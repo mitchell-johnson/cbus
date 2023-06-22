@@ -173,7 +173,28 @@ class MqttClient(mqtt.Client):
                 pass
                 Periodic.throttler.enqueue(lambda b= block,a= app_addr:userdata.request_status(b,a))          
 
+    def switchLight(self, userdata, group_addr, app_addr, light_on, brightness, transition_time ):
+        logger.debug("switching now")
+        # push state to CBus and republish on MQTT
+        # DEBUG: This is where calls to turn the lights end up
+        if light_on:
+            if brightness == 255 and transition_time == 0:
+                # lighting on
+                userdata.lighting_group_on(group_addr,app_addr)
+                self.lighting_group_on(None, group_addr,app_addr)
+            else:
+                # ramp
+                userdata.lighting_group_ramp(group_addr, app_addr, transition_time, brightness)
+                self.lighting_group_ramp(None, group_addr, app_addr, transition_time, brightness)
+        else:
+            # lighting off
+            userdata.lighting_group_off(group_addr,app_addr)
+            self.lighting_group_off(None, group_addr,app_addr)
+
     def on_message(self, client, userdata: CBusHandler, msg: mqtt.MQTTMessage):
+
+        # logging.basicConfig(level=logging.DEBUG)
+        logger.debug(f'\n\nmessage received\n topic: {msg.topic} \n payload: {msg.payload}')
         """Handle a message from an MQTT subscription."""
         if not (msg.topic.startswith(_LIGHT_TOPIC_PREFIX) and
                 msg.topic.endswith(_TOPIC_SET_SUFFIX)):
@@ -202,20 +223,7 @@ class MqttClient(mqtt.Client):
         if transition_time < 0:
             transition_time = 0
 
-        # push state to CBus and republish on MQTT
-        if light_on:
-            if brightness == 255 and transition_time == 0:
-                # lighting on
-                userdata.lighting_group_on(group_addr,app_addr)
-                self.lighting_group_on(None, group_addr,app_addr)
-            else:
-                # ramp
-                userdata.lighting_group_ramp(group_addr, app_addr, transition_time, brightness)
-                self.lighting_group_ramp(None, group_addr, app_addr, transition_time, brightness)
-        else:
-            # lighting off
-            userdata.lighting_group_off(group_addr,app_addr)
-            self.lighting_group_off(None, group_addr,app_addr)
+        Periodic.messageThrottler.enqueue(lambda: self.switchLight(userdata, group_addr, app_addr, light_on, brightness, transition_time))
 
     def publish(self, topic: Text, payload: Dict[Text, Any]):
         """Publishes a payload as JSON."""
@@ -401,8 +409,12 @@ _PERIOD = 0.97
 
 async def _main():
     
-    #throttler is queue used used to stagger commmands
+    # throttler is queue used used to stagger commmands
     Periodic.throttler = Periodic(_PERIOD)
+    # messageThrottler is queue used used to stagger messages to signal multiple mqtt commands to switch
+    # There is no reason behind the value 0.1. It just seems to work ok. more specific testing would probably show 
+    # faster would work fine. 
+    Periodic.messageThrottler = Periodic(0.1)
     parser = ArgumentParser()
 
     group = parser.add_argument_group('Logging options')
