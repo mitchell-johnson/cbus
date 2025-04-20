@@ -25,3 +25,4 @@ certificates
 .vscode
 project.xml
 venv
+.env

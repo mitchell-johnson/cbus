@@ -1,0 +1,14 @@
+version: '3'
+services:
+  cbus:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cmqttd
+    container_name: cbus
+    restart: always
+    network_mode: host
+    env_file:
+      - .env
+
+
