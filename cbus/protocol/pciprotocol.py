@@ -82,6 +82,12 @@ class PCIProtocol(CBusProtocol):
         self._timesync_frequency = timesync_frequency
         self._connection_lost_future = connection_lost_future
         self._handle_clock_requests = bool(handle_clock_requests)
+        
+        # Track which confirmation codes are in use along with their timestamp
+        self._confirmation_codes_in_use = {}  # code -> timestamp
+        self._confirmation_lock = Lock()
+        self._confirmation_timeout = 30.0  # 30 seconds timeout
+        logger.info(f"PCIProtocol initialized with confirmation timeout of {self._confirmation_timeout} seconds")
 
     def connection_made(self, transport: WriteTransport) -> None:
         """
@@ -90,12 +96,15 @@ class PCIProtocol(CBusProtocol):
         protocol, and start time synchronisation.
 
         """
+        logger.info("Connection established to PCI device")
         self._transport = transport
         self.pci_reset()
         if self._timesync_frequency:
+            logger.info(f"Starting time synchronization task with frequency {self._timesync_frequency} seconds")
             create_task(self.timesync())
 
     def connection_lost(self, exc: Optional[Exception]) -> None:
+        logger.warning(f"Connection to PCI lost: {exc}")
         self._transport = None
         self._connection_lost_future.set_result(True)
 
@@ -162,7 +171,46 @@ class PCIProtocol(CBusProtocol):
 
         :param success: True if the command was successful, False otherwise.
         """
-        logger.debug(f'recv: confirmation: code = {code}, success = {success}')
+        code_int = ord(code)
+        logger.debug(f'Received confirmation: code={code_int} (0x{code_int:02X}), success={success}')
+        
+        # Mark the confirmation code as available again
+        if code_int in CONFIRMATION_CODES:
+            logger.debug(f"Queueing release of confirmation code {code_int} (0x{code_int:02X})")
+            create_task(self._release_confirmation_code(code_int))
+        else:
+            logger.warning(f"Received unknown confirmation code: {code_int} (0x{code_int:02X})")
+
+    async def _release_confirmation_code(self, code: int):
+        """Release a confirmation code back to the pool of available codes."""
+        async with self._confirmation_lock:
+            if code in self._confirmation_codes_in_use:
+                acquisition_time = datetime.now().timestamp() - self._confirmation_codes_in_use[code]
+                del self._confirmation_codes_in_use[code]
+                used_count = len(self._confirmation_codes_in_use)
+                available_count = len(CONFIRMATION_CODES) - used_count
+                logger.info(f"Released confirmation code {code} (0x{code:02X}) after {acquisition_time:.2f}s. Used: {used_count}, Available: {available_count}")
+            else:
+                logger.warning(f"Attempted to release confirmation code {code} (0x{code:02X}) that was not in use")
+
+    async def _check_and_release_timed_out_codes(self):
+        """Check for confirmation codes that have timed out and release them."""
+        current_time = datetime.now().timestamp()
+        async with self._confirmation_lock:
+            timed_out = []
+            for code, timestamp in list(self._confirmation_codes_in_use.items()):
+                elapsed = current_time - timestamp
+                if elapsed > self._confirmation_timeout:
+                    timed_out.append((code, elapsed))
+                    
+            for code, elapsed in timed_out:
+                del self._confirmation_codes_in_use[code]
+                used_count = len(self._confirmation_codes_in_use)
+                available_count = len(CONFIRMATION_CODES) - used_count
+                logger.warning(f"Confirmation code {code} (0x{code:02X}) timed out after {elapsed:.2f}s (limit: {self._confirmation_timeout}s). Used: {used_count}, Available: {available_count}")
+            
+            if timed_out:
+                logger.info(f"Released {len(timed_out)} timed out confirmation codes")
 
     def on_reset(self):
         """
@@ -327,20 +375,71 @@ class PCIProtocol(CBusProtocol):
 
     # other things.
 
-    def _get_confirmation_code(self):
+    async def _get_confirmation_code(self):
         """
         Creates a confirmation code, and increments forward the next in the
-        list.
+        list. If all codes are in use, waits until one becomes available.
+        Automatically releases codes that have timed out.
 
         """
-        o = CONFIRMATION_CODES[self._next_confirmation_index]
+        logger.debug("Requesting confirmation code")
+        
+        # First check and release any timed out codes
+        await self._check_and_release_timed_out_codes()
+        
+        async with self._confirmation_lock:
+            used_count = len(self._confirmation_codes_in_use)
+            available_count = len(CONFIRMATION_CODES) - used_count
+            logger.debug(f"Currently {used_count} codes in use, {available_count} available")
+            
+            # Try to find an available code
+            for _ in range(len(CONFIRMATION_CODES)):
+                code = CONFIRMATION_CODES[self._next_confirmation_index]
+                
+                self._next_confirmation_index += 1
+                self._next_confirmation_index %= len(CONFIRMATION_CODES)
+                
+                if code not in self._confirmation_codes_in_use:
+                    # Store code with current timestamp
+                    self._confirmation_codes_in_use[code] = datetime.now().timestamp()
+                    used_count = len(self._confirmation_codes_in_use)
+                    available_count = len(CONFIRMATION_CODES) - used_count
+                    logger.info(f"Allocated confirmation code {code} (0x{code:02X}). Used: {used_count}, Available: {available_count}")
+                    return int2byte(code)
+        
+        # If we get here, all codes are in use - wait for one to become available
+        logger.warning("All confirmation codes are in use, waiting for one to become available")
+        wait_start = datetime.now().timestamp()
+        wait_count = 0
+        
+        while True:
+            wait_count += 1
+            elapsed = datetime.now().timestamp() - wait_start
+            
+            if wait_count % 10 == 0:  # Log every ~1 second
+                logger.warning(f"Still waiting for confirmation code after {elapsed:.2f}s")
+            
+            await sleep(0.1)  # Short sleep to prevent CPU hogging
+            
+            # Check for timed out codes
+            await self._check_and_release_timed_out_codes()
+            
+            async with self._confirmation_lock:
+                if len(self._confirmation_codes_in_use) < len(CONFIRMATION_CODES):
+                    code = CONFIRMATION_CODES[self._next_confirmation_index]
+                    while code in self._confirmation_codes_in_use:
+                        self._next_confirmation_index += 1
+                        self._next_confirmation_index %= len(CONFIRMATION_CODES)
+                        code = CONFIRMATION_CODES[self._next_confirmation_index]
+                    
+                    # Store code with current timestamp
+                    self._confirmation_codes_in_use[code] = datetime.now().timestamp()
+                    used_count = len(self._confirmation_codes_in_use)
+                    available_count = len(CONFIRMATION_CODES) - used_count
+                    logger.info(f"Allocated confirmation code {code} (0x{code:02X}) after waiting {elapsed:.2f}s. Used: {used_count}, Available: {available_count}")
+                    return int2byte(code)
 
-        self._next_confirmation_index += 1
-        self._next_confirmation_index %= len(CONFIRMATION_CODES)
-
-        return int2byte(o)
-
-    def _send(self,
+    async def _send(self,
               cmd: BasePacket,
               confirmation: bool = True,
               basic_mode: bool = False):
@@ -350,44 +449,52 @@ class PCIProtocol(CBusProtocol):
         """
         transport = self._transport
         if transport is None:
+            logger.error("Cannot send command - transport not connected")
             raise IOError('transport not connected')
         if not isinstance(cmd, BasePacket):
+            logger.error(f"Cannot send command - invalid type: {type(cmd)}")
             raise TypeError('cmd must be BasePacket')
-        logger.debug(f'send: {cmd!r}')
+        logger.debug(f'Sending packet: {cmd!r}')
 
         checksum = False
 
         if isinstance(cmd, SpecialClientPacket):
             basic_mode = True
             confirmation = False
+            logger.debug("Using basic mode and no confirmation for SpecialClientPacket")
 
         cmd = cmd.encode_packet()
 
         if not basic_mode:
             cmd = b'\\' + cmd
+            logger.debug("Added escape character to non-basic mode packet")
 
         if checksum:
             cmd = add_cbus_checksum(cmd)
+            logger.debug("Added checksum to packet")
 
         if confirmation:
-            conf_code = self._get_confirmation_code()
+            logger.debug("Getting confirmation code for packet")
+            conf_code = await self._get_confirmation_code()
             cmd += conf_code
-
-            # TODO: implement proper handling of confirmation codes.
+            logger.debug(f"Added confirmation code {ord(conf_code)} (0x{ord(conf_code):02X}) to packet")
         else:
             conf_code = None
+            logger.debug("No confirmation code requested for packet")
 
         cmd += END_COMMAND
-        logger.debug(f'send: {cmd!r}')
+        logger.debug(f'Sending encoded data: {cmd!r}')
 
         transport.write(cmd)
+        logger.debug("Data sent to transport")
         return conf_code
 
-    def pci_reset(self):
+    async def pci_reset(self):
         """
         Performs a full reset of the PCI.
 
         """
+        logger.info("Performing PCI reset")
         # reset the PCI, disable MMI reports so we know when buttons are
         # pressed. (mmi toggle is 59g disable vs 79g enable)
         #
@@ -395,33 +502,38 @@ class PCIProtocol(CBusProtocol):
         # device on the network.
 
         # full system reset
-        for _ in range(3):
-            self._send(ResetPacket())
+        for i in range(3):
+            logger.debug(f"Sending reset packet {i+1}/3")
+            await self._send(ResetPacket())
 
+        logger.debug("Setting application address 1 to ALL applications")
         # serial user interface guide sect 10.2
         # Set application address 1 to ALL applications
         # self._send('A32100FF', encode=False, checksum=False)
-        self._send(DeviceManagementPacket(
+        await self._send(DeviceManagementPacket(
             checksum=False, parameter=0x21, value=0xFF),
             basic_mode=True)
         
+        logger.debug("Setting application address 2 to USED applications")
         # serial user interface guide sect 10.2
         # Set application address 2 to USED applications
         # self._send('A32200FF', encode=False, checksum=False)
-        self._send(DeviceManagementPacket(
+        await self._send(DeviceManagementPacket(
             checksum=False, parameter=0x22, value=0xFF),
             basic_mode=True)
 
+        logger.debug("Setting interface options #3")
         # Interface options #3
         # = 0x0E / 0000 1110
         # 1: LOCAL_SAL
         # 2: PUN - power-up notification
         # 3: EXSTAT
         # self._send('A342000E', encode=False, checksum=False)
-        self._send(DeviceManagementPacket(
+        await self._send(DeviceManagementPacket(
             checksum=False, parameter=0x42, value=0x0E),
             basic_mode=True)
 
+        logger.debug("Setting interface options #1")
         # Interface options #1
         # = 0x59 / 0101 1001
         # 0: CONNECT
@@ -430,11 +542,12 @@ class PCIProtocol(CBusProtocol):
         # 5: MONITOR
         # 6: IDMON
         # self._send('A3300059', encode=False, checksum=False)
-        self._send(DeviceManagementPacket(
+        await self._send(DeviceManagementPacket(
             checksum=False, parameter=0x30, value=0x79),
             basic_mode=True)
+        logger.info("PCI reset complete")
 
-    def identify(self, unit_address, attribute):
+    async def identify(self, unit_address, attribute):
         """
         Sends an IDENTIFY command to the given unit_address.
 
@@ -450,9 +563,9 @@ class PCIProtocol(CBusProtocol):
         """
         p = PointToPointPacket(
             unit_address=unit_address, cals=[IdentifyCAL(attribute)])
-        return self._send(p)
+        return await self._send(p)
 
-    def lighting_group_on(self, group_addr: Union[int, Iterable[int]],application_addr: Union[int,Application] ):
+    async def lighting_group_on(self, group_addr: Union[int, Iterable[int]],application_addr: Union[int,Application] ):
         """
         Turns on the lights for the given group_id.
 
@@ -476,16 +589,16 @@ class PCIProtocol(CBusProtocol):
 
         p = PointToMultipointPacket(
             sals=[LightingOnSAL(ga,application_addr) for ga in group_addr])
-        return self._send(p)
+        return await self._send(p)
 
-    def request_status(self,group_addr: Union[int, Iterable[int]],application_addr: Union[int,Application] ):
+    async def request_status(self,group_addr: Union[int, Iterable[int]],application_addr: Union[int,Application] ):
         p = PointToMultipointPacket(sals=[
                 StatusRequestSAL(level_request=True, group_address=group_addr,child_application=application_addr)
             ])
-        return self._send(p)
+        return await self._send(p)
     
     
-    def lighting_group_off(self, group_addr: Union[int, Iterable[int]],application_addr: Union[int,Application] ):
+    async def lighting_group_off(self, group_addr: Union[int, Iterable[int]],application_addr: Union[int,Application] ):
         """
         Turns off the lights for the given group_id.
 
@@ -510,9 +623,9 @@ class PCIProtocol(CBusProtocol):
 
         p = PointToMultipointPacket(
             sals=[LightingOffSAL(ga,application_addr) for ga in group_addr])
-        return self._send(p)
+        return await self._send(p)
 
-    def lighting_group_ramp(
+    async def lighting_group_ramp(
             self, group_addr: int, application_addr: Union[int,Application], duration: int, level: int = 255 ):
         """
         Ramps (fades) a group address to a specified lighting level.
@@ -536,9 +649,9 @@ class PCIProtocol(CBusProtocol):
         """
         p = PointToMultipointPacket(
             sals=LightingRampSAL(group_addr, application_addr, duration, level))
-        return self._send(p)
+        return await self._send(p)
 
-    def lighting_group_terminate_ramp(
+    async def lighting_group_terminate_ramp(
             self, group_addr: Union[int, Iterable[int]], application_addr: Union[int,Application]):
         """
         Stops ramping a group address at the current point.
@@ -563,9 +676,9 @@ class PCIProtocol(CBusProtocol):
 
         p = PointToMultipointPacket(
             sals=[LightingTerminateRampSAL(ga,application_addr) for ga in group_addr])
-        return self._send(p)
+        return await self._send(p)
 
-    def clock_datetime(self, when: Optional[datetime] = None):
+    async def clock_datetime(self, when: Optional[datetime] = None):
         """
         Sends the system's local time to the CBus network.
 
@@ -578,16 +691,22 @@ class PCIProtocol(CBusProtocol):
             when = datetime.now()
 
         p = PointToMultipointPacket(sals=clock_update_sal(when))
-        return self._send(p)
+        return await self._send(p)
 
     async def timesync(self):
         frequency = self._timesync_frequency
         if frequency <= 0:
+            logger.info("Time synchronization disabled")
             return
 
+        logger.info(f"Starting time synchronization loop with frequency {frequency}s")
+        sync_count = 0
         while True:
             try:
-                self.clock_datetime()
+                sync_count += 1
+                logger.debug(f"Sending time synchronization packet #{sync_count}")
+                await self.clock_datetime()
+                logger.debug(f"Time synchronization packet #{sync_count} sent, sleeping for {frequency}s")
                 await sleep(frequency)
                 # self._send(PointToMultipointPacket(sals=StatusRequestSAL(
                 #     child_application=Application.LIGHTING,
@@ -595,7 +714,13 @@ class PCIProtocol(CBusProtocol):
                 #     group_address=0,
                 # )))
             except CancelledError:
+                logger.info("Time synchronization task cancelled")
                 break
+            except Exception as e:
+                logger.error(f"Error in time synchronization: {e}", exc_info=True)
+                # Sleep before retrying
+                await sleep(1)
+        logger.info("Time synchronization loop ended")
 
     # def recall(self, unit_addr, param_no, count):
     #    return self._send('%s%02X%s%s%02X%02X' % (
