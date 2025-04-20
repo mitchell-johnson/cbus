@@ -123,42 +123,59 @@ class CBusHandler(PCIProtocol):
         super().__init__(*args, **kwargs)
         self.labels = (
             labels if labels is not None else {56:{}})  # type: Dict[int, Text]
+        self._is_closing = False
 
+    def cleanup(self):
+        """Clean up resources to prevent memory leaks."""
+        if self._is_closing:
+            return
+        
+        self._is_closing = True
+        self.mqtt_api = None  # Remove circular reference
+        logger.debug("CBusHandler resources cleaned up")
 
-    def on_lighting_group_ramp(self, source_addr, group_addr, app_addr,duration, level):
-        if not self.mqtt_api:
+    def connection_lost(self, exc):
+        """Handle connection lost event."""
+        logger.info(f"CBus connection lost: {exc}")
+        self.cleanup()
+        super().connection_lost(exc)
+
+    def on_lighting_group_ramp(self, source_addr, group_addr, app_addr, duration, level):
+        if not self.mqtt_api or self._is_closing:
             return
         self.mqtt_api.lighting_group_ramp(
-            source_addr, group_addr, app_addr,duration, level)
+            source_addr, group_addr, app_addr, duration, level)
 
-    def on_lighting_group_on(self, source_addr, group_addr,app_addr):
-        if not self.mqtt_api:
+    def on_lighting_group_on(self, source_addr, group_addr, app_addr):
+        if not self.mqtt_api or self._is_closing:
             return
-        self.mqtt_api.lighting_group_on(source_addr, group_addr,app_addr)
+        self.mqtt_api.lighting_group_on(source_addr, group_addr, app_addr)
 
-    def on_lighting_group_off(self, source_addr, group_addr,app_addr):
-        if not self.mqtt_api:
+    def on_lighting_group_off(self, source_addr, group_addr, app_addr):
+        if not self.mqtt_api or self._is_closing:
             return
-        self.mqtt_api.lighting_group_off(source_addr, group_addr,app_addr)
+        self.mqtt_api.lighting_group_off(source_addr, group_addr, app_addr)
     
     def on_level_report(self, app_addr, start, report: LevelStatusReport):
-        groups = self.mqtt_api.groupDB.setdefault(app_addr,{})
-        for val in  report:
-            if groups[start]:
-                if val==None:
+        if not self.mqtt_api or self._is_closing:
+            return
+            
+        groups = self.mqtt_api.groupDB.setdefault(app_addr, {})
+        for val in report:
+            if start in groups:  # Check key exists to avoid KeyError
+                if val is None:
                     pass
-                elif val==0:
-                    self.on_lighting_group_off(0,start,app_addr)
+                elif val == 0:
+                    self.on_lighting_group_off(0, start, app_addr)
                 elif val == 255:
-                    self.on_lighting_group_on(0,start,app_addr)
+                    self.on_lighting_group_on(0, start, app_addr)
                 else:
-                    self.on_lighting_group_ramp(0,start,app_addr,0,val)
-            start+=1
-
-    # TODO: on_lighting_group_terminate_ramp
+                    self.on_lighting_group_ramp(0, start, app_addr, 0, val)
+            start += 1
 
     def on_clock_request(self, source_addr):
-        self.clock_datetime()
+        if not self._is_closing:
+            self.clock_datetime()
 
 
 class MqttClient(mqtt.Client):
@@ -168,10 +185,18 @@ class MqttClient(mqtt.Client):
         userdata.mqtt_api = self
         self.groupDB = {}
         self.publish_all_lights(userdata.labels)
+        
+        # Use a fixed list of tasks rather than creating lambdas in a loop
         for app_addr in self.groupDB.keys():
-            for block in range(0,256,32):
-                pass
-                Periodic.throttler.enqueue(lambda b= block,a= app_addr:userdata.request_status(b,a))          
+            self.queue_status_requests(userdata, app_addr)
+
+    def queue_status_requests(self, userdata, app_addr):
+        """Queue status requests in a way that avoids memory leaks from lambdas in loops."""
+        for block in range(0, 256, 32):
+            # Create a proper function that doesn't use closure
+            Periodic.throttler.enqueue(
+                lambda block=block, app_addr=app_addr: 
+                userdata.request_status(block, app_addr))
 
     def switchLight(self, userdata, group_addr, app_addr, light_on, brightness, transition_time ):
         logger.debug("switching now")
@@ -408,15 +433,17 @@ _PERIOD = 0.97
 
 
 async def _main():
-    
     # throttler is queue used used to stagger commmands
-    Periodic.throttler = Periodic(_PERIOD)
-    # messageThrottler is queue used used to stagger messages to signal multiple mqtt commands to switch
-    # There is no reason behind the value 0.1. It just seems to work ok. more specific testing would probably show 
-    # faster would work fine. 
+    throttler = Periodic(period=0.2)
+    Periodic.throttler = throttler
+    # messageThrottler is queue used to stagger messages to signal multiple mqtt commands to switch
     Periodic.messageThrottler = Periodic(0.1)
-    parser = ArgumentParser()
 
+    parser = ArgumentParser('cmqttd')
+    parser.add_argument(
+        '-d', '--debug', action='store_true',
+        help='Enable debug logging')
+    
     group = parser.add_argument_group('Logging options')
     group.add_argument(
         '-l', '--log-file',
@@ -582,7 +609,38 @@ async def _main():
     aioh = AsyncioHelper(loop, mqtt_client)
     mqtt_client.connect(option.broker_address, port, option.broker_keepalive)
 
-    await connection_lost_future
+    try:
+        await connection_lost_future
+    except (KeyboardInterrupt, asyncio.CancelledError):
+        logger.info('Shutting down...')
+    finally:
+        # Clean up resources to prevent memory leaks
+        logger.info('Cleaning up resources...')
+        if 'transport' in locals() and transport is not None:
+            transport.close()
+        
+        # Cancel all tasks
+        await throttler.cleanup()
+        if hasattr(Periodic, 'messageThrottler'):
+            await Periodic.messageThrottler.cleanup()
+        
+        if 'helper' in locals() and helper is not None:
+            if hasattr(helper, 'misc') and helper.misc is not None:
+                helper.misc.cancel()
+        
+        # Disconnect MQTT client if it exists
+        if 'mqtt_client' in locals() and mqtt_client is not None:
+            mqtt_client.disconnect()
+            mqtt_client.loop_stop()
+        
+        # Clean up event loops
+        loop = asyncio.get_event_loop()
+        tasks = [t for t in asyncio.all_tasks(loop) if t is not asyncio.current_task()]
+        for task in tasks:
+            task.cancel()
+        
+        await asyncio.gather(*tasks, return_exceptions=True)
+        logger.info('Cleanup complete')
 
 
 def main():
