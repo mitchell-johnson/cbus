@@ -15,7 +15,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-from asyncio import get_event_loop, run, sleep
+# Import the full asyncio module instead of just specific functions
+import asyncio
 from argparse import ArgumentParser, FileType
 import json
 import logging
@@ -175,7 +176,7 @@ class CBusHandler(PCIProtocol):
 
     def on_clock_request(self, source_addr):
         if not self._is_closing:
-            self.clock_datetime()
+            asyncio.create_task(self.clock_datetime())
 
 
 class MqttClient(mqtt.Client):
@@ -196,24 +197,24 @@ class MqttClient(mqtt.Client):
             # Create a proper function that doesn't use closure
             Periodic.throttler.enqueue(
                 lambda block=block, app_addr=app_addr: 
-                userdata.request_status(block, app_addr))
+                asyncio.create_task(userdata.request_status(block, app_addr)))
 
-    def switchLight(self, userdata, group_addr, app_addr, light_on, brightness, transition_time ):
+    async def switchLight(self, userdata, group_addr, app_addr, light_on, brightness, transition_time ):
         logger.debug("switching now")
         # push state to CBus and republish on MQTT
         # DEBUG: This is where calls to turn the lights end up
         if light_on:
             if brightness == 255 and transition_time == 0:
                 # lighting on
-                userdata.lighting_group_on(group_addr,app_addr)
+                await userdata.lighting_group_on(group_addr,app_addr)
                 self.lighting_group_on(None, group_addr,app_addr)
             else:
                 # ramp
-                userdata.lighting_group_ramp(group_addr, app_addr, transition_time, brightness)
+                await userdata.lighting_group_ramp(group_addr, app_addr, transition_time, brightness)
                 self.lighting_group_ramp(None, group_addr, app_addr, transition_time, brightness)
         else:
             # lighting off
-            userdata.lighting_group_off(group_addr,app_addr)
+            await userdata.lighting_group_off(group_addr,app_addr)
             self.lighting_group_off(None, group_addr,app_addr)
 
     def on_message(self, client, userdata: CBusHandler, msg: mqtt.MQTTMessage):
@@ -248,7 +249,8 @@ class MqttClient(mqtt.Client):
         if transition_time < 0:
             transition_time = 0
 
-        Periodic.messageThrottler.enqueue(lambda: self.switchLight(userdata, group_addr, app_addr, light_on, brightness, transition_time))
+        # Use create_task to handle the async switchLight method
+        asyncio.create_task(self.switchLight(userdata, group_addr, app_addr, light_on, brightness, transition_time))
 
     def publish(self, topic: Text, payload: Dict[Text, Any]):
         """Publishes a payload as JSON."""
@@ -436,8 +438,7 @@ async def _main():
     # throttler is queue used used to stagger commmands
     throttler = Periodic(period=0.2)
     Periodic.throttler = throttler
-    # messageThrottler is queue used to stagger messages to signal multiple mqtt commands to switch
-    Periodic.messageThrottler = Periodic(0.1)
+    # No longer need messageThrottler as we're using PCIProtocol's confirmation code tracking
 
     parser = ArgumentParser('cmqttd')
     parser.add_argument(
@@ -569,7 +570,7 @@ async def _main():
     global_logger.setLevel(option.verbosity)
     logging.basicConfig(level=option.verbosity, filename=option.log)
 
-    loop = get_event_loop()
+    loop = asyncio.get_event_loop()
     connection_lost_future = loop.create_future()
     labels = (read_cbz_labels(option.project_file,option.cbus_network)
               if option.project_file else None)
@@ -621,8 +622,7 @@ async def _main():
         
         # Cancel all tasks
         await throttler.cleanup()
-        if hasattr(Periodic, 'messageThrottler'):
-            await Periodic.messageThrottler.cleanup()
+        # messageThrottler has been removed
         
         if 'helper' in locals() and helper is not None:
             if hasattr(helper, 'misc') and helper.misc is not None:
@@ -645,7 +645,7 @@ async def _main():
 
 def main():
     # work-around asyncio vs. setuptools console_scripts
-    run(_main())
+    asyncio.run(_main())
 
 
 if __name__ == '__main__':
