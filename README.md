@@ -48,6 +48,48 @@ to an MQTT Broker. `cmqttd` supports Home Assistant's
 
 _Integration with Hass.io is still a work in progress._
 
+## Docker Setup
+
+This project includes Docker support for easy deployment. To use it:
+
+1. Copy the `.env.example` file to `.env`:
+   ```
+   cp .env.example .env
+   ```
+
+2. Edit the `.env` file to match your configuration:
+   ```
+   # Timezone
+   TZ=Your/Timezone
+
+   # MQTT Settings
+   MQTT_USE_TLS=0
+   MQTT_SERVER=your-mqtt-server.example.com
+
+   # C-Bus Settings
+   CMQTTD_PROJECT_FILE=your-project.cbz
+   CNI_ADDR=192.168.x.y:10001
+   CMQTTD_CBUS_NETWORK=Your Network
+   ```
+
+3. Build and start the container:
+   ```
+   docker-compose up -d
+   ```
+
+### Environment Variables
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `TZ` | Timezone for the container | `Australia/Sydney` |
+| `MQTT_USE_TLS` | Whether to use TLS for MQTT connection (0=no, 1=yes) | `0` |
+| `MQTT_SERVER` | MQTT broker address | `mqtt.example.com` |
+| `CMQTTD_PROJECT_FILE` | C-Bus Toolkit project backup file | `project.cbz` |
+| `CNI_ADDR` | C-Bus PCI address and port | `192.168.1.10:10001` |
+| `CMQTTD_CBUS_NETWORK` | C-Bus network name | `My Network` |
+
+The `.env` file is excluded from version control to keep your configuration private.
+
 ## Hardware interface support
 
 This should work with the following C-Bus PC Interfaces (PCIs):

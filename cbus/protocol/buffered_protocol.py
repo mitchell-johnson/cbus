@@ -18,10 +18,13 @@
 
 import abc
 import asyncio
+import logging
 import threading
 
 
 __all__ = ['BufferedProtocol']
+
+logger = logging.getLogger(__name__)
 
 
 class BufferedProtocol(asyncio.Protocol, abc.ABC):
@@ -33,6 +36,7 @@ class BufferedProtocol(asyncio.Protocol, abc.ABC):
         self._buf = bytearray()
         self._buf_lock = threading.Lock()
         self._size_limit = size_limit
+        self._closed = False
 
     @abc.abstractmethod
     def handle_data(self, buf: bytes) -> int:
@@ -67,11 +71,15 @@ class BufferedProtocol(asyncio.Protocol, abc.ABC):
         :param data: new data to add to the buffer
         :return: None
         """
+        if self._closed:
+            logger.warning("Data received after connection closed")
+            return
+
         try:
             data_size = len(data)
             if data_size > self._size_limit:
                 raise ValueError('Received data exceeds size limit '
-                             '({} bytes)'.format(self._size_limit))
+                             f'({self._size_limit} bytes)')
 
             # Add the data to the buffer
             with self._buf_lock:
@@ -85,9 +93,11 @@ class BufferedProtocol(asyncio.Protocol, abc.ABC):
 
             # Handle any messages that may be in the buffer.
             self._process_buffer()
-        except:
-            # Clear buffer.
-            self._buf =  bytearray()
+        except Exception as e:
+            # Clear buffer and log the specific exception
+            with self._buf_lock:
+                self._buf = bytearray()
+            logger.error(f"Error processing buffer: {e}")
 
     def _process_buffer(self):
         with self._buf_lock:
@@ -105,10 +115,24 @@ class BufferedProtocol(asyncio.Protocol, abc.ABC):
                     if r != -1:
                         # Only "correct" way to clear buffer is with -1.
                         # But we clear anyway to avoid loops.
+                        logger.error(f'Invalid return from frame_received: {r}')
                         raise ValueError(
-                            'Invalid return from frame_received: {}'.format(r))
+                            f'Invalid return from frame_received: {r}')
 
                 if r > 0:
                     self._buf = self._buf[r:]
                 else:
                     break
+
+    def connection_lost(self, exc):
+        """Handle connection lost event and clean up resources."""
+        self.close()
+        super().connection_lost(exc)
+
+    def close(self):
+        """Close the connection and clean up resources."""
+        if not self._closed:
+            self._closed = True
+            with self._buf_lock:
+                self._buf = bytearray()
+            logger.debug("BufferedProtocol resources cleaned up")

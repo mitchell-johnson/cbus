@@ -13,15 +13,15 @@ FROM alpine:edge as base
 
 # Install most Python deps here, because that way we don't need to include build tools in the
 # final image.
-RUN apk add --no-cache python3 py-pip py3-cffi py3-paho-mqtt py3-six tzdata && \
-    pip3 install 'pyserial==3.5' 'pyserial_asyncio==0.6'
+RUN apk add --no-cache python3 py-pip py3-cffi py3-paho-mqtt py3-six tzdata python3-dev && \
+    pip3 install --break-system-packages 'pyserial==3.5' 'pyserial_asyncio==0.6'
 
 # Runs tests and builds a distribution tarball
 FROM base as builder
 # See also .dockerignore
 ADD . /cbus
 WORKDIR /cbus
-RUN pip3 install 'parameterized' && \
+RUN pip3 install --break-system-packages 'parameterized' && \
     python3 -m unittest && \
     python3 setup.py bdist -p generic --format=gztar
 
@@ -33,5 +33,12 @@ COPY --from=builder /cbus/dist/cbus-0.2.generic.tar.gz /
 RUN tar zxf /cbus-0.2.generic.tar.gz && rm /cbus-0.2.generic.tar.gz
 COPY cmqttd_config/ /etc/cmqttd/ 
 
+# Fix auth directory and project file issues
+RUN rm -rf /etc/cmqttd/auth && touch /etc/cmqttd/auth && \
+    if [ -d /etc/cmqttd/project.cbz ]; then rm -rf /etc/cmqttd/project.cbz && touch /etc/cmqttd/project.cbz; fi
+
+# Ensure project file exists
+COPY cmqttd_config/project.cbz /etc/cmqttd/project.cbz
+
 # Runs cmqttd itself
-CMD /entrypoint-cmqttd.sh
+CMD ["/entrypoint-cmqttd.sh"]
