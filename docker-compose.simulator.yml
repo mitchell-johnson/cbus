@@ -1,0 +1,26 @@
+version: '3'
+services:
+  cbus-simulator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "10001:10001"
+    volumes:
+      - ./config:/app/config
+    environment:
+      - MQTT_SERVER=192.168.1.32
+      - CNI_ADDR=192.168.1.21:10001
+      - CMQTTD_CBUS_NETWORK=Home
+      - MQTT_USE_TLS=0
+      - SIMULATOR_PORT=10001
+      - SIMULATOR_CONFIG=/app/config/simulator-config.json
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=DEBUG
+    restart: unless-stopped
+    networks:
+      - simulator-network
+
+networks:
+  simulator-network:
+    driver: bridge 
