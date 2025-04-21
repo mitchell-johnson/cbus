@@ -13,7 +13,7 @@ FROM python:3.11.9-alpine3.19 as base
 
 # Install most Python deps here, because that way we don't need to include build tools in the
 # final image.
-RUN apk add --no-cache python3 py-pip tzdata python3-dev && \
+RUN apk add --no-cache python3 py-pip tzdata python3-dev build-base libffi-dev && \
     pip3 install --break-system-packages 'pyserial==3.5' 'pyserial_asyncio==0.6' 'paho-mqtt==1.6.1' 'six==1.16.0' 'cffi==1.15.1'
 
 # Builds a distribution tarball
