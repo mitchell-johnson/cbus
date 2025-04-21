@@ -1,0 +1,98 @@
+{
+  "device": {
+    "serial_number": "0011223344",
+    "type": "5500CN",
+    "firmware_version": "1.0.0",
+    "pci_version": "v3.7"
+  },
+  "networks": [
+    {
+      "name": "Home",
+      "network_id": 254,
+      "applications": [
+        {
+          "application_id": 56,
+          "name": "Lighting",
+          "groups": [
+            {
+              "group_id": 1,
+              "name": "Living Room",
+              "initial_level": 0
+            },
+            {
+              "group_id": 2,
+              "name": "Kitchen",
+              "initial_level": 0
+            },
+            {
+              "group_id": 3,
+              "name": "Bedroom",
+              "initial_level": 0
+            },
+            {
+              "group_id": 4,
+              "name": "Bathroom",
+              "initial_level": 0
+            }
+          ]
+        },
+        {
+          "application_id": 202,
+          "name": "Temperature Broadcast",
+          "zones": [
+            {
+              "zone_id": 1,
+              "name": "Living Room",
+              "initial_temperature": 22.5
+            },
+            {
+              "zone_id": 2,
+              "name": "Kitchen",
+              "initial_temperature": 23.0
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "units": [
+    {
+      "unit_address": 1,
+      "type": "Light Switch",
+      "group_address": 1,
+      "application_address": 56
+    },
+    {
+      "unit_address": 2,
+      "type": "Light Switch",
+      "group_address": 2,
+      "application_address": 56
+    },
+    {
+      "unit_address": 3,
+      "type": "Light Switch",
+      "group_address": 3,
+      "application_address": 56
+    },
+    {
+      "unit_address": 4,
+      "type": "Light Switch",
+      "group_address": 4,
+      "application_address": 56
+    },
+    {
+      "unit_address": 5,
+      "type": "Temperature Sensor",
+      "zone_address": 1,
+      "application_address": 202
+    }
+  ],
+  "simulation": {
+    "smart_mode": true,
+    "default_source_address": 5,
+    "delay_min_ms": 10,
+    "delay_max_ms": 50,
+    "packet_loss_probability": 0.01,
+    "clock_drift_seconds_per_day": 2
+  }
+} 

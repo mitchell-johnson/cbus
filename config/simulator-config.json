@@ -1,0 +1,45 @@
+{
+  "device": {
+    "serial_number": "00000000",
+    "type": "5500CN",
+    "firmware_version": "1.0.0",
+    "pci_version": "v3.7"
+  },
+  "networks": [
+    {
+      "name": "Default Network",
+      "network_id": 254,
+      "applications": [
+        {
+          "application_id": 56,
+          "name": "Lighting",
+          "type": "lighting",
+          "groups": [
+            {
+              "group_id": 1,
+              "name": "Living Room",
+              "initial_level": 0
+            },
+            {
+              "group_id": 2,
+              "name": "Kitchen",
+              "initial_level": 0
+            },
+            {
+              "group_id": 3,
+              "name": "Bedroom",
+              "initial_level": 0
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "simulation": {
+    "smart_mode": true,
+    "default_source_address": 5,
+    "delay_min_ms": 10,
+    "delay_max_ms": 50,
+    "packet_loss_probability": 0.0
+  }
+} 
