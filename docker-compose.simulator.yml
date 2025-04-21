@@ -3,14 +3,16 @@ services:
   cbus-simulator:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.simulator
+    image: cbus-simulator
+    container_name: cbus-simulator
     ports:
       - "10001:10001"
     volumes:
       - ./config:/app/config
     environment:
       - MQTT_SERVER=192.168.1.32
-      - CNI_ADDR=192.168.1.21:10001
+      - CNI_ADDR=127.0.0.1:10001
       - CMQTTD_CBUS_NETWORK=Home
       - MQTT_USE_TLS=0
       - SIMULATOR_PORT=10001
