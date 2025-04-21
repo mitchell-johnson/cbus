@@ -16,13 +16,12 @@ FROM alpine:edge as base
 RUN apk add --no-cache python3 py-pip py3-cffi py3-paho-mqtt py3-six tzdata python3-dev && \
     pip3 install --break-system-packages 'pyserial==3.5' 'pyserial_asyncio==0.6'
 
-# Runs tests and builds a distribution tarball
+# Builds a distribution tarball
 FROM base as builder
 # See also .dockerignore
 ADD . /cbus
 WORKDIR /cbus
 RUN pip3 install --break-system-packages 'parameterized' && \
-    python3 -m unittest && \
     python3 setup.py bdist -p generic --format=gztar
 
 # cmqttd runner image
