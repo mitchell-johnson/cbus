@@ -12,6 +12,25 @@ This simulator emulates a Clipsal C-Bus 5500CN Ethernet PCI on port 10001 (by de
 - Can be run standalone or in Docker
 - Configurable via JSON configuration file
 - Supports testing with example clients
+- Implements C-Bus protocol commands and responses including proper confirmation handling
+
+## Protocol Notes
+
+### C-Bus Confirmation Protocol
+
+The C-Bus protocol includes a confirmation mechanism for commands that works as follows:
+
+1. When a client sends a command requiring confirmation, it appends a specific ASCII character as a confirmation code to the end of the command.
+2. Valid confirmation codes are the characters in the set: `hijklmnopqrstuvwxyzg`
+3. The server responds with:
+   - The same confirmation code character
+   - A status indicator (`.` for success, `!` for failure)
+   - Followed by the command terminator (CR+LF)
+
+For example, if a client sends a command ending with the confirmation code `h`, and the command succeeds, the server responds with:
+- The ASCII characters: `h.` followed by CR+LF
+
+This allows clients to match responses to the commands they sent, even in an asynchronous communication environment. The limited set of confirmation codes (20 characters) means that in high-traffic environments, codes may need to be reused, requiring proper tracking of which codes are in use at any given time.
 
 ## Getting Started
 

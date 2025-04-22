@@ -439,55 +439,91 @@ class PCIProtocol(CBusProtocol):
                     logger.info(f"Allocated confirmation code {code} (0x{code:02X}) after waiting {elapsed:.2f}s. Used: {used_count}, Available: {available_count}")
                     return int2byte(code)
 
-    async def _send(self,
-              cmd: BasePacket,
-              confirmation: bool = True,
-              basic_mode: bool = False):
+    async def _prepare_packet(self,
+                  cmd: BasePacket,
+                  confirmation: bool = True,
+                  basic_mode: bool = False):
         """
-        Sends a packet of CBus data.
-
+        Prepares a packet of CBus data for sending without actually sending it.
+        
+        Args:
+            cmd: The packet to prepare
+            confirmation: Whether to request confirmation
+            basic_mode: Whether to send in basic mode
+            
+        Returns:
+            Tuple of (prepared_data, confirmation_code)
+            where confirmation_code is None if no confirmation was requested
+        """
+        if not isinstance(cmd, BasePacket):
+            logger.error(f"Cannot prepare command - invalid type: {type(cmd)}")
+            raise TypeError('cmd must be BasePacket')
+        
+        logger.debug(f'Preparing packet: {cmd!r}')
+        
+        checksum = False
+        
+        if isinstance(cmd, SpecialClientPacket):
+            basic_mode = True
+            confirmation = False
+            logger.debug("Using basic mode and no confirmation for SpecialClientPacket")
+        
+        cmd_bytes = cmd.encode_packet()
+        
+        if not basic_mode:
+            cmd_bytes = b'\\' + cmd_bytes
+            logger.debug("Added escape character to non-basic mode packet")
+        
+        if checksum:
+            cmd_bytes = add_cbus_checksum(cmd_bytes)
+            logger.debug("Added checksum to packet")
+        
+        conf_code = None
+        if confirmation:
+            logger.debug("Getting confirmation code for packet")
+            conf_code = await self._get_confirmation_code()
+            cmd_bytes += conf_code
+            logger.debug(f"Added confirmation code {ord(conf_code)} (0x{ord(conf_code):02X}) to packet")
+        
+        cmd_bytes += END_COMMAND
+        logger.debug(f'Prepared encoded data: {cmd_bytes!r}')
+        
+        return cmd_bytes, conf_code
+    
+    async def _send_packet(self, prepared_data: bytes):
+        """
+        Sends previously prepared packet data.
+        
+        Args:
+            prepared_data: The data to send
         """
         transport = self._transport
         if transport is None:
             logger.error("Cannot send command - transport not connected")
             raise IOError('transport not connected')
-        if not isinstance(cmd, BasePacket):
-            logger.error(f"Cannot send command - invalid type: {type(cmd)}")
-            raise TypeError('cmd must be BasePacket')
-        logger.debug(f'Sending packet: {cmd!r}')
-
-        checksum = False
-
-        if isinstance(cmd, SpecialClientPacket):
-            basic_mode = True
-            confirmation = False
-            logger.debug("Using basic mode and no confirmation for SpecialClientPacket")
-
-        cmd = cmd.encode_packet()
-
-        if not basic_mode:
-            cmd = b'\\' + cmd
-            logger.debug("Added escape character to non-basic mode packet")
-
-        if checksum:
-            cmd = add_cbus_checksum(cmd)
-            logger.debug("Added checksum to packet")
-
-        if confirmation:
-            logger.debug("Getting confirmation code for packet")
-            conf_code = await self._get_confirmation_code()
-            cmd += conf_code
-            logger.debug(f"Added confirmation code {ord(conf_code)} (0x{ord(conf_code):02X}) to packet")
-        else:
-            conf_code = None
-            logger.debug("No confirmation code requested for packet")
-
-        cmd += END_COMMAND
-        logger.debug(f'Sending encoded data: {cmd!r}')
-        # add a short delay to ensure the command is sent becuase the CNI is super slow
+        
+        # add a short delay to ensure the command is sent because the CNI is super slow
         await sleep(0.1)
-        transport.write(cmd)
+        transport.write(prepared_data)
         logger.debug("Data sent to transport")
+
+    async def _send(self,
+              cmd: BasePacket,
+              confirmation: bool = True,
+              basic_mode: bool = False):
+        """
+        Prepares and sends a packet of CBus data.
+        
+        Args:
+            cmd: The packet to send
+            confirmation: Whether to request confirmation
+            basic_mode: Whether to send in basic mode
+            
+        Returns:
+            The confirmation code byte, or None if no confirmation was requested
+        """
+        prepared_data, conf_code = await self._prepare_packet(cmd, confirmation, basic_mode)
+        await self._send_packet(prepared_data)
         return conf_code
 
     async def pci_reset(self):

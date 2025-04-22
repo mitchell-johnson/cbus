@@ -22,7 +22,11 @@ logger = logging.getLogger(__name__)
 
 # C-Bus protocol constants
 END_COMMAND = b'\r\n'
-CONFIRMATION_CODES = list(range(0x80, 0xFF + 1))
+# C-Bus confirmation codes are a specific set of ASCII characters
+# These are used as transaction identifiers for command confirmation
+# When a client sends a command with a confirmation code, the server must respond
+# with the same code followed by a success/failure indicator
+CONFIRMATION_CODES = b'hijklmnopqrstuvwxyzg'
 BASIC_MODE_PROMPT = b'>'
 SMART_MODE_NO_ECHO = '+'
 
@@ -412,26 +416,36 @@ class PCISimulatorProtocol:
                                     logger.info(f"Setting group {group_addr} to ON from string-encoded message to Level = {level}")
                                     
                                     # Check if there's a confirmation request in the message
-                                    # In C-Bus protocol, confirmation is requested by appending a byte in the range 0x80-0xFF
+                                    # In C-Bus protocol, confirmation is requested by appending a character from
+                                    # a specific set (hijklmnopqrstuvwxyzg) to the end of a command.
+                                    # This character serves as a transaction identifier that the server
+                                    # must echo back in its response, along with a success/failure indicator.
                                     needs_confirmation = False
                                     confirmation_code = None
                                     
                                     # Check the last byte of the command (if it exists)
                                     if len(data) > 0:
                                         last_byte = data[-1]
-                                        if 0x00 <= last_byte <= 0xFF:
+                                        # Convert to ASCII character for checking
+                                        last_char = bytes([last_byte])
+                                        # Check if it's a valid confirmation code
+                                        if last_char in CONFIRMATION_CODES:
                                             needs_confirmation = True
                                             confirmation_code = last_byte
-                                            logger.info(f"Detected confirmation request with code: 0x{confirmation_code:02X}")
+                                            logger.info(f"Detected confirmation request with code: {chr(confirmation_code)} (0x{confirmation_code:02X})")
                                     
                                     if needs_confirmation and confirmation_code is not None:
-                                        logger.info(f"Sending confirmation with code: 0x{confirmation_code:02X}")
+                                        logger.info(f"Sending confirmation with code: {chr(confirmation_code)} (0x{confirmation_code:02X})")
                                         
-                                        # First send success indicator
-                                        await self._write(b".\r\n")
-                                        
-                                        # Then send confirmation code
-                                        await self._write(f"{hex(confirmation_code)[2:].upper()}\r\n".encode('ascii'))
+                                        # Format confirmation response according to CBus protocol:
+                                        # The proper format is: [confirmation_code_byte][success_indicator][CR][LF]
+                                        # Where:
+                                        # - confirmation_code_byte is the same byte from the request (0x80-0xFF)
+                                        # - success_indicator is '.' for success, '!' for failure
+                                        # - CR+LF is the standard C-Bus command terminator
+                                        success_indicator = b'.'  # success
+                                        confirmation_response = bytes([confirmation_code]) + success_indicator + END_COMMAND
+                                        await self._write(confirmation_response)
                                         
                                         # Then send prompt
                                         if self.smart_mode:
@@ -916,18 +930,32 @@ class PCISimulatorProtocol:
     
     async def _send_confirmation(self, code: int, success: bool) -> None:
         """
-        Send a command confirmation.
+        Send a command confirmation according to the C-Bus protocol specification.
+        
+        The C-Bus confirmation protocol works as follows:
+        1. When a client sends a command requiring confirmation, it includes a
+           confirmation code (one of the characters in 'hijklmnopqrstuvwxyzg') as the 
+           last byte of the command.
+        2. The server must respond with a confirmation message containing:
+           - The exact same confirmation code character
+           - A success/failure indicator: '.' for success, '!' for failure
+           - Followed by the standard command terminator (CR+LF)
+        
+        This is implemented in the CBus library as a ConfirmationPacket, which is a
+        type of SpecialServerPacket. The encoded format is: [confirmation_code][indicator]
         
         Args:
-            code: The confirmation code
+            code: The ASCII value of the confirmation code character from the original request
             success: True if the command was successful, False otherwise
         """
-        if success:
-            response = f".\r\n{hex(code)[2:].upper()}\r\n{SMART_MODE_NO_ECHO}\r\n"
-        else:
-            response = f"!\r\n{hex(code)[2:].upper()}\r\n{SMART_MODE_NO_ECHO}\r\n"
+        # Format confirmation response according to CBus protocol:
+        # confirmation code byte followed by success/failure indicator
+        # '.' for success, '!' for failure
+        success_indicator = b'.' if success else b'!'
+        confirmation_response = bytes([code]) + success_indicator + END_COMMAND
         
-        await self._write(response.encode('ascii'))
+        await self._write(confirmation_response)
+        await self._send_prompt()
     
     async def _send_error(self, error_type: str, cmd: str) -> None:
         """
@@ -965,11 +993,23 @@ class PCISimulatorProtocol:
     
     def _get_confirmation_code(self) -> int:
         """
-        Get a unique confirmation code.
+        Get a unique confirmation code for command acknowledgments.
+        
+        In the C-Bus protocol, confirmation codes are specific ASCII characters
+        from the set 'hijklmnopqrstuvwxyzg' that serve as transaction identifiers 
+        for commands. When a client wants to confirm that a command was received 
+        and processed, it appends a confirmation code to the command.
+        The server must echo back this exact same code in its response.
+        
+        This method cycles through the valid confirmation codes sequentially, ensuring
+        each command gets a unique identifier. In a real implementation, you might want 
+        to track which codes are in use and reuse them only when responses have been 
+        received, similar to how the PCIProtocol._get_confirmation_code method works
+        in the client library.
         
         Returns:
-            A confirmation code (0x80-0xFF)
+            The ASCII integer value of a confirmation code character
         """
-        code = CONFIRMATION_CODES[self.confirmation_index]
+        code_char = CONFIRMATION_CODES[self.confirmation_index]
         self.confirmation_index = (self.confirmation_index + 1) % len(CONFIRMATION_CODES)
-        return code 
+        return code_char 
