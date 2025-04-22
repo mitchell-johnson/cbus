@@ -13,7 +13,7 @@ logger = logging.getLogger('cbus-client-test')
 
 # Test configuration
 HOST = 'localhost'
-PORT = 10002  # Updated port for local testing
+PORT = 10001  # Updated port to match Docker container
 TEST_COMMANDS = [
     # Initialization command
     b'\x05\xDF\x00\x0E\x02\x07\xE9\x04\x15\x00\x0D\x01\x0F\x37\x20\xFF\x90',

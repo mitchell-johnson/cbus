@@ -98,7 +98,7 @@ class PCIProtocol(CBusProtocol):
         """
         logger.info("Connection established to PCI device")
         self._transport = transport
-        self.pci_reset()
+        create_task(self.pci_reset())
         if self._timesync_frequency:
             logger.info(f"Starting time synchronization task with frequency {self._timesync_frequency} seconds")
             create_task(self.timesync())
@@ -484,7 +484,8 @@ class PCIProtocol(CBusProtocol):
 
         cmd += END_COMMAND
         logger.debug(f'Sending encoded data: {cmd!r}')
-
+        # add a short delay to ensure the command is sent becuase the CNI is super slow
+        await sleep(0.1)
         transport.write(cmd)
         logger.debug("Data sent to transport")
         return conf_code

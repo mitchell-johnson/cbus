@@ -14,7 +14,23 @@ from simulator.server import CBusSimulatorServer
 
 def setup_logging(verbose=False):
     """Set up logging with appropriate level"""
-    log_level = logging.DEBUG if verbose else logging.INFO
+    # Check for environment variable override
+    env_log_level = os.environ.get('LOG_LEVEL', 'INFO').upper()
+    
+    # Map string log level to logging constants
+    log_level_map = {
+        'DEBUG': logging.DEBUG,
+        'INFO': logging.INFO,
+        'WARNING': logging.WARNING,
+        'ERROR': logging.ERROR,
+        'CRITICAL': logging.CRITICAL
+    }
+    
+    # Determine log level from environment or verbose flag
+    if verbose:
+        log_level = logging.DEBUG
+    else:
+        log_level = log_level_map.get(env_log_level, logging.INFO)
     
     # Configure colorized logging if available
     try:
@@ -38,6 +54,9 @@ def setup_logging(verbose=False):
         root_logger.handlers = []  # Remove existing handlers
         root_logger.addHandler(handler)
         
+        # Print log level being used
+        print(f"Logging configured with level: {logging.getLevelName(log_level)}")
+        
     except ImportError:
         # Fall back to standard logging
         logging.basicConfig(
@@ -45,6 +64,7 @@ def setup_logging(verbose=False):
             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
             datefmt='%Y-%m-%d %H:%M:%S'
         )
+        print(f"Logging configured with level: {logging.getLevelName(log_level)}")
 
 def parse_args():
     """Parse command line arguments"""
