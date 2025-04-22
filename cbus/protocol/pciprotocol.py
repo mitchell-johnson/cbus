@@ -23,7 +23,7 @@ from asyncio import (CancelledError, Future, Lock, create_task,
 from asyncio.transports import WriteTransport
 from datetime import datetime
 import logging
-from typing import Iterable, Optional, Text, Union
+from typing import Iterable, Optional, Text, Union, Dict, Tuple, Any
 
 from six import int2byte
 
@@ -87,7 +87,12 @@ class PCIProtocol(CBusProtocol):
         self._confirmation_codes_in_use = {}  # code -> timestamp
         self._confirmation_lock = Lock()
         self._confirmation_timeout = 30.0  # 30 seconds timeout
-        logger.info(f"PCIProtocol initialized with confirmation timeout of {self._confirmation_timeout} seconds")
+        
+        # Track pending packets waiting for confirmation
+        self._pending_confirmations = {}  # code -> (packet_data, attempts, last_attempt_time)
+        self._max_retries = 3
+        self._retry_interval = 1.0  # 1 second retry interval
+        logger.info(f"PCIProtocol initialized with confirmation timeout of {self._confirmation_timeout} seconds, retry interval {self._retry_interval}s, max retries {self._max_retries}")
 
     def connection_made(self, transport: WriteTransport) -> None:
         """
@@ -102,6 +107,8 @@ class PCIProtocol(CBusProtocol):
         if self._timesync_frequency:
             logger.info(f"Starting time synchronization task with frequency {self._timesync_frequency} seconds")
             create_task(self.timesync())
+        # Start the packet retry task
+        create_task(self._check_pending_confirmations())
 
     def connection_lost(self, exc: Optional[Exception]) -> None:
         logger.warning(f"Connection to PCI lost: {exc}")
@@ -174,12 +181,22 @@ class PCIProtocol(CBusProtocol):
         code_int = ord(code)
         logger.debug(f'Received confirmation: code={code_int} (0x{code_int:02X}), success={success}')
         
+        # Remove from pending confirmations if present
+        create_task(self._remove_from_pending_confirmations(code_int))
+        
         # Mark the confirmation code as available again
         if code_int in CONFIRMATION_CODES:
             logger.debug(f"Queueing release of confirmation code {code_int} (0x{code_int:02X})")
             create_task(self._release_confirmation_code(code_int))
         else:
             logger.warning(f"Received unknown confirmation code: {code_int} (0x{code_int:02X})")
+
+    async def _remove_from_pending_confirmations(self, code: int):
+        """Remove a code from the pending confirmations dictionary"""
+        async with self._confirmation_lock:
+            if code in self._pending_confirmations:
+                del self._pending_confirmations[code]
+                logger.debug(f"Removed confirmation code {code} (0x{code:02X}) from pending confirmations")
 
     async def _release_confirmation_code(self, code: int):
         """Release a confirmation code back to the pool of available codes."""
@@ -190,6 +207,11 @@ class PCIProtocol(CBusProtocol):
                 used_count = len(self._confirmation_codes_in_use)
                 available_count = len(CONFIRMATION_CODES) - used_count
                 logger.info(f"Released confirmation code {code} (0x{code:02X}) after {acquisition_time:.2f}s. Used: {used_count}, Available: {available_count}")
+                
+                # Also remove from pending confirmations if present
+                if code in self._pending_confirmations:
+                    del self._pending_confirmations[code]
+                    logger.debug(f"Removed confirmation code {code} (0x{code:02X}) from pending confirmations during release")
             else:
                 logger.warning(f"Attempted to release confirmation code {code} (0x{code:02X}) that was not in use")
 
@@ -208,9 +230,68 @@ class PCIProtocol(CBusProtocol):
                 used_count = len(self._confirmation_codes_in_use)
                 available_count = len(CONFIRMATION_CODES) - used_count
                 logger.warning(f"Confirmation code {code} (0x{code:02X}) timed out after {elapsed:.2f}s (limit: {self._confirmation_timeout}s). Used: {used_count}, Available: {available_count}")
+                
+                # Also remove from pending confirmations if present
+                if code in self._pending_confirmations:
+                    del self._pending_confirmations[code]
+                    logger.debug(f"Removed confirmation code {code} (0x{code:02X}) from pending confirmations during timeout")
             
             if timed_out:
                 logger.info(f"Released {len(timed_out)} timed out confirmation codes")
+
+    async def _check_pending_confirmations(self):
+        """
+        Background task that checks for pending confirmations that need to be resent.
+        Tries to resend packets up to self._max_retries times before giving up.
+        """
+        logger.info(f"Starting packet retry task with interval {self._retry_interval}s, max retries {self._max_retries}")
+        while True:
+            try:
+                # Sleep first to avoid immediate retries on startup
+                await sleep(self._retry_interval)
+                
+                current_time = datetime.now().timestamp()
+                to_retry = []
+                to_abandon = []
+                
+                async with self._confirmation_lock:
+                    for code, (packet_data, attempts, last_attempt_time) in list(self._pending_confirmations.items()):
+                        elapsed = current_time - last_attempt_time
+                        
+                        if elapsed >= self._retry_interval:
+                            if attempts < self._max_retries:
+                                to_retry.append((code, packet_data))
+                            else:
+                                to_abandon.append(code)
+                
+                # Process packets to be abandoned (outside the lock)
+                for code in to_abandon:
+                    logger.warning(f"Giving up on confirmation code {code} (0x{code:02X}) after {self._max_retries} attempts")
+                    async with self._confirmation_lock:
+                        if code in self._pending_confirmations:
+                            del self._pending_confirmations[code]
+                    await self._release_confirmation_code(code)
+                
+                # Process packets to be retried (outside the lock)
+                for code, packet_data in to_retry:
+                    async with self._confirmation_lock:
+                        if code in self._pending_confirmations:
+                            attempts = self._pending_confirmations[code][1] + 1
+                            self._pending_confirmations[code] = (packet_data, attempts, current_time)
+                            logger.info(f"Resending packet with confirmation code {code} (0x{code:02X}), attempt {attempts}/{self._max_retries}")
+                    
+                    # Resend the packet
+                    await self._send_packet(packet_data)
+                    
+            except CancelledError:
+                logger.info("Packet retry task cancelled")
+                break
+            except Exception as e:
+                logger.error(f"Error in packet retry task: {e}", exc_info=True)
+                # Continue the loop but with a short delay to avoid spamming logs
+                await sleep(1)
+        
+        logger.info("Packet retry task ended")
 
     def on_reset(self):
         """
@@ -230,7 +311,7 @@ class PCIProtocol(CBusProtocol):
         logger.debug(f'recv: mmi: application {application}, data {data!r}')
 
     def on_lighting_group_ramp(self, source_addr: int, group_addr: int,
-                               duration: int, level: int):
+                               application_address: int, duration: int, level: int):
         """
         Event called when a lighting application ramp (fade) request is
         received.
@@ -241,6 +322,9 @@ class PCIProtocol(CBusProtocol):
 
         :param group_addr: Group address being ramped.
         :type group_addr: int
+        
+        :param application_address: Application address.
+        :type application_address: int
 
         :param duration: Duration, in seconds, that the ramp is occurring over.
         :type duration: int
@@ -249,10 +333,10 @@ class PCIProtocol(CBusProtocol):
         :type level: int
         """
         logger.debug(
-            f'recv: light ramp: from {source_addr} to {group_addr}, duration '
+            f'recv: light ramp: from {source_addr} to {group_addr}, application {application_address}, duration '
             f'{duration} seconds to level {level} ')
 
-    def on_lighting_group_on(self, source_addr: int, group_addr: int):
+    def on_lighting_group_on(self, source_addr: int, group_addr: int, application_address: int):
         """
         Event called when a lighting application "on" request is received.
 
@@ -262,10 +346,13 @@ class PCIProtocol(CBusProtocol):
 
         :param group_addr: Group address being turned on.
         :type group_addr: int
+        
+        :param application_address: Application address.
+        :type application_address: int
         """
-        logger.debug(f'recv: light on: from {source_addr} to {group_addr}')
+        logger.debug(f'recv: light on: from {source_addr} to {group_addr}, application {application_address}')
 
-    def on_lighting_group_off(self, source_addr: int, group_addr: int):
+    def on_lighting_group_off(self, source_addr: int, group_addr: int, application_address: int):
         """
         Event called when a lighting application "off" request is received.
 
@@ -275,11 +362,14 @@ class PCIProtocol(CBusProtocol):
 
         :param group_addr: Group address being turned off.
         :type group_addr: int
+        
+        :param application_address: Application address.
+        :type application_address: int
         """
-        logger.debug(f'recv: light off: from {source_addr} to {group_addr}')
+        logger.debug(f'recv: light off: from {source_addr} to {group_addr}, application {application_address}')
 
     def on_lighting_group_terminate_ramp(
-            self, source_addr: int, group_addr: int):
+            self, source_addr: int, group_addr: int, application_address: int):
         """
         Event called when a lighting application "terminate ramp" request is
         received.
@@ -290,9 +380,12 @@ class PCIProtocol(CBusProtocol):
 
         :param group_addr: Group address stopping ramping.
         :type group_addr: int
+        
+        :param application_address: Application address.
+        :type application_address: int
         """
         logger.debug(
-            f'recv: terminate ramp: from {source_addr} to {group_addr}')
+            f'recv: terminate ramp: from {source_addr} to {group_addr}, application {application_address}')
 
     def on_lighting_label_text(self, source_addr: int, group_addr: int,
                                flavour: int, language_code: int, label: Text):
@@ -320,6 +413,16 @@ class PCIProtocol(CBusProtocol):
         logger.debug(
             f'recv: lighting label text: from {source_addr} to {group_addr} '
             f'flavour {flavour} lang {language_code} text {label!r}')
+            
+    def on_level_report(self, application, block_start, report):
+        """
+        Event called when a level report is received.
+        
+        :param application: The application that generated the report
+        :param block_start: The start address of the report block
+        :param report: The level status report object
+        """
+        logger.debug(f'recv: level report: application {application}, block_start {block_start}, report {report!r}')
 
     def on_pci_cannot_accept_data(self):
         """
@@ -372,8 +475,6 @@ class PCIProtocol(CBusProtocol):
 
         """
         logger.debug(f'recv: clock update from {source_addr} of {val!r}')
-
-    # other things.
 
     async def _get_confirmation_code(self):
         """
@@ -524,6 +625,15 @@ class PCIProtocol(CBusProtocol):
         """
         prepared_data, conf_code = await self._prepare_packet(cmd, confirmation, basic_mode)
         await self._send_packet(prepared_data)
+        
+        # If confirmation was requested, add packet to pending confirmations
+        if conf_code is not None:
+            code_int = ord(conf_code)
+            now = datetime.now().timestamp()
+            async with self._confirmation_lock:
+                self._pending_confirmations[code_int] = (prepared_data, 1, now)
+                logger.debug(f"Added confirmation code {code_int} (0x{code_int:02X}) to pending confirmations")
+        
         return conf_code
 
     async def pci_reset(self):
