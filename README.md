@@ -105,6 +105,12 @@ This should work with the following C-Bus PC Interfaces (PCIs):
   This software _does not_ support configuring the Ethernet PCI for the first
   time. It must already have an IP address on your network.
 
+## C-Bus Simulator
+
+For testing purposes, a C-Bus simulator is available in the `cbus-simulator` subdirectory. 
+This can be used to simulate a C-Bus PCI without needing actual hardware. 
+See the README.md file in that directory for more details.
+
 ## Recent updates (2020-02-22)
 
 This project has recently completed a migration to Python 3.7.
