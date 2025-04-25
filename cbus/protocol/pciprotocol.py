@@ -103,6 +103,10 @@ class PCIProtocol(CBusProtocol):
         """
         logger.info("Connection established to PCI device")
         self._transport = transport
+        
+        # Clean up any existing state from previous connections
+        self._cleanup_state()
+        
         create_task(self.pci_reset())
         if self._timesync_frequency:
             logger.info(f"Starting time synchronization task with frequency {self._timesync_frequency} seconds")
@@ -113,7 +117,26 @@ class PCIProtocol(CBusProtocol):
     def connection_lost(self, exc: Optional[Exception]) -> None:
         logger.warning(f"Connection to PCI lost: {exc}")
         self._transport = None
-        self._connection_lost_future.set_result(True)
+        
+        # Clean up resources to avoid memory leaks
+        self._cleanup_state()
+        
+        # Signal connection lost
+        if self._connection_lost_future and not self._connection_lost_future.done():
+            self._connection_lost_future.set_result(True)
+            
+    def _cleanup_state(self):
+        """Clean up internal state to prevent memory leaks"""
+        logger.info("Cleaning up internal state")
+        
+        # Clear confirmation code tracking
+        self._confirmation_codes_in_use.clear()
+        self._pending_confirmations.clear()
+        
+        # Reset confirmation index
+        self._next_confirmation_index = 0
+        
+        logger.info("Internal state cleaned up successfully")
 
     def handle_cbus_packet(self, p: BasePacket) -> None:
         """
@@ -238,6 +261,24 @@ class PCIProtocol(CBusProtocol):
             
             if timed_out:
                 logger.info(f"Released {len(timed_out)} timed out confirmation codes")
+                
+            # Safety check: If we still have too many codes in use, force cleanup the oldest ones
+            if len(self._confirmation_codes_in_use) > len(CONFIRMATION_CODES) * 0.9:  # If more than 90% of codes are in use
+                logger.warning(f"Too many confirmation codes in use ({len(self._confirmation_codes_in_use)}), forcing cleanup of oldest codes")
+                # Sort by timestamp (oldest first)
+                codes_by_age = sorted(self._confirmation_codes_in_use.items(), key=lambda x: x[1])
+                # Force release the oldest 25% of codes
+                codes_to_force_release = codes_by_age[:max(1, len(codes_by_age) // 4)]
+                
+                for code, timestamp in codes_to_force_release:
+                    elapsed = current_time - timestamp
+                    del self._confirmation_codes_in_use[code]
+                    logger.warning(f"Force released confirmation code {code} (0x{code:02X}) after {elapsed:.2f}s due to high usage")
+                    
+                    # Also remove from pending confirmations if present
+                    if code in self._pending_confirmations:
+                        del self._pending_confirmations[code]
+                        logger.debug(f"Removed confirmation code {code} (0x{code:02X}) from pending confirmations during force cleanup")
 
     async def _check_pending_confirmations(self):
         """
@@ -245,6 +286,11 @@ class PCIProtocol(CBusProtocol):
         Tries to resend packets up to self._max_retries times before giving up.
         """
         logger.info(f"Starting packet retry task with interval {self._retry_interval}s, max retries {self._max_retries}")
+        
+        # Track consecutive failures to detect system issues
+        consecutive_failures = 0
+        max_consecutive_failures = 10
+        
         while True:
             try:
                 # Sleep first to avoid immediate retries on startup
@@ -254,7 +300,15 @@ class PCIProtocol(CBusProtocol):
                 to_retry = []
                 to_abandon = []
                 
+                # Check and handle timed out confirmation codes
+                await self._check_and_release_timed_out_codes()
+                
                 async with self._confirmation_lock:
+                    # Track how many pending confirmations we have
+                    pending_count = len(self._pending_confirmations)
+                    if pending_count > 20:  # If we have too many pending confirmations
+                        logger.warning(f"High number of pending confirmations: {pending_count}")
+                    
                     for code, (packet_data, attempts, last_attempt_time) in list(self._pending_confirmations.items()):
                         elapsed = current_time - last_attempt_time
                         
@@ -271,6 +325,17 @@ class PCIProtocol(CBusProtocol):
                         if code in self._pending_confirmations:
                             del self._pending_confirmations[code]
                     await self._release_confirmation_code(code)
+                    
+                    # Count consecutive failures
+                    consecutive_failures += 1
+                    if consecutive_failures >= max_consecutive_failures:
+                        logger.error(f"Detected {consecutive_failures} consecutive failures. Connection may be unstable.")
+                        # Reset counters after logging the issue
+                        consecutive_failures = 0
+                
+                # Reset consecutive failures counter if we don't have abandonments
+                if not to_abandon:
+                    consecutive_failures = 0
                 
                 # Process packets to be retried (outside the lock)
                 for code, packet_data in to_retry:
@@ -508,37 +573,52 @@ class PCIProtocol(CBusProtocol):
                     logger.info(f"Allocated confirmation code {code} (0x{code:02X}). Used: {used_count}, Available: {available_count}")
                     return int2byte(code)
         
-        # If we get here, all codes are in use - wait for one to become available
-        logger.warning("All confirmation codes are in use, waiting for one to become available")
-        wait_start = datetime.now().timestamp()
-        wait_count = 0
+        # If we get here, all codes are in use - force release the oldest code
+        logger.warning("All confirmation codes are in use, releasing oldest code")
         
-        while True:
-            wait_count += 1
-            elapsed = datetime.now().timestamp() - wait_start
-            
-            if wait_count % 10 == 0:  # Log every ~1 second
-                logger.warning(f"Still waiting for confirmation code after {elapsed:.2f}s")
-            
-            await sleep(0.1)  # Short sleep to prevent CPU hogging
-            
-            # Check for timed out codes
-            await self._check_and_release_timed_out_codes()
-            
-            async with self._confirmation_lock:
-                if len(self._confirmation_codes_in_use) < len(CONFIRMATION_CODES):
+        async with self._confirmation_lock:
+            # Find oldest code by timestamp
+            if self._confirmation_codes_in_use:
+                oldest_code = min(self._confirmation_codes_in_use.items(), key=lambda x: x[1])[0]
+                elapsed = datetime.now().timestamp() - self._confirmation_codes_in_use[oldest_code]
+                
+                # Release the oldest code
+                del self._confirmation_codes_in_use[oldest_code]
+                if oldest_code in self._pending_confirmations:
+                    del self._pending_confirmations[oldest_code] 
+                
+                logger.warning(f"Force released oldest confirmation code {oldest_code} (0x{oldest_code:02X}) after {elapsed:.2f}s")
+                
+                # Use the next available code (different from the one we just released)
+                for _ in range(len(CONFIRMATION_CODES)):
                     code = CONFIRMATION_CODES[self._next_confirmation_index]
-                    while code in self._confirmation_codes_in_use:
-                        self._next_confirmation_index += 1
-                        self._next_confirmation_index %= len(CONFIRMATION_CODES)
-                        code = CONFIRMATION_CODES[self._next_confirmation_index]
                     
-                    # Store code with current timestamp
-                    self._confirmation_codes_in_use[code] = datetime.now().timestamp()
-                    used_count = len(self._confirmation_codes_in_use)
-                    available_count = len(CONFIRMATION_CODES) - used_count
-                    logger.info(f"Allocated confirmation code {code} (0x{code:02X}) after waiting {elapsed:.2f}s. Used: {used_count}, Available: {available_count}")
-                    return int2byte(code)
+                    self._next_confirmation_index += 1
+                    self._next_confirmation_index %= len(CONFIRMATION_CODES)
+                    
+                    if code != oldest_code and code not in self._confirmation_codes_in_use:
+                        # Store code with current timestamp
+                        self._confirmation_codes_in_use[code] = datetime.now().timestamp()
+                        used_count = len(self._confirmation_codes_in_use)
+                        available_count = len(CONFIRMATION_CODES) - used_count
+                        logger.info(f"Allocated confirmation code {code} (0x{code:02X}) after releasing oldest. Used: {used_count}, Available: {available_count}")
+                        return int2byte(code)
+                
+                # If we couldn't find a different code, use the same one we just released
+                code = oldest_code
+                self._confirmation_codes_in_use[code] = datetime.now().timestamp()
+                used_count = len(self._confirmation_codes_in_use)
+                available_count = len(CONFIRMATION_CODES) - used_count
+                logger.info(f"Re-allocated same confirmation code {code} (0x{code:02X}). Used: {used_count}, Available: {available_count}")
+                return int2byte(code)
+            else:
+                # This should never happen, but just in case
+                logger.error("No confirmation codes in use but couldn't find an available code!")
+                # Use the first code
+                code = CONFIRMATION_CODES[0]
+                self._confirmation_codes_in_use[code] = datetime.now().timestamp()
+                logger.info(f"Allocated emergency confirmation code {code} (0x{code:02X})")
+                return int2byte(code)
 
     async def _prepare_packet(self,
                   cmd: BasePacket,
