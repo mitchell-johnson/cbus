@@ -1,4 +1,3 @@
-version: '3'
 services:
   cbus:
     build:
@@ -10,5 +9,3 @@ services:
     network_mode: host
     env_file:
       - .env
-
-

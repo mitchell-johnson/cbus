@@ -19,8 +19,14 @@ CMQTTD_CLIENT_KEY_PATH="/etc/cmqttd/client.key"
 # C-Bus Toolkit project backup file
 CMQTTD_PROJECT_FILE="/etc/cmqttd/project.cbz"
 
+# Set Python logging level from environment variable
+export PYTHONUNBUFFERED=1
+# Valid levels: DEBUG, INFO, WARNING, ERROR, CRITICAL
+LOG_LEVEL="DEBUG"
+echo "Setting log level to ${LOG_LEVEL}"
+
 # Arguments that are always required.
-CMQTTD_ARGS="--broker-address ${MQTT_SERVER:?unset} --timesync ${CBUS_TIMESYNC:-300}"
+CMQTTD_ARGS="--broker-address ${MQTT_SERVER:?unset} --timesync ${CBUS_TIMESYNC:-300} --verbosity ${LOG_LEVEL}"
 
 # Simple arguments
 if [ -n "${MQTT_PORT}" ]; then

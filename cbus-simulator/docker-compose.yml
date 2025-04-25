@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  cbus-simulator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cbus-simulator
+    container_name: cbus-simulator
+    ports:
+      - "10001:10001"
+    volumes:
+      - ./config:/app/config
+    environment:
+      - SIMULATOR_PORT=10001
+      - CONFIG_FILE=/app/config/simulator-config.json
+      - SIMULATOR_HOST=0.0.0.0
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=DEBUG
+    restart: unless-stopped
