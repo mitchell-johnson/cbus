@@ -47,7 +47,7 @@ from cbus.protocol.application import LightingApplication
 from cbus.protocol.cal.report import LevelStatusReport,BinaryStatusReport
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('cbus')
 
 _BINSENSOR_TOPIC_PREFIX = 'homeassistant/binary_sensor/cbus_'
 _LIGHT_TOPIC_PREFIX = 'homeassistant/light/cbus_'

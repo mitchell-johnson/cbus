@@ -24,7 +24,7 @@ import threading
 
 __all__ = ['BufferedProtocol']
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('cbus')
 
 
 class BufferedProtocol(asyncio.Protocol, abc.ABC):

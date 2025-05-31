@@ -44,7 +44,7 @@ from cbus.protocol.reset_packet import ResetPacket
 from cbus.protocol.scs_packet import SmartConnectShortcutPacket
 
 __all__ = ['PCIServerProtocol']
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('cbus')
 # logger.setLevel(logging.DEBUG)
 
 

@@ -4,7 +4,7 @@ import logging
 import paho.mqtt.client as mqtt
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('cbus')
 
 
 class AsyncioHelper:

@@ -24,7 +24,7 @@ from cbus.protocol.buffered_protocol import BufferedProtocol
 from cbus.protocol.packet import decode_packet
 from cbus.protocol.base_packet import BasePacket
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('cbus')
 
 __all__ = ['CBusProtocol']
 

@@ -56,7 +56,7 @@ from cbus.protocol.pp_packet import PointToPointPacket
 from cbus.protocol.reset_packet import ResetPacket
 from cbus.protocol.cal.extended import ExtendedCAL
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('cbus')
 
 __all__ = ['PCIProtocol']
 
@@ -989,8 +989,8 @@ async def main():
     option = parser.parse_args()
 
     global_logger = logging.getLogger('cbus')
-    # global_logger.setLevel(logging.)
-    # logging.basicConfig(level=logging.DEBUG)
+    global_logger.setLevel(logging.DEBUG)
+    logging.basicConfig(level=logging.DEBUG)
     loop = get_running_loop()
     connection_lost_future = loop.create_future()
 

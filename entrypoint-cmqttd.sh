@@ -22,7 +22,7 @@ CMQTTD_PROJECT_FILE="/etc/cmqttd/project.cbz"
 # Set Python logging level from environment variable
 export PYTHONUNBUFFERED=1
 # Valid levels: DEBUG, INFO, WARNING, ERROR, CRITICAL
-LOG_LEVEL="ERROR"
+LOG_LEVEL="DEBUG"
 echo "Setting log level to ${LOG_LEVEL}"
 
 # Arguments that are always required.
