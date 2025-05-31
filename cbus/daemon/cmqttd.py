@@ -120,11 +120,12 @@ class CBusHandler(PCIProtocol):
     """
     mqtt_api = None
 
-    def __init__(self, labels: Optional[Dict[int, Dict]], *args, **kwargs):
+    def __init__(self, labels: Optional[Dict[int, Dict]], resync_frequency: int = 300, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.labels = (
             labels if labels is not None else {56:{}})  # type: Dict[int, Text]
         self._is_closing = False
+        self._resync_frequency = resync_frequency
 
     def cleanup(self):
         """Clean up resources to prevent memory leaks."""
@@ -137,9 +138,25 @@ class CBusHandler(PCIProtocol):
 
     def connection_lost(self, exc):
         """Handle connection lost event."""
-        logger.info(f"CBus connection lost: {exc}")
+        logger.warning(f"C-Bus connection lost: {exc}")
+        if self.mqtt_api:
+            # Clear the group database since we've lost connection
+            # This will force re-discovery when connection is restored
+            self.mqtt_api.groupDB.clear()
+            logger.info("Cleared group database due to connection loss")
         self.cleanup()
         super().connection_lost(exc)
+
+    def connection_made(self, transport):
+        """Handle connection made event."""
+        logger.info("C-Bus connection established")
+        super().connection_made(transport)
+        
+        # If we have an MQTT API connection, trigger initial status request
+        if self.mqtt_api:
+            logger.info("Requesting initial status after connection restore")
+            for app_addr in LightingApplication.supported_applications():
+                self.mqtt_api.queue_status_requests(self, app_addr)
 
     def on_lighting_group_ramp(self, source_addr, group_addr, app_addr, duration, level):
         if not self.mqtt_api or self._is_closing:
@@ -162,17 +179,34 @@ class CBusHandler(PCIProtocol):
             return
             
         groups = self.mqtt_api.groupDB.setdefault(app_addr, {})
+        processed_count = 0
+        new_groups_count = 0
+        
         for val in report:
-            if start in groups:  # Check key exists to avoid KeyError
-                if val is None:
-                    pass
-                elif val == 0:
+            # Fixed: Process all level reports, not just for already-published groups
+            # This allows discovery of active groups that weren't in the labels
+            if val is not None:  # Only process if we have a valid level
+                was_published = start in groups
+                
+                # Ensure the group is published to MQTT if it has a state
+                self.mqtt_api.check_published(start, app_addr)
+                
+                if not was_published:
+                    new_groups_count += 1
+                    logger.info(f"Discovered new active group {start} in application {app_addr} with level {val}")
+                
+                if val == 0:
                     self.on_lighting_group_off(0, start, app_addr)
                 elif val == 255:
                     self.on_lighting_group_on(0, start, app_addr)
                 else:
                     self.on_lighting_group_ramp(0, start, app_addr, 0, val)
+                    
+                processed_count += 1
             start += 1
+        
+        if processed_count > 0:
+            logger.debug(f"Processed level report for application {app_addr}: {processed_count} active groups, {new_groups_count} newly discovered")
 
     def on_clock_request(self, source_addr):
         if not self._is_closing:
@@ -187,9 +221,56 @@ class MqttClient(mqtt.Client):
         self.groupDB = {}
         self.publish_all_lights(userdata.labels)
         
-        # Use a fixed list of tasks rather than creating lambdas in a loop
-        for app_addr in self.groupDB.keys():
+        # Request status for all supported lighting applications
+        # Fixed: Don't wait for groupDB to be populated - request status for all known lighting applications
+        logger.info("Requesting initial status for all lighting applications")
+        for app_addr in LightingApplication.supported_applications():
             self.queue_status_requests(userdata, app_addr)
+        
+        # Start periodic re-synchronization to keep MQTT in sync with real state
+        resync_freq = getattr(userdata, '_resync_frequency', 300)
+        self.start_periodic_resync(userdata, resync_freq)
+
+    def start_periodic_resync(self, userdata, resync_frequency=300):
+        """Start periodic re-synchronization to keep MQTT state accurate."""
+        if resync_frequency <= 0:
+            logger.info("Periodic re-synchronization disabled")
+            return
+            
+        async def periodic_resync():
+            logger.info(f"Starting periodic re-synchronization with frequency {resync_frequency}s")
+            sync_count = 0
+            while True:
+                try:
+                    # Wait for the specified interval
+                    await asyncio.sleep(resync_frequency)
+                    
+                    if userdata._is_closing or not userdata.mqtt_api:
+                        break
+                    
+                    sync_count += 1
+                    logger.info(f"Starting periodic re-synchronization #{sync_count}")
+                    
+                    # Count total groups being processed
+                    total_groups = sum(len(groups) for groups in self.groupDB.values())
+                    logger.debug(f"Re-syncing state for {total_groups} published groups across {len(self.groupDB)} applications")
+                    
+                    # Request status for all supported lighting applications
+                    for app_addr in LightingApplication.supported_applications():
+                        self.queue_status_requests(userdata, app_addr)
+                    
+                    logger.debug(f"Periodic re-synchronization #{sync_count} requests queued")
+                    
+                except asyncio.CancelledError:
+                    logger.info("Periodic re-sync task cancelled")
+                    break
+                except Exception as e:
+                    logger.error(f"Error in periodic re-sync: {e}", exc_info=True)
+                    # Continue after error, but wait a bit before retrying
+                    await asyncio.sleep(30)
+        
+        # Start the periodic resync task
+        asyncio.create_task(periodic_resync())
 
     def queue_status_requests(self, userdata, app_addr):
         """Queue status requests in a way that avoids memory leaks from lambdas in loops."""
@@ -544,6 +625,14 @@ async def _main():
              'time source, or you have another device on the CBus network '
              'providing time services. [default: %(default)s]')
 
+    group.add_argument(
+        '-S', '--status-resync', metavar='SECONDS',
+        dest='status_resync', type=int, default=300,
+        help='Request status updates from C-Bus every n seconds to keep '
+             'MQTT state synchronized (or 0 to disable). This helps ensure '
+             'MQTT doesn\'t get out of sync with real light states. '
+             '[default: %(default)s seconds]')
+
     group = parser.add_argument_group('Label options')
 
     group.add_argument(
@@ -584,6 +673,7 @@ async def _main():
             handle_clock_requests=not option.no_clock,
             connection_lost_future=connection_lost_future,
             labels=labels,
+            resync_frequency=option.status_resync,
         )
 
     if option.serial:
