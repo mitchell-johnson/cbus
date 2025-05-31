@@ -330,8 +330,7 @@ class MqttClient(mqtt.Client):
         if transition_time < 0:
             transition_time = 0
 
-        # Use messageThrottler to handle the async switchLight method
-        Periodic.messageThrottler.enqueue(lambda: self.switchLight(userdata, group_addr, app_addr, light_on, brightness, transition_time))
+        Periodic.throttler.enqueue(lambda: self.switchLight(userdata, group_addr, app_addr, light_on, brightness, transition_time))
 
     def publish(self, topic: Text, payload: Dict[Text, Any]):
         """Publishes a payload as JSON."""
@@ -511,18 +510,10 @@ def read_cbz_labels(cbz_file: BinaryIO, network_name = None) -> Dict[int, Text]:
         labels[a.address]=(a.tag_name,l)
     return labels
 
-# Wait time between commands emitted by throtller
-_PERIOD = 0.97
-
-
 async def _main():
     # throttler is queue used used to stagger commmands
     throttler = Periodic(period=0.2)
     Periodic.throttler = throttler
-    # messageThrottler for switch commands
-    messageThrottler = Periodic(period=_PERIOD)
-    Periodic.messageThrottler = messageThrottler
-    # messageThrottler is used to throttle lighting switch commands
 
     parser = ArgumentParser('cmqttd')
     parser.add_argument(
@@ -715,8 +706,6 @@ async def _main():
         
         # Cancel all tasks
         await throttler.cleanup()
-        # Clean up messageThrottler
-        await messageThrottler.cleanup()
         
         if 'helper' in locals() and helper is not None:
             if hasattr(helper, 'misc') and helper.misc is not None:
