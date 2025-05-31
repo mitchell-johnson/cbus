@@ -136,6 +136,12 @@ class CBusHandler(PCIProtocol):
         self.mqtt_api = None  # Remove circular reference
         logger.debug("CBusHandler resources cleaned up")
 
+    def handle_cbus_packet(self, p):
+        """Override to add logging for all incoming C-Bus packets."""
+        logger.debug(f"C-Bus packet received: {p!r}")
+        # Call parent implementation
+        super().handle_cbus_packet(p)
+
     def connection_lost(self, exc):
         """Handle connection lost event."""
         logger.warning(f"C-Bus connection lost: {exc}")
@@ -161,17 +167,20 @@ class CBusHandler(PCIProtocol):
     def on_lighting_group_ramp(self, source_addr, group_addr, app_addr, duration, level):
         if not self.mqtt_api or self._is_closing:
             return
+        logger.info(f"C-Bus event received: RAMP - Source: {source_addr}, Group: {group_addr}, App: {app_addr}, Level: {level}, Duration: {duration}")
         self.mqtt_api.lighting_group_ramp(
             source_addr, group_addr, app_addr, duration, level)
 
     def on_lighting_group_on(self, source_addr, group_addr, app_addr):
         if not self.mqtt_api or self._is_closing:
             return
+        logger.info(f"C-Bus event received: ON - Source: {source_addr}, Group: {group_addr}, App: {app_addr}")
         self.mqtt_api.lighting_group_on(source_addr, group_addr, app_addr)
 
     def on_lighting_group_off(self, source_addr, group_addr, app_addr):
         if not self.mqtt_api or self._is_closing:
             return
+        logger.info(f"C-Bus event received: OFF - Source: {source_addr}, Group: {group_addr}, App: {app_addr}")
         self.mqtt_api.lighting_group_off(source_addr, group_addr, app_addr)
     
     def on_level_report(self, app_addr, start, report: LevelStatusReport):
