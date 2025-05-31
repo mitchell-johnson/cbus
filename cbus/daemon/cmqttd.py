@@ -281,20 +281,23 @@ class MqttClient(mqtt.Client):
                 asyncio.create_task(userdata.request_status(block, app_addr)))
 
     async def switchLight(self, userdata, group_addr, app_addr, light_on, brightness, transition_time ):
-        logger.debug("switching now")
+        logger.info(f"switchLight executing: Group {group_addr}, App {app_addr}, State: {'ON' if light_on else 'OFF'}, Brightness: {brightness}, Transition: {transition_time}")
         # push state to CBus and republish on MQTT
         # DEBUG: This is where calls to turn the lights end up
         if light_on:
             if brightness == 255 and transition_time == 0:
                 # lighting on
+                logger.debug(f"Sending lighting_group_on command to C-Bus for group {group_addr}")
                 await userdata.lighting_group_on(group_addr,app_addr)
                 self.lighting_group_on(None, group_addr,app_addr)
             else:
                 # ramp
+                logger.debug(f"Sending lighting_group_ramp command to C-Bus for group {group_addr}, level {brightness}, duration {transition_time}")
                 await userdata.lighting_group_ramp(group_addr, app_addr, transition_time, brightness)
                 self.lighting_group_ramp(None, group_addr, app_addr, transition_time, brightness)
         else:
             # lighting off
+            logger.debug(f"Sending lighting_group_off command to C-Bus for group {group_addr}")
             await userdata.lighting_group_off(group_addr,app_addr)
             self.lighting_group_off(None, group_addr,app_addr)
 
@@ -330,7 +333,8 @@ class MqttClient(mqtt.Client):
         if transition_time < 0:
             transition_time = 0
 
-        Periodic.throttler.enqueue(lambda: self.switchLight(userdata, group_addr, app_addr, light_on, brightness, transition_time))
+        logger.info(f"MQTT command: Group {group_addr}, App {app_addr}, State: {'ON' if light_on else 'OFF'}, Brightness: {brightness}, Transition: {transition_time}")
+        Periodic.throttler.enqueue(lambda: asyncio.create_task(self.switchLight(userdata, group_addr, app_addr, light_on, brightness, transition_time)))
 
     def publish(self, topic: Text, payload: Dict[Text, Any]):
         """Publishes a payload as JSON."""
