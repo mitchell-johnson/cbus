@@ -45,7 +45,7 @@ from cbus.protocol.scs_packet import SmartConnectShortcutPacket
 
 __all__ = ['PCIServerProtocol']
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+# logger.setLevel(logging.DEBUG)
 
 
 class PCIServerProtocol(CBusProtocol):

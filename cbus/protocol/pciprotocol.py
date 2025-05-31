@@ -989,7 +989,7 @@ async def main():
     option = parser.parse_args()
 
     global_logger = logging.getLogger('cbus')
-    # global_logger.setLevel(logging.DEBUG)
+    # global_logger.setLevel(logging.)
     # logging.basicConfig(level=logging.DEBUG)
     loop = get_running_loop()
     connection_lost_future = loop.create_future()
