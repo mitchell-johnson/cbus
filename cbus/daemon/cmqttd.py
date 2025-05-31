@@ -249,8 +249,8 @@ class MqttClient(mqtt.Client):
         if transition_time < 0:
             transition_time = 0
 
-        # Use create_task to handle the async switchLight method
-        asyncio.create_task(self.switchLight(userdata, group_addr, app_addr, light_on, brightness, transition_time))
+        # Use messageThrottler to handle the async switchLight method
+        Periodic.messageThrottler.enqueue(lambda: self.switchLight(userdata, group_addr, app_addr, light_on, brightness, transition_time))
 
     def publish(self, topic: Text, payload: Dict[Text, Any]):
         """Publishes a payload as JSON."""
@@ -438,7 +438,10 @@ async def _main():
     # throttler is queue used used to stagger commmands
     throttler = Periodic(period=0.2)
     Periodic.throttler = throttler
-    # No longer need messageThrottler as we're using PCIProtocol's confirmation code tracking
+    # messageThrottler for switch commands
+    messageThrottler = Periodic(period=_PERIOD)
+    Periodic.messageThrottler = messageThrottler
+    # messageThrottler is used to throttle lighting switch commands
 
     parser = ArgumentParser('cmqttd')
     parser.add_argument(
@@ -622,7 +625,8 @@ async def _main():
         
         # Cancel all tasks
         await throttler.cleanup()
-        # messageThrottler has been removed
+        # Clean up messageThrottler
+        await messageThrottler.cleanup()
         
         if 'helper' in locals() and helper is not None:
             if hasattr(helper, 'misc') and helper.misc is not None:
