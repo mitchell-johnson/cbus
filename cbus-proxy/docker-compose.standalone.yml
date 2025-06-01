@@ -1,0 +1,22 @@
+version: '3'
+services:
+  cbus-proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile.standalone
+    image: cbus-proxy-standalone
+    container_name: cbus-proxy
+    restart: unless-stopped
+    ports:
+      - "10001:10001"  # Expose proxy port
+    environment:
+      # Configure the proxy to connect to your real CNI
+      # You need to set these according to your setup
+      - CNI_HOST=${CNI_HOST:-192.168.1.100}  # Set your CNI IP
+      - CNI_PORT=${CNI_PORT:-10001}          # Set your CNI port
+    command: 
+      - "--listen-host=0.0.0.0"
+      - "--listen-port=10001"
+      - "--target-host=${CNI_HOST:-192.168.1.100}"
+      - "--target-port=${CNI_PORT:-10001}"
+    tty: true  # Enable colored output 

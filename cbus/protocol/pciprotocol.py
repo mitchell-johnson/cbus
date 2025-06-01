@@ -29,6 +29,9 @@ from six import int2byte
 
 from cbus.protocol.cal.report import BinaryStatusReport, LevelStatusReport
 
+# Add import for centralized logging config
+from cbus.logging_config import get_configured_logger
+
 try:
     from serial_asyncio import create_serial_connection
 except ImportError:
@@ -56,7 +59,8 @@ from cbus.protocol.pp_packet import PointToPointPacket
 from cbus.protocol.reset_packet import ResetPacket
 from cbus.protocol.cal.extended import ExtendedCAL
 
-logger = logging.getLogger('cbus')
+# At the module level where logger is defined, replace with:
+logger = get_configured_logger('cbus.protocol.pciprotocol')
 
 __all__ = ['PCIProtocol']
 
@@ -770,7 +774,7 @@ class PCIProtocol(CBusProtocol):
         # 6: IDMON
         # self._send('A3300059', encode=False, checksum=False)
         await self._send(DeviceManagementPacket(
-            checksum=False, parameter=0x30, value=0x79),
+            checksum=False, parameter=0x30, value=0x59),
             basic_mode=True)
         logger.info("PCI reset complete")
 
@@ -990,7 +994,6 @@ async def main():
 
     global_logger = logging.getLogger('cbus')
     global_logger.setLevel(logging.DEBUG)
-    logging.basicConfig(level=logging.DEBUG)
     loop = get_running_loop()
     connection_lost_future = loop.create_future()
 

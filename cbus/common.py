@@ -313,7 +313,7 @@ MAX_GROUP_ADDR = 255
 # bridge length
 BRIDGE_LENGTHS = {0x09: 0, 0x12: 1, 0x1B: 2, 0x24: 3, 0x2D: 4, 0x36: 5}
 
-logging.basicConfig(format='%(asctime)s %(message)s')
+# Removed hardcoded logging configuration - now handled by logging_config module
 
 
 def duration_to_ramp_rate(seconds: int) -> LightCommand:

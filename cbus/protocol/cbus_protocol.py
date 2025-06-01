@@ -24,7 +24,10 @@ from cbus.protocol.buffered_protocol import BufferedProtocol
 from cbus.protocol.packet import decode_packet
 from cbus.protocol.base_packet import BasePacket
 
-logger = logging.getLogger('cbus')
+# Add import for centralized logging config
+from cbus.logging_config import get_configured_logger
+
+logger = get_configured_logger('cbus.protocol.cbus_protocol')
 
 __all__ = ['CBusProtocol']
 

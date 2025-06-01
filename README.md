@@ -105,11 +105,131 @@ This should work with the following C-Bus PC Interfaces (PCIs):
   This software _does not_ support configuring the Ethernet PCI for the first
   time. It must already have an IP address on your network.
 
+## C-Bus Protocol Analyzer Proxy
+
+This project includes a transparent proxy that can intercept and analyze C-Bus communications 
+between cmqttd and your CNI. This is useful for:
+
+* Debugging C-Bus communication issues
+* Learning how the C-Bus protocol works
+* Monitoring your C-Bus network in real-time
+* Analyzing packet timing and confirmations
+
+### Using the Proxy
+
+The proxy sits between cmqttd and your real CNI, logging all packets with detailed analysis:
+
+```
+┌─────────┐     TCP      ┌───────────┐     TCP      ┌─────────┐
+│ cmqttd  │ ────────────▶│   Proxy   │ ────────────▶│   CNI   │
+│         │◀──────────── │           │◀──────────── │         │
+└─────────┘              └───────────┘              └─────────┘
+                               │
+                               ▼
+                         Detailed Logs
+```
+
+To use the proxy with Docker Compose:
+
+```bash
+# Set your CNI address in .env
+CNI_HOST=192.168.1.100
+CNI_PORT=10001
+
+# Start the proxy and cmqttd
+cd cbus-proxy
+docker-compose up
+```
+
+The proxy provides colored output showing:
+* Raw packet data in hex and ASCII
+* Decoded packet type and structure
+* Command details (lighting on/off, ramp, status requests)
+* Confirmation tracking
+* Error detection
+* Session statistics
+
+See [cbus-proxy/README.md](cbus-proxy/README.md) for detailed documentation.
+
 ## C-Bus Simulator
 
 For testing purposes, a C-Bus simulator is available in the `cbus-simulator` subdirectory. 
 This can be used to simulate a C-Bus PCI without needing actual hardware. 
 See the README.md file in that directory for more details.
+
+# Logging Configuration
+
+The C-Bus MQTT Daemon (cmqttd) now supports centralized logging configuration through a single environment variable.
+
+## Configuration
+
+### Using Environment Variable
+
+Set the `CMQTTD_VERBOSITY` environment variable to control logging verbosity across all C-Bus components:
+
+```bash
+export CMQTTD_VERBOSITY=DEBUG
+```
+
+Valid values are:
+- `CRITICAL` - Only critical errors
+- `ERROR` - Errors and above
+- `WARNING` - Warnings and above 
+- `INFO` - Informational messages and above (default)
+- `DEBUG` - All messages including debug output
+
+### Using .env File
+
+For local development, you can set the verbosity in your `.env` file:
+
+```env
+CMQTTD_VERBOSITY=DEBUG
+```
+
+The `.env` file is automatically loaded when running cmqttd locally.
+
+### Docker Configuration
+
+When running in Docker, set the environment variable in your `docker-compose.yml`:
+
+```yaml
+environment:
+  - CMQTTD_VERBOSITY=INFO
+```
+
+Or pass it when running the container:
+
+```bash
+docker run -e CMQTTD_VERBOSITY=DEBUG ...
+```
+
+### Command Line Override
+
+You can still override the logging level using the command line argument:
+
+```bash
+cmqttd --verbosity WARNING ...
+```
+
+The command line argument takes precedence over the environment variable.
+
+## Benefits
+
+- **Single Point of Control**: One environment variable controls logging for all C-Bus components
+- **Consistent Formatting**: All log messages use the same format across modules
+- **Environment-Friendly**: Works seamlessly with Docker and other deployment environments
+- **Backwards Compatible**: Command line arguments still work as before
+- **Development Friendly**: Automatically loads from `.env` file in development
+
+## Troubleshooting
+
+If logging doesn't appear to be working correctly:
+
+1. Check that `CMQTTD_VERBOSITY` is set to a valid value
+2. Ensure the environment variable is exported (not just set in the shell)
+3. For Docker, verify the variable is passed to the container
+4. Check for any command line `--verbosity` arguments that might override the setting 
+
 
 ## Recent updates (2020-02-22)
 

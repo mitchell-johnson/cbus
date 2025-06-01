@@ -1,0 +1,51 @@
+version: '3'
+services:
+  cbus-proxy:
+    build:
+      context: ..
+      dockerfile: cbus-proxy/Dockerfile
+    image: cbus-proxy
+    container_name: cbus-proxy
+    restart: unless-stopped
+    ports:
+      - "10001:10001"  # Expose proxy port
+    environment:
+      # Configure the proxy to connect to your real CNI
+      # You need to set these according to your setup
+      - TARGET_HOST=${CNI_HOST:-192.168.1.100}  # Replace with your CNI IP
+      - TARGET_PORT=${CNI_PORT:-10001}          # Replace with your CNI port
+    command: 
+      - "--listen-host=0.0.0.0"
+      - "--listen-port=10001"
+      - "--target-host=${CNI_HOST:-192.168.1.100}"
+      - "--target-port=${CNI_PORT:-10001}"
+    volumes:
+      - ./logs:/app/logs  # Optional: persist logs
+    tty: true  # Enable colored output
+
+  cmqttd:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: cmqttd
+    container_name: cmqttd
+    restart: unless-stopped
+    depends_on:
+      - cbus-proxy
+    environment:
+      # Point cmqttd to the proxy instead of the real CNI
+      - SERIAL_OR_TCP=tcp
+      - SERIAL_PORT=${SERIAL_PORT:-}
+      - TCP_ADDR=cbus-proxy  # Connect to the proxy container
+      - TCP_PORT=10001       # Proxy port
+      - MQTT_SERVER=${MQTT_SERVER:-localhost}
+      - MQTT_PORT=${MQTT_PORT:-1883}
+      - MQTT_USER=${MQTT_USER:-}
+      - MQTT_PASSWORD=${MQTT_PASSWORD:-}
+      - CBUS_PROJECT_FILE=${CBUS_PROJECT_FILE:-}
+      - BRIDGE_CONFIG=${BRIDGE_CONFIG:-}
+      - CBUS_USER_SYNC=${CBUS_USER_SYNC:-}
+    env_file:
+      - ../.env
+    volumes:
+      - ../config:/config  # Optional: mount config directory 

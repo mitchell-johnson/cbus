@@ -27,6 +27,7 @@ import paho.mqtt.client as mqtt
 import sys
 
 from cbus.protocol import application
+from cbus.logging_config import configure_logging
 
 if sys.platform == 'win32':
     from asyncio import set_event_loop_policy, WindowsSelectorEventLoopPolicy
@@ -47,6 +48,8 @@ from cbus.protocol.application import LightingApplication
 from cbus.protocol.cal.report import LevelStatusReport,BinaryStatusReport
 
 
+# Configure logging at module import time
+configure_logging('cbus')
 logger = logging.getLogger('cbus')
 
 _BINSENSOR_TOPIC_PREFIX = 'homeassistant/binary_sensor/cbus_'
@@ -312,7 +315,7 @@ class MqttClient(mqtt.Client):
 
     def on_message(self, client, userdata: CBusHandler, msg: mqtt.MQTTMessage):
 
-        # logging.basicConfig(level=logging.DEBUG)
+        # Removed hardcoded basicConfig line
         logger.debug(f'\n\nmessage received\n topic: {msg.topic} \n payload: {msg.payload}')
         """Handle a message from an MQTT subscription."""
         if not (msg.topic.startswith(_LIGHT_TOPIC_PREFIX) and
@@ -663,8 +666,23 @@ async def _main():
             'To use client certificates, both -k and -K must be specified.')
 
     global_logger = logging.getLogger('cbus')
-    global_logger.setLevel(option.verbosity)
-    logging.basicConfig(level=option.verbosity, filename=option.log)
+    # Use the verbosity from command line if provided, otherwise env var will be used
+    if option.verbosity:
+        import os
+        os.environ['CMQTTD_VERBOSITY'] = option.verbosity
+    # Reconfigure logging with the potentially updated environment variable
+    configure_logging('cbus')
+    
+    # If log file is specified, add file handler
+    if option.log:
+        file_handler = logging.FileHandler(option.log)
+        file_handler.setLevel(global_logger.level)
+        formatter = logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
+        file_handler.setFormatter(formatter)
+        global_logger.addHandler(file_handler)
 
     loop = asyncio.get_event_loop()
     connection_lost_future = loop.create_future()

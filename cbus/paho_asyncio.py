@@ -3,8 +3,11 @@ import asyncio
 import logging
 import paho.mqtt.client as mqtt
 
+# Add import for centralized logging config
+from cbus.logging_config import get_configured_logger
 
-logger = logging.getLogger('cbus')
+# Replace the logger definition with:
+logger = get_configured_logger('cbus.paho_asyncio')
 
 
 class AsyncioHelper:
