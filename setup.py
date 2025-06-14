@@ -38,6 +38,7 @@ setup(
 			'cmqttd = cbus.daemon.cmqttd:main',
 			'cbus_fetch_protocol_docs = cbus.tools.fetch_protocol_docs:main',
 			'cbus_decode_packet = cbus.tools.decode_packet:main',
+			'cbus_simulator = simulator.run_simulator:cli',
 		]
 	},
 	

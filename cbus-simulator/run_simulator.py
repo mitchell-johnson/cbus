@@ -73,8 +73,8 @@ def parse_args():
     parser.add_argument(
         '--port', '-p',
         type=int,
-        default=int(os.environ.get('SIMULATOR_PORT', 10002)),
-        help='TCP port to listen on (default: 10002)'
+        default=int(os.environ.get('SIMULATOR_PORT', 10001)),
+        help='TCP port to listen on (default: 10001)'
     )
     
     parser.add_argument(
@@ -119,8 +119,20 @@ async def main():
         await server.shutdown()
 
 if __name__ == "__main__":
+    # Entry point for `python run_simulator.py` usage
     try:
-        asyncio.run(main())
+        from asyncio import run as _arun
+        _arun(main())
     except KeyboardInterrupt:
         print("\nExited by user")
-        sys.exit(0) 
+        sys.exit(0)
+
+# Provide synchronous wrapper for console_scripts
+def cli():
+    """Wrapper used by the setuptools console
+aUTO-generated entry point."""
+    try:
+        from asyncio import run as _arun
+        _arun(main())
+    except KeyboardInterrupt:
+        print("\nExited by user") 

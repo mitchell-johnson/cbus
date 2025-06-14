@@ -42,204 +42,136 @@ MMI_REQUEST_PATTERN = re.compile(r'^(#)?(\d+)//(\d+)MMI(\d+)$')
 BASIC_MODE_PATTERN = re.compile(r'^X$')
 SMART_MODE_PATTERN = re.compile(r'^Y$')
 
+# ----------------------
+# Helper functions for C-Bus string-encoded binary parsing
+# ----------------------
+
+def _clean_ascii_bytes(data: bytes) -> str:
+    """Return ASCII string without CR/LF; fallback to empty string on decode error."""
+    try:
+        return data.replace(b"\r", b"").replace(b"\n", b"").decode("ascii")
+    except UnicodeDecodeError:
+        logger.error("Unable to decode data as ASCII: %s", data)
+        return ""
+
+
+def _parse_backslash_pairs(hex_str: str) -> Optional[bytearray]:
+    """Parse strings where every byte is encoded as \XX (backslash + two hex digits)."""
+    result = bytearray()
+    i = 0
+    while i < len(hex_str):
+        if hex_str[i] == "\\" and i + 2 < len(hex_str):
+            try:
+                result.append(int(hex_str[i + 1 : i + 3], 16))
+                i += 3
+                continue
+            except ValueError:
+                logger.debug("Invalid hex at pos %s -> %s", i, hex_str[i + 1 : i + 3])
+        i += 1
+    return result if result else None
+
+
+def _parse_slash05_format(hex_str: str) -> Optional[bytearray]:
+    """Handle legacy C-Bus encoding starting with '\\05'. Detects command types, etc."""
+    if not hex_str.startswith("\\05"):
+        return None
+
+    def _hex_pairs(sub: str) -> List[int]:
+        out: List[int] = []
+        for i in range(0, len(sub), 2):
+            if i + 1 < len(sub):
+                try:
+                    out.append(int(sub[i : i + 2], 16))
+                except ValueError:
+                    logger.debug("Skipping invalid hex %s", sub[i : i + 2])
+        return out
+
+    result = bytearray([0x05])
+
+    # Determine command byte & terminator letter
+    if len(hex_str) < 5:
+        return None
+
+    cmd_byte_part = hex_str[3:5]
+    try:
+        cmd_byte = int(cmd_byte_part, 16)
+    except ValueError:
+        logger.debug("Invalid cmd byte %s", cmd_byte_part)
+        return None
+
+    result.append(cmd_byte)
+
+    # Find trailing terminator letter (common cases h/i/j/x/t etc.)
+    end_idx = len(hex_str)
+    # If last char is a lowercase letter, treat as terminator
+    if hex_str[-1].isalpha():
+        end_idx = len(hex_str) - 1
+    else:
+        # Fallback: look for first 'h' which is common
+        if "h" in hex_str:
+            end_idx = hex_str.find("h")
+
+    payload = hex_str[5:end_idx]
+    result.extend(_hex_pairs(payload))
+
+    return result if len(result) > 2 else None
+
+
+def _parse_hex_pairs_no_backslash(hex_str: str) -> Optional[bytearray]:
+    """Fallback extractor: grab any hex pairs inside a malformed string."""
+    result = bytearray([0x05])
+    start = 1 if hex_str.startswith("\\") else 0
+    for i in range(start, len(hex_str) - 1, 2):
+        pair = hex_str[i : i + 2]
+        if all(ch.isalnum() for ch in pair):
+            try:
+                result.append(int(pair, 16))
+            except ValueError:
+                pass
+    return result if len(result) > 1 else None
+
+
 def preprocess_cbus_data(data):
-    """
-    Preprocess C-Bus protocol data, handling escape sequences and special characters
-    The C-Bus protocol often includes escape characters and backslashes that need to be handled
+    """High-level wrapper that delegates to specialised converters.
+
+    Keeps the original public signature while improving readability.
     """
     try:
-        # If data is bytes and contains backslashes
-        if isinstance(data, bytes) and b'\\' in data:
-            # Data appears to be a string representation with backslashes
-            # First log the raw data
-            logger.info(f"Received string-encoded binary data: {data}")
-            
-            # Remove newlines and carriage returns
-            cleaned = data.replace(b'\r', b'').replace(b'\n', b'')
-            
-            # Convert to string for easier processing
-            try:
-                hex_str = cleaned.decode('ascii')
-            except UnicodeDecodeError:
-                logger.error(f"Unable to decode data as ASCII: {cleaned}")
-                return data
-                
-            # Log for debugging
-            logger.info(f"Cleaned string: {hex_str}")
-            
-            # C-Bus protocol format: each byte is represented as \XX where XX is a hex value
-            # Example: \05\DF\00\0E\02...
-            
-            result_bytes = bytearray()
-            
-            # Special case for strings that don't have a backslash before each byte
-            # The format seems to be \05XXXXXXXXh where XXXXXXXX are hex digits
-            if hex_str.startswith('\\05'):
-                # Extract the initial byte
-                result_bytes.append(0x05)
-                
-                # Check if this is a lighting command format: '\05FF00730738004Ai'
-                if len(hex_str) >= 5 and hex_str[3:5] == 'FF' and hex_str.endswith('i'):
-                    # Extract the command type byte (FF)
-                    result_bytes.append(0xFF)
-                    
-                    # Process the rest of the string in pairs until the 'i'
-                    rest = hex_str[5:-1]  # Skip '\05FF' and the trailing 'i'
-                    for i in range(0, len(rest), 2):
-                        if i + 1 < len(rest):
-                            try:
-                                byte_val = int(rest[i:i+2], 16)
-                                result_bytes.append(byte_val)
-                            except ValueError:
-                                # Skip invalid hex
-                                logger.warning(f"Skipping invalid hex value at position {i}: {rest[i:i+2]}")
-                                pass
-                    
-                    hex_display = " ".join(f"{b:02X}" for b in result_bytes)
-                    logger.info(f"Parsed lighting command: {hex_display}")
-                    return result_bytes
-                
-                # Check if this is an initialization command format: '\05DF000E0207E90415000D010F3720FF90h'
-                elif len(hex_str) >= 5 and hex_str[3:5] == 'DF' and ('h' in hex_str):
-                    # Extract the command type byte (DF)
-                    result_bytes.append(0xDF)
-                    
-                    # Process the rest of the string in pairs until the 'h'
-                    rest = hex_str[5:hex_str.find('h')]
-                    for i in range(0, len(rest), 2):
-                        if i + 1 < len(rest):
-                            try:
-                                byte_val = int(rest[i:i+2], 16)
-                                result_bytes.append(byte_val)
-                            except ValueError:
-                                # Skip invalid hex
-                                logger.warning(f"Skipping invalid hex value at position {i}: {rest[i:i+2]}")
-                                pass
-                    
-                    hex_display = " ".join(f"{b:02X}" for b in result_bytes)
-                    logger.info(f"Parsed initialization command: {hex_display}")
-                    return result_bytes
-                
-                # Handle special format like '\05380079024x' (which appears in error message)
-                elif len(hex_str) >= 5 and hex_str.endswith(('x', 'h', 'i', 'j')):
-                    # First try to extract the second command byte (38 in the example)
-                    try:
-                        if len(hex_str) >= 5:
-                            cmd_byte = int(hex_str[3:5], 16)
-                            result_bytes.append(cmd_byte)
-                            
-                            # Process the rest of the string in pairs until the trailing letter
-                            end_marker = hex_str[-1]
-                            rest = hex_str[5:-1]  # Skip '\05XX' and the trailing letter
-                            for i in range(0, len(rest), 2):
-                                if i + 1 < len(rest):
-                                    try:
-                                        byte_val = int(rest[i:i+2], 16)
-                                        result_bytes.append(byte_val)
-                                    except ValueError:
-                                        # Skip invalid hex
-                                        logger.warning(f"Skipping invalid hex value at position {i}: {rest[i:i+2]}")
-                                        pass
-                            
-                            hex_display = " ".join(f"{b:02X}" for b in result_bytes)
-                            logger.info(f"Parsed command with end marker '{end_marker}': {hex_display}")
-                            return result_bytes
-                    except ValueError:
-                        logger.warning(f"Failed to parse command byte: {hex_str[3:5]}")
-                
-                # Generic parsing for any other command type
-                elif len(hex_str) >= 5:
-                    try:
-                        # Try to extract the command type
-                        cmd_byte = int(hex_str[3:5], 16)
-                        result_bytes.append(cmd_byte)
-                        
-                        # Determine the endpoint
-                        end_idx = len(hex_str)
-                        if 'h' in hex_str:
-                            end_idx = hex_str.find('h')
-                        elif hex_str[-1].isalpha():  # Ends with a letter like 'i', 'j', etc.
-                            end_idx = len(hex_str) - 1
-                        
-                        # Process the rest of the string in pairs
-                        rest = hex_str[5:end_idx]
-                        for i in range(0, len(rest), 2):
-                            if i + 1 < len(rest):
-                                try:
-                                    byte_val = int(rest[i:i+2], 16)
-                                    result_bytes.append(byte_val)
-                                except ValueError:
-                                    # Skip invalid hex
-                                    logger.warning(f"Skipping invalid hex value at position {i}: {rest[i:i+2]}")
-                                    pass
-                    except ValueError:
-                        # Failed to parse command byte
-                        logger.warning(f"Failed to parse command byte: {hex_str[3:5]}")
-                
-                # Check if we have a valid result
-                if len(result_bytes) > 1:
-                    hex_display = " ".join(f"{b:02X}" for b in result_bytes)
-                    logger.info(f"Parsed C-Bus message: {hex_display}")
-                    return result_bytes
-            
-            # Handle format where each byte starts with a backslash
-            result_bytes = bytearray()  # Reset result_bytes
-            i = 0
-            while i < len(hex_str):
-                if hex_str[i] == '\\' and i + 2 < len(hex_str):
-                    # Extract the two hex characters after the backslash
-                    hex_chars = hex_str[i+1:i+3]
-                    try:
-                        # Convert hex to byte value
-                        byte_val = int(hex_chars, 16)
-                        result_bytes.append(byte_val)
-                        i += 3  # Move past this hex sequence
-                    except ValueError:
-                        logger.warning(f"Invalid hex value at position {i}: {hex_chars}")
-                        i += 1  # Skip just the backslash
-                else:
-                    # Skip any non-backslash characters
-                    i += 1
-            
-            # Log and return the result
-            if result_bytes:
-                hex_display = " ".join(f"{b:02X}" for b in result_bytes)
-                logger.info(f"Parsed using backslash method: {hex_display}")
-                return result_bytes
-            
-            # As a last resort, try to identify valid hex pairs in the string
-            # This is for malformed inputs like '\05380079024x'
-            result_bytes = bytearray([0x05])  # Always start with 0x05 for C-Bus
-            try:
-                # Skip the first character if it's a backslash
-                start_idx = 1 if hex_str.startswith('\\') else 0
-                
-                # Try to extract pairs of hex characters
-                for i in range(start_idx, len(hex_str)-1, 2):
-                    if i+1 < len(hex_str) and hex_str[i].isalnum() and hex_str[i+1].isalnum():
-                        try:
-                            byte_val = int(hex_str[i:i+2], 16)
-                            result_bytes.append(byte_val)
-                        except ValueError:
-                            # Not a valid hex pair
-                            pass
-                
-                if len(result_bytes) > 1:
-                    hex_display = " ".join(f"{b:02X}" for b in result_bytes)
-                    logger.info(f"Parsed using hex pair extraction: {hex_display}")
-                    return result_bytes
-            except Exception as e:
-                logger.warning(f"Error during hex pair extraction: {e}")
-            
-            logger.warning("Failed to extract valid binary data")
+        # Short-circuit for data that is already binary or lacks backslashes
+        if not (isinstance(data, bytes) and b"\\" in data):
             return data
-        
-        # Already binary data
+
+        logger.info("Received string-encoded binary data: %s", data)
+
+        hex_str = _clean_ascii_bytes(data)
+        if not hex_str:
+            return data
+
+        logger.info("Cleaned string: %s", hex_str)
+
+        # 1. Special legacy format starting with \05
+        result = _parse_slash05_format(hex_str)
+        if result:
+            logger.info("Parsed via _parse_slash05_format: %s", " ".join(f"{b:02X}" for b in result))
+            return result
+
+        # 2. Regular backslash-pairs format (\XX)
+        result = _parse_backslash_pairs(hex_str)
+        if result and len(result) > 2:
+            logger.info("Parsed via _parse_backslash_pairs: %s", " ".join(f"{b:02X}" for b in result))
+            return result
+
+        # 3. Fallback extractor for malformed input
+        result = _parse_hex_pairs_no_backslash(hex_str)
+        if result:
+            logger.info("Parsed via _parse_hex_pairs_no_backslash: %s", " ".join(f"{b:02X}" for b in result))
+            return result
+
+        logger.warning("Failed to parse C-Bus message; returning raw data")
         return data
-    
-    except Exception as e:
-        logger.error(f"Error preprocessing data: {e}", exc_info=True)
-        # Return original data if there's an error
+
+    except Exception as exc:
+        logger.error("Error preprocessing data: %s", exc, exc_info=True)
         return data
 
 class PCISimulatorProtocol:
@@ -379,6 +311,13 @@ class PCISimulatorProtocol:
                     if ascii_str and '\\05' in ascii_str:
                         logger.debug(f"Detected string-encoded C-Bus message: {ascii_str}")
                         
+                        # If we somehow reached here without prior preprocessing, attempt it now
+                        pre = preprocess_cbus_data(data)
+                        if isinstance(pre, (bytes, bytearray)) and pre and pre[0] == 0x05:
+                            data = pre  # Switch to parsed binary form for the rest of this handler
+                        else:
+                            logger.debug("Inline preprocessing failed or returned unparsed data")
+                        
                         # Extract the command type right after the \05 prefix
                         cmd_type_pos = ascii_str.find('\\05') + 3
                         if len(ascii_str) >= cmd_type_pos + 2:
@@ -389,8 +328,10 @@ class PCISimulatorProtocol:
                                 logger.debug(f"Extracted command type from string: 0x{cmd_type:02X}")
                                 
                                 # Special case - directly handle lighting commands (0x38)
-                                if cmd_type == 0x38:
-                                    logger.info(f"Detected lighting command 0x38 in string-encoded message")
+                                if cmd_type == 0x38 or cmd_type == 0xFF:
+                                    # For 0xFF we still need to inspect further bytes to know application and group; fall back to heuristic
+                                    logger.info(f"Detected lighting command 0x{cmd_type:02X} in string-encoded message")
+                                    
                                     # Try to extract group address from the message if possible
                                     group_addr = 1  # Default
                                     if len(ascii_str) >= cmd_type_pos + 6:  # Need at least 4 more chars for group

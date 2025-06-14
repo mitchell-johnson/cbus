@@ -1,5 +1,7 @@
 # C-Bus Simulator
 
+> ⚠️ **Work-in-progress:** Parsing and state-management internals are still evolving. APIs may change without notice while convergence with the main `cbus` project continues.
+
 A Python-based simulator for testing C-Bus PCI (Protocol Control Interface) applications without actual C-Bus hardware.
 
 ## Overview

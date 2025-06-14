@@ -17,18 +17,18 @@ from typing import Dict, List, Optional
 from simulator.protocol import PCISimulatorProtocol
 from simulator.state import SimulatorState
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler(sys.stdout)
-    ]
-)
+# AIDEV-NOTE: logging-config; use fallback only if caller hasn't set up logging
+if not logging.getLogger().handlers:
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[logging.StreamHandler(sys.stdout)]
+    )
 logger = logging.getLogger(__name__)
 
-# Default values - use port 10002 for local testing to avoid conflicts with Docker
-DEFAULT_PORT = int(os.environ.get('SIMULATOR_PORT', 10002))
+# AIDEV-TODO: unify port defaults across simulator components
+# Default values - use port 10001 (Align with Docker-compose and sample clients)
+DEFAULT_PORT = int(os.environ.get('SIMULATOR_PORT', 10001))
 
 # Use a flexible config file path for different environments
 if os.path.exists('/app/config/simulator-config.json'):

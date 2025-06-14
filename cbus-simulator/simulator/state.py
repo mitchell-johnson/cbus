@@ -11,7 +11,19 @@ import time
 from datetime import datetime
 from typing import Dict, List, Optional, Any, Union
 
+from simulator.models import (
+    Network,
+    Application,
+    Group,
+    DeviceInfo,
+    SimulationSettings,
+    UnitInfo,
+)
+
 logger = logging.getLogger(__name__)
+
+# AIDEV-NOTE: SimulatorState holds a lot of mutable nested data. Be cautious when mutating.
+# Future improvement: migrate to @dataclass structures or pydantic models for validation.
 
 class SimulatorState:
     """
@@ -22,59 +34,33 @@ class SimulatorState:
         """
         Initialize the simulator state with default values.
         """
-        # Device information
-        self.device_info = {
-            "serial_number": "00000000",
-            "type": "5500CN",
-            "firmware_version": "1.0.0",
-            "pci_version": "v3.7"
-        }
+        # Device information (typed)
+        self.device_info = DeviceInfo()
         
-        # Network configuration
-        self.networks = {}
+        # Simulation settings (typed)
+        self.simulation_settings = SimulationSettings()
         
-        # Default network
-        self.default_network = {
-            "name": "Default Network",
-            "network_id": 254,
-            "applications": {}
-        }
-        self.networks[254] = self.default_network
+        # Network configuration (typed)
+        self.networks: Dict[int, Network] = {}
         
-        # Default lighting application
-        self.default_lighting = {
-            "application_id": 56,
-            "name": "Lighting",
-            "groups": {}
-        }
-        self.default_network["applications"][56] = self.default_lighting
-        
-        # Add some default groups
-        for i in range(1, 5):
-            self.default_lighting["groups"][i] = {
-                "group_id": i,
-                "name": f"Group {i}",
-                "level": 0,
-                "last_updated": time.time()
-            }
+        # Build default lighting application + network
+        default_lighting_app = Application(application_id=56, name="Lighting")
+        for gid in range(1, 5):
+            default_lighting_app.groups[gid] = Group(group_id=gid, name=f"Group {gid}")
+
+        default_network = Network(
+            network_id=254,
+            name="Default Network",
+            applications={56: default_lighting_app},
+        )
+
+        self.networks[254] = default_network
         
         # Simple direct access to light states for quick lookups
-        self.light_states = {}
-        for i in range(1, 5):
-            self.light_states[i] = 0
-        
-        # Simulation settings
-        self.simulation_settings = {
-            "smart_mode": True,
-            "default_source_address": 5,
-            "delay_min_ms": 10,
-            "delay_max_ms": 50,
-            "packet_loss_probability": 0.0,
-            "clock_drift_seconds_per_day": 0
-        }
+        self.light_states: Dict[int, int] = {gid: 0 for gid in range(1, 5)}
         
         # Current mode (basic or smart)
-        self.smart_mode = True
+        self.smart_mode = self.simulation_settings.smart_mode
         
         # PCI status
         self.pci_status = {
@@ -84,7 +70,7 @@ class SimulatorState:
         }
         
         # Unit information
-        self.units = {}
+        self.units: Dict[int, UnitInfo] = {}
         
         # Command history
         self.command_history = []
@@ -99,87 +85,64 @@ class SimulatorState:
         """
         # Device information
         if "device" in config:
-            self.device_info.update(config["device"])
+            for key, value in config["device"].items():
+                if hasattr(self.device_info, key):
+                    setattr(self.device_info, key, value)
         
         # Reset networks
         self.networks = {}
-        self.light_states = {}  # Reset light states
+        self.light_states = {}
         
         # Configure networks
         if "networks" in config:
-            for network_config in config["networks"]:
-                network_id = network_config.get("network_id", 254)
-                
-                # Create network
-                network = {
-                    "name": network_config.get("name", f"Network {network_id}"),
-                    "network_id": network_id,
-                    "applications": {}
-                }
-                
-                # Add applications
-                for app_config in network_config.get("applications", []):
-                    app_id = app_config.get("application_id")
+            for net_cfg in config["networks"]:
+                net_id = net_cfg.get("network_id", 254)
+                network = Network(network_id=net_id, name=net_cfg.get("name", f"Network {net_id}"))
+
+                # Applications
+                for app_cfg in net_cfg.get("applications", []):
+                    app_id = app_cfg.get("application_id")
                     if app_id is None:
                         continue
-                    
-                    # Create application
-                    app = {
-                        "application_id": app_id,
-                        "name": app_config.get("name", f"Application {app_id}"),
-                        "groups": {}
-                    }
-                    
-                    # Add groups for the application
-                    if "groups" in app_config:
-                        for group_config in app_config["groups"]:
-                            group_id = group_config.get("group_id")
-                            if group_id is None:
-                                continue
-                            
-                            # Initial level from config or default to 0
-                            initial_level = group_config.get("initial_level", 0)
-                            
-                            # Create group
-                            app["groups"][group_id] = {
-                                "group_id": group_id,
-                                "name": group_config.get("name", f"Group {group_id}"),
-                                "level": initial_level,
-                                "last_updated": time.time()
-                            }
-                            
-                            # Also update the light_states for quick access
-                            self.light_states[group_id] = initial_level
-                    
-                    network["applications"][app_id] = app
-                
-                self.networks[network_id] = network
+                    app = Application(application_id=app_id, name=app_cfg.get("name", f"Application {app_id}"))
+
+                    # Groups
+                    for grp_cfg in app_cfg.get("groups", []):
+                        grp_id = grp_cfg.get("group_id")
+                        if grp_id is None:
+                            continue
+                        initial_level = grp_cfg.get("initial_level", 0)
+                        group = Group(group_id=grp_id, name=grp_cfg.get("name", f"Group {grp_id}"), level=initial_level)
+                        app.groups[grp_id] = group
+                        self.light_states[grp_id] = initial_level
+
+                    network.applications[app_id] = app
+
+                self.networks[net_id] = network
         else:
             # No networks in config, use defaults
-            self.networks[254] = self.default_network
-            # Make sure light_states is initialized
-            for i in range(1, 5):
-                self.light_states[i] = 0
+            self.__init__()  # Reset to defaults
         
         # Configure units
         if "units" in config:
-            for unit_config in config["units"]:
-                unit_address = unit_config.get("unit_address")
-                if unit_address is None:
+            for u_cfg in config["units"]:
+                u_addr = u_cfg.get("unit_address")
+                if u_addr is None:
                     continue
-                
-                self.units[unit_address] = {
-                    "unit_address": unit_address,
-                    "type": unit_config.get("type", "Unknown"),
-                    "group_address": unit_config.get("group_address"),
-                    "application_address": unit_config.get("application_address"),
-                    "zone_address": unit_config.get("zone_address")
-                }
+                self.units[u_addr] = UnitInfo(
+                    unit_address=u_addr,
+                    type=u_cfg.get("type", "Unknown"),
+                    group_address=u_cfg.get("group_address"),
+                    application_address=u_cfg.get("application_address"),
+                    zone_address=u_cfg.get("zone_address"),
+                )
         
         # Configure simulation settings
         if "simulation" in config:
-            self.simulation_settings.update(config["simulation"])
-            self.smart_mode = self.simulation_settings.get("smart_mode", True)
+            for key, value in config["simulation"].items():
+                if hasattr(self.simulation_settings, key):
+                    setattr(self.simulation_settings, key, value)
+            self.smart_mode = self.simulation_settings.smart_mode
         
         logger.info(f"Configuration applied. {len(self.light_states)} light groups configured.")
     
@@ -195,16 +158,17 @@ class SimulatorState:
         Returns:
             The current level (0-255) or 0 if group not found
         """
-        # Fast path - check light_states first
-        if group_id in self.light_states:
-            return self.light_states[group_id]
-            
-        # Fall back to checking the network hierarchy
-        try:
-            return self.networks[network_id]["applications"][application_id]["groups"][group_id]["level"]
-        except KeyError:
-            logger.warning(f"Group not found: network={network_id}, app={application_id}, group={group_id}")
-            return 0
+        net = self.networks.get(network_id)
+        if net:
+            app = net.applications.get(application_id)
+            if app:
+                grp = app.groups.get(group_id)
+                if grp:
+                    return grp.level
+        logger.warning(
+            "Group not found: network=%s, app=%s, group=%s", network_id, application_id, group_id
+        )
+        return 0
     
     def set_group_level(self, network_id: int, application_id: int, group_id: int, level: int) -> bool:
         """
@@ -222,28 +186,21 @@ class SimulatorState:
         # Validate level
         level = max(0, min(255, level))
         
-        try:
-            # Update the network hierarchy
-            if network_id in self.networks and application_id in self.networks[network_id]["applications"] and group_id in self.networks[network_id]["applications"][application_id]["groups"]:
-                self.networks[network_id]["applications"][application_id]["groups"][group_id]["level"] = level
-                self.networks[network_id]["applications"][application_id]["groups"][group_id]["last_updated"] = time.time()
-                
-                # Also update light_states for quick access
-                self.light_states[group_id] = level
-                
-                # Get the group name for logging
-                group_name = self.networks[network_id]["applications"][application_id]["groups"][group_id]["name"]
-                logger.info(f"💡 {group_name} level set to {level}")
-                
-                return True
-            else:
-                # Group doesn't exist in the hierarchy, but we'll still track it in light_states
-                logger.warning(f"Group {group_id} not found in network hierarchy, creating tracking entry")
-                self.light_states[group_id] = level
-                return True
-        except Exception as e:
-            logger.error(f"Error setting group level: {e}")
-            return False
+        net = self.networks.get(network_id)
+        if net:
+            app = net.applications.get(application_id)
+            if app:
+                grp = app.groups.get(group_id)
+                if grp:
+                    grp.level = level
+                    grp.last_updated = time.time()
+                    self.light_states[group_id] = level
+                    logger.info("💡 %s level set to %s", grp.name, level)
+                    return True
+        # Group not found; track anyway
+        logger.warning("Group %s not found in hierarchy; tracking only in light_states", group_id)
+        self.light_states[group_id] = level
+        return True
     
     def get_all_group_levels(self, network_id: int, application_id: int) -> Dict[int, int]:
         """
@@ -262,14 +219,14 @@ class SimulatorState:
         result.update(self.light_states)
         
         # Then check the network hierarchy for any missing
-        try:
-            if network_id in self.networks and application_id in self.networks[network_id]["applications"]:
-                groups = self.networks[network_id]["applications"][application_id]["groups"]
-                for group_id, group in groups.items():
-                    if group_id not in result:
-                        result[group_id] = group["level"]
-        except KeyError:
-            logger.warning(f"Application not found: network={network_id}, app={application_id}")
+        net = self.networks.get(network_id)
+        if net:
+            app = net.applications.get(application_id)
+            if app:
+                for gid, grp in app.groups.items():
+                    result.setdefault(gid, grp.level)
+        else:
+            logger.warning("Application not found: network=%s app=%s", network_id, application_id)
         
         return result
     
@@ -313,10 +270,10 @@ class SimulatorState:
         Reset the simulator state.
         """
         # Clear all group levels
-        for network_id in self.networks:
-            for app_id in self.networks[network_id]["applications"]:
-                for group_id in self.networks[network_id]["applications"][app_id]["groups"]:
-                    self.networks[network_id]["applications"][app_id]["groups"][group_id]["level"] = 0
+        for net in self.networks.values():
+            for app in net.applications.values():
+                for grp in app.groups.values():
+                    grp.level = 0
         
         # Reset light_states
         for group_id in self.light_states:
