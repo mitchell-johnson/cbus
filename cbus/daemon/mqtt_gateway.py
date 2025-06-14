@@ -155,9 +155,13 @@ class MqttClient:
 
     # ------------------------------------------------------------------
     async def __aenter__(self):
-        # aiomqtt connects when entering its async context manager. We enter it
-        # manually so that our own MqttClient stays the public context manager.
-        self._client_cm = AioMqttClient(hostname=self._host, port=self._port, keepalive=self._keepalive, **self._tls_kwargs)
+        self._client_cm = AioMqttClient(
+            hostname=self._host,
+            port=self._port,
+            keepalive=self._keepalive,
+            logger=logger,
+            **self._tls_kwargs,
+        )
         # Enter the aiomqtt context (establishes the network connection)
         self._client = await self._client_cm.__aenter__()
 
@@ -186,20 +190,22 @@ class MqttClient:
 
     # ------------------------------------------------------------------
     async def _dispatcher_loop(self):
+        logger.debug("Dispatcher loop starting…")
         assert self._client is not None
-        # Start message stream before (re-)subscribing to avoid race condition
-        async with self._client.messages() as messages:
-            # Ensure we are subscribed to everything
+        try:
             result = await self._client.subscribe("homeassistant/light/#")
-            logger.info("Subscribed to '#' (result=%s)", result)
-            async for msg in messages:
+            logger.info("Subscribed to 'homeassistant/light/#' (result=%s)", result)
+
+            async for msg in self._client.messages:
                 logger.debug("MQTT message received on topic '%s': %s", msg.topic, msg.payload[:200])
                 handled = await self._handle_message(msg)
                 if not handled:
                     logger.debug("Message on topic '%s' ignored by handler", msg.topic)
+        except Exception:
+            logger.exception("Dispatcher loop crashed")
 
     async def _handle_message(self, msg):
-        topic = msg.topic
+        topic = str(msg.topic)
         if not (topic.startswith(_LIGHT_TOPIC_PREFIX) and topic.endswith(_TOPIC_SET_SUFFIX)):
             return False
         try:
