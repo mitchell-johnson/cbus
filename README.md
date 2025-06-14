@@ -1,7 +1,7 @@
 # libcbus
 
-[![Build Status](https://secure.travis-ci.org/micolous/cbus.png?branch=master)][travis]
-[![Coverage Status](https://coveralls.io/repos/github/micolous/cbus/badge.svg)][coveralls]
+[![Build Status](https://secure.travis-ci.org/mitchell-johnson/cbus.png?branch=master)][travis]
+[![Coverage Status](https://coveralls.io/repos/github/mitchell-johnson/cbus/badge.svg)][coveralls]
 [![Documentation Status](https://readthedocs.org/projects/cbus/badge/?version=latest)][rtd]
 
 Talks to Clipsal C-Bus using Python 3.7+.
@@ -263,8 +263,8 @@ Many APIs have changed due to refactoring, and is subject to further change with
 most stable API is via MQTT (`cmqttd`).
 
 [rtd]: https://cbus.readthedocs.io/en/latest/
-[coveralls]: https://coveralls.io/github/micolous/cbus
-[travis]: https://travis-ci.org/micolous/cbus
+[coveralls]: https://coveralls.io/github/mitchell-johnson/cbus
+[travis]: https://travis-ci.org/mitchell-johnson/cbus
 [5500PC]: https://www.clipsal.com/Trade/Products/ProductDetail?catno=5500PC
 [5500PCU]: https://www.clipsal.com/Trade/Products/ProductDetail?catno=5500PCU
 [5500CN]: https://updates.clipsal.com/ClipsalOnline/Files/Brochures/W0000348.pdf

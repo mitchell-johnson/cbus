@@ -38,7 +38,7 @@ Technical analysis of the C-Bus protocol implementation:
 
 ```bash
 # Clone the repository
-git clone https://github.com/micolous/cbus.git
+git clone https://github.com/mitchell-johnson/cbus.git
 cd cbus
 
 # Install dependencies
@@ -216,7 +216,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 - [C-Bus Protocol Documentation](https://updates.clipsal.com/ClipsalSoftwareDownload/DL/downloads/OpenCBus/OpenCBusProtocolDownloads.html)
 - [Home Assistant MQTT Light](https://www.home-assistant.io/integrations/light.mqtt/)
-- [Project Repository](https://github.com/micolous/cbus)
+- [Project Repository](https://github.com/mitchell-johnson/cbus)
 
 ## Summary
 

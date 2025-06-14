@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # Clone and install libcbus
-RUN git clone https://github.com/micolous/cbus.git && \
+RUN git clone https://github.com/mitchell-johnson/cbus.git && \
     cd cbus && \
     pip install --no-cache-dir -r requirements.txt && \
     pip install -e .

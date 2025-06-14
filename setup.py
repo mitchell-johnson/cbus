@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 
+# AIDEV-NOTE: keep deps consistent; see Dockerfile/requirements.txt (anchor for AI edits)
+
 from setuptools import setup, find_packages
 
 deps = [
-	'pyserial (==3.5)',
-	'pyserial_asyncio (==0.6)',
-	'lxml (>=2.3.2)',
+	'pyserial==3.5',
+	'pyserial-asyncio==0.6',
+	'lxml>=2.3.2',
 	'six',
 	'pydot',
-	'paho_mqtt (==1.6.1)'
+	'aiomqtt>=1.0.0',
 ]
 
 tests_require = [
@@ -20,11 +22,11 @@ setup(
 	name="cbus",
 	version="0.2",
 	description="Library and applications to interact with Clipsal CBus in Python.",
-	author="Michael Farrell",
-	author_email="micolous@gmail.com",
-	url="https://github.com/micolous/cbus",
+	author="Michael Farrell, Mitchell Johnson",
+	author_email="mitchell@johnson.fyi",
+	url="https://github.com/mitchell-johnson/cbus",
 	license="LGPL3+",
-	requires=deps,
+	install_requires=deps,
 	tests_require=tests_require,
 	extras_require={'test': tests_require},
 	# TODO: add scripts to this.

@@ -39,6 +39,7 @@ from cbus.common import (
     LightCommand, ramp_rate_to_duration,
     END_COMMAND, END_RESPONSE
 )
+from cbus.protocol.scs_packet import SmartConnectShortcutPacket
 
 # Initialize colorama for cross-platform colored output
 colorama.init()
@@ -76,7 +77,7 @@ class PacketAnalyzer:
     def __init__(self):
         self.packet_count = 0
         self.error_count = 0
-        self.confirmation_map: Dict[int, Tuple[datetime, str]] = {}
+        self.confirmation_map: Dict[int, Tuple[datetime, str, Optional[str]]] = {}
         
     def format_hex(self, data: bytes) -> str:
         """Format bytes as hex string with ASCII representation"""
@@ -165,9 +166,12 @@ class PacketAnalyzer:
                 
                 # Look up what command this confirms
                 if code_int in self.confirmation_map:
-                    timestamp, cmd_desc = self.confirmation_map[code_int]
+                    timestamp, cmd_desc, origin_client = self.confirmation_map[code_int]
                     elapsed = (datetime.now() - timestamp).total_seconds()
-                    packet_info.append(f"{Fore.MAGENTA}Confirms:{Style.RESET_ALL} {cmd_desc} (sent {elapsed:.3f}s ago)")
+                    if origin_client:
+                        packet_info.append(f"{Fore.MAGENTA}Confirms:{Style.RESET_ALL} {cmd_desc} (sent {elapsed:.3f}s ago, origin {origin_client})")
+                    else:
+                        packet_info.append(f"{Fore.MAGENTA}Confirms:{Style.RESET_ALL} {cmd_desc} (sent {elapsed:.3f}s ago)")
                     del self.confirmation_map[code_int]
                     
             elif isinstance(packet, PCIErrorPacket):
@@ -194,7 +198,7 @@ class PacketAnalyzer:
                 
                 # Analyze SAL data
                 for sal in packet:
-                    sal_info = self._analyze_sal(sal, packet.confirmation)
+                    sal_info = self._analyze_sal(sal, packet.confirmation, client_info)
                     if sal_info:
                         packet_info.extend(sal_info)
                         
@@ -232,7 +236,7 @@ class PacketAnalyzer:
             logger.exception("Error analyzing packet")
             return f"{header}\n{raw_display}\n{error_msg}"
     
-    def _analyze_sal(self, sal: Any, confirmation: Optional[bytes]) -> list:
+    def _analyze_sal(self, sal: Any, confirmation: Optional[bytes], client_info: Optional[ClientInfo] = None) -> list:
         """Analyze SAL (Smart Application Language) data"""
         info = []
         
@@ -247,7 +251,7 @@ class PacketAnalyzer:
             ])
             if confirmation:
                 code_int = ord(confirmation)
-                self.confirmation_map[code_int] = (datetime.now(), f"Light ON Group {group_addr}")
+                self.confirmation_map[code_int] = (datetime.now(), f"Light ON Group {group_addr}", str(client_info) if client_info else None)
                 
         elif isinstance(sal, LightingOffSAL):
             app_name = self.get_application_name(sal.application_address) if hasattr(sal, 'application_address') else "Unknown App"
@@ -260,7 +264,7 @@ class PacketAnalyzer:
             ])
             if confirmation:
                 code_int = ord(confirmation)
-                self.confirmation_map[code_int] = (datetime.now(), f"Light OFF Group {group_addr}")
+                self.confirmation_map[code_int] = (datetime.now(), f"Light OFF Group {group_addr}", str(client_info) if client_info else None)
                 
         elif isinstance(sal, LightingRampSAL):
             app_name = self.get_application_name(sal.application_address) if hasattr(sal, 'application_address') else "Unknown App"
@@ -278,7 +282,7 @@ class PacketAnalyzer:
             ])
             if confirmation:
                 code_int = ord(confirmation)
-                self.confirmation_map[code_int] = (datetime.now(), f"Light RAMP Group {group_addr} to {level_percent:.0f}%")
+                self.confirmation_map[code_int] = (datetime.now(), f"Light RAMP Group {group_addr} to {level_percent:.0f}%", str(client_info) if client_info else None)
                 
         elif isinstance(sal, LightingTerminateRampSAL):
             app_name = self.get_application_name(sal.application_address) if hasattr(sal, 'application_address') else "Unknown App"
@@ -316,7 +320,7 @@ class PacketAnalyzer:
             ])
             if confirmation:
                 code_int = ord(confirmation)
-                self.confirmation_map[code_int] = (datetime.now(), f"Status Request App {app_val:02X} Groups {group_start}-{group_start + group_count - 1}")
+                self.confirmation_map[code_int] = (datetime.now(), f"Status Request App {app_val:02X} Groups {group_start}-{group_start + group_count - 1}", str(client_info) if client_info else None)
                 
         return info
     
@@ -373,9 +377,10 @@ class PacketAnalyzer:
         print(f"Errors: {self.error_count}")
         if self.confirmation_map:
             print(f"Unconfirmed Commands: {len(self.confirmation_map)}")
-            for code, (timestamp, desc) in self.confirmation_map.items():
+            for code, (timestamp, desc, origin_client) in self.confirmation_map.items():
                 elapsed = (datetime.now() - timestamp).total_seconds()
-                print(f"  - {desc} (code {code}, waiting {elapsed:.1f}s)")
+                origin = origin_client or "unknown"
+                print(f"  - {desc} (code {code}, origin {origin}, waiting {elapsed:.1f}s)")
 
 
 class CBusProxy:
@@ -403,6 +408,10 @@ class CBusProxy:
         # Connect to CNI first
         await self.connect_to_cni()
         
+        # Run initialization sequence before starting reader
+        if self.cni_connected:
+            await self.initialize_cni()
+        
         # Start the CNI reader task
         if self.cni_connected:
             self.cni_task = asyncio.create_task(self.cni_reader_task())
@@ -429,6 +438,43 @@ class CBusProxy:
         except Exception as e:
             logger.error(f"{Fore.RED}Failed to connect to CNI at {self.target_host}:{self.target_port}: {e}{Style.RESET_ALL}")
             self.cni_connected = False
+    
+    async def initialize_cni(self):
+        """Send initialization sequence to the CNI to enable SMART+CONNECT and MONITOR mode."""
+        if not self.cni_connected or self.cni_writer is None:
+            return
+
+        logger.info("Initializing CNI (reset, smart/connect, monitor mode)…")
+
+        cmds = []
+        # 1. Hard reset (~) – no checksum, no CR required, but append CR to flush
+        cmds.append(b'~' + END_COMMAND)
+
+        # 2. Smart + Connect shortcut ('|')
+        cmds.append(SmartConnectShortcutPacket().encode_packet() + END_COMMAND)
+
+        # 3. Device Management commands in BASIC mode
+        dm_packets = [
+            DeviceManagementPacket(checksum=False, parameter=0x21, value=0xFF),  # App addr 1 -> ALL
+            DeviceManagementPacket(checksum=False, parameter=0x22, value=0xFF),  # App addr 2 -> USED
+            DeviceManagementPacket(checksum=False, parameter=0x42, value=0x0E),  # Interface opts #3 (LOCAL_SAL, PUN, EXSTAT)
+            DeviceManagementPacket(checksum=False, parameter=0x30, value=0x79),  # Interface opts #1 (CONNECT, SRCHK, SMART, MONITOR, IDMON)
+        ]
+
+        for pkt in dm_packets:
+            cmds.append(pkt.encode_packet() + END_COMMAND)
+
+        # Send all commands with tiny spacing because CNI buffer is small
+        for cmd in cmds:
+            try:
+                self.cni_writer.write(cmd)
+                await self.cni_writer.drain()
+                await asyncio.sleep(0.05)  # avoid overrunning buffer
+            except Exception as e:
+                logger.error(f"Error sending CNI init command {cmd!r}: {e}")
+                break
+
+        logger.info("CNI initialization sequence sent")
     
     async def cni_reader_task(self):
         """Task that reads from CNI and broadcasts to all clients"""
@@ -530,8 +576,11 @@ class CBusProxy:
                 logger.warning(f"Client {client_info} connected but CNI is not available")
                 # Try to reconnect to CNI
                 await self.connect_to_cni()
-                if self.cni_connected and not self.cni_task:
-                    self.cni_task = asyncio.create_task(self.cni_reader_task())
+                if self.cni_connected:
+                    # initialise CNI after reconnection
+                    await self.initialize_cni()
+                    if not self.cni_task:
+                        self.cni_task = asyncio.create_task(self.cni_reader_task())
             
             # Forward data from this client to CNI
             await self.forward_client_to_cni(client_reader, client_info)

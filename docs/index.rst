@@ -1,7 +1,7 @@
 Welcome to libcbus' documentation!
 ==================================
 
-Project Page / Source repository: https://github.com/micolous/cbus
+Project Page / Source repository: https://github.com/mitchell-johnson/cbus
 
 libcbus is a set of Python libraries for interacting with Clipsal C-Bus.
 

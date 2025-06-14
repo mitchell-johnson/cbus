@@ -9,7 +9,8 @@ requests
 pydot
 
 # required for cmqttd
-paho-mqtt==1.6.1
+# asyncio-mqtt>=0.16  # deprecated, replaced by aiomqtt>=1.0.0
+aiomqtt>=1.0.0
 
 # required for cbz
 lxml

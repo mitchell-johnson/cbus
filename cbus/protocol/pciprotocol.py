@@ -58,6 +58,7 @@ from cbus.protocol.pm_packet import PointToMultipointPacket
 from cbus.protocol.pp_packet import PointToPointPacket
 from cbus.protocol.reset_packet import ResetPacket
 from cbus.protocol.cal.extended import ExtendedCAL
+from cbus.protocol.scs_packet import SmartConnectShortcutPacket  # Smart+Connect shortcut
 
 # At the module level where logger is defined, replace with:
 logger = get_configured_logger('cbus.protocol.pciprotocol')
@@ -737,6 +738,10 @@ class PCIProtocol(CBusProtocol):
             logger.debug(f"Sending reset packet {i+1}/3")
             await self._send(ResetPacket())
 
+        # Send Smart+Connect shortcut to enable SMART mode immediately
+        logger.debug("Sending Smart+Connect shortcut ('|')")
+        await self._send(SmartConnectShortcutPacket())
+
         logger.debug("Setting application address 1 to ALL applications")
         # serial user interface guide sect 10.2
         # Set application address 1 to ALL applications
@@ -764,9 +769,9 @@ class PCIProtocol(CBusProtocol):
             checksum=False, parameter=0x42, value=0x0E),
             basic_mode=True)
 
-        logger.debug("Setting interface options #1")
+        logger.debug("Setting interface options #1 (enable CONNECT, SRCHK, SMART, MONITOR, IDMON)")
         # Interface options #1
-        # = 0x59 / 0101 1001
+        # = 0x79 / 0111 1001
         # 0: CONNECT
         # 3: SRCHK - strict checksum check
         # 4: SMART
@@ -774,7 +779,7 @@ class PCIProtocol(CBusProtocol):
         # 6: IDMON
         # self._send('A3300059', encode=False, checksum=False)
         await self._send(DeviceManagementPacket(
-            checksum=False, parameter=0x30, value=0x59),
+            checksum=False, parameter=0x30, value=0x79),
             basic_mode=True)
         logger.info("PCI reset complete")
 

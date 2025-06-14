@@ -344,7 +344,7 @@ On a system with Docker installed, clone the `libcbus git repository`__ and then
 
     # docker build -t cmqttd .
 
-__ https://github.com/micolous/cbus
+__ https://github.com/mitchell-johnson/cbus
 
 This will download about 120 MiB of dependencies, and result in about 100 MiB image (named
 ``cmqttd``).
