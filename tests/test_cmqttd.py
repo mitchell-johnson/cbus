@@ -17,7 +17,6 @@
 
 from __future__ import absolute_import
 
-from dataclasses import dataclass
 from parameterized import parameterized
 import io
 from typing import Optional, Text, cast
@@ -25,16 +24,7 @@ import unittest
 
 from cbus.common import Application, check_ga
 from cbus.daemon import cmqttd
-
-
-@dataclass
-class MockMqttClientAuth:
-    username: Optional[Text] = None
-    password: Optional[Text] = None
-
-    def username_pw_set(self, username, password):
-        self.username = username
-        self.password = password
+from cbus.daemon import topics
 
 
 class CmqttdUtilityTest(unittest.TestCase):
@@ -62,17 +52,17 @@ class CmqttdUtilityTest(unittest.TestCase):
         self.assertEqual((ga,Application.LIGHTING), cmqttd.get_topic_group_address(light_topic))
 
         # Generating a set topic
-        set_topic = cmqttd.set_topic(ga,Application.LIGHTING)
+        set_topic = topics.set_topic(ga,Application.LIGHTING)
         self.assertEqual(light_topic, set_topic[:light_topic_len])
         self.assertEqual((ga,Application.LIGHTING), cmqttd.get_topic_group_address(set_topic))
 
         # Generating a state topic
-        state_topic = cmqttd.state_topic(ga,Application.LIGHTING)
+        state_topic = topics.state_topic(ga,Application.LIGHTING)
         self.assertEqual(light_topic, state_topic[:light_topic_len])
         self.assertEqual((ga,Application.LIGHTING), cmqttd.get_topic_group_address(state_topic))
 
         # Generating a conf topic
-        conf_topic = cmqttd.conf_topic(ga,Application.LIGHTING)
+        conf_topic = topics.conf_topic(ga,Application.LIGHTING)
         self.assertEqual(light_topic, conf_topic[:light_topic_len])
         self.assertEqual((ga,Application.LIGHTING), cmqttd.get_topic_group_address(conf_topic))
 
@@ -83,10 +73,10 @@ class CmqttdUtilityTest(unittest.TestCase):
 
         # Binary sensors are read only, so get_topic_group_address doesn't
         # support them.
-        bin_state_topic = cmqttd.bin_sensor_state_topic(ga,Application.LIGHTING)
+        bin_state_topic = topics.bin_sensor_state_topic(ga,Application.LIGHTING)
         self.assertTrue(bin_topic, bin_state_topic[:bin_topic_len])
 
-        bin_conf_topic = cmqttd.bin_sensor_conf_topic(ga,Application.LIGHTING)
+        bin_conf_topic = topics.bin_sensor_conf_topic(ga,Application.LIGHTING)
         self.assertTrue(bin_topic, bin_conf_topic[:bin_topic_len])
 
         # Uniqueness check
@@ -100,16 +90,3 @@ class CmqttdUtilityTest(unittest.TestCase):
     ])
     def test_invalid_topic_group_address(self, topic):
         self.assertRaises(ValueError, cmqttd.get_topic_group_address, topic)
-
-    @parameterized.expand([
-        ('unix newlines', 'my_username\nmy_password\n'),
-        ('dos newlines', 'my_username\r\nmy_password\r\n'),
-        ('one newline', 'my_username\nmy_password'),
-        ('whitespace', 'my_username \n  my_password\n'),
-    ])
-    def test_read_auth(self, _name, data):
-        client = MockMqttClientAuth()
-        f = io.StringIO(data)
-        cmqttd.read_auth(cast('mqtt.Client', client), f)
-        self.assertEqual('my_username', client.username)
-        self.assertEqual('my_password', client.password)

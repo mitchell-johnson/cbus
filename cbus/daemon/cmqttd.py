@@ -154,54 +154,57 @@ async def _main():
 
     loop = asyncio.get_event_loop()
     connection_lost_future = loop.create_future()
-    labels = (read_cbz_labels(option.project_file,option.cbus_network)
-              if option.project_file else None)
-
-    # Normalise cbus_network list -> single string (compat with previous behaviour)
-    if hasattr(option, 'cbus_network') and option.cbus_network:
-        option.cbus_network = " ".join(option.cbus_network)
-    else:
-        option.cbus_network = None
-
-    # Validate client-cert/key pairing
-    if bool(option.broker_client_cert) != bool(option.broker_client_key):
-        raise SystemExit('To use client certificates, both --broker-client-cert (-k) and --broker-client-key (-K) must be specified.')
-
-    def factory():
-        return CBusHandler(
-            timesync_frequency=option.timesync,
-            handle_clock_requests=not option.no_clock,
-            connection_lost_future=connection_lost_future,
-            labels=labels,
-        )
-
-    # TCP connection is required
-    addr_host, addr_port = option.tcp.split(':', 1)
-    _, protocol = await loop.create_connection(factory, addr_host, int(addr_port))
-
-    # TLS configuration
-    if option.broker_disable_tls:
-        logging.warning('Transport security disabled!')
-        port = option.broker_port or 1883
-        tls_kwargs = {}
-    else:
-        port = option.broker_port or 8883
-        tls_context = ssl.create_default_context(cafile=option.broker_ca) if option.broker_ca else ssl.create_default_context()
-        if option.broker_client_cert:
-            tls_context.load_cert_chain(certfile=option.broker_client_cert, keyfile=option.broker_client_key)
-        tls_kwargs = {'tls_context': tls_context}
-
-    mqtt_client = MqttClient(protocol, option.broker_address, port, option.broker_keepalive, tls_kwargs)
-
+    
     try:
+        labels = (read_cbz_labels(option.project_file,option.cbus_network)
+                  if option.project_file else None)
+
+        # Normalise cbus_network list -> single string (compat with previous behaviour)
+        if hasattr(option, 'cbus_network') and option.cbus_network:
+            option.cbus_network = " ".join(option.cbus_network)
+        else:
+            option.cbus_network = None
+
+        # Validate client-cert/key pairing
+        if bool(option.broker_client_cert) != bool(option.broker_client_key):
+            raise SystemExit('To use client certificates, both --broker-client-cert (-k) and --broker-client-key (-K) must be specified.')
+
+        def factory():
+            return CBusHandler(
+                timesync_frequency=option.timesync,
+                handle_clock_requests=not option.no_clock,
+                connection_lost_future=connection_lost_future,
+                labels=labels,
+            )
+
+        # TCP connection is required
+        addr_host, addr_port = option.tcp.split(':', 1)
+        _, protocol = await loop.create_connection(factory, addr_host, int(addr_port))
+
+        # TLS configuration
+        if option.broker_disable_tls:
+            logging.warning('Transport security disabled!')
+            port = option.broker_port or 1883
+            tls_kwargs = {}
+        else:
+            port = option.broker_port or 8883
+            tls_context = ssl.create_default_context(cafile=option.broker_ca) if option.broker_ca else ssl.create_default_context()
+            if option.broker_client_cert:
+                tls_context.load_cert_chain(certfile=option.broker_client_cert, keyfile=option.broker_client_key)
+            tls_kwargs = {'tls_context': tls_context}
+
+        mqtt_client = MqttClient(protocol, option.broker_address, port, option.broker_keepalive, tls_kwargs)
+
         async with mqtt_client:  # type: ignore[arg-type]
             await connection_lost_future
     except (KeyboardInterrupt, asyncio.CancelledError):
         logger.info('Shutting down...')
+    except Exception as e:
+        logger.critical("Unhandled exception: %s", e, exc_info=True)
     finally:
         # Clean up resources to prevent memory leaks
         logger.info('Cleaning up resources...')
-        if 'transport' in locals() and transport is not None:
+        if 'transport' in locals() and 'transport' in vars() and transport is not None:
             transport.close()
         
         # Cancel all tasks
