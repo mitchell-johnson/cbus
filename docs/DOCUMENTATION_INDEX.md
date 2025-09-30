@@ -44,8 +44,8 @@ cd cbus
 # Install dependencies
 pip install -r requirements.txt
 
-# For MQTT daemon
-pip install -r requirements-cmqttd.txt
+# For testing
+pip install -r requirements-tests.txt
 ```
 
 ### Docker Deployment

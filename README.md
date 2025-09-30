@@ -1,7 +1,5 @@
 # libcbus
 
-[![Build Status](https://secure.travis-ci.org/mitchell-johnson/cbus.png?branch=master)][travis]
-[![Coverage Status](https://coveralls.io/repos/github/mitchell-johnson/cbus/badge.svg)][coveralls]
 [![Documentation Status](https://readthedocs.org/projects/cbus/badge/?version=latest)][rtd]
 
 Talks to Clipsal C-Bus using Python 3.7+.
@@ -231,11 +229,9 @@ If logging doesn't appear to be working correctly:
 4. Check for any command line `--verbosity` arguments that might override the setting 
 
 
-## Recent updates (2020-02-22)
+## Recent updates (2024)
 
-This project has recently completed a migration to Python 3.7.
-
-Most things should work, but I'm still going through updating all the documentation properly.
+This project continues to be actively maintained with regular updates to dependencies and documentation.
 
 There are many backward-incompatible changes:
 
@@ -263,8 +259,6 @@ Many APIs have changed due to refactoring, and is subject to further change with
 most stable API is via MQTT (`cmqttd`).
 
 [rtd]: https://cbus.readthedocs.io/en/latest/
-[coveralls]: https://coveralls.io/github/mitchell-johnson/cbus
-[travis]: https://travis-ci.org/mitchell-johnson/cbus
 [5500PC]: https://www.clipsal.com/Trade/Products/ProductDetail?catno=5500PC
 [5500PCU]: https://www.clipsal.com/Trade/Products/ProductDetail?catno=5500PCU
 [5500CN]: https://updates.clipsal.com/ClipsalOnline/Files/Brochures/W0000348.pdf
