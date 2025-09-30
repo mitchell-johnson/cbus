@@ -25,6 +25,7 @@ setup(
 	author="Michael Farrell, Mitchell Johnson",
 	author_email="mitchell@johnson.fyi",
 	url="https://github.com/mitchell-johnson/cbus",
+	python_requires='>=3.7',
 	license="LGPL3+",
 	install_requires=deps,
 	tests_require=tests_require,
