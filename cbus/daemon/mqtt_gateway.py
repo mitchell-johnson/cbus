@@ -210,17 +210,41 @@ class MqttClient:
             return False
         try:
             group_addr, app_addr = get_topic_group_address(topic)
-        except ValueError:
-            logger.error("Invalid group address in topic %s", topic)
+        except ValueError as e:
+            logger.error("Invalid group address in topic %s: %s", topic, e)
             return False
         try:
             payload = json.loads(msg.payload)
         except json.JSONDecodeError as e:
-            logger.error("JSON parse error in %s", topic, exc_info=e)
+            logger.error("JSON parse error in %s: %s. Payload: %s", topic, e, msg.payload[:200])
             return False
-        light_on = payload['state'].upper() == 'ON'
-        brightness = max(0, min(255, int(payload.get('brightness', 255))))
-        transition = max(0, int(payload.get('transition', 0)))
+        except Exception as e:
+            logger.error("Unexpected error parsing message in %s: %s", topic, e)
+            return False
+
+        # Validate and extract payload fields with error handling
+        try:
+            if 'state' not in payload:
+                logger.error("Missing 'state' field in payload for topic %s", topic)
+                return False
+            light_on = payload['state'].upper() == 'ON'
+
+            # Validate and clamp brightness
+            brightness = payload.get('brightness', 255)
+            if not isinstance(brightness, (int, float)):
+                logger.warning("Invalid brightness type in %s, using 255", topic)
+                brightness = 255
+            brightness = max(0, min(255, int(brightness)))
+
+            # Validate and clamp transition
+            transition = payload.get('transition', 0)
+            if not isinstance(transition, (int, float)):
+                logger.warning("Invalid transition type in %s, using 0", topic)
+                transition = 0
+            transition = max(0, int(transition))
+        except (KeyError, ValueError, TypeError) as e:
+            logger.error("Error extracting fields from payload in %s: %s", topic, e)
+            return False
         logger.info("Command parsed: GA=%d, App=%s, state=%s, brightness=%d, transition=%d", group_addr, app_addr, 'ON' if light_on else 'OFF', brightness, transition)
         Periodic.throttler.enqueue(lambda: asyncio.create_task(self.switchLight(self._userdata, group_addr, app_addr, light_on, brightness, transition)))
         return True
