@@ -204,19 +204,25 @@ async def _main():
     finally:
         # Clean up resources to prevent memory leaks
         logger.info('Cleaning up resources...')
-        if 'transport' in locals() and 'transport' in vars() and transport is not None:
-            transport.close()
-        
+
+        # Close transport if protocol was created and has a transport
+        if 'protocol' in locals() and hasattr(protocol, '_transport') and protocol._transport is not None:
+            logger.info('Closing C-Bus transport')
+            protocol._transport.close()
+
         # Cancel all tasks
-        await throttler.cleanup()
-        
+        if 'throttler' in locals():
+            await throttler.cleanup()
+
         # Clean up event loops
         loop = asyncio.get_event_loop()
         tasks = [t for t in asyncio.all_tasks(loop) if t is not asyncio.current_task()]
-        for task in tasks:
-            task.cancel()
-        
-        await asyncio.gather(*tasks, return_exceptions=True)
+        if tasks:
+            logger.info('Cancelling %s remaining tasks', len(tasks))
+            for task in tasks:
+                task.cancel()
+
+            await asyncio.gather(*tasks, return_exceptions=True)
         logger.info('Cleanup complete')
 
 

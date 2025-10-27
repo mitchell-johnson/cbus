@@ -40,6 +40,18 @@ except ImportError:
 
 from cbus.common import (
     Application, CONFIRMATION_CODES, END_COMMAND, add_cbus_checksum)
+from cbus.constants import (
+    CONFIRMATION_TIMEOUT_SECONDS,
+    MAX_PACKET_RETRIES,
+    PACKET_RETRY_INTERVAL_SECONDS,
+    PENDING_CONFIRMATION_WARNING_THRESHOLD,
+    CONFIRMATION_CODE_FORCE_CLEANUP_THRESHOLD,
+    CONFIRMATION_CODE_FORCE_CLEANUP_PERCENTAGE,
+    PACKET_SEND_DELAY_SECONDS,
+    MAX_CONSECUTIVE_FAILURES,
+    MAX_PENDING_CONFIRMATIONS,
+    ERROR_RETRY_DELAY_SECONDS
+)
 from cbus.protocol.application.clock import (
     ClockSAL, ClockRequestSAL, ClockUpdateSAL, clock_update_sal)
 from cbus.protocol.application.lighting import (
@@ -91,13 +103,17 @@ class PCIProtocol(CBusProtocol):
         # Track which confirmation codes are in use along with their timestamp
         self._confirmation_codes_in_use = {}  # code -> timestamp
         self._confirmation_lock = Lock()
-        self._confirmation_timeout = 30.0  # 30 seconds timeout
+        self._confirmation_timeout = CONFIRMATION_TIMEOUT_SECONDS
         
         # Track pending packets waiting for confirmation
         self._pending_confirmations = {}  # code -> (packet_data, attempts, last_attempt_time)
-        self._max_retries = 3
-        self._retry_interval = 1.0  # 1 second retry interval
-        logger.info(f"PCIProtocol initialized with confirmation timeout of {self._confirmation_timeout} seconds, retry interval {self._retry_interval}s, max retries {self._max_retries}")
+        self._max_retries = MAX_PACKET_RETRIES
+        self._retry_interval = PACKET_RETRY_INTERVAL_SECONDS
+        logger.info(
+            "PCIProtocol initialized with confirmation timeout of %s seconds, "
+            "retry interval %ss, max retries %s",
+            self._confirmation_timeout, self._retry_interval, self._max_retries
+        )
 
     def connection_made(self, transport: WriteTransport) -> None:
         """
@@ -114,13 +130,13 @@ class PCIProtocol(CBusProtocol):
         
         create_task(self.pci_reset())
         if self._timesync_frequency:
-            logger.info(f"Starting time synchronization task with frequency {self._timesync_frequency} seconds")
+            logger.info("Starting time synchronization task with frequency %s seconds", self._timesync_frequency)
             create_task(self.timesync())
         # Start the packet retry task
         create_task(self._check_pending_confirmations())
 
     def connection_lost(self, exc: Optional[Exception]) -> None:
-        logger.warning(f"Connection to PCI lost: {exc}")
+        logger.warning("Connection to PCI lost: %s", exc)
         self._transport = None
         
         # Clean up resources to avoid memory leaks
@@ -207,24 +223,24 @@ class PCIProtocol(CBusProtocol):
         :param success: True if the command was successful, False otherwise.
         """
         code_int = ord(code)
-        logger.debug(f'Received confirmation: code={code_int} (0x{code_int:02X}), success={success}')
+        logger.debug("Received confirmation: code=%s (0x%02X), success=%s", code_int, code_int, success)
         
         # Remove from pending confirmations if present
         create_task(self._remove_from_pending_confirmations(code_int))
         
         # Mark the confirmation code as available again
         if code_int in CONFIRMATION_CODES:
-            logger.debug(f"Queueing release of confirmation code {code_int} (0x{code_int:02X})")
+            logger.debug("Queueing release of confirmation code %s (0x%02X)", code_int, code_int)
             create_task(self._release_confirmation_code(code_int))
         else:
-            logger.warning(f"Received unknown confirmation code: {code_int} (0x{code_int:02X})")
+            logger.warning("Received unknown confirmation code: %s (0x%02X)", code_int, code_int)
 
     async def _remove_from_pending_confirmations(self, code: int):
         """Remove a code from the pending confirmations dictionary"""
         async with self._confirmation_lock:
             if code in self._pending_confirmations:
                 del self._pending_confirmations[code]
-                logger.debug(f"Removed confirmation code {code} (0x{code:02X}) from pending confirmations")
+                logger.debug("Removed confirmation code %s (0x%02X) from pending confirmations", code, code)
 
     async def _release_confirmation_code(self, code: int):
         """Release a confirmation code back to the pool of available codes."""
@@ -234,14 +250,14 @@ class PCIProtocol(CBusProtocol):
                 del self._confirmation_codes_in_use[code]
                 used_count = len(self._confirmation_codes_in_use)
                 available_count = len(CONFIRMATION_CODES) - used_count
-                logger.info(f"Released confirmation code {code} (0x{code:02X}) after {acquisition_time:.2f}s. Used: {used_count}, Available: {available_count}")
+                logger.info("Released confirmation code %s (0x%02X) after %.2fs. Used: %s, Available: %s", code, code, acquisition_time, used_count, available_count)
                 
                 # Also remove from pending confirmations if present
                 if code in self._pending_confirmations:
                     del self._pending_confirmations[code]
-                    logger.debug(f"Removed confirmation code {code} (0x{code:02X}) from pending confirmations during release")
+                    logger.debug("Removed confirmation code %s (0x%02X) from pending confirmations during release", code, code)
             else:
-                logger.warning(f"Attempted to release confirmation code {code} (0x{code:02X}) that was not in use")
+                logger.warning("Attempted to release confirmation code %s (0x%02X) that was not in use", code, code)
 
     async def _check_and_release_timed_out_codes(self):
         """Check for confirmation codes that have timed out and release them."""
@@ -268,12 +284,14 @@ class PCIProtocol(CBusProtocol):
                 logger.info(f"Released {len(timed_out)} timed out confirmation codes")
                 
             # Safety check: If we still have too many codes in use, force cleanup the oldest ones
-            if len(self._confirmation_codes_in_use) > len(CONFIRMATION_CODES) * 0.9:  # If more than 90% of codes are in use
+            threshold = int(len(CONFIRMATION_CODES) * CONFIRMATION_CODE_FORCE_CLEANUP_THRESHOLD)
+            if len(self._confirmation_codes_in_use) > threshold:
                 logger.warning(f"Too many confirmation codes in use ({len(self._confirmation_codes_in_use)}), forcing cleanup of oldest codes")
                 # Sort by timestamp (oldest first)
                 codes_by_age = sorted(self._confirmation_codes_in_use.items(), key=lambda x: x[1])
                 # Force release the oldest 25% of codes
-                codes_to_force_release = codes_by_age[:max(1, len(codes_by_age) // 4)]
+                release_count = max(1, int(len(codes_by_age) * CONFIRMATION_CODE_FORCE_CLEANUP_PERCENTAGE))
+                codes_to_force_release = codes_by_age[:release_count]
                 
                 for code, timestamp in codes_to_force_release:
                     elapsed = current_time - timestamp
@@ -294,7 +312,7 @@ class PCIProtocol(CBusProtocol):
         
         # Track consecutive failures to detect system issues
         consecutive_failures = 0
-        max_consecutive_failures = 10
+        max_consecutive_failures = MAX_CONSECUTIVE_FAILURES
         
         while True:
             try:
@@ -311,7 +329,7 @@ class PCIProtocol(CBusProtocol):
                 async with self._confirmation_lock:
                     # Track how many pending confirmations we have
                     pending_count = len(self._pending_confirmations)
-                    if pending_count > 20:  # If we have too many pending confirmations
+                    if pending_count > PENDING_CONFIRMATION_WARNING_THRESHOLD:
                         logger.warning(f"High number of pending confirmations: {pending_count}")
                     
                     for code, (packet_data, attempts, last_attempt_time) in list(self._pending_confirmations.items()):
@@ -359,7 +377,7 @@ class PCIProtocol(CBusProtocol):
             except Exception as e:
                 logger.error(f"Error in packet retry task: {e}", exc_info=True)
                 # Continue the loop but with a short delay to avoid spamming logs
-                await sleep(1)
+                await sleep(ERROR_RETRY_DELAY_SECONDS)
         
         logger.info("Packet retry task ended")
 
@@ -689,7 +707,7 @@ class PCIProtocol(CBusProtocol):
             raise IOError('transport not connected')
         
         # add a short delay to ensure the command is sent because the CNI is super slow
-        await sleep(0.1)
+        await sleep(PACKET_SEND_DELAY_SECONDS)
         transport.write(prepared_data)
         logger.debug("Data sent to transport")
 
@@ -955,7 +973,7 @@ class PCIProtocol(CBusProtocol):
             except Exception as e:
                 logger.error(f"Error in time synchronization: {e}", exc_info=True)
                 # Sleep before retrying
-                await sleep(1)
+                await sleep(ERROR_RETRY_DELAY_SECONDS)
         logger.info("Time synchronization loop ended")
 
     # def recall(self, unit_addr, param_no, count):
