@@ -22,10 +22,10 @@ along with this library.  If not, see <http://www.gnu.org/licenses/>.
 from argparse import ArgumentParser, FileType
 import json
 import pydot
-from typing import BinaryIO, Text
+from typing import BinaryIO
 
 
-def generate_graph(in_f: BinaryIO, out_f: Text) -> None:
+def generate_graph(in_f: BinaryIO, out_f: str) -> None:
     """
     Generates a Graphviz DOT graph for the given network.
 
@@ -46,13 +46,12 @@ def generate_graph(in_f: BinaryIO, out_f: Text) -> None:
         loads = set()
 
         subgraph = pydot.Subgraph(f'Network_{network_id}')
-        # cluster = pydot.Cluster('Network %s' % network_id)
 
         for unit_id, unit in network['units'].items():
             node = pydot.Node(unit['name'])
             subgraph.add_node(node)
             node.groups = unit['groups']
-            [loads.add(x) for x in node.groups]
+            loads.update(node.groups)
             for x in unit['groups']:
                 if x == 255:
                     continue
@@ -63,7 +62,6 @@ def generate_graph(in_f: BinaryIO, out_f: Text) -> None:
 
             subgraph.add_node(node)
 
-        # cluster.add_subgraph(subgraph)
         graph.add_subgraph(subgraph)
 
     # Dot.write must be a file name to write to -- not a file-like

@@ -19,8 +19,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with this library.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from __future__ import absolute_import
-
 from argparse import ArgumentParser
 import json
 import sys
@@ -96,9 +94,6 @@ def main():
                     channels += [int(c[2:], 16) for c in
                                  parameter.value.split(' ')]
 
-                    # print channels
-                    # print(parameter.attrib['Name'], '=',
-                    #       parameter.attrib['Value'])
             no['units'][unit.address] = {
                 'name': unit.tag_name,
                 'address': unit.address,
@@ -114,7 +109,8 @@ def main():
     # dump structure as json.
     json.dump(o, of, indent=pretty)
     of.flush()
-    of.close()
+    if options.output is not None:
+        of.close()
 
 
 if __name__ == '__main__':

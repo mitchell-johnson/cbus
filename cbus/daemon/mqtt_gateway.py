@@ -10,10 +10,9 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-from typing import Any, Dict, Optional, Text, Union
+from typing import Dict, Optional, Union
 
 import contextlib
-import ssl
 
 from cbus.common import Application, MIN_GROUP_ADDR, MAX_GROUP_ADDR, check_ga
 from cbus.daemon.topics import (

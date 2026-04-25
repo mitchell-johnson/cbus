@@ -41,8 +41,10 @@ class TransportConfig:
 class CBusTransport(abc.ABC):
     """Abstract base class for C-Bus transport connections."""
 
-    def __init__(self, config: Optional[TransportConfig] = None):
+    def __init__(self, config: Optional[TransportConfig] = None, protocol_factory: Optional[Callable] = None):
         self._config = config or TransportConfig()
+        self._protocol_factory = protocol_factory
+        self._protocol = None
         self._state = TransportState.DISCONNECTED
         self._asyncio_transport: Optional[asyncio.Transport] = None
         self._reconnect_task: Optional[asyncio.Task] = None
@@ -62,6 +64,10 @@ class CBusTransport(abc.ABC):
     @property
     def config(self) -> TransportConfig:
         return self._config
+
+    @property
+    def protocol(self):
+        return self._protocol
 
     @property
     @abc.abstractmethod

@@ -7,9 +7,9 @@ any future tooling.
 """
 from __future__ import annotations
 
-from typing import Text, Union
+from typing import Union
 
-from cbus.common import Application, MIN_GROUP_ADDR, MAX_GROUP_ADDR, check_ga
+from cbus.common import Application
 
 # Topic fragments
 _BINSENSOR_TOPIC_PREFIX = 'homeassistant/binary_sensor/cbus_'
@@ -29,7 +29,7 @@ __all__ = [
 ]
 
 
-def ga_string(group_addr: int, app_addr: Union[int, Application], zeros: bool = True) -> Text:
+def ga_string(group_addr: int, app_addr: Union[int, Application], zeros: bool = True) -> str:
     """Return the textual representation of a C-Bus (application, group) pair.
 
     For the default lighting application (Application.LIGHTING == 0x38) we keep
@@ -44,24 +44,24 @@ def ga_string(group_addr: int, app_addr: Union[int, Application], zeros: bool = 
 
 # MQTT topic helpers ---------------------------------------------------------
 
-def set_topic(group_addr: int, app_addr: Union[int, Application]) -> Text:
+def set_topic(group_addr: int, app_addr: Union[int, Application]) -> str:
     """MQTT topic that receives commands for a (app, group)."""
     return _LIGHT_TOPIC_PREFIX + ga_string(group_addr, app_addr, False) + _TOPIC_SET_SUFFIX
 
 
-def state_topic(group_addr: int, app_addr: Union[int, Application]) -> Text:
+def state_topic(group_addr: int, app_addr: Union[int, Application]) -> str:
     """MQTT topic where we publish the current state for a (app, group)."""
     return _LIGHT_TOPIC_PREFIX + ga_string(group_addr, app_addr, False) + _TOPIC_STATE_SUFFIX
 
 
-def conf_topic(group_addr: int, app_addr: Union[int, Application]) -> Text:
+def conf_topic(group_addr: int, app_addr: Union[int, Application]) -> str:
     """MQTT discovery config topic for a (app, group)."""
     return _LIGHT_TOPIC_PREFIX + ga_string(group_addr, app_addr, False) + _TOPIC_CONF_SUFFIX
 
 
-def bin_sensor_state_topic(group_addr: int, app_addr: Union[int, Application]) -> Text:
+def bin_sensor_state_topic(group_addr: int, app_addr: Union[int, Application]) -> str:
     return _BINSENSOR_TOPIC_PREFIX + ga_string(group_addr, app_addr, False) + _TOPIC_STATE_SUFFIX
 
 
-def bin_sensor_conf_topic(group_addr: int, app_addr: Union[int, Application]) -> Text:
+def bin_sensor_conf_topic(group_addr: int, app_addr: Union[int, Application]) -> str:
     return _BINSENSOR_TOPIC_PREFIX + ga_string(group_addr, app_addr, False) + _TOPIC_CONF_SUFFIX 

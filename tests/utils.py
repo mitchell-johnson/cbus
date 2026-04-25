@@ -16,15 +16,32 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from __future__ import absolute_import
-
 from typing import Optional
 import unittest
+from unittest.mock import MagicMock
 
 from cbus.protocol.base_packet import BasePacket
 from cbus.protocol.pm_packet import PointToMultipointPacket
 from cbus.protocol.pp_packet import PointToPointPacket
 from cbus.protocol.packet import decode_packet
+
+
+class MockTransport(MagicMock):
+    """Shared mock transport for protocol tests."""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.written_data = []
+        self.is_closing_flag = False
+
+    def write(self, data):
+        self.written_data.append(data)
+        return len(data)
+
+    def close(self):
+        self.is_closing_flag = True
+
+    def is_closing(self):
+        return self.is_closing_flag
 
 
 class CBusTestCase(unittest.TestCase):

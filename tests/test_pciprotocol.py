@@ -18,7 +18,7 @@
 import unittest
 import asyncio
 import pytest
-from unittest.mock import Mock, patch, MagicMock, AsyncMock
+from unittest.mock import Mock, patch, AsyncMock
 from datetime import datetime
 from parameterized import parameterized
 
@@ -26,16 +26,7 @@ from cbus.protocol.pciprotocol import PCIProtocol
 from cbus.protocol.application.lighting import LightingOnSAL, LightingOffSAL
 from cbus.protocol.pm_packet import PointToMultipointPacket
 from cbus.common import Application
-
-
-class MockTransport(MagicMock):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.written_data = []
-
-    def write(self, data):
-        self.written_data.append(data)
-        return len(data)
+from .utils import MockTransport
 
 
 class TestPCIProtocol:

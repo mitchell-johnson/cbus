@@ -15,28 +15,21 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import
-
 from parameterized import parameterized
 import io
-from typing import Optional, Text, cast
+from typing import Optional, cast
 import unittest
 
 from cbus.common import Application, check_ga
-from cbus.daemon import cmqttd
 from cbus.daemon import topics
 from cbus.daemon.mqtt_gateway import ga_range, get_topic_group_address
-
-# Re-export for test compatibility after deduplication
-cmqttd.ga_range = ga_range
-cmqttd.get_topic_group_address = get_topic_group_address
 
 
 class CmqttdUtilityTest(unittest.TestCase):
 
     def test_ga_range(self):
         """Tests for ga_range()"""
-        valid_ga = list(cmqttd.ga_range())
+        valid_ga = list(ga_range())
 
         # Should be 256 valid GAs, and they should each appear once.
         self.assertEqual(256, len(valid_ga))
@@ -45,7 +38,7 @@ class CmqttdUtilityTest(unittest.TestCase):
         for ga in valid_ga:
             check_ga(ga)  # throws exception on error
 
-    @parameterized.expand([(ga,) for ga in cmqttd.ga_range()])
+    @parameterized.expand([(ga,) for ga in ga_range()])
     def test_valid_topic_group_address(self, ga):
         # name is also the expected group address number
         light_topic = f'homeassistant/light/cbus_{ga}'
@@ -54,22 +47,22 @@ class CmqttdUtilityTest(unittest.TestCase):
         bin_topic_len = len(bin_topic)
 
         # base topic path -> ga
-        self.assertEqual((ga,Application.LIGHTING), cmqttd.get_topic_group_address(light_topic))
+        self.assertEqual((ga,Application.LIGHTING), get_topic_group_address(light_topic))
 
         # Generating a set topic
         set_topic = topics.set_topic(ga,Application.LIGHTING)
         self.assertEqual(light_topic, set_topic[:light_topic_len])
-        self.assertEqual((ga,Application.LIGHTING), cmqttd.get_topic_group_address(set_topic))
+        self.assertEqual((ga,Application.LIGHTING), get_topic_group_address(set_topic))
 
         # Generating a state topic
         state_topic = topics.state_topic(ga,Application.LIGHTING)
         self.assertEqual(light_topic, state_topic[:light_topic_len])
-        self.assertEqual((ga,Application.LIGHTING), cmqttd.get_topic_group_address(state_topic))
+        self.assertEqual((ga,Application.LIGHTING), get_topic_group_address(state_topic))
 
         # Generating a conf topic
         conf_topic = topics.conf_topic(ga,Application.LIGHTING)
         self.assertEqual(light_topic, conf_topic[:light_topic_len])
-        self.assertEqual((ga,Application.LIGHTING), cmqttd.get_topic_group_address(conf_topic))
+        self.assertEqual((ga,Application.LIGHTING), get_topic_group_address(conf_topic))
 
         # Ensure all the topics are unique
         self.assertNotEqual(set_topic, state_topic)
@@ -94,4 +87,4 @@ class CmqttdUtilityTest(unittest.TestCase):
         'light/my_light',
     ])
     def test_invalid_topic_group_address(self, topic):
-        self.assertRaises(ValueError, cmqttd.get_topic_group_address, topic)
+        self.assertRaises(ValueError, get_topic_group_address, topic)

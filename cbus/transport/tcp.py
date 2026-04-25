@@ -32,10 +32,8 @@ class TCPTransport(CBusTransport):
     """TCP transport for C-Bus PCI connections."""
 
     def __init__(self, config: TCPTransportConfig, protocol_factory: Optional[Callable] = None):
-        super().__init__(config)
+        super().__init__(config, protocol_factory)
         self._tcp_config = config
-        self._protocol_factory = protocol_factory
-        self._protocol = None
 
     @property
     def transport_type(self) -> str:
@@ -48,10 +46,6 @@ class TCPTransport(CBusTransport):
             "host": self._tcp_config.host,
             "port": self._tcp_config.port,
         }
-
-    @property
-    def protocol(self):
-        return self._protocol
 
     async def _do_connect(self) -> Any:
         loop = asyncio.get_running_loop()

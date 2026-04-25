@@ -15,17 +15,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import
-from __future__ import print_function
-
 from asyncio import (CancelledError, Future, Lock, create_task,
                      get_running_loop, run, sleep)
 from asyncio.transports import WriteTransport
 from datetime import datetime
 import logging
-from typing import Iterable, Optional, Text, Union, Dict, Tuple, Any
+from typing import Iterable, Optional, Union
 
-from six import int2byte
 
 from cbus.protocol.cal.report import BinaryStatusReport, LevelStatusReport
 
@@ -65,7 +61,6 @@ from cbus.protocol.cbus_protocol import CBusProtocol
 from cbus.protocol.confirm_packet import ConfirmationPacket
 from cbus.protocol.dm_packet import DeviceManagementPacket
 from cbus.protocol.error_packet import PCIErrorPacket
-# from cbus.protocol.po_packet import PowerOnPacket
 from cbus.protocol.pm_packet import PointToMultipointPacket
 from cbus.protocol.pp_packet import PointToPointPacket
 from cbus.protocol.reset_packet import ResetPacket
@@ -90,7 +85,7 @@ class PCIProtocol(CBusProtocol):
             timesync_frequency: int = 10,
             handle_clock_requests: bool = True,
             connection_lost_future: Optional[Future] = None):
-        super(PCIProtocol, self).__init__(emulate_pci=False)
+        super().__init__(emulate_pci=False)
 
         self._transport = None  # type: Optional[WriteTransport]
         self._next_confirmation_index = 0
@@ -238,8 +233,7 @@ class PCIProtocol(CBusProtocol):
     async def _remove_from_pending_confirmations(self, code: int):
         """Remove a code from the pending confirmations dictionary"""
         async with self._confirmation_lock:
-            if code in self._pending_confirmations:
-                del self._pending_confirmations[code]
+            if self._pending_confirmations.pop(code, None) is not None:
                 logger.debug("Removed confirmation code %s (0x%02X) from pending confirmations", code, code)
 
     async def _release_confirmation_code(self, code: int):
@@ -253,8 +247,7 @@ class PCIProtocol(CBusProtocol):
                 logger.info("Released confirmation code %s (0x%02X) after %.2fs. Used: %s, Available: %s", code, code, acquisition_time, used_count, available_count)
                 
                 # Also remove from pending confirmations if present
-                if code in self._pending_confirmations:
-                    del self._pending_confirmations[code]
+                if self._pending_confirmations.pop(code, None) is not None:
                     logger.debug("Removed confirmation code %s (0x%02X) from pending confirmations during release", code, code)
             else:
                 logger.warning("Attempted to release confirmation code %s (0x%02X) that was not in use", code, code)
@@ -276,10 +269,9 @@ class PCIProtocol(CBusProtocol):
                 logger.warning(f"Confirmation code {code} (0x{code:02X}) timed out after {elapsed:.2f}s (limit: {self._confirmation_timeout}s). Used: {used_count}, Available: {available_count}")
                 
                 # Also remove from pending confirmations if present
-                if code in self._pending_confirmations:
-                    del self._pending_confirmations[code]
+                if self._pending_confirmations.pop(code, None) is not None:
                     logger.debug(f"Removed confirmation code {code} (0x{code:02X}) from pending confirmations during timeout")
-            
+
             if timed_out:
                 logger.info(f"Released {len(timed_out)} timed out confirmation codes")
                 
@@ -299,8 +291,7 @@ class PCIProtocol(CBusProtocol):
                     logger.warning(f"Force released confirmation code {code} (0x{code:02X}) after {elapsed:.2f}s due to high usage")
                     
                     # Also remove from pending confirmations if present
-                    if code in self._pending_confirmations:
-                        del self._pending_confirmations[code]
+                    if self._pending_confirmations.pop(code, None) is not None:
                         logger.debug(f"Removed confirmation code {code} (0x{code:02X}) from pending confirmations during force cleanup")
 
     async def _check_pending_confirmations(self):
@@ -345,8 +336,7 @@ class PCIProtocol(CBusProtocol):
                 for code in to_abandon:
                     logger.warning(f"Giving up on confirmation code {code} (0x{code:02X}) after {self._max_retries} attempts")
                     async with self._confirmation_lock:
-                        if code in self._pending_confirmations:
-                            del self._pending_confirmations[code]
+                        self._pending_confirmations.pop(code, None)
                     await self._release_confirmation_code(code)
                     
                     # Count consecutive failures
@@ -476,7 +466,7 @@ class PCIProtocol(CBusProtocol):
             f'recv: terminate ramp: from {source_addr} to {group_addr}, application {application_address}')
 
     def on_lighting_label_text(self, source_addr: int, group_addr: int,
-                               flavour: int, language_code: int, label: Text):
+                               flavour: int, language_code: int, label: str):
         """
         Event called when a group address' label text is updated.
 
@@ -594,7 +584,7 @@ class PCIProtocol(CBusProtocol):
                     used_count = len(self._confirmation_codes_in_use)
                     available_count = len(CONFIRMATION_CODES) - used_count
                     logger.info(f"Allocated confirmation code {code} (0x{code:02X}). Used: {used_count}, Available: {available_count}")
-                    return int2byte(code)
+                    return bytes([code])
         
         # If we get here, all codes are in use - force release the oldest code
         logger.warning("All confirmation codes are in use, releasing oldest code")
@@ -607,8 +597,7 @@ class PCIProtocol(CBusProtocol):
                 
                 # Release the oldest code
                 del self._confirmation_codes_in_use[oldest_code]
-                if oldest_code in self._pending_confirmations:
-                    del self._pending_confirmations[oldest_code] 
+                self._pending_confirmations.pop(oldest_code, None)
                 
                 logger.warning(f"Force released oldest confirmation code {oldest_code} (0x{oldest_code:02X}) after {elapsed:.2f}s")
                 
@@ -625,7 +614,7 @@ class PCIProtocol(CBusProtocol):
                         used_count = len(self._confirmation_codes_in_use)
                         available_count = len(CONFIRMATION_CODES) - used_count
                         logger.info(f"Allocated confirmation code {code} (0x{code:02X}) after releasing oldest. Used: {used_count}, Available: {available_count}")
-                        return int2byte(code)
+                        return bytes([code])
                 
                 # If we couldn't find a different code, use the same one we just released
                 code = oldest_code
@@ -633,7 +622,7 @@ class PCIProtocol(CBusProtocol):
                 used_count = len(self._confirmation_codes_in_use)
                 available_count = len(CONFIRMATION_CODES) - used_count
                 logger.info(f"Re-allocated same confirmation code {code} (0x{code:02X}). Used: {used_count}, Available: {available_count}")
-                return int2byte(code)
+                return bytes([code])
             else:
                 # This should never happen, but just in case
                 logger.error("No confirmation codes in use but couldn't find an available code!")
@@ -641,7 +630,7 @@ class PCIProtocol(CBusProtocol):
                 code = CONFIRMATION_CODES[0]
                 self._confirmation_codes_in_use[code] = datetime.now().timestamp()
                 logger.info(f"Allocated emergency confirmation code {code} (0x{code:02X})")
-                return int2byte(code)
+                return bytes([code])
 
     async def _prepare_packet(self,
                   cmd: BasePacket,
@@ -819,6 +808,18 @@ class PCIProtocol(CBusProtocol):
             unit_address=unit_address, cals=[IdentifyCAL(attribute)])
         return await self._send(p)
 
+    @staticmethod
+    def _normalize_group_addrs(group_addr: Union[int, Iterable[int]]) -> list:
+        """Validate and normalize group_addr to a list of ints (max 9)."""
+        if not isinstance(group_addr, Iterable):
+            group_addr = [group_addr]
+        group_addr = [int(g) for g in group_addr]
+        group_addr_count = len(group_addr)
+        if group_addr_count > 9:
+            raise ValueError(
+                f'group_addr iterable length is > 9 ({group_addr_count})')
+        return group_addr
+
     async def lighting_group_on(self, group_addr: Union[int, Iterable[int]],application_addr: Union[int,Application] ):
         """
         Turns on the lights for the given group_id.
@@ -830,16 +831,7 @@ class PCIProtocol(CBusProtocol):
         :rtype: string
 
         """
-        if not isinstance(group_addr, Iterable):
-            group_addr = [group_addr]
-
-        group_addr = [int(g) for g in group_addr]
-        group_addr_count = len(group_addr)
-
-        if group_addr_count > 9:
-            # maximum 9 group addresses per packet
-            raise ValueError(
-                f'group_addr iterable length is > 9 ({group_addr_count})')
+        group_addr = self._normalize_group_addrs(group_addr)
 
         p = PointToMultipointPacket(
             sals=[LightingOnSAL(ga,application_addr) for ga in group_addr])
@@ -864,16 +856,7 @@ class PCIProtocol(CBusProtocol):
         :rtype: string
 
         """
-        if not isinstance(group_addr, Iterable):
-            group_addr = [group_addr]
-
-        group_addr = [int(g) for g in group_addr]
-        group_addr_count = len(group_addr)
-
-        if group_addr_count > 9:
-            # maximum 9 group addresses per packet
-            raise ValueError(
-                f'group_addr iterable length is > 9 ({group_addr_count})')
+        group_addr = self._normalize_group_addrs(group_addr)
 
         p = PointToMultipointPacket(
             sals=[LightingOffSAL(ga,application_addr) for ga in group_addr])
@@ -917,16 +900,7 @@ class PCIProtocol(CBusProtocol):
         :rtype: string
         """
 
-        if not isinstance(group_addr, Iterable):
-            group_addr = [group_addr]
-
-        group_addr = [int(g) for g in group_addr]
-        group_addr_count = len(group_addr)
-
-        if group_addr_count > 9:
-            # maximum 9 group addresses per packet
-            raise ValueError(
-                f'group_addr iterable length is > 9 ({group_addr_count})')
+        group_addr = self._normalize_group_addrs(group_addr)
 
         p = PointToMultipointPacket(
             sals=[LightingTerminateRampSAL(ga,application_addr) for ga in group_addr])
@@ -962,11 +936,6 @@ class PCIProtocol(CBusProtocol):
                 await self.clock_datetime()
                 logger.debug(f"Time synchronization packet #{sync_count} sent, sleeping for {frequency}s")
                 await sleep(frequency)
-                # self._send(PointToMultipointPacket(sals=StatusRequestSAL(
-                #     child_application=Application.LIGHTING,
-                #     level_request=True,
-                #     group_address=0,
-                # )))
             except CancelledError:
                 logger.info("Time synchronization task cancelled")
                 break
@@ -975,16 +944,6 @@ class PCIProtocol(CBusProtocol):
                 # Sleep before retrying
                 await sleep(ERROR_RETRY_DELAY_SECONDS)
         logger.info("Time synchronization loop ended")
-
-    # def recall(self, unit_addr, param_no, count):
-    #    return self._send('%s%02X%s%s%02X%02X' % (
-    #        POINT_TO_46, unit_addr, ROUTING_NONE, RECALL, param_no, count
-    #    ))
-
-    # def identify(self, unit_addr, attribute):
-    #    return self._send('%s%02X%s%s%02X' % (
-    #        POINT_TO_46, unit_addr, ROUTING_NONE, RECALL, attribute
-    #    ))
 
 
 async def main():

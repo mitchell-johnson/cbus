@@ -9,8 +9,7 @@ intercepting and logging all communications with detailed packet analysis.
 import asyncio
 import logging
 from datetime import datetime
-from typing import Optional, Tuple, Dict, Any, Set
-import socket
+from typing import Optional, Tuple, Dict, Any
 from asyncio import StreamReader, StreamWriter
 import argparse
 import sys
@@ -35,8 +34,7 @@ from cbus.protocol.application.status_request import StatusRequestSAL
 from cbus.protocol.cal.report import BinaryStatusReport, LevelStatusReport
 from cbus.protocol.cal.extended import ExtendedCAL
 from cbus.common import (
-    Application, CONFIRMATION_CODES, HEX_CHARS, 
-    LightCommand, ramp_rate_to_duration,
+    Application, CONFIRMATION_CODES, HEX_CHARS,
     END_COMMAND, END_RESPONSE
 )
 from cbus.protocol.scs_packet import SmartConnectShortcutPacket
@@ -101,30 +99,6 @@ class PacketAnalyzer:
             0xFF: "Status Request"   # Application.STATUS_REQUEST
         }
         return app_names.get(app_id, f"Unknown App {app_id:02X}")
-    
-    def get_light_command_name(self, cmd: int) -> str:
-        """Get human-readable lighting command name"""
-        if cmd == LightCommand.ON:
-            return "ON"
-        elif cmd == LightCommand.OFF:
-            return "OFF"
-        elif cmd == LightCommand.TERMINATE_RAMP:
-            return "TERMINATE RAMP"
-        elif LightCommand.RAMP_INSTANT <= cmd <= LightCommand.RAMP_FASTEST:
-            return "RAMP INSTANT"
-        elif LightCommand.RAMP_00_04 <= cmd <= LightCommand.RAMP_SLOWEST:
-            try:
-                duration = ramp_rate_to_duration(cmd)
-                minutes = duration // 60
-                seconds = duration % 60
-                if minutes > 0:
-                    return f"RAMP {minutes}m{seconds:02d}s"
-                else:
-                    return f"RAMP {seconds}s"
-            except:
-                return f"RAMP (cmd: {cmd:02X})"
-        else:
-            return f"Unknown ({cmd:02X})"
     
     def analyze_packet(self, raw_data: bytes, direction: Direction, client_info: Optional[ClientInfo] = None) -> str:
         """Analyze a packet and return detailed explanation"""
@@ -669,7 +643,7 @@ class CBusProxy:
                 try:
                     client_info.writer.close()
                     await client_info.writer.wait_closed()
-                except:
+                except Exception:
                     pass
             self.clients.clear()
         

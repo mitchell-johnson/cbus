@@ -295,22 +295,27 @@ class TestPacketDecodingNegative:
 
     def test_single_byte(self):
         p, r = decode_packet(b'\x00', checksum=False, from_pci=True)
-        # Should either return None or consume 0 bytes
+        assert p is None or isinstance(p, BasePacket)
 
     def test_only_cr_lf(self):
         p, r = decode_packet(b'\r\n', checksum=False, from_pci=True)
+        assert p is None or isinstance(p, BasePacket)
 
     def test_garbage_data(self):
         p, r = decode_packet(b'\xFF\xFE\xFD\xFC\r\n', checksum=False, from_pci=True)
+        assert p is None or isinstance(p, BasePacket)
 
     def test_very_long_data(self):
         p, r = decode_packet(b'A' * 1000 + b'\r\n', checksum=False, from_pci=True)
+        assert p is None or isinstance(p, BasePacket)
 
     def test_null_bytes(self):
         p, r = decode_packet(b'\x00' * 50 + b'\r\n', checksum=False, from_pci=True)
+        assert p is None or isinstance(p, BasePacket)
 
     def test_only_hex_chars_no_structure(self):
         p, r = decode_packet(b'0123456789ABCDEF\r\n', checksum=False, from_pci=True)
+        assert p is None or isinstance(p, BasePacket)
 
 
 # ============================================================

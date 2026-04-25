@@ -15,11 +15,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import
 from __future__ import annotations
 
-from six import byte2int, indexbytes
-from six.moves import range
+
 from typing import Iterator, Optional, Sequence, Tuple
 
 from cbus.common import (
@@ -39,7 +37,7 @@ class PointToPointPacket(BasePacket, Sequence[AnyCAL]):
             unit_address: int = 0, bridge_address: int = 0,
             hops: Optional[Sequence[int]] = None,
             cals: Optional[Sequence[AnyCAL]] = None):
-        super(PointToPointPacket, self).__init__(
+        super().__init__(
             checksum=checksum,
             destination_address_type=DestinationAddressType.POINT_TO_POINT,
             priority_class=priority_class)
@@ -58,7 +56,7 @@ class PointToPointPacket(BasePacket, Sequence[AnyCAL]):
                                  'bridge_address!')
 
         self.unit_address = unit_address
-        self._cals = list(cals) or []
+        self._cals = list(cals) if cals else []
 
     def __len__(self) -> int:
         """Returns the number of CALs associated with this packet."""
@@ -83,7 +81,7 @@ class PointToPointPacket(BasePacket, Sequence[AnyCAL]):
     @classmethod
     def decode_cal(cls, data: bytes) -> Tuple[AnyCAL, int]:
         # find the cal
-        cmd = byte2int(data)
+        cmd = data[0]
         if cmd & 0xE0 == CAL.REPLY:  # flick off the lower bits
             # REPLY
             cal_end = (cmd & 0x1F) + 1
@@ -119,24 +117,24 @@ class PointToPointPacket(BasePacket, Sequence[AnyCAL]):
 
         # now decode the unit address or bridge address
         params = {}
-        if indexbytes(data, 1) == 0x00:
+        if data[1] == 0x00:
             # this is a unit address
-            unit_address = byte2int(data)
+            unit_address = data[0]
             data = data[2:]
         else:
-            params['bridge_address'] = byte2int(data)
+            params['bridge_address'] = data[0]
 
-            bridge_length = BRIDGE_LENGTHS[indexbytes(data, 1)]
+            bridge_length = BRIDGE_LENGTHS[data[1]]
 
             data = data[2:]
             params['hops'] = hops = []
 
             for x in range(bridge_length):
                 # get all the hops
-                hops.append(byte2int(data))
+                hops.append(data[0])
                 data = data[1:]
 
-            unit_address = byte2int(data)
+            unit_address = data[0]
 
             data = data[1:]
 

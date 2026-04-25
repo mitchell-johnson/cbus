@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 CBUS_MDNS_SERVICE_TYPE = "_cbus._tcp.local."
 
 try:
-    from zeroconf import Zeroconf, ServiceBrowser, ServiceInfo
+    from zeroconf import ServiceStateChange
     from zeroconf.asyncio import AsyncZeroconf, AsyncServiceBrowser
     _ZEROCONF_AVAILABLE = True
 except ImportError:
@@ -68,7 +68,7 @@ class ESP32Discovery:
         return list(self._devices)
 
     def _on_service_state_change(self, zeroconf, service_type, name, state_change):
-        if str(state_change) == "ServiceStateChange.Added":
+        if state_change == ServiceStateChange.Added:
             info = zeroconf.get_service_info(service_type, name)
             if info:
                 addresses = info.parsed_addresses()

@@ -70,7 +70,7 @@ class BasePacket(abc.ABC):
 
 class _SpecialPacket(BasePacket, abc.ABC):
     def __init__(self):
-        super(_SpecialPacket, self).__init__(
+        super().__init__(
             checksum=False)
 
     @abc.abstractmethod

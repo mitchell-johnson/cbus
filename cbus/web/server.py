@@ -7,11 +7,9 @@ Provides a browser-based UI for:
 - Monitoring and controlling lighting groups
 - Viewing command logs
 """
-import asyncio
 import json
 import logging
-import os
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 from aiohttp import web
 

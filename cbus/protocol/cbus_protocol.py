@@ -50,7 +50,7 @@ class CBusProtocol(BufferedProtocol, abc.ABC):
             communicating _with_ a PCI; incoming data will be parsed as if it
             were sent by a PCI. Checksums are required by default.
         """
-        super(CBusProtocol, self).__init__(size_limit=MAX_BUFFER_SIZE)
+        super().__init__(size_limit=MAX_BUFFER_SIZE)
         self.emulate_pci = bool(emulate_pci)  # type: bool
         self.checksum = not self.emulate_pci  # type: bool
 

@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import
 from __future__ import annotations
 
 import abc
@@ -38,10 +37,7 @@ __all__ = [
 
 # Put the main lighting application first in the set.
 _SUPPORTED_APPLICATIONS = frozenset(
-    {int(Application.LIGHTING)} |
-    {int(x) for x in range(Application.LIGHTING_FIRST,
-                           Application.LIGHTING_LAST + 1)
-     if x != Application.LIGHTING})
+    int(x) for x in range(Application.LIGHTING_FIRST, Application.LIGHTING_LAST + 1))
 
 
 class LightingSAL(SAL, abc.ABC):

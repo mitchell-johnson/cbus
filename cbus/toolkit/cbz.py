@@ -18,36 +18,29 @@ You should have received a copy of the GNU Lesser General Public License
 along with this library.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from __future__ import absolute_import
-
 import dataclasses
 from datetime import datetime
-from typing import Any, BinaryIO, Sequence, Text, Type, TypeVar
+from typing import Any, BinaryIO, Sequence, Type, TypeVar
 from uuid import UUID
 from xml.etree import ElementTree
 from zipfile import BadZipFile, ZipFile
 
 
 BaseCBZElementType = TypeVar('BaseCBZElementType', bound='BaseCBZElement')
-C_co = TypeVar('C_co', covariant=True)  # pytype: disable=not-supported-yet
-T = TypeVar('T')
 
 
 def _new(typ: type) -> Any:
-    if typ == type(None):
-        return None
-    # TODO: implement better
-    if repr(typ).startswith('typing.Sequence'):
-        return list()
-
-    # default to None
+    import typing
+    origin = typing.get_origin(typ)
+    if origin is not None:
+        return []
     return None
 
 
 @dataclasses.dataclass
 class _Element:
     @staticmethod
-    def _normalise_name(name: Text):
+    def _normalise_name(name: str):
         return name.lower().replace('_', '').rstrip('s')
 
     @classmethod
@@ -76,10 +69,7 @@ class _Element:
             params[field.name] = field.type(value)
 
         # Read all children
-        for i in range(len(element)):
-            # Use __getitem__ because we want to only go one level,
-            # and exclude self.
-            child = element[i]
+        for child in element:
             key = cls._normalise_name(child.tag)
 
             try:
@@ -114,8 +104,8 @@ class _Element:
 
 @dataclasses.dataclass
 class PP(_Element):
-    name: Text
-    value: Text
+    name: str
+    value: str
 
 
 @dataclasses.dataclass
@@ -125,24 +115,24 @@ class BaseCBZElement(_Element):
 
 @dataclasses.dataclass
 class BaseNetworkElement(BaseCBZElement):
-    tag_name: Text
+    tag_name: str
     address: int
-    description: Text
+    description: str
 
 
 @dataclasses.dataclass
 class Interface(BaseCBZElement):
-    interface_type: Text
-    interface_address: Text
+    interface_type: str
+    interface_address: str
 
 
 @dataclasses.dataclass
 class Unit(BaseNetworkElement):
-    unit_type: Text
-    unit_name: Text
-    serial_number: Text
-    firmware_version: Text
-    catalog_number: Text
+    unit_type: str
+    unit_name: str
+    serial_number: str
+    firmware_version: str
+    catalog_number: str
     pp: Sequence[PP]
 
 
@@ -171,32 +161,32 @@ class Network(BaseNetworkElement):
 
 @dataclasses.dataclass
 class Project(BaseCBZElement):
-    tag_name: Text
-    address: Text
-    description: Text
+    tag_name: str
+    address: str
+    description: str
     network: Sequence[Network]
 
 
 @dataclasses.dataclass
 class Installer(BaseCBZElement):
-    name: Text
+    name: str
 
 
 @dataclasses.dataclass
 class InstallationDetail(BaseCBZElement):
-    system_location: Text
-    hardware_platform: Text
-    hostname: Text
-    os_name: Text
-    os_version: Text
-    hardware_location: Text
+    system_location: str
+    hardware_platform: str
+    hostname: str
+    os_name: str
+    os_version: str
+    hardware_location: str
     installer: Installer
 
 
 @dataclasses.dataclass
 class Installation(BaseCBZElement):
-    db_version: Text
-    version: Text
+    db_version: str
+    version: str
     modified: datetime
     installation_detail: InstallationDetail
     project: Project

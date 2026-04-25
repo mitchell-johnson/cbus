@@ -15,15 +15,12 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import
-from __future__ import print_function
-
 import argparse
 import requests
 import os
 
-from six.moves.html_parser import HTMLParser
-from six.moves.urllib.parse import urlparse, urljoin, urlunparse, unquote
+from html.parser import HTMLParser
+from urllib.parse import urlparse, urljoin, urlunparse, unquote
 
 DOCUMENTATION_INDEX = ('https://updates.clipsal.com/ClipsalSoftwareDownload'
                        '/DL/downloads/OpenCBus/OpenCBusProtocolDownloads.html')
@@ -33,7 +30,9 @@ TERMS_URL = ('https://updates.clipsal.com/ClipsalSoftwareDownload/DL/downloads'
 
 
 class DocumentationParser(HTMLParser):
-    links = []
+    def __init__(self):
+        super().__init__()
+        self.links = []
 
     def handle_starttag(self, tag, attrs):
         if tag.lower() == 'a':
@@ -80,9 +79,8 @@ def download_file(link, destination, i=0, total_links=0):
         print('Downloading `{}` <{}>...'.format(short_fname, uri))
 
     document = requests.get(uri).content
-    fh = open(fname, 'wb')
-    fh.write(document)
-    fh.close()
+    with open(fname, 'wb') as fh:
+        fh.write(document)
 
 
 def download_docs(destination):

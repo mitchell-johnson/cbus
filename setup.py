@@ -8,7 +8,6 @@ deps = [
 	'pyserial==3.5',
 	'pyserial-asyncio==0.6',
 	'lxml>=2.3.2',
-	'six',
 	'pydot',
 	'aiomqtt>=1.0.0',
 ]

@@ -6,6 +6,7 @@ group state. Designed for use in integration tests without real hardware.
 """
 import asyncio
 import logging
+from collections import deque
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
@@ -58,7 +59,7 @@ class ESP32Emulator:
         self._server: Optional[asyncio.AbstractServer] = None
         self._clients: List[asyncio.StreamWriter] = []
         self._actual_port: int = 0
-        self._command_log: List[Dict[str, Any]] = []
+        self._command_log: deque = deque(maxlen=10000)
 
     @property
     def is_running(self) -> bool:
@@ -181,8 +182,6 @@ class ESP32Emulator:
 
             log_entry: Dict[str, Any] = {"raw": cmd_bytes, "type": "unknown"}
             self._command_log.append(log_entry)
-            if len(self._command_log) > 10000:
-                self._command_log = self._command_log[-5000:]
 
             # Add response delay
             if self._config.response_delay_ms > 0:
@@ -230,34 +229,33 @@ class ESP32Emulator:
 
                     # Point-to-Multipoint lighting command
                     if dest_type == 0x05 and app_id == 0x38:
-                        if len(packet_bytes) >= 4:
-                            routing = packet_bytes[2]
-                            cmd_type = packet_bytes[3]
-                            group_addr = (
-                                packet_bytes[4] if len(packet_bytes) > 4 else 0
-                            )
+                        routing = packet_bytes[2]
+                        cmd_type = packet_bytes[3]
+                        group_addr = (
+                            packet_bytes[4] if len(packet_bytes) > 4 else 0
+                        )
 
-                            if cmd_type == 0x79:  # ON
-                                self.set_group_level(group_addr, 255)
-                                log_entry["type"] = "lighting_on"
-                                log_entry["group"] = group_addr
-                            elif cmd_type == 0x01:  # OFF
-                                self.set_group_level(group_addr, 0)
-                                log_entry["type"] = "lighting_off"
-                                log_entry["group"] = group_addr
-                            elif cmd_type == 0x09:  # TERMINATE_RAMP
-                                log_entry["type"] = "lighting_terminate_ramp"
-                                log_entry["group"] = group_addr
-                            elif 0x02 <= cmd_type <= 0x7A:  # RAMP
-                                level = (
-                                    packet_bytes[5]
-                                    if len(packet_bytes) > 5
-                                    else 255
-                                )
-                                self.set_group_level(group_addr, level)
-                                log_entry["type"] = "lighting_ramp"
-                                log_entry["group"] = group_addr
-                                log_entry["level"] = level
+                        if cmd_type == 0x79:  # ON
+                            self.set_group_level(group_addr, 255)
+                            log_entry["type"] = "lighting_on"
+                            log_entry["group"] = group_addr
+                        elif cmd_type == 0x01:  # OFF
+                            self.set_group_level(group_addr, 0)
+                            log_entry["type"] = "lighting_off"
+                            log_entry["group"] = group_addr
+                        elif cmd_type == 0x09:  # TERMINATE_RAMP
+                            log_entry["type"] = "lighting_terminate_ramp"
+                            log_entry["group"] = group_addr
+                        elif 0x02 <= cmd_type <= 0x7A:  # RAMP
+                            level = (
+                                packet_bytes[5]
+                                if len(packet_bytes) > 5
+                                else 255
+                            )
+                            self.set_group_level(group_addr, level)
+                            log_entry["type"] = "lighting_ramp"
+                            log_entry["group"] = group_addr
+                            log_entry["level"] = level
 
                     # Status request
                     elif dest_type == 0x05 and app_id == 0xFF:
@@ -283,15 +281,12 @@ class ESP32Emulator:
         self, writer: asyncio.StreamWriter, app_id: int, block_start: int
     ):
         """Send level status report for a block of 32 groups."""
-        levels = []
-        for i in range(32):
-            gid = block_start + i
-            if gid < len(self._groups):
-                levels.append(self._groups[gid].level)
-            else:
-                levels.append(0)
+        levels = [
+            self._groups[gid].level if gid < len(self._groups) else 0
+            for gid in range(block_start, block_start + 32)
+        ]
 
-        level_hex = "".join(f"{l:02X}" for l in levels)
+        level_hex = "".join(f"{lvl:02X}" for lvl in levels)
         response_hex = f"86FFFF00{app_id:02X}E0{block_start:02X}{level_hex}"
         response = response_hex.encode("ascii") + b"\r\n"
         writer.write(response)

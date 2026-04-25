@@ -1,6 +1,5 @@
 pyserial==3.5
 pyserial_asyncio==0.6
-six
 
 # official protocol documentation downloading
 requests

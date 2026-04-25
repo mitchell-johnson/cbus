@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
-from __future__ import absolute_import
 from __future__ import annotations
 
 from typing import Iterator, Optional, Sequence, Union
@@ -38,7 +37,7 @@ class PointToMultipointPacket(BasePacket, Sequence[SAL]):
             priority_class: PriorityClass = PriorityClass.CLASS_4,
             application: Optional[Application] = None,
             sals: Optional[Union[SAL, Sequence[SAL]]] = None):
-        super(PointToMultipointPacket, self).__init__(
+        super().__init__(
             checksum=checksum,
             destination_address_type=DestinationAddressType
             .POINT_TO_MULTIPOINT,

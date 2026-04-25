@@ -18,9 +18,8 @@
 # Import the full asyncio module instead of just specific functions
 import asyncio
 from argparse import FileType
-import json
 import logging
-from typing import Any, BinaryIO, Dict, Optional, Text, TextIO, List, Tuple, Union
+from typing import List, Union
 
 import sys
 import ssl
@@ -33,29 +32,14 @@ if sys.platform == 'win32':
 # CLI helper
 from cbus.daemon.cli import parse_cli_args
 
-from cbus.protocol import application
 from cbus.logging_config import configure_logging
 
-# Topic helpers centralised in topics.py
-from cbus.daemon.topics import (
-    _BINSENSOR_TOPIC_PREFIX, _LIGHT_TOPIC_PREFIX, _TOPIC_SET_SUFFIX,
-    _TOPIC_CONF_SUFFIX, _TOPIC_STATE_SUFFIX, _APPLICATION_GROUP_SEPARATOR,
-    ga_string, set_topic, state_topic, conf_topic,
-    bin_sensor_state_topic, bin_sensor_conf_topic,
-)
-from cbus.common import MIN_GROUP_ADDR, MAX_GROUP_ADDR, check_ga, Application
-from cbus.protocol.pciprotocol import PCIProtocol
-from cbus.toolkit.cbz import CBZ
 from cbus.toolkit.periodic import Periodic
-from cbus.protocol.application import LightingApplication
-from cbus.protocol.cal.report import LevelStatusReport,BinaryStatusReport
 
 # using new MQTT gateway classes
 from cbus.daemon.mqtt_gateway import CBusHandler, MqttClient
 
 # Logging will be configured later in _main after CLI options are parsed
-
-_META_TOPIC = 'homeassistant/binary_sensor/cbus_cmqttd'
 
 logger = logging.getLogger(__name__)
 
@@ -96,9 +80,9 @@ def read_cbz_labels(project_fh: FileType, cbus_network_name: Union[str, List[str
 
     # Build structure expected by mqtt_gateway.publish_all_lights
     labels: dict[int, tuple[str, dict[int, str]]] = {}
-    for application in chosen_network.applications:
-        group_labels: dict[int, str] = {group.address: group.tag_name for group in application.groups}
-        labels[application.address] = (application.tag_name, group_labels)
+    for app_def in chosen_network.applications:
+        group_labels: dict[int, str] = {group.address: group.tag_name for group in app_def.groups}
+        labels[app_def.address] = (app_def.tag_name, group_labels)
 
     return labels
 
@@ -155,6 +139,7 @@ async def _main():
             )
 
         esp32_conn = None  # track for cleanup
+        protocol = None
 
         if option.tcp:
             # Legacy TCP connection to CNI/PCI
@@ -162,6 +147,13 @@ async def _main():
             _, protocol = await loop.create_connection(factory, addr_host, int(addr_port))
         elif option.esp32_wifi or option.esp32_serial or getattr(option, 'esp32_discover', False):
             from cbus.esp32.connection import ESP32Connection, ESP32Config
+
+            common_kwargs = dict(
+                reconnect_interval=option.esp32_reconnect_interval,
+                max_reconnect_attempts=option.esp32_max_reconnect,
+                timesync_frequency=option.timesync,
+                handle_clock_requests=not option.no_clock,
+            )
 
             if option.esp32_discover:
                 from cbus.esp32.discovery import ESP32Discovery
@@ -172,10 +164,7 @@ async def _main():
                 logger.info("Found %d ESP32 device(s), connecting to first: %s", len(devices), devices[0])
                 esp32_config = ESP32Config.wifi(
                     devices[0].host, devices[0].port,
-                    reconnect_interval=option.esp32_reconnect_interval,
-                    max_reconnect_attempts=option.esp32_max_reconnect,
-                    timesync_frequency=option.timesync,
-                    handle_clock_requests=not option.no_clock,
+                    **common_kwargs,
                 )
             elif option.esp32_wifi:
                 addr = option.esp32_wifi
@@ -183,19 +172,13 @@ async def _main():
                 port = int(addr.rsplit(':', 1)[1]) if ':' in addr else 10001
                 esp32_config = ESP32Config.wifi(
                     host, port,
-                    reconnect_interval=option.esp32_reconnect_interval,
-                    max_reconnect_attempts=option.esp32_max_reconnect,
-                    timesync_frequency=option.timesync,
-                    handle_clock_requests=not option.no_clock,
+                    **common_kwargs,
                 )
             else:
                 esp32_config = ESP32Config.serial(
                     option.esp32_serial,
                     baudrate=option.esp32_baudrate,
-                    reconnect_interval=option.esp32_reconnect_interval,
-                    max_reconnect_attempts=option.esp32_max_reconnect,
-                    timesync_frequency=option.timesync,
-                    handle_clock_requests=not option.no_clock,
+                    **common_kwargs,
                 )
 
             esp32_conn = ESP32Connection(esp32_config)
@@ -253,17 +236,16 @@ async def _main():
         logger.info('Cleaning up resources...')
 
         # Close ESP32 connection if used
-        if 'esp32_conn' in locals() and esp32_conn is not None:
+        if esp32_conn is not None:
             logger.info('Closing ESP32 connection')
             await esp32_conn.disconnect()
         # Close transport if protocol was created and has a transport
-        elif 'protocol' in locals() and hasattr(protocol, '_transport') and protocol._transport is not None:
+        elif protocol is not None and hasattr(protocol, '_transport') and protocol._transport is not None:
             logger.info('Closing C-Bus transport')
             protocol._transport.close()
 
         # Cancel all tasks
-        if 'throttler' in locals():
-            await throttler.cleanup()
+        await throttler.cleanup()
 
         # Clean up event loops
         loop = asyncio.get_event_loop()

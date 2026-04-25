@@ -22,9 +22,6 @@ Note: this is an experimental and incomplete piece of code.
 
 """
 
-from __future__ import absolute_import
-from __future__ import print_function
-
 from base64 import b16encode, b16decode
 import socket
 

@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import
 from __future__ import annotations
 
 import abc
@@ -24,7 +23,6 @@ from datetime import date, time, datetime
 from struct import unpack, pack
 from typing import Union, Set, Sequence, Tuple, Optional
 
-from six import byte2int
 
 from cbus.common import Application, ClockAttribute, ClockCommand
 from cbus.protocol.application.sal import BaseApplication, SAL
@@ -124,7 +122,7 @@ class ClockUpdateSAL(ClockSAL):
                     native date format, and times are represented in native
                     time format.
         """
-        super(ClockUpdateSAL, self).__init__()
+        super().__init__()
         self.val = val
 
     @classmethod
@@ -213,7 +211,7 @@ class ClockRequestSAL(ClockSAL):
         """
         Creates a new SAL Clock request message.
         """
-        super(ClockRequestSAL, self).__init__()
+        super().__init__()
 
     @classmethod
     def decode(cls, data: bytes) -> Tuple[Optional[ClockSAL], bytes]:
@@ -221,7 +219,7 @@ class ClockRequestSAL(ClockSAL):
         Do not call this method directly -- use ClockSAL.decode
         """
 
-        argument = byte2int(data)
+        argument = data[0]
         data = data[1:]
 
         if argument != 0x03:

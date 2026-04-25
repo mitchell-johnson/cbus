@@ -30,10 +30,8 @@ class SerialTransport(CBusTransport):
     """Serial transport for C-Bus PCI connections."""
 
     def __init__(self, config: SerialTransportConfig, protocol_factory: Optional[Callable] = None):
-        super().__init__(config)
+        super().__init__(config, protocol_factory)
         self._serial_config = config
-        self._protocol_factory = protocol_factory
-        self._protocol = None
 
     @property
     def transport_type(self) -> str:
@@ -46,10 +44,6 @@ class SerialTransport(CBusTransport):
             "device": self._serial_config.device,
             "baudrate": self._serial_config.baudrate,
         }
-
-    @property
-    def protocol(self):
-        return self._protocol
 
     async def _do_connect(self) -> Any:
         if create_serial_connection is None:

@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import
-
 from cbus.protocol.base_packet import SpecialServerPacket
 from cbus.common import CONFIRMATION_CODES
 
@@ -29,7 +27,7 @@ class ConfirmationPacket(SpecialServerPacket):
     """
 
     def __init__(self, code: bytes, success: bool):
-        super(ConfirmationPacket, self).__init__()
+        super().__init__()
 
         self._code = code[:1]
         if self._code not in CONFIRMATION_CODES:

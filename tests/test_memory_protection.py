@@ -12,7 +12,7 @@
 import unittest
 import asyncio
 import pytest
-from unittest.mock import Mock, patch, MagicMock, AsyncMock
+from unittest.mock import Mock, patch, AsyncMock
 from datetime import datetime
 
 from cbus.protocol.pciprotocol import PCIProtocol
@@ -20,24 +20,7 @@ from cbus.protocol.application.lighting import LightingOnSAL
 from cbus.protocol.pm_packet import PointToMultipointPacket
 from cbus.common import Application
 from cbus.constants import MAX_PENDING_CONFIRMATIONS
-
-
-class MockTransport(MagicMock):
-    """Mock transport for testing."""
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.written_data = []
-        self.is_closing_flag = False
-
-    def write(self, data):
-        self.written_data.append(data)
-        return len(data)
-
-    def close(self):
-        self.is_closing_flag = True
-
-    def is_closing(self):
-        return self.is_closing_flag
+from .utils import MockTransport
 
 
 class TestMemoryProtection:

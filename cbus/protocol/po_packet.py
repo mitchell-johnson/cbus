@@ -15,16 +15,12 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import
 from cbus.protocol.base_packet import SpecialServerPacket
 
 __all__ = ['PowerOnPacket']
 
 
 class PowerOnPacket(SpecialServerPacket):
-
-    def __init__(self):
-        super(PowerOnPacket, self).__init__()
 
     def encode(self):
         # We send two "Power On" bytes, like C-Bus, because the first one

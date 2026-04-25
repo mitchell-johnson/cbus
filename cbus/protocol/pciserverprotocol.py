@@ -15,12 +15,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import
-
 import asyncio
 import logging
 import random
-from typing import Text
+
 
 from cbus.common import END_RESPONSE, Application, GroupState
 from cbus.protocol.application.clock import (
@@ -59,7 +57,7 @@ class PCIServerProtocol(CBusProtocol):
     """
 
     def __init__(self):
-        super(PCIServerProtocol, self).__init__(emulate_pci=True)
+        super().__init__(emulate_pci=True)
         self._transport = None
 
         self.basic_mode = True
@@ -476,7 +474,7 @@ class PCIServerProtocol(CBusProtocol):
         return self._send(p)
 
 
-async def main(address: Text = '127.0.0.1', port: int = 10001):
+async def main(address: str = '127.0.0.1', port: int = 10001):
     print(f'Starting fake PCI on {address}:{port}')
     loop = asyncio.get_running_loop()
     server = await loop.create_server(

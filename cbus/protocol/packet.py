@@ -16,10 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import
-
 from base64 import b16decode
-from six import byte2int, indexbytes, int2byte
+
 from typing import Tuple, Union
 import warnings
 
@@ -98,7 +96,7 @@ def decode_packet(
             return None, 0
 
         if data[0] in CONFIRMATION_CODES:
-            success = indexbytes(data, 1) == 0x2e  # .
+            success = data[1] == 0x2e  # .
             code = data[:1]
             return ConfirmationPacket(code, success), consumed + 2
 
@@ -157,7 +155,7 @@ def decode_packet(
 
         if data[-1] not in HEX_CHARS:
             # then there is a confirmation code at the end.
-            confirmation = int2byte(indexbytes(data, -1))
+            confirmation = bytes([data[-1]])
 
             if confirmation not in CONFIRMATION_CODES:
                 if strict:
@@ -198,7 +196,7 @@ def decode_packet(
         data = data[:-1]
 
     # flags (serial interface guide s3.4)
-    flags = byte2int(data)
+    flags = data[0]
 
     try:
         address_type = DestinationAddressType(flags & 0x07)
@@ -213,7 +211,7 @@ def decode_packet(
 
         # handle source address
         if from_pci:
-            source_addr = byte2int(data)
+            source_addr = data[0]
             data = data[1:]
         else:
             source_addr = None

@@ -22,9 +22,7 @@ The majority of the functionality shouldn't be needed by your own application,
 however it is used internally within the protocol encoders and decoders.
 """
 
-from __future__ import absolute_import
 from enum import IntEnum
-import logging
 
 HEX_CHARS = b'0123456789ABCDEF'
 
@@ -177,10 +175,6 @@ class IdentifyAttribute(IntEnum):
     DSI_STATUS = 0x11
 
 
-# Routing buffer
-ROUTING_NONE = 0x00
-
-
 # Enable control application commands.
 class EnableCommand(IntEnum):
     SET_NETWORK_VARIABLE = 0x02
@@ -250,10 +244,6 @@ _LIGHT_RAMP_DURATION_TO_RATE = [
 LIGHT_RAMP_COMMANDS = set(_LIGHT_RAMP_RATES.keys())
 
 
-# Fastest ramp rate
-LIGHT_RAMP_FASTEST_DURATION = _LIGHT_RAMP_DURATION_TO_RATE[0][0]
-LIGHT_RAMP_SLOWEST_DURATION = _LIGHT_RAMP_DURATION_TO_RATE[-1][0]
-
 
 class ClockAttribute(IntEnum):
     TIME = 0x01
@@ -264,9 +254,6 @@ class ClockCommand(IntEnum):
     UPDATE_NETWORK_VARIABLE = 0x08
     REQUEST_REFRESH = 0x11
 
-
-RECALL = 0x1A
-IDENTIFY = 0x21
 
 # Lighting Application s2.4.3 s6-7
 # TODO: finish entering the list
@@ -361,13 +348,7 @@ def cbus_checksum(i: bytes) -> int:
 
     :returns: The checksum value of the given input
     """
-    c = 0
-    for x in i:
-        c += x
-
-    c = ((c & 0xff) ^ 0xff) + 1
-
-    return c & 0xff
+    return ((~sum(i) & 0xff) + 1) & 0xff
 
 
 def add_cbus_checksum(i: bytes) -> bytes:
@@ -393,9 +374,7 @@ def validate_cbus_checksum(i: bytes) -> bool:
 
     :returns: True if the checksum is correct, False otherwise.
     """
-    packet_checksum = i[-1]
-    actual_checksum = get_real_cbus_checksum(i)
-    return packet_checksum == actual_checksum
+    return i[-1] == cbus_checksum(i[:-1])
 
 
 def get_real_cbus_checksum(i: bytes) -> int:
@@ -432,6 +411,5 @@ def check_ga(group_addr: int) -> None:
     """
     if not validate_ga(group_addr):
         raise ValueError(
-            'Group Address out of range ({}..{}), got {}'.format(
-                MIN_GROUP_ADDR, MAX_GROUP_ADDR, group_addr))
+            f'Group Address out of range ({MIN_GROUP_ADDR}..{MAX_GROUP_ADDR}), got {group_addr}')
 
