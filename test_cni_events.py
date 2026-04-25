@@ -79,7 +79,7 @@ async def main():
     if len(sys.argv) > 1:
         cni_addr = sys.argv[1]
     else:
-        cni_addr = "192.168.1.227:10001"
+        cni_addr = os.environ.get("CNI_ADDR", "192.168.1.100:10001")
     
     print(f"Connecting to CNI at {cni_addr}")
     

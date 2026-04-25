@@ -16,11 +16,13 @@ deps = [
 tests_require = [
 	'pytype',
 	'parameterized',
+	'pytest',
+	'pytest-asyncio',
 ]
 
 setup(
 	name="cbus",
-	version="0.2",
+	version="0.3",
 	description="Library and applications to interact with Clipsal CBus in Python.",
 	author="Michael Farrell, Mitchell Johnson",
 	author_email="mitchell@johnson.fyi",
@@ -29,8 +31,11 @@ setup(
 	license="LGPL3+",
 	install_requires=deps,
 	tests_require=tests_require,
-	extras_require={'test': tests_require},
-	# TODO: add scripts to this.
+	extras_require={
+		'test': tests_require,
+		'esp32': ['zeroconf>=0.80.0'],
+		'web': ['aiohttp>=3.8.0'],
+	},
 	packages=find_packages(),
 	
 	entry_points={

@@ -20,8 +20,7 @@ import asyncio
 from argparse import FileType
 import json
 import logging
-from marshal import load
-from typing import Any, BinaryIO, Dict, Optional, Text, TextIO, List, Union
+from typing import Any, BinaryIO, Dict, Optional, Text, TextIO, List, Tuple, Union
 
 import sys
 import ssl
@@ -59,30 +58,6 @@ from cbus.daemon.mqtt_gateway import CBusHandler, MqttClient
 _META_TOPIC = 'homeassistant/binary_sensor/cbus_cmqttd'
 
 logger = logging.getLogger(__name__)
-
-def check_aa_lighting(app):
-    if not app in LightingApplication.supported_applications():
-        raise ValueError(
-            'Application ${aa} is not a valid lighting application'.format(
-                app))
-
-def ga_range():
-    return range(MIN_GROUP_ADDR, MAX_GROUP_ADDR + 1)
-
-def default_light_name(group_addr,app_addr):
-     return f'C-Bus Light {ga_string(group_addr,app_addr,True)}'
-
-def get_topic_group_address(topic: Text) -> tuple[int,int | Application]:
-    """Gets the group address for the given topic."""
-    if not topic.startswith(_LIGHT_TOPIC_PREFIX):
-        raise ValueError(
-            f'Invalid topic {topic}, must start with {_LIGHT_TOPIC_PREFIX}')
-    a1,*a2 = topic[len(_LIGHT_TOPIC_PREFIX):].split('/', maxsplit=1)[0].split(_APPLICATION_GROUP_SEPARATOR)
-    aa,ga = (a1,a2[0]) if a2 else (Application.LIGHTING,a1)
-    aa,ga = (int(aa),int(ga))
-    check_ga(ga)
-    
-    return ga,aa
 
 def read_cbz_labels(project_fh: FileType, cbus_network_name: Union[str, List[str], None]):
     """Parse a Toolkit CBZ/XML backup and return labels suitable for CBusHandler.
@@ -152,9 +127,11 @@ async def _main():
         file_handler.setFormatter(formatter)
         global_logger.addHandler(file_handler)
 
-    loop = asyncio.get_event_loop()
-    connection_lost_future = loop.create_future()
-    
+    loop = asyncio.get_running_loop()
+
+    # Mutable container so factory closure always gets the current future
+    future_holder = [loop.create_future()]
+
     try:
         labels = (read_cbz_labels(option.project_file,option.cbus_network)
                   if option.project_file else None)
@@ -173,13 +150,58 @@ async def _main():
             return CBusHandler(
                 timesync_frequency=option.timesync,
                 handle_clock_requests=not option.no_clock,
-                connection_lost_future=connection_lost_future,
+                connection_lost_future=future_holder[0],
                 labels=labels,
             )
 
-        # TCP connection is required
-        addr_host, addr_port = option.tcp.split(':', 1)
-        _, protocol = await loop.create_connection(factory, addr_host, int(addr_port))
+        esp32_conn = None  # track for cleanup
+
+        if option.tcp:
+            # Legacy TCP connection to CNI/PCI
+            addr_host, addr_port = option.tcp.split(':', 1)
+            _, protocol = await loop.create_connection(factory, addr_host, int(addr_port))
+        elif option.esp32_wifi or option.esp32_serial or getattr(option, 'esp32_discover', False):
+            from cbus.esp32.connection import ESP32Connection, ESP32Config
+
+            if option.esp32_discover:
+                from cbus.esp32.discovery import ESP32Discovery
+                discovery = ESP32Discovery(timeout=10.0)
+                devices = await discovery.discover()
+                if not devices:
+                    raise SystemExit('No ESP32 C-Bus bridge devices found on the network')
+                logger.info("Found %d ESP32 device(s), connecting to first: %s", len(devices), devices[0])
+                esp32_config = ESP32Config.wifi(
+                    devices[0].host, devices[0].port,
+                    reconnect_interval=option.esp32_reconnect_interval,
+                    max_reconnect_attempts=option.esp32_max_reconnect,
+                    timesync_frequency=option.timesync,
+                    handle_clock_requests=not option.no_clock,
+                )
+            elif option.esp32_wifi:
+                addr = option.esp32_wifi
+                host = addr.rsplit(':', 1)[0] if ':' in addr else addr
+                port = int(addr.rsplit(':', 1)[1]) if ':' in addr else 10001
+                esp32_config = ESP32Config.wifi(
+                    host, port,
+                    reconnect_interval=option.esp32_reconnect_interval,
+                    max_reconnect_attempts=option.esp32_max_reconnect,
+                    timesync_frequency=option.timesync,
+                    handle_clock_requests=not option.no_clock,
+                )
+            else:
+                esp32_config = ESP32Config.serial(
+                    option.esp32_serial,
+                    baudrate=option.esp32_baudrate,
+                    reconnect_interval=option.esp32_reconnect_interval,
+                    max_reconnect_attempts=option.esp32_max_reconnect,
+                    timesync_frequency=option.timesync,
+                    handle_clock_requests=not option.no_clock,
+                )
+
+            esp32_conn = ESP32Connection(esp32_config)
+            esp32_conn.transport._protocol_factory = factory
+            await esp32_conn.connect()
+            protocol = esp32_conn.transport.protocol
 
         # TLS configuration
         if option.broker_disable_tls:
@@ -196,7 +218,32 @@ async def _main():
         mqtt_client = MqttClient(protocol, option.broker_address, port, option.broker_keepalive, tls_kwargs)
 
         async with mqtt_client:  # type: ignore[arg-type]
-            await connection_lost_future
+            if esp32_conn and esp32_conn._config.reconnect:
+                # ESP32 mode: reconnect loop with fresh futures
+                while True:
+                    await future_holder[0]
+                    logger.warning("Connection lost. Waiting for reconnection...")
+                    # Wait for transport to reconnect (transport handles its own reconnect loop)
+                    max_wait = esp32_conn._config.max_reconnect_attempts or 999
+                    reconnected = False
+                    for _ in range(max_wait):
+                        await asyncio.sleep(esp32_conn._config.reconnect_interval)
+                        if esp32_conn.transport.is_connected:
+                            # Create fresh future for the next disconnect
+                            future_holder[0] = loop.create_future()
+                            # Rebind MQTT to the new protocol instance
+                            protocol = esp32_conn.transport.protocol
+                            protocol._connection_lost_future = future_holder[0]
+                            mqtt_client._userdata = protocol
+                            protocol.mqtt_api = mqtt_client
+                            logger.info("Reconnected. MQTT bridge re-bound.")
+                            reconnected = True
+                            break
+                    if not reconnected:
+                        logger.error("Reconnection exhausted. Shutting down.")
+                        break
+            else:
+                await future_holder[0]
     except (KeyboardInterrupt, asyncio.CancelledError):
         logger.info('Shutting down...')
     except Exception as e:
@@ -205,8 +252,12 @@ async def _main():
         # Clean up resources to prevent memory leaks
         logger.info('Cleaning up resources...')
 
+        # Close ESP32 connection if used
+        if 'esp32_conn' in locals() and esp32_conn is not None:
+            logger.info('Closing ESP32 connection')
+            await esp32_conn.disconnect()
         # Close transport if protocol was created and has a transport
-        if 'protocol' in locals() and hasattr(protocol, '_transport') and protocol._transport is not None:
+        elif 'protocol' in locals() and hasattr(protocol, '_transport') and protocol._transport is not None:
             logger.info('Closing C-Bus transport')
             protocol._transport.close()
 

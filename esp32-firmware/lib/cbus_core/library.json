@@ -1,0 +1,10 @@
+{
+    "name": "cbus_core",
+    "version": "1.0.0",
+    "description": "Platform-independent C-Bus PCI protocol library",
+    "frameworks": "*",
+    "platforms": "*",
+    "build": {
+        "flags": ["-I src"]
+    }
+}

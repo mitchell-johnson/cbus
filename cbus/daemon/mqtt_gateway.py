@@ -67,7 +67,7 @@ class CBusHandler(PCIProtocol):
 
     def __init__(self, labels: Optional[Dict[int, Dict]], *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.labels = labels if labels is not None else {56: {}}
+        self.labels = labels if labels is not None else {56: ("Lighting", {})}
         self._is_closing = False
 
     # --- lifecycle helpers ------------------------------------------------

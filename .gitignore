@@ -6,6 +6,7 @@ __MACOSX
 Thumbs.db
 desktop.ini
 *.ini
+!esp32-firmware/platformio.ini
 *.orig
 build
 dist
@@ -27,3 +28,23 @@ project.xml
 venv
 .env
 venv_test/
+
+# Python virtual environment
+.venv/
+
+# ESP32 firmware build artifacts
+esp32-firmware/.pio/
+esp32-firmware/.vscode/
+esp32-firmware/test_runner
+esp32-firmware/test_quick
+esp32-firmware/test_exhaustive
+esp32-firmware/native_tcp_server
+esp32-firmware/native_e2e_bridge
+
+# Pytest
+.pytest_cache/
+__pycache__/
+
+# Platform.ini is tracked but contains local port settings
+# Override locally with platformio_override.ini
+esp32-firmware/platformio_override.ini

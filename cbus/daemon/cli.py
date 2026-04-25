@@ -35,9 +35,26 @@ def build_arg_parser() -> ArgumentParser:
     group.add_argument('-k', '--broker-client-cert', help='PEM client certificate')
     group.add_argument('-K', '--broker-client-key', help='PEM client key (private)')
 
-    # PCI / CNI connection -----------------------------------------------
-    group = parser.add_argument_group('C-Bus PCI connection')
-    group.add_argument('-t', '--tcp', dest='tcp', required=True, metavar='ADDR:PORT', help='IP address and TCP port of CNI/PCI (eg 192.168.1.10:10001)')
+    # PCI / CNI / ESP32 connection ----------------------------------------
+    group = parser.add_argument_group('C-Bus connection')
+    conn = group.add_mutually_exclusive_group(required=True)
+    conn.add_argument('-t', '--tcp', dest='tcp', default=None, metavar='ADDR:PORT',
+                      help='IP address and TCP port of CNI/PCI (eg 192.168.1.10:10001)')
+    conn.add_argument('--esp32-wifi', dest='esp32_wifi', default=None, metavar='ADDR[:PORT]',
+                      help='ESP32 C-Bus bridge WiFi address (eg 192.168.1.50 or 192.168.1.50:10001)')
+    conn.add_argument('--esp32-serial', dest='esp32_serial', default=None, metavar='DEVICE',
+                      help='ESP32 C-Bus bridge serial port (eg /dev/ttyUSB0)')
+    conn.add_argument('--esp32-discover', dest='esp32_discover', action='store_true', default=False,
+                      help='Auto-discover ESP32 C-Bus bridge via mDNS')
+
+    # ESP32-specific options
+    esp32_group = parser.add_argument_group('ESP32 options')
+    esp32_group.add_argument('--esp32-baudrate', type=int, default=9600,
+                             help='Serial baud rate for ESP32 connection')
+    esp32_group.add_argument('--esp32-reconnect-interval', type=int, default=5,
+                             help='Seconds between reconnect attempts')
+    esp32_group.add_argument('--esp32-max-reconnect', type=int, default=0,
+                             help='Max reconnect attempts (0=unlimited)')
 
     # Time settings -------------------------------------------------------
     group = parser.add_argument_group('Time settings')

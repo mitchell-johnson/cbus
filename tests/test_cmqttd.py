@@ -25,6 +25,11 @@ import unittest
 from cbus.common import Application, check_ga
 from cbus.daemon import cmqttd
 from cbus.daemon import topics
+from cbus.daemon.mqtt_gateway import ga_range, get_topic_group_address
+
+# Re-export for test compatibility after deduplication
+cmqttd.ga_range = ga_range
+cmqttd.get_topic_group_address = get_topic_group_address
 
 
 class CmqttdUtilityTest(unittest.TestCase):

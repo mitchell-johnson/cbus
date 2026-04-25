@@ -1,0 +1,9 @@
+[wokwi]
+version = 1
+firmware = ".pio/build/esp32dev/firmware.bin"
+elf = ".pio/build/esp32dev/firmware.elf"
+
+# Forward the C-Bus TCP port from the simulated ESP32 to localhost
+[[net.forward]]
+from = "localhost:10001"
+to = "10.13.37.2:10001"
