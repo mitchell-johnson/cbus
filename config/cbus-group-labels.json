@@ -1,0 +1,56 @@
+{
+  "lighting": {
+    "application_address": 56,
+    "groups": {
+      "0": "outside wall light",
+      "1": "outside wall light front",
+      "2": "tread lights x 2",
+      "3": "under staircase storage",
+      "4": "tread lights stairwell",
+      "5": "outside wall light rear",
+      "6": "outside wall light side",
+      "7": "prov 1",
+      "8": "prov 2",
+      "9": "prov 3",
+      "10": "prov 4",
+      "11": "prov 5",
+      "12": "downstairs toilet",
+      "13": "laundry",
+      "14": "garage",
+      "15": "bathroom fan",
+      "16": "kitchen island",
+      "17": "bathroom vanity",
+      "18": "bathroom lights",
+      "19": "ensuite vanity",
+      "20": "ensuite fan",
+      "21": "ensuite shower",
+      "22": "ensuite ceiling light",
+      "23": "master walk in robe",
+      "24": "loungeroom",
+      "25": "hallway downstairs",
+      "26": "study",
+      "27": "kitchen downlights",
+      "28": "bedroom 1 left pendant",
+      "29": "bedroom 1 right pendant",
+      "30": "bedroom 2 left pendant",
+      "31": "bedroom 2 right pendant",
+      "32": "kitchen pendant",
+      "33": "dining room",
+      "34": "bedroom 1 ceiling",
+      "35": "bedroom 2 ceiling",
+      "36": "bedroom 3 ceiling",
+      "37": "bedroom 4 ceiling",
+      "38": "staircase ceiling",
+      "39": "hallway upstairs",
+      "40": "ensuite all",
+      "41": "bathroom all",
+      "42": "Dummy Group 1"
+    }
+  },
+  "trigger": {
+    "application_address": 202,
+    "groups": {
+      "0": "Trigger Group 1"
+    }
+  }
+}

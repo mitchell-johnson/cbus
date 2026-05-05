@@ -69,6 +69,90 @@ static bool published[256];  // Track which groups have HA discovery published
 static WebServer* web_server = nullptr;
 static DNSServer* dns_server = nullptr;
 
+// ---- Configured group labels (only these get HA discovery) ----
+// Label table: group_addr -> name. NULL = not configured (no discovery).
+// Populated from NVS or defaults below. Max label length 47 chars.
+#define MAX_CONFIGURED_GROUPS 64
+static struct {
+    uint8_t ga;
+    uint8_t app;
+    char label[48];
+} group_labels[MAX_CONFIGURED_GROUPS];
+static uint8_t num_configured_groups = 0;
+
+// Returns the label for a (app, ga) pair, or NULL if not configured
+static const char* get_group_label(uint8_t app, uint8_t ga) {
+    for (uint8_t i = 0; i < num_configured_groups; i++) {
+        if (group_labels[i].app == app && group_labels[i].ga == ga) {
+            return group_labels[i].label;
+        }
+    }
+    return NULL;
+}
+
+// Returns true if this (app, ga) has a configured label
+static bool is_group_configured(uint8_t app, uint8_t ga) {
+    return get_group_label(app, ga) != NULL;
+}
+
+static void add_group_label(uint8_t app, uint8_t ga, const char* label) {
+    if (num_configured_groups >= MAX_CONFIGURED_GROUPS) return;
+    group_labels[num_configured_groups].app = app;
+    group_labels[num_configured_groups].ga = ga;
+    strncpy(group_labels[num_configured_groups].label, label, 47);
+    group_labels[num_configured_groups].label[47] = '\0';
+    num_configured_groups++;
+}
+
+// Default labels for Mitchell's C-Bus installation
+static void load_default_group_labels() {
+    num_configured_groups = 0;
+    add_group_label(CBUS_APP_LIGHTING, 0, "outside wall light");
+    add_group_label(CBUS_APP_LIGHTING, 1, "outside wall light front");
+    add_group_label(CBUS_APP_LIGHTING, 2, "tread lights x 2");
+    add_group_label(CBUS_APP_LIGHTING, 3, "under staircase storage");
+    add_group_label(CBUS_APP_LIGHTING, 4, "tread lights stairwell");
+    add_group_label(CBUS_APP_LIGHTING, 5, "outside wall light rear");
+    add_group_label(CBUS_APP_LIGHTING, 6, "outside wall light side");
+    add_group_label(CBUS_APP_LIGHTING, 7, "prov 1");
+    add_group_label(CBUS_APP_LIGHTING, 8, "prov 2");
+    add_group_label(CBUS_APP_LIGHTING, 9, "prov 3");
+    add_group_label(CBUS_APP_LIGHTING, 10, "prov 4");
+    add_group_label(CBUS_APP_LIGHTING, 11, "prov 5");
+    add_group_label(CBUS_APP_LIGHTING, 12, "downstairs toilet");
+    add_group_label(CBUS_APP_LIGHTING, 13, "laundry");
+    add_group_label(CBUS_APP_LIGHTING, 14, "garage");
+    add_group_label(CBUS_APP_LIGHTING, 15, "bathroom fan");
+    add_group_label(CBUS_APP_LIGHTING, 16, "kitchen island");
+    add_group_label(CBUS_APP_LIGHTING, 17, "bathroom vanity");
+    add_group_label(CBUS_APP_LIGHTING, 18, "bathroom lights");
+    add_group_label(CBUS_APP_LIGHTING, 19, "ensuite vanity");
+    add_group_label(CBUS_APP_LIGHTING, 20, "ensuite fan");
+    add_group_label(CBUS_APP_LIGHTING, 21, "ensuite shower");
+    add_group_label(CBUS_APP_LIGHTING, 22, "ensuite ceiling light");
+    add_group_label(CBUS_APP_LIGHTING, 23, "master walk in robe");
+    add_group_label(CBUS_APP_LIGHTING, 24, "loungeroom");
+    add_group_label(CBUS_APP_LIGHTING, 25, "hallway downstairs");
+    add_group_label(CBUS_APP_LIGHTING, 26, "study");
+    add_group_label(CBUS_APP_LIGHTING, 27, "kitchen downlights");
+    add_group_label(CBUS_APP_LIGHTING, 28, "bedroom 1 left pendant");
+    add_group_label(CBUS_APP_LIGHTING, 29, "bedroom 1 right pendant");
+    add_group_label(CBUS_APP_LIGHTING, 30, "bedroom 2 left pendant");
+    add_group_label(CBUS_APP_LIGHTING, 31, "bedroom 2 right pendant");
+    add_group_label(CBUS_APP_LIGHTING, 32, "kitchen pendant");
+    add_group_label(CBUS_APP_LIGHTING, 33, "dining room");
+    add_group_label(CBUS_APP_LIGHTING, 34, "bedroom 1 ceiling");
+    add_group_label(CBUS_APP_LIGHTING, 35, "bedroom 2 ceiling");
+    add_group_label(CBUS_APP_LIGHTING, 36, "bedroom 3 ceiling");
+    add_group_label(CBUS_APP_LIGHTING, 37, "bedroom 4 ceiling");
+    add_group_label(CBUS_APP_LIGHTING, 38, "staircase ceiling");
+    add_group_label(CBUS_APP_LIGHTING, 39, "hallway upstairs");
+    add_group_label(CBUS_APP_LIGHTING, 40, "ensuite all");
+    add_group_label(CBUS_APP_LIGHTING, 41, "bathroom all");
+    add_group_label(CBUS_APP_LIGHTING, 42, "Dummy Group 1");
+    add_group_label(202, 0, "Trigger Group 1");
+}
+
 // ---- Command throttle queue ----
 #define CMD_QUEUE_SIZE 32
 static struct {
@@ -129,6 +213,7 @@ void setup() {
 
     bridge_init(&bridge);
     memset(published, 0, sizeof(published));
+    load_default_group_labels();
 
     load_config();
     setup_wifi();
@@ -434,9 +519,9 @@ static void connect_mqtt() {
         // Clear published state so discovery is re-sent on reconnect
         memset(published, 0, sizeof(published));
 
-        // Publish discovery and subscribe for all 256 groups
-        for (int i = 0; i < 256; i++) {
-            publish_ha_discovery(CBUS_APP_LIGHTING, i);
+        // Publish discovery only for configured groups (not all 256)
+        for (uint8_t i = 0; i < num_configured_groups; i++) {
+            publish_ha_discovery(group_labels[i].app, group_labels[i].ga);
         }
 
         // Publish bridge device
@@ -461,22 +546,29 @@ static void connect_mqtt() {
 
 static void publish_ha_discovery(uint8_t app, uint8_t ga) {
     if (published[ga]) return;
-    published[ga] = true;
 
-    char default_name[32];
-    snprintf(default_name, sizeof(default_name), "C-Bus Light %03d", ga);
+    // Only publish discovery for configured groups (prevents generic spam)
+    const char* label = get_group_label(app, ga);
+    if (!label) return;
+
+    published[ga] = true;
 
     char topic_id[32];
     make_topic_id(topic_id, sizeof(topic_id), app, ga);
 
-    char uid[32], cmd_t[80], stat_t[80], conf_t[80];
-    snprintf(uid, sizeof(uid), "%s_light", topic_id);
+    // Canonical unique_id: cbus_light_<ga> (matching old cmqttd format)
+    char uid[40], cmd_t[80], stat_t[80], conf_t[80];
+    if (app == CBUS_APP_LIGHTING) {
+        snprintf(uid, sizeof(uid), "cbus_light_%d", ga);
+    } else {
+        snprintf(uid, sizeof(uid), "cbus_light_%d_%03d", app, ga);
+    }
     snprintf(cmd_t, sizeof(cmd_t), "homeassistant/light/%s/set", topic_id);
     snprintf(stat_t, sizeof(stat_t), "homeassistant/light/%s/state", topic_id);
     snprintf(conf_t, sizeof(conf_t), "homeassistant/light/%s/config", topic_id);
 
     JsonDocument doc;
-    doc["name"] = default_name;
+    doc["name"] = label;
     doc["unique_id"] = uid;
     doc["cmd_t"] = cmd_t;
     doc["stat_t"] = stat_t;
@@ -505,15 +597,19 @@ static void publish_ha_discovery(uint8_t app, uint8_t ga) {
     // Subscribe to set topic for this group
     mqtt.subscribe(cmd_t);
 
-    // Also publish binary sensor config
-    char bs_conf[80], bs_stat[80], bs_uid[40];
+    // Also publish binary sensor config with canonical uid
+    char bs_conf[80], bs_stat[80], bs_uid[48];
     snprintf(bs_conf, sizeof(bs_conf), "homeassistant/binary_sensor/%s/config", topic_id);
     snprintf(bs_stat, sizeof(bs_stat), "homeassistant/binary_sensor/%s/state", topic_id);
-    snprintf(bs_uid, sizeof(bs_uid), "%s_bin_sensor", topic_id);
+    if (app == CBUS_APP_LIGHTING) {
+        snprintf(bs_uid, sizeof(bs_uid), "cbus_bin_sensor_%d", ga);
+    } else {
+        snprintf(bs_uid, sizeof(bs_uid), "cbus_bin_sensor_%d_%03d", app, ga);
+    }
 
     JsonDocument bs_doc;
-    char bs_name[48];
-    snprintf(bs_name, sizeof(bs_name), "%s (as binary sensor)", default_name);
+    char bs_name[64];
+    snprintf(bs_name, sizeof(bs_name), "%s (as binary sensor)", label);
     bs_doc["name"] = bs_name;
     bs_doc["unique_id"] = bs_uid;
     bs_doc["stat_t"] = bs_stat;
