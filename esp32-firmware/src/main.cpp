@@ -65,7 +65,6 @@ static unsigned long last_cni_attempt = 0;
 static unsigned long last_mqtt_attempt = 0;
 static unsigned long last_cni_send = 0;
 static uint8_t conf_idx = 0;
-static bool published[256];  // Track which groups have HA discovery published
 static WebServer* web_server = nullptr;
 static DNSServer* dns_server = nullptr;
 
@@ -77,17 +76,24 @@ static struct {
     uint8_t ga;
     uint8_t app;
     char label[48];
+    bool discovery_published;
 } group_labels[MAX_CONFIGURED_GROUPS];
 static uint8_t num_configured_groups = 0;
 
-// Returns the label for a (app, ga) pair, or NULL if not configured
-static const char* get_group_label(uint8_t app, uint8_t ga) {
+// Returns the label table index for a (app, ga) pair, or -1 if not configured
+static int find_group_label_index(uint8_t app, uint8_t ga) {
     for (uint8_t i = 0; i < num_configured_groups; i++) {
         if (group_labels[i].app == app && group_labels[i].ga == ga) {
-            return group_labels[i].label;
+            return i;
         }
     }
-    return NULL;
+    return -1;
+}
+
+// Returns the label for a (app, ga) pair, or NULL if not configured
+static const char* get_group_label(uint8_t app, uint8_t ga) {
+    int idx = find_group_label_index(app, ga);
+    return idx >= 0 ? group_labels[idx].label : NULL;
 }
 
 // Returns true if this (app, ga) has a configured label
@@ -101,7 +107,14 @@ static void add_group_label(uint8_t app, uint8_t ga, const char* label) {
     group_labels[num_configured_groups].ga = ga;
     strncpy(group_labels[num_configured_groups].label, label, 47);
     group_labels[num_configured_groups].label[47] = '\0';
+    group_labels[num_configured_groups].discovery_published = false;
     num_configured_groups++;
+}
+
+static void reset_discovery_published() {
+    for (uint8_t i = 0; i < num_configured_groups; i++) {
+        group_labels[i].discovery_published = false;
+    }
 }
 
 // Default labels for Mitchell's C-Bus installation
@@ -177,6 +190,7 @@ static void pci_reset();
 static void process_cni_data();
 static void handle_cni_packet(const uint8_t* hex_data, size_t hex_len);
 static void publish_ha_discovery(uint8_t app, uint8_t ga);
+static void clear_unconfigured_ha_discovery();
 static void publish_light_state(uint8_t app, uint8_t ga, uint8_t level);
 static void mqtt_callback(char* topic, byte* payload, unsigned int length);
 static void send_lighting_on(uint8_t app, uint8_t ga);
@@ -194,7 +208,7 @@ static void enqueue_cbus_command(const uint8_t* packet, size_t pkt_len);
 
 // ---- Helpers for multi-app MQTT topic naming ----
 // Default app is 0x38 (56 decimal). For default app, topic uses "cbus_<ga>".
-// For other apps, topic uses "cbus_<app_dec>_<ga>" matching cmqttd format.
+// For other apps, topic uses "cbus_<app_dec>_<ga:03d>" matching cmqttd format.
 static void make_topic_id(char* buf, size_t bufsize, uint8_t app, uint8_t ga) {
     if (app == CBUS_APP_LIGHTING) {
         snprintf(buf, bufsize, "cbus_%d", ga);
@@ -212,7 +226,6 @@ void setup() {
     Serial.println("Type 'help' for commands.");
 
     bridge_init(&bridge);
-    memset(published, 0, sizeof(published));
     load_default_group_labels();
 
     load_config();
@@ -517,12 +530,15 @@ static void connect_mqtt() {
         Serial.println(" OK");
 
         // Clear published state so discovery is re-sent on reconnect
-        memset(published, 0, sizeof(published));
+        reset_discovery_published();
 
         // Publish discovery only for configured groups (not all 256)
         for (uint8_t i = 0; i < num_configured_groups; i++) {
             publish_ha_discovery(group_labels[i].app, group_labels[i].ga);
         }
+
+        // Remove retained discovery left by old generic firmware builds.
+        clear_unconfigured_ha_discovery();
 
         // Publish bridge device
         JsonDocument doc;
@@ -545,13 +561,13 @@ static void connect_mqtt() {
 }
 
 static void publish_ha_discovery(uint8_t app, uint8_t ga) {
-    if (published[ga]) return;
-
     // Only publish discovery for configured groups (prevents generic spam)
-    const char* label = get_group_label(app, ga);
-    if (!label) return;
+    int label_idx = find_group_label_index(app, ga);
+    if (label_idx < 0) return;
+    if (group_labels[label_idx].discovery_published) return;
 
-    published[ga] = true;
+    const char* label = group_labels[label_idx].label;
+    group_labels[label_idx].discovery_published = true;
 
     char topic_id[32];
     make_topic_id(topic_id, sizeof(topic_id), app, ga);
@@ -628,9 +644,24 @@ static void publish_ha_discovery(uint8_t app, uint8_t ga) {
     mqtt.publish(bs_conf, buf, true);
 }
 
+static void clear_unconfigured_ha_discovery() {
+    if (!mqtt.connected()) return;
+
+    char light_conf[80];
+    char sensor_conf[96];
+    for (uint16_t ga = 0; ga < 256; ga++) {
+        if (is_group_configured(CBUS_APP_LIGHTING, (uint8_t)ga)) continue;
+        snprintf(light_conf, sizeof(light_conf), "homeassistant/light/cbus_%u/config", ga);
+        snprintf(sensor_conf, sizeof(sensor_conf), "homeassistant/binary_sensor/cbus_%u/config", ga);
+        mqtt.publish(light_conf, "", true);
+        mqtt.publish(sensor_conf, "", true);
+        delay(1);
+    }
+}
+
 static void publish_light_state(uint8_t app, uint8_t ga, uint8_t level) {
     if (!mqtt.connected()) return;
-    if (!published[ga]) publish_ha_discovery(app, ga);
+    publish_ha_discovery(app, ga);
 
     char topic_id[32];
     make_topic_id(topic_id, sizeof(topic_id), app, ga);
