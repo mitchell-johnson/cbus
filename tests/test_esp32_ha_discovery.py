@@ -21,7 +21,7 @@ class TestGroupConfig:
 
     def test_topic_id_non_default_app(self):
         g = GroupConfig(group_addr=0, app_addr=202, label="Trigger Group 1")
-        assert g.topic_id == "cbus_202_0"
+        assert g.topic_id == "cbus_202_000"
 
     def test_unique_id_default_app(self):
         """unique_id must match old cmqttd format: cbus_light_<ga>"""
@@ -109,8 +109,8 @@ class TestBuildLightDiscovery:
     def test_non_default_app_topics(self):
         g = GroupConfig(group_addr=0, app_addr=202, label="Trigger Group 1")
         topic, payload = build_light_discovery(g)
-        assert topic == "homeassistant/light/cbus_202_0/config"
-        assert payload["cmd_t"] == "homeassistant/light/cbus_202_0/set"
+        assert topic == "homeassistant/light/cbus_202_000/config"
+        assert payload["cmd_t"] == "homeassistant/light/cbus_202_000/set"
         assert payload["unique_id"] == "cbus_light_202_000"
 
 

@@ -37,10 +37,10 @@ class GroupConfig:
 
     @property
     def topic_id(self) -> str:
-        """Topic segment matching firmware's make_topic_id."""
+        """Topic segment matching firmware/cmqttd topic IDs."""
         if self.app_addr == DEFAULT_LIGHTING_APP:
             return f"cbus_{self.group_addr}"
-        return f"cbus_{self.app_addr}_{self.group_addr}"
+        return f"cbus_{self.app_addr}_{self.group_addr:03d}"
 
     @property
     def unique_id(self) -> str:
@@ -91,10 +91,10 @@ def build_light_discovery(group: GroupConfig) -> Tuple[str, dict]:
     format and proper label name, with command/state topics matching the
     ESP32 firmware's topic structure.
     """
-    topic_id = group.topic_id
-    cmd_t = f"{_LIGHT_TOPIC_PREFIX}{group.group_addr}/set" if group.app_addr == DEFAULT_LIGHTING_APP else f"{_LIGHT_TOPIC_PREFIX}{group.app_addr}_{group.group_addr}/set"
-    stat_t = f"{_LIGHT_TOPIC_PREFIX}{group.group_addr}/state" if group.app_addr == DEFAULT_LIGHTING_APP else f"{_LIGHT_TOPIC_PREFIX}{group.app_addr}_{group.group_addr}/state"
-    conf_t = f"{_LIGHT_TOPIC_PREFIX}{group.group_addr}/config" if group.app_addr == DEFAULT_LIGHTING_APP else f"{_LIGHT_TOPIC_PREFIX}{group.app_addr}_{group.group_addr}/config"
+    topic_id = group.topic_id.removeprefix("cbus_")
+    cmd_t = f"{_LIGHT_TOPIC_PREFIX}{topic_id}/set"
+    stat_t = f"{_LIGHT_TOPIC_PREFIX}{topic_id}/state"
+    conf_t = f"{_LIGHT_TOPIC_PREFIX}{topic_id}/config"
 
     payload = {
         "name": group.label,
@@ -121,8 +121,9 @@ def build_light_discovery(group: GroupConfig) -> Tuple[str, dict]:
 
 def build_binary_sensor_discovery(group: GroupConfig) -> Tuple[str, dict]:
     """Build HA MQTT discovery payload for a binary sensor entity."""
-    stat_t = f"{_BINSENSOR_TOPIC_PREFIX}{group.group_addr}/state" if group.app_addr == DEFAULT_LIGHTING_APP else f"{_BINSENSOR_TOPIC_PREFIX}{group.app_addr}_{group.group_addr}/state"
-    conf_t = f"{_BINSENSOR_TOPIC_PREFIX}{group.group_addr}/config" if group.app_addr == DEFAULT_LIGHTING_APP else f"{_BINSENSOR_TOPIC_PREFIX}{group.app_addr}_{group.group_addr}/config"
+    topic_id = group.topic_id.removeprefix("cbus_")
+    stat_t = f"{_BINSENSOR_TOPIC_PREFIX}{topic_id}/state"
+    conf_t = f"{_BINSENSOR_TOPIC_PREFIX}{topic_id}/config"
 
     dev_name = f"C-Bus Light {group.group_addr:03d}" if group.app_addr == DEFAULT_LIGHTING_APP else f"C-Bus Light {group.app_addr}_{group.group_addr:03d}"
 

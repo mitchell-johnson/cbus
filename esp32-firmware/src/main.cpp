@@ -199,7 +199,7 @@ static void make_topic_id(char* buf, size_t bufsize, uint8_t app, uint8_t ga) {
     if (app == CBUS_APP_LIGHTING) {
         snprintf(buf, bufsize, "cbus_%d", ga);
     } else {
-        snprintf(buf, bufsize, "cbus_%d_%d", app, ga);
+        snprintf(buf, bufsize, "cbus_%d_%03d", app, ga);
     }
 }
 
@@ -584,7 +584,11 @@ static void publish_ha_discovery(uint8_t app, uint8_t ga) {
     dev["connections"][1][1] = app_str;
     dev["sw_version"] = "cbus-esp32 https://github.com/mitchell-johnson/cbus";
     char dev_name[32];
-    snprintf(dev_name, sizeof(dev_name), "C-Bus Light %03d", ga);
+    if (app == CBUS_APP_LIGHTING) {
+        snprintf(dev_name, sizeof(dev_name), "C-Bus Light %03d", ga);
+    } else {
+        snprintf(dev_name, sizeof(dev_name), "C-Bus Light %d_%03d", app, ga);
+    }
     dev["name"] = dev_name;
     dev["manufacturer"] = "Clipsal";
     dev["model"] = "C-Bus Lighting Application";
