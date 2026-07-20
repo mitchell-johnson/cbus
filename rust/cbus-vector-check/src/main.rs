@@ -7,7 +7,6 @@ use cbus_protocol::common::{cbus_checksum, duration_to_ramp_rate, ramp_rate_to_d
 use cbus_protocol::decode::decode_packet;
 use cbus_protocol::json::{packet_from_json, packet_to_json};
 use serde_json::Value;
-use std::path::Path;
 
 const MAX_FAILURES_PRINTED: usize = 50;
 
@@ -214,6 +213,3 @@ fn check_topic(v: &Value) -> Result<(), String> {
 fn check_ha(v: &Value) -> Result<(), String> {
     cbus_mqtt::vector_check::check_ha(v)
 }
-
-#[allow(dead_code)]
-fn unused(_: &Path) {}
