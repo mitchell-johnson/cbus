@@ -69,24 +69,35 @@ pub fn bin_sensor_conf_topic(group_addr: u8, app_addr: i64) -> String {
     )
 }
 
+/// Error from [`topic_group_address`].
+#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+pub enum TopicError {
+    /// The topic does not start with [`LIGHT_TOPIC_PREFIX`].
+    #[error("invalid topic {0:?}, must start with \"homeassistant/light/cbus_\"")]
+    InvalidPrefix(String),
+    /// An app/group segment was not a base-10 integer.
+    #[error("invalid literal for int(): {0:?}")]
+    BadInteger(String),
+    /// The group address parsed but is outside 0..=255.
+    #[error("group address out of range (0..255), got {0}")]
+    GroupOutOfRange(i64),
+}
+
 /// Python `int()` (base 10): optional sign, digits, surrounding whitespace,
 /// leading zeros allowed.
-fn py_int(s: &str) -> Result<i64, String> {
+fn py_int(s: &str) -> Result<i64, TopicError> {
     let t = s.trim();
-    if t.is_empty() {
-        return Err(format!("invalid literal for int(): {s:?}"));
-    }
     t.parse::<i64>()
-        .map_err(|_| format!("invalid literal for int(): {s:?}"))
+        .map_err(|_| TopicError::BadInteger(s.to_string()))
 }
 
 /// Extract `(group_addr, app_addr)` from a command topic. Port of
 /// `get_topic_group_address` — note the app address is *not* range-checked
 /// (only the group address is, via `check_ga`).
-pub fn topic_group_address(topic: &str) -> Result<(u8, i64), String> {
+pub fn topic_group_address(topic: &str) -> Result<(u8, i64), TopicError> {
     let rest = topic
         .strip_prefix(LIGHT_TOPIC_PREFIX)
-        .ok_or_else(|| format!("Invalid topic {topic}, must start with {LIGHT_TOPIC_PREFIX}"))?;
+        .ok_or_else(|| TopicError::InvalidPrefix(topic.to_string()))?;
     let seg = rest.split('/').next().unwrap_or("");
     let parts: Vec<&str> = seg.split('_').collect();
     let (aa, ga) = if parts.len() >= 2 {
@@ -95,7 +106,7 @@ pub fn topic_group_address(topic: &str) -> Result<(u8, i64), String> {
         (DEFAULT_LIGHTING_APP, py_int(parts[0])?)
     };
     if !(0..=255).contains(&ga) {
-        return Err(format!("Group Address out of range (0..255), got {ga}"));
+        return Err(TopicError::GroupOutOfRange(ga));
     }
     Ok((ga as u8, aa))
 }

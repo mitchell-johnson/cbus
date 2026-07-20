@@ -2,6 +2,7 @@
 //! payload builders, CBZ project-file label extraction.
 
 pub mod cbz;
+pub mod command;
 pub mod discovery;
 pub mod topics;
 pub mod vector_check;

@@ -2,10 +2,9 @@
 //! (`CBusHandler` event relays + `MqttClient` helpers) onto rumqttc.
 
 use crate::throttle::Throttle;
+use cbus_mqtt::command::{parse_set_command, CommandError};
 use cbus_mqtt::discovery::{light_discovery, meta_discovery, AppLabels};
-use cbus_mqtt::topics::{
-    bin_sensor_state_topic, state_topic, topic_group_address, LIGHT_TOPIC_PREFIX, TOPIC_SET_SUFFIX,
-};
+use cbus_mqtt::topics::{bin_sensor_state_topic, state_topic};
 use cbus_transport::pci::{CBusEvent, PciClient};
 use rumqttc::{AsyncClient, QoS};
 use serde_json::{json, Value};
@@ -14,11 +13,11 @@ use std::sync::{Arc, Mutex};
 use tokio::sync::RwLock;
 
 pub struct Gateway {
-    pub mqtt: AsyncClient,
-    pub pci: RwLock<Arc<PciClient>>,
-    pub throttle: Throttle,
-    pub labels: AppLabels,
-    pub no_clock: bool,
+    mqtt: AsyncClient,
+    pci: RwLock<Arc<PciClient>>,
+    throttle: Throttle,
+    labels: AppLabels,
+    no_clock: bool,
     /// groupDB: app -> group -> discovery-config-published
     group_db: Mutex<HashMap<i64, HashMap<u8, bool>>>,
 }
@@ -46,8 +45,14 @@ impl Gateway {
         })
     }
 
-    async fn pci(&self) -> Arc<PciClient> {
+    /// The current PCI client (swapped out on reconnect).
+    pub async fn pci(&self) -> Arc<PciClient> {
         self.pci.read().await.clone()
+    }
+
+    /// Swap in a fresh PCI client after a reconnect.
+    pub async fn set_pci(&self, pci: Arc<PciClient>) {
+        *self.pci.write().await = pci;
     }
 
     // ------------------------------------------------------------- startup
@@ -271,57 +276,32 @@ impl Gateway {
     /// `MqttClient._handle_message`: parse a /set command and enqueue the
     /// C-Bus send on the throttle (behind any queued status requests).
     pub fn handle_publish(self: &Arc<Self>, topic: &str, payload: &[u8]) {
-        if !(topic.starts_with(LIGHT_TOPIC_PREFIX) && topic.ends_with(TOPIC_SET_SUFFIX)) {
-            return;
-        }
-        let (group_addr, app_addr) = match topic_group_address(topic) {
-            Ok(x) => x,
+        let cmd = match parse_set_command(topic, payload) {
+            Ok(cmd) => cmd,
+            Err(CommandError::NotACommandTopic) => return,
             Err(e) => {
-                tracing::error!("invalid group address in topic {topic}: {e}");
+                tracing::error!("ignoring publish on {topic}: {e}");
                 return;
             }
-        };
-        let v: Value = match serde_json::from_slice(payload) {
-            Ok(v) => v,
-            Err(e) => {
-                tracing::error!("JSON parse error in {topic}: {e}");
-                return;
-            }
-        };
-        let state = match v.get("state").and_then(Value::as_str) {
-            Some(s) => s,
-            None => {
-                tracing::error!("missing 'state' field in payload for topic {topic}");
-                return;
-            }
-        };
-        let light_on = state.to_uppercase() == "ON";
-
-        // brightness: default 255, int-cast, clamped 0..=255
-        let brightness = match v.get("brightness") {
-            Some(b) if b.is_number() => {
-                let f = b.as_f64().unwrap_or(255.0);
-                (f.trunc().clamp(0.0, 255.0)) as u8
-            }
-            _ => 255,
-        };
-        // transition: default 0, int-cast, clamped >= 0
-        let transition = match v.get("transition") {
-            Some(t) if t.is_number() => {
-                let f = t.as_f64().unwrap_or(0.0);
-                f.trunc().max(0.0) as u32
-            }
-            _ => 0,
         };
         tracing::info!(
-            "command parsed: GA={group_addr}, App={app_addr}, state={}, \
-             brightness={brightness}, transition={transition}",
-            if light_on { "ON" } else { "OFF" }
+            "command parsed: GA={}, App={}, state={}, brightness={}, transition={}",
+            cmd.group_addr,
+            cmd.app_addr,
+            if cmd.light_on { "ON" } else { "OFF" },
+            cmd.brightness,
+            cmd.transition
         );
         let gw = self.clone();
         self.throttle.enqueue(async move {
-            gw.switch_light(group_addr, app_addr, light_on, brightness, transition)
-                .await;
+            gw.switch_light(
+                cmd.group_addr,
+                cmd.app_addr,
+                cmd.light_on,
+                cmd.brightness,
+                cmd.transition,
+            )
+            .await;
         });
     }
 
