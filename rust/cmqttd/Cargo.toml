@@ -1,0 +1,17 @@
+[package]
+name = "cmqttd"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+cbus-protocol = { path = "../cbus-protocol" }
+cbus-mqtt = { path = "../cbus-mqtt" }
+cbus-transport = { path = "../cbus-transport" }
+tokio = { workspace = true }
+rumqttc = { workspace = true }
+clap = { workspace = true }
+serde_json = { workspace = true }
+chrono = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
