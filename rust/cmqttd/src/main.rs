@@ -42,8 +42,13 @@ fn spawn_shutdown_handler(client: AsyncClient) {
             let _ = ctrl_c.await;
         }
         tracing::info!("shutdown signal received; disconnecting from MQTT");
-        let _ = client.disconnect().await;
-        tokio::time::sleep(Duration::from_millis(250)).await;
+        // rumqttc only drains its request channel while a broker connection
+        // is up; if the channel is full (broker down, busy C-Bus network)
+        // disconnect() would block forever, so bound the wait.
+        match tokio::time::timeout(Duration::from_secs(2), client.disconnect()).await {
+            Ok(Ok(())) => tokio::time::sleep(Duration::from_millis(250)).await,
+            _ => tracing::warn!("MQTT disconnect not flushed; exiting anyway"),
+        }
         std::process::exit(0);
     });
 }
