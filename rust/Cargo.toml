@@ -28,3 +28,7 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 thiserror = "1"
 hex = "0.4"
+# TLS: must track the rustls major used by rumqttc (0.22 for rumqttc 0.24)
+rustls = "0.22"
+rustls-native-certs = "0.7"
+rustls-pemfile = "2"

@@ -41,7 +41,8 @@ pub struct Options {
     #[arg(short = 'A', long)]
     pub broker_auth: Option<String>,
 
-    /// Path to CA certificate
+    /// CA certificate file (or directory of PEM files); default: system
+    /// trust store
     #[arg(short = 'c', long)]
     pub broker_ca: Option<String>,
 
@@ -63,7 +64,8 @@ pub struct Options {
     pub esp32_wifi: Option<String>,
 
     /// ESP32 C-Bus bridge serial port (eg /dev/ttyUSB0)
-    #[arg(long)]
+    /// (`--serial` accepted for Docker entrypoint compatibility)
+    #[arg(long, alias = "serial")]
     pub esp32_serial: Option<String>,
 
     // ESP32 options --------------------------------------------------------

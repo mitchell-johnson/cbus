@@ -110,7 +110,91 @@ fn conn_spec(opts: &Options) -> ConnSpec {
     }
 }
 
-fn mqtt_options(opts: &Options) -> MqttOptions {
+/// Parse every certificate in a PEM file.
+fn pem_certs(path: &Path) -> Result<Vec<rustls::pki_types::CertificateDer<'static>>, String> {
+    let data = std::fs::read(path).map_err(|e| format!("cannot read {}: {e}", path.display()))?;
+    rustls_pemfile::certs(&mut data.as_slice())
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|e| format!("bad PEM in {}: {e}", path.display()))
+}
+
+/// CA roots for the broker connection: a PEM file, a directory of PEM files
+/// (the Docker entrypoint passes `/etc/cmqttd/certificates`), or — when no
+/// `--broker-ca` is given — the system trust store, matching the Python
+/// daemon's `ssl.create_default_context()`.
+fn ca_roots(broker_ca: Option<&str>) -> Result<rustls::RootCertStore, String> {
+    let mut roots = rustls::RootCertStore::empty();
+    match broker_ca {
+        Some(path) => {
+            let path = Path::new(path);
+            let files: Vec<std::path::PathBuf> = if path.is_dir() {
+                let mut fs: Vec<_> = std::fs::read_dir(path)
+                    .map_err(|e| format!("cannot read {}: {e}", path.display()))?
+                    .filter_map(|e| e.ok())
+                    .map(|e| e.path())
+                    .filter(|p| p.is_file())
+                    .collect();
+                fs.sort();
+                fs
+            } else {
+                vec![path.to_path_buf()]
+            };
+            for file in files {
+                for cert in pem_certs(&file)? {
+                    roots
+                        .add(cert)
+                        .map_err(|e| format!("bad CA cert in {}: {e}", file.display()))?;
+                }
+            }
+            if roots.is_empty() {
+                return Err(format!("no CA certificates found in {}", path.display()));
+            }
+        }
+        None => {
+            let certs = rustls_native_certs::load_native_certs()
+                .map_err(|e| format!("cannot load system trust store: {e}"))?;
+            // tolerate the odd unparsable platform cert, like OpenSSL does
+            for cert in certs {
+                let _ = roots.add(cert);
+            }
+            if roots.is_empty() {
+                return Err("system trust store is empty; supply -c CA.pem".into());
+            }
+        }
+    }
+    Ok(roots)
+}
+
+fn tls_configuration(opts: &Options) -> Result<rumqttc::TlsConfiguration, String> {
+    let builder = rustls::ClientConfig::builder()
+        .with_root_certificates(ca_roots(opts.broker_ca.as_deref())?);
+    let config = match (&opts.broker_client_cert, &opts.broker_client_key) {
+        (Some(cert), Some(key)) => {
+            let certs = pem_certs(Path::new(cert))?;
+            let key_data =
+                std::fs::read(key).map_err(|e| format!("cannot read client key {key}: {e}"))?;
+            let key = rustls_pemfile::private_key(&mut key_data.as_slice())
+                .map_err(|e| format!("bad client key {key}: {e}"))?
+                .ok_or_else(|| format!("no private key found in {key}"))?;
+            builder
+                .with_client_auth_cert(certs, key)
+                .map_err(|e| format!("bad client certificate/key: {e}"))?
+        }
+        (None, None) => builder.with_no_client_auth(),
+        _ => {
+            return Err(
+                "To use client certificates, both --broker-client-cert (-k) \
+                 and --broker-client-key (-K) must be specified."
+                    .into(),
+            )
+        }
+    };
+    Ok(rumqttc::TlsConfiguration::Rustls(std::sync::Arc::new(
+        config,
+    )))
+}
+
+fn mqtt_options(opts: &Options) -> Result<MqttOptions, String> {
     let port = if opts.broker_port != 0 {
         opts.broker_port
     } else if opts.broker_disable_tls {
@@ -122,50 +206,17 @@ fn mqtt_options(opts: &Options) -> MqttOptions {
     let mut mo = MqttOptions::new(client_id, opts.broker_address.clone(), port);
     mo.set_keep_alive(Duration::from_secs(opts.broker_keepalive.max(5) as u64));
     if !opts.broker_disable_tls {
-        let ca = match &opts.broker_ca {
-            Some(path) => std::fs::read(path).unwrap_or_else(|e| {
-                eprintln!("cannot read CA file {path}: {e}");
-                std::process::exit(1);
-            }),
-            None => {
-                eprintln!(
-                    "TLS enabled but no --broker-ca given; supply -c CA.pem or \
-                     use --broker-disable-tls"
-                );
-                std::process::exit(1);
-            }
-        };
-        let client_auth = match (&opts.broker_client_cert, &opts.broker_client_key) {
-            (Some(cert), Some(key)) => Some((
-                std::fs::read(cert).expect("client cert"),
-                std::fs::read(key).expect("client key"),
-            )),
-            (None, None) => None,
-            _ => {
-                eprintln!(
-                    "To use client certificates, both --broker-client-cert (-k) \
-                     and --broker-client-key (-K) must be specified."
-                );
-                std::process::exit(1);
-            }
-        };
-        mo.set_transport(Transport::Tls(rumqttc::TlsConfiguration::Simple {
-            ca,
-            alpn: None,
-            client_auth,
-        }));
+        mo.set_transport(Transport::Tls(tls_configuration(opts)?));
     }
     if let Some(auth_file) = &opts.broker_auth {
-        let content = std::fs::read_to_string(auth_file).unwrap_or_else(|e| {
-            eprintln!("cannot read auth file {auth_file}: {e}");
-            std::process::exit(1);
-        });
+        let content = std::fs::read_to_string(auth_file)
+            .map_err(|e| format!("cannot read auth file {auth_file}: {e}"))?;
         let mut lines = content.lines();
         let user = lines.next().unwrap_or("").trim().to_string();
         let pass = lines.next().unwrap_or("").trim().to_string();
         mo.set_credentials(user, pass);
     }
-    mo
+    Ok(mo)
 }
 
 #[tokio::main]
@@ -197,7 +248,11 @@ async fn main() {
     }
 
     // MQTT client + gateway
-    let (client, mut eventloop) = AsyncClient::new(mqtt_options(&opts), 100);
+    let mqtt_opts = mqtt_options(&opts).unwrap_or_else(|e| {
+        eprintln!("{e}");
+        std::process::exit(1);
+    });
+    let (client, mut eventloop) = AsyncClient::new(mqtt_opts, 100);
     let gateway = Gateway::new(client, pci, labels, opts.no_clock);
 
     // timesync loop (every -T seconds); 0 disables
@@ -280,5 +335,30 @@ async fn main() {
                 tokio::time::sleep(Duration::from_secs(1)).await;
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tls_tests {
+    use super::*;
+
+    #[test]
+    fn system_trust_store_loads() {
+        let roots = ca_roots(None).expect("system trust store");
+        assert!(!roots.is_empty());
+    }
+
+    #[test]
+    fn missing_ca_file_errors() {
+        assert!(ca_roots(Some("/nonexistent/ca.pem")).is_err());
+    }
+
+    #[test]
+    fn empty_ca_dir_errors() {
+        let dir = std::env::temp_dir().join(format!("cmqttd-ca-test-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let r = ca_roots(Some(dir.to_str().unwrap()));
+        std::fs::remove_dir_all(&dir).ok();
+        assert!(r.is_err());
     }
 }
