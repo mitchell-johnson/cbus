@@ -14,6 +14,13 @@ members = [
 edition = "2021"
 license = "LGPL-3.0-or-later"
 
+# The Docker image builds --release; trade compile time for a smaller,
+# faster daemon.
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = "symbols"
+
 [workspace.dependencies]
 tokio = { version = "1", features = ["full"] }
 rumqttc = "0.24"
