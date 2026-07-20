@@ -9,3 +9,9 @@ cbus-protocol = { path = "../cbus-protocol" }
 tokio = { workspace = true }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
+
+[dependencies.cbus-transport]
+path = "../cbus-transport"
+
+[dependencies.hex]
+workspace = true

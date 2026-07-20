@@ -18,7 +18,7 @@ pub enum CbzError {
 /// Tag/attr/field-name normalisation from `cbz.py:42-45`: lowercase,
 /// strip '_', trim trailing 's' characters (Python `rstrip('s')` strips
 /// *all* trailing 's').
-fn normalise(name: &str) -> String {
+pub fn normalise(name: &str) -> String {
     let lowered: String = name
         .to_lowercase()
         .chars()
@@ -29,7 +29,7 @@ fn normalise(name: &str) -> String {
 
 /// Field lookup like `_Element.from_element`: attributes first, then child
 /// elements (children override attributes).
-fn get_field(node: roxmltree::Node, field: &str) -> Option<String> {
+pub fn get_field(node: roxmltree::Node, field: &str) -> Option<String> {
     let want = normalise(field);
     let mut found: Option<String> = None;
     for attr in node.attributes() {
@@ -45,7 +45,7 @@ fn get_field(node: roxmltree::Node, field: &str) -> Option<String> {
     found
 }
 
-fn children<'a, 'input: 'a>(
+pub fn children<'a, 'input: 'a>(
     node: roxmltree::Node<'a, 'input>,
     field: &str,
 ) -> Vec<roxmltree::Node<'a, 'input>> {
@@ -64,9 +64,14 @@ fn py_int(s: &str) -> Result<i64, CbzError> {
 /// Read a .cbz (1-file zip) or bare XML Toolkit backup and extract
 /// `{app_addr: (app_name, {group: label})}` for the named network
 /// (None = first network).
-pub fn read_cbz_labels(path: &Path, network: Option<&str>) -> Result<AppLabels, CbzError> {
+/// Load the XML text of a .cbz (1-file zip) or bare-XML Toolkit backup.
+pub fn load_xml(path: &Path) -> Result<String, CbzError> {
     let raw = std::fs::read(path)?;
-    let xml = extract_xml(&raw)?;
+    extract_xml(&raw)
+}
+
+pub fn read_cbz_labels(path: &Path, network: Option<&str>) -> Result<AppLabels, CbzError> {
+    let xml = load_xml(path)?;
     let doc = roxmltree::Document::parse(&xml)
         .map_err(|e| CbzError::Cbz(format!("XML parse error: {e}")))?;
     let installation = doc.root_element();
