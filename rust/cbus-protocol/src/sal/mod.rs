@@ -15,48 +15,83 @@ use crate::common::{
 use crate::{DecodeError, EncodeError};
 use chrono::Datelike;
 
+/// A Smart Application Language message.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Sal {
+    /// Switch a lighting group on.
     LightingOn {
+        /// Lighting application address (0x30..=0x5F).
         application: u8,
+        /// Group address.
         group_address: u8,
     },
+    /// Switch a lighting group off.
     LightingOff {
+        /// Lighting application address (0x30..=0x5F).
         application: u8,
+        /// Group address.
         group_address: u8,
     },
+    /// Stop a ramp in progress.
     LightingTerminateRamp {
+        /// Lighting application address (0x30..=0x5F).
         application: u8,
+        /// Group address.
         group_address: u8,
     },
+    /// Ramp a lighting group to a level.
     LightingRamp {
+        /// Lighting application address (0x30..=0x5F).
         application: u8,
+        /// Group address.
         group_address: u8,
+        /// Requested duration in seconds (snapped to the rate table on
+        /// encode; JSON keeps the original value).
         duration: u32,
+        /// Target level 0..=255.
         level: u8,
     },
+    /// Broadcast the network time (DST byte always 0xFF on encode).
     ClockUpdateTime {
+        /// Hour 0..=23.
         hour: u8,
+        /// Minute 0..=59.
         minute: u8,
+        /// Second 0..=59.
         second: u8,
     },
+    /// Broadcast the network date (weekday derived, Monday = 0).
     ClockUpdateDate {
+        /// Year 1..=9999.
         year: u16,
+        /// Month 1..=12.
         month: u8,
+        /// Day of month.
         day: u8,
     },
+    /// Ask for a clock update.
     ClockRequest,
+    /// A temperature measurement (quarter-degree resolution).
     TemperatureBroadcast {
+        /// Group address of the sensor.
         group_address: u8,
+        /// Temperature in °C (`byte / 4.0`).
         temperature: f64,
     },
+    /// Set an enable-control network variable.
     EnableSetNetworkVariable {
+        /// Variable number.
         variable: u8,
+        /// New value.
         value: u8,
     },
+    /// Ask units to report group status.
     StatusRequest {
+        /// Level (manchester) report rather than binary.
         level_request: bool,
+        /// Block start; multiple of 0x20 (encode masks with 0xE0).
         group_address: u8,
+        /// Application whose groups are being queried.
         child_application: u8,
     },
 }
@@ -78,6 +113,7 @@ impl Sal {
         }
     }
 
+    /// Wire bytes of this SAL (per `application/*.py` encode methods).
     pub fn encode(&self) -> Result<Vec<u8>, EncodeError> {
         match self {
             Sal::LightingOn { group_address, .. } => Ok(vec![LIGHT_ON, *group_address]),

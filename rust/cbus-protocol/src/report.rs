@@ -33,6 +33,7 @@ pub fn manchester_encode(value: Option<u8>) -> [u8; 2] {
     }
 }
 
+/// A group status report carried in a status CAL.
 #[derive(Debug, Clone, PartialEq)]
 pub enum StatusReport {
     /// group states, values 0..=3 (missing/on/off/error)
@@ -42,6 +43,7 @@ pub enum StatusReport {
 }
 
 impl StatusReport {
+    /// The extended-status coding nibble (binary 0, level 7).
     pub fn block_type(&self) -> u8 {
         match self {
             StatusReport::Binary(_) => 0x00,
@@ -73,6 +75,8 @@ impl StatusReport {
         ))
     }
 
+    /// Wire bytes of this report (binary packs 4 states/byte, level is
+    /// 2 manchester bytes per group).
     pub fn encode(&self) -> Vec<u8> {
         match self {
             StatusReport::Binary(states) => {

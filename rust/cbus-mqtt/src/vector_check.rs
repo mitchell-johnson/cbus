@@ -20,6 +20,7 @@ fn need_i64(v: &Value, k: &str) -> Result<i64, String> {
         .ok_or_else(|| format!("vector missing {k}"))
 }
 
+/// Evaluate one `mqtt_topics.jsonl` vector.
 pub fn check_topic(v: &Value) -> Result<(), String> {
     match need_str(v, "kind")? {
         "format" => {
@@ -105,6 +106,7 @@ fn labels_from_json(v: &Value) -> Result<Option<AppLabels>, String> {
     }
 }
 
+/// Evaluate one `ha_discovery.jsonl` vector.
 pub fn check_ha(v: &Value) -> Result<(), String> {
     let expect_qos = need_i64(v, "expect_qos")?;
     let expect_retain = v

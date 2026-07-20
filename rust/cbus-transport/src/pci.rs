@@ -17,9 +17,13 @@ use tokio::sync::mpsc;
 
 use crate::framing::FrameBuffer;
 
+/// A confirmation code still unanswered after this long is abandoned.
 pub const CONFIRMATION_TIMEOUT: Duration = Duration::from_secs(30);
+/// Total transmission attempts for an unconfirmed frame.
 pub const MAX_PACKET_RETRIES: u32 = 3;
+/// Sweep interval of the retransmit task.
 pub const RETRY_INTERVAL: Duration = Duration::from_secs(1);
+/// Pause before every transport write (the CNI is slow).
 pub const PACKET_SEND_DELAY: Duration = Duration::from_millis(100);
 const FORCE_CLEANUP_THRESHOLD: f64 = 0.9;
 const FORCE_CLEANUP_PERCENTAGE: f64 = 0.25;
@@ -28,31 +32,53 @@ const FORCE_CLEANUP_PERCENTAGE: f64 = 0.25;
 /// `PCIProtocol.on_*` handlers consumed by `mqtt_gateway.CBusHandler`).
 #[derive(Debug, Clone, PartialEq)]
 pub enum CBusEvent {
+    /// A lighting group was switched on.
     LightingOn {
+        /// Source unit address (`None` when the source byte was 0).
         source: Option<u8>,
+        /// Lighting application address (0x30..=0x5F).
         app: u8,
+        /// Group address.
         group: u8,
     },
+    /// A lighting group was switched off.
     LightingOff {
+        /// Source unit address (`None` when the source byte was 0).
         source: Option<u8>,
+        /// Lighting application address (0x30..=0x5F).
         app: u8,
+        /// Group address.
         group: u8,
     },
+    /// A lighting group started ramping to a level.
     LightingRamp {
+        /// Source unit address (`None` when the source byte was 0).
         source: Option<u8>,
+        /// Lighting application address (0x30..=0x5F).
         app: u8,
+        /// Group address.
         group: u8,
+        /// Ramp duration in seconds (already snapped to the rate table).
         duration: u32,
+        /// Target level 0..=255.
         level: u8,
     },
+    /// An extended-status level report arrived (binary reports are
+    /// ignored, like the Python daemon).
     LevelReport {
+        /// Child application the report describes.
         app: u8,
+        /// First group address covered by the report.
         block_start: u8,
+        /// One level per group; `None` = missing/undecodable.
         levels: Vec<Option<u8>>,
     },
+    /// A unit asked for the network time.
     ClockRequest {
+        /// Source unit address (`None` when the source byte was 0).
         source: Option<u8>,
     },
+    /// The transport dropped; the client is dead and must be replaced.
     ConnectionLost,
 }
 
@@ -69,9 +95,12 @@ struct PciState {
     pending: HashMap<u8, Pending>,
 }
 
+/// Write half of a connected transport.
 pub type BoxedWrite = Box<dyn AsyncWrite + Send + Unpin>;
+/// Read half of a connected transport.
 pub type BoxedRead = Box<dyn AsyncRead + Send + Unpin>;
 
+/// Async client for a C-Bus PCI/CNI. Port of `PCIProtocol`.
 pub struct PciClient {
     writer: tokio::sync::Mutex<BoxedWrite>,
     state: Mutex<PciState>,
@@ -393,6 +422,7 @@ impl PciClient {
         Ok(())
     }
 
+    /// `PCIProtocol.lighting_group_on`: switch up to 9 groups on.
     pub async fn lighting_group_on(&self, groups: &[u8], app: u8) -> std::io::Result<Option<u8>> {
         self.send_lighting(groups, app, |application, group_address| Sal::LightingOn {
             application,
@@ -401,6 +431,7 @@ impl PciClient {
         .await
     }
 
+    /// `PCIProtocol.lighting_group_off`: switch up to 9 groups off.
     pub async fn lighting_group_off(&self, groups: &[u8], app: u8) -> std::io::Result<Option<u8>> {
         self.send_lighting(groups, app, |application, group_address| Sal::LightingOff {
             application,
@@ -423,6 +454,7 @@ impl PciClient {
         self.send(&p, true, false).await
     }
 
+    /// `PCIProtocol.lighting_group_ramp`: ramp one group to a level.
     pub async fn lighting_group_ramp(
         &self,
         group: u8,
@@ -443,6 +475,7 @@ impl PciClient {
         self.send(&p, true, false).await
     }
 
+    /// `PCIProtocol.request_status`: level status request for one block.
     pub async fn request_status(&self, block: u8, app: u8) -> std::io::Result<Option<u8>> {
         let p = Packet::PointToMultipoint {
             meta: Meta::new(true, 0),

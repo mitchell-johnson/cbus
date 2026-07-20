@@ -7,10 +7,13 @@ use std::collections::BTreeMap;
 use std::io::Read;
 use std::path::Path;
 
+/// Error reading a Toolkit backup.
 #[derive(Debug, thiserror::Error)]
 pub enum CbzError {
+    /// The file could not be read.
     #[error("io error: {0}")]
     Io(#[from] std::io::Error),
+    /// The archive/XML was not a usable Toolkit backup.
     #[error("{0}")]
     Cbz(String),
 }
@@ -41,6 +44,7 @@ pub fn get_field(node: roxmltree::Node, field: &str) -> Option<String> {
     found
 }
 
+/// Child elements of `node` whose (normalised) tag matches `field`.
 pub fn children<'a, 'input: 'a>(
     node: roxmltree::Node<'a, 'input>,
     field: &str,

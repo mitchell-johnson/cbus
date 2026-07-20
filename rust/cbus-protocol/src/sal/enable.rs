@@ -3,6 +3,7 @@
 use super::Sal;
 use crate::DecodeError;
 
+/// Decode the enable-control SAL stream of a PM packet.
 pub fn decode_sals(data: &[u8]) -> Result<Vec<Sal>, DecodeError> {
     let mut out = Vec::new();
     let mut data = data;

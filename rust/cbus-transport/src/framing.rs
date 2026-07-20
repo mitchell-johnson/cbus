@@ -9,10 +9,14 @@ use cbus_protocol::packet::Packet;
 /// server-mode local echo).
 #[derive(Debug)]
 pub struct FrameEvent {
+    /// The decoded packet; `None` for consume-and-ignore frames.
     pub packet: Option<Packet>,
+    /// The raw wire bytes this frame consumed.
     pub raw: Vec<u8>,
 }
 
+/// Reassembles a byte stream into C-Bus frames. Port of
+/// `buffered_protocol.py` + `cbus_protocol.py`.
 pub struct FrameBuffer {
     buf: Vec<u8>,
     from_pci: bool,
@@ -39,10 +43,13 @@ impl FrameBuffer {
         }
     }
 
+    /// Toggle checksum verification (the simulator flips this when the
+    /// client sets/clears SRCHK).
     pub fn set_checksum(&mut self, on: bool) {
         self.checksum = on;
     }
 
+    /// Drop any buffered partial frame.
     pub fn clear(&mut self) {
         self.buf.clear();
     }

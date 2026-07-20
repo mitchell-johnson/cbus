@@ -5,6 +5,7 @@ use super::Sal;
 use crate::common::{ramp_rate_to_duration, LIGHT_OFF, LIGHT_ON, LIGHT_TERMINATE_RAMP};
 use crate::DecodeError;
 
+/// Decode the lighting SAL stream of a PM packet.
 pub fn decode_sals(application: u8, data: &[u8]) -> Result<Vec<Sal>, DecodeError> {
     let mut out = Vec::new();
     let mut data = data;

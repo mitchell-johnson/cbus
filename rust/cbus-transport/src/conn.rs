@@ -7,15 +7,32 @@ use crate::pci::{BoxedRead, BoxedWrite};
 use std::time::Duration;
 use tokio::net::TcpStream;
 
+/// Timeout for a single connection attempt.
 pub const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
+/// Default pause between reconnection attempts.
 pub const DEFAULT_RECONNECT_INTERVAL: Duration = Duration::from_secs(5);
+/// Default TCP port of an ESP32 C-Bus bridge.
 pub const ESP32_DEFAULT_PORT: u16 = 10001;
+/// Default baud rate of an ESP32 serial bridge (9600 8N1).
 pub const ESP32_DEFAULT_BAUD: u32 = 9600;
 
+/// Where the C-Bus PCI/CNI lives.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Endpoint {
-    Tcp { host: String, port: u16 },
-    Serial { device: String, baud: u32 },
+    /// TCP connection to a CNI (or ESP32 bridge in WiFi mode).
+    Tcp {
+        /// Host name or IP address.
+        host: String,
+        /// TCP port.
+        port: u16,
+    },
+    /// Direct serial connection (PCI or ESP32 bridge), 8N1.
+    Serial {
+        /// Device path, e.g. `/dev/ttyUSB0`.
+        device: String,
+        /// Baud rate (9600 for a 5500PC/ESP32).
+        baud: u32,
+    },
 }
 
 impl Endpoint {

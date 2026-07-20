@@ -12,14 +12,18 @@ use crate::EncodeError;
 /// Envelope fields shared by the addressed packet types.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Meta {
+    /// Frame carries (and requires) a checksum.
     pub checksum: bool,
-    pub priority_class: u8, // 0..=3
+    /// Priority class 0..=3 (0 = lowest).
+    pub priority_class: u8,
+    /// Source unit address (from-PCI frames; `None` when 0).
     pub source_address: Option<u8>,
     /// the confirmation *char* (client->PCI frames only)
     pub confirmation: Option<u8>,
 }
 
 impl Meta {
+    /// Envelope with no source address or confirmation.
     pub fn new(checksum: bool, priority_class: u8) -> Self {
         Meta {
             checksum,
@@ -30,36 +34,57 @@ impl Meta {
     }
 }
 
+/// Any C-Bus serial-interface packet.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Packet {
-    // specials
+    /// `+` — PCI power-up notification.
     PowerOn,
+    /// `!` — PCI cannot accept data.
     PciError,
+    /// `~` — client-requested PCI reset.
     Reset,
+    /// `|` — smart+connect shortcut.
     SmartConnect,
+    /// `<code>.` / `<code>#` — command confirmation from the PCI.
     Confirmation {
+        /// The confirmation character (from `hijklmnopqrstuvwxyzg`).
         code: u8,
+        /// `.` = delivered, `#` = checksum/NAK failure.
         success: bool,
     },
     /// decode error under strict rules (payload/exception not modelled)
     Invalid,
     /// bare CAL returned by the client "device management CAL" path
     BareCal(Cal),
+    /// Device management (PCI parameter set), dp bit set.
     DeviceManagement {
+        /// Envelope fields.
         meta: Meta,
+        /// Parameter number.
         parameter: u8,
+        /// Parameter value.
         value: u8,
     },
+    /// Point-to-multipoint (SAL-carrying) packet.
     PointToMultipoint {
+        /// Envelope fields.
         meta: Meta,
+        /// Application address byte.
         application: u8,
+        /// The SAL messages.
         sals: Vec<Sal>,
     },
+    /// Point-to-point (CAL-carrying) packet.
     PointToPoint {
+        /// Envelope fields.
         meta: Meta,
+        /// Destination/replying unit address.
         unit_address: u8,
+        /// Arrived via a network bridge (decode-only).
         bridged: bool,
+        /// Bridge hop addresses (decode-only).
         hops: Vec<u8>,
+        /// The CAL messages.
         cals: Vec<Cal>,
     },
 }
@@ -79,6 +104,7 @@ fn header(meta: &Meta, dat: u8, dp: bool) -> Vec<u8> {
 }
 
 impl Packet {
+    /// Envelope fields of the addressed packet types.
     pub fn meta(&self) -> Option<&Meta> {
         match self {
             Packet::DeviceManagement { meta, .. }
@@ -88,6 +114,7 @@ impl Packet {
         }
     }
 
+    /// Mutable envelope fields of the addressed packet types.
     pub fn meta_mut(&mut self) -> Option<&mut Meta> {
         match self {
             Packet::DeviceManagement { meta, .. }

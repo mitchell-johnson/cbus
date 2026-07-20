@@ -9,6 +9,7 @@ use serde_json::{json, Map, Value};
 
 // ---------------------------------------------------------------- to_json
 
+/// Canonical JSON for one SAL.
 pub fn sal_to_json(s: &Sal) -> Value {
     match s {
         Sal::LightingRamp {
@@ -67,6 +68,7 @@ pub fn sal_to_json(s: &Sal) -> Value {
     }
 }
 
+/// Canonical JSON for a status report.
 pub fn report_to_json(r: &StatusReport) -> Value {
     match r {
         StatusReport::Binary(states) => {
@@ -76,6 +78,7 @@ pub fn report_to_json(r: &StatusReport) -> Value {
     }
 }
 
+/// Canonical JSON for one CAL.
 pub fn cal_to_json(c: &Cal) -> Value {
     match c {
         Cal::Identify { attribute } => json!({"cal": "identify", "attribute": attribute}),
@@ -192,9 +195,13 @@ pub fn packet_to_json(p: Option<&Packet>) -> Value {
 /// SAL/CAL/report encoders).
 #[derive(Debug, Clone, PartialEq)]
 pub enum JsonObject {
+    /// A full packet.
     Packet(Packet),
+    /// A bare SAL (standalone encode vectors).
     Sal(Sal),
+    /// A bare CAL.
     Cal(Cal),
+    /// A bare status report.
     Report(StatusReport),
 }
 
@@ -239,6 +246,7 @@ fn get_str<'a>(d: &'a Value, k: &str) -> Result<&'a str, JErr> {
         .ok_or_else(|| format!("missing/invalid field {k}"))
 }
 
+/// Build a SAL from canonical JSON.
 pub fn sal_from_json(d: &Value) -> Result<Sal, JErr> {
     match get_str(d, "sal")? {
         "lighting_on" => Ok(Sal::LightingOn {
@@ -296,6 +304,7 @@ pub fn sal_from_json(d: &Value) -> Result<Sal, JErr> {
     }
 }
 
+/// Build a status report from canonical JSON.
 pub fn report_from_json(d: &Value) -> Result<StatusReport, JErr> {
     match get_str(d, "report")? {
         "binary" => {
@@ -334,6 +343,7 @@ pub fn report_from_json(d: &Value) -> Result<StatusReport, JErr> {
     }
 }
 
+/// Build a CAL from canonical JSON.
 pub fn cal_from_json(d: &Value) -> Result<Cal, JErr> {
     match get_str(d, "cal")? {
         "identify" => Ok(Cal::Identify {

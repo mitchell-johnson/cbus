@@ -5,28 +5,43 @@ use crate::common::{CAL_EXTENDED_STATUS, CAL_IDENTIFY, CAL_RECALL, CAL_REPLY};
 use crate::report::StatusReport;
 use crate::DecodeError;
 
+/// A Common Application Language message.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Cal {
+    /// Ask a unit to identify one of its attributes.
     Identify {
+        /// Attribute number to identify.
         attribute: u8,
     },
+    /// Recall a parameter block from a unit.
     Recall {
+        /// First parameter number.
         param: u8,
+        /// Number of parameters to recall.
         count: u8,
     },
+    /// A unit's reply to identify/recall.
     Reply {
+        /// The parameter (or attribute) being replied to.
         parameter: u8,
+        /// Reply payload (clipped to 0x1E bytes on encode).
         data: Vec<u8>,
     },
+    /// An extended status report (binary or level).
     ExtendedStatus {
+        /// Report was sent unsolicited.
         externally_initiated: bool,
+        /// Application the report describes.
         child_application: u8,
+        /// First group address covered.
         block_start: u8,
+        /// The group states/levels.
         report: StatusReport,
     },
 }
 
 impl Cal {
+    /// Wire bytes of this CAL (per `cal/*.py` encode methods).
     pub fn encode(&self) -> Vec<u8> {
         match self {
             Cal::Identify { attribute } => vec![CAL_IDENTIFY, *attribute],

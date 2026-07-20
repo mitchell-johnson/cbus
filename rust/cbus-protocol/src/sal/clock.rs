@@ -10,6 +10,7 @@ fn skip(data: &[u8], n: usize) -> &[u8] {
     &data[n.min(data.len())..]
 }
 
+/// Decode the clock SAL stream of a PM packet.
 pub fn decode_sals(data: &[u8]) -> Result<Vec<Sal>, DecodeError> {
     let mut out = Vec::new();
     let mut data = data;

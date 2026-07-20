@@ -1,12 +1,19 @@
 //! Port of `cbus/daemon/topics.py` and
 //! `cbus/daemon/mqtt_gateway.py::get_topic_group_address`.
 
+/// Prefix of every cmqttd light topic.
 pub const LIGHT_TOPIC_PREFIX: &str = "homeassistant/light/cbus_";
+/// Prefix of every cmqttd binary-sensor topic.
 pub const BINSENSOR_TOPIC_PREFIX: &str = "homeassistant/binary_sensor/cbus_";
+/// Command topic suffix.
 pub const TOPIC_SET_SUFFIX: &str = "/set";
+/// Discovery-config topic suffix.
 pub const TOPIC_CONF_SUFFIX: &str = "/config";
+/// State topic suffix.
 pub const TOPIC_STATE_SUFFIX: &str = "/state";
 
+/// The default lighting application (0x38), whose topics keep the
+/// historic bare-group-number format.
 pub const DEFAULT_LIGHTING_APP: i64 = 0x38;
 
 /// Textual representation of a C-Bus (application, group) pair.
@@ -24,6 +31,7 @@ pub fn ga_string(group_addr: u8, app_addr: i64, zeros: bool) -> String {
     }
 }
 
+/// Command (`/set`) topic for a light.
 pub fn set_topic(group_addr: u8, app_addr: i64) -> String {
     format!(
         "{}{}{}",
@@ -33,6 +41,7 @@ pub fn set_topic(group_addr: u8, app_addr: i64) -> String {
     )
 }
 
+/// State topic for a light.
 pub fn state_topic(group_addr: u8, app_addr: i64) -> String {
     format!(
         "{}{}{}",
@@ -42,6 +51,7 @@ pub fn state_topic(group_addr: u8, app_addr: i64) -> String {
     )
 }
 
+/// Discovery-config topic for a light.
 pub fn conf_topic(group_addr: u8, app_addr: i64) -> String {
     format!(
         "{}{}{}",
@@ -51,6 +61,7 @@ pub fn conf_topic(group_addr: u8, app_addr: i64) -> String {
     )
 }
 
+/// State topic for the paired binary sensor.
 pub fn bin_sensor_state_topic(group_addr: u8, app_addr: i64) -> String {
     format!(
         "{}{}{}",
@@ -60,6 +71,7 @@ pub fn bin_sensor_state_topic(group_addr: u8, app_addr: i64) -> String {
     )
 }
 
+/// Discovery-config topic for the paired binary sensor.
 pub fn bin_sensor_conf_topic(group_addr: u8, app_addr: i64) -> String {
     format!(
         "{}{}{}",

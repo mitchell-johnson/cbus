@@ -1,73 +1,117 @@
 //! Port of `cbus/common.py`: protocol constants, checksums, ramp rates.
 
+/// The only hex alphabet the decoder accepts (uppercase).
 pub const HEX_CHARS: &[u8] = b"0123456789ABCDEF";
+/// Client command terminator.
 pub const END_COMMAND: &[u8] = b"\r";
+/// PCI response terminator.
 pub const END_RESPONSE: &[u8] = b"\r\n";
+/// Smallest possible from-PCI message (a confirmation).
 pub const MIN_MESSAGE_SIZE: usize = 2;
+/// Receive-buffer cap; overflow drops the whole buffer.
 pub const MAX_BUFFER_SIZE: usize = 256;
 
 /// Valid confirmation codes, in allocation order (h first, g last).
 pub const CONFIRMATION_CODES: &[u8] = b"hijklmnopqrstuvwxyzg";
 
+/// Lowest valid group address.
 pub const MIN_GROUP_ADDR: u8 = 0;
+/// Highest valid group address.
 pub const MAX_GROUP_ADDR: u8 = 255;
 
 // DestinationAddressType (Serial Interface Guide s3.4)
+/// Destination address type: point-to-point-to-multipoint.
 pub const DAT_POINT_TO_POINT_TO_MULTIPOINT: u8 = 0x03;
+/// Destination address type: point-to-multipoint.
 pub const DAT_POINT_TO_MULTIPOINT: u8 = 0x05;
+/// Destination address type: point-to-point.
 pub const DAT_POINT_TO_POINT: u8 = 0x06;
 
 // PriorityClass
+/// Lowest priority (default for most packets).
 pub const PRIORITY_CLASS_4: u8 = 0x00; // lowest (default for most packets)
+/// Priority class 2 (default for DeviceManagement).
 pub const PRIORITY_CLASS_2: u8 = 0x02; // default for DeviceManagement
 
 // Applications
+/// Temperature broadcast application.
 pub const APP_TEMPERATURE: u8 = 0x19;
+/// First lighting application address.
 pub const APP_LIGHTING_FIRST: u8 = 0x30;
+/// The default lighting application.
 pub const APP_LIGHTING: u8 = 0x38;
+/// Last lighting application address.
 pub const APP_LIGHTING_LAST: u8 = 0x5f;
+/// Clock and timekeeping application.
 pub const APP_CLOCK: u8 = 0xdf;
+/// Enable control application.
 pub const APP_ENABLE: u8 = 0xcb;
+/// Status request pseudo-application.
 pub const APP_STATUS_REQUEST: u8 = 0xff;
 
 // CAL command codes
+/// CAL command: reset.
 pub const CAL_RESET: u8 = 0x08;
+/// CAL command: recall.
 pub const CAL_RECALL: u8 = 0x1a;
+/// CAL command: identify.
 pub const CAL_IDENTIFY: u8 = 0x21;
+/// CAL command: get status.
 pub const CAL_GET_STATUS: u8 = 0x2a;
+/// CAL command: acknowledge.
 pub const CAL_ACKNOWLEDGE: u8 = 0x32;
 // bit-masks
+/// CAL command mask: reply (0x80..0x9F).
 pub const CAL_REPLY: u8 = 0x80;
+/// CAL command mask: standard status (0xC0..0xDF).
 pub const CAL_STANDARD_STATUS: u8 = 0xc0;
+/// CAL command mask: extended status (0xE0..0xFF).
 pub const CAL_EXTENDED_STATUS: u8 = 0xe0;
 
 // ExtendedCALType
+/// Extended status coding: binary report.
 pub const EXTENDED_CAL_BINARY: u8 = 0x00;
+/// Extended status coding: level report.
 pub const EXTENDED_CAL_LEVEL: u8 = 0x07;
 
 // GroupState
+/// Binary report state: unit missing.
 pub const GROUP_STATE_MISSING: u8 = 0x00;
+/// Binary report state: on.
 pub const GROUP_STATE_ON: u8 = 0x01;
+/// Binary report state: off.
 pub const GROUP_STATE_OFF: u8 = 0x02;
+/// Binary report state: error.
 pub const GROUP_STATE_ERROR: u8 = 0x03;
 
 // Lighting application commands
+/// Lighting SAL command: on.
 pub const LIGHT_ON: u8 = 0x79;
+/// Lighting SAL command: off.
 pub const LIGHT_OFF: u8 = 0x01;
+/// Lighting SAL command: terminate ramp.
 pub const LIGHT_TERMINATE_RAMP: u8 = 0x09;
+/// Fastest ramp rate code (instant).
 pub const LIGHT_RAMP_FASTEST: u8 = 0x02;
+/// Slowest ramp rate code (1020 s).
 pub const LIGHT_RAMP_SLOWEST: u8 = 0x7a;
 
 // Enable control application commands
+/// Enable SAL command: set network variable.
 pub const ENABLE_SET_NETWORK_VARIABLE: u8 = 0x02;
 
 // Temperature broadcast command
+/// Temperature SAL command: broadcast.
 pub const TEMPERATURE_BROADCAST: u8 = 0x02;
 
 // Clock application
+/// Clock update variable: time.
 pub const CLOCK_ATTR_TIME: u8 = 0x01;
+/// Clock update variable: date.
 pub const CLOCK_ATTR_DATE: u8 = 0x02;
+/// Clock SAL command: update network variable.
 pub const CLOCK_UPDATE_NETWORK_VARIABLE: u8 = 0x08;
+/// Clock SAL command: request refresh.
 pub const CLOCK_REQUEST_REFRESH: u8 = 0x11;
 
 /// Ramp rate table, (command code, duration seconds), ordered by duration.
@@ -129,6 +173,7 @@ pub fn cbus_checksum(data: &[u8]) -> u8 {
     (((!sum & 0xff) + 1) & 0xff) as u8
 }
 
+/// Append the checksum byte to `data`.
 pub fn add_cbus_checksum(data: &[u8]) -> Vec<u8> {
     let mut out = data.to_vec();
     out.push(cbus_checksum(data));
