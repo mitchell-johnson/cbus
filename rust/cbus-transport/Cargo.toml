@@ -10,3 +10,6 @@ tokio = { workspace = true }
 tokio-serial = { workspace = true }
 tracing = { workspace = true }
 chrono = { workspace = true }
+
+[dev-dependencies]
+proptest = { workspace = true }

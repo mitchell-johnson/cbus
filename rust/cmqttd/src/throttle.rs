@@ -50,6 +50,35 @@ mod tests {
     use std::sync::Arc;
 
     #[tokio::test]
+    async fn preserves_order() {
+        let t = Throttle::new();
+        let order = Arc::new(std::sync::Mutex::new(Vec::new()));
+        for i in 0..4 {
+            let o = order.clone();
+            t.enqueue(async move {
+                o.lock().unwrap().push(i);
+            });
+        }
+        tokio::time::sleep(Duration::from_millis(1000)).await;
+        assert_eq!(*order.lock().unwrap(), vec![0, 1, 2, 3]);
+    }
+
+    #[tokio::test]
+    async fn enqueue_never_blocks_when_full() {
+        let t = Throttle::new();
+        let start = std::time::Instant::now();
+        // way past MAX_QUEUE_SIZE; overflow is dropped with a warning
+        for _ in 0..(MAX_QUEUE_SIZE + 200) {
+            t.enqueue(async {});
+        }
+        assert!(
+            start.elapsed() < Duration::from_secs(1),
+            "enqueue blocked: {:?}",
+            start.elapsed()
+        );
+    }
+
+    #[tokio::test]
     async fn paces_at_200ms() {
         let t = Throttle::new();
         let count = Arc::new(AtomicUsize::new(0));

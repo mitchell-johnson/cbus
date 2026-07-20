@@ -165,4 +165,47 @@ mod tests {
         assert!(read_cbz_labels(&fixture(), Some("Harness Network")).is_ok());
         assert!(read_cbz_labels(&fixture(), Some("Nope")).is_err());
     }
+
+    fn write_zip(path: &Path, files: &[(&str, &[u8])]) {
+        use std::io::Write;
+        let mut w = zip::ZipWriter::new(std::fs::File::create(path).unwrap());
+        let opts = zip::write::SimpleFileOptions::default()
+            .compression_method(zip::CompressionMethod::Stored);
+        for (name, data) in files {
+            w.start_file(*name, opts).unwrap();
+            w.write_all(data).unwrap();
+        }
+        w.finish().unwrap();
+    }
+
+    fn temp_path(name: &str) -> std::path::PathBuf {
+        std::env::temp_dir().join(format!("cbz-test-{}-{name}", std::process::id()))
+    }
+
+    #[test]
+    fn reads_zipped_cbz() {
+        let xml = std::fs::read(fixture()).unwrap();
+        let path = temp_path("ok.cbz");
+        write_zip(&path, &[("project.xml", &xml)]);
+        let labels = read_cbz_labels(&path, None).unwrap();
+        std::fs::remove_file(&path).ok();
+        assert_eq!(labels[&56].1[&1], "Kitchen Bench");
+        assert_eq!(labels[&48].1[&11], "Deck");
+    }
+
+    #[test]
+    fn zip_must_hold_one_xml() {
+        let xml = std::fs::read(fixture()).unwrap();
+        let two = temp_path("two.cbz");
+        write_zip(&two, &[("a.xml", &xml), ("b.xml", &xml)]);
+        let r = read_cbz_labels(&two, None);
+        std::fs::remove_file(&two).ok();
+        assert!(r.is_err(), "2-file archive must be rejected");
+
+        let notxml = temp_path("notxml.cbz");
+        write_zip(&notxml, &[("project.txt", &xml)]);
+        let r = read_cbz_labels(&notxml, None);
+        std::fs::remove_file(&notxml).ok();
+        assert!(r.is_err(), "non-.xml member must be rejected");
+    }
 }

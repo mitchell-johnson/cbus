@@ -516,6 +516,51 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn confirmation_releases_and_stops_retry() {
+        let (client_side, mut pci_side) = tokio::io::duplex(4096);
+        let (rd, wr) = tokio::io::split(client_side);
+        let (tx, _rx) = mpsc::unbounded_channel();
+        let pci = PciClient::new(Box::new(rd), Box::new(wr), tx);
+        let code = pci.request_status(0, 0x30).await.unwrap().unwrap();
+        assert_eq!(code, b'h');
+        let first = read_available(&mut pci_side, 300).await;
+        assert!(!first.is_empty());
+        // deliver the confirmation; the pending frame must not be resent
+        tokio::io::AsyncWriteExt::write_all(&mut pci_side, b"h.")
+            .await
+            .unwrap();
+        tokio::time::sleep(Duration::from_millis(2500)).await;
+        let got = read_available(&mut pci_side, 200).await;
+        assert!(
+            got.is_empty(),
+            "unexpected retransmit after confirmation: {:?}",
+            String::from_utf8_lossy(&got)
+        );
+    }
+
+    #[tokio::test]
+    async fn allocator_survives_exhaustion_pressure() {
+        let (client_side, _pci_side) = tokio::io::duplex(4096);
+        let (rd, wr) = tokio::io::split(client_side);
+        let (tx, _rx) = mpsc::unbounded_channel();
+        let pci = PciClient::new(Box::new(rd), Box::new(wr), tx);
+        // Nothing ever confirms; the >90% force-cleanup and the
+        // exhaustion fallback must keep yielding valid codes without
+        // panicking or spinning.
+        let mut codes = Vec::new();
+        for _ in 0..64 {
+            codes.push(pci.get_confirmation_code());
+        }
+        assert!(codes.iter().all(|c| CONFIRMATION_CODES.contains(c)));
+        // the first 19 allocations are distinct (force cleanup starts
+        // when >90% of the 20-code pool is in use)
+        let mut first19 = codes[..19].to_vec();
+        first19.sort_unstable();
+        first19.dedup();
+        assert_eq!(first19.len(), 19);
+    }
+
+    #[tokio::test]
     async fn retry_unconfirmed_identical() {
         let (client_side, mut pci_side) = tokio::io::duplex(4096);
         let (rd, wr) = tokio::io::split(client_side);
