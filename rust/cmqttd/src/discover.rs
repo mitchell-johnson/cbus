@@ -27,7 +27,15 @@ pub fn discover_esp32(timeout: Duration) -> Result<(String, u16), String> {
         }
         match receiver.recv_timeout(deadline - now) {
             Ok(mdns_sd::ServiceEvent::ServiceResolved(info)) => {
-                if let Some(addr) = info.get_addresses().iter().next() {
+                // The address set mixes A and AAAA records (often IPv6
+                // link-local, sometimes even the loopback interface's).
+                // Python's zeroconf lists IPv4 first; do the same.
+                let addrs = info.get_addresses();
+                if let Some(addr) = addrs
+                    .iter()
+                    .find(|a| a.is_ipv4())
+                    .or_else(|| addrs.iter().next())
+                {
                     tracing::info!(
                         "discovered ESP32 C-Bus bridge {} at {}:{}",
                         info.get_fullname(),
