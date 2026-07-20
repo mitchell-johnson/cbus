@@ -206,6 +206,27 @@ def decode_packet(
         # priority class
         priority_class = PriorityClass((flags >> 6) & 0x03)
 
+        # For PCI responses: non-standard address types (0, 1, 2, 4, 7)
+        # are direct CAL replies where the "flags" byte is really a CAL
+        # header (REPLY 0x80-0x9F, STANDARD_STATUS 0xC0-0xDF, or
+        # EXTENDED_STATUS 0xE0-0xFF). Decode the entire data as CAL.
+        if from_pci and address_type not in (
+            DestinationAddressType.POINT_TO_POINT_TO_MULTIPOINT,
+            DestinationAddressType.POINT_TO_MULTIPOINT,
+            DestinationAddressType.POINT_TO_POINT,
+        ) and not dp:
+            cals = []
+            cal_data = data  # full data including the CAL header byte
+            while cal_data:
+                cal, cal_len = PointToPointPacket.decode_cal(cal_data)
+                cal_data = cal_data[cal_len:]
+                cals.append(cal)
+            p = PointToPointPacket(
+                checksum=checksum, priority_class=priority_class,
+                unit_address=0, cals=cals)
+            p.source_address = None
+            return p, consumed
+
         # increment ourselves along
         data = data[1:]
 

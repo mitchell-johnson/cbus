@@ -45,12 +45,18 @@ class DestinationAddressType(IntEnum):
     """
     Destination Address Type (DAT).
 
-    Ref: Serial Interface Guide, s3.4. Other values reserved.
+    Ref: Serial Interface Guide, s3.4.
+    Values 0x01, 0x02, 0x04, 0x07 appear in CNI responses for Device
+    Management CAL replies (PP short-form, DM reply, PP extended-form).
     """
     UNSET = 0x00
+    POINT_TO_POINT_SHORT = 0x01
+    DEVICE_MANAGEMENT_REPLY = 0x02
     POINT_TO_POINT_TO_MULTIPOINT = 0x03
+    RESERVED_4 = 0x04
     POINT_TO_MULTIPOINT = 0x05
     POINT_TO_POINT = 0x06
+    POINT_TO_POINT_EXTENDED = 0x07
 
 
 class PriorityClass(IntEnum):
@@ -173,6 +179,32 @@ class IdentifyAttribute(IntEnum):
     CUR_LVL = 0x0F
     OUT_SUMMARY = 0x10
     DSI_STATUS = 0x11
+
+
+class DeviceAttribute(IntEnum):
+    """
+    Device Management CAL attributes used during unit interrogation.
+
+    These are the parameter/attribute IDs used in IDENTIFY (0x21) and
+    RECALL (0x1A) commands to read unit configuration from the bus.
+    Observed via proxy capture of cmqttd and C-Bus Toolkit traffic.
+    """
+    TYPE_NAME = 0x01
+    FIRMWARE_VERSION = 0x02
+    SERIAL_NUMBER = 0x04
+    DSI_STATUS = 0x0B
+    NETWORK_TERMINAL_LEVELS = 0x0D
+    TERMINAL_LEVELS = 0x10
+    GAV_ZONE_DATA = 0x20
+    IDENTIFY_BLOCK = 0x21
+    OUTPUT_SUMMARY = 0x23
+    GAV_STORE = 0x2A
+    GROUP_ADDRESS_TABLE = 0x2C
+    PARAMETER_AREA = 0x3E
+    INSTALLED_APPS_SHORT = 0xF2
+    TYPE_IDENTIFICATION = 0xF3
+    INSTALLED_APPS = 0xFA
+    FIRMWARE_EXTENDED = 0xFB
 
 
 # Enable control application commands.

@@ -42,8 +42,12 @@ class IdentifyCAL:
         """
         Decodes identify SAL.
         """
-
-        return IdentifyCAL(IdentifyAttribute(data[1])), 2
+        attr_val = data[1]
+        try:
+            attr = IdentifyAttribute(attr_val)
+        except ValueError:
+            attr = attr_val
+        return IdentifyCAL(attr), 2
 
     def encode(self) -> bytes:
         return bytes([CAL.IDENTIFY, self.attribute & 0xff])
