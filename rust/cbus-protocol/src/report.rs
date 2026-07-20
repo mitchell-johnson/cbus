@@ -5,7 +5,10 @@ use crate::DecodeError;
 const MANCHESTER_NIBBLES: [u8; 4] = [0b1010, 0b1001, 0b0110, 0b0101];
 
 fn nibble_index(n: u8) -> Option<u8> {
-    MANCHESTER_NIBBLES.iter().position(|&x| x == n).map(|i| i as u8)
+    MANCHESTER_NIBBLES
+        .iter()
+        .position(|&x| x == n)
+        .map(|i| i as u8)
 }
 
 /// Decode a 2-byte manchester pair into a level; any invalid nibble -> None.
@@ -60,7 +63,7 @@ impl StatusReport {
 
     /// 2 bytes per level; odd byte count is an error.
     pub fn decode_level(data: &[u8]) -> Result<StatusReport, DecodeError> {
-        if data.len() % 2 != 0 {
+        if !data.len().is_multiple_of(2) {
             return Err(DecodeError::new(
                 "Expected a multiple of 2 bytes in LevelStatusReport",
             ));

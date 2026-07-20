@@ -91,13 +91,8 @@ fn main() {
             timeout,
         } => {
             let rt = tokio::runtime::Runtime::new().unwrap();
-            if let Err(e) = rt.block_on(interrogate_cmd(
-                &tcp,
-                unit,
-                discover,
-                max_address,
-                timeout,
-            )) {
+            if let Err(e) = rt.block_on(interrogate_cmd(&tcp, unit, discover, max_address, timeout))
+            {
                 eprintln!("error: {e}");
                 std::process::exit(1);
             }
@@ -249,17 +244,17 @@ const CONFIRMATION_CODES: &[u8] = cbus_protocol::common::CONFIRMATION_CODES;
 /// (identify?, attribute, recall-count) — `_INTERROGATION_ATTRS` +
 /// `_RECALL_COUNTS` from `protocol/interrogator.py`.
 const INTERROGATION_ATTRS: &[(bool, u8, u8)] = &[
-    (true, 0x01, 0),  // TYPE_NAME
-    (true, 0x02, 0),  // FIRMWARE_VERSION
-    (true, 0x04, 0),  // SERIAL_NUMBER
-    (false, 0x10, 4), // TERMINAL_LEVELS
-    (false, 0x3e, 1), // PARAMETER_AREA
+    (true, 0x01, 0),   // TYPE_NAME
+    (true, 0x02, 0),   // FIRMWARE_VERSION
+    (true, 0x04, 0),   // SERIAL_NUMBER
+    (false, 0x10, 4),  // TERMINAL_LEVELS
+    (false, 0x3e, 1),  // PARAMETER_AREA
     (false, 0xfa, 44), // INSTALLED_APPS
-    (false, 0xfb, 9), // FIRMWARE_EXTENDED
+    (false, 0xfb, 9),  // FIRMWARE_EXTENDED
     (false, 0x20, 12), // GAV_ZONE_DATA
     (false, 0x2c, 12), // GROUP_ADDRESS_TABLE
-    (false, 0x23, 6), // OUTPUT_SUMMARY
-    (false, 0x2a, 6), // GAV_STORE
+    (false, 0x23, 6),  // OUTPUT_SUMMARY
+    (false, 0x2a, 6),  // GAV_STORE
 ];
 
 struct Interrogator {
@@ -271,12 +266,9 @@ struct Interrogator {
 impl Interrogator {
     async fn connect(host: &str, port: u16, timeout: f64) -> std::io::Result<Interrogator> {
         let timeout = std::time::Duration::from_secs_f64(timeout);
-        let stream = tokio::time::timeout(
-            timeout,
-            tokio::net::TcpStream::connect((host, port)),
-        )
-        .await
-        .map_err(|_| std::io::Error::new(std::io::ErrorKind::TimedOut, "connect timeout"))??;
+        let stream = tokio::time::timeout(timeout, tokio::net::TcpStream::connect((host, port)))
+            .await
+            .map_err(|_| std::io::Error::new(std::io::ErrorKind::TimedOut, "connect timeout"))??;
         let mut me = Interrogator {
             stream,
             conf_idx: 0,
@@ -338,8 +330,7 @@ impl Interrogator {
             if now >= deadline {
                 return Ok(None);
             }
-            let n = match tokio::time::timeout(deadline - now, self.stream.read(&mut chunk)).await
-            {
+            let n = match tokio::time::timeout(deadline - now, self.stream.read(&mut chunk)).await {
                 Err(_) => return Ok(None),
                 Ok(Ok(0)) => return Ok(None),
                 Ok(Ok(n)) => n,
@@ -410,12 +401,8 @@ async fn interrogate_cmd(
         match data {
             Ok(Some(data)) => {
                 match attr {
-                    0x01 if is_identify => {
-                        type_name = String::from_utf8_lossy(&data).to_string()
-                    }
-                    0x02 if is_identify => {
-                        firmware = String::from_utf8_lossy(&data).to_string()
-                    }
+                    0x01 if is_identify => type_name = String::from_utf8_lossy(&data).to_string(),
+                    0x02 if is_identify => firmware = String::from_utf8_lossy(&data).to_string(),
                     0x04 if is_identify => serial = data.clone(),
                     0xfa => installed_apps = data.iter().copied().filter(|&b| b != 0xff).collect(),
                     _ => {}

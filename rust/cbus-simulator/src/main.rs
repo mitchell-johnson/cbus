@@ -143,9 +143,7 @@ fn handle_packet(st: &mut SimState, p: &Packet) -> Vec<u8> {
                         );
                     }
                     Sal::LightingTerminateRamp { group_address, .. } => {
-                        tracing::debug!(
-                            "recv: lighting terminate ramp: {group_address}"
-                        );
+                        tracing::debug!("recv: lighting terminate ramp: {group_address}");
                     }
                     Sal::ClockUpdateTime { .. } | Sal::ClockUpdateDate { .. } => {
                         tracing::debug!("recv: clock update");
@@ -244,8 +242,8 @@ fn master_application_status(st: &SimState, _group_address: u8) -> Option<Vec<u8
     }
     // unit 0 missing; 1-10 present; 253 present (pciserverprotocol.py:322)
     let mut states = vec![0u8]; // MISSING
-    states.extend(std::iter::repeat(1).take(10)); // ON
-    states.extend(std::iter::repeat(0).take(0xfe - 12)); // MISSING
+    states.extend(std::iter::repeat_n(1, 10)); // ON
+    states.extend(std::iter::repeat_n(0, 0xfe - 12)); // MISSING
     states.push(1); // ON
     let mut out = Vec::new();
     let mut x = 0usize;
@@ -254,7 +252,11 @@ fn master_application_status(st: &SimState, _group_address: u8) -> Option<Vec<u8
         if block.is_empty() {
             break;
         }
-        out.extend(standard_cal_packet(0xff, x as u8, &StatusReport::Binary(block)));
+        out.extend(standard_cal_packet(
+            0xff,
+            x as u8,
+            &StatusReport::Binary(block),
+        ));
         x += 0x58;
     }
     Some(out)

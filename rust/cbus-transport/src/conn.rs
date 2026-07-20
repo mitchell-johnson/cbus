@@ -37,9 +37,7 @@ impl Endpoint {
         match spec.rsplit_once(':') {
             Some((host, port)) => Ok(Endpoint::Tcp {
                 host: host.to_string(),
-                port: port
-                    .parse()
-                    .map_err(|_| format!("invalid port {port:?}"))?,
+                port: port.parse().map_err(|_| format!("invalid port {port:?}"))?,
             }),
             None => Ok(Endpoint::Tcp {
                 host: spec.to_string(),
@@ -61,17 +59,15 @@ impl Endpoint {
 pub async fn connect(ep: &Endpoint) -> std::io::Result<(BoxedRead, BoxedWrite)> {
     match ep {
         Endpoint::Tcp { host, port } => {
-            let stream = tokio::time::timeout(
-                CONNECT_TIMEOUT,
-                TcpStream::connect((host.as_str(), *port)),
-            )
-            .await
-            .map_err(|_| {
-                std::io::Error::new(
-                    std::io::ErrorKind::TimedOut,
-                    format!("connect to {host}:{port} timed out"),
-                )
-            })??;
+            let stream =
+                tokio::time::timeout(CONNECT_TIMEOUT, TcpStream::connect((host.as_str(), *port)))
+                    .await
+                    .map_err(|_| {
+                        std::io::Error::new(
+                            std::io::ErrorKind::TimedOut,
+                            format!("connect to {host}:{port} timed out"),
+                        )
+                    })??;
             stream.set_nodelay(true).ok();
             let (rd, wr) = stream.into_split();
             Ok((Box::new(rd), Box::new(wr)))
@@ -83,7 +79,7 @@ pub async fn connect(ep: &Endpoint) -> std::io::Result<(BoxedRead, BoxedWrite)> 
                     .parity(tokio_serial::Parity::None)
                     .stop_bits(tokio_serial::StopBits::One),
             )
-            .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
+            .map_err(std::io::Error::other)?;
             let (rd, wr) = tokio::io::split(port);
             Ok((Box::new(rd), Box::new(wr)))
         }
@@ -121,7 +117,10 @@ mod tests {
     async fn tcp_connect_and_reconnect() {
         let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
         let port = listener.local_addr().unwrap().port();
-        let ep = Endpoint::Tcp { host: "127.0.0.1".into(), port };
+        let ep = Endpoint::Tcp {
+            host: "127.0.0.1".into(),
+            port,
+        };
         let accept = tokio::spawn(async move {
             let (_s, _) = listener.accept().await.unwrap();
         });
@@ -132,8 +131,7 @@ mod tests {
         let r2 = connect(&ep).await;
         assert!(r2.is_err());
         // retry path with capped attempts
-        let r3 =
-            connect_with_retry(&ep, Duration::from_millis(20), 2).await;
+        let r3 = connect_with_retry(&ep, Duration::from_millis(20), 2).await;
         assert!(r3.is_err());
     }
 
@@ -141,15 +139,24 @@ mod tests {
     fn endpoint_parsing() {
         assert_eq!(
             Endpoint::parse_tcp("192.0.2.1:10001").unwrap(),
-            Endpoint::Tcp { host: "192.0.2.1".into(), port: 10001 }
+            Endpoint::Tcp {
+                host: "192.0.2.1".into(),
+                port: 10001
+            }
         );
         assert_eq!(
             Endpoint::parse_esp32_wifi("10.0.0.5").unwrap(),
-            Endpoint::Tcp { host: "10.0.0.5".into(), port: 10001 }
+            Endpoint::Tcp {
+                host: "10.0.0.5".into(),
+                port: 10001
+            }
         );
         assert_eq!(
             Endpoint::parse_esp32_wifi("10.0.0.5:2000").unwrap(),
-            Endpoint::Tcp { host: "10.0.0.5".into(), port: 2000 }
+            Endpoint::Tcp {
+                host: "10.0.0.5".into(),
+                port: 2000
+            }
         );
     }
 }

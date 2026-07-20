@@ -1,45 +1,34 @@
-# This Dockerfile sets up cmqttd, which bridges a C-Bus PCI to a MQTT server.
+# Multi-stage build for the Rust cmqttd (C-Bus <-> MQTT bridge).
 #
-# This requires about 120 MiB of dependencies, and the
-# The final image size is about 100 MiB.
+# The legacy Python image lives in Dockerfile.python until cutover.
 #
 # Example use:
 #
 # $ docker build -t cmqttd .
-# $ docker run --device /dev/ttyUSB0 -e "SERIAL_PORT=/dev/ttyUSB0" \
-#     -e "MQTT_SERVER=192.2.0.1" -e "TZ=Australia/Adelaide" -it cmqttd
-FROM python:3.11.9-alpine3.19 as base
-# python 3.10 required, at date this file is created only available in alpine:edge
+# $ docker run -e "MQTT_SERVER=192.2.0.1" -e "CNI_ADDR=192.2.0.2:10001" \
+#     -e "TZ=Australia/Adelaide" -it cmqttd
 
-# Install most Python deps here, because that way we don't need to include build tools in the
-# final image.
-RUN apk add --no-cache python3 py-pip tzdata python3-dev build-base libffi-dev && \
-    pip3 install --break-system-packages 'pyserial==3.5' 'pyserial-asyncio==0.6' 'six==1.16.0' 'cffi==1.15.1' 'aiomqtt>=1.0.0'
+FROM rust:1.92-alpine AS builder
+RUN apk add --no-cache musl-dev pkgconfig
+WORKDIR /build
+COPY rust/ /build/
+RUN cargo build --release --workspace
 
-# AIDEV-NOTE: pip deps must match setup.py; add new packages here.
+FROM alpine:3.20 AS cmqttd
+RUN apk add --no-cache tzdata
+COPY COPYING COPYING.LESSER README.md entrypoint-cmqttd.sh /
+RUN sed -i 's/\r$//' /entrypoint-cmqttd.sh && chmod +x /entrypoint-cmqttd.sh
+COPY --from=builder /build/target/release/cmqttd /usr/local/bin/cmqttd
+COPY --from=builder /build/target/release/cbus-tools /usr/local/bin/cbus-tools
+COPY --from=builder /build/target/release/cbus-simulator /usr/local/bin/cbus-simulator
+COPY cmqttd_config/ /etc/cmqttd/
 
-# Builds a distribution tarball
-FROM base as builder
-# See also .dockerignore
-ADD . /cbus
-WORKDIR /cbus
-RUN pip3 install --break-system-packages 'parameterized' && \
-    python3 setup.py bdist -p generic --format=gztar
-
-# cmqttd runner image
-FROM base as cmqttd
-COPY COPYING COPYING.LESSER Dockerfile README.md entrypoint-cmqttd.sh /
-RUN sed -i 's/\r$//' entrypoint-cmqttd.sh 
-COPY --from=builder /cbus/dist/cbus-0.2.generic.tar.gz /
-RUN tar zxf /cbus-0.2.generic.tar.gz && rm /cbus-0.2.generic.tar.gz
-COPY cmqttd_config/ /etc/cmqttd/ 
-
-# Fix auth directory and project file issues
+# Fix auth directory and project file issues (parity with the Python image)
 RUN rm -rf /etc/cmqttd/auth && touch /etc/cmqttd/auth && \
     if [ -d /etc/cmqttd/project.cbz ]; then rm -rf /etc/cmqttd/project.cbz && touch /etc/cmqttd/project.cbz; fi
-
-# Ensure project file exists
 COPY cmqttd_config/project.cbz /etc/cmqttd/project.cbz
 
-# Runs cmqttd itself
+# The entrypoint invokes `cmqttd`; the Rust binary is CLI-compatible with
+# the Python daemon, so the existing entrypoint script works unchanged.
+ENV PATH="/usr/local/bin:${PATH}"
 CMD ["/entrypoint-cmqttd.sh"]

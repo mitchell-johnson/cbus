@@ -31,8 +31,14 @@ pub fn check_topic(v: &Value) -> Result<(), String> {
                 ("expect_set_topic", set_topic(ga, app)),
                 ("expect_state_topic", state_topic(ga, app)),
                 ("expect_conf_topic", conf_topic(ga, app)),
-                ("expect_bin_sensor_state_topic", bin_sensor_state_topic(ga, app)),
-                ("expect_bin_sensor_conf_topic", bin_sensor_conf_topic(ga, app)),
+                (
+                    "expect_bin_sensor_state_topic",
+                    bin_sensor_state_topic(ga, app),
+                ),
+                (
+                    "expect_bin_sensor_conf_topic",
+                    bin_sensor_conf_topic(ga, app),
+                ),
             ];
             for (key, got) in checks {
                 let expect = need_str(v, key)?;
@@ -107,7 +113,9 @@ pub fn check_ha(v: &Value) -> Result<(), String> {
         .ok_or("vector missing expect_retain")?;
     // config+state publishes are always qos 1 retain true in the gateway
     if expect_qos != 1 || !expect_retain {
-        return Err(format!("unexpected qos/retain {expect_qos}/{expect_retain}"));
+        return Err(format!(
+            "unexpected qos/retain {expect_qos}/{expect_retain}"
+        ));
     }
 
     if v.get("meta").and_then(Value::as_bool).unwrap_or(false) {
@@ -142,7 +150,10 @@ pub fn check_ha(v: &Value) -> Result<(), String> {
     }
     let elc = v.get("expect_light_config").ok_or("missing light config")?;
     if &d.light_config != elc {
-        return Err(format!("light config mismatch: {} != {}", d.light_config, elc));
+        return Err(format!(
+            "light config mismatch: {} != {}",
+            d.light_config, elc
+        ));
     }
     let est = need_str(v, "expect_sensor_config_topic")?;
     if d.sensor_config_topic != est {
@@ -151,7 +162,9 @@ pub fn check_ha(v: &Value) -> Result<(), String> {
             d.sensor_config_topic
         ));
     }
-    let esc = v.get("expect_sensor_config").ok_or("missing sensor config")?;
+    let esc = v
+        .get("expect_sensor_config")
+        .ok_or("missing sensor config")?;
     if &d.sensor_config != esc {
         return Err(format!(
             "sensor config mismatch: {} != {}",

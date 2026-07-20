@@ -165,8 +165,8 @@ impl PciClient {
             let code = CONFIRMATION_CODES[st.next_confirmation_index];
             st.next_confirmation_index =
                 (st.next_confirmation_index + 1) % CONFIRMATION_CODES.len();
-            if !st.codes_in_use.contains_key(&code) {
-                st.codes_in_use.insert(code, Instant::now());
+            if let std::collections::hash_map::Entry::Vacant(e) = st.codes_in_use.entry(code) {
+                e.insert(Instant::now());
                 return code;
             }
         }
@@ -209,14 +209,12 @@ impl PciClient {
             st.pending.remove(&code);
         }
         // force cleanup of the oldest 25% when >90% of codes in use
-        let threshold =
-            (CONFIRMATION_CODES.len() as f64 * FORCE_CLEANUP_THRESHOLD) as usize;
+        let threshold = (CONFIRMATION_CODES.len() as f64 * FORCE_CLEANUP_THRESHOLD) as usize;
         if st.codes_in_use.len() > threshold {
             let mut by_age: Vec<(u8, Instant)> =
                 st.codes_in_use.iter().map(|(&c, &t)| (c, t)).collect();
             by_age.sort_by_key(|&(_, t)| t);
-            let release_count =
-                ((by_age.len() as f64 * FORCE_CLEANUP_PERCENTAGE) as usize).max(1);
+            let release_count = ((by_age.len() as f64 * FORCE_CLEANUP_PERCENTAGE) as usize).max(1);
             for &(code, _) in by_age.iter().take(release_count) {
                 tracing::warn!("force releasing confirmation code {:#04x}", code);
                 st.codes_in_use.remove(&code);
@@ -302,11 +300,7 @@ impl PciClient {
     fn handle_cbus_packet(&self, p: Packet) {
         match p {
             Packet::Confirmation { code, success } => {
-                tracing::debug!(
-                    "confirmation: code {:#04x} success {}",
-                    code,
-                    success
-                );
+                tracing::debug!("confirmation: code {:#04x} success {}", code, success);
                 let mut st = self.state.lock().unwrap();
                 st.pending.remove(&code);
                 st.codes_in_use.remove(&code);
@@ -345,9 +339,7 @@ impl PciClient {
                             app: application,
                             group: group_address,
                         }),
-                        Sal::ClockRequest => {
-                            Some(CBusEvent::ClockRequest { source: src })
-                        }
+                        Sal::ClockRequest => Some(CBusEvent::ClockRequest { source: src }),
                         _ => None,
                     };
                     if let Some(e) = event {
@@ -386,9 +378,7 @@ impl PciClient {
             self.send(&Packet::Reset, true, false).await?;
         }
         self.send(&Packet::SmartConnect, true, false).await?;
-        for (parameter, value) in
-            [(0x21u8, 0xffu8), (0x22, 0xff), (0x42, 0x0e), (0x30, 0x79)]
-        {
+        for (parameter, value) in [(0x21u8, 0xffu8), (0x22, 0xff), (0x42, 0x0e), (0x30, 0x79)] {
             self.send(
                 &Packet::DeviceManagement {
                     meta: Meta::new(false, 2),

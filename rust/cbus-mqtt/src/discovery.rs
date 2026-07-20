@@ -27,7 +27,11 @@ pub struct LightDiscovery {
     pub sensor_config: Value,
 }
 
-pub fn light_discovery(group_addr: u8, app_addr: i64, app_labels: Option<&AppLabels>) -> LightDiscovery {
+pub fn light_discovery(
+    group_addr: u8,
+    app_addr: i64,
+    app_labels: Option<&AppLabels>,
+) -> LightDiscovery {
     let default_name = default_light_name(group_addr, app_addr);
     let uid = format!("cbus_light_{}", ga_string(group_addr, app_addr, false));
     let mut name = default_name.clone();
@@ -59,10 +63,7 @@ pub fn light_discovery(group_addr: u8, app_addr: i64, app_labels: Option<&AppLab
             "via_device": "cmqttd",
         },
     });
-    let sensor_uid = format!(
-        "cbus_bin_sensor_{}",
-        ga_string(group_addr, app_addr, false)
-    );
+    let sensor_uid = format!("cbus_bin_sensor_{}", ga_string(group_addr, app_addr, false));
     let sensor_config = json!({
         "name": format!("{name} (as binary sensor)"),
         "unique_id": sensor_uid,

@@ -4,8 +4,7 @@
 use crate::throttle::Throttle;
 use cbus_mqtt::discovery::{light_discovery, meta_discovery, AppLabels};
 use cbus_mqtt::topics::{
-    bin_sensor_state_topic, state_topic, topic_group_address, LIGHT_TOPIC_PREFIX,
-    TOPIC_SET_SUFFIX,
+    bin_sensor_state_topic, state_topic, topic_group_address, LIGHT_TOPIC_PREFIX, TOPIC_SET_SUFFIX,
 };
 use cbus_transport::pci::{CBusEvent, PciClient};
 use rumqttc::{AsyncClient, QoS};
@@ -97,9 +96,16 @@ impl Gateway {
 
     /// `MqttClient.publish_light`
     pub async fn publish_light(&self, group_addr: u8, app_addr: i64, with_labels: bool) {
-        let labels = if with_labels { Some(&self.labels) } else { None };
+        let labels = if with_labels {
+            Some(&self.labels)
+        } else {
+            None
+        };
         let d = light_discovery(group_addr, app_addr, labels);
-        let _ = self.mqtt.subscribe(d.subscribe_topic, QoS::ExactlyOnce).await;
+        let _ = self
+            .mqtt
+            .subscribe(d.subscribe_topic, QoS::ExactlyOnce)
+            .await;
         let _ = self
             .mqtt
             .publish(
@@ -183,7 +189,8 @@ impl Gateway {
                    "cbus_source_addr": source}),
         )
         .await;
-        self.publish_binary_sensor(group_addr, app_addr, false).await;
+        self.publish_binary_sensor(group_addr, app_addr, false)
+            .await;
     }
 
     pub async fn mqtt_light_ramp(
@@ -201,7 +208,8 @@ impl Gateway {
                    "cbus_source_addr": source}),
         )
         .await;
-        self.publish_binary_sensor(group_addr, app_addr, level > 0).await;
+        self.publish_binary_sensor(group_addr, app_addr, level > 0)
+            .await;
     }
 
     // ------------------------------------------------------- C-Bus events

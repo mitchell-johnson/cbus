@@ -185,15 +185,21 @@ mod tests {
         assert_eq!(Packet::Reset.encode_packet().unwrap(), b"~");
         assert_eq!(Packet::PowerOn.encode_packet().unwrap(), b"++");
         assert_eq!(
-            Packet::Confirmation { code: b'h', success: true }
-                .encode_packet()
-                .unwrap(),
+            Packet::Confirmation {
+                code: b'h',
+                success: true
+            }
+            .encode_packet()
+            .unwrap(),
             b"h."
         );
         assert_eq!(
-            Packet::Confirmation { code: b'g', success: false }
-                .encode_packet()
-                .unwrap(),
+            Packet::Confirmation {
+                code: b'g',
+                success: false
+            }
+            .encode_packet()
+            .unwrap(),
             b"g#"
         );
     }
@@ -204,7 +210,10 @@ mod tests {
         let p = Packet::PointToMultipoint {
             meta: Meta::new(true, 0),
             application: 0x38,
-            sals: vec![Sal::LightingOn { application: 0x38, group_address: 1 }],
+            sals: vec![Sal::LightingOn {
+                application: 0x38,
+                group_address: 1,
+            }],
         };
         assert_eq!(p.encode_packet().unwrap(), b"053800790149");
     }

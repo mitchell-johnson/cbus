@@ -72,7 +72,11 @@ fn main() {
         }
         total += file_total;
         passed += file_passed;
-        let status = if file_passed == file_total { "PASS" } else { "FAIL" };
+        let status = if file_passed == file_total {
+            "PASS"
+        } else {
+            "FAIL"
+        };
         println!("  {fname}: {file_passed}/{file_total} {status}");
     }
 

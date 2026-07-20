@@ -19,11 +19,7 @@ pub enum CbzError {
 /// strip '_', trim trailing 's' characters (Python `rstrip('s')` strips
 /// *all* trailing 's').
 pub fn normalise(name: &str) -> String {
-    let lowered: String = name
-        .to_lowercase()
-        .chars()
-        .filter(|&c| c != '_')
-        .collect();
+    let lowered: String = name.to_lowercase().chars().filter(|&c| c != '_').collect();
     lowered.trim_end_matches('s').to_string()
 }
 
@@ -61,15 +57,15 @@ fn py_int(s: &str) -> Result<i64, CbzError> {
         .map_err(|_| CbzError::Cbz(format!("invalid literal for int(): {s:?}")))
 }
 
-/// Read a .cbz (1-file zip) or bare XML Toolkit backup and extract
-/// `{app_addr: (app_name, {group: label})}` for the named network
-/// (None = first network).
 /// Load the XML text of a .cbz (1-file zip) or bare-XML Toolkit backup.
 pub fn load_xml(path: &Path) -> Result<String, CbzError> {
     let raw = std::fs::read(path)?;
     extract_xml(&raw)
 }
 
+/// Read a .cbz (1-file zip) or bare XML Toolkit backup and extract
+/// `{app_addr: (app_name, {group: label})}` for the named network
+/// (None = first network).
 pub fn read_cbz_labels(path: &Path, network: Option<&str>) -> Result<AppLabels, CbzError> {
     let xml = load_xml(path)?;
     let doc = roxmltree::Document::parse(&xml)

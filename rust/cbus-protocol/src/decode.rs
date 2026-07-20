@@ -3,8 +3,8 @@
 
 use crate::cal::Cal;
 use crate::common::{
-    bridge_length, cbus_checksum, CONFIRMATION_CODES, DAT_POINT_TO_MULTIPOINT,
-    DAT_POINT_TO_POINT, DAT_POINT_TO_POINT_TO_MULTIPOINT, HEX_CHARS, MIN_MESSAGE_SIZE,
+    bridge_length, cbus_checksum, CONFIRMATION_CODES, DAT_POINT_TO_MULTIPOINT, DAT_POINT_TO_POINT,
+    DAT_POINT_TO_POINT_TO_MULTIPOINT, HEX_CHARS, MIN_MESSAGE_SIZE,
 };
 use crate::packet::{Meta, Packet};
 use crate::sal;
@@ -14,9 +14,7 @@ fn find(haystack: &[u8], needle: &[u8]) -> Option<usize> {
     if needle.len() == 1 {
         return haystack.iter().position(|&b| b == needle[0]);
     }
-    haystack
-        .windows(needle.len())
-        .position(|w| w == needle)
+    haystack.windows(needle.len()).position(|w| w == needle)
 }
 
 /// Decode a single C-Bus Serial Interface packet from the head of `data`.
@@ -37,8 +35,7 @@ pub fn decode_packet(
     }
 
     // transport-layer specials
-    let end: Option<usize>;
-    if from_pci {
+    let end: Option<usize> = if from_pci {
         if data[0] == b'+' {
             return (Some(Packet::PowerOn), 1);
         }
@@ -58,7 +55,7 @@ pub fn decode_packet(
                 2,
             );
         }
-        end = find(data, b"\r\n");
+        find(data, b"\r\n")
     } else {
         if data[0] == b'~' {
             return (Some(Packet::Reset), 1);
@@ -80,8 +77,8 @@ pub fn decode_packet(
                 return (None, q + 1);
             }
         }
-        end = find(data, b"\r");
-    }
+        find(data, b"\r")
+    };
 
     let end = match end {
         Some(e) => e,
@@ -114,12 +111,10 @@ pub fn decode_packet(
         };
         if !HEX_CHARS.contains(&last) {
             confirmation = Some(last);
-            if !CONFIRMATION_CODES.contains(&last) {
-                if strict {
-                    return (Some(Packet::Invalid), consumed);
-                }
-                // lenient: warn + accept
+            if !CONFIRMATION_CODES.contains(&last) && strict {
+                return (Some(Packet::Invalid), consumed);
             }
+            // lenient: warn + accept
             body = &body[..body.len() - 1];
         }
     }
@@ -131,7 +126,7 @@ pub fn decode_packet(
         }
     }
     // b16decode; Python crashes on odd length (no vector pins it)
-    if body.len() % 2 != 0 {
+    if !body.len().is_multiple_of(2) {
         return (Some(Packet::Invalid), consumed);
     }
     let mut raw = match hex::decode(body) {
@@ -159,7 +154,14 @@ pub fn decode_packet(
         return (Some(Packet::Invalid), consumed);
     }
 
-    match decode_body(&raw, checksum, from_pci, device_management_cal, confirmation, consumed) {
+    match decode_body(
+        &raw,
+        checksum,
+        from_pci,
+        device_management_cal,
+        confirmation,
+        consumed,
+    ) {
         Ok((p, c)) => (Some(p), c),
         Err(_) => (Some(Packet::Invalid), consumed),
     }
@@ -372,18 +374,42 @@ mod tests {
     #[test]
     fn specials() {
         assert_eq!(decode_packet(b"", true, true, true), (None, 0));
-        assert_eq!(decode_packet(b"+", true, true, true), (Some(Packet::PowerOn), 1));
-        assert_eq!(decode_packet(b"++", true, true, true), (Some(Packet::PowerOn), 1));
-        assert_eq!(decode_packet(b"!", true, true, true), (Some(Packet::PciError), 1));
+        assert_eq!(
+            decode_packet(b"+", true, true, true),
+            (Some(Packet::PowerOn), 1)
+        );
+        assert_eq!(
+            decode_packet(b"++", true, true, true),
+            (Some(Packet::PowerOn), 1)
+        );
+        assert_eq!(
+            decode_packet(b"!", true, true, true),
+            (Some(Packet::PciError), 1)
+        );
         assert_eq!(
             decode_packet(b"h.", true, true, true),
-            (Some(Packet::Confirmation { code: b'h', success: true }), 2)
+            (
+                Some(Packet::Confirmation {
+                    code: b'h',
+                    success: true
+                }),
+                2
+            )
         );
         assert_eq!(
             decode_packet(b"g#", true, true, true),
-            (Some(Packet::Confirmation { code: b'g', success: false }), 2)
+            (
+                Some(Packet::Confirmation {
+                    code: b'g',
+                    success: false
+                }),
+                2
+            )
         );
-        assert_eq!(decode_packet(b"~", false, true, false), (Some(Packet::Reset), 1));
+        assert_eq!(
+            decode_packet(b"~", false, true, false),
+            (Some(Packet::Reset), 1)
+        );
         assert_eq!(decode_packet(b"null", false, true, false), (None, 4));
         assert_eq!(
             decode_packet(b"|\r", false, true, false),
@@ -401,12 +427,19 @@ mod tests {
         let (p, c) = decode_packet(b"05013800790148\r\n", true, true, true);
         assert_eq!(c, 16);
         match p.unwrap() {
-            Packet::PointToMultipoint { meta, application, sals } => {
+            Packet::PointToMultipoint {
+                meta,
+                application,
+                sals,
+            } => {
                 assert_eq!(application, 0x38);
                 assert_eq!(meta.source_address, Some(1));
                 assert_eq!(
                     sals,
-                    vec![crate::sal::Sal::LightingOn { application: 0x38, group_address: 1 }]
+                    vec![crate::sal::Sal::LightingOn {
+                        application: 0x38,
+                        group_address: 1
+                    }]
                 );
             }
             other => panic!("wrong packet {:?}", other),
@@ -420,13 +453,21 @@ mod tests {
         let (p, c) = decode_packet(wire, true, true, true);
         assert_eq!(c, 10);
         match p.unwrap() {
-            Packet::PointToPoint { meta, unit_address, cals, .. } => {
+            Packet::PointToPoint {
+                meta,
+                unit_address,
+                cals,
+                ..
+            } => {
                 assert_eq!(unit_address, 0);
                 assert_eq!(meta.source_address, None);
                 assert_eq!(meta.priority_class, 2);
                 assert_eq!(
                     cals,
-                    vec![crate::cal::Cal::Reply { parameter: 0x21, data: vec![0x10] }]
+                    vec![crate::cal::Cal::Reply {
+                        parameter: 0x21,
+                        data: vec![0x10]
+                    }]
                 );
             }
             other => panic!("wrong packet {:?}", other),

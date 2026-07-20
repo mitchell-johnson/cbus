@@ -8,10 +8,9 @@ pub mod status_request;
 pub mod temperature;
 
 use crate::common::{
-    APP_CLOCK, APP_ENABLE, APP_LIGHTING_FIRST, APP_LIGHTING_LAST, APP_STATUS_REQUEST,
-    APP_TEMPERATURE, CLOCK_ATTR_DATE, CLOCK_ATTR_TIME, CLOCK_REQUEST_REFRESH,
-    ENABLE_SET_NETWORK_VARIABLE, LIGHT_OFF, LIGHT_ON, LIGHT_TERMINATE_RAMP,
-    TEMPERATURE_BROADCAST, duration_to_ramp_rate,
+    duration_to_ramp_rate, APP_CLOCK, APP_ENABLE, APP_LIGHTING_FIRST, APP_LIGHTING_LAST,
+    APP_STATUS_REQUEST, APP_TEMPERATURE, CLOCK_ATTR_DATE, CLOCK_ATTR_TIME, CLOCK_REQUEST_REFRESH,
+    ENABLE_SET_NETWORK_VARIABLE, LIGHT_OFF, LIGHT_ON, LIGHT_TERMINATE_RAMP, TEMPERATURE_BROADCAST,
 };
 use crate::{DecodeError, EncodeError};
 use chrono::Datelike;
@@ -109,7 +108,15 @@ impl Sal {
                     .ok_or_else(|| EncodeError::new("invalid date"))?;
                 let weekday = d.weekday().num_days_from_monday() as u8; // Monday=0
                 let yb = year.to_be_bytes();
-                Ok(vec![0x0e, CLOCK_ATTR_DATE, yb[0], yb[1], *month, *day, weekday])
+                Ok(vec![
+                    0x0e,
+                    CLOCK_ATTR_DATE,
+                    yb[0],
+                    yb[1],
+                    *month,
+                    *day,
+                    weekday,
+                ])
             }
             Sal::ClockRequest => Ok(vec![CLOCK_REQUEST_REFRESH, 0x03]),
             Sal::TemperatureBroadcast {

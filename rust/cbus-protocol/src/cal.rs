@@ -111,12 +111,7 @@ impl Cal {
             let report = match block_type {
                 0x00 => StatusReport::decode_binary(payload),
                 0x07 => StatusReport::decode_level(payload)?,
-                _ => {
-                    return Err(DecodeError::new(format!(
-                        "block_type = {:x}",
-                        block_type
-                    )))
-                }
+                _ => return Err(DecodeError::new(format!("block_type = {:x}", block_type))),
             };
             Ok((
                 Cal::ExtendedStatus {
@@ -154,21 +149,34 @@ mod tests {
     fn identify_recall() {
         assert_eq!(Cal::Identify { attribute: 2 }.encode(), vec![0x21, 0x02]);
         assert_eq!(
-            Cal::Recall { param: 0xfa, count: 0x2c }.encode(),
+            Cal::Recall {
+                param: 0xfa,
+                count: 0x2c
+            }
+            .encode(),
             vec![0x1a, 0xfa, 0x2c]
         );
         let (c, n) = Cal::decode_one(&[0x21, 0x02, 0xff]).unwrap();
         assert_eq!(c, Cal::Identify { attribute: 2 });
         assert_eq!(n, 2);
         let (c, n) = Cal::decode_one(&[0x1a, 0xfa, 0x2c]).unwrap();
-        assert_eq!(c, Cal::Recall { param: 0xfa, count: 0x2c });
+        assert_eq!(
+            c,
+            Cal::Recall {
+                param: 0xfa,
+                count: 0x2c
+            }
+        );
         assert_eq!(n, 3);
     }
 
     #[test]
     fn reply() {
         // header = 0x80 | (len+1)
-        let c = Cal::Reply { parameter: 1, data: b"PC_CNIED".to_vec() };
+        let c = Cal::Reply {
+            parameter: 1,
+            data: b"PC_CNIED".to_vec(),
+        };
         let enc = c.encode();
         assert_eq!(enc[0], 0x80 | 9);
         assert_eq!(enc[1], 1);
@@ -180,7 +188,10 @@ mod tests {
         // 0x80 (len nibble 0 -> empty reply body) -> Err (Python IndexError)
         assert!(Cal::decode_one(&[0x80]).is_err());
         // clipping to 0x1e data bytes
-        let c = Cal::Reply { parameter: 1, data: vec![0xaa; 0x40] };
+        let c = Cal::Reply {
+            parameter: 1,
+            data: vec![0xaa; 0x40],
+        };
         let enc = c.encode();
         assert_eq!(enc.len(), 2 + 0x1e);
         assert_eq!(enc[0], 0x80 | 0x1f);

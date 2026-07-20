@@ -65,8 +65,7 @@ impl FrameBuffer {
             if self.buf.is_empty() {
                 break;
             }
-            let (packet, consumed) =
-                decode_packet(&self.buf, self.checksum, true, self.from_pci);
+            let (packet, consumed) = decode_packet(&self.buf, self.checksum, true, self.from_pci);
             if consumed > 0 {
                 let raw = self.buf[..consumed.min(self.buf.len())].to_vec();
                 self.buf.drain(..consumed.min(self.buf.len()));
@@ -92,7 +91,10 @@ mod tests {
         assert_eq!(evs.len(), 1);
         assert_eq!(
             evs[0].packet,
-            Some(Packet::Confirmation { code: b'h', success: true })
+            Some(Packet::Confirmation {
+                code: b'h',
+                success: true
+            })
         );
     }
 
