@@ -36,8 +36,15 @@ cmqttd -b broker.example.com --broker-disable-tls \
 ```
 
 Flags mirror the Python daemon: `-b/-p/--broker-keepalive/--broker-disable-tls/
--A/-c/-k/-K` (MQTT), exactly one of `-t/--esp32-wifi/--esp32-serial` (C-Bus),
-`-T/-C/-S` (time), `-P/-N` (Toolkit labels), `-l/-v` (logging).
+-A/-c/-k/-K` (MQTT), exactly one of `-t/--esp32-wifi/--esp32-serial/
+--esp32-discover` (C-Bus), `-T/-C/-S` (time), `-P/-N` (Toolkit labels),
+`-l/-v` (logging).
+
+TLS uses the system trust store when `-c/--broker-ca` is not given; the
+flag accepts a PEM file or a directory of PEM files. `--serial` is an
+alias for `--esp32-serial` (Docker entrypoint compatibility), and
+`--esp32-discover` finds a bridge via mDNS (`_cbus._tcp.local.`).
+SIGINT/SIGTERM disconnect cleanly from the broker.
 
 Differences from the Python daemon:
 
