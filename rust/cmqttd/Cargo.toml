@@ -18,3 +18,4 @@ tracing-subscriber = { workspace = true }
 rustls = { workspace = true }
 rustls-native-certs = { workspace = true }
 rustls-pemfile = { workspace = true }
+mdns-sd = { workspace = true }

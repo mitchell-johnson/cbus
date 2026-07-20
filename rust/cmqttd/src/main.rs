@@ -1,6 +1,7 @@
 //! cmqttd: MQTT connector for C-Bus. Port of `cbus/daemon/cmqttd.py`.
 
 mod cli;
+mod discover;
 mod gateway;
 mod setup;
 mod throttle;
@@ -15,6 +16,37 @@ use setup::ConnSpec;
 use std::sync::Arc;
 use std::time::Duration;
 use tokio::sync::mpsc;
+
+/// On SIGINT/SIGTERM: send a clean MQTT DISCONNECT (the main loop keeps
+/// polling so it actually flushes), then exit.
+fn spawn_shutdown_handler(client: AsyncClient) {
+    tokio::spawn(async move {
+        let ctrl_c = tokio::signal::ctrl_c();
+        #[cfg(unix)]
+        {
+            let term = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate());
+            match term {
+                Ok(mut term) => {
+                    tokio::select! {
+                        _ = ctrl_c => {}
+                        _ = term.recv() => {}
+                    }
+                }
+                Err(_) => {
+                    let _ = ctrl_c.await;
+                }
+            }
+        }
+        #[cfg(not(unix))]
+        {
+            let _ = ctrl_c.await;
+        }
+        tracing::info!("shutdown signal received; disconnecting from MQTT");
+        let _ = client.disconnect().await;
+        tokio::time::sleep(Duration::from_millis(250)).await;
+        std::process::exit(0);
+    });
+}
 
 /// Connect a fresh PCI client over the endpoint and kick off its init
 /// sequence (`connection_made` → `pci_reset`).
@@ -96,6 +128,7 @@ async fn main() {
         std::process::exit(1);
     });
     let (client, mut eventloop) = AsyncClient::new(mqtt_opts, 100);
+    spawn_shutdown_handler(client.clone());
     let gateway = Gateway::new(client, pci, labels, opts.no_clock);
 
     // timesync loop (every -T seconds); 0 disables

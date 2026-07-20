@@ -4,7 +4,7 @@ use clap::{ArgGroup, Parser};
 
 #[derive(Parser, Debug, Clone)]
 #[command(name = "cmqttd", about = "MQTT connector for C-Bus (Rust port)")]
-#[command(group(ArgGroup::new("conn").required(true).args(["tcp", "esp32_wifi", "esp32_serial"])))]
+#[command(group(ArgGroup::new("conn").required(true).args(["tcp", "esp32_wifi", "esp32_serial", "esp32_discover"])))]
 pub struct Options {
     /// Enable debug logging
     #[arg(short = 'd', long)]
@@ -67,6 +67,10 @@ pub struct Options {
     /// (`--serial` accepted for Docker entrypoint compatibility)
     #[arg(long, alias = "serial")]
     pub esp32_serial: Option<String>,
+
+    /// Auto-discover an ESP32 C-Bus bridge via mDNS (_cbus._tcp)
+    #[arg(long)]
+    pub esp32_discover: bool,
 
     // ESP32 options --------------------------------------------------------
     /// Serial baud rate for ESP32 connection

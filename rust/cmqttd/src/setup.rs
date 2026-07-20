@@ -103,8 +103,23 @@ pub fn conn_spec(opts: &Options) -> ConnSpec {
             reconnect_interval: Duration::from_secs(opts.esp32_reconnect_interval.max(1)),
             max_reconnect: opts.esp32_max_reconnect,
         }
+    } else if opts.esp32_discover {
+        // Blocking browse is fine here: nothing else is running yet, and
+        // the Python daemon also blocks its startup for the same window.
+        eprintln!("Discovering ESP32 C-Bus bridges via mDNS...");
+        let (host, port) = crate::discover::discover_esp32(crate::discover::DISCOVER_TIMEOUT)
+            .unwrap_or_else(|e| {
+                eprintln!("{e}");
+                std::process::exit(1);
+            });
+        ConnSpec {
+            endpoint: Endpoint::Tcp { host, port },
+            reconnect: true,
+            reconnect_interval: Duration::from_secs(opts.esp32_reconnect_interval.max(1)),
+            max_reconnect: opts.esp32_max_reconnect,
+        }
     } else {
-        eprintln!("one of -t / --esp32-wifi / --esp32-serial is required");
+        eprintln!("one of -t / --esp32-wifi / --esp32-serial / --esp32-discover is required");
         std::process::exit(2);
     }
 }
