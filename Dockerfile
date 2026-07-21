@@ -12,7 +12,10 @@ FROM rust:1.92-alpine AS builder
 RUN apk add --no-cache musl-dev pkgconfig
 WORKDIR /build
 COPY rust/ /build/
-RUN cargo build --release --workspace
+# Build only the shipped binaries: the workspace also contains test-only
+# crates (cbus-golden-tests) whose build script needs the harness vectors,
+# which are outside this build context.
+RUN cargo build --release -p cmqttd -p cbus-tools -p cbus-simulator
 
 FROM alpine:3.20 AS cmqttd
 # ca-certificates: system trust store for TLS without --broker-ca
