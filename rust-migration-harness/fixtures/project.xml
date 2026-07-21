@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Installation oid="00000000-0000-0000-0000-000000000001">
+  <DBVersion>1</DBVersion>
+  <Version>1.0.0</Version>
+  <Modified>2026-07-20T00:00:00</Modified>
+  <InstallationDetail oid="00000000-0000-0000-0000-000000000002">
+    <SystemLocation>harness</SystemLocation>
+    <HardwarePlatform>test</HardwarePlatform>
+    <Hostname>localhost</Hostname>
+    <OSName>any</OSName>
+    <OSVersion>1</OSVersion>
+    <HardwareLocation>nowhere</HardwareLocation>
+    <Installer oid="00000000-0000-0000-0000-000000000003">
+      <Name>rust-migration-harness</Name>
+    </Installer>
+  </InstallationDetail>
+  <Project oid="00000000-0000-0000-0000-000000000004">
+    <TagName>HARNESS</TagName>
+    <Address>1</Address>
+    <Description>Fixture project for rust migration harness</Description>
+    <Network oid="00000000-0000-0000-0000-000000000005">
+      <TagName>Harness Network</TagName>
+      <Address>254</Address>
+      <Description>Fixture network</Description>
+      <NetworkNumber>1</NetworkNumber>
+      <Interface oid="00000000-0000-0000-0000-000000000006">
+        <InterfaceType>CNI</InterfaceType>
+        <InterfaceAddress>127.0.0.1:10001</InterfaceAddress>
+      </Interface>
+      <Application oid="00000000-0000-0000-0000-000000000007">
+        <TagName>Lighting</TagName>
+        <Address>56</Address>
+        <Description>Default lighting application</Description>
+        <Group oid="00000000-0000-0000-0000-000000000008">
+          <TagName>Kitchen Bench</TagName>
+          <Address>1</Address>
+          <Description>ga 1</Description>
+        </Group>
+        <Group oid="00000000-0000-0000-0000-000000000009">
+          <TagName>Lounge</TagName>
+          <Address>10</Address>
+          <Description>ga 10</Description>
+        </Group>
+      </Application>
+      <Application oid="00000000-0000-0000-0000-00000000000a">
+        <TagName>Lighting 48</TagName>
+        <Address>48</Address>
+        <Description>Alternate lighting application 0x30</Description>
+        <Group oid="00000000-0000-0000-0000-00000000000b">
+          <TagName>Deck</TagName>
+          <Address>11</Address>
+          <Description>ga 11</Description>
+        </Group>
+      </Application>
+    </Network>
+  </Project>
+</Installation>

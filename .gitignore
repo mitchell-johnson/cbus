@@ -25,6 +25,7 @@ cmqttd_config/auth
 certificates
 .vscode
 project.xml
+!rust-migration-harness/fixtures/project.xml
 venv
 .env
 venv_test/
