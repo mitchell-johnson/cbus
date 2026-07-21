@@ -4,7 +4,6 @@ mod cli;
 mod discover;
 mod gateway;
 mod setup;
-mod throttle;
 
 use cbus_transport::conn::{self};
 use cbus_transport::pci::{CBusEvent, PciClient};

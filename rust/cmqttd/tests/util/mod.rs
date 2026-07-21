@@ -21,9 +21,9 @@ pub const BIN: &str = env!("CARGO_BIN_EXE_cmqttd");
 /// only pay this on failure).
 pub const STARTUP: Duration = Duration::from_secs(20);
 
-/// A /set command drains behind the throttled (0.2 s) startup status
-/// sweep — only 4 requests for the fixture project, but keep a generous
-/// ceiling (condition-polled, so tests only pay it on failure).
+/// Ceiling for a /set command to reach the PCI. Commands get priority
+/// over queued status-sweep traffic in the flow controller, so this is
+/// normally sub-second (condition-polled: tests only pay it on failure).
 pub const COMMAND_DRAIN: Duration = Duration::from_secs(60);
 
 pub fn harness_dir() -> PathBuf {

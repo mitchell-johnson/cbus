@@ -1,8 +1,13 @@
 //! MQTT <-> C-Bus glue. Port of `cbus/daemon/mqtt_gateway.py`
 //! (`CBusHandler` event relays + `MqttClient` helpers) onto rumqttc.
+//!
+//! Outbound C-Bus traffic runs through two ordered lanes instead of the
+//! old single 0.2 s throttle queue: one worker for /set commands and one
+//! for status-sweep batches. Each worker processes strictly in order,
+//! and the adaptive flow controller in cbus-transport paces the wire
+//! (giving command frames priority over sweep frames).
 
-use crate::throttle::Throttle;
-use cbus_mqtt::command::{parse_set_command, CommandError};
+use cbus_mqtt::command::{parse_set_command, CommandError, SetCommand};
 use cbus_mqtt::discovery::{light_discovery, meta_discovery, AppLabels};
 use cbus_mqtt::topics::{
     bin_sensor_state_topic, state_topic, LIGHT_TOPIC_PREFIX, TOPIC_SET_SUFFIX,
@@ -13,12 +18,19 @@ use serde_json::{json, Value};
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
-use tokio::sync::RwLock;
+use tokio::sync::{mpsc, RwLock};
+
+/// One status request of a sweep batch: (app, block, level_request).
+type StatusProbe = (u8, u8, bool);
 
 pub struct Gateway {
     mqtt: AsyncClient,
     pci: RwLock<Arc<PciClient>>,
-    throttle: Throttle,
+    /// Ordered lane for /set commands (FIFO, one at a time).
+    commands: mpsc::UnboundedSender<SetCommand>,
+    /// Ordered lane for status-sweep batches (FIFO, one batch at a time,
+    /// so an overlapping resync can never interleave two sweeps).
+    sweeps: mpsc::UnboundedSender<Vec<StatusProbe>>,
     labels: AppLabels,
     no_clock: bool,
     /// groupDB: app -> group -> discovery-config-published
@@ -41,15 +53,57 @@ impl Gateway {
             l.insert(56, ("Lighting".to_string(), Default::default()));
             l
         });
-        Arc::new(Gateway {
+        let (commands, cmd_rx) = mpsc::unbounded_channel();
+        let (sweeps, sweep_rx) = mpsc::unbounded_channel();
+        let gw = Arc::new(Gateway {
             mqtt,
             pci: RwLock::new(pci),
-            throttle: Throttle::new(),
+            commands,
+            sweeps,
             labels,
             no_clock,
             group_db: Mutex::new(HashMap::new()),
             status_requests_queued: AtomicBool::new(false),
-        })
+        });
+        gw.clone().spawn_workers(cmd_rx, sweep_rx);
+        gw
+    }
+
+    /// The two ordered outbound lanes. Awaiting each send before taking
+    /// the next item keeps wire order equal to arrival order per lane;
+    /// pipelining across the window still happens because a send
+    /// resolves at transmission, not at acknowledgement.
+    fn spawn_workers(
+        self: Arc<Self>,
+        mut cmd_rx: mpsc::UnboundedReceiver<SetCommand>,
+        mut sweep_rx: mpsc::UnboundedReceiver<Vec<StatusProbe>>,
+    ) {
+        let gw = self.clone();
+        tokio::spawn(async move {
+            while let Some(cmd) = cmd_rx.recv().await {
+                gw.switch_light(
+                    cmd.group_addr,
+                    cmd.app_addr,
+                    cmd.light_on,
+                    cmd.brightness,
+                    cmd.transition,
+                )
+                .await;
+            }
+        });
+        tokio::spawn(async move {
+            while let Some(batch) = sweep_rx.recv().await {
+                for (app, block, level_request) in batch {
+                    let kind = if level_request { "level" } else { "binary" };
+                    tracing::info!("requesting {kind} status for app={app} block={block}");
+                    let _ = self
+                        .pci()
+                        .await
+                        .request_status(block, app, level_request)
+                        .await;
+                }
+            }
+        });
     }
 
     /// The current PCI client (swapped out on reconnect).
@@ -66,7 +120,7 @@ impl Gateway {
 
     /// `MqttClient.__aenter__`: subscribe the /set command wildcard,
     /// publish the meta config, publish discovery for every labelled
-    /// group, then enqueue the configured throttled status sweep.
+    /// group, then queue the configured status sweep.
     pub async fn on_connected(self: &Arc<Self>) {
         let _ = self
             .mqtt
@@ -132,33 +186,24 @@ impl Gateway {
             configured
         };
 
+        // one batch per invocation: binary status first (reliable ON/OFF
+        // presence), then level status so dimmer brightness can overwrite
+        // the binary fallback, per block, apps ascending
+        let mut batch: Vec<StatusProbe> = Vec::new();
         for app in apps {
             let blocks = self.configured_status_blocks(app);
             if blocks.is_empty() {
                 tracing::debug!("skipping status requests for app {app}; no real groups");
                 continue;
             }
-            self.queue_status_requests(app as u8, &blocks);
-        }
-    }
-
-    /// `MqttClient.queue_status_requests`: binary status first (reliable
-    /// ON/OFF presence), then level status so dimmer brightness can
-    /// overwrite the binary fallback, per block.
-    fn queue_status_requests(self: &Arc<Self>, app: u8, blocks: &[u8]) {
-        for &block in blocks {
-            for level_request in [false, true] {
-                let gw = self.clone();
-                self.throttle.enqueue(async move {
-                    let kind = if level_request { "level" } else { "binary" };
-                    tracing::info!("requesting {kind} status for app={app} block={block}");
-                    let _ = gw
-                        .pci()
-                        .await
-                        .request_status(block, app, level_request)
-                        .await;
-                });
+            for &block in &blocks {
+                for level_request in [false, true] {
+                    batch.push((app as u8, block, level_request));
+                }
             }
+        }
+        if !batch.is_empty() && self.sweeps.send(batch).is_err() {
+            tracing::warn!("sweep worker gone; status requests dropped");
         }
     }
 
@@ -382,10 +427,11 @@ impl Gateway {
 
     // ------------------------------------------------------- MQTT commands
 
-    /// `MqttClient._handle_message`: parse a /set command and enqueue the
-    /// C-Bus send on the throttle (behind any queued status requests).
-    /// Retained commands are stale broker state, not user intent — acting
-    /// on them would replay old switch commands on every (re)subscribe.
+    /// `MqttClient._handle_message`: parse a /set command and hand it to
+    /// the ordered command lane (user commands outrank queued status
+    /// sweeps on the wire). Retained commands are stale broker state,
+    /// not user intent — acting on them would replay old switch commands
+    /// on every (re)subscribe.
     pub fn handle_publish(self: &Arc<Self>, topic: &str, payload: &[u8], retain: bool) {
         if retain && topic.starts_with(LIGHT_TOPIC_PREFIX) && topic.ends_with(TOPIC_SET_SUFFIX) {
             tracing::warn!("ignoring retained command on topic '{topic}'");
@@ -407,17 +453,9 @@ impl Gateway {
             cmd.brightness,
             cmd.transition
         );
-        let gw = self.clone();
-        self.throttle.enqueue(async move {
-            gw.switch_light(
-                cmd.group_addr,
-                cmd.app_addr,
-                cmd.light_on,
-                cmd.brightness,
-                cmd.transition,
-            )
-            .await;
-        });
+        if self.commands.send(cmd).is_err() {
+            tracing::warn!("command worker gone; dropping command");
+        }
     }
 
     /// `MqttClient.switchLight`: C-Bus send then MQTT echo

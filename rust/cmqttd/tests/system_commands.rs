@@ -1,7 +1,7 @@
 //! Full-system MQTT-command-to-PCI tests: a /set publish must produce the
 //! exact point-to-multipoint frame on the PCI (smart mode, checksummed,
-//! confirmed) and an MQTT state echo. Commands drain behind the 0.2 s
-//! throttle queue holding the startup status sweep.
+//! confirmed) and an MQTT state echo. Commands take the flow controller's
+//! priority lane, ahead of any queued startup status sweep.
 
 mod util;
 
