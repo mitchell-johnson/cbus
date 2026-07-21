@@ -11,9 +11,12 @@ use tokio::net::TcpStream;
 const BIN: &str = env!("CARGO_BIN_EXE_cbus-simulator");
 
 /// Spawn the simulator on a free port (retrying the pick-then-bind race)
-/// and open one client connection to it.
+/// and open one client connection to it. A successful connect may reach
+/// a concurrent test's daemon that picked the same port and is about to
+/// die, so verify our daemon survived the bind and that the simulator's
+/// "++" greeting is actually arriving before handing the stream out.
 async fn spawn_sim() -> (Daemon, TcpStream) {
-    for _ in 0..10 {
+    'retry: for _ in 0..10 {
         let port = {
             let l = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
             l.local_addr().unwrap().port()
@@ -21,10 +24,19 @@ async fn spawn_sim() -> (Daemon, TcpStream) {
         let mut daemon = Daemon::spawn(BIN, &["127.0.0.1", &port.to_string()]);
         for _ in 0..150 {
             if let Ok(stream) = TcpStream::connect(("127.0.0.1", port)).await {
-                return (daemon, stream);
+                // a daemon that lost the bind race exits promptly
+                tokio::time::sleep(Duration::from_millis(100)).await;
+                if !daemon.is_running() {
+                    continue 'retry;
+                }
+                let mut peek = [0u8; 1];
+                match tokio::time::timeout(Duration::from_secs(3), stream.peek(&mut peek)).await {
+                    Ok(Ok(n)) if n > 0 => return (daemon, stream),
+                    _ => continue 'retry, // dead/foreign daemon
+                }
             }
             if !daemon.is_running() {
-                break; // lost the port race: retry with a fresh port
+                continue 'retry; // lost the port race: retry with a fresh port
             }
             tokio::time::sleep(Duration::from_millis(20)).await;
         }

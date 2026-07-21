@@ -9,19 +9,27 @@ use std::time::Duration;
 use util::*;
 
 // ------------------------------------------------------------ retransmit
+// Status requests are codeless, so confirmed traffic comes from MQTT
+// commands; the fake PCI withholds the first confirmed frame of any kind.
+
+/// OFF for group 10 -> the exact confirmed PCI frame "053800010AB8".
+const CMD_TOPIC: &str = "homeassistant/light/cbus_10/set";
+const CMD_PAYLOAD: &[u8] = br#"{"state": "OFF"}"#;
+const CMD_FRAME: &str = "053800010AB8";
 
 #[tokio::test]
-async fn unconfirmed_status_request_retransmitted_byte_identical() {
+async fn unconfirmed_command_retransmitted_byte_identical() {
     let sys = start_with(Options {
-        withhold_status_conf: true,
+        withhold_first_conf: true,
         ..Default::default()
     })
     .await;
     wait_started(&sys).await;
-    // the fake PCI withholds the confirmation of the first status
-    // request; the client must resend the identical frame (payload AND
+    sys.broker.inject(CMD_TOPIC, CMD_PAYLOAD);
+    // the fake PCI withholds the confirmation of the first confirmed
+    // frame; the client must resend the identical frame (payload AND
     // confirmation char — withheld_seen only counts exact matches)
-    require(Duration::from_secs(10), "first retransmit", || {
+    require(Duration::from_secs(20), "first retransmit", || {
         sys.pci.withheld_seen() >= 2
     })
     .await;
@@ -29,17 +37,20 @@ async fn unconfirmed_status_request_retransmitted_byte_identical() {
         sys.pci.withheld_seen() >= 3
     })
     .await;
+    // the withheld frame really is the injected command's
+    assert!(sys.pci.count_payload(CMD_FRAME) >= 3);
 }
 
 #[tokio::test]
 async fn unconfirmed_frame_abandoned_after_three_attempts() {
     let sys = start_with(Options {
-        withhold_status_conf: true,
+        withhold_first_conf: true,
         ..Default::default()
     })
     .await;
     wait_started(&sys).await;
-    require(Duration::from_secs(10), "three attempts", || {
+    sys.broker.inject(CMD_TOPIC, CMD_PAYLOAD);
+    require(Duration::from_secs(20), "three attempts", || {
         sys.pci.withheld_seen() >= 3
     })
     .await;
@@ -51,23 +62,25 @@ async fn unconfirmed_frame_abandoned_after_three_attempts() {
 #[tokio::test]
 async fn other_frames_still_confirmed_while_one_is_withheld() {
     let sys = start_with(Options {
-        withhold_status_conf: true,
+        withhold_first_conf: true,
         ..Default::default()
     })
     .await;
     wait_started(&sys).await;
-    // the stream continues past the withheld frame: later status
-    // requests (different payloads) keep being confirmed and sent
-    require(Duration::from_secs(20), "stream continues", || {
-        sys.pci
-            .payloads()
-            .iter()
-            .filter(|p| p.starts_with("05FF0073"))
-            .collect::<std::collections::HashSet<_>>()
-            .len()
-            >= 5
+    // first command's confirmation is withheld...
+    sys.broker.inject(CMD_TOPIC, CMD_PAYLOAD);
+    // ...a different command afterwards is confirmed and never retried
+    sys.broker
+        .inject("homeassistant/light/cbus_1/set", br#"{"state": "ON"}"#);
+    require(Duration::from_secs(20), "withheld frame retried", || {
+        sys.pci.withheld_seen() >= 3
     })
     .await;
+    assert_eq!(
+        sys.pci.count_payload("053800790149"),
+        1,
+        "the confirmed command must be sent exactly once"
+    );
 }
 
 // --------------------------------------------------------- connection loss

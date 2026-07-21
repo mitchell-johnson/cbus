@@ -171,8 +171,18 @@ impl MiniBroker {
     /// Deliver a message to subscribed clients as if published by an
     /// external client (e.g. Home Assistant sending a /set command).
     pub fn inject(&self, topic: &str, payload: &[u8]) {
+        self.inject_with_retain(topic, payload, false);
+    }
+
+    /// Like [`MiniBroker::inject`] but with the RETAIN flag set, as a
+    /// broker replaying stored state to a fresh subscriber would.
+    pub fn inject_retained(&self, topic: &str, payload: &[u8]) {
+        self.inject_with_retain(topic, payload, true);
+    }
+
+    fn inject_with_retain(&self, topic: &str, payload: &[u8], retain: bool) {
         let st = self.state.lock().unwrap();
-        let pkt = publish_packet(topic, payload, 0, false);
+        let pkt = publish_packet(topic, payload, 0, retain);
         for c in &st.clients {
             if c.subscriptions.iter().any(|f| topic_matches(f, topic)) {
                 let _ = c.tx.send(pkt.clone());

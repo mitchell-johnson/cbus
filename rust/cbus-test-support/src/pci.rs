@@ -4,8 +4,8 @@
 //! Accepts cmqttd connections, records every frame the client sends,
 //! auto-acknowledges confirmation codes (like a real PCI in smart mode)
 //! and lets the test inject raw server->client wire bytes. Optionally
-//! withholds the confirmation for the first status-request frame to
-//! exercise the client's retransmission logic.
+//! withholds the confirmation for the first confirmed frame of any kind
+//! to exercise the client's retransmission logic.
 
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
@@ -71,7 +71,7 @@ struct State {
     reset_count: usize,
     smart_connect_count: usize,
     connections: usize,
-    withhold_sr: bool,
+    withhold_first_conf: bool,
     withheld: Option<(String, u8)>,
     withheld_seen: usize,
     writer: Option<mpsc::UnboundedSender<Vec<u8>>>,
@@ -85,14 +85,14 @@ pub struct FakePci {
 }
 
 impl FakePci {
-    /// Bind 127.0.0.1 on an ephemeral port. `withhold_status_request_conf`
-    /// makes the server swallow the confirmation of the first
-    /// `05FF0073...` frame (and all its byte-identical retries).
-    pub async fn start(withhold_status_request_conf: bool) -> FakePci {
+    /// Bind 127.0.0.1 on an ephemeral port. `withhold_first_conf` makes
+    /// the server swallow the confirmation of the first frame carrying a
+    /// confirmation char (and all its byte-identical retries).
+    pub async fn start(withhold_first_conf: bool) -> FakePci {
         let listener = TcpListener::bind("127.0.0.1:0").await.expect("bind pci");
         let port = listener.local_addr().unwrap().port();
         let state = Arc::new(Mutex::new(State {
-            withhold_sr: withhold_status_request_conf,
+            withhold_first_conf,
             ..Default::default()
         }));
         let st = state.clone();
@@ -228,8 +228,7 @@ fn handle_frame(state: &Arc<Mutex<State>>, tx: &mpsc::UnboundedSender<Vec<u8>>, 
     let Some(conf) = conf else {
         return;
     };
-    let is_status_request = payload.starts_with("05FF0073");
-    if st.withhold_sr && st.withheld.is_none() && is_status_request {
+    if st.withhold_first_conf && st.withheld.is_none() {
         // withhold this one; count repeats of the exact same frame
         st.withheld = Some((payload, conf));
         st.withheld_seen = 1;

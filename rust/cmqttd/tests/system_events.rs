@@ -338,10 +338,11 @@ async fn spurious_confirmation_tolerated() {
 }
 
 #[tokio::test]
-async fn binary_status_report_is_ignored() {
+async fn binary_status_report_publishes_on_states() {
     let sys = start_default().await;
     wait_started(&sys).await;
-    // an extended status BINARY report (coding 0x00) is not relayed
+    // extended status BINARY report (coding 0x00), block 0, one data
+    // byte 0b01_01_01_01: groups 0..3 all GroupState::ON
     sys.pci.inject(&pci_wire(&[
         0x06,
         0x99,
@@ -353,22 +354,73 @@ async fn binary_status_report_is_ignored() {
         0x00,
         0b01_01_01_01,
     ]));
-    // control event
-    sys.pci
-        .inject(&pci_wire(&[0x05, 0x05, 0x38, 0x00, 0x79, 0x0a]));
-    require(STARTUP, "control state publish", || {
+    // deployed-faithful payload: source 0, no brightness (a binary
+    // report carries no level), no transition
+    for ga in [0u8, 1, 2, 3] {
+        let topic = format!("homeassistant/light/cbus_{ga}/state");
+        require(STARTUP, "binary ON state", || {
+            !sys.broker.find_publishes(&topic).is_empty()
+        })
+        .await;
+        assert_eq!(
+            parse_json(&sys.broker.find_publishes(&topic)[0].payload),
+            json!({"state": "ON", "cbus_source_addr": 0}),
+            "{topic}"
+        );
+        let sensor = format!("homeassistant/binary_sensor/cbus_{ga}/state");
+        require(STARTUP, "binary sensor ON", || {
+            !sys.broker.find_publishes(&sensor).is_empty()
+        })
+        .await;
+        assert_eq!(sys.broker.find_publishes(&sensor)[0].payload, b"ON");
+    }
+}
+
+#[tokio::test]
+async fn binary_status_report_off_and_missing_states() {
+    let sys = start_default().await;
+    wait_started(&sys).await;
+    // block 0, data byte 0b11_00_10_01: group 0 ON, group 1 OFF,
+    // group 2 MISSING (skipped), group 3 ERROR (skipped)
+    sys.pci.inject(&pci_wire(&[
+        0x06,
+        0x99,
+        0x10,
+        0x00,
+        0xe4,
+        0x00,
+        0x38,
+        0x00,
+        0b11_00_10_01,
+    ]));
+    require(STARTUP, "binary OFF state", || {
         !sys.broker
-            .find_publishes("homeassistant/light/cbus_10/state")
+            .find_publishes("homeassistant/light/cbus_1/state")
             .is_empty()
     })
     .await;
-    // groups 0..3 of the binary report must have produced no state
-    for ga in [0u8, 1, 2, 3] {
+    // OFF gets brightness 0 (deployed adds it so HA shows the light out)
+    assert_eq!(
+        parse_json(
+            &sys.broker
+                .find_publishes("homeassistant/light/cbus_1/state")[0]
+                .payload
+        ),
+        json!({"state": "OFF", "cbus_source_addr": 0, "brightness": 0})
+    );
+    assert_eq!(
+        sys.broker
+            .find_publishes("homeassistant/binary_sensor/cbus_1/state")[0]
+            .payload,
+        b"OFF"
+    );
+    // missing/error slots publish nothing but still advance the counter
+    for ga in [2u8, 3] {
         assert!(
             sys.broker
                 .find_publishes(&format!("homeassistant/light/cbus_{ga}/state"))
                 .is_empty(),
-            "binary report leaked a state for group {ga}"
+            "group {ga} state must not publish for missing/error"
         );
     }
 }

@@ -74,14 +74,27 @@ async fn binary_sensor_config_for_labelled_group() {
 }
 
 #[tokio::test]
-async fn set_topics_subscribed_for_every_project_group() {
+async fn single_set_wildcard_covers_every_project_group() {
     let sys = start_default().await;
+    // deployed-faithful: one homeassistant/light/+/set subscription, no
+    // per-light /set subscriptions
+    require(STARTUP, "command wildcard", || {
+        sys.broker.has_subscription("homeassistant/light/+/set")
+    })
+    .await;
     for topic in [
         "homeassistant/light/cbus_1/set",
         "homeassistant/light/cbus_10/set",
         "homeassistant/light/cbus_048_011/set",
     ] {
-        require(STARTUP, topic, || sys.broker.has_subscription(topic)).await;
+        assert!(
+            cbus_test_support::broker::topic_matches("homeassistant/light/+/set", topic),
+            "wildcard must cover {topic}"
+        );
+        assert!(
+            !sys.broker.has_subscription(topic),
+            "no per-light subscription expected for {topic}"
+        );
     }
 }
 

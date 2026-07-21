@@ -41,8 +41,8 @@ async fn dm_init_sequence_payloads_in_fixture_order() {
         .as_array()
         .unwrap()
         .iter()
-        .filter(|f| f["conf"].as_bool().unwrap())
         .map(|f| f["payload"].as_str().unwrap().to_string())
+        .filter(|p| p.starts_with("A3"))
         .collect();
     let got: Vec<String> = dm_init_frames(&sys)
         .into_iter()
@@ -52,27 +52,17 @@ async fn dm_init_sequence_payloads_in_fixture_order() {
 }
 
 #[tokio::test]
-async fn dm_init_frames_use_distinct_pool_confirmations() {
+async fn dm_init_frames_carry_no_confirmation() {
     let sys = start_default().await;
     require(STARTUP, "4 DM init frames", || {
         dm_init_frames(&sys).len() >= 4
     })
     .await;
-    let confs: Vec<u8> = dm_init_frames(&sys)
-        .iter()
-        .take(4)
-        .map(|f| f.conf.expect("init DM frame must carry a confirmation"))
-        .collect();
-    assert_eq!(confs.len(), 4);
-    let mut distinct = confs.clone();
-    distinct.sort_unstable();
-    distinct.dedup();
-    assert_eq!(distinct.len(), 4, "confirmation codes must be distinct");
-    for c in confs {
-        assert!(
-            b"hijklmnopqrstuvwxyzg".contains(&c),
-            "code {c:#04x} not in the pool"
-        );
+    // deployed-faithful: the PCI is still echoing in basic mode during
+    // init; requesting confirmations here caused retry storms on the
+    // real CNI
+    for f in dm_init_frames(&sys).iter().take(4) {
+        assert_eq!(f.conf, None, "init DM frame must be codeless: {f:?}");
     }
 }
 
@@ -94,7 +84,7 @@ async fn speaks_mqtt_311_and_broker_accepts() {
     let sys = start_default().await;
     require(STARTUP, "MQTT connection", || sys.broker.connections() >= 1).await;
     require(STARTUP, "MQTT wildcard subscription", || {
-        sys.broker.has_subscription("homeassistant/light/#")
+        sys.broker.has_subscription("homeassistant/light/+/set")
     })
     .await;
     assert_eq!(
@@ -120,78 +110,106 @@ async fn publishes_exact_meta_config_retained() {
 }
 
 #[tokio::test]
-async fn status_requests_start_with_first_lighting_app_block() {
+async fn status_sweep_is_configured_blocks_binary_then_level() {
     let sys = start_default().await;
-    let first = expectations()["status_requests"]["30:00"].as_str().unwrap();
-    require(STARTUP, "first status request", || {
-        sys.pci.count_payload(first) >= 1
-    })
-    .await;
-}
-
-#[tokio::test]
-async fn status_requests_byte_match_fixture_and_order() {
-    let sys = start_default().await;
-    require(Duration::from_secs(30), "10 status requests", || {
+    let sweep = configured_sweep();
+    require(Duration::from_secs(30), "configured status sweep", || {
         sys.pci
             .payloads()
             .iter()
-            .filter(|p| p.starts_with("05FF0073"))
+            .filter(|p| is_status_request(p))
             .count()
-            >= 10
+            >= sweep.len()
     })
     .await;
-    let fixture = expectations()["status_requests"].as_object().unwrap();
+    // exactly the blocks holding the project's labelled groups, apps
+    // ascending, binary status before level status per block
     let observed: Vec<String> = sys
         .pci
         .payloads()
         .into_iter()
-        .filter(|p| p.starts_with("05FF0073"))
-        .take(10)
+        .filter(|p| is_status_request(p))
+        .take(sweep.len())
         .collect();
-    // every frame byte-matches a fixture entry...
-    for p in &observed {
-        assert!(
-            fixture.values().any(|v| v.as_str() == Some(p)),
-            "unexpected status request frame {p}"
-        );
-    }
-    // ...and the stream walks app 0x30's blocks in order (0,32,...)
-    let expect_first: Vec<&str> = ["30:00", "30:20", "30:40", "30:60", "30:80"]
-        .iter()
-        .map(|k| fixture[*k].as_str().unwrap())
-        .collect();
-    assert_eq!(observed[..5], expect_first[..]);
+    assert_eq!(observed, sweep);
 }
 
 #[tokio::test]
-async fn status_requests_are_throttled_not_burst() {
+async fn status_requests_carry_no_confirmation() {
     let sys = start_default().await;
-    require(Duration::from_secs(30), "6 status requests", || {
+    let sweep = configured_sweep();
+    require(Duration::from_secs(30), "configured status sweep", || {
         sys.pci
             .frames()
             .iter()
-            .filter(|f| f.payload.starts_with("05FF0073"))
+            .filter(|f| is_status_request(&f.payload))
             .count()
-            >= 6
+            >= sweep.len()
     })
     .await;
-    let times: Vec<_> = sys
+    // deployed-faithful: status reports are their own replies; asking
+    // for confirmations creates a retry backlog that starves them
+    for f in sys
         .pci
         .frames()
         .iter()
-        .filter(|f| f.payload.starts_with("05FF0073"))
-        .take(6)
-        .map(|f| f.ts)
-        .collect();
-    // 0.2 s throttle: allow generous scheduler jitter but reject a burst
-    for pair in times.windows(2).skip(1) {
-        let gap = pair[1].duration_since(pair[0]);
-        assert!(
-            gap >= Duration::from_millis(100),
-            "status requests burst through the throttle: gap {gap:?}"
-        );
+        .filter(|f| is_status_request(&f.payload))
+    {
+        assert_eq!(f.conf, None, "status request must be codeless: {f:?}");
     }
+}
+
+/// The test that would have caught the live regression: the full init
+/// sequence (3 resets, smart connect, 4 DM frames) must be on the wire
+/// before ANY other frame — the repo Python interleaved status requests
+/// into the init sequence, garbling replies on the real CNI.
+#[tokio::test]
+async fn init_sequence_completes_before_any_status_request() {
+    let sys = start_default().await;
+    require(Duration::from_secs(30), "first status request", || {
+        sys.pci.payloads().iter().any(|p| is_status_request(p))
+    })
+    .await;
+    let frames = sys.pci.frames();
+    let is_init = |f: &cbus_test_support::pci::ClientFrame| {
+        f.is_reset || f.is_smart_connect || f.payload.starts_with("A3")
+    };
+    let first_other = frames
+        .iter()
+        .position(|f| !is_init(f))
+        .expect("a status request was seen");
+    assert!(
+        frames[..first_other].iter().filter(|f| is_init(f)).count() >= 8,
+        "full init (3 resets + | + 4 DM) must precede all other traffic; got {:?}",
+        frames[..first_other.min(10)]
+            .iter()
+            .map(|f| f.payload.clone())
+            .collect::<Vec<_>>()
+    );
+    assert!(
+        !frames[first_other..].iter().any(&is_init),
+        "init frames must not reappear after other traffic started"
+    );
+}
+
+#[tokio::test]
+async fn status_resync_flag_repeats_the_sweep() {
+    // -S 1: the configured sweep is re-queued every second
+    let sys = start_with(Options {
+        extra: vec!["-S".into(), "1".into()],
+        ..Default::default()
+    })
+    .await;
+    let sweep_len = configured_sweep().len();
+    require(Duration::from_secs(30), "sweep runs at least twice", || {
+        sys.pci
+            .payloads()
+            .iter()
+            .filter(|p| is_status_request(p))
+            .count()
+            >= 2 * sweep_len
+    })
+    .await;
 }
 
 #[tokio::test]
@@ -206,6 +224,13 @@ async fn no_project_file_publishes_no_light_configs_at_startup() {
         .filter(|t| t.starts_with("homeassistant/light/") && t.ends_with("/config"))
         .collect();
     assert_eq!(configs, Vec::<String>::new());
+    // the default labels ({56: ("Lighting", {})}) configure no real
+    // groups, so no status sweep runs either
+    tokio::time::sleep(Duration::from_millis(500)).await;
+    assert!(
+        !sys.pci.payloads().iter().any(|p| is_status_request(p)),
+        "no labelled groups -> no status sweep"
+    );
 }
 
 #[tokio::test]

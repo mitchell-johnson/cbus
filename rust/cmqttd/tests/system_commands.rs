@@ -1,8 +1,7 @@
 //! Full-system MQTT-command-to-PCI tests: a /set publish must produce the
 //! exact point-to-multipoint frame on the PCI (smart mode, checksummed,
 //! confirmed) and an MQTT state echo. Commands drain behind the 0.2 s
-//! throttle queue holding up to 384 status requests — that timing is part
-//! of Python parity, hence the long condition-poll ceilings.
+//! throttle queue holding the startup status sweep.
 
 mod util;
 
@@ -146,7 +145,7 @@ async fn set_invalid_lighting_app_never_reaches_pci() {
         .pci
         .payloads()
         .into_iter()
-        .filter(|p| !p.starts_with("05FF0073") && !p.starts_with("A3"))
+        .filter(|p| !is_status_request(p) && !p.starts_with("A3"))
         .collect();
     assert_eq!(lighting, vec!["053800010AB8".to_string()]);
 }
@@ -186,9 +185,31 @@ async fn set_out_of_range_group_ignored() {
         .pci
         .payloads()
         .into_iter()
-        .filter(|p| !p.starts_with("05FF0073") && !p.starts_with("A3"))
+        .filter(|p| !is_status_request(p) && !p.starts_with("A3"))
         .collect();
     assert_eq!(lighting, vec!["053800010AB8".to_string()]);
+}
+
+#[tokio::test]
+async fn retained_set_command_is_ignored() {
+    let sys = start_default().await;
+    wait_started(&sys).await;
+    // a retained /set is stale broker state, not user intent: acting on
+    // it would replay old switch commands on every (re)subscribe
+    sys.broker
+        .inject_retained("homeassistant/light/cbus_10/set", br#"{"state": "OFF"}"#);
+    // positive control: a fresh (non-retained) command still works
+    sys.broker
+        .inject("homeassistant/light/cbus_1/set", br#"{"state": "ON"}"#);
+    require(COMMAND_DRAIN, "control command frame", || {
+        sys.pci.count_payload("053800790149") >= 1
+    })
+    .await;
+    assert_eq!(
+        sys.pci.count_payload("053800010AB8"),
+        0,
+        "a retained /set must never reach the PCI"
+    );
 }
 
 #[tokio::test]
