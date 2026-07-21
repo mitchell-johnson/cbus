@@ -50,3 +50,5 @@ __pycache__/
 esp32-firmware/platformio_override.ini
 proxy.log
 *.dSYM/
+.env
+cmqttd_config/project.cbz.bak-*
