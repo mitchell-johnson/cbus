@@ -5,6 +5,7 @@
 #![deny(missing_docs)]
 
 pub mod conn;
+pub mod flow;
 pub mod framing;
 pub mod pci;
 

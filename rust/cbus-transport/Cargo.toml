@@ -13,3 +13,5 @@ chrono = { workspace = true }
 
 [dev-dependencies]
 proptest = { workspace = true }
+# test-util: paused-clock tests for the flow controller
+tokio = { workspace = true, features = ["test-util"] }
