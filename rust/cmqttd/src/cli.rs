@@ -94,7 +94,7 @@ pub struct Options {
     #[arg(short = 'C', long)]
     pub no_clock: bool,
 
-    /// Request status updates every n seconds (parsed, unused — like Python)
+    /// Request status updates every n seconds (0 to disable)
     #[arg(short = 'S', long, default_value_t = 300)]
     pub status_resync: u64,
 

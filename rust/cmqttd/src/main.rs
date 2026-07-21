@@ -91,9 +91,10 @@ async fn cbus_event_pump(
                     let new_pci = PciClient::new(rd, wr, ev_tx.clone());
                     start_pci_reset(&new_pci);
                     gw.set_pci(new_pci).await;
-                    // CBusHandler.connection_made re-queues the status
-                    // requests once the MQTT api is bound
-                    gw.queue_status_requests();
+                    // CBusHandler.connection_made calls the deduplicated
+                    // sweep (a no-op after startup; the periodic resync
+                    // covers post-reconnect state refresh)
+                    gw.queue_configured_status_requests(false);
                     tracing::info!("reconnected; MQTT bridge re-bound");
                 }
                 Err(e) => {
@@ -148,6 +149,20 @@ async fn main() {
         });
     }
 
+    // periodic status resync (every -S seconds); 0 disables
+    if opts.status_resync > 0 {
+        let gw = gateway.clone();
+        let freq = opts.status_resync;
+        tracing::info!("periodic C-Bus status resync enabled every {freq} seconds");
+        tokio::spawn(async move {
+            loop {
+                tokio::time::sleep(Duration::from_secs(freq)).await;
+                tracing::info!("queueing periodic C-Bus status resync");
+                gw.queue_configured_status_requests(true);
+            }
+        });
+    }
+
     tokio::spawn(cbus_event_pump(gateway.clone(), ev_rx, ev_tx, spec));
 
     // MQTT event loop
@@ -161,7 +176,7 @@ async fn main() {
                 });
             }
             Ok(Event::Incoming(MqttPacket::Publish(p))) => {
-                gateway.handle_publish(&p.topic, &p.payload);
+                gateway.handle_publish(&p.topic, &p.payload, p.retain);
             }
             Ok(_) => {}
             Err(e) => {

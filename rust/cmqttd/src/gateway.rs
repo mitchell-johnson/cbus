@@ -4,11 +4,14 @@
 use crate::throttle::Throttle;
 use cbus_mqtt::command::{parse_set_command, CommandError};
 use cbus_mqtt::discovery::{light_discovery, meta_discovery, AppLabels};
-use cbus_mqtt::topics::{bin_sensor_state_topic, state_topic};
+use cbus_mqtt::topics::{
+    bin_sensor_state_topic, state_topic, LIGHT_TOPIC_PREFIX, TOPIC_SET_SUFFIX,
+};
 use cbus_transport::pci::{CBusEvent, PciClient};
 use rumqttc::{AsyncClient, QoS};
 use serde_json::{json, Value};
 use std::collections::HashMap;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use tokio::sync::RwLock;
 
@@ -20,6 +23,9 @@ pub struct Gateway {
     no_clock: bool,
     /// groupDB: app -> group -> discovery-config-published
     group_db: Mutex<HashMap<i64, HashMap<u8, bool>>>,
+    /// `MqttClient._status_requests_queued`: the configured sweep runs
+    /// once per process; only the periodic resync forces repeats.
+    status_requests_queued: AtomicBool,
 }
 
 impl Gateway {
@@ -42,6 +48,7 @@ impl Gateway {
             labels,
             no_clock,
             group_db: Mutex::new(HashMap::new()),
+            status_requests_queued: AtomicBool::new(false),
         })
     }
 
@@ -57,14 +64,13 @@ impl Gateway {
 
     // ------------------------------------------------------------- startup
 
-    /// `MqttClient.__aenter__`: subscribe the wildcard, publish the meta
-    /// config, publish discovery for every labelled group, then enqueue the
-    /// 384 throttled level status requests (apps 0x30..=0x5F, blocks
-    /// 0,32..224).
+    /// `MqttClient.__aenter__`: subscribe the /set command wildcard,
+    /// publish the meta config, publish discovery for every labelled
+    /// group, then enqueue the configured throttled status sweep.
     pub async fn on_connected(self: &Arc<Self>) {
         let _ = self
             .mqtt
-            .subscribe("homeassistant/light/#", QoS::AtMostOnce)
+            .subscribe("homeassistant/light/+/set", QoS::ExactlyOnce)
             .await;
 
         let (topic, config) = meta_discovery();
@@ -82,16 +88,75 @@ impl Gateway {
             self.publish_light(ga, app, true).await;
         }
 
-        self.queue_status_requests();
+        self.queue_configured_status_requests(false);
     }
 
-    pub fn queue_status_requests(self: &Arc<Self>) {
-        for app in 0x30..=0x5fu8 {
-            for block in (0u16..256).step_by(32) {
+    /// `MqttClient._configured_status_blocks`: block starts to sweep for
+    /// one app — the blocks holding its labelled groups (255 is the
+    /// project files' pseudo-group and is ignored), the full range when
+    /// the app has no labels entry, nothing when it has one but no real
+    /// groups.
+    fn configured_status_blocks(&self, app: i64) -> Vec<u8> {
+        let Some((_, groups)) = self.labels.get(&app) else {
+            return (0u16..256).step_by(32).map(|b| b as u8).collect();
+        };
+        let mut blocks: Vec<u8> = groups
+            .keys()
+            .filter(|&&ga| ga != 255)
+            .map(|&ga| ga & 0xe0)
+            .collect();
+        blocks.sort_unstable();
+        blocks.dedup();
+        blocks
+    }
+
+    /// `MqttClient.queue_configured_status_requests`: sweep only the
+    /// configured apps/blocks (all apps when no labels exist), once per
+    /// process unless forced by the periodic resync.
+    pub fn queue_configured_status_requests(self: &Arc<Self>, force: bool) {
+        if !force && self.status_requests_queued.swap(true, Ordering::SeqCst) {
+            tracing::debug!("configured status requests already queued; skipping duplicate");
+            return;
+        }
+
+        let configured: Vec<i64> = self
+            .labels
+            .keys()
+            .copied()
+            .filter(|app| (0x30..=0x5f).contains(app))
+            .collect();
+        // no labels at all: preserve the old full-discovery behaviour
+        let apps = if configured.is_empty() {
+            (0x30..=0x5fi64).collect()
+        } else {
+            configured
+        };
+
+        for app in apps {
+            let blocks = self.configured_status_blocks(app);
+            if blocks.is_empty() {
+                tracing::debug!("skipping status requests for app {app}; no real groups");
+                continue;
+            }
+            self.queue_status_requests(app as u8, &blocks);
+        }
+    }
+
+    /// `MqttClient.queue_status_requests`: binary status first (reliable
+    /// ON/OFF presence), then level status so dimmer brightness can
+    /// overwrite the binary fallback, per block.
+    fn queue_status_requests(self: &Arc<Self>, app: u8, blocks: &[u8]) {
+        for &block in blocks {
+            for level_request in [false, true] {
                 let gw = self.clone();
-                let block = block as u8;
                 self.throttle.enqueue(async move {
-                    let _ = gw.pci().await.request_status(block, app).await;
+                    let kind = if level_request { "level" } else { "binary" };
+                    tracing::info!("requesting {kind} status for app={app} block={block}");
+                    let _ = gw
+                        .pci()
+                        .await
+                        .request_status(block, app, level_request)
+                        .await;
                 });
             }
         }
@@ -106,11 +171,9 @@ impl Gateway {
         } else {
             None
         };
+        // commands arrive via the homeassistant/light/+/set wildcard;
+        // no per-light subscription (matches the deployed daemon)
         let d = light_discovery(group_addr, app_addr, labels);
-        let _ = self
-            .mqtt
-            .subscribe(d.subscribe_topic, QoS::ExactlyOnce)
-            .await;
         let _ = self
             .mqtt
             .publish(
@@ -198,6 +261,28 @@ impl Gateway {
             .await;
     }
 
+    /// `MqttClient.lighting_group_binary_state`: state derived from a
+    /// binary status report — no brightness on ON (a binary report has
+    /// no level), brightness 0 on OFF, no transition either way.
+    pub async fn mqtt_light_binary_state(
+        &self,
+        source: Option<u8>,
+        group_addr: u8,
+        app_addr: i64,
+        light_on: bool,
+    ) {
+        self.check_published(group_addr, app_addr).await;
+        let payload = if light_on {
+            json!({"state": "ON", "cbus_source_addr": source})
+        } else {
+            json!({"state": "OFF", "cbus_source_addr": source, "brightness": 0})
+        };
+        self.publish_state(state_topic(group_addr, app_addr), payload)
+            .await;
+        self.publish_binary_sensor(group_addr, app_addr, light_on)
+            .await;
+    }
+
     pub async fn mqtt_light_ramp(
         &self,
         source: Option<u8>,
@@ -238,6 +323,30 @@ impl Gateway {
                 self.mqtt_light_ramp(source, group, app as i64, duration, level)
                     .await;
             }
+            CBusEvent::BinaryReport {
+                app,
+                block_start,
+                states,
+            } => {
+                // `CBusHandler.on_binary_report`: only definite ON/OFF
+                // states publish; missing/error slots are skipped but
+                // still advance the group counter; events use source 0.
+                let mut start = block_start;
+                for state in states {
+                    match state {
+                        1 => {
+                            self.mqtt_light_binary_state(Some(0), start, app as i64, true)
+                                .await
+                        }
+                        2 => {
+                            self.mqtt_light_binary_state(Some(0), start, app as i64, false)
+                                .await
+                        }
+                        _ => {}
+                    }
+                    start = start.wrapping_add(1);
+                }
+            }
             CBusEvent::LevelReport {
                 app,
                 block_start,
@@ -275,7 +384,13 @@ impl Gateway {
 
     /// `MqttClient._handle_message`: parse a /set command and enqueue the
     /// C-Bus send on the throttle (behind any queued status requests).
-    pub fn handle_publish(self: &Arc<Self>, topic: &str, payload: &[u8]) {
+    /// Retained commands are stale broker state, not user intent — acting
+    /// on them would replay old switch commands on every (re)subscribe.
+    pub fn handle_publish(self: &Arc<Self>, topic: &str, payload: &[u8], retain: bool) {
+        if retain && topic.starts_with(LIGHT_TOPIC_PREFIX) && topic.ends_with(TOPIC_SET_SUFFIX) {
+            tracing::warn!("ignoring retained command on topic '{topic}'");
+            return;
+        }
         let cmd = match parse_set_command(topic, payload) {
             Ok(cmd) => cmd,
             Err(CommandError::NotACommandTopic) => return,

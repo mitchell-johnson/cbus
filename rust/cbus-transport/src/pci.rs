@@ -13,7 +13,7 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
-use tokio::sync::mpsc;
+use tokio::sync::{mpsc, watch};
 
 use crate::framing::FrameBuffer;
 
@@ -63,8 +63,7 @@ pub enum CBusEvent {
         /// Target level 0..=255.
         level: u8,
     },
-    /// An extended-status level report arrived (binary reports are
-    /// ignored, like the Python daemon).
+    /// An extended-status level report arrived.
     LevelReport {
         /// Child application the report describes.
         app: u8,
@@ -72,6 +71,15 @@ pub enum CBusEvent {
         block_start: u8,
         /// One level per group; `None` = missing/undecodable.
         levels: Vec<Option<u8>>,
+    },
+    /// An extended-status binary report arrived.
+    BinaryReport {
+        /// Child application the report describes.
+        app: u8,
+        /// First group address covered by the report.
+        block_start: u8,
+        /// One `GroupState` per group: 0 missing, 1 on, 2 off, 3 error.
+        states: Vec<u8>,
     },
     /// A unit asked for the network time.
     ClockRequest {
@@ -105,6 +113,14 @@ pub struct PciClient {
     writer: tokio::sync::Mutex<BoxedWrite>,
     state: Mutex<PciState>,
     events: mpsc::UnboundedSender<CBusEvent>,
+    /// Opens once `pci_reset` has finished: everything except the init
+    /// frames themselves waits on this, so the init sequence hits the
+    /// wire uninterrupted (`PCIProtocol._send` awaiting `_reset_task`).
+    init_done: watch::Sender<bool>,
+    /// Fair FIFO lane for non-init sends: frames blocked on the init
+    /// gate leave in the order `send` was called (asyncio wakes gate
+    /// waiters FIFO; tokio's watch does not, so order it explicitly).
+    send_lane: tokio::sync::Mutex<()>,
 }
 
 impl PciClient {
@@ -120,6 +136,8 @@ impl PciClient {
             writer: tokio::sync::Mutex::new(writer),
             state: Mutex::new(PciState::default()),
             events,
+            init_done: watch::Sender::new(false),
+            send_lane: tokio::sync::Mutex::new(()),
         });
         tokio::spawn(Self::reader_loop(client.clone(), reader));
         tokio::spawn(Self::retry_task(client.clone()));
@@ -129,7 +147,8 @@ impl PciClient {
     // ------------------------------------------------------------ sending
 
     /// `PCIProtocol._send`: prepare (escape, confirmation char, CR),
-    /// transmit, and register for retry when a confirmation was requested.
+    /// wait for the init gate (unless this IS an init frame), transmit,
+    /// and register for retry when a confirmation was requested.
     pub async fn send(
         &self,
         cmd: &Packet,
@@ -142,6 +161,22 @@ impl PciClient {
             (false, true)
         } else {
             (confirmation, basic_mode)
+        };
+
+        // Only the frames pci_reset itself sends may pass before the
+        // init sequence completes; everything else queues behind it, in
+        // send-call order (the lane is a fair FIFO mutex held until the
+        // frame is on the wire).
+        let _lane = if !special && !matches!(cmd, Packet::DeviceManagement { .. }) {
+            let lane = self.send_lane.lock().await;
+            self.init_done
+                .subscribe()
+                .wait_for(|&done| done)
+                .await
+                .map_err(|_| std::io::Error::new(std::io::ErrorKind::BrokenPipe, "client gone"))?;
+            Some(lane)
+        } else {
+            None
         };
 
         let mut bytes = cmd
@@ -381,16 +416,23 @@ impl PciClient {
                     if let Cal::ExtendedStatus {
                         child_application,
                         block_start,
-                        report: StatusReport::Level(levels),
+                        report,
                         ..
                     } = c
                     {
-                        // binary reports are ignored (Python passes on them)
-                        let _ = self.events.send(CBusEvent::LevelReport {
-                            app: child_application,
-                            block_start,
-                            levels,
-                        });
+                        let event = match report {
+                            StatusReport::Level(levels) => CBusEvent::LevelReport {
+                                app: child_application,
+                                block_start,
+                                levels,
+                            },
+                            StatusReport::Binary(states) => CBusEvent::BinaryReport {
+                                app: child_application,
+                                block_start,
+                                states,
+                            },
+                        };
+                        let _ = self.events.send(event);
                     }
                 }
             }
@@ -401,12 +443,22 @@ impl PciClient {
     // ------------------------------------------------------ high-level API
 
     /// `PCIProtocol.pci_reset`: 3 resets, smart-connect shortcut, then the
-    /// four basic-mode DM commands (each with a confirmation char).
+    /// four basic-mode DM commands, all without confirmation chars (the
+    /// PCI is still echoing in basic mode; asking for confirmations here
+    /// triggers retry storms on real CNIs). Opens the init gate when done.
     pub async fn pci_reset(&self) -> std::io::Result<()> {
+        let result = self.pci_reset_frames().await;
+        // Open the gate even on failure: blocked senders then surface the
+        // dead transport themselves instead of waiting forever.
+        self.init_done.send_replace(true);
+        result
+    }
+
+    async fn pci_reset_frames(&self) -> std::io::Result<()> {
         for _ in 0..3 {
-            self.send(&Packet::Reset, true, false).await?;
+            self.send(&Packet::Reset, false, true).await?;
         }
-        self.send(&Packet::SmartConnect, true, false).await?;
+        self.send(&Packet::SmartConnect, false, true).await?;
         for (parameter, value) in [(0x21u8, 0xffu8), (0x22, 0xff), (0x42, 0x0e), (0x30, 0x79)] {
             self.send(
                 &Packet::DeviceManagement {
@@ -414,7 +466,7 @@ impl PciClient {
                     parameter,
                     value,
                 },
-                true,
+                false,
                 true,
             )
             .await?;
@@ -475,18 +527,26 @@ impl PciClient {
         self.send(&p, true, false).await
     }
 
-    /// `PCIProtocol.request_status`: level status request for one block.
-    pub async fn request_status(&self, block: u8, app: u8) -> std::io::Result<Option<u8>> {
+    /// `PCIProtocol.request_status`: binary or level status request for
+    /// one block. Status reports are their own replies; asking the CNI
+    /// for command confirmations here creates a large retry backlog on
+    /// slow hardware, so these frames are sent without a confirmation.
+    pub async fn request_status(
+        &self,
+        block: u8,
+        app: u8,
+        level_request: bool,
+    ) -> std::io::Result<Option<u8>> {
         let p = Packet::PointToMultipoint {
             meta: Meta::new(true, 0),
             application: 0xff,
             sals: vec![Sal::StatusRequest {
-                level_request: true,
+                level_request,
                 group_address: block,
                 child_application: app,
             }],
         };
-        self.send(&p, true, false).await
+        self.send(&p, false, false).await
     }
 
     /// `PCIProtocol.clock_datetime`: one PM packet, date SAL then time SAL.
@@ -542,9 +602,70 @@ mod tests {
         pci.pci_reset().await.unwrap();
         let got = read_available(&mut pci_side, 300).await;
         let s = String::from_utf8_lossy(&got);
+        // deployed-faithful: no confirmation chars anywhere in the init
+        // sequence (the PCI is still echoing in basic mode)
         assert!(
-            s.starts_with("~\r~\r~\r|\rA32100FFh\rA32200FFi\rA342000Ej\rA3300079k\r"),
+            s.starts_with("~\r~\r~\r|\rA32100FF\rA32200FF\rA342000E\rA3300079\r"),
             "unexpected init sequence: {s:?}"
+        );
+    }
+
+    #[tokio::test]
+    async fn status_requests_are_codeless_binary_and_level() {
+        let (client_side, mut pci_side) = tokio::io::duplex(4096);
+        let (rd, wr) = tokio::io::split(client_side);
+        let (tx, _rx) = mpsc::unbounded_channel();
+        let pci = PciClient::new(Box::new(rd), Box::new(wr), tx);
+        pci.pci_reset().await.unwrap();
+        read_available(&mut pci_side, 200).await; // drain the init frames
+        assert_eq!(pci.request_status(0, 0x38, false).await.unwrap(), None);
+        assert_eq!(pci.request_status(0, 0x38, true).await.unwrap(), None);
+        let got = read_available(&mut pci_side, 300).await;
+        let s = String::from_utf8_lossy(&got);
+        assert_eq!(s, "\\05FF007A38004A\r\\05FF00730738004A\r");
+        // nothing was registered for retry: no retransmits follow
+        tokio::time::sleep(Duration::from_millis(2500)).await;
+        let got = read_available(&mut pci_side, 200).await;
+        assert!(
+            got.is_empty(),
+            "codeless status requests must not retransmit: {:?}",
+            String::from_utf8_lossy(&got)
+        );
+    }
+
+    #[tokio::test]
+    async fn init_gate_holds_noninit_traffic_until_reset_completes() {
+        let (client_side, mut pci_side) = tokio::io::duplex(4096);
+        let (rd, wr) = tokio::io::split(client_side);
+        let (tx, _rx) = mpsc::unbounded_channel();
+        let pci = PciClient::new(Box::new(rd), Box::new(wr), tx);
+        // traffic issued while the init sequence has not even started yet
+        let p = pci.clone();
+        let sr = tokio::spawn(async move { p.request_status(0, 0x38, true).await });
+        let p = pci.clone();
+        let cmd = tokio::spawn(async move { p.lighting_group_on(&[1], 0x38).await });
+        tokio::time::sleep(Duration::from_millis(300)).await;
+        let early = read_available(&mut pci_side, 100).await;
+        assert!(
+            early.is_empty(),
+            "traffic leaked before init: {:?}",
+            String::from_utf8_lossy(&early)
+        );
+        pci.pci_reset().await.unwrap();
+        sr.await.unwrap().unwrap();
+        cmd.await.unwrap().unwrap();
+        let got = read_available(&mut pci_side, 300).await;
+        let s = String::from_utf8_lossy(&got);
+        let init = "~\r~\r~\r|\rA32100FF\rA32200FF\rA342000E\rA3300079\r";
+        assert!(s.starts_with(init), "init must lead the stream: {s:?}");
+        let rest = &s[init.len()..];
+        assert!(
+            rest.contains("\\05FF00730738004A\r"),
+            "status request missing: {s:?}"
+        );
+        assert!(
+            rest.contains("\\053800790149h\r"),
+            "lighting command missing: {s:?}"
         );
     }
 
@@ -554,7 +675,8 @@ mod tests {
         let (rd, wr) = tokio::io::split(client_side);
         let (tx, _rx) = mpsc::unbounded_channel();
         let pci = PciClient::new(Box::new(rd), Box::new(wr), tx);
-        let code = pci.request_status(0, 0x30).await.unwrap().unwrap();
+        pci.pci_reset().await.unwrap();
+        let code = pci.lighting_group_on(&[1], 0x38).await.unwrap().unwrap();
         assert_eq!(code, b'h');
         let first = read_available(&mut pci_side, 300).await;
         assert!(!first.is_empty());
@@ -599,13 +721,14 @@ mod tests {
         let (rd, wr) = tokio::io::split(client_side);
         let (tx, _rx) = mpsc::unbounded_channel();
         let pci = PciClient::new(Box::new(rd), Box::new(wr), tx);
-        pci.request_status(0, 0x30).await.unwrap();
+        pci.pci_reset().await.unwrap();
+        pci.lighting_group_on(&[1], 0x38).await.unwrap();
         // withhold confirmation; retries land at ~2.1s and ~3.1s (the 1s
         // sweep sees elapsed 0.9s on its first tick, like Python)
         tokio::time::sleep(Duration::from_millis(3600)).await;
         let got = read_available(&mut pci_side, 200).await;
         let s = String::from_utf8_lossy(&got).to_string();
-        let frame = "\\05FF007307300052h\r";
+        let frame = "\\053800790149h\r";
         assert_eq!(s.matches(frame).count(), 3, "got: {s:?}");
         // after 3 attempts the code is abandoned and released
         tokio::time::sleep(Duration::from_millis(1200)).await;
