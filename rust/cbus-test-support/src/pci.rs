@@ -75,6 +75,7 @@ struct State {
     withheld: Option<(String, u8)>,
     withheld_seen: usize,
     writer: Option<mpsc::UnboundedSender<Vec<u8>>>,
+    writer_abort: Option<tokio::task::AbortHandle>,
 }
 
 /// The fake PCI server; `start()` binds an ephemeral port.
@@ -163,22 +164,21 @@ impl FakePci {
         tx.send(wire.to_vec()).expect("client writer gone");
     }
 
-    /// Drop the current client connection (for reconnect tests).
+    /// Drop the current client connection (for reconnect tests): aborting
+    /// the writer task drops the socket's write half, sending a FIN the
+    /// daemon sees as EOF on its next read.
     pub fn kick(&self) {
-        // dropping the writer sender ends the writer task, closing the
-        // socket's write half; the daemon sees EOF on its next read
-        self.state.lock().unwrap().writer = None;
+        let mut st = self.state.lock().unwrap();
+        st.writer = None;
+        if let Some(h) = st.writer_abort.take() {
+            h.abort();
+        }
     }
 }
 
 async fn handle_client(stream: tokio::net::TcpStream, state: Arc<Mutex<State>>) {
     let (mut rd, mut wr) = stream.into_split();
     let (tx, mut rx) = mpsc::unbounded_channel::<Vec<u8>>();
-    {
-        let mut st = state.lock().unwrap();
-        st.connections += 1;
-        st.writer = Some(tx.clone());
-    }
     let writer_task = tokio::spawn(async move {
         use tokio::io::AsyncWriteExt as _;
         while let Some(data) = rx.recv().await {
@@ -188,6 +188,12 @@ async fn handle_client(stream: tokio::net::TcpStream, state: Arc<Mutex<State>>) 
         }
         let _ = wr.shutdown().await;
     });
+    {
+        let mut st = state.lock().unwrap();
+        st.connections += 1;
+        st.writer = Some(tx.clone());
+        st.writer_abort = Some(writer_task.abort_handle());
+    }
 
     let mut buf: Vec<u8> = Vec::new();
     let mut chunk = [0u8; 4096];

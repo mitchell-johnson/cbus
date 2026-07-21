@@ -16,3 +16,6 @@ workspace = true
 
 [dependencies.serde]
 workspace = true
+
+[dev-dependencies]
+cbus-test-support = { path = "../cbus-test-support" }

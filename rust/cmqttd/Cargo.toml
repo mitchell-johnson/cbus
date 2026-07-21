@@ -19,3 +19,7 @@ rustls = { workspace = true }
 rustls-native-certs = { workspace = true }
 rustls-pemfile = { workspace = true }
 mdns-sd = { workspace = true }
+
+[dev-dependencies]
+cbus-test-support = { path = "../cbus-test-support" }
+hex = { workspace = true }

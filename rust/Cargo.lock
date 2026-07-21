@@ -167,6 +167,7 @@ name = "cbus-simulator"
 version = "0.1.0"
 dependencies = [
  "cbus-protocol",
+ "cbus-test-support",
  "cbus-transport",
  "hex",
  "tokio",
@@ -188,6 +189,7 @@ version = "0.1.0"
 dependencies = [
  "cbus-mqtt",
  "cbus-protocol",
+ "cbus-test-support",
  "clap",
  "hex",
  "roxmltree",
@@ -299,9 +301,11 @@ version = "0.1.0"
 dependencies = [
  "cbus-mqtt",
  "cbus-protocol",
+ "cbus-test-support",
  "cbus-transport",
  "chrono",
  "clap",
+ "hex",
  "mdns-sd",
  "rumqttc",
  "rustls",
