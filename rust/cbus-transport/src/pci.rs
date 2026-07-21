@@ -1,8 +1,11 @@
 //! PCI client state machine. Port of `cbus/protocol/pciprotocol.py`:
 //! confirmation-code allocator (round-robin, 30 s timeout, force cleanup),
-//! byte-identical retransmit every 1 s (max 3 attempts), 0.1 s pre-write
-//! delay, and the exact PCI init sequence.
+//! byte-identical retransmit with jittered exponential backoff (max 3
+//! attempts), and the exact PCI init sequence at its deployed-proven
+//! fixed 0.1 s pacing. All post-init traffic is paced by the adaptive
+//! flow controller in [`crate::flow`] instead of fixed delays.
 
+use crate::flow::{self, AckSignal, Flow, FlowConfig, Priority, ResponseKind};
 use cbus_protocol::cal::Cal;
 use cbus_protocol::common::CONFIRMATION_CODES;
 use cbus_protocol::packet::{Meta, Packet};
@@ -11,9 +14,12 @@ use cbus_protocol::sal::Sal;
 use chrono::{Datelike, Timelike};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
-use std::time::{Duration, Instant};
+use std::time::Duration;
 use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
 use tokio::sync::{mpsc, watch};
+// tokio's Instant (not std): identical on a live clock, but it follows
+// the virtual clock in paused-time tests like the flow controller does.
+use tokio::time::Instant;
 
 use crate::framing::FrameBuffer;
 
@@ -21,10 +27,11 @@ use crate::framing::FrameBuffer;
 pub const CONFIRMATION_TIMEOUT: Duration = Duration::from_secs(30);
 /// Total transmission attempts for an unconfirmed frame.
 pub const MAX_PACKET_RETRIES: u32 = 3;
-/// Sweep interval of the retransmit task.
-pub const RETRY_INTERVAL: Duration = Duration::from_secs(1);
-/// Pause before every transport write (the CNI is slow).
-pub const PACKET_SEND_DELAY: Duration = Duration::from_millis(100);
+/// How often due retransmits/give-ups are checked for.
+pub const RETRY_SWEEP_INTERVAL: Duration = Duration::from_millis(100);
+/// Pause before each init-sequence write (deployed-proven pacing, pinned
+/// by the harness init assertion; post-init traffic is flow-controlled).
+pub const INIT_SEND_DELAY: Duration = Duration::from_millis(100);
 const FORCE_CLEANUP_THRESHOLD: f64 = 0.9;
 const FORCE_CLEANUP_PERCENTAGE: f64 = 0.25;
 
@@ -93,7 +100,9 @@ pub enum CBusEvent {
 struct Pending {
     data: Vec<u8>,
     attempts: u32,
-    last_attempt: Instant,
+    /// When the next retransmit (or the give-up after the final attempt)
+    /// is due: jittered 1 s -> 2 s -> 4 s exponential backoff.
+    next_retry: Instant,
 }
 
 #[derive(Default)]
@@ -108,9 +117,14 @@ pub type BoxedWrite = Box<dyn AsyncWrite + Send + Unpin>;
 /// Read half of a connected transport.
 pub type BoxedRead = Box<dyn AsyncRead + Send + Unpin>;
 
-/// Async client for a C-Bus PCI/CNI. Port of `PCIProtocol`.
+/// Async client for a C-Bus PCI/CNI. Port of `PCIProtocol`, with the
+/// fixed post-init pacing replaced by the adaptive flow controller.
 pub struct PciClient {
-    writer: tokio::sync::Mutex<BoxedWrite>,
+    /// Write half, shared with the flow-controller task (init frames
+    /// write directly; everything else goes through the controller).
+    writer: Arc<tokio::sync::Mutex<BoxedWrite>>,
+    /// Ack-clocked pacing for all post-init traffic.
+    flow: Flow,
     state: Mutex<PciState>,
     events: mpsc::UnboundedSender<CBusEvent>,
     /// Opens once `pci_reset` has finished: everything except the init
@@ -118,22 +132,26 @@ pub struct PciClient {
     /// wire uninterrupted (`PCIProtocol._send` awaiting `_reset_task`).
     init_done: watch::Sender<bool>,
     /// Fair FIFO lane for non-init sends: frames blocked on the init
-    /// gate leave in the order `send` was called (asyncio wakes gate
-    /// waiters FIFO; tokio's watch does not, so order it explicitly).
+    /// gate enter the flow queues in the order `send` was called
+    /// (asyncio wakes gate waiters FIFO; tokio's watch does not, so
+    /// order it explicitly).
     send_lane: tokio::sync::Mutex<()>,
 }
 
 impl PciClient {
-    /// Create a client over a connected transport. Spawns the reader loop
-    /// and the 1 s retry task. `pci_reset()` must be invoked by the caller
-    /// (mirrors `connection_made`).
+    /// Create a client over a connected transport. Spawns the reader
+    /// loop, the flow-controller task and the retransmit task.
+    /// `pci_reset()` must be invoked by the caller (mirrors
+    /// `connection_made`).
     pub fn new(
         reader: BoxedRead,
         writer: BoxedWrite,
         events: mpsc::UnboundedSender<CBusEvent>,
     ) -> Arc<Self> {
+        let writer = Arc::new(tokio::sync::Mutex::new(writer));
         let client = Arc::new(PciClient {
-            writer: tokio::sync::Mutex::new(writer),
+            flow: Flow::start(writer.clone(), FlowConfig::default()),
+            writer,
             state: Mutex::new(PciState::default()),
             events,
             init_done: watch::Sender::new(false),
@@ -147,8 +165,9 @@ impl PciClient {
     // ------------------------------------------------------------ sending
 
     /// `PCIProtocol._send`: prepare (escape, confirmation char, CR),
-    /// wait for the init gate (unless this IS an init frame), transmit,
-    /// and register for retry when a confirmation was requested.
+    /// wait for the init gate (unless this IS an init frame), transmit
+    /// (fixed-paced for init frames, flow-controlled for everything
+    /// else), and register for retry when a confirmation was requested.
     pub async fn send(
         &self,
         cmd: &Packet,
@@ -163,11 +182,13 @@ impl PciClient {
             (confirmation, basic_mode)
         };
 
-        // Only the frames pci_reset itself sends may pass before the
-        // init sequence completes; everything else queues behind it, in
-        // send-call order (the lane is a fair FIFO mutex held until the
-        // frame is on the wire).
-        let _lane = if !special && !matches!(cmd, Packet::DeviceManagement { .. }) {
+        // Only the frames pci_reset itself sends bypass the flow
+        // controller (and the init gate): their fixed pacing is a
+        // deployed-proven contract. Everything else queues behind init,
+        // in send-call order (the lane is a fair FIFO mutex held until
+        // the frame is in the flow queue).
+        let init_frame = special || matches!(cmd, Packet::DeviceManagement { .. });
+        let lane = if !init_frame {
             let lane = self.send_lane.lock().await;
             self.init_done
                 .subscribe()
@@ -194,7 +215,18 @@ impl PciClient {
         };
         bytes.extend_from_slice(b"\r");
 
-        self.send_raw(&bytes).await?;
+        if init_frame {
+            self.send_init(&bytes).await?;
+        } else {
+            let (priority, kind) = classify(cmd, conf);
+            let rx = self.flow.submit(bytes.clone(), priority, kind);
+            // Enqueued: this sender's place in line is fixed, so let the
+            // next caller queue up while we wait for the wire.
+            drop(lane);
+            rx.await.map_err(|_| {
+                std::io::Error::new(std::io::ErrorKind::BrokenPipe, "flow controller gone")
+            })??;
+        }
 
         if let Some(code) = conf {
             let mut st = self.state.lock().unwrap();
@@ -203,16 +235,18 @@ impl PciClient {
                 Pending {
                     data: bytes,
                     attempts: 1,
-                    last_attempt: Instant::now(),
+                    next_retry: Instant::now() + flow::jittered_backoff(1),
                 },
             );
         }
         Ok(conf)
     }
 
-    /// `PCIProtocol._send_packet`: 0.1 s delay then write (the CNI is slow).
-    async fn send_raw(&self, data: &[u8]) -> std::io::Result<()> {
-        tokio::time::sleep(PACKET_SEND_DELAY).await;
+    /// `PCIProtocol._send_packet` for the init sequence only: fixed
+    /// 0.1 s pre-write delay. Post-init traffic goes through the flow
+    /// controller instead.
+    async fn send_init(&self, data: &[u8]) -> std::io::Result<()> {
+        tokio::time::sleep(INIT_SEND_DELAY).await;
         let mut w = self.writer.lock().await;
         w.write_all(data).await?;
         w.flush().await
@@ -289,51 +323,54 @@ impl PciClient {
 
     // -------------------------------------------------------- retry task
 
-    /// `PCIProtocol._check_pending_confirmations`: every 1 s, resend
-    /// byte-identical frames (attempts capped at 3, then abandon+release).
+    /// `PCIProtocol._check_pending_confirmations` on a backoff schedule:
+    /// resend byte-identical frames at jittered 1 s -> 2 s -> 4 s
+    /// intervals (attempts capped at 3, then abandon+release, same
+    /// give-up semantics as before). Retransmits go through the flow
+    /// controller's unwindowed lane: no window slot, but the inter-frame
+    /// floor and any `!` pause still apply.
     async fn retry_task(self: Arc<Self>) {
         loop {
-            tokio::time::sleep(RETRY_INTERVAL).await;
+            tokio::time::sleep(RETRY_SWEEP_INTERVAL).await;
             let now = Instant::now();
-            let mut to_retry: Vec<(u8, Vec<u8>)> = Vec::new();
+            let mut to_retry: Vec<Vec<u8>> = Vec::new();
             {
                 let mut st = self.state.lock().unwrap();
                 Self::check_and_release_timed_out(&mut st);
 
-                let mut to_abandon: Vec<u8> = Vec::new();
-                for (&code, p) in st.pending.iter() {
-                    if now.duration_since(p.last_attempt) >= RETRY_INTERVAL {
-                        if p.attempts < MAX_PACKET_RETRIES {
-                            to_retry.push((code, p.data.clone()));
-                        } else {
-                            to_abandon.push(code);
-                        }
-                    }
-                }
-                for code in to_abandon {
-                    tracing::warn!(
-                        "giving up on confirmation code {:#04x} after {} attempts",
-                        code,
-                        MAX_PACKET_RETRIES
-                    );
-                    st.pending.remove(&code);
-                    st.codes_in_use.remove(&code);
-                }
-                for (code, _) in &to_retry {
-                    if let Some(p) = st.pending.get_mut(code) {
+                let due: Vec<u8> = st
+                    .pending
+                    .iter()
+                    .filter(|(_, p)| now >= p.next_retry)
+                    .map(|(&code, _)| code)
+                    .collect();
+                for code in due {
+                    let p = st.pending.get_mut(&code).expect("due code present");
+                    if p.attempts < MAX_PACKET_RETRIES {
                         p.attempts += 1;
-                        p.last_attempt = now;
+                        p.next_retry = now + flow::jittered_backoff(p.attempts);
                         tracing::info!(
                             "resending frame with confirmation code {:#04x}, attempt {}",
                             code,
                             p.attempts
                         );
+                        to_retry.push(p.data.clone());
+                    } else {
+                        tracing::warn!(
+                            "giving up on confirmation code {:#04x} after {} attempts",
+                            code,
+                            MAX_PACKET_RETRIES
+                        );
+                        st.pending.remove(&code);
+                        st.codes_in_use.remove(&code);
                     }
                 }
             }
-            for (_, data) in to_retry {
-                if self.send_raw(&data).await.is_err() {
-                    return;
+            for data in to_retry {
+                match self.flow.submit_unwindowed(data).await {
+                    Ok(Ok(())) => {}
+                    // transport dead or controller gone: this client is done
+                    _ => return,
                 }
             }
         }
@@ -365,11 +402,21 @@ impl PciClient {
         match p {
             Packet::Confirmation { code, success } => {
                 tracing::debug!("confirmation: code {:#04x} success {}", code, success);
-                let mut st = self.state.lock().unwrap();
-                st.pending.remove(&code);
-                st.codes_in_use.remove(&code);
+                {
+                    let mut st = self.state.lock().unwrap();
+                    st.pending.remove(&code);
+                    st.codes_in_use.remove(&code);
+                }
+                // any confirmation (even success=false) is a response:
+                // it releases the frame's flow-control slot
+                self.flow.ack(AckSignal::Confirmation(code));
             }
-            Packet::PciError => tracing::debug!("PCI cannot accept data"),
+            Packet::PciError => {
+                // explicit congestion signal: the controller pauses all
+                // sends and collapses the window
+                tracing::debug!("PCI cannot accept data");
+                self.flow.pci_error();
+            }
             Packet::PowerOn => tracing::debug!("PCI power-up notification"),
             Packet::PointToMultipoint { meta, sals, .. } => {
                 for s in sals {
@@ -420,6 +467,13 @@ impl PciClient {
                         ..
                     } = c
                     {
+                        // the first report matching a pending status
+                        // request's app+block+kind acks that request
+                        self.flow.ack(AckSignal::Report {
+                            app: child_application,
+                            block: block_start,
+                            level: matches!(report, StatusReport::Level(_)),
+                        });
                         let event = match report {
                             StatusReport::Level(levels) => CBusEvent::LevelReport {
                                 app: child_application,
@@ -572,6 +626,43 @@ impl PciClient {
     }
 }
 
+/// Flow-control classification of an outbound frame: user commands
+/// (lighting operations, i.e. MQTT /set traffic) outrank background
+/// frames, and the response that will release the frame's window slot
+/// is derived from what the device observably sends back.
+fn classify(cmd: &Packet, conf: Option<u8>) -> (Priority, ResponseKind) {
+    let is_lighting = |s: &Sal| {
+        matches!(
+            s,
+            Sal::LightingOn { .. } | Sal::LightingOff { .. } | Sal::LightingRamp { .. }
+        )
+    };
+    let priority = match cmd {
+        Packet::PointToMultipoint { sals, .. } if sals.iter().any(is_lighting) => Priority::Command,
+        _ => Priority::Background,
+    };
+    let kind = if let Some(code) = conf {
+        ResponseKind::Confirmation(code)
+    } else if let Packet::PointToMultipoint { sals, .. } = cmd {
+        // status requests are sent one per frame (request_status)
+        match sals.first() {
+            Some(Sal::StatusRequest {
+                level_request,
+                group_address,
+                child_application,
+            }) => ResponseKind::Report {
+                app: *child_application,
+                block: *group_address,
+                level: *level_request,
+            },
+            _ => ResponseKind::Silent,
+        }
+    } else {
+        ResponseKind::Silent
+    };
+    (priority, kind)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -669,7 +760,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[tokio::test(start_paused = true)]
     async fn confirmation_releases_and_stops_retry() {
         let (client_side, mut pci_side) = tokio::io::duplex(4096);
         let (rd, wr) = tokio::io::split(client_side);
@@ -681,10 +772,11 @@ mod tests {
         let first = read_available(&mut pci_side, 300).await;
         assert!(!first.is_empty());
         // deliver the confirmation; the pending frame must not be resent
+        // (first backoff fires no earlier than 0.8s after transmission)
         tokio::io::AsyncWriteExt::write_all(&mut pci_side, b"h.")
             .await
             .unwrap();
-        tokio::time::sleep(Duration::from_millis(2500)).await;
+        tokio::time::sleep(Duration::from_millis(6000)).await;
         let got = read_available(&mut pci_side, 200).await;
         assert!(
             got.is_empty(),
@@ -715,24 +807,96 @@ mod tests {
         assert_eq!(first19.len(), 19);
     }
 
-    #[tokio::test]
-    async fn retry_unconfirmed_identical() {
+    #[tokio::test(start_paused = true)]
+    async fn retry_unconfirmed_backoff_three_attempts_then_abandon() {
         let (client_side, mut pci_side) = tokio::io::duplex(4096);
         let (rd, wr) = tokio::io::split(client_side);
         let (tx, _rx) = mpsc::unbounded_channel();
         let pci = PciClient::new(Box::new(rd), Box::new(wr), tx);
         pci.pci_reset().await.unwrap();
         pci.lighting_group_on(&[1], 0x38).await.unwrap();
-        // withhold confirmation; retries land at ~2.1s and ~3.1s (the 1s
-        // sweep sees elapsed 0.9s on its first tick, like Python)
-        tokio::time::sleep(Duration::from_millis(3600)).await;
-        let got = read_available(&mut pci_side, 200).await;
-        let s = String::from_utf8_lossy(&got).to_string();
         let frame = "\\053800790149h\r";
-        assert_eq!(s.matches(frame).count(), 3, "got: {s:?}");
-        // after 3 attempts the code is abandoned and released
-        tokio::time::sleep(Duration::from_millis(1200)).await;
-        let got = read_available(&mut pci_side, 200).await;
-        assert!(got.is_empty());
+        // withhold confirmation: byte-identical retransmits back off at
+        // jittered 1s then 2s (+100ms sweep granularity each)
+        tokio::time::sleep(Duration::from_millis(500)).await;
+        let got = read_available(&mut pci_side, 100).await;
+        let s = String::from_utf8_lossy(&got).to_string();
+        assert_eq!(
+            s.matches(frame).count(),
+            1,
+            "no retransmit before the 0.8s jitter floor: {s:?}"
+        );
+        // worst case: retry2 at 1.3s, retry3 at 1.3+2.5=3.8s
+        tokio::time::sleep(Duration::from_millis(3400)).await;
+        let got = read_available(&mut pci_side, 100).await;
+        let s = String::from_utf8_lossy(&got).to_string();
+        assert_eq!(s.matches(frame).count(), 2, "got: {s:?}");
+        // after 3 total attempts the code is abandoned (give-up due at
+        // worst 3.8s + 4.9s): no fourth transmission ever
+        tokio::time::sleep(Duration::from_millis(5500)).await;
+        let got = read_available(&mut pci_side, 100).await;
+        assert!(
+            got.is_empty(),
+            "unexpected 4th attempt: {:?}",
+            String::from_utf8_lossy(&got)
+        );
+        // the give-up released the confirmation code
+        assert!(pci.state.lock().unwrap().codes_in_use.is_empty());
+        assert!(pci.state.lock().unwrap().pending.is_empty());
+    }
+
+    #[test]
+    fn classify_priorities_and_response_kinds() {
+        // lighting command with a code: user priority, conf-released
+        let cmd = Packet::PointToMultipoint {
+            meta: Meta::new(true, 0),
+            application: 0x38,
+            sals: vec![Sal::LightingOn {
+                application: 0x38,
+                group_address: 1,
+            }],
+        };
+        assert_eq!(
+            classify(&cmd, Some(b'h')),
+            (Priority::Command, ResponseKind::Confirmation(b'h'))
+        );
+        // codeless status request: background, released by the first
+        // report matching app+block+kind
+        let sr = Packet::PointToMultipoint {
+            meta: Meta::new(true, 0),
+            application: 0xff,
+            sals: vec![Sal::StatusRequest {
+                level_request: true,
+                group_address: 0x20,
+                child_application: 0x38,
+            }],
+        };
+        assert_eq!(
+            classify(&sr, None),
+            (
+                Priority::Background,
+                ResponseKind::Report {
+                    app: 0x38,
+                    block: 0x20,
+                    level: true
+                }
+            )
+        );
+        // confirmed clock update: background but conf-released
+        let clock = Packet::PointToMultipoint {
+            meta: Meta::new(true, 0),
+            application: 0xdf,
+            sals: vec![Sal::ClockUpdateTime {
+                hour: 1,
+                minute: 2,
+                second: 3,
+            }],
+        };
+        assert_eq!(
+            classify(&clock, Some(b'g')),
+            (Priority::Background, ResponseKind::Confirmation(b'g'))
+        );
+        // a codeless frame with no observable response: short slot hold
+        assert_eq!(classify(&clock, None).1, ResponseKind::Silent);
     }
 }
