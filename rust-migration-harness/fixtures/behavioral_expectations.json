@@ -1,4 +1,10 @@
 {
+ "configured_sweep": [
+  "05FF007A300052",
+  "05FF007307300052",
+  "05FF007A38004A",
+  "05FF00730738004A"
+ ],
  "init_frames": [
   {
    "conf": false,
@@ -17,19 +23,19 @@
    "payload": "|"
   },
   {
-   "conf": true,
+   "conf": false,
    "payload": "A32100FF"
   },
   {
-   "conf": true,
+   "conf": false,
    "payload": "A32200FF"
   },
   {
-   "conf": true,
+   "conf": false,
    "payload": "A342000E"
   },
   {
-   "conf": true,
+   "conf": false,
    "payload": "A3300079"
   }
  ],

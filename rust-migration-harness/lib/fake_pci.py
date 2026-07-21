@@ -4,8 +4,10 @@ Pure stdlib. Accepts a single cmqttd connection, records every frame the
 client sends, auto-acknowledges confirmation codes (like a real PCI in
 smart mode), and lets the test inject raw server->client wire bytes.
 
-Optionally withholds the confirmation for the first status-request frame,
-to exercise the client's retransmission logic.
+Optionally withholds the confirmation for the first confirmed frame of
+any kind, to exercise the client's retransmission logic. (Status
+requests are sent without confirmation chars, so the first confirmed
+frame is typically an MQTT-command or clock-update frame.)
 """
 import asyncio
 import time
@@ -30,7 +32,7 @@ class RecordedFrame:
 
 class FakePCI:
     def __init__(self, host='127.0.0.1', port=0,
-                 withhold_status_request_conf=False):
+                 withhold_first_conf=False):
         self._host = host
         self._port = port
         self._server: Optional[asyncio.AbstractServer] = None
@@ -39,7 +41,7 @@ class FakePCI:
         self.reset_count = 0
         self.smart_connect_count = 0
         self.connections = 0
-        self._withhold_sr = withhold_status_request_conf
+        self._withhold_first_conf = withhold_first_conf
         self._withheld: Optional[tuple] = None  # (payload, conf)
         self.withheld_seen = 0
 
@@ -84,9 +86,7 @@ class FakePCI:
             self.smart_connect_count += 1
             return
         if f.conf is not None:
-            is_status_request = f.payload.startswith('05FF0073')
-            if self._withhold_sr and self._withheld is None \
-                    and is_status_request:
+            if self._withhold_first_conf and self._withheld is None:
                 # withhold this one; count repeats of the exact same frame
                 self._withheld = (f.payload, f.conf)
                 self.withheld_seen = 1

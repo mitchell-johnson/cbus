@@ -848,16 +848,19 @@ def gen_ha_discovery():
 # ---------------------------------------------------------------------------
 
 def gen_behavioral_expectations():
-    # PCI init sequence as produced by PCIProtocol.pci_reset()
+    # PCI init sequence. NOTE: the deployed (production) daemon sends the
+    # DM frames withOUT confirmation chars — the repo Python (which this
+    # generator runs against) requested confirmations, which was proven
+    # wrong against the real CNI. conf is False for all init frames.
     init = [
         {'payload': '~', 'conf': False},
         {'payload': '~', 'conf': False},
         {'payload': '~', 'conf': False},
         {'payload': '|', 'conf': False},
-        {'payload': 'A32100FF', 'conf': True},
-        {'payload': 'A32200FF', 'conf': True},
-        {'payload': 'A342000E', 'conf': True},
-        {'payload': 'A3300079', 'conf': True},
+        {'payload': 'A32100FF', 'conf': False},
+        {'payload': 'A32200FF', 'conf': False},
+        {'payload': 'A342000E', 'conf': False},
+        {'payload': 'A3300079', 'conf': False},
     ]
     # sanity: DM packets encode to those exact strings
     for (param, value), expect in [((0x21, 0xFF), 'A32100FF'),
@@ -892,9 +895,20 @@ def gen_behavioral_expectations():
         p = PointToMultipointPacket(sals=sals)
         return p.encode_packet().decode()
 
+    # The exact wire sweep for fixtures/project.xml under the deployed
+    # configured-sweep behaviour: configured apps ascending (48 then 56),
+    # one block (0x00) each, binary status request before level.
+    configured_sweep = [
+        '05FF007A300052',
+        '05FF007307300052',
+        '05FF007A38004A',
+        '05FF00730738004A',
+    ]
+
     expectations = {
         'init_frames': init,
         'status_requests': status_requests,
+        'configured_sweep': configured_sweep,
         'inject_lighting_on': {
             'wire': pm_wire([LightingOnSAL(10, 0x38)], 5),
             'state_topic': state_topic(10, 0x38),
