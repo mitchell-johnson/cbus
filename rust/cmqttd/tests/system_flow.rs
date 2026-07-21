@@ -108,9 +108,11 @@ async fn pci_error_pauses_sends_collapses_window_then_recovers() {
     for g in 3..=13 {
         inject_on(&sys, g);
     }
-    require(Duration::from_secs(30), "post-collapse command frames", || {
-        (3..=13).all(|g| sys.pci.count_payload(&on_payload(g)) >= 1)
-    })
+    require(
+        Duration::from_secs(30),
+        "post-collapse command frames",
+        || (3..=13).all(|g| sys.pci.count_payload(&on_payload(g)) >= 1),
+    )
     .await;
     require(Duration::from_secs(5), "window-recovery log line", || {
         sys.daemon.stderr().contains("window recovering")

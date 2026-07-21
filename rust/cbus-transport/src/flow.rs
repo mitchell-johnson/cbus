@@ -864,12 +864,15 @@ mod tests {
 
     // -------------------------------------------------------- async driver
 
-    /// AsyncWrite capturing (virtual-time instant, bytes) per write.
+    /// One captured write: (virtual-time instant, bytes).
+    type Write = (Instant, Vec<u8>);
+
+    /// AsyncWrite capturing every write with its virtual timestamp.
     #[derive(Clone, Default)]
-    struct RecordingWriter(std::sync::Arc<std::sync::Mutex<Vec<(Instant, Vec<u8>)>>>);
+    struct RecordingWriter(std::sync::Arc<std::sync::Mutex<Vec<Write>>>);
 
     impl RecordingWriter {
-        fn writes(&self) -> Vec<(Instant, Vec<u8>)> {
+        fn writes(&self) -> Vec<Write> {
             self.0.lock().unwrap().clone()
         }
     }
