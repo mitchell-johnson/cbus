@@ -8,7 +8,7 @@
 //! to exercise the client's retransmission logic.
 
 use std::sync::{Arc, Mutex};
-use std::time::Instant;
+use std::time::{Duration, Instant};
 use tokio::io::AsyncReadExt;
 use tokio::net::TcpListener;
 use tokio::sync::mpsc;
@@ -74,6 +74,8 @@ struct State {
     withhold_first_conf: bool,
     withheld: Option<(String, u8)>,
     withheld_seen: usize,
+    /// Auto-confirmations are delayed by this much (slow-CNI emulation).
+    conf_delay: Option<Duration>,
     writer: Option<mpsc::UnboundedSender<Vec<u8>>>,
     writer_abort: Option<tokio::task::AbortHandle>,
 }
@@ -154,6 +156,12 @@ impl FakePci {
     /// has been seen.
     pub fn withheld_seen(&self) -> usize {
         self.state.lock().unwrap().withheld_seen
+    }
+
+    /// Delay every subsequent auto-confirmation by `delay` (emulates a
+    /// slow/loaded CNI withholding confirmations).
+    pub fn set_conf_delay(&self, delay: Duration) {
+        self.state.lock().unwrap().conf_delay = Some(delay);
     }
 
     /// Write raw server->client bytes (a from-PCI frame incl. CRLF).
@@ -241,7 +249,18 @@ fn handle_frame(state: &Arc<Mutex<State>>, tx: &mpsc::UnboundedSender<Vec<u8>>, 
         }
     }
     // ordinary confirmation: `<code>.` with no CR/LF (s4.3.3.3)
-    let _ = tx.send(vec![conf, b'.']);
+    match st.conf_delay {
+        None => {
+            let _ = tx.send(vec![conf, b'.']);
+        }
+        Some(delay) => {
+            let tx = tx.clone();
+            tokio::spawn(async move {
+                tokio::time::sleep(delay).await;
+                let _ = tx.send(vec![conf, b'.']);
+            });
+        }
+    }
 }
 
 /// Consume complete CR-terminated frames (and bare `~` tokens) from `buf`.
