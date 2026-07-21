@@ -1,0 +1,11 @@
+[package]
+name = "cbus-test-support"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+publish = false
+description = "Shared test infrastructure: in-process MQTT 3.1.1 mini broker, scripted fake PCI, process helpers"
+
+[dependencies]
+tokio = { workspace = true }
+serde_json = { workspace = true }

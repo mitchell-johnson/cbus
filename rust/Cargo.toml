@@ -8,6 +8,8 @@ members = [
     "cbus-vector-check",
     "cbus-simulator",
     "cbus-tools",
+    "cbus-golden-tests",
+    "cbus-test-support",
 ]
 
 [workspace.package]
