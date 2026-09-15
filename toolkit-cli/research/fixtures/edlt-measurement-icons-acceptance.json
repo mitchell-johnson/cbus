@@ -1,0 +1,395 @@
+{
+  "format": "cbus-edlt-measurement-icons-acceptance-v1",
+  "profile": {
+    "unit_type": "KEYGL5",
+    "catalog_number": "5055EDL",
+    "firmware": "5.5.00"
+  },
+  "widget_type": 12,
+  "scope": "Original built-in icon selection added to existing explicit-pair Measurement API",
+  "option": "icon_index",
+  "byte_offset": 12,
+  "default_icon": 135,
+  "selector_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    128,
+    129,
+    130,
+    131,
+    132,
+    133,
+    134,
+    135,
+    136,
+    137,
+    138,
+    139,
+    140,
+    141,
+    252,
+    253,
+    254
+  ],
+  "visibility": {
+    "functional_widget_min": 6,
+    "functional_widget_max": 21,
+    "UseBigIcon": 1,
+    "setting_address": "0x118",
+    "setting_bit": 4
+  },
+  "omitted_same_type_raw_preserved": [
+    39,
+    200,
+    255
+  ],
+  "original_model": {
+    "raw_codes_per_location": 256,
+    "locations": [
+      1,
+      5,
+      6,
+      10,
+      21
+    ],
+    "output_rows": 1290,
+    "forced_values_no_change": true,
+    "hidden_same_type_icon200_preserved": true
+  },
+  "original_graphics": {
+    "exports": [
+      "?fninit@@YAXXZ",
+      "?fnget_icon_24bpp@@YAXPAEE@Z"
+    ],
+    "candidate_count": 255,
+    "only_exercised_import": {
+      "memset": 1
+    },
+    "blank_index": 0
+  },
+  "tests": [
+    {
+      "python": "3.13.14",
+      "count": 23,
+      "skips": 0,
+      "passed": true,
+      "elapsed_seconds": 67.366
+    },
+    {
+      "python": "3.10.20",
+      "count": 23,
+      "skips": 0,
+      "passed": true,
+      "elapsed_seconds": 82.151
+    }
+  ],
+  "test_modules": [
+    "tests.test_edlt_measurement",
+    "tests.test_edlt_measurement_standby",
+    "tests.test_edlt_measurement_icons",
+    "tests.test_cli_edlt_measurement"
+  ],
+  "native_cgate_version": "3.4.0.2001",
+  "native_cases": [
+    {
+      "widget": 6,
+      "use_big_icon": 1,
+      "requested_icon": 0,
+      "literal": "0C000002010000000000FFFF0040000000000000000000000000000000000000",
+      "crcs": {
+        "GlobalParameterCRC": [
+          253,
+          71
+        ],
+        "WidgetsCRC": [
+          49,
+          225
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          156,
+          30
+        ],
+        "OverallCRC": [
+          81,
+          222
+        ]
+      },
+      "parameters_compared": 874,
+      "saved_reloaded": true
+    },
+    {
+      "widget": 6,
+      "use_big_icon": 1,
+      "requested_icon": 38,
+      "literal": "0C2A03017D00FEFFE7FF123F2640000000000000000000000000000000000000",
+      "crcs": {
+        "GlobalParameterCRC": [
+          253,
+          71
+        ],
+        "WidgetsCRC": [
+          191,
+          43
+        ],
+        "StaticTextCRC": [
+          154,
+          46
+        ],
+        "ScenesCheckSum": [
+          156,
+          30
+        ],
+        "OverallCRC": [
+          33,
+          51
+        ]
+      },
+      "parameters_compared": 874,
+      "saved_reloaded": true
+    },
+    {
+      "widget": 10,
+      "use_big_icon": 1,
+      "requested_icon": 141,
+      "literal": "0C000002010000000000FFFF8D40000000000000000000000000000000000000",
+      "crcs": {
+        "GlobalParameterCRC": [
+          253,
+          71
+        ],
+        "WidgetsCRC": [
+          121,
+          183
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          156,
+          30
+        ],
+        "OverallCRC": [
+          190,
+          158
+        ]
+      },
+      "parameters_compared": 874,
+      "saved_reloaded": true
+    },
+    {
+      "widget": 21,
+      "use_big_icon": 1,
+      "requested_icon": 254,
+      "literal": "0C000002010000000000FFFFFE40000000000000000000000000000000000000",
+      "crcs": {
+        "GlobalParameterCRC": [
+          253,
+          71
+        ],
+        "WidgetsCRC": [
+          128,
+          54
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          156,
+          30
+        ],
+        "OverallCRC": [
+          146,
+          15
+        ]
+      },
+      "parameters_compared": 874,
+      "saved_reloaded": true
+    },
+    {
+      "widget": 6,
+      "use_big_icon": 0,
+      "requested_icon": null,
+      "literal": "0C000002010000000000FFFFFF40000000000000000000000000000000000000",
+      "crcs": {
+        "GlobalParameterCRC": [
+          210,
+          63
+        ],
+        "WidgetsCRC": [
+          191,
+          34
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          156,
+          30
+        ],
+        "OverallCRC": [
+          18,
+          92
+        ]
+      },
+      "parameters_compared": 874,
+      "saved_reloaded": true
+    },
+    {
+      "widget": 1,
+      "use_big_icon": 1,
+      "requested_icon": null,
+      "literal": "0C000002010000000000FFFF2740000000000000000000000000000000000000",
+      "crcs": {
+        "GlobalParameterCRC": [
+          253,
+          71
+        ],
+        "WidgetsCRC": [
+          94,
+          249
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          156,
+          30
+        ],
+        "OverallCRC": [
+          231,
+          35
+        ]
+      },
+      "parameters_compared": 874,
+      "saved_reloaded": true
+    },
+    {
+      "widget": 5,
+      "use_big_icon": 0,
+      "requested_icon": null,
+      "literal": "0C000002010000000000FFFFFF40000000000000000000000000000000000000",
+      "crcs": {
+        "GlobalParameterCRC": [
+          210,
+          63
+        ],
+        "WidgetsCRC": [
+          246,
+          11
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          156,
+          30
+        ],
+        "OverallCRC": [
+          224,
+          107
+        ]
+      },
+      "parameters_compared": 874,
+      "saved_reloaded": true
+    }
+  ],
+  "native_reports_identical_across_interpreters": true,
+  "network_state": "new",
+  "network_opened": false,
+  "guards": [
+    "All selector gaps, boolean/noninteger and range errors rejected",
+    "Standby and UseBigIcon0 explicit requests rejected before writes",
+    "Hidden omitted raw39/255 preserved in native PP",
+    "Exact UseBigIcon schema required",
+    "Canonical icon/editability plan and changed visibility rejected before writes",
+    "Static label64 and shared text behavior preserved"
+  ],
+  "cli": [
+    "Offline and native --icon-index dispatch",
+    "Preview leaves database unchanged",
+    "Literal icon38 plus signed scaling/text",
+    "Blank and upper icon254",
+    "Invalid and hidden requests leave PP unchanged",
+    "Functional and standby raw39/255 retained",
+    "Save-close-load full equality"
+  ],
+  "limits": [
+    "No custom image upload",
+    "No physical display or incoming measurement acceptance",
+    "UI GainComposite/OffsetComposite conversion remains outside explicit-pair API",
+    "Existing selected type0/12/255 conversion and standby covered-slot restrictions remain"
+  ],
+  "historical_evidence": [
+    "research/fixtures/edlt-measurement-acceptance.json",
+    "research/fixtures/edlt-measurement-standby-acceptance.json"
+  ],
+  "source_hashes": {
+    "research/vendor/toolkit/app/CBusLogicModel.dll": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+    "research/vendor/toolkit/app/EDLT_graphics.dll": "e319379709c47f97dca477c4f631880f231c060530cb2ec45a3f731b1a5d1991",
+    "research/vendor/unitspec-plain/KEYGL5.xml": "812d2f92ccf3176d9f3d4c0f35fc196ac9ba45bc419639421e4e5ff082d2af21",
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel.EDLT.WidgetData/MeasurementData.cs": "035de76316959f4d22689276a00eaf09392e38c331e8224bea41d44c26389679",
+    "research/vendor/edlt-decompiled/eDLT/eDLT.WidgetPanels/MeasurementWidget.cs": "ad042de0f8db88e3dabf750f0cc51243a38944afaa26d626c5c4738d39626891",
+    "research/vendor/edlt-decompiled/eDLT/eDLT.Controls/SharpImageSelector.cs": "df93bc0bfd649484a153c6c6eb125c256cbea01c6be0ba4ab2da63180df84ae7",
+    "research/vendor/edlt-decompiled/eDLT/eDLT.Controls/FrmImageSelector.cs": "16a6472fc835e7b1cece8a30e9c5a234ad5e781f597e1b87e176da0b2d4d8db9",
+    "research/vendor/edlt-decompiled/eDLT/eDLT/CBusEDLTGraphicsDllWrapper.cs": "324dd496a13c92682406119539360bb8e757d3368b715ab9c94c090f510479fd"
+  },
+  "artifact_hashes": {
+    "src/cbus_toolkit/edlt_measurement.py": "f83aa3a5ab3ce0a542b193939dc7da31df00ce132d890c119dc44dec998eb9f5",
+    "research/NativeEdltMeasurementIconProbe.cs": "d90125b6e4d607d6ac2a06a036b5414163ffd725602a56fe3de160434233a00c",
+    "research/NativeEdltGraphicsProbe.py": "0f281b9f964b1892743712a847a976808f930014436ff719a0c5bbb8949116f2",
+    "tests/test_edlt_measurement.py": "0b595665c1ed78d913170dfe62dd97db5932c1fb25419fd20e2b620c2a5a3f53",
+    "tests/test_edlt_measurement_standby.py": "d1579f7c0891cc3ec5482d43c575357cad822e499f5108d201286c68695cd521",
+    "tests/test_edlt_measurement_icons.py": "8a6e37382b710cfbac29a87fba06c2094d2e66325201083d2e9fba0e4f8d42f4",
+    "tests/test_cli_edlt_measurement.py": "1bb4eec4898b8515c911c18ab96de1359ba84cb088ace298c2a2ea1b77d25ef0",
+    "docs/edlt-measurement.md": "8e854ca3acd9e96f1c6b280a63dd678a4f88c30b844783b75d909a7a1eded275"
+  },
+  "common_edlt_sha256": "78fcb914b21b71206b1cb381b670388dbcd8eb67afa0deb254620395ac353641",
+  "optional_report_environment": "CBUS_EDLT_MEASUREMENT_ICONS_REPORT",
+  "physical_device_verified": false
+}

@@ -1,0 +1,1285 @@
+{
+  "passed": true,
+  "scope": "Read-only two-node KEYE1 discovery at255; synthetic delivery timing",
+  "native_serial_list_exposed": false,
+  "fixture_serials": [
+    "101136.1558",
+    "101136.1559"
+  ],
+  "check_reply": [
+    "120 Duplicate units detected at address: 255"
+  ],
+  "inventory": {
+    "format": "cbus-native-serial-inventory-v1",
+    "network": "//DD23A4F3/254",
+    "mode": "refresh",
+    "requested": [
+      255
+    ],
+    "records": [
+      {
+        "address": 255,
+        "unit_type": null,
+        "firmware": null,
+        "serial": null,
+        "state": null,
+        "presence": "duplicate_address",
+        "status": "duplicate_address",
+        "errors": [],
+        "identity": null
+      }
+    ],
+    "identities": [],
+    "errors": [],
+    "complete": false,
+    "observed_at": "2026-09-14T12:53:57.143465+00:00",
+    "refresh_completed": true,
+    "refresh_scope": "entire_network",
+    "database_updated": false,
+    "physical_addresses_changed": false
+  },
+  "cached_units_before_full_refresh": [
+    "300 //DD23A4F3/254: Units=16"
+  ],
+  "full_refresh_inventory": {
+    "format": "cbus-native-serial-inventory-v1",
+    "network": "//DD23A4F3/254",
+    "mode": "refresh",
+    "requested": null,
+    "records": [
+      {
+        "address": 16,
+        "unit_type": "PC_CNIED",
+        "firmware": "5.5.00",
+        "serial": "100966.1187",
+        "state": "ok",
+        "presence": "single",
+        "status": "ok",
+        "errors": [],
+        "identity": {
+          "address": 16,
+          "unit_type": "PC_CNIED",
+          "serial": "100966.1187"
+        }
+      },
+      {
+        "address": 255,
+        "unit_type": null,
+        "firmware": null,
+        "serial": null,
+        "state": null,
+        "presence": "duplicate_address",
+        "status": "duplicate_address",
+        "errors": [],
+        "identity": null
+      }
+    ],
+    "identities": [
+      {
+        "address": 16,
+        "unit_type": "PC_CNIED",
+        "serial": "100966.1187"
+      }
+    ],
+    "errors": [],
+    "complete": false,
+    "observed_at": "2026-09-14T12:54:03.060474+00:00",
+    "refresh_completed": true,
+    "refresh_scope": "entire_network",
+    "database_updated": false,
+    "physical_addresses_changed": false
+  },
+  "full_refresh_commands": [
+    {
+      "command": "GET //DD23A4F3/254 InterfaceState",
+      "reply": [
+        "300 //DD23A4F3/254: InterfaceState=running"
+      ]
+    },
+    {
+      "command": "GET //DD23A4F3/254 TargetInterfaceState",
+      "reply": [
+        "300 //DD23A4F3/254: TargetInterfaceState=running"
+      ]
+    },
+    {
+      "command": "GET //DD23A4F3/254 SyncState",
+      "reply": [
+        "300 //DD23A4F3/254: SyncState=idle"
+      ]
+    },
+    {
+      "command": "GET //DD23A4F3/254 AutoUnravel",
+      "reply": [
+        "300 //DD23A4F3/254: AutoUnravel=no"
+      ]
+    },
+    {
+      "command": "GET //DD23A4F3/254 AutoUpdate",
+      "reply": [
+        "300 //DD23A4F3/254: AutoUpdate=no"
+      ]
+    },
+    {
+      "command": "NET SYNC //DD23A4F3/254 fast",
+      "reply": [
+        "120-Net Sync: started at Mon Sep 14 12:53:57 UTC 2026",
+        "120-Net Sync: synchronising PCIs",
+        "120-Net Sync: starting network discovery",
+        "120-Net Sync: MMI unit count: 2",
+        "120-Net Sync: MMI units at: 16, 255",
+        "120-Net Sync: MMI error count: 0",
+        "120-Net Sync: MMI errors at: ",
+        "120-Net Sync: Serials found at address 16: 100966.1187",
+        "120-Net Sync: Serials found at address 255: 101136.1559, 101136.1558",
+        "120-Net Sync: Unit count: 2",
+        "120-Net Sync: Unit error count: 1",
+        "120-Net Sync: Units at: 16, 255",
+        "120-Net Sync: Unit errors at: 255",
+        "120-Net Sync: address=16 type=PC_CNIED version=5.5.00 serial=100966.1187 catalog=5500CN2",
+        "120-Net Sync: synchronising bridges",
+        "120-Net Sync: synchronizing unit 1 of 2 at address 16",
+        "120-Net Sync: address 16 type PC_CNIED version 5.5.00 catalog 5500CN2",
+        "120-Net Sync: finished at Mon Sep 14 12:54:00 UTC 2026",
+        "120-Net Sync: Next Sync scheduled for Mon Sep 14 13:54:00 UTC 2026",
+        "200 OK."
+      ]
+    },
+    {
+      "command": "NET CHECKUNIT //DD23A4F3/254 *",
+      "reply": [
+        "120-Single unit detected at address: 16",
+        "120 Duplicate units detected at address: 255"
+      ]
+    },
+    {
+      "command": "GET //DD23A4F3/254 Units",
+      "reply": [
+        "300 //DD23A4F3/254: Units=16"
+      ]
+    },
+    {
+      "command": "GET //DD23A4F3/254/p/16 Address",
+      "reply": [
+        "300 //DD23A4F3/254/p/16: Address=16"
+      ]
+    },
+    {
+      "command": "GET //DD23A4F3/254/p/16 Type",
+      "reply": [
+        "300 //DD23A4F3/254/p/16: Type=PC_CNIED"
+      ]
+    },
+    {
+      "command": "GET //DD23A4F3/254/p/16 Version",
+      "reply": [
+        "300 //DD23A4F3/254/p/16: Version=5.5.00"
+      ]
+    },
+    {
+      "command": "GET //DD23A4F3/254/p/16 SerialNumber",
+      "reply": [
+        "300 //DD23A4F3/254/p/16: SerialNumber=100966.1187"
+      ]
+    },
+    {
+      "command": "GET //DD23A4F3/254/p/16 State",
+      "reply": [
+        "300 //DD23A4F3/254/p/16: State=ok"
+      ]
+    }
+  ],
+  "before_database_xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Network><OID>3ed773e0-9269-103f-905d-c222a1decd35</OID><TagName>Duplicate_Reads</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>3ed79af0-9269-103f-905e-c222a1decd35</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>host.docker.internal:59085</InterfaceAddress></Interface><Unit><OID>3ed7c200-9269-103f-905f-c222a1decd35</OID><TagName>Known_6</TagName><Address>6</Address><UnitType>KEYE1</UnitType><UnitName>KEYE1</UnitName><SerialNumber>101136.1558</SerialNumber><FirmwareVersion>2.5.00</FirmwareVersion><PP Name=\"LightIndex\" Value=\"0x0\"/><PP Name=\"LightLevel\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0x0\"/><PP Name=\"EEPROMCheckSumActive\" Value=\"0xff\"/><PP Name=\"EEPROM Checksum\" Value=\"0x0\"/><PP Name=\"UnitAddress\" Value=\"0x6\"/><PP Name=\"Application\" Value=\"0x38 0xff\"/><PP Name=\"Project\" Value=\"DD23A4F3\"/><PP Name=\"UnitName\" Value=\"NEWUNIT \"/><PP Name=\"DebounceTime\" Value=\"0x3\"/><PP Name=\"LongPressTime\" Value=\"0x19\"/><PP Name=\"IndicatorBrightness\" Value=\"0xff\"/><PP Name=\"TimerDuration\" Value=\"0xf\"/><PP Name=\"IndicatorPressedLevel\" Value=\"0xf\"/><PP Name=\"EnableNightlight\" Value=\"0\"/><PP Name=\"DisableTimerFlash\" Value=\"0\"/><PP Name=\"FirstKeyThrowAway\" Value=\"0\"/><PP Name=\"EnableNightlightControl\" Value=\"0\"/><PP Name=\"BlockAllocation\" Value=\"0x1 0x2 0x4 0x8 0x10 0x20 0x40 0x80\"/><PP Name=\"EEPROMLevelStore\" Value=\"0\"/><PP Name=\"KeyDisableGroupInvert\" Value=\"0\"/><PP Name=\"LearnMode\" Value=\"0\"/><PP Name=\"LearnAnyApp\" Value=\"0\"/><PP Name=\"LearnedFlag\" Value=\"1\"/><PP Name=\"EEPROMChecksumAlarm\" Value=\"1\"/><PP Name=\"HardwareConfiguration\" Value=\"0xff\"/><PP Name=\"RampRate\" Value=\"0x1 0x3\"/><PP Name=\"StatusReportInterval\" Value=\"0x3\"/><PP Name=\"AreaGroupAddress\" Value=\"0xff\"/><PP Name=\"CorridorOfficeGroupBlock\" Value=\"0x1\"/><PP Name=\"CorridorGroupBlock\" Value=\"0x0\"/><PP Name=\"CorridorLinkEnable\" Value=\"0\"/><PP Name=\"SecondApplicationBlocks\" Value=\"0x0\"/><PP Name=\"TimerExpiryCommand\" Value=\"0xf 0xf 0xf 0xf 0xf 0xf 0xf 0xf\"/><PP Name=\"GroupAddress\" Value=\"0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff\"/><PP Name=\"KeyDisableGroup\" Value=\"0xff\"/><PP Name=\"JoinPrimaryApplication\" Value=\"0xff\"/><PP Name=\"DualJoinPrimaryApplication\" Value=\"0xff\"/><PP Name=\"CorridorMasterGroup\" Value=\"0xff\"/><PP Name=\"JoinSecondaryApplication\" Value=\"0xff\"/><PP Name=\"DualJoinSecondaryApplication\" Value=\"0xff\"/><PP Name=\"ControlAppGroupAddress\" Value=\"0xff\"/><PP Name=\"IndicatorBlockAssignment\" Value=\"0x0 0x1 0x2 0x3 0x4 0x5 0x6 0x7\"/><PP Name=\"IndicatorFunction\" Value=\"0x2 0x2 0x2 0x2 0x0 0x0 0x0 0x0\"/><PP Name=\"SceneKeySelector\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0\"/><PP Name=\"JPCommand\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0\"/><PP Name=\"SRCommand\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0\"/><PP Name=\"LPCommand\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0\"/><PP Name=\"LRCommand\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0\"/><PP Name=\"LightLevelStore1\" Value=\"0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff\"/><PP Name=\"LightLevelStore2\" Value=\"0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff\"/><PP Name=\"TimerHighByte\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0\"/><PP Name=\"TimerLowByte\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0\"/><PP Name=\"SceneTablePointer\" Value=\"0xa2 0xb6 0xca 0xde 0xff 0xff 0xff 0xff\"/><PP Name=\"PatchEnable\" Value=\"0xff 0xff\"/><PP Name=\"SceneTable\" Value=\"0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff\"/><PP Name=\"SerialNo\" Value=\"0x0 0x0 0x0 0x0\"/><PP Name=\"CUSTYPE\" Value=\"0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff\"/><PP Name=\"NightlightColour\" Value=\"0\"/><PP Name=\"IDBacklightIllumination\" Value=\"0\"/><PP Name=\"EnableNightlightOnPCx\" Value=\"0\"/><PP Name=\"EnableNightlightOnPA6\" Value=\"0\"/><PP Name=\"IRBank\" Value=\"0x0\"/><PP Name=\"DisableIR\" Value=\"1\"/><PP Name=\"DisableIRNEC\" Value=\"1\"/><PP Name=\"PrimaryColour\" Value=\"0x1 0x1 0x1 0x1 0x1 0x1 0x1 0x1\"/><PP Name=\"KeyMask\" Value=\"0x0\"/><CatalogNumber>5031NMML</CatalogNumber></Unit><Unit><OID>3eed45d0-9269-103f-9060-c222a1decd35</OID><TagName>Known_7</TagName><Address>7</Address><UnitType>KEYE1</UnitType><UnitName>KEYE1</UnitName><SerialNumber>101136.1559</SerialNumber><FirmwareVersion>2.5.00</FirmwareVersion><PP Name=\"LightIndex\" Value=\"0x0\"/><PP Name=\"LightLevel\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0x0\"/><PP Name=\"EEPROMCheckSumActive\" Value=\"0xff\"/><PP Name=\"EEPROM Checksum\" Value=\"0x0\"/><PP Name=\"UnitAddress\" Value=\"0x7\"/><PP Name=\"Application\" Value=\"0x38 0xff\"/><PP Name=\"Project\" Value=\"DD23A4F3\"/><PP Name=\"UnitName\" Value=\"NEWUNIT \"/><PP Name=\"DebounceTime\" Value=\"0x3\"/><PP Name=\"LongPressTime\" Value=\"0x19\"/><PP Name=\"IndicatorBrightness\" Value=\"0xff\"/><PP Name=\"TimerDuration\" Value=\"0xf\"/><PP Name=\"IndicatorPressedLevel\" Value=\"0xf\"/><PP Name=\"EnableNightlight\" Value=\"0\"/><PP Name=\"DisableTimerFlash\" Value=\"0\"/><PP Name=\"FirstKeyThrowAway\" Value=\"0\"/><PP Name=\"EnableNightlightControl\" Value=\"0\"/><PP Name=\"BlockAllocation\" Value=\"0x1 0x2 0x4 0x8 0x10 0x20 0x40 0x80\"/><PP Name=\"EEPROMLevelStore\" Value=\"0\"/><PP Name=\"KeyDisableGroupInvert\" Value=\"0\"/><PP Name=\"LearnMode\" Value=\"0\"/><PP Name=\"LearnAnyApp\" Value=\"0\"/><PP Name=\"LearnedFlag\" Value=\"1\"/><PP Name=\"EEPROMChecksumAlarm\" Value=\"1\"/><PP Name=\"HardwareConfiguration\" Value=\"0xff\"/><PP Name=\"RampRate\" Value=\"0x1 0x3\"/><PP Name=\"StatusReportInterval\" Value=\"0x3\"/><PP Name=\"AreaGroupAddress\" Value=\"0xff\"/><PP Name=\"CorridorOfficeGroupBlock\" Value=\"0x1\"/><PP Name=\"CorridorGroupBlock\" Value=\"0x0\"/><PP Name=\"CorridorLinkEnable\" Value=\"0\"/><PP Name=\"SecondApplicationBlocks\" Value=\"0x0\"/><PP Name=\"TimerExpiryCommand\" Value=\"0xf 0xf 0xf 0xf 0xf 0xf 0xf 0xf\"/><PP Name=\"GroupAddress\" Value=\"0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff\"/><PP Name=\"KeyDisableGroup\" Value=\"0xff\"/><PP Name=\"JoinPrimaryApplication\" Value=\"0xff\"/><PP Name=\"DualJoinPrimaryApplication\" Value=\"0xff\"/><PP Name=\"CorridorMasterGroup\" Value=\"0xff\"/><PP Name=\"JoinSecondaryApplication\" Value=\"0xff\"/><PP Name=\"DualJoinSecondaryApplication\" Value=\"0xff\"/><PP Name=\"ControlAppGroupAddress\" Value=\"0xff\"/><PP Name=\"IndicatorBlockAssignment\" Value=\"0x0 0x1 0x2 0x3 0x4 0x5 0x6 0x7\"/><PP Name=\"IndicatorFunction\" Value=\"0x2 0x2 0x2 0x2 0x0 0x0 0x0 0x0\"/><PP Name=\"SceneKeySelector\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0\"/><PP Name=\"JPCommand\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0\"/><PP Name=\"SRCommand\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0\"/><PP Name=\"LPCommand\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0\"/><PP Name=\"LRCommand\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0\"/><PP Name=\"LightLevelStore1\" Value=\"0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff\"/><PP Name=\"LightLevelStore2\" Value=\"0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff\"/><PP Name=\"TimerHighByte\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0\"/><PP Name=\"TimerLowByte\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0\"/><PP Name=\"SceneTablePointer\" Value=\"0xa2 0xb6 0xca 0xde 0xff 0xff 0xff 0xff\"/><PP Name=\"PatchEnable\" Value=\"0xff 0xff\"/><PP Name=\"SceneTable\" Value=\"0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff\"/><PP Name=\"SerialNo\" Value=\"0x0 0x0 0x0 0x0\"/><PP Name=\"CUSTYPE\" Value=\"0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff\"/><PP Name=\"NightlightColour\" Value=\"0\"/><PP Name=\"IDBacklightIllumination\" Value=\"0\"/><PP Name=\"EnableNightlightOnPCx\" Value=\"0\"/><PP Name=\"EnableNightlightOnPA6\" Value=\"0\"/><PP Name=\"IRBank\" Value=\"0x0\"/><PP Name=\"DisableIR\" Value=\"1\"/><PP Name=\"DisableIRNEC\" Value=\"1\"/><PP Name=\"PrimaryColour\" Value=\"0x1 0x1 0x1 0x1 0x1 0x1 0x1 0x1\"/><PP Name=\"KeyMask\" Value=\"0x0\"/><CatalogNumber>5031NMML</CatalogNumber></Unit></Network>",
+  "after_database_xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Network><OID>3ed773e0-9269-103f-905d-c222a1decd35</OID><TagName>Duplicate_Reads</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>3ed79af0-9269-103f-905e-c222a1decd35</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>host.docker.internal:59085</InterfaceAddress></Interface><Unit><OID>3ed7c200-9269-103f-905f-c222a1decd35</OID><TagName>Known_6</TagName><Address>6</Address><UnitType>KEYE1</UnitType><UnitName>KEYE1</UnitName><SerialNumber>101136.1558</SerialNumber><FirmwareVersion>2.5.00</FirmwareVersion><PP Name=\"LightIndex\" Value=\"0x0\"/><PP Name=\"LightLevel\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0x0\"/><PP Name=\"EEPROMCheckSumActive\" Value=\"0xff\"/><PP Name=\"EEPROM Checksum\" Value=\"0x0\"/><PP Name=\"UnitAddress\" Value=\"0x6\"/><PP Name=\"Application\" Value=\"0x38 0xff\"/><PP Name=\"Project\" Value=\"DD23A4F3\"/><PP Name=\"UnitName\" Value=\"NEWUNIT \"/><PP Name=\"DebounceTime\" Value=\"0x3\"/><PP Name=\"LongPressTime\" Value=\"0x19\"/><PP Name=\"IndicatorBrightness\" Value=\"0xff\"/><PP Name=\"TimerDuration\" Value=\"0xf\"/><PP Name=\"IndicatorPressedLevel\" Value=\"0xf\"/><PP Name=\"EnableNightlight\" Value=\"0\"/><PP Name=\"DisableTimerFlash\" Value=\"0\"/><PP Name=\"FirstKeyThrowAway\" Value=\"0\"/><PP Name=\"EnableNightlightControl\" Value=\"0\"/><PP Name=\"BlockAllocation\" Value=\"0x1 0x2 0x4 0x8 0x10 0x20 0x40 0x80\"/><PP Name=\"EEPROMLevelStore\" Value=\"0\"/><PP Name=\"KeyDisableGroupInvert\" Value=\"0\"/><PP Name=\"LearnMode\" Value=\"0\"/><PP Name=\"LearnAnyApp\" Value=\"0\"/><PP Name=\"LearnedFlag\" Value=\"1\"/><PP Name=\"EEPROMChecksumAlarm\" Value=\"1\"/><PP Name=\"HardwareConfiguration\" Value=\"0xff\"/><PP Name=\"RampRate\" Value=\"0x1 0x3\"/><PP Name=\"StatusReportInterval\" Value=\"0x3\"/><PP Name=\"AreaGroupAddress\" Value=\"0xff\"/><PP Name=\"CorridorOfficeGroupBlock\" Value=\"0x1\"/><PP Name=\"CorridorGroupBlock\" Value=\"0x0\"/><PP Name=\"CorridorLinkEnable\" Value=\"0\"/><PP Name=\"SecondApplicationBlocks\" Value=\"0x0\"/><PP Name=\"TimerExpiryCommand\" Value=\"0xf 0xf 0xf 0xf 0xf 0xf 0xf 0xf\"/><PP Name=\"GroupAddress\" Value=\"0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff\"/><PP Name=\"KeyDisableGroup\" Value=\"0xff\"/><PP Name=\"JoinPrimaryApplication\" Value=\"0xff\"/><PP Name=\"DualJoinPrimaryApplication\" Value=\"0xff\"/><PP Name=\"CorridorMasterGroup\" Value=\"0xff\"/><PP Name=\"JoinSecondaryApplication\" Value=\"0xff\"/><PP Name=\"DualJoinSecondaryApplication\" Value=\"0xff\"/><PP Name=\"ControlAppGroupAddress\" Value=\"0xff\"/><PP Name=\"IndicatorBlockAssignment\" Value=\"0x0 0x1 0x2 0x3 0x4 0x5 0x6 0x7\"/><PP Name=\"IndicatorFunction\" Value=\"0x2 0x2 0x2 0x2 0x0 0x0 0x0 0x0\"/><PP Name=\"SceneKeySelector\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0\"/><PP Name=\"JPCommand\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0\"/><PP Name=\"SRCommand\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0\"/><PP Name=\"LPCommand\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0\"/><PP Name=\"LRCommand\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0\"/><PP Name=\"LightLevelStore1\" Value=\"0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff\"/><PP Name=\"LightLevelStore2\" Value=\"0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff\"/><PP Name=\"TimerHighByte\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0\"/><PP Name=\"TimerLowByte\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0\"/><PP Name=\"SceneTablePointer\" Value=\"0xa2 0xb6 0xca 0xde 0xff 0xff 0xff 0xff\"/><PP Name=\"PatchEnable\" Value=\"0xff 0xff\"/><PP Name=\"SceneTable\" Value=\"0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff\"/><PP Name=\"SerialNo\" Value=\"0x0 0x0 0x0 0x0\"/><PP Name=\"CUSTYPE\" Value=\"0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff\"/><PP Name=\"NightlightColour\" Value=\"0\"/><PP Name=\"IDBacklightIllumination\" Value=\"0\"/><PP Name=\"EnableNightlightOnPCx\" Value=\"0\"/><PP Name=\"EnableNightlightOnPA6\" Value=\"0\"/><PP Name=\"IRBank\" Value=\"0x0\"/><PP Name=\"DisableIR\" Value=\"1\"/><PP Name=\"DisableIRNEC\" Value=\"1\"/><PP Name=\"PrimaryColour\" Value=\"0x1 0x1 0x1 0x1 0x1 0x1 0x1 0x1\"/><PP Name=\"KeyMask\" Value=\"0x0\"/><CatalogNumber>5031NMML</CatalogNumber></Unit><Unit><OID>3eed45d0-9269-103f-9060-c222a1decd35</OID><TagName>Known_7</TagName><Address>7</Address><UnitType>KEYE1</UnitType><UnitName>KEYE1</UnitName><SerialNumber>101136.1559</SerialNumber><FirmwareVersion>2.5.00</FirmwareVersion><PP Name=\"LightIndex\" Value=\"0x0\"/><PP Name=\"LightLevel\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0x0\"/><PP Name=\"EEPROMCheckSumActive\" Value=\"0xff\"/><PP Name=\"EEPROM Checksum\" Value=\"0x0\"/><PP Name=\"UnitAddress\" Value=\"0x7\"/><PP Name=\"Application\" Value=\"0x38 0xff\"/><PP Name=\"Project\" Value=\"DD23A4F3\"/><PP Name=\"UnitName\" Value=\"NEWUNIT \"/><PP Name=\"DebounceTime\" Value=\"0x3\"/><PP Name=\"LongPressTime\" Value=\"0x19\"/><PP Name=\"IndicatorBrightness\" Value=\"0xff\"/><PP Name=\"TimerDuration\" Value=\"0xf\"/><PP Name=\"IndicatorPressedLevel\" Value=\"0xf\"/><PP Name=\"EnableNightlight\" Value=\"0\"/><PP Name=\"DisableTimerFlash\" Value=\"0\"/><PP Name=\"FirstKeyThrowAway\" Value=\"0\"/><PP Name=\"EnableNightlightControl\" Value=\"0\"/><PP Name=\"BlockAllocation\" Value=\"0x1 0x2 0x4 0x8 0x10 0x20 0x40 0x80\"/><PP Name=\"EEPROMLevelStore\" Value=\"0\"/><PP Name=\"KeyDisableGroupInvert\" Value=\"0\"/><PP Name=\"LearnMode\" Value=\"0\"/><PP Name=\"LearnAnyApp\" Value=\"0\"/><PP Name=\"LearnedFlag\" Value=\"1\"/><PP Name=\"EEPROMChecksumAlarm\" Value=\"1\"/><PP Name=\"HardwareConfiguration\" Value=\"0xff\"/><PP Name=\"RampRate\" Value=\"0x1 0x3\"/><PP Name=\"StatusReportInterval\" Value=\"0x3\"/><PP Name=\"AreaGroupAddress\" Value=\"0xff\"/><PP Name=\"CorridorOfficeGroupBlock\" Value=\"0x1\"/><PP Name=\"CorridorGroupBlock\" Value=\"0x0\"/><PP Name=\"CorridorLinkEnable\" Value=\"0\"/><PP Name=\"SecondApplicationBlocks\" Value=\"0x0\"/><PP Name=\"TimerExpiryCommand\" Value=\"0xf 0xf 0xf 0xf 0xf 0xf 0xf 0xf\"/><PP Name=\"GroupAddress\" Value=\"0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff\"/><PP Name=\"KeyDisableGroup\" Value=\"0xff\"/><PP Name=\"JoinPrimaryApplication\" Value=\"0xff\"/><PP Name=\"DualJoinPrimaryApplication\" Value=\"0xff\"/><PP Name=\"CorridorMasterGroup\" Value=\"0xff\"/><PP Name=\"JoinSecondaryApplication\" Value=\"0xff\"/><PP Name=\"DualJoinSecondaryApplication\" Value=\"0xff\"/><PP Name=\"ControlAppGroupAddress\" Value=\"0xff\"/><PP Name=\"IndicatorBlockAssignment\" Value=\"0x0 0x1 0x2 0x3 0x4 0x5 0x6 0x7\"/><PP Name=\"IndicatorFunction\" Value=\"0x2 0x2 0x2 0x2 0x0 0x0 0x0 0x0\"/><PP Name=\"SceneKeySelector\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0\"/><PP Name=\"JPCommand\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0\"/><PP Name=\"SRCommand\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0\"/><PP Name=\"LPCommand\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0\"/><PP Name=\"LRCommand\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0\"/><PP Name=\"LightLevelStore1\" Value=\"0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff\"/><PP Name=\"LightLevelStore2\" Value=\"0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff\"/><PP Name=\"TimerHighByte\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0\"/><PP Name=\"TimerLowByte\" Value=\"0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0\"/><PP Name=\"SceneTablePointer\" Value=\"0xa2 0xb6 0xca 0xde 0xff 0xff 0xff 0xff\"/><PP Name=\"PatchEnable\" Value=\"0xff 0xff\"/><PP Name=\"SceneTable\" Value=\"0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff\"/><PP Name=\"SerialNo\" Value=\"0x0 0x0 0x0 0x0\"/><PP Name=\"CUSTYPE\" Value=\"0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff\"/><PP Name=\"NightlightColour\" Value=\"0\"/><PP Name=\"IDBacklightIllumination\" Value=\"0\"/><PP Name=\"EnableNightlightOnPCx\" Value=\"0\"/><PP Name=\"EnableNightlightOnPA6\" Value=\"0\"/><PP Name=\"IRBank\" Value=\"0x0\"/><PP Name=\"DisableIR\" Value=\"1\"/><PP Name=\"DisableIRNEC\" Value=\"1\"/><PP Name=\"PrimaryColour\" Value=\"0x1 0x1 0x1 0x1 0x1 0x1 0x1 0x1\"/><PP Name=\"KeyMask\" Value=\"0x0\"/><CatalogNumber>5031NMML</CatalogNumber></Unit></Network>",
+  "before_fixture": {
+    "format": "cbus-duplicate-address-discovery-fixture-v1",
+    "read_only": true,
+    "physical_nodes": [
+      {
+        "serial": "101136.1558",
+        "address": 255,
+        "attributes": {
+          "1": "4b45594531202020",
+          "2": "322e352e30302020",
+          "4": "38ffffffff18b10616a20005",
+          "8": "000000000000000000"
+        },
+        "parameters": {
+          "48": "03",
+          "33": "38ffca8b33932cdeffca8b2a",
+          "54": "010204081020408020590103",
+          "69": "0000ff0f0f0f0f0f0f0f0f0c",
+          "80": "0cffffffffffffffffffffff",
+          "35": "ca8b33932cde",
+          "42": "ca8b2a93841e",
+          "242": "ff",
+          "32": "ff"
+        },
+        "write_tags": {},
+        "mmi_state": 2
+      },
+      {
+        "serial": "101136.1559",
+        "address": 255,
+        "attributes": {
+          "1": "4b45594531202020",
+          "2": "322e352e30302020",
+          "4": "38ffffffff18b10617a20005",
+          "8": "000000000000000000"
+        },
+        "parameters": {
+          "48": "03",
+          "33": "38ffca8b33932cdeffca8b2a",
+          "54": "010204081020408020590103",
+          "69": "0000ff0f0f0f0f0f0f0f0f0c",
+          "80": "0cffffffffffffffffffffff",
+          "35": "ca8b33932cde",
+          "42": "ca8b2a93841e",
+          "242": "ff",
+          "32": "ff"
+        },
+        "write_tags": {},
+        "mmi_state": 2
+      }
+    ],
+    "base_state": {
+      "schema": 1,
+      "local_unit": 16,
+      "profile": "synthetic",
+      "physical_memory": {},
+      "units": [
+        {
+          "address": 16,
+          "mmi_state": 1,
+          "attributes": {
+            "1": "50435f434e494544",
+            "2": "352e352e30302020",
+            "4": "ffffff000018a664a3b10005",
+            "16": "030000ff"
+          },
+          "parameters": {
+            "32": "10",
+            "33": "ffff9b192d8229e4ffb64cf6",
+            "35": "9b192d8229e4",
+            "42": "b64cf6bb1a9e",
+            "48": "55",
+            "66": "07",
+            "242": "ff"
+          },
+          "write_tags": {}
+        },
+        {
+          "address": 255,
+          "mmi_state": 2,
+          "attributes": {
+            "1": "4b45594531202020",
+            "2": "322e352e30302020",
+            "4": "38ffffffff18b10616a20005",
+            "8": "000000000000000000"
+          },
+          "parameters": {
+            "32": "ff",
+            "33": "38ffca8b33932cdeffca8b2a",
+            "35": "ca8b33932cde",
+            "42": "ca8b2a93841e",
+            "48": "03",
+            "54": "010204081020408020590103",
+            "69": "0000ff0f0f0f0f0f0f0f0f0c",
+            "80": "0cffffffffffffffffffffff",
+            "242": "ff"
+          },
+          "write_tags": {}
+        }
+      ],
+      "legacy_memory": {},
+      "legacy_writable": {},
+      "status_blocks": {},
+      "labels": {
+        "format": "cbus-synthetic-labels-v1",
+        "labels": [],
+        "languages": []
+      },
+      "triggers": {
+        "format": "cbus-synthetic-triggers-v1",
+        "sequence": 0,
+        "groups": [],
+        "events": []
+      },
+      "enable": {
+        "format": "cbus-synthetic-enable-v1",
+        "sequence": 0,
+        "variables": []
+      },
+      "lighting": {
+        "format": "cbus-synthetic-lighting-v1",
+        "groups": [
+          {
+            "application": 56,
+            "group": 12,
+            "level": 0.0,
+            "target": 0.0,
+            "remaining": 0.0
+          }
+        ]
+      },
+      "pci_settings_units": [],
+      "clock_generator": null,
+      "readdress_challenges": {},
+      "readdress_empty_addresses": [],
+      "serial_readdress_reply_tails": {}
+    }
+  },
+  "after_fixture": {
+    "format": "cbus-duplicate-address-discovery-fixture-v1",
+    "read_only": true,
+    "physical_nodes": [
+      {
+        "serial": "101136.1558",
+        "address": 255,
+        "attributes": {
+          "1": "4b45594531202020",
+          "2": "322e352e30302020",
+          "4": "38ffffffff18b10616a20005",
+          "8": "000000000000000000"
+        },
+        "parameters": {
+          "48": "03",
+          "33": "38ffca8b33932cdeffca8b2a",
+          "54": "010204081020408020590103",
+          "69": "0000ff0f0f0f0f0f0f0f0f0c",
+          "80": "0cffffffffffffffffffffff",
+          "35": "ca8b33932cde",
+          "42": "ca8b2a93841e",
+          "242": "ff",
+          "32": "ff"
+        },
+        "write_tags": {},
+        "mmi_state": 2
+      },
+      {
+        "serial": "101136.1559",
+        "address": 255,
+        "attributes": {
+          "1": "4b45594531202020",
+          "2": "322e352e30302020",
+          "4": "38ffffffff18b10617a20005",
+          "8": "000000000000000000"
+        },
+        "parameters": {
+          "48": "03",
+          "33": "38ffca8b33932cdeffca8b2a",
+          "54": "010204081020408020590103",
+          "69": "0000ff0f0f0f0f0f0f0f0f0c",
+          "80": "0cffffffffffffffffffffff",
+          "35": "ca8b33932cde",
+          "42": "ca8b2a93841e",
+          "242": "ff",
+          "32": "ff"
+        },
+        "write_tags": {},
+        "mmi_state": 2
+      }
+    ],
+    "base_state": {
+      "schema": 1,
+      "local_unit": 16,
+      "profile": "synthetic",
+      "physical_memory": {},
+      "units": [
+        {
+          "address": 16,
+          "mmi_state": 1,
+          "attributes": {
+            "1": "50435f434e494544",
+            "2": "352e352e30302020",
+            "4": "ffffff000018a664a3b10005",
+            "16": "030000ff"
+          },
+          "parameters": {
+            "32": "10",
+            "33": "ffff9b192d8229e4ffb64cf6",
+            "35": "9b192d8229e4",
+            "42": "b64cf6bb1a9e",
+            "48": "55",
+            "66": "07",
+            "242": "ff"
+          },
+          "write_tags": {}
+        },
+        {
+          "address": 255,
+          "mmi_state": 2,
+          "attributes": {
+            "1": "4b45594531202020",
+            "2": "322e352e30302020",
+            "4": "38ffffffff18b10616a20005",
+            "8": "000000000000000000"
+          },
+          "parameters": {
+            "32": "ff",
+            "33": "38ffca8b33932cdeffca8b2a",
+            "35": "ca8b33932cde",
+            "42": "ca8b2a93841e",
+            "48": "03",
+            "54": "010204081020408020590103",
+            "69": "0000ff0f0f0f0f0f0f0f0f0c",
+            "80": "0cffffffffffffffffffffff",
+            "242": "ff"
+          },
+          "write_tags": {}
+        }
+      ],
+      "legacy_memory": {},
+      "legacy_writable": {},
+      "status_blocks": {},
+      "labels": {
+        "format": "cbus-synthetic-labels-v1",
+        "labels": [],
+        "languages": []
+      },
+      "triggers": {
+        "format": "cbus-synthetic-triggers-v1",
+        "sequence": 0,
+        "groups": [],
+        "events": []
+      },
+      "enable": {
+        "format": "cbus-synthetic-enable-v1",
+        "sequence": 0,
+        "variables": []
+      },
+      "lighting": {
+        "format": "cbus-synthetic-lighting-v1",
+        "groups": [
+          {
+            "application": 56,
+            "group": 12,
+            "level": 0.0,
+            "target": 0.0,
+            "remaining": 0.0
+          }
+        ]
+      },
+      "pci_settings_units": [],
+      "clock_generator": null,
+      "readdress_challenges": {},
+      "readdress_empty_addresses": [],
+      "serial_readdress_reply_tails": {}
+    }
+  },
+  "seeker_wire": [
+    {
+      "sequence": 49,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "5c303546463030464146463030670d"
+    },
+    {
+      "sequence": 50,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "672e443846463030303030303030303030313030303030303030303030303030303030303030303030303030303030303030303032380d0a443846463538303030303030303030303030303030303030303030303030303030303030303030303030303030303030303044310d0a4436464642303030303030303030303030303030303030303030303030303030303030303030303030303030383046420d0a"
+    },
+    {
+      "sequence": 51,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "5c34364646303032313034680d"
+    },
+    {
+      "sequence": 52,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "682e38364646313030303844303433384646464646464646313842313036313641323030303531410d0a38364646313030303844303433384646464646464646313842313036313741323030303531390d0a"
+    }
+  ],
+  "cleanup_errors": [],
+  "wire": [
+    {
+      "sequence": 0,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "6e756c6c0d"
+    },
+    {
+      "sequence": 1,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "0d"
+    },
+    {
+      "sequence": 2,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "7c7c0d"
+    },
+    {
+      "sequence": 3,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "403141323030310d"
+    },
+    {
+      "sequence": 4,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "38323230313034450d0a"
+    },
+    {
+      "sequence": 5,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "5c34363130303032313031670d"
+    },
+    {
+      "sequence": 6,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "672e383930313530343335463433344534393435343432310d0a"
+    },
+    {
+      "sequence": 7,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "0d"
+    },
+    {
+      "sequence": 8,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "7c7c0d"
+    },
+    {
+      "sequence": 9,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "403141323030310d"
+    },
+    {
+      "sequence": 10,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "38323230313034450d0a"
+    },
+    {
+      "sequence": 11,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "32313031680d"
+    },
+    {
+      "sequence": 12,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "682e383930313530343335463433344534393435343432310d0a"
+    },
+    {
+      "sequence": 13,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "32313032314132313032690d"
+    },
+    {
+      "sequence": 14,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "692e3839303233353245333532453330333032303230383332314646464636440d0a"
+    },
+    {
+      "sequence": 15,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "323130346a0d"
+    },
+    {
+      "sequence": 16,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "6a2e3844303446464646464630303030313841363634413342313030303546370d0a"
+    },
+    {
+      "sequence": 17,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "3141324130366b0d"
+    },
+    {
+      "sequence": 18,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "6b2e3837324142363443463642423141394545340d0a"
+    },
+    {
+      "sequence": 19,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "3141323330366c0d"
+    },
+    {
+      "sequence": 20,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "6c2e3837323339423139324438323239453445360d0a"
+    },
+    {
+      "sequence": 21,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "323130326d0d"
+    },
+    {
+      "sequence": 22,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "6d2e383930323335324533353245333033303230323030460d0a"
+    },
+    {
+      "sequence": 23,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "3141463230316e0d"
+    },
+    {
+      "sequence": 24,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "6e2e38324632464638440d0a"
+    },
+    {
+      "sequence": 25,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "323131306f0d"
+    },
+    {
+      "sequence": 26,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "6f2e38353130303330303030464636390d0a"
+    },
+    {
+      "sequence": 27,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "32313034700d"
+    },
+    {
+      "sequence": 28,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "702e3844303446464646464630303030313841363634413342313030303546370d0a"
+    },
+    {
+      "sequence": 29,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "32313032710d"
+    },
+    {
+      "sequence": 30,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "712e383930323335324533353245333033303230323030460d0a"
+    },
+    {
+      "sequence": 31,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "314133303031720d"
+    },
+    {
+      "sequence": 32,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "722e38323330353546390d0a"
+    },
+    {
+      "sequence": 33,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "314134323031730d"
+    },
+    {
+      "sequence": 34,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "732e38323432303733350d0a"
+    },
+    {
+      "sequence": 35,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "314132313031740d"
+    },
+    {
+      "sequence": 36,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "742e38323231464635450d0a"
+    },
+    {
+      "sequence": 37,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "5c303546463030464146463030750d"
+    },
+    {
+      "sequence": 38,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "752e443846463030303030303030303030313030303030303030303030303030303030303030303030303030303030303030303032380d0a443846463538303030303030303030303030303030303030303030303030303030303030303030303030303030303030303044310d0a4436464642303030303030303030303030303030303030303030303030303030303030303030303030303030383046420d0a"
+    },
+    {
+      "sequence": 39,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "5c34363130303032313034760d"
+    },
+    {
+      "sequence": 40,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "762e3844303446464646464630303030313841363634413342313030303546370d0a"
+    },
+    {
+      "sequence": 41,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "5c34364646303032313034770d"
+    },
+    {
+      "sequence": 42,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "772e38364646313030303844303433384646464646464646313842313036313641323030303531410d0a38364646313030303844303433384646464646464646313842313036313741323030303531390d0a"
+    },
+    {
+      "sequence": 43,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "5c34363130303032313031780d"
+    },
+    {
+      "sequence": 44,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "782e383930313530343335463433344534393435343432310d0a"
+    },
+    {
+      "sequence": 45,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "32313032314132313032790d"
+    },
+    {
+      "sequence": 46,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "792e3839303233353245333532453330333032303230383332314646464636440d0a"
+    },
+    {
+      "sequence": 47,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "323130347a0d"
+    },
+    {
+      "sequence": 48,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "7a2e3844303446464646464630303030313841363634413342313030303546370d0a"
+    },
+    {
+      "sequence": 49,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "5c303546463030464146463030670d"
+    },
+    {
+      "sequence": 50,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "672e443846463030303030303030303030313030303030303030303030303030303030303030303030303030303030303030303032380d0a443846463538303030303030303030303030303030303030303030303030303030303030303030303030303030303030303044310d0a4436464642303030303030303030303030303030303030303030303030303030303030303030303030303030383046420d0a"
+    },
+    {
+      "sequence": 51,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "5c34364646303032313034680d"
+    },
+    {
+      "sequence": 52,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "682e38364646313030303844303433384646464646464646313842313036313641323030303531410d0a38364646313030303844303433384646464646464646313842313036313741323030303531390d0a"
+    },
+    {
+      "sequence": 53,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "0d"
+    },
+    {
+      "sequence": 54,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "7c7c0d"
+    },
+    {
+      "sequence": 55,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "403141323030310d"
+    },
+    {
+      "sequence": 56,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "38323230313034450d0a"
+    },
+    {
+      "sequence": 57,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "5c34363130303032313032690d"
+    },
+    {
+      "sequence": 58,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "692e383930323335324533353245333033303230323030460d0a"
+    },
+    {
+      "sequence": 59,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "3141333030316a0d"
+    },
+    {
+      "sequence": 60,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "6a2e38323330353546390d0a"
+    },
+    {
+      "sequence": 61,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "3141343230316b0d"
+    },
+    {
+      "sequence": 62,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "6b2e38323432303733350d0a"
+    },
+    {
+      "sequence": 63,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "3141323130316c0d"
+    },
+    {
+      "sequence": 64,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "6c2e38323231464635450d0a"
+    },
+    {
+      "sequence": 65,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "323130346d0d"
+    },
+    {
+      "sequence": 66,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "6d2e3844303446464646464630303030313841363634413342313030303546370d0a"
+    },
+    {
+      "sequence": 67,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "3141324130366e0d"
+    },
+    {
+      "sequence": 68,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "6e2e3837324142363443463642423141394545340d0a"
+    },
+    {
+      "sequence": 69,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "3141323330366f0d"
+    },
+    {
+      "sequence": 70,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "6f2e3837323339423139324438323239453445360d0a"
+    },
+    {
+      "sequence": 71,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "32313032700d"
+    },
+    {
+      "sequence": 72,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "702e383930323335324533353245333033303230323030460d0a"
+    },
+    {
+      "sequence": 73,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "314146323031710d"
+    },
+    {
+      "sequence": 74,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "712e38324632464638440d0a"
+    },
+    {
+      "sequence": 75,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "5c303546463030464146463030720d"
+    },
+    {
+      "sequence": 76,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "722e443846463030303030303030303030313030303030303030303030303030303030303030303030303030303030303030303032380d0a443846463538303030303030303030303030303030303030303030303030303030303030303030303030303030303030303044310d0a4436464642303030303030303030303030303030303030303030303030303030303030303030303030303030383046420d0a"
+    },
+    {
+      "sequence": 77,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "5c34363130303032313034730d"
+    },
+    {
+      "sequence": 78,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "732e3844303446464646464630303030313841363634413342313030303546370d0a"
+    },
+    {
+      "sequence": 79,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "5c34364646303032313034740d"
+    },
+    {
+      "sequence": 80,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "742e38364646313030303844303433384646464646464646313842313036313641323030303531410d0a38364646313030303844303433384646464646464646313842313036313741323030303531390d0a"
+    },
+    {
+      "sequence": 81,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "5c34363130303032313031750d"
+    },
+    {
+      "sequence": 82,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "752e383930313530343335463433344534393435343432310d0a"
+    },
+    {
+      "sequence": 83,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "32313032314132313032760d"
+    },
+    {
+      "sequence": 84,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "762e3839303233353245333532453330333032303230383332314646464636440d0a"
+    },
+    {
+      "sequence": 85,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "32313034770d"
+    },
+    {
+      "sequence": 86,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "772e3844303446464646464630303030313841363634413342313030303546370d0a"
+    },
+    {
+      "sequence": 87,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "5c303546463030464146463030780d"
+    },
+    {
+      "sequence": 88,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "782e443846463030303030303030303030313030303030303030303030303030303030303030303030303030303030303030303032380d0a443846463538303030303030303030303030303030303030303030303030303030303030303030303030303030303030303044310d0a4436464642303030303030303030303030303030303030303030303030303030303030303030303030303030383046420d0a"
+    },
+    {
+      "sequence": 89,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "5c34364646303032313034790d"
+    },
+    {
+      "sequence": 90,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "792e38364646313030303844303433384646464646464646313842313036313641323030303531410d0a38364646313030303844303433384646464646464646313842313036313741323030303531390d0a"
+    },
+    {
+      "sequence": 91,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "0d"
+    },
+    {
+      "sequence": 92,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "7c7c0d"
+    },
+    {
+      "sequence": 93,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "403141323030310d"
+    },
+    {
+      "sequence": 94,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "38323230313034450d0a"
+    },
+    {
+      "sequence": 95,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "5c343631303030323130327a0d"
+    },
+    {
+      "sequence": 96,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "7a2e383930323335324533353245333033303230323030460d0a"
+    },
+    {
+      "sequence": 97,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "314133303031670d"
+    },
+    {
+      "sequence": 98,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "672e38323330353546390d0a"
+    },
+    {
+      "sequence": 99,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "314134323031680d"
+    },
+    {
+      "sequence": 100,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "682e38323432303733350d0a"
+    },
+    {
+      "sequence": 101,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "314132313031690d"
+    },
+    {
+      "sequence": 102,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "692e38323231464635450d0a"
+    },
+    {
+      "sequence": 103,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "323130346a0d"
+    },
+    {
+      "sequence": 104,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "6a2e3844303446464646464630303030313841363634413342313030303546370d0a"
+    },
+    {
+      "sequence": 105,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "3141324130366b0d"
+    },
+    {
+      "sequence": 106,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "6b2e3837324142363443463642423141394545340d0a"
+    },
+    {
+      "sequence": 107,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "3141323330366c0d"
+    },
+    {
+      "sequence": 108,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "6c2e3837323339423139324438323239453445360d0a"
+    },
+    {
+      "sequence": 109,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "323130326d0d"
+    },
+    {
+      "sequence": 110,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "6d2e383930323335324533353245333033303230323030460d0a"
+    },
+    {
+      "sequence": 111,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "3141463230316e0d"
+    },
+    {
+      "sequence": 112,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "6e2e38324632464638440d0a"
+    },
+    {
+      "sequence": 113,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "5c3035464630304641464630306f0d"
+    },
+    {
+      "sequence": 114,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "6f2e443846463030303030303030303030313030303030303030303030303030303030303030303030303030303030303030303032380d0a443846463538303030303030303030303030303030303030303030303030303030303030303030303030303030303030303044310d0a4436464642303030303030303030303030303030303030303030303030303030303030303030303030303030383046420d0a"
+    },
+    {
+      "sequence": 115,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "5c34363130303032313034700d"
+    },
+    {
+      "sequence": 116,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "702e3844303446464646464630303030313841363634413342313030303546370d0a"
+    },
+    {
+      "sequence": 117,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "5c34364646303032313034710d"
+    },
+    {
+      "sequence": 118,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "712e38364646313030303844303433384646464646464646313842313036313641323030303531410d0a38364646313030303844303433384646464646464646313842313036313741323030303531390d0a"
+    },
+    {
+      "sequence": 119,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "5c34363130303032313031720d"
+    },
+    {
+      "sequence": 120,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "722e383930313530343335463433344534393435343432310d0a"
+    },
+    {
+      "sequence": 121,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "32313032314132313032730d"
+    },
+    {
+      "sequence": 122,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "732e3839303233353245333532453330333032303230383332314646464636440d0a"
+    },
+    {
+      "sequence": 123,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "32313034740d"
+    },
+    {
+      "sequence": 124,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "742e3844303446464646464630303030313841363634413342313030303546370d0a"
+    },
+    {
+      "sequence": 125,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "5c303546463030464146463030750d"
+    },
+    {
+      "sequence": 126,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "752e443846463030303030303030303030313030303030303030303030303030303030303030303030303030303030303030303032380d0a443846463538303030303030303030303030303030303030303030303030303030303030303030303030303030303030303044310d0a4436464642303030303030303030303030303030303030303030303030303030303030303030303030303030383046420d0a"
+    },
+    {
+      "sequence": 127,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "5c34363130303032313034760d"
+    },
+    {
+      "sequence": 128,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "762e3844303446464646464630303030313841363634413342313030303546370d0a"
+    },
+    {
+      "sequence": 129,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "5c34364646303032313034770d"
+    },
+    {
+      "sequence": 130,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "772e38364646313030303844303433384646464646464646313842313036313641323030303531410d0a38364646313030303844303433384646464646464646313842313036313741323030303531390d0a"
+    }
+  ]
+}

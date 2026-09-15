@@ -1,0 +1,13 @@
+# Windows preference adapter compatibility
+
+Both registry adapters passed their existing native tests under Python 3.13.14 AMD64: 13 preference storage cases and 8 DontAskAgain reset cases, with no failures, errors or skips. Every one of the 21 owned scratch namespaces was removed. The modules and case sources were unchanged; no compatibility patch was needed.
+
+The runtime runs as an AMD64 process with 64-bit pointers on the owned Windows 11 ARM64 VM, build 26100. This is x64 execution under ARM64 emulation, not a separate run on native AMD64 hardware. Both adapters continue selecting the original 32-bit registry view. The reset adapter's direct `HKCU = 0x80000001` path succeeded for actual root open and delete calls; the suspected predefined-handle failure was not reproduced.
+
+The [official Python 3.13.14 release page](https://www.python.org/downloads/release/python-31314/) publishes SHA-256 `90b4e5b9898b72d744650524bff92377c367f44bd5fbd09e3148656c080ad907` for the AMD64 embeddable archive. The downloaded archive matches, and all 34 extracted files match their captured hashes. The runtime was staged in a separate owned directory without installation or changes to PATH, the existing x86 runtime, user settings, or the bridge process.
+
+The native cases used the same byte-preserving reads, raw type/string roundtrips, preference fallback/error ordering, Unicode reset traversal, resource limits, interrupted partial deletion and scratch cleanup checks as the x86 acceptance. Their source bytes and assertions were retained exactly. A historical `x86 Python` text label remains inside the raw preference-case report; the observed 64-bit process and pinned AMD64 runtime establish the architecture of this compatibility run.
+
+The [compact compatibility fixture](../research/fixtures/toolkit-preferences-windows64-acceptance.json) pins the source files, raw run reports and runtime provenance. The separate [AMD64 runtime manifest](../research/fixtures/windows-python-runtime-amd64.json) contains the verified file hashes. Existing public native gateways still use `windows-python-runtime.json` and the x86 runtime; no implicit architecture switch was added. This evidence is separate from the historical 94-test expanded preference acceptance and frozen full-suite checkpoints.
+
+No real Toolkit preference subtree or machine-hive permission behavior was exercised: tests redirect their logical hives beneath fresh owned HKCU namespaces. These results establish the tested Windows API/process compatibility, not GUI notice display, runtime preference refresh, or the behavior of every Windows version.

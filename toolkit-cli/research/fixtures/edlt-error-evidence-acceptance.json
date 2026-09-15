@@ -1,0 +1,65 @@
+{
+  "format": "cbus-edlt-error-evidence-acceptance-v1",
+  "passed": true,
+  "scope": "Shared EdltApplyError reporting only; no programming protocol or phase changes",
+  "physical_device_verified": false,
+  "source_sha256": {
+    "src/cbus_toolkit/edlt.py": "f5c996698b5970c56b9bfa60525a35e96a3734328780cd35b9ae07a9663ca735",
+    "src/cbus_toolkit/edlt_mra.py": "99bf274549de55b4105acc615a620f6eebf83ebbc1a5a56379646a690e9e2636",
+    "src/cbus_toolkit/edlt_lifecycle.py": "462c4c98c53d55f562610e696a208479982e9b2bcb09625a92bb994f74ff76ec",
+    "src/cbus_toolkit/edlt_restore_levels.py": "2ae1cba7de13161959ee4c1cf76db29a9dbd2897a1f425c300d595739b18aa9b",
+    "src/cbus_toolkit/programming.py": "30b0def5768e5a7f926eb07771dddb02a4ec5bf6e724fad735be8f3f59c07a96",
+    "src/cbus_toolkit/cgate.py": "fef71db3a4d98c1a175a8bf0287b5abcaea4689df835dea7b0c19413e206eb15",
+    "src/cbus_toolkit/unitspec.py": "f8d9e2f30c0ab431b0897959328781fac6a7c9825a4d9d2bb5ecf348acb66747",
+    "src/cbus_toolkit/memory.py": "372cbc3a79710b743d23aa6690a8b56b1780de091ffe8a1d0a543e4cfa9c1f31",
+    "tests/test_edlt_apply_error.py": "f6fb5e0740fd6d65cafc6fd52c2eaa9c11cd225bdc655373a6236cd56bf652f1",
+    "tests/test_edlt.py": "5546612b307109a94d17d211a0b64d4f50658ab43e4ae5a589dd0e366fb96c46",
+    "tests/test_edlt_lifecycle.py": "6371e559b29cfe7fc0b4f62626aa1f8d370f25095c24c3b98acdb927597ef712",
+    "tests/test_edlt_restore_levels.py": "35f80d50997bec8fb455df64450c3d96d74b3a22648969a88d521dfd611cc093"
+  },
+  "tests": [
+    {
+      "python": "313",
+      "tests": 39,
+      "skips": 0,
+      "passed": true,
+      "elapsed_seconds": 9.338,
+      "log": {
+        "path": "research/runtime/edlt-model-phases/error-render-acceptance/python313.log",
+        "sha256": "2b23974fda277fff063ec7747aedb56a44ce9bd5c17f639d3a76ff0a47041a4a"
+      }
+    },
+    {
+      "python": "310",
+      "tests": 39,
+      "skips": 0,
+      "passed": true,
+      "elapsed_seconds": 12.06,
+      "log": {
+        "path": "research/runtime/edlt-model-phases/error-render-acceptance/python310.log",
+        "sha256": "f8d84bdbd768d3931dcad9a28c64a9e0e77b931ec6dbe321d42304d35cfc9bf7"
+      }
+    }
+  ],
+  "new_regression_tests": 5,
+  "existing_lighting_lifecycle_restore_tests": 34,
+  "checks": [
+    "Exact ordinary message and JSON compatibility, including untruncated4096-character errors",
+    "Unprintable causes whose str raises KeyboardInterrupt, SystemExit or RuntimeError",
+    "Failure while rendering exception type name",
+    "Original cause and chained cause identity after verified rollback",
+    "Primary cause and attempted parameters retained after failed rollback"
+  ],
+  "run_results": {
+    "path": "research/runtime/edlt-model-phases/error-render-acceptance/run-results.json",
+    "sha256": "8d3dbf957ff8b05a82198016283c03510dd08d85392be15239cb6da22433f2f8"
+  },
+  "historical_reproduction": {
+    "path": "research/runtime/edlt-model-phases/error-render-acceptance/baseline.json",
+    "sha256": "f6ffd0381d9eb96dabc5388cafca240cb7b94a61c82d2e5ab448335edde1565d"
+  },
+  "previous_phase_checkpoint": {
+    "path": "research/fixtures/edlt-lifecycle-phases-acceptance.json",
+    "sha256": "2fe7e6bd0be9e242aa49fc11cb7dacc1ce266a87263b2dba6f805de79c1b0013"
+  }
+}

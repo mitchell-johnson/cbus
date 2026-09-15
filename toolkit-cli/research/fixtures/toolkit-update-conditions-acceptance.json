@@ -1,0 +1,152 @@
+{
+  "scope": "Accepted pure bounded update-condition stages under unverified caller-supplied file facts; no package applicability or update availability",
+  "status": "accepted",
+  "test_count_each_python": 61,
+  "new_api_and_helper_tests": 13,
+  "new_cli_tests": 7,
+  "regression_tests": {
+    "existing_metadata_api_and_cli": 25,
+    "existing_revocation_api_and_cli": 16
+  },
+  "runs": {
+    "313": {
+      "report": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/conditions-acceptance-v1/313/report.json",
+      "report_sha256": "4bebef9ddd246c4f9cfbceba9d2969863c4cd27793616166ee6d3f177454326f",
+      "python_version": "3.13.14 (main, Jun 10 2026, 12:24:04) [Clang 17.0.0 (clang-1700.6.4.2)]",
+      "tests": 61,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "elapsed_seconds": 4.680002334003802,
+      "log_sha256": "53b575191d27706137e55b846927cfbd44eb945c51a5a587a74a002f5015cd82",
+      "loaded_source_runtime_hashes_correlated": true
+    },
+    "310": {
+      "report": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/conditions-acceptance-v1/310/report.json",
+      "report_sha256": "1f9092526dd7b8736cdb724842bfaf990821e02e69f68168a8450c9072da031a",
+      "python_version": "3.10.20 (main, Mar  3 2026, 00:49:35) [Clang 17.0.0 (clang-1700.6.4.2)]",
+      "tests": 61,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "elapsed_seconds": 5.398328332987148,
+      "log_sha256": "f79f7c5214f3939b649fb981bb1efd87a0fd3c735ae81100e23d9b1b5dd05c8d",
+      "loaded_source_runtime_hashes_correlated": true
+    }
+  },
+  "source_hashes": {
+    "src/cbus_toolkit/toolkit_update_conditions.py": "da8ebb5837c4e87a5612b63166d4e6a7a2619ef1d9486de081677453cc1fae31",
+    "src/cbus_toolkit/toolkit_update_conditions_cli.py": "30107a272768688c0615dee516b02445279222a7cfed75385b62a16eb2e14268",
+    "src/cbus_toolkit/cli.py": "5f5d6361e11520714eabba89380f96f2dac0640b79fa06830ba1625b7b78c147",
+    "src/cbus_toolkit/toolkit_update_metadata.py": "dcfa5990ca9f1ea8fb88e128edc2089f1045cc1b70c8f35314d84c80b4802b3f",
+    "src/cbus_toolkit/toolkit_update_revocation.py": "575bf1fccb3788ed891028dbf6ec10f1d94f1519d7a6d20341d131d17fc8d389",
+    "tests/test_toolkit_update_conditions.py": "9bece53a8aff1f89c730a264de9962111d5861ebdd1dab6a8aadcd7279b477c7",
+    "tests/test_toolkit_update_conditions_cli_helper.py": "f2ab9c1a460dd5f18773d96c5beb5e76c8ed058a6cbe46cc34a655d75ae46e37",
+    "tests/test_cli_toolkit_update_conditions.py": "f095fca94cd5dbb19b5cbbf7870130d8f76268f95879cf2df4788083b9f26baf",
+    "tests/test_toolkit_update_metadata.py": "9aab48695a3fe937491c557864f9e336d1578f60d74e32c2a674e8bb70562c1d",
+    "tests/test_cli_toolkit_update_metadata.py": "1edd068e1f9dd2e239d7ea0e1b35e5bc99be781040049e73435f1bde64368866",
+    "tests/test_toolkit_update_revocation.py": "98a07af88bc00b401bda62ef3847d5f0363ad99dbb4e9d7a94343859e378c321",
+    "tests/test_cli_toolkit_update_revocation.py": "19810624378f7b806050041b86c87bfe556cc8bb05646bfdf266846218e734c2",
+    "research/fixtures/toolkit-update-conditions-vectors.json": "4d17c1cbe37ca9ffd6be69ad4f560c56e3ba278b6f21ac2f25235f4f2e372962",
+    "research/fixtures/toolkit-update-metadata-vectors.json": "71a70a37288a6534299c3d609becb261f1f1e1a0bdadc6c2231c5c6071b4a04a",
+    "research/fixtures/toolkit-update-revocation-vectors.json": "4b17a6bf0c963f03d0149eb83371d30f787a919cbb71502a6788563116a95e2f",
+    "docs/toolkit-update-conditions.md": "574ea53e969d8271dce207f728f55092f02cec0d4c940215ebe6d0fc83112376",
+    "pyproject.toml": "5913ba9675e826001b2e2e0a7d395849cc8672d6d1c2f55705b03fb68a7838cb"
+  },
+  "input_manifest": {
+    "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/conditions-acceptance-v1/before.json",
+    "sha256": "f3e8dedcaad74c83eacb6e54b9ee1c08b671aff4ad40cf6e9193cb1a6e9d2750",
+    "input_count": 347
+  },
+  "accepted_input_archive": {
+    "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/conditions-acceptance-v1/accepted-inputs.tar.gz",
+    "sha256": "c2ec0cb4b5a2e9b5f0453a1286eef89803420206d145dcf66670209ff8ee8f40",
+    "files": 348,
+    "pre_execution_archive_readback_verified": true
+  },
+  "original_comparisons": {
+    "production_stage_arms_each_python": 279,
+    "all_original_arms_retained": 386,
+    "unique_original_cases": 364,
+    "original_processes": 106,
+    "replayed_original_rows": 0,
+    "research_only_Int32_arms": 107,
+    "direct_and_observational_arms_separate": true,
+    "prior_original_failures_preserved": true,
+    "initial_original_expectation_plan_retroactively_passed": false,
+    "original_plan_discrepancies": [
+      {
+        "id": "deserialize-269-invalid-shape",
+        "arm": "direct",
+        "disposition": "post_capture_diagnostic_wording_classification"
+      },
+      {
+        "id": "validate-276-definition",
+        "arm": "direct",
+        "disposition": "post_capture_diagnostic_wording_classification"
+      },
+      {
+        "id": "expression-345-identifier-grammar",
+        "arm": "direct",
+        "disposition": "post_capture_original_grammar_classification"
+      },
+      {
+        "id": "expression-345-identifier-grammar",
+        "arm": "trace",
+        "disposition": "new_prewritten_trace_expectation_from_prior_direct_and_IL"
+      }
+    ],
+    "original_evidence_archive": {
+      "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/stage-a-consolidated-v1/evidence.zip",
+      "sha256": "dd1bcde431a4369c4220e09a73e823b14f8b797fb2d886782dca55ba0a63bb14"
+    },
+    "original_analysis": {
+      "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/stage-a-consolidated-v1/analysis.json",
+      "sha256": "60c0107b08ceb62f1a4e3cbec3546e249d00464621460b1366c09639b4974eaf"
+    },
+    "original_assembly_sha256": {
+      "SE.DAD.SESU.Common.dll": "477fb88de310852611f26d1f845da23b8f0e6b602de8ab61a3eefc06339dc4ba",
+      "Antlr3.Runtime.dll": "7f1792ff5a0a5e0bd52982f9cea642240a1438909079ae0ca3695434b3b6fb69",
+      "Newtonsoft.Json.dll": "b624949df8b0e3a6153fdfb730a7c6f4990b6592ee0d922e1788433d276610f3",
+      "NCalc.dll": "d6cfaeb501093d1dad90f193eacd896652509f690a591c121949b576746fbff3",
+      "SE.DAD.Core.Common.dll": "71e582d87734af16ba42eeb6184a329f3cacfcb86b8ad23676cdafc3aaa227f5"
+    }
+  },
+  "preserved_draft": {
+    "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/conditions-draft-313.stderr",
+    "sha256": "0e70acb0c0a082373624efdd7276a162a5e39bb7224fafcaa4b313ee41cc9dc3",
+    "outcome": "9 tests passed and1 failed because excluded function syntax was safely rejected but classified failed rather than unsupported; fixed before accepted run"
+  },
+  "limits": {
+    "JSON_bytes_each": 131072,
+    "JSON_depth": 12,
+    "definitions": 8,
+    "file_facts": 8,
+    "expression_and_name_characters": 256,
+    "path_characters": 1024,
+    "version_RHS_characters": 256,
+    "culture": "invariant-ascii",
+    "version_text_prefix_contains": "printable ASCII at reached comparison",
+    "fresh_result_cache": true,
+    "recursive_parenthesized_NOT": "source-composed original grammar; no extra original row claimed"
+  },
+  "not_claimed": [
+    "Public Evaluate invocation",
+    "live file/registry/environment/clock/RNG observations",
+    "special-folder substitution",
+    "full NCalc grammar/culture parity",
+    "original Windows/concurrency equivalence",
+    "package applicability",
+    "current publisher trust",
+    "update availability"
+  ],
+  "metadata_six_stages_unchanged": true,
+  "revocation_seven_stages_unchanged": true,
+  "vm_or_shared_service_calls": false,
+  "public_network_calls": false,
+  "published_document": {
+    "path": "docs/toolkit-update-conditions.md",
+    "sha256": "c9854c6544e0f14ad171301ae2b0fdf2ef7a4471fbb5d85f48d4966011ed56a1",
+    "relationship": "Adds final acceptance prose after testing; source_hashes retains the pre-execution document archived with accepted inputs"
+  }
+}

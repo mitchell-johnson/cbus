@@ -1,0 +1,162 @@
+{
+  "format": "toolkit-update-registry-admission-contract-v1",
+  "original_executed": false,
+  "prefix": "registry-admission-a16df02361e14a1c",
+  "root_name": "CBusCliCondition_a16df02361e14a1c9329771a063bbd4e",
+  "input_sha256": "077c90b36a452951af1572e63d725bdb662a7966a35839985a7d121cc838f179",
+  "input_bytes": 11933,
+  "reviewed_plan_sha256": "706ef80be3ce1708d5bc97940fb63f3b56b3941656be34d2e59bf389c4102e36",
+  "expected_original_calls": 12,
+  "expected_original_errors": 2,
+  "expected_clr_bits": 32,
+  "vendor": {
+    "SE.DAD.SESU.Common": {
+      "path": "/Users/mitchell/source/cbus/toolkit-cli/research/runtime/toolkit-update-check/sesu-files/se.dad.sesu.common.dll",
+      "bytes": 38528,
+      "sha256": "477fb88de310852611f26d1f845da23b8f0e6b602de8ab61a3eefc06339dc4ba"
+    },
+    "SE.DAD.Core.Common": {
+      "path": "/Users/mitchell/source/cbus/toolkit-cli/research/runtime/toolkit-update-check/sesu-files/se.dad.core.common.dll",
+      "bytes": 67200,
+      "sha256": "71e582d87734af16ba42eeb6184a329f3cacfcb86b8ad23676cdafc3aaa227f5"
+    },
+    "Newtonsoft.Json": {
+      "path": "/Users/mitchell/source/cbus/toolkit-cli/research/runtime/toolkit-update-check/sesu-files/newtonsoft.json.dll",
+      "bytes": 701992,
+      "sha256": "b624949df8b0e3a6153fdfb730a7c6f4990b6592ee0d922e1788433d276610f3"
+    },
+    "NCalc": {
+      "path": "/Users/mitchell/source/cbus/toolkit-cli/research/runtime/toolkit-update-check/sesu-files/ncalc.dll",
+      "bytes": 132680,
+      "sha256": "d6cfaeb501093d1dad90f193eacd896652509f690a591c121949b576746fbff3"
+    },
+    "Antlr3.Runtime": {
+      "path": "/Users/mitchell/source/cbus/toolkit-cli/research/runtime/toolkit-update-check/sesu-files/antlr3.runtime.dll",
+      "bytes": 112200,
+      "sha256": "7f1792ff5a0a5e0bd52982f9cea642240a1438909079ae0ca3695434b3b6fb69"
+    }
+  },
+  "type_tokens": {
+    "Checker": 33554435,
+    "Condition": 33554440
+  },
+  "method_pins": {
+    "ClientConditionChecker::EvaluateRegistryKeyExists": {
+      "token": 100663307,
+      "rva": "0x2980",
+      "il_bytes": 135,
+      "sha256": "4722244b81608749b579412a7fefc0048be6b536b426b7657dd9e60aaa8d022d"
+    },
+    "ClientConditionChecker::ReplaceRegistryRootAbbreviations": {
+      "token": 100663308,
+      "rva": "0x2a14",
+      "il_bytes": 126,
+      "sha256": "9bee9289f9c4c337535900ab48ca45df231fcbb5067169f05faff472bd3cec6a"
+    },
+    "ClientConditionChecker::EvaluateRegistryEntryExists": {
+      "token": 100663309,
+      "rva": "0x2aa0",
+      "il_bytes": 221,
+      "sha256": "dc8d6bb42c46f6f57a3f35464ca6239905860f1993e081c3452d2478c7f8a153"
+    },
+    "ClientConditionChecker::EvaluateRegistryEntryContent": {
+      "token": 100663310,
+      "rva": "0x2b8c",
+      "il_bytes": 582,
+      "sha256": "592d2f130c5b5a474e1ccf7d4ff861785b7a9656c0a5004649627c62d6e33e91"
+    },
+    "ClientConditionChecker::CompareInt": {
+      "token": 100663311,
+      "rva": "0x2de0",
+      "il_bytes": 254,
+      "sha256": "83385e5b32925028b64b47c7f505e1a889d471f8d2d0f8e95f5dcd1cc46eb83a"
+    },
+    "ClientConditionChecker::ReplaceFirstOccurrence": {
+      "token": 100663314,
+      "rva": "0x3080",
+      "il_bytes": 43,
+      "sha256": "b57e047d97b0d6b74b73ec5b9fc74eff1e3debccbe762bbd8497abce79a0eed1"
+    },
+    "ClientConditionChecker::.cctor": {
+      "token": 100663318,
+      "rva": "0x3225",
+      "il_bytes": 11,
+      "sha256": "a7aa34f8a71253c377491a6e071045330d798e8ba1151d5908118dda9316523b"
+    },
+    "Condition::get_WhatToCheck": {
+      "token": 100663329,
+      "rva": "0x3299",
+      "il_bytes": 7,
+      "sha256": "1ba1500981d2c517ce5d6304377e74f88b067f99a7bb381da6cace2f08b9830c"
+    },
+    "Condition::set_WhatToCheck": {
+      "token": 100663330,
+      "rva": "0x32a1",
+      "il_bytes": 8,
+      "sha256": "c81d5e431329321383f81650c08333f0d561ad7525bce7dd2ac2668a5dfe9154"
+    },
+    "Condition::get_HowToCheck": {
+      "token": 100663331,
+      "rva": "0x32aa",
+      "il_bytes": 7,
+      "sha256": "b2165cfa408406b7bcdc5e554389bb7123ed00b62d680fe8de35d6486f9deeca"
+    },
+    "Condition::set_HowToCheck": {
+      "token": 100663332,
+      "rva": "0x32b2",
+      "il_bytes": 8,
+      "sha256": "0bce8f129e7fcfd08a010b56ceef5664e9a20d968be36787081341287407755b"
+    },
+    "Condition::get_FileOrRegistryKeyPath": {
+      "token": 100663333,
+      "rva": "0x32bb",
+      "il_bytes": 7,
+      "sha256": "64b8b2ec91ae67f46f06f40980e54ef0967bec1dc77b229206710b3d066b0bb9"
+    },
+    "Condition::set_FileOrRegistryKeyPath": {
+      "token": 100663334,
+      "rva": "0x32c3",
+      "il_bytes": 8,
+      "sha256": "5101e7d9d4cff84c265c5437f5bab9791b00bd6c3e3bd4242bb3e77c417b60c9"
+    },
+    "Condition::get_RegistryEntryNameOrProductCode": {
+      "token": 100663335,
+      "rva": "0x32cc",
+      "il_bytes": 7,
+      "sha256": "8fe624a5d7cbebf5b84555022f36c9231f0343cd12fa7d6ed299927474c4a14b"
+    },
+    "Condition::set_RegistryEntryNameOrProductCode": {
+      "token": 100663336,
+      "rva": "0x32d4",
+      "il_bytes": 8,
+      "sha256": "8dde82c81c640604e59a249d25b61a42ab4b3151f98d6957e248482e336882f3"
+    },
+    "Condition::get_ComparisonRightSideValue": {
+      "token": 100663337,
+      "rva": "0x32dd",
+      "il_bytes": 7,
+      "sha256": "9abc2bbb8fc411c1186bcab3ede89f376d4e15cdabe702d16ddd19b774f56d81"
+    },
+    "Condition::set_ComparisonRightSideValue": {
+      "token": 100663338,
+      "rva": "0x32e5",
+      "il_bytes": 8,
+      "sha256": "834fb624c5f21e28f85350443cf2c15bb3bd773fc1b2a478b486d1207b466be3"
+    },
+    "Condition::.cctor": {
+      "token": 100663340,
+      "rva": "0x32f6",
+      "il_bytes": 11,
+      "sha256": "12fccbc593a39389fc1e21d56c585485501ed15bfbdf9a3f842fab4e44318109"
+    }
+  },
+  "provenance_root": "/Users/mitchell/source/cbus/toolkit-cli/research/runtime/windows-generation-20260915T062650",
+  "ready_sha256": "19de41378e0a061b6871adcae18587fe7598205472b03660ac2eec13eeac0b56",
+  "runtime_sha256": "4b223e9ead90082abd4fa40a6c1c320e3d4cfbf5e37bee6f9bc6210181f6c12f",
+  "compiler_sha256": "012e8cd8adff0c439a90ffd22c0e33efeb6fbc8cf660d52b4858d310649382fa",
+  "mscorlib_sha256": "93d46bdac1664dba87641925572c789d71a21bb01dc7c7e5aa99c0eca8335e5e",
+  "user_sid": "S-1-5-21-271988887-4100452682-1621969429-1001",
+  "operator_domain": "No general CompareTo collation support claimed by this admission pilot",
+  "network_enforcement": "Source whitelists local registry-only original call graph; no dynamic network instrumentation or OS policy change",
+  "execution_release_required": "root-reviewed-registry-twelve-v1"
+}

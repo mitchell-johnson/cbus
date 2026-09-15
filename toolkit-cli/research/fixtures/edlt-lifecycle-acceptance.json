@@ -1,0 +1,423 @@
+{
+  "format": "cbus-edlt-lifecycle-acceptance-v1",
+  "passed": true,
+  "profile": {
+    "unit_type": "KEYGL5",
+    "catalog_number": "5055EDL",
+    "firmware": "5.5.00"
+  },
+  "scope": "Original AfterLoadPPData, BeforeSavePPData(saveDb=true, saveNw=false), five CRCs and database-only PP save/reload with caller-supplied complete cache facts",
+  "full_toolkit_dialog_initialization": false,
+  "physical_device_verified": false,
+  "metadata_auto_creation": false,
+  "tests": [
+    {
+      "python": "3.13.14",
+      "tests": 19,
+      "skips": 0,
+      "passed": true,
+      "elapsed_seconds": 832.057,
+      "original_cases": 76,
+      "supported_original_cases": 66,
+      "expected_original_failures": 8,
+      "bounded_source_exclusions": 2,
+      "enable_constructor_combinations": 2048,
+      "native_cases": 34,
+      "original_phase_parameter_comparisons": 173052,
+      "native_parameter_comparisons": 29716,
+      "reload_parameter_comparisons": 874,
+      "full_parameter_comparisons": 203642,
+      "explicit_crc_value_comparisons": 500
+    },
+    {
+      "python": "3.10.20",
+      "tests": 19,
+      "skips": 0,
+      "passed": true,
+      "elapsed_seconds": 826.124,
+      "original_cases": 76,
+      "supported_original_cases": 66,
+      "expected_original_failures": 8,
+      "bounded_source_exclusions": 2,
+      "enable_constructor_combinations": 2048,
+      "native_cases": 34,
+      "original_phase_parameter_comparisons": 173052,
+      "native_parameter_comparisons": 29716,
+      "reload_parameter_comparisons": 874,
+      "full_parameter_comparisons": 203642,
+      "explicit_crc_value_comparisons": 500
+    }
+  ],
+  "original_runtime": {
+    "mscorlib": {
+      "path": "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\mscorlib.dll",
+      "sha256": "93D46BDAC1664DBA87641925572C789D71A21BB01DC7C7E5AA99C0ECA8335E5E",
+      "version": "4.8.9345.0 built by: NET481REL1LAST_25H2_C"
+    },
+    "os_version": "Microsoft Windows NT 10.0.26100.0",
+    "process_architecture": "AMD64",
+    "framework": 533509,
+    "compiler": {
+      "path": "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\csc.exe",
+      "sha256": "012E8CD8ADFF0C439A90FFD22C0E33EFEB6FBC8CF660D52B4858D310649382FA",
+      "version": "4.8.9221.0 built by: NET481REL1LAST_25H2"
+    }
+  },
+  "vendor_versions": {
+    "toolkit": "1.18.0.2754",
+    "logic_model": "7.14.0.0",
+    "cgate": "3.4.0 build2001"
+  },
+  "vendor_files": [
+    {
+      "name": "ArcDimarTabs.dll",
+      "size": 306688,
+      "sha256": "20d4a44e135fe788936deb568d9602803c5832b57a1d297024956569092f6933",
+      "file_version": "1.0.0.0",
+      "product_version": "1.0.0.0"
+    },
+    {
+      "name": "Cbtag32.dll",
+      "size": 469504,
+      "sha256": "fea2ba92339cb49dc7666bdb9bbf932fccc99b02048a7a8b0e0b63a5d77e7912",
+      "file_version": "1.0.3.2",
+      "product_version": "1.0.0.0"
+    },
+    {
+      "name": "CBusLogicModel.dll",
+      "size": 258048,
+      "sha256": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+      "file_version": "7.14.0.0",
+      "product_version": "7.14.0.0"
+    },
+    {
+      "name": "CBusToolkit.exe",
+      "size": 20518992,
+      "sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+      "file_version": "1.18.0.2754",
+      "product_version": "1.18.0"
+    },
+    {
+      "name": "CustomControls.dll",
+      "size": 40448,
+      "sha256": "93d66a228c209d08685ad58e15bd5fdbcffa84828f8699a35c8c7c951b8de8e6",
+      "file_version": "1.0.0.0",
+      "product_version": "1.0.0.0"
+    },
+    {
+      "name": "eDLT.dll",
+      "size": 663552,
+      "sha256": "75bc741234b52a168a4838fee305c309d3909571d2711f7580216b46b028e8d3",
+      "file_version": "7.16.0.0",
+      "product_version": "7.16.0.0"
+    },
+    {
+      "name": "EDLTCommon.dll",
+      "size": 8192,
+      "sha256": "41c740d2376f98cfcce20a58eb1ba2a7ea0629a8a2f56ef6a1bf134cae5da3e2",
+      "file_version": "1.5.0.0",
+      "product_version": "1.5.0.0"
+    },
+    {
+      "name": "EDLT_graphics.dll",
+      "size": 813568,
+      "sha256": "e319379709c47f97dca477c4f631880f231c060530cb2ec45a3f731b1a5d1991",
+      "file_version": "1.3.0.0",
+      "product_version": "1.3.0.0"
+    },
+    {
+      "name": "GlobalCommon.dll",
+      "size": 12288,
+      "sha256": "9f1328be4fab00366add4fc25239ed1c3feaea698b4a3413b1ee37e78abc210c",
+      "file_version": "1.0.0.0",
+      "product_version": "1.0.0.0"
+    },
+    {
+      "name": "HydraCommon.dll",
+      "size": 8192,
+      "sha256": "ac0447e04acafcef56680465863449445e85827b2ff834808ac02b26181c626a",
+      "file_version": "1.0.0.0",
+      "product_version": "1.0.0.0"
+    },
+    {
+      "name": "HydraWPFPlugins.dll",
+      "size": 1475584,
+      "sha256": "03893f0fd0dad9282128910f36a5fe892131bfcabde2bdd57c9e1cea5b5d48ea",
+      "file_version": "1.0.9062.23650",
+      "product_version": "1.0.9062.23650"
+    },
+    {
+      "name": "LabelEditor.dll",
+      "size": 95232,
+      "sha256": "508fa63db112a3ec07bf3cf834b41a0f26da3b0e7a428bc288bff0ec433a073b",
+      "file_version": "1.0.0.0",
+      "product_version": "1.0.0.0"
+    },
+    {
+      "name": "libcrypto-3.dll",
+      "size": 3507560,
+      "sha256": "4adae61662c5cb1aa07a893cbcfae105d3502013fb1b5d3b1971f98b635b3217",
+      "file_version": "3.3.1",
+      "product_version": "3.3.1"
+    },
+    {
+      "name": "libssl-3.dll",
+      "size": 1099624,
+      "sha256": "5347411ac08ee819a8836d7b3235d8415a80d5c68e8ea98a642970ec1f596b35",
+      "file_version": "3.3.1",
+      "product_version": "3.3.1"
+    },
+    {
+      "name": "log4net.dll",
+      "size": 270336,
+      "sha256": "1c5f3b4ed6311ca033a8d7c4d66a24b8adca38b0f7a8da096ae353bd43a551c3",
+      "file_version": "1.2.13.0",
+      "product_version": "1.2"
+    },
+    {
+      "name": "MultiSensorPage.dll",
+      "size": 80896,
+      "sha256": "89246a21c3f77c13b7879f6ffa4f83f7fb4b0907d65419d9efce6628f4a842b8",
+      "file_version": "1.0.0.0",
+      "product_version": "1.0.0.0"
+    },
+    {
+      "name": "MVVMBase.dll",
+      "size": 39424,
+      "sha256": "1b90975e46ed5f5e07736109c0006ee2a83511e0993c4d4559d55e24e5d6cd7b",
+      "file_version": "1.0.0.0",
+      "product_version": "1.0.0.0"
+    },
+    {
+      "name": "RemObjects.Hydra.dll",
+      "size": 90624,
+      "sha256": "6037105e2c446f73c7f893c3bf6c22aa8979757bf65b05a137855816ce332045",
+      "file_version": "6.6.0.1325",
+      "product_version": "6.6.0.1325"
+    },
+    {
+      "name": "RemObjects.Hydra.WPF.dll",
+      "size": 19456,
+      "sha256": "ad0f2030bcee29b30cbde3c7bcabf268d1c0905eae412f50af0ff8315d1dc295",
+      "file_version": "6.6.0.1325",
+      "product_version": "6.6.0.1325"
+    },
+    {
+      "name": "SharpCGateCommunicator.dll",
+      "size": 65024,
+      "sha256": "fd589789f2c40c0853c06a7d836add0f81a6afe3f397a8d6965a1a1f549a2d6e",
+      "file_version": "7.15.0.0",
+      "product_version": "7.15.0.0"
+    },
+    {
+      "name": "SharpContainer.dll",
+      "size": 35840,
+      "sha256": "5cba17be19a783e4b0c1e99025c9556fea605b97003ed6a3e9f3f182fb2c3ed0",
+      "file_version": "9.7.0.0",
+      "product_version": "9.7.0.0"
+    },
+    {
+      "name": "SharpLogger.dll",
+      "size": 11264,
+      "sha256": "496a1434da3a592519e94b3eb025a98f0fc91d88341a28d58f33025ce043905c",
+      "file_version": "2.11.0.0",
+      "product_version": "2.11.0.0"
+    },
+    {
+      "name": "Toolkit.WPF.DataVisualization.dll",
+      "size": 333312,
+      "sha256": "a2abf8cba5ac173fb9cf598faf8d1b9b4b648ff8722e7ff8d823a476e1b58852",
+      "file_version": "4.0.0.0",
+      "product_version": "4.0.0.0"
+    },
+    {
+      "name": "WPFCommonControls.dll",
+      "size": 169472,
+      "sha256": "60e71a2e74e3a0f27206e6d6e3097a7c79be666ebf1d69405669562930d9ffdf",
+      "file_version": "1.0.0.0",
+      "product_version": "1.0.0.0"
+    },
+    {
+      "name": "Xceed.Wpf.Toolkit.dll",
+      "size": 967168,
+      "sha256": "3f06cd38a961a660182a0339f3eeec0db08c58d485ae2fbd7457fc9e981f838c",
+      "file_version": "2.0.0.0",
+      "product_version": "2.0.0.0"
+    }
+  ],
+  "expected_original_failures": [
+    {
+      "case": "dynamic-empty-0",
+      "stage": "afterload",
+      "type": "System.ArgumentOutOfRangeException",
+      "inner_type": null,
+      "phase_parameter_counts": {
+        "initial": 874,
+        "afterload": 0,
+        "beforesave": 0,
+        "crc": 0,
+        "partial": 874
+      }
+    },
+    {
+      "case": "dynamic-empty-3",
+      "stage": "afterload",
+      "type": "System.ArgumentOutOfRangeException",
+      "inner_type": null,
+      "phase_parameter_counts": {
+        "initial": 874,
+        "afterload": 0,
+        "beforesave": 0,
+        "crc": 0,
+        "partial": 874
+      }
+    },
+    {
+      "case": "dynamic-empty-5",
+      "stage": "afterload",
+      "type": "System.ArgumentOutOfRangeException",
+      "inner_type": null,
+      "phase_parameter_counts": {
+        "initial": 874,
+        "afterload": 0,
+        "beforesave": 0,
+        "crc": 0,
+        "partial": 874
+      }
+    },
+    {
+      "case": "dynamic-short-3",
+      "stage": "afterload",
+      "type": "System.ArgumentOutOfRangeException",
+      "inner_type": null,
+      "phase_parameter_counts": {
+        "initial": 874,
+        "afterload": 0,
+        "beforesave": 0,
+        "crc": 0,
+        "partial": 874
+      }
+    },
+    {
+      "case": "scene-output-missing",
+      "stage": "beforesave",
+      "type": "System.Reflection.TargetInvocationException",
+      "inner_type": "System.NullReferenceException",
+      "phase_parameter_counts": {
+        "initial": 874,
+        "afterload": 874,
+        "beforesave": 0,
+        "crc": 0,
+        "partial": 874
+      }
+    },
+    {
+      "case": "missing-app-56",
+      "stage": "afterload",
+      "type": "System.NullReferenceException",
+      "inner_type": null,
+      "phase_parameter_counts": {
+        "initial": 874,
+        "afterload": 0,
+        "beforesave": 0,
+        "crc": 0,
+        "partial": 874
+      }
+    },
+    {
+      "case": "missing-app-202",
+      "stage": "afterload",
+      "type": "System.NullReferenceException",
+      "inner_type": null,
+      "phase_parameter_counts": {
+        "initial": 874,
+        "afterload": 0,
+        "beforesave": 0,
+        "crc": 0,
+        "partial": 874
+      }
+    },
+    {
+      "case": "missing-app-203",
+      "stage": "afterload",
+      "type": "System.NullReferenceException",
+      "inner_type": null,
+      "phase_parameter_counts": {
+        "initial": 874,
+        "afterload": 0,
+        "beforesave": 0,
+        "crc": 0,
+        "partial": 874
+      }
+    }
+  ],
+  "source_exclusions": [
+    "scene-count255",
+    "scene-pointer254"
+  ],
+  "source_sha256": {
+    "src/cbus_toolkit/edlt_lifecycle.py": "20aceb0b0165af23b97f9b7da3ef91c45a918d11e3131c5185a13fc5f8142ba5",
+    "tests/test_edlt_lifecycle.py": "6371e559b29cfe7fc0b4f62626aa1f8d370f25095c24c3b98acdb927597ef712",
+    "tests/test_cli_edlt_lifecycle.py": "7e4ac261fca6bd3093e8e300002173e890b008cebe32cc91f5ec4390bb78a6d6",
+    "research/NativeEdltLifecycleProbe.cs": "588cd6d0c0b108cf5427edc177a7d903b38cfbc0be2ee5b99c38a6b5c22d69c4",
+    "research/windows_bridge.py": "9b2044b76fa74cb5bb06dcfb854c7a1fc7f96c19ba3f0367e5f901cfad822107",
+    "research/NativeWindowsBridge.cs": "da252f50556c70a58a039bb933b0f2dc8d25f31a1838ceac243cede07355efb1"
+  },
+  "proof_source_sha256": {
+    "probe.cs": "588cd6d0c0b108cf5427edc177a7d903b38cfbc0be2ee5b99c38a6b5c22d69c4",
+    "test_edlt_lifecycle.py": "6371e559b29cfe7fc0b4f62626aa1f8d370f25095c24c3b98acdb927597ef712",
+    "edlt_lifecycle.py": "20aceb0b0165af23b97f9b7da3ef91c45a918d11e3131c5185a13fc5f8142ba5",
+    "windows_bridge.py": "9b2044b76fa74cb5bb06dcfb854c7a1fc7f96c19ba3f0367e5f901cfad822107",
+    "KEYGL5.xml": "812d2f92ccf3176d9f3d4c0f35fc196ac9ba45bc419639421e4e5ff082d2af21",
+    "edlt.py": "78fcb914b21b71206b1cb381b670388dbcd8eb67afa0deb254620395ac353641",
+    "unitspec.py": "f8d9e2f30c0ab431b0897959328781fac6a7c9825a4d9d2bb5ecf348acb66747",
+    "programming.py": "30b0def5768e5a7f926eb07771dddb02a4ec5bf6e724fad735be8f3f59c07a96",
+    "cgate.py": "fef71db3a4d98c1a175a8bf0287b5abcaea4689df835dea7b0c19413e206eb15",
+    "native.py": "d4bb3b4e83434ace48cbd436179ec4ff68b34c065d2d88d300493cc3ebcf5051",
+    "NativeWindowsBridge.cs": "da252f50556c70a58a039bb933b0f2dc8d25f31a1838ceac243cede07355efb1",
+    "NativeWindowsBridgeV2.exe": "7d870cd1772936ca7e3de97a56cb443390da61e8484c1638629c5fb2b5ae5440"
+  },
+  "reports": [
+    {
+      "path": "research/runtime/edlt-lifecycle/original-windows-313-report.json",
+      "sha256": "c41379ee27af950315325a006837da9569a6ddfb8fd4fc0c336dbcdce6705044",
+      "proof_directory": "research/runtime/edlt-lifecycle/windows-99efa05aef2c4868",
+      "proof_sha256": "0c1f92f0e726d22b801e0f9f6afb92797f49cc275d06ac45a2ff052fde6254c8"
+    },
+    {
+      "path": "research/runtime/edlt-lifecycle/native-macos-windows-313-report.json",
+      "sha256": "b27358c80fd940e3cdf81b8ef09faa634d252a38fc9e5f19549975aafea97853",
+      "proof_directory": "research/runtime/edlt-lifecycle/windows-1a342073432b491d",
+      "proof_sha256": "1bbb0c80aa97dc55c3fc7bf57134d7cee4d5019b610f9901d55fcaf27f7f44c8"
+    },
+    {
+      "path": "research/runtime/edlt-lifecycle/original-windows-310-report.json",
+      "sha256": "ee6b3f638de97813abc0042d2941325d93a6f4811f1a5c12e7ff2a13dc82aa87",
+      "proof_directory": "research/runtime/edlt-lifecycle/windows-4e7b3c60fb01479d",
+      "proof_sha256": "3ced8f42f8eb4b33f97dbd6bd1d7819645b59a8a0063d26cd0a29222e5efa81b"
+    },
+    {
+      "path": "research/runtime/edlt-lifecycle/native-macos-windows-310-report.json",
+      "sha256": "76137d9412d6ddc6ea82dc9a963520221a84894f60bdd8d82875b3333abbc677",
+      "proof_directory": "research/runtime/edlt-lifecycle/windows-1f030ea8a69e4203",
+      "proof_sha256": "7dec150d9345f8a641236b2210ccb75f55a78e8bcdaaf995b20afb097aab8e54"
+    }
+  ],
+  "native_endpoint": {
+    "host": "127.0.0.1",
+    "port": 20033,
+    "network_state": "new",
+    "projects_disposable": true
+  },
+  "historical_partial_runs": [
+    {
+      "path": "research/runtime/edlt-lifecycle/windows-run-1-failed",
+      "reason": "v1 ready-file admission failed before launching case54; helper changed during run; not reused as complete acceptance",
+      "transcripts": "research/runtime/edlt-lifecycle/windows-run-1-transcripts"
+    },
+    {
+      "path": "research/runtime/edlt-lifecycle/windows-run-2-native-fixture-error",
+      "reason": "Original76 and2048 constructor combinations passed, combined suite failed solely because native fixture used reset instead of reset_defaults; entire final suite rerun on both Pythons"
+    }
+  ]
+}

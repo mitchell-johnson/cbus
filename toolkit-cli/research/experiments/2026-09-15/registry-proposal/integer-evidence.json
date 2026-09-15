@@ -1,0 +1,2248 @@
+{
+  "format": "toolkit-update-registry-reused-integer-evidence-v1",
+  "source_fixture": "/Users/mitchell/source/cbus/toolkit-cli/research/fixtures/toolkit-update-conditions-vectors.json",
+  "source_fixture_sha256": "4d17c1cbe37ca9ffd6be69ad4f560c56e3ba278b6f21ac2f25235f4f2e372962",
+  "new_original_execution": false,
+  "case_count": 107,
+  "boolean_count": 76,
+  "original_error_count": 31,
+  "initial_batch_overall_failed_expectation_preserved": true,
+  "registry_outer_missing_branch_executed_in_these_cases": false,
+  "cases": [
+    {
+      "kind": "integer",
+      "id": "integer-000-truth",
+      "left": "0",
+      "right": "0",
+      "how": 10,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-001-truth",
+      "left": "0",
+      "right": "0",
+      "how": 11,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-002-truth",
+      "left": "0",
+      "right": "0",
+      "how": 12,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-003-truth",
+      "left": "0",
+      "right": "0",
+      "how": 13,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-004-truth",
+      "left": "0",
+      "right": "0",
+      "how": 14,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-005-truth",
+      "left": "0",
+      "right": "0",
+      "how": 15,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-006-truth",
+      "left": "-1",
+      "right": "0",
+      "how": 10,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-007-truth",
+      "left": "-1",
+      "right": "0",
+      "how": 11,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-008-truth",
+      "left": "-1",
+      "right": "0",
+      "how": 12,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-009-truth",
+      "left": "-1",
+      "right": "0",
+      "how": 13,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-010-truth",
+      "left": "-1",
+      "right": "0",
+      "how": 14,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-011-truth",
+      "left": "-1",
+      "right": "0",
+      "how": 15,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-012-truth",
+      "left": "0",
+      "right": "-1",
+      "how": 10,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-013-truth",
+      "left": "0",
+      "right": "-1",
+      "how": 11,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-014-truth",
+      "left": "0",
+      "right": "-1",
+      "how": 12,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-015-truth",
+      "left": "0",
+      "right": "-1",
+      "how": 13,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-016-truth",
+      "left": "0",
+      "right": "-1",
+      "how": 14,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-017-truth",
+      "left": "0",
+      "right": "-1",
+      "how": 15,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-018-truth",
+      "left": "2147483647",
+      "right": "-2147483648",
+      "how": 10,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-019-truth",
+      "left": "2147483647",
+      "right": "-2147483648",
+      "how": 11,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-020-truth",
+      "left": "2147483647",
+      "right": "-2147483648",
+      "how": 12,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-021-truth",
+      "left": "2147483647",
+      "right": "-2147483648",
+      "how": 13,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-022-truth",
+      "left": "2147483647",
+      "right": "-2147483648",
+      "how": 14,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-023-truth",
+      "left": "2147483647",
+      "right": "-2147483648",
+      "how": 15,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-024-truth",
+      "left": "-2147483648",
+      "right": "2147483647",
+      "how": 10,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-025-truth",
+      "left": "-2147483648",
+      "right": "2147483647",
+      "how": 11,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-026-truth",
+      "left": "-2147483648",
+      "right": "2147483647",
+      "how": 12,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-027-truth",
+      "left": "-2147483648",
+      "right": "2147483647",
+      "how": 13,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-028-truth",
+      "left": "-2147483648",
+      "right": "2147483647",
+      "how": 14,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-029-truth",
+      "left": "-2147483648",
+      "right": "2147483647",
+      "how": 15,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-030-truth",
+      "left": " +42 ",
+      "right": "42",
+      "how": 10,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-031-truth",
+      "left": " +42 ",
+      "right": "42",
+      "how": 11,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-032-truth",
+      "left": " +42 ",
+      "right": "42",
+      "how": 12,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-033-truth",
+      "left": " +42 ",
+      "right": "42",
+      "how": 13,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-034-truth",
+      "left": " +42 ",
+      "right": "42",
+      "how": 14,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-035-truth",
+      "left": " +42 ",
+      "right": "42",
+      "how": 15,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-036-truth",
+      "left": "00042",
+      "right": "+42",
+      "how": 10,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-037-truth",
+      "left": "00042",
+      "right": "+42",
+      "how": 11,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-038-truth",
+      "left": "00042",
+      "right": "+42",
+      "how": 12,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-039-truth",
+      "left": "00042",
+      "right": "+42",
+      "how": 13,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-040-truth",
+      "left": "00042",
+      "right": "+42",
+      "how": 14,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-041-truth",
+      "left": "00042",
+      "right": "+42",
+      "how": 15,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-042-truth",
+      "left": "-0",
+      "right": "+0",
+      "how": 10,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-043-truth",
+      "left": "-0",
+      "right": "+0",
+      "how": 11,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-044-truth",
+      "left": "-0",
+      "right": "+0",
+      "how": 12,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-045-truth",
+      "left": "-0",
+      "right": "+0",
+      "how": 13,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-046-truth",
+      "left": "-0",
+      "right": "+0",
+      "how": 14,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-047-truth",
+      "left": "-0",
+      "right": "+0",
+      "how": 15,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-048-truth",
+      "left": "\t12\r\n",
+      "right": " 12 ",
+      "how": 10,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-049-truth",
+      "left": "\t12\r\n",
+      "right": " 12 ",
+      "how": 11,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-050-truth",
+      "left": "\t12\r\n",
+      "right": " 12 ",
+      "how": 12,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-051-truth",
+      "left": "\t12\r\n",
+      "right": " 12 ",
+      "how": 13,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-052-truth",
+      "left": "\t12\r\n",
+      "right": " 12 ",
+      "how": 14,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-053-truth",
+      "left": "\t12\r\n",
+      "right": " 12 ",
+      "how": 15,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-054-truth",
+      "left": "2147483647",
+      "right": "2147483647",
+      "how": 10,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-055-truth",
+      "left": "2147483647",
+      "right": "2147483647",
+      "how": 11,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-056-truth",
+      "left": "2147483647",
+      "right": "2147483647",
+      "how": 12,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-057-truth",
+      "left": "2147483647",
+      "right": "2147483647",
+      "how": 13,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-058-truth",
+      "left": "2147483647",
+      "right": "2147483647",
+      "how": 14,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-059-truth",
+      "left": "2147483647",
+      "right": "2147483647",
+      "how": 15,
+      "expected": {
+        "result": true,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-060-absent",
+      "left": "",
+      "right": "0",
+      "how": 10,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-061-absent",
+      "left": "",
+      "right": "0",
+      "how": 11,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-062-absent",
+      "left": "",
+      "right": "0",
+      "how": 12,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-063-absent",
+      "left": "",
+      "right": "0",
+      "how": 13,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-064-absent",
+      "left": "",
+      "right": "0",
+      "how": 14,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-065-absent",
+      "left": "",
+      "right": "0",
+      "how": 15,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-066-absent",
+      "left": "",
+      "right": "0",
+      "how": 0,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-067-absent",
+      "left": "",
+      "right": "0",
+      "how": 99,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-068-absent",
+      "left": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe",
+      "right": "0",
+      "how": 10,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-069-absent",
+      "left": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe",
+      "right": "0",
+      "how": 11,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-070-absent",
+      "left": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe",
+      "right": "0",
+      "how": 12,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-071-absent",
+      "left": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe",
+      "right": "0",
+      "how": 13,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-072-absent",
+      "left": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe",
+      "right": "0",
+      "how": 14,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-073-absent",
+      "left": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe",
+      "right": "0",
+      "how": 15,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-074-absent",
+      "left": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe",
+      "right": "0",
+      "how": 0,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-075-absent",
+      "left": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe",
+      "right": "0",
+      "how": 99,
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-076-bad-left",
+      "left": "2147483648",
+      "right": "0",
+      "how": 10,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "value read from registry cannot be converted to int: 2147483648"
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-077-bad-left",
+      "left": "2147483648",
+      "right": "0",
+      "how": 11,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "value read from registry cannot be converted to int: 2147483648"
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-078-bad-left",
+      "left": "-2147483649",
+      "right": "0",
+      "how": 10,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "value read from registry cannot be converted to int: -2147483649"
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-079-bad-left",
+      "left": "-2147483649",
+      "right": "0",
+      "how": 11,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "value read from registry cannot be converted to int: -2147483649"
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-080-bad-left",
+      "left": " ",
+      "right": "0",
+      "how": 10,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "value read from registry cannot be converted to int:  "
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-081-bad-left",
+      "left": " ",
+      "right": "0",
+      "how": 11,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "value read from registry cannot be converted to int:  "
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-082-bad-left",
+      "left": "1.0",
+      "right": "0",
+      "how": 10,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "value read from registry cannot be converted to int: 1.0"
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-083-bad-left",
+      "left": "1.0",
+      "right": "0",
+      "how": 11,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "value read from registry cannot be converted to int: 1.0"
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-084-bad-left",
+      "left": "0x10",
+      "right": "0",
+      "how": 10,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "value read from registry cannot be converted to int: 0x10"
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-085-bad-left",
+      "left": "0x10",
+      "right": "0",
+      "how": 11,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "value read from registry cannot be converted to int: 0x10"
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-086-bad-right-first",
+      "left": "",
+      "right": "2147483648",
+      "how": 10,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "value defined for integer comparison cannot be converted to int: 2147483648"
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-087-bad-right-first",
+      "left": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe",
+      "right": "2147483648",
+      "how": 10,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "value defined for integer comparison cannot be converted to int: 2147483648"
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-088-bad-right-first",
+      "left": "invalid",
+      "right": "2147483648",
+      "how": 10,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "value defined for integer comparison cannot be converted to int: 2147483648"
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-089-bad-right-first",
+      "left": "",
+      "right": "-2147483649",
+      "how": 10,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "value defined for integer comparison cannot be converted to int: -2147483649"
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-090-bad-right-first",
+      "left": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe",
+      "right": "-2147483649",
+      "how": 10,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "value defined for integer comparison cannot be converted to int: -2147483649"
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-091-bad-right-first",
+      "left": "invalid",
+      "right": "-2147483649",
+      "how": 10,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "value defined for integer comparison cannot be converted to int: -2147483649"
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-092-bad-right-first",
+      "left": "",
+      "right": "",
+      "how": 10,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "value defined for integer comparison cannot be converted to int: "
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-093-bad-right-first",
+      "left": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe",
+      "right": "",
+      "how": 10,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "value defined for integer comparison cannot be converted to int: "
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-094-bad-right-first",
+      "left": "invalid",
+      "right": "",
+      "how": 10,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "value defined for integer comparison cannot be converted to int: "
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-095-bad-right-first",
+      "left": "",
+      "right": " ",
+      "how": 10,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "value defined for integer comparison cannot be converted to int:  "
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-096-bad-right-first",
+      "left": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe",
+      "right": " ",
+      "how": 10,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "value defined for integer comparison cannot be converted to int:  "
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-097-bad-right-first",
+      "left": "invalid",
+      "right": " ",
+      "how": 10,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "value defined for integer comparison cannot be converted to int:  "
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-098-bad-right-first",
+      "left": "",
+      "right": "1.0",
+      "how": 10,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "value defined for integer comparison cannot be converted to int: 1.0"
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-099-bad-right-first",
+      "left": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe",
+      "right": "1.0",
+      "how": 10,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "value defined for integer comparison cannot be converted to int: 1.0"
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-100-bad-right-first",
+      "left": "invalid",
+      "right": "1.0",
+      "how": 10,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "value defined for integer comparison cannot be converted to int: 1.0"
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-101-unexpected-how",
+      "left": "1",
+      "right": "0",
+      "how": 0,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "unexpected howToCheck = "
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-102-unexpected-how",
+      "left": "1",
+      "right": "0",
+      "how": 1,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "unexpected howToCheck = "
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-103-unexpected-how",
+      "left": "1",
+      "right": "0",
+      "how": 2,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "unexpected howToCheck = "
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-104-unexpected-how",
+      "left": "1",
+      "right": "0",
+      "how": 16,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "unexpected howToCheck = "
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-105-unexpected-how",
+      "left": "1",
+      "right": "0",
+      "how": 17,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "unexpected howToCheck = "
+      }
+    },
+    {
+      "kind": "integer",
+      "id": "integer-106-unexpected-how",
+      "left": "1",
+      "right": "0",
+      "how": 99,
+      "expected": {
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message_contains": "unexpected howToCheck = "
+      }
+    }
+  ],
+  "observations": [
+    {
+      "id": "integer-000-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-001-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-002-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-003-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-004-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-005-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-006-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-007-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-008-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-009-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-010-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-011-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-012-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-013-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-014-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-015-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-016-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-017-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-018-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-019-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-020-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-021-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-022-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-023-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-024-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-025-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-026-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-027-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-028-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-029-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-030-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-031-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-032-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-033-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-034-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-035-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-036-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-037-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-038-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-039-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-040-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-041-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-042-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-043-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-044-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-045-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-046-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-047-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-048-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-049-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-050-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-051-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-052-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-053-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-054-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-055-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-056-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-057-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-058-truth",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-059-truth",
+      "arm": "direct",
+      "result": true,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-060-absent",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-061-absent",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-062-absent",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-063-absent",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-064-absent",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-065-absent",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-066-absent",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-067-absent",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-068-absent",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-069-absent",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-070-absent",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-071-absent",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-072-absent",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-073-absent",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-074-absent",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-075-absent",
+      "arm": "direct",
+      "result": false,
+      "error": null,
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-076-bad-left",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "value read from registry cannot be converted to int: 2147483648"
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-077-bad-left",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "value read from registry cannot be converted to int: 2147483648"
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-078-bad-left",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "value read from registry cannot be converted to int: -2147483649"
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-079-bad-left",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "value read from registry cannot be converted to int: -2147483649"
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-080-bad-left",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "value read from registry cannot be converted to int:  "
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-081-bad-left",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "value read from registry cannot be converted to int:  "
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-082-bad-left",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "value read from registry cannot be converted to int: 1.0"
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-083-bad-left",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "value read from registry cannot be converted to int: 1.0"
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-084-bad-left",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "value read from registry cannot be converted to int: 0x10"
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-085-bad-left",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "value read from registry cannot be converted to int: 0x10"
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-086-bad-right-first",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "value defined for integer comparison cannot be converted to int: 2147483648"
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-087-bad-right-first",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "value defined for integer comparison cannot be converted to int: 2147483648"
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-088-bad-right-first",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "value defined for integer comparison cannot be converted to int: 2147483648"
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-089-bad-right-first",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "value defined for integer comparison cannot be converted to int: -2147483649"
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-090-bad-right-first",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "value defined for integer comparison cannot be converted to int: -2147483649"
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-091-bad-right-first",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "value defined for integer comparison cannot be converted to int: -2147483649"
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-092-bad-right-first",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "value defined for integer comparison cannot be converted to int: "
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-093-bad-right-first",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "value defined for integer comparison cannot be converted to int: "
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-094-bad-right-first",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "value defined for integer comparison cannot be converted to int: "
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-095-bad-right-first",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "value defined for integer comparison cannot be converted to int:  "
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-096-bad-right-first",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "value defined for integer comparison cannot be converted to int:  "
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-097-bad-right-first",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "value defined for integer comparison cannot be converted to int:  "
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-098-bad-right-first",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "value defined for integer comparison cannot be converted to int: 1.0"
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-099-bad-right-first",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "value defined for integer comparison cannot be converted to int: 1.0"
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-100-bad-right-first",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "value defined for integer comparison cannot be converted to int: 1.0"
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-101-unexpected-how",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "unexpected howToCheck = 0 in CompareInt"
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-102-unexpected-how",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "unexpected howToCheck = IsTrue in CompareInt"
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-103-unexpected-how",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "unexpected howToCheck = IsFalse in CompareInt"
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-104-unexpected-how",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "unexpected howToCheck = BeginsWith in CompareInt"
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-105-unexpected-how",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "unexpected howToCheck = Contains in CompareInt"
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    },
+    {
+      "id": "integer-106-unexpected-how",
+      "arm": "direct",
+      "result": null,
+      "error": {
+        "type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "unexpected howToCheck = 99 in CompareInt"
+      },
+      "harness_valid": true,
+      "state": null,
+      "original_stdout_sha256": "1276af22ec63386340d9e5eb576c2b316dda4d0355d948841e4489c9892a270c"
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "format": "cbus-toolkit-database-csv-acceptance-v1",
+  "passed": true,
+  "tests_per_python": 23,
+  "reports": [
+    {
+      "python": "3.13.14",
+      "passed": true,
+      "tests": 23,
+      "skipped": 0,
+      "duration_seconds": 7.422,
+      "report": {
+        "path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/acceptance-v1/python313-v3/report.json",
+        "sha256": "c8fc441c14944a90b6494bfd4d6aba654413f27aa0e7333478b8b70c2a44f103"
+      },
+      "input_archive": {
+        "path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/acceptance-v1/python313-v3/inputs.tar.gz",
+        "sha256": "5cf5d7e0d225b3774215534c19ec4189c67a4b7650b0ca7c16513269149af40e"
+      },
+      "input_count": 136,
+      "loaded_module_count": 50,
+      "original": {
+        "path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/acceptance-v1/python313-v3/fresh-original/report.json",
+        "sha256": "6f73e6ec49253993f4ea003eed0cc339ffcf033ae1197ebcb070ac341e96c310",
+        "cases": 88,
+        "inputs": 67,
+        "input_archive": {
+          "path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/acceptance-v1/python313-v3/fresh-original/inputs.tar.gz",
+          "sha256": "7221c0a7f6bb8955c06248abda7f4816f1181dfd8a61ebcba99f73b9ab9307bc"
+        }
+      }
+    },
+    {
+      "python": "3.10.20",
+      "passed": true,
+      "tests": 23,
+      "skipped": 0,
+      "duration_seconds": 7.522,
+      "report": {
+        "path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/acceptance-v1/python310-v4/report.json",
+        "sha256": "d1aef066abca194aba17ad5099915c9a4765cc6e00ab3912debeccb920b1a140"
+      },
+      "input_archive": {
+        "path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/acceptance-v1/python310-v4/inputs.tar.gz",
+        "sha256": "e22c2086b88ffd6661cff4538e59f17cf88ae5dc8d5876bdcc62d87daf3186d7"
+      },
+      "input_count": 135,
+      "loaded_module_count": 50,
+      "original": {
+        "path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/acceptance-v1/python310-v4/fresh-original/report.json",
+        "sha256": "33ec072bee880a1e674d4918d6621e1acf86d13899fd461f22b7d25fa41b2ec5",
+        "cases": 88,
+        "inputs": 67,
+        "input_archive": {
+          "path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/acceptance-v1/python310-v4/fresh-original/inputs.tar.gz",
+          "sha256": "d16b1ffecb01554775f5ab0d6ceec09fa8db61b194ad6f1ed797c31d669ae277"
+        }
+      }
+    }
+  ],
+  "source_sha256": {
+    "src/cbus_toolkit/toolkit_database_csv.py": "c3bd9e57f6312f6972e146afb8f228968856775cd57458a007815b4456cd45f2",
+    "src/cbus_toolkit/toolkit_database_csv_cli.py": "d94f3e0891fe53842e9cb7c9b16e2f8fb4ae0255d4e77b65a28bf5a9786ca4c9",
+    "src/cbus_toolkit/cli.py": "c6d511eae66718183c1a30d33e4a2b6d0523560249ebc056b2286d46b3a65ef6",
+    "research/NativeToolkitDatabaseCSVProbe.py": "4439ac0052d822fcd912c5235f748ff392871006adfca6ccdb7dc8ff4ec81e52",
+    "research/toolkit_database_csv_original.py": "4a18e3885a388eaeb54ab163311b568eda1570a6f06363fe1f8191053c96cad4",
+    "research/fixtures/toolkit-database-csv-original-vectors.json": "ab98929aa864ed0e01f4dc44f20ede6ee21411a58226c0d888f3387d4c99334b",
+    "tests/test_toolkit_database_csv.py": "f6975220e4c0593b1d4b08785a025643c6d074534742c137741625d82ad948bf",
+    "tests/test_cli_toolkit_database_csv.py": "61a26b283ebba8cf91a39075b51746593834499ba11aa05fb86365df56380402",
+    "tests/test_toolkit_database_csv_original.py": "dd8f9f27ed6b895254bb36454c5d0143c7f848fc9c4373dc4a03d29e2fd37217",
+    "pyproject.toml": "5913ba9675e826001b2e2e0a7d395849cc8672d6d1c2f55705b03fb68a7838cb"
+  },
+  "original_executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_cases": 88,
+  "portable_row_cases": 70,
+  "portable_quote_cases": 13,
+  "columns": 26,
+  "scope": {
+    "explicit_captured_values": true,
+    "exclusive_utf8_file_export": true,
+    "original_instruction_serializer": true,
+    "database_projection_verified": false,
+    "original_native_exception_path": false,
+    "native_windows_file_bytes": false,
+    "native_windows_file_boundary": false,
+    "physical_identity": false,
+    "full_toolkit_parity": false,
+    "vm_calls": false,
+    "shared_service_calls": false
+  },
+  "preserved_attempts": [
+    {
+      "path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/acceptance-v1/python310-v1/report.json",
+      "sha256": "47e3e73f41d613431323fb3fdee6a0b0adb1f8fa12397243112b74aaade42e12",
+      "outcome": "21 pure/file/harness tests passed; fresh original rejected before process/output creation because capstone was missing"
+    },
+    {
+      "paths": [
+        "python313-v1",
+        "python313-v2",
+        "python310-v2",
+        "python310-v3"
+      ],
+      "outcome": "Successful22-test historical inputs; final launcher additionally preserves partial process output and adds its regression"
+    }
+  ],
+  "owned_python310": {
+    "path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/python310-csv/provenance.json",
+    "sha256": "488ed41bb9ab0462bd74aca72ff8b02cb2a20a7b0d9d33bea6fafe9f8dcd24de",
+    "installed_or_downloaded": false,
+    "active_environments_unchanged": true
+  },
+  "limitations": [
+    "Explicit cached string/provider fixtures; no original database/unit constructors or arbitrary project XML projection",
+    "NUL and unpaired-surrogate public inputs rejected; unsupported original mask/exception paths retained only as research",
+    "UTF-8 without BOM is a portable choice; original Windows ACP writer and GUI/registry behavior are not reproduced"
+  ]
+}

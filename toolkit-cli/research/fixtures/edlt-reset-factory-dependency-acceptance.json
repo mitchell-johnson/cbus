@@ -1,0 +1,384 @@
+{
+  "format": "cbus-edlt-reset-factory-dependency-acceptance-v1",
+  "accepted": true,
+  "scope": {
+    "profile": {
+      "unit_type": "KEYGL5",
+      "catalog_number": "5055EDL",
+      "firmware": "5.5.00"
+    },
+    "complete_captured_source_patterns": 6,
+    "new_focused_tests": 10,
+    "raw_phases_compared": 97,
+    "parameters_per_phase": 874,
+    "raw_token_dirty_parameter_comparisons": 84778,
+    "original_initialization_flags_compared_where_recorded": true,
+    "oem_crc_fields": 5,
+    "initial_load_calls": 1,
+    "reset_fresh_load_calls": 1,
+    "terminal_load_calls": 0,
+    "new_windows_jobs_during_dependency_acceptance": 0,
+    "new_native_io_during_dependency_acceptance": false,
+    "full_form_executed": false,
+    "physical_device_verified": false,
+    "global_payload_bridge_implemented_here": false
+  },
+  "runs": [
+    {
+      "python": "313",
+      "version": "Python 3.13.14",
+      "command": [
+        "/Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python",
+        "-m",
+        "unittest",
+        "-v",
+        "tests.test_edlt_reset_factory",
+        "tests.test_edlt_global_factory_context",
+        "tests.test_edlt_global_preparation",
+        "tests.test_edlt_reset",
+        "tests.test_edlt_reset_vectors",
+        "tests.test_edlt_lifecycle_phases",
+        "tests.test_edlt_blank",
+        "tests.test_edlt_blank_vectors"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 202.0807201669959,
+      "source_unchanged": true,
+      "log_sha256": "db61132919d999882ec9e848c3a0081fda1eff0785b468164d1c941062effb46",
+      "test_count": 68,
+      "unittest_seconds": 201.932,
+      "skips": 0,
+      "log": {
+        "path": "research/runtime/edlt-reset-factory-dependency/acceptance-v1/python313.log",
+        "sha256": "db61132919d999882ec9e848c3a0081fda1eff0785b468164d1c941062effb46"
+      }
+    },
+    {
+      "python": "310",
+      "version": "Python 3.10.20",
+      "command": [
+        "/opt/homebrew/opt/python@3.10/bin/python3.10",
+        "-m",
+        "unittest",
+        "-v",
+        "tests.test_edlt_reset_factory",
+        "tests.test_edlt_global_factory_context",
+        "tests.test_edlt_global_preparation",
+        "tests.test_edlt_reset",
+        "tests.test_edlt_reset_vectors",
+        "tests.test_edlt_lifecycle_phases",
+        "tests.test_edlt_blank",
+        "tests.test_edlt_blank_vectors"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 246.06433845800348,
+      "source_unchanged": true,
+      "log_sha256": "f573fadab514b76cf9a413264f5248bbfb610b966d21593733d064b5ebea1cd8",
+      "test_count": 68,
+      "unittest_seconds": 245.947,
+      "skips": 0,
+      "log": {
+        "path": "research/runtime/edlt-reset-factory-dependency/acceptance-v1/python310.log",
+        "sha256": "f573fadab514b76cf9a413264f5248bbfb610b966d21593733d064b5ebea1cd8"
+      }
+    }
+  ],
+  "pinned_sources": {
+    "research/NativeEdltBlankProbe.cs": "43e8f8fb80c6786fa2646b040d60bf10dd7d4ad6a16e600ced00f20cf82089c4",
+    "research/NativeEdltResetEdgesProbe.cs": "dd6e73d14ec463daae2fbb8db280b18277d5f5f6aeaa85f5830009fc3fdee7eb",
+    "research/NativeEdltResetMatrixProbe.cs": "664a3d4c4b7448ee56cec5a668a18ca0286a6f16ce1e9ec654f7594b84c36a6b",
+    "research/NativeEdltResetNavigationTrace.cs": "48c2731dfa5f1053bb36d29dc9c2806960294fb328bd02de234c40092a61a668",
+    "research/fixtures/edlt-blank-windows-vectors.json": "8feec31255a7cbfbd4b661d10ef54ef47e5ef5e46a3e4b87c95879156b04c42b",
+    "research/fixtures/edlt-global-preparation-vectors.json": "879a11a7076b2e124f09530cbcc9152cd7cd7126e87fa8be7558f796a95096fa",
+    "research/fixtures/edlt-global-programming-vectors.json": "e0ac5e0747279cc11e1c697045ec245f063905c8c11a6aae365f1941b6b0a415",
+    "research/fixtures/edlt-lifecycle-refactor-baseline.json": "b704ab50770d9e0b543bb29712d9232531f7b489a1d958965defa8e2811c694c",
+    "research/fixtures/edlt-reset-factory-dependency-vectors.json": "3118283623dc7cb6c3e24905b67e82ab97e65b169e86c960a453e897f7d5f070",
+    "research/fixtures/edlt-reset-factory-rich-vectors.json": "2345882da2600ffd7a0f484d5a10edc89efd29ccf51d879f2bd36445e08582c6",
+    "research/fixtures/edlt-reset-windows-vectors.json": "c09777164fab1689de8e081085ed05baec4399462ea9ebf36a1439b898de7b2f",
+    "research/runtime/edlt-reset-factory-dependency/accept.py": "624699dd59c405a35c2bfc4993ea7178dafe66b99d5fe6067e24c42a71fa8d98",
+    "research/vendor/unitspec-plain/KEYGL5.xml": "812d2f92ccf3176d9f3d4c0f35fc196ac9ba45bc419639421e4e5ff082d2af21",
+    "src/cbus_toolkit/__init__.py": "a39021e17c28b8e97c4b6ad7b20ffe35ce621332c0f4d006162f77c0703b5fed",
+    "src/cbus_toolkit/edlt.py": "f5c996698b5970c56b9bfa60525a35e96a3734328780cd35b9ae07a9663ca735",
+    "src/cbus_toolkit/edlt_application_cache.py": "c7dc8c133fd08f3b5c974c6429add4a82f7dda2d69154165c05935b02ecd6bd4",
+    "src/cbus_toolkit/edlt_blank.py": "d111b6afee5b37f304aeec64b717bfecfe8b89b80d0b55a649cd29efc4e5ed6f",
+    "src/cbus_toolkit/edlt_corridor.py": "a00e918af4ddba1a31ce804c396f927c29c5378589d066fd33a7c01597aca0a9",
+    "src/cbus_toolkit/edlt_global_preparation.py": "5ebb9b147a102471fb2242b3a9484c78ad2affa40457fc4bb0ddf368b176e9ad",
+    "src/cbus_toolkit/edlt_global_programming.py": "7a758d5969a2d2534cfad76c14b153f6e9eded45ef48d5e1cf2daea683b3edcd",
+    "src/cbus_toolkit/edlt_lifecycle.py": "a4e4eda6490f1b45cde15cd983820471bfdadf26c11abc9ab1c3d49ede6014fc",
+    "src/cbus_toolkit/edlt_reset.py": "9886ee8c6e01b34168a913c2d2529de173b1e8a020cee1107ee28f09c192a8b5",
+    "src/cbus_toolkit/memory.py": "372cbc3a79710b743d23aa6690a8b56b1780de091ffe8a1d0a543e4cfa9c1f31",
+    "src/cbus_toolkit/programming.py": "30b0def5768e5a7f926eb07771dddb02a4ec5bf6e724fad735be8f3f59c07a96",
+    "src/cbus_toolkit/unitspec.py": "f8d9e2f30c0ab431b0897959328781fac6a7c9825a4d9d2bb5ecf348acb66747",
+    "tests/__init__.py": "6b295a6d369bc894eec66aa424c8de2618957caeabe05fbe28240a3dc96d5e4d",
+    "tests/test_edlt.py": "5546612b307109a94d17d211a0b64d4f50658ab43e4ae5a589dd0e366fb96c46",
+    "tests/test_edlt_blank.py": "13f6607cc175b5e2f089ec02056b3d517c3875bd91b4cba5e659bbf0843f1212",
+    "tests/test_edlt_blank_vectors.py": "5c8e1c07f77f1f33004642fa4fc00b25a3ecded70c97383e2327edbc89b407c2",
+    "tests/test_edlt_corridor.py": "439fbfcab07f26ea2a0e08a897f8db25749cc83ceb54ae8c7ce2bd6ab2cb5908",
+    "tests/test_edlt_global_factory_context.py": "0b1138a8b04afbd4f531203bb18f14b8a506c4b68c634ea1cda8a9456c7f143e",
+    "tests/test_edlt_global_preparation.py": "a2858fda9ec2f1c3fe3b3d71529d5a440902a1dc9dd0fd8c4c1cd8d3c40a92db",
+    "tests/test_edlt_global_programming.py": "105e5d757931e2a03dcf045404400195e7b2b8dd629bc776443507bff78fd8f8",
+    "tests/test_edlt_lifecycle.py": "e8404b452c70ba670062de9f6c3ec24f3aa027dc487b04b234cb042f1f058c74",
+    "tests/test_edlt_lifecycle_phases.py": "752f00caa50d2d748930066ab046ec8d20ba278fae1ac6d789cc155aaa00fc05",
+    "tests/test_edlt_reset.py": "a827f45f9f0bb3001fd756fce727759c48899f8dee1fba9ba29dca1dd12d68f7",
+    "tests/test_edlt_reset_factory.py": "2608957d4e5341f02a599552a2ccb02fe4c4a501d8492fef6add1f5962e58614",
+    "tests/test_edlt_reset_vectors.py": "487cfb373cebc1bbfaa77ad962d91b706681f6cc33bf1a73020a7d01adb2aed3"
+  },
+  "source_manifest": {
+    "path": "research/runtime/edlt-reset-factory-dependency/acceptance-v1/source-before.json",
+    "sha256": "ab6595645a09afa0eb8c8d6e94ca6f21721340848ca4f1cfe7dc063005634b52"
+  },
+  "fixtures": [
+    {
+      "path": "research/fixtures/edlt-reset-factory-dependency-vectors.json",
+      "sha256": "3118283623dc7cb6c3e24905b67e82ab97e65b169e86c960a453e897f7d5f070"
+    },
+    {
+      "path": "research/fixtures/edlt-reset-factory-rich-vectors.json",
+      "sha256": "2345882da2600ffd7a0f484d5a10edc89efd29ccf51d879f2bd36445e08582c6"
+    }
+  ],
+  "original_evidence": {
+    "tab_removal_report": {
+      "path": "research/runtime/edlt-global-preamble/global-tab-removal-6ab5705643/report.json",
+      "sha256": "8a9f72f89e3b8d28cede772926788bd69844b4b58a7b2ccd3f7830c70de37515"
+    },
+    "tab_removal_analysis": {
+      "path": "research/runtime/edlt-global-preamble/tab-removal-analysis.json",
+      "sha256": "bf968d0599f2f39425f36a9daaa1fb52f4c4876ac675a6200c9774b5a8167b32"
+    },
+    "rich_analysis": {
+      "path": "research/runtime/edlt-global-preamble/factory-rich/analysis.json",
+      "sha256": "e7d68d699029d2a2a69ee57d8e87bcadd3bfd1bf31e989381ef5e091be96a0b0"
+    },
+    "rich_counts": {
+      "source_families": 5,
+      "actual_fullfactory_workers": 10,
+      "phased_recreations": 10
+    },
+    "negative_attempts": [
+      {
+        "report": {
+          "path": "research/runtime/edlt-global-preamble/factory-rich/matrix-3985f32c/report.json",
+          "sha256": "216661bce21aef05802f7af331907834762c8fa739cd85a2ef9d5102c05f2e5c"
+        },
+        "phase": "provenance-before-job",
+        "jobs_executed": 0
+      },
+      {
+        "source": {
+          "path": "research/runtime/edlt-global-preamble/factory-rich/run_matrix-indentation-negative.py.txt",
+          "sha256": "9d144a265d30c3a94118358d89b4a42cadbf656830076da53dcfe792637a579c"
+        },
+        "phase": "Python parser before process body",
+        "jobs_executed": 0
+      }
+    ],
+    "trace_executable_sha256": "4107b78ba556444c7dfe0ba044f333f2c2437eae83e36c7e1b1b280a4d5c8333",
+    "vendor_manifest": [
+      {
+        "name": "ArcDimarTabs.dll",
+        "size": 306688,
+        "sha256": "20d4a44e135fe788936deb568d9602803c5832b57a1d297024956569092f6933",
+        "file_version": "1.0.0.0",
+        "product_version": "1.0.0.0"
+      },
+      {
+        "name": "Cbtag32.dll",
+        "size": 469504,
+        "sha256": "fea2ba92339cb49dc7666bdb9bbf932fccc99b02048a7a8b0e0b63a5d77e7912",
+        "file_version": "1.0.3.2",
+        "product_version": "1.0.0.0"
+      },
+      {
+        "name": "CBusLogicModel.dll",
+        "size": 258048,
+        "sha256": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+        "file_version": "7.14.0.0",
+        "product_version": "7.14.0.0"
+      },
+      {
+        "name": "CBusToolkit.exe",
+        "size": 20518992,
+        "sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+        "file_version": "1.18.0.2754",
+        "product_version": "1.18.0"
+      },
+      {
+        "name": "CustomControls.dll",
+        "size": 40448,
+        "sha256": "93d66a228c209d08685ad58e15bd5fdbcffa84828f8699a35c8c7c951b8de8e6",
+        "file_version": "1.0.0.0",
+        "product_version": "1.0.0.0"
+      },
+      {
+        "name": "eDLT.dll",
+        "size": 663552,
+        "sha256": "75bc741234b52a168a4838fee305c309d3909571d2711f7580216b46b028e8d3",
+        "file_version": "7.16.0.0",
+        "product_version": "7.16.0.0"
+      },
+      {
+        "name": "EDLTCommon.dll",
+        "size": 8192,
+        "sha256": "41c740d2376f98cfcce20a58eb1ba2a7ea0629a8a2f56ef6a1bf134cae5da3e2",
+        "file_version": "1.5.0.0",
+        "product_version": "1.5.0.0"
+      },
+      {
+        "name": "EDLT_graphics.dll",
+        "size": 813568,
+        "sha256": "e319379709c47f97dca477c4f631880f231c060530cb2ec45a3f731b1a5d1991",
+        "file_version": "1.3.0.0",
+        "product_version": "1.3.0.0"
+      },
+      {
+        "name": "GlobalCommon.dll",
+        "size": 12288,
+        "sha256": "9f1328be4fab00366add4fc25239ed1c3feaea698b4a3413b1ee37e78abc210c",
+        "file_version": "1.0.0.0",
+        "product_version": "1.0.0.0"
+      },
+      {
+        "name": "HydraCommon.dll",
+        "size": 8192,
+        "sha256": "ac0447e04acafcef56680465863449445e85827b2ff834808ac02b26181c626a",
+        "file_version": "1.0.0.0",
+        "product_version": "1.0.0.0"
+      },
+      {
+        "name": "HydraWPFPlugins.dll",
+        "size": 1475584,
+        "sha256": "03893f0fd0dad9282128910f36a5fe892131bfcabde2bdd57c9e1cea5b5d48ea",
+        "file_version": "1.0.9062.23650",
+        "product_version": "1.0.9062.23650"
+      },
+      {
+        "name": "LabelEditor.dll",
+        "size": 95232,
+        "sha256": "508fa63db112a3ec07bf3cf834b41a0f26da3b0e7a428bc288bff0ec433a073b",
+        "file_version": "1.0.0.0",
+        "product_version": "1.0.0.0"
+      },
+      {
+        "name": "libcrypto-3.dll",
+        "size": 3507560,
+        "sha256": "4adae61662c5cb1aa07a893cbcfae105d3502013fb1b5d3b1971f98b635b3217",
+        "file_version": "3.3.1",
+        "product_version": "3.3.1"
+      },
+      {
+        "name": "libssl-3.dll",
+        "size": 1099624,
+        "sha256": "5347411ac08ee819a8836d7b3235d8415a80d5c68e8ea98a642970ec1f596b35",
+        "file_version": "3.3.1",
+        "product_version": "3.3.1"
+      },
+      {
+        "name": "log4net.dll",
+        "size": 270336,
+        "sha256": "1c5f3b4ed6311ca033a8d7c4d66a24b8adca38b0f7a8da096ae353bd43a551c3",
+        "file_version": "1.2.13.0",
+        "product_version": "1.2"
+      },
+      {
+        "name": "MultiSensorPage.dll",
+        "size": 80896,
+        "sha256": "89246a21c3f77c13b7879f6ffa4f83f7fb4b0907d65419d9efce6628f4a842b8",
+        "file_version": "1.0.0.0",
+        "product_version": "1.0.0.0"
+      },
+      {
+        "name": "MVVMBase.dll",
+        "size": 39424,
+        "sha256": "1b90975e46ed5f5e07736109c0006ee2a83511e0993c4d4559d55e24e5d6cd7b",
+        "file_version": "1.0.0.0",
+        "product_version": "1.0.0.0"
+      },
+      {
+        "name": "RemObjects.Hydra.dll",
+        "size": 90624,
+        "sha256": "6037105e2c446f73c7f893c3bf6c22aa8979757bf65b05a137855816ce332045",
+        "file_version": "6.6.0.1325",
+        "product_version": "6.6.0.1325"
+      },
+      {
+        "name": "RemObjects.Hydra.WPF.dll",
+        "size": 19456,
+        "sha256": "ad0f2030bcee29b30cbde3c7bcabf268d1c0905eae412f50af0ff8315d1dc295",
+        "file_version": "6.6.0.1325",
+        "product_version": "6.6.0.1325"
+      },
+      {
+        "name": "SharpCGateCommunicator.dll",
+        "size": 65024,
+        "sha256": "fd589789f2c40c0853c06a7d836add0f81a6afe3f397a8d6965a1a1f549a2d6e",
+        "file_version": "7.15.0.0",
+        "product_version": "7.15.0.0"
+      },
+      {
+        "name": "SharpContainer.dll",
+        "size": 35840,
+        "sha256": "5cba17be19a783e4b0c1e99025c9556fea605b97003ed6a3e9f3f182fb2c3ed0",
+        "file_version": "9.7.0.0",
+        "product_version": "9.7.0.0"
+      },
+      {
+        "name": "SharpLogger.dll",
+        "size": 11264,
+        "sha256": "496a1434da3a592519e94b3eb025a98f0fc91d88341a28d58f33025ce043905c",
+        "file_version": "2.11.0.0",
+        "product_version": "2.11.0.0"
+      },
+      {
+        "name": "Toolkit.WPF.DataVisualization.dll",
+        "size": 333312,
+        "sha256": "a2abf8cba5ac173fb9cf598faf8d1b9b4b648ff8722e7ff8d823a476e1b58852",
+        "file_version": "4.0.0.0",
+        "product_version": "4.0.0.0"
+      },
+      {
+        "name": "WPFCommonControls.dll",
+        "size": 169472,
+        "sha256": "60e71a2e74e3a0f27206e6d6e3097a7c79be666ebf1d69405669562930d9ffdf",
+        "file_version": "1.0.0.0",
+        "product_version": "1.0.0.0"
+      },
+      {
+        "name": "Xceed.Wpf.Toolkit.dll",
+        "size": 967168,
+        "sha256": "3f06cd38a961a660182a0339f3eeec0db08c58d485ae2fbd7457fc9e981f838c",
+        "file_version": "2.0.0.0",
+        "product_version": "2.0.0.0"
+      }
+    ]
+  },
+  "independent_phase_and_ten_worker_comparisons": [
+    {
+      "path": "research/runtime/edlt-global-preamble/factory-rich/dependency-comparison-313.json",
+      "sha256": "14e8ecc77c4d6e9e0551e8d3ffc7f761ed0b4d530d56f2b211010dfd506fee0a"
+    },
+    {
+      "path": "research/runtime/edlt-global-preamble/factory-rich/dependency-comparison-310.json",
+      "sha256": "8be593b71f61587c89a3316094b31a6ca04175ab8b07d62db43104ab72e69fe9"
+    }
+  ],
+  "prior_public_reset_checkpoint": {
+    "path": "research/fixtures/edlt-reset-acceptance.json",
+    "sha256": "0ead811532a5d4d0768ffbcb92cf1de8399988590d26b8b324bc4e1a45024c62"
+  },
+  "historical_failures_preserved": "Original C1/C2/handler/factory failures remain at their earlier checkpoint paths; initial dependency test draft had a SyntaxError before collection, corrected before the10-test draft and final acceptance.",
+  "limitations": [
+    "Only six whole numeric source fingerprints; identity fields separately validated.",
+    "Actual Project token/backing sidecar can exceed physical codec length; only unchanged source Project is used in named OEM projection.",
+    "No VCL form execution, renderer, physical device access, category apply, source save or automatic metadata creation.",
+    "Original all/empty workers support the separate high-level bridge; this dependency exposes issued model and review result only."
+  ],
+  "documentation": {
+    "path": "docs/edlt-reset-factory.md",
+    "sha256": "4e3ffea65f0e070f2eeac24ba5bb0e7cc6c7d6438be564c7af66640e811447ec"
+  },
+  "compactor": {
+    "path": "research/runtime/edlt-reset-factory-dependency/compact_acceptance.py",
+    "sha256": "80d2aaa732ad68e47bd46426355d83bb6efaddcbad21abdf4873e0762312d5b6"
+  }
+}

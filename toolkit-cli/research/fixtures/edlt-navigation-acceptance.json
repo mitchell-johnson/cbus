@@ -1,0 +1,258 @@
+{
+  "format": "cbus-edlt-navigation-acceptance-v1",
+  "profile": {
+    "unit_type": "KEYGL5",
+    "catalog_number": "5055EDL",
+    "firmware": "5.5.00"
+  },
+  "scope": "Navigation page modes, nine variants, temperature and page-label references, caller cache evidence, shared text allocation, original direct save/CRCs and closed database persistence",
+  "tests": [
+    {
+      "python": "3.13.14",
+      "count": 16,
+      "skips": 0,
+      "passed": true,
+      "elapsed_seconds": 39.83,
+      "log": "research/runtime/edlt-navigation/final-py313.log",
+      "report": "research/runtime/edlt-navigation/report-final-py313.json",
+      "report_sha256": "52e3523c2eecfa98172a0b67cdb9b487f700a1af90b64b9444a6c7061669d994"
+    },
+    {
+      "python": "3.10.20",
+      "count": 16,
+      "skips": 0,
+      "passed": true,
+      "elapsed_seconds": 42.219,
+      "log": "research/runtime/edlt-navigation/final-py310.log",
+      "report": "research/runtime/edlt-navigation/report-final-py310.json",
+      "report_sha256": "1c59caceb83081cd241b76a42de4ec04010dd06155060000ffc16b03423d08f3"
+    }
+  ],
+  "test_modules": [
+    "tests.test_edlt_navigation",
+    "tests.test_cli_edlt_navigation"
+  ],
+  "field_layouts": [
+    {
+      "parameter": "NavWidgetType",
+      "address": "0x200",
+      "bit": 0,
+      "bits": 8,
+      "default": 255
+    },
+    {
+      "parameter": "NavWidgetVariant",
+      "address": "0x201",
+      "bit": 0,
+      "bits": 4,
+      "default": 0
+    },
+    {
+      "parameter": "TemperatureApplication",
+      "address": "0x201",
+      "bit": 7,
+      "bits": 1,
+      "default": 0
+    },
+    {
+      "parameter": "NavDevIDZoneGroup",
+      "address": "0x202",
+      "bit": 0,
+      "bits": 8,
+      "default": 0
+    },
+    {
+      "parameter": "NavChannelZoneNumber",
+      "address": "0x203",
+      "bit": 0,
+      "bits": 8,
+      "default": 0
+    },
+    {
+      "parameter": "DynamicGroup",
+      "address": "0x204",
+      "bit": 0,
+      "bits": 8,
+      "default": 0
+    },
+    {
+      "parameter": "PageNameIndex1",
+      "address": "0x205",
+      "bit": 0,
+      "bits": 8,
+      "default": 0
+    },
+    {
+      "parameter": "PageNameIndex2",
+      "address": "0x206",
+      "bit": 0,
+      "bits": 8,
+      "default": 0
+    },
+    {
+      "parameter": "PageNameIndex3",
+      "address": "0x207",
+      "bit": 0,
+      "bits": 8,
+      "default": 0
+    },
+    {
+      "parameter": "PageNameIndex4",
+      "address": "0x208",
+      "bit": 0,
+      "bits": 8,
+      "default": 0
+    }
+  ],
+  "original_model": {
+    "assembly": "CBusLogicModel.dll",
+    "sha256": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+    "runner": "mono@sha256:34d816779b1248b5cfd095770b64ecbaf1798e2aca693a91c11a018dce9c7ad5",
+    "network": "none",
+    "model_output_rows": 84,
+    "cached_group_rows": 46,
+    "capacity_rows": 2,
+    "source_methods": [
+      "EDLTUnit.MultiPage getter/setter",
+      "EDLTUnit.NavWidgetVariant setter",
+      "PageWidgetData.Unit_PropertyChanged",
+      "PageWidgetData.PageName1..4/PageNameIndex1..4",
+      "PageWidgetData.NavDynamicLabels/GetDynamicIcons",
+      "PageWidgetData.DevIDZoneGroupValues/ChannelZoneNumberValues",
+      "EDLTUnit.GetStaticTextIndex/GetUsedStaticText",
+      "EDLTUnit.LoadScenes/BeforeSavePPData",
+      "CBusBaseUnit.CalculateCRCForPPAttributes",
+      "PPHelper.SetMemoryFromParamStringValue"
+    ],
+    "output_sha256": {
+      "research/runtime/edlt-navigation/navigation-original-vectors.txt": "5136b03694e3f4f608d7d7327ec10634a58b6975cf764c8d7f62afa80348c2f3",
+      "research/runtime/edlt-navigation/navigation-cached-vectors.txt": "971bec4a78e4ec4bf63d3ba271105d9ec38ca99a839bac93b433006635ea2432",
+      "research/runtime/edlt-navigation/navigation-capacity-vectors.txt": "d41b0e4a7d682068be45560381a6a37d0e462296f0bd5984421f43e5fd883ce6"
+    }
+  },
+  "native": {
+    "cgate": "3.4.0.2001",
+    "cases_per_python": 30,
+    "parameter_comparisons_per_python": 26220,
+    "crc_comparisons_per_python": 150,
+    "raw_window": "0x200..0x208",
+    "static_order_hex": "01060000001a3f3f3e",
+    "static_same_reuse_hex": "01060000003eff3f3e",
+    "canonical_empty_scene_record": "0200ffffff",
+    "empty_scene_count": 8,
+    "scene_state_preserved": true,
+    "hidden_functional_widget_type": 10,
+    "hidden_widget_slots": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21
+    ],
+    "restores_preserved": true,
+    "opaque_final_byte": 173,
+    "save_close_load_equal": true,
+    "network_state": "new",
+    "network_opened": false,
+    "physical_device_verified": false
+  },
+  "metadata": {
+    "format": "cbus-edlt-navigation-metadata-v1",
+    "max_groups": 512,
+    "max_variants_per_group": 4,
+    "address_range": [
+      0,
+      255
+    ],
+    "dynamic_variant_range": [
+      0,
+      3
+    ],
+    "strict_duplicate_records": true,
+    "unused_group_has_no_variants": true,
+    "explicit_dynamic_selection_requires_matching_cache": true,
+    "provenance": "caller-supplied-cache",
+    "freshness_verified": false,
+    "automatic_group_creation": false,
+    "physical_labels_verified": false,
+    "cli_max_bytes": 262144,
+    "cli_rejects_duplicate_json_keys": true
+  },
+  "cli": {
+    "count": 4,
+    "preview_database_unchanged": true,
+    "native_save_reload_equal": true,
+    "unicode_static_bytes_verified": true,
+    "invalid_metadata_rejected_before_programming_load": true,
+    "interrupt_evidence": true,
+    "database_destination_guard": true
+  },
+  "guards": [
+    "exact profile/field shapes",
+    "page-mode/variant visibility",
+    "temperature explicit bounds",
+    "per-page conflicts and strict mappings",
+    "variant conversion vs same-selection behavior",
+    "full shared table references before each ascending allocation",
+    "correlated dynamic variant cache",
+    "strict metadata bounds and unique identities",
+    "omitted hidden/raw fields preserved",
+    "canonical full plan and strict result types",
+    "stale snapshot and database identity",
+    "rollback and interrupted rollback evidence",
+    "no automatic recovery after direct interruption"
+  ],
+  "excluded": [
+    "physical rendered labels/images/temperature behavior",
+    "dynamic label or image upload",
+    "automatic database group creation",
+    "complete WinForms dialog load/binding side effects",
+    "arbitrary scene compaction normalization",
+    "physical unit programming",
+    "other eDLT profiles",
+    "full Toolkit parity"
+  ],
+  "historical_harness_failures": [
+    {
+      "log": "research/runtime/edlt-navigation/navigation-first-py313.log",
+      "reason": "Original scene loader required owned cached Trigger metadata; fixture setup failed."
+    },
+    {
+      "log": "research/runtime/edlt-navigation/navigation-third-py313.log",
+      "reason": "Canonical empty-scene ActionSelector isFF because original unused-group getter returns-1; initial fixture used0. Fixture corrected from original output/source."
+    },
+    {
+      "log": "research/runtime/edlt-navigation/navigation-native-fourth-py313.log",
+      "reason": "Uninitialized original Lighting constructors require application/group objects. Hidden-widget fixture uses valid original Time10 widgets; all28 earlier native cases matched."
+    }
+  ],
+  "source_sha256": {
+    "src/cbus_toolkit/edlt_navigation.py": "3a0cf8903c3c0413ed9393dfa7ff0ae23a248938bdc26e1f8d0be575cd8f1775",
+    "src/cbus_toolkit/edlt.py": "78fcb914b21b71206b1cb381b670388dbcd8eb67afa0deb254620395ac353641",
+    "src/cbus_toolkit/edlt_mra.py": "99bf274549de55b4105acc615a620f6eebf83ebbc1a5a56379646a690e9e2636",
+    "tests/test_edlt_navigation.py": "425daadad1a59aff3d6581a7dd79f0519ef7eb80bd5e16bd2e2c89ef6d51e6aa",
+    "tests/test_cli_edlt_navigation.py": "6ce0dd901d748daa938f757b229e92cfa0aaefc8d1ca26b4b20b06790aa8121c",
+    "research/NativeEdltNavigationProbe.cs": "0c1eca0b29d58d3ca2aad2c158a1a45a7a5975254566ce7b04c14b07760474b1",
+    "research/NativeEdltCachedGroupProbe.cs": "2b201afd47b1d42360638c5d95494a8f87e1bdd76fd912d7c59bbe0ccd50c3c1",
+    "docs/edlt-navigation.md": "a367a265b4d7d87d481cc2c45f72688629ecd183d9d92d378952508bc0af4464"
+  },
+  "local_original_source_sha256": {
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel.Units.EDLT/EDLTUnit.cs": "641f5abc1c3762cd86a0c4b18bc125424a39017a3d78d6edfa4e1e2964af62b2",
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel.Units.EDLT.WidgetData/PageWidgetData.cs": "dd1045594838dbffd3cf40c0ab144022c186f01acf0130ba5801b2d66bcc115f",
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel/CBusApplication.cs": "669554fea6b53c01a2d0d0c1d7cf8c89cd76d68af0b7d2b11f3bb73a6bfe5933",
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel.CBusObjects/CBusGroup.cs": "882ef659aa8114ee8d5a9f51c7d7d14cde7322f7da83a33853c9c6f49a3e7aa2",
+    "research/vendor/edlt-decompiled/eDLT/eDLT.WidgetPanels/PageWidget.cs": "23f242a462a770670617921f0731974af720933dd4feba483d5976e67252b231"
+  },
+  "spec_sha256": "812d2f92ccf3176d9f3d4c0f35fc196ac9ba45bc419639421e4e5ff082d2af21"
+}

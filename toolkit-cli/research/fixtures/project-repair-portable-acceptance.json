@@ -1,0 +1,38 @@
+{
+  "format": "cbus-project-repair-portable-acceptance-v1",
+  "passed_both": true,
+  "tests_each": 13,
+  "skips_each": 0,
+  "manual_original_cases_each": 3036,
+  "transform_original_cases_each": 159,
+  "supported_transform_cases_each": 144,
+  "explicit_xml_version_encoding_exclusions": 15,
+  "input_sha256": {
+    "src/cbus_toolkit/project_repair.py": "414a87682c3d0306f1914c4fcd8d537247077e5c7b5c317e302602ecd18f6ffb",
+    "tests/test_project_repair.py": "6fae63ff92267c8d0b0655f4b3ec364e84d145645858da8fb15177401102d613",
+    "research/project_repair_original.py": "ae9fe24aeda28c907f859fa630e29b975a957f8946164c68126cd8751814b363",
+    "research/RepairStageProbe.java": "178ef74faf32dfc424b9cb5a349a60f2fd58a21daf27aea8c17a7090592d2981",
+    "research/fixtures/project-repair-vectors.json": "131c02c50ffde57a09b1ccf61162b13330cb8f761e6148ab2b961ecef86e5228",
+    "research/runtime/project-repair-research/portable-acceptance-v1/run.py": "23c62df37754d8b4592f0f9c6ae8974a5b6945c212401e1cf3cb2d6848522557",
+    "src/cbus_toolkit/__init__.py": "a39021e17c28b8e97c4b6ad7b20ffe35ce621332c0f4d006162f77c0703b5fed"
+  },
+  "runs": {
+    "python313": {
+      "path": "research/runtime/project-repair-research/portable-acceptance-v1/python313-v2/report.json",
+      "sha256": "d477e812d34bf6cc17860295783f2909e591539a1852097a764b67ebe2ff743e",
+      "duration_seconds": 30.207683874992654
+    },
+    "python310": {
+      "path": "research/runtime/project-repair-research/portable-acceptance-v1/python310-v2/report.json",
+      "sha256": "6c7fd5703b82e5437e698bae4a8bfb7486d4e5db529b2136d7016d2a109e02d6",
+      "duration_seconds": 31.531435167009477
+    }
+  },
+  "archive": {
+    "path": "research/runtime/project-repair-research/portable-acceptance-v1/accepted-inputs.tar.gz",
+    "sha256": "6f4fee9acd890b75965ff6690dbbe4d5c85377f870a70d61e204ddb533066cb4",
+    "verified_exact_files": 7
+  },
+  "scope": "Pure portable lexical repair and two XML1.0 UTF8 repair transforms; original Java11 methods executed on generated files. No CLI file-write or native reload acceptance in this checkpoint. Output XML semantics verified; vendor serialization bytes not claimed.",
+  "toolkit_parity_complete": false
+}

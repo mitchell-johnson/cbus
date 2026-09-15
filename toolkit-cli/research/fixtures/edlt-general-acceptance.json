@@ -1,0 +1,1370 @@
+{
+  "format": "cbus-edlt-general-acceptance-v1",
+  "profile": {
+    "unit_type": "KEYGL5",
+    "catalog_number": "5055EDL",
+    "firmware": "5.5.00"
+  },
+  "scope": "Five whole-unit PP settings, original setters/save hooks, CRCs and closed database persistence",
+  "tests": [
+    {
+      "python": "3.13.14",
+      "count": 11,
+      "skips": 0,
+      "passed": true,
+      "elapsed_seconds": 65.828
+    },
+    {
+      "python": "3.10.20",
+      "count": 11,
+      "skips": 0,
+      "passed": true,
+      "elapsed_seconds": 75.829
+    }
+  ],
+  "test_modules": [
+    "tests.test_edlt_general",
+    "tests.test_cli_edlt_general"
+  ],
+  "field_layouts": [
+    {
+      "parameter": "LongPressTime",
+      "address": "0x114",
+      "bit": 0,
+      "bits": 8,
+      "unit": "25ms",
+      "explicit_codes": [
+        1,
+        255
+      ],
+      "default": 16
+    },
+    {
+      "parameter": "DebounceTime",
+      "address": "0x115",
+      "bit": 0,
+      "bits": 8,
+      "unit": "25ms",
+      "explicit_codes": [
+        0,
+        255
+      ],
+      "default": 3
+    },
+    {
+      "parameter": "StatusRequestInterval",
+      "address": "0x112",
+      "bit": 0,
+      "bits": 8,
+      "unit": "seconds",
+      "explicit_codes": [
+        3,
+        255
+      ],
+      "default": 3
+    },
+    {
+      "parameter": "ToolsPageLocked",
+      "address": "0x11A",
+      "bit": 4,
+      "bits": 1,
+      "default": 0
+    },
+    {
+      "parameter": "EnableLevelStore",
+      "address": "0x116",
+      "bit": 1,
+      "bits": 1,
+      "previous": 1,
+      "preset": 0,
+      "default": 0
+    }
+  ],
+  "original_model_output_rows": 773,
+  "original_timing_lists": {
+    "long_press_codes": [
+      1,
+      255
+    ],
+    "debounce_codes": [
+      0,
+      255
+    ],
+    "milliseconds_per_code": 25
+  },
+  "native_cgate_version": "3.4.0.2001",
+  "native_cases_count": 36,
+  "full_pp_parameters_compared_per_case": 874,
+  "raw_start_address": "0x112",
+  "raw_length": 9,
+  "boundary_input_order": [
+    "long_press_ms",
+    "debounce_ms",
+    "status_report_seconds",
+    "tools_page_locked",
+    "power_restore"
+  ],
+  "crc_order": [
+    "GlobalParameterCRC",
+    "WidgetsCRC",
+    "StaticTextCRC",
+    "ScenesCheckSum",
+    "OverallCRC"
+  ],
+  "native_cases": [
+    {
+      "case": 0,
+      "kind": "boundary-combination",
+      "raw_hex": "03080100062911e141",
+      "crcs": [
+        [
+          167,
+          21
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          14,
+          45
+        ]
+      ],
+      "inputs": [
+        25,
+        0,
+        3,
+        false,
+        "previous"
+      ]
+    },
+    {
+      "case": 1,
+      "kind": "boundary-combination",
+      "raw_hex": "03080100042911e141",
+      "crcs": [
+        [
+          84,
+          33
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          193,
+          205
+        ]
+      ],
+      "inputs": [
+        25,
+        0,
+        3,
+        false,
+        "preset"
+      ]
+    },
+    {
+      "case": 2,
+      "kind": "boundary-combination",
+      "raw_hex": "03080100062911e151",
+      "crcs": [
+        [
+          13,
+          126
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          0,
+          141
+        ]
+      ],
+      "inputs": [
+        25,
+        0,
+        3,
+        true,
+        "previous"
+      ]
+    },
+    {
+      "case": 3,
+      "kind": "boundary-combination",
+      "raw_hex": "03080100042911e151",
+      "crcs": [
+        [
+          254,
+          74
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          207,
+          109
+        ]
+      ],
+      "inputs": [
+        25,
+        0,
+        3,
+        true,
+        "preset"
+      ]
+    },
+    {
+      "case": 4,
+      "kind": "boundary-combination",
+      "raw_hex": "ff080100062911e141",
+      "crcs": [
+        [
+          72,
+          232
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          212,
+          188
+        ]
+      ],
+      "inputs": [
+        25,
+        0,
+        255,
+        false,
+        "previous"
+      ]
+    },
+    {
+      "case": 5,
+      "kind": "boundary-combination",
+      "raw_hex": "ff080100042911e141",
+      "crcs": [
+        [
+          187,
+          220
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          27,
+          92
+        ]
+      ],
+      "inputs": [
+        25,
+        0,
+        255,
+        false,
+        "preset"
+      ]
+    },
+    {
+      "case": 6,
+      "kind": "boundary-combination",
+      "raw_hex": "ff080100062911e151",
+      "crcs": [
+        [
+          226,
+          131
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          218,
+          28
+        ]
+      ],
+      "inputs": [
+        25,
+        0,
+        255,
+        true,
+        "previous"
+      ]
+    },
+    {
+      "case": 7,
+      "kind": "boundary-combination",
+      "raw_hex": "ff080100042911e151",
+      "crcs": [
+        [
+          17,
+          183
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          21,
+          252
+        ]
+      ],
+      "inputs": [
+        25,
+        0,
+        255,
+        true,
+        "preset"
+      ]
+    },
+    {
+      "case": 8,
+      "kind": "boundary-combination",
+      "raw_hex": "030801ff062911e141",
+      "crcs": [
+        [
+          251,
+          145
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          126,
+          140
+        ]
+      ],
+      "inputs": [
+        25,
+        6375,
+        3,
+        false,
+        "previous"
+      ]
+    },
+    {
+      "case": 9,
+      "kind": "boundary-combination",
+      "raw_hex": "030801ff042911e141",
+      "crcs": [
+        [
+          8,
+          165
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          177,
+          108
+        ]
+      ],
+      "inputs": [
+        25,
+        6375,
+        3,
+        false,
+        "preset"
+      ]
+    },
+    {
+      "case": 10,
+      "kind": "boundary-combination",
+      "raw_hex": "030801ff062911e151",
+      "crcs": [
+        [
+          81,
+          250
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          112,
+          44
+        ]
+      ],
+      "inputs": [
+        25,
+        6375,
+        3,
+        true,
+        "previous"
+      ]
+    },
+    {
+      "case": 11,
+      "kind": "boundary-combination",
+      "raw_hex": "030801ff042911e151",
+      "crcs": [
+        [
+          162,
+          206
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          191,
+          204
+        ]
+      ],
+      "inputs": [
+        25,
+        6375,
+        3,
+        true,
+        "preset"
+      ]
+    },
+    {
+      "case": 12,
+      "kind": "boundary-combination",
+      "raw_hex": "ff0801ff062911e141",
+      "crcs": [
+        [
+          20,
+          108
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          164,
+          29
+        ]
+      ],
+      "inputs": [
+        25,
+        6375,
+        255,
+        false,
+        "previous"
+      ]
+    },
+    {
+      "case": 13,
+      "kind": "boundary-combination",
+      "raw_hex": "ff0801ff042911e141",
+      "crcs": [
+        [
+          231,
+          88
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          107,
+          253
+        ]
+      ],
+      "inputs": [
+        25,
+        6375,
+        255,
+        false,
+        "preset"
+      ]
+    },
+    {
+      "case": 14,
+      "kind": "boundary-combination",
+      "raw_hex": "ff0801ff062911e151",
+      "crcs": [
+        [
+          190,
+          7
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          170,
+          189
+        ]
+      ],
+      "inputs": [
+        25,
+        6375,
+        255,
+        true,
+        "previous"
+      ]
+    },
+    {
+      "case": 15,
+      "kind": "boundary-combination",
+      "raw_hex": "ff0801ff042911e151",
+      "crcs": [
+        [
+          77,
+          51
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          101,
+          93
+        ]
+      ],
+      "inputs": [
+        25,
+        6375,
+        255,
+        true,
+        "preset"
+      ]
+    },
+    {
+      "case": 16,
+      "kind": "boundary-combination",
+      "raw_hex": "0308ff00062911e141",
+      "crcs": [
+        [
+          40,
+          94
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          172,
+          24
+        ]
+      ],
+      "inputs": [
+        6375,
+        0,
+        3,
+        false,
+        "previous"
+      ]
+    },
+    {
+      "case": 17,
+      "kind": "boundary-combination",
+      "raw_hex": "0308ff00042911e141",
+      "crcs": [
+        [
+          219,
+          106
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          99,
+          248
+        ]
+      ],
+      "inputs": [
+        6375,
+        0,
+        3,
+        false,
+        "preset"
+      ]
+    },
+    {
+      "case": 18,
+      "kind": "boundary-combination",
+      "raw_hex": "0308ff00062911e151",
+      "crcs": [
+        [
+          130,
+          53
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          162,
+          184
+        ]
+      ],
+      "inputs": [
+        6375,
+        0,
+        3,
+        true,
+        "previous"
+      ]
+    },
+    {
+      "case": 19,
+      "kind": "boundary-combination",
+      "raw_hex": "0308ff00042911e151",
+      "crcs": [
+        [
+          113,
+          1
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          109,
+          88
+        ]
+      ],
+      "inputs": [
+        6375,
+        0,
+        3,
+        true,
+        "preset"
+      ]
+    },
+    {
+      "case": 20,
+      "kind": "boundary-combination",
+      "raw_hex": "ff08ff00062911e141",
+      "crcs": [
+        [
+          199,
+          163
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          118,
+          137
+        ]
+      ],
+      "inputs": [
+        6375,
+        0,
+        255,
+        false,
+        "previous"
+      ]
+    },
+    {
+      "case": 21,
+      "kind": "boundary-combination",
+      "raw_hex": "ff08ff00042911e141",
+      "crcs": [
+        [
+          52,
+          151
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          185,
+          105
+        ]
+      ],
+      "inputs": [
+        6375,
+        0,
+        255,
+        false,
+        "preset"
+      ]
+    },
+    {
+      "case": 22,
+      "kind": "boundary-combination",
+      "raw_hex": "ff08ff00062911e151",
+      "crcs": [
+        [
+          109,
+          200
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          120,
+          41
+        ]
+      ],
+      "inputs": [
+        6375,
+        0,
+        255,
+        true,
+        "previous"
+      ]
+    },
+    {
+      "case": 23,
+      "kind": "boundary-combination",
+      "raw_hex": "ff08ff00042911e151",
+      "crcs": [
+        [
+          158,
+          252
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          183,
+          201
+        ]
+      ],
+      "inputs": [
+        6375,
+        0,
+        255,
+        true,
+        "preset"
+      ]
+    },
+    {
+      "case": 24,
+      "kind": "boundary-combination",
+      "raw_hex": "0308ffff062911e141",
+      "crcs": [
+        [
+          116,
+          218
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          220,
+          185
+        ]
+      ],
+      "inputs": [
+        6375,
+        6375,
+        3,
+        false,
+        "previous"
+      ]
+    },
+    {
+      "case": 25,
+      "kind": "boundary-combination",
+      "raw_hex": "0308ffff042911e141",
+      "crcs": [
+        [
+          135,
+          238
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          19,
+          89
+        ]
+      ],
+      "inputs": [
+        6375,
+        6375,
+        3,
+        false,
+        "preset"
+      ]
+    },
+    {
+      "case": 26,
+      "kind": "boundary-combination",
+      "raw_hex": "0308ffff062911e151",
+      "crcs": [
+        [
+          222,
+          177
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          210,
+          25
+        ]
+      ],
+      "inputs": [
+        6375,
+        6375,
+        3,
+        true,
+        "previous"
+      ]
+    },
+    {
+      "case": 27,
+      "kind": "boundary-combination",
+      "raw_hex": "0308ffff042911e151",
+      "crcs": [
+        [
+          45,
+          133
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          29,
+          249
+        ]
+      ],
+      "inputs": [
+        6375,
+        6375,
+        3,
+        true,
+        "preset"
+      ]
+    },
+    {
+      "case": 28,
+      "kind": "boundary-combination",
+      "raw_hex": "ff08ffff062911e141",
+      "crcs": [
+        [
+          155,
+          39
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          6,
+          40
+        ]
+      ],
+      "inputs": [
+        6375,
+        6375,
+        255,
+        false,
+        "previous"
+      ]
+    },
+    {
+      "case": 29,
+      "kind": "boundary-combination",
+      "raw_hex": "ff08ffff042911e141",
+      "crcs": [
+        [
+          104,
+          19
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          201,
+          200
+        ]
+      ],
+      "inputs": [
+        6375,
+        6375,
+        255,
+        false,
+        "preset"
+      ]
+    },
+    {
+      "case": 30,
+      "kind": "boundary-combination",
+      "raw_hex": "ff08ffff062911e151",
+      "crcs": [
+        [
+          49,
+          76
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          8,
+          136
+        ]
+      ],
+      "inputs": [
+        6375,
+        6375,
+        255,
+        true,
+        "previous"
+      ]
+    },
+    {
+      "case": 31,
+      "kind": "boundary-combination",
+      "raw_hex": "ff08ffff042911e151",
+      "crcs": [
+        [
+          194,
+          120
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          199,
+          104
+        ]
+      ],
+      "inputs": [
+        6375,
+        6375,
+        255,
+        true,
+        "preset"
+      ]
+    },
+    {
+      "case": 32,
+      "kind": "omitted-raw-0",
+      "raw_hex": "000800ff062911e151",
+      "crcs": [
+        [
+          210,
+          198
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          33,
+          88
+        ]
+      ]
+    },
+    {
+      "case": 33,
+      "kind": "omitted-raw-1",
+      "raw_hex": "010800ff062911e151",
+      "crcs": [
+        [
+          220,
+          60
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          202,
+          245
+        ]
+      ]
+    },
+    {
+      "case": 34,
+      "kind": "omitted-raw-2",
+      "raw_hex": "020800ff062911e151",
+      "crcs": [
+        [
+          207,
+          50
+        ],
+        [
+          164,
+          73
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          230,
+          35
+        ]
+      ]
+    },
+    {
+      "case": 35,
+      "kind": "stored-mra-propagation",
+      "raw_hex": "020800ff062911e151",
+      "crcs": [
+        [
+          94,
+          197
+        ],
+        [
+          222,
+          200
+        ],
+        [
+          102,
+          121
+        ],
+        [
+          156,
+          30
+        ],
+        [
+          192,
+          196
+        ]
+      ]
+    }
+  ],
+  "native_reports_identical_across_interpreters": true,
+  "saved_reloaded": true,
+  "network_state": "new",
+  "network_opened": false,
+  "cli": {
+    "passed": true,
+    "saved_reloaded": true,
+    "offline_preview_changes_match": true,
+    "preview_database_unchanged": true,
+    "omitted_settings_preserved": true,
+    "power_restore_presets_preserved": true,
+    "database_destination_guard": true,
+    "network_opened": false,
+    "physical_device_verified": false,
+    "power_cycle_verified": false
+  },
+  "guards": [
+    "Exact profile and field layout",
+    "Canonical full plan and stale snapshot",
+    "Boolean and integer range/type guards",
+    "Whole-unit static references",
+    "Omitted long-press0 and status0..2 preserved and marked noncanonical",
+    "Database-only destination",
+    "Disconnection stops recovery I/O",
+    "Original interruption object and partial evidence retained",
+    "Interrupted rollback retains original failure and prior rollback errors"
+  ],
+  "normalization": [
+    "Original blank/terminator changes reset only affected functional RestoreLevel fields",
+    "Original first stored MRA supplies sibling shared zone/multiplexer bits",
+    "Application mirror and all five CRCs updated"
+  ],
+  "limits": [
+    "AfterLoadPPData lifecycle excluded, including ConfigVersion initialization and InvertDisplay reset",
+    "Preset mode physical transfer must include all16 functional RestoreLevel parameters; not accepted here",
+    "Individual widget preset editing and UI slider synchronization are separate operations",
+    "No physical device or power-cycle verification"
+  ],
+  "source_hashes": {
+    "research/vendor/toolkit/app/CBusLogicModel.dll": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+    "research/vendor/unitspec-plain/KEYGL5.xml": "812d2f92ccf3176d9f3d4c0f35fc196ac9ba45bc419639421e4e5ff082d2af21",
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel.Units.EDLT/EDLTUnit.cs": "641f5abc1c3762cd86a0c4b18bc125424a39017a3d78d6edfa4e1e2964af62b2",
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel.Utilities/CommonConstants.cs": "98e20887cf973205eaa42e621f0ee21ee5b9367aac1553f88c75b86e16d39020",
+    "research/vendor/edlt-decompiled/eDLT/eDLT/FrmBaseUnit.cs": "060323b11494c7a697656d048f97351526a143e339db767731675a87ba1b1b16"
+  },
+  "artifact_hashes": {
+    "src/cbus_toolkit/edlt_general.py": "6ce6abeaa55dfe36401645a8c432eb40490d350adcf1e46e5ce005b0430e0420",
+    "tests/test_edlt_general.py": "3e38b5b0a5e333fb8e4013ea16f1a39beeb6efa5fdc7f24b93b9f2b75e57fa24",
+    "tests/test_cli_edlt_general.py": "abe6931c1a4952db8f85c533a80336f2dd2e161aeb05b7b7a4d0399591b61104",
+    "research/NativeEdltGeneralProbe.cs": "3649fa812b34ab627b10e7a5c217ee1cb974d23f80f6daaeb9a9506b01f05097",
+    "docs/edlt-general.md": "38f5e348cf1d1e5cd2d70b146aab8e5814cd27cfdc663b5134b39e567d1fccda"
+  },
+  "shared_sources": {
+    "src/cbus_toolkit/edlt.py": "78fcb914b21b71206b1cb381b670388dbcd8eb67afa0deb254620395ac353641",
+    "src/cbus_toolkit/edlt_mra.py": "99bf274549de55b4105acc615a620f6eebf83ebbc1a5a56379646a690e9e2636"
+  },
+  "physical_device_verified": false,
+  "power_cycle_verified": false
+}

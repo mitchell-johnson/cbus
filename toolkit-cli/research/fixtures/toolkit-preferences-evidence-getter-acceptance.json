@@ -1,0 +1,76 @@
+{
+  "format": "cbus-preferences-evidence-getter-acceptance-v1",
+  "passed": true,
+  "scope": "Focused CLI correction only; guarded optional exception-evidence reads preserve manager fallback and exact primary error. No registry algorithm or native adapter change.",
+  "files": {
+    "src/cbus_toolkit/toolkit_preferences_cli.py": "0647dbb2a5b49d70e4c9c64639cb135bd3ddc29ba76eb5c001c8557dc44ee604",
+    "tests/test_cli_toolkit_preferences_actions.py": "dcd551f94f3ceba5f900e54c74c2d5aa6f0657f96883c534721ac9b2bc295180",
+    "tests/test_cli_toolkit_preferences.py": "41a72a13c99f933a5578c1389a0b9085245ea97c4d9013a6dd0c5ca5a3bc46e7",
+    "tests/test_cli_toolkit_preferences_numeric.py": "126eee7b74ea4e8af1b6d33547840f081bd63f0400119a4c533e151bdd31ccba",
+    "docs/toolkit-preferences.md": "ecfbcf66e2598c48dceec0f1c56653b72e3ee7ccbb3ee95bece8ed51057ca0f0"
+  },
+  "reports": [
+    {
+      "path": "research/runtime/toolkit-preferences/evidence-getter-fix/final-313-v2/result.json",
+      "sha256": "15832e11ce997029d67b81e926ccee45ae0360457bee16744a934e8102586a32",
+      "python": "3.13.14 (main, Jun 10 2026, 12:24:04) [Clang 17.0.0 (clang-1700.6.4.2)]",
+      "tests": 24,
+      "skipped": 0,
+      "native_jobs": 0,
+      "elapsed_seconds": 1.5612756670161616,
+      "hashes_unchanged": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "9d60f575e6dfeacb75630c0ca6228412cf2d55bb9b24e833c2991cbbc0ae95d9"
+    },
+    {
+      "path": "research/runtime/toolkit-preferences/evidence-getter-fix/final-310-v2/result.json",
+      "sha256": "0c4dfa0feac309ee019f93c16356b13e8d9eb79169c3e2c08db0e5a63271cce6",
+      "python": "3.10.20 (main, Mar  3 2026, 00:49:35) [Clang 17.0.0 (clang-1700.6.4.2)]",
+      "tests": 24,
+      "skipped": 0,
+      "native_jobs": 0,
+      "elapsed_seconds": 2.1764185829961207,
+      "hashes_unchanged": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "b38ca3292b3353db7ccf807846a5b0648c3c5064d546d7ca613421289fca574a"
+    }
+  ],
+  "delta_audit": {
+    "path": "research/runtime/toolkit-preferences/evidence-getter-fix/delta-audit.json",
+    "sha256": "44b07970f9b64155b405483b04b891bfb945aa1f8db0c8844c17a3c8984742d9",
+    "production_delta": "Only error_payload evidence reads plus new guarded helper; every other original top-level function unchanged",
+    "existing_action_test_methods_unchanged": 7,
+    "added_action_tests": [
+      "test_hostile_getters_use_only_matching_manager_evidence",
+      "test_reset_hostile_evidence_getter_preserves_cli_primary_and_cleanup",
+      "test_store_hostile_evidence_getter_preserves_cli_primary_and_write_prefix"
+    ],
+    "before_reproduction": [
+      {
+        "path": "reset-dont-ask-again",
+        "actual_before_exception": "SystemExit",
+        "original_preserved": false
+      },
+      {
+        "path": "registry-save",
+        "actual_before_exception": "SystemExit",
+        "original_preserved": false
+      }
+    ]
+  },
+  "historical_expanded94": {
+    "path": "research/fixtures/toolkit-preferences-expanded-acceptance.json",
+    "sha256": "5867accf1558dbf9d7d56760b6b7e8bdf733a556fda90e752e2a500259879d5e",
+    "unchanged": true,
+    "not_replaced_or_recounted": true
+  },
+  "preserved_failed_test_draft": {
+    "path": "research/runtime/toolkit-preferences/evidence-getter-fix/final-313/result.json",
+    "sha256": "2c0241075d7aa682ed512ca63c8d3f0ec2aedc3528fbf4305a4fe204ea372c29",
+    "reason": "Two new tests initially patched an alias local to cli.main as if it were a module attribute. Corrected only the patch target to the actual helper module; original failure transcript retained."
+  },
+  "limitations": [
+    "24 focused CLI tests on each interpreter, not a new full native suite or a replacement94-test claim",
+    "No native/Windows jobs were needed for this pure error-reporting delta"
+  ]
+}

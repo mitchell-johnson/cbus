@@ -1,0 +1,2481 @@
+{
+  "format": "cbus-toolkit-updates-original-vectors-v1",
+  "source_hashes": {
+    "research/vendor/toolkit/app/CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "research/vendor/toolkit/app/CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "research/vendor/toolkit-help/1300.htm": "627a9b8dd6fa315d11ca78d31baf078cdb66c9d29f49bdb3945e6ee43943bd51"
+  },
+  "menu": {
+    "format": "cbus-original-update-menu-probe-v1",
+    "passed": true,
+    "cases": [
+      {
+        "preference_string": "https://www.se.com/ww/en/product-range/2216-spacelogic-cbus-home-automation-system#software-and-firmware",
+        "fixture_shell_result": 0,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "https://www.se.com/ww/en/product-range/2216-spacelogic-cbus-home-automation-system#software-and-firmware",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 0
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "https://www.se.com/ww/en/product-range/2216-spacelogic-cbus-home-automation-system#software-and-firmware",
+        "fixture_shell_result": 2,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "https://www.se.com/ww/en/product-range/2216-spacelogic-cbus-home-automation-system#software-and-firmware",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 2
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "https://www.se.com/ww/en/product-range/2216-spacelogic-cbus-home-automation-system#software-and-firmware",
+        "fixture_shell_result": 31,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "https://www.se.com/ww/en/product-range/2216-spacelogic-cbus-home-automation-system#software-and-firmware",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 31
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "https://www.se.com/ww/en/product-range/2216-spacelogic-cbus-home-automation-system#software-and-firmware",
+        "fixture_shell_result": 32,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "https://www.se.com/ww/en/product-range/2216-spacelogic-cbus-home-automation-system#software-and-firmware",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 32
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "https://www.se.com/ww/en/product-range/2216-spacelogic-cbus-home-automation-system#software-and-firmware",
+        "fixture_shell_result": 33,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "https://www.se.com/ww/en/product-range/2216-spacelogic-cbus-home-automation-system#software-and-firmware",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 33
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "https://www.se.com/ww/en/product-range/2216-spacelogic-cbus-home-automation-system#software-and-firmware",
+        "fixture_shell_result": 4294967295,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "https://www.se.com/ww/en/product-range/2216-spacelogic-cbus-home-automation-system#software-and-firmware",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 4294967295
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "",
+        "fixture_shell_result": 0,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 0
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b5": "b808183a01",
+          "0x6089ba": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "",
+        "fixture_shell_result": 2,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 2
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b5": "b808183a01",
+          "0x6089ba": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "",
+        "fixture_shell_result": 31,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 31
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b5": "b808183a01",
+          "0x6089ba": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "",
+        "fixture_shell_result": 32,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 32
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b5": "b808183a01",
+          "0x6089ba": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "",
+        "fixture_shell_result": 33,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 33
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b5": "b808183a01",
+          "0x6089ba": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "",
+        "fixture_shell_result": 4294967295,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 4294967295
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b5": "b808183a01",
+          "0x6089ba": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "https://example.invalid/check?a=1&b=2",
+        "fixture_shell_result": 0,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "https://example.invalid/check?a=1&b=2",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 0
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "https://example.invalid/check?a=1&b=2",
+        "fixture_shell_result": 2,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "https://example.invalid/check?a=1&b=2",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 2
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "https://example.invalid/check?a=1&b=2",
+        "fixture_shell_result": 31,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "https://example.invalid/check?a=1&b=2",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 31
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "https://example.invalid/check?a=1&b=2",
+        "fixture_shell_result": 32,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "https://example.invalid/check?a=1&b=2",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 32
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "https://example.invalid/check?a=1&b=2",
+        "fixture_shell_result": 33,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "https://example.invalid/check?a=1&b=2",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 33
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "https://example.invalid/check?a=1&b=2",
+        "fixture_shell_result": 4294967295,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "https://example.invalid/check?a=1&b=2",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 4294967295
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "  https://example.invalid/  ",
+        "fixture_shell_result": 0,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "  https://example.invalid/  ",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 0
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "  https://example.invalid/  ",
+        "fixture_shell_result": 2,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "  https://example.invalid/  ",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 2
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "  https://example.invalid/  ",
+        "fixture_shell_result": 31,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "  https://example.invalid/  ",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 31
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "  https://example.invalid/  ",
+        "fixture_shell_result": 32,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "  https://example.invalid/  ",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 32
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "  https://example.invalid/  ",
+        "fixture_shell_result": 33,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "  https://example.invalid/  ",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 33
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "  https://example.invalid/  ",
+        "fixture_shell_result": 4294967295,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "  https://example.invalid/  ",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 4294967295
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "https://example.invalid/更新",
+        "fixture_shell_result": 0,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "https://example.invalid/更新",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 0
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "https://example.invalid/更新",
+        "fixture_shell_result": 2,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "https://example.invalid/更新",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 2
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "https://example.invalid/更新",
+        "fixture_shell_result": 31,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "https://example.invalid/更新",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 31
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "https://example.invalid/更新",
+        "fixture_shell_result": 32,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "https://example.invalid/更新",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 32
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "https://example.invalid/更新",
+        "fixture_shell_result": 33,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "https://example.invalid/更新",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 33
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "https://example.invalid/更新",
+        "fixture_shell_result": 4294967295,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "https://example.invalid/更新",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 4294967295
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "https://example.invalid/ok\u0000ignored",
+        "fixture_shell_result": 0,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "https://example.invalid/ok",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 0
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "https://example.invalid/ok\u0000ignored",
+        "fixture_shell_result": 2,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "https://example.invalid/ok",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 2
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "https://example.invalid/ok\u0000ignored",
+        "fixture_shell_result": 31,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "https://example.invalid/ok",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 31
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "https://example.invalid/ok\u0000ignored",
+        "fixture_shell_result": 32,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "https://example.invalid/ok",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 32
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "https://example.invalid/ok\u0000ignored",
+        "fixture_shell_result": 33,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "https://example.invalid/ok",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 33
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      },
+      {
+        "preference_string": "https://example.invalid/ok\u0000ignored",
+        "fixture_shell_result": 4294967295,
+        "synchronous_return": true,
+        "preference_unchanged": true,
+        "calls": [
+          {
+            "call": "GetHandle",
+            "fixture_handle": 4660
+          },
+          {
+            "call": "ShellExecuteW",
+            "parent": 4660,
+            "verb": "open",
+            "file": "https://example.invalid/ok",
+            "parameters": null,
+            "directory": null,
+            "show": 1,
+            "fixture_result": 4294967295
+          }
+        ],
+        "original_executed_instructions": {
+          "0xe9e9f0": "55",
+          "0xe9e9f1": "8bec",
+          "0xe9e9f3": "83c4f8",
+          "0xe9e9f6": "8955f8",
+          "0xe9e9f9": "8945fc",
+          "0xe9e9fc": "6a01",
+          "0xe9e9fe": "6a00",
+          "0xe9ea00": "6a00",
+          "0xe9ea02": "a16c223c01",
+          "0xe9ea07": "8b00",
+          "0xe9ea09": "8b4018",
+          "0xe9ea0c": "e89f9f76ff",
+          "0x6089b0": "85c0",
+          "0x6089b2": "7401",
+          "0x6089b4": "c3",
+          "0xe9ea11": "50",
+          "0xe9ea12": "682ceae900",
+          "0xe9ea17": "8b45fc",
+          "0xe9ea1a": "e8dd0586ff",
+          "0x6feffc": "53",
+          "0xe9ea1f": "50",
+          "0xe9ea20": "e833907dff",
+          "0x677a58": "ff25886c4501",
+          "0xe9ea25": "59",
+          "0xe9ea26": "59",
+          "0xe9ea27": "5d",
+          "0xe9ea28": "c3"
+        }
+      }
+    ],
+    "executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "probe_sha256": "71696ed1ab1a74ea0ead0b33155204d80fcee9bf769d5d1e4b303046cc3e4193",
+    "browser_started": false,
+    "native_calls": false,
+    "network_calls": 0,
+    "registry_calls": 0,
+    "scope": "Original synchronous menu handler and pointer conversion; GetHandle/ShellExecute fixtures only."
+  },
+  "collection_cases": [
+    {
+      "name": "captured-live",
+      "input": {
+        "version": "1.18.0",
+        "status": 200,
+        "body": "{\"data\":[{\"urls\":{\"5\":{\"url\":\"https://www.seupdate.schneider-electric.com/download/SpaceLogic%20C-Bus/C-Bus%20Toolkit/CBusToolkit-1.18.1.2774-CGate-3.4.1.2055-Setup.exe\"}},\"header\":{\"revision\":{\"revisionId\":\"0f4f734e-d6c8-42a8-b2e8-d1d3989f0d87\",\"changeId\":8535,\"timestamp\":\"2025-02-27T04:10:53.0880135Z\",\"state\":\"active\"}},\"data\":{\"additionalInfoUrl\":{\"default\":\"https://www.seupdate.schneider-electric.com/download/SpaceLogic%20C-Bus/C-Bus%20Toolkit/CBusToolkit-1.18.1.2774-CGate-3.4.1.2055-Release-Notes.pdf\"},\"visibilityInPercent\":100,\"startDate\":\"2025-02-17T00:00:00Z\",\"expireDate\":\"2099-12-31T00:00:00Z\",\"clientConditionData\":{\"conditions\":{},\"expression\":\"\"},\"forcedUpdate\":false,\"automaticUpdate\":false,\"type\":\"PackageData\",\"displayName\":{\"default\":\"C-Bus Toolkit 1.18.1\"},\"description\":{\"default\":\"This is version 1.18.1 of the C-Bus Toolkit software. It contains important bug and security fixes, along with new features. It is recommended that you install this update. To ensure compatibility with this release, it is important that you update the C-Bus Commission software as well.\\n\\nClick the Get Additional Information link to view the release notes for this update.\"}},\"nodeId\":\"2398558e-aa7e-4777-b4a8-f1e8f21704ea\",\"nodeName\":\"C-Bus Toolkit 1.18.1\",\"assignedTo\":[{\"type\":\"product\",\"target\":{\"nodeId\":\"a3e97970-f31c-4bd8-91ca-a031ef5609dc\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"9a426dfa-1e61-4a49-b3f7-dc14c3ecf819\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"parent\",\"target\":{\"collection\":\"PackageData\",\"type\":\"collection\"}}],\"files\":[{\"id\":\"5\",\"name\":\"CBusToolkit-1.18.1.2774-CGate-3.4.1.2055-Setup.exe\",\"size\":176269496,\"url\":\"https://www.seupdate.schneider-electric.com/download/SpaceLogic%20C-Bus/C-Bus%20Toolkit/CBusToolkit-1.18.1.2774-CGate-3.4.1.2055-Setup.exe\",\"security\":{\"sha1\":\"4e19dbe51d000718b92cf018f962eb6ee252022e\"},\"metadata\":{\"architecture\":\"windows_x86_64\",\"mediatype\":\"singleFileExecutable\"}}],\"signatures\":{\"v1\":\"eyJhbGciOiJSUzI1NiIsImtpZCI6IkFDNEEzMDNFQTI1MEJGRkRCM0U2RjQyNzA4OEVCOEM1Q0MyMTExNzQiLCJ0eXAiOiJKV1QiLCJ4NXQiOiJBQzRBMzAzRUEyNTBCRkZEQjNFNkY0MjcwODhFQjhDNUNDMjExMTc0IiwicG9sIjoidjEiLCJjcml0IjpbInBvbCJdfQ.eyJuYmYiOjE3NDA2Mjk0NTMsImV4cCI6MjUzNDAyMzAwODAwLCJpYXQiOjE3NDA2Mjk0NTMsInBheWxvYWRfc2hhMjU2IjoidHFyRFJjd2FOQVJEZUliVFBpaHdjeXE0UWNYRVdYMW85VEhScThIU2NLTT0ifQ.IzBpx7mWtKQvKn-2pE9oXcBKcObZWNSgZ49BRm6Ln8jImPBkJwDDcVPMC85GQjLgbkykFrwnppDB8Ivj_vDgbm3tNEO433kw0hO1qlgFwCmiIbWa3u5Z7cXv-FBl0TNXhjHaV-YVh-vKRv65XFAadk_gapi7zcUYEFTOfH1dfRhpbMIV4QhJG37MXrzNhFNv05xK5u7kCeaEJYREmd_ayqLu8HHgOMXL4_Hh6rbGGGdt_eV73DKU1BWi-K2OP_MyJO3l1Q5ZQqGY_AwmTtLJ4kjYZ8VR_ALXGS2AgHxdlgfU2V80MYRnjaukTXosZA9ELRYpEkDyu4BDLbmcbOD2uEnTyBa4LHS3VNMXma-9r5EP2U4pOerqFRNsZPvjim-ytqAxNyvMMuuxylmYcAAGs52vGH2gCM5-hWadMtH7mS_UAneDnOmteya6z3ojfNyowKH4HEM8L2f-jyagImno-XBFoUT4F5-7SpOi4-2NmyztAbjyRcrVSrIjTNCbLk25G8ArffLNhPmpn49TH4HdRGj5CD7e-cZ3auKTwZvbtSSe25PrEsyqSRoKu7p8FMNY222NGGSM_kmNO65U1NOcOdomzxuoXoinHzWR_wrprOINhA0xoB07EbX365FN1nBTj2OTXMyxYpgdWT6IOIxqJjohROlNlPHxsoKqhnWiKls\"}},{\"urls\":{\"2\":{\"url\":\"https://www.seupdate.schneider-electric.com/download/SpaceLogic%20C-Bus/C-Bus%20Toolkit/CBusToolkit-1.18.2.2832-CGate-3.4.1.2055-Setup.exe\"}},\"header\":{\"revision\":{\"revisionId\":\"40c6b840-6faa-4ef7-82f6-c6387a74b95b\",\"changeId\":8731,\"timestamp\":\"2025-05-14T23:07:03.8697733Z\",\"state\":\"active\"}},\"data\":{\"additionalInfoUrl\":{\"default\":\"https://www.seupdate.schneider-electric.com/download/SpaceLogic%20C-Bus/C-Bus%20Toolkit/CBusToolkit-1.18.2.2832-CGate-3.4.1.2055-Release-Notes.pdf\"},\"severity\":\"critical\",\"visibilityInPercent\":100,\"startDate\":\"2025-04-30T00:00:00Z\",\"expireDate\":\"2099-12-31T00:00:00Z\",\"clientConditionData\":{\"conditions\":{},\"expression\":\"\"},\"forcedUpdate\":false,\"automaticUpdate\":false,\"type\":\"PackageData\",\"displayName\":{\"default\":\"C-Bus Toolkit 1.18.2\"},\"description\":{\"default\":\"This is version 1.18.2 of the C-Bus Toolkit software. It contains an important bug fix. It is strongly recommended that you install this update. Click the Get Additional Information link to view the release notes for this update.\"}},\"nodeId\":\"eb269ff2-74ad-4317-8576-c4895950d992\",\"nodeName\":\"C-Bus Toolkit 1.18.2\",\"assignedTo\":[{\"type\":\"product\",\"target\":{\"nodeId\":\"a3e97970-f31c-4bd8-91ca-a031ef5609dc\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"9a426dfa-1e61-4a49-b3f7-dc14c3ecf819\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"a156f5df-e2ed-475a-813d-df551b689a72\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"parent\",\"target\":{\"collection\":\"PackageData\",\"type\":\"collection\"}}],\"files\":[{\"id\":\"2\",\"name\":\"CBusToolkit-1.18.2.2832-CGate-3.4.1.2055-Setup.exe\",\"size\":176268936,\"url\":\"https://www.seupdate.schneider-electric.com/download/SpaceLogic%20C-Bus/C-Bus%20Toolkit/CBusToolkit-1.18.2.2832-CGate-3.4.1.2055-Setup.exe\",\"security\":{\"sha1\":\"af01e9d18c83085567dc4c9a89bd18e3eb7a09bd\"},\"metadata\":{\"architecture\":\"windows_x86_64\",\"mediatype\":\"singleFileExecutable\"}}],\"signatures\":{\"v1\":\"eyJhbGciOiJSUzI1NiIsImtpZCI6IkFDNEEzMDNFQTI1MEJGRkRCM0U2RjQyNzA4OEVCOEM1Q0MyMTExNzQiLCJ0eXAiOiJKV1QiLCJ4NXQiOiJBQzRBMzAzRUEyNTBCRkZEQjNFNkY0MjcwODhFQjhDNUNDMjExMTc0IiwicG9sIjoidjEiLCJjcml0IjpbInBvbCJdfQ.eyJuYmYiOjE3NDcyNjQwMjMsImV4cCI6MjUzNDAyMzAwODAwLCJpYXQiOjE3NDcyNjQwMjMsInBheWxvYWRfc2hhMjU2IjoiUFdzNmFyOHVpcmFOVW5HVFc2WjdnWVNoZUNZMXNRYW5sSzNRZ0hsZG1yST0ifQ.PYHT65xuE7FGyM1FI4tq2oYq_68Ebiy26dVHbR__UIMxavbPVlAxM9IbNE125O_hxaW3uD0SKXUrKfBBFU-RGg_k8XbfTrSsi3pVwS_plXEE_PofYApIeVt_C82H4LG5HBP6kh4uAk65WLbCOLYZwmK0oRUA64GskW10TsUJN-YRaJ0Mxt5pjtFegPiqeLMS2isCsG50OFFbfVe9hgqAnK8KE8rkXGAwHV1c_mlLjw2TlxbMkXDMmUKKtEqdKuEekPuGTvoEnpVDK4bYqnMSjfzCWnTicdaz3xutpLv5lHJEKoTvSZ6-mxPfRKHdAASr5abV2PGzJNaMCHTZRpXopDtfUBtHuPmDO6XWLYW5PGVYyHdedM2J--uTvTBI9d-6vCurVFpwEUky0xLHqv0zfZHlrtc_Bg5CQXixmCv8wRQ0EO9kb-LMvBUqcy16cDBsFTm993UJRifMxKONSeP2P3t98wC2yKJs5Zb00_8CuowEr0pbYNCAfDG9iFbXcyRohu3jruvQ7EJ-aYFyXvudbqkEoSA7dSeAVjLdYfEWRQyBdOY3sAp1406iv_CQFhfA8LnelIefmbhO429xkav2f4vTcWZdKKlpaU7UVf08qhOjQo-jTlw5o4LNyX1oYj-4IQ_Ey73oKXrtUDLujKwzkwCofRFbQOHek7rA9R5LzAI\"}},{\"urls\":{\"4\":{\"url\":\"https://www.seupdate.schneider-electric.com/download/SpaceLogic%20C-Bus/C-Bus%20Toolkit/CBusToolkit-1.19.0.2884-CGate-3.5.0.2119-Setup.exe\"}},\"header\":{\"revision\":{\"revisionId\":\"e1dab570-9639-49cd-b604-8447d0a161a8\",\"changeId\":8783,\"timestamp\":\"2025-06-06T00:04:06.1397871Z\",\"state\":\"active\"}},\"data\":{\"additionalInfoUrl\":{\"default\":\"https://www.seupdate.schneider-electric.com/download/SpaceLogic%20C-Bus/C-Bus%20Toolkit/CBusToolkit-1.19.0.2884-CGate-3.5.0.2119-Release-Notes.pdf\"},\"visibilityInPercent\":100,\"startDate\":\"2025-06-02T00:00:00Z\",\"expireDate\":\"2099-12-31T00:00:00Z\",\"clientConditionData\":{\"conditions\":{},\"expression\":\"\"},\"forcedUpdate\":false,\"automaticUpdate\":false,\"type\":\"PackageData\",\"displayName\":{\"default\":\"C-Bus Toolkit 1.19.0\"},\"description\":{\"default\":\"This is version 1.19.0 of the C-Bus Toolkit software. It contains important bug and security fixes, along with new features. It is recommended that you install this update. To ensure compatibility with this release, it is important that you update the C-Bus Commission software as well. Click the Get Additional Information link to view the release notes for this update.\"}},\"nodeId\":\"6ce72c98-97d0-41cf-8a8c-caf2ee993340\",\"nodeName\":\"C-Bus Toolkit 1.19.0\",\"assignedTo\":[{\"type\":\"product\",\"target\":{\"nodeId\":\"a3e97970-f31c-4bd8-91ca-a031ef5609dc\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"9a426dfa-1e61-4a49-b3f7-dc14c3ecf819\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"a156f5df-e2ed-475a-813d-df551b689a72\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"781b7e79-5f80-48bd-8908-f63b069274cc\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"parent\",\"target\":{\"collection\":\"PackageData\",\"type\":\"collection\"}}],\"files\":[{\"id\":\"4\",\"name\":\"CBusToolkit-1.19.0.2884-CGate-3.5.0.2119-Setup.exe\",\"size\":188823744,\"url\":\"https://www.seupdate.schneider-electric.com/download/SpaceLogic%20C-Bus/C-Bus%20Toolkit/CBusToolkit-1.19.0.2884-CGate-3.5.0.2119-Setup.exe\",\"security\":{\"sha1\":\"1a2114d970b9150586c3e592c74d06ddcdf16f08\"},\"metadata\":{\"architecture\":\"windows_x86_64\",\"mediatype\":\"singleFileExecutable\"}}],\"signatures\":{\"v1\":\"eyJhbGciOiJSUzI1NiIsImtpZCI6IkFDNEEzMDNFQTI1MEJGRkRCM0U2RjQyNzA4OEVCOEM1Q0MyMTExNzQiLCJ0eXAiOiJKV1QiLCJ4NXQiOiJBQzRBMzAzRUEyNTBCRkZEQjNFNkY0MjcwODhFQjhDNUNDMjExMTc0IiwicG9sIjoidjEiLCJjcml0IjpbInBvbCJdfQ.eyJuYmYiOjE3NDkxNjgyNDYsImV4cCI6MjUzNDAyMzAwODAwLCJpYXQiOjE3NDkxNjgyNDYsInBheWxvYWRfc2hhMjU2IjoiWTNxais3aFFUTWxBbHdOOHJkeHQvQitCdC96cU14dGU0dnRSS0c5ODQzYz0ifQ.MA3cMo-3N9csOVCsue8IbPjNFORkLw-x50Wd0P-YeMRDAjBQ7dDUnZGosA6WVyj_DEh8_KBT7ajZ_V95heJGWbwmEPMe71c9zBMQ1wKq_81ix5njPPWqCFQ42rDgfM5WQwC2sbXlhOqXE7QgwRgY5SWMY5FqNfLSamBJ0tOHPWdDFpdoMgrFjPUn7A-xZsewdOdquqQqJyXQLXL5s2ZuMzICoYPymUVv9SQuXCTkAeLfpko5KPddlLYhoVm9BryKG_Y8uu7fZPUDwxZH-g9LpBMyoSZvpglvpj88ffQWEL-EhAN34ZZiRams96KI-82iPnklbqIr5eG2SYHWd9TYtTWO0mHVfN6Mv7J-TCvVsEwBDl4J8d-QeDpqJdjYqNeupNnmSGxlvMNJnEwBKHhhA9sX9i86WtnuVy5F5SaMTNn0efu5R4p6io460lQt-lTpQw-bqbRfOnqm0UIugPGgWudMsKFSLjt1V0NGU_6RcxRDLf2bq4Ym82Dnrns1eFzQeRDwaVOHVlAbZ81Tr0ltSw8UULqQQM6fy8Q2iN79YeV_XX79HB3ebQAD_yGYCb-vc5hanfcZuLjQ6R7272HkUNjNbTN4sjixw0C3yKaiZaSRy-bA2gc7wXSTvGeZ-i9w4IAEVsW1n8pNwYEiRsASsg1gOjx8_LfxDFdLieQDWGk\"}},{\"urls\":{\"4\":{\"url\":\"https://www.seupdate.schneider-electric.com/download/SpaceLogic%20C-Bus/C-Bus%20Toolkit/CBusToolkit-1.19.2.2929-CGate-3.6.0.2173-Setup.exe\"}},\"header\":{\"revision\":{\"revisionId\":\"f7209fd1-90dc-43a1-8cb1-f158cd337192\",\"changeId\":9391,\"timestamp\":\"2025-10-26T23:16:25.0285834Z\",\"state\":\"active\"}},\"data\":{\"additionalInfoUrl\":{\"default\":\"https://www.seupdate.schneider-electric.com/download/SpaceLogic%20C-Bus/C-Bus%20Toolkit/CBusToolkit-1.19.2.2929-CGate-3.6.0.2173-Release-Notes.pdf\"},\"visibilityInPercent\":100,\"startDate\":\"2025-10-23T00:00:00Z\",\"expireDate\":\"2099-12-31T00:00:00Z\",\"clientConditionData\":{\"conditions\":{},\"expression\":\"\"},\"forcedUpdate\":false,\"automaticUpdate\":false,\"type\":\"PackageData\",\"displayName\":{\"default\":\"C-Bus Toolkit 1.19.2\"},\"description\":{\"default\":\"This is version 1.19.2 of the C-Bus Toolkit software. It contains important bug and security fixes. It is recommended that you install this update. To ensure compatibility with this release, it is important that you update the C-Bus Commission software as well. Click the Get Additional Information link to view the release notes for this update.\"}},\"nodeId\":\"ec83f894-6a31-4aed-beaf-c9d7cc5f20f7\",\"nodeName\":\"C-Bus Toolkit 1.19.2\",\"assignedTo\":[{\"type\":\"product\",\"target\":{\"nodeId\":\"a3e97970-f31c-4bd8-91ca-a031ef5609dc\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"9a426dfa-1e61-4a49-b3f7-dc14c3ecf819\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"a156f5df-e2ed-475a-813d-df551b689a72\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"781b7e79-5f80-48bd-8908-f63b069274cc\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"c0cffa56-7b7c-46fc-819a-68f8356261be\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"b13a7e12-ae7b-4e60-b9f6-eef0e9db6a40\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"parent\",\"target\":{\"collection\":\"PackageData\",\"type\":\"collection\"}}],\"files\":[{\"id\":\"4\",\"name\":\"CBusToolkit-1.19.2.2929-CGate-3.6.0.2173-Setup.exe\",\"size\":189612184,\"url\":\"https://www.seupdate.schneider-electric.com/download/SpaceLogic%20C-Bus/C-Bus%20Toolkit/CBusToolkit-1.19.2.2929-CGate-3.6.0.2173-Setup.exe\",\"security\":{\"sha1\":\"94289127440ce892c576cfee6f71c7e9f8e0b00b\"},\"metadata\":{\"architecture\":\"windows_x86_64\",\"mediatype\":\"singleFileExecutable\"}}],\"signatures\":{\"v1\":\"eyJhbGciOiJSUzI1NiIsImtpZCI6IkFDNEEzMDNFQTI1MEJGRkRCM0U2RjQyNzA4OEVCOEM1Q0MyMTExNzQiLCJ0eXAiOiJKV1QiLCJ4NXQiOiJBQzRBMzAzRUEyNTBCRkZEQjNFNkY0MjcwODhFQjhDNUNDMjExMTc0IiwicG9sIjoidjEiLCJjcml0IjpbInBvbCJdfQ.eyJuYmYiOjE3NjE1MjA1ODUsImV4cCI6MjUzNDAyMzAwODAwLCJpYXQiOjE3NjE1MjA1ODUsInBheWxvYWRfc2hhMjU2IjoiL0sxSnJPN2JjYzJKUDgvNVNUd1ppTEhDOURRT0NQNGlTQTROZTRidUh5bz0ifQ.Gy-vdBnta58stRetO6Tl31jQrbOlLoZuzg3Fq9LVlUzXp2LdYv7aLaXXinX1FR6-I1evWJ-CGAZy3nGMD8UVp-jRoUF85mgsKCB9iemjbGbQtrBS6q5roONEZCdU2X-gQPKTggycWzEJQBc9XHHi176LQDg9-UNu_3tY1UHuwJABqpEalBO8YeQb4e3gXuDsLmkrzuloNmUKPOV_PZ2LcRhZNl62VJ2etFfNealx-fdERrBhPOhlFArXkUbxlRwDELx0OJMm9Txpc4PmfbqmjJElUsuc_B7pBLFvMd_KWmj2RG95CiqLhiKDp3WrTRTD4ZfvUPL633vOtbmThLYfLyFBvCmOZVMZlH5LZUDkOkQg_16Xu8YQbRIAahEX4mgRL_km459EoXsa3NBJKQHJCxh09fnvQ86Y0-ZAauSyw6Ewc0Iw4IWSeHZwRnixiGCWzAmxgtW9d-JwfHUux-LfH6VxVJNFDOKZYJJKRtWDasHRXMZJRKoeE4lyhy7jWEyLFS_MicZJM3ZockDWV8Rqd5evVWOlsVX9nf_uTbDnLnbraoPWjDXi_BhoDpfOlHX1_OUGShvrOMoK-05tQWwMbS9Ec538-rwY0hA8NrmOy44SE7ngbchkuo-tHyqa4HOFsrKEpRvQUfMgrqXJ6EPuoJAjX8ua68nzdfxJyud8ksE\"}},{\"urls\":{\"9\":{\"url\":\"https://download.dad.se.com/download/SpaceLogic_C-Bus/C-Bus_Toolkit/CBusToolkit-1.19.3.2955-CGate-3.7.0.2285-Setup.exe\"}},\"header\":{\"revision\":{\"revisionId\":\"06062a04-ef01-408d-8f67-2a69dee7f19c\",\"changeId\":9897,\"timestamp\":\"2026-03-10T00:30:56.8736847Z\",\"state\":\"active\"}},\"data\":{\"additionalInfoUrl\":{\"default\":\"https://download.dad.se.com/download/SpaceLogic_C-Bus/C-Bus_Toolkit/CBusToolkit-1.19.3.2955-CGate-3.7.0.2285-Release-Notes.pdf\"},\"visibilityInPercent\":100,\"startDate\":\"2026-03-10T00:00:00Z\",\"expireDate\":\"2099-12-31T00:00:00Z\",\"clientConditionData\":{\"conditions\":{},\"expression\":\"\"},\"forcedUpdate\":false,\"automaticUpdate\":false,\"type\":\"PackageData\",\"displayName\":{\"default\":\"C-Bus Toolkit 1.19.3\"},\"description\":{\"default\":\"This is version 1.19.3 of the C-Bus Toolkit software. It contains important bug and security fixes. It is recommended that you install this update. To ensure compatibility with this release, it is important that you update the C-Bus Commission software as well. Click the Get Additional Information link to view the release notes for this update.\\n\"}},\"nodeId\":\"a9a03da0-7048-49ff-af47-7783d8d2b3be\",\"nodeName\":\"C-Bus Toolkit 1.19.3\",\"assignedTo\":[{\"type\":\"product\",\"target\":{\"nodeId\":\"a3e97970-f31c-4bd8-91ca-a031ef5609dc\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"9a426dfa-1e61-4a49-b3f7-dc14c3ecf819\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"a156f5df-e2ed-475a-813d-df551b689a72\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"781b7e79-5f80-48bd-8908-f63b069274cc\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"c0cffa56-7b7c-46fc-819a-68f8356261be\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"b13a7e12-ae7b-4e60-b9f6-eef0e9db6a40\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"b6742a1c-a83d-43af-90b5-99241cd10109\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"parent\",\"target\":{\"collection\":\"PackageData\",\"type\":\"collection\"}}],\"files\":[{\"id\":\"9\",\"name\":\"CBusToolkit-1.19.3.2955-CGate-3.7.0.2285-Setup.exe\",\"size\":189453280,\"url\":\"https://download.dad.se.com/download/SpaceLogic_C-Bus/C-Bus_Toolkit/CBusToolkit-1.19.3.2955-CGate-3.7.0.2285-Setup.exe\",\"security\":{\"sha1\":\"02bd385775e927cc74085427c0c8f7508b9e6602\"},\"metadata\":{\"architecture\":\"windows_x86_64\",\"mediatype\":\"singleFileExecutable\"}}],\"signatures\":{\"v1\":\"eyJhbGciOiJSUzI1NiIsImtpZCI6IkFDNEEzMDNFQTI1MEJGRkRCM0U2RjQyNzA4OEVCOEM1Q0MyMTExNzQiLCJ0eXAiOiJKV1QiLCJ4NXQiOiJBQzRBMzAzRUEyNTBCRkZEQjNFNkY0MjcwODhFQjhDNUNDMjExMTc0IiwicG9sIjoidjEiLCJjcml0IjpbInBvbCJdfQ.eyJuYmYiOjE3NzMxMDI2NTYsImV4cCI6MjUzNDAyMzAwODAwLCJpYXQiOjE3NzMxMDI2NTYsInBheWxvYWRfc2hhMjU2Ijoic3VpUklrblFFV0lhSTNpYVpTWnFwMkFxTU94S2oyZHRPTXhEOGVtV2VZdz0ifQ.sarBfTRk61hyFbUNvJoaq2thYd-Yur23AqCMYIjM1k8GtAs-1FtCyegznlDoGOToPnaXxwP_J1V0xInDURyG3FKlbKKnBJwNxckkhMXqzreXizAgvAnk6BNPaw-M2aKC9TXymM0bqJacHCKDn9XVAMzExU7Ck_9pl9tbW67bedWG_TLGwuDDHtM29lg0r376KW9_HuHwehrZcj2lvEm_s54qzD5t4UOu5ytd7pvt7CrJAIVL5nFunVPauKi3W8Qsa4CMlkNuPofzXAhpZrgskPmpa2jBB58cwB-bUUiZFNv7J4h3UALa9tlkM6wZmI8zOIYz0b5I2q79soGLy959jSE094pcLgBTOb4c3VVRTc80KXyxTNNWfn1wpzLMdvvYJ67zirU1ao3oOu1vzZi7zSGFLFh6fOFLg-C3u2YaVGwrZD3lmDINYaTMFFXL1BevtNl7g8-k3pOBMW6r_ogMZQwMR9rPDSeNu6VvYYPQ8jnLBjn9adadb2IfmtTZhAARfvGRblD-drWzNsiK-fgSIrUadDH18TGu0oOHxtd2sdcyBR9RuvbD5tXWHgI4t_Y0cDmg4ys42_RdGRmQSLtDh0kZn23FL_J91UUqqLFKk2Bg52EIL2_zEFEkefNmF5Gb6XAsnV7AHzUJczYKAPEIRzn_CmY8aN_IfbU6sDXbov8\"}},{\"urls\":{\"4\":{\"url\":\"https://download.dad.se.com/download/SpaceLogic_C-Bus/C-Bus_Toolkit/CBusToolkit-1.19.4.2958-CGate-3.7.1.2287-Setup.exe\"}},\"header\":{\"revision\":{\"revisionId\":\"7feb51d7-7827-47fa-80fc-4aba2e722e65\",\"changeId\":9965,\"timestamp\":\"2026-04-13T00:02:31.7330268Z\",\"state\":\"active\"}},\"data\":{\"additionalInfoUrl\":{\"default\":\"https://download.dad.se.com/download/SpaceLogic_C-Bus/C-Bus_Toolkit/CBusToolkit-1.19.4.2958-CGate-3.7.1.2287-Release-Notes.pdf\"},\"visibilityInPercent\":100,\"startDate\":\"2026-04-13T00:00:00Z\",\"expireDate\":\"2099-12-31T00:00:00Z\",\"clientConditionData\":{\"conditions\":{},\"expression\":\"\"},\"forcedUpdate\":false,\"automaticUpdate\":false,\"type\":\"PackageData\",\"displayName\":{\"default\":\"C-Bus Toolkit 1.19.4\"},\"description\":{\"default\":\"This is version 1.19.4 of the C-Bus Toolkit software. It contains important bug and security fixes, along with new features. It is recommended that you install this update. To ensure compatibility with this release, it is important that you update the C-Bus Commission software as well. Click the Get Additional Information link to view the release notes for this update.\"}},\"nodeId\":\"7e1bbf6a-ad5b-4bdb-8b00-fb5f8f147936\",\"nodeName\":\"C-Bus Toolkit 1.19.4\",\"assignedTo\":[{\"type\":\"product\",\"target\":{\"nodeId\":\"a3e97970-f31c-4bd8-91ca-a031ef5609dc\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"9a426dfa-1e61-4a49-b3f7-dc14c3ecf819\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"a156f5df-e2ed-475a-813d-df551b689a72\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"781b7e79-5f80-48bd-8908-f63b069274cc\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"c0cffa56-7b7c-46fc-819a-68f8356261be\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"b13a7e12-ae7b-4e60-b9f6-eef0e9db6a40\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"b6742a1c-a83d-43af-90b5-99241cd10109\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"d2940486-ef3b-4f8d-9696-4a77e78c0678\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"parent\",\"target\":{\"collection\":\"PackageData\",\"type\":\"collection\"}}],\"files\":[{\"id\":\"4\",\"name\":\"CBusToolkit-1.19.4.2958-CGate-3.7.1.2287-Setup.exe\",\"size\":189454720,\"url\":\"https://download.dad.se.com/download/SpaceLogic_C-Bus/C-Bus_Toolkit/CBusToolkit-1.19.4.2958-CGate-3.7.1.2287-Setup.exe\",\"security\":{\"sha1\":\"4707ba0218ac7c1a841a3a933f9195c0e036fdca\"},\"metadata\":{\"architecture\":\"windows_x86_64\",\"mediatype\":\"singleFileExecutable\"}}],\"signatures\":{\"v1\":\"eyJhbGciOiJSUzI1NiIsImtpZCI6IkFDNEEzMDNFQTI1MEJGRkRCM0U2RjQyNzA4OEVCOEM1Q0MyMTExNzQiLCJ0eXAiOiJKV1QiLCJ4NXQiOiJBQzRBMzAzRUEyNTBCRkZEQjNFNkY0MjcwODhFQjhDNUNDMjExMTc0IiwicG9sIjoidjEiLCJjcml0IjpbInBvbCJdfQ.eyJuYmYiOjE3NzYwMzg1NTEsImV4cCI6MjUzNDAyMzAwODAwLCJpYXQiOjE3NzYwMzg1NTEsInBheWxvYWRfc2hhMjU2IjoiUGUxVTE4anZ5dWk0eHhKSGtsT1I2MXJRckRLdHVBRE5GZEdFM2ZmVkg5RT0ifQ.qB5dz5nnTovjVFebNTYOyomm5ohdGZGCm2YO33eqHlJiW39i263esc4JiLqY9ZKLKtPcymLn25WhWZOUqI9H2bQnOQQs39KIbVlKYwWutg4Fijbtp_18Ut5b4UjlJKoxV74KPzFJh3DWu8I05aCIg-x0OZ_SIFU0VaFuZ5im1BMSuj7cZ0CtnXUjNfk1HzAMIQEBamEfWmDcQvm4AIpRgw7z2fC9PYw-eBMxth_TVaScS-cMWKgZHbtb1SX73ngjHcHtSEoYTHDJFPdYI5rhlmItiUAhzxoh_Ypnuz9oxqWQfs0eNCOUT1Onr2qJR-JPJLm2FPO7uLC_e5aM3o9DoDSoZdLYCVMz92aRt7nvUOHVtFPydNgkIU4eBCnvsXbilu4BMfHbfPDII9lHKVOBpglM3oVWaifmuu8-g0PJkNF8I8i_QXeyY09TGh5mzxIlniwW-8Yf4ag1Xbp5hT8BkBqm3zoMrsvPZlsn9q7uip0-pNry4XHWcJKC4OapbkCpy4WD68Y0PCmCoIKGvjGBiGNHUjgd6t7WqA7VKGhQjsktQs_bh7cJ-02Ut9TCYqIg2VFh4sb8ALigqGSYO0V21lwgsyDHZqzOGdInRX6KxZfBkQjgMlkUP3XB49HIKuwlVWBXa_2GrgGXp_dCOAzocl2fpgOtLqmWDLJqb36vnXw\"}},{\"urls\":{\"4\":{\"url\":\"https://download.dad.se.com/download/SpaceLogic_C-Bus/C-Bus_Toolkit/CBusToolkit-1.19.5.3017-CGate-3.8.0.2438-Setup.exe\"}},\"header\":{\"revision\":{\"revisionId\":\"24f78840-a42f-4f66-983b-76d89aec952b\",\"changeId\":10401,\"timestamp\":\"2026-08-10T00:57:33.4836944Z\",\"state\":\"active\"}},\"data\":{\"additionalInfoUrl\":{\"default\":\"https://download.dad.se.com/download/SpaceLogic_C-Bus/C-Bus_Toolkit/CBusToolkit-1.19.5.3017-CGate-3.8.0.2438-Release-Notes.pdf\"},\"visibilityInPercent\":100,\"startDate\":\"2026-08-04T00:00:00Z\",\"expireDate\":\"2099-12-31T00:00:00Z\",\"clientConditionData\":{\"conditions\":{},\"expression\":\"\"},\"forcedUpdate\":false,\"automaticUpdate\":false,\"type\":\"PackageData\",\"displayName\":{\"default\":\"C-Bus Toolkit 1.19.5\"},\"description\":{\"default\":\"This is version 1.19.5 of the C-Bus Toolkit software. It contains important bug and security fixes, along with new features. It is recommended that you install this update. To ensure compatibility with this release, it is important that you update the C-Bus Commission software as well. Click the Get Additional Information link to view the release notes for this update.\"}},\"nodeId\":\"63687c88-a39d-4b9e-952c-49ffa0bca0ad\",\"nodeName\":\"C-Bus Toolkit 1.19.5\",\"assignedTo\":[{\"type\":\"product\",\"target\":{\"nodeId\":\"a3e97970-f31c-4bd8-91ca-a031ef5609dc\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"9a426dfa-1e61-4a49-b3f7-dc14c3ecf819\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"a156f5df-e2ed-475a-813d-df551b689a72\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"781b7e79-5f80-48bd-8908-f63b069274cc\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"c0cffa56-7b7c-46fc-819a-68f8356261be\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"b13a7e12-ae7b-4e60-b9f6-eef0e9db6a40\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"b6742a1c-a83d-43af-90b5-99241cd10109\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"d2940486-ef3b-4f8d-9696-4a77e78c0678\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"product\",\"target\":{\"nodeId\":\"b758137d-9796-4c2f-b18f-b3fa4660c627\",\"collection\":\"ProductVersionData\",\"type\":\"node\"}},{\"type\":\"parent\",\"target\":{\"collection\":\"PackageData\",\"type\":\"collection\"}}],\"files\":[{\"id\":\"4\",\"name\":\"CBusToolkit-1.19.5.3017-CGate-3.8.0.2438-Setup.exe\",\"size\":189553680,\"url\":\"https://download.dad.se.com/download/SpaceLogic_C-Bus/C-Bus_Toolkit/CBusToolkit-1.19.5.3017-CGate-3.8.0.2438-Setup.exe\",\"security\":{\"sha1\":\"7f602b2813d078ba5797bc257d70895d261f4e3f\"},\"metadata\":{\"architecture\":\"windows_x86_64\",\"mediatype\":\"singleFileExecutable\"}}],\"signatures\":{\"v1\":\"eyJhbGciOiJSUzI1NiIsImtpZCI6IkFDNEEzMDNFQTI1MEJGRkRCM0U2RjQyNzA4OEVCOEM1Q0MyMTExNzQiLCJ0eXAiOiJKV1QiLCJ4NXQiOiJBQzRBMzAzRUEyNTBCRkZEQjNFNkY0MjcwODhFQjhDNUNDMjExMTc0IiwicG9sIjoidjEiLCJjcml0IjpbInBvbCJdfQ.eyJuYmYiOjE3ODYzMjM0NTMsImV4cCI6MjUzNDAyMzAwODAwLCJpYXQiOjE3ODYzMjM0NTMsInBheWxvYWRfc2hhMjU2IjoiSmpUaUFjZ1ErSlR1ZnFJTllabjQwY1FrcjVHRy8yM0ttWEhLZEovOWM1MD0ifQ.T41ZSWgapg9o4pBSyaAVG5j83hyd2KX4fgbIt0hJDRXeQrrf3U2YVhcqwujAouR2E6Xlpo79Rf7sSjGVGWh1c_Yr5Vhan8rmQ3k1KavMBs99WTGwY_f90aJX2_IIYxWXstEABztdXh2VpQebN8amxmtGteH7wV_V-lyFv9yDFiVvVfnCgvcKCXyOk5yJCae8ZNLbuUs_TTw092QnEHZPGxFHk3MrV0mpwmz6rLtb3_oZMKXKuIwCv8SJsmHJ3mHeJ5vCkrgU2zdALQjVWJx8JNLc-ZW1G8FDtYSRNWoUJNBxtzqynD7_9_bpm4ADlzvnEqiLr_pJce6R7cXasUKCX0krUKomF5uN3COOpx8qtnyhP9m9ij8TAfd7iP5GjqnhUxkaL0yfqH9k1HleEO9Iq21ObgJXUdnmo6HNHNPglvx0JqDaEBLBHwPMayEsG2j52R_tOy3xftAb9oZrVMvYTByanY40y_cqV7hGPmrEfxUszQVM7KhdDjTZiQqy23t_Dhafd38vYaGwZZPcm6fckfuubQZxAG7cIq3tWqtXZwhzfa_-7SkcRpsOqHxQlPqmmbuzehIHNxsz96CQjXyk4eyPzdscJTkYhEf5GPlKZ1EQjpO0Q7HQHutt_Kp8lbUAZUFoNnSQ4Qx0ixQpbXHS1D0tvxTNlKy_evewFIMiD10\"}}],\"success\":true,\"message\":\"Node list\",\"statusCode\":200}",
+        "failure": null
+      },
+      "request": {
+        "stage": "captured-request",
+        "method": "POST",
+        "url": "https://sw.dad.se.com/collections/PackageData/list",
+        "body": "[{\"nodeStates\":[\"active\"],\"type\":\"NodeStateFilter\"},{\"productId\":\"435e4274-3bcf-4f3e-a67a-3008278c539c\",\"version\":\"1.18.0\",\"includeParents\":false,\"type\":\"ProductAssignmentFilter\"}]",
+        "network_calls": 0
+      },
+      "result": {
+        "stage": "synthetic-response",
+        "returned_null": false,
+        "count": 7,
+        "signature_validation_executed": false,
+        "applicability_executed": false
+      },
+      "input_sha256": "45726e4dc6614ae194bfe5c8ed713ea7f9fcdc5a06d539ce05e910bfb4859e85",
+      "stdout_sha256": "1165f841ae47d50d24f250519d98d7c25285e8a0e0f750d9a32b5f042c964cf2"
+    },
+    {
+      "name": "empty-success",
+      "input": {
+        "version": "1.18.0",
+        "status": 200,
+        "body": "{\"data\":[],\"success\":true,\"message\":\"Node list\",\"statusCode\":200}",
+        "failure": null
+      },
+      "request": {
+        "stage": "captured-request",
+        "method": "POST",
+        "url": "https://sw.dad.se.com/collections/PackageData/list",
+        "body": "[{\"nodeStates\":[\"active\"],\"type\":\"NodeStateFilter\"},{\"productId\":\"435e4274-3bcf-4f3e-a67a-3008278c539c\",\"version\":\"1.18.0\",\"includeParents\":false,\"type\":\"ProductAssignmentFilter\"}]",
+        "network_calls": 0
+      },
+      "result": {
+        "stage": "synthetic-response",
+        "returned_null": false,
+        "count": 0,
+        "signature_validation_executed": false,
+        "applicability_executed": false
+      },
+      "input_sha256": "d5d17005821a3ec331110c1393d1a5aeef44896e47b9c103e41011fe9dd07426",
+      "stdout_sha256": "5d6c7ebd289ce30db8458d592a4b0f6d96be6c4a9e5aafe1b0ca475e937e30d4"
+    },
+    {
+      "name": "body-failure",
+      "input": {
+        "version": "1.18.0",
+        "status": 200,
+        "body": "{\"data\":[],\"success\":false,\"message\":\"owned failure\",\"statusCode\":500}",
+        "failure": null
+      },
+      "request": {
+        "stage": "captured-request",
+        "method": "POST",
+        "url": "https://sw.dad.se.com/collections/PackageData/list",
+        "body": "[{\"nodeStates\":[\"active\"],\"type\":\"NodeStateFilter\"},{\"productId\":\"435e4274-3bcf-4f3e-a67a-3008278c539c\",\"version\":\"1.18.0\",\"includeParents\":false,\"type\":\"ProductAssignmentFilter\"}]",
+        "network_calls": 0
+      },
+      "result": {
+        "stage": "synthetic-response",
+        "returned_null": false,
+        "count": 0,
+        "signature_validation_executed": false,
+        "applicability_executed": false
+      },
+      "input_sha256": "480c3cb8d6df4a031903b3ede0800945c7c8553a0df0dbc1480e3f984146f56d",
+      "stdout_sha256": "5d6c7ebd289ce30db8458d592a4b0f6d96be6c4a9e5aafe1b0ca475e937e30d4"
+    },
+    {
+      "name": "http-failure",
+      "input": {
+        "version": "1.18.0",
+        "status": 503,
+        "body": "{\"data\":[],\"success\":false,\"message\":\"owned failure\",\"statusCode\":503}",
+        "failure": null
+      },
+      "request": {
+        "stage": "captured-request",
+        "method": "POST",
+        "url": "https://sw.dad.se.com/collections/PackageData/list",
+        "body": "[{\"nodeStates\":[\"active\"],\"type\":\"NodeStateFilter\"},{\"productId\":\"435e4274-3bcf-4f3e-a67a-3008278c539c\",\"version\":\"1.18.0\",\"includeParents\":false,\"type\":\"ProductAssignmentFilter\"}]",
+        "network_calls": 0
+      },
+      "result": {
+        "stage": "synthetic-response",
+        "error": "SE.DAD.Core.Common.Exceptions.UnknownHttpException",
+        "message": "Error calling GetNodeList: Service Unavailable",
+        "inner_error": null
+      },
+      "input_sha256": "57f1e0d43c849682c240953b2e0bb8afaf46d999b0edaed2ebf4411901d9a5d3",
+      "stdout_sha256": "26f7251c43a7c2ddbc15349cd518156874c4397fff45762dd48d9433de1d05b5"
+    },
+    {
+      "name": "http-redirect",
+      "input": {
+        "version": "1.18.0",
+        "status": 302,
+        "body": "{\"data\":[],\"success\":true,\"message\":\"Node list\",\"statusCode\":200}",
+        "failure": null
+      },
+      "request": {
+        "stage": "captured-request",
+        "method": "POST",
+        "url": "https://sw.dad.se.com/collections/PackageData/list",
+        "body": "[{\"nodeStates\":[\"active\"],\"type\":\"NodeStateFilter\"},{\"productId\":\"435e4274-3bcf-4f3e-a67a-3008278c539c\",\"version\":\"1.18.0\",\"includeParents\":false,\"type\":\"ProductAssignmentFilter\"}]",
+        "network_calls": 0
+      },
+      "result": {
+        "stage": "synthetic-response",
+        "error": "SE.DAD.Core.Common.Exceptions.UnknownHttpException",
+        "message": "Error calling GetNodeList: Found",
+        "inner_error": null
+      },
+      "input_sha256": "3a3008e893a12d8c5203c81ba5aed4c33029821aa46488ff2eacd831f91e625c",
+      "stdout_sha256": "e8db12e7b0f3b979013ba0581c95ab2ff1a48e856c96986df018226f27f9f261"
+    },
+    {
+      "name": "absent-data",
+      "input": {
+        "version": "1.18.0",
+        "status": 200,
+        "body": "{\"success\":true,\"statusCode\":200}",
+        "failure": null
+      },
+      "request": {
+        "stage": "captured-request",
+        "method": "POST",
+        "url": "https://sw.dad.se.com/collections/PackageData/list",
+        "body": "[{\"nodeStates\":[\"active\"],\"type\":\"NodeStateFilter\"},{\"productId\":\"435e4274-3bcf-4f3e-a67a-3008278c539c\",\"version\":\"1.18.0\",\"includeParents\":false,\"type\":\"ProductAssignmentFilter\"}]",
+        "network_calls": 0
+      },
+      "result": {
+        "stage": "synthetic-response",
+        "returned_null": true,
+        "count": null,
+        "signature_validation_executed": false,
+        "applicability_executed": false
+      },
+      "input_sha256": "88cad030ceaff48753f73ce3ecc4b7df08e6383a918aa93614b076f81d28b131",
+      "stdout_sha256": "28102c776ec554cb16adc0778b5233bb31f4c06f8ab4dea40ca0e85a156c6bcd"
+    },
+    {
+      "name": "null-data",
+      "input": {
+        "version": "1.18.0",
+        "status": 200,
+        "body": "{\"data\":null,\"success\":true,\"statusCode\":200}",
+        "failure": null
+      },
+      "request": {
+        "stage": "captured-request",
+        "method": "POST",
+        "url": "https://sw.dad.se.com/collections/PackageData/list",
+        "body": "[{\"nodeStates\":[\"active\"],\"type\":\"NodeStateFilter\"},{\"productId\":\"435e4274-3bcf-4f3e-a67a-3008278c539c\",\"version\":\"1.18.0\",\"includeParents\":false,\"type\":\"ProductAssignmentFilter\"}]",
+        "network_calls": 0
+      },
+      "result": {
+        "stage": "synthetic-response",
+        "returned_null": true,
+        "count": null,
+        "signature_validation_executed": false,
+        "applicability_executed": false
+      },
+      "input_sha256": "24f12ced584fa3dd87f968e9f30da57450819f33a4a7a9dd49e2a06c13a03912",
+      "stdout_sha256": "28102c776ec554cb16adc0778b5233bb31f4c06f8ab4dea40ca0e85a156c6bcd"
+    },
+    {
+      "name": "truncated",
+      "input": {
+        "version": "1.18.0",
+        "status": 200,
+        "body": "{\"data\":[",
+        "failure": null
+      },
+      "request": {
+        "stage": "captured-request",
+        "method": "POST",
+        "url": "https://sw.dad.se.com/collections/PackageData/list",
+        "body": "[{\"nodeStates\":[\"active\"],\"type\":\"NodeStateFilter\"},{\"productId\":\"435e4274-3bcf-4f3e-a67a-3008278c539c\",\"version\":\"1.18.0\",\"includeParents\":false,\"type\":\"ProductAssignmentFilter\"}]",
+        "network_calls": 0
+      },
+      "result": {
+        "stage": "synthetic-response",
+        "error": "SE.DAD.Core.Common.Exceptions.ApiClientDeserializationException",
+        "message": "Cannot deserialize NodeListResponse`1: Unexpected end when deserializing array. Path 'data', line 1, position 9.",
+        "inner_error": "Newtonsoft.Json.JsonSerializationException"
+      },
+      "input_sha256": "7d9ae125c9d6c8b5184d81f7e589e673e3fa55190f9e8e1e89c4405202b7053e",
+      "stdout_sha256": "458f49a30c6a1709e86314274cff6971ae3a20b38a9717944c2e3da94779f1af"
+    },
+    {
+      "name": "duplicate-data",
+      "input": {
+        "version": "1.18.0",
+        "status": 200,
+        "body": "{\"data\":null,\"data\":[],\"success\":true,\"statusCode\":200}",
+        "failure": null
+      },
+      "request": {
+        "stage": "captured-request",
+        "method": "POST",
+        "url": "https://sw.dad.se.com/collections/PackageData/list",
+        "body": "[{\"nodeStates\":[\"active\"],\"type\":\"NodeStateFilter\"},{\"productId\":\"435e4274-3bcf-4f3e-a67a-3008278c539c\",\"version\":\"1.18.0\",\"includeParents\":false,\"type\":\"ProductAssignmentFilter\"}]",
+        "network_calls": 0
+      },
+      "result": {
+        "stage": "synthetic-response",
+        "returned_null": false,
+        "count": 0,
+        "signature_validation_executed": false,
+        "applicability_executed": false
+      },
+      "input_sha256": "2c61cebb59e03ef9486f587b1bd84a9af7a9e1d50129a83083bd0294f77fa684",
+      "stdout_sha256": "5d6c7ebd289ce30db8458d592a4b0f6d96be6c4a9e5aafe1b0ca475e937e30d4"
+    },
+    {
+      "name": "unknown-type",
+      "input": {
+        "version": "1.18.0",
+        "status": 200,
+        "body": "{\"data\":[{\"nodeId\":\"00000000-0000-0000-0000-000000000001\",\"data\":{\"type\":\"UnknownData\"}}],\"success\":true,\"statusCode\":200}",
+        "failure": null
+      },
+      "request": {
+        "stage": "captured-request",
+        "method": "POST",
+        "url": "https://sw.dad.se.com/collections/PackageData/list",
+        "body": "[{\"nodeStates\":[\"active\"],\"type\":\"NodeStateFilter\"},{\"productId\":\"435e4274-3bcf-4f3e-a67a-3008278c539c\",\"version\":\"1.18.0\",\"includeParents\":false,\"type\":\"ProductAssignmentFilter\"}]",
+        "network_calls": 0
+      },
+      "result": {
+        "stage": "synthetic-response",
+        "error": "SE.DAD.Core.Common.Exceptions.ApiClientDeserializationException",
+        "message": "Cannot deserialize NodeListResponse`1: Unable to deserialize polymorphic NodeData sub type UnknownData",
+        "inner_error": "Newtonsoft.Json.JsonSerializationException"
+      },
+      "input_sha256": "29db768d62acf8f616823d9f5b5be317e5260c810a776df41dc538e2c836fdfa",
+      "stdout_sha256": "dff860eeebaf4853baeeb4f8d4fe578cb5870754af67b7efefd1c8b0688f54d4"
+    },
+    {
+      "name": "network-error",
+      "input": {
+        "version": "1.18.0",
+        "status": 200,
+        "body": "{\"data\":[],\"success\":true,\"message\":\"Node list\",\"statusCode\":200}",
+        "failure": "http"
+      },
+      "request": {
+        "stage": "captured-request",
+        "method": "POST",
+        "url": "https://sw.dad.se.com/collections/PackageData/list",
+        "body": "[{\"nodeStates\":[\"active\"],\"type\":\"NodeStateFilter\"},{\"productId\":\"435e4274-3bcf-4f3e-a67a-3008278c539c\",\"version\":\"1.18.0\",\"includeParents\":false,\"type\":\"ProductAssignmentFilter\"}]",
+        "network_calls": 0
+      },
+      "result": {
+        "stage": "synthetic-response",
+        "error": "System.Net.Http.HttpRequestException",
+        "message": "owned synthetic HTTP failure",
+        "inner_error": null
+      },
+      "input_sha256": "3a67a4da2329492d852c85d17b3e4fcda30c552342fb8d1bc02661514de3c537",
+      "stdout_sha256": "d0541559ce4b9975d97a51dcf50c75a650e9effc592d1a9a4ad00a9de4027985"
+    },
+    {
+      "name": "cancel",
+      "input": {
+        "version": "1.18.0",
+        "status": 200,
+        "body": "{\"data\":[],\"success\":true,\"message\":\"Node list\",\"statusCode\":200}",
+        "failure": "cancel"
+      },
+      "request": {
+        "stage": "captured-request",
+        "method": "POST",
+        "url": "https://sw.dad.se.com/collections/PackageData/list",
+        "body": "[{\"nodeStates\":[\"active\"],\"type\":\"NodeStateFilter\"},{\"productId\":\"435e4274-3bcf-4f3e-a67a-3008278c539c\",\"version\":\"1.18.0\",\"includeParents\":false,\"type\":\"ProductAssignmentFilter\"}]",
+        "network_calls": 0
+      },
+      "result": {
+        "stage": "synthetic-response",
+        "error": "System.Threading.Tasks.TaskCanceledException",
+        "message": "owned synthetic cancellation",
+        "inner_error": null
+      },
+      "input_sha256": "b81e6ac55f945a725eff0acd421fd6977a9ca4f6558fc1fd309c049579c84c32",
+      "stdout_sha256": "fead3911f8088b329de2fc84c656e408ef32550bf794eae372262386d8005098"
+    },
+    {
+      "name": "version-empty",
+      "input": {
+        "version": "",
+        "status": 200,
+        "body": "{\"data\":[],\"success\":true,\"message\":\"Node list\",\"statusCode\":200}",
+        "failure": null
+      },
+      "request": {
+        "stage": "captured-request",
+        "method": "POST",
+        "url": "https://sw.dad.se.com/collections/PackageData/list",
+        "body": "[{\"nodeStates\":[\"active\"],\"type\":\"NodeStateFilter\"},{\"productId\":\"435e4274-3bcf-4f3e-a67a-3008278c539c\",\"version\":\"\",\"includeParents\":false,\"type\":\"ProductAssignmentFilter\"}]",
+        "network_calls": 0
+      },
+      "result": {
+        "stage": "synthetic-response",
+        "returned_null": false,
+        "count": 0,
+        "signature_validation_executed": false,
+        "applicability_executed": false
+      },
+      "input_sha256": "a50c24eb36414745a1729f074914df676a460bd5c179658dbc1422bd8f1041f0",
+      "stdout_sha256": "11fc4384e5dbc501af42cc2598c680463d94e9fa6ac85d2a01891133f75b5761"
+    },
+    {
+      "name": "version-leading-space",
+      "input": {
+        "version": " 01.18.0 ",
+        "status": 200,
+        "body": "{\"data\":[],\"success\":true,\"message\":\"Node list\",\"statusCode\":200}",
+        "failure": null
+      },
+      "request": {
+        "stage": "captured-request",
+        "method": "POST",
+        "url": "https://sw.dad.se.com/collections/PackageData/list",
+        "body": "[{\"nodeStates\":[\"active\"],\"type\":\"NodeStateFilter\"},{\"productId\":\"435e4274-3bcf-4f3e-a67a-3008278c539c\",\"version\":\" 01.18.0 \",\"includeParents\":false,\"type\":\"ProductAssignmentFilter\"}]",
+        "network_calls": 0
+      },
+      "result": {
+        "stage": "synthetic-response",
+        "returned_null": false,
+        "count": 0,
+        "signature_validation_executed": false,
+        "applicability_executed": false
+      },
+      "input_sha256": "7cdce1ca361d25e9e32d73b770f686cf241f0a01355102f5e387149aa5197e46",
+      "stdout_sha256": "43cbb6516405fe0c05241c0d88127e10f376989be2ea1b9c070a844921aafa0f"
+    },
+    {
+      "name": "version-suffix",
+      "input": {
+        "version": "1.18.0-beta+owned",
+        "status": 200,
+        "body": "{\"data\":[],\"success\":true,\"message\":\"Node list\",\"statusCode\":200}",
+        "failure": null
+      },
+      "request": {
+        "stage": "captured-request",
+        "method": "POST",
+        "url": "https://sw.dad.se.com/collections/PackageData/list",
+        "body": "[{\"nodeStates\":[\"active\"],\"type\":\"NodeStateFilter\"},{\"productId\":\"435e4274-3bcf-4f3e-a67a-3008278c539c\",\"version\":\"1.18.0-beta+owned\",\"includeParents\":false,\"type\":\"ProductAssignmentFilter\"}]",
+        "network_calls": 0
+      },
+      "result": {
+        "stage": "synthetic-response",
+        "returned_null": false,
+        "count": 0,
+        "signature_validation_executed": false,
+        "applicability_executed": false
+      },
+      "input_sha256": "ddb55b6cad5788acfb281d7695bf4f1ef37d2632a386340767913f42a6fadce7",
+      "stdout_sha256": "dad417e2fb980bb91cac1a72ab54d30efb04323ba6b167055079197caeef7ad6"
+    },
+    {
+      "name": "version-unicode",
+      "input": {
+        "version": "é.漢",
+        "status": 200,
+        "body": "{\"data\":[],\"success\":true,\"message\":\"Node list\",\"statusCode\":200}",
+        "failure": null
+      },
+      "request": {
+        "stage": "captured-request",
+        "method": "POST",
+        "url": "https://sw.dad.se.com/collections/PackageData/list",
+        "body": "[{\"nodeStates\":[\"active\"],\"type\":\"NodeStateFilter\"},{\"productId\":\"435e4274-3bcf-4f3e-a67a-3008278c539c\",\"version\":\"é.漢\",\"includeParents\":false,\"type\":\"ProductAssignmentFilter\"}]",
+        "network_calls": 0
+      },
+      "result": {
+        "stage": "synthetic-response",
+        "returned_null": false,
+        "count": 0,
+        "signature_validation_executed": false,
+        "applicability_executed": false
+      },
+      "input_sha256": "06e237c49fa050f9def5852fbdb72d389356682be3cf5980c43157383d7bf6b9",
+      "stdout_sha256": "078c286cf3ac62c40fb40365ec209b123a1a9f345569e19c0e3a052260bd242e"
+    },
+    {
+      "name": "version-null",
+      "input": {
+        "version": null,
+        "status": 200,
+        "body": "{\"data\":[],\"success\":true,\"message\":\"Node list\",\"statusCode\":200}",
+        "failure": null
+      },
+      "request": {
+        "stage": "captured-request",
+        "method": "POST",
+        "url": "https://sw.dad.se.com/collections/PackageData/list",
+        "body": "[{\"nodeStates\":[\"active\"],\"type\":\"NodeStateFilter\"},{\"productId\":\"435e4274-3bcf-4f3e-a67a-3008278c539c\",\"version\":null,\"includeParents\":false,\"type\":\"ProductAssignmentFilter\"}]",
+        "network_calls": 0
+      },
+      "result": {
+        "stage": "synthetic-response",
+        "returned_null": false,
+        "count": 0,
+        "signature_validation_executed": false,
+        "applicability_executed": false
+      },
+      "input_sha256": "2318cba9ca721be19b3c1ddcc1875898f0915554349b0d1687c4ec9244a5779d",
+      "stdout_sha256": "fb5375d7c0ee2d3f7f8685cf78d34b3da5dc3588f3a5a0c3e507c2a518de7d82"
+    },
+    {
+      "name": "serializer-edge-0",
+      "input": {
+        "version": "  ",
+        "status": 200,
+        "body": "{\"data\":[],\"success\":true,\"statusCode\":200,\"message\":\"owned\"}",
+        "failure": null
+      },
+      "request": {
+        "stage": "captured-request",
+        "method": "POST",
+        "url": "https://sw.dad.se.com/collections/PackageData/list",
+        "body": "[{\"nodeStates\":[\"active\"],\"type\":\"NodeStateFilter\"},{\"productId\":\"435e4274-3bcf-4f3e-a67a-3008278c539c\",\"version\":\"\\u0085\\u2028\\u2029\",\"includeParents\":false,\"type\":\"ProductAssignmentFilter\"}]",
+        "network_calls": 0
+      },
+      "result": {
+        "stage": "synthetic-response",
+        "returned_null": false,
+        "count": 0,
+        "signature_validation_executed": false,
+        "applicability_executed": false
+      },
+      "input_sha256": "b39b7c180737cb6eb8f3fa9ed05aae14fcce365c4763890ef7506bf2db4def7c",
+      "stdout_sha256": "892a9088ff5dd5ef295f14dea55e8d3d7b26846d04983647b2355cb6646583eb"
+    },
+    {
+      "name": "serializer-edge-1",
+      "input": {
+        "version": "\"\\/\t\r\n\b\f",
+        "status": 200,
+        "body": "{\"data\":[],\"success\":true,\"statusCode\":200,\"message\":\"owned\"}",
+        "failure": null
+      },
+      "request": {
+        "stage": "captured-request",
+        "method": "POST",
+        "url": "https://sw.dad.se.com/collections/PackageData/list",
+        "body": "[{\"nodeStates\":[\"active\"],\"type\":\"NodeStateFilter\"},{\"productId\":\"435e4274-3bcf-4f3e-a67a-3008278c539c\",\"version\":\"\\\"\\\\/\\t\\r\\n\\b\\f\",\"includeParents\":false,\"type\":\"ProductAssignmentFilter\"}]",
+        "network_calls": 0
+      },
+      "result": {
+        "stage": "synthetic-response",
+        "returned_null": false,
+        "count": 0,
+        "signature_validation_executed": false,
+        "applicability_executed": false
+      },
+      "input_sha256": "7221932119ae67c9829718f16b11e7bec49d6793848538215dc66b19c4b2fc79",
+      "stdout_sha256": "ae1437d75388b57e28fe568abf48c369c17db52314147f286aae6f25dd152e7e"
+    },
+    {
+      "name": "serializer-edge-2",
+      "input": {
+        "version": "emoji😀",
+        "status": 200,
+        "body": "{\"data\":[],\"success\":true,\"statusCode\":200,\"message\":\"owned\"}",
+        "failure": null
+      },
+      "request": {
+        "stage": "captured-request",
+        "method": "POST",
+        "url": "https://sw.dad.se.com/collections/PackageData/list",
+        "body": "[{\"nodeStates\":[\"active\"],\"type\":\"NodeStateFilter\"},{\"productId\":\"435e4274-3bcf-4f3e-a67a-3008278c539c\",\"version\":\"emoji😀\",\"includeParents\":false,\"type\":\"ProductAssignmentFilter\"}]",
+        "network_calls": 0
+      },
+      "result": {
+        "stage": "synthetic-response",
+        "returned_null": false,
+        "count": 0,
+        "signature_validation_executed": false,
+        "applicability_executed": false
+      },
+      "input_sha256": "082530da79981767b37ea9061d179e280c58a7262718debd815115864d1a73c1",
+      "stdout_sha256": "245c5473b69043a1cac0fbfd1e23ff850fabcf37d308eefd02da25c3aaf56691"
+    }
+  ],
+  "collection_probe_sha256": "baec31f714495332035e621feacdfa7feb5f240949d7e36801013a1ca2f39bc5",
+  "collection_assembly_hashes": {
+    "antlr3.runtime.dll": "7f1792ff5a0a5e0bd52982f9cea642240a1438909079ae0ca3695434b3b6fb69",
+    "avalonlibrary.dll": "34f5bc79432886a376eac55b449612849f0d367e9a3eb02653ae08dbbd2f8aa5",
+    "bouncycastle.cryptography.dll": "3f0182309f8ffb9ce0fa5f303219d3155bf1da232e14a620ed234aec209a2935",
+    "brandidentity.dll": "a271dd8123222c0ced3dcddf119363adbfbebcf5f7d68c5547cabb21eef6704a",
+    "brandidentity.resources.dll": "eb8a542be72f3f503ef602f227fd92f6b081afd6a723e80fcc3090b17fef5249",
+    "downloadbrick.dll": "1971a76d143d3e7c1afa2a27cb99f15afca81de195530d4b4e72dae201cc0d3f",
+    "flxclientcommon.dll": "51ebe9d7d09b0421b5d8434f12dff0e9c05b6db8e936529b8398942cc6cff72d",
+    "flxconnect.dll": "7c78e82e83deb19a0ba25f72cb93a7403d3a642106bacb523f40fbd2d6e3c9f5",
+    "flxconnectclient.dll": "fb8db5eab0adb9212c89e8da69e745769e44ff9da5af57e7617d694dea966520",
+    "flxcore.dll": "c58b9bd40da4fc8f4c6484bb18049e47a282746685f7dafc97975136b30e4108",
+    "flxlicensingclient.dll": "5fa6b8ffa0712d225d64e1498671c3302af9a6e6aff4745d21d19a7fe6b617c9",
+    "fuscontracts.dll": "95fe2b129b9de57bacb8e75900c6a48f75a6cd50d780a42b7ba4bc4821d712c9",
+    "microsoft.bcl.asyncinterfaces.dll": "ed5bc605f7f9fcc382183abef06c354dad946abb42a07631712077b2157d6bc9",
+    "microsoft.identitymodel.abstractions.dll": "d2df4a4f1d6d74bccad8f7aeb5b3fd5bc299e4e4d5b14f5bb40a6e4d418231b9",
+    "microsoft.identitymodel.jsonwebtokens.dll": "176a6a99fa385583a0044dc4c2307df333de2bc0096474ec631efbefedbdebf6",
+    "microsoft.identitymodel.logging.dll": "262aa7257cb874a8cabf96b5a6d18b4a217f5c9d2a841cd1a7d9ed1724e59ddb",
+    "microsoft.identitymodel.tokens.dll": "52e734b9ffa2acc2cd25684ee815ecd398f1fb0d1fc3f26b58ae5d5c522b5f41",
+    "microsoft.win32.registry.dll": "e9a9d281c1a708aaae366f82fd6a1742f65da2918cc4fa5eaaaada0be24277d9",
+    "ncalc.dll": "d6cfaeb501093d1dad90f193eacd896652509f690a591c121949b576746fbff3",
+    "newtonsoft.json.dll": "b624949df8b0e3a6153fdfb730a7c6f4990b6592ee0d922e1788433d276610f3",
+    "se.dad.core.client.dll": "1dfe507db194587474a38a1677151d8c92ef8ab7e5725140292a162ea1b421d9",
+    "se.dad.core.common.dll": "71e582d87734af16ba42eeb6184a329f3cacfcb86b8ad23676cdafc3aaa227f5",
+    "se.dad.core.public.dll": "64f3de020aa9cde0c455e8d2cee8128a2252d2640eebf099ea15acba85fec247",
+    "se.dad.services.clientapi.api.dll": "c407914345c39732a9788f87bc0f8e99a836268ad6a23d74380825034d2df9ad",
+    "se.dad.services.clientapi.client.dll": "6f1ad031bd96fed5368acd3afb9de8f4df493bfdb876173203364d8552cd07f8",
+    "se.dad.sesu.common.dll": "477fb88de310852611f26d1f845da23b8f0e6b602de8ab61a3eefc06339dc4ba",
+    "se.dad.signature.api.dll": "e9fb6514e42e91c2aa56094c8d40ac0730860595943094c4fb1a816a90ce5b09",
+    "se.dad.signature.client.dll": "fbebe2300a18672f09875a170178c11bebc857952499d3023bc0579f632774f3",
+    "serilog.dll": "3b581ad8415f1a377b50fb30cdaee182593a4ac306fc5eb8a10f292fdd06ff65",
+    "serilog.enrichers.environment.dll": "dc0174cf382ce41b5fb186cdd9f772898957b0cc1c419466ad55b327dbc95b05",
+    "serilog.enrichers.process.dll": "aecce333e7c1697757e6d4fd441308f70d1a938c6b8d72b538c4eb5d19b2db47",
+    "serilog.enrichers.thread.dll": "7d125aac4cc4045daca4b4f87e487cbd1b38f634144eeedbc3571dcfc5abe420",
+    "serilog.formatting.compact.dll": "7a63331f3d0df780f629b0e9169ac75d559ea95934e223453fd57b9f622cbf83",
+    "serilog.settings.appsettings.dll": "c2341da8535b22d4a27430ce19aab97ee3b9dc81c24bfbfb2cbb91375c0f4315",
+    "serilog.sinks.console.dll": "a3d0d2ef84548f823873374c0626689c6834dbb4ea84290b8161321e59d39e4a",
+    "serilog.sinks.debug.dll": "c49c30c35a62f11a49bf07e6ec50a86b3713490c654f536ebf541413cf4452fb",
+    "serilog.sinks.file.dll": "51fe1e6ddd464f2c486fdd4ecfa376ad98160af86fe7516a3c5328ce069d6b47",
+    "serilog.sinks.inmemory.dll": "f0349382dc2065973a54d7366f8800c6e18ffc7d58b1f9e7859a8a67eb65812f",
+    "sesubrick.dad.dll": "21a6b2fb74d9b308d22c740ca0a1d887d80a067cccc03f59e4dd1bbb6c9c4b0c",
+    "sesucontracts.dll": "6e945336bf1885659d052b0b09b9710e092aab1451e825dc93522e136e0c589d",
+    "sesudatacollectorbrick.dll": "bb8e80ac10d2915deb9973cdd4f6b156acab2ba7c568ccb5c504a68ec28529ea",
+    "sesuutilities.dll": "42a4fca045b951434f8faf813638e90744ec65e8f2e32fe72f375c76244e16fa",
+    "softwareupdate.resources.dll": "4aca2dcba2aa97b9a80a9380c8f3fcfc8a3c997f3761d6665d1cbff47ac265b6",
+    "sutbrick.dll": "4d5f9bb7e6daeddb2bb73ae80a615f92a0e20ac1964f60ba20d1094b21a56c70",
+    "sutcontracts.dll": "908c4ce05888b40a34ada8b885ae0bfe13c984053e7d84a6c9c7ba3d158ef751",
+    "system.buffers.dll": "accccfbe45d9f08ffeed9916e37b33e98c65be012cfff6e7fa7b67210ce1fefb",
+    "system.componentmodel.annotations.dll": "9f15d5475a59964b1422a6ca16c8eb0fb6d16ad5b2e8613487cd4eb303fe2e84",
+    "system.memory.dll": "bf3fb84664f4097f1a8a9bc71a51dcf8cf1a905d4080a4d290da1730866e856f",
+    "system.numerics.vectors.dll": "1d3ef8698281e7cf7371d1554afef5872b39f96c26da772210a33da041ba1183",
+    "system.runtime.compilerservices.unsafe.dll": "f6ef966d019b1c406659ce18f3ab00c3c7c9334e4dadc0249bc6721cdb77ee9a",
+    "system.security.accesscontrol.dll": "1fda491eebdb19ea0a83cf6c16ab5dd004a1bfdfc845ede017ebe0945beb927f",
+    "system.security.principal.windows.dll": "b4d8e15adc235d0e858e39b5133e5d00a4baa8c94f4f39e3b5e791b0f9c0c806",
+    "system.text.json.dll": "d2608254043e5b19f6e8335569fc2dd72ae4ce11a3df0d3f1425ac158df93237",
+    "system.threading.tasks.extensions.dll": "4f81ffd0dc7204db75afc35ea4291769b07c440592f28894260eea76626a23c6",
+    "system.valuetuple.dll": "e905d102585b22c6df04f219af5cbdbfa7bc165979e9788b62df6dcc165e10f4",
+    "updatemanager.dll": "73b41a81ef06baf5ba2df60c66db0fa439b597d7fa2e122bcf718fbd2611e0cf"
+  },
+  "collection_runtime_hashes": {
+    "mono-sgen64": "91b99fc4b1158785b43506f2d76f9998c31f0492128e5789fbaaab0e300afd49",
+    "mcs.exe": "857bb3129c3e2a5e7f8410db8fa5eb78139e934bb6279a72428597962311d771"
+  },
+  "live_query": {
+    "started_at": "2026-09-15T01:07:33.291182+00:00",
+    "method": "POST",
+    "url": "https://sw.dad.se.com/collections/PackageData/list",
+    "request_sha256": "68de95e31964a019bd1dc18b1cb31acb8c4df81ef55f002e4cdcbeaddfc627c5",
+    "installed_version": "1.18.0",
+    "max_response_bytes": 2097152,
+    "timeout_seconds": 15,
+    "redirects_allowed": false,
+    "request_purpose": "Read product-assigned update catalogue; no download or install",
+    "status": 200,
+    "headers": [
+      [
+        "Content-Type",
+        "application/json; charset=utf-8"
+      ],
+      [
+        "Content-Length",
+        "24255"
+      ],
+      [
+        "Cache-Control",
+        "private,max-age=0"
+      ],
+      [
+        "Expires",
+        "0"
+      ],
+      [
+        "x-content-type-options",
+        "nosniff"
+      ],
+      [
+        "x-frame-options",
+        "DENY"
+      ],
+      [
+        "Content-Security-Policy",
+        "default-src 'none'; script-src 'none'; object-src 'none'; frame-src 'none'; form-action 'none';"
+      ],
+      [
+        "Date",
+        "Tue, 15 Sep 2026 01:07:33 GMT"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "body_complete": true,
+    "response_bytes": 24255,
+    "response_sha256": "4444edb826360c2909b740c6152bc2d9f76f6ce471400cda1bbaf49dfbe97ad9"
+  },
+  "scope": "Original menu with OS-call fixtures, original collection client with injected HTTP; signatures and applicability are not verified",
+  "serializer_edge_provenance": {
+    "exe_sha256": "044e768a64bac79db8515d5e4cbfa14dffba4c14eadd48c4b24b20ab6ed4e338",
+    "source_sha256": "baec31f714495332035e621feacdfa7feb5f240949d7e36801013a1ca2f39bc5",
+    "network_calls": 0
+  }
+}

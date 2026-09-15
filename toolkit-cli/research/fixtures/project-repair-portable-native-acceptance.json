@@ -1,0 +1,208 @@
+{
+  "format": "cbus-project-repair-portable-native-acceptance-v1",
+  "passed": true,
+  "tests_per_python": 4,
+  "errors": 0,
+  "failures": 0,
+  "skips": 0,
+  "scope": "Pinned generated Python repair outputs loaded into owned original XML repositories; no native REPAIR/TRANSFORM of Python outputs",
+  "source_count": 4,
+  "input_count": 4,
+  "archived_unique_inputs": 8,
+  "source_sha256": {
+    "src/cbus_toolkit/__init__.py": "a39021e17c28b8e97c4b6ad7b20ffe35ce621332c0f4d006162f77c0703b5fed",
+    "src/cbus_toolkit/cgate.py": "fef71db3a4d98c1a175a8bf0287b5abcaea4689df835dea7b0c19413e206eb15",
+    "src/cbus_toolkit/project_repair.py": "414a87682c3d0306f1914c4fcd8d537247077e5c7b5c317e302602ecd18f6ffb",
+    "src/cbus_toolkit/repositories.py": "9a4dfa92e099f319e73f4cb354702d2e762ea7f7657e65ba64bc8b9203bc71d2"
+  },
+  "input_sha256": {
+    "research/runtime/project-repair-native-acceptance-v1/run.py": "19f83b351e3fdf6a329321d376c02641f704b9abff84123797fd56dbc9ea3690",
+    "tests/test_project_repair_native.py": "16ae2f75a8fa35d4da683e9721f3c6c3cdd48a19a5ce50e4d527e194bd206205",
+    "research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+    "research/fixtures/project-repair-native-vectors.json": "4249fba21a15c4018b3c3c4d8b4c126697a9c990382c3bf23cec0cc51b3c98da"
+  },
+  "literal_fixture": {
+    "path": "research/fixtures/project-repair-native-vectors.json",
+    "sha256": "4249fba21a15c4018b3c3c4d8b4c126697a9c990382c3bf23cec0cc51b3c98da"
+  },
+  "original_literal_cases": 5,
+  "modern_native_loads_per_python": 3,
+  "legacy_native_load_rejections_per_python": 1,
+  "owned_processes_per_python": 4,
+  "malformed_input_rejected_before_native": true,
+  "native_repair_requested": false,
+  "native_transform_requested": false,
+  "shared_service_used": false,
+  "net_open_requested": false,
+  "generic_repair_result_claims_native_loadability": false,
+  "readback_comparison": {
+    "regenerated_oids_excluded": true,
+    "generated_inter_element_whitespace_ignored": true,
+    "other_full_ordered_tree_compared": true,
+    "only_allowed_field_order_change": {
+      "group_address": 255,
+      "python": [
+        "Address",
+        "TagName"
+      ],
+      "native": [
+        "TagName",
+        "Address"
+      ]
+    }
+  },
+  "reports": [
+    {
+      "python": "3.13.14",
+      "seconds": 3.5286392090201844,
+      "report": {
+        "path": "research/runtime/project-repair-native-acceptance-v1/final-313/report.json",
+        "sha256": "ad7a2177098b212fb745c5687b22ce4fe007acdc36f6a39903287bd85198acbe"
+      },
+      "native_reports": [
+        {
+          "kind": "modern",
+          "path": "research/runtime/project-repair-native-acceptance-v1/final-313/modern.json",
+          "sha256": "9f9779fdb0ad08866d630459ea2909249f0045e683e8e52b950582097ecb65aa",
+          "cases": [
+            {
+              "id": "RPDUP",
+              "load_code": 200,
+              "loadable": true,
+              "regenerated_oid_count": 61,
+              "staged_bytes_unchanged": true,
+              "cleanup_complete": true,
+              "original_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+            },
+            {
+              "id": "RPFIX",
+              "load_code": 200,
+              "loadable": true,
+              "regenerated_oid_count": 61,
+              "staged_bytes_unchanged": true,
+              "cleanup_complete": true,
+              "original_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+            },
+            {
+              "id": "RPOLD",
+              "load_code": 200,
+              "loadable": true,
+              "regenerated_oid_count": 61,
+              "staged_bytes_unchanged": true,
+              "cleanup_complete": true,
+              "original_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+            }
+          ]
+        },
+        {
+          "kind": "legacy",
+          "path": "research/runtime/project-repair-native-acceptance-v1/final-313/legacy.json",
+          "sha256": "ebdd3773c8fe8a09bdd23627df9971bbabda8805c5987602993f50854c25c49b",
+          "cases": [
+            {
+              "id": "RPMAL",
+              "load_code": 408,
+              "loadable": false,
+              "regenerated_oid_count": null,
+              "staged_bytes_unchanged": true,
+              "cleanup_complete": true,
+              "original_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+            }
+          ]
+        }
+      ],
+      "archive": {
+        "path": "research/runtime/project-repair-native-acceptance-v1/final-313/accepted-inputs.tar.gz",
+        "sha256": "27d0458e90a34720ca3d7f0f67a1524525970b1a8bc6a0e2cbe2c2b2e7766f55",
+        "bytes": 22616
+      }
+    },
+    {
+      "python": "3.10.20",
+      "seconds": 3.6525310419965535,
+      "report": {
+        "path": "research/runtime/project-repair-native-acceptance-v1/final-310/report.json",
+        "sha256": "65173a63887920a774c2771bee258913dbe9af89ffb67fa6309c1422a3ae78c8"
+      },
+      "native_reports": [
+        {
+          "kind": "modern",
+          "path": "research/runtime/project-repair-native-acceptance-v1/final-310/modern.json",
+          "sha256": "fef4660e85b9bf3097336a982a8bcb1020be85901a5a09b54a9fa8ec8880f49c",
+          "cases": [
+            {
+              "id": "RPDUP",
+              "load_code": 200,
+              "loadable": true,
+              "regenerated_oid_count": 61,
+              "staged_bytes_unchanged": true,
+              "cleanup_complete": true,
+              "original_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+            },
+            {
+              "id": "RPFIX",
+              "load_code": 200,
+              "loadable": true,
+              "regenerated_oid_count": 61,
+              "staged_bytes_unchanged": true,
+              "cleanup_complete": true,
+              "original_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+            },
+            {
+              "id": "RPOLD",
+              "load_code": 200,
+              "loadable": true,
+              "regenerated_oid_count": 61,
+              "staged_bytes_unchanged": true,
+              "cleanup_complete": true,
+              "original_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+            }
+          ]
+        },
+        {
+          "kind": "legacy",
+          "path": "research/runtime/project-repair-native-acceptance-v1/final-310/legacy.json",
+          "sha256": "a26b1cbf438f858078f15863a198b8a53f3b1aecc4f8157a1f621c60d4ed0fe6",
+          "cases": [
+            {
+              "id": "RPMAL",
+              "load_code": 408,
+              "loadable": false,
+              "regenerated_oid_count": null,
+              "staged_bytes_unchanged": true,
+              "cleanup_complete": true,
+              "original_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+            }
+          ]
+        }
+      ],
+      "archive": {
+        "path": "research/runtime/project-repair-native-acceptance-v1/final-310/accepted-inputs.tar.gz",
+        "sha256": "ca995f08e743638d7d024be97654508e0a8b2f4fbcc88b9a67d1fc3b731d26bf",
+        "bytes": 22616
+      }
+    }
+  ],
+  "preserved_drafts": [
+    {
+      "path": "research/runtime/project-repair-native-acceptance-v1/draft-313/failed-RPDUP.json",
+      "sha256": "cd62e070aaa3097910557b979f4141cacd91e225b8b788e7a8cd9fbc36e98391",
+      "scope": "First stricter assertion recorded native Group255 field order; no implementation failure inferred"
+    },
+    {
+      "path": "research/runtime/project-repair-native-acceptance-v1/draft-313/failed-RPFIX.json",
+      "sha256": "af4b7c97b6ff8505361c0ee8015c731bde351edb816276647accfbeef58ca363",
+      "scope": "First stricter assertion recorded native Group255 field order; no implementation failure inferred"
+    },
+    {
+      "path": "research/runtime/project-repair-native-acceptance-v1/draft-313/failed-RPOLD.json",
+      "sha256": "2304788e330d78328f32b9c6609895fc75670f2353786be48b75cda0f6d6e150",
+      "scope": "First stricter assertion recorded native Group255 field order; no implementation failure inferred"
+    },
+    {
+      "path": "research/runtime/project-repair-native-acceptance-v1/draft-313/legacy.json",
+      "sha256": "562e87434b7cc7f6c9834cf74452c71fc75a91e8294410eeb82fc0385e1d95e0",
+      "scope": "First stricter assertion recorded native Group255 field order; no implementation failure inferred"
+    }
+  ]
+}

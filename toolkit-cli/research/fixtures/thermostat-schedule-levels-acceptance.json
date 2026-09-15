@@ -1,0 +1,103 @@
+{
+  "format": "thermostat-schedule-levels-acceptance-v1",
+  "passed": true,
+  "scope": "Retained original inner CreateLevels model with supplied save-callback boundaries; no UI selection/native storage/Delphi unwind equivalence",
+  "source_files": {
+    "src/cbus_toolkit/thermostat_schedule_levels.py": "aab440e9233d531fa3d59044bfec7f9080873063e080f94faa16e960b8395dc8",
+    "tests/test_thermostat_schedule_levels.py": "836b64da8365100aa236506289aa5c681cc3ff6c087a9cb3e63a3d42f848b5fe",
+    "research/fixtures/thermostat-schedule-levels-vectors.json": "672dd12f06eb5f89022366b3dc8052ca0d8e0af101b0675b9d93c8b65341a35b",
+    "docs/thermostat-schedule-levels.md": "37813b165d8bde5e0c04189fa8b4c3cd15f119e59a1541266450c3e75a0237ac"
+  },
+  "tests": {
+    "313": {
+      "python": "3.13.14 (main, Jun 10 2026, 12:24:04) [Clang 17.0.0 (clang-1700.6.4.2)]",
+      "tests_run": 17,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "elapsed_seconds": 0.09210670803440735,
+      "report_path": "/Volumes/external/cbus-toolkit-research-20260915-thermostat-levels/core-acceptance-v2/313.json",
+      "report_sha256": "cb0708a34c08a7fa47eca35ce199612994995fdac31ff1086319d1265dd5adb0",
+      "log_path": "/Volumes/external/cbus-toolkit-research-20260915-thermostat-levels/core-acceptance-v2/final-313.log",
+      "log_sha256": "2a06f6923c3327f63d6331f34e686ab578e6fc7d1a9c8a44cef52da1c4d49d5f",
+      "inputs_unchanged": true,
+      "loaded_modules": {
+        "test_thermostat_schedule_levels": {
+          "path": "/Users/mitchell/source/cbus/toolkit-cli/tests/test_thermostat_schedule_levels.py",
+          "sha256": "836b64da8365100aa236506289aa5c681cc3ff6c087a9cb3e63a3d42f848b5fe"
+        },
+        "cbus_toolkit": {
+          "path": "/Users/mitchell/source/cbus/toolkit-cli/src/cbus_toolkit/__init__.py",
+          "sha256": "a39021e17c28b8e97c4b6ad7b20ffe35ce621332c0f4d006162f77c0703b5fed"
+        },
+        "cbus_toolkit.thermostat_schedule_levels": {
+          "path": "/Users/mitchell/source/cbus/toolkit-cli/src/cbus_toolkit/thermostat_schedule_levels.py",
+          "sha256": "aab440e9233d531fa3d59044bfec7f9080873063e080f94faa16e960b8395dc8"
+        }
+      },
+      "captured_original_cases_compared": 14,
+      "fresh_original_executions": 0,
+      "native_storage_or_vm_called": false
+    },
+    "310": {
+      "python": "3.10.20 (main, Mar  3 2026, 00:49:35) [Clang 17.0.0 (clang-1700.6.4.2)]",
+      "tests_run": 17,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "elapsed_seconds": 0.10081091697793454,
+      "report_path": "/Volumes/external/cbus-toolkit-research-20260915-thermostat-levels/core-acceptance-v2/310.json",
+      "report_sha256": "49762be74575f702bf8cbe91bd5385c04b560a64f0ca527fa25d640c2baa4795",
+      "log_path": "/Volumes/external/cbus-toolkit-research-20260915-thermostat-levels/core-acceptance-v2/final-310.log",
+      "log_sha256": "67b7489276d54695ec1bd67cc9835bb99e2c69a97acb7395b0d1623a282a4cc7",
+      "inputs_unchanged": true,
+      "loaded_modules": {
+        "test_thermostat_schedule_levels": {
+          "path": "/Users/mitchell/source/cbus/toolkit-cli/tests/test_thermostat_schedule_levels.py",
+          "sha256": "836b64da8365100aa236506289aa5c681cc3ff6c087a9cb3e63a3d42f848b5fe"
+        },
+        "cbus_toolkit": {
+          "path": "/Users/mitchell/source/cbus/toolkit-cli/src/cbus_toolkit/__init__.py",
+          "sha256": "a39021e17c28b8e97c4b6ad7b20ffe35ce621332c0f4d006162f77c0703b5fed"
+        },
+        "cbus_toolkit.thermostat_schedule_levels": {
+          "path": "/Users/mitchell/source/cbus/toolkit-cli/src/cbus_toolkit/thermostat_schedule_levels.py",
+          "sha256": "aab440e9233d531fa3d59044bfec7f9080873063e080f94faa16e960b8395dc8"
+        }
+      },
+      "captured_original_cases_compared": 14,
+      "fresh_original_executions": 0,
+      "native_storage_or_vm_called": false
+    }
+  },
+  "captured_original_outcomes": 14,
+  "original_zone_labels": 31,
+  "original_denied_provider_boundaries": 2,
+  "captured_original_maximum_retained_records": 34,
+  "portable_byte_address_domain_records": 256,
+  "domain_composition": "Unique byte addresses are retained by original address-search semantics; finite original capture includes0,32,255 extras. Portable full256 preservation is a model regression, not256 original examples.",
+  "input_archive": {
+    "path": "/Volumes/external/cbus-toolkit-research-20260915-thermostat-levels/core-acceptance-v2/accepted-inputs.zip",
+    "sha256": "50f40d70eb11750d17d42f5a833bc5f4db3db22bfe34feb2bae8c66d2b0ca980",
+    "input_count": 17
+  },
+  "input_manifest": {
+    "path": "/Volumes/external/cbus-toolkit-research-20260915-thermostat-levels/core-acceptance-v2/accepted-inputs.json",
+    "sha256": "4856b3b3b2dc609ecc384a41f240b45e0c6c52c34d46a03941b78c600e68698d"
+  },
+  "original_research_seal": {
+    "path": "/Volumes/external/cbus-toolkit-research-20260915-thermostat-levels/research-seal.json",
+    "sha256": "8e8aeba8a1b6ab3b74def02838e8aa03ff4baa54e74a6808da2025cad482c100"
+  },
+  "original_research_summary": {
+    "path": "/Volumes/external/cbus-toolkit-research-20260915-thermostat-levels/research-summary.json",
+    "sha256": "ced0ecd7e143b567e4598ecee5ade27b413642c0e3277aaa610d5fb4e49278c7"
+  },
+  "prior_fifteen_test_checkpoint": {
+    "path": "/Volumes/external/cbus-toolkit-research-20260915-thermostat-levels/core-acceptance-v1",
+    "final_acceptance": false,
+    "reason": "Successful pre-fix reports preserved; callback-isolation findings fixed and meaningful regressions added in current17."
+  },
+  "independent_review": "cgate_impl read-only callback delta recheck clear; no reviewer execution or native calls",
+  "whole_suite_acceptance_claimed": false
+}

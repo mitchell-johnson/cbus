@@ -1,0 +1,106 @@
+{
+  "format": "cbus-windows-bridge-v2-acceptance-v1",
+  "scope": "Owned original-model research queue; no listener, credentials, security-policy change, physical network or installed Toolkit modification",
+  "v1_failure": {
+    "operation": "Read ready JSON before process start",
+    "condition": "Windows sharing violation during file upload",
+    "process_started": false,
+    "failed_job": "job-probe-c92f59df60a8473c",
+    "retained_evidence": "research/runtime/edlt-lifecycle/windows-run-1-failed"
+  },
+  "native_windows_tests": {
+    "passed": true,
+    "count": 9,
+    "stdout_sha256": "7498671c03e96fca932fddf08bb03bfa99bb03a7c04b87a3d4c89e553548266c",
+    "cases": [
+      "partial-ready-json then valid publication once",
+      "ready file sharing violation",
+      "script file sharing violation",
+      "bounded hash mismatch with intended hash",
+      "bounded partial JSON",
+      "interruption after snapshot then restart",
+      "interruption after admission then restart",
+      "execute exact hashed snapshot after upload changes",
+      "actual command starts then process exits42 before result; restart never replays"
+    ]
+  },
+  "live_publication": {
+    "partial_observed_before_admission": true,
+    "completed_after_valid_publication": true,
+    "script_executions": 1,
+    "helper_rejects_id_reuse": true,
+    "result": {
+      "exit_code": 0,
+      "complete": true,
+      "pre_execution": false,
+      "admitted": true,
+      "script_sha256": "8a55021967e98b7d794b0524b39ae58e7025a67538c53399fb3a2d4c97786bac",
+      "utc": "2026-09-14T18:09:07.2553131Z",
+      "job_id": "job-000-live-partial"
+    }
+  },
+  "handover": {
+    "v1_exit": {
+      "pid": 5564,
+      "exit_observed": true,
+      "already_exited": true,
+      "utc": "2026-09-14T18:04:44.3809759Z"
+    },
+    "v2_ready": {
+      "format": "cbus-windows-bridge-v2",
+      "pid": 484,
+      "expires_utc": "2026-09-14T22:04:44.8506417Z",
+      "job_directory": "C:\\CBusCliOracle118-88d8",
+      "network_listener": false,
+      "admission_poll_limit": 120,
+      "source_protocol": "hash-verified-snapshot-before-execution"
+    },
+    "process_check": {
+      "exit_code": 0,
+      "complete": true,
+      "pre_execution": false,
+      "admitted": true,
+      "script_sha256": "f36bfdfaa4fa29e0b4364a68e1a01313b2674a9364afcc6e5d515335fad7c88e",
+      "utc": "2026-09-14T18:05:18.1713516Z",
+      "job_id": "job-bridge-v2-process-check",
+      "stderr_hex": ""
+    },
+    "v1_backups": [
+      "bridge-ready.json.v1-20260914T1804447349642",
+      "bridge-stopped.json.v1-20260914T1804447349642",
+      "stop.bridge.v1-20260914T1804447508689"
+    ]
+  },
+  "admission_semantics": {
+    "poll_limit": 120,
+    "write_snapshot_from_already_hashed_bytes": true,
+    "snapshot_and_marker_flush_before_start": true,
+    "create_new_only": true,
+    "restart_skips_any_snapshot_marker_or_result": true,
+    "pre_execution_rejection_distinct_from_process_result": true,
+    "started_process_auto_retry": false,
+    "exclusive_runner_lock": true
+  },
+  "source_sha256": {
+    "research/NativeWindowsBridge.cs": "da252f50556c70a58a039bb933b0f2dc8d25f31a1838ceac243cede07355efb1",
+    "research/NativeWindowsBridgeTests.cs": "43093607b73eec45846a360f14efb85be223edb8221c614eabd666b71b1cf012",
+    "research/windows_bridge.py": "9b2044b76fa74cb5bb06dcfb854c7a1fc7f96c19ba3f0367e5f901cfad822107",
+    "docs/windows-native-oracle.md": "cacc41be3508cb00291007549b3ac00f21b956adb8c71ac0bee4514c5f7b4147"
+  },
+  "v1_pins": {
+    "runner_source_sha256": "f1cb5d5562d905a72d2e80a6e71aca9194582ea7018242dff4511be4b2f73024",
+    "host_helper_sha256": "a67dabe35372066e6023acf002088fa360f2bc5a898283c2331963bc081af0b6",
+    "guest_exe_sha256": "1b74eab795b0e7ccda14c208ba43d3db6f1ef7fb6fd8ad9251c25d52c82678cb"
+  },
+  "v2_pins": {
+    "guest_exe_sha256": "7d870cd1772936ca7e3de97a56cb443390da61e8484c1638629c5fb2b5ae5440",
+    "tests_exe_sha256": "4018ad0ed16a574b3ca3419b77cb432ae4e5bd0662a88a5404f2f7d884d87ed1",
+    "launcher_sha256": "d6ec4ab5b43ec78fd0d3aaebec851fbe430ecb91048d54fbc14bec90a6dc8453"
+  },
+  "limitations": [
+    "The current runner is an explicit resume of a previously owned staged fixture, not a fresh VM installer.",
+    "Five-minute process timeout terminates the immediate command process; research jobs must not spawn persistent descendants.",
+    "A missing result after admission is uncertain; no automatic retry or replay.",
+    "Earlier acceptance remains pinned to its earlier harness; this record does not backdate v2 coverage."
+  ]
+}

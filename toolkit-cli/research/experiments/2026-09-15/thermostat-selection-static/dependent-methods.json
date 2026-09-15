@@ -1,0 +1,31 @@
+{
+  "static_only": true,
+  "original_executed": false,
+  "source_hashes": {
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "methods": [
+    {
+      "name": "CIS_TThermostat.ZoneLevelsExist",
+      "address": "0xfda7a4",
+      "end": "0xfda910",
+      "bytes_sha256": "d01ebc144fd96b6213876977ecd22ed34ce56474a6beb77f5e782c9e877463b0",
+      "asm": "ZoneLevelsExist.asm"
+    },
+    {
+      "name": "CIS_TCommonCBus.TCBusGroup.IsUnused",
+      "address": "0xf27e14",
+      "end": "0xf27e38",
+      "bytes_sha256": "d8303f159f3cd7404170fc45c6a79fcae0f526960c8eecc758908e64dea9ee19",
+      "asm": "IsUnused.asm"
+    },
+    {
+      "name": "CIS_TThermostat.TZoneManagerService.GetRemoteScheduleEnable",
+      "address": "0xfdffd4",
+      "end": "0xfdfff8",
+      "bytes_sha256": "e97fb5efdc851e0af36e6fcfb5c1bbae36ed38cfc82f1ce6b69d208aeb615a3e",
+      "asm": "GetRemoteScheduleEnable.asm"
+    }
+  ]
+}

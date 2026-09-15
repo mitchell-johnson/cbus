@@ -1,0 +1,527 @@
+{
+  "format": "cbus-edlt-colours-acceptance-v1",
+  "profile": {
+    "unit_type": "KEYGL5",
+    "catalog_number": "5055EDL",
+    "firmware": "5.5.00"
+  },
+  "scope": "Nine fixed values and six explicit primary-application numeric control references; database PP only",
+  "tests": [
+    {
+      "python": "3.13.14",
+      "count": 11,
+      "skips": 0,
+      "passed": true,
+      "elapsed_seconds": 26.332
+    },
+    {
+      "python": "3.10.20",
+      "count": 11,
+      "skips": 0,
+      "passed": true,
+      "elapsed_seconds": 30.432
+    }
+  ],
+  "test_modules": [
+    "tests.test_edlt_colours",
+    "tests.test_cli_edlt_colours"
+  ],
+  "original_vector_rows": 2894,
+  "original_vectors": {
+    "palette_scalar": 1084,
+    "cached_group": 1536,
+    "standby": 256,
+    "fixed_summaries": 3,
+    "omitted_key_colours": 9,
+    "missing_group": 6
+  },
+  "screen_colours": [
+    "black",
+    "white",
+    "red",
+    "green",
+    "blue",
+    "cyan",
+    "magenta",
+    "yellow"
+  ],
+  "key_colours": [
+    "none",
+    "white",
+    "red",
+    "green",
+    "blue",
+    "cyan",
+    "magenta",
+    "yellow",
+    "orange"
+  ],
+  "field_layouts": {
+    "ActiveBacklightBrightness": {
+      "Type": "int",
+      "Address": "$122",
+      "DefaultValue": "$FF"
+    },
+    "ActiveIndicatorBrightness": {
+      "Type": "int",
+      "Address": "$121",
+      "DefaultValue": "$80"
+    },
+    "IdleBacklightBrightness": {
+      "Type": "int",
+      "Address": "$120",
+      "DefaultValue": "$0A"
+    },
+    "IdleIndicatorBrightness": {
+      "Type": "int",
+      "Address": "$11F",
+      "DefaultValue": "$0A"
+    },
+    "IndicatorOffColour": {
+      "Type": "int",
+      "Address": "$11D",
+      "DefaultValue": "$00"
+    },
+    "IndicatorOnColour": {
+      "Type": "int",
+      "Address": "$11C",
+      "DefaultValue": "$06"
+    },
+    "LCDBackground": {
+      "Type": "int",
+      "Address": "$113",
+      "BitAddress": "0",
+      "BitSize": "3",
+      "DefaultValue": "$00"
+    },
+    "LCDForeground": {
+      "Type": "int",
+      "Address": "$113",
+      "BitAddress": "3",
+      "BitSize": "3",
+      "DefaultValue": "$01"
+    },
+    "NavigationIndicatorColour": {
+      "Type": "int",
+      "Address": "$11E",
+      "DefaultValue": "$01"
+    },
+    "IndicatorOnColourControlGroup": {
+      "Type": "int",
+      "Address": "$12B",
+      "DefaultValue": "$FF"
+    },
+    "IndicatorOffColourControlGroup": {
+      "Type": "int",
+      "Address": "$12C",
+      "DefaultValue": "$FF"
+    },
+    "IndicatorIdleBrightnessControlGroup": {
+      "Type": "int",
+      "Address": "$12D",
+      "DefaultValue": "$FF"
+    },
+    "BacklightIdleBrightnessControlGroup": {
+      "Type": "int",
+      "Address": "$12E",
+      "DefaultValue": "$FF"
+    },
+    "IndicatorActiveBrightnessControlGroup": {
+      "Type": "int",
+      "Address": "$12F",
+      "DefaultValue": "$FF"
+    },
+    "BacklightActiveBrightnessControlGroup": {
+      "Type": "int",
+      "Address": "$130",
+      "DefaultValue": "$FF"
+    }
+  },
+  "idle_dependency": {
+    "parameter": "ActivityDuration",
+    "address": "0x11B",
+    "condition": "existing value nonzero",
+    "parameter_changed": false
+  },
+  "group_mode": {
+    "application": "existing PrimaryApplication",
+    "numeric_group_range": [
+      0,
+      254
+    ],
+    "fixed_sentinel": 255,
+    "group_metadata_verified": false,
+    "database_group_created": false
+  },
+  "fixed_edit_rule": "Resulting associated group must be255; same-plan explicit255 is accepted",
+  "omitted_out_of_palette_key_values": [
+    9,
+    254,
+    255
+  ],
+  "native_cgate_version": "3.4.0.2001",
+  "native_cases": [
+    {
+      "label": "default",
+      "options": {},
+      "raw_hex": "081003042911e1411e0600010a0a80ffffffff02070355aaffffffffffff",
+      "crcs": {
+        "GlobalParameterCRC": [
+          253,
+          71
+        ],
+        "WidgetsCRC": [
+          164,
+          73
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          251,
+          95
+        ],
+        "OverallCRC": [
+          133,
+          90
+        ]
+      },
+      "parameters_compared": 874
+    },
+    {
+      "label": "minimum",
+      "options": {
+        "text_colour": "black",
+        "background_colour": "black",
+        "indicator_on_colour": "none",
+        "indicator_off_colour": "none",
+        "page_key_colour": "none",
+        "active_screen_brightness": 0,
+        "idle_screen_brightness": 0,
+        "active_indicator_brightness": 0,
+        "idle_indicator_brightness": 0
+      },
+      "raw_hex": "001003042911e1411e00000000000000ffffff02070355aaffffffffffff",
+      "crcs": {
+        "GlobalParameterCRC": [
+          48,
+          58
+        ],
+        "WidgetsCRC": [
+          164,
+          73
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          251,
+          95
+        ],
+        "OverallCRC": [
+          108,
+          126
+        ]
+      },
+      "parameters_compared": 874
+    },
+    {
+      "label": "maximum",
+      "options": {
+        "text_colour": "yellow",
+        "background_colour": "yellow",
+        "indicator_on_colour": "orange",
+        "indicator_off_colour": "orange",
+        "page_key_colour": "orange",
+        "active_screen_brightness": 255,
+        "idle_screen_brightness": 255,
+        "active_indicator_brightness": 255,
+        "idle_indicator_brightness": 255
+      },
+      "raw_hex": "3f1003042911e1411e080808ffffffffffffff02070355aaffffffffffff",
+      "crcs": {
+        "GlobalParameterCRC": [
+          253,
+          153
+        ],
+        "WidgetsCRC": [
+          164,
+          73
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          251,
+          95
+        ],
+        "OverallCRC": [
+          88,
+          129
+        ]
+      },
+      "parameters_compared": 874
+    },
+    {
+      "label": "numeric-group-0",
+      "options": {
+        "active_screen_group": 0,
+        "idle_screen_group": 0,
+        "active_indicator_group": 0,
+        "idle_indicator_group": 0,
+        "indicator_on_group": 0,
+        "indicator_off_group": 0
+      },
+      "raw_hex": "3f1003042911e1411e080808ffffffffffffff02070355aa000000000000",
+      "crcs": {
+        "GlobalParameterCRC": [
+          10,
+          52
+        ],
+        "WidgetsCRC": [
+          164,
+          73
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          251,
+          95
+        ],
+        "OverallCRC": [
+          44,
+          30
+        ]
+      },
+      "parameters_compared": 874
+    },
+    {
+      "label": "numeric-group-254",
+      "options": {
+        "active_screen_group": 254,
+        "idle_screen_group": 254,
+        "active_indicator_group": 254,
+        "idle_indicator_group": 254,
+        "indicator_on_group": 254,
+        "indicator_off_group": 254
+      },
+      "raw_hex": "3f1003042911e1411e080808ffffffffffffff02070355aafefefefefefe",
+      "crcs": {
+        "GlobalParameterCRC": [
+          83,
+          107
+        ],
+        "WidgetsCRC": [
+          164,
+          73
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          251,
+          95
+        ],
+        "OverallCRC": [
+          237,
+          94
+        ]
+      },
+      "parameters_compared": 874
+    },
+    {
+      "label": "return-fixed",
+      "options": {
+        "active_screen_group": 255,
+        "idle_screen_group": 255,
+        "active_indicator_group": 255,
+        "idle_indicator_group": 255,
+        "indicator_on_group": 255,
+        "indicator_off_group": 255,
+        "active_screen_brightness": 1,
+        "idle_screen_brightness": 128,
+        "active_indicator_brightness": 254,
+        "idle_indicator_brightness": 127,
+        "indicator_on_colour": "red",
+        "indicator_off_colour": "green"
+      },
+      "raw_hex": "3f1003042911e1411e0203087f80fe01ffffff02070355aaffffffffffff",
+      "crcs": {
+        "GlobalParameterCRC": [
+          58,
+          89
+        ],
+        "WidgetsCRC": [
+          164,
+          73
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          251,
+          95
+        ],
+        "OverallCRC": [
+          60,
+          172
+        ]
+      },
+      "parameters_compared": 874
+    },
+    {
+      "label": "omitted-outside-palette",
+      "options": {
+        "text_colour": "blue"
+      },
+      "raw_hex": "271003042911e1411e0600017f80fe01ffffff02070355aaffffffffffff",
+      "crcs": {
+        "GlobalParameterCRC": [
+          8,
+          111
+        ],
+        "WidgetsCRC": [
+          164,
+          73
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          251,
+          95
+        ],
+        "OverallCRC": [
+          126,
+          13
+        ]
+      },
+      "parameters_compared": 874
+    },
+    {
+      "label": "disabled-idle-preserved",
+      "options": {
+        "background_colour": "cyan"
+      },
+      "raw_hex": "251003042911e141000600017f80fe01ffffff02070355aaffffffffffff",
+      "crcs": {
+        "GlobalParameterCRC": [
+          84,
+          11
+        ],
+        "WidgetsCRC": [
+          164,
+          73
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          251,
+          95
+        ],
+        "OverallCRC": [
+          104,
+          179
+        ]
+      },
+      "parameters_compared": 874
+    },
+    {
+      "label": "stored-mra",
+      "options": {
+        "text_colour": "white"
+      },
+      "raw_hex": "0d1003042911e141000600017f80fe01ffffff02070355aaffffffffffff",
+      "crcs": {
+        "GlobalParameterCRC": [
+          204,
+          177
+        ],
+        "WidgetsCRC": [
+          84,
+          65
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          251,
+          95
+        ],
+        "OverallCRC": [
+          71,
+          194
+        ]
+      },
+      "parameters_compared": 874
+    }
+  ],
+  "raw_start_address": "0x113",
+  "raw_length": 30,
+  "native_reports_identical_across_interpreters": true,
+  "saved_reloaded": true,
+  "metadata_unchanged": true,
+  "scene_fixture": "All eight slots explicitly authored before original LoadScenes/direct BeforeSavePPData; nonempty output item preserved",
+  "network_state": "new",
+  "network_opened": false,
+  "cli": {
+    "passed": true,
+    "all_fifteen_options_exercised": true,
+    "preview_unchanged": true,
+    "saved_reloaded": true,
+    "group_values_preserve_hidden_fixed_values": true,
+    "idle_guard": true,
+    "database_destination_guard": true,
+    "network_opened": false,
+    "physical_device_verified": false
+  },
+  "guards": [
+    "Exact palette and integer types/bounds",
+    "Enabled standby for idle fixed/group options",
+    "Fixed/group conflict without hidden value changes",
+    "Exact profile/bit layouts",
+    "Canonical full plan and stale complete snapshot",
+    "Disconnection stops recovery I/O",
+    "Primary interruption retains original object and partial evidence",
+    "Rollback interruption retains original failure and previous rollback errors"
+  ],
+  "limits": [
+    "No physical colour/luminance/display verification",
+    "No automatic group creation or first-group selection",
+    "Original group getter side effects excluded from numeric reference editing",
+    "AfterLoadPPData lifecycle excluded; direct setters/save stage only"
+  ],
+  "source_hashes": {
+    "research/vendor/toolkit/app/CBusLogicModel.dll": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+    "research/vendor/unitspec-plain/KEYGL5.xml": "812d2f92ccf3176d9f3d4c0f35fc196ac9ba45bc419639421e4e5ff082d2af21",
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel.Units.EDLT/EDLTUnit.cs": "641f5abc1c3762cd86a0c4b18bc125424a39017a3d78d6edfa4e1e2964af62b2",
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel.Utilities/CommonConstants.cs": "98e20887cf973205eaa42e621f0ee21ee5b9367aac1553f88c75b86e16d39020",
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel.ProgramableProperties/PPAttributeDataSourceLogic.cs": "a3b56f80b6abb9ba3b24cd9778e450ba8aca3a592f181e04c8eafdfeb600056b",
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel.ProgramableProperties/PPAttributeLogic.cs": "b07e0d2dfac418867e2cce36449fc36e2e60d7a3017fe20c55539ff5eade1b1c",
+    "research/vendor/edlt-decompiled/eDLT/eDLT/FrmBaseUnit.cs": "060323b11494c7a697656d048f97351526a143e339db767731675a87ba1b1b16"
+  },
+  "artifact_hashes": {
+    "src/cbus_toolkit/edlt_colours.py": "48f248040581a3d6b542800bc8c828814ecfcf58b10531c8394eaf92bcb24dc0",
+    "research/NativeEdltColoursProbe.cs": "31f0f3562b2e88991d449ba1dc8b56db78dd2ab3ac344ed4eeea5910952ff891",
+    "tests/test_edlt_colours.py": "c46003f00efffc049ea2d739f6352c09517f3d36b8cfac4f0735c4bdbeb9d280",
+    "tests/test_cli_edlt_colours.py": "e8a81c0e32fb0eb5331d6accb064147b7e79ec676c8f83cdc129630494392c9c",
+    "docs/edlt-colours.md": "5a899b7556e544771721f9d99a7e86682a5db597cf95ad12d7cfe2ac05ef3515"
+  },
+  "shared_sources": {
+    "src/cbus_toolkit/edlt.py": "78fcb914b21b71206b1cb381b670388dbcd8eb67afa0deb254620395ac353641",
+    "src/cbus_toolkit/edlt_mra.py": "99bf274549de55b4105acc615a620f6eebf83ebbc1a5a56379646a690e9e2636"
+  },
+  "optional_report_environment": "CBUS_EDLT_COLOURS_REPORT",
+  "physical_device_verified": false
+}

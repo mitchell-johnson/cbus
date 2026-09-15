@@ -1,0 +1,7 @@
+# Shared eDLT failure evidence
+
+`EdltApplyError` preserves the original exception object in `.cause`, the attempted parameter names, rollback errors and `saved=false`. It now safely reports exceptions whose `__str__` raises another exception, including `KeyboardInterrupt` or `SystemExit`. The fallback is `<unprintable TypeName>`, or `<unprintable exception>` if the type name also cannot be read. This handles failures while formatting an existing programming error; it does not consume an actual interruption raised by a programming operation.
+
+Ordinary printable errors retain their exact existing message and JSON, with no truncation. The fix changes neither parameter operations nor rollback/retry behavior. It is separate from the accepted loaded-model extraction and does not add physical-device coverage.
+
+Five new regression tests reproduce the old formatter-interruption bug, preserve original/chained cause identity, check successful and failed rollback evidence, and verify normal text compatibility. Together with 34 existing Lighting, Lifecycle and Restore tests, **39 tests passed with zero skips** on Python **3.13.14** and **3.10.20**, with scoped source hashes unchanged. The compact evidence is [edlt-error-evidence-acceptance.json](../research/fixtures/edlt-error-evidence-acceptance.json). Logs, copied sources and the historical reproduction are retained under `research/runtime/edlt-model-phases/error-render-acceptance`.

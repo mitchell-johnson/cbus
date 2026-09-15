@@ -1,0 +1,105 @@
+{
+  "format": "cbus-toolkit-preferences-acceptance-v1",
+  "passed": true,
+  "tests_each_host_python": 37,
+  "skips_each": 0,
+  "runs": [
+    {
+      "python": "313",
+      "executable": "/Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python",
+      "exit_code": 0,
+      "seconds": 10.870627,
+      "log": "/Users/mitchell/source/cbus/toolkit-cli/research/runtime/toolkit-preferences/final-acceptance-v1/313.log",
+      "log_sha256": "384fda15bb8ffbce8ac1e7203bf20a654356096a0a6ab9e32787d03eecc603db",
+      "inputs_unchanged": true
+    },
+    {
+      "python": "310",
+      "executable": "/Users/mitchell/source/cbus/toolkit-cli/research/runtime/full-wheel-environments-20260914/controls-310/bin/python",
+      "exit_code": 0,
+      "seconds": 9.904147,
+      "log": "/Users/mitchell/source/cbus/toolkit-cli/research/runtime/toolkit-preferences/final-acceptance-v1/310.log",
+      "log_sha256": "0ac319133d15fe7ab13e315a31f7ae6150afbd7b2c12a1091b43b50316450686",
+      "inputs_unchanged": true
+    }
+  ],
+  "source_sha256": {
+    "src/cbus_toolkit/cli.py": "ab547f5929b3748b51876597ab69e5976695ce9f17026f0409e12945305d0c13",
+    "src/cbus_toolkit/toolkit_preferences_cli.py": "1e3b32fe5ece06e2fb689ed417ce651b1afa1a55692aa1916dc605986925f240",
+    "src/cbus_toolkit/toolkit_preferences_controls.py": "48a69f319f3da8ce565645be0c28f80f498c55bd84fb983438deef3d539c1d52",
+    "src/cbus_toolkit/toolkit_preferences_store.py": "1e2bc8b4416bde76eb1280b75a4c8d1f39f138d466a6928c950f397aa6d81937",
+    "src/cbus_toolkit/windows_preferences.py": "6a9b9abb6a2945acd11fca52b89ac47a7fcbe26625ce232e58019fceb46a6af6",
+    "tests/test_cli_toolkit_preferences.py": "41a72a13c99f933a5578c1389a0b9085245ea97c4d9013a6dd0c5ca5a3bc46e7",
+    "tests/test_toolkit_preferences_controls.py": "0dbe0aceefbef09919012515a1810e0f920511d15185288e5f682f31e4d883d0",
+    "tests/test_toolkit_preferences_store.py": "ad62e402491d3b9e3e314ec38ddb1880d8af895939bc71d38d8e95020ad50553",
+    "tests/test_windows_preferences.py": "bcc8aae8462833aeb4b012ff4f387fd48332fb0fbdd545da4d6423a6eb9c8569",
+    "research/windows_preferences_probe.py": "ff3d9894135f18d1bfa330d48ea882a2a42dfd8835ad49f5cd026a17bf88f545",
+    "research/windows_preferences_native_cases.py": "d41ddaf19bf8ac91f26b46c225c8bfb776165cdeb1f733c84b63644f2613300a",
+    "research/windows_bridge.py": "9b2044b76fa74cb5bb06dcfb854c7a1fc7f96c19ba3f0367e5f901cfad822107",
+    "research/windows_provenance.py": "8aad4ca9d1577b985eef9b453cd1ba1b10c1a73f4627a74b8c45e565c3a47e48",
+    "research/fixtures/toolkit-preferences-controls-vectors.json": "afc5e844408d5296d8f43874acab5f6a4a360d629e398cc9d8232cae8d176f0a",
+    "research/fixtures/toolkit-preferences-store-vectors.json": "965237303fd13524707897e88f6a32c1a28176e0a9bfb9a9c3dbaf0850c97f61",
+    "research/fixtures/windows-python-runtime.json": "42997bb7775dfa74a8e3e10887e26c131f8d980718298f42a7fd79d84c88619c"
+  },
+  "original_reference": {
+    "executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "load_cases_with_original_spin_clamp": 48,
+    "successful_ok_handler_cases": 22,
+    "storage_fixture_cases_each": 80,
+    "storage_acceptance": "research/fixtures/toolkit-preferences-store-acceptance.json"
+  },
+  "native_windows_runs": [
+    {
+      "report": "research/runtime/windows-preferences-652ic8c_/native-result.json",
+      "sha256": "4c1b28bd4a1ac5ebfc2bfbb7d27668dffa0cd7c3224309480a57f90e14ef5d75",
+      "job_id": "job-probe-1787a9b58f884ecc",
+      "python": "3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 12:49:38) [MSC v.1944 32 bit (Intel)]",
+      "bits": 32,
+      "tests_run": 10,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "owned_namespaces_removed": 10,
+      "independent_process_reload_verified": true
+    },
+    {
+      "report": "research/runtime/windows-preferences-i04klenp/native-result.json",
+      "sha256": "19f85d6f41f07d4114e26a616034025fa63aa8b8ac019b079fdbbc76804cf1c1",
+      "job_id": "job-probe-77b7c6ec300d44ea",
+      "python": "3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 12:49:38) [MSC v.1944 32 bit (Intel)]",
+      "bits": 32,
+      "tests_run": 10,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "owned_namespaces_removed": 10,
+      "independent_process_reload_verified": true
+    }
+  ],
+  "capabilities": [
+    "all40 stored preference definitions and35 named save values",
+    "five display DWORDs",
+    "19 original OK-handler setting assignments preserving21 other settings",
+    "ordered canonical control edits",
+    "Windows32-bit-view registry adapter with raw reads and validated string writes",
+    "CLI schema, controls, plan, registry-load and registry-save including preview and interruption evidence"
+  ],
+  "limits": [
+    "No whole-application startup or installer-default inference",
+    "Canonical ASCII decimal heap input and canonical signed-decimal stored integer reads; broader JCL conversion remains separate research",
+    "No actual VCL form/dispatch/address-preview, logging-controller or C-Gate restart effects",
+    "Native tests redirect logicalHKCU/HKLM to distinct owned HKCU subtrees; actual HKLM permission/elevation and native64-bitPython remain unverified",
+    "DontAskAgain deletion and update workflow remain incomplete",
+    "Task overall100percent parity remains incomplete"
+  ],
+  "historical_failures": [
+    {
+      "path": "research/runtime/toolkit-preferences/native-windows-v1",
+      "cause": "Invalid unterminated REG_SZ roundtrip assumption; WindowsAPI contract checked, malformed string writes now rejected before key creation"
+    },
+    {
+      "path": "research/runtime/toolkit-preferences/preferences-combined-313-v1.log",
+      "cause": "Test omitted load-time default for skip-save ShowDatabaseLabelsOption; exact original three-write order now asserted"
+    }
+  ]
+}

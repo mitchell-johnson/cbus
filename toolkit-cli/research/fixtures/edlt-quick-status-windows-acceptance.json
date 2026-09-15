@@ -1,0 +1,484 @@
+{
+  "format": "cbus-edlt-quick-status-windows-acceptance-v1",
+  "passed": true,
+  "scope": "Original Windows x86 model/WinForms palette binding, sampled states, owned network-free model fixtures",
+  "production_policy_changed": false,
+  "physical_device_verified": false,
+  "palette_coverage": {
+    "properties": [
+      "QuickStatusColour1",
+      "QuickStatusColour2",
+      "QuickStatusColour3"
+    ],
+    "initial_modes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "requested_modes": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "stored_colours": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      39,
+      254,
+      255
+    ],
+    "form_cases": 416,
+    "property_transitions": 1248,
+    "all_three_properties_initialized_to_sampled_colour": true,
+    "original_construction_and_validation_order": [
+      2,
+      1,
+      3
+    ],
+    "type_placeholder_then_model_instance": true,
+    "formatting_enabled": true,
+    "edit_initialization_mode": false
+  },
+  "observations": {
+    "stored_colours_preserved_before_after_and_validation": true,
+    "nested_sources_refresh_to_actual_palette": true,
+    "key_palette_modes": [
+      0,
+      1
+    ],
+    "key_palette_values": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "screen_palette_modes": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "screen_palette_values": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "out_of_palette_selected_index": -1,
+    "out_of_palette_selected_value": null,
+    "all_explicit_validation_results": true
+  },
+  "unchanged_baseline_probe": {
+    "palette_cases": 60,
+    "actual_group_control_cases": 9,
+    "low_then_high_cases": 49,
+    "single_level_cases": 168,
+    "group_rows_identical_to_mono": true,
+    "low_then_high_rows_identical_to_mono": true,
+    "single_level_rows_identical_to_mono": true
+  },
+  "python_comparison": {
+    "passed": true,
+    "cases": 416,
+    "properties_per_case": 3,
+    "behavior_changed": false,
+    "source_sha256": "df19a640a4aacd8559fd3adbe34f16f1bbf2ffdf86638168c88de71c8902d359"
+  },
+  "jobs": [
+    {
+      "job_id": "job-quick-status-8798e893b3",
+      "complete": true,
+      "exit_code": 0,
+      "script_sha256": "d2e5076835527913353526d3277f761e2923bad41aca77575850524589e53d26",
+      "utc": "2026-09-14T17:38:15.6368971Z",
+      "stdout_sha256": "ce0f4cf259a3c15196814699c8c49e2e333ee04e5e8ff2cc59bbf1d8196f9299",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "job_id": "job-quick-status-order-61f5259b",
+      "complete": true,
+      "exit_code": 0,
+      "script_sha256": "ee53c00e897bcddf959e21ce56864806d1998c00bb69d31a496877ab51089b5a",
+      "utc": "2026-09-14T17:41:12.3355572Z",
+      "stdout_sha256": "5e22677612a7df0b82404da7470ec45e2ae9885bbbcdf4bbc85179a4ad076b95",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "job_id": "job-quick-palette-d23ce5a0-0",
+      "complete": true,
+      "exit_code": 0,
+      "script_sha256": "99d6cad872efcb05846ff7e254fc4aaab6c59c65dca4a5288ee7f9592fef1e45",
+      "utc": "2026-09-14T17:49:46.5511580Z",
+      "stdout_sha256": "1a34c3aed49f44e5ebcb858d9dba1fedb49aff2537dac2b6771d3f485afaea5d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "job_id": "job-quick-palette-d23ce5a0-1",
+      "complete": true,
+      "exit_code": 0,
+      "script_sha256": "da1641aadefa1371cb8579eb3beb5eed8d0a00914e3bba976bca5b2f162ffdd3",
+      "utc": "2026-09-14T17:50:03.5108517Z",
+      "stdout_sha256": "45b2cdaef926e7a0d241ed6e67db9994d4e688ca0db0fdae10f67c6ec316e383",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "job_id": "job-quick-palette-d23ce5a0-2",
+      "complete": true,
+      "exit_code": 0,
+      "script_sha256": "645f511fa0af66bc99f1be153f1ba583fa85dbd548e384de63d846b690cd5b9e",
+      "utc": "2026-09-14T17:50:17.7001280Z",
+      "stdout_sha256": "c67dcee82d0ee4a59b94c16a49d2b418962af4ac44a09493ca3a1732983d0525",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "job_id": "job-quick-palette-d23ce5a0-3",
+      "complete": true,
+      "exit_code": 0,
+      "script_sha256": "e08d0ead9112d0a8d49b2297e0c31fd79a5435ecfd36e8849c5903994508f7bf",
+      "utc": "2026-09-14T17:50:31.3555345Z",
+      "stdout_sha256": "72dd1a84205ee6a706d26bc2647b6aad909cfd26a1448b6e7dd9b0595538b82e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "runtime": {
+    "reported_environment_version": "4.0.30319.42000",
+    "process_pointer_bytes": 4,
+    "environment_os_version_compatibility_string": "Microsoft Windows NT 6.2.9200.0",
+    "registry_display_version": "24H2",
+    "registry_current_build": "26100",
+    "registry_ubr": 9445,
+    "loaded_framework_hashes_pending": false,
+    "loaded_files_observation": {
+      "scope": "Later same-guest x86 read-only provenance query; not an in-process hash capture during the earlier palette jobs",
+      "job": {
+        "exit_code": 0,
+        "complete": true,
+        "pre_execution": false,
+        "admitted": true,
+        "script_sha256": "868f6caf19469ea75843de5e19ae90056b07cf70d6c436f9a9189f7489f76ca2",
+        "utc": "2026-09-14T18:08:37.8824513Z",
+        "job_id": "job-quick-runtime-f595cde794"
+      },
+      "loaded_files": [
+        {
+          "kind": "assembly",
+          "identity": "mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+          "loaded_location": "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\mscorlib.dll",
+          "sha256": "93d46bdac1664dba87641925572c789d71a21bb01dc7c7e5aa99c0eca8335e5e",
+          "file_version": "4.8.9345.0 built by: NET481REL1LAST_25H2_C"
+        },
+        {
+          "kind": "assembly",
+          "identity": "System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+          "loaded_location": "C:\\WINDOWS\\Microsoft.Net\\assembly\\GAC_MSIL\\System.Windows.Forms\\v4.0_4.0.0.0__b77a5c561934e089\\System.Windows.Forms.dll",
+          "sha256": "8c0f533e089647aeffb3ce0868f01d696a3fd2893ced5c3570e8438c96613a98",
+          "file_version": "4.8.9325.0 built by: NET481REL1LAST_25H2_C"
+        },
+        {
+          "kind": "assembly",
+          "identity": "System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+          "loaded_location": "C:\\WINDOWS\\Microsoft.Net\\assembly\\GAC_MSIL\\System\\v4.0_4.0.0.0__b77a5c561934e089\\System.dll",
+          "sha256": "2b3c17c6208a0b4b6beb94e1a066f99ba06cdb2ea919479e99d47e8c6d96dc71",
+          "file_version": "4.8.9340.0 built by: NET481REL1LAST_25H2_B"
+        },
+        {
+          "kind": "assembly",
+          "identity": "System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+          "loaded_location": "C:\\WINDOWS\\Microsoft.Net\\assembly\\GAC_MSIL\\System.Core\\v4.0_4.0.0.0__b77a5c561934e089\\System.Core.dll",
+          "sha256": "fd1097aed825d392a5dc8d19384381d4bb2a43498ea1c9d917f5d80c66600e1b",
+          "file_version": "4.8.9347.0 built by: NET481REL1LAST_25H2_B"
+        },
+        {
+          "kind": "assembly",
+          "identity": "CBusLogicModel, Version=7.14.0.0, Culture=neutral, PublicKeyToken=8b8325a0c030db9d",
+          "loaded_location": "C:\\CBusCliOracle118-88d8\\quick-status-8798e893b3\\CBusLogicModel.dll",
+          "sha256": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+          "file_version": "7.14.0.0"
+        },
+        {
+          "kind": "assembly",
+          "identity": "eDLT, Version=7.16.0.0, Culture=neutral, PublicKeyToken=8b8325a0c030db9d",
+          "loaded_location": "C:\\CBusCliOracle118-88d8\\quick-status-8798e893b3\\eDLT.dll",
+          "sha256": "75bc741234b52a168a4838fee305c309d3909571d2711f7580216b46b028e8d3",
+          "file_version": "7.16.0.0"
+        },
+        {
+          "kind": "runtime-library",
+          "identity": "clr.dll",
+          "loaded_location": "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\clr.dll",
+          "sha256": "103f4dc56d85350adbc950068d9a91a7b5668c5509f6bb59463106d8c30765de",
+          "file_version": "4.8.9345.0 built by: NET481REL1LAST_25H2_C"
+        }
+      ],
+      "source": "research/NativeEdltQuickStatusRuntimeProbe.cs",
+      "source_sha256": "0809ef94a5df6d450caf882a008e9a6464dcbe1fba033e537f7bea45278606f3",
+      "executable_sha256": "60f8b6d936f3807f467dbff847891e721c81f46c7cadc7dfd428e15730817045",
+      "bridge_source_sha256": "9b2044b76fa74cb5bb06dcfb854c7a1fc7f96c19ba3f0367e5f901cfad822107",
+      "raw_transcript": "research/fixtures/edlt-quick-status-windows-runtime.txt",
+      "raw_transcript_sha256": "67a8a571dbc9175edf1749eefd95f8cd313eed2495f0f8a61b6d327a34a6f429"
+    }
+  },
+  "original_files": [
+    {
+      "name": "ArcDimarTabs.dll",
+      "size": 306688,
+      "sha256": "20d4a44e135fe788936deb568d9602803c5832b57a1d297024956569092f6933",
+      "file_version": "1.0.0.0",
+      "product_version": "1.0.0.0"
+    },
+    {
+      "name": "Cbtag32.dll",
+      "size": 469504,
+      "sha256": "fea2ba92339cb49dc7666bdb9bbf932fccc99b02048a7a8b0e0b63a5d77e7912",
+      "file_version": "1.0.3.2",
+      "product_version": "1.0.0.0"
+    },
+    {
+      "name": "CBusLogicModel.dll",
+      "size": 258048,
+      "sha256": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+      "file_version": "7.14.0.0",
+      "product_version": "7.14.0.0"
+    },
+    {
+      "name": "CBusToolkit.exe",
+      "size": 20518992,
+      "sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+      "file_version": "1.18.0.2754",
+      "product_version": "1.18.0"
+    },
+    {
+      "name": "CustomControls.dll",
+      "size": 40448,
+      "sha256": "93d66a228c209d08685ad58e15bd5fdbcffa84828f8699a35c8c7c951b8de8e6",
+      "file_version": "1.0.0.0",
+      "product_version": "1.0.0.0"
+    },
+    {
+      "name": "eDLT.dll",
+      "size": 663552,
+      "sha256": "75bc741234b52a168a4838fee305c309d3909571d2711f7580216b46b028e8d3",
+      "file_version": "7.16.0.0",
+      "product_version": "7.16.0.0"
+    },
+    {
+      "name": "EDLTCommon.dll",
+      "size": 8192,
+      "sha256": "41c740d2376f98cfcce20a58eb1ba2a7ea0629a8a2f56ef6a1bf134cae5da3e2",
+      "file_version": "1.5.0.0",
+      "product_version": "1.5.0.0"
+    },
+    {
+      "name": "EDLT_graphics.dll",
+      "size": 813568,
+      "sha256": "e319379709c47f97dca477c4f631880f231c060530cb2ec45a3f731b1a5d1991",
+      "file_version": "1.3.0.0",
+      "product_version": "1.3.0.0"
+    },
+    {
+      "name": "GlobalCommon.dll",
+      "size": 12288,
+      "sha256": "9f1328be4fab00366add4fc25239ed1c3feaea698b4a3413b1ee37e78abc210c",
+      "file_version": "1.0.0.0",
+      "product_version": "1.0.0.0"
+    },
+    {
+      "name": "HydraCommon.dll",
+      "size": 8192,
+      "sha256": "ac0447e04acafcef56680465863449445e85827b2ff834808ac02b26181c626a",
+      "file_version": "1.0.0.0",
+      "product_version": "1.0.0.0"
+    },
+    {
+      "name": "HydraWPFPlugins.dll",
+      "size": 1475584,
+      "sha256": "03893f0fd0dad9282128910f36a5fe892131bfcabde2bdd57c9e1cea5b5d48ea",
+      "file_version": "1.0.9062.23650",
+      "product_version": "1.0.9062.23650"
+    },
+    {
+      "name": "LabelEditor.dll",
+      "size": 95232,
+      "sha256": "508fa63db112a3ec07bf3cf834b41a0f26da3b0e7a428bc288bff0ec433a073b",
+      "file_version": "1.0.0.0",
+      "product_version": "1.0.0.0"
+    },
+    {
+      "name": "libcrypto-3.dll",
+      "size": 3507560,
+      "sha256": "4adae61662c5cb1aa07a893cbcfae105d3502013fb1b5d3b1971f98b635b3217",
+      "file_version": "3.3.1",
+      "product_version": "3.3.1"
+    },
+    {
+      "name": "libssl-3.dll",
+      "size": 1099624,
+      "sha256": "5347411ac08ee819a8836d7b3235d8415a80d5c68e8ea98a642970ec1f596b35",
+      "file_version": "3.3.1",
+      "product_version": "3.3.1"
+    },
+    {
+      "name": "log4net.dll",
+      "size": 270336,
+      "sha256": "1c5f3b4ed6311ca033a8d7c4d66a24b8adca38b0f7a8da096ae353bd43a551c3",
+      "file_version": "1.2.13.0",
+      "product_version": "1.2"
+    },
+    {
+      "name": "MultiSensorPage.dll",
+      "size": 80896,
+      "sha256": "89246a21c3f77c13b7879f6ffa4f83f7fb4b0907d65419d9efce6628f4a842b8",
+      "file_version": "1.0.0.0",
+      "product_version": "1.0.0.0"
+    },
+    {
+      "name": "MVVMBase.dll",
+      "size": 39424,
+      "sha256": "1b90975e46ed5f5e07736109c0006ee2a83511e0993c4d4559d55e24e5d6cd7b",
+      "file_version": "1.0.0.0",
+      "product_version": "1.0.0.0"
+    },
+    {
+      "name": "RemObjects.Hydra.dll",
+      "size": 90624,
+      "sha256": "6037105e2c446f73c7f893c3bf6c22aa8979757bf65b05a137855816ce332045",
+      "file_version": "6.6.0.1325",
+      "product_version": "6.6.0.1325"
+    },
+    {
+      "name": "RemObjects.Hydra.WPF.dll",
+      "size": 19456,
+      "sha256": "ad0f2030bcee29b30cbde3c7bcabf268d1c0905eae412f50af0ff8315d1dc295",
+      "file_version": "6.6.0.1325",
+      "product_version": "6.6.0.1325"
+    },
+    {
+      "name": "SharpCGateCommunicator.dll",
+      "size": 65024,
+      "sha256": "fd589789f2c40c0853c06a7d836add0f81a6afe3f397a8d6965a1a1f549a2d6e",
+      "file_version": "7.15.0.0",
+      "product_version": "7.15.0.0"
+    },
+    {
+      "name": "SharpContainer.dll",
+      "size": 35840,
+      "sha256": "5cba17be19a783e4b0c1e99025c9556fea605b97003ed6a3e9f3f182fb2c3ed0",
+      "file_version": "9.7.0.0",
+      "product_version": "9.7.0.0"
+    },
+    {
+      "name": "SharpLogger.dll",
+      "size": 11264,
+      "sha256": "496a1434da3a592519e94b3eb025a98f0fc91d88341a28d58f33025ce043905c",
+      "file_version": "2.11.0.0",
+      "product_version": "2.11.0.0"
+    },
+    {
+      "name": "Toolkit.WPF.DataVisualization.dll",
+      "size": 333312,
+      "sha256": "a2abf8cba5ac173fb9cf598faf8d1b9b4b648ff8722e7ff8d823a476e1b58852",
+      "file_version": "4.0.0.0",
+      "product_version": "4.0.0.0"
+    },
+    {
+      "name": "WPFCommonControls.dll",
+      "size": 169472,
+      "sha256": "60e71a2e74e3a0f27206e6d6e3097a7c79be666ebf1d69405669562930d9ffdf",
+      "file_version": "1.0.0.0",
+      "product_version": "1.0.0.0"
+    },
+    {
+      "name": "Xceed.Wpf.Toolkit.dll",
+      "size": 967168,
+      "sha256": "3f06cd38a961a660182a0339f3eeec0db08c58d485ae2fbd7457fc9e981f838c",
+      "file_version": "2.0.0.0",
+      "product_version": "2.0.0.0"
+    }
+  ],
+  "copied_original_dll_hashes_verified": 24,
+  "guest_original_files_hashes_verified": 25,
+  "source_sha256": {
+    "research/NativeEdltQuickStatusPaletteProbe.cs": "7545c2fb5b5cdec946392356315decd1ad35edd5fb8b255c815fec0a71ac1f50",
+    "research/NativeEdltQuickStatusProbe.cs": "a676d0c8afede553c27d0a63816306d003e3b2bb6011a665b726be2123c401a8",
+    "research/NativeEdltCachedGroupProbe.cs": "2b201afd47b1d42360638c5d95494a8f87e1bdd76fd912d7c59bbe0ccd50c3c1",
+    "src/cbus_toolkit/edlt_quick_status.py": "df19a640a4aacd8559fd3adbe34f16f1bbf2ffdf86638168c88de71c8902d359"
+  },
+  "raw_vectors": "research/fixtures/edlt-quick-status-windows-vectors.txt",
+  "raw_vectors_sha256": "cae3af5aa0f4c47f870a440121d780dbabe23bd838e88ec8f7af5caa64ab4372",
+  "limits": [
+    "Sampled colours are not all256 stored byte values",
+    "No target raw mode4..7 transition was requested",
+    "Independent control fixture does not run the complete Toolkit unit dialog",
+    "No database lookup or group creation is authorized by this evidence",
+    "No physical eDLT firmware rendering or programming is verified"
+  ],
+  "probe_executables": [
+    {
+      "file_version": "0.0.0.0",
+      "sha256": "d1525a7796bb561a50de1061903167a4271563e7b9bb9396cf7ed449b9d4f588",
+      "name": "OriginalOrder.exe",
+      "size": 12288
+    },
+    {
+      "file_version": "0.0.0.0",
+      "sha256": "8bd77dfddb8c2e6ed0249f92120e1edb63d8176d34a96992f0be60d101ba7095",
+      "name": "Probe.exe",
+      "size": 23040
+    },
+    {
+      "file_version": "0.0.0.0",
+      "sha256": "c005617cc0779228c0d12fe0b9cb4c7879f10c73121cbe4370f0ecbb7b0af8ef",
+      "name": "quick-palette-d23ce5a0.exe",
+      "size": 9728
+    }
+  ],
+  "copied_file_hash_job": {
+    "job_id": "job-quick-palette-d23ce5a0-hashes",
+    "stdout_sha256": "90cd5fb4c9e40f8cd1010783cbc341f1b73c42c2a090ad57b588071886e9ec2f"
+  },
+  "fixed_vector_regression": {
+    "test_file": "tests/test_edlt_quick_status_windows.py",
+    "test_file_sha256": "b9088481f70b5ea8eb3311df50433455378796848abfd2878ea1a2042dda812d",
+    "runs": [
+      {
+        "python": "3.13.14",
+        "tests": 2,
+        "seconds": 27.791,
+        "skips": 0,
+        "passed": true
+      },
+      {
+        "python": "3.10.20",
+        "tests": 2,
+        "seconds": 35.014,
+        "skips": 0,
+        "passed": true
+      }
+    ]
+  }
+}
