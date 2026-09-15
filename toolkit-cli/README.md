@@ -7,6 +7,10 @@ deliberately exits nonzero until the feature census and acceptance tests are
 complete. A command transport or a simulator passing its own tests does not
 establish Toolkit equivalence.
 
+See [completed functions and outstanding work](docs/implementation-status.md)
+for the current status of all 38 feature areas, detailed eDLT functions,
+accepted test checkpoints and the remaining implementation plan.
+
 ## Install and run
 
 Python 3.10 or newer:
@@ -968,7 +972,12 @@ wrapping and method-specific limits are preserved. The Python API is
 The focused checkpoint passes 17 tests on each Python version, including a fresh
 28,840-case original-instruction comparison per run. A separate Windows probe
 matched all 28 pilot and 1,176 full cases. Scheduling and complete thermostat
-editor behavior remain separate work.
+editor behavior remain separate work. The retained inner scheduling-level
+Python API now has its own [17-test dual-Python acceptance](docs/thermostat-schedule-levels.md),
+covering all 14 captured original outcomes and ordered save phases. It creates
+missing levels 1 through 31 while preserving existing records. Native scheduling
+and its CLI remain in progress; the draft adapter has not passed complete native
+acceptance.
 
 ## Toolkit unit templates
 
@@ -1434,6 +1443,7 @@ outside that frozen wheel:
 - [PCI routing](docs/pci-routing.md), [incoming routing](docs/pci-incoming-routing.md), [routed RECALL](docs/pci-routed-recall.md) and [routed IDENTIFY](docs/pci-routed-identify.md): separate codec and transport checkpoints; IDENTIFY passes 104 tests with fresh original matcher comparisons and owned loopback exchanges.
 - [Database CSV export](docs/toolkit-database-csv.md): 23 tests with 88 fresh original cases per run; captured unit values and portable UTF-8 output.
 - [Thermostat temperature conversions](docs/thermostat-temperature.md): 17 tests with 28,840 fresh original cases per run and separate original Windows arithmetic acceptance.
+- [Thermostat scheduling-level core](docs/thermostat-schedule-levels.md): 17 tests comparing all 14 captured original outcomes and ordered phases; retained Python model and callback boundaries only, with native adapter and CLI acceptance still outstanding.
 
 These overlapping focused counts must not be added to the full-suite count.
 Their linked fixtures identify the exact inputs and limitations; a later full
@@ -1465,4 +1475,6 @@ Remaining acceptance work includes full Toolkit-to-CLI comparisons, device
 memory encoding and transfer, all firmware/unit combinations, CGL and label
 workflows, sensor/eDLT settings, diagnostics, firmware updates and hardware
 behavior. See [capabilities.json](src/cbus_toolkit/capabilities.json).
+The current [implementation status](docs/implementation-status.md) separates
+completed functions, development drafts and outstanding work in every area.
 The full source/topic census is in [toolkit-surface.md](docs/toolkit-surface.md).

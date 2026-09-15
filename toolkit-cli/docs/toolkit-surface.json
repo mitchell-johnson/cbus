@@ -16559,6 +16559,13 @@
       "status": "source_present_results_not_imported"
     },
     {
+      "path": "tests/test_native_thermostat_schedule.py",
+      "bytes": 14908,
+      "sha256": "09d5536fe1133a7a9a02e6d8b5473a69c772e5f6789a3c25a87b9918f8a68da2",
+      "test_definitions": 12,
+      "status": "source_present_results_not_imported"
+    },
+    {
       "path": "tests/test_native_tls.py",
       "bytes": 2690,
       "sha256": "c7d598f0246502bdfb0637cab1cb74974eecce4b96939807997c72eb9c76282b",
@@ -16857,6 +16864,13 @@
       "bytes": 4683,
       "sha256": "9ea2a8d5dbdd3c9cca2f220cf7cea9a3d18b500116606f5968883a8f0dc03e40",
       "test_definitions": 5,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_thermostat_schedule_levels.py",
+      "bytes": 14711,
+      "sha256": "836b64da8365100aa236506289aa5c681cc3ff6c087a9cb3e63a3d42f848b5fe",
+      "test_definitions": 17,
       "status": "source_present_results_not_imported"
     },
     {

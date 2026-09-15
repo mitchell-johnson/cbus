@@ -59,7 +59,7 @@
         "docs/cgate-cleanup.md",
         "research/fixtures/cgate-cleanup-acceptance.json"
       ],
-      "limits": "TCP/TLS/tagged framing, events, here documents and bounded failure handling tested. Exact native mutual TLS passes with generated operator-managed certificates plus five certificate rejection cases. Individual command effects require separate acceptance. Secondary cleanup failures preserve the first context/connect/command/event error and bounded CLI evidence without replay; this correction has focused dual-Python acceptance and awaits a new full wheel checkpoint."
+      "limits": "TCP/TLS/tagged framing, events, here documents and bounded failure handling tested. Exact native mutual TLS passes with generated operator-managed certificates plus five certificate rejection cases. Individual command effects require separate acceptance. Secondary cleanup failures preserve the first context/connect/command/event error and bounded CLI evidence without replay; this correction has focused dual-Python acceptance and is included in the audited1725-test full wheel checkpoint."
     },
     {
       "id": "pci-command-transport",
@@ -710,7 +710,7 @@
         "research/fixtures/toolkit-database-csv-acceptance.json",
         "docs/toolkit-database-csv.md"
       ],
-      "limits": "Explicit captured-report values to original CSV rows and exclusive portable UTF-8 file export pass23 tests on Python3.13/3.10, each including88 fresh original-instruction comparisons. Original scalar/group providers remain captured fixtures; generic database/XML projection, class-specific cached state, original selection dialog/registry choices and Windows default-codepage bytes are not established. No physical identity or device access is inferred."
+      "limits": "Explicit captured-report values to original CSV rows and exclusive portable UTF-8 file export pass23 tests on Python3.13/3.10, each including88 fresh original-instruction comparisons. Original scalar/group providers remain captured fixtures; generic database/XML projection, class-specific cached state, original selection dialog/registry choices and Windows default-codepage bytes are not established. No physical identity or device access is inferred. Separate original cached-getter/class research completed12 cases (10 normal and2 declared provider stops); this is not a production database-to-row implementation. The next8-original/4-native backend harness is still a prepared draft without execution acceptance."
     },
     {
       "id": "thermostat-configuration",
@@ -723,9 +723,17 @@
         "tests/test_thermostat_temperature_original.py",
         "research/fixtures/thermostat-temperature-acceptance.json",
         "research/fixtures/thermostat-temperature-native-acceptance.json",
-        "docs/thermostat-temperature.md"
+        "docs/thermostat-temperature.md",
+        "src/cbus_toolkit/thermostat_schedule_levels.py",
+        "tests/test_thermostat_schedule_levels.py",
+        "research/fixtures/thermostat-schedule-levels-vectors.json",
+        "research/fixtures/thermostat-schedule-levels-acceptance.json",
+        "docs/thermostat-schedule-levels.md",
+        "src/cbus_toolkit/native_thermostat_schedule.py",
+        "tests/test_native_thermostat_schedule.py",
+        "docs/development-checkpoint.md"
       ],
-      "limits": "Fourteen original scalar conversion methods with explicit unit preference and Int32 inputs pass17 tests on Python3.13/3.10, each with28840 fresh original-instruction cases. Separate original Windows x86 pilot28/full1176 match through standard PE HIGHLOW relocation. Original intermediate rounding, helper double stores, signed wrap and clamps are preserved. Thermostat scheduling, complete model/form events, database load/save and physical-device behavior are not established."
+      "limits": "Fourteen original scalar conversion methods with explicit unit preference and Int32 inputs pass17 tests on Python3.13/3.10, each with28840 fresh original-instruction cases. Separate original Windows x86 pilot28/full1176 match through standard PE HIGHLOW relocation. Original intermediate rounding, helper double stores, signed wrap and clamps are preserved. The separate retained inner CreateLevels Python API now passes17 tests on both Python versions against all14 captured original outcomes and ordered phases. It creates missing scheduling addresses1..31 with exact Enable/Disable/Overrd labels and preserves existing address/value/tag/order, model save-lock state and first callback errors. These focused runs replay captured original results; they do not execute original instructions or native storage. Outer selection/UI, full service factories, native scheduling persistence, CLI integration and physical-device behavior remain incomplete. The native adapter is a development draft with fake-peer tests; its first complete native pilot failed on missing session PROJECT USE after reload. That requirement and a regression are added, but the corrected adapter has not passed a fresh native pilot."
     }
   ]
 }

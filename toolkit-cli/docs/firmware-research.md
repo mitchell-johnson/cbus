@@ -1,6 +1,8 @@
 # eDLT firmware updater research
 
-Firmware updating is not implemented or accepted yet. The original installer includes a separate .NET `FirmwareUpdater.exe`, native `dfuprog.exe`, USB DFU drivers and four encrypted firmware archives. Their hashes and archive directory inventories are recorded in [firmware-research.json](firmware-research.json). This investigation did not access a USB device or extract or transfer a firmware image.
+Complete Toolkit firmware updating remains unfinished. Diagnostic commands, offline DFU tooling, an injected transfer client and a claimed-PyUSB program/erase/readback CLI are now implemented within their documented scopes: [diagnostics](firmware-diagnostics.md), [DFU transport](dfu-transport.md) and [USB DFU](usb-dfu.md). Vendor payload compatibility, NCC installation and physical firmware acceptance remain open.
+
+This earlier investigation records the original installer, including a separate .NET `FirmwareUpdater.exe`, native `dfuprog.exe`, USB DFU drivers and four encrypted firmware archives. Their hashes and archive directory inventories are recorded in [firmware-research.json](firmware-research.json). The investigation below did not access a USB device or extract or transfer a firmware image; subsequent scoped acceptance is linked above.
 
 The unmodified updater was decompiled into the ignored `research/vendor/firmware-updater-decompiled` directory using ILSpy 9.1.0.7988. References below identify original class/method names, not Python implementations. Decompiled source needs original-assembly or bytecode comparison before it becomes behavioral acceptance.
 
@@ -18,4 +20,4 @@ The NCC branch re-identifies firmware after the main update. It uses `nv\r` to o
 
 ## Remaining acceptance work
 
-The original-assembly harness for variant classification, package metadata and diagnostic responses is complete within its documented scope. DFU transport needs a separate observable device model: command/status decoding, flash ranges, erase/write sequencing, reboot and interrupted-transfer recovery. USB enumeration, driver differences and real hardware compatibility are still open. The C-Bus PCI simulator does not model this USB interface.
+The original-assembly harness for variant classification, package metadata and diagnostic responses is complete within its documented scope. Subsequent [DFU protocol and memory simulator](dfu-protocol.md), [transport](dfu-transport.md), [USB inspection](usb-inspection.md) and [claimed USB transport](usb-dfu.md) acceptance cover bounded command/status decoding, ranges, explicit program/erase/readback, polling and partial failures. These use independent synthetic memory and a fake backend through the actual PyUSB library. Complete vendor updater sequencing, payload compatibility, NCC installation, reboot/recovery across the whole update, driver differences and real hardware remain open. The C-Bus PCI simulator itself does not model the USB interface.

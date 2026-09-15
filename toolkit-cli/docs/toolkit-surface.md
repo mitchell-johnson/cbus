@@ -175,7 +175,7 @@ Families overlap. Root topic links establish why each family is in scope; the JS
 
 ## Prioritized unresolved acceptance
 
-These are open scope items, not an automated assertion that their entire implementation is missing.
+These are open scope items, not an automated assertion that their entire implementation is missing. See [implementation status](implementation-status.md) for completed functions, accepted test checkpoints and the remaining work within each area.
 
 - **P0: Resolve each device dialog's fields, dependencies and native serialization.** Map each dialog control to an exact unit type/firmware parameter or command; test valid and invalid settings, roundtrip serialization and preservation of unrelated values. Generic PP get/set and catalogue creation do not verify a dialog's full semantics.
 

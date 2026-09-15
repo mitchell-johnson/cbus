@@ -540,7 +540,7 @@ def markdown(data):
                  "| Family | Topics | Evidence roots |", "| --- | ---: | --- |"])
     rows.extend("| " + escape(f["name"]) + " | " + str(f["topic_count"]) + " | " + "; ".join(link(t) for t in f["root_topic_ids"]) + " |"
                 for f in data["workflow_families"])
-    rows.extend(["", "## Prioritized unresolved acceptance", "", "These are open scope items, not an automated assertion that their entire implementation is missing.", ""])
+    rows.extend(["", "## Prioritized unresolved acceptance", "", "These are open scope items, not an automated assertion that their entire implementation is missing. See [implementation status](implementation-status.md) for completed functions, accepted test checkpoints and the remaining work within each area.", ""])
     for gap in data["prioritized_open_scope"]:
         rows.extend(["- **" + gap["priority"] + ": " + gap["task"] + ".** " + gap["acceptance_needed"], ""])
     rows.extend(["## Boundaries requiring explicit decisions", ""])
