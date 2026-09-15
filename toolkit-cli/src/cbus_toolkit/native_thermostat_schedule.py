@@ -137,7 +137,8 @@ class NativeSchedulePlan:
                 'expected_levels': [level.as_dict() for level in self.expected_levels],
                 'created_addresses': list(self.created_addresses), 'closed_networks': list(self.networks),
                 'caller_exclusive_project_required': True, 'physical_device_programmed': False,
-                'original_ui_workflow_executed': False, 'native_mutation_performed': False}
+                'original_ui_workflow_executed': False, 'native_mutation_performed': False,
+                'native_collection_order_verified': False}
 
 
 @dataclass(frozen=True)
@@ -179,6 +180,7 @@ class NativeThermostatScheduleLevels:
                           'target_save_attempted': False, 'target_save_confirmed': False,
                           'persistence_verified': False, 'batch_atomic': False, 'automatic_retries': 0,
                           'physical_device_programmed': False, 'original_ui_workflow_executed': False,
+                          'native_collection_order_verified': False,
                           'caller_exclusive_project_required': True, 'server_edit_lock_acquired': False}
 
     def command(self, command):

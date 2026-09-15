@@ -1,0 +1,98 @@
+{
+  "format": "cbus-authored-experiment-source-snapshot-v1",
+  "created_utc": "2026-09-15T07:59:45.937269+00:00",
+  "scope": "Authored prepared source/cases/provenance only; no vendor/runtime binaries, raw output archives or user project/registry data",
+  "status": {
+    "host_guard_tests_each": 15,
+    "host_python_versions": [
+      "3.13",
+      "3.10"
+    ],
+    "original_cases_executed": 0,
+    "native_fixtures_executed": 0,
+    "prepared_original_cases": 8,
+    "prepared_native_fixtures": 4,
+    "admission_issued": false
+  },
+  "source_review_manifest_sha256": "6c9afc4220af720ec7a29e6fcbd3b17d7c4e0bafe1383ba6ff572435d7c2b871",
+  "entries": [
+    {
+      "path": "PLAN.md",
+      "source_path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-pilot-v1/PLAN.md",
+      "sha256": "ebf0de7ea6477ca1d807ebcd7328abfa6f3c8ed08eb5c3c86b3a31f08f091078",
+      "bytes": 13780
+    },
+    {
+      "path": "NativeCSVBackendProbe.py",
+      "source_path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-pilot-v1/NativeCSVBackendProbe.py",
+      "sha256": "356ce3093488bddcabdcd2d566cbd938ad954337906047f90912eaf729298130",
+      "bytes": 22064
+    },
+    {
+      "path": "run_original.py",
+      "source_path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-pilot-v1/run_original.py",
+      "sha256": "5a58508fd4c73ad6c2c490e76f6b0f7cb321dd5e50e5db956c6ec0093f5cee65",
+      "bytes": 11222
+    },
+    {
+      "path": "run_native.py",
+      "source_path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-pilot-v1/run_native.py",
+      "sha256": "59a39cd719818b757c83fb00dbe14f7dd7d59286faee2a946e8b9c8da147805a",
+      "bytes": 20687
+    },
+    {
+      "path": "replay_native.py",
+      "source_path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-pilot-v1/replay_native.py",
+      "sha256": "d9c4f4c07a0c3cd88ec2d532cbc6c62523542615df6a2a61b7d15955887eb6f2",
+      "bytes": 14313
+    },
+    {
+      "path": "run_replay.py",
+      "source_path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-pilot-v1/run_replay.py",
+      "sha256": "64f498cf172873b5a2b689a11c664d7a5f9608417cc35ea95afa18331279e145",
+      "bytes": 7735
+    },
+    {
+      "path": "backend_support.py",
+      "source_path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-pilot-v1/backend_support.py",
+      "sha256": "12fdb6ece9c77c844cf104a3b9dbcf4e613579128700941baa5e49a6b2acac5a",
+      "bytes": 6044
+    },
+    {
+      "path": "guard_tests.py",
+      "source_path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-pilot-v1/guard_tests.py",
+      "sha256": "9ae5749a58699a870a4014b87b22ea1bd36e8ebb2f7f371d0329a3e20475d103",
+      "bytes": 9930
+    },
+    {
+      "path": "run_guards.py",
+      "source_path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-pilot-v1/run_guards.py",
+      "sha256": "2a095c5a09f6d2397b38f48a8ca858298a31340e9c3a8ca0d57de19b11fb8e06",
+      "bytes": 2947
+    },
+    {
+      "path": "cases.json",
+      "source_path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-pilot-v1/cases.json",
+      "sha256": "3f096d8840e296ca8cccd1d1244e20ece8a4ac4064410e76c6de19bda100f68b",
+      "bytes": 3678
+    },
+    {
+      "path": "native-cases.json",
+      "source_path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-pilot-v1/native-cases.json",
+      "sha256": "db1a0784e65097d99f85302367bf3be83a2d2b88419d6531c32ed56bf3a91741",
+      "bytes": 593
+    },
+    {
+      "path": "review-manifest-v2.json",
+      "source_path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-pilot-v1/review-manifest-v2.json",
+      "sha256": "6c9afc4220af720ec7a29e6fcbd3b17d7c4e0bafe1383ba6ff572435d7c2b871",
+      "bytes": 4537
+    },
+    {
+      "path": "README.md",
+      "source_path": null,
+      "sha256": "597c24fe6d67f813acb3202702469352975193f45cf37c640eccf14857aefb0c",
+      "bytes": 2853
+    }
+  ]
+}

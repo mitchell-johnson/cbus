@@ -12963,8 +12963,8 @@
         {
           "symbol": "_cgate",
           "path": "src/cbus_toolkit/cli.py",
-          "line": 1968,
-          "end_line": 2258
+          "line": 1971,
+          "end_line": 2264
         },
         {
           "symbol": "NativeSerials._get",
@@ -14074,8 +14074,8 @@
         {
           "symbol": "_cgate",
           "path": "src/cbus_toolkit/cli.py",
-          "line": 1968,
-          "end_line": 2258
+          "line": 1971,
+          "end_line": 2264
         }
       ],
       "acceptance_status": "unassessed",
@@ -14113,8 +14113,8 @@
         {
           "symbol": "_cgate",
           "path": "src/cbus_toolkit/cli.py",
-          "line": 1968,
-          "end_line": 2258
+          "line": 1971,
+          "end_line": 2264
         }
       ],
       "acceptance_status": "unassessed",
@@ -14594,8 +14594,8 @@
         {
           "symbol": "_cgate",
           "path": "src/cbus_toolkit/cli.py",
-          "line": 1968,
-          "end_line": 2258
+          "line": 1971,
+          "end_line": 2264
         }
       ],
       "acceptance_status": "unassessed",
@@ -15094,8 +15094,8 @@
         {
           "symbol": "_cgate",
           "path": "src/cbus_toolkit/cli.py",
-          "line": 1968,
-          "end_line": 2258
+          "line": 1971,
+          "end_line": 2264
         }
       ],
       "acceptance_status": "unassessed",
@@ -15324,8 +15324,8 @@
     "source": {
       "symbol": "_cgate",
       "path": "src/cbus_toolkit/cli.py",
-      "line": 1968,
-      "end_line": 2258
+      "line": 1971,
+      "end_line": 2264
     },
     "route": "cbus-toolkit cgate exec '<command>'",
     "status": "static_forwarding_route_present_not_command_acceptance"
@@ -15441,8 +15441,8 @@
     },
     {
       "path": "src/cbus_toolkit/cli.py",
-      "bytes": 182362,
-      "sha256": "5f5d6361e11520714eabba89380f96f2dac0640b79fa06830ba1625b7b78c147"
+      "bytes": 183770,
+      "sha256": "83ce742614a0c054a685e8a220a217bb9d82d457e5089d07646c093345ddb8da"
     },
     {
       "path": "src/cbus_toolkit/conversion.py",
@@ -15915,6 +15915,20 @@
       "status": "source_present_results_not_imported"
     },
     {
+      "path": "tests/test_cli_thermostat_schedule.py",
+      "bytes": 21296,
+      "sha256": "f667a4d566f2a40efbc724b70406ab15660d7ed30cc9933e438976a9e784c216",
+      "test_definitions": 19,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_cli_thermostat_schedule_dispatch.py",
+      "bytes": 4545,
+      "sha256": "9a51e4bf7062c036d11688e708130aaeae2b1accdd94452cdbfaf4a58706e882",
+      "test_definitions": 3,
+      "status": "source_present_results_not_imported"
+    },
+    {
       "path": "tests/test_cli_thermostat_temperature.py",
       "bytes": 3508,
       "sha256": "58505d4b9a74ff92aeedb1261451a43aa9f7176cb2d5172a50c2d69642031a03",
@@ -15968,6 +15982,13 @@
       "bytes": 10429,
       "sha256": "1edd068e1f9dd2e239d7ea0e1b35e5bc99be781040049e73435f1bde64368866",
       "test_definitions": 8,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_cli_toolkit_update_registry_conditions.py",
+      "bytes": 6755,
+      "sha256": "b93a63e5cd68c4de841829e4d70551c08104a58f0df68bc79f7f39b5ffc81c30",
+      "test_definitions": 5,
       "status": "source_present_results_not_imported"
     },
     {
@@ -16566,6 +16587,13 @@
       "status": "source_present_results_not_imported"
     },
     {
+      "path": "tests/test_native_thermostat_schedule_integration.py",
+      "bytes": 15104,
+      "sha256": "6b52400ef784a7e884c6baf11a2e4030d49464202abfdb6f4af3c9b6f0e7b434",
+      "test_definitions": 5,
+      "status": "source_present_results_not_imported"
+    },
+    {
       "path": "tests/test_native_tls.py",
       "bytes": 2690,
       "sha256": "c7d598f0246502bdfb0637cab1cb74974eecce4b96939807997c72eb9c76282b",
@@ -16983,6 +17011,13 @@
       "bytes": 20465,
       "sha256": "9aab48695a3fe937491c557864f9e336d1578f60d74e32c2a674e8bb70562c1d",
       "test_definitions": 17,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_toolkit_update_registry_conditions.py",
+      "bytes": 16775,
+      "sha256": "16661a66a7787cd181fb5d68ce35c1c84087361b0878f2c88227573e616f0789",
+      "test_definitions": 12,
       "status": "source_present_results_not_imported"
     },
     {

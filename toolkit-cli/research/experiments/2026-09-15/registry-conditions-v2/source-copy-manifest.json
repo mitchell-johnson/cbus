@@ -1,0 +1,151 @@
+{
+  "format": "authored-registry-conditions-v2-source-copy-v1",
+  "copied": [
+    {
+      "destination": "pilot/NativeRegistryConditionProbe.cs",
+      "source_path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-pilot-v2/NativeRegistryConditionProbe.cs",
+      "sha256": "4dddb514ee5bca8ff1210c91a67e9def9fb190b013dadcc8b0b9cd6aa281d195",
+      "bytes": 21793
+    },
+    {
+      "destination": "pilot/Pins.cs",
+      "source_path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-pilot-v2/Pins.cs",
+      "sha256": "f5d9e0dc1e75aee66b15a47f7c13e9b026c34da75bfdd121b83460a74a56a4c6",
+      "bytes": 4633
+    },
+    {
+      "destination": "pilot/PLAN.md",
+      "source_path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-pilot-v2/PLAN.md",
+      "sha256": "ab71bb09783cb341b978f5623f7b88c70ccbe3f416f485c96bddf005df48a16c",
+      "bytes": 5151
+    },
+    {
+      "destination": "pilot/input.json",
+      "source_path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-pilot-v2/input.json",
+      "sha256": "89b2dc9efc4024c596dd9915e74701a89a4329164fa4a66c12e10f64f14a7817",
+      "bytes": 11933
+    },
+    {
+      "destination": "pilot/contract.json",
+      "source_path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-pilot-v2/contract.json",
+      "sha256": "b5fafecc367844e8c46416a190322c5f65c22231368136dc96d217f69d599613",
+      "bytes": 6845
+    },
+    {
+      "destination": "pilot/run.py",
+      "source_path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-pilot-v2/run.py",
+      "sha256": "84c763c844f44850bef4bf93cd7f3429941e13ada9eedd6d72c9060b71d6306d",
+      "bytes": 19272
+    },
+    {
+      "destination": "pilot/prepare.py",
+      "source_path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-pilot-v2/prepare.py",
+      "sha256": "dbde8ba1abbd70517928cb97c2774af9028960c6e2d7f9a2ef293cbf61226851",
+      "bytes": 8416
+    },
+    {
+      "destination": "pilot/derive.py",
+      "source_path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-pilot-v2/derive.py",
+      "sha256": "c1cd70fbe45fd2dafeb65dfc632f689f7738267946b5508aae82c19c75ef39f4",
+      "bytes": 8858
+    },
+    {
+      "destination": "pilot/test_guards.py",
+      "source_path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-pilot-v2/test_guards.py",
+      "sha256": "3a6fb033ceb0131ff9bba90c2e21476a6cbcd14e5d59feb4985e5db9263b9e46",
+      "bytes": 9073
+    },
+    {
+      "destination": "pilot/seal_preparation.py",
+      "source_path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-pilot-v2/seal_preparation.py",
+      "sha256": "809c28a8f24caa43d9634376e34e5a6136b1e9e4c5fb5c5ddcba2aeb59b6e8da",
+      "bytes": 5892
+    },
+    {
+      "destination": "pilot/identity.json",
+      "source_path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-pilot-v2/identity.json",
+      "sha256": "b907b204c549b093f78a79751a992e9de523aca33d5a58541b5a46d668db8c51",
+      "bytes": 207
+    },
+    {
+      "destination": "pilot/derivation.json",
+      "source_path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-pilot-v2/derivation.json",
+      "sha256": "c11135d74722ff0e60e0b1b2dff250bb3cf56ee927a11d7ae2cffdcb09ac9f2c",
+      "bytes": 1418
+    },
+    {
+      "destination": "pilot/source-seal.json",
+      "source_path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-pilot-v2/source-seal.json",
+      "sha256": "7d29f310859dd807189de29fe3f774e0a23940f530040e195cbc5fcda11ba3ed",
+      "bytes": 14611
+    },
+    {
+      "destination": "dependency/inspect.py",
+      "source_path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-dependency-v1/inspect.py",
+      "sha256": "f54c4adccab634bfba1548449e805aeae1f0ee483e41d55fc4b20e4c32a939d7",
+      "bytes": 5348
+    },
+    {
+      "destination": "dependency/classify.py",
+      "source_path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-dependency-v1/classify.py",
+      "sha256": "9243be1a2693ab0c5575a2ebf83e0caca2d5f09a27e819255ae4594877c0649e",
+      "bytes": 5907
+    },
+    {
+      "destination": "context/PROPOSAL.md",
+      "source_path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-context-v2/PROPOSAL.md",
+      "sha256": "cacdd3d178b0ceff631197a974d54ed9290312ce76d7e41990e090a4128033e3",
+      "bytes": 8714
+    },
+    {
+      "destination": "context/capture_v1_corrected.py",
+      "source_path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-context-v2/capture_v1_corrected.py",
+      "sha256": "e5837017e396bba4ee9f5d514906a73f775e19d2a5647f8b13af3bec757ef378",
+      "bytes": 3428
+    },
+    {
+      "destination": "acceptance/run.py",
+      "source_path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-context-v2/acceptance-final-v2/run.py",
+      "sha256": "d1a4ff0dd9d9db286215e5c310334a0e363b461527c7fa54d32f94256d5c31ed",
+      "bytes": 5077
+    },
+    {
+      "destination": "acceptance/child.py",
+      "source_path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-context-v2/acceptance-final-v2/child.py",
+      "sha256": "32d605bbe4cd6900e57298351fbd48755ac0e7701269922e5926e6171feade13",
+      "bytes": 1344
+    },
+    {
+      "destination": "acceptance/promote.py",
+      "source_path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-context-v2/acceptance-final-v2/promote.py",
+      "sha256": "3d8d4f38d0fffe1e4530596e5eac502619c34845c00a2b16d3b1fb825d636e84",
+      "bytes": 6957
+    }
+  ],
+  "generated": [
+    {
+      "destination": "README.md",
+      "sha256": "9dbc18c7693a10c7d95a21ee5f71570adc948a1d4f50b309567216ff54c29969",
+      "bytes": 3451
+    },
+    {
+      "destination": "provider-provenance.json",
+      "sha256": "79c7b0f119d6ab062c8383c3566d8b857b7f9f83b4bcd0feacc768dddfa946df",
+      "bytes": 3845
+    }
+  ],
+  "generator": {
+    "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-context-v2/archive_authored_sources.py",
+    "sha256": "045d7e0eeac408fc866495103c2bf939888cb15788d9666cdaafd1a4d1337e30"
+  },
+  "original_input_seal": {
+    "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-pilot-v2/source-seal.json",
+    "sha256": "7d29f310859dd807189de29fe3f774e0a23940f530040e195cbc5fcda11ba3ed",
+    "input_count": 53
+  },
+  "old_registry_snapshot_files_unchanged": 15,
+  "raw_vm_outputs_included": false,
+  "vendor_inputs_or_binaries_included": false,
+  "private_key_or_credential_patterns_found": false,
+  "scripts_executed_from_archive": false
+}

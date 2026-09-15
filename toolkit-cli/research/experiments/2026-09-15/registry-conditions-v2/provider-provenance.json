@@ -1,0 +1,85 @@
+{
+  "format": "registry-provider-provenance-summary-v2",
+  "source": "Authored summary of accepted original method/runtime identity; raw VM outputs omitted",
+  "original_common_sha256": "477fb88de310852611f26d1f845da23b8f0e6b602de8ab61a3eefc06339dc4ba",
+  "staged_facade": {
+    "assembly": "Microsoft.Win32.Registry, Version=5.0.0.0, PublicKeyToken=b03f5f7f11d50a3a",
+    "sha256": "e9a9d281c1a708aaae366f82fd6a1742f65da2918cc4fa5eaaaada0be24277d9",
+    "source": "Existing staged SESU package, no download",
+    "classification": "Registry and RegistryKey type forwarders to mscorlib; no Registry.GetValue implementation in the facade",
+    "classification_report": {
+      "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-dependency-v1/report.json",
+      "sha256": "714f780c3ee2babe02dfb70e2a6ef3e1c3157b50ec13592f58e602ae9c9382d3"
+    }
+  },
+  "resolved_provider": {
+    "source_memberref": 167772244,
+    "declaring_type": "Microsoft.Win32.Registry",
+    "method": "GetValue",
+    "return_type": "System.Object",
+    "parameter_types": [
+      "System.String",
+      "System.String",
+      "System.Object"
+    ],
+    "assembly": "mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+    "location": "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\mscorlib.dll",
+    "sha256": "93d46bdac1664dba87641925572c789d71a21bb01dc7c7e5aa99c0eca8335e5e",
+    "method_token": 100663539,
+    "same_original_and_witness": true,
+    "type_remapping": false
+  },
+  "resolved_provider_il_sha256": "c0363d229d83fb9ca8d8c88ef77816bbd3971cec725fafb68ef96d1486024b72",
+  "process_bits": 32,
+  "registry_view": "Process default; no RegistryView.Registry32 selection",
+  "witness": "Separate reflection invocation of the exact MemberRef-resolved MethodInfo, not interception of the original call",
+  "pilot": {
+    "original_leaf_calls": 12,
+    "separate_provider_witnesses": 12,
+    "ordered_records": 47,
+    "booleans": 10,
+    "expected_original_errors": 2,
+    "known_child_keys_removed": 11,
+    "root_absence_verified": true,
+    "handles_closed": true,
+    "report": {
+      "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-pilot-v2/pilot-v2/report.json",
+      "sha256": "df5b5d74892cf4ac9d7935a71179b6c42486796f015a3b5697b0be2a753a213f"
+    },
+    "audit": {
+      "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-pilot-v2/pilot-v2/audit.json",
+      "sha256": "3a30eb24788565f3b60ba421164867c20764e3e733cb6aa3a904cdee0fa3f03b"
+    }
+  },
+  "supplied_fact_tests": {
+    "tests_each_python": 78,
+    "versions": [
+      "3.13",
+      "3.10"
+    ],
+    "new_tests": 17,
+    "existing_regressions": 61,
+    "supported_registry_leaf_observations": 11,
+    "excluded_registry_collation_observations": 1,
+    "separate_original_int32_helper_observations": 107,
+    "v1_complete_report_byte_comparisons": 248,
+    "no_live_registry_or_original_execution_during_focused_tests": true,
+    "acceptance_fixture": {
+      "path": "research/fixtures/toolkit-update-registry-conditions-acceptance.json",
+      "sha256": "ff130316b5c3cee24454db0808bdad7a4e69e0fa5b5822216112e83472ce6d11"
+    }
+  },
+  "preserved_failures": [
+    "Registry v1 stopped for the missing staged facade dependency; scratch keys and handles cleaned",
+    "Initial local baseline-generator draft omitted file paths; corrected capture occurred before production edits",
+    "First final acceptance preparation assumed optional _virtualenv existed in Python3.10; it stopped before tests; fresh corrected v2 passed"
+  ],
+  "not_claimed": [
+    "Current caller context verified",
+    "General culture-sensitive collation",
+    "Other hives or views",
+    "Live provider API",
+    "Machine applicability",
+    "Update availability"
+  ]
+}

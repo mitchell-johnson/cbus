@@ -9,10 +9,10 @@ from .toolkit_update_metadata_cli import _read
 
 def options(commands):
     command = commands.add_parser('update-condition-stages',
-        help='Evaluate bounded original update conditions using supplied file facts; no live applicability query')
+        help='Evaluate bounded original update conditions using supplied facts; no live applicability query')
     command.add_argument('file', type=Path, help='Original ClientConditionData JSON (maximum128KiB)')
     command.add_argument('--context', type=Path, required=True,
-        help='cbus-toolkit-condition-context-v1 JSON with explicit unverified file facts')
+        help='Explicit unverified facts: context-v1 files or context-v2 files and typed registry results')
 
 
 def run(args):
