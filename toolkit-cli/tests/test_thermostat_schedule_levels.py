@@ -106,6 +106,19 @@ class ScheduleLevelsTests(unittest.TestCase):
         object.__setattr__(level, 'value', 1)
         with self.assertRaises(ValueError): engine.create_levels(state, 'Enable')
 
+    def test_equal_valued_type_or_container_tampering_rejected(self):
+        class Text(str): pass
+        for target, field, value in [('level', 'value', True), ('level', 'address', True),
+                                     ('level', 'identity', Text('kept')), ('level', 'tag', Text('label')),
+                                     ('state', 'save_lock', False), ('state', 'pending_save', 0),
+                                     ('state', 'levels', 'list')]:
+            with self.subTest(target=target, field=field):
+                engine = ScheduleLevelsEngine(); level = ScheduleLevel('kept', 1, 1, 'label')
+                state = engine.load([level])
+                if field == 'levels': value = list(state.levels)
+                object.__setattr__(level if target == 'level' else state, field, value)
+                with self.assertRaises(ValueError): engine.create_levels(state, 'Enable')
+
     def test_schema_preflight_exact_types_and_duplicates(self):
         valid = ScheduleLevel('id', 1, 17, 'keep')
         for levels in ((valid, dataclasses.replace(valid, identity='other')), (valid, dataclasses.replace(valid, address=2)), [object()], [valid] * 257, iter([valid])):
@@ -188,6 +201,37 @@ class ScheduleLevelsTests(unittest.TestCase):
         self.assertFalse(engine.last_outcome.complete)
         self.assertEqual(engine.last_outcome.state.level_save_attempts, 1)
         self.assertEqual(engine.last_outcome.state.level_save_completed, 0)
+
+    def test_callback_mutation_isolated_and_rejected(self):
+        for location in ('level', 'storage'):
+            engine = ScheduleLevelsEngine(); retained = ScheduleLevel('retained', 1, 203, 'keep')
+            state = engine.load([retained])
+            def level(record, snapshot):
+                if location == 'level': object.__setattr__(snapshot.levels[0], 'value', 999)
+            def storage(snapshot):
+                if location == 'storage': object.__setattr__(snapshot, 'pending_save', 1)
+            with self.assertRaisesRegex(ValueError, 'immutable snapshot'):
+                engine.create_levels(state, 'Enable', level_save=level, storage_save=storage)
+            self.assertFalse(engine.last_outcome.complete)
+            self.assertIs(engine.last_outcome.state.levels[0], retained)
+            self.assertEqual(retained.value, 203)
+            self.assertTrue(all(type(x.value) is int and x.value <= 255 for x in engine.last_outcome.state.levels))
+
+    def test_corrupt_callback_snapshot_then_interruption_keeps_first(self):
+        for location in ('level', 'storage'):
+            engine = ScheduleLevelsEngine(); state = engine.load([]); first = KeyboardInterrupt('callback')
+            def level(record, snapshot):
+                if location == 'level':
+                    object.__setattr__(snapshot, 'levels', None); raise first
+            def storage(snapshot):
+                if location == 'storage':
+                    object.__setattr__(snapshot, 'levels', None); raise first
+            try: engine.create_levels(state, 'Enable', level_save=level, storage_save=storage)
+            except BaseException as observed: self.assertIs(observed, first)
+            else: self.fail('Expected original interruption')
+            self.assertIs(engine.last_error, first)
+            self.assertFalse(engine.last_outcome.complete)
+            self.assertEqual(len(engine.last_outcome.state.levels), 1 if location == 'level' else 31)
 
     def test_generated_identity_avoids_retained_collision(self):
         engine = ScheduleLevelsEngine(); old = ScheduleLevel('schedule:1', 31, 9, 'keep')

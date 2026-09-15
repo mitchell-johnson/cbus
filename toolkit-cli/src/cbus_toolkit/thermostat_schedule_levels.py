@@ -105,9 +105,24 @@ StorageSave = Callable[[ScheduleLevelsState], None]
 
 
 def _signature(state: ScheduleLevelsState) -> tuple:
-    return (tuple((id(x), x.identity, x.address, x.value, x.tag) for x in state.levels),
-            state.save_lock, state.pending_save, state.level_save_attempts,
-            state.level_save_completed, state.storage_attempts, state.storage_completed, state.project_requests)
+    def scalar(value: object) -> tuple:
+        return type(value), value
+    return (type(state.levels),
+            tuple((id(x), *(scalar(v) for v in (x.identity, x.address, x.value, x.tag))) for x in state.levels),
+            *(scalar(v) for v in (state.save_lock, state.pending_save, state.level_save_attempts,
+                                  state.level_save_completed, state.storage_attempts,
+                                  state.storage_completed, state.project_requests)))
+
+
+def _detached(state: ScheduleLevelsState) -> ScheduleLevelsState:
+    return replace(state, levels=tuple(replace(level) for level in state.levels))
+
+
+def _callback_unchanged(state: ScheduleLevelsState, signature: tuple) -> None:
+    if (type(state.levels) is not tuple or len(state.levels) > 256
+            or any(type(x) is not ScheduleLevel for x in state.levels)
+            or _signature(state) != signature):
+        raise ValueError("Save callback changed its immutable snapshot")
 
 
 class _Work:
@@ -125,7 +140,10 @@ class _Work:
         self.update(level_save_attempts=self.state.level_save_attempts + 1)
         self.event("level_save_requested", level=level)
         if callback is not None:
-            callback(level, self.state)
+            snapshot = _detached(self.state)
+            signature = _signature(snapshot)
+            callback(next(x for x in snapshot.levels if x.identity == level.identity), snapshot)
+            _callback_unchanged(snapshot, signature)
         self.update(level_save_completed=self.state.level_save_completed + 1)
 
     def save_project(self, callback: StorageSave | None) -> None:
@@ -138,7 +156,10 @@ class _Work:
             self.update(storage_attempts=self.state.storage_attempts + 1)
             self.event("storage_requested")
             if callback is not None:
-                callback(self.state)
+                snapshot = _detached(self.state)
+                signature = _signature(snapshot)
+                callback(snapshot)
+                _callback_unchanged(snapshot, signature)
             self.update(storage_completed=self.state.storage_completed + 1)
 
     def end_lock(self, callback: StorageSave | None) -> None:
@@ -179,6 +200,8 @@ class ScheduleLevelsEngine:
     def _require(self, state: ScheduleLevelsState) -> None:
         if type(state) is not ScheduleLevelsState or state not in self._issued:
             raise ValueError("State must be issued by this scheduling engine")
+        if type(state.levels) is not tuple or len(state.levels) > 256 or any(type(x) is not ScheduleLevel for x in state.levels):
+            raise ValueError("Issued scheduling records have changed")
         signature, resumable = self._issued[state]
         if signature != _signature(state):
             raise ValueError("Issued scheduling state has changed")

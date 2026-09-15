@@ -79,15 +79,13 @@ def _shape(node, *, level=False):
     attrs = sorted((node.attributes.item(i).name, node.attributes.item(i).value) for i in range(node.attributes.length))
     children = []
     for child in node.childNodes:
-        if child.nodeType == Node.TEXT_NODE and not child.data.strip():
-            continue
         # Native save/reload materializes an empty TagsDLT on a Level. The
         # observed absent and empty forms carry the same metadata here.
         if (level and child.nodeType == Node.ELEMENT_NODE and child.tagName == 'TagsDLT'
                 and not child.attributes.length and not child.childNodes):
             continue
         children.append(_shape(child))
-    return (node.tagName, attrs, sorted(children, key=repr) if level else children)
+    return (node.tagName, attrs, children)
 
 
 def _group(text, expected_address):
@@ -113,9 +111,8 @@ def _group(text, expected_address):
         raise ValueError('Duplicate native level object ID')
     attrs = sorted((root.attributes.item(i).name, root.attributes.item(i).value) for i in range(root.attributes.length))
     nonlevels = [_shape(c) for c in root.childNodes
-                 if not(c.nodeType == Node.TEXT_NODE and not c.data.strip())
-                 and not(c.nodeType == Node.ELEMENT_NODE and c.tagName == 'Level')]
-    return identity, tuple(levels), _json((attrs, sorted(nonlevels, key=repr))), metadata
+                 if not(c.nodeType == Node.ELEMENT_NODE and c.tagName == 'Level')]
+    return identity, tuple(levels), _json((attrs, nonlevels)), metadata
 
 
 @dataclass(frozen=True)
@@ -155,7 +152,7 @@ class NativeScheduleError(RuntimeError):
     def __init__(self, cause, result):
         self.cause = cause
         self.result = result
-        self.details = result.as_dict()
+        self.details = json.loads(result.document)
         super().__init__('Native thermostat scheduling stopped: ' + _error(cause)['message'])
 
 
@@ -171,9 +168,11 @@ class NativeThermostatScheduleLevels:
         self._evidence = None
         self.last_result = None
         self.last_error = None
+        self.last_evidence_errors = ()
 
     def _start(self, operation):
         self.last_result = self.last_error = None
+        self.last_evidence_errors = ()
         self._evidence = {'format': 'cbus-native-thermostat-schedule-result-v1', 'operation': operation,
                           'state': 'preconditions', 'complete': False, 'commands': [], 'levels': [],
                           'backup_created': False, 'target_mutation_attempted': False,
@@ -201,14 +200,29 @@ class NativeThermostatScheduleLevels:
         self.last_error = error
         self._evidence.update(complete=False, error=_error(error),
                               state='uncertain' if self._evidence['target_mutation_attempted'] or self._evidence['target_save_attempted'] else 'stopped')
-        result = self._finish()
+        try:
+            result = self._finish()
+        except BaseException as secondary:
+            self.last_evidence_errors = (*self.last_evidence_errors, secondary)
+            try:
+                document = json.dumps(self._evidence, ensure_ascii=True, sort_keys=True, separators=(',', ':'))
+            except BaseException as export_error:
+                self.last_evidence_errors = (*self.last_evidence_errors, export_error)
+                document = '{"format":"cbus-native-thermostat-schedule-result-v1","complete":false,"state":"evidence_unavailable"}'
+            result = NativeScheduleResult(document)
+            self.last_result = result
         if not isinstance(error, Exception):
             try:
                 error.thermostat_schedule_evidence = result.as_dict()
             except BaseException:
                 pass
             raise error
-        raise NativeScheduleError(error, result) from error
+        try:
+            wrapper = NativeScheduleError(error, result)
+        except BaseException as secondary:
+            self.last_evidence_errors = (*self.last_evidence_errors, secondary)
+            raise error
+        raise wrapper from error
 
     def _xml(self, path):
         response = self.database.get(path, xml=True)
@@ -305,6 +319,10 @@ class NativeThermostatScheduleLevels:
             self._operation('copy', plan.project, backup)
             self._evidence['backup_created'] = True
             self._fresh(plan)
+            # PROJECT CLOSE clears this command connection's selected tag
+            # database. OID addressing requires an explicit current project,
+            # even when DBADDSAFE used a fully qualified parent path.
+            self._operation('use', plan.project)
             expected = {level.address: level for level in plan.expected_levels}
             known_oids = {level.identity for level in plan.initial_levels}
             created_oids = {}
