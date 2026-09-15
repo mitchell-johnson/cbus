@@ -1,0 +1,70 @@
+{
+  "format": "cbus-extended-macros-acceptance-v1",
+  "scope": "Toolkit help/binary-grounded Neo-core presets through native PP;closed database only;no physical button behavior",
+  "profiles": [
+    {
+      "unit_type": "KEYE1",
+      "catalog_number": "5031NMML",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYE.xml",
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36,
+      "database_reload_passed": true
+    },
+    {
+      "unit_type": "KEYM4",
+      "catalog_number": "5054NL",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYM4.xml",
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36,
+      "database_reload_passed": true
+    },
+    {
+      "unit_type": "KEYA3",
+      "catalog_number": "R5063NL",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYA3.xml",
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36,
+      "database_reload_passed": true
+    },
+    {
+      "unit_type": "KEYB4",
+      "catalog_number": "5084NL",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYB4.xml",
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36,
+      "database_reload_passed": true
+    }
+  ],
+  "passed": true,
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+  "test_count": 13,
+  "native_preset_cases": 72,
+  "physical_hardware_verified": false,
+  "source_hashes": {
+    "src/cbus_toolkit/extended_macros.py": "fee60e40ca1100b4efc31740d42184bce2a992791c24793a9e6957c2e4faf4b6",
+    "src/cbus_toolkit/macros.py": "05c211f0e7f4ef35066fb51fb94b883e03cf88b8605e6bb3b782d00e5c523d44",
+    "tests/test_extended_macros.py": "d61aec2f4bb2e471f7df9a3d85a8b4808e14275ebd815c738f9d8aaf479d064f",
+    "research/vendor/toolkit/app/CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "research/vendor/toolkit/app/CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "research/vendor/cgate/app/cgate.jar": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "research/vendor/unitspec-plain/KEYE.xml": "8f9aae67a141b6a2919a4551dbd72762d56be1f97fbd8f51d66d4cce54cbeed4",
+    "research/vendor/unitspec-plain/KEYM4.xml": "d2512412f2304db00bcc77e5568b6c493b50d1fd44bd64187d8ef51457478995",
+    "research/vendor/unitspec-plain/KEYA3.xml": "ff1ea2360245ba3fe5a00a5f2c3d9a728bad5419ea6f8fdd5e9b7f602f9de83b",
+    "research/vendor/unitspec-plain/KEYB4.xml": "e8e9996d9ccc90b854c6b46061861ec1664b308443539384fe909259df518775",
+    "research/vendor/unitspec-plain/I_NEOPRO.xml": "1ffa027e2c5e98da1461673a0bb8e67e96ae9a97ae41c37753bb6fa8cb26b1ab",
+    "research/vendor/unitspec-plain/I_NEOCORE.xml": "5a26c87fe11a87208815436e00e07ad46e1b65981adab9c93e743a3e1c763af7"
+  },
+  "local_report": "research/runtime/extended-macros-acceptance.json",
+  "local_report_sha256": "41d7f47ab6375191e55122c58e1935798ba2d152215502894ea39ba280779b6a",
+  "unverified": [
+    "Physical button behavior",
+    "Other unit types and firmware revisions",
+    "Complete GUI before/after parity",
+    "Automatic GUI indicator reassignment",
+    "DLT/eDLT/NCC widgets and custom macros"
+  ]
+}

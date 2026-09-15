@@ -1,0 +1,141 @@
+{
+  "format": "cbus-edlt-timer-acceptance-v1",
+  "passed": true,
+  "scope": "5055EDL5.5 Timer Toggle/Retrigger database PP; no physical device",
+  "python": "3.10.20",
+  "cgate": "3.4.0.2001",
+  "tests": 12,
+  "skipped": 0,
+  "elapsed_seconds": 18.578,
+  "mode": "toggle-retrigger",
+  "duration_range_seconds": [
+    0,
+    64800
+  ],
+  "target_range": [
+    1,
+    255
+  ],
+  "expiry_range": [
+    0,
+    255
+  ],
+  "ramp_seconds": [
+    0,
+    4,
+    8,
+    12,
+    20,
+    30,
+    40,
+    60,
+    90,
+    120,
+    180,
+    300,
+    420,
+    600,
+    900,
+    1020
+  ],
+  "defaults": {
+    "duration_seconds": 60,
+    "target_level": 255,
+    "expiry_level": 0,
+    "ramp_seconds": 1020,
+    "label": "Fan",
+    "status": "timer"
+  },
+  "crcs": {
+    "OverallCRC": [
+      173,
+      112
+    ],
+    "GlobalParameterCRC": [
+      149,
+      141
+    ],
+    "WidgetsCRC": [
+      201,
+      222
+    ],
+    "StaticTextCRC": [
+      94,
+      223
+    ],
+    "ScenesCheckSum": [
+      184,
+      6
+    ]
+  },
+  "dll_sha256": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+  "physical_device_verified": false,
+  "literal_records": {
+    "default": "05340E0D0000FF2322FF00003C0000000F3F0000000000000000000000000000",
+    "bound-default": "05340E0D00002A2322FF00003C0000000F3F0000000000000000000000000000",
+    "maximum-duration": "05B40E0D00002A232201000020FDFF00003F0000000000000000000000000000",
+    "zero-duration": "05B40E0D00002A2322FF0000000000000F3F0000000000000000000000000000",
+    "forced-target-one": "05B40E0D00002A2322010000000000000F3F0000000000000000000000000000",
+    "custom-static": "05B50E0D00002A23227F00002C016400043E3F00000000000000000000000000",
+    "dynamic-icons": "05A70E0D00002A23227F00002C01640004010300000000000000000000000000",
+    "dynamic-text": "05960E0D00002A23227F00002C01640004020000000000000000000000000000",
+    "same-index-refresh": "05A70E0D00002A23227F00002C01640004020000000000000000000000000000",
+    "group-refresh": "05A70E0D00002B23227F00002C01640004020000000000000000000000000000",
+    "timer-status-blank-label": "05840E0D00002B23227F00002C01640004000000000000000000000000000000",
+    "blank-status": "05800E0D00002B23227F00002C01640004000000000000000000000000000000",
+    "existing-fan-default": "05340E0D00002A2322FF00003C0000000F020000000000000000000000000000",
+    "existing-fan-maximum": "05B40E0D00002A232201000020FDFF0000020000000000000000000000000000",
+    "existing-fan-zero": "05B40E0D00002A2322FF0000000000000F020000000000000000000000000000",
+    "existing-fan-forced": "05B40E0D00002A2322010000000000000F020000000000000000000000000000",
+    "existing-fan-custom": "05B50E0D00002A23227F00002C016400043F3E00000000000000000000000000",
+    "opaque-default": "05340E0D0405FF2322FF0A0B3C0000000F3F00131415161718191A1B1C1D1E1F",
+    "opaque-blank-default": "05340E0D0405FF2322FF0A0B3C0000000F3F00131415161718191A1B1C1D1E1F"
+  },
+  "allocation_fixtures": {
+    "no_existing_Fan": {
+      "default_Fan": 63,
+      "custom_Timer": 62,
+      "status_Ready": 63
+    },
+    "native_default_Fan_at2": {
+      "default_Fan": 2,
+      "custom_Timer": 63,
+      "status_Ready": 62
+    }
+  },
+  "assertions": [
+    "Unchanged original TimerData serialization matches default, duration boundaries, target forcing, expiry/ramp, dynamic/status and opaque literal vectors",
+    "The original Timer UI offers only Toggle/Retrigger with macro bytes35/34 and time-specific status categories",
+    "Both noFan scaffold and native existingFan2 fixture match independent original-DLL allocation vectors",
+    "Fresh default Fan allocation occurs before requested label/status changes and remains canonical metadata",
+    "Duration0..64800, target1..255, expiry0..255 and exact16-entry ramp table are guarded",
+    "Existing target0 is forced to1 by the original model and the helper; requested0 rejects before mutation",
+    "Full shared-reference enumeration, exact reuse, sequential allocation and exhausted-table rejection",
+    "Original first numeric-group restore lookup copies137 across application boundary; unchanged group retains selected state",
+    "Original DLL refreshes text-to-icon metadata on same-index assignments; native rejection preserves all PP values unless explicit corresponding types are supplied",
+    "Native literal widget/static/restore bytes match original-DLL vectors",
+    "All five CRCs match unchanged original DLL method",
+    "Entire normalized PP snapshot survives save/close/load; scene fields and unrelated widgets are preserved",
+    "Profile/schema/stale/canonical-plan guards include invalid boolean numeric metadata",
+    "Verified rollback after partial failure; no recovery I/O after disconnection",
+    "Offline CLI plan and native preview/save/reload match; physical destination and invalid settings reject",
+    "Disposable native database network remains unopened,state=new"
+  ],
+  "limitations": [
+    "No physical timer execution verification",
+    "No custom button icon programming",
+    "No automatic network dynamic-label metadata lookup",
+    "Signed negative expiry model values are outside supported UI range",
+    "Exact5055EDL/KEYGL5/5.5.00 profile only"
+  ],
+  "raw_report_sha256": "f0ef7a59088176e056993fbf7ab4831fcfeda8f13ab371598b32a28512623918",
+  "source_sha256": {
+    "src/cbus_toolkit/edlt.py": "08e7e788976abf7491c6acd03755d4980357c9d5cee9b1e44716eb23e916c258",
+    "src/cbus_toolkit/edlt_timer.py": "33172d6acea2456fa499020bfbe160ebdba05d6088361fc5535adab65a64ee89",
+    "tests/test_edlt_timer.py": "03518680905b16228c4bc1ab3795557c17e0857854bd63e21c8fec36d8ebd7b6",
+    "tests/test_cli_edlt_timer.py": "6afe5c23147c143ec350baa61d38d5a25a287a2d99bc0319bfd01b874f01c69d",
+    "research/NativeEdltTimerProbe.cs": "7b8e6961bfb3d6404ee87b4de91c0bbc6e481f1978bd8bf85a8533c314cb5967",
+    "research/NativeEdltProbe.cs": "f794cadb421eab0c066464b59990961651486490456a2eaaa37ef8a748b5e9ec",
+    "docs/edlt-timer.md": "1ee460bb67a412893b2cac9867bed4f16b7b06ba56772bb2d3ed68e335e3687e"
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "format": "cbus-unit-template-acceptance-v2",
+  "profiles": [
+    {
+      "profile": {
+        "unit_type": "KEY1",
+        "firmware": "1.2.67",
+        "catalog_number": "5031N",
+        "spec": "KEY1.xml"
+      },
+      "parameters_roundtripped": 26,
+      "raw_bytes_compared": 28,
+      "save_reload_cases": 1,
+      "xml_special_characters_in_unit_name": true,
+      "passed": true,
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "crc": 48779
+    },
+    {
+      "profile": {
+        "unit_type": "KEY2",
+        "firmware": "1.2.67",
+        "catalog_number": "5032N",
+        "spec": "KEY2.xml"
+      },
+      "parameters_roundtripped": 26,
+      "raw_bytes_compared": 28,
+      "save_reload_cases": 1,
+      "xml_special_characters_in_unit_name": true,
+      "passed": true,
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "crc": 22808
+    },
+    {
+      "profile": {
+        "unit_type": "KEY4",
+        "firmware": "1.2.67",
+        "catalog_number": "5034N",
+        "spec": "KEY4.xml"
+      },
+      "parameters_roundtripped": 26,
+      "raw_bytes_compared": 28,
+      "save_reload_cases": 1,
+      "xml_special_characters_in_unit_name": true,
+      "passed": true,
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "crc": 41665
+    }
+  ],
+  "scope": "Original Toolkit XML structure/reader/checksum plus native PP closed database transfer; no GUI process or physical device",
+  "passed": true,
+  "parameters_roundtripped": 78,
+  "raw_bytes_compared": 84,
+  "save_reload_cases": 3,
+  "test_count": 15,
+  "executable_probe_routines": [
+    "0x7F1FDC",
+    "0xCC4DE8",
+    "0x7DF174",
+    "0xC1B11C"
+  ],
+  "executable_probe_runtime": "Unicorn 2.1.4 / pefile 2024.8.26 / CPython 3.13",
+  "physical_hardware_verified": false,
+  "full_gui_process_verified": false,
+  "local_report": "research/runtime/unit-template-acceptance.json",
+  "local_report_sha256": "0fc20e9f454a9158b18ab19b831286da755b9f0940dc1dab97b8d9a12dfd81fa",
+  "source_hashes": {
+    "src/cbus_toolkit/unit_templates.py": "d40e382a3ecef8ff7ed247bb888ed12569020a4e4fd70cfa70b5784526dce433",
+    "tests/test_unit_templates.py": "cae417d9fbb292b2ac9d48885b85574af066e82a52812ff92300208188581778",
+    "research/native_template_probe.py": "49ac2ad0c908613e0c9619256a8c9f70e37bda11a2b14e5ef6c560c5f60cbaeb",
+    "research/vendor/toolkit/app/CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "research/vendor/toolkit/app/CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "research/vendor/cgate/app/cgate.jar": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "research/vendor/unitspec-plain/KEY1.xml": "4e1cff5d20e1e34dcc48e5f8233de3342c8273c5eb8d72ccae538d0490dbf064",
+    "research/vendor/unitspec-plain/KEY2.xml": "ee36ef7fad437f0cdf1abd78e58abebb0e2411a96fb8455d84330c69f0022188",
+    "research/vendor/unitspec-plain/KEY4.xml": "8e8094146eda7b7c50d3ffd452736dfce62a422e413428ce5a22ed056ca4d459",
+    "research/vendor/unitspec-plain/I_KEY.xml": "610772568d96cf2cd85d37f9c38c58051854aa5f9e1b1788ea20acda88a79f68"
+  },
+  "unverified": [
+    "Other unit profiles and firmware, including KEYE1",
+    "Cross-model template conversion",
+    "Non-ASCII template file I/O",
+    "Nondefault virtual InfraRedBank/GAVBroadcastFlag",
+    "Complete Toolkit GUI process import/export",
+    "Physical template transfer and operation"
+  ]
+}

@@ -1,0 +1,315 @@
+{
+  "format": "cbus-edlt-hvac-acceptance-v1",
+  "profile": {
+    "unit_type": "KEYGL5",
+    "catalog_number": "5055EDL",
+    "firmware": "5.5.00"
+  },
+  "widget_type": 13,
+  "application": 172,
+  "scope": "Original HVAC Temperature Display configuration, shared static text, built-in icons, original CRC and closed native database persistence",
+  "tests": [
+    {
+      "python": "3.10.20",
+      "count": 12,
+      "skips": 0,
+      "passed": true,
+      "elapsed_seconds": 49.006
+    },
+    {
+      "python": "3.13.14",
+      "count": 12,
+      "skips": 0,
+      "passed": true,
+      "elapsed_seconds": 42.035
+    }
+  ],
+  "test_modules": [
+    "tests.test_edlt_hvac",
+    "tests.test_cli_edlt_hvac"
+  ],
+  "native_cases": [
+    {
+      "widget": 1,
+      "literal": "0DFF000000871200000000000000000000000000000000000000000000000000",
+      "crcs": {
+        "GlobalParameterCRC": [
+          253,
+          71
+        ],
+        "WidgetsCRC": [
+          223,
+          83
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          156,
+          30
+        ],
+        "OverallCRC": [
+          176,
+          245
+        ]
+      },
+      "saved_reloaded": true
+    },
+    {
+      "widget": 5,
+      "literal": "0D2A040201873F00000000000000000000000000000000000000000000000000",
+      "crcs": {
+        "GlobalParameterCRC": [
+          253,
+          71
+        ],
+        "WidgetsCRC": [
+          172,
+          143
+        ],
+        "StaticTextCRC": [
+          188,
+          204
+        ],
+        "ScenesCheckSum": [
+          156,
+          30
+        ],
+        "OverallCRC": [
+          42,
+          30
+        ]
+      },
+      "saved_reloaded": true
+    },
+    {
+      "widget": 6,
+      "literal": "0DFF000000871200000000000000000000000000000000000000000000000000",
+      "crcs": {
+        "GlobalParameterCRC": [
+          253,
+          71
+        ],
+        "WidgetsCRC": [
+          71,
+          47
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          156,
+          30
+        ],
+        "OverallCRC": [
+          189,
+          4
+        ]
+      },
+      "saved_reloaded": true
+    },
+    {
+      "widget": 6,
+      "literal": "0D2A040201263F00000000000000000000000000000000000000000000000000",
+      "crcs": {
+        "GlobalParameterCRC": [
+          253,
+          71
+        ],
+        "WidgetsCRC": [
+          183,
+          232
+        ],
+        "StaticTextCRC": [
+          188,
+          204
+        ],
+        "ScenesCheckSum": [
+          156,
+          30
+        ],
+        "OverallCRC": [
+          76,
+          16
+        ]
+      },
+      "saved_reloaded": true
+    },
+    {
+      "widget": 10,
+      "literal": "0DFE000100FE3F00000000000000000000000000000000000000000000000000",
+      "crcs": {
+        "GlobalParameterCRC": [
+          253,
+          71
+        ],
+        "WidgetsCRC": [
+          171,
+          211
+        ],
+        "StaticTextCRC": [
+          221,
+          222
+        ],
+        "ScenesCheckSum": [
+          156,
+          30
+        ],
+        "OverallCRC": [
+          254,
+          113
+        ]
+      },
+      "saved_reloaded": true
+    },
+    {
+      "widget": 21,
+      "literal": "0D0001020100FF00000000000000000000000000000000000000000000000000",
+      "crcs": {
+        "GlobalParameterCRC": [
+          253,
+          71
+        ],
+        "WidgetsCRC": [
+          52,
+          187
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          156,
+          30
+        ],
+        "OverallCRC": [
+          43,
+          244
+        ]
+      },
+      "saved_reloaded": true
+    }
+  ],
+  "native_network_state": "new",
+  "physical_device_verified": false,
+  "graphics": {
+    "dll_sha256": "e319379709c47f97dca477c4f631880f231c060530cb2ec45a3f731b1a5d1991",
+    "original_indices_executed": 255,
+    "selector_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      128,
+      129,
+      130,
+      131,
+      132,
+      133,
+      134,
+      135,
+      136,
+      137,
+      138,
+      139,
+      140,
+      141,
+      252,
+      253,
+      254
+    ],
+    "used_import_shims": {
+      "memset": 1
+    },
+    "independent_agent_probe_matched": true
+  },
+  "literal_vectors": {
+    "isolated_default": "0DFF000000873F00000000000000000000000000000000000000000000000000",
+    "isolated_custom": "0D2A040201263E00000000000000000000000000000000000000000000000000",
+    "native_default": "0DFF000000871200000000000000000000000000000000000000000000000000",
+    "native_custom": "0D2A040201263F00000000000000000000000000000000000000000000000000"
+  },
+  "guards": [
+    "profile/schema/canonical plan/stale full snapshot",
+    "standby covered slot and UI placement",
+    "explicit icon edits require functional placement and existing UseBigIcon1",
+    "full shared reference enumeration and original capacity/default allocation order",
+    "explicit indexes retain duplicate text slot identity",
+    "rollback stops after disconnection"
+  ],
+  "limits": [
+    "No HVAC control, device transfer or physical display acceptance",
+    "No implicit database group creation or group metadata verification",
+    "Built-in icon selection only; no image upload API",
+    "Unrepresentable temporary default-label references are rejected",
+    "Original model fixture starts with canonical empty scene pointers255 and AfterLoad config1.0"
+  ],
+  "source_hashes": {
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel.EDLT.WidgetData/HVACTempDisplayData.cs": "d609ff2308d892e689cbeb4728fb6b542b1d86a099412c645d5ce11e453e2223",
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel.Units.EDLT/EDLTUnit.cs": "641f5abc1c3762cd86a0c4b18bc125424a39017a3d78d6edfa4e1e2964af62b2",
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel.Units.EDLT/EDLTWidget.cs": "de02300ce1cbdfdde44ef5967922e15a8a01f06bb18b0bd64231dfb7005bc1a7",
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel/CBusApplication.cs": "669554fea6b53c01a2d0d0c1d7cf8c89cd76d68af0b7d2b11f3bb73a6bfe5933",
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel.Utilities/CommonConstants.cs": "98e20887cf973205eaa42e621f0ee21ee5b9367aac1553f88c75b86e16d39020",
+    "research/vendor/edlt-decompiled/eDLT/eDLT.WidgetPanels/HVACTempWidget.cs": "4cd1500fc73b264102ab14cc626dba3690c8293938a8544f4ce6aacf998c9642",
+    "research/vendor/edlt-decompiled/eDLT/eDLT/FrmBaseUnit.cs": "060323b11494c7a697656d048f97351526a143e339db767731675a87ba1b1b16",
+    "research/vendor/edlt-decompiled/eDLT/eDLT.Controls/FrmImageSelector.cs": "16a6472fc835e7b1cece8a30e9c5a234ad5e781f597e1b87e176da0b2d4d8db9",
+    "research/vendor/edlt-decompiled/eDLT/eDLT/CBusEDLTGraphicsDllWrapper.cs": "324dd496a13c92682406119539360bb8e757d3368b715ab9c94c090f510479fd",
+    "research/vendor/toolkit/app/CBusLogicModel.dll": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+    "research/vendor/toolkit/app/EDLT_graphics.dll": "e319379709c47f97dca477c4f631880f231c060530cb2ec45a3f731b1a5d1991",
+    "research/vendor/unitspec-plain/KEYGL5.xml": "812d2f92ccf3176d9f3d4c0f35fc196ac9ba45bc419639421e4e5ff082d2af21",
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel.Units/CBusBaseUnit.cs": "4f0468941222c6696db5836a32fc0b70d18fcf704ea8fe6dd0c2d709a3842487",
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel.Units.EDLT.WidgetData.BaseObjects/WidgetBaseData.cs": "9848f4b6eac5360fc9396887be2ea8aace7fa0e5fdc43cab2ece66597a086189",
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel/PPHelper.cs": "3167e5c223c27bf92b59fd0c8710167e61b430ddd99cc87bdf016be08d960e37",
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel/PPAttribute.cs": "6c057abce7de8793501e34b326d862a9bbc2c2e32ed6c7b7ace796b0ad29e9cb"
+  },
+  "artifact_hashes": {
+    "src/cbus_toolkit/edlt_hvac.py": "1425551576911a14cebdfbbfda303d42a0bf71cd1d6582aa47f29a1c7a572e34",
+    "tests/test_edlt_hvac.py": "8e2e3dddde93ea4e2bdbb6195bf99934cbc765f635933cf38a2bbb070a0b14bc",
+    "tests/test_cli_edlt_hvac.py": "8860829c320e4ef9080950336fa6b4afa891d457c9c99b2671c2a576fa5df323",
+    "research/NativeEdltHVACProbe.cs": "f0892c64ec062f138c26d4841a0c9939f0c346e865ae80bf7434b1ce738d5b1d",
+    "research/NativeEdltGraphicsProbe.py": "0f281b9f964b1892743712a847a976808f930014436ff719a0c5bbb8949116f2",
+    "docs/edlt-hvac.md": "31d4574c73a6166304243e02a4b59f9213642daa2e7aa5280d978452f5d5d4fc"
+  },
+  "shared_dependencies": {
+    "src/cbus_toolkit/edlt.py": "78fcb914b21b71206b1cb381b670388dbcd8eb67afa0deb254620395ac353641",
+    "edlt_mra_normalization_prefix_sha256": "486b6005b6baa300cfda3a564604c3f755c0ad81333706d56951e0c70e4f0a4b"
+  },
+  "optional_report_environment": "CBUS_EDLT_HVAC_REPORT"
+}

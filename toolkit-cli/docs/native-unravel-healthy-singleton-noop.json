@@ -1,0 +1,291 @@
+{
+  "project": "SCABDE62",
+  "reply": [
+    "120-completed MMI 1 of 1.",
+    "120-Unravel: Unit count: 3",
+    "120-Unravel: Units at: 4, 5, 16",
+    "120-Unravel: Scanning unit 1 of 3 at address 4 (0x04).",
+    "120-completed MMI 1 of 1.",
+    "120-Unravel: Complete.",
+    "200 OK."
+  ],
+  "before": {
+    "format": "cbus-native-serial-inventory-v1",
+    "network": "//SCABDE62/254",
+    "mode": "cached",
+    "requested": null,
+    "records": [
+      {
+        "address": 4,
+        "unit_type": "KEYE1",
+        "firmware": "2.5.00",
+        "serial": "101136.1558",
+        "state": "ok",
+        "presence": "cached",
+        "status": "ok",
+        "errors": [],
+        "identity": {
+          "address": 4,
+          "unit_type": "KEYE1",
+          "serial": "101136.1558"
+        }
+      },
+      {
+        "address": 5,
+        "unit_type": "KEYGL5",
+        "firmware": "5.5.00",
+        "serial": "101183.1666",
+        "state": "ok",
+        "presence": "cached",
+        "status": "ok",
+        "errors": [],
+        "identity": {
+          "address": 5,
+          "unit_type": "KEYGL5",
+          "serial": "101183.1666"
+        }
+      },
+      {
+        "address": 16,
+        "unit_type": "PC_CNIED",
+        "firmware": "5.5.00",
+        "serial": "100966.1187",
+        "state": "ok",
+        "presence": "cached",
+        "status": "ok",
+        "errors": [],
+        "identity": {
+          "address": 16,
+          "unit_type": "PC_CNIED",
+          "serial": "100966.1187"
+        }
+      }
+    ],
+    "identities": [
+      {
+        "address": 4,
+        "unit_type": "KEYE1",
+        "serial": "101136.1558"
+      },
+      {
+        "address": 5,
+        "unit_type": "KEYGL5",
+        "serial": "101183.1666"
+      },
+      {
+        "address": 16,
+        "unit_type": "PC_CNIED",
+        "serial": "100966.1187"
+      }
+    ],
+    "errors": [],
+    "complete": true,
+    "observed_at": "2026-09-14T11:44:58.446309+00:00",
+    "refresh_completed": false,
+    "refresh_scope": "none",
+    "database_updated": false,
+    "physical_addresses_changed": false
+  },
+  "after": {
+    "format": "cbus-native-serial-inventory-v1",
+    "network": "//SCABDE62/254",
+    "mode": "cached",
+    "requested": null,
+    "records": [
+      {
+        "address": 4,
+        "unit_type": "KEYE1",
+        "firmware": "2.5.00",
+        "serial": "101136.1558",
+        "state": "ok",
+        "presence": "cached",
+        "status": "ok",
+        "errors": [],
+        "identity": {
+          "address": 4,
+          "unit_type": "KEYE1",
+          "serial": "101136.1558"
+        }
+      },
+      {
+        "address": 5,
+        "unit_type": "KEYGL5",
+        "firmware": "5.5.00",
+        "serial": "101183.1666",
+        "state": "ok",
+        "presence": "cached",
+        "status": "ok",
+        "errors": [],
+        "identity": {
+          "address": 5,
+          "unit_type": "KEYGL5",
+          "serial": "101183.1666"
+        }
+      },
+      {
+        "address": 16,
+        "unit_type": "PC_CNIED",
+        "firmware": "5.5.00",
+        "serial": "100966.1187",
+        "state": "ok",
+        "presence": "cached",
+        "status": "ok",
+        "errors": [],
+        "identity": {
+          "address": 16,
+          "unit_type": "PC_CNIED",
+          "serial": "100966.1187"
+        }
+      }
+    ],
+    "identities": [
+      {
+        "address": 4,
+        "unit_type": "KEYE1",
+        "serial": "101136.1558"
+      },
+      {
+        "address": 5,
+        "unit_type": "KEYGL5",
+        "serial": "101183.1666"
+      },
+      {
+        "address": 16,
+        "unit_type": "PC_CNIED",
+        "serial": "100966.1187"
+      }
+    ],
+    "errors": [],
+    "complete": true,
+    "observed_at": "2026-09-14T11:45:01.209589+00:00",
+    "refresh_completed": false,
+    "refresh_scope": "none",
+    "database_updated": false,
+    "physical_addresses_changed": false
+  },
+  "wire": [
+    {
+      "sequence": 109,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "464146463030710d"
+    },
+    {
+      "sequence": 110,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "712e443846463030303030413030303030313030303030303030303030303030303030303030303030303030303030303030303031450d0a443846463538303030303030303030303030303030303030303030303030303030303030303030303030303030303030303044310d0a4436464642303030303030303030303030303030303030303030303030303030303030303030303030303030303037420d0a"
+    },
+    {
+      "sequence": 111,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "0d"
+    },
+    {
+      "sequence": 112,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "7c7c0d"
+    },
+    {
+      "sequence": 113,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "403141323030310d"
+    },
+    {
+      "sequence": 114,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "38323230313034450d0a"
+    },
+    {
+      "sequence": 115,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "5c34363130303032313034720d"
+    },
+    {
+      "sequence": 116,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "722e3844303446464646464630303030313841363634413342313030303546370d0a"
+    },
+    {
+      "sequence": 117,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "314132413036730d"
+    },
+    {
+      "sequence": 118,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "732e3837324142363443463642423141394545340d0a"
+    },
+    {
+      "sequence": 119,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "314132333036740d"
+    },
+    {
+      "sequence": 120,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "742e3837323339423139324438323239453445360d0a"
+    },
+    {
+      "sequence": 121,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "32313032750d"
+    },
+    {
+      "sequence": 122,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "752e383930323335324533353245333033303230323030460d0a"
+    },
+    {
+      "sequence": 123,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "314146323031760d"
+    },
+    {
+      "sequence": 124,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "762e38324632464638440d0a"
+    },
+    {
+      "sequence": 125,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "5c34363034303032313034770d"
+    },
+    {
+      "sequence": 126,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "772e38363034313030303844303433384646464646464646313842313036313641323030303531350d0a"
+    },
+    {
+      "sequence": 127,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "5c303546463030464146463030780d"
+    },
+    {
+      "sequence": 128,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "782e443846463030303030413030303030313030303030303030303030303030303030303030303030303030303030303030303031450d0a443846463538303030303030303030303030303030303030303030303030303030303030303030303030303030303030303044310d0a4436464642303030303030303030303030303030303030303030303030303030303030303030303030303030303037420d0a"
+    }
+  ],
+  "cleanup_errors": [],
+  "scope": "Exact native healthy-address4 UNRAVELUNIT MATCHDB no-op; database target serial was at6",
+  "address_store_count": 0
+}

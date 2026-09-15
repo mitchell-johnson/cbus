@@ -1,0 +1,184 @@
+{
+  "format": "cbus-edlt-standby-acceptance-v1",
+  "profile": {
+    "unit_type": "KEYGL5",
+    "catalog_number": "5055EDL",
+    "firmware": "5.5.00"
+  },
+  "scope": "Five original standby PP fields through six typed controls, direct original before-save normalization, CRCs and closed database persistence",
+  "tests": [
+    {
+      "python": "3.13.14",
+      "count": 14,
+      "skips": 0,
+      "passed": true,
+      "elapsed_seconds": 50.792,
+      "log": "research/runtime/edlt-standby/final-py313.log",
+      "report": "research/runtime/edlt-standby/report-final-py313.json",
+      "report_sha256": "6c08744c089c3a5b591dea1fd4817540e4a5abb492ec77dee01690f8cd1691fe"
+    },
+    {
+      "python": "3.10.20",
+      "count": 14,
+      "skips": 0,
+      "passed": true,
+      "elapsed_seconds": 55.435,
+      "log": "research/runtime/edlt-standby/final-py310.log",
+      "report": "research/runtime/edlt-standby/report-final-py310.json",
+      "report_sha256": "29a430e61e1282dd626edfd771d51114d4557720b343edf676a6ede07e640e84"
+    }
+  ],
+  "test_modules": [
+    "tests.test_edlt_standby",
+    "tests.test_cli_edlt_standby"
+  ],
+  "field_layouts": [
+    {
+      "parameter": "ActivityDuration",
+      "address": "0x11b",
+      "bit": 0,
+      "bits": 8,
+      "default": 30
+    },
+    {
+      "parameter": "TimeoutPage",
+      "address": "0x11a",
+      "bit": 5,
+      "bits": 2,
+      "default": 2
+    },
+    {
+      "parameter": "EnableNightlightUserKey",
+      "address": "0x116",
+      "bit": 6,
+      "bits": 1,
+      "default": 0
+    },
+    {
+      "parameter": "EnableNightlightPageKey",
+      "address": "0x116",
+      "bit": 7,
+      "bits": 1,
+      "default": 0
+    },
+    {
+      "parameter": "NightlightColour",
+      "address": "0x117",
+      "bit": 3,
+      "bits": 2,
+      "default": 1
+    }
+  ],
+  "original_model": {
+    "assembly": "CBusLogicModel.dll",
+    "sha256": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+    "runner": "mono@sha256:34d816779b1248b5cfd095770b64ecbaf1798e2aca693a91c11a018dce9c7ad5",
+    "network": "none",
+    "output_rows": 84,
+    "standby_assertions": {
+      "enable_setter_cases": 12,
+      "radio_setter_cases": 20,
+      "nightlight_enabled_combinations": 4,
+      "duration_options": 255,
+      "timeout_combo_options": 2,
+      "colour_options": 4
+    },
+    "output": "research/runtime/edlt-standby/original-vectors.txt",
+    "output_sha256": "5136b03694e3f4f608d7d7327ec10634a58b6975cf764c8d7f62afa80348c2f3",
+    "source_references": {
+      "EDLTUnit.cs": [
+        "64 ActivityDuration",
+        "356 nightlight colour enabled",
+        "368 and385 nightlight flags",
+        "426 EnableStandByPage",
+        "829 NightlightColour",
+        "1106 and1123 timeout radio mapping",
+        "1193 TimeoutPage"
+      ],
+      "FrmBaseUnit.cs": [
+        "5653 dependent group enabled",
+        "5759 and5769 timeout radio bindings",
+        "5785 timeout combo",
+        "5816 and5825 nightlight flags",
+        "5834 and5835 colour selector and enabled binding",
+        "5860 delay selector",
+        "5871 enable checkbox"
+      ]
+    }
+  },
+  "native": {
+    "cgate": "3.4.0.2001",
+    "cases_per_python": 34,
+    "parameter_comparisons_per_python": 29716,
+    "crc_comparisons_per_python": 170,
+    "byte_window": "0x116..0x11b",
+    "default_hex": "042911e1411e",
+    "save_close_load_equal": true,
+    "network_state": "new",
+    "physical_device_verified": false,
+    "cases": {
+      "default_omission": 1,
+      "enable_setter": 12,
+      "duration_destination_endpoints": 6,
+      "nightlight_combinations": 12,
+      "disabled_hidden_retention": 1,
+      "stored_timeout3_preserved": 1,
+      "stored_standby_mra_raw3_normalization": 1
+    }
+  },
+  "cli": {
+    "count": 3,
+    "original_custom_fields": [
+      255,
+      0,
+      1,
+      1,
+      3
+    ],
+    "timeout_page_distinct_from_programming_destination": true,
+    "preview_unchanged": true,
+    "save_close_load_equal": true,
+    "interrupt_evidence": true,
+    "report": "research/runtime/edlt-standby-cli-report.json"
+  },
+  "guards": [
+    "exact profile and field layouts",
+    "strict booleans/integers/named choices",
+    "dependent controls only when resulting standby enabled",
+    "colour only when resulting nightlight flag enabled",
+    "omitted hidden/raw timeout3 preservation",
+    "canonical plan and explicit result types",
+    "stale full snapshot",
+    "database identity and destination",
+    "rollback verification",
+    "interruption evidence without automatic recovery I/O",
+    "shared MRA and terminator normalization"
+  ],
+  "excluded": [
+    "physical standby timing and indicator output",
+    "physical device programming",
+    "standby brightness authoring",
+    "navigation and quick-status authoring",
+    "all other eDLT profiles",
+    "complete Toolkit parity"
+  ],
+  "historical_failed_harness": {
+    "path": "research/runtime/edlt-navigation/standby-first-py313.log",
+    "reason": "Two interruption assertions expected ActivityDuration as first synthetic write; shared Application synchronization is first. Assertions corrected; all native cases passed in that run."
+  },
+  "source_sha256": {
+    "src/cbus_toolkit/edlt_standby.py": "e78b2c2cd4d3c29239eb06c3b3c2f1e677ebe2e363a58aef515f7ef1f8c15a1f",
+    "src/cbus_toolkit/edlt.py": "78fcb914b21b71206b1cb381b670388dbcd8eb67afa0deb254620395ac353641",
+    "src/cbus_toolkit/edlt_mra.py": "99bf274549de55b4105acc615a620f6eebf83ebbc1a5a56379646a690e9e2636",
+    "tests/test_edlt_standby.py": "4235afa8fbbe8adf508f9d42da49687239845333f9c1203f7ef4e62755af5506",
+    "tests/test_cli_edlt_standby.py": "adf24ef5a9f38deada122c0d24640c952fb12752c6f3fa0564b71e6f9f06a719",
+    "research/NativeEdltStandbyProbe.cs": "918070845c5110c980ac952cc5ec7a37bf35b37140ec33fd99074f8d10b85374",
+    "docs/edlt-standby.md": "3225fc6a43ba4cabd15bdf4c1efc8824656d1d1379dc3784a9856354ed10615d"
+  },
+  "local_original_source_sha256": {
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel.Units.EDLT/EDLTUnit.cs": "641f5abc1c3762cd86a0c4b18bc125424a39017a3d78d6edfa4e1e2964af62b2",
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel.Utilities/CommonConstants.cs": "98e20887cf973205eaa42e621f0ee21ee5b9367aac1553f88c75b86e16d39020",
+    "research/vendor/edlt-decompiled/eDLT/eDLT/FrmBaseUnit.cs": "060323b11494c7a697656d048f97351526a143e339db767731675a87ba1b1b16"
+  },
+  "spec_sha256": "812d2f92ccf3176d9f3d4c0f35fc196ac9ba45bc419639421e4e5ff082d2af21"
+}

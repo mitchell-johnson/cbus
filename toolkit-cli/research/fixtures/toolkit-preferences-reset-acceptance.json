@@ -1,0 +1,138 @@
+{
+  "format": "cbus-toolkit-preferences-reset-acceptance-v1",
+  "passed": true,
+  "scope": "Exact Toolkit1.18.0 reset handler/wrapper/TRegistry traversal with explicit original-call fixtures; separate portable coordinator and actual Windows32-bit registry adapter acceptance in owned HKCU namespaces. No real Toolkit registry or hardware access.",
+  "files": {
+    "src/cbus_toolkit/toolkit_preferences_reset.py": "7619bbe9e590eff202ff1a5cbd6c1825817df8ca15fa18dbe240caee5c3ff6c0",
+    "src/cbus_toolkit/windows_preferences_reset.py": "d157d7e19586ec564dcc62feadbea4dbdfc82171fb2afe5cbbbb503b8d2858ea",
+    "tests/test_toolkit_preferences_reset.py": "b8c171879f7c114e6397add0ec43da8550ce83a442e11a1dd6833287c475bed3",
+    "tests/test_windows_preferences_reset.py": "a02ad5f8ee80bb0447b1be681c6fc11f7bebd09502787df52c97e9804522b3ae",
+    "research/toolkit_reset_original.py": "8b9cd28e4777da2930dcdd5993a3053efd78f592e6059d653ba97a342028c179",
+    "research/windows_preferences_reset_probe.py": "7a624d5d677bd75519edebe215db4ae188f24efaab3ec32894e03badc0c712d0",
+    "research/windows_preferences_reset_native_cases.py": "126a158755c56912619d05920e113be4edc4872a34e20f3f410f92081549e6f1",
+    "research/fixtures/toolkit-preferences-reset-vectors.json": "279bae4765544f950926788836980cb5fae16ae48e145d586b5eb27501a77cdb",
+    "research/fixtures/windows-python-runtime.json": "42997bb7775dfa74a8e3e10887e26c131f8d980718298f42a7fd79d84c88619c",
+    "research/windows_bridge.py": "9b2044b76fa74cb5bb06dcfb854c7a1fc7f96c19ba3f0367e5f901cfad822107",
+    "research/windows_provenance.py": "8aad4ca9d1577b985eef9b453cd1ba1b10c1a73f4627a74b8c45e565c3a47e48",
+    "docs/toolkit-preferences-reset.md": "f8e7a22279e4219878e7cd6b60a2d120cbbe85429186fce0304230de4a4df745"
+  },
+  "reports": [
+    {
+      "path": "research/runtime/toolkit-preferences/reset/final-313-v1/result.json",
+      "sha256": "ebcaa7765cb7d4143b60dee2c05122142035b377ffe05dfc3c833551a9545e6e",
+      "python": "3.13.14 (main, Jun 10 2026, 12:24:04) [Clang 17.0.0 (clang-1700.6.4.2)]",
+      "elapsed_seconds": 13.107883791002678,
+      "tests": 11,
+      "skipped": 0,
+      "inputs_unchanged": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "b8e3a449008a18c4d652fb1f8531ad098fa079a66f1b9eaa5010c2dbde5893d8",
+      "native": {
+        "path": "research/runtime/windows-preferences-reset-qk4f5o0f/result.json",
+        "sha256": "85a58d03e4885a224138f1b058949b459f87d84e73a041470f70f1f2af3c883c",
+        "passed": true,
+        "job_id": "job-probe-37742d163d684971",
+        "tests": 8,
+        "python": "3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 12:49:38) [MSC v.1944 32 bit (Intel)]",
+        "bits": 32,
+        "all_owned_namespaces_removed": true,
+        "archive_sha256": "7ef2f380a2fccbcc476d0e74d439c81018074e1442da3ae200318a2e3e555d8d"
+      }
+    },
+    {
+      "path": "research/runtime/toolkit-preferences/reset/final-310-v1/result.json",
+      "sha256": "ebf22050381e2ece05dd256f10c026bc799661f1fbc9608d434a3fcc25cdb54a",
+      "python": "3.10.20 (main, Mar  3 2026, 00:49:35) [Clang 17.0.0 (clang-1700.6.4.2)]",
+      "elapsed_seconds": 11.60692549997475,
+      "tests": 11,
+      "skipped": 0,
+      "inputs_unchanged": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "c336516eb76a89fc26ae9463d384096a3f009007a5c3fbf185e3439715e363e4",
+      "native": {
+        "path": "research/runtime/windows-preferences-reset-faba6i8_/result.json",
+        "sha256": "927bcc01b9a2fe2f0980e31754deaa1b900a584b15e272c423cab2ddcfba078a",
+        "passed": true,
+        "job_id": "job-probe-9943762a5582441f",
+        "tests": 8,
+        "python": "3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 12:49:38) [MSC v.1944 32 bit (Intel)]",
+        "bits": 32,
+        "all_owned_namespaces_removed": true,
+        "archive_sha256": "81d41b007785213c56e6e4eb08cdf9f56679831cce8a4ad20efbf2e989b3a686"
+      }
+    }
+  ],
+  "original": {
+    "executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "vectors": "research/fixtures/toolkit-preferences-reset-vectors.json",
+    "cases": 13,
+    "entrypoints": {
+      "handler": "0xddf2d4",
+      "wrapper": "0x8455ec",
+      "constructor": "0x660b54",
+      "delete_key": "0x6610a0",
+      "get_key_info": "0x661250",
+      "get_key": "0x661c68"
+    },
+    "fixture_boundaries": [
+      "Preallocated Delphi objects, allocation and strings",
+      "Win32 registry calls with deterministic tree/status fixtures",
+      "Object release and GUI notice sink",
+      "Normal SysLocale.FarEast=false; alternate allocation branch not claimed",
+      "No OS exception delivery or actual GUI binding"
+    ]
+  },
+  "behavior": {
+    "logical_hive": "HKCU",
+    "logical_key": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+    "registry_view_bits": 32,
+    "original_access": 983103,
+    "ordering": "Initial child count, descending enumeration indexes, recursive child-before-parent deletion",
+    "notice_message_id": 11260,
+    "notice_caption_argument": "WHITE",
+    "notice_displayed": false,
+    "success_means": "All recorded statuses zero and root delete status zero; absence is not independently verified",
+    "transactional": false,
+    "retry": false,
+    "limits": "Explicit configurable resource bounds, not Toolkit product limits",
+    "interruptions": "Exact first KeyboardInterrupt/SystemExit preserved despite message/attachment/cleanup failures; last_error/last_outcome/last_evidence retained"
+  },
+  "historical_reports": [
+    {
+      "path": "research/runtime/toolkit-preferences/reset/acceptance-313-v1.json",
+      "sha256": "1d3e3b0de59580b1995129283d018b70c1092fd665297232432046a5a5faa7e4",
+      "scope": "Preserved runtime draft before public-path promotion; source hashes are its own, not the final public file hashes."
+    },
+    {
+      "path": "research/runtime/toolkit-preferences/reset/acceptance-310-v1.json",
+      "sha256": "3406bd8316717b9d5a748b22c2cfb7acb9e9deb5fd4b57ead416f499b3a9d673",
+      "scope": "Preserved runtime draft before public-path promotion; source hashes are its own, not the final public file hashes."
+    },
+    {
+      "path": "research/runtime/toolkit-preferences/reset/acceptance-313-v2.json",
+      "sha256": "0128575e36e4eea45f1db317580ec655cf3d2d52790bffe07117269e51b79846",
+      "scope": "Preserved runtime draft before public-path promotion; source hashes are its own, not the final public file hashes."
+    },
+    {
+      "path": "research/runtime/toolkit-preferences/reset/acceptance-310-v2.json",
+      "sha256": "1be7aaf0976e714fdbe91857364850c84cac9b6191f2edb2629dc273b4f7c252",
+      "scope": "Preserved runtime draft before public-path promotion; source hashes are its own, not the final public file hashes."
+    },
+    {
+      "path": "research/runtime/toolkit-preferences/reset/native-v1/result.json",
+      "sha256": "f610ad7238d7c9f358432e83dddfcdb4e7bd1578319eb215a5477f4817d6372b",
+      "scope": "Preserved runtime draft before public-path promotion; source hashes are its own, not the final public file hashes."
+    },
+    {
+      "path": "research/runtime/toolkit-preferences/reset/native-310-v1/result.json",
+      "sha256": "aaf9bb8d4831088cd54b604617028b56252696996acffe36c98ef9b8fc27b2ac",
+      "scope": "Preserved runtime draft before public-path promotion; source hashes are its own, not the final public file hashes."
+    }
+  ],
+  "limitations": [
+    "No UI notice displayed or runtime preference reload",
+    "No concurrent-registry snapshot/transaction or independently verified absence",
+    "Windows runtime is Python3.13.14 x86 in both host runs, not WindowsPython3.10",
+    "Focused helper acceptance is separate from immutable full-suite snapshots; CLI acceptance is recorded independently"
+  ]
+}

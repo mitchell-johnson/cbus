@@ -1,0 +1,1481 @@
+{
+  "format": "cbus-original-dont-ask-again-reset-v1",
+  "cases": [
+    {
+      "children": [],
+      "faults": [],
+      "far_east_fixture": false,
+      "initial_nodes": [
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain"
+      ],
+      "remaining_nodes": [],
+      "trace": [
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 0,
+          "count": 0,
+          "max_name_length": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 0
+        }
+      ],
+      "original_delete_return": [
+        true
+      ],
+      "notice_requests": [
+        {
+          "message_id": 11260,
+          "caption": "WHITE"
+        }
+      ],
+      "registry_object_free_calls": 1
+    },
+    {
+      "children": null,
+      "faults": [],
+      "far_east_fixture": false,
+      "initial_nodes": [],
+      "remaining_nodes": [],
+      "trace": [
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "access": 983103,
+          "status": 2
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 2
+        }
+      ],
+      "original_delete_return": [
+        false
+      ],
+      "notice_requests": [
+        {
+          "message_id": 11260,
+          "caption": "WHITE"
+        }
+      ],
+      "registry_object_free_calls": 1
+    },
+    {
+      "children": [
+        "a",
+        "b",
+        "a\\x"
+      ],
+      "faults": [],
+      "far_east_fixture": false,
+      "initial_nodes": [
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x"
+      ],
+      "remaining_nodes": [],
+      "trace": [
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 0,
+          "count": 2,
+          "max_name_length": 1
+        },
+        {
+          "operation": "enumerate",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "index": 1,
+          "capacity": 2,
+          "status": 0,
+          "name": "b"
+        },
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          "status": 0,
+          "count": 0,
+          "max_name_length": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          "status": 0
+        },
+        {
+          "operation": "enumerate",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "index": 0,
+          "capacity": 2,
+          "status": 0,
+          "name": "a"
+        },
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "status": 0,
+          "count": 1,
+          "max_name_length": 1
+        },
+        {
+          "operation": "enumerate",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "index": 0,
+          "capacity": 2,
+          "status": 0,
+          "name": "x"
+        },
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "status": 0,
+          "count": 0,
+          "max_name_length": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "status": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "status": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 0
+        }
+      ],
+      "original_delete_return": [
+        true
+      ],
+      "notice_requests": [
+        {
+          "message_id": 11260,
+          "caption": "WHITE"
+        }
+      ],
+      "registry_object_free_calls": 1
+    },
+    {
+      "children": [
+        "M\u0101ori",
+        "\ud83d\ude42"
+      ],
+      "faults": [],
+      "far_east_fixture": false,
+      "initial_nodes": [
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\M\u0101ori",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\\ud83d\ude42"
+      ],
+      "remaining_nodes": [],
+      "trace": [
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 0,
+          "count": 2,
+          "max_name_length": 5
+        },
+        {
+          "operation": "enumerate",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "index": 1,
+          "capacity": 6,
+          "status": 0,
+          "name": "\ud83d\ude42"
+        },
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\\ud83d\ude42",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\\ud83d\ude42",
+          "status": 0,
+          "count": 0,
+          "max_name_length": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\\ud83d\ude42",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\\ud83d\ude42",
+          "status": 0
+        },
+        {
+          "operation": "enumerate",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "index": 0,
+          "capacity": 6,
+          "status": 0,
+          "name": "M\u0101ori"
+        },
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\M\u0101ori",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\M\u0101ori",
+          "status": 0,
+          "count": 0,
+          "max_name_length": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\M\u0101ori",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\M\u0101ori",
+          "status": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 0
+        }
+      ],
+      "original_delete_return": [
+        true
+      ],
+      "notice_requests": [
+        {
+          "message_id": 11260,
+          "caption": "WHITE"
+        }
+      ],
+      "registry_object_free_calls": 1
+    },
+    {
+      "children": [
+        "a",
+        "b",
+        "a\\x"
+      ],
+      "faults": [
+        [
+          "open",
+          "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          null,
+          5
+        ]
+      ],
+      "far_east_fixture": false,
+      "initial_nodes": [
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x"
+      ],
+      "remaining_nodes": [
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x"
+      ],
+      "trace": [
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "access": 983103,
+          "status": 5
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 5
+        }
+      ],
+      "original_delete_return": [
+        false
+      ],
+      "notice_requests": [
+        {
+          "message_id": 11260,
+          "caption": "WHITE"
+        }
+      ],
+      "registry_object_free_calls": 1
+    },
+    {
+      "children": [
+        "a",
+        "b",
+        "a\\x"
+      ],
+      "faults": [
+        [
+          "query",
+          "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          null,
+          5
+        ]
+      ],
+      "far_east_fixture": false,
+      "initial_nodes": [
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x"
+      ],
+      "remaining_nodes": [
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x"
+      ],
+      "trace": [
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 5,
+          "count": null,
+          "max_name_length": null
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 5
+        }
+      ],
+      "original_delete_return": [
+        false
+      ],
+      "notice_requests": [
+        {
+          "message_id": 11260,
+          "caption": "WHITE"
+        }
+      ],
+      "registry_object_free_calls": 1
+    },
+    {
+      "children": [
+        "a",
+        "b",
+        "a\\x"
+      ],
+      "faults": [
+        [
+          "enumerate",
+          "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          1,
+          5
+        ]
+      ],
+      "far_east_fixture": false,
+      "initial_nodes": [
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x"
+      ],
+      "remaining_nodes": [
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b"
+      ],
+      "trace": [
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 0,
+          "count": 2,
+          "max_name_length": 1
+        },
+        {
+          "operation": "enumerate",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "index": 1,
+          "capacity": 2,
+          "status": 5,
+          "name": null
+        },
+        {
+          "operation": "enumerate",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "index": 0,
+          "capacity": 2,
+          "status": 0,
+          "name": "a"
+        },
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "status": 0,
+          "count": 1,
+          "max_name_length": 1
+        },
+        {
+          "operation": "enumerate",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "index": 0,
+          "capacity": 2,
+          "status": 0,
+          "name": "x"
+        },
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "status": 0,
+          "count": 0,
+          "max_name_length": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "status": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "status": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 5
+        }
+      ],
+      "original_delete_return": [
+        false
+      ],
+      "notice_requests": [
+        {
+          "message_id": 11260,
+          "caption": "WHITE"
+        }
+      ],
+      "registry_object_free_calls": 1
+    },
+    {
+      "children": [
+        "a",
+        "b",
+        "a\\x"
+      ],
+      "faults": [
+        [
+          "open",
+          "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          null,
+          5
+        ]
+      ],
+      "far_east_fixture": false,
+      "initial_nodes": [
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x"
+      ],
+      "remaining_nodes": [],
+      "trace": [
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 0,
+          "count": 2,
+          "max_name_length": 1
+        },
+        {
+          "operation": "enumerate",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "index": 1,
+          "capacity": 2,
+          "status": 0,
+          "name": "b"
+        },
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          "access": 983103,
+          "status": 5
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          "status": 0
+        },
+        {
+          "operation": "enumerate",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "index": 0,
+          "capacity": 2,
+          "status": 0,
+          "name": "a"
+        },
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "status": 0,
+          "count": 1,
+          "max_name_length": 1
+        },
+        {
+          "operation": "enumerate",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "index": 0,
+          "capacity": 2,
+          "status": 0,
+          "name": "x"
+        },
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "status": 0,
+          "count": 0,
+          "max_name_length": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "status": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "status": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 0
+        }
+      ],
+      "original_delete_return": [
+        true
+      ],
+      "notice_requests": [
+        {
+          "message_id": 11260,
+          "caption": "WHITE"
+        }
+      ],
+      "registry_object_free_calls": 1
+    },
+    {
+      "children": [
+        "a",
+        "b",
+        "a\\x"
+      ],
+      "faults": [
+        [
+          "query",
+          "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          null,
+          5
+        ]
+      ],
+      "far_east_fixture": false,
+      "initial_nodes": [
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x"
+      ],
+      "remaining_nodes": [],
+      "trace": [
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 0,
+          "count": 2,
+          "max_name_length": 1
+        },
+        {
+          "operation": "enumerate",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "index": 1,
+          "capacity": 2,
+          "status": 0,
+          "name": "b"
+        },
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          "status": 5,
+          "count": null,
+          "max_name_length": null
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          "status": 0
+        },
+        {
+          "operation": "enumerate",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "index": 0,
+          "capacity": 2,
+          "status": 0,
+          "name": "a"
+        },
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "status": 0,
+          "count": 1,
+          "max_name_length": 1
+        },
+        {
+          "operation": "enumerate",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "index": 0,
+          "capacity": 2,
+          "status": 0,
+          "name": "x"
+        },
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "status": 0,
+          "count": 0,
+          "max_name_length": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "status": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "status": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 0
+        }
+      ],
+      "original_delete_return": [
+        true
+      ],
+      "notice_requests": [
+        {
+          "message_id": 11260,
+          "caption": "WHITE"
+        }
+      ],
+      "registry_object_free_calls": 1
+    },
+    {
+      "children": [
+        "a",
+        "b",
+        "a\\x"
+      ],
+      "faults": [
+        [
+          "delete",
+          "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          null,
+          5
+        ]
+      ],
+      "far_east_fixture": false,
+      "initial_nodes": [
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x"
+      ],
+      "remaining_nodes": [
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b"
+      ],
+      "trace": [
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 0,
+          "count": 2,
+          "max_name_length": 1
+        },
+        {
+          "operation": "enumerate",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "index": 1,
+          "capacity": 2,
+          "status": 0,
+          "name": "b"
+        },
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          "status": 0,
+          "count": 0,
+          "max_name_length": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          "status": 5
+        },
+        {
+          "operation": "enumerate",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "index": 0,
+          "capacity": 2,
+          "status": 0,
+          "name": "a"
+        },
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "status": 0,
+          "count": 1,
+          "max_name_length": 1
+        },
+        {
+          "operation": "enumerate",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "index": 0,
+          "capacity": 2,
+          "status": 0,
+          "name": "x"
+        },
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "status": 0,
+          "count": 0,
+          "max_name_length": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "status": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "status": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 5
+        }
+      ],
+      "original_delete_return": [
+        false
+      ],
+      "notice_requests": [
+        {
+          "message_id": 11260,
+          "caption": "WHITE"
+        }
+      ],
+      "registry_object_free_calls": 1
+    },
+    {
+      "children": [
+        "a",
+        "b",
+        "a\\x"
+      ],
+      "faults": [
+        [
+          "delete",
+          "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          null,
+          5
+        ]
+      ],
+      "far_east_fixture": false,
+      "initial_nodes": [
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x"
+      ],
+      "remaining_nodes": [
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain"
+      ],
+      "trace": [
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 0,
+          "count": 2,
+          "max_name_length": 1
+        },
+        {
+          "operation": "enumerate",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "index": 1,
+          "capacity": 2,
+          "status": 0,
+          "name": "b"
+        },
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          "status": 0,
+          "count": 0,
+          "max_name_length": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          "status": 0
+        },
+        {
+          "operation": "enumerate",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "index": 0,
+          "capacity": 2,
+          "status": 0,
+          "name": "a"
+        },
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "status": 0,
+          "count": 1,
+          "max_name_length": 1
+        },
+        {
+          "operation": "enumerate",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "index": 0,
+          "capacity": 2,
+          "status": 0,
+          "name": "x"
+        },
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "status": 0,
+          "count": 0,
+          "max_name_length": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "status": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "status": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 5
+        }
+      ],
+      "original_delete_return": [
+        false
+      ],
+      "notice_requests": [
+        {
+          "message_id": 11260,
+          "caption": "WHITE"
+        }
+      ],
+      "registry_object_free_calls": 1
+    },
+    {
+      "children": [
+        "a",
+        "b",
+        "a\\x"
+      ],
+      "faults": [
+        [
+          "close",
+          "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          null,
+          5
+        ]
+      ],
+      "far_east_fixture": false,
+      "initial_nodes": [
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x"
+      ],
+      "remaining_nodes": [],
+      "trace": [
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 0,
+          "count": 2,
+          "max_name_length": 1
+        },
+        {
+          "operation": "enumerate",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "index": 1,
+          "capacity": 2,
+          "status": 0,
+          "name": "b"
+        },
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          "status": 0,
+          "count": 0,
+          "max_name_length": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          "status": 5
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          "status": 0
+        },
+        {
+          "operation": "enumerate",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "index": 0,
+          "capacity": 2,
+          "status": 0,
+          "name": "a"
+        },
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "status": 0,
+          "count": 1,
+          "max_name_length": 1
+        },
+        {
+          "operation": "enumerate",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "index": 0,
+          "capacity": 2,
+          "status": 0,
+          "name": "x"
+        },
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "status": 0,
+          "count": 0,
+          "max_name_length": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "status": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "status": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 0
+        }
+      ],
+      "original_delete_return": [
+        true
+      ],
+      "notice_requests": [
+        {
+          "message_id": 11260,
+          "caption": "WHITE"
+        }
+      ],
+      "registry_object_free_calls": 1
+    },
+    {
+      "children": [
+        "a",
+        "b",
+        "a\\x"
+      ],
+      "faults": [
+        [
+          "close",
+          "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          null,
+          5
+        ]
+      ],
+      "far_east_fixture": false,
+      "initial_nodes": [
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+        "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x"
+      ],
+      "remaining_nodes": [],
+      "trace": [
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 0,
+          "count": 2,
+          "max_name_length": 1
+        },
+        {
+          "operation": "enumerate",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "index": 1,
+          "capacity": 2,
+          "status": 0,
+          "name": "b"
+        },
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          "status": 0,
+          "count": 0,
+          "max_name_length": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\b",
+          "status": 0
+        },
+        {
+          "operation": "enumerate",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "index": 0,
+          "capacity": 2,
+          "status": 0,
+          "name": "a"
+        },
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "status": 0,
+          "count": 1,
+          "max_name_length": 1
+        },
+        {
+          "operation": "enumerate",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "index": 0,
+          "capacity": 2,
+          "status": 0,
+          "name": "x"
+        },
+        {
+          "operation": "open",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "access": 983103,
+          "status": 0
+        },
+        {
+          "operation": "query",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "status": 0,
+          "count": 0,
+          "max_name_length": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a\\x",
+          "status": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "status": 0
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain\\a",
+          "status": 0
+        },
+        {
+          "operation": "close",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 5
+        },
+        {
+          "operation": "delete",
+          "path": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\DontAskAgain",
+          "status": 0
+        }
+      ],
+      "original_delete_return": [
+        true
+      ],
+      "notice_requests": [
+        {
+          "message_id": 11260,
+          "caption": "WHITE"
+        }
+      ],
+      "registry_object_free_calls": 1
+    }
+  ],
+  "executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "probe_sha256": "8b9cd28e4777da2930dcdd5993a3053efd78f592e6059d653ba97a342028c179",
+  "scope": "Original handler/wrapper/recursive deletion; explicit Win32 registry/string/heap/notice fixtures; no host registry touched; normal SysLocale.FarEast=false."
+}

@@ -1,0 +1,495 @@
+{
+  "alternative_database_load": {
+    "alternative_status_counts": {
+      "alternative_failed": 4,
+      "alternative_roundtrip_pass": 23
+    },
+    "hidden_entries": 1,
+    "non_addressable_entries": 8,
+    "original_exclusions": 27,
+    "successful_alternative_parameter_comparisons": 8872
+  },
+  "boundary_alternative_database_load": {
+    "alternative_status_counts": {
+      "alternative_failed": 10,
+      "alternative_roundtrip_pass": 105
+    },
+    "hidden_entries": 4,
+    "non_addressable_entries": 16,
+    "original_exclusions": 115,
+    "successful_alternative_parameter_comparisons": 64331
+  },
+  "boundary_workflow": {
+    "all_selected_cases_passed": false,
+    "completed": 6497,
+    "failure_classes": [
+      {
+        "count": 1,
+        "error": "C-Gate error: 408 Operation failed: No unit specification available for unit type KEYBOARD, version 0",
+        "status": "vendor_catalog_rejected"
+      },
+      {
+        "count": 1,
+        "error": "C-Gate error: 408 Operation failed: No unit specification available for unit type KEYBOARD, version 9",
+        "status": "vendor_catalog_rejected"
+      },
+      {
+        "count": 1,
+        "error": "C-Gate error: 408 Operation failed: No unit specification available for unit type TOUCHA, version 3",
+        "status": "vendor_catalog_rejected"
+      },
+      {
+        "count": 1,
+        "error": "C-Gate error: 408 Operation failed: No unit specification available for unit type TOUCHA, version 9",
+        "status": "vendor_catalog_rejected"
+      },
+      {
+        "count": 6,
+        "error": "C-Gate error: 408 Operation failed: Unit spec file DUMMY.xml not found",
+        "status": "vendor_catalog_rejected"
+      },
+      {
+        "count": 95,
+        "error": "C-Gate error: 500 Internal error.",
+        "status": "vendor_catalog_rejected"
+      },
+      {
+        "count": 2,
+        "error": "C-Gate PP NEW cannot represent a UnitType containing spaces: 'NEOI 1FL'",
+        "status": "vendor_command_limitation"
+      },
+      {
+        "count": 2,
+        "error": "C-Gate PP NEW cannot represent a UnitType containing spaces: 'NEOI 4FL'",
+        "status": "vendor_command_limitation"
+      },
+      {
+        "count": 2,
+        "error": "C-Gate PP NEW cannot represent a UnitType containing spaces: 'NEOI HHR'",
+        "status": "vendor_command_limitation"
+      },
+      {
+        "count": 2,
+        "error": "C-Gate PP NEW cannot represent a UnitType containing spaces: 'WTXU 2FL'",
+        "status": "vendor_command_limitation"
+      },
+      {
+        "count": 2,
+        "error": "C-Gate PP NEW cannot represent a UnitType containing spaces: 'WTXU 6FL'",
+        "status": "vendor_command_limitation"
+      }
+    ],
+    "firmware_selection": "minimum and maximum boundaries",
+    "not_run": 0,
+    "selected": 6497,
+    "status": "complete",
+    "status_counts": {
+      "pass": 6382,
+      "vendor_catalog_rejected": 105,
+      "vendor_command_limitation": 10
+    },
+    "successful_parameter_comparisons": 552391
+  },
+  "catalog": {
+    "declared_default_revisions": 576,
+    "revision_entries": 3750,
+    "unit_entries": 577,
+    "unit_entries_with_multiple_defaults": [
+      {
+        "catalog_number": "L5103D5UA*",
+        "default_count": 2,
+        "unit_index": 245
+      },
+      {
+        "catalog_number": "L5112D5UA*",
+        "default_count": 2,
+        "unit_index": 247
+      },
+      {
+        "catalog_number": "5800WCGA",
+        "default_count": 2,
+        "unit_index": 470
+      }
+    ],
+    "unit_entries_without_default": [
+      {
+        "catalog_number": "5104DTSI",
+        "revision_count": 1,
+        "unit_index": 44
+      },
+      {
+        "catalog_number": "{unknown}",
+        "revision_count": 1,
+        "unit_index": 374
+      },
+      {
+        "catalog_number": "EN_UNIV",
+        "revision_count": 1,
+        "unit_index": 398
+      },
+      {
+        "catalog_number": "SLC5500HPS",
+        "revision_count": 1,
+        "unit_index": 528
+      }
+    ]
+  },
+  "combined_boundary_workflows": {
+    "all_selected_cases_passed": false,
+    "excluded_cases": 10,
+    "not_run": 0,
+    "selected": 6497,
+    "successful_parameter_comparisons": 616722,
+    "verified_cases": 6487
+  },
+  "combined_default_workflows": {
+    "all_selected_cases_passed": false,
+    "excluded_cases": 4,
+    "not_run": 0,
+    "selected": 575,
+    "verified_cases": 571
+  },
+  "commands": {
+    "alternatives": ".venv/bin/python research/diagnose_catalog.py --host HOST",
+    "boundaries": ".venv/bin/python research/verify_catalog.py --host HOST --all-revisions --boundaries --output research/runtime/catalog-boundaries.json",
+    "boundary_alternatives": ".venv/bin/python research/diagnose_catalog.py --host HOST --source research/runtime/catalog-boundaries.json --output research/runtime/catalog-boundary-diagnostics.json",
+    "default": ".venv/bin/python research/verify_catalog.py --host HOST",
+    "parallel_resume": ".venv/bin/python research/verify_catalog_parallel.py --host HOST --output research/runtime/catalog-boundaries.json --jobs 4",
+    "summary": ".venv/bin/python research/summarize_catalog.py"
+  },
+  "default_new_workflow": {
+    "all_selected_cases_passed": false,
+    "completed": 575,
+    "not_run": 0,
+    "selected": 575,
+    "status_counts": {
+      "pass": 548,
+      "vendor_catalog_rejected": 22,
+      "vendor_command_limitation": 5
+    },
+    "successful_parameter_comparisons": 39292
+  },
+  "does_not_establish": [
+    "physical device programming",
+    "all firmware values between endpoints",
+    "all possible parameter values",
+    "all Toolkit workflows",
+    "100 percent Toolkit parity"
+  ],
+  "evidence": [
+    {
+      "local_path": "research/runtime/catalog-acceptance.json",
+      "name": "default_acceptance",
+      "sha256": "6a6c11d7139f09e02ef16ab4d21c0e0574d95a70f61ed3dc00170ebf0cf2110b"
+    },
+    {
+      "local_path": "research/runtime/catalog-diagnostics.json",
+      "name": "alternative_diagnostics",
+      "sha256": "f71dbc18290a48038fc57b960486dfb76799c738597c55390604fed61abad9a7"
+    },
+    {
+      "local_path": "research/runtime/catalog-boundaries.json",
+      "name": "all_revision_boundaries",
+      "sha256": "fbc6fb4a8bf74eca88110660c077bd0d65182f0b00e4736c7582621283568446"
+    },
+    {
+      "local_path": "research/runtime/catalog-boundary-diagnostics.json",
+      "name": "boundary_alternative_diagnostics",
+      "sha256": "f4a0e2479cfa2b30fda8c64ffd73217ed39e95d70da74f1631fa460ac476a904"
+    }
+  ],
+  "excluded_boundary_cases": [
+    {
+      "addressable": true,
+      "catalog_description": "KEYBOARD",
+      "catalog_number": "{unknown}",
+      "error": {
+        "message": "C-Gate error: 408 Operation failed: No unit specification available for unit type KEYBOARD, version 0",
+        "response_lines": [
+          "408 Operation failed: No unit specification available for unit type KEYBOARD, version 0"
+        ],
+        "response_status": 408,
+        "type": "CGateError"
+      },
+      "firmware": "0",
+      "hidden_in_catalog": true,
+      "id": "29ec70a48da3d29784e01858",
+      "spec_filename": "",
+      "unit_type": "KEYBOARD"
+    },
+    {
+      "addressable": false,
+      "catalog_description": "C-Bus Communications Cable, 305m",
+      "catalog_number": "5005C305B",
+      "error": {
+        "message": "C-Gate error: 408 Operation failed: Unit spec file DUMMY.xml not found",
+        "response_lines": [
+          "408 Operation failed: Unit spec file DUMMY.xml not found"
+        ],
+        "response_status": 408,
+        "type": "CGateError"
+      },
+      "firmware": "9",
+      "hidden_in_catalog": false,
+      "id": "61e790bed2c57d6c9c6f23c7",
+      "spec_filename": "DUMMY.xml",
+      "unit_type": "XC305B"
+    },
+    {
+      "addressable": false,
+      "catalog_description": "C-Bus Communications Cable, 305m",
+      "catalog_number": "5005C305B",
+      "error": {
+        "message": "C-Gate error: 408 Operation failed: Unit spec file DUMMY.xml not found",
+        "response_lines": [
+          "408 Operation failed: Unit spec file DUMMY.xml not found"
+        ],
+        "response_status": 408,
+        "type": "CGateError"
+      },
+      "firmware": "0",
+      "hidden_in_catalog": false,
+      "id": "6d9d4dddb2e7a1d93c22ed34",
+      "spec_filename": "DUMMY.xml",
+      "unit_type": "XC305B"
+    },
+    {
+      "addressable": false,
+      "catalog_description": "C-Bus Hardware Burden",
+      "catalog_number": "5500BUR",
+      "error": {
+        "message": "C-Gate error: 408 Operation failed: Unit spec file DUMMY.xml not found",
+        "response_lines": [
+          "408 Operation failed: Unit spec file DUMMY.xml not found"
+        ],
+        "response_status": 408,
+        "type": "CGateError"
+      },
+      "firmware": "9",
+      "hidden_in_catalog": false,
+      "id": "7fe9d88f1d7fce331c704874",
+      "spec_filename": "DUMMY.xml",
+      "unit_type": "BURDEN"
+    },
+    {
+      "addressable": true,
+      "catalog_description": "KEYBOARD",
+      "catalog_number": "{unknown}",
+      "error": {
+        "message": "C-Gate error: 408 Operation failed: No unit specification available for unit type KEYBOARD, version 9",
+        "response_lines": [
+          "408 Operation failed: No unit specification available for unit type KEYBOARD, version 9"
+        ],
+        "response_status": 408,
+        "type": "CGateError"
+      },
+      "firmware": "9",
+      "hidden_in_catalog": true,
+      "id": "8e45208c7c44a5ef09b66fe8",
+      "spec_filename": "",
+      "unit_type": "KEYBOARD"
+    },
+    {
+      "addressable": true,
+      "catalog_description": "TOUCHA",
+      "catalog_number": "{unknown}",
+      "error": {
+        "message": "C-Gate error: 408 Operation failed: No unit specification available for unit type TOUCHA, version 9",
+        "response_lines": [
+          "408 Operation failed: No unit specification available for unit type TOUCHA, version 9"
+        ],
+        "response_status": 408,
+        "type": "CGateError"
+      },
+      "firmware": "9",
+      "hidden_in_catalog": true,
+      "id": "aa8ba865472ffd01a1855443",
+      "spec_filename": "",
+      "unit_type": "TOUCHA"
+    },
+    {
+      "addressable": true,
+      "catalog_description": "TOUCHA",
+      "catalog_number": "{unknown}",
+      "error": {
+        "message": "C-Gate error: 408 Operation failed: No unit specification available for unit type TOUCHA, version 3",
+        "response_lines": [
+          "408 Operation failed: No unit specification available for unit type TOUCHA, version 3"
+        ],
+        "response_status": 408,
+        "type": "CGateError"
+      },
+      "firmware": "3",
+      "hidden_in_catalog": true,
+      "id": "abc32721ce3885d780ec7764",
+      "spec_filename": "",
+      "unit_type": "TOUCHA"
+    },
+    {
+      "addressable": false,
+      "catalog_description": "C-Bus Hardware Burden",
+      "catalog_number": "5500BUR",
+      "error": {
+        "message": "C-Gate error: 408 Operation failed: Unit spec file DUMMY.xml not found",
+        "response_lines": [
+          "408 Operation failed: Unit spec file DUMMY.xml not found"
+        ],
+        "response_status": 408,
+        "type": "CGateError"
+      },
+      "firmware": "0",
+      "hidden_in_catalog": false,
+      "id": "ce75af91d2bb635d60d5a511",
+      "spec_filename": "DUMMY.xml",
+      "unit_type": "BURDEN"
+    },
+    {
+      "addressable": false,
+      "catalog_description": "C-Bus Communications Cable, 100m",
+      "catalog_number": "5005C100B",
+      "error": {
+        "message": "C-Gate error: 408 Operation failed: Unit spec file DUMMY.xml not found",
+        "response_lines": [
+          "408 Operation failed: Unit spec file DUMMY.xml not found"
+        ],
+        "response_status": 408,
+        "type": "CGateError"
+      },
+      "firmware": "0",
+      "hidden_in_catalog": false,
+      "id": "d3a0b5d8e78644c3d87d8321",
+      "spec_filename": "DUMMY.xml",
+      "unit_type": "XC100B"
+    },
+    {
+      "addressable": false,
+      "catalog_description": "C-Bus Communications Cable, 100m",
+      "catalog_number": "5005C100B",
+      "error": {
+        "message": "C-Gate error: 408 Operation failed: Unit spec file DUMMY.xml not found",
+        "response_lines": [
+          "408 Operation failed: Unit spec file DUMMY.xml not found"
+        ],
+        "response_status": 408,
+        "type": "CGateError"
+      },
+      "firmware": "9",
+      "hidden_in_catalog": false,
+      "id": "eb4e0eaa12e160dd6ce5edd8",
+      "spec_filename": "DUMMY.xml",
+      "unit_type": "XC100B"
+    }
+  ],
+  "excluded_default_cases": [
+    {
+      "addressable": true,
+      "catalog_description": "KEYBOARD",
+      "catalog_number": "{unknown}",
+      "error": {
+        "message": "C-Gate error: 408 Operation failed: No unit specification available for unit type KEYBOARD, version 0",
+        "response_lines": [
+          "408 Operation failed: No unit specification available for unit type KEYBOARD, version 0"
+        ],
+        "response_status": 408,
+        "type": "CGateError"
+      },
+      "firmware": "0",
+      "hidden_in_catalog": true,
+      "id": "29ec70a48da3d29784e01858",
+      "spec_filename": "",
+      "unit_type": "KEYBOARD"
+    },
+    {
+      "addressable": false,
+      "catalog_description": "C-Bus Communications Cable, 305m",
+      "catalog_number": "5005C305B",
+      "error": {
+        "message": "C-Gate error: 408 Operation failed: Unit spec file DUMMY.xml not found",
+        "response_lines": [
+          "408 Operation failed: Unit spec file DUMMY.xml not found"
+        ],
+        "response_status": 408,
+        "type": "CGateError"
+      },
+      "firmware": "0",
+      "hidden_in_catalog": false,
+      "id": "6d9d4dddb2e7a1d93c22ed34",
+      "spec_filename": "DUMMY.xml",
+      "unit_type": "XC305B"
+    },
+    {
+      "addressable": false,
+      "catalog_description": "C-Bus Hardware Burden",
+      "catalog_number": "5500BUR",
+      "error": {
+        "message": "C-Gate error: 408 Operation failed: Unit spec file DUMMY.xml not found",
+        "response_lines": [
+          "408 Operation failed: Unit spec file DUMMY.xml not found"
+        ],
+        "response_status": 408,
+        "type": "CGateError"
+      },
+      "firmware": "0",
+      "hidden_in_catalog": false,
+      "id": "ce75af91d2bb635d60d5a511",
+      "spec_filename": "DUMMY.xml",
+      "unit_type": "BURDEN"
+    },
+    {
+      "addressable": false,
+      "catalog_description": "C-Bus Communications Cable, 100m",
+      "catalog_number": "5005C100B",
+      "error": {
+        "message": "C-Gate error: 408 Operation failed: Unit spec file DUMMY.xml not found",
+        "response_lines": [
+          "408 Operation failed: Unit spec file DUMMY.xml not found"
+        ],
+        "response_status": 408,
+        "type": "CGateError"
+      },
+      "firmware": "0",
+      "hidden_in_catalog": false,
+      "id": "d3a0b5d8e78644c3d87d8321",
+      "spec_filename": "DUMMY.xml",
+      "unit_type": "XC100B"
+    }
+  ],
+  "execution_constraints": [
+    "explicit test host",
+    "owned disposable projects",
+    "new or closed networks only",
+    "no NET OPEN or physical operations",
+    "no automatic replay after ambiguous transport failure",
+    "native rejections and unrun cases are not passes"
+  ],
+  "format": "cbus-catalog-acceptance-summary-v1",
+  "generated_at": "2026-09-14T09:31:40.765984+00:00",
+  "reference": {
+    "catalog_sha256": "c134c752fe4ef62a659c4480cd6702dffcc0096a59b4b0b336b5c383dbea6fe7",
+    "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0"
+  },
+  "runner_options": [
+    "--host",
+    "--port",
+    "--catalog",
+    "--output",
+    "--filter",
+    "--limit",
+    "--resume",
+    "--retry-failures",
+    "--all-revisions",
+    "--boundaries",
+    "--network",
+    "--shard"
+  ],
+  "scope": "Offline native unit schema and Python session acceptance at selected catalogue firmware points",
+  "source_hashes": {
+    "research/diagnose_catalog.py": "54eba100995c37bf90c9c9f7c39585bf03adf2aa04c77ea940918000663a666d",
+    "research/summarize_catalog.py": "9095eaed7c98ee2c13cbbc634b1305740c13e3ae6485d0baf3bd0e33ffc77b19",
+    "research/vendor/cgate-decompiled.tar": "fd81e4c41b4e29b9b82f351d34e9b02a9bbcd224c869b2b4451d075226f44c6e",
+    "research/vendor/cgate/app/cgate.jar": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "research/verify_catalog.py": "5f1e20032c68726398222412961b44281761f3f71c48ba7c3eb4352eb31181af",
+    "research/verify_catalog_parallel.py": "26a61a2491c874dfbe3460543c2026883cfe33a17d11b78ef48466034746b672",
+    "src/cbus_toolkit/programming.py": "7a2f82a902c5af55bdf8815aa10dee5c65430fe766036c5549bff7ed81caa537"
+  }
+}

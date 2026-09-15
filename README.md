@@ -2,6 +2,10 @@
 
 Talks to Clipsal C-Bus from Rust — plus an ESP32 firmware option.
 
+The new [Python Toolkit CLI](toolkit-cli/README.md) is being developed against
+C-Bus Toolkit 1.18.0 and C-Gate 3.4.0. Its feature ledger records implemented
+operations and the remaining parity tests.
+
 Copyright 2012-2020 Michael Farrell, 2024-2026 Mitchell Johnson.
 Licensed under the GNU LGPL3+. See `COPYING` and `COPYING.LESSER`.
 

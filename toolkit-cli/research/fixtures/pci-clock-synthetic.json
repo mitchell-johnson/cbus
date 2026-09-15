@@ -1,0 +1,122 @@
+{
+  "description": "Explicit synthetic PCI fixture; residual bits zero only at schema-declared default byte addresses; no checksum algorithm or clock election emulation",
+  "source_sha256": {
+    "PCI.xml": "41b034b114d995377240d4004ce49f048650775e71579d5020940b96a0592c17"
+  },
+  "legacy_memory": {
+    "32": 16,
+    "33": 255,
+    "34": 255,
+    "35": 202,
+    "36": 139,
+    "37": 51,
+    "38": 147,
+    "39": 44,
+    "40": 222,
+    "41": 254,
+    "42": 202,
+    "43": 139,
+    "44": 47,
+    "45": 138,
+    "46": 132,
+    "47": 21,
+    "48": 85,
+    "60": 255,
+    "62": 1,
+    "63": 255,
+    "64": 255,
+    "65": 0,
+    "66": 7,
+    "242": 255,
+    "243": 0,
+    "244": 0,
+    "245": 0,
+    "246": 0,
+    "247": 255,
+    "248": 255,
+    "249": 255,
+    "250": 255,
+    "251": 255,
+    "252": 255,
+    "253": 255,
+    "254": 255
+  },
+  "writable": [
+    62
+  ],
+  "layout": {
+    "ClockGenEnable": {
+      "name": "ClockGenEnable",
+      "type": "bit",
+      "source": "PCI.xml",
+      "description": "Is Active Clock Generator",
+      "address": 62,
+      "array_size": 1,
+      "bit_size": 8,
+      "bit_address": 0,
+      "array_skip": 0,
+      "protection": "checksum",
+      "program_method": "direct",
+      "default": "1",
+      "tags": [],
+      "fields": {
+        "Name": "ClockGenEnable",
+        "Description": "Is Active Clock Generator",
+        "Type": "bit",
+        "ProgramMethod": "direct",
+        "Address": "$3E",
+        "BitAddress": "0",
+        "Protection": "checksum",
+        "DefaultValue": "1"
+      }
+    },
+    "Burden": {
+      "name": "Burden",
+      "type": "bit",
+      "source": "PCI.xml",
+      "description": "Burden Present",
+      "address": 62,
+      "array_size": 1,
+      "bit_size": 8,
+      "bit_address": 6,
+      "array_skip": 0,
+      "protection": "checksum",
+      "program_method": "direct",
+      "default": "0",
+      "tags": [],
+      "fields": {
+        "Name": "Burden",
+        "Description": "Burden Present",
+        "Type": "bit",
+        "ProgramMethod": "direct",
+        "Address": "$3E",
+        "BitAddress": "6",
+        "Protection": "checksum",
+        "DefaultValue": "0"
+      }
+    }
+  },
+  "read_ahead_padding": {
+    "67": 165,
+    "68": 165,
+    "69": 165,
+    "70": 165,
+    "71": 165,
+    "72": 165,
+    "73": 165
+  },
+  "padding_provenance": "Explicit A5 sentinel bytes for observed native lP RECALL3E0C read-ahead; these are not declared schema fields or hardware defaults",
+  "fixture_identities": {
+    "16": {
+      "unit_type": "PC_CNIED",
+      "firmware": "5.5.00",
+      "role": "attached"
+    },
+    "17": {
+      "unit_type": "PC_CNICD",
+      "firmware": "5.5.00",
+      "role": "remote"
+    }
+  },
+  "catalogue_sha256": "c134c752fe4ef62a659c4480cd6702dffcc0096a59b4b0b336b5c383dbea6fe7"
+}

@@ -1,0 +1,71 @@
+{
+  "format": "cbus-edlt-label-clear-pure-acceptance-v1",
+  "scope": "Strict native-request helper mocks and independent literal owned loopback/persistence fixture tests only",
+  "native_fixture_acceptance": "pending_service_recovery",
+  "original_native_research": "docs/edlt-label-clear-research.json",
+  "labels_cleared_verified": false,
+  "label_persistence_verified": false,
+  "fixture_policy": "clear_committed_labels_preserve_languages",
+  "runs": [
+    {
+      "python": "3.13.14",
+      "tests": 18,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "seconds": 0.091
+    },
+    {
+      "python": "3.10.20",
+      "tests": 18,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "seconds": 0.099
+    }
+  ],
+  "test_selection": [
+    "tests.test_edlt_label_clear.LabelClearTests",
+    "tests.test_simulator_edlt_labels"
+  ],
+  "literal_vectors": {
+    "ordinary_request_ascii": "\\46050900A4FF43C1EAg\r",
+    "srchk_request_ascii": "\\46050900A4FF43C1EA1Bg\r",
+    "reply_ascii": "g.860510010032FF43F0\r\n",
+    "cached_header_request_ascii": "A4FF43C1EAh\r"
+  },
+  "fault_modes": [
+    "ack",
+    "missing",
+    "negative",
+    "extended",
+    "wrong_tag",
+    "wrong_source",
+    "wrong_destination",
+    "bad_checksum"
+  ],
+  "fault_clear_policies": [
+    true,
+    false
+  ],
+  "coverage": [
+    "Canonical plan shape and identity guards before I/O",
+    "Repeated identity and complete MMI guards before one request",
+    "Native acceptance does not prove erasure",
+    "No replay or follow-up after response/transport interruption",
+    "Committed per-unit labels and language preservation across fixture reload",
+    "Ordinary/SRCHK/cache-header literal framing",
+    "Fragmented loopback TCP input/output",
+    "Whole-state validation and external-file preservation",
+    "Atomic replacement fault and directory durability uncertainty",
+    "First interruption preserved across secondary cleanup/message failures"
+  ],
+  "sha256": {
+    "src/cbus_toolkit/edlt_label_clear.py": "6000a12edb08b71873bd0bac26c0f1e31a56f6094e78dc8526950eccde522dca",
+    "src/cbus_toolkit/simulator_edlt_labels.py": "d500c59ace847b787d6c6203b381336ae724ee4c52ebec0033ffff57d2a9bf7e",
+    "tests/test_edlt_label_clear.py": "66122e8d41f2c6c94a9db93f53e90e007cf05b1b272e73df390a14ee54e5c6a5",
+    "tests/test_simulator_edlt_labels.py": "ab72eaa1419f92042e15a36da8a0f7aa2871909019940698a097e36da608e17e",
+    "docs/edlt-label-clear.md": "5e849cda6429431288fed5eb2360d1382920713ad6ccb2d8a5ad1e1d8e6f9545",
+    "docs/edlt-label-clear-research.json": "a889462788d94c7b21cc7ed4e636da3a6cf5b01c9c7e7e888eee1e8411278192"
+  }
+}

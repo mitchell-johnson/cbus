@@ -1,0 +1,493 @@
+{
+  "format": "cbus-edlt-blank-acceptance-v1",
+  "passed": true,
+  "toolkit_parity_complete": false,
+  "profile": {
+    "unit_type": "KEYGL5",
+    "catalog_number": "5055EDL",
+    "firmware": "5.5.00"
+  },
+  "scope": "One original bound Blank selection on engine-issued retained models, followed by BeforeSave/CRC and closed C-Gate database save/reload",
+  "full_reset_unit_verified": false,
+  "physical_factory_reset_verified": false,
+  "full_form_initialization_verified": false,
+  "physical_device_verified": false,
+  "dynamic_metadata_freshness_verified": false,
+  "runs": [
+    {
+      "python": "3.13.14 (main, Jun 10 2026, 12:24:04) [Clang 17.0.0 (clang-1700.6.4.2)]",
+      "tests": 54,
+      "skipped": 0,
+      "passed": true,
+      "duration_seconds": 322.597,
+      "source_unchanged": true,
+      "log_path": "research/runtime/edlt-blank/acceptance-v2/python313.log",
+      "log_sha256": "c9e95162e64e21a8d457e1f6019a349d900b18b8de42376079ec06b000b3b32e",
+      "native_report_path": "research/runtime/edlt-blank/acceptance-v2/native-313.json",
+      "native_report_sha256": "b74ecbb488df64bd5710c679787d971302878d06ce496e02e5d5a912b211f9ab",
+      "native_cases": 13,
+      "original_parameter_comparisons": 56810,
+      "native_parameter_comparisons": 11362,
+      "reload_parameter_comparisons": 11362,
+      "crc_values": 65,
+      "full_widget_records_before_and_after_reload": 26,
+      "vendor_manifest": [
+        {
+          "name": "ArcDimarTabs.dll",
+          "size": 306688,
+          "sha256": "20d4a44e135fe788936deb568d9602803c5832b57a1d297024956569092f6933",
+          "file_version": "1.0.0.0",
+          "product_version": "1.0.0.0"
+        },
+        {
+          "name": "Cbtag32.dll",
+          "size": 469504,
+          "sha256": "fea2ba92339cb49dc7666bdb9bbf932fccc99b02048a7a8b0e0b63a5d77e7912",
+          "file_version": "1.0.3.2",
+          "product_version": "1.0.0.0"
+        },
+        {
+          "name": "CBusLogicModel.dll",
+          "size": 258048,
+          "sha256": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+          "file_version": "7.14.0.0",
+          "product_version": "7.14.0.0"
+        },
+        {
+          "name": "CBusToolkit.exe",
+          "size": 20518992,
+          "sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+          "file_version": "1.18.0.2754",
+          "product_version": "1.18.0"
+        },
+        {
+          "name": "CustomControls.dll",
+          "size": 40448,
+          "sha256": "93d66a228c209d08685ad58e15bd5fdbcffa84828f8699a35c8c7c951b8de8e6",
+          "file_version": "1.0.0.0",
+          "product_version": "1.0.0.0"
+        },
+        {
+          "name": "eDLT.dll",
+          "size": 663552,
+          "sha256": "75bc741234b52a168a4838fee305c309d3909571d2711f7580216b46b028e8d3",
+          "file_version": "7.16.0.0",
+          "product_version": "7.16.0.0"
+        },
+        {
+          "name": "EDLTCommon.dll",
+          "size": 8192,
+          "sha256": "41c740d2376f98cfcce20a58eb1ba2a7ea0629a8a2f56ef6a1bf134cae5da3e2",
+          "file_version": "1.5.0.0",
+          "product_version": "1.5.0.0"
+        },
+        {
+          "name": "EDLT_graphics.dll",
+          "size": 813568,
+          "sha256": "e319379709c47f97dca477c4f631880f231c060530cb2ec45a3f731b1a5d1991",
+          "file_version": "1.3.0.0",
+          "product_version": "1.3.0.0"
+        },
+        {
+          "name": "GlobalCommon.dll",
+          "size": 12288,
+          "sha256": "9f1328be4fab00366add4fc25239ed1c3feaea698b4a3413b1ee37e78abc210c",
+          "file_version": "1.0.0.0",
+          "product_version": "1.0.0.0"
+        },
+        {
+          "name": "HydraCommon.dll",
+          "size": 8192,
+          "sha256": "ac0447e04acafcef56680465863449445e85827b2ff834808ac02b26181c626a",
+          "file_version": "1.0.0.0",
+          "product_version": "1.0.0.0"
+        },
+        {
+          "name": "HydraWPFPlugins.dll",
+          "size": 1475584,
+          "sha256": "03893f0fd0dad9282128910f36a5fe892131bfcabde2bdd57c9e1cea5b5d48ea",
+          "file_version": "1.0.9062.23650",
+          "product_version": "1.0.9062.23650"
+        },
+        {
+          "name": "LabelEditor.dll",
+          "size": 95232,
+          "sha256": "508fa63db112a3ec07bf3cf834b41a0f26da3b0e7a428bc288bff0ec433a073b",
+          "file_version": "1.0.0.0",
+          "product_version": "1.0.0.0"
+        },
+        {
+          "name": "libcrypto-3.dll",
+          "size": 3507560,
+          "sha256": "4adae61662c5cb1aa07a893cbcfae105d3502013fb1b5d3b1971f98b635b3217",
+          "file_version": "3.3.1",
+          "product_version": "3.3.1"
+        },
+        {
+          "name": "libssl-3.dll",
+          "size": 1099624,
+          "sha256": "5347411ac08ee819a8836d7b3235d8415a80d5c68e8ea98a642970ec1f596b35",
+          "file_version": "3.3.1",
+          "product_version": "3.3.1"
+        },
+        {
+          "name": "log4net.dll",
+          "size": 270336,
+          "sha256": "1c5f3b4ed6311ca033a8d7c4d66a24b8adca38b0f7a8da096ae353bd43a551c3",
+          "file_version": "1.2.13.0",
+          "product_version": "1.2"
+        },
+        {
+          "name": "MultiSensorPage.dll",
+          "size": 80896,
+          "sha256": "89246a21c3f77c13b7879f6ffa4f83f7fb4b0907d65419d9efce6628f4a842b8",
+          "file_version": "1.0.0.0",
+          "product_version": "1.0.0.0"
+        },
+        {
+          "name": "MVVMBase.dll",
+          "size": 39424,
+          "sha256": "1b90975e46ed5f5e07736109c0006ee2a83511e0993c4d4559d55e24e5d6cd7b",
+          "file_version": "1.0.0.0",
+          "product_version": "1.0.0.0"
+        },
+        {
+          "name": "RemObjects.Hydra.dll",
+          "size": 90624,
+          "sha256": "6037105e2c446f73c7f893c3bf6c22aa8979757bf65b05a137855816ce332045",
+          "file_version": "6.6.0.1325",
+          "product_version": "6.6.0.1325"
+        },
+        {
+          "name": "RemObjects.Hydra.WPF.dll",
+          "size": 19456,
+          "sha256": "ad0f2030bcee29b30cbde3c7bcabf268d1c0905eae412f50af0ff8315d1dc295",
+          "file_version": "6.6.0.1325",
+          "product_version": "6.6.0.1325"
+        },
+        {
+          "name": "SharpCGateCommunicator.dll",
+          "size": 65024,
+          "sha256": "fd589789f2c40c0853c06a7d836add0f81a6afe3f397a8d6965a1a1f549a2d6e",
+          "file_version": "7.15.0.0",
+          "product_version": "7.15.0.0"
+        },
+        {
+          "name": "SharpContainer.dll",
+          "size": 35840,
+          "sha256": "5cba17be19a783e4b0c1e99025c9556fea605b97003ed6a3e9f3f182fb2c3ed0",
+          "file_version": "9.7.0.0",
+          "product_version": "9.7.0.0"
+        },
+        {
+          "name": "SharpLogger.dll",
+          "size": 11264,
+          "sha256": "496a1434da3a592519e94b3eb025a98f0fc91d88341a28d58f33025ce043905c",
+          "file_version": "2.11.0.0",
+          "product_version": "2.11.0.0"
+        },
+        {
+          "name": "Toolkit.WPF.DataVisualization.dll",
+          "size": 333312,
+          "sha256": "a2abf8cba5ac173fb9cf598faf8d1b9b4b648ff8722e7ff8d823a476e1b58852",
+          "file_version": "4.0.0.0",
+          "product_version": "4.0.0.0"
+        },
+        {
+          "name": "WPFCommonControls.dll",
+          "size": 169472,
+          "sha256": "60e71a2e74e3a0f27206e6d6e3097a7c79be666ebf1d69405669562930d9ffdf",
+          "file_version": "1.0.0.0",
+          "product_version": "1.0.0.0"
+        },
+        {
+          "name": "Xceed.Wpf.Toolkit.dll",
+          "size": 967168,
+          "sha256": "3f06cd38a961a660182a0339f3eeec0db08c58d485ae2fbd7457fc9e981f838c",
+          "file_version": "2.0.0.0",
+          "product_version": "2.0.0.0"
+        }
+      ],
+      "compiled_executable_sha256": "3d2bb6d8310134f2ab801b74961d6ed29b84e94addda900cfb37c71bcf0c92db",
+      "proof_directory": "/Users/mitchell/source/cbus/toolkit-cli/research/runtime/edlt-blank/native-36b399d23b3f4df3"
+    },
+    {
+      "python": "3.10.20 (main, Mar  3 2026, 00:49:35) [Clang 17.0.0 (clang-1700.6.4.2)]",
+      "tests": 54,
+      "skipped": 0,
+      "passed": true,
+      "duration_seconds": 326.324,
+      "source_unchanged": true,
+      "log_path": "research/runtime/edlt-blank/acceptance-v2/python310.log",
+      "log_sha256": "c91e2cde79b43d264a389decc3d2f585b54ffb2cefb613b417df351af94c6897",
+      "native_report_path": "research/runtime/edlt-blank/acceptance-v2/native-310.json",
+      "native_report_sha256": "f32da09963514c1df40b42d8283c7fef8fbe67e6b1435f9643fe2a857174e110",
+      "native_cases": 13,
+      "original_parameter_comparisons": 56810,
+      "native_parameter_comparisons": 11362,
+      "reload_parameter_comparisons": 11362,
+      "crc_values": 65,
+      "full_widget_records_before_and_after_reload": 26,
+      "vendor_manifest": [
+        {
+          "name": "ArcDimarTabs.dll",
+          "size": 306688,
+          "sha256": "20d4a44e135fe788936deb568d9602803c5832b57a1d297024956569092f6933",
+          "file_version": "1.0.0.0",
+          "product_version": "1.0.0.0"
+        },
+        {
+          "name": "Cbtag32.dll",
+          "size": 469504,
+          "sha256": "fea2ba92339cb49dc7666bdb9bbf932fccc99b02048a7a8b0e0b63a5d77e7912",
+          "file_version": "1.0.3.2",
+          "product_version": "1.0.0.0"
+        },
+        {
+          "name": "CBusLogicModel.dll",
+          "size": 258048,
+          "sha256": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+          "file_version": "7.14.0.0",
+          "product_version": "7.14.0.0"
+        },
+        {
+          "name": "CBusToolkit.exe",
+          "size": 20518992,
+          "sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+          "file_version": "1.18.0.2754",
+          "product_version": "1.18.0"
+        },
+        {
+          "name": "CustomControls.dll",
+          "size": 40448,
+          "sha256": "93d66a228c209d08685ad58e15bd5fdbcffa84828f8699a35c8c7c951b8de8e6",
+          "file_version": "1.0.0.0",
+          "product_version": "1.0.0.0"
+        },
+        {
+          "name": "eDLT.dll",
+          "size": 663552,
+          "sha256": "75bc741234b52a168a4838fee305c309d3909571d2711f7580216b46b028e8d3",
+          "file_version": "7.16.0.0",
+          "product_version": "7.16.0.0"
+        },
+        {
+          "name": "EDLTCommon.dll",
+          "size": 8192,
+          "sha256": "41c740d2376f98cfcce20a58eb1ba2a7ea0629a8a2f56ef6a1bf134cae5da3e2",
+          "file_version": "1.5.0.0",
+          "product_version": "1.5.0.0"
+        },
+        {
+          "name": "EDLT_graphics.dll",
+          "size": 813568,
+          "sha256": "e319379709c47f97dca477c4f631880f231c060530cb2ec45a3f731b1a5d1991",
+          "file_version": "1.3.0.0",
+          "product_version": "1.3.0.0"
+        },
+        {
+          "name": "GlobalCommon.dll",
+          "size": 12288,
+          "sha256": "9f1328be4fab00366add4fc25239ed1c3feaea698b4a3413b1ee37e78abc210c",
+          "file_version": "1.0.0.0",
+          "product_version": "1.0.0.0"
+        },
+        {
+          "name": "HydraCommon.dll",
+          "size": 8192,
+          "sha256": "ac0447e04acafcef56680465863449445e85827b2ff834808ac02b26181c626a",
+          "file_version": "1.0.0.0",
+          "product_version": "1.0.0.0"
+        },
+        {
+          "name": "HydraWPFPlugins.dll",
+          "size": 1475584,
+          "sha256": "03893f0fd0dad9282128910f36a5fe892131bfcabde2bdd57c9e1cea5b5d48ea",
+          "file_version": "1.0.9062.23650",
+          "product_version": "1.0.9062.23650"
+        },
+        {
+          "name": "LabelEditor.dll",
+          "size": 95232,
+          "sha256": "508fa63db112a3ec07bf3cf834b41a0f26da3b0e7a428bc288bff0ec433a073b",
+          "file_version": "1.0.0.0",
+          "product_version": "1.0.0.0"
+        },
+        {
+          "name": "libcrypto-3.dll",
+          "size": 3507560,
+          "sha256": "4adae61662c5cb1aa07a893cbcfae105d3502013fb1b5d3b1971f98b635b3217",
+          "file_version": "3.3.1",
+          "product_version": "3.3.1"
+        },
+        {
+          "name": "libssl-3.dll",
+          "size": 1099624,
+          "sha256": "5347411ac08ee819a8836d7b3235d8415a80d5c68e8ea98a642970ec1f596b35",
+          "file_version": "3.3.1",
+          "product_version": "3.3.1"
+        },
+        {
+          "name": "log4net.dll",
+          "size": 270336,
+          "sha256": "1c5f3b4ed6311ca033a8d7c4d66a24b8adca38b0f7a8da096ae353bd43a551c3",
+          "file_version": "1.2.13.0",
+          "product_version": "1.2"
+        },
+        {
+          "name": "MultiSensorPage.dll",
+          "size": 80896,
+          "sha256": "89246a21c3f77c13b7879f6ffa4f83f7fb4b0907d65419d9efce6628f4a842b8",
+          "file_version": "1.0.0.0",
+          "product_version": "1.0.0.0"
+        },
+        {
+          "name": "MVVMBase.dll",
+          "size": 39424,
+          "sha256": "1b90975e46ed5f5e07736109c0006ee2a83511e0993c4d4559d55e24e5d6cd7b",
+          "file_version": "1.0.0.0",
+          "product_version": "1.0.0.0"
+        },
+        {
+          "name": "RemObjects.Hydra.dll",
+          "size": 90624,
+          "sha256": "6037105e2c446f73c7f893c3bf6c22aa8979757bf65b05a137855816ce332045",
+          "file_version": "6.6.0.1325",
+          "product_version": "6.6.0.1325"
+        },
+        {
+          "name": "RemObjects.Hydra.WPF.dll",
+          "size": 19456,
+          "sha256": "ad0f2030bcee29b30cbde3c7bcabf268d1c0905eae412f50af0ff8315d1dc295",
+          "file_version": "6.6.0.1325",
+          "product_version": "6.6.0.1325"
+        },
+        {
+          "name": "SharpCGateCommunicator.dll",
+          "size": 65024,
+          "sha256": "fd589789f2c40c0853c06a7d836add0f81a6afe3f397a8d6965a1a1f549a2d6e",
+          "file_version": "7.15.0.0",
+          "product_version": "7.15.0.0"
+        },
+        {
+          "name": "SharpContainer.dll",
+          "size": 35840,
+          "sha256": "5cba17be19a783e4b0c1e99025c9556fea605b97003ed6a3e9f3f182fb2c3ed0",
+          "file_version": "9.7.0.0",
+          "product_version": "9.7.0.0"
+        },
+        {
+          "name": "SharpLogger.dll",
+          "size": 11264,
+          "sha256": "496a1434da3a592519e94b3eb025a98f0fc91d88341a28d58f33025ce043905c",
+          "file_version": "2.11.0.0",
+          "product_version": "2.11.0.0"
+        },
+        {
+          "name": "Toolkit.WPF.DataVisualization.dll",
+          "size": 333312,
+          "sha256": "a2abf8cba5ac173fb9cf598faf8d1b9b4b648ff8722e7ff8d823a476e1b58852",
+          "file_version": "4.0.0.0",
+          "product_version": "4.0.0.0"
+        },
+        {
+          "name": "WPFCommonControls.dll",
+          "size": 169472,
+          "sha256": "60e71a2e74e3a0f27206e6d6e3097a7c79be666ebf1d69405669562930d9ffdf",
+          "file_version": "1.0.0.0",
+          "product_version": "1.0.0.0"
+        },
+        {
+          "name": "Xceed.Wpf.Toolkit.dll",
+          "size": 967168,
+          "sha256": "3f06cd38a961a660182a0339f3eeec0db08c58d485ae2fbd7457fc9e981f838c",
+          "file_version": "2.0.0.0",
+          "product_version": "2.0.0.0"
+        }
+      ],
+      "compiled_executable_sha256": "a92558ed22106fd0a3e911cc28b503d1ce84b60316ad112ead83e504f63208d1",
+      "proof_directory": "/Users/mitchell/source/cbus/toolkit-cli/research/runtime/edlt-blank/native-62169ec6ac08414a"
+    }
+  ],
+  "captured_original_matrix": {
+    "cases": 31,
+    "phases_per_case": 5,
+    "parameters_per_phase": 874,
+    "parameter_comparisons_per_python": 135470,
+    "types": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      127,
+      254,
+      255
+    ],
+    "fixture_path": "research/fixtures/edlt-blank-windows-vectors.json",
+    "sha256": "8feec31255a7cbfbd4b661d10ef54ef47e5ef5e46a3e4b87c95879156b04c42b"
+  },
+  "original_placement_vectors": {
+    "page_lists": 7,
+    "two_slice_exclusion_lists": 4,
+    "fixture_path": "research/fixtures/edlt-blank-placements.json",
+    "sha256": "246c49819905d9627d6753052a639c8b09bcb9628285f63d88b9d215d6b4ba9b",
+    "row_panel_binding": false,
+    "rendered_visibility_verified": false
+  },
+  "legacy_regression": {
+    "retained_model_tests": 10,
+    "exact_prior_lifecycle_cases": 2124,
+    "lifecycle_pure_tests": 13,
+    "restore_pure_tests": 10,
+    "captured_original_restore_cases": 64
+  },
+  "source_sha256": {
+    "src/cbus_toolkit/edlt_blank.py": "d111b6afee5b37f304aeec64b717bfecfe8b89b80d0b55a649cd29efc4e5ed6f",
+    "src/cbus_toolkit/edlt_lifecycle.py": "6bddc29c181c52562002c65f25def293f59e6c5a04d63cbc45e9e12a6148f25d",
+    "src/cbus_toolkit/edlt_restore_levels.py": "2ae1cba7de13161959ee4c1cf76db29a9dbd2897a1f425c300d595739b18aa9b",
+    "src/cbus_toolkit/edlt.py": "f5c996698b5970c56b9bfa60525a35e96a3734328780cd35b9ae07a9663ca735",
+    "src/cbus_toolkit/edlt_mra.py": "99bf274549de55b4105acc615a620f6eebf83ebbc1a5a56379646a690e9e2636",
+    "src/cbus_toolkit/unitspec.py": "f8d9e2f30c0ab431b0897959328781fac6a7c9825a4d9d2bb5ecf348acb66747",
+    "src/cbus_toolkit/memory.py": "372cbc3a79710b743d23aa6690a8b56b1780de091ffe8a1d0a543e4cfa9c1f31",
+    "src/cbus_toolkit/programming.py": "30b0def5768e5a7f926eb07771dddb02a4ec5bf6e724fad735be8f3f59c07a96",
+    "src/cbus_toolkit/native.py": "d4bb3b4e83434ace48cbd436179ec4ff68b34c065d2d88d300493cc3ebcf5051",
+    "src/cbus_toolkit/cgate.py": "fef71db3a4d98c1a175a8bf0287b5abcaea4689df835dea7b0c19413e206eb15",
+    "src/cbus_toolkit/cli.py": "ad7b7f766a1530752118fae1aabca6bed46c188cc010c118f3ebd1d52c747bb6",
+    "src/cbus_toolkit/edlt_control_cli.py": "319c296482c39e4d96ac12b880406ed59659a021c6dadbcd384f77e2b9d20ad9",
+    "tests/test_edlt_blank.py": "13f6607cc175b5e2f089ec02056b3d517c3875bd91b4cba5e659bbf0843f1212",
+    "tests/test_edlt_blank_vectors.py": "5c8e1c07f77f1f33004642fa4fc00b25a3ecded70c97383e2327edbc89b407c2",
+    "tests/test_edlt_blank_native.py": "e6e990b4333f163290c7b83e7c23eeebeb681f7fcdcdaa90a624e215de113b2b",
+    "tests/test_cli_edlt_blank.py": "afcedd03d2132bd6418cc0539b2d856cc8b5dd2b76b578570a80a14cbfc4cdf6",
+    "tests/test_edlt_lifecycle_phases.py": "752f00caa50d2d748930066ab046ec8d20ba278fae1ac6d789cc155aaa00fc05",
+    "tests/test_edlt_lifecycle.py": "e8404b452c70ba670062de9f6c3ec24f3aa027dc487b04b234cb042f1f058c74",
+    "tests/test_edlt_restore_levels.py": "35f80d50997bec8fb455df64450c3d96d74b3a22648969a88d521dfd611cc093",
+    "tests/test_edlt_restore_levels_vectors.py": "ab31bce7bf9468dd5d1d2cb8698da01168a7997bf82c046dd844afbe1b4a8212",
+    "tests/test_edlt.py": "5546612b307109a94d17d211a0b64d4f50658ab43e4ae5a589dd0e366fb96c46",
+    "research/NativeEdltBlankProbe.cs": "43e8f8fb80c6786fa2646b040d60bf10dd7d4ad6a16e600ced00f20cf82089c4",
+    "research/NativeEdltBlankPlacementProbe.cs": "03970ff12a44b783f627bb53b4b434aee373c3995a9e09ea34eb9fc651f57669",
+    "research/windows_bridge.py": "9b2044b76fa74cb5bb06dcfb854c7a1fc7f96c19ba3f0367e5f901cfad822107",
+    "research/windows_provenance.py": "8aad4ca9d1577b985eef9b453cd1ba1b10c1a73f4627a74b8c45e565c3a47e48",
+    "research/NativeWindowsBridge.cs": "da252f50556c70a58a039bb933b0f2dc8d25f31a1838ceac243cede07355efb1",
+    "research/fixtures/edlt-blank-windows-vectors.json": "8feec31255a7cbfbd4b661d10ef54ef47e5ef5e46a3e4b87c95879156b04c42b",
+    "research/fixtures/edlt-blank-placements.json": "246c49819905d9627d6753052a639c8b09bcb9628285f63d88b9d215d6b4ba9b",
+    "research/fixtures/edlt-lifecycle-refactor-baseline.json": "b704ab50770d9e0b543bb29712d9232531f7b489a1d958965defa8e2811c694c",
+    "research/fixtures/edlt-restore-levels-windows-vectors.json": "bec098cddd18ee2a9f97dbcdf5bee8853b9a45d87a2cdb35ebf961ecbbf465df",
+    "research/vendor/unitspec-plain/KEYGL5.xml": "812d2f92ccf3176d9f3d4c0f35fc196ac9ba45bc419639421e4e5ff082d2af21",
+    "research/runtime/edlt-reset-controls/run_blank_acceptance.py": "7a186efca08d8748577c87fa9dce4b67c7fa2c77a526e97961c6d98c7dbfbb35"
+  },
+  "superseded_run": "research/runtime/edlt-blank/acceptance-v1 (53 tests; source drift rejected during authorized configure-evidence fix; no acceptance)"
+}

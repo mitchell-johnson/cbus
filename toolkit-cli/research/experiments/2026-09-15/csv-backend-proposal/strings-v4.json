@@ -1,0 +1,1935 @@
+{
+  "original_execution": false,
+  "inputs": {
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v1/00cb0694.asm": "dd144f0ef955d427da2e4ff12225add8e141970a76e1d37a816bd3f0f1d54d08",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v1/00cb070c.asm": "9a44fc322bc2cce060b1594f7985a91485eb9b5a9ea46e578e37a8a495bcb676",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v1/00cb0a9c.asm": "50925bfaafd14b4066d5c79f70a4ddddf2c33e34b3514bbae94a5178712b68c3",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v1/00cb0c4c.asm": "9b04c6bc626681b83c6bd98b337113ee9a053506186972eaa8c426d58a63889b",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v1/00cb0cbc.asm": "d7f1ff0371771fc1e19578f1d31694568ce33bf4fbcadef686ce3b7c7b312679",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v1/00cb0cdc.asm": "9707c023e00b947b6ab9b599be6d899cdcf5cf8054e0093025fa00e7ec39a3e0",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v1/00cb5d0c.asm": "3e908534282e84bfc5d2466147f91def3e145d87ab4f3c204018a7b7f6f4fc1b",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v1/00cb87f4.asm": "365cbecc856984a89fdd5b6402d09a4c5d5058996468f3dbe8cffed7f4e62cff",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v1/00cb8818.asm": "e8db5c73357a53f858f0b949e7c379fc12e41a2b9e97680c6bce11e17275c9ae",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v1/00cb8b84.asm": "88b1b41d82535a879716b6d19a048b11d3c879bd760ab82c9a50e7e93fdba7de",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v1/00cb8c44.asm": "c45ac71105a25b6aee1a7144fcc8ed61c7aafdbe625436fe36e23049caae36a1",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v1/00cbe650.asm": "f61ffd08e8dda08e5050232c6a5e38264809a7b0e196b61be75a27c83e2bc934",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v1/00cc335c.asm": "1d48401302b0ccf2c9a8439433bf411b3a14133ba4a4def2b17b52f5bb26a5d4",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v1/00cc4c1c.asm": "2667e7feb533be2fe481403f2fcac356e752757be5ee0c1ed4d997c7895cd533",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v3/007ef1c4.asm": "95a4c1ef8efdfdb3710250be179edff4e7e13ff7b7306b474c6a4f90893e6600",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v3/007ef46c.asm": "6522202e4b23b08f5e8cde00a20416b007b7f2d548fb6a793226918870520653",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v3/007ef4f0.asm": "3cd48f14551ec5d2845a944ac2afa47797799b25b8d315c8211eb6f138ec1228",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v3/00843c74.asm": "a6d73fe81396204982f0f061b887609e66de8106d4cadf3cf96dac63acf2af37",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v3/00843cec.asm": "2cb3e47fc07233194f1095574027956eb5299134cad9c0c055f1efbbedb4ad54",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v3/00cacf50.asm": "f25b36866755680a8670a977f7c46ff1258c11a4db6cd1536d7999ab0a117234",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v3/00cb91c8.asm": "f3aec4231b2d819974cebf504c6d3679a655efe26b3a2cea3de05850bbf3ed1f",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v3/00cc3264.asm": "9fa31908df9ee1340c0d62ecacc6a616c2ecbb42c7cf39c27e739ae44e5fddfa",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v5/007e26cc.asm": "c799556168d714e2722516f2d3ccf490f9ff1007adad158ccb536193f16d5243",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v5/007e36b4.asm": "f86d64265abfd6e9e20465d11d0a5bcebb04c978473190a01bd0ae3dee326fbf",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v5/007f4160.asm": "378457a479761d5a52857c5702042d6e042cde53bd38e73382cf5a6057f97922",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v5/00f2e9ec.asm": "1c8f9ed519f64e8cb162f1cad2b69d79307ab1b33595752d0cfd924a87aa7624",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v5/00f34104.asm": "9d9f6dc5b55c7b7b9b28ca91dd3df8a6ba0d829fc5c86f5fb8fd47ab46807b91",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v5/00f47a58.asm": "7530be76c9d4453a9d69f8202de86c023546e49a7f9cb8aca29f744f84abde85",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v5/00f47c7c.asm": "a031a0170a25621b3fb1623cdafe4a8dbfe4dc7b3c41183e4d29ffe0061f212c",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v6/007e2f00.asm": "d36c660ec38b6b14d4ffd69a5f9e4f0ef47c4a7fce16c7d9a34334499fabb440",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v6/007e2fec.asm": "00531425d7a16671f6b3e5a19aead37dbf3be5fd86dfd8cef4ae329d82f34c83",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v6/007e316c.asm": "be783ac57ba87bbede15ad2b2dd4e3eb68c1b8e80ee2f23c5f71e6ed051746d6",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v6/007efa88.asm": "7709459b8b460fb7a68d43c06fbfbe908f66beff4a9d44cc9ba6bd18ca84ebd4",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v6/007f3df8.asm": "a0c9090ad3c95d166879492b21dd82b13b62e1956b234b67c12035c8d1e54c8e",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v6/00f47bf0.asm": "1ea8074babd2fedf5b6519191cfaf0403de61bd2641a1c7b8effd8757002a358",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v8/007e0390.asm": "d8bffb821894a01e2088abadc98116ba81525b5bd0879255f56e2bb139eba6fd",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v8/007e1fb8.asm": "e527cb461f31db3923e1a0d27c25064688f9a135b1777eb7d16e4efd51b1f08a",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v8/00d85304.asm": "92ca397b329ef77db965e0ac8aa4e2f25e4a874cb447c5991b38ee86a322855b",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v8/00d85498.asm": "ff438ce7a5d91adf442bb663e9292f84abbc18355b3a97bd299a24fc38ae728c",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v8/00d865ec.asm": "d6fd391867cf814ac2ec646a95e02f05847c3ae11dc8b97c549e2b710435a9ef",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v8/00d86900.asm": "3ad765f0b654d07d0837de0d5d5bd8a0fa2b1e1a7d039192d3ee859af89ca2cb",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v8/00d869cc.asm": "f71b85ca45ec77740855bc4d83193b9c031ad244abbd5679862d389ae1f06e81",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v9/00c1a4e0.asm": "dbe25353a5653db2d650ebe14df234ec36fd071ce1915fc8f0be209b98705797",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v9/00d23b48.asm": "f1c0af99f1f8d9c467b12bd9d926eb33381bffdcff61b4ba24624fff88591cc3",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v9/00d80ef4.asm": "581b629a480e5b52bc82ce12fb67a65c886a05486270913ac006228922e7a644",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v9/00eb6488.asm": "f3bc273da201606818d8d33bed2ce1f0698f89ead00f2ded188702f986ca9d8b",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v9/00f2ef2c.asm": "5549c7b4ae63d4078c2410a6f1ad5147676f0ee515545dc10ebd5f34ae30985b",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v11/007ef2c4.asm": "6148c7f0ae861bbb3636e6f60abc7ddc39b63898198eebf5c8fcef388e8d77c0",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v11/007ef350.asm": "569ae09a1c8537970e98ffb1a2af45c588440898b5b396e605ffd0c0fa58160d",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v11/00cb066c.asm": "1616c8e184815f22607a72c202dd365ca05152a6cc5c58c66bd0ab699cc69ccf",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v11/00d80fe0.asm": "7c879a20c3f1cb4be72e851d60174e5707fde5cb5b800f2ca739f735a11c6178",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v11/01249d6c.asm": "4e85da41f5f326583189848063b66bccb3c9603801bd07f8811432b05f68baea",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v11/0124a198.asm": "82124bcb53289d4569f132b91cbd0889389b22eb4976d9d55654e9afa1fa04bf",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v11/0124a1c4.asm": "8fb592425cddaa3526189ed14ab7cc2a989732faad3e109d4f4e0dfb27ab9f8d",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v11/013835b8.asm": "a9f500f7ee6ce606fa9abc634774b9af8ccb0dc4e5591ac3824a043b88ae7149",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v11/013974cc.asm": "f171bb335c2009be378a420a6afdfe7a80af0c68da028429987bca4a2d43f4ab",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v11/01398d7c.asm": "3eb966fa3fe8efad02b975a74870d4d9f8bf39c6424a4d92c40f56637c903b22",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v12/00cb8ad4.asm": "4d4ffe30ee81bdbabf595b2c7688e070eba89833371cfeec4970c44041c0d0c6",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v12/00d23808.asm": "d07fbeb70eb18a2c7d79de6b9796f8ba5a705a982130b85ee8f1460b62f1d76e",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v12/00f3053c.asm": "f31a5e3a6cbc7c45498c21b5a6ad74146909033f8787c5df3d81644f3713a06b",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-v12/00f47718.asm": "b826e80345a1b37180bb810d475e90aa5778e52a8510c5f5080506721b86cb89"
+  },
+  "strings": [
+    {
+      "method_file": "static-v1/00cb0694.asm",
+      "instruction": "00cb06a3",
+      "pointer": "0xcb06e0",
+      "length": 12,
+      "value": "pp quickget ",
+      "header_and_bytes_sha256": "fe6eab451c97240fca4b37224a0dae942dc703ff55c71ab02e1089f61c9db3af"
+    },
+    {
+      "method_file": "static-v1/00cb0694.asm",
+      "instruction": "00cb06b1",
+      "pointer": "0xcb0708",
+      "length": 1,
+      "value": " ",
+      "header_and_bytes_sha256": "12f220deaf7a81be7eefd85defa56bcaa1d527f7efd48ef5c0316e32c89783d2"
+    },
+    {
+      "method_file": "static-v1/00cb070c.asm",
+      "instruction": "00cb074b",
+      "pointer": "0xcb08d8",
+      "length": 3,
+      "value": "315",
+      "header_and_bytes_sha256": "6a1e9e513ed6e36484c4317937a05b56bd49c402140cbdece56f3c1da990c30d"
+    },
+    {
+      "method_file": "static-v1/00cb070c.asm",
+      "instruction": "00cb076c",
+      "pointer": "0xcb08ec",
+      "length": 4,
+      "value": "315 ",
+      "header_and_bytes_sha256": "2b2f1acfe8ba6cf974d5f74a9257612fba01fc3f441bbd9a041d0e85de685a6e"
+    },
+    {
+      "method_file": "static-v1/00cb070c.asm",
+      "instruction": "00cb0793",
+      "pointer": "0xcb0904",
+      "length": 3,
+      "value": "401",
+      "header_and_bytes_sha256": "c8a22581dce136057323cc2e48435efd2e309efda2034af9deb68ad63c9cb0de"
+    },
+    {
+      "method_file": "static-v1/00cb070c.asm",
+      "instruction": "00cb079b",
+      "pointer": "0xcb0918",
+      "length": 23,
+      "value": "Bad object or device ID",
+      "header_and_bytes_sha256": "37b6f13006bdacc4f1285fb45e40601493cea8c84c2a3d27df4e002b26f8d816"
+    },
+    {
+      "method_file": "static-v1/00cb070c.asm",
+      "instruction": "00cb07a3",
+      "pointer": "0xcb0954",
+      "length": 7,
+      "value": "Element",
+      "header_and_bytes_sha256": "29b3232db71914025b1cb218b8822d7b3c47337d08c8fc7616ce678726f6c187"
+    },
+    {
+      "method_file": "static-v1/00cb070c.asm",
+      "instruction": "00cb07ab",
+      "pointer": "0xcb0970",
+      "length": 9,
+      "value": "not found",
+      "header_and_bytes_sha256": "44c53ec55c9c05949a70ef1b75df7744c52aa239482a124ee75b22bb85ff17d2"
+    },
+    {
+      "method_file": "static-v1/00cb070c.asm",
+      "instruction": "00cb07e0",
+      "pointer": "0xcb0990",
+      "length": 3,
+      "value": "408",
+      "header_and_bytes_sha256": "3b123f12063f87f82a092b08cc63ffb8bcda5c8fe08f3f7fbaef59fca835f2f1"
+    },
+    {
+      "method_file": "static-v1/00cb070c.asm",
+      "instruction": "00cb07e8",
+      "pointer": "0xcb09a4",
+      "length": 29,
+      "value": "Programming session not found",
+      "header_and_bytes_sha256": "544d795652bf9deed05d40af9fef0b58e0afcb3590ea31917a99d6380c0bdf90"
+    },
+    {
+      "method_file": "static-v1/00cb070c.asm",
+      "instruction": "00cb081a",
+      "pointer": "0xcb09ec",
+      "length": 19,
+      "value": "Parameter not found",
+      "header_and_bytes_sha256": "1f7648d211a2b2646f84c910b3de378e4093b0245277a12bd162b72ffc41b000"
+    },
+    {
+      "method_file": "static-v1/00cb070c.asm",
+      "instruction": "00cb083f",
+      "pointer": "0xcb0a20",
+      "length": 44,
+      "value": "408 Operation failed: Bad unit specification",
+      "header_and_bytes_sha256": "9321f588ecd0db4838702f7d39d511e2ff88f9860d81111cf2d5c8f65254cc53"
+    },
+    {
+      "method_file": "static-v1/00cb070c.asm",
+      "instruction": "00cb0886",
+      "pointer": "0xcb0a88",
+      "length": 8,
+      "value": "No valid",
+      "header_and_bytes_sha256": "fb66d440d24fd7451f2907d07aa3e144850d1447403a5c9ad5c37aa605df19fe"
+    },
+    {
+      "method_file": "static-v1/00cb0a9c.asm",
+      "instruction": "00cb0aeb",
+      "pointer": "0xcb0c38",
+      "length": 1,
+      "value": "]",
+      "header_and_bytes_sha256": "298684a9f4fb386600ca32f9e1e836b657f3db2e9a07d87ea2fd2e2d812c1a96"
+    },
+    {
+      "method_file": "static-v1/00cb0a9c.asm",
+      "instruction": "00cb0b96",
+      "pointer": "0xcb0c48",
+      "length": 1,
+      "value": "=",
+      "header_and_bytes_sha256": "c7873548cf6e8c1e9d7812a49871243fbb081a4be298421ae000399ac9dc5d02"
+    },
+    {
+      "method_file": "static-v1/00cb0a9c.asm",
+      "instruction": "00cb0bcb",
+      "pointer": "0xcb0c48",
+      "length": 1,
+      "value": "=",
+      "header_and_bytes_sha256": "c7873548cf6e8c1e9d7812a49871243fbb081a4be298421ae000399ac9dc5d02"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb5d61",
+      "pointer": "0xcb6828",
+      "length": 15,
+      "value": "ResetToDefaults",
+      "header_and_bytes_sha256": "c4abce7b3a8e3c49315aa63e3d1592fce89fae1ac21ac5cd2d571b10a522bf0f"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb5d92",
+      "pointer": "0xcb6854",
+      "length": 12,
+      "value": "SaveTemplate",
+      "header_and_bytes_sha256": "2d1e67b61a291797fdbb1c460f83c3e2c74e163a4a3699cd057054e036b36866"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb5db2",
+      "pointer": "0xcb687c",
+      "length": 12,
+      "value": "LoadTemplate",
+      "header_and_bytes_sha256": "3002e15aa91d540fdc722d1100abda59447d3770fc2a197d6d3855b13ac47838"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb5de4",
+      "pointer": "0xcb68a4",
+      "length": 19,
+      "value": "LoadTemplateAndSave",
+      "header_and_bytes_sha256": "3fd6112df4f98caf47a5c6378a49d6e2a10e34e54329ac7ac37cb69eb37aec13"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb5e16",
+      "pointer": "0xcb68d8",
+      "length": 22,
+      "value": "LoadTemplateNoValidate",
+      "header_and_bytes_sha256": "0f244fe451df38cd14efb68f55c6c1b417d7ca95ab48de11b424395129427327"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb5e46",
+      "pointer": "0xcb6914",
+      "length": 23,
+      "value": "CheckTemplateCompatible",
+      "header_and_bytes_sha256": "6649748787e55d6a0dc82484a6a25358baa548de464bf3263f68d9e2523e5243"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb5e76",
+      "pointer": "0xcb6950",
+      "length": 16,
+      "value": "LoadFromTemplate",
+      "header_and_bytes_sha256": "3b852c50f04004dd37012e3c8d1ec391893c6685ec053ed9f2aaaabc4753585f"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb5e9f",
+      "pointer": "0xcb6828",
+      "length": 15,
+      "value": "ResetToDefaults",
+      "header_and_bytes_sha256": "c4abce7b3a8e3c49315aa63e3d1592fce89fae1ac21ac5cd2d571b10a522bf0f"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb5ece",
+      "pointer": "0xcb6980",
+      "length": 6,
+      "value": "Reload",
+      "header_and_bytes_sha256": "3f814f33c776346ef2f837615111b7ff281e3c70f68151d0e6781f64d382ddd1"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb5f0a",
+      "pointer": "0xcb699c",
+      "length": 8,
+      "value": "QuickGet",
+      "header_and_bytes_sha256": "c7749b29444af94f6d7a800fadd7c45b2da271234d84cc94b2f6c9ed50987f10"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb5f26",
+      "pointer": "0xcb69bc",
+      "length": 9,
+      "value": "Parameter",
+      "header_and_bytes_sha256": "11f0838feba4781dc895256444f7664b018842a74104045747aa6b8912ab9c26"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb5f63",
+      "pointer": "0xcb69dc",
+      "length": 6,
+      "value": "GetOne",
+      "header_and_bytes_sha256": "db66e1924923ce7225a1629886043982e8e31f1ccb35a9e39d015412cc581a80"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb5f7c",
+      "pointer": "0xcb69bc",
+      "length": 9,
+      "value": "Parameter",
+      "header_and_bytes_sha256": "11f0838feba4781dc895256444f7664b018842a74104045747aa6b8912ab9c26"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb5fbc",
+      "pointer": "0xcb69f8",
+      "length": 6,
+      "value": "GetAll",
+      "header_and_bytes_sha256": "484ac3d93176450726447d56969a9debbdfe962d8cb2510206175574bc8724fc"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb5fed",
+      "pointer": "0xcb6a14",
+      "length": 6,
+      "value": "Groups",
+      "header_and_bytes_sha256": "3f3c6c69fa18e1cb0cf6bf5ca098f43a0fec0d0d2fa60b887e964ffb2113c8f1"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb6010",
+      "pointer": "0xcb6a30",
+      "length": 10,
+      "value": "LoadGroups",
+      "header_and_bytes_sha256": "809359c0758f2ceaadd67c51952f09340ba2f4e15a71687f76e248e5d2917027"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb6028",
+      "pointer": "0xcb6a54",
+      "length": 8,
+      "value": "Database",
+      "header_and_bytes_sha256": "a0e1f44557e64f173e05720742d4041a77143971f577ad0fa00e568a4f87d4ad"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb6056",
+      "pointer": "0xcb6a74",
+      "length": 21,
+      "value": "AsyncFinishLoadGroups",
+      "header_and_bytes_sha256": "d5286a668918e351e9a67632fbf1583266b74d9916ba056377739977ca15902c"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb6079",
+      "pointer": "0xcb6aac",
+      "length": 13,
+      "value": "LiveAgentMode",
+      "header_and_bytes_sha256": "0f280bdc0f975b65459c1b02621c8cbb2e8ca89dd9bde883c5bf4542f31519be"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb60a3",
+      "pointer": "0xcb6ad4",
+      "length": 16,
+      "value": "DefaultAgentMode",
+      "header_and_bytes_sha256": "8172a9d27fcbd86f44af95429324b2b345b0040de715a816f339ee7d0a62e9a7"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb60cd",
+      "pointer": "0xcb6b04",
+      "length": 20,
+      "value": "PhysicalSerialNumber",
+      "header_and_bytes_sha256": "9e98055715717f2cf05695cc28b8c96bbad7db391bb93f886507f35a8b9d144a"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb60ed",
+      "pointer": "0xcb6b3c",
+      "length": 27,
+      "value": "PhysicalSetQuickApplication",
+      "header_and_bytes_sha256": "3851bdebbd65dd6e363f1e962a4ca6ccd1b8bd242cca8a47d5e1f85bed86667d"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb610d",
+      "pointer": "0xcb6b80",
+      "length": 19,
+      "value": "PhysicalApplication",
+      "header_and_bytes_sha256": "7f03d71f0c817a76ccc957c4af4e6f933cb8c7ba3203887c1a4411d51776157c"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb612d",
+      "pointer": "0xcb6bb4",
+      "length": 14,
+      "value": "PhysicalGroups",
+      "header_and_bytes_sha256": "ced1f9b70dfcfe0ad453cafc94c2648b3a36a2f69f1a855efafd3dd34ae6ab7e"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb6150",
+      "pointer": "0xcb6be0",
+      "length": 25,
+      "value": "CachedPhysicalApplication",
+      "header_and_bytes_sha256": "1da1236487575130b9ade78b348f68e3f1980df9b0dedafa0ed8cf3398a23906"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb6179",
+      "pointer": "0xcb6c20",
+      "length": 20,
+      "value": "CachedPhysicalGroups",
+      "header_and_bytes_sha256": "94cfd6c42f43e6db962e25bc879c2b0d90278a5602ecb7e3fdbd12aefad8105b"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb61a2",
+      "pointer": "0xcb6c58",
+      "length": 25,
+      "value": "MoveToLightingApplication",
+      "header_and_bytes_sha256": "f748eaf9e3768835072b21e66de797f40b5ba89849589b6e4b8a41f87dffeafd"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb61c2",
+      "pointer": "0xcb6c98",
+      "length": 18,
+      "value": "RestoreApplication",
+      "header_and_bytes_sha256": "477af3ac637001cf5b341d6fc9b72cdb727643fb75a43e134a52ea094bd39e9b"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb61e8",
+      "pointer": "0xcb6ccc",
+      "length": 31,
+      "value": "MoveToIdentificationApplication",
+      "header_and_bytes_sha256": "a9e0c7cdf06c85a97e7795bfe3010f95cf8bd59f3cb2b0c6aa93887f21f2a498"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb6208",
+      "pointer": "0xcb6d18",
+      "length": 10,
+      "value": "ResyncUnit",
+      "header_and_bytes_sha256": "cfe1c426394c4e30e4a5f4a51f8d84548c3fe87260c1da94094bf7538d1cf412"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb6228",
+      "pointer": "0xcb6d3c",
+      "length": 13,
+      "value": "ParameterSync",
+      "header_and_bytes_sha256": "ab39fee07a17244459f13eae3d315deec4b33dbebf963a093a0f3577bbf459a5"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb6244",
+      "pointer": "0xcb6d64",
+      "length": 7,
+      "value": "TimeOut",
+      "header_and_bytes_sha256": "3e537e418651003aefbb3658b7bab5bb797c88961b958b756cb0e76ebea1910d"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb629f",
+      "pointer": "0xcb6d80",
+      "length": 15,
+      "value": "ResyncUnitQuick",
+      "header_and_bytes_sha256": "0825e15dcb9e01789dd2f6d90d2db61ca258f24ae88a8aea3de77d97bfd93ec6"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb62b7",
+      "pointer": "0xcb6dac",
+      "length": 21,
+      "value": "ProcessMessagesOnIdle",
+      "header_and_bytes_sha256": "207490746b0c07a3807c252def06061485794fa5698b0f98bafc653a5acd072d"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb62d5",
+      "pointer": "0xcb6de4",
+      "length": 9,
+      "value": "ReAddress",
+      "header_and_bytes_sha256": "6ea38ef4b523664e80274159958f9cbcfea19f7c4c004175c6d3c9b93aee94fc"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb62f5",
+      "pointer": "0xcb6e04",
+      "length": 14,
+      "value": "UnitAttributes",
+      "header_and_bytes_sha256": "7708c8b4e32cbac960d4ce755d7c6def0f1393bfb58452fae2a55a5d2467ed96"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb630a",
+      "pointer": "0xcb6a54",
+      "length": 8,
+      "value": "Database",
+      "header_and_bytes_sha256": "a0e1f44557e64f173e05720742d4041a77143971f577ad0fa00e568a4f87d4ad"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb633d",
+      "pointer": "0xcb6e30",
+      "length": 21,
+      "value": "ProgrammingParameters",
+      "header_and_bytes_sha256": "74ba5109b37d5dd5fc782c7d1e0d53b716f518ab7552a6fab399fc778fe7b4ab"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb6363",
+      "pointer": "0xcb6e68",
+      "length": 8,
+      "value": "ReadOnly",
+      "header_and_bytes_sha256": "286123740c74be714ab4f8610bc2b9f48fadc02cd154d5d3c6ea438ec1fccec9"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb638c",
+      "pointer": "0xcb6e88",
+      "length": 17,
+      "value": "CancellingChanges",
+      "header_and_bytes_sha256": "35ce8f0093ffbb5206460c4ebc26aecdcaa39b7623230f1ed753981c213f9334"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb639e",
+      "pointer": "0xcb6a54",
+      "length": 8,
+      "value": "Database",
+      "header_and_bytes_sha256": "a0e1f44557e64f173e05720742d4041a77143971f577ad0fa00e568a4f87d4ad"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb63c0",
+      "pointer": "0xcb6eb8",
+      "length": 25,
+      "value": "TransferNetworkToDatabase",
+      "header_and_bytes_sha256": "03eda2eaf0a53f5e13be8df63473928e9d8dc2af381249f9587af86569d08346"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb63e3",
+      "pointer": "0xcb6ef8",
+      "length": 25,
+      "value": "TransferDatabaseToNetwork",
+      "header_and_bytes_sha256": "3403e6d1ffbaf7f60d411c15cb6b68f2d3047b971aae2bf6393aac46e8d04589"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb6403",
+      "pointer": "0xcb6f38",
+      "length": 21,
+      "value": "UpdateSingleParameter",
+      "header_and_bytes_sha256": "a725b72a13c63900c8ba515c904d4ae76e4d0d09711516ec7d801083b547503c"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb6429",
+      "pointer": "0xcb6f70",
+      "length": 15,
+      "value": "ProgrammingLock",
+      "header_and_bytes_sha256": "f484fb5ac34f3022083071af397e372b79c472b1b3ba7b9aa7337286966e3cc1"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb644f",
+      "pointer": "0xcb6f9c",
+      "length": 15,
+      "value": "ProgrammingLoad",
+      "header_and_bytes_sha256": "89fa8b3ad36502e62b09f07f1466d0519079d7f7196184066e9ec2e55dbb1845"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb6467",
+      "pointer": "0xcb6fc8",
+      "length": 20,
+      "value": "SkipTypeVerification",
+      "header_and_bytes_sha256": "62707aa564c89cc8812d88bb353134efd75b6dfe9c26c9f474cda2fcb25649f0"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb6488",
+      "pointer": "0xcb7000",
+      "length": 25,
+      "value": "UpdateUnitTypeAndFirmware",
+      "header_and_bytes_sha256": "4312ff3813367666c39f7d37ff761838364aeeb8b63c0b647b818d506bc89a9c"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb64a8",
+      "pointer": "0xcb7040",
+      "length": 10,
+      "value": "NetVoltage",
+      "header_and_bytes_sha256": "8f567a64ec88b89f86e9f585ee36ecb6cd0643318c36cc30ba4783e06e8318f5"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb64c8",
+      "pointer": "0xcb7064",
+      "length": 10,
+      "value": "LoadBurden",
+      "header_and_bytes_sha256": "38b1a1173b99d9d53193c5df6acb8bf4ac9abc14079778f3787f06f9b82e5e55"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb64e8",
+      "pointer": "0xcb7088",
+      "length": 18,
+      "value": "LoadClockGenActive",
+      "header_and_bytes_sha256": "b75118efd63bdcb8c434849be75963a56ba4a251360939aa9dc0f3dbaa4cd336"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb6508",
+      "pointer": "0xcb70bc",
+      "length": 19,
+      "value": "LoadClockGenEnabled",
+      "header_and_bytes_sha256": "06c2d6378a753780adc2d5cb9dd94910fd0a0c3971ac095c3bc8a2b8f5018113"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb6528",
+      "pointer": "0xcb70f0",
+      "length": 19,
+      "value": "LoadFirmwareVersion",
+      "header_and_bytes_sha256": "27e37454b7b62e0c578ff4197537ebd0a5a9ff241697fb81b7b9bd866bbbe10b"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb6548",
+      "pointer": "0xcb7124",
+      "length": 8,
+      "value": "Partname",
+      "header_and_bytes_sha256": "26fbebf960e3eb6113fcb62d75fd8a39f7ff572fef67c56236a5fbc8102588a5"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb6568",
+      "pointer": "0xcb7144",
+      "length": 9,
+      "value": "CloneUnit",
+      "header_and_bytes_sha256": "4e395d5f4a1442e4538f185109ceae2752ed153cd064525cb3db580744c092b7"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb6588",
+      "pointer": "0xcb7164",
+      "length": 17,
+      "value": "ProgrammingUnlock",
+      "header_and_bytes_sha256": "3d2cc82f2273c6fe414e8e1ec07045c8d569a3cc03962a793018ef67d4818b9c"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb659d",
+      "pointer": "0xcb6e88",
+      "length": 17,
+      "value": "CancellingChanges",
+      "header_and_bytes_sha256": "35ce8f0093ffbb5206460c4ebc26aecdcaa39b7623230f1ed753981c213f9334"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb65b2",
+      "pointer": "0xcb6a54",
+      "length": 8,
+      "value": "Database",
+      "header_and_bytes_sha256": "a0e1f44557e64f173e05720742d4041a77143971f577ad0fa00e568a4f87d4ad"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb65d4",
+      "pointer": "0xcb7194",
+      "length": 10,
+      "value": "ReloadUnit",
+      "header_and_bytes_sha256": "bfe7b3a05a8c5152b6dc545a9393a4e67d6fef080927d1916993941ff408c130"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb6605",
+      "pointer": "0xcb71b8",
+      "length": 10,
+      "value": "AsyncQsync",
+      "header_and_bytes_sha256": "f5157ed5716aa3519b005a24e4450f662cd8814eb765f5f97459874470c384da"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb6636",
+      "pointer": "0xcb71dc",
+      "length": 10,
+      "value": "LoadStatus",
+      "header_and_bytes_sha256": "49ffe6374b2d4335d6377711eb915c399a8e639ca07425464fabffa3b4288627"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb666a",
+      "pointer": "0xcb7200",
+      "length": 15,
+      "value": "AsyncLoadGroups",
+      "header_and_bytes_sha256": "be1b4a6af0cdb1f44f58848cb1b0c47ad24e85e1b7f47bb8c40bf7d56cadaf05"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb66b1",
+      "pointer": "0xcb722c",
+      "length": 14,
+      "value": "AsyncNextParam",
+      "header_and_bytes_sha256": "bdd8c713601079cf467c038eb2f68875e3c0f2be242a18a2a58c4f266ef552d2"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb66e1",
+      "pointer": "0xcb7258",
+      "length": 15,
+      "value": "AsyncParamValue",
+      "header_and_bytes_sha256": "7a0256b43eea3ae37307bfe22389c3007cb3e1bb844c1e61d1e0ed43a7d89cbb"
+    },
+    {
+      "method_file": "static-v1/00cb5d0c.asm",
+      "instruction": "00cb66fd",
+      "pointer": "0xcb7284",
+      "length": 6,
+      "value": "Failed",
+      "header_and_bytes_sha256": "8b73e78e29523fd956f063eeef58c9e5d50d5065601519a6dec5ae3cf9be7fce"
+    },
+    {
+      "method_file": "static-v1/00cb8818.asm",
+      "instruction": "00cb8903",
+      "pointer": "0xcb8ad0",
+      "length": 1,
+      "value": " ",
+      "header_and_bytes_sha256": "12f220deaf7a81be7eefd85defa56bcaa1d527f7efd48ef5c0316e32c89783d2"
+    },
+    {
+      "method_file": "static-v1/00cb8c44.asm",
+      "instruction": "00cb8c96",
+      "pointer": "0xcb8e54",
+      "length": 7,
+      "value": "TagName",
+      "header_and_bytes_sha256": "fba452a62d4eb88946f64a474e904eb0a060c01938eabfad1f29a2f8a19fef44"
+    },
+    {
+      "method_file": "static-v1/00cb8c44.asm",
+      "instruction": "00cb8d00",
+      "pointer": "0xcb8e70",
+      "length": 8,
+      "value": "UnitName",
+      "header_and_bytes_sha256": "7bd8133c66efa63884d007fddbf990a8f0a67ea1a8db2782225960e8d55c031b"
+    },
+    {
+      "method_file": "static-v1/00cb8c44.asm",
+      "instruction": "00cb8d51",
+      "pointer": "0xcb8e90",
+      "length": 11,
+      "value": "Description",
+      "header_and_bytes_sha256": "faf174a6e02270153dacd8d340d08f5a7b138c77045066d24a465483487f20c0"
+    },
+    {
+      "method_file": "static-v1/00cb8c44.asm",
+      "instruction": "00cb8da2",
+      "pointer": "0xcb8eb4",
+      "length": 12,
+      "value": "SerialNumber",
+      "header_and_bytes_sha256": "54ff20ee5f2d42a005c79e0e816604be7ac6103c7af17a0f14a2406e748fceaa"
+    },
+    {
+      "method_file": "static-v1/00cb8c44.asm",
+      "instruction": "00cb8df3",
+      "pointer": "0xcb8edc",
+      "length": 13,
+      "value": "CatalogNumber",
+      "header_and_bytes_sha256": "a7e5bffc75d92829c182f72cd7ba19a49f6e60b688794e9b9dfecce4e832bb30"
+    },
+    {
+      "method_file": "static-v3/007ef4f0.asm",
+      "instruction": "007ef534",
+      "pointer": "0x7ef5cc",
+      "length": 1,
+      "value": "=",
+      "header_and_bytes_sha256": "c7873548cf6e8c1e9d7812a49871243fbb081a4be298421ae000399ac9dc5d02"
+    },
+    {
+      "method_file": "static-v3/007ef4f0.asm",
+      "instruction": "007ef567",
+      "pointer": "0x7ef5cc",
+      "length": 1,
+      "value": "=",
+      "header_and_bytes_sha256": "c7873548cf6e8c1e9d7812a49871243fbb081a4be298421ae000399ac9dc5d02"
+    },
+    {
+      "method_file": "static-v3/00cb91c8.asm",
+      "instruction": "00cb9261",
+      "pointer": "0xcb92c0",
+      "length": 7,
+      "value": "NEWUNIT",
+      "header_and_bytes_sha256": "92401dc1d4dd2e9bfd8f246d1940e771aff8cb84ca1dc999c66b6a3f026d1d55"
+    },
+    {
+      "method_file": "static-v3/00cc3264.asm",
+      "instruction": "00cc32c9",
+      "pointer": "0xcc3344",
+      "length": 2,
+      "value": "//",
+      "header_and_bytes_sha256": "8bdf350ba2f1d8190de032d7219d7150e861f9dcc95a25e646dcea5c6e72e7d8"
+    },
+    {
+      "method_file": "static-v3/00cc3264.asm",
+      "instruction": "00cc32f1",
+      "pointer": "0xcc3358",
+      "length": 1,
+      "value": "/",
+      "header_and_bytes_sha256": "b3f78e4624e3c1fe47b60418cba85d85e59d5b7531c7152d67dd8b7763cbee43"
+    },
+    {
+      "method_file": "static-v5/007e26cc.asm",
+      "instruction": "007e2700",
+      "pointer": "0x7e2868",
+      "length": 83,
+      "value": "C:\\Dev\\GitHub\\CBus\\toolkit\\DelphiComponents\\Clipsal\\FlashXML\\Code\\CIS_XMLLoader.pas",
+      "header_and_bytes_sha256": "e80a4385c6d250779d170004f118886054bfabf01ea5560e4c3f50d2d100c2be"
+    },
+    {
+      "method_file": "static-v5/007e26cc.asm",
+      "instruction": "007e2705",
+      "pointer": "0x7e291c",
+      "length": 35,
+      "value": "This cached object has been deleted",
+      "header_and_bytes_sha256": "f87a9d124b692705c518701ea09723fde2c4281cbe069c8820a8a1930058278b"
+    },
+    {
+      "method_file": "static-v5/007e26cc.asm",
+      "instruction": "007e2720",
+      "pointer": "0x7e2868",
+      "length": 83,
+      "value": "C:\\Dev\\GitHub\\CBus\\toolkit\\DelphiComponents\\Clipsal\\FlashXML\\Code\\CIS_XMLLoader.pas",
+      "header_and_bytes_sha256": "e80a4385c6d250779d170004f118886054bfabf01ea5560e4c3f50d2d100c2be"
+    },
+    {
+      "method_file": "static-v5/007e26cc.asm",
+      "instruction": "007e2725",
+      "pointer": "0x7e2970",
+      "length": 53,
+      "value": "Cannot create the actual FlashObject with a WorkSpace",
+      "header_and_bytes_sha256": "cb2339f57141ed552a1ece2b57364a6d0870a642fb461729b01c33fb4dec8cae"
+    },
+    {
+      "method_file": "static-v5/007e26cc.asm",
+      "instruction": "007e273f",
+      "pointer": "0x7e29e8",
+      "length": 45,
+      "value": "Incorrectly cached object. Owner Session ID (",
+      "header_and_bytes_sha256": "c558f8acddea13b3b795a170822bba9c25f84522ee352697696a650a14d9984c"
+    },
+    {
+      "method_file": "static-v5/007e26cc.asm",
+      "instruction": "007e2755",
+      "pointer": "0x7e2a50",
+      "length": 16,
+      "value": ") = Session ID (",
+      "header_and_bytes_sha256": "56448ac34c6b847989fdf32932ab09b5cf18a1a4a8fd674bc287ec2a9e2aea88"
+    },
+    {
+      "method_file": "static-v5/007e26cc.asm",
+      "instruction": "007e276d",
+      "pointer": "0x7e2a80",
+      "length": 1,
+      "value": ")",
+      "header_and_bytes_sha256": "b6a926ad01700a24bb20f41a364e3c4a30f5343164231039771b8afa8eede4ea"
+    },
+    {
+      "method_file": "static-v5/007e26cc.asm",
+      "instruction": "007e2787",
+      "pointer": "0x7e2868",
+      "length": 83,
+      "value": "C:\\Dev\\GitHub\\CBus\\toolkit\\DelphiComponents\\Clipsal\\FlashXML\\Code\\CIS_XMLLoader.pas",
+      "header_and_bytes_sha256": "e80a4385c6d250779d170004f118886054bfabf01ea5560e4c3f50d2d100c2be"
+    },
+    {
+      "method_file": "static-v5/007e26cc.asm",
+      "instruction": "007e27ba",
+      "pointer": "0x7e2a90",
+      "length": 55,
+      "value": "Unable to locate the Owner Object for this IFlashObject",
+      "header_and_bytes_sha256": "da66bdad8ca7dffac493db3aca9032d62cca93df301912870aaa2b22ec6ad9a5"
+    },
+    {
+      "method_file": "static-v5/007e26cc.asm",
+      "instruction": "007e27ee",
+      "pointer": "0x7e2b0c",
+      "length": 42,
+      "value": "Unable to locate the Owner target relation",
+      "header_and_bytes_sha256": "2f107148e1c43f7492c97d7e1dfa9c67fb1f151e3b629d3af55ab9e82377ece2"
+    },
+    {
+      "method_file": "static-v5/007e36b4.asm",
+      "instruction": "007e36f4",
+      "pointer": "0x7e38dc",
+      "length": 83,
+      "value": "C:\\Dev\\GitHub\\CBus\\toolkit\\DelphiComponents\\Clipsal\\FlashXML\\Code\\CIS_XMLLoader.pas",
+      "header_and_bytes_sha256": "e80a4385c6d250779d170004f118886054bfabf01ea5560e4c3f50d2d100c2be"
+    },
+    {
+      "method_file": "static-v5/007e36b4.asm",
+      "instruction": "007e36f9",
+      "pointer": "0x7e3990",
+      "length": 58,
+      "value": "Cannot load into an object unless the workspace is defined",
+      "header_and_bytes_sha256": "ada9f3cbcc44f9f943d914f5d5b91112a16eebfde85dc05eefc0a6da6381e375"
+    },
+    {
+      "method_file": "static-v5/007e36b4.asm",
+      "instruction": "007e371e",
+      "pointer": "0x7e38dc",
+      "length": 83,
+      "value": "C:\\Dev\\GitHub\\CBus\\toolkit\\DelphiComponents\\Clipsal\\FlashXML\\Code\\CIS_XMLLoader.pas",
+      "header_and_bytes_sha256": "e80a4385c6d250779d170004f118886054bfabf01ea5560e4c3f50d2d100c2be"
+    },
+    {
+      "method_file": "static-v5/007e36b4.asm",
+      "instruction": "007e3723",
+      "pointer": "0x7e3a14",
+      "length": 80,
+      "value": "The workspace for the cached object and the object to load into must be the same",
+      "header_and_bytes_sha256": "c1089b75ed61ace4bc63c871a997b62755383f86f343c5f50f0dcafdf4534386"
+    },
+    {
+      "method_file": "static-v5/00f2e9ec.asm",
+      "instruction": "00f2ea1f",
+      "pointer": "0xf2ea9c",
+      "length": 77,
+      "value": "C:\\Dev\\GitHub\\CBus\\toolkit\\DelphiProjects1\\CbusModel\\code\\CIS_TCommonCBus.pas",
+      "header_and_bytes_sha256": "47ca6608179944ab0ae948abeacb52a22fca5bdc6d723ef6dfd89dec700eb8da"
+    },
+    {
+      "method_file": "static-v5/00f2e9ec.asm",
+      "instruction": "00f2ea24",
+      "pointer": "0xf2eb44",
+      "length": 43,
+      "value": "Cannot determine a fully qualified address.",
+      "header_and_bytes_sha256": "4e06b33528ff7db62563ba01666a4e03c58c5f31c64da018c7a39ddcac6a9be9"
+    },
+    {
+      "method_file": "static-v5/00f2e9ec.asm",
+      "instruction": "00f2ea2e",
+      "pointer": "0xf2eba8",
+      "length": 2,
+      "value": "p/",
+      "header_and_bytes_sha256": "3361fadf7ebef9fcf7dfd25555e916cd6997de8bdf17701e653f435b7b748dd8"
+    },
+    {
+      "method_file": "static-v5/00f2e9ec.asm",
+      "instruction": "00f2ea49",
+      "pointer": "0xf2ebbc",
+      "length": 1,
+      "value": "/",
+      "header_and_bytes_sha256": "b3f78e4624e3c1fe47b60418cba85d85e59d5b7531c7152d67dd8b7763cbee43"
+    },
+    {
+      "method_file": "static-v5/00f34104.asm",
+      "instruction": "00f34142",
+      "pointer": "0xf341cc",
+      "length": 77,
+      "value": "C:\\Dev\\GitHub\\CBus\\toolkit\\DelphiProjects1\\CbusModel\\code\\CIS_TCommonCBus.pas",
+      "header_and_bytes_sha256": "47ca6608179944ab0ae948abeacb52a22fca5bdc6d723ef6dfd89dec700eb8da"
+    },
+    {
+      "method_file": "static-v5/00f34104.asm",
+      "instruction": "00f34147",
+      "pointer": "0xf34274",
+      "length": 44,
+      "value": "Can only construct units from cached objects",
+      "header_and_bytes_sha256": "641249eede0b2f6a14acc106c6f8532cad1aa1c33369a2a4dd4b6366e2f1b8c4"
+    },
+    {
+      "method_file": "static-v5/00f34104.asm",
+      "instruction": "00f34162",
+      "pointer": "0xf342dc",
+      "length": 8,
+      "value": "UNITTYPE",
+      "header_and_bytes_sha256": "9fee94055e8691a25552cf3299154ea7de0929e74b3ca7c5324db59aedc647d1"
+    },
+    {
+      "method_file": "static-v5/00f34104.asm",
+      "instruction": "00f34172",
+      "pointer": "0xf342fc",
+      "length": 15,
+      "value": "FIRMWAREVERSION",
+      "header_and_bytes_sha256": "bd4845371b9fcf862de5bfc49f90e71b2e3863f0715a8c84c5ced8eb992e1bd7"
+    },
+    {
+      "method_file": "static-v5/00f47c7c.asm",
+      "instruction": "00f47cab",
+      "pointer": "0xf47cec",
+      "length": 5,
+      "value": "BLANK",
+      "header_and_bytes_sha256": "a09ef28df108db42bf72e2575d216cde87004746bec901c10258022b5f8b2ef5"
+    },
+    {
+      "method_file": "static-v6/007e2fec.asm",
+      "instruction": "007e3094",
+      "pointer": "0x7e30e4",
+      "length": 67,
+      "value": "Trying to add an reference to a collection that doesn't accept them",
+      "header_and_bytes_sha256": "e67c7a54ff25e46d40fd93f024a152e6840236d485a3e13b4aa75fbeccbc9acf"
+    },
+    {
+      "method_file": "static-v6/007e316c.asm",
+      "instruction": "007e3287",
+      "pointer": "0x7e349c",
+      "length": 157,
+      "value": "While assigning Owner ID to owned object an object retrieved from workspace wasn't a cached object, but an already created object.\r\nRetrieved Object Class = ",
+      "header_and_bytes_sha256": "cbf5deb9d6d8f3529a99e65996693359d0ec1ff32e94dce386ce2a7ea490ed45"
+    },
+    {
+      "method_file": "static-v6/007e316c.asm",
+      "instruction": "007e32a1",
+      "pointer": "0x7e35e4",
+      "length": 2,
+      "value": "\r\n",
+      "header_and_bytes_sha256": "9c9ba157b76e61aa7d3bb9b6b3900a19b0efad23afa4c6c00d67c773c607cffc"
+    },
+    {
+      "method_file": "static-v6/007e316c.asm",
+      "instruction": "007e32a6",
+      "pointer": "0x7e35f8",
+      "length": 21,
+      "value": "Owner Object Class = ",
+      "header_and_bytes_sha256": "d4bd456161265ee8cfcfeb94e10aabf1a306d551a1ade5271f2a8dd77de6660d"
+    },
+    {
+      "method_file": "static-v6/007e316c.asm",
+      "instruction": "007e32e4",
+      "pointer": "0x7e3630",
+      "length": 64,
+      "value": "Trying to add an object to a collection that doesn't accept them",
+      "header_and_bytes_sha256": "e25972511d09b9490e37ade497c6daf6ab90d1f0386556c322fe2f25c3a892f0"
+    },
+    {
+      "method_file": "static-v6/007e316c.asm",
+      "instruction": "007e33f1",
+      "pointer": "0x7e349c",
+      "length": 157,
+      "value": "While assigning Owner ID to owned object an object retrieved from workspace wasn't a cached object, but an already created object.\r\nRetrieved Object Class = ",
+      "header_and_bytes_sha256": "cbf5deb9d6d8f3529a99e65996693359d0ec1ff32e94dce386ce2a7ea490ed45"
+    },
+    {
+      "method_file": "static-v6/007e316c.asm",
+      "instruction": "007e340b",
+      "pointer": "0x7e35e4",
+      "length": 2,
+      "value": "\r\n",
+      "header_and_bytes_sha256": "9c9ba157b76e61aa7d3bb9b6b3900a19b0efad23afa4c6c00d67c773c607cffc"
+    },
+    {
+      "method_file": "static-v6/007e316c.asm",
+      "instruction": "007e3410",
+      "pointer": "0x7e35f8",
+      "length": 21,
+      "value": "Owner Object Class = ",
+      "header_and_bytes_sha256": "d4bd456161265ee8cfcfeb94e10aabf1a306d551a1ade5271f2a8dd77de6660d"
+    },
+    {
+      "method_file": "static-v6/007f3df8.asm",
+      "instruction": "007f3eb7",
+      "pointer": "0x7f3f18",
+      "length": 6,
+      "value": "%s: %s",
+      "header_and_bytes_sha256": "48ef695e63dd852d2db92f25b5f80e640ad0609c159cf1ac08fa345cff205785"
+    },
+    {
+      "method_file": "static-v6/00f47bf0.asm",
+      "instruction": "00f47c31",
+      "pointer": "0xf47c78",
+      "length": 1,
+      "value": "!",
+      "header_and_bytes_sha256": "43d73833a6c50d3f02a7e2c885c2b55e7c4d084532c8503907c6d10fb4b456e7"
+    },
+    {
+      "method_file": "static-v8/007e1fb8.asm",
+      "instruction": "007e1fe8",
+      "pointer": "0x7e20c4",
+      "length": 83,
+      "value": "C:\\Dev\\GitHub\\CBus\\toolkit\\DelphiComponents\\Clipsal\\FlashXML\\Code\\CIS_XMLLoader.pas",
+      "header_and_bytes_sha256": "e80a4385c6d250779d170004f118886054bfabf01ea5560e4c3f50d2d100c2be"
+    },
+    {
+      "method_file": "static-v8/007e1fb8.asm",
+      "instruction": "007e1fed",
+      "pointer": "0x7e2178",
+      "length": 32,
+      "value": "Can't load XML into a nil object",
+      "header_and_bytes_sha256": "1ab4402690568b51099766d4a796363bd8761ab78c94786a71e21fd9066e1869"
+    },
+    {
+      "method_file": "static-v8/007e1fb8.asm",
+      "instruction": "007e205f",
+      "pointer": "0x7e21c8",
+      "length": 29,
+      "value": "Error loading XML into object",
+      "header_and_bytes_sha256": "6949d3c600cb345a740a1b1d288fe638b432c8450b892c57d081171765279c29"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d854d6",
+      "pointer": "0xd857a4",
+      "length": 27,
+      "value": "<Applications><Application>",
+      "header_and_bytes_sha256": "d9c6af211f56e8866b7a0f41c552cf5e46b71470b878c7bc9294e952560d5d1d"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d854db",
+      "pointer": "0xd857e8",
+      "length": 13,
+      "value": "<Application>",
+      "header_and_bytes_sha256": "d36cd34573ce98afd2d6a51e70cc705d0683a9263bca3148ff7d6b822a6b4592"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d854f7",
+      "pointer": "0xd85810",
+      "length": 29,
+      "value": "</Application></Applications>",
+      "header_and_bytes_sha256": "c1349748f6bb2a8fd91c1b20862eec49360cbfc0ea49a0041939da9005cf1288"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d854fc",
+      "pointer": "0xd85858",
+      "length": 14,
+      "value": "</Application>",
+      "header_and_bytes_sha256": "11c69dbbfca6e53781007ffe4b6b19249143dae4e234e39047e7be61e8c1ae9f"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d8551a",
+      "pointer": "0xd85884",
+      "length": 6,
+      "value": "</OID>",
+      "header_and_bytes_sha256": "b01a818a0e5aa2de8e5dae1b192c95f2634e71e60b98852e84e9116c9b825263"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d8551f",
+      "pointer": "0xd858a0",
+      "length": 16,
+      "value": "<Languages><OID>",
+      "header_and_bytes_sha256": "a17a6fecaee2abde1ca9f782bff15cc54acae6a52f89b10d9bc58f37dc20d5f6"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d85543",
+      "pointer": "0xd858d0",
+      "length": 11,
+      "value": "<Languages>",
+      "header_and_bytes_sha256": "aefdf9bda0d6d5a0d07ea78cf7990875019a84e01b0734de1e1ff9b2fd50364d"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d85548",
+      "pointer": "0xd858f4",
+      "length": 22,
+      "value": "<Languages><OID></OID>",
+      "header_and_bytes_sha256": "81b6c092eb0dcd16e9d74e5540ce946338dd1ea7d965e73b769952324eaac87e"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d8556c",
+      "pointer": "0xd85930",
+      "length": 15,
+      "value": "<Groups><Group>",
+      "header_and_bytes_sha256": "ca31653d41bf1b26f54b14ca1e88dda15a54fe276772fe47d0c0eca525f95ec6"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d85571",
+      "pointer": "0xd8595c",
+      "length": 7,
+      "value": "<Group>",
+      "header_and_bytes_sha256": "65ed1dd21c8a96996f399dd9b3bbbbacf1e33e1b0c79de1726f968efdd8d3f7f"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d85595",
+      "pointer": "0xd85978",
+      "length": 17,
+      "value": "</Group></Groups>",
+      "header_and_bytes_sha256": "1842842f65909d8aee256b6d65da90a5cefb8aaf03b38b702992bc7040684446"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d8559a",
+      "pointer": "0xd859a8",
+      "length": 8,
+      "value": "</Group>",
+      "header_and_bytes_sha256": "e9a4c54235323b2f4d58c4b6f56ee6a682513246afa54ba52ba210c978ad360e"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d855be",
+      "pointer": "0xd859c8",
+      "length": 21,
+      "value": "<Levels><Level Value=",
+      "header_and_bytes_sha256": "14774861207bd914c837923bd1d1ae36f84f89c918db10bd81dd7e1eb4880e9a"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d855c3",
+      "pointer": "0xd85a00",
+      "length": 13,
+      "value": "<Level Value=",
+      "header_and_bytes_sha256": "5d34906fafecef9f38770d5d7bcd432838869b2b6816cc6d87c426a284763951"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d855e7",
+      "pointer": "0xd85a28",
+      "length": 17,
+      "value": "</Level></Levels>",
+      "header_and_bytes_sha256": "ed5b17bae8ec7d4b23dad2538d62d746efdde442a09599c051fefe391a7f179b"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d855ec",
+      "pointer": "0xd85a58",
+      "length": 8,
+      "value": "</Level>",
+      "header_and_bytes_sha256": "6659932c7d0d0962d6b2e58a6bd034f83b99bf36cb4b4f051ee8f96b0464d274"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d85610",
+      "pointer": "0xd85a78",
+      "length": 13,
+      "value": "<Units><Unit>",
+      "header_and_bytes_sha256": "8acc73558d2f2514215756ef0f6b6f36625d7b88f03109140b37b6a8d3a2c3b7"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d85615",
+      "pointer": "0xd85aa0",
+      "length": 6,
+      "value": "<Unit>",
+      "header_and_bytes_sha256": "ac86c92772b337352c322cb1c6989f879285d3818357835e7d0b873db1acc353"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d85639",
+      "pointer": "0xd85abc",
+      "length": 15,
+      "value": "</Unit></Units>",
+      "header_and_bytes_sha256": "454a13a8af0c968553ac39005af311535255f4ce1d5c6d0eb541ba96a3594dce"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d8563e",
+      "pointer": "0xd85ae8",
+      "length": 7,
+      "value": "</Unit>",
+      "header_and_bytes_sha256": "1466a618af1720f34f2c4518466ee3933a74a33306100b13ee72790894b6cdef"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d85662",
+      "pointer": "0xd85b04",
+      "length": 17,
+      "value": "<NetVars><NetVar>",
+      "header_and_bytes_sha256": "f6d4ca17bfca1203224037dca0a76c765cc550513839dcec4d09e062a1798bbe"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d85667",
+      "pointer": "0xd85b34",
+      "length": 8,
+      "value": "<NetVar>",
+      "header_and_bytes_sha256": "cf1a63868df0c74f04a47a88f0811f1eabe1c3311f6a1227faed2971b3fc3e63"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d8568b",
+      "pointer": "0xd85b54",
+      "length": 19,
+      "value": "</NetVar></NetVars>",
+      "header_and_bytes_sha256": "0db64ce1f9b031fb439d62fcd3d65a0912bd37df187b9bb23f91dc8c14cd2343"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d85690",
+      "pointer": "0xd85b88",
+      "length": 9,
+      "value": "</NetVar>",
+      "header_and_bytes_sha256": "bc5a322dc46ff607c8f7d65717ef88cf7dc013572e133f37049deb92d45bb833"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d856b4",
+      "pointer": "0xd85ba8",
+      "length": 17,
+      "value": "<Outputs><Output>",
+      "header_and_bytes_sha256": "1d344e702e90d70b0786de420045b9b8c84e2f083610514b6f074ca80a3c94e0"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d856b9",
+      "pointer": "0xd85bd8",
+      "length": 8,
+      "value": "<Output>",
+      "header_and_bytes_sha256": "52385b615371798e92d4f43a56876d77b0c6f0e063fbeb8f8bf6e5b139d7bfc5"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d856dd",
+      "pointer": "0xd85bf8",
+      "length": 19,
+      "value": "</Output></Outputs>",
+      "header_and_bytes_sha256": "a0bf5aafeef985540cf792112ed6eb5631bd35354f0f2bae8f04dbfd659f0d26"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d856e2",
+      "pointer": "0xd85c2c",
+      "length": 9,
+      "value": "</Output>",
+      "header_and_bytes_sha256": "6a78745360a86bd90d987da897fd59257dea32cbc25299b86a4b64258d7429ec"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d856fc",
+      "pointer": "0xd85c4c",
+      "length": 2,
+      "value": "<N",
+      "header_and_bytes_sha256": "16c10a3be9d821a3c976b7b121a2a2701cf2504b2b8752ef862f8c85d3f89446"
+    },
+    {
+      "method_file": "static-v8/00d85498.asm",
+      "instruction": "00d85745",
+      "pointer": "0xd85c60",
+      "length": 10,
+      "value": "</Network>",
+      "header_and_bytes_sha256": "3bb428ded507f35d6f762a6a718515be2fdd228b6b48bb3531c3da1310742eb9"
+    },
+    {
+      "method_file": "static-v8/00d865ec.asm",
+      "instruction": "00d8663d",
+      "pointer": "0xd8687c",
+      "length": 11,
+      "value": "Application",
+      "header_and_bytes_sha256": "52ba6f103f9dbcec2bce5a209e37b5114872b415e865f8dc62f482527b07f5b5"
+    },
+    {
+      "method_file": "static-v8/00d865ec.asm",
+      "instruction": "00d8666b",
+      "pointer": "0xd868a0",
+      "length": 2,
+      "value": "/p",
+      "header_and_bytes_sha256": "1eeab27f6c51071cae762b79743e7c1ae50fa59de1a62e771424875c3c6083fe"
+    },
+    {
+      "method_file": "static-v8/00d865ec.asm",
+      "instruction": "00d866bd",
+      "pointer": "0xd868b4",
+      "length": 12,
+      "value": "Application=",
+      "header_and_bytes_sha256": "8025a0232458ba0bb74463e45de5ac4b02e053b96b2b501a1cea68e40fe74499"
+    },
+    {
+      "method_file": "static-v8/00d865ec.asm",
+      "instruction": "00d866ec",
+      "pointer": "0xd868dc",
+      "length": 1,
+      "value": "/",
+      "header_and_bytes_sha256": "b3f78e4624e3c1fe47b60418cba85d85e59d5b7531c7152d67dd8b7763cbee43"
+    },
+    {
+      "method_file": "static-v8/00d865ec.asm",
+      "instruction": "00d8671e",
+      "pointer": "0xd868ec",
+      "length": 1,
+      "value": "=",
+      "header_and_bytes_sha256": "c7873548cf6e8c1e9d7812a49871243fbb081a4be298421ae000399ac9dc5d02"
+    },
+    {
+      "method_file": "static-v8/00d865ec.asm",
+      "instruction": "00d8674a",
+      "pointer": "0xd868fc",
+      "length": 1,
+      "value": ":",
+      "header_and_bytes_sha256": "add66c8b02811d0d94759be9fb9afbd59c53cf70b7945a28ff9fd19b3ebe53af"
+    },
+    {
+      "method_file": "static-v8/00d86900.asm",
+      "instruction": "00d86964",
+      "pointer": "0xd869bc",
+      "length": 6,
+      "value": "Groups",
+      "header_and_bytes_sha256": "3f3c6c69fa18e1cb0cf6bf5ca098f43a0fec0d0d2fa60b887e964ffb2113c8f1"
+    },
+    {
+      "method_file": "static-v9/00c1a4e0.asm",
+      "instruction": "00c1a4ef",
+      "pointer": "0xc1a50c",
+      "length": 15,
+      "value": "CBusUnitGeneric",
+      "header_and_bytes_sha256": "a4aef1d07df2d50da5b5e2a856f3e9489964312fa6298393bff585f5d655cc79"
+    },
+    {
+      "method_file": "static-v9/00d23b48.asm",
+      "instruction": "00d23b57",
+      "pointer": "0xd23c70",
+      "length": 8,
+      "value": "Channels",
+      "header_and_bytes_sha256": "ea7afbeda7f6c3ab0d5ff215c9e5dea40b9d2dccc0459b1b56fa42d2a4829f3f"
+    },
+    {
+      "method_file": "static-v9/00d23b48.asm",
+      "instruction": "00d23b77",
+      "pointer": "0xd23c90",
+      "length": 16,
+      "value": "RelayLogicGroups",
+      "header_and_bytes_sha256": "24d3cc57702a1d7304117df4f36a583142f1ceacbb0cf3147d792a1d3de76e0f"
+    },
+    {
+      "method_file": "static-v9/00d23b48.asm",
+      "instruction": "00d23b97",
+      "pointer": "0xd23cc0",
+      "length": 10,
+      "value": "LightLevel",
+      "header_and_bytes_sha256": "01bc4272b93fdc941c11311d6a014f3aa9e802743561eec9c0ebbf91ec981c8f"
+    },
+    {
+      "method_file": "static-v9/00d23b48.asm",
+      "instruction": "00d23bbd",
+      "pointer": "0xd23ce4",
+      "length": 9,
+      "value": "AreaGroup",
+      "header_and_bytes_sha256": "c0b65950f123e89730afae59da5384027126f15e70969406cc3fd880e03afc84"
+    },
+    {
+      "method_file": "static-v9/00d23b48.asm",
+      "instruction": "00d23be3",
+      "pointer": "0xd23d04",
+      "length": 8,
+      "value": "CheckSum",
+      "header_and_bytes_sha256": "bbe4769e75f0f7a12bb14f6924408e2025261df90cd3bdc6c212b833aceae6b9"
+    },
+    {
+      "method_file": "static-v9/00d23b48.asm",
+      "instruction": "00d23c09",
+      "pointer": "0xd23d24",
+      "length": 20,
+      "value": "RestoreToPresetLevel",
+      "header_and_bytes_sha256": "5bf837d98aa3d3417bb6c0ef3ba9e2f9283257e61d70edb9b99c4b7f37097173"
+    },
+    {
+      "method_file": "static-v9/00d23b48.asm",
+      "instruction": "00d23c2f",
+      "pointer": "0xd23d5c",
+      "length": 22,
+      "value": "InputUnitsReissueLevel",
+      "header_and_bytes_sha256": "cb5b4d767d1bd212bad1c4d2285fe3466db8dcee4eea748d63bad911c7c2fe52"
+    },
+    {
+      "method_file": "static-v9/00d80ef4.asm",
+      "instruction": "00d80f12",
+      "pointer": "0xd80f48",
+      "length": 9,
+      "value": "dbgetxml ",
+      "header_and_bytes_sha256": "e349ebf310d6f8b54c13638f2e5e01a7a54ca21d444ac888588cfec47f2e9b03"
+    },
+    {
+      "method_file": "static-v9/00eb6488.asm",
+      "instruction": "00eb6553",
+      "pointer": "0xeb6718",
+      "length": 23,
+      "value": "CSV Files (*.csv)|*.CSV",
+      "header_and_bytes_sha256": "545b502caedd0ca231a85656863c7765c063eef3ccf13603a7291afaa77ccc58"
+    },
+    {
+      "method_file": "static-v9/00eb6488.asm",
+      "instruction": "00eb6565",
+      "pointer": "0xeb6754",
+      "length": 3,
+      "value": "csv",
+      "header_and_bytes_sha256": "ac7736a1614cf7f157bfe8c14da39474453c519277cd3d709fb02f97a568fe06"
+    },
+    {
+      "method_file": "static-v9/00eb6488.asm",
+      "instruction": "00eb65c2",
+      "pointer": "0xeb6768",
+      "length": 4,
+      "value": ".CSV",
+      "header_and_bytes_sha256": "18e05dc780d60b4f39da9053911b4aaf1fdc19dbcd98a325a284fae32a78cdd7"
+    },
+    {
+      "method_file": "static-v9/00eb6488.asm",
+      "instruction": "00eb65db",
+      "pointer": "0xeb6780",
+      "length": 5,
+      "value": "WHITE",
+      "header_and_bytes_sha256": "4156983eeec80b6fcb3d8f4c9bdd7d84f061a4402dfe94ca4d6508c9489f8794"
+    },
+    {
+      "method_file": "static-v9/00eb6488.asm",
+      "instruction": "00eb65f1",
+      "pointer": "0xeb6768",
+      "length": 4,
+      "value": ".CSV",
+      "header_and_bytes_sha256": "18e05dc780d60b4f39da9053911b4aaf1fdc19dbcd98a325a284fae32a78cdd7"
+    },
+    {
+      "method_file": "static-v9/00eb6488.asm",
+      "instruction": "00eb6637",
+      "pointer": "0xeb6780",
+      "length": 5,
+      "value": "WHITE",
+      "header_and_bytes_sha256": "4156983eeec80b6fcb3d8f4c9bdd7d84f061a4402dfe94ca4d6508c9489f8794"
+    },
+    {
+      "method_file": "static-v9/00eb6488.asm",
+      "instruction": "00eb664d",
+      "pointer": "0xeb6768",
+      "length": 4,
+      "value": ".CSV",
+      "header_and_bytes_sha256": "18e05dc780d60b4f39da9053911b4aaf1fdc19dbcd98a325a284fae32a78cdd7"
+    },
+    {
+      "method_file": "static-v9/00f2ef2c.asm",
+      "instruction": "00f2ef4f",
+      "pointer": "0xf2f2f0",
+      "length": 8,
+      "value": "CBUSUnit",
+      "header_and_bytes_sha256": "dd9a8db430a09fb0eb3bb230f726881080146ed1a0adf5b19d16905eb39f0fdb"
+    },
+    {
+      "method_file": "static-v9/00f2ef2c.asm",
+      "instruction": "00f2ef5c",
+      "pointer": "0xf2f310",
+      "length": 17,
+      "value": "ApplicationObject",
+      "header_and_bytes_sha256": "a58bae1ef3c992d9ff75eb29a28c438c4a85b67038b57fdb7d5fb7ffa86934c3"
+    },
+    {
+      "method_file": "static-v9/00f2ef2c.asm",
+      "instruction": "00f2ef9c",
+      "pointer": "0xf2f340",
+      "length": 18,
+      "value": "Application2Object",
+      "header_and_bytes_sha256": "4c0f783903a98c857981f25067aac72470ae565c68a9e3e92cecdda55c2300e1"
+    },
+    {
+      "method_file": "static-v9/00f2ef2c.asm",
+      "instruction": "00f2efdc",
+      "pointer": "0xf2f374",
+      "length": 15,
+      "value": "FirmwareVersion",
+      "header_and_bytes_sha256": "a5ce99c65c4cab97e235cee153bcad6d01687e7b2cf04317919ae5a39bbc36a1"
+    },
+    {
+      "method_file": "static-v9/00f2ef2c.asm",
+      "instruction": "00f2f002",
+      "pointer": "0xf2f3a0",
+      "length": 24,
+      "value": "SecondaryFirmwareVersion",
+      "header_and_bytes_sha256": "05c348f51985f3ffb7870ae76ff0b2d831e1de800a189c66812194e4d175fe0c"
+    },
+    {
+      "method_file": "static-v9/00f2ef2c.asm",
+      "instruction": "00f2f028",
+      "pointer": "0xf2f3e0",
+      "length": 6,
+      "value": "Groups",
+      "header_and_bytes_sha256": "3f3c6c69fa18e1cb0cf6bf5ca098f43a0fec0d0d2fa60b887e964ffb2113c8f1"
+    },
+    {
+      "method_file": "static-v9/00f2ef2c.asm",
+      "instruction": "00f2f057",
+      "pointer": "0xf2f3fc",
+      "length": 13,
+      "value": "CatalogNumber",
+      "header_and_bytes_sha256": "a7e5bffc75d92829c182f72cd7ba19a49f6e60b688794e9b9dfecce4e832bb30"
+    },
+    {
+      "method_file": "static-v9/00f2ef2c.asm",
+      "instruction": "00f2f0a0",
+      "pointer": "0xf2f424",
+      "length": 13,
+      "value": "NetworkObject",
+      "header_and_bytes_sha256": "a52ff9e39cb1352043855b02570efe50768dfddc018c2c3be48ea2db294fadc3"
+    },
+    {
+      "method_file": "static-v9/00f2ef2c.asm",
+      "instruction": "00f2f0c6",
+      "pointer": "0xf2f44c",
+      "length": 6,
+      "value": "Levels",
+      "header_and_bytes_sha256": "dbc8409960a79ae62e1430dfdc31308ceb477b4246a2ed3e440e3d68942fd905"
+    },
+    {
+      "method_file": "static-v9/00f2ef2c.asm",
+      "instruction": "00f2f102",
+      "pointer": "0xf2f468",
+      "length": 7,
+      "value": "Project",
+      "header_and_bytes_sha256": "bf68d7a71c424e0b6b524348f22988ff9553ddaabc640d5eaa79192882c20ac3"
+    },
+    {
+      "method_file": "static-v9/00f2ef2c.asm",
+      "instruction": "00f2f128",
+      "pointer": "0xf2f484",
+      "length": 12,
+      "value": "SerialNumber",
+      "header_and_bytes_sha256": "54ff20ee5f2d42a005c79e0e816604be7ac6103c7af17a0f14a2406e748fceaa"
+    },
+    {
+      "method_file": "static-v9/00f2ef2c.asm",
+      "instruction": "00f2f14e",
+      "pointer": "0xf2f4ac",
+      "length": 5,
+      "value": "State",
+      "header_and_bytes_sha256": "3a9f272a37607d543c768764b0a561b5fc5ee300be242e088ba6b9851e08fd15"
+    },
+    {
+      "method_file": "static-v9/00f2ef2c.asm",
+      "instruction": "00f2f174",
+      "pointer": "0xf2f4c4",
+      "length": 11,
+      "value": "UnitAddress",
+      "header_and_bytes_sha256": "48c73dadb28ad5af798a3b6f98804b00b1c8cd4a624e288b6ce78f800c99047b"
+    },
+    {
+      "method_file": "static-v9/00f2ef2c.asm",
+      "instruction": "00f2f19a",
+      "pointer": "0xf2f4e8",
+      "length": 8,
+      "value": "UnitName",
+      "header_and_bytes_sha256": "7bd8133c66efa63884d007fddbf990a8f0a67ea1a8db2782225960e8d55c031b"
+    },
+    {
+      "method_file": "static-v9/00f2ef2c.asm",
+      "instruction": "00f2f1c0",
+      "pointer": "0xf2f508",
+      "length": 8,
+      "value": "UnitType",
+      "header_and_bytes_sha256": "8cac0dc70093e3b912cb1c4c3170332499adc271afcf0f08484bf075cbfdc763"
+    },
+    {
+      "method_file": "static-v9/00f2ef2c.asm",
+      "instruction": "00f2f1e6",
+      "pointer": "0xf2f528",
+      "length": 6,
+      "value": "Burden",
+      "header_and_bytes_sha256": "d974d9c4e258f52468ccf0fb009f13a7d9c230cf94c5eed8f8ef841ce3e5198e"
+    },
+    {
+      "method_file": "static-v9/00f2ef2c.asm",
+      "instruction": "00f2f20c",
+      "pointer": "0xf2f544",
+      "length": 14,
+      "value": "ClockGenEnable",
+      "header_and_bytes_sha256": "c725603c1daa6e97489ed8533c9a36506bd71c0f071e948d1091fbc9d0278765"
+    },
+    {
+      "method_file": "static-v9/00f2ef2c.asm",
+      "instruction": "00f2f232",
+      "pointer": "0xf2f570",
+      "length": 11,
+      "value": "PSyncFailed",
+      "header_and_bytes_sha256": "62702245d7fab7078b5bf25b93af80c9ea89270534bcb2233af9871defef6a4b"
+    },
+    {
+      "method_file": "static-v9/00f2ef2c.asm",
+      "instruction": "00f2f258",
+      "pointer": "0xf2f594",
+      "length": 9,
+      "value": "IsSyncing",
+      "header_and_bytes_sha256": "2281cb201755875097e753a9fba809ab730b68ec345a4e870e73733c3fe37f94"
+    },
+    {
+      "method_file": "static-v9/00f2ef2c.asm",
+      "instruction": "00f2f27e",
+      "pointer": "0xf2f5b4",
+      "length": 13,
+      "value": "LoadingStatus",
+      "header_and_bytes_sha256": "d290d9cff17ee5e2ce987047db4fda1cae18fdbbbd885d49a6f5dd4ff840a5db"
+    },
+    {
+      "method_file": "static-v9/00f2ef2c.asm",
+      "instruction": "00f2f2a4",
+      "pointer": "0xf2f5dc",
+      "length": 7,
+      "value": "Voltage",
+      "header_and_bytes_sha256": "b6eaf74f30ccb7e4b86d0a4c8b473bc1b66e011a6bddb95c3d910e5bb7e201c1"
+    },
+    {
+      "method_file": "static-v11/00d80fe0.asm",
+      "instruction": "00d81052",
+      "pointer": "0xd81140",
+      "length": 7,
+      "value": "end xml",
+      "header_and_bytes_sha256": "a779302eadbeda342317a4c66a601ceda05195e69be9048837b8061b0d5f1a68"
+    },
+    {
+      "method_file": "static-v11/00d80fe0.asm",
+      "instruction": "00d81065",
+      "pointer": "0xd8115c",
+      "length": 3,
+      "value": "344",
+      "header_and_bytes_sha256": "19d37f9f0acea2d782b3ee876bae233d96ffb9307d28f7495cdc9814196daf49"
+    },
+    {
+      "method_file": "static-v11/00d80fe0.asm",
+      "instruction": "00d8108a",
+      "pointer": "0xd81170",
+      "length": 10,
+      "value": "bad object",
+      "header_and_bytes_sha256": "82f405c32d77c3936ca3fc90f1b7273f2f119b1828c916260e61aaec7dbc9d6d"
+    },
+    {
+      "method_file": "static-v11/00d80fe0.asm",
+      "instruction": "00d8109d",
+      "pointer": "0xd81194",
+      "length": 3,
+      "value": "401",
+      "header_and_bytes_sha256": "c8a22581dce136057323cc2e48435efd2e309efda2034af9deb68ad63c9cb0de"
+    },
+    {
+      "method_file": "static-v11/01249d6c.asm",
+      "instruction": "01249d98",
+      "pointer": "0x124a02c",
+      "length": 12,
+      "value": "GroupAddress",
+      "header_and_bytes_sha256": "25ab2f9c0e2df9b44d86862dde45cfef6178a1cf6396903d401cee357d27892a"
+    },
+    {
+      "method_file": "static-v11/01249d6c.asm",
+      "instruction": "01249df2",
+      "pointer": "0x124a054",
+      "length": 20,
+      "value": "LogicGA0Associations",
+      "header_and_bytes_sha256": "7ee56ca66133e65530b1979e6ae0387da9376d9300be48fd192996726c248c6e"
+    },
+    {
+      "method_file": "static-v11/01249d6c.asm",
+      "instruction": "01249e1e",
+      "pointer": "0x124a08c",
+      "length": 20,
+      "value": "LogicGA1Associations",
+      "header_and_bytes_sha256": "c586c3297e414a234f8ea6457e61f11b65d55e1d0f3d20dbb4a63c52cdf9db66"
+    },
+    {
+      "method_file": "static-v11/01249d6c.asm",
+      "instruction": "01249e4a",
+      "pointer": "0x124a0c4",
+      "length": 20,
+      "value": "LogicGA2Associations",
+      "header_and_bytes_sha256": "451428a79614b3af2cd0778ec5f0b00e7e46272e844bedb45cce889e2535c197"
+    },
+    {
+      "method_file": "static-v11/01249d6c.asm",
+      "instruction": "01249e79",
+      "pointer": "0x124a0fc",
+      "length": 20,
+      "value": "LogicGA3Associations",
+      "header_and_bytes_sha256": "41b2522d4f30535abf01f7c8b92552140981e071d4ae64b63cc6e449d84452b2"
+    },
+    {
+      "method_file": "static-v11/01249d6c.asm",
+      "instruction": "01249eb1",
+      "pointer": "0x124a134",
+      "length": 20,
+      "value": "LogicGA4Associations",
+      "header_and_bytes_sha256": "4450301abbe3987a4821db894ea1c6c16eb050cb40df8144994f1ee100d19fce"
+    },
+    {
+      "method_file": "static-v11/01249d6c.asm",
+      "instruction": "01249ee9",
+      "pointer": "0x124a16c",
+      "length": 20,
+      "value": "LogicGA5Associations",
+      "header_and_bytes_sha256": "fb3430de02c1647174c4a05f58ad9f788ad81685ba0d7c57ce53821f56b00303"
+    },
+    {
+      "method_file": "static-v11/0124a1c4.asm",
+      "instruction": "0124a235",
+      "pointer": "0x124a60c",
+      "length": 1,
+      "value": " ",
+      "header_and_bytes_sha256": "12f220deaf7a81be7eefd85defa56bcaa1d527f7efd48ef5c0316e32c89783d2"
+    },
+    {
+      "method_file": "static-v11/0124a1c4.asm",
+      "instruction": "0124a287",
+      "pointer": "0x124a60c",
+      "length": 1,
+      "value": " ",
+      "header_and_bytes_sha256": "12f220deaf7a81be7eefd85defa56bcaa1d527f7efd48ef5c0316e32c89783d2"
+    },
+    {
+      "method_file": "static-v11/0124a1c4.asm",
+      "instruction": "0124a2d9",
+      "pointer": "0x124a60c",
+      "length": 1,
+      "value": " ",
+      "header_and_bytes_sha256": "12f220deaf7a81be7eefd85defa56bcaa1d527f7efd48ef5c0316e32c89783d2"
+    },
+    {
+      "method_file": "static-v11/0124a1c4.asm",
+      "instruction": "0124a32b",
+      "pointer": "0x124a60c",
+      "length": 1,
+      "value": " ",
+      "header_and_bytes_sha256": "12f220deaf7a81be7eefd85defa56bcaa1d527f7efd48ef5c0316e32c89783d2"
+    },
+    {
+      "method_file": "static-v11/0124a1c4.asm",
+      "instruction": "0124a37d",
+      "pointer": "0x124a60c",
+      "length": 1,
+      "value": " ",
+      "header_and_bytes_sha256": "12f220deaf7a81be7eefd85defa56bcaa1d527f7efd48ef5c0316e32c89783d2"
+    },
+    {
+      "method_file": "static-v11/0124a1c4.asm",
+      "instruction": "0124a3cf",
+      "pointer": "0x124a60c",
+      "length": 1,
+      "value": " ",
+      "header_and_bytes_sha256": "12f220deaf7a81be7eefd85defa56bcaa1d527f7efd48ef5c0316e32c89783d2"
+    },
+    {
+      "method_file": "static-v11/0124a1c4.asm",
+      "instruction": "0124a48c",
+      "pointer": "0x124a60c",
+      "length": 1,
+      "value": " ",
+      "header_and_bytes_sha256": "12f220deaf7a81be7eefd85defa56bcaa1d527f7efd48ef5c0316e32c89783d2"
+    },
+    {
+      "method_file": "static-v11/013835b8.asm",
+      "instruction": "013835c8",
+      "pointer": "0x1383648",
+      "length": 6,
+      "value": "Groups",
+      "header_and_bytes_sha256": "3f3c6c69fa18e1cb0cf6bf5ca098f43a0fec0d0d2fa60b887e964ffb2113c8f1"
+    },
+    {
+      "method_file": "static-v11/013835b8.asm",
+      "instruction": "013835d9",
+      "pointer": "0x1383664",
+      "length": 21,
+      "value": "ProgrammingParameters",
+      "header_and_bytes_sha256": "74ba5109b37d5dd5fc782c7d1e0d53b716f518ab7552a6fab399fc778fe7b4ab"
+    },
+    {
+      "method_file": "static-v11/013835b8.asm",
+      "instruction": "013835ea",
+      "pointer": "0x138369c",
+      "length": 14,
+      "value": "UnitAttributes",
+      "header_and_bytes_sha256": "7708c8b4e32cbac960d4ce755d7c6def0f1393bfb58452fae2a55a5d2467ed96"
+    },
+    {
+      "method_file": "static-v11/013835b8.asm",
+      "instruction": "013835fb",
+      "pointer": "0x13836c8",
+      "length": 17,
+      "value": "ProgrammingUnlock",
+      "header_and_bytes_sha256": "3d2cc82f2273c6fe414e8e1ec07045c8d569a3cc03962a793018ef67d4818b9c"
+    },
+    {
+      "method_file": "static-v11/013835b8.asm",
+      "instruction": "0138360c",
+      "pointer": "0x13836f8",
+      "length": 15,
+      "value": "ResycParameters",
+      "header_and_bytes_sha256": "a28ff5cbb3941883a77c62240e44258d1510617a7392d4d5efd0115f4d67c74b"
+    },
+    {
+      "method_file": "static-v11/013835b8.asm",
+      "instruction": "0138361d",
+      "pointer": "0x1383724",
+      "length": 10,
+      "value": "ResyncUnit",
+      "header_and_bytes_sha256": "cfe1c426394c4e30e4a5f4a51f8d84548c3fe87260c1da94094bf7538d1cf412"
+    },
+    {
+      "method_file": "static-v11/013835b8.asm",
+      "instruction": "0138362e",
+      "pointer": "0x1383748",
+      "length": 13,
+      "value": "ParameterSync",
+      "header_and_bytes_sha256": "ab39fee07a17244459f13eae3d315deec4b33dbebf963a093a0f3577bbf459a5"
+    },
+    {
+      "method_file": "static-v12/00cb8ad4.asm",
+      "instruction": "00cb8b0d",
+      "pointer": "0xcb8b6c",
+      "length": 11,
+      "value": "Application",
+      "header_and_bytes_sha256": "52ba6f103f9dbcec2bce5a209e37b5114872b415e865f8dc62f482527b07f5b5"
+    },
+    {
+      "method_file": "static-v12/00f47718.asm",
+      "instruction": "00f47727",
+      "pointer": "0xf4780c",
+      "length": 11,
+      "value": "CGateObject",
+      "header_and_bytes_sha256": "b56776afa29ef7b395bccdcfee7bdbc41cabcda29b9e2d615a31ac77c442ff29"
+    },
+    {
+      "method_file": "static-v12/00f47718.asm",
+      "instruction": "00f47734",
+      "pointer": "0xf47830",
+      "length": 7,
+      "value": "TagName",
+      "header_and_bytes_sha256": "fba452a62d4eb88946f64a474e904eb0a060c01938eabfad1f29a2f8a19fef44"
+    },
+    {
+      "method_file": "static-v12/00f47718.asm",
+      "instruction": "00f4779a",
+      "pointer": "0xf4784c",
+      "length": 7,
+      "value": "Address",
+      "header_and_bytes_sha256": "5edf7390b9806202a6c840c668c790b51b9cfae9ffc9f453068c704a9c2486eb"
+    },
+    {
+      "method_file": "static-v12/00f47718.asm",
+      "instruction": "00f477d6",
+      "pointer": "0xf47868",
+      "length": 11,
+      "value": "Description",
+      "header_and_bytes_sha256": "faf174a6e02270153dacd8d340d08f5a7b138c77045066d24a465483487f20c0"
+    }
+  ],
+  "preparation_failures": [
+    {
+      "output": "static-v2",
+      "reason": "Unknown exact MAP method 0xcb06bc typo rejected before output creation; corrected request omitted it"
+    },
+    {
+      "output": "strings initial inline attempt",
+      "reason": "Immediate outside PE caused PEFormatError during literal scan; no output created. Current scanner explicitly checks image range and rejects non-data candidates."
+    }
+  ]
+}

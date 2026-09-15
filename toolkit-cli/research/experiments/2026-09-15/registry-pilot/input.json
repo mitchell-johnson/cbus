@@ -1,0 +1,369 @@
+{
+  "format": "toolkit-update-registry-admission-input-v1",
+  "root_name": "CBusCliCondition_a16df02361e14a1c9329771a063bbd4e",
+  "reviewed_plan_sha256": "706ef80be3ce1708d5bc97940fb63f3b56b3941656be34d2e59bf389c4102e36",
+  "cases": [
+    {
+      "id": "registry-01-existing-key-default",
+      "original_calls": 1,
+      "leaf": "EvaluateRegistryKeyExists",
+      "fixture": {
+        "subkey": "c01",
+        "key_exists": true,
+        "entry": "Test",
+        "value_kind": null,
+        "value": null
+      },
+      "condition": {
+        "name": "R01",
+        "whatToCheck": 3,
+        "howToCheck": 1,
+        "fileOrRegistryKeyPath": "HKCU\\Software\\CBusCliCondition_a16df02361e14a1c9329771a063bbd4e\\c01",
+        "registryEntryNameOrProductCode": "Test",
+        "comparisonRightSideValue": null
+      },
+      "expected_provider_witness": {
+        "kind": "System.Int32",
+        "value": 1,
+        "status": "prewritten hypothesis, not yet observed"
+      },
+      "expected_original": {
+        "result": true,
+        "error": null
+      },
+      "note": "Present key, absent Test entry; boxed default1 makes key existence true."
+    },
+    {
+      "id": "registry-02-missing-key-negated",
+      "original_calls": 1,
+      "leaf": "EvaluateRegistryKeyExists",
+      "fixture": {
+        "subkey": "c02",
+        "key_exists": false,
+        "entry": "Test",
+        "value_kind": null,
+        "value": null
+      },
+      "condition": {
+        "name": "R02",
+        "whatToCheck": 3,
+        "howToCheck": 2,
+        "fileOrRegistryKeyPath": "HKEY_CURRENT_USER\\Software\\CBusCliCondition_a16df02361e14a1c9329771a063bbd4e\\c02",
+        "registryEntryNameOrProductCode": "Test",
+        "comparisonRightSideValue": null
+      },
+      "expected_provider_witness": {
+        "kind": "null",
+        "value": null,
+        "status": "prewritten hypothesis, not yet observed"
+      },
+      "expected_original": {
+        "result": true,
+        "error": null
+      },
+      "note": "Missing key returns null; negate existence."
+    },
+    {
+      "id": "registry-03-key-invalid-how-after-read",
+      "original_calls": 1,
+      "leaf": "EvaluateRegistryKeyExists",
+      "fixture": {
+        "subkey": "c03",
+        "key_exists": true,
+        "entry": "Test",
+        "value_kind": null,
+        "value": null
+      },
+      "condition": {
+        "name": "R03",
+        "whatToCheck": 3,
+        "howToCheck": 0,
+        "fileOrRegistryKeyPath": "HKEY_CURRENT_USER\\Software\\CBusCliCondition_a16df02361e14a1c9329771a063bbd4e\\c03",
+        "registryEntryNameOrProductCode": "Test",
+        "comparisonRightSideValue": null
+      },
+      "expected_provider_witness": {
+        "kind": "System.Int32",
+        "value": 1,
+        "status": "prewritten hypothesis, not yet observed"
+      },
+      "expected_original": {
+        "result": null,
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "error when evaluating condition 'R03': registry keys can only be checked against existence or not-existence, but not against 0"
+      },
+      "note": "Getter precedes invalid-how error in exact IL; witness is a separate read."
+    },
+    {
+      "id": "registry-04-missing-entry",
+      "original_calls": 1,
+      "leaf": "EvaluateRegistryEntryExists",
+      "fixture": {
+        "subkey": "c04",
+        "key_exists": true,
+        "entry": "Value",
+        "value_kind": null,
+        "value": null
+      },
+      "condition": {
+        "name": "R04",
+        "whatToCheck": 4,
+        "howToCheck": 1,
+        "fileOrRegistryKeyPath": "HKEY_CURRENT_USER\\Software\\CBusCliCondition_a16df02361e14a1c9329771a063bbd4e\\c04",
+        "registryEntryNameOrProductCode": "Value",
+        "comparisonRightSideValue": null
+      },
+      "expected_provider_witness": {
+        "kind": "System.String",
+        "value": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe",
+        "status": "prewritten hypothesis, not yet observed"
+      },
+      "expected_original": {
+        "result": false,
+        "error": null
+      },
+      "note": ""
+    },
+    {
+      "id": "registry-05-literal-sentinel-entry",
+      "original_calls": 1,
+      "leaf": "EvaluateRegistryEntryExists",
+      "fixture": {
+        "subkey": "c05",
+        "key_exists": true,
+        "entry": "Value",
+        "value_kind": "REG_SZ",
+        "value": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe"
+      },
+      "condition": {
+        "name": "R05",
+        "whatToCheck": 4,
+        "howToCheck": 1,
+        "fileOrRegistryKeyPath": "HKCU\\Software\\CBusCliCondition_a16df02361e14a1c9329771a063bbd4e\\c05",
+        "registryEntryNameOrProductCode": "Value",
+        "comparisonRightSideValue": null
+      },
+      "expected_provider_witness": {
+        "kind": "System.String",
+        "value": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe",
+        "status": "prewritten hypothesis, not yet observed"
+      },
+      "expected_original": {
+        "result": false,
+        "error": null
+      },
+      "note": "A present literal sentinel is indistinguishable from missing entry to original leaf."
+    },
+    {
+      "id": "registry-06-empty-present-entry",
+      "original_calls": 1,
+      "leaf": "EvaluateRegistryEntryExists",
+      "fixture": {
+        "subkey": "c06",
+        "key_exists": true,
+        "entry": "Value",
+        "value_kind": "REG_SZ",
+        "value": ""
+      },
+      "condition": {
+        "name": "R06",
+        "whatToCheck": 4,
+        "howToCheck": 1,
+        "fileOrRegistryKeyPath": "HKEY_CURRENT_USER\\Software\\CBusCliCondition_a16df02361e14a1c9329771a063bbd4e\\c06",
+        "registryEntryNameOrProductCode": "Value",
+        "comparisonRightSideValue": null
+      },
+      "expected_provider_witness": {
+        "kind": "System.String",
+        "value": "",
+        "status": "prewritten hypothesis, not yet observed"
+      },
+      "expected_original": {
+        "result": true,
+        "error": null
+      },
+      "note": ""
+    },
+    {
+      "id": "registry-07-string-lower-equality",
+      "original_calls": 1,
+      "leaf": "EvaluateRegistryEntryContent",
+      "fixture": {
+        "subkey": "c07",
+        "key_exists": true,
+        "entry": "Value",
+        "value_kind": "REG_SZ",
+        "value": "MiXeD"
+      },
+      "condition": {
+        "name": "R07",
+        "whatToCheck": 5,
+        "howToCheck": 10,
+        "fileOrRegistryKeyPath": "HKEY_CURRENT_USER\\Software\\CBusCliCondition_a16df02361e14a1c9329771a063bbd4e\\c07",
+        "registryEntryNameOrProductCode": "Value",
+        "comparisonRightSideValue": "mIxEd"
+      },
+      "expected_provider_witness": {
+        "kind": "System.String",
+        "value": "MiXeD",
+        "status": "prewritten hypothesis, not yet observed"
+      },
+      "expected_original": {
+        "result": true,
+        "error": null
+      },
+      "note": ""
+    },
+    {
+      "id": "registry-08-string-letter-order",
+      "original_calls": 1,
+      "leaf": "EvaluateRegistryEntryContent",
+      "fixture": {
+        "subkey": "c08",
+        "key_exists": true,
+        "entry": "Value",
+        "value_kind": "REG_SZ",
+        "value": "Z"
+      },
+      "condition": {
+        "name": "R08",
+        "whatToCheck": 5,
+        "howToCheck": 12,
+        "fileOrRegistryKeyPath": "HKEY_CURRENT_USER\\Software\\CBusCliCondition_a16df02361e14a1c9329771a063bbd4e\\c08",
+        "registryEntryNameOrProductCode": "Value",
+        "comparisonRightSideValue": "a"
+      },
+      "expected_provider_witness": {
+        "kind": "System.String",
+        "value": "Z",
+        "status": "prewritten hypothesis, not yet observed"
+      },
+      "expected_original": {
+        "result": true,
+        "error": null
+      },
+      "note": "One invariant letter comparison only; no punctuation/general collation proof."
+    },
+    {
+      "id": "registry-09-dword-signed-int32",
+      "original_calls": 1,
+      "leaf": "EvaluateRegistryEntryContent",
+      "fixture": {
+        "subkey": "c09",
+        "key_exists": true,
+        "entry": "Value",
+        "value_kind": "REG_DWORD",
+        "value": 2147483648
+      },
+      "condition": {
+        "name": "R09",
+        "whatToCheck": 6,
+        "howToCheck": 10,
+        "fileOrRegistryKeyPath": "HKEY_CURRENT_USER\\Software\\CBusCliCondition_a16df02361e14a1c9329771a063bbd4e\\c09",
+        "registryEntryNameOrProductCode": "Value",
+        "comparisonRightSideValue": "-2147483648"
+      },
+      "expected_provider_witness": {
+        "kind": "System.Int32",
+        "value": -2147483648,
+        "status": "prewritten hypothesis, not yet observed"
+      },
+      "expected_original": {
+        "result": true,
+        "error": null
+      },
+      "note": "Fixture writes raw DWORD80000000; CLR signedness is a hypothesis to verify."
+    },
+    {
+      "id": "registry-10-missing-content-null-rhs",
+      "original_calls": 1,
+      "leaf": "EvaluateRegistryEntryContent",
+      "fixture": {
+        "subkey": "c10",
+        "key_exists": true,
+        "entry": "Value",
+        "value_kind": null,
+        "value": null
+      },
+      "condition": {
+        "name": "R10",
+        "whatToCheck": 6,
+        "howToCheck": 11,
+        "fileOrRegistryKeyPath": "HKEY_CURRENT_USER\\Software\\CBusCliCondition_a16df02361e14a1c9329771a063bbd4e\\c10",
+        "registryEntryNameOrProductCode": "Value",
+        "comparisonRightSideValue": null
+      },
+      "expected_provider_witness": {
+        "kind": "System.String",
+        "value": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe",
+        "status": "prewritten hypothesis, not yet observed"
+      },
+      "expected_original": {
+        "result": true,
+        "error": null
+      },
+      "note": "Missing entry bypasses RHS validation/CompareInt and returns true for not-equal."
+    },
+    {
+      "id": "registry-11-empty-content-valid-rhs",
+      "original_calls": 1,
+      "leaf": "EvaluateRegistryEntryContent",
+      "fixture": {
+        "subkey": "c11",
+        "key_exists": true,
+        "entry": "Value",
+        "value_kind": "REG_SZ",
+        "value": ""
+      },
+      "condition": {
+        "name": "R11",
+        "whatToCheck": 6,
+        "howToCheck": 11,
+        "fileOrRegistryKeyPath": "HKEY_CURRENT_USER\\Software\\CBusCliCondition_a16df02361e14a1c9329771a063bbd4e\\c11",
+        "registryEntryNameOrProductCode": "Value",
+        "comparisonRightSideValue": "0"
+      },
+      "expected_provider_witness": {
+        "kind": "System.String",
+        "value": "",
+        "status": "prewritten hypothesis, not yet observed"
+      },
+      "expected_original": {
+        "result": false,
+        "error": null
+      },
+      "note": "Present empty value enters CompareInt; valid RHS then absent LHS returns false."
+    },
+    {
+      "id": "registry-12-rhs-error-before-invalid-lhs",
+      "original_calls": 1,
+      "leaf": "EvaluateRegistryEntryContent",
+      "fixture": {
+        "subkey": "c12",
+        "key_exists": true,
+        "entry": "Value",
+        "value_kind": "REG_SZ",
+        "value": "INVALID"
+      },
+      "condition": {
+        "name": "R12",
+        "whatToCheck": 6,
+        "howToCheck": 10,
+        "fileOrRegistryKeyPath": "HKEY_CURRENT_USER\\Software\\CBusCliCondition_a16df02361e14a1c9329771a063bbd4e\\c12",
+        "registryEntryNameOrProductCode": "Value",
+        "comparisonRightSideValue": "BAD-RHS"
+      },
+      "expected_provider_witness": {
+        "kind": "System.String",
+        "value": "INVALID",
+        "status": "prewritten hypothesis, not yet observed"
+      },
+      "expected_original": {
+        "result": null,
+        "error_type": "SE.DAD.SESU.Common.Validation.ClientConditionException",
+        "message": "value defined for integer comparison cannot be converted to int: bad-rhs"
+      },
+      "note": "Provider and lowercasing precede CompareInt RHS error; invalid LHS not parsed."
+    }
+  ]
+}

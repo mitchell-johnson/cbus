@@ -1,0 +1,1536 @@
+{
+  "format": "cbus-duplicate-unravel-research-v1",
+  "scope": "Observed native protocol and fault behavior in ignored explicit simulator forks. Research checks passing does not imply requested addresses were reached. No hardware or restart persistence claim.",
+  "cases": {
+    "none": {
+      "probe_checks_passed": true,
+      "raw_artifact": "research/runtime/duplicate-unravel-none.json",
+      "raw_artifact_sha256": "b23e217b4e8356f70944531c6f3bc3d98cd9b7c358c1688e5294dc47a08c1b27",
+      "native_command": "NET UNRAVELUNIT //DDBFC6A2/254 255 MATCHDB",
+      "native_reply": [
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Unit count: 2",
+        "120-Unravel: Units at: 16, 255",
+        "120-Unravel: Scanning unit 1 of 2 at address 255 (0xFF).",
+        "120-Unravel: Readdressed unit with serial number 101136.1559 from address 255 (0xFF) to address 7 (0x07).",
+        "120-Unravel: Readdressed unit with serial number 101136.1558 from address 255 (0xFF) to address 6 (0x06).",
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Complete.",
+        "120-Unravel: Updating network model at address 255 (0xFF)",
+        "120-Unravel: No unit objects at address 255",
+        "120-Unravel: Updating network model at address 7 (0x07)",
+        "120-Unravel: Unit object  address=7 type=KEYE1 version=2.5.00 serial=101136.1559 catalog=5031NMML",
+        "120-Unravel: Updating network model at address 6 (0x06)",
+        "120-Unravel: Unit object  address=6 type=KEYE1 version=2.5.00 serial=101136.1558 catalog=5031NMML",
+        "200 OK."
+      ],
+      "co_operations": [
+        {
+          "serial": "18b10617",
+          "old": 255,
+          "requested": 7,
+          "actual": 7,
+          "returned_source": 7,
+          "returned_serial": "18b10617",
+          "fault": "none",
+          "payload": "05ff000f0018b106170713",
+          "parameter32": "ff",
+          "reply": "86071000870018b106170000"
+        },
+        {
+          "serial": "18b10616",
+          "old": 255,
+          "requested": 6,
+          "actual": 6,
+          "returned_source": 6,
+          "returned_serial": "18b10616",
+          "fault": "none",
+          "payload": "05ff000f0018b106160615",
+          "parameter32": "ff",
+          "reply": "86061000870018b106160000"
+        }
+      ],
+      "unit_address_stores": [],
+      "local_pci_stores": [
+        "461000a3429705",
+        "461000a3429707"
+      ],
+      "bus_addresses_after": {
+        "101136.1558": 6,
+        "101136.1559": 7
+      },
+      "parameter32_after": {
+        "101136.1558": "ff",
+        "101136.1559": "ff"
+      },
+      "database_unchanged": true,
+      "database_sha256": "096372f6b6a2beb9dee60397d1bb69c1cbd3f3c460c1af5541ad6165138bdd71",
+      "other_node_fields_preserved": true,
+      "unsupported_wire_records": [],
+      "post_refresh_requested_inventory": {
+        "format": "cbus-native-serial-inventory-v1",
+        "network": "//DDBFC6A2/254",
+        "mode": "refresh",
+        "requested": [
+          6,
+          7,
+          255
+        ],
+        "records": [
+          {
+            "address": 6,
+            "unit_type": "KEYE1",
+            "firmware": "2.5.00",
+            "serial": "101136.1558",
+            "state": "ok",
+            "presence": "single",
+            "status": "ok",
+            "errors": [],
+            "identity": {
+              "address": 6,
+              "unit_type": "KEYE1",
+              "serial": "101136.1558"
+            }
+          },
+          {
+            "address": 7,
+            "unit_type": "KEYE1",
+            "firmware": "2.5.00",
+            "serial": "101136.1559",
+            "state": "ok",
+            "presence": "single",
+            "status": "ok",
+            "errors": [],
+            "identity": {
+              "address": 7,
+              "unit_type": "KEYE1",
+              "serial": "101136.1559"
+            }
+          },
+          {
+            "address": 255,
+            "unit_type": null,
+            "firmware": null,
+            "serial": null,
+            "state": null,
+            "presence": "absent",
+            "status": "absent",
+            "errors": [],
+            "identity": null
+          }
+        ],
+        "identities": [
+          {
+            "address": 6,
+            "unit_type": "KEYE1",
+            "serial": "101136.1558"
+          },
+          {
+            "address": 7,
+            "unit_type": "KEYE1",
+            "serial": "101136.1559"
+          }
+        ],
+        "errors": [],
+        "complete": false,
+        "observed_at": "2026-09-14T12:42:19.546190+00:00",
+        "refresh_completed": true,
+        "refresh_scope": "entire_network",
+        "database_updated": false,
+        "physical_addresses_changed": false
+      },
+      "relevant_wire": [
+        {
+          "request": "\\4607001120p\r",
+          "reply": "p."
+        },
+        {
+          "request": "A3429705r\r",
+          "reply": "r.324297F5\r\n"
+        },
+        {
+          "request": "\\05FF000F0018B106170713s\r",
+          "reply": "s.86071000870018B106170000F6\r\n"
+        },
+        {
+          "request": "\\4606001120t\r",
+          "reply": "t."
+        },
+        {
+          "request": "\\05FF000F0018B106160615u\r",
+          "reply": "u.86061000870018B106160000F8\r\n"
+        },
+        {
+          "request": "A3429707x\r",
+          "reply": "x.324297F5\r\n"
+        }
+      ]
+    },
+    "no_reply": {
+      "probe_checks_passed": true,
+      "raw_artifact": "research/runtime/duplicate-unravel-no_reply.json",
+      "raw_artifact_sha256": "85da43f221f264676336736b2f29986288e5ac6484d87a325b41ce53aa3d244a",
+      "native_command": "NET UNRAVELUNIT //DDA8298B/254 255 MATCHDB",
+      "native_reply": [
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Unit count: 2",
+        "120-Unravel: Units at: 16, 255",
+        "120-Unravel: Scanning unit 1 of 2 at address 255 (0xFF).",
+        "120-Unravel: Readdressed unit with serial number 101136.1559 from address 255 (0xFF) to address 7 (0x07).",
+        "120-Unravel: Readdressed unit with serial number 101136.1558 from address 255 (0xFF) to address 6 (0x06).",
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Complete.",
+        "120-Unravel: Updating network model at address 255 (0xFF)",
+        "120-Unravel: No unit objects at address 255",
+        "120-Unravel: Updating network model at address 7 (0x07)",
+        "120-Unravel: Unit object  address=7 type=KEYE1 version=2.5.00 serial=101136.1559 catalog=5031NMML",
+        "120-Unravel: Updating network model at address 6 (0x06)",
+        "120-Unravel: Unit object  address=6 type=KEYE1 version=2.5.00 serial=101136.1558 catalog=5031NMML",
+        "200 OK."
+      ],
+      "co_operations": [
+        {
+          "serial": "18b10617",
+          "old": 255,
+          "requested": 7,
+          "actual": 7,
+          "returned_source": 7,
+          "returned_serial": "18b10617",
+          "fault": "none",
+          "payload": "05ff000f0018b106170713",
+          "parameter32": "ff",
+          "reply": "86071000870018b106170000"
+        },
+        {
+          "serial": "18b10616",
+          "old": 255,
+          "requested": 6,
+          "actual": 6,
+          "returned_source": 6,
+          "returned_serial": "18b10616",
+          "fault": "no_reply",
+          "payload": "05ff000f0018b106160615",
+          "parameter32": "ff",
+          "reply": null
+        }
+      ],
+      "unit_address_stores": [],
+      "local_pci_stores": [
+        "461000a3429705",
+        "461000a3429707"
+      ],
+      "bus_addresses_after": {
+        "101136.1558": 6,
+        "101136.1559": 7
+      },
+      "parameter32_after": {
+        "101136.1558": "ff",
+        "101136.1559": "ff"
+      },
+      "database_unchanged": true,
+      "database_sha256": "0de93ef13c13845947ad1f01240c94172f0201e65b0020956f05157124ecbf16",
+      "other_node_fields_preserved": true,
+      "unsupported_wire_records": [],
+      "post_refresh_requested_inventory": {
+        "format": "cbus-native-serial-inventory-v1",
+        "network": "//DDA8298B/254",
+        "mode": "refresh",
+        "requested": [
+          6,
+          7,
+          255
+        ],
+        "records": [
+          {
+            "address": 6,
+            "unit_type": "KEYE1",
+            "firmware": "2.5.00",
+            "serial": "101136.1558",
+            "state": "ok",
+            "presence": "single",
+            "status": "ok",
+            "errors": [],
+            "identity": {
+              "address": 6,
+              "unit_type": "KEYE1",
+              "serial": "101136.1558"
+            }
+          },
+          {
+            "address": 7,
+            "unit_type": "KEYE1",
+            "firmware": "2.5.00",
+            "serial": "101136.1559",
+            "state": "ok",
+            "presence": "single",
+            "status": "ok",
+            "errors": [],
+            "identity": {
+              "address": 7,
+              "unit_type": "KEYE1",
+              "serial": "101136.1559"
+            }
+          },
+          {
+            "address": 255,
+            "unit_type": null,
+            "firmware": null,
+            "serial": null,
+            "state": null,
+            "presence": "absent",
+            "status": "absent",
+            "errors": [],
+            "identity": null
+          }
+        ],
+        "identities": [
+          {
+            "address": 6,
+            "unit_type": "KEYE1",
+            "serial": "101136.1558"
+          },
+          {
+            "address": 7,
+            "unit_type": "KEYE1",
+            "serial": "101136.1559"
+          }
+        ],
+        "errors": [],
+        "complete": false,
+        "observed_at": "2026-09-14T12:43:04.015422+00:00",
+        "refresh_completed": true,
+        "refresh_scope": "entire_network",
+        "database_updated": false,
+        "physical_addresses_changed": false
+      },
+      "relevant_wire": [
+        {
+          "request": "\\4607001120p\r",
+          "reply": "p."
+        },
+        {
+          "request": "A3429705r\r",
+          "reply": "r.324297F5\r\n"
+        },
+        {
+          "request": "\\05FF000F0018B106170713s\r",
+          "reply": "s.86071000870018B106170000F6\r\n"
+        },
+        {
+          "request": "\\4606001120t\r",
+          "reply": "t."
+        },
+        {
+          "request": "\\05FF000F0018B106160615u\r",
+          "reply": "u."
+        },
+        {
+          "request": "A3429707y\r",
+          "reply": "y.324297F5\r\n"
+        }
+      ]
+    },
+    "wrong_serial": {
+      "probe_checks_passed": true,
+      "raw_artifact": "research/runtime/duplicate-unravel-wrong_serial.json",
+      "raw_artifact_sha256": "b25ecb46d8485fc05ce936bac82ce5f93609b037433041a3c87f74d6475745d8",
+      "native_command": "NET UNRAVELUNIT //DD6B2152/254 255 MATCHDB",
+      "native_reply": [
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Unit count: 2",
+        "120-Unravel: Units at: 16, 255",
+        "120-Unravel: Scanning unit 1 of 2 at address 255 (0xFF).",
+        "120-Unravel: Readdressed unit with serial number 101136.1559 from address 255 (0xFF) to address 7 (0x07).",
+        "120-Unravel: Readdressed unit with serial number 101136.1558 from address 255 (0xFF) to address 6 (0x06).",
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Complete.",
+        "120-Unravel: Updating network model at address 255 (0xFF)",
+        "120-Unravel: No unit objects at address 255",
+        "120-Unravel: Updating network model at address 7 (0x07)",
+        "120-Unravel: Unit object  address=7 type=KEYE1 version=2.5.00 serial=101136.1559 catalog=5031NMML",
+        "120-Unravel: Updating network model at address 6 (0x06)",
+        "120-Unravel: Unit object  address=6 type=KEYE1 version=2.5.00 serial=101136.1558 catalog=5031NMML",
+        "200 OK."
+      ],
+      "co_operations": [
+        {
+          "serial": "18b10617",
+          "old": 255,
+          "requested": 7,
+          "actual": 7,
+          "returned_source": 7,
+          "returned_serial": "18b10617",
+          "fault": "none",
+          "payload": "05ff000f0018b106170713",
+          "parameter32": "ff",
+          "reply": "86071000870018b106170000"
+        },
+        {
+          "serial": "18b10616",
+          "old": 255,
+          "requested": 6,
+          "actual": 6,
+          "returned_source": 6,
+          "returned_serial": "18b10699",
+          "fault": "wrong_serial",
+          "payload": "05ff000f0018b106160615",
+          "parameter32": "ff",
+          "reply": "86061000870018b106990000"
+        }
+      ],
+      "unit_address_stores": [],
+      "local_pci_stores": [
+        "461000a3429705",
+        "461000a3429707"
+      ],
+      "bus_addresses_after": {
+        "101136.1558": 6,
+        "101136.1559": 7
+      },
+      "parameter32_after": {
+        "101136.1558": "ff",
+        "101136.1559": "ff"
+      },
+      "database_unchanged": true,
+      "database_sha256": "71efe661ffc29ef9198dde7164869599a42236a13c6bce11eb3f255a4a00d3f7",
+      "other_node_fields_preserved": true,
+      "unsupported_wire_records": [],
+      "post_refresh_requested_inventory": {
+        "format": "cbus-native-serial-inventory-v1",
+        "network": "//DD6B2152/254",
+        "mode": "refresh",
+        "requested": [
+          6,
+          7,
+          255
+        ],
+        "records": [
+          {
+            "address": 6,
+            "unit_type": "KEYE1",
+            "firmware": "2.5.00",
+            "serial": "101136.1558",
+            "state": "ok",
+            "presence": "single",
+            "status": "ok",
+            "errors": [],
+            "identity": {
+              "address": 6,
+              "unit_type": "KEYE1",
+              "serial": "101136.1558"
+            }
+          },
+          {
+            "address": 7,
+            "unit_type": "KEYE1",
+            "firmware": "2.5.00",
+            "serial": "101136.1559",
+            "state": "ok",
+            "presence": "single",
+            "status": "ok",
+            "errors": [],
+            "identity": {
+              "address": 7,
+              "unit_type": "KEYE1",
+              "serial": "101136.1559"
+            }
+          },
+          {
+            "address": 255,
+            "unit_type": null,
+            "firmware": null,
+            "serial": null,
+            "state": null,
+            "presence": "absent",
+            "status": "absent",
+            "errors": [],
+            "identity": null
+          }
+        ],
+        "identities": [
+          {
+            "address": 6,
+            "unit_type": "KEYE1",
+            "serial": "101136.1558"
+          },
+          {
+            "address": 7,
+            "unit_type": "KEYE1",
+            "serial": "101136.1559"
+          }
+        ],
+        "errors": [],
+        "complete": false,
+        "observed_at": "2026-09-14T12:43:03.922813+00:00",
+        "refresh_completed": true,
+        "refresh_scope": "entire_network",
+        "database_updated": false,
+        "physical_addresses_changed": false
+      },
+      "relevant_wire": [
+        {
+          "request": "\\4607001120p\r",
+          "reply": "p."
+        },
+        {
+          "request": "A3429705r\r",
+          "reply": "r.324297F5\r\n"
+        },
+        {
+          "request": "\\05FF000F0018B106170713s\r",
+          "reply": "s.86071000870018B106170000F6\r\n"
+        },
+        {
+          "request": "\\4606001120t\r",
+          "reply": "t."
+        },
+        {
+          "request": "\\05FF000F0018B106160615u\r",
+          "reply": "u.86061000870018B10699000075\r\n"
+        },
+        {
+          "request": "A3429707y\r",
+          "reply": "y.324297F5\r\n"
+        }
+      ]
+    },
+    "wrong_source": {
+      "probe_checks_passed": true,
+      "raw_artifact": "research/runtime/duplicate-unravel-wrong_source.json",
+      "raw_artifact_sha256": "90a2f401e4ae28f78b6f05d5457bd1d5491bd4b7bc37bfbed2c65b95312352b2",
+      "native_command": "NET UNRAVELUNIT //DDBDF84F/254 255 MATCHDB",
+      "native_reply": [
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Unit count: 2",
+        "120-Unravel: Units at: 16, 255",
+        "120-Unravel: Scanning unit 1 of 2 at address 255 (0xFF).",
+        "120-Unravel: Readdressed unit with serial number 101136.1559 from address 255 (0xFF) to address 7 (0x07).",
+        "120-Unravel: Readdressed unit with serial number 101136.1558 from address 255 (0xFF) to address 9 (0x09).",
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Complete.",
+        "120-Unravel: Updating network model at address 255 (0xFF)",
+        "120-Unravel: No unit objects at address 255",
+        "120-Unravel: Updating network model at address 9 (0x09)",
+        "120-Unravel: No unit objects at address 9",
+        "120-Unravel: Updating network model at address 7 (0x07)",
+        "120-Unravel: Unit object  address=7 type=KEYE1 version=2.5.00 serial=101136.1559 catalog=5031NMML",
+        "200 OK."
+      ],
+      "co_operations": [
+        {
+          "serial": "18b10617",
+          "old": 255,
+          "requested": 7,
+          "actual": 7,
+          "returned_source": 7,
+          "returned_serial": "18b10617",
+          "fault": "none",
+          "payload": "05ff000f0018b106170713",
+          "parameter32": "ff",
+          "reply": "86071000870018b106170000"
+        },
+        {
+          "serial": "18b10616",
+          "old": 255,
+          "requested": 6,
+          "actual": 6,
+          "returned_source": 9,
+          "returned_serial": "18b10616",
+          "fault": "wrong_source",
+          "payload": "05ff000f0018b106160615",
+          "parameter32": "ff",
+          "reply": "86091000870018b106160000"
+        }
+      ],
+      "unit_address_stores": [],
+      "local_pci_stores": [
+        "461000a3429705",
+        "461000a3429707"
+      ],
+      "bus_addresses_after": {
+        "101136.1558": 6,
+        "101136.1559": 7
+      },
+      "parameter32_after": {
+        "101136.1558": "ff",
+        "101136.1559": "ff"
+      },
+      "database_unchanged": true,
+      "database_sha256": "8535ab4931efba1ac99890fca24220ca4b1f5508d2ec57baf919b35a2a5b5b69",
+      "other_node_fields_preserved": true,
+      "unsupported_wire_records": [],
+      "post_refresh_requested_inventory": {
+        "format": "cbus-native-serial-inventory-v1",
+        "network": "//DDBDF84F/254",
+        "mode": "refresh",
+        "requested": [
+          6,
+          7,
+          255
+        ],
+        "records": [
+          {
+            "address": 6,
+            "unit_type": "KEYE1",
+            "firmware": "2.5.00",
+            "serial": "101136.1558",
+            "state": "ok",
+            "presence": "single",
+            "status": "ok",
+            "errors": [],
+            "identity": {
+              "address": 6,
+              "unit_type": "KEYE1",
+              "serial": "101136.1558"
+            }
+          },
+          {
+            "address": 7,
+            "unit_type": "KEYE1",
+            "firmware": "2.5.00",
+            "serial": "101136.1559",
+            "state": "ok",
+            "presence": "single",
+            "status": "ok",
+            "errors": [],
+            "identity": {
+              "address": 7,
+              "unit_type": "KEYE1",
+              "serial": "101136.1559"
+            }
+          },
+          {
+            "address": 255,
+            "unit_type": null,
+            "firmware": null,
+            "serial": null,
+            "state": null,
+            "presence": "absent",
+            "status": "absent",
+            "errors": [],
+            "identity": null
+          }
+        ],
+        "identities": [
+          {
+            "address": 6,
+            "unit_type": "KEYE1",
+            "serial": "101136.1558"
+          },
+          {
+            "address": 7,
+            "unit_type": "KEYE1",
+            "serial": "101136.1559"
+          }
+        ],
+        "errors": [],
+        "complete": false,
+        "observed_at": "2026-09-14T12:42:59.586020+00:00",
+        "refresh_completed": true,
+        "refresh_scope": "entire_network",
+        "database_updated": false,
+        "physical_addresses_changed": false
+      },
+      "relevant_wire": [
+        {
+          "request": "\\4607001120p\r",
+          "reply": "p."
+        },
+        {
+          "request": "A3429705r\r",
+          "reply": "r.324297F5\r\n"
+        },
+        {
+          "request": "\\05FF000F0018B106170713s\r",
+          "reply": "s.86071000870018B106170000F6\r\n"
+        },
+        {
+          "request": "\\4606001120t\r",
+          "reply": "t."
+        },
+        {
+          "request": "\\05FF000F0018B106160615u\r",
+          "reply": "u.86091000870018B106160000F5\r\n"
+        },
+        {
+          "request": "A3429707x\r",
+          "reply": "x.324297F5\r\n"
+        }
+      ]
+    },
+    "ack_no_move": {
+      "probe_checks_passed": true,
+      "raw_artifact": "research/runtime/duplicate-unravel-ack_no_move.json",
+      "raw_artifact_sha256": "f794f41ee760a86c399e638e57dbef76a58a0be47d3e410635a9b7198ea7bcdc",
+      "native_command": "NET UNRAVELUNIT //DD26ED7A/254 255 MATCHDB",
+      "native_reply": [
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Unit count: 2",
+        "120-Unravel: Units at: 16, 255",
+        "120-Unravel: Scanning unit 1 of 2 at address 255 (0xFF).",
+        "120-Unravel: Readdressed unit with serial number 101136.1559 from address 255 (0xFF) to address 7 (0x07).",
+        "120-Unravel: Readdressed unit with serial number 101136.1558 from address 255 (0xFF) to address 6 (0x06).",
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Complete.",
+        "120-Unravel: Updating network model at address 255 (0xFF)",
+        "120-Unravel: Unit object  address=255 type=KEYE1 version=2.5.00 serial=101136.1558 catalog=5031NMML",
+        "120-Unravel: Updating network model at address 7 (0x07)",
+        "120-Unravel: Unit object  address=7 type=KEYE1 version=2.5.00 serial=101136.1559 catalog=5031NMML",
+        "120-Unravel: Updating network model at address 6 (0x06)",
+        "120-Unravel: No unit objects at address 6",
+        "200 OK."
+      ],
+      "co_operations": [
+        {
+          "serial": "18b10617",
+          "old": 255,
+          "requested": 7,
+          "actual": 7,
+          "returned_source": 7,
+          "returned_serial": "18b10617",
+          "fault": "none",
+          "payload": "05ff000f0018b106170713",
+          "parameter32": "ff",
+          "reply": "86071000870018b106170000"
+        },
+        {
+          "serial": "18b10616",
+          "old": 255,
+          "requested": 6,
+          "actual": 255,
+          "returned_source": 6,
+          "returned_serial": "18b10616",
+          "fault": "ack_no_move",
+          "payload": "05ff000f0018b106160615",
+          "parameter32": "ff",
+          "reply": "86061000870018b106160000"
+        }
+      ],
+      "unit_address_stores": [],
+      "local_pci_stores": [
+        "461000a3429705",
+        "461000a3429707"
+      ],
+      "bus_addresses_after": {
+        "101136.1558": 255,
+        "101136.1559": 7
+      },
+      "parameter32_after": {
+        "101136.1558": "ff",
+        "101136.1559": "ff"
+      },
+      "database_unchanged": true,
+      "database_sha256": "9275b7e382dc3893cd7e0664df465d1f1b88fdb2c8d09ce537fcc495f3fdec52",
+      "other_node_fields_preserved": true,
+      "unsupported_wire_records": [],
+      "post_refresh_requested_inventory": {
+        "format": "cbus-native-serial-inventory-v1",
+        "network": "//DD26ED7A/254",
+        "mode": "refresh",
+        "requested": [
+          6,
+          7,
+          255
+        ],
+        "records": [
+          {
+            "address": 6,
+            "unit_type": null,
+            "firmware": null,
+            "serial": null,
+            "state": null,
+            "presence": "absent",
+            "status": "absent",
+            "errors": [],
+            "identity": null
+          },
+          {
+            "address": 7,
+            "unit_type": "KEYE1",
+            "firmware": "2.5.00",
+            "serial": "101136.1559",
+            "state": "ok",
+            "presence": "single",
+            "status": "ok",
+            "errors": [],
+            "identity": {
+              "address": 7,
+              "unit_type": "KEYE1",
+              "serial": "101136.1559"
+            }
+          },
+          {
+            "address": 255,
+            "unit_type": "KEYE1",
+            "firmware": "2.5.00",
+            "serial": "101136.1558",
+            "state": "ok",
+            "presence": "single",
+            "status": "ok",
+            "errors": [],
+            "identity": {
+              "address": 255,
+              "unit_type": "KEYE1",
+              "serial": "101136.1558"
+            }
+          }
+        ],
+        "identities": [
+          {
+            "address": 7,
+            "unit_type": "KEYE1",
+            "serial": "101136.1559"
+          },
+          {
+            "address": 255,
+            "unit_type": "KEYE1",
+            "serial": "101136.1558"
+          }
+        ],
+        "errors": [],
+        "complete": false,
+        "observed_at": "2026-09-14T12:43:10.584272+00:00",
+        "refresh_completed": true,
+        "refresh_scope": "entire_network",
+        "database_updated": false,
+        "physical_addresses_changed": false
+      },
+      "relevant_wire": [
+        {
+          "request": "\\4607001120q\r",
+          "reply": "q."
+        },
+        {
+          "request": "A3429705s\r",
+          "reply": "s.324297F5\r\n"
+        },
+        {
+          "request": "\\05FF000F0018B106170713t\r",
+          "reply": "t.86071000870018B106170000F6\r\n"
+        },
+        {
+          "request": "\\4606001120u\r",
+          "reply": "u."
+        },
+        {
+          "request": "\\05FF000F0018B106160615v\r",
+          "reply": "v.86061000870018B106160000F8\r\n"
+        },
+        {
+          "request": "A3429707y\r",
+          "reply": "y.324297F5\r\n"
+        }
+      ]
+    },
+    "bare_ack_no_move": {
+      "probe_checks_passed": true,
+      "raw_artifact": "research/runtime/duplicate-unravel-bare_ack_no_move.json",
+      "raw_artifact_sha256": "e018c81a2529607307f162677c72493bc8172f859b91e6c070152f42edda2303",
+      "native_command": "NET UNRAVELUNIT //DD3180F9/254 255 MATCHDB",
+      "native_reply": [
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Unit count: 2",
+        "120-Unravel: Units at: 16, 255",
+        "120-Unravel: Scanning unit 1 of 2 at address 255 (0xFF).",
+        "120-Unravel: Readdressed unit with serial number 101136.1559 from address 255 (0xFF) to address 7 (0x07).",
+        "120-Unravel: Readdressed unit with serial number 101136.1558 from address 255 (0xFF) to address 6 (0x06).",
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Complete.",
+        "120-Unravel: Updating network model at address 255 (0xFF)",
+        "120-Unravel: Unit object  address=255 type=KEYE1 version=2.5.00 serial=101136.1558 catalog=5031NMML",
+        "120-Unravel: Updating network model at address 7 (0x07)",
+        "120-Unravel: Unit object  address=7 type=KEYE1 version=2.5.00 serial=101136.1559 catalog=5031NMML",
+        "120-Unravel: Updating network model at address 6 (0x06)",
+        "120-Unravel: No unit objects at address 6",
+        "200 OK."
+      ],
+      "co_operations": [
+        {
+          "serial": "18b10617",
+          "old": 255,
+          "requested": 7,
+          "actual": 7,
+          "returned_source": 7,
+          "returned_serial": "18b10617",
+          "fault": "none",
+          "payload": "05ff000f0018b106170713",
+          "parameter32": "ff",
+          "reply": "86071000870018b106170000"
+        },
+        {
+          "serial": "18b10616",
+          "old": 255,
+          "requested": 6,
+          "actual": 255,
+          "returned_source": 6,
+          "returned_serial": "18b10616",
+          "fault": "bare_ack_no_move",
+          "payload": "05ff000f0018b106160615",
+          "parameter32": "ff",
+          "reply": "870018b106160000"
+        }
+      ],
+      "unit_address_stores": [],
+      "local_pci_stores": [
+        "461000a3429705",
+        "461000a3429707"
+      ],
+      "bus_addresses_after": {
+        "101136.1558": 255,
+        "101136.1559": 7
+      },
+      "parameter32_after": {
+        "101136.1558": "ff",
+        "101136.1559": "ff"
+      },
+      "database_unchanged": true,
+      "database_sha256": "e1d3f7e1849c529d45b4107c272762c3c189b80ce35eea66249cbac46b46d508",
+      "other_node_fields_preserved": true,
+      "unsupported_wire_records": [],
+      "post_refresh_requested_inventory": {
+        "format": "cbus-native-serial-inventory-v1",
+        "network": "//DD3180F9/254",
+        "mode": "refresh",
+        "requested": [
+          6,
+          7,
+          255
+        ],
+        "records": [
+          {
+            "address": 6,
+            "unit_type": null,
+            "firmware": null,
+            "serial": null,
+            "state": null,
+            "presence": "absent",
+            "status": "absent",
+            "errors": [],
+            "identity": null
+          },
+          {
+            "address": 7,
+            "unit_type": "KEYE1",
+            "firmware": "2.5.00",
+            "serial": "101136.1559",
+            "state": "ok",
+            "presence": "single",
+            "status": "ok",
+            "errors": [],
+            "identity": {
+              "address": 7,
+              "unit_type": "KEYE1",
+              "serial": "101136.1559"
+            }
+          },
+          {
+            "address": 255,
+            "unit_type": "KEYE1",
+            "firmware": "2.5.00",
+            "serial": "101136.1558",
+            "state": "ok",
+            "presence": "single",
+            "status": "ok",
+            "errors": [],
+            "identity": {
+              "address": 255,
+              "unit_type": "KEYE1",
+              "serial": "101136.1558"
+            }
+          }
+        ],
+        "identities": [
+          {
+            "address": 7,
+            "unit_type": "KEYE1",
+            "serial": "101136.1559"
+          },
+          {
+            "address": 255,
+            "unit_type": "KEYE1",
+            "serial": "101136.1558"
+          }
+        ],
+        "errors": [],
+        "complete": false,
+        "observed_at": "2026-09-14T12:44:58.798844+00:00",
+        "refresh_completed": true,
+        "refresh_scope": "entire_network",
+        "database_updated": false,
+        "physical_addresses_changed": false
+      },
+      "relevant_wire": [
+        {
+          "request": "\\4607001120p\r",
+          "reply": "p."
+        },
+        {
+          "request": "A3429705r\r",
+          "reply": "r.324297F5\r\n"
+        },
+        {
+          "request": "\\05FF000F0018B106170713s\r",
+          "reply": "s.86071000870018B106170000F6\r\n"
+        },
+        {
+          "request": "\\4606001120t\r",
+          "reply": "t."
+        },
+        {
+          "request": "\\05FF000F0018B106160615u\r",
+          "reply": "u.870018B10616000094\r\n"
+        },
+        {
+          "request": "A3429707x\r",
+          "reply": "x.324297F5\r\n"
+        }
+      ]
+    },
+    "no_reply_no_move": {
+      "probe_checks_passed": true,
+      "raw_artifact": "research/runtime/duplicate-unravel-no_reply_no_move.json",
+      "raw_artifact_sha256": "a7e37c3c6983e09bc806ab0f805e9430abe9797c067761f78fd896355ca8af26",
+      "native_command": "NET UNRAVELUNIT //DDCCF96F/254 255 MATCHDB",
+      "native_reply": [
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Unit count: 2",
+        "120-Unravel: Units at: 16, 255",
+        "120-Unravel: Scanning unit 1 of 2 at address 255 (0xFF).",
+        "120-Unravel: Readdressed unit with serial number 101136.1559 from address 255 (0xFF) to address 7 (0x07).",
+        "120-Unravel: Readdressed unit  from address 255 (0xFF) to address 2 (0x02).",
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Complete.",
+        "120-Unravel: Updating network model at address 255 (0xFF)",
+        "120-Unravel: No unit objects at address 255",
+        "120-Unravel: Updating network model at address 7 (0x07)",
+        "120-Unravel: Unit object  address=7 type=KEYE1 version=2.5.00 serial=101136.1559 catalog=5031NMML",
+        "120-Unravel: Updating network model at address 2 (0x02)",
+        "120-Unravel: Unit object  address=2 type=KEYE1 version=2.5.00 serial=101136.1558 catalog=5031NMML",
+        "200 OK."
+      ],
+      "co_operations": [
+        {
+          "serial": "18b10617",
+          "old": 255,
+          "requested": 7,
+          "actual": 7,
+          "returned_source": 7,
+          "returned_serial": "18b10617",
+          "fault": "none",
+          "payload": "05ff000f0018b106170713",
+          "parameter32": "ff",
+          "reply": "86071000870018b106170000"
+        },
+        {
+          "serial": "18b10616",
+          "old": 255,
+          "requested": 6,
+          "actual": 255,
+          "returned_source": 6,
+          "returned_serial": "18b10616",
+          "fault": "no_reply_no_move",
+          "payload": "05ff000f0018b106160615",
+          "parameter32": "ff",
+          "reply": null
+        }
+      ],
+      "unit_address_stores": [
+        {
+          "serial": "18b10616",
+          "old": 255,
+          "new": 2,
+          "payload": "46ff00a3204e025a"
+        }
+      ],
+      "local_pci_stores": [
+        "461000a3429705",
+        "461000a3429707"
+      ],
+      "bus_addresses_after": {
+        "101136.1558": 2,
+        "101136.1559": 7
+      },
+      "parameter32_after": {
+        "101136.1558": "02",
+        "101136.1559": "ff"
+      },
+      "database_unchanged": true,
+      "database_sha256": "09101ecd1953a2c5b36ddb845f8b9b58baf4670aebdc291ee1cecb3c9a3068eb",
+      "other_node_fields_preserved": true,
+      "unsupported_wire_records": [],
+      "post_refresh_requested_inventory": {
+        "format": "cbus-native-serial-inventory-v1",
+        "network": "//DDCCF96F/254",
+        "mode": "refresh",
+        "requested": [
+          6,
+          7,
+          255
+        ],
+        "records": [
+          {
+            "address": 6,
+            "unit_type": null,
+            "firmware": null,
+            "serial": null,
+            "state": null,
+            "presence": "absent",
+            "status": "absent",
+            "errors": [],
+            "identity": null
+          },
+          {
+            "address": 7,
+            "unit_type": "KEYE1",
+            "firmware": "2.5.00",
+            "serial": "101136.1559",
+            "state": "ok",
+            "presence": "single",
+            "status": "ok",
+            "errors": [],
+            "identity": {
+              "address": 7,
+              "unit_type": "KEYE1",
+              "serial": "101136.1559"
+            }
+          },
+          {
+            "address": 255,
+            "unit_type": null,
+            "firmware": null,
+            "serial": null,
+            "state": null,
+            "presence": "absent",
+            "status": "absent",
+            "errors": [],
+            "identity": null
+          }
+        ],
+        "identities": [
+          {
+            "address": 7,
+            "unit_type": "KEYE1",
+            "serial": "101136.1559"
+          }
+        ],
+        "errors": [],
+        "complete": false,
+        "observed_at": "2026-09-14T12:45:10.763694+00:00",
+        "refresh_completed": true,
+        "refresh_scope": "entire_network",
+        "database_updated": false,
+        "physical_addresses_changed": false
+      },
+      "relevant_wire": [
+        {
+          "request": "\\4607001120p\r",
+          "reply": "p."
+        },
+        {
+          "request": "A3429705r\r",
+          "reply": "r.324297F5\r\n"
+        },
+        {
+          "request": "\\05FF000F0018B106170713s\r",
+          "reply": "s.86071000870018B106170000F6\r\n"
+        },
+        {
+          "request": "\\4606001120t\r",
+          "reply": "t."
+        },
+        {
+          "request": "\\05FF000F0018B106160615u\r",
+          "reply": "u."
+        },
+        {
+          "request": "\\46FF001120w\r",
+          "reply": "w.86FF100082205A6F\r\n"
+        },
+        {
+          "request": "A3204E025Ax\r",
+          "reply": "x.8602100032204EC8\r\n"
+        },
+        {
+          "request": "\\4602001120y\r",
+          "reply": "y.8602100082205A6C\r\n"
+        },
+        {
+          "request": "\\46FF001120z\r",
+          "reply": "z."
+        },
+        {
+          "request": "A3429707i\r",
+          "reply": "i.324297F5\r\n"
+        }
+      ]
+    },
+    "no_matchdb": {
+      "probe_checks_passed": true,
+      "raw_artifact": "research/runtime/duplicate-unravel-no_matchdb.json",
+      "raw_artifact_sha256": "6d6c65a2a95eaa65c67d7819a3f540f516d4dbda5c903ab58594cf5289e6c8a5",
+      "native_command": "NET UNRAVELUNIT //DD6E225B/254 255",
+      "native_reply": [
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Unit count: 2",
+        "120-Unravel: Units at: 16, 255",
+        "120-Unravel: Scanning unit 1 of 2 at address 255 (0xFF).",
+        "120-Unravel: Readdressed unit with serial number 101136.1559 from address 255 (0xFF) to address 2 (0x02).",
+        "120-Unravel: Readdressed unit with serial number 101136.1558 from address 255 (0xFF) to address 3 (0x03).",
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Complete.",
+        "120-Unravel: Updating network model at address 255 (0xFF)",
+        "120-Unravel: No unit objects at address 255",
+        "120-Unravel: Updating network model at address 3 (0x03)",
+        "120-Unravel: Unit object  address=3 type=KEYE1 version=2.5.00 serial=101136.1558 catalog=5031NMML",
+        "120-Unravel: Updating network model at address 2 (0x02)",
+        "120-Unravel: Unit object  address=2 type=KEYE1 version=2.5.00 serial=101136.1559 catalog=5031NMML",
+        "200 OK."
+      ],
+      "co_operations": [
+        {
+          "serial": "18b10617",
+          "old": 255,
+          "requested": 2,
+          "actual": 2,
+          "returned_source": 2,
+          "returned_serial": "18b10617",
+          "fault": "none",
+          "payload": "05ff000f0018b106170218",
+          "parameter32": "ff",
+          "reply": "86021000870018b106170000"
+        },
+        {
+          "serial": "18b10616",
+          "old": 255,
+          "requested": 3,
+          "actual": 3,
+          "returned_source": 3,
+          "returned_serial": "18b10616",
+          "fault": "no_matchdb",
+          "payload": "05ff000f0018b106160318",
+          "parameter32": "ff",
+          "reply": "86031000870018b106160000"
+        }
+      ],
+      "unit_address_stores": [],
+      "local_pci_stores": [
+        "461000a3429705",
+        "461000a3429707"
+      ],
+      "bus_addresses_after": {
+        "101136.1558": 3,
+        "101136.1559": 2
+      },
+      "parameter32_after": {
+        "101136.1558": "ff",
+        "101136.1559": "ff"
+      },
+      "database_unchanged": true,
+      "database_sha256": "5e85da95a736146e3266f8d130b3eead69397d17294dc901b51d286930b584d4",
+      "other_node_fields_preserved": true,
+      "unsupported_wire_records": [],
+      "post_refresh_requested_inventory": {
+        "format": "cbus-native-serial-inventory-v1",
+        "network": "//DD6E225B/254",
+        "mode": "refresh",
+        "requested": [
+          6,
+          7,
+          255
+        ],
+        "records": [
+          {
+            "address": 6,
+            "unit_type": null,
+            "firmware": null,
+            "serial": null,
+            "state": null,
+            "presence": "absent",
+            "status": "absent",
+            "errors": [],
+            "identity": null
+          },
+          {
+            "address": 7,
+            "unit_type": null,
+            "firmware": null,
+            "serial": null,
+            "state": null,
+            "presence": "absent",
+            "status": "absent",
+            "errors": [],
+            "identity": null
+          },
+          {
+            "address": 255,
+            "unit_type": null,
+            "firmware": null,
+            "serial": null,
+            "state": null,
+            "presence": "absent",
+            "status": "absent",
+            "errors": [],
+            "identity": null
+          }
+        ],
+        "identities": [],
+        "errors": [],
+        "complete": false,
+        "observed_at": "2026-09-14T12:44:52.733226+00:00",
+        "refresh_completed": true,
+        "refresh_scope": "entire_network",
+        "database_updated": false,
+        "physical_addresses_changed": false
+      },
+      "relevant_wire": [
+        {
+          "request": "A3429705q\r",
+          "reply": "q.324297F5\r\n"
+        },
+        {
+          "request": "\\05FF000F0018B106170218r\r",
+          "reply": "r.86021000870018B106170000FB\r\n"
+        },
+        {
+          "request": "A3429707v\r",
+          "reply": "v.324297F5\r\n"
+        }
+      ]
+    },
+    "none-FACE": {
+      "probe_checks_passed": true,
+      "raw_artifact": "research/runtime/duplicate-unravel-none-FACE.json",
+      "raw_artifact_sha256": "4bf1687be169f64f5192d0e44c26ba5e373535d9ca3e7fd84d3df0af1633931a",
+      "native_command": "NET UNRAVELUNIT //DD714D48/254 255 MATCHDB",
+      "native_reply": [
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Unit count: 2",
+        "120-Unravel: Units at: 16, 255",
+        "120-Unravel: Scanning unit 1 of 2 at address 255 (0xFF).",
+        "120-Unravel: Readdressed unit with serial number 101136.1559 from address 255 (0xFF) to address 7 (0x07).",
+        "120-Unravel: Readdressed unit with serial number 101136.1558 from address 255 (0xFF) to address 6 (0x06).",
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Complete.",
+        "120-Unravel: Updating network model at address 255 (0xFF)",
+        "120-Unravel: No unit objects at address 255",
+        "120-Unravel: Updating network model at address 7 (0x07)",
+        "120-Unravel: Unit object  address=7 type=KEYE1 version=2.5.00 serial=101136.1559 catalog=5031NMML",
+        "120-Unravel: Updating network model at address 6 (0x06)",
+        "120-Unravel: Unit object  address=6 type=KEYE1 version=2.5.00 serial=101136.1558 catalog=5031NMML",
+        "200 OK."
+      ],
+      "co_operations": [
+        {
+          "serial": "18b10617",
+          "old": 255,
+          "requested": 7,
+          "actual": 7,
+          "returned_source": 7,
+          "returned_serial": "18b10617",
+          "fault": "none",
+          "payload": "05ff000f0018b106170713",
+          "parameter32": "ff",
+          "reply": "86071000870018b10617face"
+        },
+        {
+          "serial": "18b10616",
+          "old": 255,
+          "requested": 6,
+          "actual": 6,
+          "returned_source": 6,
+          "returned_serial": "18b10616",
+          "fault": "none",
+          "payload": "05ff000f0018b106160615",
+          "parameter32": "ff",
+          "reply": "86061000870018b10616face"
+        }
+      ],
+      "unit_address_stores": [],
+      "local_pci_stores": [
+        "461000a3429705",
+        "461000a3429707"
+      ],
+      "bus_addresses_after": {
+        "101136.1558": 6,
+        "101136.1559": 7
+      },
+      "parameter32_after": {
+        "101136.1558": "ff",
+        "101136.1559": "ff"
+      },
+      "database_unchanged": true,
+      "database_sha256": "392864e27c3f053b99a78dde5ba1f721c07d6cba8a3a0156caddb555584477bd",
+      "other_node_fields_preserved": true,
+      "unsupported_wire_records": [],
+      "post_refresh_requested_inventory": {
+        "format": "cbus-native-serial-inventory-v1",
+        "network": "//DD714D48/254",
+        "mode": "refresh",
+        "requested": [
+          6,
+          7,
+          255
+        ],
+        "records": [
+          {
+            "address": 6,
+            "unit_type": "KEYE1",
+            "firmware": "2.5.00",
+            "serial": "101136.1558",
+            "state": "ok",
+            "presence": "single",
+            "status": "ok",
+            "errors": [],
+            "identity": {
+              "address": 6,
+              "unit_type": "KEYE1",
+              "serial": "101136.1558"
+            }
+          },
+          {
+            "address": 7,
+            "unit_type": "KEYE1",
+            "firmware": "2.5.00",
+            "serial": "101136.1559",
+            "state": "ok",
+            "presence": "single",
+            "status": "ok",
+            "errors": [],
+            "identity": {
+              "address": 7,
+              "unit_type": "KEYE1",
+              "serial": "101136.1559"
+            }
+          },
+          {
+            "address": 255,
+            "unit_type": null,
+            "firmware": null,
+            "serial": null,
+            "state": null,
+            "presence": "absent",
+            "status": "absent",
+            "errors": [],
+            "identity": null
+          }
+        ],
+        "identities": [
+          {
+            "address": 6,
+            "unit_type": "KEYE1",
+            "serial": "101136.1558"
+          },
+          {
+            "address": 7,
+            "unit_type": "KEYE1",
+            "serial": "101136.1559"
+          }
+        ],
+        "errors": [],
+        "complete": false,
+        "observed_at": "2026-09-14T12:44:59.248058+00:00",
+        "refresh_completed": true,
+        "refresh_scope": "entire_network",
+        "database_updated": false,
+        "physical_addresses_changed": false
+      },
+      "relevant_wire": [
+        {
+          "request": "\\4607001120p\r",
+          "reply": "p."
+        },
+        {
+          "request": "A3429705r\r",
+          "reply": "r.324297F5\r\n"
+        },
+        {
+          "request": "\\05FF000F0018B106170713s\r",
+          "reply": "s.86071000870018B10617FACE2E\r\n"
+        },
+        {
+          "request": "\\4606001120t\r",
+          "reply": "t."
+        },
+        {
+          "request": "\\05FF000F0018B106160615u\r",
+          "reply": "u.86061000870018B10616FACE30\r\n"
+        },
+        {
+          "request": "A3429707x\r",
+          "reply": "x.324297F5\r\n"
+        }
+      ]
+    }
+  },
+  "source_classes_sha256": {
+    "co.class": "185ba3fefcc0a92db0f46d05109fd204b90e176353a7cdfa231c98e546716134",
+    "cT.class": "651ba8c17283d55038ae187c898671cef8de685dd910d95d777eaf6166bdbf2f",
+    "aW.class": "a083758468278319e94af30bd60b69a222efb4c6f3298c8847d2b6feda2b594d",
+    "kY.class": "5c87783bbb86cdac1d39179910642200d8c115871ee2f65da7b995e989d30515",
+    "com/clipsal/cgate/cbus/core/CBusNetworkUnraveller.class": "217a0e2aca149f5a7254e5ff9a591af1098cb4b7d298c8a901054f16958ec3dc",
+    "com/clipsal/cgate/cbus/dev/CBusBaseUnit.class": "d4292e70bddd34d249779a03a8019254aeb1aaba8cf72f376f25c25f2384b225",
+    "com/clipsal/cgate/cbus/dev/CBus2PCILocalable.class": "9240f8545663b13a1b6e3ebbda114fa5c9dad01da4f170748e54b8b14e22c3ec"
+  },
+  "direct_selected_serial_fixture": {
+    "probe_checks_passed": true,
+    "scope": "One explicit source-derived co request on exclusively owned simulated TCP connection; no hardware/persistence claim",
+    "raw_artifact": "research/runtime/selected-serial-wire.json",
+    "raw_artifact_sha256": "b734e7663f08cf7779b89798ffb5212be54e9c466689f0076e5be54b76669e49",
+    "exchanges": [
+      {
+        "request": "\\46FF002104g\r",
+        "reply": "g.86FF10008D0438FFFFFFFF18B10616A200051A\r\n86FF10008D0438FFFFFFFF18B10617A2000519\r\n"
+      },
+      {
+        "request": "\\461000A3429705h\r",
+        "reply": "h.324297F5\r\n"
+      },
+      {
+        "request": "\\05FF000F0018B106160615i\r",
+        "reply": "i.86061000870018B106160000F8\r\n"
+      },
+      {
+        "request": "\\461000A3429707j\r",
+        "reply": "j.324297F5\r\n"
+      },
+      {
+        "request": "\\4606002104k\r",
+        "reply": "k.860610008D0438FFFFFFFF18B10616A2000513\r\n"
+      },
+      {
+        "request": "\\46FF002104l\r",
+        "reply": "l.86FF10008D0438FFFFFFFF18B10617A2000519\r\n"
+      }
+    ],
+    "co_operations": [
+      {
+        "serial": "18b10616",
+        "old": 255,
+        "requested": 6,
+        "actual": 6,
+        "returned_source": 6,
+        "returned_serial": "18b10616",
+        "fault": "none",
+        "payload": "05ff000f0018b106160615",
+        "parameter32": "ff",
+        "reply": "86061000870018b106160000"
+      }
+    ],
+    "local_pci_stores": [
+      "461000a3429705",
+      "461000a3429707"
+    ],
+    "bus_addresses_after": {
+      "101136.1558": 6,
+      "101136.1559": 255
+    }
+  },
+  "unverified": [
+    "Actual co response-tail meanings",
+    "Physical unit EEPROM persistence from co",
+    "Power-cycle/restart behavior",
+    "Analogue collision and response timing",
+    "Exclusive physical transport ownership",
+    "Production multi-response collector and independent full before/after transaction"
+  ]
+}

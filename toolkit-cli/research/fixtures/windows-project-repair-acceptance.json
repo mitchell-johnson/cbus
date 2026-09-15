@@ -1,0 +1,346 @@
+{
+  "format": "cbus-windows-project-repair-acceptance-v1",
+  "passed": true,
+  "scope": "Unchanged package file/CLI execution under existing official Python3.13.14 x86 and AMD64 runtimes on the owned Windows11 ARM64 guest; four host harness checks plus two native16-case jobs per host interpreter. No Toolkit/C-Gate/physical network operations.",
+  "source_files": {
+    "src/cbus_toolkit/cli.py": "a0c4432aef7a60222a84a8223e2eb6eab5f272faa8418b08db6d643409b51467",
+    "src/cbus_toolkit/project_repair.py": "414a87682c3d0306f1914c4fcd8d537247077e5c7b5c317e302602ecd18f6ffb",
+    "src/cbus_toolkit/project_repair_cli.py": "3e7a323c0eb9c0b0b5264665ab13f4a79245f056466f887f78da328ccd2ab31c"
+  },
+  "input_files": {
+    "research/windows_project_repair_probe.py": "fd906596a6ef07866c01efe6c0d787c95fab4ab4b54a4342390676ded05c4e0a",
+    "research/windows_project_repair_cases.py": "0706cef9cf851a5fe67a875955bc709a6054ed8bc4fd53ce1ce5f62ed517d5a3",
+    "research/windows_bridge.py": "069aab3ab13195871104408bc0f01df7ef14a6d663d3412ef7008135ba6abb58",
+    "research/windows_provenance.py": "8aad4ca9d1577b985eef9b453cd1ba1b10c1a73f4627a74b8c45e565c3a47e48",
+    "research/fixtures/windows-python-runtime.json": "42997bb7775dfa74a8e3e10887e26c131f8d980718298f42a7fd79d84c88619c",
+    "research/fixtures/windows-python-runtime-amd64.json": "6ac0ff5ec0c0b027212b3bbc0bf4303b29fc856152af039c317170a759a0165c",
+    "tests/test_windows_project_repair.py": "706e27bb65d565be75a161e33ec8477bb2744cfa75521833d44f12e7b69159bc"
+  },
+  "runs": [
+    {
+      "path": "research/runtime/project-repair-windows/final-313-v2/report.json",
+      "sha256": "309607eb440603d2096ea47ea939863e127f241b411721124538805df46705f6",
+      "python": "3.13.14 (main, Jun 10 2026, 12:24:04) [Clang 17.0.0 (clang-1700.6.4.2)]",
+      "tests_run": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "duration_seconds": 25.544202290999237,
+      "input_files": 121,
+      "archive": {
+        "path": "research/runtime/project-repair-windows/final-313-v2/host-inputs.zip",
+        "sha256": "bf795f8f3c58a6551b9bc3e4a5bf4866627c50df3fc8445efb2bf16bcceb2662"
+      }
+    },
+    {
+      "path": "research/runtime/project-repair-windows/final-310-v2/report.json",
+      "sha256": "02e99648822e8d3084e499b4127471b809b0ce9733920b56ef1bcd103f7d6331",
+      "python": "3.10.20 (main, Mar  3 2026, 00:49:35) [Clang 17.0.0 (clang-1700.6.4.2)]",
+      "tests_run": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "duration_seconds": 26.508189207990654,
+      "input_files": 121,
+      "archive": {
+        "path": "research/runtime/project-repair-windows/final-310-v2/host-inputs.zip",
+        "sha256": "d93c3da477e27175c734b62fd1dc0f454394e647cd27b265526ad3ce649ddca2"
+      }
+    }
+  ],
+  "native_jobs": [
+    {
+      "path": "research/runtime/windows-project-repair-amd64-nmcfi95p/run/result.json",
+      "sha256": "11571e6b2ea0cb68f0fa36c5579dd0dfc08507289c27fbadcf6c40ea8be40536",
+      "host_python": "313",
+      "architecture": "amd64",
+      "job_id": "job-probe-84cf9813d96d485b",
+      "tests_run": 16,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "runtime": {
+        "python": "3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 13:03:48) [MSC v.1944 64 bit (AMD64)]",
+        "pointer_bits": 64,
+        "process_machine": 0,
+        "native_machine": 43620,
+        "python_pe_machine": 34404,
+        "platform_machine": "ARM64",
+        "windows_version": "sys.getwindowsversion(major=10, minor=0, build=26100, platform=2, service_pack='')",
+        "processor_architecture": "AMD64",
+        "stdout_encoding": "cp1252",
+        "stderr_encoding": "cp1252",
+        "binary_machine_differs_from_native": true,
+        "interpretation": "Raw IsWow64Process2 process value zero does not establish matching PE/native architectures"
+      },
+      "runtime_file_count": 34,
+      "loaded_package_sources": 35,
+      "archive": {
+        "path": "research/runtime/windows-project-repair-amd64-nmcfi95p/run/inputs.zip",
+        "sha256": "463b8d215b3f7735b3d6ec76d7ebc7854026c1bb6eb8012a0c0eff58e5990e8d"
+      },
+      "raw_stdout": {
+        "path": "research/runtime/windows-project-repair-amd64-nmcfi95p/run/stdout.txt",
+        "sha256": "e39e41476865af262db4acb33b0e63b2d4aba3829ce5ae864b9c342acf13b5dd"
+      },
+      "raw_stderr": {
+        "path": "research/runtime/windows-project-repair-amd64-nmcfi95p/run/stderr.txt",
+        "sha256": "a2ec675be0231822f21744bad6e1d17c5ddc0ab49ae8ffa2a43810456353ed1b"
+      },
+      "provenance": {
+        "path": "research/runtime/windows-project-repair-amd64-nmcfi95p/run/provenance.json",
+        "sha256": "befeecf20a4dc517ec5c9f5eea9097d7d12976aa4092c507e62823414adecaec"
+      },
+      "wait_evidence": {
+        "job_id": "job-probe-84cf9813d96d485b",
+        "state": "retrieved",
+        "timeout": 330,
+        "max_busy_retries": 8,
+        "file_busy_attempts": [],
+        "job_resubmitted": false
+      },
+      "scratch_cleanup": {
+        "scratch_path": "C:\\CBusCliOracle118-88d8\\repair-files-54f7a131c9444430",
+        "removed": true,
+        "error": null
+      },
+      "cli_exit_codes": [
+        0,
+        0,
+        1,
+        1,
+        1
+      ],
+      "semantic_unicode_preserved": true
+    },
+    {
+      "path": "research/runtime/windows-project-repair-x86-x8mxvg74/run/result.json",
+      "sha256": "97262c0eb1055052f6e05a23cfc4fdae86f54d7fa2536432d461ef706a9ebc8c",
+      "host_python": "313",
+      "architecture": "x86",
+      "job_id": "job-probe-61e57194e44d4e4f",
+      "tests_run": 16,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "runtime": {
+        "python": "3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 12:49:38) [MSC v.1944 32 bit (Intel)]",
+        "pointer_bits": 32,
+        "process_machine": 332,
+        "native_machine": 43620,
+        "python_pe_machine": 332,
+        "platform_machine": "ARM64",
+        "windows_version": "sys.getwindowsversion(major=10, minor=0, build=26100, platform=2, service_pack='')",
+        "processor_architecture": "x86",
+        "stdout_encoding": "cp1252",
+        "stderr_encoding": "cp1252",
+        "binary_machine_differs_from_native": true,
+        "interpretation": "Raw IsWow64Process2 process value zero does not establish matching PE/native architectures"
+      },
+      "runtime_file_count": 33,
+      "loaded_package_sources": 35,
+      "archive": {
+        "path": "research/runtime/windows-project-repair-x86-x8mxvg74/run/inputs.zip",
+        "sha256": "e00044dcf3edc2c050a2cfbc604e7744f876b0abb7af0362b14b2f98c93b6393"
+      },
+      "raw_stdout": {
+        "path": "research/runtime/windows-project-repair-x86-x8mxvg74/run/stdout.txt",
+        "sha256": "f4f79fadf00d40c0ce30f02fa560c171c9d447b8e221a1374da12f8f0b827084"
+      },
+      "raw_stderr": {
+        "path": "research/runtime/windows-project-repair-x86-x8mxvg74/run/stderr.txt",
+        "sha256": "778ed8c6c7248f62d5e4b5e4626504fc8c46363807156728eff239773d450a60"
+      },
+      "provenance": {
+        "path": "research/runtime/windows-project-repair-x86-x8mxvg74/run/provenance.json",
+        "sha256": "ae38c552109d21e0b7f277ed287872a8599df0afaf63440f6f65ec271c19975c"
+      },
+      "wait_evidence": {
+        "job_id": "job-probe-61e57194e44d4e4f",
+        "state": "retrieved",
+        "timeout": 330,
+        "max_busy_retries": 8,
+        "file_busy_attempts": [],
+        "job_resubmitted": false
+      },
+      "scratch_cleanup": {
+        "scratch_path": "C:\\CBusCliOracle118-88d8\\repair-files-9010bba5bc8c4080",
+        "removed": true,
+        "error": null
+      },
+      "cli_exit_codes": [
+        0,
+        0,
+        1,
+        1,
+        1
+      ],
+      "semantic_unicode_preserved": true
+    },
+    {
+      "path": "research/runtime/windows-project-repair-amd64-bd3px56j/run/result.json",
+      "sha256": "0c20dcc0d87cdda2ba15c404ff3d382d7177bb0354c6eee86e1d94d3f68199ad",
+      "host_python": "310",
+      "architecture": "amd64",
+      "job_id": "job-probe-7532fafa7b5e402f",
+      "tests_run": 16,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "runtime": {
+        "python": "3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 13:03:48) [MSC v.1944 64 bit (AMD64)]",
+        "pointer_bits": 64,
+        "process_machine": 0,
+        "native_machine": 43620,
+        "python_pe_machine": 34404,
+        "platform_machine": "ARM64",
+        "windows_version": "sys.getwindowsversion(major=10, minor=0, build=26100, platform=2, service_pack='')",
+        "processor_architecture": "AMD64",
+        "stdout_encoding": "cp1252",
+        "stderr_encoding": "cp1252",
+        "binary_machine_differs_from_native": true,
+        "interpretation": "Raw IsWow64Process2 process value zero does not establish matching PE/native architectures"
+      },
+      "runtime_file_count": 34,
+      "loaded_package_sources": 35,
+      "archive": {
+        "path": "research/runtime/windows-project-repair-amd64-bd3px56j/run/inputs.zip",
+        "sha256": "463b8d215b3f7735b3d6ec76d7ebc7854026c1bb6eb8012a0c0eff58e5990e8d"
+      },
+      "raw_stdout": {
+        "path": "research/runtime/windows-project-repair-amd64-bd3px56j/run/stdout.txt",
+        "sha256": "200e73c26b2a615dd5c4d0521e0e326c251eb8d11a8b081e1bd2056a620ecc8e"
+      },
+      "raw_stderr": {
+        "path": "research/runtime/windows-project-repair-amd64-bd3px56j/run/stderr.txt",
+        "sha256": "ccdf7aaaaed059d9aa50474b28ab10e6d4b9f8ad1ca40c40e59af49a9f5fd190"
+      },
+      "provenance": {
+        "path": "research/runtime/windows-project-repair-amd64-bd3px56j/run/provenance.json",
+        "sha256": "ee7b685a99f2cc87ae822d18536a1aeed433eb6ada430af89246a5e51766e019"
+      },
+      "wait_evidence": {
+        "job_id": "job-probe-7532fafa7b5e402f",
+        "state": "retrieved",
+        "timeout": 330,
+        "max_busy_retries": 8,
+        "file_busy_attempts": [],
+        "job_resubmitted": false
+      },
+      "scratch_cleanup": {
+        "scratch_path": "C:\\CBusCliOracle118-88d8\\repair-files-93d22193ed2042d3",
+        "removed": true,
+        "error": null
+      },
+      "cli_exit_codes": [
+        0,
+        0,
+        1,
+        1,
+        1
+      ],
+      "semantic_unicode_preserved": true
+    },
+    {
+      "path": "research/runtime/windows-project-repair-x86-cngzkbui/run/result.json",
+      "sha256": "cb5717d5e3c89175750935f0b1d98792613530260931d700334b26ccc9f573b5",
+      "host_python": "310",
+      "architecture": "x86",
+      "job_id": "job-probe-4412450ee3fe4056",
+      "tests_run": 16,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "runtime": {
+        "python": "3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 12:49:38) [MSC v.1944 32 bit (Intel)]",
+        "pointer_bits": 32,
+        "process_machine": 332,
+        "native_machine": 43620,
+        "python_pe_machine": 332,
+        "platform_machine": "ARM64",
+        "windows_version": "sys.getwindowsversion(major=10, minor=0, build=26100, platform=2, service_pack='')",
+        "processor_architecture": "x86",
+        "stdout_encoding": "cp1252",
+        "stderr_encoding": "cp1252",
+        "binary_machine_differs_from_native": true,
+        "interpretation": "Raw IsWow64Process2 process value zero does not establish matching PE/native architectures"
+      },
+      "runtime_file_count": 33,
+      "loaded_package_sources": 35,
+      "archive": {
+        "path": "research/runtime/windows-project-repair-x86-cngzkbui/run/inputs.zip",
+        "sha256": "e00044dcf3edc2c050a2cfbc604e7744f876b0abb7af0362b14b2f98c93b6393"
+      },
+      "raw_stdout": {
+        "path": "research/runtime/windows-project-repair-x86-cngzkbui/run/stdout.txt",
+        "sha256": "b50c1aaf04469624114900b296ec8798bb6c85a45f5fd7dc31578b4c90ee85c5"
+      },
+      "raw_stderr": {
+        "path": "research/runtime/windows-project-repair-x86-cngzkbui/run/stderr.txt",
+        "sha256": "c0a1d2193f9b3f2b575482649cf2ea3983047d76b1ee8855f2f61b6bd260323c"
+      },
+      "provenance": {
+        "path": "research/runtime/windows-project-repair-x86-cngzkbui/run/provenance.json",
+        "sha256": "fe64b0518025f7f682002ef89334d0c79641f28c2217e27ffbc0a1d262a10799"
+      },
+      "wait_evidence": {
+        "job_id": "job-probe-4412450ee3fe4056",
+        "state": "retrieved",
+        "timeout": 330,
+        "max_busy_retries": 8,
+        "file_busy_attempts": [],
+        "job_resubmitted": false
+      },
+      "scratch_cleanup": {
+        "scratch_path": "C:\\CBusCliOracle118-88d8\\repair-files-c612c1fe3c9d4c36",
+        "removed": true,
+        "error": null
+      },
+      "cli_exit_codes": [
+        0,
+        0,
+        1,
+        1,
+        1
+      ],
+      "semantic_unicode_preserved": true
+    }
+  ],
+  "all_four_scratch_trees_removed": true,
+  "all_four_archives_readback_verified": true,
+  "identical_native_input_archive_per_architecture_across_hosts": {
+    "amd64": "463b8d215b3f7735b3d6ec76d7ebc7854026c1bb6eb8012a0c0eff58e5990e8d",
+    "x86": "e00044dcf3edc2c050a2cfbc604e7744f876b0abb7af0362b14b2f98c93b6393"
+  },
+  "preserved_initial_failure": {
+    "path": "research/runtime/project-repair-windows/pilot-x86-v1/result.json",
+    "sha256": "78eb5df92c12bcf13e0ceaa53e271df18efae50b2921619e8ec2d327f83cfb75",
+    "archive": {
+      "path": "research/runtime/project-repair-windows/pilot-x86-v1/inputs.zip",
+      "sha256": "a881bccb4db3c7b397cfe3597d68d70cde8ce35882d823ebe4515d5e043a550a"
+    },
+    "observed": "Default cp1252 stdout failed after successful640-byte repair output; subsequent exclusive create rejected without changing bytes.15/16 Windows cases passed.",
+    "status": "Historical failure; not promoted as current acceptance"
+  },
+  "preserved_pre_provenance_correction_runs": [
+    {
+      "path": "research/runtime/project-repair-windows/final-313-v1/report.json",
+      "sha256": "5f66ea87a9cc5b7d0a305547ff4dcbc70187817b6f5dafac677c52613c1604b4"
+    },
+    {
+      "path": "research/runtime/project-repair-windows/final-310-v1/report.json",
+      "sha256": "eba3a23982c222bf6b5b4077ecaf4df7f63472b1a284d60352f10ee946ec4be7"
+    }
+  ],
+  "provenance_correction": "IsWow64Process2 process_machine is0 for this AMD64 process while native_machine isARM64. Final reports retain raw values and the exact Python PE machine; no naive process!=0 emulation boolean remains.",
+  "limits": [
+    "Unix FIFO behavior is not applicable on Windows.",
+    "Privilege-dependent symlink creation is not exercised; no privilege changes.",
+    "File-descriptor failures are injected; no power-loss or directory durability guarantee.",
+    "AMD64/x86 PE binaries run on reported ARM64 Windows; no native AMD64/x86 hardware acceptance.",
+    "Windows provenance performs its existing read-only runtime query; repair tests deny registry and network access.",
+    "Input ZIPs and bridge job evidence remain; only owned test scratch trees are removed.",
+    "This file boundary does not establish arbitrary repaired XML native loadability or physical-device compatibility.",
+    "Historical full1608 checkpoint is unchanged; these are focused subsequent tests."
+  ]
+}

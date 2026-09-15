@@ -1,0 +1,341 @@
+{
+  "format": "cbus-project-repair-combined-acceptance-v1",
+  "passed": true,
+  "tests_per_python": 31,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "scope": "Portable lexical/XML repair, isolated original native load of generated Python outputs, and new-file/dry-run CLI boundaries",
+  "test_files": [
+    "tests/test_project_repair.py",
+    "tests/test_project_repair_native.py",
+    "tests/test_project_repair_cli.py"
+  ],
+  "test_composition": {
+    "portable_and_fresh_original": 13,
+    "portable_native_load": 4,
+    "file_cli": 14
+  },
+  "captured_input_files": 122,
+  "loaded_package_sources": 35,
+  "snapshot": {
+    "path": "research/runtime/project-repair-combined-acceptance-v1/input-manifest.json",
+    "sha256": "92f935ef92091af2978694ea25f53885859e9a43922271105dab59520cca6db1"
+  },
+  "archive": {
+    "path": "research/runtime/project-repair-combined-acceptance-v1/accepted-inputs.tar.gz",
+    "sha256": "9504455a9eea7591e599385d4996f19462c0b63862b310c571be3d558e7951b3",
+    "bytes": 470967
+  },
+  "source_sha256": {
+    "src/cbus_toolkit/__init__.py": "a39021e17c28b8e97c4b6ad7b20ffe35ce621332c0f4d006162f77c0703b5fed",
+    "src/cbus_toolkit/cgate.py": "fef71db3a4d98c1a175a8bf0287b5abcaea4689df835dea7b0c19413e206eb15",
+    "src/cbus_toolkit/cli.py": "b83e85473ab9b903e9700ea4a6b54e892f965e2aa33f26660e555c3ada76c720",
+    "src/cbus_toolkit/device_scenes.py": "81b0a2fd8b73bd1e22e33c2e9b83e79b7f6fdef8511d138b44865af0175894cc",
+    "src/cbus_toolkit/edlt.py": "f5c996698b5970c56b9bfa60525a35e96a3734328780cd35b9ae07a9663ca735",
+    "src/cbus_toolkit/edlt_activation.py": "d9ef076dfbf71d39cbdce0ff2b5ae27fc29be8f2a547fd4507a51a36dfe34cd0",
+    "src/cbus_toolkit/edlt_application_cache.py": "c7dc8c133fd08f3b5c974c6429add4a82f7dda2d69154165c05935b02ecd6bd4",
+    "src/cbus_toolkit/edlt_colours.py": "48f248040581a3d6b542800bc8c828814ecfcf58b10531c8394eaf92bcb24dc0",
+    "src/cbus_toolkit/edlt_control_cli.py": "90807283d24976e753835a191f982f538187be2c2b5347492f34d15207e19a48",
+    "src/cbus_toolkit/edlt_global_cli.py": "9957a6f3a2910391990aaccbd774b12a4ee9af999e21500ef0391d9e912cf363",
+    "src/cbus_toolkit/edlt_hvac.py": "1425551576911a14cebdfbbfda303d42a0bf71cd1d6582aa47f29a1c7a572e34",
+    "src/cbus_toolkit/edlt_lifecycle.py": "a4e4eda6490f1b45cde15cd983820471bfdadf26c11abc9ab1c3d49ede6014fc",
+    "src/cbus_toolkit/edlt_mra.py": "99bf274549de55b4105acc615a620f6eebf83ebbc1a5a56379646a690e9e2636",
+    "src/cbus_toolkit/edlt_navigation.py": "3a0cf8903c3c0413ed9393dfa7ff0ae23a248938bdc26e1f8d0be575cd8f1775",
+    "src/cbus_toolkit/edlt_quick_status.py": "df19a640a4aacd8559fd3adbe34f16f1bbf2ffdf86638168c88de71c8902d359",
+    "src/cbus_toolkit/edlt_reset_cli.py": "6e661865721c04d43af9244f0b3d38ab2e91000934e9927e55304d0ded0244f0",
+    "src/cbus_toolkit/edlt_room_courtesy.py": "24d886f38e4612a83c81c8284951f886c4e7702ab7b1aeec517c0feb78b57713",
+    "src/cbus_toolkit/edlt_scene_live_cli.py": "7cc5c9bfa7f81347df3abdbca8f36974f7c1df6963e502b5b139d303a9bc66ad",
+    "src/cbus_toolkit/edlt_scene_manager_cli.py": "30b6144d6e9a5a4484a03dcee82ac4c394a67ddd3748c1e2ee20806bf135b5e7",
+    "src/cbus_toolkit/edlt_standby.py": "e78b2c2cd4d3c29239eb06c3b3c2f1e677ebe2e363a58aef515f7ef1f8c15a1f",
+    "src/cbus_toolkit/edlt_time_date.py": "35e3117cccdc5592cca2fed8d9fb4e9eff367faff397d33ebe652515769577d7",
+    "src/cbus_toolkit/macros.py": "05c211f0e7f4ef35066fb51fb94b883e03cf88b8605e6bb3b782d00e5c523d44",
+    "src/cbus_toolkit/memory.py": "372cbc3a79710b743d23aa6690a8b56b1780de091ffe8a1d0a543e4cfa9c1f31",
+    "src/cbus_toolkit/programming.py": "30b0def5768e5a7f926eb07771dddb02a4ec5bf6e724fad735be8f3f59c07a96",
+    "src/cbus_toolkit/project_repair.py": "414a87682c3d0306f1914c4fcd8d537247077e5c7b5c317e302602ecd18f6ffb",
+    "src/cbus_toolkit/project_repair_cli.py": "3e7a323c0eb9c0b0b5264665ab13f4a79245f056466f887f78da328ccd2ab31c",
+    "src/cbus_toolkit/repositories.py": "9a4dfa92e099f319e73f4cb354702d2e762ea7f7657e65ba64bc8b9203bc71d2",
+    "src/cbus_toolkit/repositories_cli.py": "7be3fcabde71d13aba69319c40a6ce24fd1e4cfb3feb35fdd8ef5dfcc8ca1d16",
+    "src/cbus_toolkit/toolkit_numeric.py": "10bb51a54321964f80720356fa5b2d09638fe3b0a5108c7379915a22ca0f221b",
+    "src/cbus_toolkit/toolkit_preferences_cli.py": "0647dbb2a5b49d70e4c9c64639cb135bd3ddc29ba76eb5c001c8557dc44ee604",
+    "src/cbus_toolkit/toolkit_preferences_controls.py": "07ca6627405e28764c89ce94942056f7b75c76f5ff57c405bb171f5bc4d9caff",
+    "src/cbus_toolkit/toolkit_preferences_store.py": "833d9d057896cab472b23fdce945d69c01b52849f6a6cd1a146e65d636c00363",
+    "src/cbus_toolkit/toolkit_updates.py": "2e60b111a1c4f98fd548f645bad59031bfc1b4de05b621856a4003dd6a558244",
+    "src/cbus_toolkit/toolkit_updates_cli.py": "60d960a3abcf2e8789e7235d28e5779cd13f4a8fa7e47667caa3e9623b87172d",
+    "src/cbus_toolkit/unitspec.py": "f8d9e2f30c0ab431b0897959328781fac6a7c9825a4d9d2bb5ecf348acb66747"
+  },
+  "original_vectors": {
+    "manual": 3036,
+    "transform": 159,
+    "transform_supported": 144,
+    "transform_explicitly_excluded": 15
+  },
+  "fresh_original_cases_per_python": 3195,
+  "native_owned_processes_per_python": 4,
+  "modern_native_loads_per_python": 3,
+  "legacy_native_load_rejections_per_python": 1,
+  "native_repair_or_transform_requested_for_python_output": false,
+  "shared_native_server_used": false,
+  "windows_vm_used": false,
+  "net_open_requested": false,
+  "general_native_loadability_claimed": false,
+  "full_toolkit_parity_claimed": false,
+  "limits": [
+    "Native loading covers only the literal generated fixtures; legacy DBVersion 2.2 still requires a separate transform.",
+    "Native group 255 readback changes Address/TagName ordering; the exact permutation is recorded.",
+    "The portable transform domain excludes XML 1.1 and non-UTF-8 encodings.",
+    "The CLI creates new files only, retains uncertain partial outputs, and never overwrites existing files."
+  ],
+  "related_native_fixture": {
+    "path": "research/fixtures/project-repair-portable-native-acceptance.json",
+    "sha256": "a8bd78497eb8d1c2df222d716afd9e12b1ebc36f366e2ad82463b158c6b66bd2"
+  },
+  "reports": [
+    {
+      "python": "3.13.14",
+      "seconds": 31.72165424999548,
+      "tests_run": 31,
+      "report": {
+        "path": "research/runtime/project-repair-combined-acceptance-v1/313/report.json",
+        "sha256": "9a5a7571017ea439c387c9a4dea6ac867f5a022bede55773b54c41fb4d589cc2"
+      },
+      "fresh_original_calls": [
+        {
+          "path": "research/runtime/project-repair-combined-acceptance-v1/313/original-0.json",
+          "sha256": "8aeb71d38b1d93fd90565211343336e8d14ec7b7744986f82153430d64462eba",
+          "cases": 159,
+          "line_ending": "lf",
+          "class_sha256": "27ad39b4faf7df3eb359bb6f7b7fbf4cc161707477e8ce6cb11a769b25c6d0db",
+          "java_exit_code": 0,
+          "temporary_directory_removed": true
+        },
+        {
+          "path": "research/runtime/project-repair-combined-acceptance-v1/313/original-1.json",
+          "sha256": "21110c00cfbf592cd2cafa7d0bb9ca99c9aa743b5cb60df0c0579d2f6f441c57",
+          "cases": 3009,
+          "line_ending": "lf",
+          "class_sha256": "27ad39b4faf7df3eb359bb6f7b7fbf4cc161707477e8ce6cb11a769b25c6d0db",
+          "java_exit_code": 0,
+          "temporary_directory_removed": true
+        },
+        {
+          "path": "research/runtime/project-repair-combined-acceptance-v1/313/original-2.json",
+          "sha256": "3ce4cd84db62d184c1e9507fc33c2e8beefd31685b3149767fbb6c63455e942b",
+          "cases": 27,
+          "line_ending": "crlf",
+          "class_sha256": "27ad39b4faf7df3eb359bb6f7b7fbf4cc161707477e8ce6cb11a769b25c6d0db",
+          "java_exit_code": 0,
+          "temporary_directory_removed": true
+        }
+      ],
+      "native_reports": [
+        {
+          "path": "research/runtime/project-repair-combined-acceptance-v1/313/native/modern.json",
+          "sha256": "d1b344d6875c424317878e7ca3dbbca86e84b6bdb133315f13ba931a71ad85a9",
+          "kind": "modern",
+          "cases": 3,
+          "cleanup_complete": true,
+          "case_results": [
+            {
+              "id": "RPDUP",
+              "load_code": 200,
+              "staged_bytes_unchanged": true,
+              "regenerated_oid_count": 61,
+              "native_field_order_changes": [
+                {
+                  "group_address": "255",
+                  "python": [
+                    "Address",
+                    "TagName"
+                  ],
+                  "native": [
+                    "TagName",
+                    "Address"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "RPFIX",
+              "load_code": 200,
+              "staged_bytes_unchanged": true,
+              "regenerated_oid_count": 61,
+              "native_field_order_changes": [
+                {
+                  "group_address": "255",
+                  "python": [
+                    "Address",
+                    "TagName"
+                  ],
+                  "native": [
+                    "TagName",
+                    "Address"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "RPOLD",
+              "load_code": 200,
+              "staged_bytes_unchanged": true,
+              "regenerated_oid_count": 61,
+              "native_field_order_changes": [
+                {
+                  "group_address": "255",
+                  "python": [
+                    "Address",
+                    "TagName"
+                  ],
+                  "native": [
+                    "TagName",
+                    "Address"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "path": "research/runtime/project-repair-combined-acceptance-v1/313/native/legacy.json",
+          "sha256": "2ecea663f727b1f3efb0210117d3012b8663c8710e703489b9d704db9326e9ac",
+          "kind": "legacy",
+          "cases": 1,
+          "cleanup_complete": true,
+          "case_results": [
+            {
+              "id": "RPMAL",
+              "load_code": 408,
+              "staged_bytes_unchanged": true,
+              "regenerated_oid_count": null,
+              "native_field_order_changes": []
+            }
+          ]
+        }
+      ],
+      "inputs_unchanged": true
+    },
+    {
+      "python": "3.10.20",
+      "seconds": 32.08197679198929,
+      "tests_run": 31,
+      "report": {
+        "path": "research/runtime/project-repair-combined-acceptance-v1/310/report.json",
+        "sha256": "196caabfae157bd1657647bae2ee43aab95eff8bd4dd7aa5d3d361ac0ab571c4"
+      },
+      "fresh_original_calls": [
+        {
+          "path": "research/runtime/project-repair-combined-acceptance-v1/310/original-0.json",
+          "sha256": "8aeb71d38b1d93fd90565211343336e8d14ec7b7744986f82153430d64462eba",
+          "cases": 159,
+          "line_ending": "lf",
+          "class_sha256": "27ad39b4faf7df3eb359bb6f7b7fbf4cc161707477e8ce6cb11a769b25c6d0db",
+          "java_exit_code": 0,
+          "temporary_directory_removed": true
+        },
+        {
+          "path": "research/runtime/project-repair-combined-acceptance-v1/310/original-1.json",
+          "sha256": "21110c00cfbf592cd2cafa7d0bb9ca99c9aa743b5cb60df0c0579d2f6f441c57",
+          "cases": 3009,
+          "line_ending": "lf",
+          "class_sha256": "27ad39b4faf7df3eb359bb6f7b7fbf4cc161707477e8ce6cb11a769b25c6d0db",
+          "java_exit_code": 0,
+          "temporary_directory_removed": true
+        },
+        {
+          "path": "research/runtime/project-repair-combined-acceptance-v1/310/original-2.json",
+          "sha256": "3ce4cd84db62d184c1e9507fc33c2e8beefd31685b3149767fbb6c63455e942b",
+          "cases": 27,
+          "line_ending": "crlf",
+          "class_sha256": "27ad39b4faf7df3eb359bb6f7b7fbf4cc161707477e8ce6cb11a769b25c6d0db",
+          "java_exit_code": 0,
+          "temporary_directory_removed": true
+        }
+      ],
+      "native_reports": [
+        {
+          "path": "research/runtime/project-repair-combined-acceptance-v1/310/native/modern.json",
+          "sha256": "7aa06f640737f4a2a33a0f34797ed95739c773972cd6aab8c8c0b91b2ac9cf33",
+          "kind": "modern",
+          "cases": 3,
+          "cleanup_complete": true,
+          "case_results": [
+            {
+              "id": "RPDUP",
+              "load_code": 200,
+              "staged_bytes_unchanged": true,
+              "regenerated_oid_count": 61,
+              "native_field_order_changes": [
+                {
+                  "group_address": "255",
+                  "python": [
+                    "Address",
+                    "TagName"
+                  ],
+                  "native": [
+                    "TagName",
+                    "Address"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "RPFIX",
+              "load_code": 200,
+              "staged_bytes_unchanged": true,
+              "regenerated_oid_count": 61,
+              "native_field_order_changes": [
+                {
+                  "group_address": "255",
+                  "python": [
+                    "Address",
+                    "TagName"
+                  ],
+                  "native": [
+                    "TagName",
+                    "Address"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "RPOLD",
+              "load_code": 200,
+              "staged_bytes_unchanged": true,
+              "regenerated_oid_count": 61,
+              "native_field_order_changes": [
+                {
+                  "group_address": "255",
+                  "python": [
+                    "Address",
+                    "TagName"
+                  ],
+                  "native": [
+                    "TagName",
+                    "Address"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "path": "research/runtime/project-repair-combined-acceptance-v1/310/native/legacy.json",
+          "sha256": "6caa788fbdfe1d7df8d876bf0f5a633418a4f052ee9e0c132dce96103758829b",
+          "kind": "legacy",
+          "cases": 1,
+          "cleanup_complete": true,
+          "case_results": [
+            {
+              "id": "RPMAL",
+              "load_code": 408,
+              "staged_bytes_unchanged": true,
+              "regenerated_oid_count": null,
+              "native_field_order_changes": []
+            }
+          ]
+        }
+      ],
+      "inputs_unchanged": true
+    }
+  ]
+}

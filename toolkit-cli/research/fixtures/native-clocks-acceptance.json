@@ -1,0 +1,68 @@
+{
+  "scope": "Native clock and burden commissioning against explicit PCI.xml fixture; no electrical/arbitration claim",
+  "passed": true,
+  "cleanup_errors": [],
+  "persisted": true,
+  "recovery_verified": true,
+  "burden_conflict_observable": true,
+  "programming_lock_conflict_rejected": true,
+  "final200_write_failure_observed": true,
+  "cli_rejected_native_partial_success": true,
+  "unachievable_clock_target_rejected": true,
+  "source_report_sha256": "b8fafa0772957f9c4c549c35bdaee7399b56cce7a412cde51393ba937f97739b",
+  "wire_frame_count": 351,
+  "cli_operation_count": 16,
+  "expected_rejection_count": 6,
+  "unit_identities": {
+    "16": "PC_CNIED 5.5.00",
+    "17": "PC_CNICD 5.5.00"
+  },
+  "failure_response": [
+    [
+      "120-Keeping the master clock at address 16 enabled.",
+      "120-Clock at address 17 could NOT be enabled: Set clock failed: Failed to set parameter.",
+      "200 OK."
+    ]
+  ],
+  "limitations": [
+    "No electrical loading/clock loss/arbitration model",
+    "No duplicate physical-unit addressing model",
+    "No firmware EEPROM checksum algorithm"
+  ],
+  "response_delay_seconds": 0.01,
+  "confirmation_race": "C-Gate3.4 sender registers its awaited tag after writing; the explicit test delay avoids zero-latency early confirmation. Native implementation remains unchanged.",
+  "repeated_acceptance": [
+    {
+      "report": "clocks-delay-repeat-1.json",
+      "sha256": "cc051ae0aec1cb2811af970b333b0ce61a2d53c7616d296fc3786e53b33e4d9a",
+      "passed": true,
+      "wire_frame_count": 351,
+      "cli_operation_count": 16,
+      "expected_rejection_count": 6
+    },
+    {
+      "report": "clocks-delay-python310-1.json",
+      "sha256": "ffcc0e774a659ba724ba1659b05d9c823154230a97de774cfd2ecbf943ddd801",
+      "passed": true,
+      "wire_frame_count": 351,
+      "cli_operation_count": 16,
+      "expected_rejection_count": 6
+    },
+    {
+      "report": "clocks-delay-python310-2.json",
+      "sha256": "284ef1b1b95d12326e44c743c33b1b41b527812b0e9ccbb0472650f6ad4082e2",
+      "passed": true,
+      "wire_frame_count": 351,
+      "cli_operation_count": 16,
+      "expected_rejection_count": 6
+    },
+    {
+      "report": "clocks-delay-python310-3.json",
+      "sha256": "b8fafa0772957f9c4c549c35bdaee7399b56cce7a412cde51393ba937f97739b",
+      "passed": true,
+      "wire_frame_count": 351,
+      "cli_operation_count": 16,
+      "expected_rejection_count": 6
+    }
+  ]
+}

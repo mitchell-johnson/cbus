@@ -1,0 +1,72 @@
+{
+  "format": "csv-backend-source-proposal-manifest-v1",
+  "stage": "source_only_held_proposal",
+  "original_executed": false,
+  "native_executed": false,
+  "vm_executed": false,
+  "selected_authored_files": [
+    {
+      "path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/extract_static.py",
+      "bytes": 4203,
+      "sha256": "1ef61a19fd5db4edb4457c3891156efbce84dd95b7b7ac734aae501ad3aeab07"
+    },
+    {
+      "path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/extract_named.py",
+      "bytes": 920,
+      "sha256": "503c46a3273531a073d6d1c38fcd46e84c8b3841c06cb3b51d47b4e2bb57662f"
+    },
+    {
+      "path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/extract_strings_v4.py",
+      "bytes": 2222,
+      "sha256": "c47dc09fb709dec77831b1f32a9704bf11aade7ca93a37a6d2b9c2b8a1c803db"
+    },
+    {
+      "path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/source_facts.py",
+      "bytes": 2606,
+      "sha256": "363ba65fd572ec1c796a16183ada044e5f264a9e8089fceea008b1b2c4ffd7eb"
+    },
+    {
+      "path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/source-findings.md",
+      "bytes": 11342,
+      "sha256": "0422a99335b94e7a3297ba04dfe98a881885a5959e1ec6aa01ac8dc43c4a78ee"
+    },
+    {
+      "path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/PILOT-PROPOSAL.md",
+      "bytes": 8033,
+      "sha256": "a01f714424394033a81a153aff3df99046c6b87b849a26e8cf08b514eb08ab0a"
+    },
+    {
+      "path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/case-plan.json",
+      "bytes": 2678,
+      "sha256": "785dae8660fcfee49c7e530baedfb5a61a48751dbc8e767ab06bd65b6aad6ef4"
+    },
+    {
+      "path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/source-data-v1.json",
+      "bytes": 10453,
+      "sha256": "1f1b2cd2f9c3900b649ca3c7bfcfdad9691ff9aacf2c43e536409d6bbe5c0ecb"
+    },
+    {
+      "path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/strings-v4.json",
+      "bytes": 76600,
+      "sha256": "20a3a7a0bf2eb59d8131b26c6333e6e9ac7fb43178ed053974a03d1b0362de67"
+    },
+    {
+      "path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-proposal-v1/static-index.json",
+      "bytes": 30807,
+      "sha256": "72d871c0c13ea0fa8654f8b4f40a73fc472d9508cd8b9c760a65835303617fd7"
+    }
+  ],
+  "preserved_prior_pilot": {
+    "report": {
+      "path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/projection-pilot-v1/original-pilot-v1/report.json",
+      "bytes": 26545,
+      "sha256": "4adac8a1633eaef408f301384d60aabda2ce5497ec403df80a8668170865f3a1"
+    },
+    "findings": {
+      "path": "/Volumes/external/cbus-toolkit-research-20260915-document-database/projection-pilot-v1/findings.md",
+      "bytes": 4860,
+      "sha256": "7bee5159d720484370d64b3a1ebcd02c7385b3929029c6cc80d6bc14ecd9cdfb"
+    }
+  },
+  "scope": "Source graph and future pilot proposal only. No new implementation or full CSV workflow claim."
+}

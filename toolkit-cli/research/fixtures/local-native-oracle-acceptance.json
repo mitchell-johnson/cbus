@@ -1,0 +1,30 @@
+{
+  "scope": "Owned original C-Gate process lifecycle on macOS; no physical network",
+  "passed": true,
+  "tests": [
+    {
+      "python": "3.13",
+      "tests": 16,
+      "skips": 0,
+      "seconds": 1.082
+    },
+    {
+      "python": "3.10",
+      "tests": 16,
+      "skips": 0,
+      "seconds": 1.263
+    }
+  ],
+  "source_and_report_sha256": {
+    "research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+    "tests/test_local_cgate.py": "997faf66b6ec02e4db3b57413cad504570aa6aad0fa4b87820f5e4894cbfc49b",
+    "docs/local-native-oracle.md": "b54ca6925b2c95378690e1c8f85453259ffc1ad4091375c65dcf84ef67a27fe0",
+    "research/runtime/cgate-macos-owned/local-helper-313.json": "58f4622a96d796146633d01d7cfa1b9d4b0f9355648a9b6687aea8a648477299",
+    "research/runtime/cgate-macos-owned/local-helper-310.json": "eb011386a30d0c68d34e533e9c1e93cec3f27e600d5410d556a0d2bd5849a003"
+  },
+  "native_listener_count": 6,
+  "loopback_only": true,
+  "existing_projects_adopted": false,
+  "cleanup_verified": true,
+  "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+}

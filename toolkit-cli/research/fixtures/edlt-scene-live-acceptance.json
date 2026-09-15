@@ -1,0 +1,217 @@
+{
+  "format": "cbus-edlt-scene-live-acceptance-v1",
+  "passed": true,
+  "profile": {
+    "unit_type": "KEYGL5",
+    "catalog": "5055EDL",
+    "firmware": "5.5.00"
+  },
+  "scope": "Serial terminal-response capture/broadcast on issued retained scene references, with verified capture PP staging/save/reload and independent synthetic receiver",
+  "original_toolkit_version": "1.18.0.2754",
+  "original_backend": "windows",
+  "native_cgate": "3.4.0 build2001 owned macOS loopback service",
+  "runs": [
+    {
+      "python": "Python 3.13.14",
+      "tests": 17,
+      "skips": 0,
+      "passed": true,
+      "elapsed_seconds": 119.2286010410171,
+      "source_unchanged": true,
+      "source_hashes": {
+        "src/cbus_toolkit/edlt_scene_live.py": "60b4018263dc28406e2b52e1f9fe8179c32d8ca7b57f0886bedb23984a8e8a0c",
+        "src/cbus_toolkit/edlt_scene_manager.py": "8072aa122d2578b0d4763bb8b06d6e38b278fed110cf1d0337f55b745f1b575f",
+        "src/cbus_toolkit/edlt_lifecycle.py": "4f085eac6d38b562c0e8289185638dd16152f73a68728b2a40a6268224c5a94f",
+        "src/cbus_toolkit/edlt_application_cache.py": "c7dc8c133fd08f3b5c974c6429add4a82f7dda2d69154165c05935b02ecd6bd4",
+        "src/cbus_toolkit/edlt.py": "f5c996698b5970c56b9bfa60525a35e96a3734328780cd35b9ae07a9663ca735",
+        "src/cbus_toolkit/cgate.py": "fef71db3a4d98c1a175a8bf0287b5abcaea4689df835dea7b0c19413e206eb15",
+        "src/cbus_toolkit/programming.py": "30b0def5768e5a7f926eb07771dddb02a4ec5bf6e724fad735be8f3f59c07a96",
+        "src/cbus_toolkit/native.py": "d4bb3b4e83434ace48cbd436179ec4ff68b34c065d2d88d300493cc3ebcf5051",
+        "src/cbus_toolkit/simulator.py": "1626a046f5bd274b185bec1b11236f32a274abe06d41e87012655012dc58fec6",
+        "src/cbus_toolkit/lighting_state.py": "b5c62265aa98883e42d9d24767d7b97be11371d833ea2b943ba27d9c7bec8fff",
+        "tests/test_edlt_scene_live.py": "b5342e30a534c90bde2a24387313d16ddacb0ce80f9cae02d03899545ee0dd04",
+        "tests/test_edlt_scene_manager.py": "d9fb4d82af2b5747b1012080524ed047d91511a1a93942ee7573a9acb65e3cd9",
+        "tests/test_edlt_lifecycle.py": "e8404b452c70ba670062de9f6c3ec24f3aa027dc487b04b234cb042f1f058c74",
+        "tests/test_edlt.py": "5546612b307109a94d17d211a0b64d4f50658ab43e4ae5a589dd0e366fb96c46",
+        "tests/test_cgate.py": "b4883d234bc76abd5cf3ad0fd2b427b8c5acbb37258d66db94c9b02ebf64a8b7",
+        "research/NativeEdltSceneLiveProbe.cs": "dc7ff71271ac9fad784cdb35c8678ed5c3ecff0d4e8c6ed7892f9d8f17a467ac",
+        "research/fixtures/edlt-scene-live-vectors.json": "ae0f3864b456ad8c0cafc306159f12195d4c4e923a3b272f13bfaaa2ae259299",
+        "research/fixtures/edlt-scene-manager-vectors.json": "d8d6bbb40ae62d8209a05fbd13ec9571cb6748c81fe069f88d1b5d11c6d32ae4",
+        "research/original_oracle.py": "5c96ba679de04921798b282dea05a5b0a1db78f4859aab5e8259b78e41a50ab8",
+        "research/windows_bridge.py": "9b2044b76fa74cb5bb06dcfb854c7a1fc7f96c19ba3f0367e5f901cfad822107",
+        "research/windows_provenance.py": "8aad4ca9d1577b985eef9b453cd1ba1b10c1a73f4627a74b8c45e565c3a47e48",
+        "src/cbus_toolkit/edlt_scene_live_cli.py": "7cc5c9bfa7f81347df3abdbca8f36974f7c1df6963e502b5b139d303a9bc66ad",
+        "src/cbus_toolkit/edlt_scene_manager_cli.py": "30b6144d6e9a5a4484a03dcee82ac4c394a67ddd3748c1e2ee20806bf135b5e7",
+        "src/cbus_toolkit/edlt_control_cli.py": "90807283d24976e753835a191f982f538187be2c2b5347492f34d15207e19a48",
+        "src/cbus_toolkit/cli.py": "d849f3675f45922965b7cea0fc69e5bcd4466189e02b67e2ff61da764f40c908",
+        "tests/test_cli_edlt_scene_live.py": "54e92e34a0360626ed85f2329b277b158a551bdcf15b4958415191e3430416e7"
+      },
+      "log_sha256": "4eaf4dfceecb022340057951927b96dd52c4326e5d86167ebe0894f3b616aca9",
+      "original_report_sha256": "6b2c333d148c7c9aec9fd2296d16edfb7d320fc69d8cfc8a233dffeefa83a248",
+      "native_report_sha256": "0dde12da540cb4f573a4f1166f76aabdf90025f7ed45caaae527d08c8eeb3ca0",
+      "original_executions": 14,
+      "original_parameters_each": 874,
+      "compiled_probe_sha256": "2933cfcbf4aadbe42ecda0853e1a702cc8e4100ebf5d10ee9fbd8f50cf4a7a20",
+      "original_runtime_files": [
+        "runtime-file\tmscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\tC:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\mscorlib.dll\t93d46bdac1664dba87641925572c789d71a21bb01dc7c7e5aa99c0eca8335e5e\t4.8.9345.0 built by: NET481REL1LAST_25H2_C",
+        "runtime-file\tSystem.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\tC:\\WINDOWS\\Microsoft.Net\\assembly\\GAC_MSIL\\System.Windows.Forms\\v4.0_4.0.0.0__b77a5c561934e089\\System.Windows.Forms.dll\t8c0f533e089647aeffb3ce0868f01d696a3fd2893ced5c3570e8438c96613a98\t4.8.9325.0 built by: NET481REL1LAST_25H2_C",
+        "runtime-file\tSystem.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\tC:\\WINDOWS\\Microsoft.Net\\assembly\\GAC_MSIL\\System.Core\\v4.0_4.0.0.0__b77a5c561934e089\\System.Core.dll\tfd1097aed825d392a5dc8d19384381d4bb2a43498ea1c9d917f5d80c66600e1b\t4.8.9347.0 built by: NET481REL1LAST_25H2_B",
+        "runtime-file\tCBusLogicModel, Version=7.14.0.0, Culture=neutral, PublicKeyToken=8b8325a0c030db9d\tC:\\CBusCliOracle118-88d8\\vendor\\CBusLogicModel.dll\t34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823\t7.14.0.0",
+        "runtime-file\teDLT, Version=7.16.0.0, Culture=neutral, PublicKeyToken=8b8325a0c030db9d\tC:\\CBusCliOracle118-88d8\\vendor\\eDLT.dll\t75bc741234b52a168a4838fee305c309d3909571d2711f7580216b46b028e8d3\t7.16.0.0",
+        "runtime-file\tSharpCGateCommunicator, Version=7.15.0.0, Culture=neutral, PublicKeyToken=8b8325a0c030db9d\tC:\\CBusCliOracle118-88d8\\vendor\\SharpCGateCommunicator.dll\tfd589789f2c40c0853c06a7d836add0f81a6afe3f397a8d6965a1a1f549a2d6e\t7.15.0.0"
+      ],
+      "native_original_five_crc_bytes": "efa10008a4496679cc74",
+      "native_scene_sha256": "796505bc90e25f83e894f09fa86b0402217d21957ff94edfdcbad7f25626213f",
+      "native_broadcast_wire_rx": [
+        "303230433041730d",
+        "303232414338740d",
+        "5c303533393030303230433030750d"
+      ],
+      "save_close_reload_verified": true,
+      "metadata_unchanged": true,
+      "independent_receiver_persisted": true
+    },
+    {
+      "python": "Python 3.10.20",
+      "tests": 17,
+      "skips": 0,
+      "passed": true,
+      "elapsed_seconds": 109.602185249998,
+      "source_unchanged": true,
+      "source_hashes": {
+        "src/cbus_toolkit/edlt_scene_live.py": "60b4018263dc28406e2b52e1f9fe8179c32d8ca7b57f0886bedb23984a8e8a0c",
+        "src/cbus_toolkit/edlt_scene_manager.py": "8072aa122d2578b0d4763bb8b06d6e38b278fed110cf1d0337f55b745f1b575f",
+        "src/cbus_toolkit/edlt_lifecycle.py": "4f085eac6d38b562c0e8289185638dd16152f73a68728b2a40a6268224c5a94f",
+        "src/cbus_toolkit/edlt_application_cache.py": "c7dc8c133fd08f3b5c974c6429add4a82f7dda2d69154165c05935b02ecd6bd4",
+        "src/cbus_toolkit/edlt.py": "f5c996698b5970c56b9bfa60525a35e96a3734328780cd35b9ae07a9663ca735",
+        "src/cbus_toolkit/cgate.py": "fef71db3a4d98c1a175a8bf0287b5abcaea4689df835dea7b0c19413e206eb15",
+        "src/cbus_toolkit/programming.py": "30b0def5768e5a7f926eb07771dddb02a4ec5bf6e724fad735be8f3f59c07a96",
+        "src/cbus_toolkit/native.py": "d4bb3b4e83434ace48cbd436179ec4ff68b34c065d2d88d300493cc3ebcf5051",
+        "src/cbus_toolkit/simulator.py": "1626a046f5bd274b185bec1b11236f32a274abe06d41e87012655012dc58fec6",
+        "src/cbus_toolkit/lighting_state.py": "b5c62265aa98883e42d9d24767d7b97be11371d833ea2b943ba27d9c7bec8fff",
+        "tests/test_edlt_scene_live.py": "b5342e30a534c90bde2a24387313d16ddacb0ce80f9cae02d03899545ee0dd04",
+        "tests/test_edlt_scene_manager.py": "d9fb4d82af2b5747b1012080524ed047d91511a1a93942ee7573a9acb65e3cd9",
+        "tests/test_edlt_lifecycle.py": "e8404b452c70ba670062de9f6c3ec24f3aa027dc487b04b234cb042f1f058c74",
+        "tests/test_edlt.py": "5546612b307109a94d17d211a0b64d4f50658ab43e4ae5a589dd0e366fb96c46",
+        "tests/test_cgate.py": "b4883d234bc76abd5cf3ad0fd2b427b8c5acbb37258d66db94c9b02ebf64a8b7",
+        "research/NativeEdltSceneLiveProbe.cs": "dc7ff71271ac9fad784cdb35c8678ed5c3ecff0d4e8c6ed7892f9d8f17a467ac",
+        "research/fixtures/edlt-scene-live-vectors.json": "ae0f3864b456ad8c0cafc306159f12195d4c4e923a3b272f13bfaaa2ae259299",
+        "research/fixtures/edlt-scene-manager-vectors.json": "d8d6bbb40ae62d8209a05fbd13ec9571cb6748c81fe069f88d1b5d11c6d32ae4",
+        "research/original_oracle.py": "5c96ba679de04921798b282dea05a5b0a1db78f4859aab5e8259b78e41a50ab8",
+        "research/windows_bridge.py": "9b2044b76fa74cb5bb06dcfb854c7a1fc7f96c19ba3f0367e5f901cfad822107",
+        "research/windows_provenance.py": "8aad4ca9d1577b985eef9b453cd1ba1b10c1a73f4627a74b8c45e565c3a47e48",
+        "src/cbus_toolkit/edlt_scene_live_cli.py": "7cc5c9bfa7f81347df3abdbca8f36974f7c1df6963e502b5b139d303a9bc66ad",
+        "src/cbus_toolkit/edlt_scene_manager_cli.py": "30b6144d6e9a5a4484a03dcee82ac4c394a67ddd3748c1e2ee20806bf135b5e7",
+        "src/cbus_toolkit/edlt_control_cli.py": "90807283d24976e753835a191f982f538187be2c2b5347492f34d15207e19a48",
+        "src/cbus_toolkit/cli.py": "d849f3675f45922965b7cea0fc69e5bcd4466189e02b67e2ff61da764f40c908",
+        "tests/test_cli_edlt_scene_live.py": "54e92e34a0360626ed85f2329b277b158a551bdcf15b4958415191e3430416e7"
+      },
+      "log_sha256": "1ff979e2a595366d584e08e40d236961a4f3a8ac560d076d3ad7fd04d5a96243",
+      "original_report_sha256": "071a229f6766625cfbba263e2de53db8ef990262bf4d7bd44dfcb4c4d5d65299",
+      "native_report_sha256": "25304e9fea7622ead96cbc0db2307980bff8c9cc8acf702635280a60c7f1574c",
+      "original_executions": 14,
+      "original_parameters_each": 874,
+      "compiled_probe_sha256": "e0456af54c66eb9e0d4720141043fa5e61bca1a898c2a49da2b37f2c9dff6211",
+      "original_runtime_files": [
+        "runtime-file\tmscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\tC:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\mscorlib.dll\t93d46bdac1664dba87641925572c789d71a21bb01dc7c7e5aa99c0eca8335e5e\t4.8.9345.0 built by: NET481REL1LAST_25H2_C",
+        "runtime-file\tSystem.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\tC:\\WINDOWS\\Microsoft.Net\\assembly\\GAC_MSIL\\System.Windows.Forms\\v4.0_4.0.0.0__b77a5c561934e089\\System.Windows.Forms.dll\t8c0f533e089647aeffb3ce0868f01d696a3fd2893ced5c3570e8438c96613a98\t4.8.9325.0 built by: NET481REL1LAST_25H2_C",
+        "runtime-file\tSystem.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\tC:\\WINDOWS\\Microsoft.Net\\assembly\\GAC_MSIL\\System.Core\\v4.0_4.0.0.0__b77a5c561934e089\\System.Core.dll\tfd1097aed825d392a5dc8d19384381d4bb2a43498ea1c9d917f5d80c66600e1b\t4.8.9347.0 built by: NET481REL1LAST_25H2_B",
+        "runtime-file\tCBusLogicModel, Version=7.14.0.0, Culture=neutral, PublicKeyToken=8b8325a0c030db9d\tC:\\CBusCliOracle118-88d8\\vendor\\CBusLogicModel.dll\t34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823\t7.14.0.0",
+        "runtime-file\teDLT, Version=7.16.0.0, Culture=neutral, PublicKeyToken=8b8325a0c030db9d\tC:\\CBusCliOracle118-88d8\\vendor\\eDLT.dll\t75bc741234b52a168a4838fee305c309d3909571d2711f7580216b46b028e8d3\t7.16.0.0",
+        "runtime-file\tSharpCGateCommunicator, Version=7.15.0.0, Culture=neutral, PublicKeyToken=8b8325a0c030db9d\tC:\\CBusCliOracle118-88d8\\vendor\\SharpCGateCommunicator.dll\tfd589789f2c40c0853c06a7d836add0f81a6afe3f397a8d6965a1a1f549a2d6e\t7.15.0.0"
+      ],
+      "native_original_five_crc_bytes": "efa10008a4496679cc74",
+      "native_scene_sha256": "796505bc90e25f83e894f09fa86b0402217d21957ff94edfdcbad7f25626213f",
+      "native_broadcast_wire_rx": [
+        "303230433041730d",
+        "303232414338740d",
+        "5c303533393030303230433030750d"
+      ],
+      "save_close_reload_verified": true,
+      "metadata_unchanged": true,
+      "independent_receiver_persisted": true
+    }
+  ],
+  "files": {
+    "src/cbus_toolkit/edlt_scene_live.py": "60b4018263dc28406e2b52e1f9fe8179c32d8ca7b57f0886bedb23984a8e8a0c",
+    "src/cbus_toolkit/edlt_scene_manager.py": "8072aa122d2578b0d4763bb8b06d6e38b278fed110cf1d0337f55b745f1b575f",
+    "src/cbus_toolkit/edlt_scene_live_cli.py": "7cc5c9bfa7f81347df3abdbca8f36974f7c1df6963e502b5b139d303a9bc66ad",
+    "tests/test_edlt_scene_live.py": "b5342e30a534c90bde2a24387313d16ddacb0ce80f9cae02d03899545ee0dd04",
+    "tests/test_cli_edlt_scene_live.py": "54e92e34a0360626ed85f2329b277b158a551bdcf15b4958415191e3430416e7",
+    "research/NativeEdltSceneLiveProbe.cs": "dc7ff71271ac9fad784cdb35c8678ed5c3ecff0d4e8c6ed7892f9d8f17a467ac",
+    "research/fixtures/edlt-scene-live-vectors.json": "ae0f3864b456ad8c0cafc306159f12195d4c4e923a3b272f13bfaaa2ae259299",
+    "docs/edlt-scene-live.md": "6f82f0fef4b99ada1c1724fb943dcefa248b8b232856ac2575a71089fb22040e",
+    "docs/edlt-scene-manager.md": "f9b478b276527e6d5290773618111b507bca9c412e17c8353f4cb9f94f85827e"
+  },
+  "historical_research_summary_sha256": "fc5eb2942d2369746c52d31cbeda9a05dc354b2a8b634a764cfa33d5f61983ce",
+  "historical_original_control_cancellation_scope": "Owned manual callback after timer stop; not wall-clock timing or production background behavior",
+  "original_case_names": [
+    "capture",
+    "capture-bad",
+    "capture-rejected",
+    "capture-missing-key",
+    "empty",
+    "broadcast-one",
+    "broadcast-all",
+    "broadcast-rejected",
+    "broadcast-cross",
+    "broadcast-all-rejected",
+    "capture-low",
+    "capture-high",
+    "capture-overflow",
+    "capture-signed"
+  ],
+  "original_vendor_manifest_sha256": "689931140e99a8366021073dd5980d2e43dbb61059eef0a488b69e8d856f69cc",
+  "transcript_archive_sha256": "abda17d64aa82a7564d36646517dad7433d7508e2d08373490578364e05e2898",
+  "additional_manager_regressions": {
+    "tests_each": 9,
+    "skips": 0,
+    "report_sha256": "b71abcc9330eaf26ff411009809f39567947da6b20e08076883b03a0656e2adb",
+    "runs": [
+      {
+        "python": "Python 3.13.14",
+        "returncode": 0,
+        "log_sha256": "64d1d249de9828b9de8301d73238ceedb04ad41e32c1d99d3a8c1135fdc39dad"
+      },
+      {
+        "python": "Python 3.10.20",
+        "returncode": 0,
+        "log_sha256": "ed823138cac4b9f272544321e4ff42ab8f10eee5728f4a85d606aba76e21a956"
+      }
+    ]
+  },
+  "preserved_prior_runs": [
+    {
+      "path": "implementation-acceptance-v1/report.json",
+      "sha256": "4f28b5764684001b2c625bff699b915c24be8de728eab0fe4a827b28c2657be7",
+      "status": "Initial10 core tests passed both; later first-evidence-interruption guard added"
+    },
+    {
+      "path": "cli-acceptance-v1/report.json",
+      "sha256": "a19ef12cc5469a52327b478bacc15745c8af3ede84f943007acf0eca6aa216ff",
+      "status": "Initial6 CLI tests passed both; final17-test run supersedes this checkpoint"
+    },
+    {
+      "path": "native-implementation-313-v2.log",
+      "sha256": "22c6672519e322fd83ed08665a43c53682afb068e26bb929f12382e661b35379",
+      "status": "Fixture metadata baseline had not undergone first save/reload normalization; no production mismatch"
+    },
+    {
+      "path": "native-implementation-313-v3.log",
+      "sha256": "6be5e9db34d0ca89bdcef1e0d1d796673b79c32e4c9597f2280d933de93bd66d",
+      "status": "Corrected fixture baseline; complete original/raw/CRC/native persistence passed"
+    }
+  ],
+  "operation_limits": {
+    "automatic_retries": 0,
+    "background_timer": false,
+    "ui_async_dispatch_parity": false,
+    "metadata_creation": false,
+    "broadcast_pp_writes": 0,
+    "capture_dry_run": "Live GET plus temporary verified PP stage, no persistent SAVE",
+    "unverified_capture_persistable": false,
+    "exports_resumable": false,
+    "physical_device_verified": false
+  },
+  "physical_device_verified": false
+}

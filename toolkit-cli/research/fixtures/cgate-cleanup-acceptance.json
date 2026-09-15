@@ -1,0 +1,34 @@
+{
+  "format": "cbus-cgate-cleanup-focused-acceptance-v1",
+  "passed": true,
+  "full_native_wheel_acceptance": false,
+  "physical_device_verified": false,
+  "scope": "Preserve first context/connect/command/event failure across socket cleanup; CLI bounded cleanup details",
+  "source_sha256": {
+    "src/cbus_toolkit/cgate.py": "fef71db3a4d98c1a175a8bf0287b5abcaea4689df835dea7b0c19413e206eb15",
+    "src/cbus_toolkit/cli.py": "dff6ae6dcf1363903588983cb366afa2436e49c262a13203a8bc7c7b9fd0bf43",
+    "tests/test_cgate_cleanup.py": "4e8b241f96d57b2d5f942f3e4e067748597da79f1c0d7bf4631ed88b2b20460b",
+    "tests/test_cgate.py": "b4883d234bc76abd5cf3ad0fd2b427b8c5acbb37258d66db94c9b02ebf64a8b7"
+  },
+  "runs": [
+    {
+      "python": "3.13.14",
+      "tests_run": 42,
+      "duration_seconds": 1.919,
+      "skipped": [],
+      "report": "research/runtime/cgate-clear-cli-python3.13.14.json",
+      "report_sha256": "f11a6f8f255dde1901e3a1a81e68c69cc18a15da03f8f69a82a5bf2398110700"
+    },
+    {
+      "python": "3.10.20",
+      "tests_run": 42,
+      "duration_seconds": 2.042,
+      "skipped": [],
+      "report": "research/runtime/cgate-clear-cli-python3.10.20.json",
+      "report_sha256": "5004340e3390c897b1d2f2f8757de0a08ce4daffc9f3bb127967d4a661e0b2d1"
+    }
+  ],
+  "reproduction": "research/runtime/cgate-cleanup-review.json",
+  "core_tests": 36,
+  "supplemental_clear_cli_tests": 6
+}

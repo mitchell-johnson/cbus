@@ -1,0 +1,97 @@
+{
+  "format": "cbus-edlt-percentage-acceptance-v1",
+  "passed": true,
+  "tests_each": 10,
+  "skips_each": 0,
+  "reports": [
+    {
+      "report_path": "research/runtime/edlt-percentage-acceptance-v1/final-313-v2/report.json",
+      "report_sha256": "f73a4e20d2cfb5b725a2c1129faae00fd8b5df038869f831c6ac93499bf8dd2b",
+      "input_archive_path": "research/runtime/edlt-percentage-acceptance-v1/final-313-v2/inputs.tar.gz",
+      "input_archive_sha256": "d5ab101b8b327ae13ad989384d81b90a3ab6e75d85d1e846eb4238e61af84603",
+      "test_result": {
+        "python": "3.13.14",
+        "tests_run": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "passed": true,
+        "duration_seconds": 3.2937198749859817,
+        "loaded_package_sha256": {
+          "cbus_toolkit": "a39021e17c28b8e97c4b6ad7b20ffe35ce621332c0f4d006162f77c0703b5fed",
+          "cbus_toolkit.edlt_percentage": "5c076ea7f4e3a9a3985087f4a65ccc33d553fb41d4cb36b3eaf9ececcc0123e9"
+        }
+      },
+      "original_report_path": "research/runtime/edlt-percentage-acceptance-v1/final-313-v2/original-report.json",
+      "original_report_sha256": "ee54fec32d5202e4f6dfdeaabfa713692d17f262321304915866d417c16c9f60",
+      "actual_decimal_runtime": "decimal_runtime\t/Users/mitchell/source/cbus/toolkit-cli/research/runtime/mono-macos-owned/expanded/mono.pkg/Payload/Library/Frameworks/Mono.framework/Versions/6.12.0/lib/mono/4.5/mscorlib.dll\tmscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\t86364b7803c92d8c88b590031f015f80b10b00641e9d067e07a529a131d815e4\tpointer_bits\t64",
+      "executed_fixture": "executable\t/Users/mitchell/source/cbus/toolkit-cli/research/runtime/edlt-percentage-acceptance-v1/final-313-v2/original/OriginalPercentage.exe\tc908b3296b75f07b88ee2f72b29ac7345dfc52807d9c505c02e4588c575bd8e9",
+      "post_write_verifier_stdout_sha256": "9f17700db39de9bc4874b26e29cccd935457daf71f448c8f89057f2bdbee133c"
+    },
+    {
+      "report_path": "research/runtime/edlt-percentage-acceptance-v1/final-310-v2/report.json",
+      "report_sha256": "c4a9ebe5e0d2804482e63aff88cac602408ae62adb328cfcf01220af129175e8",
+      "input_archive_path": "research/runtime/edlt-percentage-acceptance-v1/final-310-v2/inputs.tar.gz",
+      "input_archive_sha256": "d2f7b7c42f34a343b261872525559f25d1e5c8e3cb1d9bcf5bef4de8ab8ebce8",
+      "test_result": {
+        "python": "3.10.20",
+        "tests_run": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "passed": true,
+        "duration_seconds": 3.1064444999792613,
+        "loaded_package_sha256": {
+          "cbus_toolkit": "a39021e17c28b8e97c4b6ad7b20ffe35ce621332c0f4d006162f77c0703b5fed",
+          "cbus_toolkit.edlt_percentage": "5c076ea7f4e3a9a3985087f4a65ccc33d553fb41d4cb36b3eaf9ececcc0123e9"
+        }
+      },
+      "original_report_path": "research/runtime/edlt-percentage-acceptance-v1/final-310-v2/original-report.json",
+      "original_report_sha256": "b3f5cba98d6bf3fa054d80f789c08d34323b790b8cfd5cc4c782a3376391a858",
+      "actual_decimal_runtime": "decimal_runtime\t/Users/mitchell/source/cbus/toolkit-cli/research/runtime/mono-macos-owned/expanded/mono.pkg/Payload/Library/Frameworks/Mono.framework/Versions/6.12.0/lib/mono/4.5/mscorlib.dll\tmscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\t86364b7803c92d8c88b590031f015f80b10b00641e9d067e07a529a131d815e4\tpointer_bits\t64",
+      "executed_fixture": "executable\t/Users/mitchell/source/cbus/toolkit-cli/research/runtime/edlt-percentage-acceptance-v1/final-310-v2/original/OriginalPercentage.exe\tc908b3296b75f07b88ee2f72b29ac7345dfc52807d9c505c02e4588c575bd8e9",
+      "post_write_verifier_stdout_sha256": "9f17700db39de9bc4874b26e29cccd935457daf71f448c8f89057f2bdbee133c"
+    }
+  ],
+  "input_sha256": {
+    "src/cbus_toolkit/__init__.py": "a39021e17c28b8e97c4b6ad7b20ffe35ce621332c0f4d006162f77c0703b5fed",
+    "src/cbus_toolkit/edlt_percentage.py": "5c076ea7f4e3a9a3985087f4a65ccc33d553fb41d4cb36b3eaf9ececcc0123e9",
+    "tests/__init__.py": "6b295a6d369bc894eec66aa424c8de2618957caeabe05fbe28240a3dc96d5e4d",
+    "tests/test_edlt_percentage.py": "08679d6e63bca37308e0b6a58187f5c0086ebcf64a0fa5c0bed9d78d6401e63a",
+    "research/edlt_percentage_original.py": "a9476a806114bb2d69614b4190be99c22f6ca422b6c0824bec3e5feb328c8fef",
+    "research/NativeEdltPercentageExtract.cs": "baf77b9e09666c532a19960d870fb5dffa8f248f9a23f9d0f433b6fad1bb6e49",
+    "research/NativeEdltPercentageVerify.cs": "bf5f9430a1e95921d15f23d300d53d5e0af2cad4780659585ff62f2686cc19e9",
+    "research/NativeEdltPercentageProbe.cs": "b7c8f34f6f53e9707609fbe19d79a5fa62d73f1c7643675a5f23d6e67315f7f9",
+    "research/fixtures/edlt-percentage-vectors.json": "b29e2754378450320d431313ac5a96ac549209f4875dda65b6c1b851e7940454",
+    "docs/edlt-percentage.md": "2ff11323433b0b7a6e98c55008e39a6536b6a5ba4e3f6556960c9eea67108c25",
+    "research/runtime/edlt-percentage-acceptance-v1/run.py": "83f062cc4f914c404e814fa0e911d90719397b7218ef71cdf2920985a07c0787"
+  },
+  "vectors_sha256": "b29e2754378450320d431313ac5a96ac549209f4875dda65b6c1b851e7940454",
+  "scope": {
+    "pure_arithmetic_module": true,
+    "full_control_or_winforms_executed": false,
+    "real_network_or_registry_io": false,
+    "vm_jobs_during_this_acceptance": 0,
+    "historical_windows_and_mono_rows": 290,
+    "supported_historical_rows": 270,
+    "historical_rows_outside_domain": 20,
+    "mono_only_boundary_supplement_rows": 6214,
+    "fresh_original_rows_each_python": 6504,
+    "byte_roundtrip_losses_preserved": 37,
+    "written_original_il_instructions": 44,
+    "written_branch_targets": 3,
+    "redirected_calls": 6,
+    "exact_input_representability_required": true,
+    "local_original_mono_only": true
+  },
+  "limitations": [
+    "No WinForms range validation, GUI, binding, parsing, formatting or event parity claim.",
+    "The historical Windows290-row capture is independent and retained; new6214-row supplement was run only on pinned Mono.",
+    "The exact Python module/test/research inputs were archived at launch; shared CLI edits and full-wheel checkpoints are separate acceptance."
+  ],
+  "prior_acceptance_preserved": {
+    "path": "research/runtime/edlt-percentage-acceptance-v1/prior-final-v1-acceptance.json",
+    "sha256": "eecf2d30212a96342ea289de0375bfe5999c012fe5b33fca744a577348a5c90f",
+    "reason": "Both earlier10-test runs passed. Finalv2 additionally pins original Windows raw transcript/job files and the final acceptance documentation link."
+  }
+}

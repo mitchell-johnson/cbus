@@ -1,0 +1,34 @@
+{
+  "target": "C-Gate 3.4.0.2001",
+  "report_sha256": "9369fe9f519946fafaabf778dedc2949c2545da6d8a757ff061866ae22d9cf37",
+  "project": "EN8B317C",
+  "passed": true,
+  "native_set_operations": 5,
+  "verified_values": [
+    0,
+    255,
+    127,
+    123,
+    123
+  ],
+  "wire_records": 119,
+  "unsupported_packets": 0,
+  "peer_state_persisted": true,
+  "native_remove_cache_cleared": false,
+  "physical_device_verified": false,
+  "source_hashes": [
+    {
+      "class": "CBusEnableSetCommand.java",
+      "sha256": "4d6b1e83fa496055d13f07fa38fdc6ce7559177d648e1322afc6e039204e04e3"
+    },
+    {
+      "class": "CBusEnableNetworkVariable.java",
+      "sha256": "eca1d3beba400fb888c0f1923882b33e82b52cc0f432edbaa7ab7419daacbefa"
+    },
+    {
+      "class": "CBusEnableNetworkVariable$EnableRemoveMethodExposer.java",
+      "sha256": "009d4f6467e01c6089b3cac5a731eca697d5394509ad39a0c16069a18568eba0"
+    }
+  ],
+  "tests": "tests/test_enable.py"
+}

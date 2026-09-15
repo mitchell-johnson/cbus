@@ -1,0 +1,1416 @@
+{
+  "format": "cbus-toolkit-numeric-validation-vectors-v1",
+  "origin_report_sha256": "c092175f798215872e7d5f173dc5f5fc99445fb5b6fc13fb51fafa90042fa4f6",
+  "executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "cases": [
+    {
+      "input": "",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": false,
+      "converted_integers": [
+        0
+      ],
+      "original_float_inputs": [],
+      "error_message_ids": [
+        11264
+      ],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "display-error-fixture"
+      ]
+    },
+    {
+      "input": "0",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": false,
+      "converted_integers": [
+        0,
+        0
+      ],
+      "original_float_inputs": [
+        "0",
+        "0"
+      ],
+      "error_message_ids": [
+        11264
+      ],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text",
+        "display-error-fixture"
+      ]
+    },
+    {
+      "input": "63",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": false,
+      "converted_integers": [
+        63,
+        63
+      ],
+      "original_float_inputs": [
+        "63",
+        "63"
+      ],
+      "error_message_ids": [
+        11264
+      ],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text",
+        "display-error-fixture"
+      ]
+    },
+    {
+      "input": "64",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "65",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": true,
+      "converted_integers": [
+        65,
+        65
+      ],
+      "original_float_inputs": [
+        "65",
+        "65"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "9999",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": true,
+      "converted_integers": [
+        9999,
+        9999
+      ],
+      "original_float_inputs": [
+        "9999",
+        "9999"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "10000",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": false,
+      "converted_integers": [],
+      "original_float_inputs": [],
+      "error_message_ids": [
+        11263
+      ],
+      "gui_stub_trace": [
+        "get-text",
+        "display-error-fixture"
+      ]
+    },
+    {
+      "input": "0064",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "0064",
+        "0064"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": " 64",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "64 ",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "+64",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "-64",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": false,
+      "converted_integers": [
+        -64,
+        -64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [
+        11264
+      ],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text",
+        "display-error-fixture"
+      ]
+    },
+    {
+      "input": "--64",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "(64)",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "6A4",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "A64",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "64A",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "6.4",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": false,
+      "converted_integers": [
+        6,
+        6
+      ],
+      "original_float_inputs": [
+        "6.4",
+        "6.4"
+      ],
+      "error_message_ids": [
+        11264
+      ],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text",
+        "display-error-fixture"
+      ]
+    },
+    {
+      "input": "64.0",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64.0",
+        "64.0"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "64.5",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64.5",
+        "64.5"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "63.9",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": false,
+      "converted_integers": [
+        63,
+        63
+      ],
+      "original_float_inputs": [
+        "63.9",
+        "63.9"
+      ],
+      "error_message_ids": [
+        11264
+      ],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text",
+        "display-error-fixture"
+      ]
+    },
+    {
+      "input": "6,4",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "1e3",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": false,
+      "converted_integers": [
+        13,
+        13
+      ],
+      "original_float_inputs": [
+        "13",
+        "13"
+      ],
+      "error_message_ids": [
+        11264
+      ],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text",
+        "display-error-fixture"
+      ]
+    },
+    {
+      "input": "9e99",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": true,
+      "converted_integers": [
+        999,
+        999
+      ],
+      "original_float_inputs": [
+        "999",
+        "999"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "0x40",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": false,
+      "converted_integers": [
+        40,
+        40
+      ],
+      "original_float_inputs": [
+        "040",
+        "040"
+      ],
+      "error_message_ids": [
+        11264
+      ],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text",
+        "display-error-fixture"
+      ]
+    },
+    {
+      "input": "NaN",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": false,
+      "converted_integers": [
+        0,
+        0
+      ],
+      "original_float_inputs": [],
+      "error_message_ids": [
+        11264
+      ],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text",
+        "display-error-fixture"
+      ]
+    },
+    {
+      "input": "64\t",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": ".",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": false,
+      "converted_integers": [
+        0,
+        0
+      ],
+      "original_float_inputs": [
+        "0.0",
+        "0.0"
+      ],
+      "error_message_ids": [
+        11264
+      ],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text",
+        "display-error-fixture"
+      ]
+    },
+    {
+      "input": ",",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": false,
+      "converted_integers": [
+        0,
+        0
+      ],
+      "original_float_inputs": [
+        "0.0",
+        "0.0"
+      ],
+      "error_message_ids": [
+        11264
+      ],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text",
+        "display-error-fixture"
+      ]
+    },
+    {
+      "input": "6..4",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "6,,4",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "++64",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "99999",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "accepted": false,
+      "converted_integers": [],
+      "original_float_inputs": [],
+      "error_message_ids": [
+        11263
+      ],
+      "gui_stub_trace": [
+        "get-text",
+        "display-error-fixture"
+      ]
+    },
+    {
+      "input": "",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": false,
+      "converted_integers": [
+        0
+      ],
+      "original_float_inputs": [],
+      "error_message_ids": [
+        11264
+      ],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "display-error-fixture"
+      ]
+    },
+    {
+      "input": "0",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": false,
+      "converted_integers": [
+        0,
+        0
+      ],
+      "original_float_inputs": [
+        "0",
+        "0"
+      ],
+      "error_message_ids": [
+        11264
+      ],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text",
+        "display-error-fixture"
+      ]
+    },
+    {
+      "input": "63",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": false,
+      "converted_integers": [
+        63,
+        63
+      ],
+      "original_float_inputs": [
+        "63",
+        "63"
+      ],
+      "error_message_ids": [
+        11264
+      ],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text",
+        "display-error-fixture"
+      ]
+    },
+    {
+      "input": "64",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "65",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": true,
+      "converted_integers": [
+        65,
+        65
+      ],
+      "original_float_inputs": [
+        "65",
+        "65"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "9999",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": true,
+      "converted_integers": [
+        9999,
+        9999
+      ],
+      "original_float_inputs": [
+        "9999",
+        "9999"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "10000",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": false,
+      "converted_integers": [],
+      "original_float_inputs": [],
+      "error_message_ids": [
+        11263
+      ],
+      "gui_stub_trace": [
+        "get-text",
+        "display-error-fixture"
+      ]
+    },
+    {
+      "input": "0064",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "0064",
+        "0064"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": " 64",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "64 ",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "+64",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "-64",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": false,
+      "converted_integers": [
+        -64,
+        -64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [
+        11264
+      ],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text",
+        "display-error-fixture"
+      ]
+    },
+    {
+      "input": "--64",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "(64)",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "6A4",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "A64",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "64A",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "6.4",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "64.0",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": true,
+      "converted_integers": [
+        640,
+        640
+      ],
+      "original_float_inputs": [
+        "640",
+        "640"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "64.5",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": true,
+      "converted_integers": [
+        645,
+        645
+      ],
+      "original_float_inputs": [
+        "645",
+        "645"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "63.9",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": true,
+      "converted_integers": [
+        639,
+        639
+      ],
+      "original_float_inputs": [
+        "639",
+        "639"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "6,4",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": false,
+      "converted_integers": [
+        6,
+        6
+      ],
+      "original_float_inputs": [
+        "6,4",
+        "6,4"
+      ],
+      "error_message_ids": [
+        11264
+      ],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text",
+        "display-error-fixture"
+      ]
+    },
+    {
+      "input": "1e3",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": false,
+      "converted_integers": [
+        13,
+        13
+      ],
+      "original_float_inputs": [
+        "13",
+        "13"
+      ],
+      "error_message_ids": [
+        11264
+      ],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text",
+        "display-error-fixture"
+      ]
+    },
+    {
+      "input": "9e99",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": true,
+      "converted_integers": [
+        999,
+        999
+      ],
+      "original_float_inputs": [
+        "999",
+        "999"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "0x40",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": false,
+      "converted_integers": [
+        40,
+        40
+      ],
+      "original_float_inputs": [
+        "040",
+        "040"
+      ],
+      "error_message_ids": [
+        11264
+      ],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text",
+        "display-error-fixture"
+      ]
+    },
+    {
+      "input": "NaN",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": false,
+      "converted_integers": [
+        0,
+        0
+      ],
+      "original_float_inputs": [],
+      "error_message_ids": [
+        11264
+      ],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text",
+        "display-error-fixture"
+      ]
+    },
+    {
+      "input": "64\t",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": ".",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": false,
+      "converted_integers": [
+        0,
+        0
+      ],
+      "original_float_inputs": [
+        "0,0",
+        "0,0"
+      ],
+      "error_message_ids": [
+        11264
+      ],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text",
+        "display-error-fixture"
+      ]
+    },
+    {
+      "input": ",",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": false,
+      "converted_integers": [
+        0,
+        0
+      ],
+      "original_float_inputs": [
+        "0,0",
+        "0,0"
+      ],
+      "error_message_ids": [
+        11264
+      ],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text",
+        "display-error-fixture"
+      ]
+    },
+    {
+      "input": "6..4",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "6,,4",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "++64",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": true,
+      "converted_integers": [
+        64,
+        64
+      ],
+      "original_float_inputs": [
+        "64",
+        "64"
+      ],
+      "error_message_ids": [],
+      "gui_stub_trace": [
+        "get-text",
+        "get-text",
+        "get-text",
+        "get-text"
+      ]
+    },
+    {
+      "input": "99999",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "accepted": false,
+      "converted_integers": [],
+      "original_float_inputs": [],
+      "error_message_ids": [
+        11263
+      ],
+      "gui_stub_trace": [
+        "get-text",
+        "display-error-fixture"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "format": "cbus-toolkit-preferences-store-acceptance-v1",
+  "passed": true,
+  "scope": "Original x86 fixture-backed storage semantics and pure explicit-backend coordinator; no OS registry or GUI effects.",
+  "executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "profiles": {
+    "313": {
+      "python": "3.13.14",
+      "original_case_counts": {
+        "matrix": 40,
+        "display": 38,
+        "key": 2
+      },
+      "backend_tests": 14,
+      "skips": 0,
+      "backend_seconds": 0.07605187498847954,
+      "reports": {
+        "matrix-313-v3.json": "aaf86f405bde8ec0792e1a8a880a99d3fc349b7eb5e944a7a142132ee8331857",
+        "display-313-v3.json": "9c96d08747e1ebc0e1d0c26cb8c78b7c9f9cb3e29d610fe54ff5acbe91013d33",
+        "key-313-v3.json": "401ca596f6f13a4c0ca49ac7b85ea5a13bc791b7d62f8f6da048d19ec1648142",
+        "backend-313-final.json": "bb990741386f5274737d55728da7720d7108e1a730d0cb3e36c57dd864cd0687"
+      },
+      "tested_input_hashes": {
+        "src/cbus_toolkit/toolkit_preferences_store.py": "1e2bc8b4416bde76eb1280b75a4c8d1f39f138d466a6928c950f397aa6d81937",
+        "tests/test_toolkit_preferences_store.py": "ad62e402491d3b9e3e314ec38ddb1880d8af895939bc71d38d8e95020ad50553",
+        "research/fixtures/toolkit-preferences-store-vectors.json": "965237303fd13524707897e88f6a32c1a28176e0a9bfb9a9c3dbaf0850c97f61",
+        "docs/toolkit-preferences-store.md": "fa5f70c205e8ed534d8af0e093c726aaf5df6b7586b14f44d50d030ec9f5b4f3"
+      }
+    },
+    "310": {
+      "python": "3.10.20",
+      "original_case_counts": {
+        "matrix": 40,
+        "display": 38,
+        "key": 2
+      },
+      "backend_tests": 14,
+      "skips": 0,
+      "backend_seconds": 0.06893745801062323,
+      "reports": {
+        "matrix-310-v3.json": "51c3e1c8bbd144dfab62739536c6ff71fb4fe7162a6148d73441843c9f13e2b5",
+        "display-310-v3.json": "d8430dea60d21b068dce4dd123469def801461a4ec9cc49fe0ac9cfc27644629",
+        "key-310-v3.json": "5e106d9574dea8646264326331bdcb0598ea5752c9bc36f8c4c2b24bf73cae87",
+        "backend-310-final.json": "53b019a818f071f8540f883efbf2e3cf480e9f7824e39187e32bad9355efcae0"
+      },
+      "tested_input_hashes": {
+        "src/cbus_toolkit/toolkit_preferences_store.py": "1e2bc8b4416bde76eb1280b75a4c8d1f39f138d466a6928c950f397aa6d81937",
+        "tests/test_toolkit_preferences_store.py": "ad62e402491d3b9e3e314ec38ddb1880d8af895939bc71d38d8e95020ad50553",
+        "research/fixtures/toolkit-preferences-store-vectors.json": "965237303fd13524707897e88f6a32c1a28176e0a9bfb9a9c3dbaf0850c97f61",
+        "docs/toolkit-preferences-store.md": "fa5f70c205e8ed534d8af0e093c726aaf5df6b7586b14f44d50d030ec9f5b4f3"
+      }
+    }
+  },
+  "original_registration_count": 40,
+  "original_named_save_count": 35,
+  "display_values": 5,
+  "registration_order": "Kipper4 at InitTable388; global28 at614; DefaultLanguage8 at682; System.InitUnits walks forward",
+  "sources": {
+    "schema-v3.json": "e3e32d33dff37395f73a8aec673b8ef312147d112e87e41654eefc3dd0ea8613",
+    "persistence_probe.py": "1eee64c792100b6d6c02ab5d99b5acb313b039107b3857fefbcb931eb3b38e16",
+    "persistence_matrix.py": "3da1468d1b5f14f70465ba50dd015dbc385d1d813effca88cfd289ce28fd418c",
+    "display_persistence_probe.py": "963d03b40776dadb54633749be3a2cffe0ccc386e4e96fbe8e3ea72c5583b97d",
+    "key_creation_probe.py": "27ea5ecfa528fe0c5e9eb0cbc862a29e1dba5a2cb21af4185a79a686a23dae03",
+    "findings.md": "b5159913d76ed1efc690594099a2f7adbca47bacb797d8ceced2786f1bec2959"
+  },
+  "runtime_provenance": {
+    "registry_calls": "isolated fixtures only",
+    "exception_dispatch": "original Delphi catch-target tables, fixture unwind",
+    "string_memory_and_allocation": "explicit fixtures",
+    "boolean_comparison": "ASCII case-insensitive fixture; original final comparison branch",
+    "integer_conversion": "original JCL filter/parser/x87 instructions",
+    "ui_binding_executed": false,
+    "actual_registry_access": false,
+    "whole_startup_defaults_verified": false
+  },
+  "boundaries": [
+    "canonical signed decimal storage reads only; original broader JCL coercions explicitly unsupported",
+    "valid terminated UTF16LE strings without embedded NUL, max4096 characters",
+    "no implicit registry backend or actual Windows adapter",
+    "no registry transaction, retries of same operation, rollback or runtime-effect application",
+    "original ignored unnamed-write errors surfaced separately as incomplete outcome"
+  ],
+  "historical_corrections": [
+    "schema-v1 only32 direct registrations",
+    "schema-v2 full40 values but fixture order wrong",
+    "schema-v3 derives full40 original order from PE InitTable; older reports remain unchanged"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "format": "registry-authored-source-copy-v1",
+  "original_executed": false,
+  "windows_executed": false,
+  "admission_review_pending": true,
+  "files": {
+    "NativeRegistryConditionProbe.cs": {
+      "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-pilot-v1/NativeRegistryConditionProbe.cs",
+      "sha256": "a3decddc346c8bc8a3c66d2113e99d926e1e93b595ca7e953baf6822f5f4814b",
+      "bytes": 20359
+    },
+    "Pins.cs": {
+      "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-pilot-v1/Pins.cs",
+      "sha256": "7f11b044209870a74b743bdab2c79745501d5f569bbb7650db9d09638561c9cf",
+      "bytes": 4422
+    },
+    "prepare.py": {
+      "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-pilot-v1/prepare.py",
+      "sha256": "5aafd03aada731d65aa766f267807399e61926ee3d5f571b71a6c7c7c81a82d0",
+      "bytes": 7656
+    },
+    "input.json": {
+      "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-pilot-v1/input.json",
+      "sha256": "077c90b36a452951af1572e63d725bdb662a7966a35839985a7d121cc838f179",
+      "bytes": 11933
+    },
+    "contract.json": {
+      "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-pilot-v1/contract.json",
+      "sha256": "89712731cd62275ec46d54a004cb23d2c5195884f7096a9fe6918435478ba301",
+      "bytes": 6520
+    },
+    "run.py": {
+      "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-pilot-v1/run.py",
+      "sha256": "37f09a23a682ccedbd2681d530413a9d0981583713e9eff01d825981594f310a",
+      "bytes": 18030
+    },
+    "test_guards.py": {
+      "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-pilot-v1/test_guards.py",
+      "sha256": "9490e86722011cb11a479a09e39f58dc71ae7ca405ac47379a1ead62a5ec5086",
+      "bytes": 8077
+    }
+  }
+}

@@ -1,0 +1,626 @@
+{
+  "model_harnesses": [
+    {
+      "file": "tests/test_edlt_lifecycle.py",
+      "probes": [
+        "NativeEdltLifecycleProbe.cs"
+      ],
+      "windows_already_explicit": true,
+      "special": [],
+      "sha256": "47671802f35aa7609883cdc9047e0b1a106bd36a7608b26fffba845ce2cd4a50",
+      "current_sha256": "6371e559b29cfe7fc0b4f62626aa1f8d370f25095c24c3b98acdb927597ef712",
+      "current_explicit_backend": "windows",
+      "historical_fields_note": "Earlier sha256/windows_already_explicit fields reflect the recorded migration checkpoint; current fields describe this final census."
+    },
+    {
+      "file": "tests/test_edlt_scene.py",
+      "probes": [
+        "NativeEdltProbe.cs",
+        "NativeEdltSceneProbe.cs"
+      ],
+      "windows_already_explicit": false,
+      "special": [],
+      "sha256": "000ec13737974ebe3d7d111d13b3ba2c34824f286cfe711110856f28f2edaa42",
+      "current_sha256": "44f8e5e5440f3c96c1a38795946cd0660b26498d4fec2523682058f72956d4ac",
+      "current_explicit_backend": "windows",
+      "historical_fields_note": "Earlier sha256/windows_already_explicit fields reflect the recorded migration checkpoint; current fields describe this final census."
+    },
+    {
+      "file": "tests/test_edlt_shutter.py",
+      "probes": [
+        "NativeEdltProbe.cs",
+        "NativeEdltShutterProbe.cs"
+      ],
+      "windows_already_explicit": false,
+      "special": [],
+      "sha256": "c2deae647d0a3d056e6540a0aef49ee3a684e3d9b658513bc2f453499c3b55a1",
+      "current_sha256": "55bd97de2cc96fc13aa2f5934bd4e675feac7418623231a5e849e3260cdac6cf",
+      "current_explicit_backend": "windows",
+      "historical_fields_note": "Earlier sha256/windows_already_explicit fields reflect the recorded migration checkpoint; current fields describe this final census."
+    },
+    {
+      "file": "tests/test_edlt_navigation.py",
+      "probes": [
+        "NativeEdltCachedGroupProbe.cs",
+        "NativeEdltNavigationProbe.cs"
+      ],
+      "windows_already_explicit": false,
+      "special": [],
+      "sha256": "425daadad1a59aff3d6581a7dd79f0519ef7eb80bd5e16bd2e2c89ef6d51e6aa",
+      "current_sha256": "035f3f8493867fe75ccfc7b57fd444c9490bbcd5c6dc6e90cf75f530e6e1c875",
+      "current_explicit_backend": "windows",
+      "historical_fields_note": "Earlier sha256/windows_already_explicit fields reflect the recorded migration checkpoint; current fields describe this final census."
+    },
+    {
+      "file": "tests/test_edlt_timer.py",
+      "probes": [
+        "NativeEdltProbe.cs",
+        "NativeEdltTimerProbe.cs"
+      ],
+      "windows_already_explicit": false,
+      "special": [],
+      "sha256": "03518680905b16228c4bc1ab3795557c17e0857854bd63e21c8fec36d8ebd7b6",
+      "current_sha256": "5c66510b452383f5f25a15092a04d15319a8b753d7f4ae254cf50d79ce2a302a",
+      "current_explicit_backend": "windows",
+      "historical_fields_note": "Earlier sha256/windows_already_explicit fields reflect the recorded migration checkpoint; current fields describe this final census."
+    },
+    {
+      "file": "tests/test_edlt_page_control.py",
+      "probes": [
+        "NativeEdltPageControlProbe.cs"
+      ],
+      "windows_already_explicit": true,
+      "special": [],
+      "sha256": "84ca08aaf27d0f05303f99a2b7614a2e0555364d4093bab331c9b2d2e78184f2",
+      "current_sha256": "84ca08aaf27d0f05303f99a2b7614a2e0555364d4093bab331c9b2d2e78184f2",
+      "current_explicit_backend": "windows",
+      "historical_fields_note": "Earlier sha256/windows_already_explicit fields reflect the recorded migration checkpoint; current fields describe this final census."
+    },
+    {
+      "file": "tests/test_edlt_mra_normalization.py",
+      "probes": [
+        "NativeEdltNormalizationProbe.cs"
+      ],
+      "windows_already_explicit": true,
+      "special": [],
+      "sha256": "ea6daaf5d47ed1c2099e02c7799ce7e60a289415fd238b1345e82fd9c44e5a89",
+      "initial_inventory_sha256": "48bb6f97ea1f346fc0f4766cf53244f2675bff70bd93d5c82e1c2d11fe283dab",
+      "pre_shared_adapter_sha256": "48bb6f97ea1f346fc0f4766cf53244f2675bff70bd93d5c82e1c2d11fe283dab",
+      "shared_adapter_batch": 2,
+      "current_sha256": "ea6daaf5d47ed1c2099e02c7799ce7e60a289415fd238b1345e82fd9c44e5a89",
+      "current_explicit_backend": "windows",
+      "historical_fields_note": "Earlier sha256/windows_already_explicit fields reflect the recorded migration checkpoint; current fields describe this final census."
+    },
+    {
+      "file": "tests/test_edlt_general.py",
+      "probes": [
+        "NativeEdltGeneralProbe.cs"
+      ],
+      "windows_already_explicit": true,
+      "special": [],
+      "sha256": "6e0565cc0ad79ddd11230606db46561db16bd48c53aacfc5d066a49ba0e3569f",
+      "shared_adapter_pilot": true,
+      "current_sha256": "6e0565cc0ad79ddd11230606db46561db16bd48c53aacfc5d066a49ba0e3569f",
+      "current_explicit_backend": "windows",
+      "historical_fields_note": "Earlier sha256/windows_already_explicit fields reflect the recorded migration checkpoint; current fields describe this final census."
+    },
+    {
+      "file": "tests/test_edlt_activation.py",
+      "probes": [
+        "NativeEdltActivationProbe.cs"
+      ],
+      "windows_already_explicit": true,
+      "special": [],
+      "sha256": "b8d736778ad8a0ca922ca2d99bf893eeae7154c3ff6f313144073cb6f68aa175",
+      "pre_shared_adapter_sha256": "f3b0d5951cf220264a892166d8ea9d003ff986aa67d2ace6b262374809e37113",
+      "shared_adapter_batch": 1,
+      "current_sha256": "b8d736778ad8a0ca922ca2d99bf893eeae7154c3ff6f313144073cb6f68aa175",
+      "current_explicit_backend": "windows",
+      "historical_fields_note": "Earlier sha256/windows_already_explicit fields reflect the recorded migration checkpoint; current fields describe this final census."
+    },
+    {
+      "file": "tests/test_edlt.py",
+      "probes": [
+        "NativeEdltProbe.cs",
+        "NativeEdltStaticProbe.cs"
+      ],
+      "windows_already_explicit": false,
+      "special": [],
+      "sha256": "6c27ac7d80757cd85a5ed45a1d8344c11266f77a1108fa7fb873819b65662c65",
+      "current_sha256": "5546612b307109a94d17d211a0b64d4f50658ab43e4ae5a589dd0e366fb96c46",
+      "current_explicit_backend": "windows",
+      "historical_fields_note": "Earlier sha256/windows_already_explicit fields reflect the recorded migration checkpoint; current fields describe this final census."
+    },
+    {
+      "file": "tests/test_edlt_quick_status.py",
+      "probes": [
+        "NativeEdltCachedGroupProbe.cs",
+        "NativeEdltQuickStatusProbe.cs"
+      ],
+      "windows_already_explicit": false,
+      "special": [
+        "multi-source-and-Xvfb"
+      ],
+      "sha256": "4387b82e0155c6ed0356b38e39fe6247bcac12b48cce3aa7e20a6fb8c62c20dc",
+      "current_sha256": "4794030a367bdbb3e780adda45c4331957d26cfe3e641d6f57bcd9480666f393",
+      "current_explicit_backend": "windows",
+      "historical_fields_note": "Earlier sha256/windows_already_explicit fields reflect the recorded migration checkpoint; current fields describe this final census."
+    },
+    {
+      "file": "tests/test_edlt_measurement_icons.py",
+      "probes": [
+        "NativeEdltMeasurementIconProbe.cs"
+      ],
+      "windows_already_explicit": true,
+      "special": [
+        "additional-vendor-assembly"
+      ],
+      "sha256": "bdd8e82bcfa0be8321387faeb243842ea0e70e9ee6e1729c76351e114a8d0f15",
+      "pre_shared_adapter_sha256": "8a6e37382b710cfbac29a87fba06c2094d2e66325201083d2e9fba0e4f8d42f4",
+      "shared_adapter_batch": 1,
+      "current_sha256": "bdd8e82bcfa0be8321387faeb243842ea0e70e9ee6e1729c76351e114a8d0f15",
+      "current_explicit_backend": "windows",
+      "historical_fields_note": "Earlier sha256/windows_already_explicit fields reflect the recorded migration checkpoint; current fields describe this final census."
+    },
+    {
+      "file": "tests/test_edlt_room_courtesy.py",
+      "probes": [
+        "NativeEdltProbe.cs",
+        "NativeEdltRCPProbe.cs"
+      ],
+      "windows_already_explicit": true,
+      "special": [],
+      "sha256": "d29ce0a740103f6f5636c3702d174b3fe7e8beebad83ae16065e0874f47d250a",
+      "initial_inventory_sha256": "ba46b5d73cde1975dbccf9280e4db023526f3d4c8a930594c871c373cbdf67ab",
+      "pre_shared_adapter_sha256": "ba46b5d73cde1975dbccf9280e4db023526f3d4c8a930594c871c373cbdf67ab",
+      "shared_adapter_batch": 3,
+      "current_sha256": "d29ce0a740103f6f5636c3702d174b3fe7e8beebad83ae16065e0874f47d250a",
+      "current_explicit_backend": "windows",
+      "historical_fields_note": "Earlier sha256/windows_already_explicit fields reflect the recorded migration checkpoint; current fields describe this final census."
+    },
+    {
+      "file": "tests/test_edlt_multilevel.py",
+      "probes": [
+        "NativeEdltMultiLevelProbe.cs",
+        "NativeEdltProbe.cs"
+      ],
+      "windows_already_explicit": false,
+      "special": [],
+      "sha256": "f70631efc04806d2403a6a5dac861f3883ffbf0821f3200a1044c2028dc424fa",
+      "current_sha256": "da53071588c65c8282f35b7a81312a6c4ce936cf25eff1dbe1a9a22f646491cb",
+      "current_explicit_backend": "windows",
+      "historical_fields_note": "Earlier sha256/windows_already_explicit fields reflect the recorded migration checkpoint; current fields describe this final census."
+    },
+    {
+      "file": "tests/test_edlt_enable.py",
+      "probes": [
+        "NativeEdltEnableProbe.cs",
+        "NativeEdltProbe.cs"
+      ],
+      "windows_already_explicit": false,
+      "special": [],
+      "sha256": "12b8b4e3a64812d70a1e123269eb0a9bf3380fe997d4512fc6d246bb64d4a345",
+      "current_sha256": "f8236f3c975f3f6d790a49256dc68fe6c687cc1cb60da4561dc72b7d542931bd",
+      "current_explicit_backend": "windows",
+      "historical_fields_note": "Earlier sha256/windows_already_explicit fields reflect the recorded migration checkpoint; current fields describe this final census."
+    },
+    {
+      "file": "tests/test_edlt_standby.py",
+      "probes": [
+        "NativeEdltStandbyProbe.cs"
+      ],
+      "windows_already_explicit": true,
+      "special": [],
+      "sha256": "dfa3d93c7caa1ca43678103ba7c521ca7aaea43f9572600b0e8f61104819bb8a",
+      "pre_shared_adapter_sha256": "4235afa8fbbe8adf508f9d42da49687239845333f9c1203f7ef4e62755af5506",
+      "shared_adapter_batch": 1,
+      "current_sha256": "dfa3d93c7caa1ca43678103ba7c521ca7aaea43f9572600b0e8f61104819bb8a",
+      "current_explicit_backend": "windows",
+      "historical_fields_note": "Earlier sha256/windows_already_explicit fields reflect the recorded migration checkpoint; current fields describe this final census."
+    },
+    {
+      "file": "tests/test_edlt_measurement_standby.py",
+      "probes": [
+        "NativeEdltMeasurementStandbyProbe.cs"
+      ],
+      "windows_already_explicit": true,
+      "special": [
+        "additional-vendor-assembly"
+      ],
+      "sha256": "f48c6819e822e918e6db80d191a9f75b28c7148461e24cb2605bb2fe39d69f2a",
+      "initial_inventory_sha256": "d1579f7c0891cc3ec5482d43c575357cad822e499f5108d201286c68695cd521",
+      "pre_shared_adapter_sha256": "d1579f7c0891cc3ec5482d43c575357cad822e499f5108d201286c68695cd521",
+      "shared_adapter_batch": 3,
+      "current_sha256": "f48c6819e822e918e6db80d191a9f75b28c7148461e24cb2605bb2fe39d69f2a",
+      "current_explicit_backend": "windows",
+      "historical_fields_note": "Earlier sha256/windows_already_explicit fields reflect the recorded migration checkpoint; current fields describe this final census."
+    },
+    {
+      "file": "tests/test_edlt_hvac.py",
+      "probes": [
+        "NativeEdltHVACProbe.cs",
+        "NativeEdltHVACBaselineProbe.cs"
+      ],
+      "windows_already_explicit": true,
+      "special": [
+        "additional-vendor-assembly",
+        "strict-utf8-label-file-extension-with-baseline-audit"
+      ],
+      "sha256": "154b3fd03abcd1c01b818fc48802b02c1f5d1113bb64e5c5e6ac427cf8585f8f",
+      "initial_inventory_sha256": "8e2e3dddde93ea4e2bdbb6195bf99934cbc765f635933cf38a2bbb070a0b14bc",
+      "pre_shared_adapter_sha256": "8e2e3dddde93ea4e2bdbb6195bf99934cbc765f635933cf38a2bbb070a0b14bc",
+      "shared_adapter_batch": 3,
+      "current_sha256": "154b3fd03abcd1c01b818fc48802b02c1f5d1113bb64e5c5e6ac427cf8585f8f",
+      "current_explicit_backend": "windows",
+      "historical_fields_note": "Earlier sha256/windows_already_explicit fields reflect the recorded migration checkpoint; current fields describe this final census."
+    },
+    {
+      "file": "tests/test_edlt_display.py",
+      "probes": [
+        "NativeEdltDisplayProbe.cs"
+      ],
+      "windows_already_explicit": true,
+      "special": [],
+      "sha256": "0cc2eccae9001fa144ebfe76ee6627e842b200bd4abfc33265b5668adf82e9d5",
+      "pre_shared_adapter_sha256": "08dcc28342ca9957ba319fa898dd64e7968731a78538464e4fd9c5b0c57ebc4c",
+      "shared_adapter_batch": 1,
+      "current_sha256": "0cc2eccae9001fa144ebfe76ee6627e842b200bd4abfc33265b5668adf82e9d5",
+      "current_explicit_backend": "windows",
+      "historical_fields_note": "Earlier sha256/windows_already_explicit fields reflect the recorded migration checkpoint; current fields describe this final census."
+    },
+    {
+      "file": "tests/test_firmware_diagnostics.py",
+      "probes": [
+        "NativeFirmwareProbe.cs"
+      ],
+      "windows_already_explicit": false,
+      "special": [
+        "FirmwareUpdater.exe-outside-staged-bundle"
+      ],
+      "sha256": "0e2e3c7830a45fce73832bb51601f1319c7803dcf2081181b8bdad8b09bd0fd0",
+      "current_sha256": "3598c7742a56822c35007163331cf7281bcc265ee39a9b3510719a1d9610f4ef",
+      "current_explicit_backend": "macos-mono",
+      "historical_fields_note": "Earlier sha256/windows_already_explicit fields reflect the recorded migration checkpoint; current fields describe this final census."
+    },
+    {
+      "file": "tests/test_edlt_measurement.py",
+      "probes": [
+        "NativeEdltMeasurementProbe.cs",
+        "NativeEdltProbe.cs"
+      ],
+      "windows_already_explicit": true,
+      "special": [],
+      "sha256": "ef92237886fca8ac75d7ae539bee60fd69999e003f1c8f8f1243880395efd162",
+      "initial_inventory_sha256": "0b595665c1ed78d913170dfe62dd97db5932c1fb25419fd20e2b620c2a5a3f53",
+      "pre_shared_adapter_sha256": "0b595665c1ed78d913170dfe62dd97db5932c1fb25419fd20e2b620c2a5a3f53",
+      "shared_adapter_batch": 3,
+      "current_sha256": "ef92237886fca8ac75d7ae539bee60fd69999e003f1c8f8f1243880395efd162",
+      "current_explicit_backend": "windows",
+      "historical_fields_note": "Earlier sha256/windows_already_explicit fields reflect the recorded migration checkpoint; current fields describe this final census."
+    },
+    {
+      "file": "tests/test_edlt_fan.py",
+      "probes": [
+        "NativeEdltFanProbe.cs",
+        "NativeEdltProbe.cs"
+      ],
+      "windows_already_explicit": false,
+      "special": [],
+      "sha256": "923a8533fb507d1298b3499af9d676128a3fd78c03c5d042beaa1f554322c445",
+      "current_sha256": "df41dae62853a930d92ca1b4d60331040b74f96423ea14cc3f8df4aa29edb6e4",
+      "current_explicit_backend": "windows",
+      "historical_fields_note": "Earlier sha256/windows_already_explicit fields reflect the recorded migration checkpoint; current fields describe this final census."
+    },
+    {
+      "file": "tests/test_edlt_time_date.py",
+      "probes": [
+        "NativeEdltTimeDateProbe.cs"
+      ],
+      "windows_already_explicit": true,
+      "special": [
+        "additional-vendor-assembly"
+      ],
+      "sha256": "b59c03f6371e88fc72ab2da917d9ca94f9a96110268cb1a81cc7ff1937dcc04e",
+      "initial_inventory_sha256": "14107d218088279a3b801a9af1cf764718ef015af131f32ed7449194e4347db7",
+      "pre_shared_adapter_sha256": "14107d218088279a3b801a9af1cf764718ef015af131f32ed7449194e4347db7",
+      "shared_adapter_batch": 2,
+      "current_sha256": "b59c03f6371e88fc72ab2da917d9ca94f9a96110268cb1a81cc7ff1937dcc04e",
+      "current_explicit_backend": "windows",
+      "historical_fields_note": "Earlier sha256/windows_already_explicit fields reflect the recorded migration checkpoint; current fields describe this final census."
+    },
+    {
+      "file": "tests/test_edlt_scenes.py",
+      "probes": [
+        "NativeEdltProbe.cs",
+        "NativeEdltScenesProbe.cs"
+      ],
+      "windows_already_explicit": false,
+      "special": [],
+      "sha256": "2834b7fbc30e88c7fca3ad83ea90dc722f9afcea4a57cabd1d7ee7cd0d415b74",
+      "current_sha256": "7476db4d717684828bf3d76bbc31fbebc5a69dd7a190881b2318ca2f885fbc15",
+      "current_explicit_backend": "windows",
+      "historical_fields_note": "Earlier sha256/windows_already_explicit fields reflect the recorded migration checkpoint; current fields describe this final census."
+    },
+    {
+      "file": "tests/test_edlt_colours.py",
+      "probes": [
+        "NativeEdltColoursProbe.cs"
+      ],
+      "windows_already_explicit": true,
+      "special": [],
+      "sha256": "3faff62ab586fbf3e033f28e3a8ea344fbfd475dbab7b2fbf39b5021a5d8ec84",
+      "pre_shared_adapter_sha256": "c46003f00efffc049ea2d739f6352c09517f3d36b8cfac4f0735c4bdbeb9d280",
+      "shared_adapter_batch": 1,
+      "current_sha256": "3faff62ab586fbf3e033f28e3a8ea344fbfd475dbab7b2fbf39b5021a5d8ec84",
+      "current_explicit_backend": "windows",
+      "historical_fields_note": "Earlier sha256/windows_already_explicit fields reflect the recorded migration checkpoint; current fields describe this final census."
+    },
+    {
+      "file": "tests/test_edlt_mra.py",
+      "probes": [
+        "NativeEdltMRAProbe.cs"
+      ],
+      "windows_already_explicit": true,
+      "special": [
+        "additional-vendor-assembly"
+      ],
+      "sha256": "ff4b46ec8bb9cd60a90cb028fb24a1e95d529e1d27c43e3d0aec4660f887f989",
+      "initial_inventory_sha256": "a5625a00f22fb7ce6f3608622c99799f53ad4c9be8e867aef233c85190696248",
+      "pre_shared_adapter_sha256": "a5625a00f22fb7ce6f3608622c99799f53ad4c9be8e867aef233c85190696248",
+      "shared_adapter_batch": 2,
+      "current_sha256": "ff4b46ec8bb9cd60a90cb028fb24a1e95d529e1d27c43e3d0aec4660f887f989",
+      "current_explicit_backend": "windows",
+      "historical_fields_note": "Earlier sha256/windows_already_explicit fields reflect the recorded migration checkpoint; current fields describe this final census."
+    },
+    {
+      "file": "tests/test_edlt_normalization.py",
+      "probes": [
+        "NativeEdltNormalizationProbe.cs"
+      ],
+      "windows_already_explicit": true,
+      "special": [],
+      "sha256": "96d3a49b61c1455b7c55e1b94e85e5564554c421eca780ad06404c101ae14b9f",
+      "initial_inventory_sha256": "0a8e93b49619f7a47d48a632e447628f9ae62126b2b54e4c7ba359ecef212a09",
+      "pre_shared_adapter_sha256": "0a8e93b49619f7a47d48a632e447628f9ae62126b2b54e4c7ba359ecef212a09",
+      "shared_adapter_batch": 2,
+      "current_sha256": "96d3a49b61c1455b7c55e1b94e85e5564554c421eca780ad06404c101ae14b9f",
+      "current_explicit_backend": "windows",
+      "historical_fields_note": "Earlier sha256/windows_already_explicit fields reflect the recorded migration checkpoint; current fields describe this final census."
+    }
+  ],
+  "network_hostname_mentions": [
+    {
+      "file": "tests/test_physical_addressing.py",
+      "environment_override": true
+    },
+    {
+      "file": "tests/test_edlt_label_clear.py",
+      "environment_override": true
+    },
+    {
+      "file": "tests/test_pci_full_inventory.py",
+      "environment_override": true
+    },
+    {
+      "file": "tests/test_serials.py",
+      "environment_override": true
+    },
+    {
+      "file": "tests/test_serial_commissioning.py",
+      "environment_override": true
+    },
+    {
+      "file": "tests/test_enable.py",
+      "environment_override": true
+    },
+    {
+      "file": "tests/test_serial_population.py",
+      "environment_override": true
+    },
+    {
+      "file": "tests/test_cli_physical_addressing.py",
+      "environment_override": true
+    },
+    {
+      "file": "tests/test_applications.py",
+      "environment_override": true
+    },
+    {
+      "file": "tests/test_labels.py",
+      "environment_override": true
+    },
+    {
+      "file": "tests/test_simulator_duplicates.py",
+      "environment_override": true
+    },
+    {
+      "file": "tests/test_pci_inventory.py",
+      "environment_override": true
+    },
+    {
+      "file": "tests/test_simulator_duplicate_addressing.py",
+      "environment_override": true
+    },
+    {
+      "file": "tests/test_cli_serials.py",
+      "environment_override": true
+    },
+    {
+      "file": "tests/test_clocks_native.py",
+      "environment_override": true
+    },
+    {
+      "file": "tests/test_pci_serials.py",
+      "environment_override": true
+    },
+    {
+      "file": "tests/test_cli_edlt_label_clear.py",
+      "environment_override": true
+    },
+    {
+      "file": "tests/test_lighting_native.py",
+      "environment_override": true
+    },
+    {
+      "file": "research/verify_scenes.py",
+      "environment_override": false
+    },
+    {
+      "file": "research/verify_network.py",
+      "environment_override": false
+    }
+  ],
+  "research_docker_services": [
+    "research/verify_tls.py",
+    "research/verify_scenes.py",
+    "research/verify_network.py",
+    "research/oracle.py"
+  ],
+  "scope": "Live driver inventory; excludes immutable snapshots and ignored runtime/vendor sources",
+  "new_shared_adapter": {
+    "path": "research/original_oracle.py",
+    "backend_environment": "CBUS_ORIGINAL_MODEL_BACKEND",
+    "default": "docker",
+    "silent_fallback": false,
+    "single_source": true,
+    "pilot": "tests/test_edlt_general.py"
+  },
+  "shared_adapter_batch1": {
+    "files": [
+      "tests/test_edlt_activation.py",
+      "tests/test_edlt_colours.py",
+      "tests/test_edlt_display.py",
+      "tests/test_edlt_measurement_icons.py",
+      "tests/test_edlt_standby.py"
+    ],
+    "backend_environment": "CBUS_ORIGINAL_MODEL_BACKEND",
+    "default": "docker",
+    "acceptance_fixture": "research/fixtures/original-oracle-batch1-acceptance.json",
+    "standby_imported_mono_helper_unchanged": true
+  },
+  "shared_adapter_batch2": {
+    "files": [
+      "tests/test_edlt_mra.py",
+      "tests/test_edlt_mra_normalization.py",
+      "tests/test_edlt_normalization.py",
+      "tests/test_edlt_time_date.py"
+    ],
+    "backend_environment": "CBUS_ORIGINAL_MODEL_BACKEND",
+    "default": "docker",
+    "acceptance_fixture": "research/fixtures/original-oracle-batch2-acceptance.json",
+    "existing_docker_helpers_unchanged": true
+  },
+  "shared_adapter_batch3": {
+    "files": [
+      "tests/test_edlt_hvac.py",
+      "tests/test_edlt_measurement.py",
+      "tests/test_edlt_measurement_standby.py",
+      "tests/test_edlt_room_courtesy.py"
+    ],
+    "backend_environment": "CBUS_ORIGINAL_MODEL_BACKEND",
+    "default": "docker",
+    "acceptance_fixture": "research/fixtures/original-oracle-batch3-acceptance.json",
+    "shared_argument_grammar_unchanged": true
+  },
+  "shared_adapter_batch4": {
+    "files": [
+      "tests/test_edlt_shutter.py",
+      "tests/test_edlt_timer.py",
+      "tests/test_edlt_fan.py",
+      "tests/test_edlt_enable.py"
+    ],
+    "backend_environment": "CBUS_ORIGINAL_MODEL_BACKEND",
+    "default": "docker",
+    "acceptance_fixture": "research/fixtures/original-oracle-batch4-acceptance.json",
+    "production_probes_shared_adapter_unchanged": true
+  },
+  "shared_adapter_batch5": {
+    "files": [
+      "tests/test_edlt.py",
+      "tests/test_edlt_scene.py",
+      "tests/test_edlt_scenes.py",
+      "tests/test_edlt_multilevel.py",
+      "tests/test_edlt_navigation.py"
+    ],
+    "backend_environment": "CBUS_ORIGINAL_MODEL_BACKEND",
+    "default": "docker",
+    "acceptance_fixture": "research/fixtures/original-oracle-batch5-acceptance.json",
+    "production_probes_shared_adapter_unchanged": true
+  },
+  "quick_status_source_set_adapter": {
+    "file": "tests/test_edlt_quick_status.py",
+    "helper": "research/original_source_oracle.py",
+    "ordered_sources": [
+      "research/NativeEdltQuickStatusProbe.cs",
+      "research/NativeEdltCachedGroupProbe.cs"
+    ],
+    "entry_point": "NativeEdltQuickStatusProbe",
+    "default": "docker",
+    "acceptance_fixture": "research/fixtures/original-oracle-quick-status-acceptance.json",
+    "shared_adapter_bridge_unchanged": true
+  },
+  "firmware_adapter": {
+    "helper": "research/firmware_oracle.py",
+    "test": "tests/test_firmware_diagnostics.py",
+    "guard_tests": "tests/test_firmware_oracle.py",
+    "selector": "CBUS_FIRMWARE_ORACLE_BACKEND",
+    "choices": [
+      "docker",
+      "macos-mono"
+    ],
+    "default": "docker",
+    "runtime_gate": "CBUS_MONO_MACOS_ROOT",
+    "acceptance_fixture": "research/fixtures/original-oracle-firmware-macos-acceptance.json",
+    "probe_unchanged": true,
+    "transport": "Real native macOS pseudo-terminal and unchanged original SerialPort ID/NV handlers"
+  },
+  "final_read_only_readiness": {
+    "scope": "Read-only static live test/research Docker branch census plus import/discovery; zero tests executed; no backend process or socket activity",
+    "docker_reference_files": 58,
+    "remaining_Docker_only_full_suite_tests": [],
+    "legacy_Docker_only_launcher": "research/oracle.py",
+    "discovery": [
+      {
+        "path": "research/runtime/full-suite-readiness/discovery-313.json",
+        "sha256": "df163215bbdd826bb87281e3988e1473fad80d7e278f89838bf20a14b2d5e7b7",
+        "python": "3.13.14",
+        "test_count": 1377,
+        "module_count": 148
+      },
+      {
+        "path": "research/runtime/full-suite-readiness/discovery-310.json",
+        "sha256": "d6fcfe75abd16be37bef44a5dc512c4a6f3ae3183613846db0296ac120ff5a41",
+        "python": "3.10.20",
+        "test_count": 1377,
+        "module_count": 148
+      }
+    ],
+    "same_test_ids_and_source_hashes": true,
+    "dynamic_skip_precondition": "CBUS_CATALOG_PATH must resolve to the matching native catalogue; checked to exist",
+    "artifacts": {
+      "research/runtime/full-suite-readiness/environment-at-discovery.json": "46eabcfc374eecab41c7c8444c4ecaf9f190d5b185f9892b4f764caca188129c",
+      "research/runtime/full-suite-readiness/census.json": "48483e47a8cec37c1d1d7de5d7b6de10cd05cc1e32528547d981bd05b8f36693",
+      "research/runtime/full-suite-readiness/discover_only.py": "b13d0b677fd2bdf5b03ab52e795115abfbfb2007d52e7332a03a4fae96ef5642"
+    },
+    "dependencies": {
+      "cryptography": "50.0.1",
+      "pefile": "2024.8.26",
+      "unicorn": "2.1.4",
+      "pyusb": "1.3.1",
+      "pyserial": "3.5"
+    },
+    "limits": [
+      "Imports do not run test bodies or validate native behavior.",
+      "Existing focused native fixtures supply per-backend evidence; full installed-wheel integration remains separate.",
+      "The Windows bridge must remain live throughout a full run; its scheduled expiry is an external readiness condition."
+    ],
+    "subsequent_readiness_fixes": {
+      "current_environment_file": "research/runtime/mono-macos-owned/full-suite-environment.json",
+      "sha256": "4d1ae4c571dda1d7a14c6c204cda710d0a40268f78b57957a4bb2d0d03b97b29",
+      "added_gate": "CBUS_WINDOWS_PROVENANCE_ROOT",
+      "output_directory_audit": "research/runtime/full-suite-readiness/output-path-audit.json",
+      "output_directory_audit_sha256": "bab2c06ef272f67f8d2aa4d247c45c432ed66d581d8e429442e1f375421e827f",
+      "scope": "Historical discovery counts/hashes above precede these output-only harness changes and separately owned provenance helper; full snapshot will include final files."
+    }
+  }
+}

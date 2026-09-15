@@ -1,0 +1,256 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "case": "move_and_reply",
+      "outcome": "observed_expected_change",
+      "receipt_matches_request": true,
+      "restart_identities": {
+        "6": [
+          "101136.1558"
+        ],
+        "16": [
+          "100966.1187"
+        ],
+        "255": [
+          "101136.1559"
+        ]
+      },
+      "co_operations": 1,
+      "database_updated": false,
+      "firmware_persistence_verified": false
+    },
+    {
+      "case": "move_without_reply",
+      "outcome": "observed_expected_change",
+      "receipt_matches_request": false,
+      "restart_identities": {
+        "6": [
+          "101136.1558"
+        ],
+        "16": [
+          "100966.1187"
+        ],
+        "255": [
+          "101136.1559"
+        ]
+      },
+      "co_operations": 1,
+      "database_updated": false,
+      "firmware_persistence_verified": false
+    },
+    {
+      "case": "fake_success",
+      "outcome": "observed_unchanged",
+      "receipt_matches_request": true,
+      "restart_identities": {
+        "16": [
+          "100966.1187"
+        ],
+        "255": [
+          "101136.1558",
+          "101136.1559"
+        ]
+      },
+      "co_operations": 1,
+      "database_updated": false,
+      "firmware_persistence_verified": false
+    },
+    {
+      "case": "wrong_source",
+      "outcome": "observed_expected_change",
+      "receipt_matches_request": false,
+      "restart_identities": {
+        "6": [
+          "101136.1558"
+        ],
+        "16": [
+          "100966.1187"
+        ],
+        "255": [
+          "101136.1559"
+        ]
+      },
+      "co_operations": 1,
+      "database_updated": false,
+      "firmware_persistence_verified": false
+    }
+  ],
+  "format": "cbus-selected-serial-coordinator-acceptance-v1",
+  "scope": "Owned literal TCP peers and serial-keyed synthetic fixtures; no actual hardware or compatibility verification",
+  "final_focused_runs": [
+    {
+      "python": "3.13.14",
+      "tests": 29,
+      "seconds": 5.408,
+      "skipped": 0,
+      "passed": true
+    },
+    {
+      "python": "3.10.20",
+      "tests": 29,
+      "seconds": 5.371,
+      "skipped": 0,
+      "passed": true
+    }
+  ],
+  "dependency_runs_before_final_coordinator_deadline_refinement": [
+    {
+      "python": "3.13.14",
+      "tests": 158,
+      "seconds": 57.137,
+      "skipped": 0,
+      "passed": true
+    },
+    {
+      "python": "3.13.14",
+      "tests": 5,
+      "seconds": 0.002,
+      "skipped": 0,
+      "passed": true
+    },
+    {
+      "python": "3.10.20",
+      "tests": 163,
+      "seconds": 57.071,
+      "skipped": 0,
+      "passed": true
+    }
+  ],
+  "final_test_modules": [
+    "tests.test_pci_selected_serial",
+    "tests.test_pci_local_options",
+    "tests.test_pci_inventory_parent_deadline"
+  ],
+  "final_change": "Post-final-journal and result-serialization deadline checks; final29 tests rerun on both Python versions",
+  "independently_literal_requests": {
+    "read_local_options": "\\4610001A4201g\r",
+    "read_local_options_srchk": "\\4610001A42014Dg\r",
+    "co_selected_A_target6": "\\05FF000F0018B106160615g\r",
+    "co_selected_A_target6_srchk": "\\05FF000F0018B106160615EDg\r"
+  },
+  "limitations": {
+    "firmware_persistence_verified": false,
+    "physical_compatibility_verified": false,
+    "atomic_observation": false,
+    "actual_hardware_used": false,
+    "exclusive_ownership_cannot_be_detected": true,
+    "initial_profile": "Two distinct KEYE1 2.5.00 fixture serials at255; PC_CNIED 5.5.00 local PCI with explicit option byte05",
+    "fixture_timing_seconds": {
+      "serial_quiet": 0.02,
+      "options_capture": 0.02,
+      "co_capture": 0.02
+    },
+    "native_default_windows_verified_separately": true
+  },
+  "source_sha256": {
+    "src/cbus_toolkit/pci_selected_serial.py": "1ead4b35a28c47dc47dc1993b7522cf810b2cc6947a3ba6b9e9d6084c63b28b7",
+    "src/cbus_toolkit/pci_local_options.py": "a0d8dcc948cc9b5bd8392e899ce369203b1d2e58aa018649c6e745303b15423d",
+    "src/cbus_toolkit/pci_full_inventory.py": "f918b191dd63bfc0c43e7d94b3e45807f446bb1293a4914b5df7519993279499",
+    "src/cbus_toolkit/pci_inventory.py": "515dc2b0ab7ae175263590376a703f37873f14183dba3fe1326090491c506f56",
+    "src/cbus_toolkit/pci_serials.py": "d0c013d31ea649012450933c1019c0494cf976d397d6363ab3da1b8d5357be58",
+    "src/cbus_toolkit/pci_serial_address_transport.py": "ab7b29216513898efd595c908ccb7cbd3bbae17fe3ce416ca381b96e41700b61",
+    "src/cbus_toolkit/pci_serial_address.py": "d56f7124f3ae39b3268e6af6dad00b240ebb7ab3201ba18d6113f8030f917174",
+    "src/cbus_toolkit/simulator_duplicate_addressing.py": "4993ed9e3086a5e08d7b9953fa4b08c1e50d2669fd314f921d6e9c1940d21337",
+    "tests/test_pci_selected_serial.py": "e2d7dcf1b22e7d74695d5639b980030b78f2b50b916af4a74e29133bff18e63e",
+    "tests/test_pci_local_options.py": "82a1c87a37fba1355683e76fc164a82942146a9b6a97af22394833a7f592a6ca",
+    "tests/test_pci_inventory_parent_deadline.py": "b7cbf440d296d8698391bed11d45eb1711ec97d90fae0027b9fa9e193ea78fa6",
+    "docs/pci-selected-serial.md": "c97599343d07df6a56f067fdc546459eb9a0b15545a246c4305fcf61bc21d24f"
+  },
+  "related_evidence_sha256": {
+    "docs/serial-address-codec-evidence.json": "f90f5dd2e45a906652fcc030fca82172daad4ef63d65b899dfd3accd102cea0b",
+    "docs/serial-address-transport-evidence.json": "1a49254f250b71c5bc9c382c36e2e11904fc6d4ccd53dea8c5db767b60b76eec",
+    "docs/serial-address-fixture-evidence.json": "ec50ef9a69c4f43296dac962b2102a5790b7a3f60c48c8869fef1a1359b6f542",
+    "docs/native-duplicate-unravel-research.json": "537ee7eb08333d261a592686b92f8affae8351defc603432ae49bc5c3d9c9996"
+  },
+  "original_local_options_source_sha256": {
+    "CBus2PCILocalable.java": "f82e2ddd2517330e8e3b75e9f725ccf944e8d27ad29b925ccd0a77845fecaefa",
+    "CBusBaseUnit.java": "4b705678b70ffd9602658c25b2f97dde91897ea195876997f3f457ee971cb98d",
+    "CBusNetworkUnraveller.java": "6a67b1b831560b445dfd954b6d6280b4aec21f7647d47d4b3bf3c82a4a77dbcc",
+    "CBusNetworkUnraveller.javap.txt": "e2719e4b559485db25870d47feb763bd2b63c7fc13038bd304f9f01fbddc8db0",
+    "cg.java": "3ba8b27f5bd76d1773568c0d7016567c408c42972dc9bdc52e6f404cd9dcda29",
+    "co.java": "95aea2176a881aa15db116eaca7a10136975e18c9aaac56de74ae2b7b440476d",
+    "report.md": "7f252a2607c4b2c3ef358b4eac7900acb5641c64968edb2e038feff1d8a37aca",
+    "PCI.xml": "41b034b114d995377240d4004ce49f048650775e71579d5020940b96a0592c17",
+    "cgate.jar": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+  },
+  "cli": {
+    "surface": [
+      "serial-address plan",
+      "serial-address apply",
+      "serial-address verify"
+    ],
+    "offline_existing": [
+      "serial-address encode",
+      "serial-address receipt"
+    ],
+    "passed": true,
+    "final_combined_runs": [
+      {
+        "python": "3.13.14",
+        "tests": 42,
+        "seconds": 10.696,
+        "skipped": 0,
+        "passed": true
+      },
+      {
+        "python": "3.10.20",
+        "tests": 42,
+        "seconds": 11.248,
+        "skipped": 0,
+        "passed": true
+      }
+    ],
+    "test_modules": [
+      "tests.test_cli_selected_serial",
+      "tests.test_cli_serial_address",
+      "tests.test_pci_selected_serial",
+      "tests.test_pci_local_options",
+      "tests.test_pci_inventory_parent_deadline"
+    ],
+    "cases": [
+      {
+        "case": "move_without_reply",
+        "exit_status": 0,
+        "outcome": "observed_expected_change",
+        "receipt_matches_request": false,
+        "actual_fixture_addresses": {
+          "101136.1558": 6,
+          "101136.1559": 255
+        },
+        "co_requests": 1
+      },
+      {
+        "case": "forged_success_without_move",
+        "exit_status": 1,
+        "outcome": "observed_unchanged",
+        "receipt_matches_request": true,
+        "actual_fixture_addresses": {
+          "101136.1558": 255,
+          "101136.1559": 255
+        },
+        "co_requests": 1
+      }
+    ],
+    "source_sha256": {
+      "src/cbus_toolkit/cli.py": "6285b50d81b0f8e4cf944f9fb9f1765bf80a1a934f16bf3531062cd8e27de08a",
+      "tests/test_cli_selected_serial.py": "fa3fa18e3485ed1888ad1f1e8c9fd195049757c03c7e9aaaca7ce5195d75ccf4",
+      "tests/test_cli_serial_address.py": "46fa83951ac9364a2b279a77a4240c5c9008f68fa511dda9d52c8f94bd0b887f",
+      "docs/pci-selected-serial.md": "c97599343d07df6a56f067fdc546459eb9a0b15545a246c4305fcf61bc21d24f"
+    },
+    "fixtures_only": true,
+    "actual_hardware_used": false,
+    "error_output_cases": [
+      "KeyboardInterrupt during send with later close failure",
+      "nonserializable evidence",
+      "17MiB evidence",
+      "5001-digit integer scalar",
+      "Secondary KeyboardInterrupt during error-evidence JSON serialization preserves original interruption"
+    ],
+    "independent_wire_sequence_verified": true,
+    "checksum_and_same_endpoint_fixture_restart_verified": true,
+    "new_file_preflight_verified": true,
+    "stale_plan_reapply_rejected_without_second_co": true,
+    "verify_does_not_write_journal_or_send_co": true
+  }
+}
