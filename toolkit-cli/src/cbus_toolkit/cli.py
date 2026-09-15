@@ -1145,6 +1145,9 @@ def build_parser():
     cgops = cgate.add_subparsers(dest="action", required=True)
     from .repositories_cli import register as repository_options
     repository_options(cgops)
+    from .thermostat_schedule_cli import options as schedule_options
+    schedule_parser = cgops.add_parser("thermostat-schedule-levels", help="Preview or create thermostat scheduling levels in a closed project")
+    schedule_options(schedule_parser)
     from .edlt_global_cli import options as global_options
     global_parser = cgops.add_parser("edlt-global", help="Copy selected eDLT categories to existing closed database units")
     global_parser.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
@@ -1981,6 +1984,9 @@ def _cgate(args):
     if args.action == "repositories":
         from .repositories_cli import run as repository_run
         return repository_run(args, CGateClient, context)
+    if args.action == "thermostat-schedule-levels":
+        from .thermostat_schedule_cli import native as schedule_native
+        return schedule_native(args, CGateClient, context)
     if args.action == "edlt-scene-broadcast":
         from .edlt_scene_live_cli import broadcast
         return broadcast(args, CGateClient, context)
@@ -3007,20 +3013,40 @@ def main(argv=None):
     from .pci_routed_recall_cli import error_payload as routed_recall_error_payload
     from .pci_routed_identify_cli import error_payload as routed_identify_error_payload
     from .project_repair_cli import error_payload as project_repair_error_payload
+    from .thermostat_schedule_cli import error_payload as schedule_error_payload
     try:
         result, status = run(args)
         stream = args.area == "cgate" and args.action == "events"
         # JSON escapes preserve Unicode even when redirected Windows stdout uses
         # a legacy code page. An output encoding error must not mask a completed write.
-        print(json.dumps(result, default=_json_default, ensure_ascii=True, indent=None if args.compact or stream else 2))
+        try:
+            print(json.dumps(result, default=_json_default, ensure_ascii=True, indent=None if args.compact or stream else 2))
+        except BaseException as output_error:
+            if args.area == "cgate" and args.action == "thermostat-schedule-levels":
+                from .thermostat_schedule_cli import record_output_error
+                record_output_error(args, output_error)
+            raise
         return status
     except (ValueError, OSError, RuntimeError) as exc:
+        scheduling = schedule_error_payload(exc, args)
+        if scheduling:
+            try:
+                message = str(exc)
+            except BaseException:
+                message = "<unprintable>"
+            print(json.dumps({"error": message, "type": type(exc).__name__, **scheduling},
+                             default=_json_default), file=sys.stderr)
+            return 1
         print(json.dumps({"error": str(exc), "type": type(exc).__name__, **getattr(exc, "details", {}),
                           **_selected_serial_error_payload(exc), **_programming_cleanup_payload(exc),
                           **_cgate_cleanup_payload(exc), **_edlt_label_clear_payload(exc), **_edlt_ordered_payload(exc, args), **global_error_payload(exc, args), **live_error_payload(exc, args), **preference_error_payload(exc, args), **update_error_payload(exc, args), **metadata_error_payload(exc, args), **revocation_error_payload(exc, args), **condition_error_payload(exc, args), **database_csv_error_payload(exc, args), **routed_recall_error_payload(exc, args), **routed_identify_error_payload(exc, args), **project_repair_error_payload(exc, args)},
                          default=_json_default), file=sys.stderr)
         return 1
     except KeyboardInterrupt as exc:
+        scheduling = schedule_error_payload(exc, args)
+        if scheduling:
+            print(json.dumps({"error": "Interrupted", **scheduling}, default=_json_default), file=sys.stderr)
+            return 130
         evidence = getattr(exc, "physical_address_evidence", None)
         result = {"error": "Interrupted", **(evidence if isinstance(evidence, dict) else {})}
         result.update(_selected_serial_error_payload(exc))

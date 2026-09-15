@@ -1,0 +1,6 @@
+[
+ {"id":"B01","project":"CSVBA01","unit_type":"RELAY4","firmware":"4.4","area":12,"groups":[1,2,3,4,5,6,7,8,12,13,255],"association_reads":true},
+ {"id":"B02","project":"CSVBA02","unit_type":"RELAY4","firmware":"4.4","area":255,"groups":[1,2,3,4,5,6,7,8,12,13,255],"association_reads":false},
+ {"id":"B03","project":"CSVBA03","unit_type":"RELAY4","firmware":"4.4","area":13,"groups":[1,2,3,4,5,6,7,8,12,255],"association_reads":false},
+ {"id":"B04","project":"CSVBA04","unit_type":"OWNED_UNKNOWN","firmware":"4.4","area":null,"groups":[1,2,3,4,5,6,7,8,12,13,255],"association_reads":false}
+]

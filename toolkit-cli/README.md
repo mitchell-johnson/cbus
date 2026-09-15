@@ -72,14 +72,17 @@ versions and preserves the existing metadata reports. It does not establish
 certificate-chain trust, current publisher trust or update availability.
 
 `update-condition-stages conditions.json --context facts.json` evaluates bounded
-Boolean conditions using explicitly supplied file-existence and version facts.
-It preserves lazy evaluation, repeated-condition caching and partial results.
-Both a computed `true` and a computed `false` exit successfully; unknown facts
-and unsupported conditions remain explicit. Its separate
-[61-test checkpoint](docs/toolkit-update-conditions.md) passes on both Python
-versions, including 279 captured original condition observations and the existing
-metadata and revocation checks. Supplied facts remain unverified, and the command
-does not determine package applicability or update availability.
+Boolean conditions using explicitly supplied file-existence and version facts,
+or [context v2 with HKCU registry results](docs/toolkit-update-registry-conditions.md).
+Supported registry leaves cover key/entry existence and bounded string/Int32
+content comparisons. It preserves lazy evaluation, repeated-condition caching
+and partial results. Both a computed `true` and a computed `false` exit
+successfully; unknown facts and unsupported conditions remain explicit. The
+combined 78-test checkpoint passes on both Python versions, including the
+earlier 61 regressions, 11 supported original registry results, 107 Int32
+comparisons and 248 byte-identical v1 reports. Supplied facts remain unverified;
+the command does not read the live registry or determine package applicability
+or update availability.
 
 `toolkit-about path/to/CBusToolkit.exe` reads an explicit executable and emits
 the original About text, using the current local year. `--year 2026` supplies
@@ -971,13 +974,26 @@ wrapping and method-specific limits are preserved. The Python API is
 [thermostat temperature arithmetic](docs/thermostat-temperature.md).
 The focused checkpoint passes 17 tests on each Python version, including a fresh
 28,840-case original-instruction comparison per run. A separate Windows probe
-matched all 28 pilot and 1,176 full cases. Scheduling and complete thermostat
-editor behavior remain separate work. The retained inner scheduling-level
+matched all 28 pilot and 1,176 full cases. The retained inner scheduling-level
 Python API now has its own [17-test dual-Python acceptance](docs/thermostat-schedule-levels.md),
 covering all 14 captured original outcomes and ordered save phases. It creates
-missing levels 1 through 31 while preserving existing records. Native scheduling
-and its CLI remain in progress; the draft adapter has not passed complete native
-acceptance.
+missing levels 1 through 31 while preserving existing records.
+
+The [native scheduling command](docs/native-thermostat-schedule.md) now previews
+and creates missing levels in one existing Enable Control group in a closed
+project:
+
+```sh
+cbus-toolkit cgate --host 127.0.0.1 --port 20033 thermostat-schedule-levels \
+  //TEST/254/203/1 --action Enable --exclusive-project
+```
+
+Add `--apply --backup-project THBAK1` to save the whole current project, create a
+backup, apply missing levels and verify them after save/reload. Existing levels
+retain their values, labels and OIDs. The combined 67-test checkpoint passes on
+both Python versions, including five native integration methods and eight
+project/group scenarios per run. Full thermostat selection/settings, native
+collection-order equivalence and physical behavior remain outstanding.
 
 ## Toolkit unit templates
 
@@ -1439,11 +1455,11 @@ outside that frozen wheel:
 - [Configuration CRC](docs/edlt-crc.md): 21 tests, including 65,588 fresh original CRC results per run.
 - [Percentage conversion](docs/edlt-percentage.md): pure conversion and CLI acceptance; the standalone original Windows control has also completed separate 12- and 528-case research captures; full editor integration remains pending.
 - [About information](docs/toolkit-about.md): 16 tests, including 51 original instruction cases per run.
-- [Signed update metadata](docs/toolkit-update-metadata.md), [revocation stages](docs/toolkit-update-revocation.md) and [supplied-context conditions](docs/toolkit-update-conditions.md): separate 56-, 53- and 61-test checkpoints with explicit trust and availability limits.
+- [Signed update metadata](docs/toolkit-update-metadata.md), [revocation stages](docs/toolkit-update-revocation.md) and [supplied-context registry conditions](docs/toolkit-update-registry-conditions.md): separate 56-, 53- and 78-test checkpoints with explicit trust and availability limits.
 - [PCI routing](docs/pci-routing.md), [incoming routing](docs/pci-incoming-routing.md), [routed RECALL](docs/pci-routed-recall.md) and [routed IDENTIFY](docs/pci-routed-identify.md): separate codec and transport checkpoints; IDENTIFY passes 104 tests with fresh original matcher comparisons and owned loopback exchanges.
 - [Database CSV export](docs/toolkit-database-csv.md): 23 tests with 88 fresh original cases per run; captured unit values and portable UTF-8 output.
 - [Thermostat temperature conversions](docs/thermostat-temperature.md): 17 tests with 28,840 fresh original cases per run and separate original Windows arithmetic acceptance.
-- [Thermostat scheduling-level core](docs/thermostat-schedule-levels.md): 17 tests comparing all 14 captured original outcomes and ordered phases; retained Python model and callback boundaries only, with native adapter and CLI acceptance still outstanding.
+- [Thermostat scheduling](docs/native-thermostat-schedule.md): 67 tests including the retained core, native backup/save/reload, public CLI and error/cleanup regressions; all 14 captured original outcomes replayed and eight native project/group scenarios per run.
 
 These overlapping focused counts must not be added to the full-suite count.
 Their linked fixtures identify the exact inputs and limitations; a later full

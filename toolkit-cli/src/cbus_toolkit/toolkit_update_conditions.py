@@ -263,11 +263,14 @@ def _native_how(number):
     return _NATIVE_HOW.get(number, str(number))
 
 
-def _leaf(name, condition, facts, event):
+def _leaf(name, condition, facts, event, registry=None):
     if condition is None:
         _unsupported('Reached null condition definition is outside the supported leaf domain')
     what, how, path, right = (condition[k] for k in ('what', 'how', 'path', 'right'))
     event.update(what_to_check=what, how_to_check=how, path=path)
+    if registry is not None and what in (3, 4, 5, 6):
+        from ._toolkit_update_registry_conditions import leaf
+        return leaf(name, condition, registry, event)
     if what not in (1, 2):
         _unsupported('Reached condition requires an unsupported original provider or leaf', what_to_check=what)
     if path is None or path == '':
@@ -322,7 +325,7 @@ def _leaf(name, condition, facts, event):
     _failure('unexpected howToCheck = ' + _native_how(how) + " in condition '" + name + "' that checks file version")
 
 
-def _evaluate(ast, definitions, facts, document):
+def _evaluate(ast, definitions, facts, document, registry=None):
     cache = document['condition_result_cache']; events = document['events']
     def visit(node):
         operation = node[0]
@@ -343,7 +346,8 @@ def _evaluate(ast, definitions, facts, document):
                 _failure("not defined condition name '" + name + "' used in expression '" + document['normalized_expression'] + "'")
             else:
                 event.update(resolution='leaf', definition_name=definitions[name]['name'])
-                result = _leaf(name, definitions[name]['value'], facts, event)
+                result = (_leaf(name, definitions[name]['value'], facts, event) if registry is None
+                          else _leaf(name, definitions[name]['value'], facts, event, registry))
                 cache[name] = result
             event.update(status='passed', result=result, cache_after=dict(cache))
             return result
@@ -418,7 +422,17 @@ class ToolkitUpdateConditions:
             current = 'context_input'
             try:
                 facts_data = _json(context, limit=MAX_JSON_BYTES, depth_limit=12); _ascii(facts_data)
-                facts = _facts(facts_data); document['supplied_context'] = facts_data
+                registry = None
+                if type(facts_data) is dict and facts_data.get('format') == 'cbus-toolkit-condition-context-v2':
+                    from . import _toolkit_update_registry_conditions as registry_leaves
+                    registry = registry_leaves.facts(facts_data)
+                    facts = _facts({'format': CONTEXT_FORMAT, 'culture': facts_data['culture'], 'files': facts_data['files']})
+                    document.update(profile=registry_leaves.PROFILE, scope='Conditions under supplied file and registry facts only',
+                                    registry_provider_profile=registry_leaves.PROVIDER, registry_provider_verified=False)
+                    rows[current].update(registry_records=len(registry))
+                else:
+                    facts = _facts(facts_data)
+                document['supplied_context'] = facts_data
                 rows[current].update(status='passed', culture='invariant-ascii', file_records=len(facts))
             except _Outcome as error:
                 rows[current].update(error.details); return finish()
@@ -433,7 +447,7 @@ class ToolkitUpdateConditions:
             ast = _Parser(model['expression']).parse()
             rows[current].update(status='passed')
             current = 'expression_evaluation'
-            result = _evaluate(ast, definitions, facts, document)
+            result = _evaluate(ast, definitions, facts, document) if registry is None else _evaluate(ast, definitions, facts, document, registry)
             document['condition_result_under_supplied_context'] = result
             rows[current].update(status='passed', result=result)
             visited = {row['lookup_name'] for row in document['events']}
