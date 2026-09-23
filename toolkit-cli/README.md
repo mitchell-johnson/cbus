@@ -107,10 +107,12 @@ report values as UTF-8, preserving the original column order, serial formatting,
 quoting and unavailable-group placement. `--columns address tag_name serial`
 selects fields. `--cached-projection` instead consumes the strict retained
 unit/group-cache schema and reproduces the 12 captured original class, Area,
-reference and missing-group outcomes before export. The current host set passes
-26 tests; the earlier 23-test checkpoint includes 88 fresh original comparisons
-per run. Cold database/XML cache loading, arbitrary unit profiles and native
-Windows file encoding remain separate.
+reference and missing-group outcomes before export. `--native-xml-unit
+//PROJECT/254/p/4` projects the three admitted read-only C-Gate XML archive
+shapes without manual cache transcription. The current host set passes 33 tests;
+the earlier 23-test checkpoint includes 88 fresh original comparisons per run.
+Live snapshot acquisition, mutation-backed missing Area groups, arbitrary unit
+profiles and native Windows file encoding remain separate.
 
 ## Legacy projects
 
@@ -1499,7 +1501,7 @@ outside that frozen wheel:
 - [About information](docs/toolkit-about.md): 16 tests, including 51 original instruction cases per run.
 - [Signed update metadata](docs/toolkit-update-metadata.md), [revocation stages](docs/toolkit-update-revocation.md) and [supplied-context registry conditions](docs/toolkit-update-registry-conditions.md): separate 56-, 53- and 78-test checkpoints with explicit trust and availability limits.
 - [PCI routing](docs/pci-routing.md), [incoming routing](docs/pci-incoming-routing.md), [routed RECALL](docs/pci-routed-recall.md) and [routed IDENTIFY](docs/pci-routed-identify.md): separate codec and transport checkpoints; IDENTIFY passes 104 tests with fresh original matcher comparisons and owned loopback exchanges.
-- [Database CSV export](docs/toolkit-database-csv.md): 26 current host tests for captured values, cached-object projection and portable UTF-8 output; the historical 23-test checkpoint includes 88 fresh original cases per run.
+- [Database CSV export](docs/toolkit-database-csv.md): 33 current host tests for captured values, cached-object projection, admitted native XML and portable UTF-8 output; the historical 23-test checkpoint includes 88 fresh original cases per run.
 - [Thermostat temperature conversions](docs/thermostat-temperature.md): 17 tests with 28,840 fresh original cases per run and separate original Windows arithmetic acceptance.
 - [Thermostat scheduling](docs/native-thermostat-schedule.md): 67 tests including the retained core, native backup/save/reload, public CLI and error/cleanup regressions; all 14 captured original outcomes replayed and eight native project/group scenarios per run.
 

@@ -10,6 +10,7 @@ from unittest.mock import patch
 from cbus_toolkit import cli, toolkit_database_csv_cli as boundary
 from cbus_toolkit.toolkit_database_csv import COLUMNS
 from tests.test_toolkit_database_csv import captured, unit
+from tests.test_toolkit_database_csv_native import native_xml
 from tests.test_toolkit_database_csv_projection import projection_input
 
 
@@ -71,6 +72,29 @@ class DatabaseCSVCLITests(unittest.TestCase):
             evidence = result['toolkit_database_csv_evidence']
             self.assertEqual(evidence['stage'], 'project_cached_unit')
             self.assertEqual(evidence['projection']['stop_reason'], 'area_load_failed')
+            self.assertFalse(evidence['output_create_attempted'])
+            self.assertFalse(output.exists())
+
+    def test_native_xml_unit_mode_projects_read_only_snapshot(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source = Path(folder) / 'native.xml'; output = Path(folder) / 'report.csv'
+            source.write_text(native_xml())
+            code, result = self.execute([source, '--output', output,
+                '--native-xml-unit', '//CSVTEST/254/p/4', '--columns', 'area', 'address'])
+            self.assertEqual(code, 0)
+            self.assertEqual(result['input_mode'], 'native_xml')
+            self.assertFalse(result['projection']['native_database_mutated'])
+            self.assertEqual(output.read_bytes(), b'Unit Address,Area,\r\n4,Group12,\r\n\r\n')
+
+    def test_native_xml_missing_area_group_creates_no_output(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source = Path(folder) / 'native.xml'; output = Path(folder) / 'report.csv'
+            source.write_text(native_xml(area=13, missing=(13,)))
+            code, result = self.execute([source, '--output', output,
+                '--native-xml-unit', '//CSVTEST/254/p/4'])
+            self.assertEqual(code, 1)
+            evidence = result['toolkit_database_csv_evidence']
+            self.assertEqual(evidence['stage'], 'project_native_xml_unit')
             self.assertFalse(evidence['output_create_attempted'])
             self.assertFalse(output.exists())
 

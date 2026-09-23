@@ -1,0 +1,99 @@
+"""Native C-Gate XML adapter tests for database CSV projection."""
+import unittest
+import xml.etree.ElementTree as ET
+
+from cbus_toolkit.toolkit_database_csv import COLUMNS
+from cbus_toolkit.toolkit_database_csv_native import (
+    loads_native_xml_projection,
+    project_native_xml_unit,
+)
+
+
+def oid(number):
+    return '00000000-0000-0000-0000-' + str(number).zfill(12)
+
+
+def scalar(parent, name, value):
+    ET.SubElement(parent, name).text = str(value)
+
+
+def native_xml(*, unit_type='RELAY4', area=12, missing=(), extra_unit=False):
+    root = ET.Element('Installation')
+    project = ET.SubElement(root, 'Project'); scalar(project, 'Address', 'CSVTEST')
+    network = ET.SubElement(project, 'Network'); scalar(network, 'Address', 254)
+    application = ET.SubElement(network, 'Application')
+    scalar(application, 'OID', oid(20)); scalar(application, 'TagName', 'Lighting'); scalar(application, 'Address', 56)
+    for address in (1, 2, 3, 4, 5, 6, 7, 8, 12, 13, 255):
+        if address in missing:
+            continue
+        group = ET.SubElement(application, 'Group')
+        scalar(group, 'OID', oid(100 + address)); scalar(group, 'TagName', '<Unused>' if address == 255 else 'Group' + str(address))
+        scalar(group, 'Address', address)
+    unit = ET.SubElement(network, 'Unit')
+    for name, value in (('OID', oid(500)), ('TagName', 'OwnedUnit'), ('Address', 4),
+                        ('UnitType', unit_type), ('UnitName', 'NativeUnit'),
+                        ('SerialNumber', '1.2.3'), ('FirmwareVersion', '4.4'),
+                        ('CatalogNumber', 'OWNED')):
+        scalar(unit, name, value)
+    if unit_type == 'RELAY4':
+        for name, value in (('Application', '0x38 0xff'),
+                            ('AreaGroupAddress', hex(area)),
+                            ('GroupAddress', ' '.join(hex(value) for value in
+                                (*range(1, 9), *(255 for _ in range(8)))))):
+            ET.SubElement(unit, 'PP', Name=name, Value=value)
+    if extra_unit:
+        other = ET.SubElement(network, 'Unit'); scalar(other, 'Address', 5)
+    return ET.tostring(root, encoding='unicode')
+
+
+class NativeXMLCSVProjectionTests(unittest.TestCase):
+    def test_relay_existing_area_projects_native_scalars_and_six_groups(self):
+        outcome = project_native_xml_unit(native_xml(), '//CSVTEST/254/p/4',
+            columns=('group_7', 'secondary', 'area', 'group_1', 'tag_name',
+                     'address', 'primary', 'part_name', 'group_6'))
+        self.assertTrue(outcome.complete)
+        self.assertEqual(outcome.cached.columns,
+            ('address', 'part_name', 'tag_name', 'primary', 'secondary',
+             'area', 'group_1', 'group_6', 'group_7'))
+        self.assertEqual(outcome.report.rows, (
+            'Unit Address,Part Name,Tag Name,Primary Application,Secondary Application,Area,Group 1,Group 6,Group 7,',
+            '4,NativeUnit,OwnedUnit,Lighting,,Group12,Group1,Group6,<N/A>,'))
+        self.assertFalse(outcome.as_dict()['native_database_mutated'])
+
+    def test_relay_unused_area_and_generic_eight_group_profile(self):
+        relay = project_native_xml_unit(native_xml(area=255), '//CSVTEST/254/p/4', columns=COLUMNS)
+        self.assertIn(',<Unused>,Group1,Group2,Group3,Group4,Group5,Group6,<N/A>,', relay.report.rows[1])
+        generic = project_native_xml_unit(native_xml(unit_type='OWNED_UNKNOWN'),
+                                          '//CSVTEST/254/p/4', columns=COLUMNS)
+        self.assertEqual(generic.cached.selected_class, 'TCBusUnitGeneric')
+        self.assertIn(',<Unused>,Group1,Group2,Group3,Group4,Group5,Group6,Group7,Group8,',
+                      generic.report.rows[1])
+
+    def test_missing_area_group_requires_unperformed_native_mutation(self):
+        with self.assertRaisesRegex(ValueError, 'unperformed database mutation'):
+            project_native_xml_unit(native_xml(area=13, missing=(13,)),
+                                    '//CSVTEST/254/p/4', columns=COLUMNS)
+        with self.assertRaisesRegex(ValueError, 'existing Area12 or Area255'):
+            project_native_xml_unit(native_xml(area=13), '//CSVTEST/254/p/4', columns=COLUMNS)
+
+    def test_selected_path_allows_other_units_but_rejects_ambiguity_and_bad_profile(self):
+        outcome = project_native_xml_unit(native_xml(extra_unit=True),
+                                          '//CSVTEST/254/p/4', columns=('address',))
+        self.assertEqual(outcome.report.rows[1], '4,')
+        for text, path in ((native_xml(), '//OTHER/254/p/4'),
+                           (native_xml(unit_type='KEY4'), '//CSVTEST/254/p/4')):
+            with self.subTest(path=path):
+                with self.assertRaises(ValueError):
+                    project_native_xml_unit(text, path, columns=COLUMNS)
+
+    def test_bounded_loader_rejects_declarations_and_detaches_hash(self):
+        raw = native_xml().encode()
+        outcome = loads_native_xml_projection(raw, '//CSVTEST/254/p/4', columns=('address',))
+        self.assertEqual(len(outcome.xml_sha256), 64)
+        with self.assertRaises(ValueError):
+            loads_native_xml_projection(b'<!DOCTYPE x><Installation/>',
+                                        '//CSVTEST/254/p/4', columns=COLUMNS)
+
+
+if __name__ == '__main__':
+    unittest.main()

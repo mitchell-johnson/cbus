@@ -13,8 +13,11 @@ def options(commands):
     parser = commands.add_parser('toolkit-database-csv', help='Export captured Toolkit report values as portable UTF-8 CSV offline')
     parser.add_argument('file', type=Path, help='Captured report or bounded cached-projection JSON; generic project XML is not accepted')
     parser.add_argument('--output', required=True, type=Path, help='New UTF-8 file; existing destinations are never overwritten')
-    parser.add_argument('--cached-projection', action='store_true',
-                        help='Replay the original-backed cached unit/group projection schema before export')
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument('--cached-projection', action='store_true',
+                      help='Replay the original-backed cached unit/group projection schema before export')
+    mode.add_argument('--native-xml-unit', metavar='//PROJECT/NETWORK/p/UNIT',
+                      help='Project one captured native DBGETXML Installation snapshot read-only')
     parser.add_argument('--columns', nargs='+', default=['all'], metavar='COLUMN',
                         help='all (default), or selected names: ' + ', '.join(COLUMNS) + '; output follows original order')
 
@@ -38,10 +41,18 @@ class DatabaseCSVFileOperation:
     def __init__(self):
         self.last_error = self.last_cause = self.last_evidence = None
 
-    def run(self, source, *, output, columns, cached_projection=False):
+    def run(self, source, *, output, columns, cached_projection=False, native_xml_unit=None):
         self.last_error = self.last_cause = self.last_evidence = None
+        if type(cached_projection) is not bool:
+            raise ValueError('cached_projection must be Boolean')
+        if native_xml_unit is not None and type(native_xml_unit) is not str:
+            raise ValueError('native_xml_unit must be text or absent')
+        if cached_projection and native_xml_unit is not None:
+            raise ValueError('Select at most one database CSV input mode')
+        input_mode = ('native_xml' if native_xml_unit is not None else
+                      'cached_projection' if cached_projection else 'captured_report')
         state = {'operation': 'toolkit-database-csv', 'complete': False, 'stage': 'validate',
-                 'input_mode': 'cached_projection' if cached_projection else 'captured_report',
+                 'input_mode': input_mode,
                  'source': None, 'output': None, 'source_regular_verified': False,
                  'source_identity_verified': False,
                  'source_bytes': 0, 'source_closed': False,
@@ -99,7 +110,15 @@ class DatabaseCSVFileOperation:
             state['stage'] = 'source_close'
             close('source')
             raw = b''.join(chunks)
-            if cached_projection:
+            if native_xml_unit is not None:
+                from .toolkit_database_csv_native import loads_native_xml_projection
+                state['stage'] = 'project_native_xml_unit'
+                projection = loads_native_xml_projection(raw, native_xml_unit, columns=selected)
+                state['projection'] = projection.as_dict()
+                if not projection.complete or projection.report is None:
+                    raise ValueError('Native XML projection stopped: ' + str(projection.stop_reason))
+                report = projection.report
+            elif cached_projection:
                 from .toolkit_database_csv_projection import loads_cached_projection
                 state['stage'] = 'project_cached_unit'
                 projection = loads_cached_projection(raw, columns=selected)
@@ -180,7 +199,8 @@ def run(args):
     operation = DatabaseCSVFileOperation()
     args._toolkit_database_csv_operation = operation
     result = operation.run(args.file, output=args.output, columns=columns,
-                           cached_projection=args.cached_projection)
+                           cached_projection=args.cached_projection,
+                           native_xml_unit=args.native_xml_unit)
     return result, 0
 
 
