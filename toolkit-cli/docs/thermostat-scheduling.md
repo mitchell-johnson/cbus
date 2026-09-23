@@ -10,6 +10,7 @@ The `thermostat-scheduling` commands operate on resolved thermostat state suppli
 cbus-toolkit thermostat-scheduling selected state.json
 cbus-toolkit thermostat-scheduling required state.json
 cbus-toolkit thermostat-scheduling load raw-load.json
+cbus-toolkit thermostat-scheduling load-create-levels raw-load.json
 cbus-toolkit thermostat-scheduling create-levels state.json --policy button
 cbus-toolkit thermostat-scheduling create-levels state.json --policy direct
 cbus-toolkit thermostat-scheduling end-save-lock locked-state.json
@@ -17,7 +18,9 @@ cbus-toolkit thermostat-scheduling end-save-lock locked-state.json
 
 An input can also include `save_lock` (0–2) and `pending_save`. The CLI performs no storage writes. The Python `ThermostatScheduling` API accepts level-save and storage-save callbacks; its returned state can be passed to the same manager for lock release. Callbacks receive detached snapshots, and a failed partial state cannot be resumed.
 
-`load` accepts supplied raw scheduling bytes, an explicit `application_present` Boolean and the resolved application group collection. It replays the captured `AfterLoad` normalization and resolution rules, reports any application/group objects the original path would save, and emits `scheduling_state` in the exact shape accepted by the other commands. Optional `--group-name` and `--unused-name` values supply labels for newly planned groups; the command does not infer localized Toolkit resources. It does not read a unit, invoke inherited loading or perform any save.
+`load` accepts supplied raw scheduling bytes, an explicit `application_present` Boolean and the resolved application group collection. Groups may include their existing `levels`; the command preserves them in `scheduling_state`. It replays the captured `AfterLoad` normalization and resolution rules, reports any application/group objects the original path would save, and emits state in the exact shape accepted by the other commands. Optional `--group-name` and `--unused-name` values supply labels for newly planned groups; the command does not infer localized Toolkit resources. It does not read a unit, invoke inherited loading or perform any save.
+
+`load-create-levels` performs that load and then runs the retained outer and inner scheduling operations in one command. It preserves supplied levels, creates the missing addresses 1–31 for On, Off and Override in role order, and returns both phase records plus the final state. `--policy button` applies the captured enable/required gate; `--policy direct` enters the outer operation unconditionally. This combined operation remains an offline plan with no save providers or native writes.
 
 `selected` ignores the enable flag and looks for the first non-null group whose address is not 255. `required` first checks the enable flag, then checks for missing level addresses 1–31. Address and Value are distinct: existing labels and values do not make a complete address set require creation. Address 0 is actionable; 255 is the unused sentinel.
 

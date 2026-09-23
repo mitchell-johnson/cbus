@@ -5,6 +5,7 @@ import unittest
 from cbus_toolkit.thermostat_unit_load import (
     ThermostatLoadGroup, ThermostatUnitLoader,
 )
+from cbus_toolkit.thermostat_schedule_levels import ScheduleLevel
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -51,9 +52,11 @@ class ThermostatUnitLoadTests(unittest.TestCase):
                'RemoteScheduleOverrideGroup': 12, 'RemoteScheduleEnable': 0,
                'EvapProgramEnabled': 1, 'NonEvapProgramEnabled': 0}
         result = ThermostatUnitLoader().load(raw, application_present=True,
-            groups=(ThermostatLoadGroup('shared', 12, 'Existing'),))
+            groups=(ThermostatLoadGroup('shared', 12, 'Existing',
+                (ScheduleLevel('level-1', 1, 7, 'Existing level'),)),))
         self.assertEqual(result.scheduling_state(), {
-            'groups': [{'identity': 'shared', 'address': 12, 'levels': []}],
+            'groups': [{'identity': 'shared', 'address': 12, 'levels': [
+                {'identity': 'level-1', 'address': 1, 'value': 7, 'tag': 'Existing level'}]}],
             'roles': {'on': 'shared', 'off': 'shared', 'override': 'shared'},
             'enabled': True})
 

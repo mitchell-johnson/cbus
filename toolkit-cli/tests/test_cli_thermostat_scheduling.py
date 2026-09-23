@@ -84,6 +84,36 @@ class ThermostatSchedulingCLITests(unittest.TestCase):
                 self.assertEqual(code, 1)
                 self.assertIn('error', result)
 
+    def test_load_create_levels_preserves_existing_and_composes_all_roles(self):
+        import tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'combined.json'
+            path.write_text(json.dumps({'raw': {
+                'RemoteScheduleOnGroup': 12, 'RemoteScheduleOffGroup': 13,
+                'RemoteScheduleOverrideGroup': 14, 'RemoteScheduleEnable': 0,
+                'EvapProgramEnabled': 1, 'NonEvapProgramEnabled': 0},
+                'application_present': True, 'groups': [{
+                    'identity': 'existing-12', 'address': 12, 'tag': 'Existing',
+                    'levels': [{'identity': 'kept', 'address': 1, 'value': 9,
+                                'tag': 'Existing value'}]}]}), encoding='utf-8')
+            code, result = self.execute([
+                'thermostat-scheduling', 'load-create-levels', str(path)])
+            self.assertEqual(code, 0)
+            self.assertTrue(result['complete'])
+            self.assertEqual(result['operation'], 'load_and_create_remote_schedule_levels')
+            self.assertEqual(result['load']['saved'], ['created-1', 'created-2'])
+            self.assertEqual(result['state']['roles'], {
+                'on': 'existing-12', 'off': 'created-1', 'override': 'created-2'})
+            self.assertEqual([len(group['levels']) for group in result['state']['groups']],
+                             [31, 31, 31])
+            self.assertEqual(result['state']['groups'][0]['levels'][0], {
+                'identity': 'kept', 'address': 1, 'value': 9, 'tag': 'Existing value'})
+            self.assertEqual([role['action'] for role in result['levels']['roles']],
+                             ['Enable', 'Disable', 'Overrd'])
+            self.assertFalse(result['levels']['native_persistence_verified'])
+            self.assertIn('resolved groups and levels', result['scope'])
+
     def test_unused_sentinel_and_empty_share_negative_outcome(self):
         import tempfile
         from pathlib import Path

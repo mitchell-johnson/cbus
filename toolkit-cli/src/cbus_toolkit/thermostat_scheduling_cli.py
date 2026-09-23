@@ -21,6 +21,8 @@ SCOPE_CREATE = ('Supplied resolved state with no save providers; no native '
                 'persistence, VCL dispatch or device operation')
 SCOPE_LOAD = ('Supplied raw scheduling bytes and resolved application/group collection; '
               'no inherited loader, native persistence, VCL dispatch or device operation')
+SCOPE_LOAD_CREATE = ('Supplied raw scheduling bytes, resolved groups and levels; '
+                     'no inherited loader, native persistence, VCL dispatch or device operation')
 MAX_STATE_BYTES = 1024 * 1024
 
 
@@ -119,20 +121,36 @@ def _unit_load(path):
         raise ValueError('Unit-load groups must be a list of at most 256 records')
     groups = []
     for index, group in enumerate(raw['groups']):
-        if type(group) is not dict or set(group) != {'identity', 'address', 'tag'}:
-            raise ValueError('Unit-load group %d must define identity, address and tag' % index)
-        groups.append(ThermostatLoadGroup(**group))
+        if (type(group) is not dict or not {'identity', 'address', 'tag'} <= set(group)
+                or set(group) - {'identity', 'address', 'tag', 'levels'}):
+            raise ValueError('Unit-load group %d must define identity, address and tag with optional levels' % index)
+        levels = group.get('levels', [])
+        if type(levels) is not list or len(levels) > 256:
+            raise ValueError('Unit-load group %d levels must be a list of at most 256 records' % index)
+        groups.append(ThermostatLoadGroup(group['identity'], group['address'], group['tag'],
+            tuple(_level(level, 'Unit-load group %d' % index) for level in levels)))
     return raw['raw'], raw['application_present'], groups
+
+
+def _load_options(actions, name, help_text):
+    command = actions.add_parser(name, help=help_text)
+    command.add_argument('state', type=Path, help='Raw scheduling/application/group JSON document')
+    command.add_argument('--group-name', default='Group',
+                         help='Supplied standard group label used for created non-255 groups')
+    command.add_argument('--unused-name', default='<Unused>',
+                         help='Supplied label used for a created group 255')
+    return command
 
 
 def options(commands):
     parser = commands.add_parser('thermostat-scheduling',
                                  help='Evaluate retained outer scheduling selection over supplied state')
     actions = parser.add_subparsers(dest='action', required=True)
-    load = actions.add_parser('load', help='Resolve retained scheduling state from supplied raw bytes')
-    load.add_argument('state', type=Path, help='Raw scheduling/application/group JSON document')
-    load.add_argument('--group-name', default='Group', help='Supplied standard group label used for created non-255 groups')
-    load.add_argument('--unused-name', default='<Unused>', help='Supplied label used for a created group 255')
+    _load_options(actions, 'load', 'Resolve retained scheduling state from supplied raw bytes')
+    combined = _load_options(actions, 'load-create-levels',
+                             'Resolve scheduling state and compose missing levels')
+    combined.add_argument('--policy', choices=('button', 'direct'), default='button',
+                          help='Button applies selection gating; direct composes unconditionally')
     for name in ('selected', 'required'):
         sub = actions.add_parser(name, help='Evaluate the ' + name + ' predicate')
         sub.add_argument('state', type=Path, help='Resolved-state JSON document')
@@ -145,14 +163,26 @@ def options(commands):
 
 
 def run(args):
-    if args.area != 'thermostat-scheduling' or args.action not in ('load', 'selected', 'required', 'create-levels', 'end-save-lock'):
+    if args.area != 'thermostat-scheduling' or args.action not in ('load', 'load-create-levels', 'selected', 'required', 'create-levels', 'end-save-lock'):
         raise ValueError('Unsupported thermostat scheduling command')
-    if args.action == 'load':
+    if args.action in ('load', 'load-create-levels'):
         raw, application_present, groups = _unit_load(args.state)
-        outcome = ThermostatUnitLoader().load(raw, application_present=application_present,
+        loaded = ThermostatUnitLoader().load(raw, application_present=application_present,
             groups=groups, group_name=args.group_name, unused_name=args.unused_name)
-        return {**outcome.as_dict(), 'scheduling_state': outcome.scheduling_state(),
-                'scope': SCOPE_LOAD}, 0
+        if args.action == 'load':
+            return {**loaded.as_dict(), 'scheduling_state': loaded.scheduling_state(),
+                    'scope': SCOPE_LOAD}, 0
+        resolved_groups, on, off, override, enabled, _save_lock, _pending_save = _state(
+            loaded.scheduling_state())
+        model = ThermostatScheduling()
+        state = model.load(resolved_groups, on=on, off=off, override=override,
+                           enabled=enabled)
+        levels = model.create_levels(state, policy=args.policy)
+        level_data = levels.as_dict()
+        return {'operation': 'load_and_create_remote_schedule_levels',
+                'complete': level_data['complete'], 'load': loaded.as_dict(),
+                'levels': level_data, 'state': levels.state.as_dict(),
+                'scope': SCOPE_LOAD_CREATE}, 0
     groups, on, off, override, enabled, save_lock, pending_save = _load(args.state)
     model = ThermostatScheduling()
     state = model.load(groups, on=on, off=off, override=override, enabled=enabled,

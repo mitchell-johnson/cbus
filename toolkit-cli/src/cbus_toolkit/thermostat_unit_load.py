@@ -9,6 +9,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from .thermostat_schedule_levels import ScheduleLevel, ScheduleLevelsEngine
+
 
 RAW_FIELDS = ('RemoteScheduleOnGroup', 'RemoteScheduleOffGroup',
               'RemoteScheduleOverrideGroup', 'RemoteScheduleEnable',
@@ -29,12 +31,16 @@ class ThermostatLoadGroup:
     identity: str
     address: int
     tag: str
+    levels: tuple[ScheduleLevel, ...] = ()
 
     def __post_init__(self):
         _text(self.identity, 'Group identity')
         if type(self.address) is not int or not 0 <= self.address <= 255:
             raise ValueError('Group address must be a byte integer')
         _text(self.tag, 'Group tag', empty=True)
+        if type(self.levels) is not tuple:
+            raise ValueError('Group levels must be an exact tuple')
+        ScheduleLevelsEngine().load(self.levels)
 
     def as_dict(self):
         return {'identity': self.identity, 'address': self.address, 'tag': self.tag}
@@ -85,7 +91,8 @@ class ThermostatUnitLoadOutcome:
 
     def scheduling_state(self):
         """Return the exact JSON shape accepted by thermostat-scheduling."""
-        return {'groups': [{'identity': group.identity, 'address': group.address, 'levels': []}
+        return {'groups': [{'identity': group.identity, 'address': group.address,
+                            'levels': [level.as_dict() for level in group.levels]}
                            for group in self.groups],
                 'roles': dict(zip(ROLES, self.roles)), 'enabled': self.remote}
 
