@@ -1016,8 +1016,9 @@ cbus-toolkit cgate --host 127.0.0.1 --port 20033 thermostat-schedule-compose \
 Add `--apply --backup-project THBAK2` to create a missing application 203, role
 groups and scheduling levels, then persist them with one target project save.
 The command preserves and verifies the complete unit record and existing native
-metadata. Its new composition layer passes 14 focused host tests; a fresh
-integrated C-Gate run and physical thermostat verification remain outstanding.
+metadata. Its new composition layer passes 14 focused host tests plus two fresh
+owned C-Gate 3.4.0.2001 integrations covering manager and public CLI paths.
+Physical thermostat verification remains outstanding.
 
 Evaluate the [retained outer scheduling workflow](docs/thermostat-scheduling.md) offline over supplied
 resolved state (Python 3.13, 9 CLI tests):

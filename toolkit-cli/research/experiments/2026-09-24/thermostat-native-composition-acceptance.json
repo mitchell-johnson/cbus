@@ -1,0 +1,78 @@
+{
+  "format": "cbus-thermostat-native-composition-acceptance-v1",
+  "accepted": true,
+  "accepted_at": "2026-09-24",
+  "base_commit": "8585c3ea63785b326cde4776e93fa3bc8599663b",
+  "scope": "Native PC_TSA 4.6 unit-to-application/group/level composition and public CLI against one owned isolated C-Gate 3.4.0.2001 process",
+  "command": "CBUS_CGATE_JAVA=<pinned-temurin11-jdk>/bin/java CBUS_LOCAL_CGATE_VENDOR=research/vendor/cgate/app CBUS_THERMOSTAT_COMPOSITION_EVIDENCE=<new-output> .venv/bin/python -m unittest tests.test_native_thermostat_scheduling_integration -v",
+  "tests_run": 2,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "elapsed_seconds": 3.151,
+  "cases": [
+    {
+      "name": "manager_missing_application_three_groups",
+      "application_created": true,
+      "group_addresses": [12, 13, 14],
+      "created_levels": 93,
+      "target_project_save_count": 1,
+      "backup_verified": true,
+      "complete_unit_record_preserved": true,
+      "persistence_verified_after_save_close_load": true
+    },
+    {
+      "name": "public_cli_shared_group_and_noop",
+      "group_addresses": [12],
+      "created_levels": 31,
+      "preview_read_only": true,
+      "target_project_save_count": 1,
+      "complete_unit_record_preserved": true,
+      "second_apply_state": "already_present",
+      "second_apply_mutated": false
+    }
+  ],
+  "owned_service": {
+    "version": "C-Gate 3.4.0 build 2001",
+    "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java": "Temurin 11.0.32.1+1",
+    "java_binary_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "listener_ownership_verified": true,
+    "loopback_listeners": 6,
+    "process_exit_confirmed": true,
+    "exit_code": 143,
+    "work_directory_removed": true,
+    "cleanup_complete": true,
+    "server_log_sha256": "77584bdfdb1c7d4ff73d9cead7d9c22f2b434c0a39050b27e5462f587d59114e",
+    "server_log_bytes": 240
+  },
+  "isolation": {
+    "physical_devices_accessed": false,
+    "cni_sentinel_connections": [],
+    "existing_projects_adopted": false,
+    "automatic_retries": 0
+  },
+  "source_sha256": {
+    "src/cbus_toolkit/native_thermostat_scheduling.py": "44166c4b7c15a7b51cf492db3bd7f55cabb60229642adf8be3b86587200c9432",
+    "src/cbus_toolkit/thermostat_schedule_cli.py": "33ea7c99ae59e5a3980ba77166f1cb8c12a162f23ad53adfe9de62dd95599c5b",
+    "tests/test_native_thermostat_scheduling_integration.py": "8003a83f020f4cbdd869fd68503f28fb2eb0bf35733678305b4d5df89dc87ac4"
+  },
+  "raw_evidence": {
+    "bytes": 6052442,
+    "sha256": "09d43fd767dea750bb636d24f044752e89808592fac7fd224d954f0a3a7cd88b",
+    "external_archive": "/Volumes/external/cbus-toolkit-root-research-20260924/thermostat-native-composition-v1/native-evidence.json"
+  },
+  "prior_attempts": [
+    {
+      "stage": "pre-start runtime validation",
+      "result": "rejected",
+      "reason": "The selected archived JRE did not contain keytool; no C-Gate process or project was created. The adjacent pinned JDK was then selected."
+    }
+  ],
+  "not_claimed": [
+    "original Toolkit inherited loader or service factories",
+    "native collection-order equivalence",
+    "remaining thermostat dialog settings",
+    "physical thermostat programming or behavior"
+  ]
+}
