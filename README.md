@@ -52,6 +52,16 @@ rust/target/release/cmqttd \
   --tcp 192.168.1.10:10001
 ```
 
+## C-Bus Toolkit and C-Gate CLI compatibility
+
+The Rust CLI stack provides full command-surface compatibility with the C-Gate 3.4 interface used by C-Bus Toolkit 1.18. Every command in the maintained native inventory is recognized and dispatched: 224 public manual headings and 268 registered command paths, representing 431 unique paths.
+
+`cgate-mock` supports tagged commands, multiline replies, here-documents, event subscriptions, cross-client event delivery, per-session project selection, access levels, and programming locks. Its stateful command model covers project and database management, networks, units, groups, labels, levels, scenes, schedules, CGL data, repository operations, and PP programming sessions. Unit-specification directories can be supplied with `--unitspec` for catalogue-backed programming parameters.
+
+The companion `cbus-tools` CLI reads Toolkit `.cbz` backups and project XML, exports network/application/group/unit metadata, decodes C-Bus frames, and interrogates units through a CNI. `cmqttd` can use the same project files for Home Assistant entity names and network selection.
+
+Full compatibility here means that every registered C-Gate command path has tested parsing, dispatch, and protocol-shaped behavior. Core project, database, network, lighting, event, and programming workflows are stateful. Commands that normally require Schneider services or physical equipment use deterministic in-memory behavior in `cgate-mock`; the CLI does not reproduce the Toolkit graphical interface or create physical device side effects. See [C-Gate compatibility](docs/cgate.md) for the detailed boundary.
+
 For Docker, copy `.env.example` to `.env`, set the broker and C-Bus endpoint, and run:
 
 ```sh
