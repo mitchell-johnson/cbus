@@ -1,0 +1,7 @@
+interface:
+  display_name: "C-Bus CLI"
+  short_description: "Operate and troubleshoot the Rust C-Bus tools"
+  default_prompt: "Use $cbus-cli to choose and run the correct C-Bus command-line workflow for this task."
+
+policy:
+  allow_implicit_invocation: true

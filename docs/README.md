@@ -9,3 +9,5 @@ The repository is a Rust-only C-Bus implementation. These documents describe the
 - [Protocol](protocol.md): packets, PCI/CNI transport, MQTT, and project files.
 - [Configuration](configuration.md): `cmqttd`, TLS, Docker, and project labels.
 - [Testing](testing.md): local checks, test data, CI, and adding coverage.
+
+AI agents should start with the repository's [C-Bus CLI skill](../.agents/skills/cbus-cli/SKILL.md). Its reference set provides command selection, system context, C-Gate wire behavior, and repeatable operating and validation workflows. [AGENTS.md](../AGENTS.md) contains repository-wide agent guidance.

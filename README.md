@@ -78,12 +78,19 @@ docker compose up --build
 - [cmqttd configuration](docs/configuration.md)
 - [Testing and development](docs/testing.md)
 
+## AI agent support
+
+The repository includes a versioned [C-Bus CLI skill](.agents/skills/cbus-cli/SKILL.md) for AI coding and operations agents. It teaches an agent how to choose and run each Rust CLI, interpret C-Gate and Toolkit compatibility accurately, distinguish local inspection from bus-changing operations, and validate repository changes. Its focused references cover the [CLI surface](.agents/skills/cbus-cli/references/cli.md), [system architecture](.agents/skills/cbus-cli/references/system.md), [C-Gate behavior](.agents/skills/cbus-cli/references/cgate.md), and [operational workflows](.agents/skills/cbus-cli/references/workflows.md).
+
+Root-level [AI agent guidance](AGENTS.md) makes the maintained Rust boundary, secret-handling rules, crate ownership, and validation gate discoverable when an agent opens the repository.
+
 ## Repository layout
 
 ```text
 rust/                    Rust workspace and all maintained source code
 rust/testdata/           committed protocol vectors and system-test fixtures
 docs/                    maintained documentation
+.agents/skills/cbus-cli/ reusable AI skill and operational references
 cmqttd_config/           optional local Docker configuration
 .github/workflows/ci.yml Rust formatting, lint, test, and release-build checks
 ```
