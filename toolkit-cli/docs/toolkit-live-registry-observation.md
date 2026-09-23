@@ -2,9 +2,10 @@
 
 `ToolkitLiveUpdateConditions` evaluates registry conditions lazily through a
 provider. The Python API is implemented and tested with deterministic providers
-and retained original results. The production Windows worker still needs fresh
-Windows acceptance; this is not a completed live Toolkit parity claim or a new
-CLI command.
+and retained original results. The production Windows worker now has a bounded
+seven-case execution under the VM guest agent's LocalSystem HKCU. Interactive
+user-context acceptance is still outstanding, so this is not a completed live
+Toolkit parity claim or a new CLI command.
 
 The wrapper uses the existing condition parser and successful condition-name
 cache. In `A AND A AND B`, where A and B refer to the same registry value, A is
@@ -49,12 +50,23 @@ archived source/test/fixture files were unchanged before/after, and imported
 package paths resolved to this worktree. The [host test report](../research/experiments/2026-09-24/registry-host-review.json) records these results; the full archive remains under
 `/Volumes/external/cbus-toolkit-registry-live-review-20260924/`.
 
-Remaining work is to verify a fresh Windows runner and runtime, execute the
-production Python observer against newly owned HKCU fixtures, and compare its
-typed results with the original leaves and same-provider witnesses. Original
-callback/cache ordering must also be checked with controlled value changes, and
-owned-process/key cleanup independently verified. CLI exposure, broader registry
-hives/value domains, culture-sensitive comparisons and complete update
-applicability/selection remain outstanding. Existing supplied-fact behavior and
-its limitations are documented in
+The later [Windows system-context acceptance](../research/experiments/2026-09-24/registry-windows-system-acceptance.json)
+executed the current production adapter and its compiled x86 Framework worker on
+Windows 11 with Python 3.13.14. Seven observations distinguished an existing key
+with the original Int32 default, a missing key, a missing string entry, a literal
+sentinel string, an empty string, mixed-case ASCII and DWORD `0x80000000` as
+signed Int32 minimum. The captured compiler/runtime hashes, method token, method
+IL, helper hash, request/response correlation and typed values all passed.
+Production cleanup reaped the compiler and worker; an independent read-only
+query found the newly owned registry root absent and no owned worker or driver
+processes. The single execution was not retried after an initial output-file
+sharing violation. It made no network, C-Gate or CNI call.
+
+Remaining work is to repeat production acceptance in the interactive Toolkit
+user context and compare the typed results with the original leaves and
+same-provider witnesses. Original callback/cache ordering must also be checked
+with controlled value changes, along with short-circuiting, unsupported binary
+values and bounded interruption. CLI exposure, broader registry hives/value
+domains, culture-sensitive comparisons and complete update applicability and
+selection remain outstanding. Existing supplied-fact behavior and its limitations are documented in
 [toolkit-update-registry-conditions.md](toolkit-update-registry-conditions.md).
