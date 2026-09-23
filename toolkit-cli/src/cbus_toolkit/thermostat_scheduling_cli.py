@@ -13,11 +13,14 @@ from pathlib import Path
 
 from .thermostat_schedule_levels import ScheduleLevel
 from .thermostat_scheduling import ScheduleGroup, ThermostatScheduling
+from .thermostat_unit_load import RAW_FIELDS, ThermostatLoadGroup, ThermostatUnitLoader
 
 SCOPE = ('Supplied resolved thermostat state only; no unit load, native '
          'persistence, VCL dispatch or device operation')
 SCOPE_CREATE = ('Supplied resolved state with no save providers; no native '
                 'persistence, VCL dispatch or device operation')
+SCOPE_LOAD = ('Supplied raw scheduling bytes and resolved application/group collection; '
+              'no inherited loader, native persistence, VCL dispatch or device operation')
 MAX_STATE_BYTES = 1024 * 1024
 
 
@@ -95,10 +98,41 @@ def _load(path):
     return _state(raw)
 
 
+def _unit_load(path):
+    if not isinstance(path, Path):
+        raise ValueError('Unit-load path is required')
+    try:
+        data = path.read_bytes()
+    except OSError as error:
+        raise ValueError('Cannot read unit-load file: ' + str(error)) from error
+    if len(data) > MAX_STATE_BYTES or not data:
+        raise ValueError('Unit-load file must be nonempty and at most 1 MiB')
+    try:
+        raw = json.loads(data.decode('utf-8'))
+    except (UnicodeError, ValueError) as error:
+        raise ValueError('Unit-load file must be UTF-8 JSON: ' + str(error)) from error
+    if type(raw) is not dict or set(raw) != {'raw', 'application_present', 'groups'}:
+        raise ValueError('Unit-load document must define exactly raw, application_present and groups')
+    if type(raw['raw']) is not dict or set(raw['raw']) != set(RAW_FIELDS):
+        raise ValueError('Unit-load raw state must contain the six exact scheduling fields')
+    if type(raw['groups']) is not list or len(raw['groups']) > 256:
+        raise ValueError('Unit-load groups must be a list of at most 256 records')
+    groups = []
+    for index, group in enumerate(raw['groups']):
+        if type(group) is not dict or set(group) != {'identity', 'address', 'tag'}:
+            raise ValueError('Unit-load group %d must define identity, address and tag' % index)
+        groups.append(ThermostatLoadGroup(**group))
+    return raw['raw'], raw['application_present'], groups
+
+
 def options(commands):
     parser = commands.add_parser('thermostat-scheduling',
                                  help='Evaluate retained outer scheduling selection over supplied state')
     actions = parser.add_subparsers(dest='action', required=True)
+    load = actions.add_parser('load', help='Resolve retained scheduling state from supplied raw bytes')
+    load.add_argument('state', type=Path, help='Raw scheduling/application/group JSON document')
+    load.add_argument('--group-name', default='Group', help='Supplied standard group label used for created non-255 groups')
+    load.add_argument('--unused-name', default='<Unused>', help='Supplied label used for a created group 255')
     for name in ('selected', 'required'):
         sub = actions.add_parser(name, help='Evaluate the ' + name + ' predicate')
         sub.add_argument('state', type=Path, help='Resolved-state JSON document')
@@ -111,8 +145,14 @@ def options(commands):
 
 
 def run(args):
-    if args.area != 'thermostat-scheduling' or args.action not in ('selected', 'required', 'create-levels', 'end-save-lock'):
+    if args.area != 'thermostat-scheduling' or args.action not in ('load', 'selected', 'required', 'create-levels', 'end-save-lock'):
         raise ValueError('Unsupported thermostat scheduling command')
+    if args.action == 'load':
+        raw, application_present, groups = _unit_load(args.state)
+        outcome = ThermostatUnitLoader().load(raw, application_present=application_present,
+            groups=groups, group_name=args.group_name, unused_name=args.unused_name)
+        return {**outcome.as_dict(), 'scheduling_state': outcome.scheduling_state(),
+                'scope': SCOPE_LOAD}, 0
     groups, on, off, override, enabled, save_lock, pending_save = _load(args.state)
     model = ThermostatScheduling()
     state = model.load(groups, on=on, off=off, override=override, enabled=enabled,

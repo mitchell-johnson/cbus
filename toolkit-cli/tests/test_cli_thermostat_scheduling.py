@@ -46,6 +46,44 @@ class ThermostatSchedulingCLITests(unittest.TestCase):
             self.assertTrue(required['value'])
             self.assertTrue(any(e.get('event') == 'find' for e in required['semantic_events']))
 
+    def test_load_resolves_original_normalization_and_created_groups(self):
+        import tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'load.json'
+            path.write_text(json.dumps({'raw': {
+                'RemoteScheduleOnGroup': 12, 'RemoteScheduleOffGroup': 13,
+                'RemoteScheduleOverrideGroup': 14, 'RemoteScheduleEnable': 255,
+                'EvapProgramEnabled': 2, 'NonEvapProgramEnabled': 255},
+                'application_present': False, 'groups': []}), encoding='utf-8')
+            code, result = self.execute(['thermostat-scheduling', 'load', str(path),
+                '--group-name', 'Fixture Group', '--unused-name', 'Fixture Unused'])
+            self.assertEqual(code, 0)
+            self.assertEqual(result['normalized_flags'], {
+                'EvapProgramEnabled': 0, 'NonEvapProgramEnabled': 1})
+            self.assertTrue(result['remote']);self.assertTrue(result['application_created'])
+            self.assertEqual(result['saved'], ['application', 'created-0', 'created-1', 'created-2'])
+            self.assertEqual(result['roles'], {
+                'on': 'created-0', 'off': 'created-1', 'override': 'created-2'})
+            self.assertEqual(result['scheduling_state']['enabled'], True)
+            self.assertFalse(result['native_persistence_verified'])
+            self.assertIn('Supplied raw scheduling', result['scope'])
+
+    def test_load_rejects_implicit_or_malformed_application_state(self):
+        import tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for name, value in (
+                ('missing.json', {'raw': {}, 'groups': []}),
+                ('foreign.json', {'raw': {field: 0 for field in boundary.RAW_FIELDS},
+                                  'application_present': False,
+                                  'groups': [{'identity': 'foreign', 'address': 1, 'tag': 'x'}]})):
+                path = root / name;path.write_text(json.dumps(value), encoding='utf-8')
+                code, result = self.execute(['thermostat-scheduling', 'load', str(path)])
+                self.assertEqual(code, 1)
+                self.assertIn('error', result)
+
     def test_unused_sentinel_and_empty_share_negative_outcome(self):
         import tempfile
         from pathlib import Path
