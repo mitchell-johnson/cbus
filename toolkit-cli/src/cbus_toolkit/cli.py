@@ -1087,6 +1087,8 @@ def build_parser():
     revocation_options(commands)
     from .toolkit_update_conditions_cli import options as condition_options
     condition_options(commands)
+    from .toolkit_live_update_conditions_cli import options as live_condition_options
+    live_condition_options(commands)
     from .pci_routing_cli import options as routing_options
     routing_options(commands)
     from .toolkit_about_cli import options as about_options
@@ -2741,6 +2743,9 @@ def run(args):
     if args.area == "update-condition-stages":
         from .toolkit_update_conditions_cli import run as condition_run
         return condition_run(args)
+    if args.area == "update-condition-live":
+        from .toolkit_live_update_conditions_cli import run as live_condition_run
+        return live_condition_run(args)
     if args.area == "pci-route":
         from .pci_routing_cli import run as routing_run
         return routing_run(args)
@@ -3017,6 +3022,7 @@ def main(argv=None):
     from .toolkit_update_metadata_cli import error_payload as metadata_error_payload
     from .toolkit_update_revocation_cli import error_payload as revocation_error_payload
     from .toolkit_update_conditions_cli import error_payload as condition_error_payload
+    from .toolkit_live_update_conditions_cli import error_payload as live_condition_error_payload
     from .toolkit_database_csv_cli import error_payload as database_csv_error_payload
     from .pci_routed_recall_cli import error_payload as routed_recall_error_payload
     from .pci_routed_identify_cli import error_payload as routed_identify_error_payload
@@ -3033,6 +3039,9 @@ def main(argv=None):
             if args.area == "cgate" and args.action == "thermostat-schedule-levels":
                 from .thermostat_schedule_cli import record_output_error
                 record_output_error(args, output_error)
+            if args.area == "update-condition-live":
+                from .toolkit_live_update_conditions_cli import record_output_error
+                record_output_error(args, output_error)
             raise
         return status
     except (ValueError, OSError, RuntimeError) as exc:
@@ -3047,7 +3056,7 @@ def main(argv=None):
             return 1
         print(json.dumps({"error": str(exc), "type": type(exc).__name__, **getattr(exc, "details", {}),
                           **_selected_serial_error_payload(exc), **_programming_cleanup_payload(exc),
-                          **_cgate_cleanup_payload(exc), **_edlt_label_clear_payload(exc), **_edlt_ordered_payload(exc, args), **global_error_payload(exc, args), **live_error_payload(exc, args), **preference_error_payload(exc, args), **update_error_payload(exc, args), **metadata_error_payload(exc, args), **revocation_error_payload(exc, args), **condition_error_payload(exc, args), **database_csv_error_payload(exc, args), **routed_recall_error_payload(exc, args), **routed_identify_error_payload(exc, args), **project_repair_error_payload(exc, args)},
+                          **_cgate_cleanup_payload(exc), **_edlt_label_clear_payload(exc), **_edlt_ordered_payload(exc, args), **global_error_payload(exc, args), **live_error_payload(exc, args), **preference_error_payload(exc, args), **update_error_payload(exc, args), **metadata_error_payload(exc, args), **revocation_error_payload(exc, args), **condition_error_payload(exc, args), **live_condition_error_payload(exc, args), **database_csv_error_payload(exc, args), **routed_recall_error_payload(exc, args), **routed_identify_error_payload(exc, args), **project_repair_error_payload(exc, args)},
                          default=_json_default), file=sys.stderr)
         return 1
     except KeyboardInterrupt as exc:
@@ -3069,6 +3078,7 @@ def main(argv=None):
         result.update(metadata_error_payload(exc, args))
         result.update(revocation_error_payload(exc, args))
         result.update(condition_error_payload(exc, args))
+        result.update(live_condition_error_payload(exc, args))
         result.update(database_csv_error_payload(exc, args))
         result.update(routed_recall_error_payload(exc, args))
         result.update(routed_identify_error_payload(exc, args))

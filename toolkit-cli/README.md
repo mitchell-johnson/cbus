@@ -84,6 +84,16 @@ comparisons and 248 byte-identical v1 reports. Supplied facts remain unverified;
 the command does not read the live registry or determine package applicability
 or update availability.
 
+On Windows, `update-condition-live conditions.json --file-context file-facts.json
+--registry-scope registry-scope.json` evaluates the same bounded expression while
+lazily reading only the one to eight exact HKCU queries admitted by the scope.
+It uses the checked x86 .NET Framework worker, hashes all three input files and
+retains partial observation and cleanup evidence on failure or interruption.
+Both computed Boolean results exit successfully. The accepted worker has seven
+typed observations in LocalSystem HKCU; interactive Toolkit-user context and
+original lazy-wrapper comparison remain outstanding. See [live registry
+observation](docs/toolkit-live-registry-observation.md).
+
 `toolkit-about path/to/CBusToolkit.exe` reads an explicit executable and emits
 the original About text, using the current local year. `--year 2026` supplies
 a reproducible year; `--context captured-context.json` adds explicitly supplied

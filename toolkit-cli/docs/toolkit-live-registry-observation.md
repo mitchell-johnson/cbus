@@ -5,7 +5,24 @@ provider. The Python API is implemented and tested with deterministic providers
 and retained original results. The production Windows worker now has a bounded
 seven-case execution under the VM guest agent's LocalSystem HKCU. Interactive
 user-context acceptance is still outstanding, so this is not a completed live
-Toolkit parity claim or a new CLI command.
+Toolkit parity claim.
+
+The wrapper is available through the Windows command line:
+
+```text
+cbus-toolkit update-condition-live conditions.json \
+  --file-context file-facts.json \
+  --registry-scope registry-scope.json
+```
+
+`registry-scope.json` must use `cbus-toolkit-registry-read-scope-v1` and list
+one to eight unique HKCU queries, including each query's exact typed default.
+The command hashes all three supplied files, uses the captured x86 Framework
+compiler by default, and accepts `--compiler`, `--workspace-parent` and
+`--timeout` for an explicit worker environment. Both computed Boolean results
+exit 0; incomplete, failed or unsupported evaluation exits 1. An interruption
+exits 130 and retains partial evaluation, observation and cleanup evidence.
+Input files are read as bounded ordinary files before observer construction.
 
 The wrapper uses the existing condition parser and successful condition-name
 cache. In `A AND A AND B`, where A and B refer to the same registry value, A is
@@ -37,7 +54,7 @@ already used Windows sessions are rejected before an extra read; and termination
 errors still lead to a bounded wait/reap attempt on the exact owned process,
 without replacing the first error.
 
-Validation on Python 3.13.14 and 3.10.20 passed **108 tests each**, with no failures,
+The historical validation on Python 3.13.14 and 3.10.20 passed **108 tests each**, with no failures,
 errors or skips. This includes the existing 78 conditions/registry/metadata/
 revocation tests and 30 live-wrapper/host-transport tests. The latter cover lazy
 ordering, changing repeated queries, short-circuiting, original null/RHS order,
@@ -49,6 +66,14 @@ These runs executed no Windows worker or original Toolkit methods. Their 155
 archived source/test/fixture files were unchanged before/after, and imported
 package paths resolved to this worktree. The [host test report](../research/experiments/2026-09-24/registry-host-review.json) records these results; the full archive remains under
 `/Volumes/external/cbus-toolkit-registry-live-review-20260924/`.
+
+The current Python 3.13 focused suite adds five CLI boundary tests and passes
+**113 tests** in total. The CLI tests cover true and false results, exact source
+hashes, scope and regular-file admission before observer construction, invalid
+timeouts, retained interruption evidence, report-export failure recovery and
+single-close ownership. They substitute a deterministic observer and perform no
+Windows, registry or network operation. The [CLI review report](../research/experiments/2026-09-24/registry-cli-review.json)
+records the current source hashes and result.
 
 The later [Windows system-context acceptance](../research/experiments/2026-09-24/registry-windows-system-acceptance.json)
 executed the current production adapter and its compiled x86 Framework worker on
@@ -66,7 +91,7 @@ Remaining work is to repeat production acceptance in the interactive Toolkit
 user context and compare the typed results with the original leaves and
 same-provider witnesses. Original callback/cache ordering must also be checked
 with controlled value changes, along with short-circuiting, unsupported binary
-values and bounded interruption. CLI exposure, broader registry hives/value
-domains, culture-sensitive comparisons and complete update applicability and
+values and bounded interruption. Broader registry hives/value domains,
+culture-sensitive comparisons and complete update applicability and
 selection remain outstanding. Existing supplied-fact behavior and its limitations are documented in
 [toolkit-update-registry-conditions.md](toolkit-update-registry-conditions.md).
