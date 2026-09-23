@@ -198,8 +198,8 @@ def project_native_xml_unit(text, unit_path, *, columns):
         raise ValueError('Native unit group reference is absent from the primary application cache')
     if area_address is not None and area_address not in by_address:
         raise ValueError('Native Area group is absent; original report creation requires an unperformed database mutation')
-    if area_address is not None and area_address not in (12, 255):
-        raise ValueError('Captured native RELAY4 profile supports existing Area12 or Area255')
+    if area_address is not None and area_address not in (12, 13, 255):
+        raise ValueError('Captured native RELAY4 profile supports existing Area12, Area13 or Area255')
     identities = tuple(by_address[address].identity for address in group_addresses)
     cached_unit = CachedCSVUnit(_oid(_field(unit, 'OID')), unit_address,
         _field(unit, 'UnitName'), _field(unit, 'TagName'), unit_type,

@@ -4,8 +4,9 @@ import json
 import os
 from pathlib import Path
 import tempfile
+from types import SimpleNamespace
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from cbus_toolkit import cli, toolkit_database_csv_cli as boundary
 from cbus_toolkit.toolkit_database_csv import COLUMNS
@@ -13,6 +14,7 @@ from tests.test_toolkit_database_csv import captured, unit
 from tests.test_toolkit_database_csv_native import native_xml
 from tests.test_toolkit_database_csv_projection import projection_input
 from tests.test_cgate import peer
+from tests.test_toolkit_database_csv_area import AreaClient
 
 
 class DatabaseCSVCLITests(unittest.TestCase):
@@ -135,6 +137,53 @@ class DatabaseCSVCLITests(unittest.TestCase):
             self.assertIn('unperformed database mutation', json.loads(err.getvalue())['error'])
             self.assertFalse(output.exists())
             self.assertEqual(sent, [b'[1] DBGETXML //CSVTEST\r\n'])
+
+    def test_live_cgate_explicit_missing_area_apply_backs_up_and_exports(self):
+        with tempfile.TemporaryDirectory() as folder:
+            output = Path(folder) / 'live.csv'; client = AreaClient()
+            class Connection:
+                def __enter__(self): return client
+                def __exit__(self, kind, error, trace): return False
+            factory = Mock(return_value=Connection())
+            args = SimpleNamespace(area='cgate', action='database-csv', unit='//CSVTEST/254/p/4',
+                output=output, columns=['area', 'address'], apply_missing_area=True,
+                backup_project='BACKUP', host='127.0.0.1', port=None, timeout=5, tls=False)
+            result, code = boundary.live(args, factory, None)
+            self.assertEqual(code, 0)
+            self.assertTrue(result['native_database_mutated'])
+            self.assertEqual(result['area_group_mutation']['backup_project'], 'BACKUP')
+            self.assertTrue(result['area_group_mutation']['reload_verified'])
+            self.assertEqual(output.read_bytes(), b'Unit Address,Area,\r\n4,Group 13,\r\n\r\n')
+            factory.assert_called_once_with('127.0.0.1', 20023, timeout=5, ssl_context=None)
+
+    def test_live_cgate_apply_validation_precedes_connection(self):
+        with tempfile.TemporaryDirectory() as folder:
+            base = dict(area='cgate', action='database-csv', unit='//CSVTEST/254/p/4',
+                output=Path(folder) / 'live.csv', columns=['all'], apply_missing_area=True,
+                backup_project=None, host='127.0.0.1', port=None, timeout=5, tls=False)
+            for change in ({}, {'apply_missing_area': False, 'backup_project': 'BACKUP'},
+                           {'backup_project': 'CSVTEST'}):
+                args = SimpleNamespace(**{**base, **change}); factory = Mock()
+                with self.subTest(change=change), self.assertRaises(ValueError):
+                    boundary.live(args, factory, None)
+                factory.assert_not_called()
+
+    def test_live_cgate_output_failure_reports_completed_mutation_and_backup(self):
+        with tempfile.TemporaryDirectory() as folder:
+            output = Path(folder) / 'live.csv'; client = AreaClient()
+            class Connection:
+                def __enter__(self): return client
+                def __exit__(self, kind, error, trace): return False
+            args = SimpleNamespace(area='cgate', action='database-csv', unit='//CSVTEST/254/p/4',
+                output=output, columns=['all'], apply_missing_area=True,
+                backup_project='BACKUP', host='127.0.0.1', port=None, timeout=5, tls=False)
+            with patch.object(boundary.os, 'open', side_effect=OSError('disk failed')):
+                with self.assertRaises(boundary.DatabaseCSVLiveError) as caught:
+                    boundary.live(args, Mock(return_value=Connection()), None)
+            self.assertTrue(caught.exception.details['native_database_mutated'])
+            self.assertEqual(caught.exception.details['backup_project'], 'BACKUP')
+            self.assertEqual(caught.exception.details['output_bytes_confirmed'], 0)
+            self.assertTrue(client.created)
 
     def test_columns_invalid_before_input_io_and_capture_invalid_before_output_creation(self):
         for columns in (['all', 'address'], ['address', 'address'], ['unknown']):

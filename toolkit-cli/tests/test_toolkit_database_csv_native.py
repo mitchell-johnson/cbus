@@ -75,8 +75,9 @@ class NativeXMLCSVProjectionTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'unperformed database mutation'):
             project_native_xml_unit(native_xml(area=13, missing=(13,)),
                                     '//CSVTEST/254/p/4', columns=COLUMNS)
-        with self.assertRaisesRegex(ValueError, 'existing Area12 or Area255'):
-            project_native_xml_unit(native_xml(area=13), '//CSVTEST/254/p/4', columns=COLUMNS)
+        completed = project_native_xml_unit(native_xml(area=13), '//CSVTEST/254/p/4', columns=COLUMNS)
+        self.assertTrue(completed.complete)
+        self.assertIn(',Group13,', completed.report.rows[1])
 
     def test_selected_path_allows_other_units_but_rejects_ambiguity_and_bad_profile(self):
         outcome = project_native_xml_unit(native_xml(extra_unit=True),

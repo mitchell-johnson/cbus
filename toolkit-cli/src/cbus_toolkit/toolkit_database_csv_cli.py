@@ -30,6 +30,10 @@ def live_options(parser):
                         help='New UTF-8 CSV file; existing destinations are never overwritten')
     parser.add_argument('--columns', nargs='+', default=['all'], metavar='COLUMN',
                         help='all (default), or selected names: ' + ', '.join(COLUMNS) + '; output follows original order')
+    parser.add_argument('--apply-missing-area', action='store_true',
+                        help='For the exact captured B03 shape, back up and persist missing Area13 before export')
+    parser.add_argument('--backup-project',
+                        help='New C-Gate backup project; required with --apply-missing-area')
 
 
 def _failure(error):
@@ -45,6 +49,21 @@ class DatabaseCSVFileError(ValueError):
         super().__init__(_failure(cause)['message'])
         self.original_error = cause
         self.details = evidence
+
+
+class DatabaseCSVLiveError(RuntimeError):
+    def __init__(self, cause, *, mutation, output, confirmed):
+        self.original_error = cause
+        self.details = {
+            'native_database_mutated': True,
+            'area_group_mutation': copy.deepcopy(mutation),
+            'backup_project': mutation['backup_project'],
+            'output': str(output),
+            'output_bytes_confirmed': confirmed,
+            'output_may_be_partial': confirmed > 0,
+        }
+        super().__init__('CSV output failed after the Area group was saved: ' +
+                         _failure(cause)['message'])
 
 
 class DatabaseCSVFileOperation:
@@ -224,6 +243,16 @@ def live(args, client_factory, ssl_context):
         raise ValueError('Unsupported live database CSV command')
     selected = validate_columns(COLUMNS if args.columns == ['all'] else tuple(args.columns))
     project, _network, _unit = _path(args.unit)
+    if type(args.apply_missing_area) is not bool:
+        raise ValueError('apply_missing_area must be Boolean')
+    if args.apply_missing_area:
+        if type(args.backup_project) is not str:
+            raise ValueError('--apply-missing-area requires --backup-project')
+        from .native import _project
+        if _project(args.backup_project).upper() == project.upper():
+            raise ValueError('Backup project must differ from the edited project')
+    elif args.backup_project is not None:
+        raise ValueError('--backup-project requires --apply-missing-area')
     if type(args.host) is not str or not args.host:
         raise ValueError('C-Gate host is required')
     if type(args.tls) is not bool:
@@ -238,8 +267,17 @@ def live(args, client_factory, ssl_context):
         raise FileExistsError('Output already exists: ' + str(output))
 
     with client_factory(args.host, port, timeout=args.timeout, ssl_context=ssl_context) as client:
-        reply = NativeDatabase(client).get('//' + project, xml=True)
-        xml = native_xml_reply_text(reply)
+        mutation = None
+        if args.apply_missing_area:
+            from .toolkit_database_csv_area import NativeCSVAreaGroups
+            manager = NativeCSVAreaGroups(client)
+            mutation_result = manager.apply(manager.plan(args.unit),
+                                            backup_project=args.backup_project)
+            mutation = mutation_result.as_dict()
+            xml = mutation_result.final_xml
+        else:
+            reply = NativeDatabase(client).get('//' + project, xml=True)
+            xml = native_xml_reply_text(reply)
         projection = project_native_xml_unit(xml, args.unit, columns=selected)
     if not projection.complete or projection.report is None:
         raise ValueError('Native XML projection stopped: ' + str(projection.stop_reason))
@@ -277,13 +315,18 @@ def live(args, client_factory, ssl_context):
                     except BaseException:
                         pass
     if primary is not None:
+        if mutation is not None and isinstance(primary, Exception):
+            raise DatabaseCSVLiveError(primary, mutation=mutation,
+                                       output=output, confirmed=confirmed) from primary
         raise primary
     return {
         'format': 'cbus-toolkit-database-live-csv-v1', 'complete': True,
         'input_mode': 'live_native_xml', 'database_command': 'DBGETXML //' + project,
         'network_io_performed': True, 'physical_device_accessed': False,
-        'native_database_mutated': False, 'output': str(output),
+        'output': str(output),
         'output_bytes_confirmed': confirmed, 'projection': projection.as_dict(),
+        'area_group_mutation': mutation,
+        'native_database_mutated': mutation is not None,
         'report': projection.report.as_dict(),
     }, 0
 

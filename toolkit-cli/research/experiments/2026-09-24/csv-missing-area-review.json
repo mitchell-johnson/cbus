@@ -1,0 +1,60 @@
+{
+  "format": "csv-missing-area-review-v1",
+  "passed": true,
+  "base_commit": "46221c541d6196995e5dc11c121918f529117833",
+  "captured_case": "B03",
+  "original_replay_evidence": "research/experiments/2026-09-24/csv-replay-complete.json",
+  "original_observed_creation": {
+    "application": 56,
+    "address": 13,
+    "tag": "Group 13",
+    "original_save_completed": false
+  },
+  "focused_command": ".venv/bin/python -m unittest tests.test_toolkit_database_csv_area tests.test_toolkit_database_csv_native tests.test_toolkit_database_csv_projection tests.test_toolkit_database_csv tests.test_cli_toolkit_database_csv -v",
+  "focused_tests": 42,
+  "focused_failures": 0,
+  "focused_errors": 0,
+  "focused_skips": 0,
+  "owned_cgate_command": "CBUS_CGATE_JAVA=<pinned-java11> CBUS_LOCAL_CGATE_VENDOR=research/vendor/cgate/app PYTHONPATH=tests:. .venv/bin/python -m unittest tests.test_toolkit_database_csv_area_native -v",
+  "owned_cgate_tests": 1,
+  "owned_cgate_failures": 0,
+  "owned_cgate_errors": 0,
+  "owned_cgate_skips": 0,
+  "owned_cgate_elapsed_seconds": 1.893,
+  "owned_cgate_report_sha256": "12932bf43230b26cdf5e3f57c1bc781c347f2fc692a9b02aaca844cf3a7a61ca",
+  "vendor_cgate_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+  "java11_executable_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+  "owned_cgate_result": {
+    "backup_created_before_mutation": true,
+    "created_application": 56,
+    "created_address": 13,
+    "created_tag": "Group 13",
+    "target_save_confirmed": true,
+    "reload_verified": true,
+    "csv_area": "Group 13",
+    "sentinel_cni_connections": 0,
+    "physical_device_accessed": false,
+    "service_cleanup_complete": true,
+    "cleanup_errors": []
+  },
+  "full_suite_command": "PYTHONPATH=tests .venv/bin/python -m unittest discover -s tests",
+  "full_suite_tests": 2168,
+  "full_suite_failures": 0,
+  "full_suite_errors": 0,
+  "full_suite_skips": 255,
+  "full_suite_elapsed_seconds": 568.916,
+  "source_hashes": {
+    "src/cbus_toolkit/toolkit_database_csv_area.py": "80badc60a373d2e488cf4b969ce5a7e63c8e6f73f7056534794b5a20a95b5107",
+    "src/cbus_toolkit/toolkit_database_csv_cli.py": "c5bc98feb3c4a59268f794298353eff397a62b504d30ca05205ed810a78f9ebb",
+    "src/cbus_toolkit/toolkit_database_csv_native.py": "327272cae15aaf18243bcd7d11fad34515e4de05eb3520c5feb63fe1f8514189",
+    "tests/test_toolkit_database_csv_area.py": "4acdbf33a2790fdede33353d28e6d4ee8c3d54f3373fe2ca377f3f886a362149",
+    "tests/test_toolkit_database_csv_area_native.py": "dc898dfe471c9a042f1ebadbf4b60219b43de7b6383923dc1555eab50788b01f",
+    "tests/test_cli_toolkit_database_csv.py": "0f2d2f855f1ab861a81b3601bab27304758c5dd10c23715d0a8f02669b9a3130"
+  },
+  "outstanding": [
+    "general application, group and association construction",
+    "arbitrary unit profiles",
+    "selection preferences and native Windows encoding",
+    "physical behavior"
+  ]
+}
