@@ -125,6 +125,25 @@ class CachedCSVProjectionTests(unittest.TestCase):
             ['<Unused>', 'G1', 'G2', *('<Unused>' for _ in range(6))])
         self.assertEqual(fields[18:26], ['<N/A>'] * 8)
 
+    def test_din_profiles_keep_configured_noninteraction_slots_unavailable(self):
+        groups = tuple(group(address) for address in (*range(20, 33), 255))
+        identities = tuple('group-' + str(address)
+                           for address in (*range(20, 33), 255, 255, 255))
+        for unit_type, selected_class, interactions in (
+                ('DIMDN8', 'TDIMDN8', 8), ('RELDN12', 'TRELDN12', 12)):
+            with self.subTest(unit_type=unit_type):
+                unit = CachedCSVUnit('din-' + unit_type, 3, 'DIN part', 'DIN unit',
+                    unit_type, 'DIN-CATALOG', '', '2.7.00', 'Lighting', '', identities)
+                outcome = project_cached_csv_unit(unit, group_cache=groups,
+                    area_observations=(CSVAreaObservation('255'), CSVAreaObservation('255')),
+                    columns=COLUMNS)
+                self.assertEqual(outcome.selected_class, selected_class)
+                fields = outcome.report.rows[1].split(',')
+                self.assertEqual(fields[10:10 + interactions],
+                                 ['G' + str(index) for index in range(20, 20 + interactions)])
+                self.assertEqual(fields[10 + interactions:26],
+                                 ['<N/A>'] * (16 - interactions))
+
     def test_reference_moves_between_groups_and_retains_identity(self):
         unit, groups = fixture()
         outcome = project_cached_csv_unit(unit, group_cache=groups,

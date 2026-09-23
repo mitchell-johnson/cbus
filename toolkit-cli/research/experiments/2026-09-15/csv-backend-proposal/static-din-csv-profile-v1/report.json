@@ -1,0 +1,91 @@
+{
+  "original_execution": false,
+  "scope": "bounded .text/.itext PE disassembly with exact MAP symbol annotations; spans may include trailing inline data",
+  "script_sha256": "1ef61a19fd5db4edb4457c3891156efbce84dd95b7b7ac734aae501ad3aeab07",
+  "original_inputs": {
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "methods": [
+    {
+      "start": "0x122942c",
+      "end": "0x122966c",
+      "symbols": [
+        "CIS_TDIMDN8..TDIMDN8"
+      ],
+      "bytes_sha256": "af23bd60f2ea591ea01e86a1ebced5dc2ed3fc8f02f9119ef1e483b4709b2260",
+      "file": "0122942c.asm",
+      "file_sha256": "f8fc13b1d61bfffe9dbc991ccd78120ea425b852f4eccfa40e28bb2eb86827f0"
+    },
+    {
+      "start": "0x12298b0",
+      "end": "0x12298c8",
+      "symbols": [
+        "CIS_TDIMDN8.TDIMDN8.GetMaxChannels"
+      ],
+      "bytes_sha256": "05a1daa7bf067f8b5a872d598c8788ec1975e98076aa026242c7e9aa772c940e",
+      "file": "012298b0.asm",
+      "file_sha256": "5d597c1a2842b89e0b681d50db35fdba51a3a0f29e7ac32cdd5a65401126e3ab"
+    },
+    {
+      "start": "0x122a49c",
+      "end": "0x122a6e0",
+      "symbols": [
+        "CIS_TRELDN12..TRELDN12"
+      ],
+      "bytes_sha256": "f8d480ecbad72ad55ccdf23399b7f0a625accfb6f3181e7012211ddaf6c94934",
+      "file": "0122a49c.asm",
+      "file_sha256": "c2e9014650c2f59dc6b829ec3420bd65a399bf3e6464debaec2cc8b6c8095735"
+    },
+    {
+      "start": "0x122a6e0",
+      "end": "0x122a6f8",
+      "symbols": [
+        "CIS_TRELDN12.TRELDN12.GetMaxChannels"
+      ],
+      "bytes_sha256": "d5e2322032941a9fe8d2ff3265d8c0899c202e1e5b4bd79f15dc752befece697",
+      "file": "0122a6e0.asm",
+      "file_sha256": "d7f0e0f3605063eb52875591fdf179a300287dcc98defbc2d0ffc04d45acc3ed"
+    },
+    {
+      "start": "0xd2bf94",
+      "end": "0xd2bfbc",
+      "symbols": [
+        "CIS_TCBusDimmerUnit.TCBusDimmerUnit.IsInteractionGroup"
+      ],
+      "bytes_sha256": "59d5bd7d35468ddd474cebf5d144554805e38ad9beb9265a7f512fbf57deabbb",
+      "file": "00d2bf94.asm",
+      "file_sha256": "2fe6af8c24619bab7340d2e9a40365bedfb48f47142f47523dc5be6b3fbafdc1"
+    },
+    {
+      "start": "0xd1ef60",
+      "end": "0xd1f040",
+      "symbols": [
+        "CIS_TCBusDINRailOutputUnit.TCBusDINRailOutputUnit.GetAreaIfAvailable"
+      ],
+      "bytes_sha256": "d387a175ea35c17b2bdb57067d0e90f0b48121b62d26fd6769a3a089b3035b8c",
+      "file": "00d1ef60.asm",
+      "file_sha256": "9b47e8ab0efd0391e08ebec63e3588c642818ce025cf153e75afbb83b9a4c198"
+    },
+    {
+      "start": "0x1398060",
+      "end": "0x1398154",
+      "symbols": [
+        "CIS_TDIMDN8.CIS_TDIMDN8"
+      ],
+      "bytes_sha256": "8090f10be41a887d83a4e4710200f8b6753e4b1784dac7bad87aeddbbd4f2cc8",
+      "file": "01398060.asm",
+      "file_sha256": "38b9ced7c9cab326fa331024be4c9c7fe3268f79353ebf2768d952e403bd2966"
+    },
+    {
+      "start": "0x13983a4",
+      "end": "0x1398438",
+      "symbols": [
+        "CIS_TRELDN12.CIS_TRELDN12"
+      ],
+      "bytes_sha256": "2db18b5dc51ebc34a3b51235939bcf2432abee02854f076a4ad62866caf0402a",
+      "file": "013983a4.asm",
+      "file_sha256": "82e76bbc7b320a4e093760e9f926b825a9946321a8f5de45337941e95a19f94e"
+    }
+  ]
+}

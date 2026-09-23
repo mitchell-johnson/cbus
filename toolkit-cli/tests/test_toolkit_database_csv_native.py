@@ -20,7 +20,16 @@ def scalar(parent, name, value):
 
 
 def native_xml(*, unit_type='RELAY4', area=12, missing=(), extra_unit=False,
-               keye_groups=(1, 2, 255, 255, 255, 255, 255, 255, 255), with_oids=True):
+               keye_groups=(1, 2, 255, 255, 255, 255, 255, 255, 255),
+               din_groups=None, with_oids=True):
+    keye = unit_type in ('KEYE1', 'KEYE2', 'KEYE3')
+    din = unit_type in ('DIMDN8', 'RELDN12')
+    if din and din_groups is None:
+        din_groups = ((*range(1, 9), *(255 for _ in range(8)))
+                      if unit_type == 'DIMDN8'
+                      else (*range(1, 14), 255, 255, 255))
+    group_cache_addresses = (tuple(dict.fromkeys(din_groups)) if din else
+                             (1, 2, 3, 4, 5, 6, 7, 8, 12, 13, 255))
     root = ET.Element('Installation')
     project = ET.SubElement(root, 'Project'); scalar(project, 'Address', 'CSVTEST')
     network = ET.SubElement(project, 'Network'); scalar(network, 'Address', 254)
@@ -28,7 +37,7 @@ def native_xml(*, unit_type='RELAY4', area=12, missing=(), extra_unit=False,
     if with_oids:
         scalar(application, 'OID', oid(20))
     scalar(application, 'TagName', 'Lighting'); scalar(application, 'Address', 56)
-    for address in (1, 2, 3, 4, 5, 6, 7, 8, 12, 13, 255):
+    for address in group_cache_addresses:
         if address in missing:
             continue
         group = ET.SubElement(application, 'Group')
@@ -37,14 +46,15 @@ def native_xml(*, unit_type='RELAY4', area=12, missing=(), extra_unit=False,
         scalar(group, 'TagName', '<Unused>' if address == 255 else 'Group' + str(address))
         scalar(group, 'Address', address)
     unit = ET.SubElement(network, 'Unit')
-    keye = unit_type in ('KEYE1', 'KEYE2', 'KEYE3')
     if with_oids:
         scalar(unit, 'OID', oid(500))
     for name, value in (('TagName', 'OwnedUnit'), ('Address', 4),
                         ('UnitType', unit_type), ('UnitName', 'NativeUnit'),
                         ('SerialNumber', '1.2.3'),
-                        ('FirmwareVersion', '2.5.00' if keye else '4.4'),
-                        ('CatalogNumber', '5031NMML' if keye else 'OWNED')):
+                        ('FirmwareVersion', '2.5.00' if keye else ('2.7.00' if din else '4.4')),
+                        ('CatalogNumber', '5031NMML' if keye else
+                            ('L5508D1A' if unit_type == 'DIMDN8' else
+                             ('L5512RVF' if unit_type == 'RELDN12' else 'OWNED')))):
         scalar(unit, name, value)
     if unit_type == 'RELAY4':
         for name, value in (('Application', '0x38 0xff'),
@@ -57,6 +67,11 @@ def native_xml(*, unit_type='RELAY4', area=12, missing=(), extra_unit=False,
                             ('AreaGroupAddress', '0xff'),
                             ('SecondApplicationBlocks', '0'),
                             ('GroupAddress', ' '.join(hex(value) for value in keye_groups))):
+            ET.SubElement(unit, 'PP', Name=name, Value=value)
+    elif din:
+        for name, value in (('Application', '0x38 0xff'),
+                            ('AreaGroupAddress', '0xff'),
+                            ('GroupAddress', ' '.join(hex(value) for value in din_groups))):
             ET.SubElement(unit, 'PP', Name=name, Value=value)
     if extra_unit:
         other = ET.SubElement(network, 'Unit'); scalar(other, 'Address', 5)
@@ -111,6 +126,20 @@ class NativeXMLCSVProjectionTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     project_native_xml_unit(text.replace(old, new),
                                             '//CSVTEST/254/p/4', columns=COLUMNS)
+
+    def test_din_profiles_use_eight_and_twelve_interaction_slots(self):
+        for unit_type, selected_class, interactions in (
+                ('DIMDN8', 'TDIMDN8', 8), ('RELDN12', 'TRELDN12', 12)):
+            with self.subTest(unit_type=unit_type):
+                outcome = project_native_xml_unit(native_xml(unit_type=unit_type, with_oids=False),
+                                                  '//CSVTEST/254/p/4', columns=COLUMNS)
+                self.assertEqual(outcome.cached.selected_class, selected_class)
+                self.assertEqual(len(outcome.cached.unit.group_identities), 16)
+                fields = outcome.report.rows[1].split(',')
+                self.assertEqual(fields[10:10 + interactions],
+                                 ['Group' + str(index) for index in range(1, interactions + 1)])
+                self.assertEqual(fields[10 + interactions:26],
+                                 ['<N/A>'] * (16 - interactions))
 
     def test_missing_area_group_requires_unperformed_native_mutation(self):
         with self.assertRaisesRegex(ValueError, 'unperformed database mutation'):

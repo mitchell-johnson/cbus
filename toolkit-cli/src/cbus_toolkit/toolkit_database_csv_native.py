@@ -196,6 +196,19 @@ def project_native_xml_unit(text, unit_path, *, columns):
         secondary = ''
         group_addresses = group_values
         area_address = 255
+    elif unit_type in ('DIMDN8', 'RELDN12') and firmware == '2.7.00':
+        app_values = _tokens(_parameter(unit, 'Application'), 'Application', count=2)
+        group_values = _tokens(_parameter(unit, 'GroupAddress'), 'GroupAddress', count=16)
+        area_values = _tokens(_parameter(unit, 'AreaGroupAddress'), 'AreaGroupAddress', count=1)
+        primary_address, secondary_address = app_values
+        if secondary_address != 255:
+            raise ValueError('Captured native DIN profile requires an unused secondary application')
+        if area_values != (255,):
+            raise ValueError('Captured native DIN profile requires Area group 255')
+        primary = _one_by_address(network, 'Application', primary_address)
+        secondary = ''
+        group_addresses = group_values
+        area_address = 255
     elif unit_type == 'OWNED_UNKNOWN' and firmware == '4.4':
         if _children(unit, 'PP'):
             raise ValueError('Captured native generic profile requires no stored PP records')
@@ -206,7 +219,7 @@ def project_native_xml_unit(text, unit_path, *, columns):
         group_addresses = tuple(range(1, 9))
         area_address = None
     else:
-        raise ValueError('Native XML projection supports only captured RELAY4 4.4, KEYE1/2/3 2.5.00 and OWNED_UNKNOWN 4.4 profiles')
+        raise ValueError('Native XML projection supports only captured RELAY4 4.4, KEYE1/2/3 2.5.00, DIMDN8/RELDN12 2.7.00 and OWNED_UNKNOWN 4.4 profiles')
 
     groups = []
     seen_addresses = set()

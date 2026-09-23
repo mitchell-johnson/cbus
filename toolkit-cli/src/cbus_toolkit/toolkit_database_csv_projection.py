@@ -24,6 +24,7 @@ from .toolkit_database_csv import (
 PROFILE = 'cbus-toolkit-database-cached-projection-v1'
 _RELAY_FIRMWARE = frozenset(('0', '4.4', '9', '9.1', '10'))
 _KEYE_TYPES = frozenset(('KEYE1', 'KEYE2', 'KEYE3'))
+_DIN_TYPES = {'DIMDN8': 'TDIMDN8', 'RELDN12': 'TRELDN12'}
 _AREA_VALUES = frozenset(('12', '13', '255', 'invalid'))
 _ROOT_FIELDS = frozenset(('format', 'unit', 'group_cache', 'area_observations', 'group_save'))
 _UNIT_FIELDS = frozenset(('identity', 'address', 'part_name', 'tag_name', 'unit_type',
@@ -173,7 +174,9 @@ def _class(unit):
         return 'TRELAY4' if unit.firmware in ('0', '4.4', '9') else 'TCBusUnitGeneric'
     if kind in _KEYE_TYPES and unit.firmware == '2.5.00':
         return 'TKEYEx'
-    raise ValueError('Cached projection profile supports only the captured generic, RELAY4 and KEYE type/firmware pairs')
+    if kind in _DIN_TYPES and unit.firmware == '2.7.00':
+        return _DIN_TYPES[kind]
+    raise ValueError('Cached projection profile supports only the captured generic, RELAY4, KEYE and DIN type/firmware pairs')
 
 
 def _validated_groups(unit, groups):
@@ -211,7 +214,7 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
         raise ValueError('area_observations must be an exact tuple of CSVAreaObservation records')
     if group_save is not None and type(group_save) is not CSVGroupSaveObservation:
         raise ValueError('group_save must be an exact CSVGroupSaveObservation or absent')
-    has_area = selected_class in ('TRELAY4', 'TKEYEx')
+    has_area = selected_class in ('TRELAY4', 'TKEYEx', 'TDIMDN8', 'TRELDN12')
     if has_area and len(area_observations) != 2:
         raise ValueError('The captured input/output projection requires two ordered Area observations')
     if not has_area and area_observations and len(area_observations) != 2:
@@ -268,7 +271,7 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
         raise ValueError('Group-save observation was supplied but the projection did not require a save')
 
     cache = {group.identity: group for group in current}
-    interaction_count = 6 if selected_class == 'TRELAY4' else 8
+    interaction_count = {'TRELAY4': 6, 'TRELDN12': 12}.get(selected_class, 8)
     values = tuple(CSVGroupValue(cache[identity].tag, index < interaction_count)
                    for index, identity in enumerate(unit.group_identities))
     area = cache[area_identity].tag if area_identity is not None else None
