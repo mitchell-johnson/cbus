@@ -6,9 +6,11 @@ import math
 
 from .native import _project
 from .native_thermostat_schedule import NativeThermostatScheduleLevels, _path
+from .native_thermostat_scheduling import NativeThermostatScheduling, _name, _unit_path
 
 EVIDENCE = 'thermostat_schedule_evidence'
 ACTIONS = ('Enable', 'Disable', 'Overrd')
+CLI_ACTIONS = ('thermostat-schedule-levels', 'thermostat-schedule-compose')
 
 
 def options(parser):
@@ -19,6 +21,20 @@ def options(parser):
     parser.add_argument('--apply', action='store_true',
                         help='Create missing levels with backup and save/reload; default only reads a preview')
     parser.add_argument('--backup-project', help='New backup project name; applies only with --apply')
+
+
+def compose_options(parser):
+    parser.add_argument('unit', help='Existing programmable thermostat: //PROJECT/network/p/unit')
+    parser.add_argument('--exclusive-project', action='store_true',
+                        help='Declare exclusive editing/reloading of the closed project; required even for preview')
+    parser.add_argument('--apply', action='store_true',
+                        help='Create missing application, groups and levels with one target save; default previews')
+    parser.add_argument('--backup-project', help='New backup project name; applies only with --apply')
+    parser.add_argument('--policy', choices=('button', 'direct'), default='button',
+                        help='Retained outer CreateLevels entry policy')
+    parser.add_argument('--application-name', default='Enable Control')
+    parser.add_argument('--group-name', default='Group')
+    parser.add_argument('--unused-name', default='<Unused>')
 
 
 def _brief(error):
@@ -41,11 +57,19 @@ def _decode(text):
 
 
 def _inputs(args):
-    if args.area != 'cgate' or args.action != 'thermostat-schedule-levels':
+    if args.area != 'cgate' or args.action not in CLI_ACTIONS:
         raise ValueError('Unsupported thermostat scheduling CLI operation')
-    path, project, _network, _group = _path(args.group)
-    if type(args.schedule_action) is not str or args.schedule_action not in ACTIONS:
-        raise ValueError('Action must be Enable, Disable or Overrd')
+    if args.action == 'thermostat-schedule-levels':
+        path, project, _network, _group = _path(args.group)
+        if type(args.schedule_action) is not str or args.schedule_action not in ACTIONS:
+            raise ValueError('Action must be Enable, Disable or Overrd')
+    else:
+        path, project, _network, _unit = _unit_path(args.unit)
+        if type(args.policy) is not str or args.policy not in ('button', 'direct'):
+            raise ValueError('Policy must be button or direct')
+        _name(args.application_name, 'Application name')
+        _name(args.group_name, 'Standard group name')
+        _name(args.unused_name, 'Unused group name')
     if args.exclusive_project is not True:
         raise ValueError('Thermostat scheduling requires --exclusive-project')
     if type(args.apply) is not bool:
@@ -117,7 +141,7 @@ def _remember(args, evidence, error):
 def error_payload(error, args=None):
     """Export only this invocation's first error; ignore hostile exception getters."""
     try:
-        if (args.area != 'cgate' or args.action != 'thermostat-schedule-levels'
+        if (args.area != 'cgate' or args.action not in CLI_ACTIONS
                 or args._thermostat_schedule_error is not error):
             return {}
         try:
@@ -138,7 +162,7 @@ def record_output_error(args, error):
     errors win; a failed/new invocation or a different command is not admitted.
     """
     try:
-        if args.area != 'cgate' or args.action != 'thermostat-schedule-levels':
+        if args.area != 'cgate' or args.action not in CLI_ACTIONS:
             return {}
         first = args._thermostat_schedule_error
         if first is not None:
@@ -191,8 +215,14 @@ def native(args, client_factory, ssl_context):
         client = context.__enter__()
         entered = True
         evidence.update(connection_entered=True, phase='plan')
-        manager = NativeThermostatScheduleLevels(client)
-        plan = manager.plan(path, args.schedule_action, exclusive_project=True)
+        if args.action == 'thermostat-schedule-compose':
+            manager = NativeThermostatScheduling(client)
+            plan = manager.plan(path, exclusive_project=True, policy=args.policy,
+                                application_name=args.application_name,
+                                group_name=args.group_name, unused_name=args.unused_name)
+        else:
+            manager = NativeThermostatScheduleLevels(client)
+            plan = manager.plan(path, args.schedule_action, exclusive_project=True)
         if args.apply:
             evidence['phase'] = 'apply'
             receipt = manager.apply(plan, backup_project=args.backup_project)

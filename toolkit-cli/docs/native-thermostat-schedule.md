@@ -1,6 +1,6 @@
-# Native thermostat scheduling levels
+# Native thermostat scheduling
 
-`cgate thermostat-schedule-levels` previews or creates the missing scheduling levels of one existing Enable Control network variable in a closed C-Gate project. It uses the [original-backed retained scheduling model](thermostat-schedule-levels.md) for addresses and labels, then verifies native database persistence independently of the model's save callbacks.
+Two commands expose the accepted native scheduling layers. `cgate thermostat-schedule-levels` previews or creates missing levels in one existing Enable Control network variable. `cgate thermostat-schedule-compose` starts at an existing programmable thermostat unit, reads its six scheduling parameters and the complete application/group/level collection from one project XML snapshot, then composes the captured unit-load, outer-selection and level-creation rules.
 
 ```sh
 cbus-toolkit cgate --host 127.0.0.1 --port 20033 thermostat-schedule-levels \
@@ -8,9 +8,25 @@ cbus-toolkit cgate --host 127.0.0.1 --port 20033 thermostat-schedule-levels \
 
 cbus-toolkit cgate --host 127.0.0.1 --port 20033 thermostat-schedule-levels \
   //TEST/254/203/1 --action Enable --exclusive-project --apply --backup-project THBAK1
+
+cbus-toolkit cgate --host 127.0.0.1 --port 20033 thermostat-schedule-compose \
+  //TEST/254/p/4 --exclusive-project
+
+cbus-toolkit cgate --host 127.0.0.1 --port 20033 thermostat-schedule-compose \
+  //TEST/254/p/4 --exclusive-project --apply --backup-project THBAK2
 ```
 
 The first command reads a preview. `--apply` performs the changes. The fixed actions are `Enable`, `Disable` and the original spelling `Overrd`. A supplied backup name must be a different project and is valid only with `--apply`; otherwise a new random name is generated when applying. `--exclusive-project` declares that the caller controls all editing and reloading of this project. The CLI does not acquire a server-wide edit lock.
+
+The composition command uses `--policy button` by default; `--policy direct` enters the retained outer operation unconditionally. `--application-name`, `--group-name` and `--unused-name` supply bounded native tags for objects that must be created. Preview is read-only. It reports the normalized flags, resolved role identities, missing application/groups/levels, and whether apply would issue a target project save.
+
+## Unit-to-level composition
+
+The unit path is `//PROJECT/network/p/unit`. The selected unit must contain exactly one value for each captured scheduling parameter: `RemoteScheduleOnGroup`, `RemoteScheduleOffGroup`, `RemoteScheduleOverrideGroup`, `RemoteScheduleEnable`, `EvapProgramEnabled` and `NonEvapProgramEnabled`. Application 203 may be absent. Existing NetVars are resolved by byte address; shared role addresses create one group, and all existing groups and levels retain their identities, tags and opaque XML metadata.
+
+Apply repeats the exact project snapshot check before any backup. When mutation is required, it saves the current source, creates a retained backup, rechecks the normalized snapshot, creates the missing Application/NetVar/Level records, and issues exactly one target `PROJECT SAVE`. Close/load verification checks the complete thermostat unit XML shape, all six raw bytes, existing application/group/level metadata, created OIDs, level values and generated labels. The source save used to make the backup is reported separately from the one target save. If the plan is already complete, apply performs no backup or write.
+
+This workflow does not invoke the original inherited unit loader, acquire a server edit lock, open a network or program a physical thermostat. C-Gate collection order is still not claimed equivalent to Toolkit order.
 
 ## Behavior
 
@@ -30,7 +46,7 @@ There is one apply attempt and no automatic retry, rollback, reverse write or ba
 
 CLI errors include `thermostat_schedule_evidence`, with a separate CLI phase and nested `native_result`. A failed connection close or output write does not undo a confirmed database save. Native completion and CLI completion therefore have distinct fields. Interruption preserves the first error and available confirmed state; secondary cleanup or evidence errors do not authorize another write.
 
-The Python API is `NativeThermostatScheduleLevels(client).plan(path, action, exclusive_project=True)`, followed by `apply(plan, backup_project=...)` on the same manager. Plans are immutable, issued to that manager, checked for tampering and usable for one apply attempt. The manager retains `last_result` and `last_error`. The caller owns the connection lifetime; the CLI supplies that connection handling.
+The group API is `NativeThermostatScheduleLevels(client).plan(path, action, exclusive_project=True)`. The composed API is `NativeThermostatScheduling(client).plan(unit, exclusive_project=True, policy=...)`. Each is followed by `apply(plan, backup_project=...)` on the same manager. Plans are immutable, issued to that manager, checked for tampering and usable for one apply attempt. The manager retains `last_result` and `last_error`. The caller owns the connection lifetime; the CLI supplies that connection handling.
 
 ## Verification and remaining scope
 
@@ -39,3 +55,7 @@ Native integration tests use a fresh owned C-Gate 3.4.0.2001 process with six ve
 The first native adapter pilot failed because project close/reload cleared the command session's current project; the corrected second pilot passed 182 commands and verified backup and project cleanup. The first integration draft separately exposed duplicate sibling fixture tag names; that failed draft is preserved and the fixtures now use distinct names. These findings are separate from product acceptance.
 
 The [combined acceptance fixture](../research/fixtures/thermostat-schedule-native-acceptance.json) records **67 tests passing on each of Python 3.13.14 and 3.10.20**, with zero failures, errors or skips. Each run includes five native integration methods covering eight project/group scenarios; process exit, isolated storage removal and zero CNI connections were verified. All 443 archived input files were hash-checked, with unchanged per-run inputs and actual loaded modules associated with the archive. The tests replay all 14 captured original scheduling outcomes; they perform no fresh original instruction execution. The earlier 17-test retained core and 29-test development checkpoint overlap this result. This is a focused source-tree acceptance, separate from the last complete installed wheel. Full thermostat dialog selection, original service factories, cursor/delay behavior, complete thermostat settings and physical devices are outside this command and remain outstanding in [implementation status](implementation-status.md).
+
+The unit-to-level composition layer adds **14 focused Python 3.13 host tests**: eight manager methods and six public CLI methods. They cover missing and existing applications, shared and distinct groups, 93 missing levels, one target save, no-op apply, one-snapshot preview, stale project/unit/application rejection, input and plan tampering, lost replies, first-error preservation and public dispatch. Its [review record](../research/experiments/2026-09-24/thermostat-native-composition-review.json) pins the source and test files.
+
+The underlying unit XML shape and six raw parameter reads were separately observed in seven accepted C-Gate 3.4.0.2001 cases, and the older level writer has the native acceptance described above. The new combined transaction has not yet been run against a freshly provisioned native C-Gate process; its 14 new tests use an independent stateful command peer. That fresh integrated native run, inherited original loader/service factories, complete settings and physical thermostat behavior remain outstanding.

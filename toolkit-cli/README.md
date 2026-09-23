@@ -1005,6 +1005,20 @@ both Python versions, including five native integration methods and eight
 project/group scenarios per run. Full thermostat selection/settings, native
 collection-order equivalence and physical behavior remain outstanding.
 
+Compose the captured unit-load, outer selection and missing-level rules directly
+from one closed-project programmable thermostat snapshot:
+
+```sh
+cbus-toolkit cgate --host 127.0.0.1 --port 20033 thermostat-schedule-compose \
+  //TEST/254/p/4 --exclusive-project
+```
+
+Add `--apply --backup-project THBAK2` to create a missing application 203, role
+groups and scheduling levels, then persist them with one target project save.
+The command preserves and verifies the complete unit record and existing native
+metadata. Its new composition layer passes 14 focused host tests; a fresh
+integrated C-Gate run and physical thermostat verification remain outstanding.
+
 Evaluate the [retained outer scheduling workflow](docs/thermostat-scheduling.md) offline over supplied
 resolved state (Python 3.13, 9 CLI tests):
 

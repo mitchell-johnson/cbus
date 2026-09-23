@@ -1149,9 +1149,11 @@ def build_parser():
     cgops = cgate.add_subparsers(dest="action", required=True)
     from .repositories_cli import register as repository_options
     repository_options(cgops)
-    from .thermostat_schedule_cli import options as schedule_options
+    from .thermostat_schedule_cli import compose_options, options as schedule_options
     schedule_parser = cgops.add_parser("thermostat-schedule-levels", help="Preview or create thermostat scheduling levels in a closed project")
     schedule_options(schedule_parser)
+    compose_parser = cgops.add_parser("thermostat-schedule-compose", help="Preview or compose thermostat scheduling from a closed database unit")
+    compose_options(compose_parser)
     from .edlt_global_cli import options as global_options
     global_parser = cgops.add_parser("edlt-global", help="Copy selected eDLT categories to existing closed database units")
     global_parser.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
@@ -1988,7 +1990,7 @@ def _cgate(args):
     if args.action == "repositories":
         from .repositories_cli import run as repository_run
         return repository_run(args, CGateClient, context)
-    if args.action == "thermostat-schedule-levels":
+    if args.action in ("thermostat-schedule-levels", "thermostat-schedule-compose"):
         from .thermostat_schedule_cli import native as schedule_native
         return schedule_native(args, CGateClient, context)
     if args.action == "edlt-scene-broadcast":
@@ -3036,7 +3038,7 @@ def main(argv=None):
         try:
             print(json.dumps(result, default=_json_default, ensure_ascii=True, indent=None if args.compact or stream else 2))
         except BaseException as output_error:
-            if args.area == "cgate" and args.action == "thermostat-schedule-levels":
+            if args.area == "cgate" and args.action in ("thermostat-schedule-levels", "thermostat-schedule-compose"):
                 from .thermostat_schedule_cli import record_output_error
                 record_output_error(args, output_error)
             if args.area == "update-condition-live":
