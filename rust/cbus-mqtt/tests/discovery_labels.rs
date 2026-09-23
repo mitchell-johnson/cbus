@@ -24,7 +24,7 @@ fn label_replaces_entity_name() {
 
 #[test]
 fn device_name_stays_default_even_when_labelled() {
-    // Python quirk: the device block keeps "C-Bus Light NNN" regardless
+    // Compatibility quirk: the device block keeps "C-Bus Light NNN" regardless
     let l = labels(56, 10, "Lounge");
     let d = light_discovery(10, 56, Some(&l));
     assert_eq!(d.light_config["device"]["name"], "C-Bus Light 010");

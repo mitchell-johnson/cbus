@@ -1,4 +1,4 @@
-//! Port of `cbus/protocol/application/temperature.py` decode.
+//! Temperature-broadcast application decoding.
 
 use super::Sal;
 use crate::DecodeError;

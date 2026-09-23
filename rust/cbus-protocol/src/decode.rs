@@ -1,5 +1,5 @@
-//! Port of `cbus/protocol/packet.py::decode_packet` — line by line. Every
-//! branch here is pinned by a golden vector; do not "fix" quirks.
+//! C-Bus frame decoder. Compatibility-sensitive branches are pinned by
+//! golden vectors.
 
 use crate::cal::Cal;
 use crate::common::{
@@ -106,7 +106,7 @@ pub fn decode_packet(
         // confirmation char detection: last byte not uppercase hex
         let last = match body.last() {
             Some(&l) => l,
-            // Python raises IndexError here (uncaught); no vector pins it
+            // Truncated bridge metadata is invalid.
             None => return (Some(Packet::Invalid), consumed),
         };
         if !HEX_CHARS.contains(&last) {
@@ -125,7 +125,7 @@ pub fn decode_packet(
             return (Some(Packet::Invalid), consumed);
         }
     }
-    // b16decode; Python crashes on odd length (no vector pins it)
+    // Hex decoding requires an even number of digits.
     if !body.len().is_multiple_of(2) {
         return (Some(Packet::Invalid), consumed);
     }
@@ -150,7 +150,7 @@ pub fn decode_packet(
     }
 
     if raw.is_empty() {
-        // Python raises IndexError on flags access (uncaught); no vector
+        // A packet without flags is invalid.
         return (Some(Packet::Invalid), consumed);
     }
 
@@ -256,8 +256,8 @@ fn decode_body(
             value,
         }
     } else if device_management_cal {
-        // bare CAL return; NB Python's quirky consumed accounting:
-        // frame-consumed PLUS the CAL length (packet.py:246-247)
+        // Bare CAL return uses compatibility-sensitive consumed accounting:
+        // frame-consumed plus the CAL length.
         let (cal, cal_len) = Cal::decode_one(rest)?;
         return Ok((Packet::BareCal(cal), consumed + cal_len));
     } else if address_type == DAT_POINT_TO_POINT {

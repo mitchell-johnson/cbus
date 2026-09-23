@@ -1,4 +1,4 @@
-//! Port of `cbus/protocol/application/status_request.py` decode.
+//! Status-request application decoding.
 //! Errors here (unknown type / bad block) invalidate the whole packet.
 
 use super::Sal;
@@ -24,7 +24,7 @@ pub fn decode_sals(data: &[u8]) -> Result<Vec<Sal>, DecodeError> {
             )));
         }
 
-        // Python warns when len < 2 but then indexes anyway (IndexError)
+        // A short status request is invalid.
         let child_application = *data
             .first()
             .ok_or_else(|| DecodeError::new("incomplete status request SAL"))?;

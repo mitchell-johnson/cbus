@@ -161,7 +161,7 @@ async fn status_requests_carry_no_confirmation() {
 
 /// The test that would have caught the live regression: the full init
 /// sequence (3 resets, smart connect, 4 DM frames) must be on the wire
-/// before ANY other frame — the repo Python interleaved status requests
+/// before any other frame; status requests must not interleave
 /// into the init sequence, garbling replies on the real CNI.
 #[tokio::test]
 async fn init_sequence_completes_before_any_status_request() {

@@ -1,5 +1,4 @@
-//! Port of `cbus/daemon/topics.py` and
-//! `cbus/daemon/mqtt_gateway.py::get_topic_group_address`.
+//! MQTT topic construction and parsing for C-Bus entities.
 
 /// Prefix of every cmqttd light topic.
 pub const LIGHT_TOPIC_PREFIX: &str = "homeassistant/light/cbus_";
@@ -95,7 +94,7 @@ pub enum TopicError {
     GroupOutOfRange(i64),
 }
 
-/// Python `int()` (base 10): optional sign, digits, surrounding whitespace,
+/// Base-10 integer syntax: optional sign, digits, surrounding whitespace,
 /// leading zeros allowed.
 fn py_int(s: &str) -> Result<i64, TopicError> {
     let t = s.trim();
@@ -103,7 +102,7 @@ fn py_int(s: &str) -> Result<i64, TopicError> {
         .map_err(|_| TopicError::BadInteger(s.to_string()))
 }
 
-/// Extract `(group_addr, app_addr)` from a command topic. Port of
+/// Extract `(group_addr, app_addr)` from a command topic.
 /// `get_topic_group_address` — note the app address is *not* range-checked
 /// (only the group address is, via `check_ga`).
 pub fn topic_group_address(topic: &str) -> Result<(u8, i64), TopicError> {

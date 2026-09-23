@@ -1,5 +1,4 @@
-//! Port of `cbus/protocol/cal/*.py` (identify, recall, reply, extended) and
-//! the CAL stream decoder from `cbus/protocol/pp_packet.py:82-112`.
+//! Common Application Language messages and stream decoding.
 
 use crate::common::{CAL_EXTENDED_STATUS, CAL_IDENTIFY, CAL_RECALL, CAL_REPLY};
 use crate::report::StatusReport;
@@ -41,7 +40,7 @@ pub enum Cal {
 }
 
 impl Cal {
-    /// Wire bytes of this CAL (per `cal/*.py` encode methods).
+    /// Wire bytes of this CAL.
     pub fn encode(&self) -> Vec<u8> {
         match self {
             Cal::Identify { attribute } => vec![CAL_IDENTIFY, *attribute],
@@ -75,7 +74,7 @@ impl Cal {
     }
 
     /// Decode one CAL from the front of `data`; returns (cal, consumed).
-    /// Port of `PointToPointPacket.decode_cal`.
+    /// Decode the CAL payload of a point-to-point packet.
     pub fn decode_one(data: &[u8]) -> Result<(Cal, usize), DecodeError> {
         let cmd = *data
             .first()
@@ -102,7 +101,7 @@ impl Cal {
                 cal_end,
             ))
         } else if cmd & 0xe0 == 0xc0 {
-            // STANDARD_STATUS: never supported by the Python decoder
+            // STANDARD_STATUS is not supported by this decoder.
             Err(DecodeError::new("standard status cal"))
         } else if cmd & 0xe0 == CAL_EXTENDED_STATUS {
             let cal_end = ((cmd & 0x1f) + 1) as usize;
@@ -115,7 +114,7 @@ impl Cal {
             }
             let d = &data[1..cal_end];
             if d.len() < 3 {
-                // Python IndexError on coding/app/block access
+                // Missing coding/application/block fields are invalid.
                 return Err(DecodeError::new("extended status CAL too short"));
             }
             let externally_initiated = d[0] & 0x40 > 0;
@@ -200,7 +199,7 @@ mod tests {
         assert_eq!(n, enc.len());
         // truncated reply -> Err
         assert!(Cal::decode_one(&[0x89, 0x01]).is_err());
-        // 0x80 (len nibble 0 -> empty reply body) -> Err (Python IndexError)
+        // 0x80 (length nibble zero) produces an invalid empty reply body.
         assert!(Cal::decode_one(&[0x80]).is_err());
         // clipping to 0x1e data bytes
         let c = Cal::Reply {

@@ -112,7 +112,7 @@ async fn ramp_to_level_zero_state_on_sensor_off() {
         !sys.broker.find_publishes(topic).is_empty()
     })
     .await;
-    // Python parity quirk: the light state stays "ON" with brightness 0,
+    // Compatibility quirk: the light state stays "ON" with brightness 0,
     // only the binary sensor reports OFF
     assert_eq!(
         parse_json(&sys.broker.find_publishes(topic)[0].payload),
@@ -252,7 +252,7 @@ async fn no_clock_flag_suppresses_clock_answer() {
 async fn terminate_ramp_event_publishes_nothing() {
     let sys = start_default().await;
     wait_started(&sys).await;
-    // terminate ramp for group 4 is not relayed to MQTT (like Python)
+    // Terminate-ramp for group 4 is not relayed to MQTT.
     sys.pci
         .inject(&pci_wire(&[0x05, 0x05, 0x38, 0x00, 0x09, 0x04]));
     // positive control on another group

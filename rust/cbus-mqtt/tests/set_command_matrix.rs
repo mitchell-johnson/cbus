@@ -1,6 +1,6 @@
 //! The `/set` payload matrix: state spellings x brightness types/ranges x
 //! transition types/ranges x topic forms x malformed JSON. Pins the exact
-//! Python `_handle_message` field-extraction semantics (truncation toward
+//! Command field-extraction semantics (truncation toward
 //! zero, clamping, type-fallback to defaults, booleans counting as ints).
 
 use cbus_mqtt::command::{parse_set_command, CommandError, SetCommand};
@@ -490,7 +490,7 @@ ok_case!(
     t = 0
 );
 ok_case!(
-    topic_whitespace_group_python_int,
+    topic_whitespace_group_decimal_int,
     "homeassistant/light/cbus_ 10/set",
     r#"{"state":"ON"}"#,
     ga = 10,

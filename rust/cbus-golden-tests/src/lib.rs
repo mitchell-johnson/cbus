@@ -1,13 +1,12 @@
 //! Runtime support for the generated golden-vector tests.
 //!
 //! `build.rs` emits one `#[test]` per vector in
-//! `rust-migration-harness/vectors/*.jsonl`; each generated test calls
+//! `testdata/vectors/*.jsonl`; each generated test calls
 //! [`run_vector`] with its file, line index and vector id. The vectors are
 //! read from the harness directory at test run time (never copied), so the
 //! committed JSONL files stay the single source of truth.
 //!
-//! The per-suite check logic mirrors `cbus-vector-check` (the harness
-//! contract in rust-migration-harness/README.md §4); the two are kept
+//! The per-suite check logic mirrors `cbus-vector-check`; the two are kept
 //! deliberately independent so a bug in one shows up as a disagreement.
 
 #![deny(missing_docs)]
@@ -21,10 +20,7 @@ use std::sync::{Mutex, OnceLock};
 
 /// Committed golden vectors, resolved relative to this crate so the tests
 /// work from any working directory (including CI).
-pub const VECTORS_DIR: &str = concat!(
-    env!("CARGO_MANIFEST_DIR"),
-    "/../../rust-migration-harness/vectors"
-);
+pub const VECTORS_DIR: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../testdata/vectors");
 
 /// All vectors of one JSONL file, parsed once per process and cached.
 fn file_vectors(fname: &str) -> &'static [Value] {
@@ -92,7 +88,7 @@ fn need_u64(v: &Value, k: &str) -> Result<u64, String> {
         .ok_or_else(|| format!("vector missing {k}"))
 }
 
-/// decode_from_pci.jsonl / decode_to_pci.jsonl (README §4): run
+/// decode_from_pci.jsonl / decode_to_pci.jsonl: run
 /// `decode_packet` and compare consumed count, canonical packet JSON and —
 /// when present — the re-serialised `encode_packet()` bytes.
 fn check_decode(v: &Value) -> Result<(), String> {

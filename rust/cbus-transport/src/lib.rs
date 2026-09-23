@@ -1,6 +1,4 @@
-//! Async framing + PCI client state machine + connections.
-//! Port of `buffered_protocol.py`/`cbus_protocol.py` (framing),
-//! `pciprotocol.py` (PciClient) and `transport/{base,tcp,serial}.py`.
+//! Async framing, PCI client state machine, flow control, and connections.
 
 #![deny(missing_docs)]
 

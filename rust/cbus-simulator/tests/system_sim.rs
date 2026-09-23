@@ -270,7 +270,7 @@ async fn clock_updates_accepted_and_confirmed() {
         .await
         .unwrap();
     let got = read_until(&mut s, b"s.", WAIT).await;
-    // deliberate divergence from Python: no random debug lighting events
+    // Clock updates do not create random debug lighting events.
     let text = String::from_utf8_lossy(&got).into_owned();
     assert_eq!(text, "s.", "clock update must only confirm: {text:?}");
 }

@@ -16,11 +16,9 @@ CMQTTD_CLIENT_CERT_PATH="/etc/cmqttd/client.pem"
 # Client certificate, private part, must NOT be encrypted
 CMQTTD_CLIENT_KEY_PATH="/etc/cmqttd/client.key"
 
-# C-Bus Toolkit project backup file
+# Optional C-Bus project backup file
 CMQTTD_PROJECT_FILE="/etc/cmqttd/project.cbz"
 
-# Set Python logging level from environment variable
-export PYTHONUNBUFFERED=1
 # Valid levels: DEBUG, INFO, WARNING, ERROR, CRITICAL
 # Use CMQTTD_VERBOSITY from environment, default to INFO if not set
 LOG_LEVEL="${CMQTTD_VERBOSITY:-INFO}"
@@ -58,7 +56,7 @@ if [ "${MQTT_USE_TLS:-1}" == "1" ]; then
         echo "Using custom certificates in ${CMQTTD_CA_CERT_PATH}"
         CMQTTD_ARGS="${CMQTTD_ARGS} --broker-ca ${CMQTTD_CA_CERT_PATH}"
     else
-        echo "${CMQTTD_CA_CERT_PATH} not found, using Python CA store."
+        echo "${CMQTTD_CA_CERT_PATH} not found, using the system trust store."
     fi
 
     # Client certificates
@@ -83,13 +81,11 @@ else
 fi
 
 if [ -e "${CMQTTD_PROJECT_FILE}" ]; then
-    echo "Using C-Bus Toolkit project backup file ${CMQTTD_PROJECT_FILE}"
+    echo "Using C-Bus project backup file ${CMQTTD_PROJECT_FILE}"
     CMQTTD_ARGS="${CMQTTD_ARGS} --project-file ${CMQTTD_PROJECT_FILE}"
 else
     echo "${CMQTTD_PROJECT_FILE} not found; using generated labels."
 fi
-
-echo ">${CMQTTD_CBUS_NETWORK}<"
 
 if [ -n "${CMQTTD_CBUS_NETWORK}" ]; then
     echo "Loading C-Bus network ${CMQTTD_CBUS_NETWORK}"

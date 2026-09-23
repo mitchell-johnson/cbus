@@ -1,6 +1,4 @@
-//! HA discovery payload builders. Port of
-//! `cbus/daemon/mqtt_gateway.py::MqttClient.publish_light` /
-//! `publish_all_lights` (payload construction only, no I/O).
+//! Home Assistant discovery payload builders.
 
 use crate::topics::{
     bin_sensor_conf_topic, bin_sensor_state_topic, conf_topic, ga_string, set_topic, state_topic,
@@ -34,7 +32,7 @@ pub struct LightDiscovery {
     pub sensor_config: Value,
 }
 
-/// Build the Home Assistant discovery payloads for one group. Port of
+/// Build the Home Assistant discovery payloads for one group.
 /// `MqttClient.publish_light` (payload construction only).
 pub fn light_discovery(
     group_addr: u8,

@@ -1,5 +1,4 @@
-//! SAL model + application dispatch. Port of
-//! `cbus/protocol/application/*.py` (registry in `__init__.py:30-36`).
+//! Simple Application Language model and application dispatch.
 
 pub mod clock;
 pub mod enable;
@@ -113,7 +112,7 @@ impl Sal {
         }
     }
 
-    /// Wire bytes of this SAL (per `application/*.py` encode methods).
+    /// Wire bytes of this SAL.
     pub fn encode(&self) -> Result<Vec<u8>, EncodeError> {
         match self {
             Sal::LightingOn { group_address, .. } => Ok(vec![LIGHT_ON, *group_address]),
@@ -193,7 +192,7 @@ impl Sal {
 }
 
 /// Application dispatch: decode the SAL payload of a PM packet.
-/// Mirrors the Python registry: only status-request (0xFF), clock (0xDF),
+/// The supported registry includes status-request (0xFF), clock (0xDF),
 /// enable (0xCB), lighting (0x30-0x5F) and temperature (0x19) are
 /// registered; anything else errors (-> Invalid packet).
 pub fn decode_sals(app: u8, data: &[u8]) -> Result<Vec<Sal>, DecodeError> {

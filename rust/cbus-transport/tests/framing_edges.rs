@@ -43,7 +43,7 @@ fn single_oversized_feed_drops_pending_buffer() {
 
 #[test]
 fn bare_cal_consumed_overshoot_is_clamped_to_buffer() {
-    // decode reports consumed 9 for the 7-byte frame "002102\r" (Python
+    // Decode reports consumed 9 for the 7-byte frame "002102\r" (the
     // quirk); the buffer must clamp the drain and not panic
     let mut fb = FrameBuffer::new_server();
     let evs = fb.feed(b"002102\r");

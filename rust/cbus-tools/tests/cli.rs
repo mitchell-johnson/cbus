@@ -10,7 +10,7 @@ const BIN: &str = env!("CARGO_BIN_EXE_cbus-tools");
 
 fn fixture_project() -> String {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("../../rust-migration-harness/fixtures/project.xml")
+        .join("../testdata/fixtures/project.xml")
         .to_string_lossy()
         .into_owned()
 }

@@ -1,4 +1,4 @@
-//! Decoder error paths and Python-parity quirks the golden vectors do not
+//! Decoder error paths and compatibility quirks the golden vectors do not
 //! individually reach: framing waits, strict/lenient checksum and
 //! confirmation handling, malformed CAL/SAL streams, bridged packets and
 //! the quirky bare-CAL consumed accounting.
@@ -91,7 +91,7 @@ fn bad_checksum_lenient_still_decodes() {
 #[test]
 fn checksum_only_body_strips_to_nothing_and_is_invalid() {
     // "00" validates as a checksum of the empty prefix, leaving no flags
-    // byte (Python raises IndexError -> InvalidPacket)
+    // byte and must return an invalid packet.
     assert_eq!(decode_pci(b"00\r\n"), (Some(Packet::Invalid), 4));
 }
 
@@ -355,9 +355,9 @@ fn at_prefix_forces_basic_mode_no_checksum() {
 
 #[test]
 fn bare_cal_consumed_includes_cal_length_quirk() {
-    // A bare CAL frame is flags byte (dp clear) + CAL bytes. Python adds
-    // the CAL length to the already-final consumed count (packet.py:
-    // 246-247): the 7-byte frame reports consumed 9.
+    // A bare CAL frame is a flags byte (dp clear) plus CAL bytes. Compatibility adds
+    // the CAL length to the already-final consumed count, so the 7-byte frame
+    // reports consumed 9.
     let (p, consumed) = decode_packet(b"002102\r", false, true, false);
     assert_eq!(p, Some(Packet::BareCal(Cal::Identify { attribute: 2 })));
     assert_eq!(consumed, 9);

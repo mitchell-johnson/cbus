@@ -1,4 +1,4 @@
-//! PCI client state machine. Port of `cbus/protocol/pciprotocol.py`:
+//! PCI client state machine:
 //! confirmation-code allocator (round-robin, 30 s timeout, force cleanup),
 //! byte-identical retransmit with jittered exponential backoff (max 3
 //! attempts), and the exact PCI init sequence at its deployed-proven
@@ -117,7 +117,7 @@ pub type BoxedWrite = Box<dyn AsyncWrite + Send + Unpin>;
 /// Read half of a connected transport.
 pub type BoxedRead = Box<dyn AsyncRead + Send + Unpin>;
 
-/// Async client for a C-Bus PCI/CNI. Port of `PCIProtocol`, with the
+/// Async client for a C-Bus PCI/CNI, with the
 /// fixed post-init pacing replaced by the adaptive flow controller.
 pub struct PciClient {
     /// Write half, shared with the flow-controller task (init frames

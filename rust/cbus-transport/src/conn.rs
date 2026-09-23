@@ -1,5 +1,4 @@
-//! TCP / serial connections. Port of `transport/{base,tcp,serial}.py` and
-//! `esp32/connection.py` semantics: 10 s connect timeout; optional
+//! TCP and serial connections: 10 s connect timeout; optional
 //! reconnect every `reconnect_interval` (default 5 s), 0 = unlimited
 //! attempts.
 

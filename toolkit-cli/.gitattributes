@@ -1,4 +1,0 @@
-# Original observations and archived probe sources are verified by byte hash.
-# Preserve their exact bytes across Windows and Unix checkouts.
-research/fixtures/** -text
-research/experiments/** -text

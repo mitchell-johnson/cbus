@@ -1,11 +1,11 @@
-//! Port of `cbus/protocol/application/clock.py` decode, including the
-//! double-skip bug for unknown clock variables (`clock.py:175`).
+//! Clock application decoding, including compatibility behavior for unknown
+//! clock variables.
 
 use super::Sal;
 use crate::common::{CLOCK_ATTR_DATE, CLOCK_ATTR_TIME, CLOCK_REQUEST_REFRESH};
 use crate::DecodeError;
 
-/// Python-style forgiving slice: `data[n:]`.
+/// Forgiving slice that returns an empty slice past the end.
 fn skip(data: &[u8], n: usize) -> &[u8] {
     &data[n.min(data.len())..]
 }
@@ -51,7 +51,7 @@ pub fn decode_sals(data: &[u8]) -> Result<Vec<Sal>, DecodeError> {
                 let month = val[2];
                 let day = val[3];
                 // day-of-week byte (val[4]) is ignored
-                // Python date() validation: year 1..=9999, valid month/day
+                // Date validation: year 1..=9999 and a valid month/day.
                 if !(1..=9999).contains(&year)
                     || chrono::NaiveDate::from_ymd_opt(year as i32, month as u32, day as u32)
                         .is_none()
@@ -71,7 +71,7 @@ pub fn decode_sals(data: &[u8]) -> Result<Vec<Sal>, DecodeError> {
                 }
                 let (hour, minute, second) = (val[0], val[1], val[2]);
                 // dst byte (val[3]) is ignored
-                // Python time() validation
+                // Time validation.
                 if hour > 23 || minute > 59 || second > 59 {
                     return Err(DecodeError::new("invalid time"));
                 }
@@ -82,8 +82,8 @@ pub fn decode_sals(data: &[u8]) -> Result<Vec<Sal>, DecodeError> {
                 });
                 data = new_data;
             } else {
-                // unknown clock variable: Python skips data_length TWICE
-                // (bug in clock.py:175) -- keep bug-for-bug.
+                // Unknown clock variables retain the established double-skip behavior.
+                // Keep this compatibility behavior fixed by test vectors.
                 data = skip(new_data, data_length);
             }
         } else if command_code == CLOCK_REQUEST_REFRESH {

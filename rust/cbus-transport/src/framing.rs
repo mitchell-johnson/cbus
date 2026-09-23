@@ -1,5 +1,4 @@
-//! Buffered decode loop. Port of `buffered_protocol.py` (256-byte cap,
-//! overflow clears the buffer) + `cbus_protocol.py` (decode loop).
+//! Buffered decode loop with a 256-byte cap and overflow recovery.
 
 use cbus_protocol::common::MAX_BUFFER_SIZE;
 use cbus_protocol::decode::decode_packet;
@@ -15,8 +14,8 @@ pub struct FrameEvent {
     pub raw: Vec<u8>,
 }
 
-/// Reassembles a byte stream into C-Bus frames. Port of
-/// `buffered_protocol.py` + `cbus_protocol.py`.
+/// Reassembles a byte stream into C-Bus frames.
+/// buffered protocol behavior.
 pub struct FrameBuffer {
     buf: Vec<u8>,
     from_pci: bool,
@@ -56,7 +55,7 @@ impl FrameBuffer {
 
     /// Feed rx bytes; return every decoded frame. Overflow (>256 bytes)
     /// drops the whole buffer (log, don't crash) like
-    /// `buffered_protocol.py:80-93`.
+    /// the framing contract.
     pub fn feed(&mut self, data: &[u8]) -> Vec<FrameEvent> {
         let mut out = Vec::new();
         if data.len() > MAX_BUFFER_SIZE || self.buf.len() + data.len() > MAX_BUFFER_SIZE {

@@ -1,33 +1,31 @@
-//! C-Bus Toolkit project (CBZ) label extraction. Port of
-//! `cbus/toolkit/cbz.py` (the walk we need) + `cmqttd.read_cbz_labels`.
-//! Accepts both a 1-file zip (.cbz) and bare XML.
+//! C-Bus project (CBZ) label extraction.
+//! Accepts both a one-file zip (`.cbz`) and bare XML.
 
 use crate::discovery::AppLabels;
 use std::collections::BTreeMap;
 use std::io::Read;
 use std::path::Path;
 
-/// Error reading a Toolkit backup.
+/// Error reading a C-Bus project backup.
 #[derive(Debug, thiserror::Error)]
 pub enum CbzError {
     /// The file could not be read.
     #[error("io error: {0}")]
     Io(#[from] std::io::Error),
-    /// The archive/XML was not a usable Toolkit backup.
+    /// The archive/XML was not a usable C-Bus project backup.
     #[error("{0}")]
     Cbz(String),
 }
 
-/// Tag/attr/field-name normalisation from `cbz.py:42-45`: lowercase,
-/// strip '_', trim trailing 's' characters (Python `rstrip('s')` strips
-/// *all* trailing 's').
+/// Tag, attribute, and field-name normalization: lowercase, strip `_`, and
+/// trim all trailing `s` characters.
 pub fn normalise(name: &str) -> String {
     let lowered: String = name.to_lowercase().chars().filter(|&c| c != '_').collect();
     lowered.trim_end_matches('s').to_string()
 }
 
-/// Field lookup like `_Element.from_element`: attributes first, then child
-/// elements (children override attributes).
+/// Field lookup checks attributes first and then child elements; children
+/// override attributes.
 pub fn get_field(node: roxmltree::Node, field: &str) -> Option<String> {
     let want = normalise(field);
     let mut found: Option<String> = None;
@@ -151,8 +149,7 @@ mod tests {
     use super::*;
 
     fn fixture() -> std::path::PathBuf {
-        Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("../../rust-migration-harness/fixtures/project.xml")
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("../testdata/fixtures/project.xml")
     }
 
     #[test]

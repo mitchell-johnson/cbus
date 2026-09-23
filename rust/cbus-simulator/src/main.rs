@@ -1,13 +1,10 @@
-//! Fake C-Bus PCI TCP server. Port of
-//! `cbus/protocol/pciserverprotocol.py` semantics: power-on notification on
+//! Fake C-Bus PCI TCP server with power-on notification on
 //! connect, basic-mode local echo, reset / smart-connect / DM interface
 //! options handling, confirmation of any command carrying a confirmation
 //! char, and binary StandardCAL replies to master-application status
 //! requests.
 //!
-//! Deliberate divergence from the Python module: clock updates do NOT
-//! trigger random debug lighting events (`pciserverprotocol.py:296-308`
-//! fires two random on/off SALs per clock update as debug junk).
+//! Clock updates do not trigger random debug lighting events.
 
 use cbus_protocol::common::add_cbus_checksum;
 use cbus_protocol::packet::Packet;
@@ -24,7 +21,7 @@ struct SimState {
     checksum: bool,
     monitor: bool,
     idmon: bool,
-    // stored (and reset) like Python, but the simulator never reads them
+    // Stored and reset, but the simulator never reads them.
     #[allow(dead_code)]
     application_addr1: u8,
     #[allow(dead_code)]
@@ -157,15 +154,14 @@ fn handle_packet(st: &mut SimState, p: &Packet) -> Vec<u8> {
                         if *child_application == 0xff && !level_request {
                             match master_application_status(st, *group_address) {
                                 Some(reply) => out.extend(reply),
-                                // Python raises NotImplementedError outside
-                                // basic mode: no reply, no confirmation
+                                // Outside basic mode: no reply or confirmation.
                                 None => {
                                     out.clear();
                                     return out;
                                 }
                             }
                         } else {
-                            // unhandled: no confirmation (like Python)
+                            // Unhandled messages receive no confirmation.
                             tracing::debug!("unhandled status request SAL");
                             return out;
                         }
@@ -234,13 +230,13 @@ fn confirm(confirmation: Option<u8>, out: &mut Vec<u8>) {
 }
 
 /// `on_master_application_status`: binary presence report as StandardCAL
-/// blocks (basic mode only; None outside basic mode, where Python raises).
+/// blocks (basic mode only; `None` outside basic mode).
 fn master_application_status(st: &SimState, _group_address: u8) -> Option<Vec<u8>> {
     if !st.basic_mode {
         tracing::error!("master application status only implemented in basic mode");
         return None;
     }
-    // unit 0 missing; 1-10 present; 253 present (pciserverprotocol.py:322)
+    // Unit 0 is missing; 1-10 and 253 are present.
     let mut states = vec![0u8]; // MISSING
     states.extend(std::iter::repeat_n(1, 10)); // ON
     states.extend(std::iter::repeat_n(0, 0xfe - 12)); // MISSING
