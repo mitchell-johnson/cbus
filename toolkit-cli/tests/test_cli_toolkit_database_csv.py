@@ -10,6 +10,7 @@ from unittest.mock import patch
 from cbus_toolkit import cli, toolkit_database_csv_cli as boundary
 from cbus_toolkit.toolkit_database_csv import COLUMNS
 from tests.test_toolkit_database_csv import captured, unit
+from tests.test_toolkit_database_csv_projection import projection_input
 
 
 class DatabaseCSVCLITests(unittest.TestCase):
@@ -46,6 +47,32 @@ class DatabaseCSVCLITests(unittest.TestCase):
             self.assertEqual(code, 0); self.assertEqual(result['report']['columns'], list(COLUMNS))
             self.assertEqual(result['report']['unit_count'], 0)
             self.assertTrue(output.read_bytes().endswith(b'Group 16,\r\n\r\n'))
+
+    def test_cached_projection_mode_exports_original_backed_row_and_evidence(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source = Path(folder) / 'cached.json'; output = Path(folder) / 'report.csv'
+            source.write_text(json.dumps(projection_input()))
+            code, result = self.execute([source, '--output', output, '--cached-projection',
+                                         '--columns', 'area', 'address'])
+            self.assertEqual(code, 0)
+            self.assertEqual(result['input_mode'], 'cached_projection')
+            self.assertTrue(result['projection']['complete'])
+            self.assertEqual(result['projection']['selected_class'], 'TRELAY4')
+            self.assertEqual(output.read_bytes(), b'Unit Address,Area,\r\n4,Area12,\r\n\r\n')
+
+    def test_cached_projection_provider_stop_creates_no_output(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source = Path(folder) / 'cached.json'; output = Path(folder) / 'report.csv'
+            value = projection_input(observations=('12', '12'))
+            value['area_observations'][0]['completed'] = False
+            source.write_text(json.dumps(value))
+            code, result = self.execute([source, '--output', output, '--cached-projection'])
+            self.assertEqual(code, 1)
+            evidence = result['toolkit_database_csv_evidence']
+            self.assertEqual(evidence['stage'], 'project_cached_unit')
+            self.assertEqual(evidence['projection']['stop_reason'], 'area_load_failed')
+            self.assertFalse(evidence['output_create_attempted'])
+            self.assertFalse(output.exists())
 
     def test_columns_invalid_before_input_io_and_capture_invalid_before_output_creation(self):
         for columns in (['all', 'address'], ['address', 'address'], ['unknown']):

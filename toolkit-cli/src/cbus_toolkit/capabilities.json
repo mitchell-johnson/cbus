@@ -722,16 +722,19 @@
       "evidence": [
         "src/cbus_toolkit/toolkit_database_csv.py",
         "src/cbus_toolkit/toolkit_database_csv_cli.py",
+        "src/cbus_toolkit/toolkit_database_csv_projection.py",
         "tests/test_toolkit_database_csv.py",
         "tests/test_cli_toolkit_database_csv.py",
+        "tests/test_toolkit_database_csv_projection.py",
         "tests/test_toolkit_database_csv_original.py",
         "research/fixtures/toolkit-database-csv-acceptance.json",
         "docs/toolkit-database-csv.md",
         "research/experiments/2026-09-24/csv-original8-analysis.json",
         "research/experiments/2026-09-24/csv-native4-analysis.json",
-        "research/experiments/2026-09-24/csv-replay-complete.json"
+        "research/experiments/2026-09-24/csv-replay-complete.json",
+        "research/experiments/2026-09-24/csv-cached-projection-review.json"
       ],
-      "limits": "Explicit captured-report values to original CSV rows and exclusive portable UTF-8 file export pass23 tests on Python3.13/3.10, each including88 fresh original-instruction comparisons. Original scalar/group providers remain captured fixtures; generic database/XML projection, class-specific cached state, original selection dialog/registry choices and Windows default-codepage bytes are not established. No physical identity or device access is inferred. Separate original cached-getter/class research completed12 cases (10 normal and2 declared provider stops); this is not a production database-to-row implementation. The later backend research completed8 original cases and4 native database captures. Native reads preserve full21-parameter relay state and whole-project XML, agree across30 literal path/OID queries, leave missing group13 absent and verify owned-process/storage cleanup with no CNI connections. A bounded replay then drove all4 captured native fixtures through27,661 approved original instruction entries while verifying all473 historical native inputs: existing Area12 and existing unused Area255 completed, missing Area13 was created and named Group 13 before the declared GroupSave refusal, and generic nil completed. No native, VM or CNI call occurred during the replay. Cold XML/cache loading, application/group/association loading, end-to-end database projection, selection preferences and native Windows encoding remain outstanding."
+      "limits": "Explicit captured-report values to original CSV rows and exclusive portable UTF-8 file export have a historical23-test Python3.13/3.10 checkpoint, each including88 fresh original-instruction comparisons. The current26-test host set adds a strict cached-object projector and public CLI: all12 original cached-getter/class pilot cases (10 completed and2 declared provider stops), captured factory boundaries, six/eight interaction groups, ordered Area loads, reference moves and missing group255 creation/save behavior. Inputs remain explicit retained unit/group caches and provider outcomes; cold database/XML loading is not implemented. The later backend research completed8 original cases and4 native database captures. Native reads preserve full21-parameter relay state and whole-project XML, agree across30 literal path/OID queries, leave missing group13 absent and verify owned-process/storage cleanup with no CNI connections. A bounded replay drove all4 captured native fixtures through27,661 approved original instruction entries while verifying all473 historical native inputs: existing Area12 and existing unused Area255 completed, missing Area13 was created and named Group 13 before the declared GroupSave refusal, and generic nil completed. No native, VM or CNI call occurred during that replay. Application/group/association construction, arbitrary unit profiles, selection preferences, native Windows encoding and physical behavior remain outstanding."
     },
     {
       "id": "thermostat-configuration",

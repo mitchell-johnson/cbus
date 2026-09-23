@@ -11,8 +11,10 @@ from .toolkit_database_csv import COLUMNS, MAX_CAPTURE_BYTES, document_database_
 
 def options(commands):
     parser = commands.add_parser('toolkit-database-csv', help='Export captured Toolkit report values as portable UTF-8 CSV offline')
-    parser.add_argument('file', type=Path, help='Captured report JSON; generic project XML is not accepted')
+    parser.add_argument('file', type=Path, help='Captured report or bounded cached-projection JSON; generic project XML is not accepted')
     parser.add_argument('--output', required=True, type=Path, help='New UTF-8 file; existing destinations are never overwritten')
+    parser.add_argument('--cached-projection', action='store_true',
+                        help='Replay the original-backed cached unit/group projection schema before export')
     parser.add_argument('--columns', nargs='+', default=['all'], metavar='COLUMN',
                         help='all (default), or selected names: ' + ', '.join(COLUMNS) + '; output follows original order')
 
@@ -36,9 +38,10 @@ class DatabaseCSVFileOperation:
     def __init__(self):
         self.last_error = self.last_cause = self.last_evidence = None
 
-    def run(self, source, *, output, columns):
+    def run(self, source, *, output, columns, cached_projection=False):
         self.last_error = self.last_cause = self.last_evidence = None
         state = {'operation': 'toolkit-database-csv', 'complete': False, 'stage': 'validate',
+                 'input_mode': 'cached_projection' if cached_projection else 'captured_report',
                  'source': None, 'output': None, 'source_regular_verified': False,
                  'source_identity_verified': False,
                  'source_bytes': 0, 'source_closed': False,
@@ -47,7 +50,7 @@ class DatabaseCSVFileOperation:
                  'output_write_complete': False, 'output_fsync_succeeded': False,
                  'output_closed': False, 'output_may_exist': False, 'output_may_be_partial': False,
                  'source_modified': False, 'network_io_attempted': False, 'registry_io_attempted': False,
-                 'error': None, 'cleanup_errors': [], 'report': None}
+                 'error': None, 'cleanup_errors': [], 'projection': None, 'report': None}
         handles = {'source': None, 'output': None}
         primary = None
 
@@ -95,10 +98,20 @@ class DatabaseCSVFileOperation:
                 chunks.append(chunk)
             state['stage'] = 'source_close'
             close('source')
-            state['stage'] = 'parse_capture'
-            units = loads_capture(b''.join(chunks))
-            state['stage'] = 'render'
-            report = document_database_csv(units, columns=selected)
+            raw = b''.join(chunks)
+            if cached_projection:
+                from .toolkit_database_csv_projection import loads_cached_projection
+                state['stage'] = 'project_cached_unit'
+                projection = loads_cached_projection(raw, columns=selected)
+                state['projection'] = projection.as_dict()
+                if not projection.complete or projection.report is None:
+                    raise ValueError('Cached projection stopped: ' + str(projection.stop_reason))
+                report = projection.report
+            else:
+                state['stage'] = 'parse_capture'
+                units = loads_capture(raw)
+                state['stage'] = 'render'
+                report = document_database_csv(units, columns=selected)
             state['report'] = report.as_dict()
             payload = memoryview(report.utf8_bytes)
             state.update(stage='output_create', output_create_attempted=True, output_may_exist=True)
@@ -166,7 +179,8 @@ def run(args):
     columns = COLUMNS if args.columns == ['all'] else tuple(args.columns)
     operation = DatabaseCSVFileOperation()
     args._toolkit_database_csv_operation = operation
-    result = operation.run(args.file, output=args.output, columns=columns)
+    result = operation.run(args.file, output=args.output, columns=columns,
+                           cached_projection=args.cached_projection)
     return result, 0
 
 
