@@ -1,5 +1,5 @@
 //! In-process MQTT 3.1.1 mini broker: a Rust-native port of
-//! `rust-migration-harness/lib/mini_broker.py`.
+//! Minimal MQTT 3.1.1 broker used by full-system tests.
 //!
 //! Supports exactly what cmqttd needs: CONNECT/CONNACK (protocol level 4
 //! enforced), PUBLISH QoS 0/1/2 (with PUBACK / PUBREC+PUBREL+PUBCOMP),

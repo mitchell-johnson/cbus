@@ -1,4 +1,4 @@
-//! Port of `cbus/common.py`: protocol constants, checksums, ramp rates.
+//! Protocol constants, checksums, framing bytes, and ramp-rate conversion.
 
 /// The only hex alphabet the decoder accepts (uppercase).
 pub const HEX_CHARS: &[u8] = b"0123456789ABCDEF";
@@ -181,7 +181,7 @@ pub fn add_cbus_checksum(data: &[u8]) -> Vec<u8> {
 }
 
 /// True if the last byte is the checksum of the rest. Empty input -> false
-/// (Python raises IndexError; callers never pass empty data).
+/// Callers must pass nonempty data.
 pub fn validate_cbus_checksum(data: &[u8]) -> bool {
     match data.split_last() {
         Some((&last, rest)) => last == cbus_checksum(rest),

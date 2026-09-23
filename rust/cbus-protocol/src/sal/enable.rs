@@ -1,4 +1,4 @@
-//! Port of `cbus/protocol/application/enable.py` decode.
+//! Enable-control application decoding.
 
 use super::Sal;
 use crate::DecodeError;

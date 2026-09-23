@@ -1,4 +1,4 @@
-//! Port of `cbus/constants.py`: timings and thresholds.
+//! Protocol timings and thresholds.
 
 /// Confirmation codes time out after this long.
 pub const CONFIRMATION_TIMEOUT_SECONDS: f64 = 30.0;

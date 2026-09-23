@@ -1,6 +1,6 @@
 //! Shared setup for the cmqttd full-system tests: spawns the real cmqttd
 //! binary against the in-process mini MQTT broker and scripted fake PCI,
-//! with the committed behavioral expectations as the oracle.
+//! with committed behavioral expectations as the oracle.
 #![allow(dead_code)]
 
 use cbus_protocol::common::add_cbus_checksum;
@@ -26,22 +26,22 @@ pub const STARTUP: Duration = Duration::from_secs(20);
 /// normally sub-second (condition-polled: tests only pay it on failure).
 pub const COMMAND_DRAIN: Duration = Duration::from_secs(60);
 
-pub fn harness_dir() -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../rust-migration-harness")
+pub fn testdata_dir() -> PathBuf {
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../testdata")
 }
 
 pub fn project_file() -> String {
-    harness_dir()
+    testdata_dir()
         .join("fixtures/project.xml")
         .to_string_lossy()
         .into_owned()
 }
 
-/// The committed behavioral expectations (generated from Python).
+/// The committed behavioral expectations.
 pub fn expectations() -> &'static Value {
     static EXP: OnceLock<Value> = OnceLock::new();
     EXP.get_or_init(|| {
-        let path = harness_dir().join("fixtures/behavioral_expectations.json");
+        let path = testdata_dir().join("fixtures/behavioral_expectations.json");
         serde_json::from_str(&std::fs::read_to_string(&path).expect("read expectations"))
             .expect("expectations json")
     })

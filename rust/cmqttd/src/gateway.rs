@@ -1,5 +1,4 @@
-//! MQTT <-> C-Bus glue. Port of `cbus/daemon/mqtt_gateway.py`
-//! (`CBusHandler` event relays + `MqttClient` helpers) onto rumqttc.
+//! MQTT-to-C-Bus event relays and command handling built on rumqttc.
 //!
 //! Outbound C-Bus traffic runs through two ordered lanes instead of the
 //! old single 0.2 s throttle queue: one worker for /set commands and one

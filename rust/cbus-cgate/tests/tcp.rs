@@ -1,6 +1,6 @@
 //! Loopback interop: real TCP framing against the `cgate-mock` binary.
 //!
-//! Speaks manual 4.3.1.5 over a socket exactly like the Python
+//! Speaks manual 4.3.1.5 over a socket like a real
 //! `CGateClient`: `[tag] COMMAND`, `-` continuations, space-terminated
 //! final lines, untagged `#e#` events ahead of replies, and `<< DELIMITER`
 //! here-documents.

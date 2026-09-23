@@ -1,5 +1,5 @@
 //! Scripted fake C-Bus PCI (TCP server): a Rust-native port of
-//! `rust-migration-harness/lib/fake_pci.py`.
+//! Scripted fake PCI used by full-system tests.
 //!
 //! Accepts cmqttd connections, records every frame the client sends,
 //! auto-acknowledges confirmation codes (like a real PCI in smart mode)
@@ -16,7 +16,7 @@ use tokio::sync::mpsc;
 const HEX_CHARS: &[u8] = b"0123456789ABCDEF";
 
 /// One CR-terminated command received from the C-Bus client, split the
-/// way `rust-migration-harness/lib/wire.py` does (independent of the
+/// wire format independently of the
 /// production framing code on purpose).
 #[derive(Debug, Clone)]
 pub struct ClientFrame {

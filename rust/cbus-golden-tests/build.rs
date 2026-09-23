@@ -1,8 +1,8 @@
 //! Generates the test suites of this crate:
 //!
 //! * `golden_generated.rs` — one named `#[test]` per committed golden
-//!   vector in `rust-migration-harness/vectors/*.jsonl`. The tests load
-//!   the vectors from the harness directory at run time; this script only
+//!   vector in `testdata/vectors/*.jsonl`. The tests load the vectors from
+//!   the repository test-data directory at run time; this script only
 //!   assigns stable, meaningful names (from the vector ids) and line
 //!   indices, so every vector is individually reported by `cargo test`.
 //!
@@ -21,7 +21,7 @@ use std::path::{Path, PathBuf};
 
 fn main() {
     let manifest = PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").unwrap());
-    let vectors = manifest.join("../../rust-migration-harness/vectors");
+    let vectors = manifest.join("../testdata/vectors");
     let out = PathBuf::from(std::env::var("OUT_DIR").unwrap());
     println!("cargo:rerun-if-changed={}", vectors.display());
     println!("cargo:rerun-if-changed=build.rs");
@@ -182,7 +182,7 @@ const RAMP_TABLE: &[(u8, u32)] = &[
 
 const CONFIRMATION_ALPHABET: &[u8] = b"hijklmnopqrstuvwxyzg";
 
-/// Independent manchester encoding (report.py nibble table).
+/// Independent Manchester encoding.
 fn ref_manchester(v: u8) -> [u8; 2] {
     const NIBBLES: [u8; 4] = [0b1010, 0b1001, 0b0110, 0b0101];
     [

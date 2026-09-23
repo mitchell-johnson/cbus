@@ -1,9 +1,9 @@
-//! CLI parity with `cbus/daemon/cli.py` (argparse-compatible subset).
+//! Command-line arguments for the C-Bus MQTT bridge.
 
 use clap::{ArgGroup, Parser};
 
 #[derive(Parser, Debug, Clone)]
-#[command(name = "cmqttd", about = "MQTT connector for C-Bus (Rust port)")]
+#[command(name = "cmqttd", about = "MQTT connector for C-Bus")]
 #[command(group(ArgGroup::new("conn").required(true).args(["tcp", "esp32_wifi", "esp32_serial", "esp32_discover"])))]
 pub struct Options {
     /// Enable debug logging
@@ -99,7 +99,7 @@ pub struct Options {
     pub status_resync: u64,
 
     // Label options --------------------------------------------------------
-    /// Path to a C-Bus Toolkit project backup (.cbz or .xml)
+    /// Path to a C-Bus project backup (.cbz or .xml)
     #[arg(short = 'P', long)]
     pub project_file: Option<String>,
 

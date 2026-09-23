@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [master, rust-migration]
+    branches: [main]
   pull_request:
 
 env:
@@ -10,7 +10,7 @@ env:
 
 jobs:
   rust:
-    name: fmt + clippy + test + parity harness
+    name: Rust workspace
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,21 +23,18 @@ jobs:
         with:
           workspaces: rust
 
-      - name: rustfmt
+      - name: Format
         working-directory: rust
         run: cargo fmt --check
 
-      - name: clippy
+      - name: Lint
         working-directory: rust
         run: cargo clippy --workspace --all-targets -- -D warnings
 
-      - name: unit and property tests
+      - name: Test
         working-directory: rust
         run: cargo test --workspace
 
-      # The parity oracle: golden vectors + end-to-end behavioral suite
-      # against the stdlib-only fake PCI and mini MQTT broker. SKIP_SLOW
-      # skips two ~2-minute throttle-drain assertions; the full run is the
-      # release gate and can be exercised locally.
-      - name: parity harness (SKIP_SLOW)
-        run: SKIP_SLOW=1 ./rust-migration-harness/run.sh
+      - name: Build release binaries
+        working-directory: rust
+        run: cargo build --release --workspace

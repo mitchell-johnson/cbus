@@ -31,7 +31,7 @@ fn missing_type_field_rejected() {
 
 #[test]
 fn pm_with_no_sals_cannot_be_built() {
-    // Python derives the packet application from the SALs; empty = error
+    // The packet application is derived from its SALs; empty is an error.
     let v = json!({
         "type": "point_to_multipoint", "checksum": true,
         "priority_class": 0, "source_address": null,
@@ -41,7 +41,7 @@ fn pm_with_no_sals_cannot_be_built() {
 
 #[test]
 fn empty_confirmation_string_means_none() {
-    // Python: conf.encode('ascii') if conf else None — "" is falsy
+    // An empty confirmation string is treated as absent.
     let v = json!({
         "type": "point_to_multipoint", "checksum": true,
         "priority_class": 0, "source_address": null,

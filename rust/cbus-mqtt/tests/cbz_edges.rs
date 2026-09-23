@@ -132,7 +132,7 @@ fn non_numeric_address_errors() {
 
 #[test]
 fn whitespace_around_address_tolerated() {
-    // Python int() trims surrounding whitespace
+    // Decimal integer parsing trims surrounding whitespace.
     let labels = labels_of(
         r#"<Installation><Project><Network>
            <Application Address=" 56 " TagName="L"/>

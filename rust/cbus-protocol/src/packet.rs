@@ -1,5 +1,4 @@
-//! Packet model + encoders. Port of `base_packet.py` and the per-type
-//! `encode()` methods in `{pm,pp,dm,confirm,error,po,reset,scs}_packet.py`.
+//! C-Bus packet model and wire encoders.
 
 use crate::cal::Cal;
 use crate::common::{
@@ -89,7 +88,7 @@ pub enum Packet {
     },
 }
 
-/// flags byte per `base_packet.py:53-57`: note the (buggy) `rc & 0x02` mask;
+/// flags byte: note the compatibility-sensitive `rc & 0x02` mask;
 /// rc is always 0 here so the term vanishes.
 fn flags(dat: u8, dp: bool, priority_class: u8) -> u8 {
     (dat & 0x07) | (if dp { 0x20 } else { 0 }) | ((priority_class & 0x03) << 6)
@@ -180,7 +179,7 @@ impl Packet {
 
     /// BasePacket.encode_packet: base16 uppercase ASCII of `encode()` for
     /// addressed packets; the raw token for special packets. Bare CALs have
-    /// no encode_packet in Python (AttributeError).
+    /// This packet type has no framed encoding.
     pub fn encode_packet(&self) -> Result<Vec<u8>, EncodeError> {
         match self {
             Packet::Reset

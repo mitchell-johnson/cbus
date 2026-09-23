@@ -80,6 +80,6 @@ fn ga_string_non_lighting_app_uses_padded_form() {
 
 #[test]
 fn ga_string_app_wider_than_three_digits() {
-    // {:03} is a minimum width, not a cap — parity with Python %03d
+    // A width of three is a minimum, not a cap.
     assert_eq!(ga_string(3, 1234, false), "1234_003");
 }

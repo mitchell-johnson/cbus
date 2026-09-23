@@ -1,4 +1,4 @@
-//! Golden-vector runner. Contract: rust-migration-harness/README.md §1.
+//! Golden-vector runner for the repository's protocol compatibility data.
 //! Reads every *.jsonl in the given directory, evaluates each vector, and
 //! prints `protocol-vectors: <passed>/<total> PASS|FAIL` as the last line.
 //! Exit code 0 iff all pass.

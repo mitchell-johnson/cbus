@@ -1,8 +1,7 @@
 //! In-memory C-Gate 3.4 command model.
 //!
-//! Bounded, synchronous command handling compatible with the Python
-//! `CGateClient` framing in `toolkit-cli/src/cbus_toolkit/cgate.py`
-//! (manual section 4.3.1.5): a space terminates a reply, a hyphen
+//! Bounded, synchronous command handling compatible with C-Gate manual
+//! section 4.3.1.5: a space terminates a reply, a hyphen
 //! continues it, commands carry `[tag]` prefixes so asynchronous events
 //! cannot complete a command, and no command is retried automatically.
 //!
@@ -11,9 +10,8 @@
 //! project/network/unit lifecycle plus deterministic stateful models for the
 //! remaining application and private command families. It builds on
 //! `cbus-protocol` level validation. The
-//! access-level matrix reproduces the observed native roles documented in
-//! `toolkit-cli/docs/implementation-status.md`: a default `Program`
-//! interface grants DB/PROJECT/NET but denies `PP` programming sessions
+//! access-level matrix reproduces observed native roles: a default
+//! `Program` interface grants DB/PROJECT/NET but denies `PP` programming sessions
 //! with `420`, while an operator-provisioned handle with programming-lock
 //! rights allows them.
 
@@ -27,7 +25,7 @@ pub mod unitspec;
 pub const GREETING_PREFIX: &str = "201 ";
 /// Overflow marker queued when the event buffer is full.
 pub const EVENT_OVERFLOW: &str = "###!!!Event buffer overflow. Events have been missed.!!!###";
-/// Default bound matching the Python transport.
+/// Default bound for queued events.
 pub const DEFAULT_MAX_EVENTS: usize = 4096;
 
 pub mod status {
@@ -114,10 +112,9 @@ pub fn parse_command(line: &str) -> Result<TaggedCommand, String> {
 /// Format a reply: intermediate lines use `-`, the final line uses ` `.
 ///
 /// `final_text` retains its native status prefix (e.g. `"200 OK"`), matching
-/// the Python `CGateResponse` convention; the tag is the only part removed.
+/// the C-Gate response convention; the tag is the only part removed.
 /// A reply with an empty tag (only produced for a tagless client line, which
-/// carries no command ID to echo) is emitted untagged so the Python `_TAG`
-/// matcher never mistakes it for a tagged reply.
+/// carries no command ID to echo) is emitted untagged.
 ///
 /// Intermediate lines that already carry a native envelope prefix
 /// (`134`, `300`, `343` or `347`; e.g. DBGETXML snippet rows) pass through
@@ -257,9 +254,8 @@ pub enum EventCategory {
 }
 
 /// Delivery category of an event line: `#s#` is status, `#c#` is
-/// configuration, everything else (including `#e#`, timestamped and
-/// overflow lines, mirroring the Python `parse_event` default) is an
-/// event.
+/// configuration, and everything else (including `#e#`, timestamped, and
+/// overflow lines) is an event.
 pub fn event_category(line: &str) -> EventCategory {
     if line.starts_with("#s#") {
         EventCategory::Status
@@ -272,8 +268,8 @@ pub fn event_category(line: &str) -> EventCategory {
 
 /// True for accepted C-Gate event subscription modes.
 ///
-/// Mirrors the Python `NativeEvents.subscribe` validation exactly:
-/// `ON`/`OFF` case-insensitively, otherwise the literal `e[+0-9]s[01]c[01]`
+/// Accepts `ON`/`OFF` case-insensitively, otherwise the literal
+/// `e[+0-9]s[01]c[01]`
 /// shape (lowercase, six characters).
 pub fn valid_event_mode(mode: &str) -> bool {
     if mode.eq_ignore_ascii_case("on") || mode.eq_ignore_ascii_case("off") {
@@ -291,8 +287,7 @@ pub fn valid_event_mode(mode: &str) -> bool {
 
 /// True for asynchronous event lines (never completes a command).
 ///
-/// Mirrors the Python `_EVENT` matcher in `cgate.py`: `#e#`/`#s#`/`#c#`
-/// markers require end-of-line or a trailing space, and timestamped events
+/// `#e#`/`#s#`/`#c#` markers require end-of-line or a trailing space, and timestamped events
 /// require the exact `YYYYMMDD-HHMMSS[.mmm] SP [789]xx SP` shape. All
 /// indexing uses byte slices so non-character-boundary input cannot panic.
 pub fn is_event_line(line: &str) -> bool {
@@ -398,7 +393,7 @@ fn xml_escape(text: &str) -> String {
         .replace('"', "&quot;")
 }
 
-/// Inverse of the Python `quote_value` mK quoting: `"a\ b\"c\\d"` → raw.
+/// Decode C-Gate mK quoting: `"a\ b\"c\\d"` to raw text.
 /// Only the three emitted escapes (`\\`, `\"`, `\ `) de-escape; any other
 /// backslash is preserved so hand-crafted input cannot lose backslashes.
 /// Unquoted tails store verbatim (documented tolerance for non-client use).
@@ -723,9 +718,8 @@ impl Server {
 
     fn push_event(&mut self, line: String) {
         // Server-side overflow policy: the triggering event is dropped, a
-        // single overflow marker is retained, and `events_lost` is set. This
-        // mirrors what the Python client observes (marker queued plus
-        // `events_lost`) without blocking command handling on a full queue.
+        // single overflow marker is retained, and `events_lost` is set without
+        // blocking command handling on a full queue.
         if self.events.len() >= self.max_events {
             self.events_lost = true;
             if !self.events.iter().any(|e| e == EVENT_OVERFLOW) {
@@ -4236,7 +4230,7 @@ mod tests {
         assert!(!EventMode::DEFAULT.delivers(EventCategory::Config));
         assert!(mode.delivers(EventCategory::Status));
         assert!(mode.delivers(EventCategory::Config));
-        // Categories mirror the Python `parse_event` default.
+        // Categories use the default C-Gate event mapping.
         assert_eq!(event_category("#e# x"), EventCategory::Event);
         assert_eq!(event_category("#s# x"), EventCategory::Status);
         assert_eq!(event_category("#c# x"), EventCategory::Config);

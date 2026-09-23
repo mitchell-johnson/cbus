@@ -1,6 +1,4 @@
-//! Parsing of Home Assistant `/set` command payloads. Port of the field
-//! extraction in `cbus/daemon/mqtt_gateway.py::MqttClient._handle_message`
-//! (pure logic only — no I/O).
+//! Parsing of Home Assistant `/set` command payloads.
 
 use crate::topics::{topic_group_address, LIGHT_TOPIC_PREFIX, TOPIC_SET_SUFFIX};
 use serde_json::Value;
@@ -10,7 +8,7 @@ use serde_json::Value;
 pub struct SetCommand {
     /// C-Bus group address.
     pub group_addr: u8,
-    /// C-Bus application address (not range-checked, like Python).
+    /// C-Bus application address (not range-checked).
     pub app_addr: i64,
     /// `state` was (case-insensitively) `"ON"`.
     pub light_on: bool,
@@ -37,8 +35,8 @@ pub enum CommandError {
     MissingState,
 }
 
-/// Python `isinstance(x, (int, float))` + `int(x)`: numbers truncate toward
-/// zero; booleans count as ints (`True` → 1). Anything else is `None`.
+/// Numbers truncate toward zero; booleans count as integers (`true` maps to
+/// one). Anything else is `None`.
 fn py_number(v: &Value) -> Option<f64> {
     match v {
         Value::Number(n) => n.as_f64(),
@@ -47,13 +45,8 @@ fn py_number(v: &Value) -> Option<f64> {
     }
 }
 
-/// Parse a `/set` command publish. Mirrors `_handle_message`: bad
-/// brightness/transition *types* fall back to their defaults (255 / 0)
-/// rather than failing the whole command.
-///
-/// Divergence from Python: a non-string `state` returns
-/// [`CommandError::MissingState`] instead of raising `AttributeError`
-/// (which crashes the Python dispatcher task).
+/// Parse a `/set` command publish. Invalid brightness and transition types
+/// fall back to their defaults (255 and 0) instead of failing the command.
 pub fn parse_set_command(topic: &str, payload: &[u8]) -> Result<SetCommand, CommandError> {
     if !(topic.starts_with(LIGHT_TOPIC_PREFIX) && topic.ends_with(TOPIC_SET_SUFFIX)) {
         return Err(CommandError::NotACommandTopic);
@@ -110,7 +103,7 @@ mod tests {
             }
         );
         assert!(!parse(T, r#"{"state": "off"}"#).unwrap().light_on);
-        // any other state string is treated as OFF, like Python
+        // Any other state string is treated as OFF for compatibility.
         assert!(!parse(T, r#"{"state": "toggle"}"#).unwrap().light_on);
         // case-insensitive ON
         assert!(parse(T, r#"{"state": "on"}"#).unwrap().light_on);
@@ -138,10 +131,10 @@ mod tests {
         assert_eq!(c.brightness, 127);
         let c = parse(T, r#"{"state": "ON", "transition": -3}"#).unwrap();
         assert_eq!(c.transition, 0);
-        // Python isinstance(True, int): booleans are numbers
+        // Booleans are accepted as numeric values for compatibility.
         let c = parse(T, r#"{"state": "ON", "brightness": true}"#).unwrap();
         assert_eq!(c.brightness, 1);
-        // wrong types fall back to the defaults (Python warns + defaults)
+        // Wrong types fall back to the defaults.
         let c = parse(
             T,
             r#"{"state": "ON", "brightness": "high", "transition": null}"#,

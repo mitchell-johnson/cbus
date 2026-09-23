@@ -1,4 +1,4 @@
-//! cmqttd: MQTT connector for C-Bus. Port of `cbus/daemon/cmqttd.py`.
+//! `cmqttd`: MQTT connector for C-Bus.
 
 mod cli;
 mod discover;
@@ -64,7 +64,7 @@ fn start_pci_reset(pci: &Arc<PciClient>) {
 }
 
 /// Pump C-Bus events into the gateway; on connection loss, reconnect
-/// (esp32 modes) or shut down (plain `-t`, like the Python daemon).
+/// (discovery modes) or shut down (plain `-t`).
 async fn cbus_event_pump(
     gw: Arc<Gateway>,
     mut ev_rx: mpsc::UnboundedReceiver<CBusEvent>,

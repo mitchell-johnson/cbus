@@ -1,5 +1,4 @@
-//! Port of `cbus/protocol/application/lighting.py` decode (forgiving:
-//! warn-and-stop on malformed tails).
+//! Lighting application decoding with warn-and-stop handling for malformed tails.
 
 use super::Sal;
 use crate::common::{ramp_rate_to_duration, LIGHT_OFF, LIGHT_ON, LIGHT_TERMINATE_RAMP};

@@ -1,6 +1,5 @@
-//! Pure C-Bus wire codec: a behaviour-for-behaviour port of the Python
-//! `cbus` protocol package (including its documented quirks and bugs).
-//! No async, no I/O.
+//! Pure C-Bus wire codec with compatibility behavior fixed by golden vectors.
+//! No async and no I/O.
 
 #![deny(missing_docs)]
 
@@ -20,7 +19,7 @@ pub use report::StatusReport;
 pub use sal::Sal;
 
 /// Error raised while decoding wire data. Maps to `Packet::Invalid` at the
-/// packet level (like Python exceptions caught in `decode_packet`).
+/// packet level by `decode_packet`.
 #[derive(Debug, Clone, thiserror::Error)]
 #[error("{0}")]
 pub struct DecodeError(pub String);
@@ -32,8 +31,7 @@ impl DecodeError {
     }
 }
 
-/// Error raised while encoding (mirrors Python ValueError/NotImplementedError
-/// raised by the various `encode()` methods).
+/// Error raised while encoding an unsupported or invalid value.
 #[derive(Debug, Clone, thiserror::Error)]
 #[error("{0}")]
 pub struct EncodeError(pub String);

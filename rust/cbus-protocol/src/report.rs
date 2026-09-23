@@ -1,4 +1,4 @@
-//! Port of `cbus/protocol/cal/report.py`: binary & manchester level reports.
+//! Binary and Manchester-encoded C-Bus level reports.
 
 use crate::DecodeError;
 

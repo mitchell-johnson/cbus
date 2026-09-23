@@ -1,32 +1,29 @@
 //! Minimal unit-specification reader for catalogue-backed sessions.
 //!
-//! Mirrors the Python `UnitSpecStore.load` semantics that programming
-//! sessions need: `<Param>` elements (name plus ordered fields, `Tag`
+//! Supports the unit-specification semantics that programming sessions need:
+//! `<Param>` elements (name plus ordered fields, `Tag`
 //! children skipped) with `<Includes>` following, resolved-directory
 //! containment, repeated-parameter last-wins overrides, structural
-//! numeric validation, and the 128-file / 8MiB caps. Anything richer
-//! (catalogues, value validation, declared non-UTF-8 encodings) stays
-//! with the Python implementation; a file this reader rejects simply
-//! yields no spec, and callers fall back to spec-free behavior.
+//! numeric validation, and the 128-file / 8MiB caps. A file this reader
+//! rejects yields no spec, and callers fall back to spec-free behavior.
 
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 
 /// Authenticated copyright preamble some decrypted signed specs carry
-/// ahead of the XML (mirrors the Python loader: only this exact line is
+/// ahead of the XML. Only this exact line is
 /// accepted, not arbitrary leading junk).
 const COPYRIGHT: &[u8] = b"(C) CLIPSAL INTEGRATED SYSTEMS 2003 all rights reserved";
-/// Specification size cap, mirroring the Python loader (checked on the
+/// Specification size cap, checked on the
 /// file metadata before any bytes are read).
 const MAX_SPEC_BYTES: u64 = 8 * 1024 * 1024;
-/// Include fan-out cap: at most this many files per load, mirroring the
-/// Python loader's visited-set limit.
+/// Include fan-out cap: at most this many files per load.
 const MAX_SPEC_FILES: usize = 128;
 
 /// One specification parameter: name plus ordered raw fields.
 ///
-/// Repeated fields keep Python-dict semantics: last value wins, first
-/// position kept.
+/// Repeated fields use last-value-wins semantics while retaining the first
+/// position.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SpecParam {
     /// Parameter name (`Name` child).
@@ -54,7 +51,7 @@ impl SpecParam {
 }
 
 /// Parse an integer in the specification grammar: optional sign, then
-/// `$`-hex, `0x`-hex or decimal (mirrors the Python loader).
+/// `$`-hex, `0x`-hex or decimal.
 fn parse_integer(raw: &str) -> Option<i64> {
     let text = raw.trim();
     // The grammar is ASCII. Reject before slicing at byte offsets so
@@ -117,7 +114,7 @@ struct Loader<'a> {
 
 impl Loader<'_> {
     /// Resolve `name` inside the specification directory, following the
-    /// Python loader: relative names only, no `..` segments, symlinks
+    /// Relative names only, no `..` segments, and symlinks
     /// resolved with containment re-checked.
     fn resolve(&self, name: &str) -> Result<PathBuf, String> {
         if name.is_empty() || name.contains('\\') || Path::new(name).is_absolute() {
@@ -168,9 +165,8 @@ impl Loader<'_> {
                 .or_else(|| rest.strip_prefix(b"\n"))
                 .unwrap_or(rest);
         }
-        // Vendor specifications are ASCII/UTF-8 in practice; the Python
-        // loader additionally honors declared non-UTF-8 encodings, which
-        // this reader does not attempt.
+        // Vendor specifications are ASCII/UTF-8 in practice. Declared
+        // non-UTF-8 encodings are not supported.
         let text = std::str::from_utf8(text)
             .map_err(|_| format!("Malformed specification {name:?}: not UTF-8"))?;
         let doc = roxmltree::Document::parse(text)
@@ -227,8 +223,7 @@ impl Loader<'_> {
                     }
                     seen_name = true;
                     param.name = value.trim().to_string();
-                    // The field map carries raw text like the Python
-                    // loader; only the parameter key is stripped.
+                    // The field map carries raw text; only the parameter key is stripped.
                     param.set_field(tag, value);
                 }
                 "Type" => {
@@ -253,8 +248,8 @@ impl Loader<'_> {
                 "Parameter in {source:?} requires Name, Type and Address"
             ));
         }
-        // Structural numeric metadata is parsed now, mirroring the Python
-        // loader; unexpected default/range contents stay visible for
+        // Structural numeric metadata is parsed now. Unexpected default and
+        // range contents stay visible for
         // explicit validation by callers.
         let address = parse_integer(&address_raw)
             .ok_or_else(|| format!("Invalid numeric parameter metadata for {:?}", param.name))?;
@@ -288,7 +283,7 @@ impl Loader<'_> {
             }
         }
         // Later includes override earlier ones; dict order (first-seen
-        // position) is kept, matching the Python loader.
+        // position) is kept.
         if let Some(&pos) = self.index.get(param.name.as_str()) {
             self.params[pos] = param;
         } else {
@@ -302,16 +297,6 @@ impl Loader<'_> {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    fn dir() -> PathBuf {
-        PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .join("..")
-            .join("..")
-            .join("toolkit-cli")
-            .join("research")
-            .join("vendor")
-            .join("unitspec-plain")
-    }
 
     fn scratch(name: &str) -> PathBuf {
         let path = std::env::temp_dir().join(format!(
@@ -333,54 +318,32 @@ mod tests {
     }
 
     #[test]
-    fn loads_keygl5_parameters() {
-        let dir = dir();
-        if !dir.is_dir() {
-            eprintln!("skipped: vendor unitspec not present");
-            return;
-        }
-        let params = load_spec(&dir, "KEYGL5").expect("KEYGL5 loads");
-        assert_eq!(params.len(), 874);
+    fn loads_parameters() {
+        let dir = scratch("loads");
+        write(
+            &dir,
+            "KEYGL5.xml",
+            "<Parameters><Param><Name>Application</Name><Type>int</Type><Address>$21</Address>\
+             <DefaultValue>$FF $FF</DefaultValue></Param></Parameters>",
+        );
+        let params = load_spec(&dir, "KEYGL5").expect("spec loads");
+        assert_eq!(params.len(), 1);
         let app = params
             .iter()
             .find(|p| p.name == "Application")
             .expect("Application");
         assert_eq!(app.get("Address"), Some("$21"));
         assert_eq!(app.get("DefaultValue"), Some("$FF $FF"));
+        let _ = std::fs::remove_dir_all(&dir);
     }
 
     #[test]
     fn rejects_escape_and_cycles() {
-        let dir = dir();
+        let dir = scratch("paths");
         assert!(load_spec(&dir, "../x").is_err());
         assert!(load_spec(&dir, "").is_err());
         assert!(load_spec(&dir, "NOPE-MISSING-TYPE").is_err());
-    }
-
-    #[test]
-    fn later_includes_override_earlier_with_vendor_spec() {
-        let dir = dir();
-        if !dir.join("BCN2B.xml").is_file() {
-            eprintln!("skipped: vendor BCN2B spec not present");
-            return;
-        }
-        let params = load_spec(&dir, "BCN2B").expect("BCN2B loads");
-        // Python agrees: 64 parameters, 4 overrides; the later include's
-        // IndicatorBlockAssignment default wins.
-        assert_eq!(params.len(), 64);
-        let names: Vec<&str> = params.iter().map(|p| p.name.as_str()).collect();
-        assert_eq!(
-            &names[..3],
-            &["LightIndex", "LightLevel", "EEPROMCheckSumActive"]
-        );
-        let block = params
-            .iter()
-            .find(|p| p.name == "IndicatorBlockAssignment")
-            .expect("IndicatorBlockAssignment");
-        assert_eq!(
-            block.get("DefaultValue"),
-            Some("$00 $01 $02 $03 $00 $01 $02 $03")
-        );
+        let _ = std::fs::remove_dir_all(&dir);
     }
 
     #[test]
@@ -406,7 +369,7 @@ mod tests {
              <Parameters><Param><Name>Own</Name><Type>int</Type><Address>$03</Address></Param></Parameters>",
         );
         let params = load_spec(&dir, "main").expect("override chain loads");
-        // First-seen positions kept (P, Only, Own), last value wins.
+        // First-seen positions are kept (P, Only, Own); the last value wins.
         let names: Vec<&str> = params.iter().map(|p| p.name.as_str()).collect();
         assert_eq!(names, vec!["P", "Only", "Own"]);
         assert_eq!(

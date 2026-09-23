@@ -1,6 +1,4 @@
-//! cbus-tools: decode | dump-labels | interrogate
-//! Ports of `cbus/tools/decode_packet.py`, `cbus/toolkit/dump_labels.py`
-//! and `cbus/protocol/interrogator.py`.
+//! `cbus-tools`: frame decoding, CBZ label export, and unit interrogation.
 
 use cbus_protocol::cal::Cal;
 use cbus_protocol::decode::decode_packet;
@@ -11,7 +9,7 @@ use serde_json::{json, Map, Value};
 use std::path::PathBuf;
 
 #[derive(Parser)]
-#[command(name = "cbus-tools", about = "C-Bus debugging tools (Rust port)")]
+#[command(name = "cbus-tools", about = "C-Bus debugging tools")]
 struct Cli {
     #[command(subcommand)]
     command: Command,
@@ -33,9 +31,9 @@ enum Command {
         #[arg(short = 'c', long)]
         client: bool,
     },
-    /// Dump group address and unit metadata from a Toolkit CBZ as JSON
+    /// Dump group address and unit metadata from a C-Bus project as JSON
     DumpLabels {
-        /// Toolkit backup (.cbz or .xml)
+        /// C-Bus project backup (.cbz or .xml)
         input: PathBuf,
         /// Write output to FILE (default stdout)
         #[arg(short = 'o', long)]
@@ -124,7 +122,7 @@ fn decode_cmd(packet: &str, checksum: bool, strict: bool, from_pci: bool) {
 
 // ------------------------------------------------------------- dump-labels
 
-/// Port of `toolkit/dump_labels.py`: full CBZ walk (networks, applications,
+/// Full CBZ walk (networks, applications,
 /// groups, units incl. `GroupAddress` PP channel parsing).
 fn dump_labels(
     input: &std::path::Path,
@@ -177,7 +175,7 @@ fn dump_labels(
         for unit in children(network, "unit") {
             let addr = int_field(unit, "address")?;
             // channel configuration: `GroupAddress` PP values like
-            // "0x38 0xFF" -> [0x38, 0xFF] (dump_labels.py:89-105)
+            // "0x38 0xFF" maps to [0x38, 0xFF].
             let mut channels: Vec<i64> = Vec::new();
             for pp in children(unit, "pp") {
                 if get_field(pp, "name").as_deref() == Some("GroupAddress") {
@@ -241,8 +239,7 @@ fn dump_labels(
 const PP_HEADER: u8 = 0x46;
 const CONFIRMATION_CODES: &[u8] = cbus_protocol::common::CONFIRMATION_CODES;
 
-/// (identify?, attribute, recall-count) — `_INTERROGATION_ATTRS` +
-/// `_RECALL_COUNTS` from `protocol/interrogator.py`.
+/// `(identify?, attribute, recall-count)` interrogation table.
 const INTERROGATION_ATTRS: &[(bool, u8, u8)] = &[
     (true, 0x01, 0),   // TYPE_NAME
     (true, 0x02, 0),   // FIRMWARE_VERSION

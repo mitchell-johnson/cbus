@@ -104,7 +104,7 @@ fn temperature_63_75_is_byte_255() {
 
 #[test]
 fn temperature_truncates_toward_zero() {
-    // int(25.9 * 4) == int(103.6) == 103, like Python
+    // Truncation gives int(25.9 * 4) == int(103.6) == 103.
     let s = Sal::TemperatureBroadcast {
         group_address: 1,
         temperature: 25.9,

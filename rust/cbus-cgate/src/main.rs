@@ -36,8 +36,7 @@ use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::{mpsc, Mutex};
 
 const MAX_LINE_BYTES: usize = 1024 * 1024;
-/// Cap for a single here-document body, mirroring the Python transport's
-/// 16 MiB response bound.
+/// Cap for a single here-document body.
 const MAX_DOCUMENT_BYTES: usize = 16 * 1024 * 1024;
 
 fn usage() -> ! {
@@ -198,8 +197,8 @@ async fn serve(stream: TcpStream, hub: Arc<Mutex<Hub>>) {
         };
         if raw.len() > MAX_LINE_BYTES {
             // Untagged: the tag itself may be the overlong/malformed part,
-            // so no command ID can be echoed. The connection closes, matching
-            // the Python client's close-on-framing-error posture; the client
+            // so no command ID can be echoed. The connection closes with a
+            // close-on-framing-error posture; the client
             // must reconnect rather than reuse this stream.
             let _ = send_raw(&hub, id, "400 C-Gate line exceeded configured limit").await;
             break;
@@ -364,8 +363,8 @@ async fn send_raw(hub: &Arc<Mutex<Hub>>, id: u64, line: &str) -> Result<(), ()> 
 
 /// Split a `[tag] COMMAND << DELIMITER` line; `None` for ordinary commands.
 ///
-/// Delimiters are short visible tokens (the Python client sends
-/// `CBUS_END_<hex>`); overlong delimiters fall back to ordinary command
+/// Delimiters are short visible tokens such as `CBUS_END_<hex>`;
+/// overlong delimiters fall back to ordinary command
 /// handling, which rejects the line.
 fn split_heredoc(line: &str) -> Option<(String, String)> {
     let (head, delimiter) = line.split_once(" << ")?;

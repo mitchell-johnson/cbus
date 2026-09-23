@@ -1,5 +1,4 @@
-//! Canonical packet <-> JSON codec, mirroring
-//! `rust-migration-harness/lib/pyjson.py` field-for-field.
+//! Stable packet-to-JSON conversion used by CLI output and golden-vector tests.
 
 use crate::cal::Cal;
 use crate::packet::{Meta, Packet};
@@ -206,7 +205,7 @@ pub enum JsonObject {
 }
 
 impl JsonObject {
-    /// `.encode()` on the underlying Python object.
+    /// the underlying packet value.
     pub fn encode(&self) -> Result<Vec<u8>, crate::EncodeError> {
         match self {
             JsonObject::Packet(p) => p.encode(),
@@ -375,7 +374,7 @@ fn meta_from_json(d: &Value) -> Result<Meta, JErr> {
         Some(Value::Null) => None,
         Some(v) => Some(v.as_u64().ok_or("bad source_address")? as u8),
     };
-    // Python: conf.encode('ascii') if conf else None (empty string -> None)
+    // An empty confirmation string means no confirmation.
     let confirmation = match d.get("confirmation") {
         None => None,
         Some(Value::Null) => None,
@@ -392,7 +391,7 @@ fn meta_from_json(d: &Value) -> Result<Meta, JErr> {
     })
 }
 
-/// Port of `pyjson.packet_from_json`: constructs an encodable object from
+/// Construct an encodable packet from
 /// canonical JSON (no invalid/bridged variants).
 pub fn packet_from_json(d: &Value) -> Result<JsonObject, JErr> {
     match get_str(d, "type")? {
@@ -420,7 +419,7 @@ pub fn packet_from_json(d: &Value) -> Result<JsonObject, JErr> {
                 .iter()
                 .map(sal_from_json)
                 .collect::<Result<Vec<Sal>, _>>()?;
-            // Python derives the packet application from the SALs
+            // The packet application is derived from its SALs.
             let application = sals
                 .first()
                 .map(|s| s.application())

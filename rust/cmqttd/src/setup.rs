@@ -52,7 +52,7 @@ pub fn init_logging(opts: &Options) {
 
 pub fn load_labels(opts: &Options) -> Option<AppLabels> {
     let path = opts.project_file.as_ref()?;
-    // `-N` may be multiple words; Python joins with spaces
+    // `-N` may contain multiple words.
     let network = if opts.cbus_network.is_empty() {
         None
     } else {
@@ -105,7 +105,7 @@ pub fn conn_spec(opts: &Options) -> ConnSpec {
         }
     } else if opts.esp32_discover {
         // Blocking browse is fine here: nothing else is running yet, and
-        // the Python daemon also blocks its startup for the same window.
+        // Startup waits for the same bounded discovery window.
         eprintln!("Discovering ESP32 C-Bus bridges via mDNS...");
         let (host, port) = crate::discover::discover_esp32(crate::discover::DISCOVER_TIMEOUT)
             .unwrap_or_else(|e| {
@@ -134,8 +134,7 @@ fn pem_certs(path: &Path) -> Result<Vec<rustls::pki_types::CertificateDer<'stati
 
 /// CA roots for the broker connection: a PEM file, a directory of PEM files
 /// (the Docker entrypoint passes `/etc/cmqttd/certificates`), or — when no
-/// `--broker-ca` is given — the system trust store, matching the Python
-/// daemon's `ssl.create_default_context()`.
+/// `--broker-ca` is given — the system trust store.
 fn ca_roots(broker_ca: Option<&str>) -> Result<rustls::RootCertStore, String> {
     let mut roots = rustls::RootCertStore::empty();
     match broker_ca {
