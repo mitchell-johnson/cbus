@@ -175,11 +175,13 @@ def project_native_xml_unit(text, unit_path, *, columns):
         area_values = _tokens(_parameter(unit, 'AreaGroupAddress'), 'AreaGroupAddress', count=1)
         primary_address, secondary_address = app_values
         primary = _one_by_address(network, 'Application', primary_address)
-        secondary = '' if secondary_address == 255 else _field(
-            _one_by_address(network, 'Application', secondary_address), 'TagName')
+        secondary_node = (None if secondary_address == 255 else
+                          _one_by_address(network, 'Application', secondary_address))
+        secondary = '' if secondary_node is None else _field(secondary_node, 'TagName')
         if group_values != (*range(1, 9), *(255 for _ in range(8))):
             raise ValueError('Captured native RELAY4 profile requires groups 1 through 8 followed by eight unused slots')
         group_addresses = group_values
+        group_applications = (primary,) * len(group_addresses)
         area_address = area_values[0]
     elif unit_type in ('KEYE1', 'KEYE2', 'KEYE3') and firmware == '2.5.00':
         app_values = _tokens(_parameter(unit, 'Application'), 'Application', count=2)
@@ -188,13 +190,19 @@ def project_native_xml_unit(text, unit_path, *, columns):
         secondary_blocks = _tokens(
             _parameter(unit, 'SecondApplicationBlocks'), 'SecondApplicationBlocks', count=1)
         primary_address, secondary_address = app_values
-        if secondary_address != 255 or secondary_blocks != (0,):
-            raise ValueError('Captured native KEYE profile requires an unused secondary application')
+        secondary_mask = secondary_blocks[0]
+        if secondary_address == 255 and secondary_mask:
+            raise ValueError('KEYE secondary group blocks require a configured secondary application')
         if area_values != (255,):
             raise ValueError('Captured native KEYE profile requires Area group 255')
         primary = _one_by_address(network, 'Application', primary_address)
-        secondary = ''
+        secondary_node = (None if secondary_address == 255 else
+                          _one_by_address(network, 'Application', secondary_address))
+        secondary = '' if secondary_node is None else _field(secondary_node, 'TagName')
         group_addresses = group_values
+        group_applications = tuple(
+            secondary_node if index < 8 and secondary_mask & (1 << index) else primary
+            for index in range(len(group_addresses)))
         area_address = 255
     elif unit_type in ('DIMDN8', 'RELDN12') and firmware == '2.7.00':
         app_values = _tokens(_parameter(unit, 'Application'), 'Application', count=2)
@@ -208,6 +216,7 @@ def project_native_xml_unit(text, unit_path, *, columns):
         primary = _one_by_address(network, 'Application', primary_address)
         secondary = ''
         group_addresses = group_values
+        group_applications = (primary,) * len(group_addresses)
         area_address = 255
     elif unit_type == 'SENPIROA' and firmware == '2.4.00':
         app_values = _tokens(_parameter(unit, 'Application'), 'Application', count=2)
@@ -223,6 +232,7 @@ def project_native_xml_unit(text, unit_path, *, columns):
         primary = _one_by_address(network, 'Application', primary_address)
         secondary = ''
         group_addresses = group_values
+        group_applications = (primary,) * len(group_addresses)
         area_address = 255
     elif unit_type == 'OWNED_UNKNOWN' and firmware == '4.4':
         if _children(unit, 'PP'):
@@ -232,28 +242,38 @@ def project_native_xml_unit(text, unit_path, *, columns):
         primary, secondary = applications[0], ''
         _byte(_field(primary, 'Address'), 'Application address')
         group_addresses = tuple(range(1, 9))
+        group_applications = (primary,) * len(group_addresses)
         area_address = None
     else:
         raise ValueError('Native XML projection supports only captured RELAY4 4.4, KEYE1/2/3 2.5.00, DIMDN8/RELDN12 2.7.00, SENPIROA 2.4.00 and OWNED_UNKNOWN 4.4 profiles')
 
     groups = []
-    seen_addresses = set()
-    for node in _children(primary, 'Group'):
-        address = _byte(_field(node, 'Address'), 'Group address')
-        if address in seen_addresses:
-            raise ValueError('Native primary application contains duplicate group addresses')
-        seen_addresses.add(address)
-        oid = _optional_oid(node)
-        identity = oid or f'//{project_name}/{network_address}/{primary_address}/{address}'
-        groups.append(CachedCSVGroup(identity, address, _field(node, 'TagName'), oid))
-    by_address = {group.address: group for group in groups}
-    if any(address not in by_address for address in group_addresses):
-        raise ValueError('Native unit group reference is absent from the primary application cache')
-    if area_address is not None and area_address not in by_address:
+    application_groups = {}
+    for application in dict.fromkeys(group_applications):
+        application_address = _byte(_field(application, 'Address'), 'Application address')
+        by_address = {}
+        for node in _children(application, 'Group'):
+            address = _byte(_field(node, 'Address'), 'Group address')
+            if address in by_address:
+                raise ValueError('Native application contains duplicate group addresses')
+            oid = _optional_oid(node)
+            identity = oid or f'//{project_name}/{network_address}/{application_address}/{address}'
+            group = CachedCSVGroup(identity, address, _field(node, 'TagName'), oid)
+            groups.append(group)
+            by_address[address] = group
+        application_groups[application] = by_address
+    missing = [(application, address) for application, address
+               in zip(group_applications, group_addresses)
+               if address not in application_groups[application]]
+    if missing:
+        raise ValueError('Native unit group reference is absent from its selected application cache')
+    primary_groups = application_groups[primary]
+    if area_address is not None and area_address not in primary_groups:
         raise ValueError('Native Area group is absent; original report creation requires an unperformed database mutation')
     if area_address is not None and area_address not in (12, 13, 255):
         raise ValueError('Captured native RELAY4 profile supports existing Area12, Area13 or Area255')
-    identities = tuple(by_address[address].identity for address in group_addresses)
+    identities = tuple(application_groups[application][address].identity
+                       for application, address in zip(group_applications, group_addresses))
     unit_oid = _optional_oid(unit)
     cached_unit = CachedCSVUnit(unit_oid or unit_path, unit_address,
         _field(unit, 'UnitName'), _field(unit, 'TagName'), unit_type,

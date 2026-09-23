@@ -160,6 +160,22 @@ class CachedCSVProjectionTests(unittest.TestCase):
                           '<Unused>', '<Unused>'])
         self.assertEqual(fields[18:26], ['<N/A>'] * 8)
 
+    def test_same_address_groups_from_two_applications_resolve_by_identity(self):
+        groups = (
+            CachedCSVGroup('primary-255', 255, '<Unused>', 'OID-primary-255'),
+            CachedCSVGroup('secondary-255', 255, 'Secondary unused', 'OID-secondary-255'),
+        )
+        unit = CachedCSVUnit('keye-secondary', 15, 'Neo Pro', 'Secondary groups',
+            'KEYE1', '5031NMML', '', '2.5.00', 'Lighting', 'HVAC',
+            ('secondary-255',) * 8 + ('primary-255',))
+        outcome = project_cached_csv_unit(unit, group_cache=groups,
+            area_observations=(CSVAreaObservation('255'), CSVAreaObservation('255')),
+            columns=COLUMNS)
+        fields = outcome.report.rows[1].split(',')
+        self.assertEqual(fields[8:18],
+                         ['HVAC', '<Unused>'] + ['Secondary unused'] * 8)
+        self.assertEqual(outcome.area_identity, 'primary-255')
+
     def test_reference_moves_between_groups_and_retains_identity(self):
         unit, groups = fixture()
         outcome = project_cached_csv_unit(unit, group_cache=groups,

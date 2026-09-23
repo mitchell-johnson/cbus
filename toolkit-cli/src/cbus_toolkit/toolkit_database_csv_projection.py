@@ -188,11 +188,9 @@ def _validated_groups(unit, groups):
     if any(type(group) is not CachedCSVGroup for group in groups):
         raise ValueError('group_cache must contain exact CachedCSVGroup records')
     identities = [group.identity for group in groups]
-    addresses = [group.address for group in groups]
     oids = [group.oid for group in groups if group.oid]
-    if (len(set(identities)) != len(groups) or len(set(addresses)) != len(groups)
-            or len(set(oids)) != len(oids)):
-        raise ValueError('Cached group identities, addresses and nonempty OID tokens must be unique')
+    if len(set(identities)) != len(groups) or len(set(oids)) != len(oids):
+        raise ValueError('Cached group identities and nonempty OID tokens must be unique')
     if any(identity not in set(identities) for identity in unit.group_identities):
         raise ValueError('Every unit group identity must resolve in the complete cache')
     if any(unit.identity in group.references for group in groups):

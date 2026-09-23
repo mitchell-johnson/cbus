@@ -22,7 +22,8 @@ def scalar(parent, name, value):
 def native_xml(*, unit_type='RELAY4', area=12, missing=(), extra_unit=False,
                keye_groups=(1, 2, 255, 255, 255, 255, 255, 255, 255),
                din_groups=None,
-               sensor_groups=(1, 0, 4, 2, 255, 255, 255, 255), with_oids=True):
+               sensor_groups=(1, 0, 4, 2, 255, 255, 255, 255), with_oids=True,
+               secondary_address=255, secondary_blocks=0):
     keye = unit_type in ('KEYE1', 'KEYE2', 'KEYE3')
     din = unit_type in ('DIMDN8', 'RELDN12')
     sensor = unit_type == 'SENPIROA'
@@ -51,6 +52,17 @@ def native_xml(*, unit_type='RELAY4', area=12, missing=(), extra_unit=False,
             scalar(group, 'OID', oid(100 + address))
         scalar(group, 'TagName', '<Unused>' if address == 255 else 'Group' + str(address))
         scalar(group, 'Address', address)
+    if secondary_address != 255:
+        application = ET.SubElement(network, 'Application')
+        if with_oids:
+            scalar(application, 'OID', oid(21))
+        scalar(application, 'TagName', 'HVAC'); scalar(application, 'Address', secondary_address)
+        for address in group_cache_addresses:
+            group = ET.SubElement(application, 'Group')
+            if with_oids:
+                scalar(group, 'OID', oid(400 + address))
+            scalar(group, 'TagName', '<Unused>' if address == 255 else 'Secondary' + str(address))
+            scalar(group, 'Address', address)
     unit = ET.SubElement(network, 'Unit')
     if with_oids:
         scalar(unit, 'OID', oid(500))
@@ -71,9 +83,9 @@ def native_xml(*, unit_type='RELAY4', area=12, missing=(), extra_unit=False,
                                 (*range(1, 9), *(255 for _ in range(8)))))):
             ET.SubElement(unit, 'PP', Name=name, Value=value)
     elif keye:
-        for name, value in (('Application', '0x38 0xff'),
+        for name, value in (('Application', '0x38 ' + hex(secondary_address)),
                             ('AreaGroupAddress', '0xff'),
-                            ('SecondApplicationBlocks', '0'),
+                            ('SecondApplicationBlocks', str(secondary_blocks)),
                             ('GroupAddress', ' '.join(hex(value) for value in keye_groups))):
             ET.SubElement(unit, 'PP', Name=name, Value=value)
     elif din:
@@ -130,7 +142,21 @@ class NativeXMLCSVProjectionTests(unittest.TestCase):
             ['<Unused>', 'Group1', 'Group2', *('<Unused>' for _ in range(6))])
         self.assertEqual(fields[18:26], ['<N/A>'] * 8)
 
-    def test_keye_profile_rejects_secondary_and_area_shapes_not_yet_admitted(self):
+    def test_keye_secondary_mask_resolves_each_of_first_eight_blocks_in_its_application(self):
+        text = native_xml(unit_type='KEYE1', with_oids=False,
+                          keye_groups=(1, 2, 3, 4, 5, 6, 7, 8, 1),
+                          secondary_address=57, secondary_blocks=0b00000101)
+        outcome = project_native_xml_unit(text, '//CSVTEST/254/p/4', columns=COLUMNS)
+        self.assertEqual(outcome.cached.unit.secondary, 'HVAC')
+        self.assertEqual(len(outcome.cached.groups), 22)
+        fields = outcome.report.rows[1].split(',')
+        self.assertEqual(fields[8], 'HVAC')
+        self.assertEqual(fields[10:18],
+                         ['Secondary1', 'Group2', 'Secondary3', 'Group4',
+                          'Group5', 'Group6', 'Group7', 'Group8'])
+        self.assertEqual(fields[18:26], ['<N/A>'] * 8)
+
+    def test_keye_profile_rejects_unresolved_secondary_and_nonunused_area(self):
         text = native_xml(unit_type='KEYE1')
         for old, new in (('Name="SecondApplicationBlocks" Value="0"',
                           'Name="SecondApplicationBlocks" Value="1"'),
