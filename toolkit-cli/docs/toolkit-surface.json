@@ -12963,8 +12963,8 @@
         {
           "symbol": "_cgate",
           "path": "src/cbus_toolkit/cli.py",
-          "line": 1971,
-          "end_line": 2264
+          "line": 1973,
+          "end_line": 2266
         },
         {
           "symbol": "NativeSerials._get",
@@ -14074,8 +14074,8 @@
         {
           "symbol": "_cgate",
           "path": "src/cbus_toolkit/cli.py",
-          "line": 1971,
-          "end_line": 2264
+          "line": 1973,
+          "end_line": 2266
         }
       ],
       "acceptance_status": "unassessed",
@@ -14113,8 +14113,8 @@
         {
           "symbol": "_cgate",
           "path": "src/cbus_toolkit/cli.py",
-          "line": 1971,
-          "end_line": 2264
+          "line": 1973,
+          "end_line": 2266
         }
       ],
       "acceptance_status": "unassessed",
@@ -14594,8 +14594,8 @@
         {
           "symbol": "_cgate",
           "path": "src/cbus_toolkit/cli.py",
-          "line": 1971,
-          "end_line": 2264
+          "line": 1973,
+          "end_line": 2266
         }
       ],
       "acceptance_status": "unassessed",
@@ -15094,8 +15094,8 @@
         {
           "symbol": "_cgate",
           "path": "src/cbus_toolkit/cli.py",
-          "line": 1971,
-          "end_line": 2264
+          "line": 1973,
+          "end_line": 2266
         }
       ],
       "acceptance_status": "unassessed",
@@ -15324,8 +15324,8 @@
     "source": {
       "symbol": "_cgate",
       "path": "src/cbus_toolkit/cli.py",
-      "line": 1971,
-      "end_line": 2264
+      "line": 1973,
+      "end_line": 2266
     },
     "route": "cbus-toolkit cgate exec '<command>'",
     "status": "static_forwarding_route_present_not_command_acceptance"
@@ -15441,8 +15441,8 @@
     },
     {
       "path": "src/cbus_toolkit/cli.py",
-      "bytes": 183770,
-      "sha256": "83ce742614a0c054a685e8a220a217bb9d82d457e5089d07646c093345ddb8da"
+      "bytes": 184295,
+      "sha256": "3dd3d05625532dab068491960b8aed755982d8ad52ee0643e81abe65e212744a"
     },
     {
       "path": "src/cbus_toolkit/conversion.py",
@@ -15501,6 +15501,13 @@
     }
   ],
   "test_source_inventory": [
+    {
+      "path": "tests/test_acceptance.py",
+      "bytes": 6084,
+      "sha256": "40637c1142aecd244454d2736128aec3a8de16085ec070c587d2c2624b15fb95",
+      "test_definitions": 3,
+      "status": "source_present_results_not_imported"
+    },
     {
       "path": "tests/test_addressing.py",
       "bytes": 25612,
@@ -15926,6 +15933,13 @@
       "bytes": 4545,
       "sha256": "9a51e4bf7062c036d11688e708130aaeae2b1accdd94452cdbfaf4a58706e882",
       "test_definitions": 3,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_cli_thermostat_scheduling.py",
+      "bytes": 7429,
+      "sha256": "6c98c66865cbb5b5658ac85649bcd074fcf8bb1332928a073b936b3e4f0bdec6",
+      "test_definitions": 9,
       "status": "source_present_results_not_imported"
     },
     {
@@ -16797,6 +16811,13 @@
       "status": "source_present_results_not_imported"
     },
     {
+      "path": "tests/test_rust_cgate_interop.py",
+      "bytes": 27468,
+      "sha256": "5945a25fd769991250e1125211b15cb53a15a7735c7b68f11781ff4f1a22363a",
+      "test_definitions": 13,
+      "status": "source_present_results_not_imported"
+    },
+    {
       "path": "tests/test_scenes.py",
       "bytes": 10832,
       "sha256": "6439821223ce93d4e4e2bea198160472c376a88dab2983f866db8cea20bfab71",
@@ -16902,6 +16923,13 @@
       "status": "source_present_results_not_imported"
     },
     {
+      "path": "tests/test_thermostat_scheduling.py",
+      "bytes": 20996,
+      "sha256": "44cb79b6d5edad78d5f3073382c8902ed266862033483ddd8a83d819b5eef49a",
+      "test_definitions": 20,
+      "status": "source_present_results_not_imported"
+    },
+    {
       "path": "tests/test_thermostat_temperature.py",
       "bytes": 4774,
       "sha256": "249b882d850538046a4b2c812be64a3b676a8a4ea51bee90b83150565dedee27",
@@ -16934,6 +16962,13 @@
       "bytes": 4422,
       "sha256": "dd8f9f27ed6b895254bb36454c5d0143c7f848fc9c4373dc4a03d29e2fd37217",
       "test_definitions": 5,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_toolkit_live_update_conditions.py",
+      "bytes": 14239,
+      "sha256": "796aa14db4fb40c2c7121e8ed54f44db2a618d0454416b7b88442057a548ed3a",
+      "test_definitions": 14,
       "status": "source_present_results_not_imported"
     },
     {
@@ -17071,9 +17106,9 @@
     },
     {
       "path": "tests/test_wheel_acceptance.py",
-      "bytes": 15392,
-      "sha256": "77de2f44b59528d3331c16b82bd8e4f3f5f6eeacb4d134a4f6c9b9d62f015eae",
-      "test_definitions": 13,
+      "bytes": 21429,
+      "sha256": "a6f4413bdf6071dfb64c2ae1063476151727e1076129a91ef0c749d3c26b615b",
+      "test_definitions": 17,
       "status": "source_present_results_not_imported"
     },
     {
@@ -17081,6 +17116,13 @@
       "bytes": 11370,
       "sha256": "7652ce34a6e00243b290b5b801fcf52dd19bf9343738bc5b848657ce8bb5f60e",
       "test_definitions": 11,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_windows_condition_registry.py",
+      "bytes": 13773,
+      "sha256": "60efd2481a75cc2fd6c86ae98730b5e519f03f7c0356e3748e9c003cfb38e7f5",
+      "test_definitions": 16,
       "status": "source_present_results_not_imported"
     },
     {

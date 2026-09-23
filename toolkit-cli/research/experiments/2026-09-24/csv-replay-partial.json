@@ -1,0 +1,62 @@
+{
+  "format": "csv-original-replay4-failed-analysis-v1",
+  "passed": false,
+  "report_sha256": "b35bc38f1ab5b1a03f8005cc8b004fc3b99c0420b8c23091642bec9451b9be1d",
+  "capture_sha256": "2ec750fdc751f07a139a9c9c82ce42d482568128c35c4c2ad0359d2b5d397097",
+  "archive_sha256": "2db8503258084496cdff37973a8b114fcf70680a16ca213ebd540037f213e90a",
+  "input_count": 77,
+  "archive_entries_verified": 77,
+  "before_after_equal": true,
+  "original_invocations_attempted": 6,
+  "original_instruction_entries": 26879,
+  "native_report_sha256": "f4c8369e0fc4cad87de15a3ad844c7d6a303df741af4e87797ed2f7822bc158c",
+  "native_stage_repeated": false,
+  "fixture_results": [
+    {
+      "id": "B01",
+      "captured": true,
+      "completed": true,
+      "original_area": 12,
+      "factory_class": "TRELAY4",
+      "error": null
+    },
+    {
+      "id": "B02",
+      "captured": true,
+      "completed": true,
+      "original_area": 255,
+      "factory_class": "TRELAY4",
+      "error": null
+    },
+    {
+      "id": "B03",
+      "captured": false,
+      "completed": false,
+      "original_area": null,
+      "factory_class": "TRELAY4",
+      "error": {
+        "stage": "original replay",
+        "type": "HarnessError",
+        "message": "Unapproved original address 0xf28978"
+      }
+    },
+    {
+      "id": "B04",
+      "attempted": false,
+      "reason": "Stopped on first B03 failure"
+    }
+  ],
+  "first_child_failure": {
+    "stage": "original replay",
+    "type": "HarnessError",
+    "message": "Unapproved original address 0xf28978"
+  },
+  "all_owned_processes_absent": true,
+  "launcher_pid": 36091,
+  "child_pid": 36111,
+  "child_reaped": true,
+  "secondary_errors": [],
+  "cleanup_errors": [],
+  "original_cold_xml_import": false,
+  "full_csv_workflow_verified": false
+}

@@ -1095,6 +1095,8 @@ def build_parser():
     database_csv_options(commands)
     from .thermostat_temperature_cli import options as thermostat_temperature_options
     thermostat_temperature_options(commands)
+    from .thermostat_scheduling_cli import options as thermostat_scheduling_options
+    thermostat_scheduling_options(commands)
 
     project = commands.add_parser("project", help="Edit legacy Toolkit XML/CBZ projects without discarding unknown data")
     ops = project.add_subparsers(dest="action", required=True)
@@ -2715,6 +2717,9 @@ def run(args):
     if args.area == "thermostat-temperature":
         from .thermostat_temperature_cli import run as run_thermostat_temperature
         return run_thermostat_temperature(args)
+    if args.area == "thermostat-scheduling":
+        from .thermostat_scheduling_cli import run as run_thermostat_scheduling
+        return run_thermostat_scheduling(args)
     if args.area == "pci" and args.action == "routed-recall":
         from .pci_routed_recall_cli import run as routed_recall_run
         return routed_recall_run(args)
@@ -2995,7 +3000,10 @@ def run(args):
         return {"parameter": args.parameter, "value": result}, int(not result["valid"])
     if args.area == "coverage":
         ledger = json.loads(files("cbus_toolkit").joinpath("capabilities.json").read_text())
-        complete = ledger["census_complete"] and all(x["status"] == "verified" for x in ledger["features"])
+        # The ledger issues implemented/in_progress/pending (never "verified");
+        # parity burden lives in the ledger IDs themselves, including
+        # toolkit-differential-acceptance and unit-hardware-acceptance.
+        complete = ledger["census_complete"] and all(x["status"] == "implemented" for x in ledger["features"])
         return {"complete": complete, **ledger}, int(args.require_complete and not complete)
     raise ValueError("Unknown command area")
 

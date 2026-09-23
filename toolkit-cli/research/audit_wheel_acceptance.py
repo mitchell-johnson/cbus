@@ -32,7 +32,7 @@ def relative_file(root, name):
     return result
 
 
-def audit(snapshot, report_paths, *, python_versions=('3.13', '3.10')):
+def audit(snapshot, report_paths, *, python_versions=('3.13',)):
     require(report_paths and python_versions, 'At least one report and Python version are required')
     snapshot = Path(snapshot).resolve()
     manifest_path = snapshot / 'snapshot.json'
@@ -55,7 +55,7 @@ def audit(snapshot, report_paths, *, python_versions=('3.13', '3.10')):
         for name, expected in package_hashes.items():
             require(hashlib.sha256(wheel.read(name)).hexdigest() == expected, 'Wheel source differs: ' + name)
         ledger = json.loads(wheel.read('cbus_toolkit/capabilities.json'))
-        parity = bool(ledger['census_complete'] and all(row['status'] == 'verified' for row in ledger['features']))
+        parity = bool(ledger['census_complete'] and all(row['status'] == 'implemented' for row in ledger['features']))
     # Snapshots may additionally pin direct documentation files. They are
     # verified above, but acceptance.input_files() does not execute/select them.
     # Keep this exclusion narrow: nested docs and other suffixes are not silently
@@ -76,6 +76,9 @@ def audit(snapshot, report_paths, *, python_versions=('3.13', '3.10')):
         gates.add('CBUS_WINDOWS_BRIDGE')
     if {'tests/test_local_cgate.py', 'tests/test_native_network_oracle.py'} & set(expected_tests):
         gates.update(('CBUS_CGATE_JAVA', 'CBUS_LOCAL_CGATE_VENDOR'))
+    mock_required = 'tests/test_rust_cgate_interop.py' in expected_tests
+    if mock_required:
+        gates.add('CBUS_CGATE_MOCK_BIN')
     firmware_backend = 'research/firmware_oracle.py' in inputs
     selectors_required = firmware_backend or bool({'research/original_oracle.py', 'research/local_cgate.py'} & set(inputs))
     reports, recorded_versions = [], []
@@ -96,6 +99,19 @@ def audit(snapshot, report_paths, *, python_versions=('3.13', '3.10')):
         require(report.get('input_sha256') == expected_inputs, 'Report input hashes differ from the snapshot')
         require(all(report.get('enabled_native_gates', {}).get(name) is True for name in gates),
                 'Report did not enable every required native gate')
+        if mock_required:
+            binaries = report.get('external_test_binaries_before')
+            require(isinstance(binaries, dict) and set(binaries) == {'CBUS_CGATE_MOCK_BIN'},
+                    'Report lacks explicit mock binary evidence')
+            binary = binaries['CBUS_CGATE_MOCK_BIN']
+            require(isinstance(binary, dict) and set(binary) == {'path', 'sha256', 'size_bytes'}
+                    and isinstance(binary['path'], str) and Path(binary['path']).is_absolute()
+                    and isinstance(binary['sha256'], str) and re.fullmatch(r'[0-9a-f]{64}', binary['sha256'])
+                    and type(binary['size_bytes']) is int and binary['size_bytes'] > 0,
+                    'Invalid explicit mock binary evidence')
+            require(report.get('external_test_binaries_after') == binaries
+                    and report.get('external_test_binary_errors') == [],
+                    'Mock binary changed or could not be observed')
         selectors = report.get('backend_selectors')
         if selectors_required or selectors is not None:
             allowed = {'CBUS_ORIGINAL_MODEL_BACKEND': ('docker', 'windows'),
@@ -130,6 +146,9 @@ def audit(snapshot, report_paths, *, python_versions=('3.13', '3.10')):
     require(set(recorded_versions) == set(python_versions), 'Reports do not cover the requested Python versions')
     primary = reports[0][0]
     for report, _ in reports[1:]:
+        if mock_required:
+            require(report['external_test_binaries_before'] == primary['external_test_binaries_before'],
+                    'Reports disagree: external_test_binaries_before')
         require(report.get('backend_selectors') == primary.get('backend_selectors'),
                 'Reports disagree: backend_selectors')
         for name in ('tests_run', 'test_files', 'input_sha256', 'imported_package_module_sha256',
@@ -140,6 +159,9 @@ def audit(snapshot, report_paths, *, python_versions=('3.13', '3.10')):
                 'enabled_native_gates', 'test_files', 'input_sha256', 'imported_package_module_sha256')
     summary = {name: primary[name] for name in retained}
     if 'backend_selectors' in primary: summary['backend_selectors'] = primary['backend_selectors']
+    for name in ('external_test_binaries_before', 'external_test_binaries_after', 'external_test_binary_errors'):
+        if name in primary:
+            summary[name] = primary[name]
     summary.update(source_report_sha256=reports[0][1], wheel_sha256=manifest['wheel_sha256'],
                    wheel_package_files=manifest['package_files'], snapshot=snapshot.name,
                    snapshot_manifest_sha256=digest(manifest_path), installed_wheel=True,
@@ -153,6 +175,9 @@ def audit(snapshot, report_paths, *, python_versions=('3.13', '3.10')):
         row.update(source_report_sha256=report_hash, same_input_hashes=True,
                    same_imported_package_hashes=True, installed_wheel=True)
         if 'backend_selectors' in report: row['backend_selectors'] = report['backend_selectors']
+        if mock_required:
+            row['external_test_binaries_before'] = report['external_test_binaries_before']
+            row['same_external_test_binary_hashes'] = True
         summary['additional_python_validation'].append(row)
     return summary
 
@@ -161,11 +186,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('snapshot', type=Path)
     parser.add_argument('--report', type=Path, action='append', required=True)
-    parser.add_argument('--python', dest='versions', action='append', help='Required minor version; defaults to 3.13 and 3.10')
+    parser.add_argument('--python', dest='versions', action='append',
+                        help='Required minor version (repeat for multiple); defaults to 3.13. '
+                             'Use explicit versions when auditing historical evidence.')
     parser.add_argument('--output', type=Path, help='Write a new summary file; an existing file is never overwritten')
     args = parser.parse_args()
     try:
-        summary = audit(args.snapshot, args.report, python_versions=tuple(args.versions or ('3.13', '3.10')))
+        summary = audit(args.snapshot, args.report, python_versions=tuple(args.versions or ('3.13',)))
         if args.output:
             with args.output.open('x') as output:
                 output.write(json.dumps(summary, indent=2) + '\n')

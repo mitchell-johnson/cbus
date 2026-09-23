@@ -4,6 +4,7 @@ members = [
     "cbus-protocol",
     "cbus-mqtt",
     "cbus-transport",
+    "cbus-cgate",
     "cmqttd",
     "cbus-vector-check",
     "cbus-simulator",

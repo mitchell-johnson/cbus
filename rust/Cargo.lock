@@ -131,6 +131,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fc652a48c352aef3ea3aed32080501cf3ef6ed5da78602a020c991775b0aff04"
 
 [[package]]
+name = "cbus-cgate"
+version = "0.1.0"
+dependencies = [
+ "cbus-protocol",
+ "roxmltree",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "cbus-golden-tests"
 version = "0.1.0"
 dependencies = [

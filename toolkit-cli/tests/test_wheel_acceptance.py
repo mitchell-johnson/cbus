@@ -1,6 +1,8 @@
 """Reject incomplete or mismatched installed-wheel acceptance evidence."""
 import copy
+from contextlib import redirect_stdout
 import hashlib
+import io
 import json
 from pathlib import Path
 import tempfile
@@ -9,7 +11,7 @@ from unittest.mock import patch
 import zipfile
 
 from research.acceptance import input_files
-from research.audit_wheel_acceptance import audit
+from research.audit_wheel_acceptance import audit, main as audit_main
 
 
 class WheelAcceptanceAuditTests(unittest.TestCase):
@@ -57,21 +59,81 @@ class WheelAcceptanceAuditTests(unittest.TestCase):
         self.report.update({name: [] for name in ('skipped', 'failed_tests', 'inputs_changed_during_run',
             'inputs_added_during_run', 'inputs_removed_during_run', 'test_files_added_during_run', 'source_files_added_during_run')})
 
-    def run_audit(self, report=None):
+    def run_audit(self, report=None, *, historical=False):
         primary = self.report if report is None else report
+        first = self.root / 'first.json'
+        first.write_text(json.dumps(primary))
+        if not historical:
+            return audit(self.root, [first])
         secondary = copy.deepcopy(primary)
         secondary['python'] = '3.10.9'
         paths = [self.root / 'first.json', self.root / 'second.json']
         for path, data in zip(paths, (primary, secondary)):
             path.write_text(json.dumps(data))
-        return audit(self.root, paths)
+        return audit(self.root, paths, python_versions=('3.13', '3.10'))
 
     def test_matching_full_reports_keep_parity_separate(self):
         result = self.run_audit()
         self.assertTrue(result['passed'])
         self.assertFalse(result['toolkit_parity_complete'])
+        self.assertEqual(result['validated_python_versions'], ['3.13.1'])
+        self.assertEqual(result['additional_python_validation'], [])
+
+    def test_historical_dual_reports_remain_auditable_with_explicit_versions(self):
+        result = self.run_audit(historical=True)
         self.assertEqual(result['validated_python_versions'], ['3.13.1', '3.10.9'])
         self.assertTrue(result['additional_python_validation'][0]['same_input_hashes'])
+        paths = [self.root / 'first.json', self.root / 'second.json']
+        with self.assertRaisesRegex(ValueError, 'requested Python versions'):
+            audit(self.root, paths)
+
+    def test_cli_defaults_to_313_and_accepts_explicit_historical_versions(self):
+        self.run_audit(historical=True)
+        first, second = self.root / 'first.json', self.root / 'second.json'
+        cases = [(['--report', str(first)], 0, ['3.13.1']),
+                 (['--report', str(first), '--report', str(second)], 1, None),
+                 (['--report', str(first), '--report', str(second),
+                   '--python', '3.13', '--python', '3.10'], 0, ['3.13.1', '3.10.9'])]
+        for options, expected_exit, versions in cases:
+            with self.subTest(options=options):
+                output = io.StringIO()
+                with patch('sys.argv', ['audit', str(self.root), *options]), redirect_stdout(output):
+                    self.assertEqual(audit_main(), expected_exit)
+                report = json.loads(output.getvalue())
+                self.assertIs(report['passed'], expected_exit == 0)
+                if versions is not None:
+                    self.assertEqual(report['validated_python_versions'], versions)
+
+    def test_parity_requires_complete_census_and_every_implemented_acceptance_feature(self):
+        cases = [(False, 'implemented', False), (True, 'in_progress', False),
+                 (True, 'pending', False), (True, 'verified', False), (True, 'implemented', True)]
+        for census, acceptance_status, expected in cases:
+            with self.subTest(census=census, acceptance_status=acceptance_status):
+                ledger = {'census_complete': census, 'features': [
+                    {'id': 'project-storage', 'status': 'implemented'},
+                    {'id': 'toolkit-differential-acceptance', 'status': acceptance_status},
+                    {'id': 'unit-hardware-acceptance', 'status': acceptance_status}]}
+                raw = json.dumps(ledger).encode()
+                name = 'src/cbus_toolkit/capabilities.json'
+                value = self.add_snapshot_input(name, raw)
+                self.report['input_sha256'][name] = value
+                wheel_path = self.root / 'fixture.whl'
+                with zipfile.ZipFile(wheel_path) as wheel:
+                    entries = {entry: wheel.read(entry) for entry in wheel.namelist()}
+                entries['cbus_toolkit/capabilities.json'] = raw
+                with zipfile.ZipFile(wheel_path, 'w') as wheel:
+                    for entry, contents in entries.items():
+                        wheel.writestr(entry, contents)
+                manifest_path = self.root / 'snapshot.json'
+                manifest = json.loads(manifest_path.read_text())
+                manifest['wheel_sha256'] = hashlib.sha256(wheel_path.read_bytes()).hexdigest()
+                manifest_path.write_text(json.dumps(manifest))
+                self.report['toolkit_parity_complete'] = expected
+                result = self.run_audit()
+                self.assertIs(result['toolkit_parity_complete'], expected)
+                self.report['toolkit_parity_complete'] = not expected
+                with self.assertRaisesRegex(ValueError, 'Report parity differs'):
+                    self.run_audit()
 
     def test_incomplete_failed_or_different_report_is_rejected(self):
         mutations = [('passed', False), ('failures', 1), ('expected_failures', 1), ('skipped', ['fixture']),
@@ -135,7 +197,7 @@ class WheelAcceptanceAuditTests(unittest.TestCase):
         report['backend_selectors']['CBUS_NATIVE_SERVICE_BACKEND'] = 'docker'
         second.write_text(json.dumps(report))
         with self.assertRaisesRegex(ValueError, 'Reports disagree: backend_selectors'):
-            audit(self.root, [first, second])
+            audit(self.root, [first, second], python_versions=('3.13', '3.10'))
 
     def test_macos_firmware_backend_requires_explicit_owned_runtime(self):
         name = 'research/firmware_oracle.py'; raw = b'# owned firmware backend marker\n'
@@ -172,6 +234,38 @@ class WheelAcceptanceAuditTests(unittest.TestCase):
         del self.report['enabled_native_gates']['CBUS_WINDOWS_PROVENANCE_ROOT']
         self.assertTrue(self.run_audit()['passed'])
 
+    def test_mock_test_requires_explicit_gate_and_unchanged_binary_evidence(self):
+        name = 'tests/test_rust_cgate_interop.py'
+        value = self.add_snapshot_input(name, b'# Explicit mock integration fixture\n')
+        self.report['input_sha256'][name] = value
+        self.report['test_files'] = sorted([*self.report['test_files'], name])
+        self.report['tests_run'] = 2
+        with self.assertRaisesRegex(ValueError, 'every required native gate'):
+            self.run_audit()
+        self.report['enabled_native_gates']['CBUS_CGATE_MOCK_BIN'] = True
+        with self.assertRaisesRegex(ValueError, 'explicit mock binary evidence'):
+            self.run_audit()
+        binary = {'path': '/owned/bin/cgate-mock', 'sha256': 'a' * 64, 'size_bytes': 1234}
+        self.report['external_test_binaries_before'] = {'CBUS_CGATE_MOCK_BIN': binary}
+        self.report['external_test_binaries_after'] = copy.deepcopy(self.report['external_test_binaries_before'])
+        self.report['external_test_binary_errors'] = []
+        result = self.run_audit()
+        self.assertEqual(result['external_test_binaries_before'], self.report['external_test_binaries_before'])
+        for field, value in [('path', 'relative/mock'), ('sha256', 'invalid'), ('size_bytes', True), ('size_bytes', 0)]:
+            with self.subTest(field=field, value=value):
+                report = copy.deepcopy(self.report)
+                report['external_test_binaries_before']['CBUS_CGATE_MOCK_BIN'][field] = value
+                with self.assertRaisesRegex(ValueError, 'Invalid explicit mock binary evidence'):
+                    self.run_audit(report)
+        report = copy.deepcopy(self.report)
+        report['external_test_binaries_after']['CBUS_CGATE_MOCK_BIN']['sha256'] = 'b' * 64
+        with self.assertRaisesRegex(ValueError, 'Mock binary changed'):
+            self.run_audit(report)
+        report = copy.deepcopy(self.report)
+        report['external_test_binary_errors'] = ['CBUS_CGATE_MOCK_BIN']
+        with self.assertRaisesRegex(ValueError, 'Mock binary changed'):
+            self.run_audit(report)
+
     def add_snapshot_input(self, name, contents):
         path = self.root / name
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -190,7 +284,7 @@ class WheelAcceptanceAuditTests(unittest.TestCase):
         self.assertEqual(selected, set(self.report['input_sha256']))
         self.assertNotIn('docs/acceptance.md', selected)
         self.assertFalse(self.root.is_relative_to(Path(__file__).resolve().parents[1]))
-        result = self.run_audit()
+        result = self.run_audit(historical=True)
         self.assertTrue(result['passed'])
         self.assertEqual(result['input_sha256'], self.report['input_sha256'])
         self.assertEqual(result['validated_python_versions'], ['3.13.1', '3.10.9'])
@@ -241,7 +335,7 @@ class WheelAcceptanceAuditTests(unittest.TestCase):
         report['input_sha256']['research/fixtures/original-vectors.txt'] = '0' * 64
         second.write_text(json.dumps(report))
         with self.assertRaisesRegex(ValueError, 'Report input hashes differ'):
-            audit(self.root, [first, second])
+            audit(self.root, [first, second], python_versions=('3.13', '3.10'))
 
     def test_documentation_path_traversal_is_rejected_before_exclusion(self):
         original = (self.root / 'snapshot.json').read_text()

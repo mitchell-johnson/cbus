@@ -71,3 +71,5 @@ CBUS_SERIALS_REPORT=research/runtime/serials-acceptance.json \
 ```
 
 `CBUS_CGATE_TEST_PORT` defaults to 20023. `CBUS_CGATE_SIMULATOR_HOST` defaults to `host.docker.internal`, the simulator endpoint as seen by the isolated native server. `CBUS_SERIALS_REPORT` optionally captures the inventory and wire transcript from the fresh fixture.
+
+Known timing sensitivity (open): against a self-provisioned C-Gate with `CBUS_CGATE_SIMULATOR_HOST=127.0.0.1`, the native refresh test has been observed to read a cache missing the KEYGL5 identity after a ~20s `wait_ready`, while a standalone probe replicating its exact command sequence sees all three identities instantly. Suspected C-Gate discovery race, not a product-code cause (the read path is untouched by recent changes); needs dedicated investigation with wire evidence before any test adjustment.

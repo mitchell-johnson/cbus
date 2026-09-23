@@ -1,0 +1,22 @@
+[package]
+name = "cbus-cgate"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+description = "In-memory C-Gate 3.4 command model: tagged framing, project/network/unit lifecycle and application commands, building on cbus-protocol"
+
+[[bin]]
+name = "cgate-mock"
+path = "src/main.rs"
+
+[dependencies]
+cbus-protocol = { path = "../cbus-protocol" }
+roxmltree = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+tokio = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true }

@@ -13,7 +13,7 @@ accepted test checkpoints and the remaining implementation plan.
 
 ## Install and run
 
-Python 3.10 or newer:
+Python 3.13 or newer:
 
 ```sh
 python3 -m venv .venv
@@ -88,7 +88,7 @@ or update availability.
 the original About text, using the current local year. `--year 2026` supplies
 a reproducible year; `--context captured-context.json` adds explicitly supplied
 C-Gate details. The executable is read without being run. The separate
-[16-test checkpoint](docs/toolkit-about.md) passes on Python 3.13 and 3.10,
+[16-test checkpoint](docs/toolkit-about.md) passes on Python 3.13 (historical runs also covered 3.10; current policy is 3.13-only),
 including 51 fresh original-instruction cases per run. Display-name and context
 provenance are reported; supplied context is not checked against a live service.
 
@@ -995,6 +995,20 @@ both Python versions, including five native integration methods and eight
 project/group scenarios per run. Full thermostat selection/settings, native
 collection-order equivalence and physical behavior remain outstanding.
 
+Evaluate the [retained outer scheduling workflow](docs/thermostat-scheduling.md) offline over supplied
+resolved state (Python 3.13, 9 CLI tests):
+
+```sh
+cbus-toolkit thermostat-scheduling selected state.json
+cbus-toolkit thermostat-scheduling required state.json
+cbus-toolkit thermostat-scheduling create-levels state.json --policy direct
+cbus-toolkit thermostat-scheduling end-save-lock locked-state.json
+```
+
+`state.json` holds `{groups, roles, enabled}` with byte addresses (255 is the
+shareable unused sentinel) and existing level records. The commands perform
+no unit loads, native writes or device operations.
+
 ## Toolkit unit templates
 
 Export and import Toolkit XML templates for classic KEY1, KEY2 and KEY4 units
@@ -1430,7 +1444,7 @@ fails if tests are skipped or sources change during the run, and keeps Toolkit
 parity separate from test success.
 
 The audited [installed-wheel checkpoint](docs/test-acceptance.json) passed
-**1,725 tests on Python 3.13.14 and 1,725 on Python 3.10.20**, with zero failures,
+**1,725 tests on Python 3.13.14 and 1,725 on Python 3.10.20** (historical dual-Python checkpoint; current policy is 3.13-only), with zero failures,
 errors or skips and all 14 native gates enabled. The wheel SHA256 is
 `5bebe9ea185da7e18171fad7434907b6dc0a398293198dd7c8aa0228253fef12`.
 Both runs used the same 195 test modules and imported package hashes; the
@@ -1472,12 +1486,19 @@ to overwrite an existing snapshot. Run its copied `research/acceptance.py`
 in an isolated environment that installs the snapshot's wheel. The vendor
 directory remains external and is not distributed in the wheel.
 
-After both runs, `research/audit_wheel_acceptance.py SNAPSHOT --report FIRST.json
---report SECOND.json --output NEW-SUMMARY.json` checks that the wheel, snapshot,
+After the Python 3.13 run, `research/audit_wheel_acceptance.py SNAPSHOT
+--report REPORT.json --output NEW-SUMMARY.json` checks that the wheel, snapshot,
 complete test selection and imported module hashes agree. It requires passing
-runs without skips on Python 3.13 and 3.10, with all native gates enabled, and
+runs without skips on Python 3.13, with all native gates enabled, and
 keeps test success separate from Toolkit parity. It verifies recorded results;
-it does not run the tests itself.
+it does not run the tests itself. To re-audit a historical dual-version snapshot,
+provide both reports and `--python 3.13 --python 3.10` explicitly.
+
+For snapshots containing the Rust interop suite, set `CBUS_CGATE_MOCK_BIN`
+to the absolute path of a freshly built `cgate-mock`. The acceptance runner
+records its path, size and SHA-256 before and after the run; the wheel audit
+requires this explicit gate and stable binary evidence. This verifies the test
+binary bytes, not native C-Gate equivalence or Rust build provenance.
 
 The oracle runs the **actual vendor C-Gate 3.4.0 jar** with Java 11, using
 disposable project storage. Docker is the default; an explicitly selected local
