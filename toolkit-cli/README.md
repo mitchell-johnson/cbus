@@ -103,7 +103,7 @@ including 51 fresh original-instruction cases per run. Display-name and context
 provenance are reported; supplied context is not checked against a live service.
 
 `toolkit-database-csv capture.json --output report.csv` exports explicit captured
-report values as UTF-8, preserving the original column order, serial formatting,
+report values as UTF-8 by default, preserving the original column order, serial formatting,
 quoting and unavailable-group placement. `--columns address tag_name serial`
 selects fields. `--cached-projection` instead consumes the strict retained
 unit/group-cache schema and reproduces the 12 captured original class, Area,
@@ -117,11 +117,12 @@ backs up, creates, saves, reloads and verifies the group before export. The
 original 26-column form preference can be loaded with
 `--toolkit-column-selection` or persisted with
 `--save-toolkit-column-selection`; both use Toolkit's Windows 32-bit HKCU value
-before file or C-Gate access. The current core/CLI set passes 53 tests, the host
-Windows guard and two owned Windows registry tests pass, and one owned C-Gate
+before file or C-Gate access. On Windows, `--toolkit-native-encoding` reproduces
+Toolkit's CP_ACP `WideCharToMultiByte` conversion, replacement behavior and
+BOM-free output. The current core/CLI set passes 56 tests, both host Windows
+guards and five owned Windows tests pass, and one owned C-Gate
 acceptance passes. The earlier 23-test checkpoint includes 88 fresh original
-comparisons per run. Arbitrary unit profiles and native Windows file encoding
-remain separate.
+comparisons per run. Arbitrary unit profiles remain separate.
 
 ## Legacy projects
 
@@ -1510,7 +1511,7 @@ outside that frozen wheel:
 - [About information](docs/toolkit-about.md): 16 tests, including 51 original instruction cases per run.
 - [Signed update metadata](docs/toolkit-update-metadata.md), [revocation stages](docs/toolkit-update-revocation.md) and [supplied-context registry conditions](docs/toolkit-update-registry-conditions.md): separate 56-, 53- and 78-test checkpoints with explicit trust and availability limits.
 - [PCI routing](docs/pci-routing.md), [incoming routing](docs/pci-incoming-routing.md), [routed RECALL](docs/pci-routed-recall.md) and [routed IDENTIFY](docs/pci-routed-identify.md): separate codec and transport checkpoints; IDENTIFY passes 104 tests with fresh original matcher comparisons and owned loopback exchanges.
-- [Database CSV export](docs/toolkit-database-csv.md): 53 current core/CLI tests, one host Windows-adapter guard, two owned Windows registry tests and one owned C-Gate acceptance for captured values, exact saved column selection, cached-object projection, admitted file/live native XML, guarded Area13 persistence and portable UTF-8 output; the historical 23-test checkpoint includes 88 fresh original cases per run.
+- [Database CSV export](docs/toolkit-database-csv.md): 56 current core/CLI tests, two host Windows-adapter guards, five owned Windows tests and one owned C-Gate acceptance for captured values, exact saved column selection, cached-object projection, admitted file/live native XML, guarded Area13 persistence, portable UTF-8 and Toolkit-native Windows ACP output; the historical 23-test checkpoint includes 88 fresh original cases per run.
 - [Thermostat temperature conversions](docs/thermostat-temperature.md): 17 tests with 28,840 fresh original cases per run and separate original Windows arithmetic acceptance.
 - [Thermostat scheduling](docs/native-thermostat-schedule.md): 67 tests including the retained core, native backup/save/reload, public CLI and error/cleanup regressions; all 14 captured original outcomes replayed and eight native project/group scenarios per run.
 

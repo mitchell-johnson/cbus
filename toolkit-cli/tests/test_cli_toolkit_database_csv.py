@@ -33,6 +33,17 @@ class SelectionRegistry:
         self.value = value
 
 
+class NativeEncoder:
+    code_page = 1252
+
+    def __init__(self):
+        self.calls = []
+
+    def encode(self, text):
+        self.calls.append(text)
+        return text.encode('cp1252', errors='replace')
+
+
 class DatabaseCSVCLITests(unittest.TestCase):
     def execute(self, args):
         out, err = io.StringIO(), io.StringIO()
@@ -67,6 +78,52 @@ class DatabaseCSVCLITests(unittest.TestCase):
             self.assertEqual(code, 0); self.assertEqual(result['report']['columns'], list(COLUMNS))
             self.assertEqual(result['report']['unit_count'], 0)
             self.assertTrue(output.read_bytes().endswith(b'Group 16,\r\n\r\n'))
+            self.assertEqual(result['output_encoding']['mode'], 'portable_utf8')
+            self.assertFalse(result['output_encoding']['original_encoding_equivalent'])
+
+    def test_explicit_toolkit_native_encoding_uses_windows_acp_boundary(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source, output = self.files(folder)
+            encoder = NativeEncoder()
+            with patch.object(boundary, 'native_csv_encoder_backend',
+                              return_value=encoder):
+                code, result = self.execute([
+                    source, '--output', output, '--columns', 'tag_name',
+                    '--toolkit-native-encoding'])
+            self.assertEqual(code, 0)
+            expected = 'Tag Name,\r\n"灯, ""💡""",\r\n\r\n'.encode(
+                'cp1252', errors='replace')
+            self.assertEqual(output.read_bytes(), expected)
+            self.assertEqual(len(encoder.calls), 1)
+            encoding = result['output_encoding']
+            self.assertEqual(encoding['mode'], 'toolkit_native')
+            self.assertEqual(encoding['encoding'], 'windows-acp')
+            self.assertEqual(encoding['windows_code_page'], 1252)
+            self.assertTrue(encoding['original_encoding_equivalent'])
+            self.assertFalse(encoding['bom'])
+
+    @unittest.skipIf(os.name == 'nt', 'Non-Windows ordering guard')
+    def test_native_encoding_rejects_before_file_or_live_network_access(self):
+        with patch.object(boundary.os, 'lstat',
+                          side_effect=AssertionError('No input read')):
+            code, result = self.execute([
+                'missing', '--output', 'missing-output',
+                '--toolkit-native-encoding'])
+        self.assertEqual(code, 1)
+        evidence = result['toolkit_database_csv_evidence']
+        self.assertEqual(evidence['stage'], 'validate')
+        self.assertFalse(evidence['network_io_attempted'])
+
+        args = SimpleNamespace(
+            area='cgate', action='database-csv', unit='//CSVTEST/254/p/4',
+            output='missing-output', columns=None, apply_missing_area=False,
+            backup_project=None, host='127.0.0.1', port=None, timeout=5,
+            tls=False, toolkit_column_selection=False,
+            save_toolkit_column_selection=False, toolkit_native_encoding=True)
+        factory = Mock()
+        with self.assertRaisesRegex(RuntimeError, 'requires Windows'):
+            boundary.live(args, factory, None)
+        factory.assert_not_called()
 
     def test_toolkit_registry_columns_load_before_file_io(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -292,6 +349,33 @@ class DatabaseCSVCLITests(unittest.TestCase):
             self.assertTrue(caught.exception.details['native_database_mutated'])
             self.assertEqual(caught.exception.details['backup_project'], 'BACKUP')
             self.assertEqual(caught.exception.details['output_bytes_confirmed'], 0)
+            self.assertEqual(caught.exception.details['output_encoding']['mode'],
+                             'portable_utf8')
+            self.assertTrue(client.created)
+
+    def test_live_native_encoding_failure_reports_completed_mutation(self):
+        with tempfile.TemporaryDirectory() as folder:
+            output = Path(folder) / 'live.csv'; client = AreaClient()
+            class Connection:
+                def __enter__(self): return client
+                def __exit__(self, kind, error, trace): return False
+            class FailedEncoder:
+                code_page = 1252
+                def encode(self, text): raise UnicodeError('conversion failed')
+            args = SimpleNamespace(
+                area='cgate', action='database-csv', unit='//CSVTEST/254/p/4',
+                output=output, columns=['all'], apply_missing_area=True,
+                backup_project='BACKUP', host='127.0.0.1', port=None,
+                timeout=5, tls=False, toolkit_native_encoding=True)
+            with patch.object(boundary, 'native_csv_encoder_backend',
+                              return_value=FailedEncoder()):
+                with self.assertRaises(boundary.DatabaseCSVLiveError) as caught:
+                    boundary.live(args, Mock(return_value=Connection()), None)
+            self.assertTrue(caught.exception.details['native_database_mutated'])
+            self.assertEqual(caught.exception.details['backup_project'], 'BACKUP')
+            self.assertEqual(caught.exception.details['output_bytes_confirmed'], 0)
+            self.assertIsNone(caught.exception.details['output_encoding'])
+            self.assertFalse(output.exists())
             self.assertTrue(client.created)
 
     def test_columns_invalid_before_input_io_and_capture_invalid_before_output_creation(self):

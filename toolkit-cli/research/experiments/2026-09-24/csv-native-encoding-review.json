@@ -1,0 +1,82 @@
+{
+  "format": "cbus-toolkit-database-csv-native-encoding-review-v1",
+  "date": "2026-09-24",
+  "scope": "Toolkit 1.18 database-report file-encoding path, explicit Python CLI integration, and owned Windows CP1252 acceptance. Original methods were inspected statically; the original executable, project database, C-Gate, CNI and physical devices were not executed or accessed.",
+  "original_inputs": {
+    "research/vendor/toolkit/app/CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "research/vendor/toolkit/app/CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "static_methods": [
+    {"start": "0xeb6488", "end": "0xeb678c", "symbol": "CIS_TfrmUnitsNode.TfrmUnitsNode.actProduceDocumentationExecute", "bytes": 772, "sha256": "115ccc4b7eed6c1f95f594b1f7aec5d85acb7a047f1bc31c12e369945d88c5c7"},
+    {"start": "0x6469e4", "end": "0x6469f4", "symbol": "Classes.TStrings.SaveToFile", "bytes": 16, "sha256": "a33c11c6b9a08aad33d4b2c58de2426cb466877e10e1b2f1e1f721f8e85f1bcb"},
+    {"start": "0x6469f4", "end": "0x646a54", "symbol": "Classes.TStrings.SaveToFile", "bytes": 96, "sha256": "02fd71cf8c40eb6fbafe9c496b2b3c04189e99addd1c6f61b2165189668da516"},
+    {"start": "0x646a54", "end": "0x646a64", "symbol": "Classes.TStrings.SaveToStream", "bytes": 16, "sha256": "83a31935ce23aae5686faaa6f698ca9603a492b7a4866c982ba2464cf8eda4d3"},
+    {"start": "0x646a64", "end": "0x646b1c", "symbol": "Classes.TStrings.SaveToStream", "bytes": 184, "sha256": "33b173326498b9e2338a8615ed82744cc253b525d44779b52fa9d4c982e7a19e"},
+    {"start": "0x625f38", "end": "0x625f78", "symbol": "SysUtils.TEncoding.GetDefault", "bytes": 64, "sha256": "f7226d1a5e32248fcb73f850237b3693dfcc6b0cd770e6427a15dc7d0d22557f"},
+    {"start": "0x626154", "end": "0x6261d0", "symbol": "SysUtils.TMBCSEncoding.Create", "bytes": 124, "sha256": "c9205f583174b7d552bd54e1d61eb12a7e9bf904521a2315eedcd58ad11909e4"},
+    {"start": "0x6261d0", "end": "0x6261e8", "symbol": "SysUtils.TMBCSEncoding.GetByteCount", "bytes": 24, "sha256": "b93be3475be60c22bb786e59db8e38e0122fbb43ae7d8a4e4066c66fc40b96c5"},
+    {"start": "0x6261e8", "end": "0x62620c", "symbol": "SysUtils.TMBCSEncoding.GetBytes", "bytes": 36, "sha256": "e0763494691c171ad7a3ca46f632995a829965ff8ba30f295b7b587a5a2578ef"},
+    {"start": "0x62624c", "end": "0x626268", "symbol": "SysUtils.TMBCSEncoding.GetPreamble", "bytes": 28, "sha256": "1b1f8e4d64f0ac280c478849b2ab0b0f5a58a127311294e24e5fba2ac49b9c0b"}
+  ],
+  "static_facts": {
+    "report_call": "The report action invokes the filename-only TStrings.SaveToFile virtual method.",
+    "encoding_selection": "The filename-only SaveToFile and stream-only SaveToStream overloads pass a null encoding; SaveToStream resolves TEncoding.GetDefault.",
+    "default_encoding": "TEncoding.GetDefault constructs TMBCSEncoding with code page 0 (CP_ACP), flags 0 and null default-character pointers.",
+    "conversion": "TMBCSEncoding.GetByteCount and GetBytes call WideCharToMultiByte with the explicit Delphi UnicodeString UTF-16 unit count.",
+    "preamble": "TMBCSEncoding.GetPreamble returns a zero-length byte array, so no BOM is written."
+  },
+  "host_acceptance": {
+    "core_command": "PYTHONPATH=tests:. .venv/bin/python -m unittest tests.test_toolkit_database_csv_selection tests.test_toolkit_database_csv tests.test_toolkit_database_csv_projection tests.test_toolkit_database_csv_native tests.test_toolkit_database_csv_area tests.test_cli_toolkit_database_csv",
+    "core_tests_run": 56,
+    "core_failures": 0,
+    "core_errors": 0,
+    "core_skipped": 0,
+    "adapter_command": "PYTHONPATH=tests:. .venv/bin/python -m unittest tests.test_windows_csv_selection tests.test_windows_csv_encoding -v",
+    "adapter_tests_run": 5,
+    "adapter_failures": 0,
+    "adapter_errors": 0,
+    "adapter_skipped": 3,
+    "executed_guard_tests": 2,
+    "full_repository_acceptance": {
+      "command": "PYTHONPATH=tests .venv/bin/python -m unittest discover -s tests",
+      "tests_run": 2187,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 258,
+      "elapsed_seconds": 545.152
+    }
+  },
+  "owned_windows_acceptance": {
+    "environment": "Windows VM in UTM; system ANSI code page 1252",
+    "python": "CPython 3.13.14 embeddable amd64",
+    "python_archive_sha256": "90b4e5b9898b72d744650524bff92377c367f44bd5fbd09e3148656c080ad907",
+    "staged_bundle_sha256": "5d631dab3d383375e32cbe025ad599c93710bcac24b5a5542ca064457cbdb70c",
+    "command": "python.exe -m unittest tests.test_windows_csv_encoding -v (CBUS_WINDOWS_CSV_ENCODING=1)",
+    "tests_run": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "checks": [
+      "real GetACP result",
+      "WideCharToMultiByte CP_ACP with flags 0",
+      "CP1252 Euro conversion",
+      "two replacement bytes for one non-BMP surrogate pair",
+      "empty input",
+      "no BOM",
+      "production output byte count and SHA-256 evidence",
+      "invalid type, NUL and unpaired-surrogate rejection"
+    ],
+    "staged_runtime_cleanup_verified": true
+  },
+  "implemented_sources": {
+    "src/cbus_toolkit/windows_csv_encoding.py": "d0d7d171424fb91e974c283bd6a2f34ac6ac901f12f5957c6de180dcfb14ca84",
+    "src/cbus_toolkit/toolkit_database_csv_cli.py": "a410544cab6fd2f3deaff94b5911f527ff836cad6dcb6b8db6fac72b2065b873",
+    "tests/test_windows_csv_encoding.py": "e23c6125348f25a4d070f031854650bb36a04da62b727927a99b1af48cf5d746",
+    "tests/test_cli_toolkit_database_csv.py": "1867d4ec7a269f3f63b5e8ec899d4b3be2c99cda5741ad353eaab00a98d4b8df"
+  },
+  "remaining_limits": [
+    "General application/group/association construction",
+    "Arbitrary unit profiles",
+    "Physical-device behavior"
+  ]
+}
