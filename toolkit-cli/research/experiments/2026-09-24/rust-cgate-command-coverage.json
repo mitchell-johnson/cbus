@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "date": "2026-09-24",
+  "scope": "Rust in-memory C-Gate 3.4 command-name and modeled-behavior coverage",
+  "sources": {
+    "manual": {
+      "path": "research/vendor/cgate/app/CGateManual.pdf",
+      "sha256": "812f84b0206b8714e6780b80ea5dfe6347357530aa899f6aecc0f7da8f44c97b",
+      "section": "4.5",
+      "headings": 224
+    },
+    "bytecode": {
+      "path": "research/vendor/cgate/app/cgate.jar",
+      "sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+      "registered_subcommands": 268
+    },
+    "unique_command_paths": 431,
+    "overlap": 61
+  },
+  "implementation": {
+    "inventory": "rust/cbus-cgate/src/manual.rs",
+    "dispatcher": "rust/cbus-cgate/src/lib.rs",
+    "public_headings_fallthrough_to_unknown": 0,
+    "bytecode_registrations_fallthrough_to_unknown": 0,
+    "behavior": "Dedicated native-shaped core handlers plus deterministic stateful application/private-family emulation"
+  },
+  "verification": {
+    "rust": {
+      "command": "CARGO_TARGET_DIR=/Volumes/external/cbus-rust-review-target cargo test -p cbus-cgate",
+      "passed": 58,
+      "failed": 0
+    },
+    "python_interop": {
+      "command": "CBUS_CGATE_MOCK_BIN=/Volumes/external/cbus-rust-review-target/debug/cgate-mock .venv/bin/python -m pytest -q tests/test_rust_cgate_interop.py",
+      "passed": 13,
+      "failed": 0
+    },
+    "clippy": {
+      "command": "CARGO_TARGET_DIR=/Volumes/external/cbus-rust-review-target cargo clippy -p cbus-cgate --all-targets -- -D warnings",
+      "passed": true
+    },
+    "rustfmt": {
+      "command": "rustfmt --edition 2021 --check cbus-cgate/src/manual.rs cbus-cgate/src/lib.rs",
+      "passed": true
+    }
+  },
+  "boundary": "No physical C-Bus hardware is attached. Hardware-dependent commands model state, validation, events and response envelopes but do not prove bus-side effects. Server files, access entries, database snapshots and shutdown are process-local."
+}

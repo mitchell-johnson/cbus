@@ -1,0 +1,134 @@
+{
+  "time": "2026-09-14T09:03:27.388981+00:00",
+  "host": "127.0.0.1",
+  "port": 20023,
+  "scope": "Native offline project operations; not Toolkit functional parity",
+  "operations": [
+    {
+      "operation": "archive-zip",
+      "status": "pass",
+      "reply": [
+        "200 OK."
+      ]
+    },
+    {
+      "operation": "restore-zip",
+      "status": "pass",
+      "reply": [
+        "200 OK."
+      ]
+    },
+    {
+      "operation": "verify-restored-zip",
+      "status": "pass",
+      "reply": [
+        "342 254/56/1/TagName=Acceptance"
+      ]
+    },
+    {
+      "operation": "rename-zip",
+      "status": "pass",
+      "reply": [
+        "200 OK."
+      ]
+    },
+    {
+      "operation": "read-renamed-zip",
+      "status": "pass",
+      "reply": [
+        "342 254/56/1/TagName=Acceptance"
+      ]
+    },
+    {
+      "operation": "repair-zip",
+      "status": "fail",
+      "error": "C-Gate error: 408 Operation failed: The current repository does not support this command."
+    },
+    {
+      "operation": "archive-gz",
+      "status": "pass",
+      "reply": [
+        "200 OK."
+      ]
+    },
+    {
+      "operation": "restore-gz",
+      "status": "pass",
+      "reply": [
+        "200 OK."
+      ]
+    },
+    {
+      "operation": "verify-restored-gz",
+      "status": "pass",
+      "reply": [
+        "342 254/56/1/TagName=Acceptance"
+      ]
+    },
+    {
+      "operation": "rename-gz",
+      "status": "pass",
+      "reply": [
+        "200 OK."
+      ]
+    },
+    {
+      "operation": "read-renamed-gz",
+      "status": "pass",
+      "reply": [
+        "342 254/56/1/TagName=Acceptance"
+      ]
+    },
+    {
+      "operation": "repair-gz",
+      "status": "fail",
+      "error": "C-Gate error: 408 Operation failed: The current repository does not support this command."
+    },
+    {
+      "operation": "archive-db",
+      "status": "pass",
+      "reply": [
+        "200 OK."
+      ]
+    },
+    {
+      "operation": "restore-db",
+      "status": "pass",
+      "reply": [
+        "200 OK."
+      ]
+    },
+    {
+      "operation": "verify-restored-db",
+      "status": "pass",
+      "reply": [
+        "342 254/56/1/TagName=Acceptance"
+      ]
+    },
+    {
+      "operation": "rename-db",
+      "status": "pass",
+      "reply": [
+        "200 OK."
+      ]
+    },
+    {
+      "operation": "read-renamed-db",
+      "status": "pass",
+      "reply": [
+        "342 254/56/1/TagName=Acceptance"
+      ]
+    },
+    {
+      "operation": "repair-db",
+      "status": "fail",
+      "error": "C-Gate error: 408 Operation failed: The current repository does not support this command."
+    }
+  ],
+  "cleanup": [],
+  "server": "300 cgate: version=v3.4.0 (build 2001)",
+  "summary": {
+    "passed": 15,
+    "failed": 3
+  }
+}

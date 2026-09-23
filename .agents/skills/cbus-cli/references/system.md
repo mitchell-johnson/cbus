@@ -2,11 +2,15 @@
 
 ## Data flow
 
+`cbus-toolkit` is the Python project and commissioning application. Offline workflows edit XML/CBZ or plan device settings; online workflows use its C-Gate client and typed wrappers, or its direct PCI client. Native C-Gate supplies online server behavior. Rust `cgate-mock` can stand in for that server during tests. The Toolkit CLI is maintained independently of the Rust bridge.
+
 `cmqttd` connects one C-Bus PCI/CNI endpoint to one MQTT broker. Incoming C-Bus frames become typed protocol values, state publications, and Home Assistant discovery messages. Valid MQTT light commands become C-Bus lighting commands. A Toolkit `.cbz` or bare XML project supplies human-readable network, application, group, and unit metadata.
 
 `cbus-tools` calls the same protocol and project readers for one-shot work. `cbus-simulator` supplies a development PCI/CNI endpoint. `cbus-cgate` is an independent in-memory C-Gate protocol model exposed over TCP by `cgate-mock`.
 
-## Workspace ownership
+## Source ownership
+
+Toolkit modules live under `toolkit-cli/src/cbus_toolkit/`; its tests are under `toolkit-cli/tests/`. Its feature docs, compatibility ledger, and retained acceptance evidence describe supported workflows and profiles. The Rust workspace is organized as follows.
 
 | Crate | Responsibility |
 | --- | --- |
@@ -46,5 +50,6 @@ Supported project inputs are a one-file `.cbz` zip archive or bare project XML. 
 - `cbus-golden-tests` generates a named test per committed vector.
 - `cmqttd` system tests run the real daemon against an in-process MQTT broker and scripted PCI.
 - `cgate-mock` integration tests cover framing, state, sessions, event fanout, here-documents, inventory reachability, and programming access.
+- `toolkit-cli/tests/test_rust_cgate_interop.py` drives the Rust mock using the production Python C-Gate client and typed workflows.
 
 Use exact vector evidence for byte and JSON claims. Use system tests for claims involving sockets, MQTT, child processes, concurrency, or reconnect behavior.

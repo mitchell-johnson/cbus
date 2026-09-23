@@ -1,0 +1,71 @@
+{
+  "format": "cbus-test-acceptance-v1",
+  "started_at": "2026-09-23T12:28:35.498395+00:00",
+  "duration_seconds": 2.752,
+  "python": "3.13.14",
+  "openssl": "OpenSSL 3.6.4 25 Aug 2026",
+  "package_version": "0.1.0",
+  "package_location": "/Users/mitchell/source/cbus/toolkit-cli/src/cbus_toolkit/__init__.py",
+  "tests_run": 13,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "expected_failures": 0,
+  "unexpected_successes": 0,
+  "test_success": true,
+  "require_no_skips": true,
+  "passed": true,
+  "toolkit_parity_complete": false,
+  "scope": "These selected acceptance tests do not establish full Toolkit functionality or physical-device parity.",
+  "backend_selectors": {
+    "CBUS_ORIGINAL_MODEL_BACKEND": "docker",
+    "CBUS_EDLT_LIFECYCLE_ORIGINAL_BACKEND": "docker",
+    "CBUS_NATIVE_SERVICE_BACKEND": "docker",
+    "CBUS_WINDOWS_BRIDGE": false,
+    "CBUS_FIRMWARE_ORACLE_BACKEND": "docker"
+  },
+  "enabled_native_gates": {
+    "CBUS_CGATE_TEST_HOST": false,
+    "CBUS_UNITSPEC_DIR": true,
+    "CBUS_TOOLKIT_HELP_DIR": false,
+    "CBUS_TOOLKIT_EXE": false,
+    "CBUS_SCENE_NATIVE": false,
+    "CBUS_NATIVE_TLS_TEST": false,
+    "CBUS_FIRMWARE_UPDATER": false,
+    "CBUS_DFU_DLL": false,
+    "CBUS_WINDOWS_BRIDGE": false,
+    "CBUS_CGATE_JAVA": false,
+    "CBUS_LOCAL_CGATE_VENDOR": false,
+    "CBUS_MONO_MACOS_ROOT": false,
+    "CBUS_WINDOWS_PROVENANCE_ROOT": false,
+    "CBUS_CATALOG_PATH": false,
+    "CBUS_CGATE_MOCK_BIN": true
+  },
+  "external_test_binaries_before": {
+    "CBUS_CGATE_MOCK_BIN": {
+      "path": "/Volumes/external/cbus-rust-review-target/debug/cgate-mock",
+      "sha256": "1b9feb774b4270f8b69c3be6a0881d48deb16cc126b364f2eb95d757342f7008",
+      "size_bytes": 5193816
+    }
+  },
+  "external_test_binaries_after": {
+    "CBUS_CGATE_MOCK_BIN": {
+      "path": "/Volumes/external/cbus-rust-review-target/debug/cgate-mock",
+      "sha256": "1b9feb774b4270f8b69c3be6a0881d48deb16cc126b364f2eb95d757342f7008",
+      "size_bytes": 5193816
+    }
+  },
+  "external_test_binary_errors": [],
+  "test_files": [
+    "tests/test_rust_cgate_interop.py"
+  ],
+  "inputs_changed_during_run": [],
+  "inputs_added_during_run": [],
+  "inputs_removed_during_run": [],
+  "test_files_added_during_run": [],
+  "source_files_added_during_run": [],
+  "failed_tests": [],
+  "source_report_sha256": "44f406511a154ebaaf0490a4e7c43706d5e450588a26a8841320b5074b73a7a1",
+  "source_file_count": 405,
+  "note": "Focused current-tree mock interop only; neither installed full-wheel nor native C-Gate acceptance."
+}

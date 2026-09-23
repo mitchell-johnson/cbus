@@ -1,0 +1,311 @@
+{
+  "format": "cbus-thermostat-temperature-native-acceptance-v1",
+  "passed": true,
+  "report_sha256": "dc8f8dd762063babeae836da6398a47c1662a639f4f5b7f9f3933fd8e750caeb",
+  "source_report": "/Volumes/external/cbus-toolkit-root-research-20260915/thermostat-temperature-native-windows-v2/report.json",
+  "original_executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "actual_probe_sha256": "237eef6d6f8333f212ffb6ce85616a1e2d580a45c095283b45a20d36f9999cc6",
+  "preparation_sha256": "1e99d93e71fd724920d4512e9663375c0cfe8f049c762160e1081f2119d3a3e6",
+  "phases": [
+    {
+      "phase": "pilot",
+      "job_id": "job-thermostat-77d3ce837de64f79",
+      "passed": true,
+      "cases": 28,
+      "runtime": [
+        "runtime",
+        "C:\\CBusCliOracle118-88d8\\vendor\\probe-3fdb54d6b26d4f1e.exe",
+        "237eef6d6f8333f212ffb6ce85616a1e2d580a45c095283b45a20d36f9999cc6",
+        "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\mscorlib.dll",
+        "93d46bdac1664dba87641925572c789d71a21bb01dc7c7e5aa99c0eca8335e5e",
+        "32"
+      ],
+      "inputs": [
+        "inputs",
+        "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+        "842a030654d2cc04d32fe888eb8a613604671811430168789e050461a361741f",
+        "28"
+      ],
+      "execution": [
+        "execution",
+        "image_sha256",
+        "7dbcc58416a1ab8745e9c21bb74d52edf55f4e6fa2ebd77d3dd7532943813134",
+        "stub_sha256",
+        "219f268da194ae93ccc93dc4132facbc0c2335f0540908bf116198af2f18bcd6",
+        "default_control_word",
+        "1332",
+        "image_base",
+        "12210000",
+        "relocation_count",
+        "571099",
+        "state",
+        "0FA40000",
+        "context",
+        "0FA50000"
+      ],
+      "cleanup": [
+        [
+          "cleanup",
+          "code",
+          "released",
+          "0"
+        ],
+        [
+          "cleanup",
+          "context",
+          "released",
+          "0"
+        ],
+        [
+          "cleanup",
+          "state",
+          "released",
+          "0"
+        ],
+        [
+          "cleanup",
+          "image",
+          "released",
+          "0"
+        ],
+        [
+          "cleanup",
+          "watchdog",
+          "disposed",
+          "0"
+        ]
+      ],
+      "generated_stub_hash_independently_reconstructed": true,
+      "relocated_image_hash_independently_reconstructed": true,
+      "scope": "Original arithmetic with only standard PE HIGHLOW address relocation in an owned mapped image; integer inputs and captured unit preference only; no original application startup, UI, network or physical thermostat",
+      "control_word_counts": {
+        "1372": 28
+      }
+    },
+    {
+      "phase": "full",
+      "job_id": "job-thermostat-2d3f32d725694153",
+      "passed": true,
+      "cases": 1176,
+      "runtime": [
+        "runtime",
+        "C:\\CBusCliOracle118-88d8\\vendor\\probe-3fdb54d6b26d4f1e.exe",
+        "237eef6d6f8333f212ffb6ce85616a1e2d580a45c095283b45a20d36f9999cc6",
+        "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\mscorlib.dll",
+        "93d46bdac1664dba87641925572c789d71a21bb01dc7c7e5aa99c0eca8335e5e",
+        "32"
+      ],
+      "inputs": [
+        "inputs",
+        "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+        "16cb5893f29ce48b4b72f7894d575254d2034abcbac30083a7d4c4c426727da6",
+        "1176"
+      ],
+      "execution": [
+        "execution",
+        "image_sha256",
+        "8d86d47922d9ab27a56b722abcc7e1d22c3dce7a33f93103dce69a8ca1ee8053",
+        "stub_sha256",
+        "efc68f821e0779c918ff39d958d09664ef91df582a79c6127b8d1916c9cc3a76",
+        "default_control_word",
+        "1332",
+        "image_base",
+        "12410000",
+        "relocation_count",
+        "571099",
+        "state",
+        "0FB90000",
+        "context",
+        "0FBA0000"
+      ],
+      "cleanup": [
+        [
+          "cleanup",
+          "code",
+          "released",
+          "0"
+        ],
+        [
+          "cleanup",
+          "context",
+          "released",
+          "0"
+        ],
+        [
+          "cleanup",
+          "state",
+          "released",
+          "0"
+        ],
+        [
+          "cleanup",
+          "image",
+          "released",
+          "0"
+        ],
+        [
+          "cleanup",
+          "watchdog",
+          "disposed",
+          "0"
+        ]
+      ],
+      "generated_stub_hash_independently_reconstructed": true,
+      "relocated_image_hash_independently_reconstructed": true,
+      "scope": "Original arithmetic with only standard PE HIGHLOW address relocation in an owned mapped image; integer inputs and captured unit preference only; no original application startup, UI, network or physical thermostat",
+      "control_word_counts": {
+        "1372": 1176
+      }
+    }
+  ],
+  "source_and_runtime_inputs": {
+    "/Volumes/external/cbus-toolkit-root-research-20260915/thermostat-temperature-native-plan-v2/run_windows.py": "a874128788b1b69be72c96797d3b38ee29b8d62bf08296654de32a47fb6a1133",
+    "/Users/mitchell/source/cbus/toolkit-cli/.venv/lib/python3.13/site-packages/pefile.py": "0d0eb68f0f169182613dc64b3ab50b20855508c1c1d2faafe8fccf23edb6a345",
+    "/Volumes/external/cbus-toolkit-root-research-20260915/thermostat-temperature-native-plan-v2/compare.py": "30889117b4d990d40ed8ac8a960ec69159425e7d611af3494a9dc9b123441bea",
+    "/Volumes/external/cbus-toolkit-root-research-20260915/thermostat-temperature-native-plan-v2/PLAN.md": "b71d8d9a1df797dbf564fe2d21bbe41d697882dbb1d8a2be9960070c958e3e5a",
+    "/Volumes/external/cbus-toolkit-root-research-20260915/thermostat-temperature-native-plan-v2/comparator-check.json": "5bb97c5dba7f39890c8e5184ecfb1aaabffe32dd50f046d3e2aef153c2364c65",
+    "/Volumes/external/cbus-toolkit-root-research-20260915/thermostat-temperature-windows-plan-v3/NativeThermostatTemperatureProbe.cs": "f0100e0db33de1c3a1f84cc5a4f4d79d3dae6750c4ac1436931b3360866e2cc5",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/runtime/thermostat-temperature-windows-plan-v3/preparation.json": "1e99d93e71fd724920d4512e9663375c0cfe8f049c762160e1081f2119d3a3e6",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/runtime/thermostat-temperature-windows-plan-v3/prepared-inputs.tar.gz": "d645f9c93b6d4a7feed55de1c16dde4011acaa443cc0e6404aa07481521ade63",
+    "/Users/mitchell/source/cbus/toolkit-cli/docs/test-acceptance.json": "d32294ba22ce40c7f2738d77f8c30479ed4fbde0cb8b22fd681d343204e03be2",
+    "/Volumes/external/cbus-toolkit-acceptance-20260915-v7/full-launch.json": "59dcb1abac8944be7f7e975df65cb0d625e7350063b190465967a4fa20ac1553",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/windows_bridge.py": "069aab3ab13195871104408bc0f01df7ef14a6d663d3412ef7008135ba6abb58",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/windows_provenance.py": "8aad4ca9d1577b985eef9b453cd1ba1b10c1a73f4627a74b8c45e565c3a47e48",
+    "/opt/homebrew/Cellar/python@3.13/3.13.14_1/Frameworks/Python.framework/Versions/3.13/bin/python3.13": "e1ab0abf4365a2d400998c9c8cd52733170ed568118d03b4b005d418c140d6da",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/runtime/thermostat-temperature-pilot-v1/report.json": "542a82fec074e04cb0b7468453767d2e6c5cf97a565b22f87f50dee0a91259ea",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/runtime/thermostat-temperature-static-v1/report.json": "e8a6bdc5c9583eacac34b5002fe9dd3c7303b6b532a8479ccd72586a55627b15",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/runtime/windows-generation-20260915T022419/windows-bridge/v2/bridge-ready.json": "8a57e6a6397e0e40d7579ab6fa50c305b0165aab54e5400627cf0f6ef5cee0f8",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/runtime/windows-generation-20260915T022419/windows-bridge/v2/NativeWindowsBridgeV2.exe": "7d870cd1772936ca7e3de97a56cb443390da61e8484c1638629c5fb2b5ae5440",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/runtime/windows-generation-20260915T022419/edlt-lifecycle/windows-runtime.json": "4b223e9ead90082abd4fa40a6c1c320e3d4cfbf5e37bee6f9bc6210181f6c12f",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/runtime/windows-generation-20260915T022419/current-generation-runtime-proof.json": "27c1a21c85935377f0a7296d9403f7b6bbf06749e5c4af0fc6646bfe57594d3b",
+    "/Volumes/external/cbus-toolkit-root-research-20260915/thermostat-temperature-native-plan-v2/pilot-cases.tsv": "842a030654d2cc04d32fe888eb8a613604671811430168789e050461a361741f",
+    "/Volumes/external/cbus-toolkit-root-research-20260915/thermostat-temperature-native-plan-v2/pilot-expected.json": "ea62679e839111680f815e92b2820cca1c0f0138dc8a33106734e796279a1ee1",
+    "/Volumes/external/cbus-toolkit-root-research-20260915/thermostat-temperature-native-plan-v2/full-cases.tsv": "16cb5893f29ce48b4b72f7894d575254d2034abcbac30083a7d4c4c426727da6",
+    "/Volumes/external/cbus-toolkit-root-research-20260915/thermostat-temperature-native-plan-v2/full-expected.json": "b682832d74765b5aba735983b3497008223f293e2e74faac49b8112db9d7a883",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/ArcDimarTabs.dll": "20d4a44e135fe788936deb568d9602803c5832b57a1d297024956569092f6933",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/CBusLogicModel.dll": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/Cbtag32.dll": "fea2ba92339cb49dc7666bdb9bbf932fccc99b02048a7a8b0e0b63a5d77e7912",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/CustomControls.dll": "93d66a228c209d08685ad58e15bd5fdbcffa84828f8699a35c8c7c951b8de8e6",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/EDLTCommon.dll": "41c740d2376f98cfcce20a58eb1ba2a7ea0629a8a2f56ef6a1bf134cae5da3e2",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/EDLT_graphics.dll": "e319379709c47f97dca477c4f631880f231c060530cb2ec45a3f731b1a5d1991",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/FirmwareUpdater.exe": "f54ea945167436b8a3e95decb1d146d01d60e4af1badcd34f4bad626df1e54d5",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/GlobalCommon.dll": "9f1328be4fab00366add4fc25239ed1c3feaea698b4a3413b1ee37e78abc210c",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/HydraCommon.dll": "ac0447e04acafcef56680465863449445e85827b2ff834808ac02b26181c626a",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/HydraWPFPlugins.dll": "03893f0fd0dad9282128910f36a5fe892131bfcabde2bdd57c9e1cea5b5d48ea",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/LabelEditor.dll": "508fa63db112a3ec07bf3cf834b41a0f26da3b0e7a428bc288bff0ec433a073b",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/MVVMBase.dll": "1b90975e46ed5f5e07736109c0006ee2a83511e0993c4d4559d55e24e5d6cd7b",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/MultiSensorPage.dll": "89246a21c3f77c13b7879f6ffa4f83f7fb4b0907d65419d9efce6628f4a842b8",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/RemObjects.Hydra.WPF.dll": "ad0f2030bcee29b30cbde3c7bcabf268d1c0905eae412f50af0ff8315d1dc295",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/RemObjects.Hydra.dll": "6037105e2c446f73c7f893c3bf6c22aa8979757bf65b05a137855816ce332045",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/SharpCGateCommunicator.dll": "fd589789f2c40c0853c06a7d836add0f81a6afe3f397a8d6965a1a1f549a2d6e",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/SharpContainer.dll": "5cba17be19a783e4b0c1e99025c9556fea605b97003ed6a3e9f3f182fb2c3ed0",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/SharpLogger.dll": "496a1434da3a592519e94b3eb025a98f0fc91d88341a28d58f33025ce043905c",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/TKLogService.exe": "3ec2176c057f460af5bd18f1d3ffc04e8798614fc59df7aed8f8e9f4c8b00796",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/Toolkit.WPF.DataVisualization.dll": "a2abf8cba5ac173fb9cf598faf8d1b9b4b648ff8722e7ff8d823a476e1b58852",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/WPFCommonControls.dll": "60e71a2e74e3a0f27206e6d6e3097a7c79be666ebf1d69405669562930d9ffdf",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/Xceed.Wpf.Toolkit.dll": "3f06cd38a961a660182a0339f3eeec0db08c58d485ae2fbd7457fc9e981f838c",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/eDLT.dll": "75bc741234b52a168a4838fee305c309d3909571d2711f7580216b46b028e8d3",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/libcrypto-3.dll": "4adae61662c5cb1aa07a893cbcfae105d3502013fb1b5d3b1971f98b635b3217",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/libssl-3.dll": "5347411ac08ee819a8836d7b3235d8415a80d5c68e8ea98a642970ec1f596b35",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/log4net.dll": "1c5f3b4ed6311ca033a8d7c4d66a24b8adca38b0f7a8da096ae353bd43a551c3"
+  },
+  "inputs_unchanged": true,
+  "job_results": [
+    {
+      "job_id": "job-thermostat-a4df73b1218642e5",
+      "submission_attempted": true,
+      "result_observed": true,
+      "result": {
+        "exit_code": 0,
+        "complete": true,
+        "pre_execution": false,
+        "admitted": true,
+        "script_sha256": "8cc2b7686ca6a7941fcfeb075f1750965dd89b11b3f51dfc8b88b76ce966d9d8",
+        "utc": "2026-09-15T05:25:00.2022288Z",
+        "job_id": "job-thermostat-a4df73b1218642e5",
+        "wait_evidence": {
+          "job_id": "job-thermostat-a4df73b1218642e5",
+          "state": "retrieved",
+          "timeout": 330,
+          "max_busy_retries": 8,
+          "file_busy_attempts": [],
+          "job_resubmitted": false
+        }
+      }
+    },
+    {
+      "job_id": "job-thermostat-1a7c97ee76644ebf",
+      "submission_attempted": true,
+      "result_observed": true,
+      "result": {
+        "exit_code": 0,
+        "complete": true,
+        "pre_execution": false,
+        "admitted": true,
+        "script_sha256": "a30dc05d68042a2158cb2cfc89bd4a53e25107b1e4060f82ec042cc584e8b343",
+        "utc": "2026-09-15T05:25:03.8819740Z",
+        "job_id": "job-thermostat-1a7c97ee76644ebf",
+        "wait_evidence": {
+          "job_id": "job-thermostat-1a7c97ee76644ebf",
+          "state": "retrieved",
+          "timeout": 330,
+          "max_busy_retries": 8,
+          "file_busy_attempts": [],
+          "job_resubmitted": false
+        }
+      }
+    },
+    {
+      "job_id": "job-thermostat-77d3ce837de64f79",
+      "submission_attempted": true,
+      "result_observed": true,
+      "result": {
+        "exit_code": 0,
+        "complete": true,
+        "pre_execution": false,
+        "admitted": true,
+        "script_sha256": "98d1ecb42b4398239391b01e937bc1ea5f8d8506920322ce064978bc476b1159",
+        "utc": "2026-09-15T05:25:07.6780786Z",
+        "job_id": "job-thermostat-77d3ce837de64f79",
+        "wait_evidence": {
+          "job_id": "job-thermostat-77d3ce837de64f79",
+          "state": "retrieved",
+          "timeout": 330,
+          "max_busy_retries": 8,
+          "file_busy_attempts": [],
+          "job_resubmitted": false
+        }
+      }
+    },
+    {
+      "job_id": "job-thermostat-2d3f32d725694153",
+      "submission_attempted": true,
+      "result_observed": true,
+      "result": {
+        "exit_code": 0,
+        "complete": true,
+        "pre_execution": false,
+        "admitted": true,
+        "script_sha256": "af1bb1d03ad1aa16942af7967418773480e78ec708d71fe68f926902ba3ff770",
+        "utc": "2026-09-15T05:25:15.1466834Z",
+        "job_id": "job-thermostat-2d3f32d725694153",
+        "wait_evidence": {
+          "job_id": "job-thermostat-2d3f32d725694153",
+          "state": "retrieved",
+          "timeout": 330,
+          "max_busy_retries": 8,
+          "file_busy_attempts": [],
+          "job_resubmitted": false
+        }
+      }
+    }
+  ],
+  "first_fixed_base_failure": {
+    "report_sha256": "0dc7bfd7696f859aa6613839f8ae8429ef76c27418c29de918443e779f6ee05e",
+    "reason": "VirtualAlloc unavailable before original arithmetic execution",
+    "original_rows": 0,
+    "replayed": false
+  },
+  "scope": "Native original x86 scalar arithmetic with standard PE HIGHLOW relocation; no original initialization, form, scheduling, project persistence or physical thermostat. The image hash is the relocated baseline before declared context/global writes."
+}

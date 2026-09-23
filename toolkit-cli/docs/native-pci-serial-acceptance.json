@@ -1,0 +1,105 @@
+{
+  "passed": true,
+  "scope": "Direct IDENTIFY4 collector and original native cT against explicit duplicate fixture",
+  "observation": {
+    "format": "cbus-pci-serial-observation-v1",
+    "address": 255,
+    "local_unit": 16,
+    "status": "duplicate_address",
+    "complete": true,
+    "serials": [
+      "101136.1558",
+      "101136.1559"
+    ],
+    "replies": [
+      {
+        "source": 255,
+        "destination": 16,
+        "serial": "101136.1558",
+        "known": true,
+        "data_hex": "38ffffffff18b10616a20005",
+        "raw_hex": "3836464631303030384430343338464646464646464631384231303631364132303030353141",
+        "received_after_seconds": 0.013163708004867658
+      },
+      {
+        "source": 255,
+        "destination": 16,
+        "serial": "101136.1559",
+        "known": true,
+        "data_hex": "38ffffffff18b10617a20005",
+        "raw_hex": "3836464631303030384430343338464646464646464631384231303631374132303030353139",
+        "received_after_seconds": 0.013163708004867658
+      }
+    ],
+    "repeated_responses": 0,
+    "confirmation": ".",
+    "termination": "quiet",
+    "errors": [],
+    "unrelated": [],
+    "request_hex": "5c34364646303032313034670d",
+    "received_hex": "672e38364646313030303844303433384646464646464646313842313036313641323030303531410d0a38364646313030303844303433384646464646464646313842313036313741323030303531390d0a",
+    "bytes_received": 82,
+    "timing": {
+      "elapsed_seconds": 2.0154976249905303,
+      "quiet_period_seconds": 2.0,
+      "overall_timeout_seconds": 10.0,
+      "confirmation_timeout_seconds": 2.0,
+      "vendor_quiet_period": true
+    },
+    "max_frames": 7,
+    "scope": "one_address",
+    "physical_addresses_changed": false,
+    "database_updated": false,
+    "automatic_retries": 0,
+    "connection_closed": true
+  },
+  "native_reply": [
+    "120 Duplicate units detected at address: 255"
+  ],
+  "direct_wire": [
+    {
+      "sequence": 0,
+      "connection": 0,
+      "direction": "rx",
+      "hex": "5c34364646303032313034670d"
+    },
+    {
+      "sequence": 1,
+      "connection": 0,
+      "direction": "tx",
+      "hex": "672e38364646313030303844303433384646464646464646313842313036313641323030303531410d0a38364646313030303844303433384646464646464646313842313036313741323030303531390d0a"
+    }
+  ],
+  "native_wire": [
+    {
+      "sequence": 51,
+      "connection": 1,
+      "direction": "rx",
+      "hex": "5c303546463030464146463030670d"
+    },
+    {
+      "sequence": 52,
+      "connection": 1,
+      "direction": "tx",
+      "hex": "672e443846463030303030303030303030313030303030303030303030303030303030303030303030303030303030303030303032380d0a443846463538303030303030303030303030303030303030303030303030303030303030303030303030303030303030303044310d0a4436464642303030303030303030303030303030303030303030303030303030303030303030303030303030383046420d0a"
+    },
+    {
+      "sequence": 53,
+      "connection": 1,
+      "direction": "rx",
+      "hex": "5c34364646303032313034680d"
+    },
+    {
+      "sequence": 54,
+      "connection": 1,
+      "direction": "tx",
+      "hex": "682e38364646313030303844303433384646464646464646313842313036313641323030303531410d0a38364646313030303844303433384646464646464646313842313036313741323030303531390d0a"
+    }
+  ],
+  "database_unchanged": true,
+  "fixture_unchanged": true,
+  "post_ready_retries_reply": [
+    "300 //SC3EBE3C/254: Retries=0"
+  ],
+  "cleanup_errors": []
+}

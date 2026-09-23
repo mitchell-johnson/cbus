@@ -1,0 +1,21 @@
+{
+  "format": "thermostat-levels-extra-address-preparation-v1",
+  "original_executed": false,
+  "parent_passed_report": "924d0c8765361866b1a498d19547ff53d81d6c697b7fae21417a67f1b40d7d26",
+  "original_machine_image_case_body_unchanged": true,
+  "changes": [
+    "Two cases instead of twelve; new release/report identity.",
+    "Existing fixture guard allows34 entries and byte addresses0..255.",
+    "Case1 preserves0/32/255 while creating all31 schedule entries.",
+    "Case2 preserves complete31 plus0/32/255 in deliberately non-address order.",
+    "Parent checks exact prewritten final address order plus unchanged existing full identity records."
+  ],
+  "files": {
+    "probe.py": "180855a26110263c2263769522d85f930b2fb8a99cbcf3c1e2e002fd2dada059",
+    "run_pilot.py": "92ee1cc99443c575889df6db93afc47bb2fffea90f18e7b4e48d04de1280a5f5",
+    "cases.json": "07f092d7792afaff5687a803c4333bb099f2b633bede5e0c998b65bfcb8fc4f3",
+    "process_harness.py": "52e87ad4cab2f441479186ec521ed9b2fefea9a63ed89e89bb5ff71e527479d6",
+    "make_cases.py": "c148ff4a7b8b89f8d7343848922a285c63d94d3911563ae428153324a47fe692",
+    "input-manifest.json": "109afeeb18149c0285d523f416d64b46d8d7f97f4d57453d7121110949f24bf5"
+  }
+}

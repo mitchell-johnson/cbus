@@ -1,11 +1,12 @@
 # CLI reference
 
-Run `cargo build --release --workspace` from `rust/` to create every binary under `rust/target/release/`. Use each program's `--help` output as the option-level authority.
+The Python `cbus-toolkit` application is installed separately; see [toolkit.md](toolkit.md). Run `cargo build --release --workspace` from `rust/` to create the Rust binaries under `rust/target/release/`. Use each program's `--help` output as the option-level authority.
 
 ## Program selection
 
 | Need | Program | External effect |
 | --- | --- | --- |
+| Edit projects, commission networks, configure supported units, or use C-Gate | `cbus-toolkit` | Depends on subcommand: files, server state, or hardware |
 | Decode one serial frame | `cbus-tools decode` | None |
 | Read a Toolkit backup or project XML | `cbus-tools dump-labels` | Reads locally; optionally writes JSON |
 | Query one unit or discover units | `cbus-tools interrogate` | Sends requests through a TCP CNI |
@@ -19,8 +20,8 @@ Run `cargo build --release --workspace` from `rust/` to create every binary unde
 ### Decode
 
 ```sh
-rust/target/release/cbus-tools decode 0538007901490D
-rust/target/release/cbus-tools decode --client '\\053800790149g'
+rust/target/release/cbus-tools decode 05013800790148
+rust/target/release/cbus-tools decode --client '\053800790149g'
 rust/target/release/cbus-tools decode --no-checksum --not-strict FRAME
 ```
 

@@ -6,6 +6,7 @@
 .vscode
 .opencode
 rust/target
+toolkit-cli
 cmqttd_config/auth
 cmqttd_config/certificates
 cmqttd_config/*.pem

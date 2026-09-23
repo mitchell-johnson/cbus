@@ -1,0 +1,91 @@
+{
+  "format": "cbus-edlt-enable-acceptance-v1",
+  "passed": true,
+  "scope": "5055EDL5.5 Enable Off/Preset database PP; no physical device",
+  "python": "3.10.20",
+  "cgate": "3.4.0.2001",
+  "tests": 12,
+  "skipped": 0,
+  "elapsed_seconds": 17.016,
+  "mode": "off-preset",
+  "application": 203,
+  "variable_range": [
+    0,
+    254
+  ],
+  "level_range": [
+    0,
+    255
+  ],
+  "crcs": {
+    "OverallCRC": [
+      181,
+      119
+    ],
+    "GlobalParameterCRC": [
+      104,
+      194
+    ],
+    "WidgetsCRC": [
+      52,
+      201
+    ],
+    "StaticTextCRC": [
+      94,
+      223
+    ],
+    "ScenesCheckSum": [
+      184,
+      6
+    ]
+  },
+  "dll_sha256": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+  "physical_device_verified": false,
+  "literal_records": {
+    "default": "0E0022210000FF0A17FF00000000000000000000000000000000000000000000",
+    "preset-static": "0E35222100002A0A177F003F3E00000000000000000000000000000000000000",
+    "dynamic-icons": "0E27222100002A0A177F00010300000000000000000000000000000000000000",
+    "dynamic-text": "0E16222100002A0A177F00020000000000000000000000000000000000000000",
+    "group-refresh-and-cross-application-restore": "0E27222100002B0A177F00020000000000000000000000000000000000000000",
+    "retained-application-bit": "0EA7222100002B0A177F00020000000000000000000000000000000000000000",
+    "zero-preset": "0EA7222100002B0A170000020000000000000000000000000000000000000000",
+    "maximum-preset": "0EA7222100002B0A17FF00020000000000000000000000000000000000000000",
+    "status-1": "0EA1222100002B0A17FF00020000000000000000000000000000000000000000",
+    "status-2": "0EA2222100002B0A17FF00020000000000000000000000000000000000000000",
+    "status-3": "0EA3222100002B0A17FF00020000000000000000000000000000000000000000",
+    "opaque-default": "0E0022210405FF0A17090A00000D0E0F101112131415161718191A1B1C1D1E1F",
+    "opaque-blank-default": "0E0022210405FF0A17090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F"
+  },
+  "assertions": [
+    "Unchanged original EnableData constructor/property/default serialization matches independent literal records",
+    "Preset zero and255 remain exact; native raw bytes cover Level/Percent/Bar displays",
+    "Fixed application203 preserves existing control bit7",
+    "Static label/status allocation, same-string reuse, whole-unit references and full-table rejection",
+    "Changing variable copies the first matching numeric-group AppGroup restore level across applications",
+    "Retaining a variable preserves restore state and opaque/inactive bytes",
+    "Dynamic variable/variant changes require an explicit display type when PP lacks network metadata",
+    "Native raw widget/static/restore bytes match independent vectors",
+    "All five configuration CRCs match unchanged original DLL method",
+    "Entire normalized PP snapshot survives save/close/load; scene records and unrelated widgets preserved",
+    "Profile/schema/stale/canonical-plan validation and database-only destination guard",
+    "Verified rollback after partial failure; no recovery I/O after disconnect",
+    "Offline CLI planning, native preview, UTF8 text deduplication and explicit save/reload",
+    "Disposable native network remains unopened, state=new"
+  ],
+  "limitations": [
+    "No physical eDLT execution verification",
+    "No custom button icon programming",
+    "No automatic network dynamic-label metadata lookup",
+    "Exact5055EDL/KEYGL5/5.5.00 profile only"
+  ],
+  "raw_report_sha256": "0a08739cdd2eb280f8d79d1f01e9c7f06d1a8cc17a162b08740263bf617630ee",
+  "source_sha256": {
+    "src/cbus_toolkit/edlt.py": "08e7e788976abf7491c6acd03755d4980357c9d5cee9b1e44716eb23e916c258",
+    "src/cbus_toolkit/edlt_enable.py": "95e1360da4f43b051c4f23d66cb956d37e28c3e2457e373eef2e533902de25c0",
+    "tests/test_edlt_enable.py": "12b8b4e3a64812d70a1e123269eb0a9bf3380fe997d4512fc6d246bb64d4a345",
+    "tests/test_cli_edlt_enable.py": "c9e9860af1b282654f0bec8c7f803c6c9f77207de96127f1d690d69a631441ce",
+    "research/NativeEdltEnableProbe.cs": "aca9992ac42555082c37a9c41f16cd486a5af83bf5b939b5ac48810d0f10b673",
+    "research/NativeEdltProbe.cs": "f794cadb421eab0c066464b59990961651486490456a2eaaa37ef8a748b5e9ec",
+    "docs/edlt-enable.md": "7ba98008bf3f65822d426f848dd493cdcf22870cad111afec14f3a3722b2df79"
+  }
+}

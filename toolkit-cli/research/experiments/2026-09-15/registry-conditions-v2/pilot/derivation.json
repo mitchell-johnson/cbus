@@ -1,0 +1,27 @@
+{
+  "format": "registry-pilot-v2-source-derivation",
+  "old_original_failure_preserved": true,
+  "original_execution_authorized": false,
+  "identity": {
+    "prefix": "registry-admission-d0fe9896d3764e53",
+    "root_name": "CBusCliCondition_d0fe9896d3764e53b7327afb4d1af652",
+    "job_suffix": "d0fe9896d3764e53",
+    "release": "root-reviewed-registry-twelve-v2"
+  },
+  "added_assembly_aliases": [
+    "Microsoft.Win32.Registry"
+  ],
+  "old_source_hashes": {
+    "NativeRegistryConditionProbe.cs": "a3decddc346c8bc8a3c66d2113e99d926e1e93b595ca7e953baf6822f5f4814b",
+    "prepare.py": "5aafd03aada731d65aa766f267807399e61926ee3d5f571b71a6c7c7c81a82d0",
+    "run.py": "37f09a23a682ccedbd2681d530413a9d0981583713e9eff01d825981594f310a",
+    "test_guards.py": "9490e86722011cb11a479a09e39f58dc71ae7ca405ac47379a1ead62a5ec5086"
+  },
+  "derived_source_hashes": {
+    "NativeRegistryConditionProbe.cs": "4dddb514ee5bca8ff1210c91a67e9def9fb190b013dadcc8b0b9cd6aa281d195",
+    "prepare.py": "dbde8ba1abbd70517928cb97c2774af9028960c6e2d7f9a2ef293cbf61226851",
+    "run.py": "84c763c844f44850bef4bf93cd7f3429941e13ada9eedd6d72c9060b71d6306d",
+    "test_guards.py": "3a6fb033ceb0131ff9bba90c2e21476a6cbcd14e5d59feb4985e5db9263b9e46"
+  },
+  "extra_scope": "Resolve original MemberRef and require same Framework Registry.GetValue provider as separate witness before any registry writes; capture provider IL without invoking it."
+}

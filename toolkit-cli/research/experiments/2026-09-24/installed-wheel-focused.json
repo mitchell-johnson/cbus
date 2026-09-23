@@ -1,0 +1,15 @@
+{
+  "scope": "Installed-wheel thermostat46 focused tests and entrypoint/metadata smoke; not full wheel or Toolkit parity acceptance.",
+  "wheel_sha256": "4c1e589d519121d2d504125b4ad2daeeb1c99d9ef134668c0c31f52c573a740d",
+  "package_file_count": 140,
+  "requires_python": ">=3.13",
+  "package_location": "/Volumes/external/cbus-toolkit-refresh-20260924/wheel-smoke/lib/python3.13/site-packages/cbus_toolkit/__init__.py",
+  "source_matches_wheel": true,
+  "tests": 46,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "passed": true,
+  "coverage_exit": 1,
+  "toolkit_parity_complete": false
+}

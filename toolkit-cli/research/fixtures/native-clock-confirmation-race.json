@@ -1,0 +1,35 @@
+{
+  "scope": "Synthetic fixture CLK05763 only; C-Gate3.4.0.2001 zero-latency confirmation race",
+  "observed": [
+    "cc1699 sent cmd (fastpci): \\05FF00FAFF00t (254: \\05FF00FAFF00t)",
+    "got packet confirm: t.",
+    "response: D8FF000000000005000000000000000000000000000000000024 accepted by command: \\05FF00FAFF00t",
+    "response: D8FF5800000000000000000000000000000000000000000000D1 accepted by command: \\05FF00FAFF00t",
+    "response: D6FFB000000000000000000000000000000000000000007B accepted by command: \\05FF00FAFF00t",
+    "20260914-105413.887 759 //CLK05763/254 86acf2f0-9258-103f-be1a-c222a1decd35 command timed out: \\4610002110  after 2000ms, beginning retry 1 of 2",
+    "20260914-105413.888 759 //CLK05763/254 86acf2f0-9258-103f-be1a-c222a1decd35 Checking PCI before retrying command (\\4610002110 )",
+    "20260914-105415.894 759 //CLK05763/254 86acf2f0-9258-103f-be1a-c222a1decd35 command timed out: \\4610001A2001  after 2000ms, retry limit of 0 reached",
+    "20260914-105417.899 759 //CLK05763/254 86acf2f0-9258-103f-be1a-c222a1decd35 command timed out: \\4610002110  after 2000ms, beginning retry 2 of 2",
+    "20260914-105417.899 759 //CLK05763/254 86acf2f0-9258-103f-be1a-c222a1decd35 Checking PCI before retrying command (\\4610002110 )",
+    "20260914-105419.908 759 //CLK05763/254 86acf2f0-9258-103f-be1a-c222a1decd35 command timed out: \\4610001A2001  after 2000ms, retry limit of 0 reached",
+    "Sender waiting for flow control.  txEnabled=false serialInputBytes=0",
+    "20260914-105421.911 759 //CLK05763/254 86acf2f0-9258-103f-be1a-c222a1decd35 command timed out: \\4610002110  after 2000ms, retry limit of 2 reached",
+    "20260914-105421.911 759 //CLK05763/254 86acf2f0-9258-103f-be1a-c222a1decd35 command-fail-count=1 unit=16 reason=no response (\\4610002110)",
+    "20260914-105421.911 753 //CLK05763/254 86acf2f0-9258-103f-be1a-c222a1decd35 address=16 output_units=0",
+    "20260914-105422.837 834 //CLK05763/254 86acf2f0-9258-103f-be1a-c222a1decd35 Restarting stuck transmitter",
+    "cc1699 sent cmd (fastpci): \\4610002110u (254: \\4610002110u)",
+    "cc1699 sent cmd: \\4610001A2001",
+    "got packet confirm: u.",
+    "cc1699 sent cmd (fastpci): \\4610002110v (254: \\4610002110v)",
+    "response: 8510830000FFE9 accepted as short form by command: \\4611002110 ",
+    "20260914-105422.857 753 //CLK05763/254 86acf2f0-9258-103f-be1a-c222a1decd35 address=17 output_units=1 clocks_enabled=1 clocks_active=1 burdens_enabled=1"
+  ],
+  "source_order": [
+    "cl.a(aW,boolean) writes and flushes command",
+    "logs sent and calls e(aW)",
+    "sets awaited tag j",
+    "calls b() setting txEnabled=false"
+  ],
+  "receiver": "cl.a(char[]) enables transmission only when received confirmation tag equals j",
+  "mitigation": "Explicit10ms simulator response_delay in clock fixture, not a native software fix or retry"
+}

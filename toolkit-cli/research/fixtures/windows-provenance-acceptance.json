@@ -1,0 +1,65 @@
+{
+  "format": "cbus-windows-provenance-acceptance-v1",
+  "passed": true,
+  "scope": "Explicit external research provenance root, current runner generation and native runtime matching; portable Lifecycle/Restore harness paths",
+  "environment": "CBUS_WINDOWS_PROVENANCE_ROOT",
+  "source_sha256": {
+    "research/windows_provenance.py": "8aad4ca9d1577b985eef9b453cd1ba1b10c1a73f4627a74b8c45e565c3a47e48",
+    "research/windows_bridge.py": "9b2044b76fa74cb5bb06dcfb854c7a1fc7f96c19ba3f0367e5f901cfad822107",
+    "tests/test_windows_provenance.py": "79abab327a458505191afa9f4b4bd326c218da74d67a813912dedc4039ac3919",
+    "tests/test_edlt_lifecycle.py": "e8404b452c70ba670062de9f6c3ec24f3aa027dc487b04b234cb042f1f058c74",
+    "tests/test_edlt_restore_levels_native.py": "c61da8e4807f4ce92a0b13ce20016a45cef4e8ceae73b532f77b6580f65d4a4c"
+  },
+  "tests": [
+    {
+      "python": "313",
+      "tests": 32,
+      "skips": 0,
+      "passed": true,
+      "elapsed_seconds": 7.274,
+      "log": "research/runtime/edlt-model-phases/windows-provenance-313.log",
+      "log_sha256": "5aae2c0d43d169c460b822334eb5845ab1c2de4469a462b3f48e33c87dd12a6a"
+    },
+    {
+      "python": "310",
+      "tests": 32,
+      "skips": 0,
+      "passed": true,
+      "elapsed_seconds": 9.229,
+      "log": "research/runtime/edlt-model-phases/windows-provenance-310.log",
+      "log_sha256": "b1549bf0beeeeee2d742cf62409bb44e239d9d958f594ae59eab22abbfeb86f3"
+    }
+  ],
+  "provenance_tests": 9,
+  "existing_lifecycle_restore_tests": 23,
+  "live_generation": {
+    "report": "research/runtime/edlt-model-phases/windows-provenance-live-old-generation.json",
+    "sha256": "338e4012b6457941a66c8e2550f98afea6ab3b555e24298c24134a80b7709744",
+    "job_id": "job-probe-b2eef5b736984614",
+    "runner_pid": 484,
+    "expires_utc": "2026-09-14T22:04:44.8506417Z",
+    "runtime": {
+      "compiler": {
+        "path": "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\csc.exe",
+        "sha256": "012E8CD8ADFF0C439A90FFD22C0E33EFEB6FBC8CF660D52B4858D310649382FA",
+        "version": "4.8.9221.0 built by: NET481REL1LAST_25H2"
+      },
+      "framework": 533509,
+      "mscorlib": {
+        "path": "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\mscorlib.dll",
+        "sha256": "93D46BDAC1664DBA87641925572C789D71A21BB01DC7C7E5AA99C0ECA8335E5E",
+        "version": "4.8.9345.0 built by: NET481REL1LAST_25H2_C"
+      },
+      "os_version": "Microsoft Windows NT 10.0.26100.0",
+      "process_architecture": "AMD64"
+    },
+    "file_sha256": {
+      "NativeWindowsBridgeV2.exe": "7d870cd1772936ca7e3de97a56cb443390da61e8484c1638629c5fb2b5ae5440",
+      "bridge-ready.json": "a4205673c19603a1202a6238e6254852f3e0394d07d6607d49555e9793c3e32a",
+      "windows-runtime.json": "4b223e9ead90082abd4fa40a6c1c320e3d4cfbf5e37bee6f9bc6210181f6c12f"
+    }
+  },
+  "physical_device_verified": false,
+  "historical_acceptance_modified": false,
+  "full_original_suites_repeated": false
+}

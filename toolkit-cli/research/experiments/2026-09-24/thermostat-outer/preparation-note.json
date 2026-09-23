@@ -1,0 +1,5 @@
+{
+  "change": "Include actual trailing RET instructions at0xfdfff7 and0x7dda85 in half-open decoded spans. No instruction bytes, providers or case hypotheses changed.",
+  "failed_capture": "/Volumes/external/cbus-toolkit-thermostat-outer-20260915-v1/pilot-v1/original-313-20260924-v1-capture/report.json",
+  "failed_report_sha256": "566a803eb86e99d251d8286f2474d18d88432087885e552d571475363e5b80c8"
+}

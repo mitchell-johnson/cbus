@@ -1,0 +1,42 @@
+{
+  "format": "csv-native-xml-projection-review-v1",
+  "passed": true,
+  "focused_command": ".venv/bin/python -m unittest tests.test_toolkit_database_csv_native tests.test_toolkit_database_csv_projection tests.test_toolkit_database_csv tests.test_cli_toolkit_database_csv -v",
+  "focused_tests": 33,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "full_suite_command": "PYTHONPATH=tests .venv/bin/python -m unittest discover -s tests",
+  "full_suite_tests": 2158,
+  "full_suite_failures": 0,
+  "full_suite_errors": 0,
+  "full_suite_skips": 254,
+  "full_suite_elapsed_seconds": 578.140,
+  "new_adapter_tests": 5,
+  "new_public_cli_tests": 2,
+  "native_archive_report_sha256": "f4c8369e0fc4cad87de15a3ad844c7d6a303df741af4e87797ed2f7822bc158c",
+  "native_archive_sha256": "8ec94db97e7ed2a7bb153fa27662633579b0af3bee1d5e43e97671814883de4a",
+  "external_archive": "/Volumes/external/cbus-toolkit-research-20260915-document-database/backend-pilot-v3/native4-313-20260924-v1",
+  "archive_comparison": [
+    {"id": "B01", "complete": true, "class": "TRELAY4", "area": "Group12"},
+    {"id": "B02", "complete": true, "class": "TRELAY4", "area": "<Unused>"},
+    {"id": "B03", "complete": false, "stop": "missing Area13 requires unperformed database mutation"},
+    {"id": "B04", "complete": true, "class": "TCBusUnitGeneric", "area": "<Unused>"}
+  ],
+  "source_hashes": {
+    "src/cbus_toolkit/toolkit_database_csv_native.py": "8a5fc20df9e2d59481e4d6ef6f79d105dc77dda07dbaf9a152300b17e027de45",
+    "src/cbus_toolkit/toolkit_database_csv_cli.py": "1c8e5c2cdfad7b5d634a8e85969b5c5660e0aeafcbe9d82c14b0050a8e53d126",
+    "tests/test_toolkit_database_csv_native.py": "7854668bd4075925cff04d348f3b12097f41e165c74bc37da949d46dcbd459fc",
+    "tests/test_cli_toolkit_database_csv.py": "acbbcda6a78622ec68b74c68e74a2ca894348082775f973d9bba4f117c1ca11a"
+  },
+  "native_or_vm_calls_in_this_test": false,
+  "network_calls_in_this_test": false,
+  "native_database_mutated": false,
+  "outstanding": [
+    "live C-Gate snapshot acquisition",
+    "guarded missing-Area-group creation and save",
+    "association construction",
+    "arbitrary unit profiles",
+    "selection preferences and native Windows encoding"
+  ]
+}

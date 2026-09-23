@@ -1,0 +1,154 @@
+{
+  "format": "cbus-selected-serial-codec-evidence-v1",
+  "scope": "Pure request encoding and captured receipt classification; no I/O or physical mutation implementation",
+  "jar": {
+    "path": "research/vendor/cgate/app/cgate.jar",
+    "sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+  },
+  "members": [
+    {
+      "member": "./co.java",
+      "source_sha256": "95aea2176a881aa15db116eaca7a10136975e18c9aaac56de74ae2b7b440476d",
+      "class": "co.class",
+      "class_sha256": "185ba3fefcc0a92db0f46d05109fd204b90e176353a7cdfa231c98e546716134"
+    },
+    {
+      "member": "./cn.java",
+      "source_sha256": "b27333bf56f5a1632befab67c4b4966b2f497719d130b5e99e2d96b83daf59c0",
+      "class": "cn.class",
+      "class_sha256": "f2a5f1ca9fef4aba66e9c31a9b6009b698443c27d8ed490a82adeffba0520813"
+    },
+    {
+      "member": "./aW.java",
+      "source_sha256": "4b6030d2772bcc1f5a2ecd2657f7ca2f86a5c689cba1c9b574df31999b9851ed",
+      "class": "aW.class",
+      "class_sha256": "a083758468278319e94af30bd60b69a222efb4c6f3298c8847d2b6feda2b594d"
+    },
+    {
+      "member": "./cj.java",
+      "source_sha256": "4803e6c2bec6175c5b60252fd839614be0572ea781978441ce086ef3454b6595",
+      "class": "cj.class",
+      "class_sha256": "a3eef5c3deb6560275d0e2fe215b9a046b31f33a3c2c6f74996db4ea80b0a0d2"
+    },
+    {
+      "member": "./kY.java",
+      "source_sha256": "15bf8418006429605fab1331ef2faa96a05034ed66c60fa743c0b4cddd94a3f6",
+      "class": "kY.class",
+      "class_sha256": "5c87783bbb86cdac1d39179910642200d8c115871ee2f65da7b995e989d30515"
+    },
+    {
+      "member": "./com/clipsal/cgate/cbus/core/CBusNetworkUnraveller.java",
+      "source_sha256": "6a67b1b831560b445dfd954b6d6280b4aec21f7647d47d4b3bf3c82a4a77dbcc",
+      "class": "com/clipsal/cgate/cbus/core/CBusNetworkUnraveller.class",
+      "class_sha256": "217a0e2aca149f5a7254e5ff9a591af1098cb4b7d298c8a901054f16958ec3dc"
+    },
+    {
+      "member": "./com/clipsal/cgate/cbus/dev/CBus2PCILocalable.java",
+      "source_sha256": "f82e2ddd2517330e8e3b75e9f725ccf944e8d27ad29b925ccd0a77845fecaefa",
+      "class": "com/clipsal/cgate/cbus/dev/CBus2PCILocalable.class",
+      "class_sha256": "9240f8545663b13a1b6e3ebbda114fa5c9dad01da4f170748e54b8b14e22c3ec"
+    },
+    {
+      "member": "./com/clipsal/cgate/cbus/dev/CBusBaseUnit.java",
+      "source_sha256": "4b705678b70ffd9602658c25b2f97dde91897ea195876997f3f457ee971cb98d",
+      "class": "com/clipsal/cgate/cbus/dev/CBusBaseUnit.class",
+      "class_sha256": "d4292e70bddd34d249779a03a8019254aeb1aaba8cf72f376f25c25f2384b225"
+    }
+  ],
+  "native_report": {
+    "path": "docs/native-duplicate-unravel-research.json",
+    "sha256": "537ee7eb08333d261a592686b92f8affae8351defc603432ae49bc5c3d9c9996"
+  },
+  "native_vectors": {
+    "none": {
+      "original_native_command": "NET UNRAVELUNIT //DDBFC6A2/254 255 MATCHDB",
+      "original_exchange": {
+        "request": "\\05FF000F0018B106160615u\r",
+        "reply": "u.86061000870018B106160000F8\r\n"
+      },
+      "bus_addresses_after": {
+        "101136.1558": 6,
+        "101136.1559": 7
+      },
+      "unit_address_stores": []
+    },
+    "wrong_source": {
+      "original_native_command": "NET UNRAVELUNIT //DDBDF84F/254 255 MATCHDB",
+      "original_exchange": {
+        "request": "\\05FF000F0018B106160615u\r",
+        "reply": "u.86091000870018B106160000F5\r\n"
+      },
+      "bus_addresses_after": {
+        "101136.1558": 6,
+        "101136.1559": 7
+      },
+      "unit_address_stores": []
+    },
+    "wrong_serial": {
+      "original_native_command": "NET UNRAVELUNIT //DD6B2152/254 255 MATCHDB",
+      "original_exchange": {
+        "request": "\\05FF000F0018B106160615u\r",
+        "reply": "u.86061000870018B10699000075\r\n"
+      },
+      "bus_addresses_after": {
+        "101136.1558": 6,
+        "101136.1559": 7
+      },
+      "unit_address_stores": []
+    },
+    "ack_no_move": {
+      "original_native_command": "NET UNRAVELUNIT //DD26ED7A/254 255 MATCHDB",
+      "original_exchange": {
+        "request": "\\05FF000F0018B106160615v\r",
+        "reply": "v.86061000870018B106160000F8\r\n"
+      },
+      "bus_addresses_after": {
+        "101136.1558": 255,
+        "101136.1559": 7
+      },
+      "unit_address_stores": []
+    },
+    "bare_ack_no_move": {
+      "original_native_command": "NET UNRAVELUNIT //DD3180F9/254 255 MATCHDB",
+      "original_exchange": {
+        "request": "\\05FF000F0018B106160615u\r",
+        "reply": "u.870018B10616000094\r\n"
+      },
+      "bus_addresses_after": {
+        "101136.1558": 255,
+        "101136.1559": 7
+      },
+      "unit_address_stores": []
+    },
+    "none-FACE": {
+      "original_native_command": "NET UNRAVELUNIT //DD714D48/254 255 MATCHDB",
+      "original_exchange": {
+        "request": "\\05FF000F0018B106160615u\r",
+        "reply": "u.86061000870018B10616FACE30\r\n"
+      },
+      "bus_addresses_after": {
+        "101136.1558": 6,
+        "101136.1559": 7
+      },
+      "unit_address_stores": []
+    }
+  },
+  "bytecode_evidence": {
+    "co.a(cn,int)": "Offsets 17..126 build 00 + packed serial + destination, the inner checksum and 05FF000F header; 129..152 set k=true, i=1, timeout=2000 and q=0.",
+    "co.a(String)": "Offsets 17..58 extract the reported source or unknown; 77..107 check opcode 87 and 00 + serial only, without checking the expected target or opaque tail.",
+    "cn": "The serial contains 20-bit and 12-bit components. Exact class/source hashes are pinned above.",
+    "Unraveller.b(cn,int,int)": "Offset 415 decrements the attempt counter unconditionally; the normal wired caller starts with one attempt."
+  },
+  "ordinary_request_A_to_6": "\\05FF000F0018B106160615g\r",
+  "srchk_request_A_to_6": "\\05FF000F0018B106160615EDg\r",
+  "srchk_evidence": "A separate whole-packet two\u2019s-complement checksum: fixed header sum 13 hex plus inner body sum 0 gives ED. This derived form is tested independently; the pinned native run used ordinary mode.",
+  "unverified": [
+    "Physical movement from any receipt alone",
+    "Meaning of two opaque receipt bytes",
+    "Device firmware persistence or power-cycle behavior",
+    "Physical source/target/local identity guards",
+    "Local SAL transaction and rollback"
+  ],
+  "research_contract": "research/runtime/selected-serial-contract/wire-contract.md",
+  "research_contract_sha256": "48f20008dac541a7621e190c50dfc66b51fc64c74bd63dfcf37d4009adeb8911"
+}

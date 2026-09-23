@@ -1,0 +1,262 @@
+{
+  "status": "accepted",
+  "scope": "Pure bounded update conditions under unverified supplied file and HKCU registry primitive facts; no live provider, full applicability or update-availability evaluation",
+  "test_count_each_python": 78,
+  "new_registry_core_tests": 12,
+  "new_registry_cli_tests": 5,
+  "existing_conditions_regressions": 20,
+  "existing_metadata_revocation_regressions": 41,
+  "runs": {
+    "313": {
+      "report": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-context-v2/acceptance-final-v2/313/report.json",
+      "report_sha256": "a07c6ad80ca878314718ef3ceec55cc9d925fcca05cb31eb939e0f202db118c5",
+      "python_version": "3.13.14 (main, Jun 10 2026, 12:24:04) [Clang 17.0.0 (clang-1700.6.4.2)]",
+      "tests": 78,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "elapsed_seconds": 4.634384166973177,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "92952beab3457445df12aba90aa9c2ecb218cd2edf394126f8042be5e4b447b5",
+      "loaded_source_runtime_hashes_correlated": true
+    },
+    "310": {
+      "report": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-context-v2/acceptance-final-v2/310/report.json",
+      "report_sha256": "51ae347906215e1512429886d8998b9f26cd3dcb0b701e5e33d0473d742bd098",
+      "python_version": "3.10.20 (main, Mar  3 2026, 00:49:35) [Clang 17.0.0 (clang-1700.6.4.2)]",
+      "tests": 78,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "elapsed_seconds": 5.422521041997243,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "228d1a1029775c82c4378cc648a03164d294d883623bce2558dc9595a917c0ed",
+      "loaded_source_runtime_hashes_correlated": true
+    }
+  },
+  "source_hashes": {
+    "src/cbus_toolkit/_toolkit_update_registry_conditions.py": "50d35a214de2bb0a3660acb05fb2d032b13356179c72bab29e14a811ef1b28ff",
+    "src/cbus_toolkit/toolkit_update_conditions.py": "06932d970a76496ebc17eba32d6f599a27a0436843fb81bc9a1674860c98bbf7",
+    "src/cbus_toolkit/toolkit_update_conditions_cli.py": "23219d1f687c207ce2010095b6ae7eda856d5630d16a4855d50d48733fb80d2a",
+    "src/cbus_toolkit/toolkit_update_metadata.py": "dcfa5990ca9f1ea8fb88e128edc2089f1045cc1b70c8f35314d84c80b4802b3f",
+    "src/cbus_toolkit/toolkit_update_revocation.py": "575bf1fccb3788ed891028dbf6ec10f1d94f1519d7a6d20341d131d17fc8d389",
+    "src/cbus_toolkit/cli.py": "83ce742614a0c054a685e8a220a217bb9d82d457e5089d07646c093345ddb8da",
+    "tests/test_toolkit_update_registry_conditions.py": "16661a66a7787cd181fb5d68ce35c1c84087361b0878f2c88227573e616f0789",
+    "tests/test_cli_toolkit_update_registry_conditions.py": "b93a63e5cd68c4de841829e4d70551c08104a58f0df68bc79f7f39b5ffc81c30",
+    "tests/test_toolkit_update_conditions.py": "9bece53a8aff1f89c730a264de9962111d5861ebdd1dab6a8aadcd7279b477c7",
+    "tests/test_toolkit_update_conditions_cli_helper.py": "f2ab9c1a460dd5f18773d96c5beb5e76c8ed058a6cbe46cc34a655d75ae46e37",
+    "tests/test_cli_toolkit_update_conditions.py": "f095fca94cd5dbb19b5cbbf7870130d8f76268f95879cf2df4788083b9f26baf",
+    "tests/test_toolkit_update_metadata.py": "9aab48695a3fe937491c557864f9e336d1578f60d74e32c2a674e8bb70562c1d",
+    "tests/test_cli_toolkit_update_metadata.py": "1edd068e1f9dd2e239d7ea0e1b35e5bc99be781040049e73435f1bde64368866",
+    "tests/test_toolkit_update_revocation.py": "98a07af88bc00b401bda62ef3847d5f0363ad99dbb4e9d7a94343859e378c321",
+    "tests/test_cli_toolkit_update_revocation.py": "19810624378f7b806050041b86c87bfe556cc8bb05646bfdf266846218e734c2",
+    "research/fixtures/toolkit-update-registry-conditions-vectors.json": "6b3d9d3e6a2ec7529d7222ea2527c3d492fe7bb4b19502635fc50d87045d2ae4",
+    "research/fixtures/toolkit-update-conditions-v1-report-baseline.json": "66c8d86a0a8f0d5b6fc7719ff8752416d4b7d818375944ad1f7e8078cfd07ad1",
+    "research/fixtures/toolkit-update-conditions-vectors.json": "4d17c1cbe37ca9ffd6be69ad4f560c56e3ba278b6f21ac2f25235f4f2e372962",
+    "research/fixtures/toolkit-update-metadata-vectors.json": "71a70a37288a6534299c3d609becb261f1f1e1a0bdadc6c2231c5c6071b4a04a",
+    "research/fixtures/toolkit-update-revocation-vectors.json": "4b17a6bf0c963f03d0149eb83371d30f787a919cbb71502a6788563116a95e2f",
+    "docs/toolkit-update-conditions.md": "fe682d56f7c638d45b20dfa5a481c7ecc8a37ce0aae9793adf0d2a2a4613d904",
+    "docs/toolkit-update-registry-conditions.md": "ae1aaae01d7e7602cdb4ffee0d0eec6e3f0bf48f8b9f6ee05ccb7c9dd9fbb929",
+    "pyproject.toml": "5913ba9675e826001b2e2e0a7d395849cc8672d6d1c2f55705b03fb68a7838cb"
+  },
+  "input_manifest": {
+    "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-context-v2/acceptance-final-v2/before.json",
+    "sha256": "ccf272bc1f2db74a1b4c0cab85e5c9475c6b0e429fdc93ea0743d885b805d254",
+    "input_count": 357
+  },
+  "accepted_input_archive": {
+    "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-context-v2/acceptance-final-v2/accepted-inputs.tar.gz",
+    "sha256": "5a2ed57896586fa32d9d6d7e1273b4ad3c7ea8a42c8f7a6ca34a62233ceef20a",
+    "files": 358,
+    "pre_execution_readback_verified": true
+  },
+  "v1_compatibility": {
+    "complete_report_byte_comparisons_each_python": 248,
+    "completed_baseline_reports": 99,
+    "capture_before_production_edit": true,
+    "baseline_archive": {
+      "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-context-v2/v1-report-baseline-v2.zip",
+      "sha256": "e2f3dbacc9bc7a4dfebf5f2371c630fa4cf2c760b9b91d74fffedb053a336349"
+    },
+    "initial_invalid_context_capture_preserved": {
+      "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-context-v2/v1-report-baseline.zip",
+      "sha256": "1f89b3121b91a5639ab5cbe432b11d7d54b04b04b791e4e83dc55b1b54e458d4"
+    },
+    "initial_capture_classification": {
+      "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-context-v2/baseline-first-capture-note.json",
+      "sha256": "df51a87329d717d2cd5e7ff9baeaf9cbe25ccd3facb9b5fb77dcb271b944fe5f"
+    }
+  },
+  "preserved_failed_acceptance_preparation": {
+    "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-context-v2/acceptance-final-v1/failed-preparation.json",
+    "sha256": "26d6007ade22b5a0b20835a21b6b05d6f7fe300348d456db1b03e78f3bb95f97"
+  },
+  "original_registry": {
+    "original_leaf_calls": 12,
+    "separate_same_provider_witness_calls": 12,
+    "raw_ordered_records": 47,
+    "observed_booleans": 10,
+    "observed_expected_errors": 2,
+    "supported_leaf_observations_each_python": 11,
+    "excluded_original_collation_observations": 1,
+    "replayed_original_calls": 0,
+    "pilot_report": {
+      "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-pilot-v2/pilot-v2/report.json",
+      "sha256": "df5b5d74892cf4ac9d7935a71179b6c42486796f015a3b5697b0be2a753a213f"
+    },
+    "independent_audit": {
+      "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-pilot-v2/pilot-v2/audit.json",
+      "sha256": "3a30eb24788565f3b60ba421164867c20764e3e733cb6aa3a904cdee0fa3f03b"
+    },
+    "original_stdout": {
+      "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-pilot-v2/pilot-v2/original.stdout",
+      "sha256": "d7899931580428c1baefa339358ff799c787080dd1d98b7662bea313b62dc8e7"
+    },
+    "provider_identity": {
+      "source_memberref": 167772244,
+      "declaring_type": "Microsoft.Win32.Registry",
+      "method": "GetValue",
+      "return_type": "System.Object",
+      "parameter_types": [
+        "System.String",
+        "System.String",
+        "System.Object"
+      ],
+      "assembly": "mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+      "location": "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\mscorlib.dll",
+      "sha256": "93d46bdac1664dba87641925572c789d71a21bb01dc7c7e5aa99c0eca8335e5e",
+      "method_token": 100663539,
+      "il_bytes_hex": "02120028F20000060B07066F160100060C082D02142A000803046F230100060DDE07086FF8000006DC092A",
+      "same_original_and_witness": true,
+      "type_remapping": false
+    },
+    "cleanup": {
+      "stage": "complete",
+      "passed": true,
+      "original_rows": 12,
+      "root_created": true,
+      "root_absence_verified": true,
+      "handles_closed": true,
+      "handle_close_failures": 0,
+      "cleanup": [
+        {
+          "subkey": "c12",
+          "removed": true
+        },
+        {
+          "subkey": "c11",
+          "removed": true
+        },
+        {
+          "subkey": "c10",
+          "removed": true
+        },
+        {
+          "subkey": "c09",
+          "removed": true
+        },
+        {
+          "subkey": "c08",
+          "removed": true
+        },
+        {
+          "subkey": "c07",
+          "removed": true
+        },
+        {
+          "subkey": "c06",
+          "removed": true
+        },
+        {
+          "subkey": "c05",
+          "removed": true
+        },
+        {
+          "subkey": "c04",
+          "removed": true
+        },
+        {
+          "subkey": "c03",
+          "removed": true
+        },
+        {
+          "subkey": "c01",
+          "removed": true
+        }
+      ],
+      "failures": [],
+      "first_error": null,
+      "provider_remapping": false,
+      "network_call_sites_in_whitelisted_original_graph": 0,
+      "dynamic_network_instrumentation": false
+    },
+    "prior_failed_dependency_pilot": {
+      "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-pilot-v1/pilot-v1/report.json",
+      "sha256": "56d7c5d4c41796c11a59e7094228af31677b2de5bd907048aa833d0ff3a6054f"
+    },
+    "prior_failure_analysis": {
+      "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-pilot-v1/failure-analysis-v1/analysis.json",
+      "sha256": "8784a34ea094b12849ee9bf3b941e1c6e5e0c1d615e2db2feb47d9d1d4039103"
+    }
+  },
+  "original_int32": {
+    "separate_direct_calls_compared_each_python": 107,
+    "booleans": 76,
+    "errors": 31,
+    "outer_registry_content_shortcuts_compared_separately": true,
+    "integer_source_evidence": {
+      "path": "/Volumes/external/cbus-toolkit-agent-runtime/toolkit-update-applicability/registry-proposal-v1/integer-evidence.json",
+      "sha256": "339ee0f11bdc52d8a45484fd58449da403977ad55adf86f3b5eb183880978a6f"
+    }
+  },
+  "limits": {
+    "json_bytes_each": 131072,
+    "json_depth": 12,
+    "definitions": 8,
+    "file_facts": 8,
+    "registry_facts": 8,
+    "expression_name_characters": 256,
+    "path_characters": 1024,
+    "entry_result_rhs_characters": 256,
+    "hive": "HKCU/HKEY_CURRENT_USER only",
+    "culture": "invariant-ascii",
+    "provider": "framework-registry-getvalue-x86-process-default-v1",
+    "provider_live_verified": false,
+    "results": [
+      "null",
+      "System.String",
+      "System.Int32"
+    ],
+    "query_key": [
+      "expanded exact path",
+      "exact entry",
+      "exact tagged original default"
+    ],
+    "integer_outer_whitespace": [
+      "space",
+      "tab",
+      "CR",
+      "LF"
+    ],
+    "fresh_successful_result_cache": true
+  },
+  "not_claimed": [
+    "Live registry reads",
+    "Other hives or views",
+    "Registry32 rollout",
+    "General string ordering/prefix collation",
+    "Arbitrary provider objects or errors",
+    "Public Evaluate invocation or full candidate selection",
+    "Current publisher trust",
+    "Update availability"
+  ],
+  "metadata_six_stages_unchanged": true,
+  "revocation_seven_stages_unchanged": true,
+  "focused_acceptance_vm_or_shared_service_calls": false,
+  "public_network_calls": false,
+  "published_document": {
+    "path": "docs/toolkit-update-registry-conditions.md",
+    "sha256": "16f8e383bd36e04b6b631a218a6934fada726494abf5f0d38c2a355cbff85a64",
+    "note": "Final acceptance paragraph added after execution; tested document bytes remain in source_hashes and the pre-execution archive."
+  }
+}

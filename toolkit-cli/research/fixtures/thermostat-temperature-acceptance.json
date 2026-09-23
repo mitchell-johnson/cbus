@@ -1,0 +1,91 @@
+{
+  "format": "cbus-thermostat-temperature-acceptance-v1",
+  "passed": true,
+  "tests_per_python": 17,
+  "reports": [
+    {
+      "python": "3.13.14",
+      "passed": true,
+      "tests": 17,
+      "skipped": 0,
+      "duration_seconds": 11.057,
+      "report": {
+        "path": "/Volumes/external/cbus-toolkit-root-research-20260915/thermostat-temperature-acceptance-v1/python313-v2/report.json",
+        "sha256": "90b3d6f936ffb36f656019b92b067001dff7355703c7dcba7338a387cea1eee0"
+      },
+      "input_archive": {
+        "path": "/Volumes/external/cbus-toolkit-root-research-20260915/thermostat-temperature-acceptance-v1/python313-v2/inputs.tar.gz",
+        "sha256": "5b205c1de34318ec00c1b1af994042874fae95c055be449e046b812607c2fa59"
+      },
+      "input_count": 140,
+      "loaded_module_count": 54,
+      "fresh_original": {
+        "path": "/Volumes/external/cbus-toolkit-root-research-20260915/thermostat-temperature-acceptance-v1/python313-v2/fresh-original/report.json",
+        "sha256": "cf074423eb40d66506dd212b06f2255ebc581813451a84df81f3480743e3d85b",
+        "cases": 28840,
+        "input_archive_sha256": "54eb53a00f7dbbb542b05d0f956830bf6a2df64e26080a6f70f1a5155e7eac79",
+        "inputs": 67,
+        "observation": {
+          "path": "/Volumes/external/cbus-toolkit-root-research-20260915/thermostat-temperature-acceptance-v1/python313-v2/fresh-original/observation/report.json",
+          "sha256": "d6392a56e8e5cc3a999cf9b4676b4810e8dd77de0cd87d1996095cb185e66c36"
+        }
+      }
+    },
+    {
+      "python": "3.10.20",
+      "passed": true,
+      "tests": 17,
+      "skipped": 0,
+      "duration_seconds": 11.484,
+      "report": {
+        "path": "/Volumes/external/cbus-toolkit-root-research-20260915/thermostat-temperature-acceptance-v1/python310-v1/report.json",
+        "sha256": "dc2840d3c5d9d95f3a4d7540a6cc5f983e3dd61b5b08d66111132f101db1f0a5"
+      },
+      "input_archive": {
+        "path": "/Volumes/external/cbus-toolkit-root-research-20260915/thermostat-temperature-acceptance-v1/python310-v1/inputs.tar.gz",
+        "sha256": "9940e46163fb7499a53e99ed1b536b5dd8a51a6a385eb2856b2ab338ef21ce4d"
+      },
+      "input_count": 139,
+      "loaded_module_count": 54,
+      "fresh_original": {
+        "path": "/Volumes/external/cbus-toolkit-root-research-20260915/thermostat-temperature-acceptance-v1/python310-v1/fresh-original/report.json",
+        "sha256": "654752522e6dc656925a3519284a14c8f31452813c66b6803cad98af53ea7bde",
+        "cases": 28840,
+        "input_archive_sha256": "8d2db181ce05fe722a487b300ea3b5b481e18ba64980ac026260f40836dc38d3",
+        "inputs": 67,
+        "observation": {
+          "path": "/Volumes/external/cbus-toolkit-root-research-20260915/thermostat-temperature-acceptance-v1/python310-v1/fresh-original/observation/report.json",
+          "sha256": "de4eb3e41da662c11e2c15eff841e1b1be98c5833982087d757d48b9824d09c9"
+        }
+      }
+    }
+  ],
+  "source_sha256": {
+    "src/cbus_toolkit/thermostat_temperature.py": "a6db5f7e6a334a2aca7eeacd57d900e353fb6049adbca3497c8647899cac05ae",
+    "src/cbus_toolkit/thermostat_temperature_cli.py": "4d42dcf46a1a3dc32c64a0d4d8a15858603563c237661b6507809381a5d6efe1",
+    "src/cbus_toolkit/cli.py": "9faf9549f2654f872836c95ac27f4485fcc9aff7efee6f0d89c0ea9bb2584d3c",
+    "research/thermostat_temperature_original.py": "419e2b5b2ec29c57993cfc1f17d707d5ebe806ed1a26dd5bb7e20a5121bc5cf8",
+    "research/NativeThermostatTemperatureProbe.py": "e871868e80318a82cb9d588cb01cc705b317be5797e731355e5c5ebbd00bc912",
+    "research/fixtures/thermostat-temperature-vectors.json": "188050a51a4324b0039dba68383a66d528baabcfe88210b3634ba1f372fd31d0",
+    "research/fixtures/thermostat-temperature-native-acceptance.json": "a374c546544bc8dc1815344283273a7ea19a0c5b4814c6a106113f16ae2e671d",
+    "tests/test_thermostat_temperature.py": "249b882d850538046a4b2c812be64a3b676a8a4ea51bee90b83150565dedee27",
+    "tests/test_cli_thermostat_temperature.py": "58505d4b9a74ff92aeedb1261451a43aa9f7176cb2d5172a50c2d69642031a03",
+    "tests/test_thermostat_temperature_original.py": "c1bc09469f753be1bdcb2a47f8c5a563695b9c0eb8eb5cb0f18ea65fe21a6b25"
+  },
+  "original_methods": 14,
+  "native_windows_pilot_cases": 28,
+  "native_windows_full_cases": 1176,
+  "fresh_original_cases_per_python": 28840,
+  "not_in_full1725wheel": true,
+  "scope": "Original scalar arithmetic with explicit Celsius/Fahrenheit preference and signed Int32 inputs. No full thermostat form, scheduling, database save/load or physical device claim.",
+  "preserved_attempts": [
+    "Fixed-address native pilot failed VirtualAlloc before original conversions; new original-relocation harness passed.",
+    "First helper trial linearly disassembled embedded constant pools and rejected before original conversions; reached-instruction decoding corrected the harness.",
+    "Initial15-test Python3.13 pass predates two parent file-reader review corrections. Final17-test runs include FIFO/race and first-error/close regressions."
+  ],
+  "independent_reviews": {
+    "project_store": "Core/formulas/publictypes/CLI/portabletests clear",
+    "cgate_impl": "Original instruction helper and first-error/file-admission fixes clear",
+    "pci_impl": "Native comparator/dynamic wrappers/provenance clear"
+  }
+}

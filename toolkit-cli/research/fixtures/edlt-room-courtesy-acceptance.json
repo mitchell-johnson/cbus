@@ -1,0 +1,183 @@
+{
+  "format": "cbus-edlt-room-courtesy-acceptance-v1",
+  "passed": true,
+  "scope": "5055EDL5.5 Room Courtesy database PP; no physical device",
+  "python": "3.10.20",
+  "cgate": "3.4.0.2001",
+  "tests": 12,
+  "skipped": 0,
+  "elapsed_seconds": 32.349,
+  "modern_runs": {
+    "python": "3.13.14",
+    "module": {
+      "tests": 10,
+      "skipped": 0,
+      "elapsed_seconds": 12.861
+    },
+    "cli": {
+      "tests": 2,
+      "skipped": 0,
+      "elapsed_seconds": 17.459
+    }
+  },
+  "modes": {
+    "bell-press": 25,
+    "unused": 255
+  },
+  "colours": {
+    "none": 0,
+    "white": 1,
+    "red": 2,
+    "green": 3,
+    "blue": 4,
+    "cyan": 5,
+    "magenta": 6,
+    "yellow": 7,
+    "orange": 8
+  },
+  "defaults": {
+    "mode": "bell-press",
+    "colours": [
+      "none",
+      "none"
+    ],
+    "label": "blank",
+    "status": "blank",
+    "state_icons": [
+      132,
+      132
+    ],
+    "default_text_allocations": 0
+  },
+  "application_scope": {
+    "inclusive_range": [
+      48,
+      127
+    ],
+    "additional": [
+      136
+    ]
+  },
+  "applications": [
+    {
+      "application": 127,
+      "crcs": {
+        "OverallCRC": [
+          26,
+          89
+        ],
+        "GlobalParameterCRC": [
+          94,
+          111
+        ],
+        "WidgetsCRC": [
+          172,
+          207
+        ],
+        "StaticTextCRC": [
+          106,
+          201
+        ],
+        "ScenesCheckSum": [
+          184,
+          6
+        ]
+      },
+      "all_pp_reloaded": true
+    },
+    {
+      "application": 136,
+      "crcs": {
+        "OverallCRC": [
+          168,
+          79
+        ],
+        "GlobalParameterCRC": [
+          93,
+          140
+        ],
+        "WidgetsCRC": [
+          172,
+          207
+        ],
+        "StaticTextCRC": [
+          106,
+          201
+        ],
+        "ScenesCheckSum": [
+          184,
+          6
+        ]
+      },
+      "all_pp_reloaded": true
+    }
+  ],
+  "dll_sha256": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+  "physical_device_verified": false,
+  "literal_records": {
+    "default": "0F0084840000FF19000000000000000000000000000000000000000000000000",
+    "bound-default": "0F00848400002A19000000000000000000000000000000000000000000000000",
+    "unused-colours": "0F80848400002AFF000002030000000000000000000000000000000000000000",
+    "custom-static": "0FB5848400002AFF3F3E02030000000000000000000000000000000000000000",
+    "bell-retains-labels": "0FB5848400002A193F3E02030000000000000000000000000000000000000000",
+    "colour-0": "0FB5848400002A193F3E00080000000000000000000000000000000000000000",
+    "colour-1": "0FB5848400002A193F3E01070000000000000000000000000000000000000000",
+    "colour-2": "0FB5848400002A193F3E02060000000000000000000000000000000000000000",
+    "colour-3": "0FB5848400002A193F3E03050000000000000000000000000000000000000000",
+    "colour-4": "0FB5848400002A193F3E04040000000000000000000000000000000000000000",
+    "colour-5": "0FB5848400002A193F3E05030000000000000000000000000000000000000000",
+    "colour-6": "0FB5848400002A193F3E06020000000000000000000000000000000000000000",
+    "colour-7": "0FB5848400002A193F3E07010000000000000000000000000000000000000000",
+    "colour-8": "0FB5848400002A193F3E08000000000000000000000000000000000000000000",
+    "dynamic-icons": "0FA7848400002A19010302030000000000000000000000000000000000000000",
+    "dynamic-text": "0F96848400002A19020002030000000000000000000000000000000000000000",
+    "same-index-refresh": "0FA7848400002A19020002030000000000000000000000000000000000000000",
+    "group-refresh": "0FA7848400002B19020002030000000000000000000000000000000000000000",
+    "application-127": "0FA7848400002B19020002030000000000000000000000000000000000000000",
+    "application-136": "0FA7848400002B19020002030000000000000000000000000000000000000000",
+    "blank-types": "0F80848400002B19000002030000000000000000000000000000000000000000",
+    "single-icon-both-bytes": "0F80898900002B19000002030000000000000000000000000000000000000000",
+    "no-forcing": "0F80898900002B19000002030000000000000000000000000000000000000000",
+    "opaque-default": "0F0084840405FF19000000000C0D0E0F101112131415161718191A1B1C1D1E1F",
+    "opaque-blank-default": "0F0084840405FF19080900000C0D0E0F101112131415161718191A1B1C1D1E1F"
+  },
+  "assertions": [
+    "Original RCPData constructor/defaults, both modes and all nine colours match independent literal vectors",
+    "Original static label/status indexes8/9 and colours10/11 remain distinct; mode edits preserve selected text references",
+    "No default static allocation and no forced-value change; fresh default preserves opaque bytes and already-blank indexes",
+    "Both original dynamic index setters refresh same-index network metadata; explicit type required and native rejection leaves all PP unchanged",
+    "Whole-unit shared references, sequential allocation, equal-string dedup, exact duplicate slot selection and full-table rejection",
+    "Original numeric-group restore lookup copies137 across applications; retained group keeps selected state",
+    "Supported pages and widget placement preserve unrelated widgets/scenes; invalid profile/layout/options reject",
+    "Original application selectors48..127 plus136;127and136 each native raw/CRC/save/close/load with full PP equality",
+    "Native literal default/custom/dynamic records, restore byte and shared Maori UTF8 raw data verified",
+    "Five CRCs match the original DLL private calculation for both tested applications",
+    "Canonical plan, whole-source stale checks, schema/identity validation, rollback and no recovery I/O after disconnect",
+    "CLI offline/preview/source preservation, modes/colours/static/dynamic fields, same-index and DB-only guards, full saved reload",
+    "All native projects uniquely marked disposable and remain unopened state=new"
+  ],
+  "limits": [
+    "No physical panel invocation or colour behaviour acceptance",
+    "No custom state-icon authoring",
+    "Exact5055EDL/KEYGL5 firmware5.5.00 only",
+    "No network dynamic-label upload or metadata inference"
+  ],
+  "sources_sha256": {
+    "CBusLogicModel/CBusLogicModel.EDLT.WidgetData/RCPData.cs": "5a18876d33b2733c188c612e7b64bb1a3dec59257b555da70c2f638ad0741b95",
+    "eDLT/eDLT.WidgetPanels/RCAWidget.cs": "40b99765bb4b3a94683b370d9d62b22e88a0eb3da5382b289c1f75ea877e44a3",
+    "CBusLogicModel/CBusLogicModel.Utilities/CommonConstants.cs": "98e20887cf973205eaa42e621f0ee21ee5b9367aac1553f88c75b86e16d39020",
+    "CBusLogicModel/CBusLogicModel.Units.EDLT.Utilities/MacroFunctionTypes.cs": "828d9b0a68076478b8514764a65b2374ee4f7cd236c088548484a2f533d176d7",
+    "CBusLogicModel/CBusLogicModel.Units/CBusBaseUnit.cs": "4f0468941222c6696db5836a32fc0b70d18fcf704ea8fe6dd0c2d709a3842487",
+    "CBusLogicModel/CBusLogicModel.Utilities/BindingListCBusObject.cs": "700dc6020b82886b9ed69c94c07cddfd0da64da4d14d18941e8308ce75563bbe",
+    "CBusLogicModel/CBusLogicModel.Units.EDLT.WidgetData.BaseObjects/StatusLabelAppGroupData.cs": "d0116aad0fe28fef6101ba36a719cbe08aa562036cb47ce86e71cd20470c8b6a",
+    "CBusLogicModel/CBusLogicModel.Units.EDLT.WidgetData.BaseObjects/StatusLabelTypeData.cs": "58f98c4469b4af7c90df4afe48c72e54b9b94c6683a655b80085b851784d891e"
+  },
+  "files_sha256": {
+    "src/cbus_toolkit/edlt_room_courtesy.py": "24d886f38e4612a83c81c8284951f886c4e7702ab7b1aeec517c0feb78b57713",
+    "tests/test_edlt_room_courtesy.py": "ba46b5d73cde1975dbccf9280e4db023526f3d4c8a930594c871c373cbdf67ab",
+    "tests/test_cli_edlt_room_courtesy.py": "1dec156008544d391e5984850d338f3b1b6866b232373f56bdb42269725da55f",
+    "research/NativeEdltRCPProbe.cs": "fc3e44641919b5d10947626a2c2001b2e0a7f14557f640fd3942a98efd02b2d5",
+    "docs/edlt-room-courtesy.md": "701c67ff9ca43c123d29bb5b6b3a47ccd41e4e5a961e76bf10934dd0aab7d18d"
+  },
+  "raw_report_sha256": "6f0ef22abdb55d16a99d650dc75497cd1d5d5f23cddf2898d5df5713bc823f3e"
+}

@@ -9,6 +9,35 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  toolkit:
+    name: Toolkit CLI and Rust interoperability
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust
+
+      - name: Install Toolkit CLI and test dependencies
+        run: python -m pip install -e './toolkit-cli[test,research,serial,usb]'
+
+      - name: Build C-Gate mock for Python interoperability
+        working-directory: rust
+        run: cargo build -p cbus-cgate
+
+      - name: Toolkit offline suite and interoperability
+        working-directory: toolkit-cli
+        env:
+          PYTHONPATH: src:tests
+        run: python -m pytest tests/ -q -p no:cacheprovider
+
   rust:
     name: Rust workspace
     runs-on: ubuntu-latest

@@ -1,0 +1,195 @@
+{
+  "format": "cbus-local-native-network-acceptance-v1",
+  "passed": true,
+  "backend": "local",
+  "source_sha256": {
+    "research/verify_network.py": "6a6dbb0073750e0ff4fe64e3d9c631983d14d0eb9b7b28350b45ab0140ef5435",
+    "research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+    "tests/test_native_network_oracle.py": "1146c1b331583ffe5ea01633e0eac4911101c1b60a69d7e38e91ea2a737f1f9a",
+    "src/cbus_toolkit/cgate.py": "fef71db3a4d98c1a175a8bf0287b5abcaea4689df835dea7b0c19413e206eb15",
+    "src/cbus_toolkit/pci.py": "fb453cc58f76eebac67e5771ba4bd67efb6c8fd4ab6f4652a0bbc0651935de1e",
+    "src/cbus_toolkit/programming.py": "30b0def5768e5a7f926eb07771dddb02a4ec5bf6e724fad735be8f3f59c07a96",
+    "src/cbus_toolkit/simulator.py": "1626a046f5bd274b185bec1b11236f32a274abe06d41e87012655012dc58fec6"
+  },
+  "inputs_unchanged": true,
+  "tests": [
+    {
+      "python": "3.13.14",
+      "tests": 2,
+      "skips": 0,
+      "passed": true,
+      "duration_seconds": 12.16,
+      "report": "research/runtime/native-network-macos/python313-report.json",
+      "report_sha256": "bf0cd1d57645714a4bcce239cd6251fa2f5ebba5ec5568920a4f96a1956097fd",
+      "log_sha256": "5320003d7b68c9dacff60e9cef90be775afa0194133e46b0175f5b7135d4f471",
+      "owned_project": "PCI91D19",
+      "service": {
+        "backend": "local",
+        "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+        "java": "/Users/mitchell/source/cbus/toolkit-cli/research/runtime/jdk11-macos-owned/jdk-11.0.32.1+1/Contents/Home/bin/java",
+        "java_version": "openjdk version \"11.0.32.1\" 2026-08-18\nOpenJDK Runtime Environment Temurin-11.0.32.1+1 (build 11.0.32.1+1)\nOpenJDK 64-Bit Server VM Temurin-11.0.32.1+1 (build 11.0.32.1+1, mixed mode)",
+        "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+        "work_directory": "/var/folders/8t/bnm3x3vs64vcv_mfr2ry767m0000gn/T/cbus-owned-native-j8lgl59k",
+        "projects_adopted": false,
+        "listener_ownership_verified": true,
+        "cleanup_complete": true,
+        "cleanup_errors": [],
+        "process_exit_confirmed": true,
+        "work_removed": true,
+        "reserved_sockets_closed": true,
+        "log_closed": true,
+        "configured_ports": [
+          57851,
+          57852,
+          57853,
+          57854,
+          57855,
+          57856
+        ],
+        "pid": 90589,
+        "argv": [
+          "/Users/mitchell/source/cbus/toolkit-cli/research/runtime/jdk11-macos-owned/jdk-11.0.32.1+1/Contents/Home/bin/java",
+          "-Djava.net.preferIPv4Stack=true",
+          "-Djava.io.tmpdir=/var/folders/8t/bnm3x3vs64vcv_mfr2ry767m0000gn/T/cbus-owned-native-j8lgl59k/tmp",
+          "-Xms64M",
+          "-Xmx512M",
+          "-jar",
+          "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/cgate/app/cgate.jar"
+        ],
+        "listeners": [
+          "127.0.0.1:57851",
+          "127.0.0.1:57852",
+          "127.0.0.1:57853",
+          "127.0.0.1:57854",
+          "127.0.0.1:57855",
+          "127.0.0.1:57856"
+        ],
+        "exit_code": 143,
+        "server_log_sha256": "c225837d1bac4bbda2a623e544132133cf2959550bf88e57ed878923a7a951bc",
+        "server_log_bytes": 240,
+        "server_log_hashed_bytes": 240,
+        "server_log_tail": [
+          "Schneider Electric C-Gate(TM) v3.4.0 (build 2001)",
+          "C-Gate is running."
+        ]
+      },
+      "discovered_units": [
+        {
+          "unit": 4,
+          "type": "KEYE1",
+          "state": "ok"
+        },
+        {
+          "unit": 5,
+          "type": "KEYGL5",
+          "state": "ok"
+        },
+        {
+          "unit": 16,
+          "type": "PC_CNIED",
+          "state": "ok"
+        }
+      ],
+      "programming_memory_write": {
+        "verified": true,
+        "scope": "PCIClient programming memory, not native PP SAVE or hardware flash",
+        "original": "38ff",
+        "written": "39ff",
+        "read_back": "39ff",
+        "reloaded_read_back": "39ff",
+        "restored": "38ff"
+      }
+    },
+    {
+      "python": "3.10.20",
+      "tests": 2,
+      "skips": 0,
+      "passed": true,
+      "duration_seconds": 12.362,
+      "report": "research/runtime/native-network-macos/python310-report.json",
+      "report_sha256": "926135c4ed067e8db4c2e8987a716b4449e3d92f0f723ce46e1a9a07003d9e21",
+      "log_sha256": "21167c6fae96e9b07504bea27200e6c7b09c1b33e9794c41532c71b05cc0a0d1",
+      "owned_project": "PCI8A0E4",
+      "service": {
+        "backend": "local",
+        "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+        "java": "/Users/mitchell/source/cbus/toolkit-cli/research/runtime/jdk11-macos-owned/jdk-11.0.32.1+1/Contents/Home/bin/java",
+        "java_version": "openjdk version \"11.0.32.1\" 2026-08-18\nOpenJDK Runtime Environment Temurin-11.0.32.1+1 (build 11.0.32.1+1)\nOpenJDK 64-Bit Server VM Temurin-11.0.32.1+1 (build 11.0.32.1+1, mixed mode)",
+        "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+        "work_directory": "/var/folders/8t/bnm3x3vs64vcv_mfr2ry767m0000gn/T/cbus-owned-native-ch7idzbe",
+        "projects_adopted": false,
+        "listener_ownership_verified": true,
+        "cleanup_complete": true,
+        "cleanup_errors": [],
+        "process_exit_confirmed": true,
+        "work_removed": true,
+        "reserved_sockets_closed": true,
+        "log_closed": true,
+        "configured_ports": [
+          57845,
+          57846,
+          57847,
+          57848,
+          57849,
+          57850
+        ],
+        "pid": 90588,
+        "argv": [
+          "/Users/mitchell/source/cbus/toolkit-cli/research/runtime/jdk11-macos-owned/jdk-11.0.32.1+1/Contents/Home/bin/java",
+          "-Djava.net.preferIPv4Stack=true",
+          "-Djava.io.tmpdir=/var/folders/8t/bnm3x3vs64vcv_mfr2ry767m0000gn/T/cbus-owned-native-ch7idzbe/tmp",
+          "-Xms64M",
+          "-Xmx512M",
+          "-jar",
+          "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/cgate/app/cgate.jar"
+        ],
+        "listeners": [
+          "127.0.0.1:57845",
+          "127.0.0.1:57846",
+          "127.0.0.1:57847",
+          "127.0.0.1:57848",
+          "127.0.0.1:57849",
+          "127.0.0.1:57850"
+        ],
+        "exit_code": 143,
+        "server_log_sha256": "7a4baba1be1996aa54fb944724eacfe511ebb37d7b82cdf2de48e5f04f0f73fe",
+        "server_log_bytes": 240,
+        "server_log_hashed_bytes": 240,
+        "server_log_tail": [
+          "Schneider Electric C-Gate(TM) v3.4.0 (build 2001)",
+          "C-Gate is running."
+        ]
+      },
+      "discovered_units": [
+        {
+          "unit": 4,
+          "type": "KEYE1",
+          "state": "ok"
+        },
+        {
+          "unit": 5,
+          "type": "KEYGL5",
+          "state": "ok"
+        },
+        {
+          "unit": 16,
+          "type": "PC_CNIED",
+          "state": "ok"
+        }
+      ],
+      "programming_memory_write": {
+        "verified": true,
+        "scope": "PCIClient programming memory, not native PP SAVE or hardware flash",
+        "original": "38ff",
+        "written": "39ff",
+        "read_back": "39ff",
+        "reloaded_read_back": "39ff",
+        "restored": "38ff"
+      }
+    }
+  ],
+  "scope": "Owned local C-Gate discovery plus independent simulator programming memory/disk restoration; not hardware or PP SAVE",
+  "physical_device_verified": false,
+  "full_wheel_acceptance": false,
+  "earlier_run": "Initial3-second scan observation window did not satisfy acceptance on either version; final10-second window matches successful standalone pilot. Earlier failure logs retained; failing temporary detail reports were not preserved."
+}

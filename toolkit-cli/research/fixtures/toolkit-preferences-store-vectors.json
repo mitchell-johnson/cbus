@@ -1,0 +1,1350 @@
+{
+  "format": "cbus-toolkit-preferences-store-vectors-v1",
+  "executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "schema": {
+    "format": "cbus-toolkit-preference-schema-research-v3",
+    "executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "source_report": "matrix-313-v3.json",
+    "source_report_sha256": "aaf86f405bde8ec0792e1a8a880a99d3fc349b7eb5e944a7a142132ee8331857",
+    "constructor_scope": "Original constructors, resource/name/value/flag assignments and eight default-language registration calls execute. Allocation, memory/string/runtime support and resource reads are fixtures. Whole Toolkit startup and installer registry defaults are not executed.",
+    "full_startup_defaults_verified": false,
+    "rows": [
+      {
+        "name": "LoadChangePortDisable",
+        "kind": "boolean",
+        "value": false,
+        "boolean_default": false,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": true,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "ApplicationLogDisable",
+        "kind": "boolean",
+        "value": false,
+        "boolean_default": false,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": true,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "TemperatureUnit",
+        "kind": "integer",
+        "value": 0,
+        "boolean_default": null,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": true,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "DoNotPauseEventsWhileLoadingProject",
+        "kind": "boolean",
+        "value": false,
+        "boolean_default": false,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": false,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "ShowProjectManager",
+        "kind": "boolean",
+        "value": false,
+        "boolean_default": true,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": false,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "RememberProjectManagerVisibleState",
+        "kind": "boolean",
+        "value": false,
+        "boolean_default": false,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": true,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "Default Site",
+        "kind": "string",
+        "value": "LOCAL",
+        "boolean_default": null,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": false,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "Default COM Port",
+        "kind": "string",
+        "value": "COM1",
+        "boolean_default": null,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": false,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "Default Interface Type",
+        "kind": "string",
+        "value": "Serial (PCI)",
+        "boolean_default": null,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": false,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "Default CNI Address",
+        "kind": "string",
+        "value": "",
+        "boolean_default": null,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": false,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "AutoInvokeMacroFunctionDialog",
+        "kind": "boolean",
+        "value": false,
+        "boolean_default": false,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": true,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "AutoInvokeDatabaseUnitDialog",
+        "kind": "boolean",
+        "value": false,
+        "boolean_default": false,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": true,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "SynchroniseFilters",
+        "kind": "boolean",
+        "value": true,
+        "boolean_default": true,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": true,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "CGateShutdownOnExit",
+        "kind": "boolean",
+        "value": false,
+        "boolean_default": false,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": true,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "CGateShutdownOnExitAsk",
+        "kind": "boolean",
+        "value": false,
+        "boolean_default": false,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": true,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "CloseProjectsOnExit",
+        "kind": "boolean",
+        "value": false,
+        "boolean_default": false,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": true,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "CGateShutdownDecision",
+        "kind": "integer",
+        "value": 0,
+        "boolean_default": null,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": false,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "UnitDialogOverride",
+        "kind": "boolean",
+        "value": false,
+        "boolean_default": false,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": true,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "UnitDialogModeAdvanced",
+        "kind": "boolean",
+        "value": false,
+        "boolean_default": false,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": true,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "UnitDialogAlwaysClassic",
+        "kind": "boolean",
+        "value": false,
+        "boolean_default": false,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": true,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "FeedbackLog",
+        "kind": "boolean",
+        "value": false,
+        "boolean_default": false,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": true,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "FeedbackLogFile",
+        "kind": "string",
+        "value": "",
+        "boolean_default": null,
+        "machine_first": true,
+        "skip_save": true,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": false,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKLM",
+          "HKCU-on-error"
+        ],
+        "load_hives": [
+          "HKLM",
+          "HKCU-on-error"
+        ]
+      },
+      {
+        "name": "FeedbackLogSize",
+        "kind": "integer",
+        "value": 0,
+        "boolean_default": null,
+        "machine_first": true,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": true,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKLM",
+          "HKCU-on-error"
+        ],
+        "load_hives": [
+          "HKLM",
+          "HKCU-on-error"
+        ]
+      },
+      {
+        "name": "JavaHeapMin",
+        "kind": "integer",
+        "value": 0,
+        "boolean_default": null,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": true,
+        "key": "\\Software\\Schneider Electric\\C-Gate\\CurrentVersion\\",
+        "ui_edited": true,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "JavaHeapMax",
+        "kind": "integer",
+        "value": 0,
+        "boolean_default": null,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": true,
+        "key": "\\Software\\Schneider Electric\\C-Gate\\CurrentVersion\\",
+        "ui_edited": true,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "IlluminanceMeasurementUnit",
+        "kind": "integer",
+        "value": 0,
+        "boolean_default": null,
+        "machine_first": true,
+        "skip_save": true,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": false,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKLM",
+          "HKCU-on-error"
+        ],
+        "load_hives": [
+          "HKLM",
+          "HKCU-on-error"
+        ]
+      },
+      {
+        "name": "ClipsalWebsiteURL",
+        "kind": "string",
+        "value": "https://www.clipsal.com",
+        "boolean_default": null,
+        "machine_first": true,
+        "skip_save": true,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": false,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKLM",
+          "HKCU-on-error"
+        ],
+        "load_hives": [
+          "HKLM",
+          "HKCU-on-error"
+        ]
+      },
+      {
+        "name": "CISDownloadsURL",
+        "kind": "string",
+        "value": "https://www.se.com/ww/en/product-range/2216-spacelogic-cbus-home-automation-system#software-and-firmware",
+        "boolean_default": null,
+        "machine_first": true,
+        "skip_save": true,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": false,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKLM",
+          "HKCU-on-error"
+        ],
+        "load_hives": [
+          "HKLM",
+          "HKCU-on-error"
+        ]
+      },
+      {
+        "name": "AllowLegacyApplicationCreation",
+        "kind": "boolean",
+        "value": false,
+        "boolean_default": false,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": true,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "AllowUserDefinedApplicationCreation",
+        "kind": "boolean",
+        "value": false,
+        "boolean_default": false,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": true,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "LegacyDuplicateUnitsDetection",
+        "kind": "boolean",
+        "value": true,
+        "boolean_default": true,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": false,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "ShowDatabaseLabelsOption",
+        "kind": "boolean",
+        "value": false,
+        "boolean_default": false,
+        "machine_first": false,
+        "skip_save": true,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": false,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "Default Language 1",
+        "kind": "integer",
+        "value": 1,
+        "boolean_default": null,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": false,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "Default Language 2",
+        "kind": "integer",
+        "value": -1,
+        "boolean_default": null,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": false,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "Default Language 3",
+        "kind": "integer",
+        "value": -1,
+        "boolean_default": null,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": false,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "Default Language 4",
+        "kind": "integer",
+        "value": -1,
+        "boolean_default": null,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": false,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "Default Language 5",
+        "kind": "integer",
+        "value": -1,
+        "boolean_default": null,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": false,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "Default Language 6",
+        "kind": "integer",
+        "value": -1,
+        "boolean_default": null,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": false,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "Default Language 7",
+        "kind": "integer",
+        "value": -1,
+        "boolean_default": null,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": false,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      },
+      {
+        "name": "Default Language 8",
+        "kind": "integer",
+        "value": -1,
+        "boolean_default": null,
+        "machine_first": false,
+        "skip_save": false,
+        "alternate_key": false,
+        "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+        "ui_edited": false,
+        "registry_type": "REG_SZ",
+        "save_hives": [
+          "HKCU"
+        ],
+        "load_hives": [
+          "HKCU",
+          "HKLM-on-error"
+        ]
+      }
+    ],
+    "initialization_order": [
+      {
+        "ordinal": 388,
+        "address": "0x1379b18",
+        "phase": "kipper-preferences-initializer"
+      },
+      {
+        "ordinal": 614,
+        "address": "0x136b1bc",
+        "phase": "global-preferences-initializer"
+      },
+      {
+        "ordinal": 682,
+        "address": "0x136afb8",
+        "phase": "default-language-preferences-initializer"
+      }
+    ],
+    "initialization_order_proof": {
+      "entrypoint_init_table_operand": "0x1342770",
+      "init_table_entry_pointer": "0x1342788",
+      "init_table_count": 2091,
+      "original_loop": "System.InitUnits 0x6070EC..0x60710A increments index and calls each entry in forward order",
+      "manager_create_ordinal": 387,
+      "manager_fixture": true,
+      "other_unrelated_initializers_executed": false
+    }
+  },
+  "initial_values": {
+    "LoadChangePortDisable": false,
+    "ApplicationLogDisable": false,
+    "TemperatureUnit": 0,
+    "DoNotPauseEventsWhileLoadingProject": false,
+    "ShowProjectManager": false,
+    "RememberProjectManagerVisibleState": false,
+    "Default Site": "LOCAL",
+    "Default COM Port": "COM1",
+    "Default Interface Type": "Serial (PCI)",
+    "Default CNI Address": "",
+    "AutoInvokeMacroFunctionDialog": false,
+    "AutoInvokeDatabaseUnitDialog": false,
+    "SynchroniseFilters": true,
+    "CGateShutdownOnExit": false,
+    "CGateShutdownOnExitAsk": false,
+    "CloseProjectsOnExit": false,
+    "CGateShutdownDecision": 0,
+    "UnitDialogOverride": false,
+    "UnitDialogModeAdvanced": false,
+    "UnitDialogAlwaysClassic": false,
+    "FeedbackLog": false,
+    "FeedbackLogFile": "",
+    "FeedbackLogSize": 0,
+    "JavaHeapMin": 0,
+    "JavaHeapMax": 0,
+    "IlluminanceMeasurementUnit": 0,
+    "ClipsalWebsiteURL": "https://www.clipsal.com",
+    "CISDownloadsURL": "https://www.se.com/ww/en/product-range/2216-spacelogic-cbus-home-automation-system#software-and-firmware",
+    "AllowLegacyApplicationCreation": false,
+    "AllowUserDefinedApplicationCreation": false,
+    "LegacyDuplicateUnitsDetection": true,
+    "ShowDatabaseLabelsOption": false,
+    "Default Language 1": 1,
+    "Default Language 2": -1,
+    "Default Language 3": -1,
+    "Default Language 4": -1,
+    "Default Language 5": -1,
+    "Default Language 6": -1,
+    "Default Language 7": -1,
+    "Default Language 8": -1
+  },
+  "first_load_values": {
+    "LoadChangePortDisable": false,
+    "ApplicationLogDisable": false,
+    "TemperatureUnit": 0,
+    "DoNotPauseEventsWhileLoadingProject": false,
+    "ShowProjectManager": false,
+    "RememberProjectManagerVisibleState": false,
+    "Default Site": "LOCAL",
+    "Default COM Port": "COM1",
+    "Default Interface Type": "Serial (PCI)",
+    "Default CNI Address": "",
+    "AutoInvokeMacroFunctionDialog": false,
+    "AutoInvokeDatabaseUnitDialog": false,
+    "SynchroniseFilters": true,
+    "CGateShutdownOnExit": false,
+    "CGateShutdownOnExitAsk": false,
+    "CloseProjectsOnExit": false,
+    "CGateShutdownDecision": 0,
+    "UnitDialogOverride": false,
+    "UnitDialogModeAdvanced": false,
+    "UnitDialogAlwaysClassic": false,
+    "FeedbackLog": false,
+    "FeedbackLogFile": "",
+    "FeedbackLogSize": 0,
+    "JavaHeapMin": 0,
+    "JavaHeapMax": 0,
+    "IlluminanceMeasurementUnit": 0,
+    "ClipsalWebsiteURL": "https://www.clipsal.com",
+    "CISDownloadsURL": "https://www.se.com/ww/en/product-range/2216-spacelogic-cbus-home-automation-system#software-and-firmware",
+    "AllowLegacyApplicationCreation": false,
+    "AllowUserDefinedApplicationCreation": false,
+    "LegacyDuplicateUnitsDetection": true,
+    "ShowDatabaseLabelsOption": false,
+    "Default Language 1": 1,
+    "Default Language 2": -1,
+    "Default Language 3": -1,
+    "Default Language 4": -1,
+    "Default Language 5": -1,
+    "Default Language 6": -1,
+    "Default Language 7": -1,
+    "Default Language 8": -1
+  },
+  "second_load_values": {
+    "LoadChangePortDisable": false,
+    "ApplicationLogDisable": false,
+    "TemperatureUnit": 0,
+    "DoNotPauseEventsWhileLoadingProject": false,
+    "ShowProjectManager": true,
+    "RememberProjectManagerVisibleState": false,
+    "Default Site": "LOCAL",
+    "Default COM Port": "COM1",
+    "Default Interface Type": "Serial (PCI)",
+    "Default CNI Address": "",
+    "AutoInvokeMacroFunctionDialog": false,
+    "AutoInvokeDatabaseUnitDialog": false,
+    "SynchroniseFilters": true,
+    "CGateShutdownOnExit": false,
+    "CGateShutdownOnExitAsk": false,
+    "CloseProjectsOnExit": false,
+    "CGateShutdownDecision": 0,
+    "UnitDialogOverride": false,
+    "UnitDialogModeAdvanced": false,
+    "UnitDialogAlwaysClassic": false,
+    "FeedbackLog": false,
+    "FeedbackLogFile": "",
+    "FeedbackLogSize": 0,
+    "JavaHeapMin": 0,
+    "JavaHeapMax": 0,
+    "IlluminanceMeasurementUnit": 0,
+    "ClipsalWebsiteURL": "https://www.clipsal.com",
+    "CISDownloadsURL": "https://www.se.com/ww/en/product-range/2216-spacelogic-cbus-home-automation-system#software-and-firmware",
+    "AllowLegacyApplicationCreation": false,
+    "AllowUserDefinedApplicationCreation": false,
+    "LegacyDuplicateUnitsDetection": true,
+    "ShowDatabaseLabelsOption": false,
+    "Default Language 1": 1,
+    "Default Language 2": -1,
+    "Default Language 3": -1,
+    "Default Language 4": -1,
+    "Default Language 5": -1,
+    "Default Language 6": -1,
+    "Default Language 7": -1,
+    "Default Language 8": -1
+  },
+  "original_named_save": [
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "LoadChangePortDisable",
+      "type": 1,
+      "utf16le_hex": "460061006c00730065000000",
+      "value": "False",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "ApplicationLogDisable",
+      "type": 1,
+      "utf16le_hex": "460061006c00730065000000",
+      "value": "False",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "TemperatureUnit",
+      "type": 1,
+      "utf16le_hex": "30000000",
+      "value": "0",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "DoNotPauseEventsWhileLoadingProject",
+      "type": 1,
+      "utf16le_hex": "460061006c00730065000000",
+      "value": "False",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "ShowProjectManager",
+      "type": 1,
+      "utf16le_hex": "54007200750065000000",
+      "value": "True",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "RememberProjectManagerVisibleState",
+      "type": 1,
+      "utf16le_hex": "460061006c00730065000000",
+      "value": "False",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "Default Site",
+      "type": 1,
+      "utf16le_hex": "4c004f00430041004c000000",
+      "value": "LOCAL",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "Default COM Port",
+      "type": 1,
+      "utf16le_hex": "43004f004d0031000000",
+      "value": "COM1",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "Default Interface Type",
+      "type": 1,
+      "utf16le_hex": "530065007200690061006c002000280050004300490029000000",
+      "value": "Serial (PCI)",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "Default CNI Address",
+      "type": 1,
+      "utf16le_hex": "0000",
+      "value": "",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "AutoInvokeMacroFunctionDialog",
+      "type": 1,
+      "utf16le_hex": "460061006c00730065000000",
+      "value": "False",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "AutoInvokeDatabaseUnitDialog",
+      "type": 1,
+      "utf16le_hex": "460061006c00730065000000",
+      "value": "False",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "SynchroniseFilters",
+      "type": 1,
+      "utf16le_hex": "54007200750065000000",
+      "value": "True",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "CGateShutdownOnExit",
+      "type": 1,
+      "utf16le_hex": "460061006c00730065000000",
+      "value": "False",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "CGateShutdownOnExitAsk",
+      "type": 1,
+      "utf16le_hex": "460061006c00730065000000",
+      "value": "False",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "CloseProjectsOnExit",
+      "type": 1,
+      "utf16le_hex": "460061006c00730065000000",
+      "value": "False",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "CGateShutdownDecision",
+      "type": 1,
+      "utf16le_hex": "30000000",
+      "value": "0",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "UnitDialogOverride",
+      "type": 1,
+      "utf16le_hex": "460061006c00730065000000",
+      "value": "False",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "UnitDialogModeAdvanced",
+      "type": 1,
+      "utf16le_hex": "460061006c00730065000000",
+      "value": "False",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "UnitDialogAlwaysClassic",
+      "type": 1,
+      "utf16le_hex": "460061006c00730065000000",
+      "value": "False",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "FeedbackLog",
+      "type": 1,
+      "utf16le_hex": "460061006c00730065000000",
+      "value": "False",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000002",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "FeedbackLogSize",
+      "type": 1,
+      "utf16le_hex": "30000000",
+      "value": "0",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Schneider Electric\\C-Gate\\CurrentVersion\\",
+      "name": "JavaHeapMin",
+      "type": 1,
+      "utf16le_hex": "30000000",
+      "value": "0",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Schneider Electric\\C-Gate\\CurrentVersion\\",
+      "name": "JavaHeapMax",
+      "type": 1,
+      "utf16le_hex": "30000000",
+      "value": "0",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "AllowLegacyApplicationCreation",
+      "type": 1,
+      "utf16le_hex": "460061006c00730065000000",
+      "value": "False",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "AllowUserDefinedApplicationCreation",
+      "type": 1,
+      "utf16le_hex": "460061006c00730065000000",
+      "value": "False",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "LegacyDuplicateUnitsDetection",
+      "type": 1,
+      "utf16le_hex": "54007200750065000000",
+      "value": "True",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "Default Language 1",
+      "type": 1,
+      "utf16le_hex": "31000000",
+      "value": "1",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "Default Language 2",
+      "type": 1,
+      "utf16le_hex": "2d0031000000",
+      "value": "-1",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "Default Language 3",
+      "type": 1,
+      "utf16le_hex": "2d0031000000",
+      "value": "-1",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "Default Language 4",
+      "type": 1,
+      "utf16le_hex": "2d0031000000",
+      "value": "-1",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "Default Language 5",
+      "type": 1,
+      "utf16le_hex": "2d0031000000",
+      "value": "-1",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "Default Language 6",
+      "type": 1,
+      "utf16le_hex": "2d0031000000",
+      "value": "-1",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "Default Language 7",
+      "type": 1,
+      "utf16le_hex": "2d0031000000",
+      "value": "-1",
+      "failed": false,
+      "phase": "save"
+    },
+    {
+      "call": "write",
+      "hive": "0x80000001",
+      "key": "\\Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0\\",
+      "name": "Default Language 8",
+      "type": 1,
+      "utf16le_hex": "2d0031000000",
+      "value": "-1",
+      "failed": false,
+      "phase": "save"
+    }
+  ],
+  "original_registration_order": [
+    {
+      "ordinal": 388,
+      "address": "0x1379b18",
+      "phase": "kipper-preferences-initializer"
+    },
+    {
+      "ordinal": 614,
+      "address": "0x136b1bc",
+      "phase": "global-preferences-initializer"
+    },
+    {
+      "ordinal": 682,
+      "address": "0x136afb8",
+      "phase": "default-language-preferences-initializer"
+    }
+  ],
+  "sources": {
+    "schema-v3.json": "e3e32d33dff37395f73a8aec673b8ef312147d112e87e41654eefc3dd0ea8613",
+    "matrix-313-v3.json": "aaf86f405bde8ec0792e1a8a880a99d3fc349b7eb5e944a7a142132ee8331857",
+    "persistence_probe.py": "1eee64c792100b6d6c02ab5d99b5acb313b039107b3857fefbcb931eb3b38e16",
+    "persistence_matrix.py": "3da1468d1b5f14f70465ba50dd015dbc385d1d813effca88cfd289ce28fd418c"
+  },
+  "scope": {
+    "original_manager_constructor_serializer": true,
+    "original_integer_numeric": true,
+    "ascii_case_comparison_fixture": true,
+    "string_and_heap_runtime_fixture": true,
+    "registry_and_exception_dispatch_fixture": true,
+    "actual_registry_access": false,
+    "whole_toolkit_startup": false
+  }
+}

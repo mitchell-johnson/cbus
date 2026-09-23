@@ -1,0 +1,43 @@
+{
+  "format": "thermostat-afterload-original12-analysis-v1",
+  "passed": true,
+  "launcher_report_sha256": "b691e536bd9f6373965981db9216e115c7786587aef6098d6e4d1a09656932b5",
+  "capture_report_sha256": "019eb5b13266563b1fea95a1421fd3d5a6efa1026b8d2da6c76702b6eea30ab3",
+  "archive_sha256": "e5cbb15bc5e94b3dd81bdd95e45bf1a61147ea660f6e7b98dc8b4fc461251e38",
+  "archive_inputs": 76,
+  "cases": 12,
+  "original_invocations_attempted": 12,
+  "original_instruction_entries": 71832,
+  "all_cases_matched_expected": true,
+  "runtime_sources_stable": true,
+  "inputs_unchanged": true,
+  "network_denied": true,
+  "native_calls": false,
+  "vm_calls": false,
+  "physical_cni_calls": false,
+  "confirmed_rules": [
+    "EvapProgramEnabled values greater than 1 normalize to 0",
+    "NonEvapProgramEnabled values greater than 1 normalize to 1",
+    "RemoteScheduleEnable is overwritten by the normalized Evap/NonEvap logical OR",
+    "disabled loading still finds or creates application 203",
+    "disabled loading resolves existing group 255 without creating a missing group",
+    "enabled roles reuse shared group identity and create missing groups in On/Off/Override order",
+    "a full 256-object group collection refuses additional creation"
+  ],
+  "not_executed": [
+    "inherited loader implementation",
+    "original constructors and class registration",
+    "attribute callback implementations",
+    "real disk or project saves",
+    "exception unwinding",
+    "native C-Gate or physical programming"
+  ],
+  "preserved_first_failure": {
+    "launcher_report_sha256": "9ac3be92cfc00c953598236aa130c4fdb0963fa5fe774930d4c0f3fa5f124c51",
+    "capture_report_sha256": "0c3adf2a550744db97f57c7d9d0441f07a96573a786cfe057ba0befac29a974e",
+    "case": "L01",
+    "original_instruction_entries": 45,
+    "cause": "trace-only Python argument collision before provider behavior"
+  },
+  "external_evidence": "/Volumes/external/cbus-toolkit-thermostat-unit-load-20260924-v3/original12-313-20260924-v1"
+}

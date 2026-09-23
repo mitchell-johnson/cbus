@@ -1,0 +1,220 @@
+{
+  "format": "cbus-toolkit-updates-acceptance-v2",
+  "scope": "Printed original-menu URL and unverified server-assigned SESU catalogue candidates only",
+  "accepted": true,
+  "runs": [
+    {
+      "report": "research/runtime/toolkit-update-check/acceptance-final-313-v2/report.json",
+      "sha256": "1664c61bcf9b009a53abb7f802ea9fdc9d17fdb9df996153a5e443d0d92f82b4",
+      "python": "3.13.14 (main, Jun 10 2026, 12:24:04) [Clang 17.0.0 (clang-1700.6.4.2)]",
+      "tests_run": 19,
+      "elapsed_seconds": 3.676265875023091,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "source_hashes": {
+        "docs/toolkit-updates.md": "f28c61a9294401665e18d8bd4b5445bd3fa7ba33e542425c065a1c478bc3376e",
+        "research/NativeToolkitCatalogueProbe.cs": "baec31f714495332035e621feacdfa7feb5f240949d7e36801013a1ca2f39bc5",
+        "research/fixtures/toolkit-updates-vectors.json": "e101d89620bf5415d239e7ee4b37efccfea092ba85b46347468e8ecab9c6e5ea",
+        "research/runtime/toolkit-update-check/accept_updates.py": "dfccdcfc4f7b8e91d5b8c0aef712013b788275013025fadd41d433838e7b7ab6",
+        "research/toolkit_updates_original.py": "6ed9fac47e7af55c04f09e738d1d236ca69584d54da8322337370865cb91f852",
+        "src/cbus_toolkit/__init__.py": "a39021e17c28b8e97c4b6ad7b20ffe35ce621332c0f4d006162f77c0703b5fed",
+        "src/cbus_toolkit/cgate.py": "fef71db3a4d98c1a175a8bf0287b5abcaea4689df835dea7b0c19413e206eb15",
+        "src/cbus_toolkit/cli.py": "9cb36fdcfaa90d3946b936181062a9886c104c930313ea25de5eef2d5ca1f371",
+        "src/cbus_toolkit/device_scenes.py": "81b0a2fd8b73bd1e22e33c2e9b83e79b7f6fdef8511d138b44865af0175894cc",
+        "src/cbus_toolkit/edlt.py": "f5c996698b5970c56b9bfa60525a35e96a3734328780cd35b9ae07a9663ca735",
+        "src/cbus_toolkit/edlt_activation.py": "d9ef076dfbf71d39cbdce0ff2b5ae27fc29be8f2a547fd4507a51a36dfe34cd0",
+        "src/cbus_toolkit/edlt_application_cache.py": "c7dc8c133fd08f3b5c974c6429add4a82f7dda2d69154165c05935b02ecd6bd4",
+        "src/cbus_toolkit/edlt_colours.py": "48f248040581a3d6b542800bc8c828814ecfcf58b10531c8394eaf92bcb24dc0",
+        "src/cbus_toolkit/edlt_control_cli.py": "90807283d24976e753835a191f982f538187be2c2b5347492f34d15207e19a48",
+        "src/cbus_toolkit/edlt_global_cli.py": "9957a6f3a2910391990aaccbd774b12a4ee9af999e21500ef0391d9e912cf363",
+        "src/cbus_toolkit/edlt_hvac.py": "1425551576911a14cebdfbbfda303d42a0bf71cd1d6582aa47f29a1c7a572e34",
+        "src/cbus_toolkit/edlt_lifecycle.py": "a4e4eda6490f1b45cde15cd983820471bfdadf26c11abc9ab1c3d49ede6014fc",
+        "src/cbus_toolkit/edlt_mra.py": "99bf274549de55b4105acc615a620f6eebf83ebbc1a5a56379646a690e9e2636",
+        "src/cbus_toolkit/edlt_navigation.py": "3a0cf8903c3c0413ed9393dfa7ff0ae23a248938bdc26e1f8d0be575cd8f1775",
+        "src/cbus_toolkit/edlt_quick_status.py": "df19a640a4aacd8559fd3adbe34f16f1bbf2ffdf86638168c88de71c8902d359",
+        "src/cbus_toolkit/edlt_reset_cli.py": "6e661865721c04d43af9244f0b3d38ab2e91000934e9927e55304d0ded0244f0",
+        "src/cbus_toolkit/edlt_room_courtesy.py": "24d886f38e4612a83c81c8284951f886c4e7702ab7b1aeec517c0feb78b57713",
+        "src/cbus_toolkit/edlt_scene_live_cli.py": "7cc5c9bfa7f81347df3abdbca8f36974f7c1df6963e502b5b139d303a9bc66ad",
+        "src/cbus_toolkit/edlt_scene_manager_cli.py": "30b6144d6e9a5a4484a03dcee82ac4c394a67ddd3748c1e2ee20806bf135b5e7",
+        "src/cbus_toolkit/edlt_standby.py": "e78b2c2cd4d3c29239eb06c3b3c2f1e677ebe2e363a58aef515f7ef1f8c15a1f",
+        "src/cbus_toolkit/edlt_time_date.py": "35e3117cccdc5592cca2fed8d9fb4e9eff367faff397d33ebe652515769577d7",
+        "src/cbus_toolkit/macros.py": "05c211f0e7f4ef35066fb51fb94b883e03cf88b8605e6bb3b782d00e5c523d44",
+        "src/cbus_toolkit/memory.py": "372cbc3a79710b743d23aa6690a8b56b1780de091ffe8a1d0a543e4cfa9c1f31",
+        "src/cbus_toolkit/programming.py": "30b0def5768e5a7f926eb07771dddb02a4ec5bf6e724fad735be8f3f59c07a96",
+        "src/cbus_toolkit/repositories.py": "9a4dfa92e099f319e73f4cb354702d2e762ea7f7657e65ba64bc8b9203bc71d2",
+        "src/cbus_toolkit/repositories_cli.py": "7be3fcabde71d13aba69319c40a6ce24fd1e4cfb3feb35fdd8ef5dfcc8ca1d16",
+        "src/cbus_toolkit/toolkit_numeric.py": "10bb51a54321964f80720356fa5b2d09638fe3b0a5108c7379915a22ca0f221b",
+        "src/cbus_toolkit/toolkit_preferences_cli.py": "0647dbb2a5b49d70e4c9c64639cb135bd3ddc29ba76eb5c001c8557dc44ee604",
+        "src/cbus_toolkit/toolkit_preferences_controls.py": "07ca6627405e28764c89ce94942056f7b75c76f5ff57c405bb171f5bc4d9caff",
+        "src/cbus_toolkit/toolkit_preferences_initial_state.py": "1669dcc774795f3d5820292a1142ed020cb7d51471f0f284020614335b36f3c5",
+        "src/cbus_toolkit/toolkit_preferences_store.py": "833d9d057896cab472b23fdce945d69c01b52849f6a6cd1a146e65d636c00363",
+        "src/cbus_toolkit/toolkit_updates.py": "2e60b111a1c4f98fd548f645bad59031bfc1b4de05b621856a4003dd6a558244",
+        "src/cbus_toolkit/toolkit_updates_cli.py": "60d960a3abcf2e8789e7235d28e5779cd13f4a8fa7e47667caa3e9623b87172d",
+        "src/cbus_toolkit/unitspec.py": "f8d9e2f30c0ab431b0897959328781fac6a7c9825a4d9d2bb5ecf348acb66747",
+        "src/cbus_toolkit/windows_preferences.py": "6a9b9abb6a2945acd11fca52b89ac47a7fcbe26625ce232e58019fceb46a6af6",
+        "tests/test_cli_toolkit_updates.py": "cb281ff140f2d73aafd82443c0e48132304f01e46c7e282dd4c57221451e5348",
+        "tests/test_toolkit_updates.py": "3dd8ed9dd77d351d7e51a6ade57ab13e7205666acaf9d807925244c96a372007"
+      },
+      "source_hashes_stable": true,
+      "tests_log_sha256": "59049ec953460eb34e66f020dfb0a9fa830861f33b778a1fb7ad7654e498bff4"
+    },
+    {
+      "report": "research/runtime/toolkit-update-check/acceptance-final-310-v2/report.json",
+      "sha256": "5c8cb3a64c52f573340b01d0c895360366ac24541cbcff58b3b0f03ba743f12d",
+      "python": "3.10.20 (main, Mar  3 2026, 00:49:35) [Clang 17.0.0 (clang-1700.6.4.2)]",
+      "tests_run": 19,
+      "elapsed_seconds": 3.906144332984695,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "source_hashes": {
+        "docs/toolkit-updates.md": "f28c61a9294401665e18d8bd4b5445bd3fa7ba33e542425c065a1c478bc3376e",
+        "research/NativeToolkitCatalogueProbe.cs": "baec31f714495332035e621feacdfa7feb5f240949d7e36801013a1ca2f39bc5",
+        "research/fixtures/toolkit-updates-vectors.json": "e101d89620bf5415d239e7ee4b37efccfea092ba85b46347468e8ecab9c6e5ea",
+        "research/runtime/toolkit-update-check/accept_updates.py": "dfccdcfc4f7b8e91d5b8c0aef712013b788275013025fadd41d433838e7b7ab6",
+        "research/toolkit_updates_original.py": "6ed9fac47e7af55c04f09e738d1d236ca69584d54da8322337370865cb91f852",
+        "src/cbus_toolkit/__init__.py": "a39021e17c28b8e97c4b6ad7b20ffe35ce621332c0f4d006162f77c0703b5fed",
+        "src/cbus_toolkit/cgate.py": "fef71db3a4d98c1a175a8bf0287b5abcaea4689df835dea7b0c19413e206eb15",
+        "src/cbus_toolkit/cli.py": "9cb36fdcfaa90d3946b936181062a9886c104c930313ea25de5eef2d5ca1f371",
+        "src/cbus_toolkit/device_scenes.py": "81b0a2fd8b73bd1e22e33c2e9b83e79b7f6fdef8511d138b44865af0175894cc",
+        "src/cbus_toolkit/edlt.py": "f5c996698b5970c56b9bfa60525a35e96a3734328780cd35b9ae07a9663ca735",
+        "src/cbus_toolkit/edlt_activation.py": "d9ef076dfbf71d39cbdce0ff2b5ae27fc29be8f2a547fd4507a51a36dfe34cd0",
+        "src/cbus_toolkit/edlt_application_cache.py": "c7dc8c133fd08f3b5c974c6429add4a82f7dda2d69154165c05935b02ecd6bd4",
+        "src/cbus_toolkit/edlt_colours.py": "48f248040581a3d6b542800bc8c828814ecfcf58b10531c8394eaf92bcb24dc0",
+        "src/cbus_toolkit/edlt_control_cli.py": "90807283d24976e753835a191f982f538187be2c2b5347492f34d15207e19a48",
+        "src/cbus_toolkit/edlt_global_cli.py": "9957a6f3a2910391990aaccbd774b12a4ee9af999e21500ef0391d9e912cf363",
+        "src/cbus_toolkit/edlt_hvac.py": "1425551576911a14cebdfbbfda303d42a0bf71cd1d6582aa47f29a1c7a572e34",
+        "src/cbus_toolkit/edlt_lifecycle.py": "a4e4eda6490f1b45cde15cd983820471bfdadf26c11abc9ab1c3d49ede6014fc",
+        "src/cbus_toolkit/edlt_mra.py": "99bf274549de55b4105acc615a620f6eebf83ebbc1a5a56379646a690e9e2636",
+        "src/cbus_toolkit/edlt_navigation.py": "3a0cf8903c3c0413ed9393dfa7ff0ae23a248938bdc26e1f8d0be575cd8f1775",
+        "src/cbus_toolkit/edlt_quick_status.py": "df19a640a4aacd8559fd3adbe34f16f1bbf2ffdf86638168c88de71c8902d359",
+        "src/cbus_toolkit/edlt_reset_cli.py": "6e661865721c04d43af9244f0b3d38ab2e91000934e9927e55304d0ded0244f0",
+        "src/cbus_toolkit/edlt_room_courtesy.py": "24d886f38e4612a83c81c8284951f886c4e7702ab7b1aeec517c0feb78b57713",
+        "src/cbus_toolkit/edlt_scene_live_cli.py": "7cc5c9bfa7f81347df3abdbca8f36974f7c1df6963e502b5b139d303a9bc66ad",
+        "src/cbus_toolkit/edlt_scene_manager_cli.py": "30b6144d6e9a5a4484a03dcee82ac4c394a67ddd3748c1e2ee20806bf135b5e7",
+        "src/cbus_toolkit/edlt_standby.py": "e78b2c2cd4d3c29239eb06c3b3c2f1e677ebe2e363a58aef515f7ef1f8c15a1f",
+        "src/cbus_toolkit/edlt_time_date.py": "35e3117cccdc5592cca2fed8d9fb4e9eff367faff397d33ebe652515769577d7",
+        "src/cbus_toolkit/macros.py": "05c211f0e7f4ef35066fb51fb94b883e03cf88b8605e6bb3b782d00e5c523d44",
+        "src/cbus_toolkit/memory.py": "372cbc3a79710b743d23aa6690a8b56b1780de091ffe8a1d0a543e4cfa9c1f31",
+        "src/cbus_toolkit/programming.py": "30b0def5768e5a7f926eb07771dddb02a4ec5bf6e724fad735be8f3f59c07a96",
+        "src/cbus_toolkit/repositories.py": "9a4dfa92e099f319e73f4cb354702d2e762ea7f7657e65ba64bc8b9203bc71d2",
+        "src/cbus_toolkit/repositories_cli.py": "7be3fcabde71d13aba69319c40a6ce24fd1e4cfb3feb35fdd8ef5dfcc8ca1d16",
+        "src/cbus_toolkit/toolkit_numeric.py": "10bb51a54321964f80720356fa5b2d09638fe3b0a5108c7379915a22ca0f221b",
+        "src/cbus_toolkit/toolkit_preferences_cli.py": "0647dbb2a5b49d70e4c9c64639cb135bd3ddc29ba76eb5c001c8557dc44ee604",
+        "src/cbus_toolkit/toolkit_preferences_controls.py": "07ca6627405e28764c89ce94942056f7b75c76f5ff57c405bb171f5bc4d9caff",
+        "src/cbus_toolkit/toolkit_preferences_initial_state.py": "1669dcc774795f3d5820292a1142ed020cb7d51471f0f284020614335b36f3c5",
+        "src/cbus_toolkit/toolkit_preferences_store.py": "833d9d057896cab472b23fdce945d69c01b52849f6a6cd1a146e65d636c00363",
+        "src/cbus_toolkit/toolkit_updates.py": "2e60b111a1c4f98fd548f645bad59031bfc1b4de05b621856a4003dd6a558244",
+        "src/cbus_toolkit/toolkit_updates_cli.py": "60d960a3abcf2e8789e7235d28e5779cd13f4a8fa7e47667caa3e9623b87172d",
+        "src/cbus_toolkit/unitspec.py": "f8d9e2f30c0ab431b0897959328781fac6a7c9825a4d9d2bb5ecf348acb66747",
+        "src/cbus_toolkit/windows_preferences.py": "6a9b9abb6a2945acd11fca52b89ac47a7fcbe26625ce232e58019fceb46a6af6",
+        "tests/test_cli_toolkit_updates.py": "cb281ff140f2d73aafd82443c0e48132304f01e46c7e282dd4c57221451e5348",
+        "tests/test_toolkit_updates.py": "3dd8ed9dd77d351d7e51a6ade57ab13e7205666acaf9d807925244c96a372007"
+      },
+      "source_hashes_stable": true,
+      "tests_log_sha256": "dcfb257a8fe94bbe88b58fcab63e165953c610f5ca13d1848998ef4aaa80d0d8"
+    }
+  ],
+  "identical_dual_source_hashes": true,
+  "source_count": 42,
+  "vectors": {
+    "path": "research/fixtures/toolkit-updates-vectors.json",
+    "sha256": "e101d89620bf5415d239e7ee4b37efccfea092ba85b46347468e8ecab9c6e5ea",
+    "original_menu_cases_per_run": 36,
+    "captured_original_collection_cases": 20,
+    "owned_tls_cases_per_run": 2
+  },
+  "original_evidence": [
+    {
+      "path": "research/runtime/toolkit-update-check/menu-vectors.json",
+      "sha256": "2751b419a656e1b56ddfd3e5ca3cf554645fa4ba43ec7b89c6f3bdb3aa6d4411"
+    },
+    {
+      "path": "research/runtime/toolkit-update-check/request-probe-v2.json",
+      "sha256": "06ae31f1bd2b88c9576bd52034bb3ead17d9fb2c999757cb154e7e16b34cd3d3"
+    },
+    {
+      "path": "research/runtime/toolkit-update-check/response-probe-v1/report.json",
+      "sha256": "70ae5bc99cee38fe9fa255aaab9ea071f121174bb900c443c6a56edfbab80a2b"
+    },
+    {
+      "path": "research/runtime/toolkit-update-check/payload-probe-v1/report.json",
+      "sha256": "c091af315d560ce4b678ca6bf27b61c1a5d7249c79cb89670748b5559fd10b10"
+    },
+    {
+      "path": "research/runtime/toolkit-update-check/payload-probe-v1/digest-comparison.json",
+      "sha256": "6776e617bec25e461b1b63148469ef785130ebea6f7593a1f2c90f3e77b6a7c4"
+    },
+    {
+      "path": "research/runtime/toolkit-update-check/live-catalog-result.json",
+      "sha256": "2de033871476315e674c722996e9c1ec477717507a38934e887e87455db181cc"
+    },
+    {
+      "path": "research/runtime/toolkit-update-check/live-catalog-response.body",
+      "sha256": "4444edb826360c2909b740c6152bc2d9f76f6ce471400cda1bbaf49dfbe97ad9"
+    },
+    {
+      "path": "research/runtime/toolkit-update-check/proposal.md",
+      "sha256": "664ccbb2b284a12506ab2b1f11d8faaa2ec3ed676ffe3b71b4c2b8e8787c4115"
+    },
+    {
+      "path": "research/runtime/toolkit-update-check/response-findings.md",
+      "sha256": "efc3f6d84322434f555e2236dc3345f78b9ea61f1f56050a76892cb794d66aa3"
+    },
+    {
+      "path": "research/runtime/toolkit-update-check/disassembly.json",
+      "sha256": "c7a22123964a5040a8ce1e90e1a2ccb52c12e7218d97768b4a84b83ff44d3e0b"
+    },
+    {
+      "path": "research/runtime/toolkit-update-check/disassembly-v2.json",
+      "sha256": "e114f44b78100585d67c6394255acc86dafdae86aa714a24ad0b66f7559385d8"
+    },
+    {
+      "path": "research/runtime/toolkit-update-check/disassembly-brick-v2.json",
+      "sha256": "8e634b4dc502d563f33c8ce7f982e72a89d700ef9a6169357f38e169a6457916"
+    },
+    {
+      "path": "research/runtime/toolkit-update-check/serializer-edge-v1/report.json",
+      "sha256": "002cf9c6a3f1405ee2aea81a837a61cd0924f7d0755aa5167f8253087be307dd"
+    }
+  ],
+  "public_query_count": 1,
+  "public_query_repeated_during_tests": false,
+  "historical_capture": {
+    "at_utc": "2026-09-15T01:07:33Z",
+    "http_status": 200,
+    "installed_version": "1.18.0",
+    "candidate_count": 7,
+    "raw_body_sha256": "4444edb826360c2909b740c6152bc2d9f76f6ce471400cda1bbaf49dfbe97ad9"
+  },
+  "preserved_exploratory_limits": [
+    "Unsupported compressed MSI extraction produced retained zero-byte output; stored CAB extraction succeeded without installer execution.",
+    "Initial missing-dependency disassembly and one -11 failure retained; later complete dependency disassembly succeeded.",
+    "First request probe used nodes rather than data in the synthetic response and returned null; later17-case probe supplies correct shapes.",
+    "PayloadGenerator already returns a base64 SHA256 digest; exploratory v1 report double-hashed it. Separate digest-comparison.json compares unmodified returns and finds all seven equal to unverified JWT claims."
+  ],
+  "intentional_boundaries": [
+    "Full forty-value preference schema excludes embedded NUL although original ShellExecute pointer truncates it.",
+    "Version string must be nonempty valid Unicode <=256 characters without NUL; original lower filter permits broader values.",
+    "Reject duplicate/nonfinite JSON, missing/null data and failed body status, unlike permissive original lower client.",
+    "Require HTTP200, verified TLS, bounded unencoded body, no redirect/retry/proxy, no end-to-end hard deadline."
+  ],
+  "not_claimed": {
+    "metadata_signature_verified": false,
+    "applicability_verified": false,
+    "updates_available": null,
+    "latest_version": null,
+    "browser_opened": false,
+    "downloaded": false,
+    "installed": false,
+    "host_registry_read": false,
+    "physical_device_accessed": false,
+    "full_sesu_parity": false
+  },
+  "superseded_acceptance": {
+    "path": "research/runtime/toolkit-update-check/acceptance-v1-historical.json",
+    "sha256": "1e2eb4415b89cada40e4849a229676d2f83b123a876e69ef9ed46f07b909fa85",
+    "limitation": "19 tests passed both before original Unicode separator escaping edge was identified; v2 matches original U+0085/U+2028/U+2029 escaping and adds three captured literal cases."
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "format": "cbus-edlt-shutter-acceptance-v2",
+  "passed": true,
+  "scope": "5055EDL5.5 Shutter two-key/presets database PP; no physical device",
+  "python": "3.10.20",
+  "cgate": "3.4.0.2001",
+  "tests": 12,
+  "skipped": 0,
+  "elapsed_seconds": 17.971,
+  "modes": [
+    "two-key",
+    "two-key-presets"
+  ],
+  "preset_range": [
+    6,
+    248
+  ],
+  "crcs": {
+    "OverallCRC": [
+      62,
+      127
+    ],
+    "GlobalParameterCRC": [
+      149,
+      141
+    ],
+    "WidgetsCRC": [
+      126,
+      71
+    ],
+    "StaticTextCRC": [
+      94,
+      223
+    ],
+    "ScenesCheckSum": [
+      184,
+      6
+    ]
+  },
+  "dll_sha256": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+  "physical_device_verified": false,
+  "literal_records": {
+    "default": "033012110000FF0056AA3F000000000000000000000000000000000000000000",
+    "bound-default": "0330121100002A0056AA3F000000000000000000000000000000000000000000",
+    "presets-boundaries": "03B0121100002A0106F83F000000000000000000000000000000000000000000",
+    "clamped-boundaries": "03B0121100002A0106F83F000000000000000000000000000000000000000000",
+    "custom-static": "03B5121100002A0106F83E3F0000000000000000000000000000000000000000",
+    "two-key-preserves-presets": "03B5121100002A0006F83E3F0000000000000000000000000000000000000000",
+    "dynamic-icons": "03A7121100002A0006F801030000000000000000000000000000000000000000",
+    "dynamic-text": "0396121100002A0006F802000000000000000000000000000000000000000000",
+    "same-index-refresh": "03A7121100002A0006F802000000000000000000000000000000000000000000",
+    "group-refresh": "03A7121100002B0006F802000000000000000000000000000000000000000000",
+    "status-1": "03A1121100002B0006F802000000000000000000000000000000000000000000",
+    "status-2": "03A2121100002B0006F802000000000000000000000000000000000000000000",
+    "status-3": "03A3121100002B0006F802000000000000000000000000000000000000000000",
+    "existing-blind-default": "0330121100002A0056AA05000000000000000000000000000000000000000000",
+    "existing-blind-presets": "03B0121100002A0106F805000000000000000000000000000000000000000000",
+    "existing-blind-custom": "03B5121100002A0106F83F3E0000000000000000000000000000000000000000",
+    "existing-blind-two-key": "03B5121100002A0006F83F3E0000000000000000000000000000000000000000",
+    "opaque-default": "033012110405FF0056AA3F000C0D0E0F101112131415161718191A1B1C1D1E1F",
+    "opaque-blank-default": "033012110405FF0056AA3F0B0C0D0E0F101112131415161718191A1B1C1D1E1F"
+  },
+  "allocation_fixtures": {
+    "no_existing_Blind": {
+      "default_Blind": 63,
+      "custom_Shade": 62,
+      "status_Ready": 63
+    },
+    "native_default_Blind_at5": {
+      "default_Blind": 5,
+      "custom_Shade": 63,
+      "status_Ready": 62
+    }
+  },
+  "assertions": [
+    "Unchanged original ShutterRelayData serialization matches literal defaults, mode/preset/dynamic/status/opaque vectors",
+    "Both empty-label scaffold and native existingBlind5 fixture match independent original-DLL allocation vectors",
+    "Fresh default Blind allocation occurs before requested label/status changes and remains canonical metadata",
+    "Presets6..248 are guarded and retained across switching to two-key mode",
+    "Full shared-reference enumeration, exact reuse, sequential allocation and exhausted-table rejection",
+    "Original first numeric-group restore lookup copied137 from another application; unchanged group preserved state",
+    "Explicit dynamic type required when PP cannot determine the new reference metadata",
+    "Native raw widget/static/restore bytes match original-DLL vectors",
+    "All five CRCs match unchanged original DLL method",
+    "Entire normalized PP snapshot survives save/close/load; scenes and unrelated widgets preserved",
+    "Profile/schema/stale/canonical-plan guards including invalid boolean numeric metadata",
+    "Verified rollback after partial failure; no recovery I/O after disconnection",
+    "Offline CLI plan and native preview/save/reload match; physical destination and invalid presets rejected",
+    "Disposable native database network remains unopened,state=new",
+    "Original DLL refreshes text-to-icon metadata on same-index assignment; native rejection preserves all PP values unless explicit types accompany each assignment"
+  ],
+  "limitations": [
+    "No physical shutter operation verification",
+    "No custom button icon programming",
+    "No automatic network dynamic-label metadata lookup",
+    "Exact5055EDL/KEYGL5/5.5.00 profile only"
+  ],
+  "raw_report_sha256": "a948bbc8cde1aa471d4e69ccc86bf41b425463ae0b73b27e158c88a908dbf80b",
+  "source_sha256": {
+    "src/cbus_toolkit/edlt.py": "08e7e788976abf7491c6acd03755d4980357c9d5cee9b1e44716eb23e916c258",
+    "src/cbus_toolkit/edlt_shutter.py": "3e26601332080d17a6d4638f7337405906138be54788ee81ab06f63ea64e92c9",
+    "tests/test_edlt_shutter.py": "c2deae647d0a3d056e6540a0aef49ee3a684e3d9b658513bc2f453499c3b55a1",
+    "tests/test_cli_edlt_shutter.py": "8dadb4e042420d6d2b2db0470c833b331e31d9d91fcd74d8ede22d197d165069",
+    "research/NativeEdltShutterProbe.cs": "6115f9d257783b35b3dcdc0b7a15a4339a7f6e734e00bb84d7a8e707470f1684",
+    "research/NativeEdltProbe.cs": "f794cadb421eab0c066464b59990961651486490456a2eaaa37ef8a748b5e9ec",
+    "docs/edlt-shutter.md": "04d9a5771ae286fe89c2d51a8cb69e4a849ea54d1bf6de073f33fad7c3520665"
+  }
+}

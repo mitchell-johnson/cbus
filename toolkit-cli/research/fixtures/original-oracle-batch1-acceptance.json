@@ -1,0 +1,209 @@
+{
+  "status": "passed",
+  "scope": "Explicit Windows original-model adapter batch 1: Display, Standby, Colours, Measurement icons, Activation; unchanged production and original C# probes.",
+  "full_suite_run": false,
+  "physical_device_verified": false,
+  "original_model_backend": "windows",
+  "native_service": {
+    "host": "127.0.0.1",
+    "port": 20033,
+    "version": "3.4.0 build 2001",
+    "scope": "Owned loopback-only macOS service; unique closed database projects"
+  },
+  "windows_bridge_provenance": "research/fixtures/windows-bridge-v2-acceptance.json",
+  "original_vendor_manifest": {
+    "path": "research/runtime/windows-bridge/guest-vendor-manifest.json",
+    "sha256": "689931140e99a8366021073dd5980d2e43dbb61059eef0a488b69e8d856f69cc",
+    "file_count": 25,
+    "files": {
+      "CBusLogicModel.dll": {
+        "sha256": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+        "file_version": "7.14.0.0"
+      },
+      "CBusToolkit.exe": {
+        "sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+        "file_version": "1.18.0.2754"
+      },
+      "eDLT.dll": {
+        "sha256": "75bc741234b52a168a4838fee305c309d3909571d2711f7580216b46b028e8d3",
+        "file_version": "7.16.0.0"
+      },
+      "EDLT_graphics.dll": {
+        "sha256": "e319379709c47f97dca477c4f631880f231c060530cb2ec45a3f731b1a5d1991",
+        "file_version": "1.3.0.0"
+      }
+    }
+  },
+  "shared_windows_runtime_provenance": {
+    "scope": "Separate read-only probe of the same owned VM, not instrumentation added to these original probes",
+    "path": "research/runtime/windows-quick-status/job-quick-runtime-f595cde794.stdout.txt",
+    "sha256": "67a8a571dbc9175edf1749eefd95f8cd313eed2495f0f8a61b6d327a34a6f429",
+    "clr": "4.0.30319.42000",
+    "process_bits": 32
+  },
+  "backend_default": "docker",
+  "silent_fallback": false,
+  "source_hashes": {
+    "research/NativeWindowsBridge.cs": "da252f50556c70a58a039bb933b0f2dc8d25f31a1838ceac243cede07355efb1",
+    "research/windows_bridge.py": "9b2044b76fa74cb5bb06dcfb854c7a1fc7f96c19ba3f0367e5f901cfad822107",
+    "research/original_oracle.py": "5c96ba679de04921798b282dea05a5b0a1db78f4859aab5e8259b78e41a50ab8",
+    "tests/test_original_oracle.py": "234a2cc3958a4c8d0ada609c1dcf2a4c42486dfa26cf624e26a7f46bac7b6cbd",
+    "tests/test_edlt_display.py": "0cc2eccae9001fa144ebfe76ee6627e842b200bd4abfc33265b5668adf82e9d5",
+    "tests/test_edlt_standby.py": "dfa3d93c7caa1ca43678103ba7c521ca7aaea43f9572600b0e8f61104819bb8a",
+    "tests/test_edlt_colours.py": "3faff62ab586fbf3e033f28e3a8ea344fbfd475dbab7b2fbf39b5021a5d8ec84",
+    "tests/test_edlt_measurement_icons.py": "bdd8e82bcfa0be8321387faeb243842ea0e70e9ee6e1729c76351e114a8d0f15",
+    "tests/test_edlt_activation.py": "b8d736778ad8a0ca922ca2d99bf893eeae7154c3ff6f313144073cb6f68aa175",
+    "research/NativeEdltDisplayProbe.cs": "57ae5e7c8d28b2bc3e70f3930012ade2622bd27527e7d10e6b169e6c22232487",
+    "research/NativeEdltStandbyProbe.cs": "918070845c5110c980ac952cc5ec7a37bf35b37140ec33fd99074f8d10b85374",
+    "research/NativeEdltColoursProbe.cs": "31f0f3562b2e88991d449ba1dc8b56db78dd2ab3ac344ed4eeea5910952ff891",
+    "research/NativeEdltMeasurementIconProbe.cs": "d90125b6e4d607d6ac2a06a036b5414163ffd725602a56fe3de160434233a00c",
+    "research/NativeEdltActivationProbe.cs": "f6f19f6d86b65558c015118dd01ae5faf7316b46ae5f10e531dddaf997cc10c2",
+    "src/cbus_toolkit/edlt_display.py": "4903078af7c5dfb59baafa68177cb49e3d4a7bdea60a41db4de082f70d1e1087",
+    "src/cbus_toolkit/edlt_standby.py": "e78b2c2cd4d3c29239eb06c3b3c2f1e677ebe2e363a58aef515f7ef1f8c15a1f",
+    "src/cbus_toolkit/edlt_colours.py": "48f248040581a3d6b542800bc8c828814ecfcf58b10531c8394eaf92bcb24dc0",
+    "src/cbus_toolkit/edlt_measurement.py": "f83aa3a5ab3ce0a542b193939dc7da31df00ce132d890c119dc44dec998eb9f5",
+    "src/cbus_toolkit/edlt_activation.py": "d9ef076dfbf71d39cbdce0ff2b5ae27fc29be8f2a547fd4507a51a36dfe34cd0"
+  },
+  "runs": {
+    "313": {
+      "python": "Python 3.13.14",
+      "interpreter": "/Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python",
+      "passed": 49,
+      "skipped": 0,
+      "elapsed_seconds": 705.473,
+      "log": "research/runtime/windows-bridge/adapter-batch1/tests-313.txt",
+      "log_sha256": "023e6a23d330d6700ef289415b0b4f4d2d2428e802e6bd2d06a93f6ccc4cf628",
+      "families": {
+        "display": {
+          "original_literal_rows": 56,
+          "native_cases": 27,
+          "parameters_per_case": 874,
+          "crcs_per_case": 5,
+          "report": "research/runtime/windows-bridge/adapter-batch1/display-313.json",
+          "report_sha256": "df0e6d2ae9763e65292a8a8b4ab3f6a1b15d81c226e854f06cd3367e25b55e69"
+        },
+        "standby": {
+          "original_literal_rows": 84,
+          "native_cases": 34,
+          "parameters_per_case": 874,
+          "crcs_per_case": 5,
+          "report": "research/runtime/windows-bridge/adapter-batch1/standby-313.json",
+          "report_sha256": "45edbb8f7a4663ebc39eb07cda8e5e9f1501ab3699acc5b4635dd5cb4878db96"
+        },
+        "colours": {
+          "original_literal_rows": 2894,
+          "native_cases": 9,
+          "parameters_per_case": 874,
+          "crcs_per_case": 5,
+          "report": "research/runtime/windows-bridge/adapter-batch1/colours-313.json",
+          "report_sha256": "a9194d1e0c813cac6dd53915bd9677c5213fc6005b4a6d0deb72b6cf9e763d90"
+        },
+        "icons": {
+          "original_literal_rows": 1290,
+          "native_cases": 7,
+          "parameters_per_case": 874,
+          "crcs_per_case": 5,
+          "report": "research/runtime/windows-bridge/adapter-batch1/icons-313.json",
+          "report_sha256": "1301c8f4e298f97274f53dde81ec1ab21b1c4d46cc45d7f97187b287b21294ab"
+        },
+        "activation": {
+          "original_literal_rows": 422,
+          "native_cases": 18,
+          "parameters_per_case": 874,
+          "crcs_per_case": 5,
+          "report": "research/runtime/windows-bridge/adapter-batch1/activation-313.json",
+          "report_sha256": "ce094989bf8b070e8c067b5c16458c2e72d40b9876b151515ce01db57557607a"
+        }
+      }
+    },
+    "310": {
+      "python": "Python 3.10.20",
+      "interpreter": "/opt/homebrew/opt/python@3.10/bin/python3.10",
+      "passed": 49,
+      "skipped": 0,
+      "elapsed_seconds": 602.628,
+      "log": "research/runtime/windows-bridge/adapter-batch1/tests-310.txt",
+      "log_sha256": "832e36894dc39b015452311461ae9c20aa14945be00cd07bc337f2562c625e4e",
+      "families": {
+        "display": {
+          "original_literal_rows": 56,
+          "native_cases": 27,
+          "parameters_per_case": 874,
+          "crcs_per_case": 5,
+          "report": "research/runtime/windows-bridge/adapter-batch1/display-310.json",
+          "report_sha256": "701000515bd6bc175ca06fee36aeb9077396f766fb188f112479b3d86879b5c3"
+        },
+        "standby": {
+          "original_literal_rows": 84,
+          "native_cases": 34,
+          "parameters_per_case": 874,
+          "crcs_per_case": 5,
+          "report": "research/runtime/windows-bridge/adapter-batch1/standby-310.json",
+          "report_sha256": "a0ac267cfc5dedb0cfbbc30270fff8ae41075a3a4e2f74f15069f325bffc3bea"
+        },
+        "colours": {
+          "original_literal_rows": 2894,
+          "native_cases": 9,
+          "parameters_per_case": 874,
+          "crcs_per_case": 5,
+          "report": "research/runtime/windows-bridge/adapter-batch1/colours-310.json",
+          "report_sha256": "a9194d1e0c813cac6dd53915bd9677c5213fc6005b4a6d0deb72b6cf9e763d90"
+        },
+        "icons": {
+          "original_literal_rows": 1290,
+          "native_cases": 7,
+          "parameters_per_case": 874,
+          "crcs_per_case": 5,
+          "report": "research/runtime/windows-bridge/adapter-batch1/icons-310.json",
+          "report_sha256": "1301c8f4e298f97274f53dde81ec1ab21b1c4d46cc45d7f97187b287b21294ab"
+        },
+        "activation": {
+          "original_literal_rows": 422,
+          "native_cases": 18,
+          "parameters_per_case": 874,
+          "crcs_per_case": 5,
+          "report": "research/runtime/windows-bridge/adapter-batch1/activation-310.json",
+          "report_sha256": "ce094989bf8b070e8c067b5c16458c2e72d40b9876b151515ce01db57557607a"
+        }
+      }
+    }
+  },
+  "evidence_equal_between_python_versions": true,
+  "preservation_audit": {
+    "path": "research/runtime/windows-bridge/adapter-batch1/preservation-audit.json",
+    "sha256": "c87b60f29a8c109adda1c8c335d6011f8d63b359adc7b175a55e0d46ff0243c2",
+    "assertion_expressions_unchanged": 352,
+    "test_decorators_and_environment_gates_unchanged": true,
+    "docker_command_strings_unchanged": true,
+    "standby_shared_mono_source_identical": true
+  },
+  "bounded_at_index": {
+    "grammar": "Canonical unsigned @0 through @64 only",
+    "actual_case": "Measurement functional widget 6, big icon enabled, requested icon 38, static label @64",
+    "native_case_compared_full_pp": true,
+    "frozen_windows_bridge_unchanged": true
+  },
+  "preservation": {
+    "display_and_standby_unrelated_static_text_scenes_and_raw_fields": true,
+    "colours_group_metadata_unchanged": true,
+    "activation_metadata_unchanged": true,
+    "activation_absent_applications_preserved": [
+      127,
+      136,
+      202
+    ],
+    "all_networks_remained_new": true,
+    "navigation_imported_standby_docker_helper_unchanged": true
+  },
+  "graphics": {
+    "unchanged_original_x86_dll_calls": 255,
+    "available_icon_indices": 56,
+    "separate_from_windows_model_transport": true
+  },
+  "limits": [
+    "This is a focused source acceptance, not a full wheel run.",
+    "The existing Docker paths and gates remain the default; this batch did not execute Docker.",
+    "No physical device calls or runtime page/lighting behavior are accepted by these database fixtures.",
+    "General pilot retains its earlier historical harness hashes; this batch does not replace its evidence."
+  ]
+}

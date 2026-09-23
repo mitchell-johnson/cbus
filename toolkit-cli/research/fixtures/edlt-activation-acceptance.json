@@ -1,0 +1,764 @@
+{
+  "format": "cbus-edlt-activation-acceptance-v1",
+  "profile": {
+    "unit_type": "KEYGL5",
+    "catalog_number": "5055EDL",
+    "firmware": "5.5.00"
+  },
+  "scope": "Five activation PP fields, six human options; exact original direct setters/save stage with explicit numeric metadata boundary",
+  "tests": [
+    {
+      "python": "3.13.14",
+      "count": 11,
+      "skips": 0,
+      "passed": true,
+      "elapsed_seconds": 39.476
+    },
+    {
+      "python": "3.10.20",
+      "count": 11,
+      "skips": 0,
+      "passed": true,
+      "elapsed_seconds": 44.049
+    }
+  ],
+  "test_modules": [
+    "tests.test_edlt_activation",
+    "tests.test_cli_edlt_activation"
+  ],
+  "original_vector_rows": 422,
+  "original_vectors": {
+    "options": 5,
+    "visibility": 64,
+    "event_values": 256,
+    "stored_pages": 5,
+    "radio_transitions": 32,
+    "cached_groups": 48,
+    "conditional_application_switches": 4,
+    "application_filtering": 3,
+    "application_setters": 5
+  },
+  "wake_modes": {
+    "key-press": 0,
+    "wake-unit": 1,
+    "primary-event": 2,
+    "trigger-event": 3
+  },
+  "activation_pages": {
+    "last-active": 0,
+    "page-1": 1
+  },
+  "field_layouts": {
+    "IgnoreFirstKeyPress": {
+      "Type": "bit",
+      "Address": "$116",
+      "BitAddress": "0",
+      "BitSize": "1",
+      "DefaultValue": "$00"
+    },
+    "ProximityMode": {
+      "Type": "int",
+      "Address": "$117",
+      "BitAddress": "0",
+      "BitSize": "3",
+      "DefaultValue": "$01"
+    },
+    "ProximityGroup": {
+      "Type": "int",
+      "Address": "$123",
+      "DefaultValue": "$FF"
+    },
+    "ProximityLevel": {
+      "Type": "int",
+      "Address": "$124",
+      "DefaultValue": "$FF"
+    },
+    "DeafultPage": {
+      "Type": "int",
+      "Address": "$11A",
+      "BitAddress": "0",
+      "BitSize": "4",
+      "DefaultValue": "$01"
+    },
+    "ActivityDuration": {
+      "Type": "int",
+      "Address": "$11B",
+      "DefaultValue": "$1E"
+    },
+    "TimeoutPage": {
+      "Type": "int",
+      "Address": "$11A",
+      "BitAddress": "5",
+      "BitSize": "2",
+      "DefaultValue": "$02"
+    }
+  },
+  "dependencies": {
+    "all_explicit_options": "Existing ActivityDuration>0",
+    "group": "Resulting mode2 or3",
+    "level": "Resulting mode2; group255 allowed",
+    "action": "Resulting mode3 and group!=255",
+    "activation_page": "Existing TimeoutPage2",
+    "ignore_first_key_press": "Existing TimeoutPage<2 and resulting mode0"
+  },
+  "native_cgate_version": "3.4.0.2001",
+  "native_cases": [
+    {
+      "label": "default",
+      "options": {},
+      "raw_hex": "042911e1411e0600010a0a80ffffff",
+      "crcs": {
+        "GlobalParameterCRC": [
+          253,
+          71
+        ],
+        "WidgetsCRC": [
+          164,
+          73
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          251,
+          95
+        ],
+        "OverallCRC": [
+          133,
+          90
+        ]
+      },
+      "event_application": null,
+      "reference_application_changed": false,
+      "parameters_compared": 874
+    },
+    {
+      "label": "last-active",
+      "options": {
+        "activation_page": "last-active"
+      },
+      "raw_hex": "042911e1401e0600010a0a80ffffff",
+      "crcs": {
+        "GlobalParameterCRC": [
+          76,
+          247
+        ],
+        "WidgetsCRC": [
+          164,
+          73
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          251,
+          95
+        ],
+        "OverallCRC": [
+          133,
+          176
+        ]
+      },
+      "event_application": null,
+      "reference_application_changed": false,
+      "parameters_compared": 874
+    },
+    {
+      "label": "page-one",
+      "options": {
+        "activation_page": "page-1"
+      },
+      "raw_hex": "042911e1411e0600010a0a80ffffff",
+      "crcs": {
+        "GlobalParameterCRC": [
+          253,
+          71
+        ],
+        "WidgetsCRC": [
+          164,
+          73
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          251,
+          95
+        ],
+        "OverallCRC": [
+          133,
+          90
+        ]
+      },
+      "event_application": null,
+      "reference_application_changed": false,
+      "parameters_compared": 874
+    },
+    {
+      "label": "key-press-0",
+      "options": {
+        "wake_mode": "key-press",
+        "ignore_first_key_press": false
+      },
+      "raw_hex": "042811e1011e0600010a0a80ffffff",
+      "crcs": {
+        "GlobalParameterCRC": [
+          163,
+          107
+        ],
+        "WidgetsCRC": [
+          164,
+          73
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          251,
+          95
+        ],
+        "OverallCRC": [
+          64,
+          163
+        ]
+      },
+      "event_application": null,
+      "reference_application_changed": false,
+      "parameters_compared": 874
+    },
+    {
+      "label": "key-press-1",
+      "options": {
+        "wake_mode": "key-press",
+        "ignore_first_key_press": true
+      },
+      "raw_hex": "052811e1211e0600010a0a80ffffff",
+      "crcs": {
+        "GlobalParameterCRC": [
+          158,
+          6
+        ],
+        "WidgetsCRC": [
+          164,
+          73
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          251,
+          95
+        ],
+        "OverallCRC": [
+          58,
+          19
+        ]
+      },
+      "event_application": null,
+      "reference_application_changed": false,
+      "parameters_compared": 874
+    },
+    {
+      "label": "primary-unused-maximum",
+      "options": {
+        "wake_mode": "primary-event",
+        "group": 255,
+        "level": 255
+      },
+      "raw_hex": "052a11e1211e0600010a0a80ffffff",
+      "crcs": {
+        "GlobalParameterCRC": [
+          33,
+          163
+        ],
+        "WidgetsCRC": [
+          164,
+          73
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          251,
+          95
+        ],
+        "OverallCRC": [
+          212,
+          192
+        ]
+      },
+      "event_application": 56,
+      "reference_application_changed": false,
+      "parameters_compared": 874
+    },
+    {
+      "label": "primary-zero",
+      "options": {
+        "group": 0,
+        "level": 0
+      },
+      "raw_hex": "052a11e1211e0600010a0a80ff0000",
+      "crcs": {
+        "GlobalParameterCRC": [
+          207,
+          12
+        ],
+        "WidgetsCRC": [
+          164,
+          73
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          251,
+          95
+        ],
+        "OverallCRC": [
+          58,
+          166
+        ]
+      },
+      "event_application": 56,
+      "reference_application_changed": false,
+      "parameters_compared": 874
+    },
+    {
+      "label": "primary-254",
+      "options": {
+        "group": 254,
+        "level": 255
+      },
+      "raw_hex": "052a11e1211e0600010a0a80fffeff",
+      "crcs": {
+        "GlobalParameterCRC": [
+          200,
+          17
+        ],
+        "WidgetsCRC": [
+          164,
+          73
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          251,
+          95
+        ],
+        "OverallCRC": [
+          66,
+          22
+        ]
+      },
+      "event_application": 56,
+      "reference_application_changed": false,
+      "parameters_compared": 874
+    },
+    {
+      "label": "trigger-retained",
+      "options": {
+        "wake_mode": "trigger-event"
+      },
+      "raw_hex": "052b11e1211e0600010a0a80fffeff",
+      "crcs": {
+        "GlobalParameterCRC": [
+          31,
+          211
+        ],
+        "WidgetsCRC": [
+          164,
+          73
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          251,
+          95
+        ],
+        "OverallCRC": [
+          189,
+          111
+        ]
+      },
+      "event_application": 202,
+      "reference_application_changed": true,
+      "parameters_compared": 874
+    },
+    {
+      "label": "trigger-zero",
+      "options": {
+        "group": 7,
+        "action": 0
+      },
+      "raw_hex": "052b11e1211e0600010a0a80ff0700",
+      "crcs": {
+        "GlobalParameterCRC": [
+          164,
+          146
+        ],
+        "WidgetsCRC": [
+          164,
+          73
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          251,
+          95
+        ],
+        "OverallCRC": [
+          21,
+          158
+        ]
+      },
+      "event_application": 202,
+      "reference_application_changed": false,
+      "parameters_compared": 874
+    },
+    {
+      "label": "trigger-maximum",
+      "options": {
+        "group": 77,
+        "action": 255
+      },
+      "raw_hex": "052b11e1211e0600010a0a80ff4dff",
+      "crcs": {
+        "GlobalParameterCRC": [
+          93,
+          5
+        ],
+        "WidgetsCRC": [
+          164,
+          73
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          251,
+          95
+        ],
+        "OverallCRC": [
+          144,
+          97
+        ]
+      },
+      "event_application": 202,
+      "reference_application_changed": false,
+      "parameters_compared": 874
+    },
+    {
+      "label": "primary-127",
+      "options": {
+        "wake_mode": "primary-event",
+        "group": 42,
+        "level": 173
+      },
+      "raw_hex": "052a11e1211e0600010a0a80ff2aad",
+      "crcs": {
+        "GlobalParameterCRC": [
+          170,
+          207
+        ],
+        "WidgetsCRC": [
+          164,
+          73
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          251,
+          95
+        ],
+        "OverallCRC": [
+          149,
+          39
+        ]
+      },
+      "event_application": 127,
+      "reference_application_changed": true,
+      "parameters_compared": 874
+    },
+    {
+      "label": "primary-136",
+      "options": {
+        "wake_mode": "primary-event",
+        "group": 42,
+        "level": 173
+      },
+      "raw_hex": "052a11e1211e0600010a0a80ff2aad",
+      "crcs": {
+        "GlobalParameterCRC": [
+          121,
+          172
+        ],
+        "WidgetsCRC": [
+          164,
+          73
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          251,
+          95
+        ],
+        "OverallCRC": [
+          4,
+          190
+        ]
+      },
+      "event_application": 136,
+      "reference_application_changed": false,
+      "parameters_compared": 874
+    },
+    {
+      "label": "omitted-stored-4",
+      "options": {},
+      "raw_hex": "052c11e123000600010a0a80ff2aad",
+      "crcs": {
+        "GlobalParameterCRC": [
+          193,
+          10
+        ],
+        "WidgetsCRC": [
+          164,
+          73
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          251,
+          95
+        ],
+        "OverallCRC": [
+          85,
+          203
+        ]
+      },
+      "event_application": null,
+      "reference_application_changed": false,
+      "parameters_compared": 874
+    },
+    {
+      "label": "omitted-stored-5",
+      "options": {},
+      "raw_hex": "052d11e124000600010a0a80ff2aad",
+      "crcs": {
+        "GlobalParameterCRC": [
+          50,
+          187
+        ],
+        "WidgetsCRC": [
+          164,
+          73
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          251,
+          95
+        ],
+        "OverallCRC": [
+          168,
+          36
+        ]
+      },
+      "event_application": null,
+      "reference_application_changed": false,
+      "parameters_compared": 874
+    },
+    {
+      "label": "omitted-stored-6",
+      "options": {},
+      "raw_hex": "052e11e122000600010a0a80ff2aad",
+      "crcs": {
+        "GlobalParameterCRC": [
+          207,
+          31
+        ],
+        "WidgetsCRC": [
+          164,
+          73
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          251,
+          95
+        ],
+        "OverallCRC": [
+          187,
+          242
+        ]
+      },
+      "event_application": null,
+      "reference_application_changed": false,
+      "parameters_compared": 874
+    },
+    {
+      "label": "omitted-stored-7",
+      "options": {},
+      "raw_hex": "052f11e123000600010a0a80ff2aad",
+      "crcs": {
+        "GlobalParameterCRC": [
+          169,
+          109
+        ],
+        "WidgetsCRC": [
+          164,
+          73
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          251,
+          95
+        ],
+        "OverallCRC": [
+          68,
+          97
+        ]
+      },
+      "event_application": null,
+      "reference_application_changed": false,
+      "parameters_compared": 874
+    },
+    {
+      "label": "stored-mra-wake-unit",
+      "options": {
+        "wake_mode": "wake-unit",
+        "activation_page": "page-1"
+      },
+      "raw_hex": "052911e1411e0600010a0a80ff2aad",
+      "crcs": {
+        "GlobalParameterCRC": [
+          232,
+          204
+        ],
+        "WidgetsCRC": [
+          84,
+          65
+        ],
+        "StaticTextCRC": [
+          102,
+          121
+        ],
+        "ScenesCheckSum": [
+          251,
+          95
+        ],
+        "OverallCRC": [
+          188,
+          43
+        ]
+      },
+      "event_application": null,
+      "reference_application_changed": true,
+      "parameters_compared": 874
+    }
+  ],
+  "raw_start_address": 278,
+  "raw_length": 15,
+  "native_reports_identical_across_interpreters": true,
+  "saved_reloaded": true,
+  "metadata_unchanged": true,
+  "application_addresses": [
+    56
+  ],
+  "absent_applications_preserved": [
+    127,
+    136,
+    202
+  ],
+  "metadata_comparison": "Parsed complete Application XML subtrees before every native case and after save/close/load; nonempty known app56 asserted",
+  "scene_fixture": "Eight explicitly authored scene slots, one with an output item; scene/static fields preserved under original LoadScenes/BeforeSave comparison",
+  "network_state": "new",
+  "network_opened": false,
+  "cli": [
+    "edlt activation-plan",
+    "cgate unit edlt-activation",
+    "--action-selector maps to action",
+    "six option mappings",
+    "offline profile guard",
+    "preview unchanged",
+    "full database save/reload",
+    "physical destination rejection",
+    "interruption evidence"
+  ],
+  "guards": [
+    "exact profile/layout",
+    "strict integer/boolean inputs",
+    "level/action mutual exclusion",
+    "existing standby/timeout dependencies",
+    "noncanonical omitted modes4..7/pages2..4 preserved",
+    "hidden stored fields retained",
+    "canonical/tampered plan rejection",
+    "full stale snapshot rejection",
+    "readback failure rollback",
+    "disconnected rollback suppression",
+    "primary and rollback interruptions"
+  ],
+  "limits": [
+    "Database PP acceptance only; no physical wake or event emission",
+    "No metadata lookup, auto-creation, rename, missing-group clearing or cached first-choice selection",
+    "Mode changes retain omitted numeric references and report changed reference application",
+    "Byte API does not claim GUI percentage conversion parity",
+    "No broader AfterLoad lifecycle normalization beyond the established direct save stage"
+  ],
+  "source_hashes": {
+    "research/vendor/toolkit/app/CBusLogicModel.dll": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel.Units.EDLT/EDLTUnit.cs": "641f5abc1c3762cd86a0c4b18bc125424a39017a3d78d6edfa4e1e2964af62b2",
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel.Units/CBusBaseUnit.cs": "4f0468941222c6696db5836a32fc0b70d18fcf704ea8fe6dd0c2d709a3842487",
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel.ProgramableProperties/PPAttributeDataSourceLogic.cs": "a3b56f80b6abb9ba3b24cd9778e450ba8aca3a592f181e04c8eafdfeb600056b",
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel.Utilities/BindingListCBusObject.cs": "700dc6020b82886b9ed69c94c07cddfd0da64da4d14d18941e8308ce75563bbe",
+    "research/vendor/edlt-decompiled/eDLT/eDLT/FrmBaseUnit.cs": "060323b11494c7a697656d048f97351526a143e339db767731675a87ba1b1b16",
+    "research/vendor/edlt-decompiled/eDLT/eDLT.Controls/NumUpDownPercentage.cs": "8af1e7a0096314fbd393c28f9d0989f813c91a0a26adc946ea7ceee0a3c1af70",
+    "research/vendor/unitspec-plain/KEYGL5.xml": "812d2f92ccf3176d9f3d4c0f35fc196ac9ba45bc419639421e4e5ff082d2af21",
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel.Utilities/CommonConstants.cs": "98e20887cf973205eaa42e621f0ee21ee5b9367aac1553f88c75b86e16d39020",
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel.ProgramableProperties/PPAttributeLogic.cs": "b07e0d2dfac418867e2cce36449fc36e2e60d7a3017fe20c55539ff5eade1b1c",
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel/PPAttribute.cs": "6c057abce7de8793501e34b326d862a9bbc2c2e32ed6c7b7ace796b0ad29e9cb",
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel/CBusNetwork.cs": "ddd65e5d34d94f3b0468f0db5a8468c0b6b5cdc50b8a49ca27b9f7331000d39c",
+    "research/vendor/edlt-decompiled/CBusLogicModel/CBusLogicModel/CBusApplication.cs": "669554fea6b53c01a2d0d0c1d7cf8c89cd76d68af0b7d2b11f3bb73a6bfe5933"
+  },
+  "artifact_hashes": {
+    "src/cbus_toolkit/edlt_activation.py": "d9ef076dfbf71d39cbdce0ff2b5ae27fc29be8f2a547fd4507a51a36dfe34cd0",
+    "research/NativeEdltActivationProbe.cs": "f6f19f6d86b65558c015118dd01ae5faf7316b46ae5f10e531dddaf997cc10c2",
+    "tests/test_edlt_activation.py": "f3b0d5951cf220264a892166d8ea9d003ff986aa67d2ace6b262374809e37113",
+    "tests/test_cli_edlt_activation.py": "cc79c80c699c749b26714dfec7d9a2da44cef69a948a96d857dc45f05eb49cc9",
+    "docs/edlt-activation.md": "9d8cd6a5ea7a89ec1cf209ef9f26f422dcf6783ec9be15c7e4232e4e14b96de0",
+    "docs/edlt-remaining-controls.md": "24707e62b850c43856fe12e2c48597970c1c6467a6d038ac3c44e60a53805745"
+  },
+  "shared_sources": {
+    "src/cbus_toolkit/edlt.py": "78fcb914b21b71206b1cb381b670388dbcd8eb67afa0deb254620395ac353641",
+    "src/cbus_toolkit/edlt_mra.py": "99bf274549de55b4105acc615a620f6eebf83ebbc1a5a56379646a690e9e2636",
+    "src/cbus_toolkit/memory.py": "372cbc3a79710b743d23aa6690a8b56b1780de091ffe8a1d0a543e4cfa9c1f31"
+  },
+  "optional_report_environment": "CBUS_EDLT_ACTIVATION_REPORT",
+  "physical_device_verified": false
+}

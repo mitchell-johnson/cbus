@@ -1,0 +1,414 @@
+[
+  {
+    "type": "OWNED_UNKNOWN",
+    "firmware": "4.4",
+    "raw_area": "12",
+    "quick_get": [
+      "12",
+      "12"
+    ],
+    "cache_addresses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      12,
+      13,
+      255
+    ],
+    "columns": "all",
+    "deny": null,
+    "class": "TCBusUnitGeneric",
+    "expected_area": "<Unused>",
+    "expected_loads": 0,
+    "expected_creations": 0,
+    "expected_saves": 0,
+    "expected_complete": true,
+    "id": "unknown-generic",
+    "expected_rows": [
+      "Unit Address,Part Name,Tag Name,Unit Type,Catalog Number,Serial Number,Firmware Version,Primary Application,Secondary Application,Area,Group 1,Group 2,Group 3,Group 4,Group 5,Group 6,Group 7,Group 8,Group 9,Group 10,Group 11,Group 12,Group 13,Group 14,Group 15,Group 16,",
+      "4,Owned part,Owned unit,OWNED_UNKNOWN,OWNED,No serial #,4.4,Lighting,Secondary,<Unused>,G1,G2,G3,G4,G5,G6,G7,G8,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    ]
+  },
+  {
+    "type": "RELAY4",
+    "firmware": "4.4",
+    "raw_area": "12",
+    "quick_get": [
+      "12",
+      "12"
+    ],
+    "cache_addresses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      12,
+      13,
+      255
+    ],
+    "columns": "all",
+    "deny": null,
+    "class": "TRELAY4",
+    "expected_area": "Area12",
+    "expected_loads": 2,
+    "expected_creations": 0,
+    "expected_saves": 0,
+    "expected_complete": true,
+    "id": "relay-existing",
+    "expected_rows": [
+      "Unit Address,Part Name,Tag Name,Unit Type,Catalog Number,Serial Number,Firmware Version,Primary Application,Secondary Application,Area,Group 1,Group 2,Group 3,Group 4,Group 5,Group 6,Group 7,Group 8,Group 9,Group 10,Group 11,Group 12,Group 13,Group 14,Group 15,Group 16,",
+      "4,Owned part,Owned unit,RELAY4,OWNED,No serial #,4.4,Lighting,Secondary,Area12,G1,G2,G3,G4,G5,G6,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    ]
+  },
+  {
+    "type": "relay4",
+    "firmware": "0",
+    "raw_area": "12",
+    "quick_get": [
+      "12",
+      "12"
+    ],
+    "cache_addresses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      12,
+      13,
+      255
+    ],
+    "columns": "all",
+    "deny": null,
+    "class": "TRELAY4",
+    "expected_area": "Area12",
+    "expected_loads": 2,
+    "expected_creations": 0,
+    "expected_saves": 0,
+    "expected_complete": true,
+    "id": "relay-lowercase-lower-bound",
+    "expected_rows": [
+      "Unit Address,Part Name,Tag Name,Unit Type,Catalog Number,Serial Number,Firmware Version,Primary Application,Secondary Application,Area,Group 1,Group 2,Group 3,Group 4,Group 5,Group 6,Group 7,Group 8,Group 9,Group 10,Group 11,Group 12,Group 13,Group 14,Group 15,Group 16,",
+      "4,Owned part,Owned unit,relay4,OWNED,No serial #,0,Lighting,Secondary,Area12,G1,G2,G3,G4,G5,G6,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    ]
+  },
+  {
+    "type": "RELAY4",
+    "firmware": "9",
+    "raw_area": "12",
+    "quick_get": [
+      "12",
+      "12"
+    ],
+    "cache_addresses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      12,
+      13,
+      255
+    ],
+    "columns": "all",
+    "deny": null,
+    "class": "TRELAY4",
+    "expected_area": "Area12",
+    "expected_loads": 2,
+    "expected_creations": 0,
+    "expected_saves": 0,
+    "expected_complete": true,
+    "id": "relay-upper-bound",
+    "expected_rows": [
+      "Unit Address,Part Name,Tag Name,Unit Type,Catalog Number,Serial Number,Firmware Version,Primary Application,Secondary Application,Area,Group 1,Group 2,Group 3,Group 4,Group 5,Group 6,Group 7,Group 8,Group 9,Group 10,Group 11,Group 12,Group 13,Group 14,Group 15,Group 16,",
+      "4,Owned part,Owned unit,RELAY4,OWNED,No serial #,9,Lighting,Secondary,Area12,G1,G2,G3,G4,G5,G6,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    ]
+  },
+  {
+    "type": "RELAY4",
+    "firmware": "10",
+    "raw_area": "12",
+    "quick_get": [
+      "12",
+      "12"
+    ],
+    "cache_addresses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      12,
+      13,
+      255
+    ],
+    "columns": "all",
+    "deny": null,
+    "class": "TCBusUnitGeneric",
+    "expected_area": "<Unused>",
+    "expected_loads": 0,
+    "expected_creations": 0,
+    "expected_saves": 0,
+    "expected_complete": true,
+    "id": "relay-outside-upper",
+    "expected_rows": [
+      "Unit Address,Part Name,Tag Name,Unit Type,Catalog Number,Serial Number,Firmware Version,Primary Application,Secondary Application,Area,Group 1,Group 2,Group 3,Group 4,Group 5,Group 6,Group 7,Group 8,Group 9,Group 10,Group 11,Group 12,Group 13,Group 14,Group 15,Group 16,",
+      "4,Owned part,Owned unit,RELAY4,OWNED,No serial #,10,Lighting,Secondary,<Unused>,G1,G2,G3,G4,G5,G6,G7,G8,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    ]
+  },
+  {
+    "type": "RELAY4",
+    "firmware": "9.1",
+    "raw_area": "12",
+    "quick_get": [
+      "12",
+      "12"
+    ],
+    "cache_addresses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      12,
+      13,
+      255
+    ],
+    "columns": "all",
+    "deny": null,
+    "class": "TCBusUnitGeneric",
+    "expected_area": "<Unused>",
+    "expected_loads": 0,
+    "expected_creations": 0,
+    "expected_saves": 0,
+    "expected_complete": true,
+    "id": "relay-dotted-outside-upper",
+    "expected_rows": [
+      "Unit Address,Part Name,Tag Name,Unit Type,Catalog Number,Serial Number,Firmware Version,Primary Application,Secondary Application,Area,Group 1,Group 2,Group 3,Group 4,Group 5,Group 6,Group 7,Group 8,Group 9,Group 10,Group 11,Group 12,Group 13,Group 14,Group 15,Group 16,",
+      "4,Owned part,Owned unit,RELAY4,OWNED,No serial #,9.1,Lighting,Secondary,<Unused>,G1,G2,G3,G4,G5,G6,G7,G8,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    ]
+  },
+  {
+    "type": "RELAY4",
+    "firmware": "4.4",
+    "raw_area": "12",
+    "quick_get": [
+      "12",
+      "13"
+    ],
+    "cache_addresses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      12,
+      13,
+      255
+    ],
+    "columns": "all",
+    "deny": null,
+    "class": "TRELAY4",
+    "expected_area": "Area13",
+    "expected_loads": 2,
+    "expected_creations": 0,
+    "expected_saves": 0,
+    "expected_complete": true,
+    "id": "relay-storage-changes-between-getters",
+    "expected_rows": [
+      "Unit Address,Part Name,Tag Name,Unit Type,Catalog Number,Serial Number,Firmware Version,Primary Application,Secondary Application,Area,Group 1,Group 2,Group 3,Group 4,Group 5,Group 6,Group 7,Group 8,Group 9,Group 10,Group 11,Group 12,Group 13,Group 14,Group 15,Group 16,",
+      "4,Owned part,Owned unit,RELAY4,OWNED,No serial #,4.4,Lighting,Secondary,Area13,G1,G2,G3,G4,G5,G6,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    ]
+  },
+  {
+    "type": "RELAY4",
+    "firmware": "4.4",
+    "raw_area": "invalid",
+    "quick_get": [
+      "invalid",
+      "invalid"
+    ],
+    "cache_addresses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      12,
+      13,
+      255
+    ],
+    "columns": "all",
+    "deny": null,
+    "class": "TRELAY4",
+    "expected_area": "<Unused>",
+    "expected_loads": 2,
+    "expected_creations": 0,
+    "expected_saves": 0,
+    "expected_complete": true,
+    "id": "relay-invalid-area-falls-back",
+    "expected_rows": [
+      "Unit Address,Part Name,Tag Name,Unit Type,Catalog Number,Serial Number,Firmware Version,Primary Application,Secondary Application,Area,Group 1,Group 2,Group 3,Group 4,Group 5,Group 6,Group 7,Group 8,Group 9,Group 10,Group 11,Group 12,Group 13,Group 14,Group 15,Group 16,",
+      "4,Owned part,Owned unit,RELAY4,OWNED,No serial #,4.4,Lighting,Secondary,<Unused>,G1,G2,G3,G4,G5,G6,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    ]
+  },
+  {
+    "type": "RELAY4",
+    "firmware": "4.4",
+    "raw_area": "255",
+    "quick_get": [
+      "255",
+      "255"
+    ],
+    "cache_addresses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      12,
+      13
+    ],
+    "columns": "all",
+    "deny": null,
+    "class": "TRELAY4",
+    "expected_area": "<Unused>",
+    "expected_loads": 2,
+    "expected_creations": 1,
+    "expected_saves": 1,
+    "expected_complete": true,
+    "id": "relay-create-unused",
+    "expected_rows": [
+      "Unit Address,Part Name,Tag Name,Unit Type,Catalog Number,Serial Number,Firmware Version,Primary Application,Secondary Application,Area,Group 1,Group 2,Group 3,Group 4,Group 5,Group 6,Group 7,Group 8,Group 9,Group 10,Group 11,Group 12,Group 13,Group 14,Group 15,Group 16,",
+      "4,Owned part,Owned unit,RELAY4,OWNED,No serial #,4.4,Lighting,Secondary,<Unused>,G1,G2,G3,G4,G5,G6,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    ]
+  },
+  {
+    "type": "RELAY4",
+    "firmware": "4.4",
+    "raw_area": "255",
+    "quick_get": [
+      "255",
+      "255"
+    ],
+    "cache_addresses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      12,
+      13
+    ],
+    "columns": "all",
+    "deny": "save",
+    "class": "TRELAY4",
+    "expected_area": null,
+    "expected_loads": 1,
+    "expected_creations": 1,
+    "expected_saves": 1,
+    "expected_complete": false,
+    "id": "relay-save-denied-after-create",
+    "expected_rows": null
+  },
+  {
+    "type": "RELAY4",
+    "firmware": "4.4",
+    "raw_area": "12",
+    "quick_get": [
+      "12",
+      "12"
+    ],
+    "cache_addresses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      12,
+      13,
+      255
+    ],
+    "columns": "address",
+    "deny": null,
+    "class": "TRELAY4",
+    "expected_area": "Area12",
+    "expected_loads": 2,
+    "expected_creations": 0,
+    "expected_saves": 0,
+    "expected_complete": true,
+    "id": "relay-area-column-omitted",
+    "expected_rows": [
+      "Unit Address,",
+      "4,"
+    ]
+  },
+  {
+    "type": "RELAY4",
+    "firmware": "4.4",
+    "raw_area": "12",
+    "quick_get": [
+      "12",
+      "12"
+    ],
+    "cache_addresses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      12,
+      13,
+      255
+    ],
+    "columns": "all",
+    "deny": "load",
+    "class": "TRELAY4",
+    "expected_area": null,
+    "expected_loads": 1,
+    "expected_creations": 0,
+    "expected_saves": 0,
+    "expected_complete": false,
+    "id": "relay-load-denied",
+    "expected_rows": null
+  }
+]

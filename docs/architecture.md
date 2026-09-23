@@ -1,5 +1,15 @@
 # Architecture
 
+The repository has two application stacks. The Python `cbus-toolkit` CLI handles project editing and commissioning workflows. The Rust workspace supplies the MQTT bridge, reusable protocol libraries, inspection tools, and test servers.
+
+## Toolkit CLI
+
+`toolkit-cli/src/cbus_toolkit/cli.py` exposes the Python command-line interface. Offline commands use project-file editors and device-specific planning modules. Online `cgate` commands use the Python C-Gate client and typed workflow wrappers; direct `pci` commands use the Python PCI transport. These clients can address vendor software or explicitly selected test servers.
+
+The CLI can connect to the Rust `cgate-mock` over TCP. The interop suite drives that server through the same Python client and typed wrappers used in production. The CLI does not require the Rust binaries for offline project work or connections to a native C-Gate server. Its detailed functions and compatibility limits are documented in the [Toolkit guide](../toolkit-cli/README.md).
+
+## Rust workspace
+
 The workspace separates pure protocol behavior from I/O and applications. This keeps packet rules testable without a network and lets the same codec serve the bridge, tools, simulator, and C-Gate test server.
 
 ```mermaid

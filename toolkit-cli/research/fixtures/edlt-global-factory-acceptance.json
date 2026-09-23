@@ -1,0 +1,341 @@
+{
+  "format": "cbus-edlt-global-factory-acceptance-v1",
+  "passed": true,
+  "profile": {
+    "unit_type": "KEYGL5",
+    "catalog_number": "5055EDL",
+    "firmware": "5.5.00"
+  },
+  "scope": "Issued factory model preparation, original Project raw sidecar, default template category selection and existing closed same-project database destinations",
+  "factory_model_preparation_applied": true,
+  "full_form_preamble_applied": false,
+  "default_template_reset_verified": true,
+  "post_reset_user_control_edits_supported": false,
+  "physical_device_verified": false,
+  "destination_full_crc_validity_verified": false,
+  "caller_exclusive_project_required": true,
+  "global_session_exclusivity_verified": false,
+  "export_is_review_only": true,
+  "batch_atomic": false,
+  "automatic_retries": 0,
+  "expected_source_parameters": 874,
+  "exact_source_raw_strings_required": true,
+  "source_database_required": "exact context.source, excluded from destinations",
+  "initial_dirty_history": "empty",
+  "parameter_order": "pinned original complete schema order",
+  "accepted_whole_source_patterns": [
+    "default-like",
+    "rich-scene",
+    "first-mra",
+    "enable",
+    "mixed-controls",
+    "fallback127"
+  ],
+  "lifecycle": {
+    "model_loads_per_issued_preparation": 2,
+    "retained_terminal_save_calls": 1,
+    "third_after_load": false,
+    "native_cli_independent_preparations": 2,
+    "native_cli_total_model_loads": 4,
+    "native_cli_preflight_discarded": true
+  },
+  "project_policy": {
+    "actual": "original conditional form Project initialization then explicit cached-network setter with positional token tails",
+    "typed_oem_projection": "original codec-valid Project only; actual raw Project is a separate sidecar",
+    "relaxed_physical_codec": false,
+    "project_in_global_payload": false
+  },
+  "payload_policy": {
+    "order": "source attribute order then zero GlobalParameterCRC",
+    "all_selected_fields_written_even_unchanged": true,
+    "factory_literal_spellings_preserved": true,
+    "overall_crc": "source",
+    "global_parameter_crc": [
+      0,
+      0
+    ],
+    "destination_section_crcs_preserved": [
+      "WidgetsCRC",
+      "StaticTextCRC",
+      "ScenesCheckSum"
+    ]
+  },
+  "original_comparison": {
+    "full_factory_worker_masks": [
+      0,
+      15
+    ],
+    "rich_actual_workers": 10,
+    "rich_raw_token_dirty_stages": 17,
+    "raw_parameters_per_stage": 874,
+    "ordinary_factory_project_cases": 2,
+    "ordinary_actual_worker_cases": 3,
+    "original_rejected_pp_set_false_complete_preserved": true,
+    "other_masks": "existing independent original category composition; not new full-factory executions",
+    "recreated_component_snapshots_are_actual_midfactory_hooks": false,
+    "runtime_analysis": {
+      "path": "research/runtime/edlt-global-preamble/factory-rich/analysis.json",
+      "sha256": "e7d68d699029d2a2a69ee57d8e87bcadd3bfd1bf31e989381ef5e091be96a0b0"
+    }
+  },
+  "tests": [
+    {
+      "python": "3.13.14 (main, Jun 10 2026, 12:24:04) [Clang 17.0.0 (clang-1700.6.4.2)]",
+      "tests": 77,
+      "passed": true,
+      "skips": 0,
+      "failures": 0,
+      "errors": 0,
+      "elapsed_seconds": 217.21865666599479,
+      "report": {
+        "path": "research/runtime/edlt-global-preamble/factory-rich/acceptance-final-313-v2/report.json",
+        "sha256": "86eb0414a311c5493d296ae8391ce224b9d25e143b1e0fd2d4374a17a648f682"
+      },
+      "log": {
+        "path": "research/runtime/edlt-global-preamble/factory-rich/acceptance-final-313-v2/tests.log",
+        "sha256": "3f98e6a2056ff1e5c8a03e8dd4ce5ca8af47fbf05b0e5f85c6e52c1314147d67"
+      },
+      "native_service": {
+        "path": "research/runtime/edlt-global-preamble/factory-rich/acceptance-final-313-v2/native-service.json",
+        "sha256": "9499a8cd34d982406cc1b9f3935ab4c54241ee4293f0013fac679df43ee6ff7c"
+      },
+      "source_hashes_stable": true,
+      "input_hashes_stable": true,
+      "loaded_source_count": 53,
+      "input_count": 285,
+      "native": {
+        "Factory Global native evidence": {
+          "report": {
+            "path": "research/runtime/edlt-global-preamble/bridge-native-13-07faf548/report.json",
+            "sha256": "5265637bca4011a2ad91e16ed4fc1db0b70ac459c09f9f03856936c6ec107aef"
+          },
+          "cases": 2,
+          "masks": [
+            0,
+            15
+          ],
+          "successful_targets": 4,
+          "definite_rejection_on_second_target": {
+            "prior_target_saved_full874": true,
+            "rejected_target_unchanged_full874": true,
+            "source_xml_unchanged": true,
+            "target_save_count": 1,
+            "replayed": false,
+            "injected_literal": {
+              "planned": "PP SET cbus_cli_80611c3c011a4a2d FontStyle \"0x1\"",
+              "sent": "PP SET cbus_cli_80611c3c011a4a2d CLI_TEST_INVALID_FACTORY_PARAMETER \"0\""
+            }
+          }
+        },
+        "Global native evidence": {
+          "report": {
+            "path": "research/runtime/edlt-global-programming/implementation-native-13-5eb05637/report.json",
+            "sha256": "0447c3cb3430189eff229ce2c1f40e0115321207f1c3c577045a3d2c0d7d7c8c"
+          },
+          "cases": 35
+        }
+      },
+      "native_cli_factory_targets_saved_closed_loaded": 2,
+      "native_cli_ordinary_targets_saved_closed_loaded": 2,
+      "service_cleanup_complete": true,
+      "six_loopback_listeners_verified": true
+    },
+    {
+      "python": "3.10.20 (main, Mar  3 2026, 00:49:35) [Clang 17.0.0 (clang-1700.6.4.2)]",
+      "tests": 77,
+      "passed": true,
+      "skips": 0,
+      "failures": 0,
+      "errors": 0,
+      "elapsed_seconds": 263.0521358749829,
+      "report": {
+        "path": "research/runtime/edlt-global-preamble/factory-rich/acceptance-final-310-v2/report.json",
+        "sha256": "e86a873b157eaa8f1e8b584322e056de9718494772fef24064eee596a8b82691"
+      },
+      "log": {
+        "path": "research/runtime/edlt-global-preamble/factory-rich/acceptance-final-310-v2/tests.log",
+        "sha256": "c70e73fa9f5fb38cbacb96d2982b560a125f726ae78ba57b8ed66d4268f18500"
+      },
+      "native_service": {
+        "path": "research/runtime/edlt-global-preamble/factory-rich/acceptance-final-310-v2/native-service.json",
+        "sha256": "3c804c7f7e3c985864ad1f497f59355d9e9a98c3a2b8e46f9df7b7b68c2cc892"
+      },
+      "source_hashes_stable": true,
+      "input_hashes_stable": true,
+      "loaded_source_count": 53,
+      "input_count": 285,
+      "native": {
+        "Factory Global native evidence": {
+          "report": {
+            "path": "research/runtime/edlt-global-preamble/bridge-native-10-b72207b9/report.json",
+            "sha256": "7d65cec56aa1e76e71fe92a86a98ad4b1f42984c887904c8c6f9bbe9d7f3ef0c"
+          },
+          "cases": 2,
+          "masks": [
+            0,
+            15
+          ],
+          "successful_targets": 4,
+          "definite_rejection_on_second_target": {
+            "prior_target_saved_full874": true,
+            "rejected_target_unchanged_full874": true,
+            "source_xml_unchanged": true,
+            "target_save_count": 1,
+            "replayed": false,
+            "injected_literal": {
+              "planned": "PP SET cbus_cli_8822e34b4d3149a0 FontStyle \"0x1\"",
+              "sent": "PP SET cbus_cli_8822e34b4d3149a0 CLI_TEST_INVALID_FACTORY_PARAMETER \"0\""
+            }
+          }
+        },
+        "Global native evidence": {
+          "report": {
+            "path": "research/runtime/edlt-global-programming/implementation-native-10-9ad3436f/report.json",
+            "sha256": "56bf113844cb54961b5074595a4c64210548bda133c8dab0fe00f1994d49d816"
+          },
+          "cases": 35
+        }
+      },
+      "native_cli_factory_targets_saved_closed_loaded": 2,
+      "native_cli_ordinary_targets_saved_closed_loaded": 2,
+      "service_cleanup_complete": true,
+      "six_loopback_listeners_verified": true
+    }
+  ],
+  "accepted_input_archive": {
+    "path": "research/runtime/edlt-global-preamble/factory-rich/accepted-inputs-77.tar.gz",
+    "sha256": "335a20b482d93da6fa93c3f0564e5626c834a6d20d4f9dc670d1408291127f94"
+  },
+  "accepted_input_archive_manifest": {
+    "path": "research/runtime/edlt-global-preamble/factory-rich/accepted-inputs-77.json",
+    "sha256": "898ad03a061f9dd956b2a38e49a36b1c20e5e143fb7237c807042b3b5479d11a"
+  },
+  "python310_subprocess_environment": {
+    "path": "research/runtime/edlt-global-preamble/factory-rich/acceptance-final-310-v2/launch-environment.json",
+    "sha256": "4f1b5d4e9630cbea4ee0927caad39613147dc378fa898568ed1a7b85ba3c2969"
+  },
+  "native_cli_pilots": {
+    "shared_service_definite_project_save_408": {
+      "path": "research/runtime/edlt-global-factory-cli/draft-native-313-v1.log",
+      "sha256": "e43dae476dcec6230fe2417bf831a7a71fc272de5f272ee94245d3de710f6aa6"
+    },
+    "isolated_program_role_lock_420": {
+      "path": "research/runtime/edlt-global-factory-cli/isolated-pilot-v1/report.json",
+      "sha256": "aceec472066c09f2a078cdfdab03ee8325665893a999b35684a0339776cb0aab"
+    },
+    "fresh_clipsal_fixture_seven_passed": {
+      "path": "research/runtime/edlt-global-factory-cli/isolated-pilot-v2/report.json",
+      "sha256": "fec0cea86dd48b9c678b92c982aff2c6c7036015e7c28e5ef35409186a566b2c"
+    },
+    "production_retry_or_guard_relaxation": false
+  },
+  "python310_failed_environment_run": {
+    "report": {
+      "path": "research/runtime/edlt-global-preamble/factory-rich/acceptance-final-310-v1/report.json",
+      "sha256": "fabefeed03c95bfc3c356891856b0ff2127b329ac51b30234e2e199634aba5b2"
+    },
+    "tests_passed": 76,
+    "tests_failed": 1,
+    "accepted": false,
+    "reason": "CLI subprocess lacked the source PYTHONPATH and could not import cbus_toolkit; final run explicitly inherits the local source path with no package or test change."
+  },
+  "source_sha256": {
+    "src/cbus_toolkit/__init__.py": "a39021e17c28b8e97c4b6ad7b20ffe35ce621332c0f4d006162f77c0703b5fed",
+    "src/cbus_toolkit/__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "src/cbus_toolkit/addressing.py": "0e0d23f0f0587fd90278f8c734a071966adf299ee0b257fae481e062f873f926",
+    "src/cbus_toolkit/cgate.py": "fef71db3a4d98c1a175a8bf0287b5abcaea4689df835dea7b0c19413e206eb15",
+    "src/cbus_toolkit/classic_replacement.py": "4be1118513549ffb65c45d4c1ee3fc142f46da59bf21aa249bc9be3808e54b62",
+    "src/cbus_toolkit/cli.py": "ab547f5929b3748b51876597ab69e5976695ce9f17026f0409e12945305d0c13",
+    "src/cbus_toolkit/device_scenes.py": "81b0a2fd8b73bd1e22e33c2e9b83e79b7f6fdef8511d138b44865af0175894cc",
+    "src/cbus_toolkit/edlt.py": "f5c996698b5970c56b9bfa60525a35e96a3734328780cd35b9ae07a9663ca735",
+    "src/cbus_toolkit/edlt_activation.py": "d9ef076dfbf71d39cbdce0ff2b5ae27fc29be8f2a547fd4507a51a36dfe34cd0",
+    "src/cbus_toolkit/edlt_application_cache.py": "c7dc8c133fd08f3b5c974c6429add4a82f7dda2d69154165c05935b02ecd6bd4",
+    "src/cbus_toolkit/edlt_colours.py": "48f248040581a3d6b542800bc8c828814ecfcf58b10531c8394eaf92bcb24dc0",
+    "src/cbus_toolkit/edlt_control_cli.py": "90807283d24976e753835a191f982f538187be2c2b5347492f34d15207e19a48",
+    "src/cbus_toolkit/edlt_corridor.py": "a00e918af4ddba1a31ce804c396f927c29c5378589d066fd33a7c01597aca0a9",
+    "src/cbus_toolkit/edlt_global_cli.py": "9957a6f3a2910391990aaccbd774b12a4ee9af999e21500ef0391d9e912cf363",
+    "src/cbus_toolkit/edlt_global_preparation.py": "efcdc8957e06c6f6bdfac5c3480d68731ddfa8e4f5b51e3d3499f08fe23344e4",
+    "src/cbus_toolkit/edlt_global_programming.py": "efb8a685360722b140d519356ea5aeadfddc3947047b1f664919efd1ba980043",
+    "src/cbus_toolkit/edlt_hvac.py": "1425551576911a14cebdfbbfda303d42a0bf71cd1d6582aa47f29a1c7a572e34",
+    "src/cbus_toolkit/edlt_lifecycle.py": "a4e4eda6490f1b45cde15cd983820471bfdadf26c11abc9ab1c3d49ede6014fc",
+    "src/cbus_toolkit/edlt_mra.py": "99bf274549de55b4105acc615a620f6eebf83ebbc1a5a56379646a690e9e2636",
+    "src/cbus_toolkit/edlt_navigation.py": "3a0cf8903c3c0413ed9393dfa7ff0ae23a248938bdc26e1f8d0be575cd8f1775",
+    "src/cbus_toolkit/edlt_quick_status.py": "df19a640a4aacd8559fd3adbe34f16f1bbf2ffdf86638168c88de71c8902d359",
+    "src/cbus_toolkit/edlt_reset.py": "9886ee8c6e01b34168a913c2d2529de173b1e8a020cee1107ee28f09c192a8b5",
+    "src/cbus_toolkit/edlt_reset_cli.py": "6e661865721c04d43af9244f0b3d38ab2e91000934e9927e55304d0ded0244f0",
+    "src/cbus_toolkit/edlt_room_courtesy.py": "24d886f38e4612a83c81c8284951f886c4e7702ab7b1aeec517c0feb78b57713",
+    "src/cbus_toolkit/edlt_scene_live_cli.py": "7cc5c9bfa7f81347df3abdbca8f36974f7c1df6963e502b5b139d303a9bc66ad",
+    "src/cbus_toolkit/edlt_scene_manager_cli.py": "30b6144d6e9a5a4484a03dcee82ac4c394a67ddd3748c1e2ee20806bf135b5e7",
+    "src/cbus_toolkit/edlt_standby.py": "e78b2c2cd4d3c29239eb06c3b3c2f1e677ebe2e363a58aef515f7ef1f8c15a1f",
+    "src/cbus_toolkit/edlt_time_date.py": "35e3117cccdc5592cca2fed8d9fb4e9eff367faff397d33ebe652515769577d7",
+    "src/cbus_toolkit/macros.py": "05c211f0e7f4ef35066fb51fb94b883e03cf88b8605e6bb3b782d00e5c523d44",
+    "src/cbus_toolkit/memory.py": "372cbc3a79710b743d23aa6690a8b56b1780de091ffe8a1d0a543e4cfa9c1f31",
+    "src/cbus_toolkit/native.py": "d4bb3b4e83434ace48cbd436179ec4ff68b34c065d2d88d300493cc3ebcf5051",
+    "src/cbus_toolkit/native_global_programming.py": "c8ef81bcf7f33567196ce5036be33414051f5526c271f5a333c7e18f491af9e2",
+    "src/cbus_toolkit/offline_conversion.py": "dce62b0374fa3104b93c7a92e4d8ce79aea4f1095f6becb0f362c9bdf58a6fbd",
+    "src/cbus_toolkit/programming.py": "30b0def5768e5a7f926eb07771dddb02a4ec5bf6e724fad735be8f3f59c07a96",
+    "src/cbus_toolkit/toolkit_numeric.py": "10bb51a54321964f80720356fa5b2d09638fe3b0a5108c7379915a22ca0f221b",
+    "src/cbus_toolkit/toolkit_preferences_cli.py": "1e3b32fe5ece06e2fb689ed417ce651b1afa1a55692aa1916dc605986925f240",
+    "src/cbus_toolkit/toolkit_preferences_controls.py": "24e18b0563331447a600ee50a912c69b1c399389d77a3e802dec73fe05a9e3ae",
+    "src/cbus_toolkit/toolkit_preferences_store.py": "833d9d057896cab472b23fdce945d69c01b52849f6a6cd1a146e65d636c00363",
+    "src/cbus_toolkit/unitspec.py": "f8d9e2f30c0ab431b0897959328781fac6a7c9825a4d9d2bb5ecf348acb66747",
+    "tests/test_cgate.py": "b4883d234bc76abd5cf3ad0fd2b427b8c5acbb37258d66db94c9b02ebf64a8b7",
+    "tests/test_cli_edlt_global.py": "b7685eca0b44ee9c336c841b5d92504a34bd15373895750a9a700e22d4e1c16e",
+    "tests/test_cli_edlt_global_factory.py": "792b7202b14ddc86e8591f6935ae7766dd0fef2130a981616b3b3ab74bfe5450",
+    "tests/test_edlt.py": "5546612b307109a94d17d211a0b64d4f50658ab43e4ae5a589dd0e366fb96c46",
+    "tests/test_edlt_corridor.py": "439fbfcab07f26ea2a0e08a897f8db25749cc83ceb54ae8c7ce2bd6ab2cb5908",
+    "tests/test_edlt_global_factory.py": "c7566285afbc694e7de71c052008558728eacc438ad1b81eafa573bba93ca7b6",
+    "tests/test_edlt_global_factory_context.py": "0b1138a8b04afbd4f531203bb18f14b8a506c4b68c634ea1cda8a9456c7f143e",
+    "tests/test_edlt_global_preparation.py": "a2858fda9ec2f1c3fe3b3d71529d5a440902a1dc9dd0fd8c4c1cd8d3c40a92db",
+    "tests/test_edlt_global_programming.py": "105e5d757931e2a03dcf045404400195e7b2b8dd629bc776443507bff78fd8f8",
+    "tests/test_edlt_lifecycle.py": "e8404b452c70ba670062de9f6c3ec24f3aa027dc487b04b234cb042f1f058c74",
+    "tests/test_edlt_reset.py": "a827f45f9f0bb3001fd756fce727759c48899f8dee1fba9ba29dca1dd12d68f7",
+    "tests/test_edlt_reset_factory.py": "2608957d4e5341f02a599552a2ccb02fe4c4a501d8492fef6add1f5962e58614",
+    "tests/test_native_global_factory.py": "476ef5d5d0ad5bd122b81f30a3f7ef443861c4ea47a728da76fc12bb3bbd5735",
+    "tests/test_native_global_programming.py": "2d5cdab7deb8bebf8bc196766499c953536ecee9d0f03c48b80b97a90d6bc68b"
+  },
+  "input_files": [
+    {
+      "path": "research/fixtures/edlt-global-preparation-vectors.json",
+      "sha256": "879a11a7076b2e124f09530cbcc9152cd7cd7126e87fa8be7558f796a95096fa"
+    },
+    {
+      "path": "research/fixtures/edlt-reset-factory-rich-vectors.json",
+      "sha256": "2345882da2600ffd7a0f484d5a10edc89efd29ccf51d879f2bd36445e08582c6"
+    },
+    {
+      "path": "research/fixtures/edlt-global-programming-vectors.json",
+      "sha256": "e0ac5e0747279cc11e1c697045ec245f063905c8c11a6aae365f1941b6b0a415"
+    }
+  ],
+  "reset_dependency_acceptance": {
+    "path": "research/fixtures/edlt-reset-factory-dependency-acceptance.json",
+    "sha256": "f1257bc330af4ed2977924f8dd217dbb70d2a0061f1034717d519a113cc089ef"
+  },
+  "unaccepted_boundary": {
+    "report": {
+      "path": "research/runtime/edlt-global-preamble/factory-rich/acceptance-final-313-v1/report.json",
+      "sha256": "31ced55588fdfe9b877658f296bea9fcceb7778c58e9066cbd9eeb407146b61d"
+    },
+    "tests_passed": 77,
+    "accepted": false,
+    "reason": "Two independently edited preference modules changed after the initial source hash boundary; final runs use a fresh unchanged boundary and isolated native service."
+  },
+  "validation_summary": [
+    "All 874 original raw/token/dirty fields and literal ordered worker payloads compared against fixed original assembly outputs.",
+    "Exactly two retained-model loads per issued preparation, no third load, no arbitrary source/order/dirty histories.",
+    "Issued context and sidecar ownership, schema mutation, bool forgery, cross-engine and sidecar removal/injection rejected.",
+    "Mandatory exact source database/raw snapshot and unchanged source XML; numerical respelling is stale.",
+    "Backup originals and all 874 destination values verified after native save/close/load; identity, metadata and shared raw bits retained.",
+    "Definite native rejection at target two preserves target one, leaves target two unchanged and sends no retry or target-two save.",
+    "Original interruption identity and partial evidence survive secondary formatting, attachment and cleanup failures.",
+    "CLI validates before connecting and reports its separate preflight/coordinator preparation counts."
+  ],
+  "limits": [
+    "Only the six complete observed source patterns and original default template are supported; there is no post-Reset user editor stage.",
+    "Python composes the evidenced model phases; it does not execute the original form, renderer, callbacks or arbitrary UI history.",
+    "A native 200 or original worker completion alone is not accepted as persistence proof.",
+    "Mixed source/zero/retained destination CRCs do not prove full image CRC validity or firmware acceptance.",
+    "All native services and closed database projects were disposable and owned; no physical hardware or user project was used."
+  ]
+}

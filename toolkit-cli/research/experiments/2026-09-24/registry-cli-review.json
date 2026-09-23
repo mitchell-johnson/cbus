@@ -1,0 +1,46 @@
+{
+  "scope": "Focused current-tree host tests; deterministic CLI observer substitution; no Windows registry, original Toolkit, C-Gate, CNI or network operation",
+  "date": "2026-09-24",
+  "python": "3.13.14 (main, Jun 10 2026, 12:24:04) [Clang 17.0.0 (clang-1700.6.4.2)]",
+  "python_executable": "/opt/homebrew/Cellar/python@3.13/3.13.14_1/Frameworks/Python.framework/Versions/3.13/bin/python3.13",
+  "platform": "macOS-15.7.4-arm64-arm-64bit-Mach-O",
+  "tests": 113,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "successful": true,
+  "seconds": 5.197,
+  "modules": [
+    "tests.test_toolkit_live_update_conditions",
+    "tests.test_windows_condition_registry",
+    "tests.test_toolkit_update_registry_conditions",
+    "tests.test_cli_toolkit_update_registry_conditions",
+    "tests.test_toolkit_update_conditions",
+    "tests.test_toolkit_update_conditions_cli_helper",
+    "tests.test_cli_toolkit_update_conditions",
+    "tests.test_cli_toolkit_live_update_conditions",
+    "tests.test_toolkit_update_metadata",
+    "tests.test_cli_toolkit_update_metadata",
+    "tests.test_toolkit_update_revocation",
+    "tests.test_cli_toolkit_update_revocation"
+  ],
+  "new_cli_boundary_tests": 5,
+  "post_run_source_sha256": {
+    "src/cbus_toolkit/cli.py": "feb61392e6f98e1d60113825790acbdb31d1a2701ab21716705a0431d0293183",
+    "src/cbus_toolkit/toolkit_live_update_conditions_cli.py": "7f584248974f11a69e2c4a409060cf99110a1dd87e0ae5810121994b6dbc0d85",
+    "src/cbus_toolkit/toolkit_live_update_conditions.py": "ee123aed267adad24081809b0f4d1634a1244b22427e42aa287051b1fc5dd148",
+    "src/cbus_toolkit/windows_condition_registry.py": "64f0e3f844bd148072f0864908af19ba2a73921a13debe0066c8b822ca1e2904",
+    "src/cbus_toolkit/_windows_condition_registry_worker.py": "4df70deaa78d746306a406ec018733041fd12e7a3141d143f16420e359942fe2",
+    "tests/test_cli_toolkit_live_update_conditions.py": "6024d13a93e9da72b4c8d8963b082861a9bdaf9c0b656df63d36b23cf93137fa",
+    "tests/test_toolkit_live_update_conditions.py": "796aa14db4fb40c2c7121e8ed54f44db2a618d0454416b7b88442057a548ed3a",
+    "tests/test_windows_condition_registry.py": "60efd2481a75cc2fd6c86ae98730b5e519f03f7c0356e3748e9c003cfb38e7f5"
+  },
+  "claims": {
+    "windows_worker_executed": false,
+    "registry_accessed": false,
+    "network_accessed": false,
+    "package_applicability_evaluated": false,
+    "publisher_trust_evaluated": false,
+    "update_availability_evaluated": false
+  }
+}

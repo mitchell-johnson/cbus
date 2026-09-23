@@ -1,0 +1,343 @@
+{
+  "original_execution": false,
+  "scope": "Pinned static data/VMT fields only. Registration call order comes from separately pinned method bodies; active whole-startup registry not executed.",
+  "inputs": {
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "classes": [
+    {
+      "prefix": {
+        "address": "0x1249224",
+        "symbols": [
+          "CIS_TCBus1RelayCGateAgent..TCBus1RelayCGateAgent"
+        ]
+      },
+      "vmt": "0x124927c",
+      "slots": [
+        {
+          "offset": "0x94",
+          "pointer": {
+            "address": "0xcb5d0c",
+            "symbols": [
+              "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.AgentLoad"
+            ]
+          },
+          "bytes_sha256": "af93d19d92936e47261e6f622b830e51ddffed5199579e1d6e4bf940a60e172b"
+        },
+        {
+          "offset": "0xac",
+          "pointer": {
+            "address": "0xcc3264",
+            "symbols": [
+              "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.GetProjectPrefix"
+            ]
+          },
+          "bytes_sha256": "f0f80c781d55333b861bf8de2539e2ec7f01a7c9eb89c18ceeb342ef6ad3743a"
+        },
+        {
+          "offset": "0xd0",
+          "pointer": {
+            "address": "0xcb86b8",
+            "symbols": [
+              "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.LoadApplications"
+            ]
+          },
+          "bytes_sha256": "086f39a42303f3e752efbc3eacecf1f520be40db8bb3d73b963edf2aab4d2cdc"
+        },
+        {
+          "offset": "0xf4",
+          "pointer": {
+            "address": "0xcc3530",
+            "symbols": [
+              "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.LoadUnitGroupAddresses"
+            ]
+          },
+          "bytes_sha256": "ae00622789d8a86b1686e35586477ba8250b06def54e71c5cbca0d05f8ca291f"
+        },
+        {
+          "offset": "0xf8",
+          "pointer": {
+            "address": "0x12493f4",
+            "symbols": [
+              "CIS_TCBus1RelayCGateAgent.TCBus1RelayCGateAgent.GetProgrammingTimeout"
+            ]
+          },
+          "bytes_sha256": "b03f20ac082c4db69803ef2c6c6a68a6330bdfd79e3c3a6231e4cc296edfb29e"
+        },
+        {
+          "offset": "0xfc",
+          "pointer": {
+            "address": "0xcbecc0",
+            "symbols": [
+              "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.GetPSyncTimeout"
+            ]
+          },
+          "bytes_sha256": "0fb8df9c155f32a07e0f4112a2c1ecc668ce96a9f2399e89d0d83aace0caed76"
+        },
+        {
+          "offset": "0x100",
+          "pointer": {
+            "address": "0xcb84c4",
+            "symbols": [
+              "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.FormatCgApplication"
+            ]
+          },
+          "bytes_sha256": "31f9e526a48d9fce8170bc044f790ee5e3b2b6a2a90d12a07509344636d9ca8a"
+        }
+      ]
+    },
+    {
+      "prefix": {
+        "address": "0x1215714",
+        "symbols": [
+          "CIS_TCBusUnitGenericCGateAgent..TCBusUnitGenericCGateAgent"
+        ]
+      },
+      "vmt": "0x121576c",
+      "slots": [
+        {
+          "offset": "0x94",
+          "pointer": {
+            "address": "0xcb5d0c",
+            "symbols": [
+              "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.AgentLoad"
+            ]
+          },
+          "bytes_sha256": "af93d19d92936e47261e6f622b830e51ddffed5199579e1d6e4bf940a60e172b"
+        },
+        {
+          "offset": "0xac",
+          "pointer": {
+            "address": "0xcc3264",
+            "symbols": [
+              "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.GetProjectPrefix"
+            ]
+          },
+          "bytes_sha256": "f0f80c781d55333b861bf8de2539e2ec7f01a7c9eb89c18ceeb342ef6ad3743a"
+        },
+        {
+          "offset": "0xd0",
+          "pointer": {
+            "address": "0xcb86b8",
+            "symbols": [
+              "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.LoadApplications"
+            ]
+          },
+          "bytes_sha256": "086f39a42303f3e752efbc3eacecf1f520be40db8bb3d73b963edf2aab4d2cdc"
+        },
+        {
+          "offset": "0xf4",
+          "pointer": {
+            "address": "0xcc3530",
+            "symbols": [
+              "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.LoadUnitGroupAddresses"
+            ]
+          },
+          "bytes_sha256": "ae00622789d8a86b1686e35586477ba8250b06def54e71c5cbca0d05f8ca291f"
+        },
+        {
+          "offset": "0xf8",
+          "pointer": {
+            "address": "0xcbeca8",
+            "symbols": [
+              "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.GetProgrammingTimeout"
+            ]
+          },
+          "bytes_sha256": "89dd26b09039c661afeb4c384e0b93aa4c445323fdba2980737416ffb738a484"
+        },
+        {
+          "offset": "0xfc",
+          "pointer": {
+            "address": "0xcbecc0",
+            "symbols": [
+              "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.GetPSyncTimeout"
+            ]
+          },
+          "bytes_sha256": "0fb8df9c155f32a07e0f4112a2c1ecc668ce96a9f2399e89d0d83aace0caed76"
+        },
+        {
+          "offset": "0x100",
+          "pointer": {
+            "address": "0xcb84c4",
+            "symbols": [
+              "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.FormatCgApplication"
+            ]
+          },
+          "bytes_sha256": "31f9e526a48d9fce8170bc044f790ee5e3b2b6a2a90d12a07509344636d9ca8a"
+        }
+      ]
+    },
+    {
+      "prefix": {
+        "address": "0x101aa5c",
+        "symbols": [
+          "CIS_TRELAY4..TRELAY4"
+        ]
+      },
+      "vmt": "0x101aab4",
+      "slots": [
+        {
+          "offset": "0x88",
+          "pointer": {
+            "address": "0x7f4160",
+            "symbols": [
+              "CIS_TIdentifiableObject.TPersistableObject.StorageLoad"
+            ]
+          },
+          "bytes_sha256": "75eb3d8fb770c3977e7230ef75e98344b9a41d6b24462ab02bd10536bf797d16"
+        },
+        {
+          "offset": "0x90",
+          "pointer": {
+            "address": "0xf2e82c",
+            "symbols": [
+              "CIS_TCommonCBus.TCBUSUnit.GetAddressAsPath"
+            ]
+          },
+          "bytes_sha256": "5a49f2a17ab4b2f6ab758f19cf960b32b8ddbdb728bfe00e8928ccd4896e071e"
+        },
+        {
+          "offset": "0xe4",
+          "pointer": {
+            "address": "0xd23808",
+            "symbols": [
+              "CIS_TCBus1RelayUnit.TCBus1RelayUnit.Init"
+            ]
+          },
+          "bytes_sha256": "5c1b60e6215cfcf1e309c3606699d9a53850f1ae7f318c1bd046e781fa08b2f5"
+        },
+        {
+          "offset": "0xec",
+          "pointer": {
+            "address": "0xd23704",
+            "symbols": [
+              "CIS_TCBus1RelayUnit.TCBus1RelayUnit.GetAreaIfAvailable"
+            ]
+          },
+          "bytes_sha256": "afa9d0749abcdcea953aba54a664130bf0fcb7aedf174ff864fe04efa6c763f4"
+        },
+        {
+          "offset": "0x10c",
+          "pointer": {
+            "address": "0xd243bc",
+            "symbols": [
+              "CIS_TCBus1RelayUnit.TCBus1RelayUnit.IsInteractionGroup"
+            ]
+          },
+          "bytes_sha256": "01c6e46010c7c0ff2cec8013bc88d132cc064322731b97c7ef6f25d77b12321d"
+        }
+      ]
+    },
+    {
+      "prefix": {
+        "address": "0xc1a2c8",
+        "symbols": [
+          "CIS_TCBusUnitGeneric..TCBusUnitGeneric"
+        ]
+      },
+      "vmt": "0xc1a320",
+      "slots": [
+        {
+          "offset": "0x88",
+          "pointer": {
+            "address": "0x7f4160",
+            "symbols": [
+              "CIS_TIdentifiableObject.TPersistableObject.StorageLoad"
+            ]
+          },
+          "bytes_sha256": "75eb3d8fb770c3977e7230ef75e98344b9a41d6b24462ab02bd10536bf797d16"
+        },
+        {
+          "offset": "0x90",
+          "pointer": {
+            "address": "0xf2e82c",
+            "symbols": [
+              "CIS_TCommonCBus.TCBUSUnit.GetAddressAsPath"
+            ]
+          },
+          "bytes_sha256": "5a49f2a17ab4b2f6ab758f19cf960b32b8ddbdb728bfe00e8928ccd4896e071e"
+        },
+        {
+          "offset": "0xe4",
+          "pointer": {
+            "address": "0xf2ef18",
+            "symbols": [
+              "CIS_TCommonCBus.TCBUSUnit.Init"
+            ]
+          },
+          "bytes_sha256": "8f6a4123d050280977c3f183ea8904d3f244bcb03f55f0d4352c4f8bb456f1e9"
+        },
+        {
+          "offset": "0xec",
+          "pointer": {
+            "address": "0xf34770",
+            "symbols": [
+              "CIS_TCommonCBus.TCBUSUnit.GetAreaIfAvailable"
+            ]
+          },
+          "bytes_sha256": "816db1a6656fe3858b90c0d533785abaa3c018cd366438f5e2ce578437374219"
+        },
+        {
+          "offset": "0x10c",
+          "pointer": {
+            "address": "0xf2ffe0",
+            "symbols": [
+              "CIS_TCommonCBus.TCBUSUnit.IsInteractionGroup"
+            ]
+          },
+          "bytes_sha256": "b93d7417742eb7fba6db3b3deb649876ae44adbb033e78f682aed398d823f25b"
+        }
+      ]
+    }
+  ],
+  "quickget_exception_class_prefixes": [
+    {
+      "address": "0xf43d78",
+      "symbols": [
+        "CIS_TCBusObject..ECGateObjectException"
+      ]
+    },
+    {
+      "address": "0x842ac8",
+      "symbols": [
+        "CIS_TCGateCommand..ECGateCommand"
+      ]
+    },
+    {
+      "address": "0xf46bd4",
+      "symbols": [
+        "CIS_TCBusObject..ECGateProgrammingSessionNotFound"
+      ]
+    },
+    {
+      "address": "0xf444a4",
+      "symbols": [
+        "CIS_TCBusObject..ECGateBadUnitSpec"
+      ]
+    }
+  ],
+  "preparation_failures": [
+    {
+      "request": "static-v2",
+      "failure": "Unknown exact method 0xcb06bc; rejected before output creation."
+    },
+    {
+      "request": "initial inline string scan",
+      "failure": "Immediate outside PE caused PEFormatError before output; versioned scanner checks PE range."
+    },
+    {
+      "request": "static-v4",
+      "failure": "Unknown exact method 0x7f3ed0; rejected before output creation."
+    },
+    {
+      "request": "static-v7",
+      "failure": "Unknown exact method 0x7e03c0; rejected before output creation."
+    },
+    {
+      "request": "static-v10",
+      "failure": "Unknown exact MAP name FlashAgent.TFlashAgentFactory.GetFlashAgent; rejected before extractor/output creation."
+    }
+  ],
+  "source_unchanged": true
+}

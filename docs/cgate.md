@@ -2,6 +2,8 @@
 
 `cbus-cgate` provides a bounded, stateful C-Gate 3.4 command model. `cgate-mock` exposes that model over TCP for integration tests and local tooling.
 
+The user-facing client is [`cbus-toolkit cgate`](../toolkit-cli/README.md#c-gate-and-pci), implemented in Python. It connects to a native C-Gate server for online workflows, or to `cgate-mock` for local tests. Set `--port 20033` explicitly when using the mock; the client's default plain TCP port is 20023. This document describes the Rust server's compatibility, while the [Toolkit feature ledger](../toolkit-cli/docs/implementation-status.md) tracks end-to-end workflow parity.
+
 ## Command coverage
 
 The registry contains:

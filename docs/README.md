@@ -1,6 +1,9 @@
 # Documentation
 
-The repository is a Rust-only C-Bus implementation. These documents describe the maintained code and its current behavior.
+The repository contains the Python Toolkit CLI and a Rust workspace for MQTT bridging, protocols, and testing. These documents describe how the components fit together.
+
+- [Toolkit CLI guide](../toolkit-cli/README.md): installation, project editing, commissioning, and detailed command examples.
+- [Toolkit feature status](../toolkit-cli/docs/implementation-status.md): completed functions, device profiles, acceptance evidence, and outstanding parity work.
 
 - [Status](status.md): completed functionality, known limits, and remaining validation.
 - [Architecture](architecture.md): data flow and crate responsibilities.

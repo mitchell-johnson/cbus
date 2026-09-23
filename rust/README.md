@@ -1,6 +1,6 @@
 # Rust workspace
 
-This directory contains the complete maintained implementation.
+This directory contains the Rust MQTT bridge, protocol libraries, inspection tools, and test servers. The separate [Python Toolkit CLI](../toolkit-cli/README.md) provides project editing and commissioning workflows, including a client for this workspace's `cgate-mock`.
 
 | Crate | Kind | Purpose |
 | --- | --- | --- |

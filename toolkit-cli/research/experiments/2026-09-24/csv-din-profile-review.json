@@ -1,0 +1,79 @@
+{
+  "format": "cbus-toolkit-database-csv-din-profile-review-v1",
+  "date": "2026-09-24",
+  "passed": true,
+  "scope": "Static Toolkit 1.18 DIMDN8/RELDN12 class, VMT and group-agent analysis; bounded Python cached/native projection; and a read-only sweep of an unchanged VM project snapshot. The original executable was not executed; no database, CNI or physical device was mutated or accessed during the sweep.",
+  "original_inputs": {
+    "research/vendor/toolkit/app/CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "research/vendor/toolkit/app/CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "static_reports": {
+    "research/experiments/2026-09-15/csv-backend-proposal/static-din-csv-profile-v1/report.json": "bdc11fad875d19e6fc81c3d273f239e1435ff78c00887a34417fa13967c7335e",
+    "research/experiments/2026-09-15/csv-backend-proposal/static-din-csv-agent-v1/report.json": "e727f3d0d3c1cfc838267ab225902186f37a4375168f96d6af7c2395f6cbdba2"
+  },
+  "key_methods": [
+    {"start": "0x1398060", "symbol": "CIS_TDIMDN8.CIS_TDIMDN8", "bytes_sha256": "8090f10be41a887d83a4e4710200f8b6753e4b1784dac7bad87aeddbbd4f2cc8"},
+    {"start": "0x13983a4", "symbol": "CIS_TRELDN12.CIS_TRELDN12", "bytes_sha256": "2db18b5dc51ebc34a3b51235939bcf2432abee02854f076a4ad62866caf0402a"},
+    {"start": "0x12298b0", "symbol": "CIS_TDIMDN8.TDIMDN8.GetMaxChannels", "bytes_sha256": "05a1daa7bf067f8b5a872d598c8788ec1975e98076aa026242c7e9aa772c940e"},
+    {"start": "0x122a6e0", "symbol": "CIS_TRELDN12.TRELDN12.GetMaxChannels", "bytes_sha256": "d5e2322032941a9fe8d2ff3265d8c0899c202e1e5b4bd79f15dc752befece697"},
+    {"start": "0xd2bf94", "symbol": "CIS_TCBusDimmerUnit.TCBusDimmerUnit.IsInteractionGroup", "bytes_sha256": "59d5bd7d35468ddd474cebf5d144554805e38ad9beb9265a7f512fbf57deabbb"},
+    {"start": "0xd1ef60", "symbol": "CIS_TCBusDINRailOutputUnit.TCBusDINRailOutputUnit.GetAreaIfAvailable", "bytes_sha256": "d387a175ea35c17b2bdb57067d0e90f0b48121b62d26fd6769a3a089b3035b8c"},
+    {"start": "0x122dd40", "symbol": "CIS_TDinRailOutputCGateAgent.TBasicDinRailOutputCGateAgent.LoadGroups", "bytes_sha256": "455b0f618d59746d1c8ca3b66311f121eb1c325dbccad3f802f5342d41e60370"}
+  ],
+  "static_facts": {
+    "factory": "The initializers register DIMDN8, DIMDN8F and RELDN12 with firmware bounds 0 and 9. This increment admits only the independently observed DIMDN8 and RELDN12 firmware 2.7.00 subset.",
+    "selected_classes": "DIMDN8 selects TDIMDN8 and RELDN12 selects TRELDN12.",
+    "interaction_slots": "Both VMTs resolve IsInteractionGroup to TCBusDimmerUnit.IsInteractionGroup. It compares the zero-based slot with the virtual GetMaxChannels result: eight for TDIMDN8 and twelve for TRELDN12.",
+    "area": "Both VMTs resolve Area to TCBusDINRailOutputUnit.GetAreaIfAvailable, which loads AreaGroupAddress and resolves it in the primary application.",
+    "group_associations": "TBasicDinRailOutputCGateAgent.LoadGroups loads the GroupAddress array, resolves each channel through the primary application with creation enabled, assigns it to the channel and appends it to the unit manager in order. The native snapshot retains all 16 stored associations even when later slots are not CSV interaction groups."
+  },
+  "read_only_snapshot_sweep": {
+    "source": "unchanged GRENACHE.xml copied read-only from the user-owned Windows VM",
+    "snapshot_sha256": "8850d846aa0fc1c948420726e7ec27aa9401336945b6fe7612992c3a21c89469",
+    "raw_snapshot_committed": false,
+    "matching_units": 4,
+    "type_counts": {"DIMDN8": 2, "RELDN12": 2},
+    "complete_projections": 4,
+    "group_slots_per_unit": 16,
+    "area_value": 255,
+    "records": [
+      {"path": "//GRENACHE/254/p/0", "unit_type": "RELDN12", "selected_class": "TRELDN12", "group_slots": 16, "row_sha256": "c34cd8e39f5ff9b47512e291f3ea8e5885891e02163f1bd76a13d8d0d13d4f3b"},
+      {"path": "//GRENACHE/254/p/1", "unit_type": "RELDN12", "selected_class": "TRELDN12", "group_slots": 16, "row_sha256": "1113669c88a69b82a809936039b650326f22eda32ee066234f551049aebbf1c2"},
+      {"path": "//GRENACHE/254/p/3", "unit_type": "DIMDN8", "selected_class": "TDIMDN8", "group_slots": 16, "row_sha256": "4365c6bc8f0a7f2147d16d7aeb35474a32ab58e33152068b84b98d3332318213"},
+      {"path": "//GRENACHE/254/p/19", "unit_type": "DIMDN8", "selected_class": "TDIMDN8", "group_slots": 16, "row_sha256": "8972b1684f1c0d27125df8a6e9ed8de59b3ad6c56e58416fe873deda72093671"}
+    ],
+    "canonical_record_list_sha256": "4e5a6c975177d3133462a9740911f8d15a14edeb8c26278374730c93455c0493",
+    "network_io": false,
+    "database_mutation": false,
+    "physical_access": false
+  },
+  "focused_acceptance": {
+    "command": "PYTHONPATH=tests:. .venv/bin/python -m unittest tests.test_toolkit_database_csv_selection tests.test_toolkit_database_csv tests.test_toolkit_database_csv_projection tests.test_toolkit_database_csv_native tests.test_toolkit_database_csv_area tests.test_cli_toolkit_database_csv",
+    "tests_run": 61,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "elapsed_seconds": 0.917
+  },
+  "repository_acceptance": {
+    "command": "PYTHONPATH=tests .venv/bin/python -m unittest discover -s tests",
+    "tests_run": 2192,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 258,
+    "elapsed_seconds": 548.695
+  },
+  "implemented_sources": {
+    "src/cbus_toolkit/toolkit_database_csv_projection.py": "9fcd2a28cb96b797ba37cd0e4b82a9db8a1017375f876aedefa100d871cfa0d6",
+    "src/cbus_toolkit/toolkit_database_csv_native.py": "fadb6bd2d67c490c23e01b59024718d25d12b8a7e4c9c5add1871ae9c8dd7edf",
+    "tests/test_toolkit_database_csv_projection.py": "467f5ed13d9877a07c5f12ca47e6f6088b7451fa56054933ed7b6d5275c8574e",
+    "tests/test_toolkit_database_csv_native.py": "6daf382b782a6f15f25e8a05c24f9f9082b277c3ad7d4c715150be623baa47fd"
+  },
+  "remaining_limits": [
+    "DIMDN8F and other DIN output profiles",
+    "Other observed or unobserved firmware versions",
+    "Secondary-application group associations",
+    "Missing or non-255 Area mutation outside the exact admitted B03 relay fixture",
+    "Physical-device behavior"
+  ]
+}

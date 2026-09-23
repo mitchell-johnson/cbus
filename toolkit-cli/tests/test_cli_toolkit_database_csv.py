@@ -1,0 +1,521 @@
+from contextlib import redirect_stdout, redirect_stderr
+import io
+import json
+import os
+from pathlib import Path
+import tempfile
+from types import SimpleNamespace
+import unittest
+from unittest.mock import Mock, patch
+
+from cbus_toolkit import cli, toolkit_database_csv_cli as boundary
+from cbus_toolkit.toolkit_database_csv import COLUMNS
+from tests.test_toolkit_database_csv import captured, unit
+from tests.test_toolkit_database_csv_native import native_xml
+from tests.test_toolkit_database_csv_projection import projection_input
+from tests.test_cgate import peer
+from tests.test_toolkit_database_csv_area import AreaClient
+
+
+class SelectionRegistry:
+    def __init__(self, value=...):
+        self.value = value
+        self.calls = []
+
+    def read_selection(self, hive, key, name):
+        self.calls.append(('read', hive, key, name))
+        if self.value is ...:
+            raise FileNotFoundError(name)
+        return self.value
+
+    def write_selection(self, hive, key, name, value):
+        self.calls.append(('write', hive, key, name, value))
+        self.value = value
+
+
+class NativeEncoder:
+    code_page = 1252
+
+    def __init__(self):
+        self.calls = []
+
+    def encode(self, text):
+        self.calls.append(text)
+        return text.encode('cp1252', errors='replace')
+
+
+class DatabaseCSVCLITests(unittest.TestCase):
+    def execute(self, args):
+        out, err = io.StringIO(), io.StringIO()
+        with redirect_stdout(out), redirect_stderr(err), patch('socket.socket', side_effect=AssertionError('No network')):
+            code = cli.main(['toolkit-database-csv', *map(str, args)])
+        return code, json.loads(out.getvalue() or err.getvalue())
+
+    def files(self, folder):
+        source, output = Path(folder) / '捕獲 💡.json', Path(folder) / '报告 💡.csv'
+        source.write_bytes(json.dumps(captured(unit(tag_name='灯, "💡"'))).encode())
+        return source, output
+
+    def test_real_dispatch_unicode_utf8_exclusive_output_and_original_order(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source, output = self.files(folder); before = source.read_bytes()
+            code, result = self.execute([source, '--output', output, '--columns', 'tag_name', 'address'])
+            self.assertEqual(code, 0); self.assertTrue(result['complete'])
+            self.assertTrue(result['source_identity_verified'])
+            self.assertEqual(output.read_bytes(), 'Unit Address,Tag Name,\r\n7,"灯, ""💡""",\r\n\r\n'.encode())
+            self.assertEqual(result['report']['columns'], ['address', 'tag_name'])
+            self.assertEqual(source.read_bytes(), before)
+            saved = output.read_bytes()
+            code, result = self.execute([source, '--output', output])
+            self.assertEqual(code, 1); evidence = result['toolkit_database_csv_evidence']
+            self.assertFalse(evidence['output_created']); self.assertEqual(output.read_bytes(), saved)
+            self.assertEqual(evidence['stage'], 'output_create')
+
+    def test_default_all_and_empty_report_extra_blank_line(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source, output = self.files(folder); source.write_text(json.dumps(captured()))
+            code, result = self.execute([source, '--output', output])
+            self.assertEqual(code, 0); self.assertEqual(result['report']['columns'], list(COLUMNS))
+            self.assertEqual(result['report']['unit_count'], 0)
+            self.assertTrue(output.read_bytes().endswith(b'Group 16,\r\n\r\n'))
+            self.assertEqual(result['output_encoding']['mode'], 'portable_utf8')
+            self.assertFalse(result['output_encoding']['original_encoding_equivalent'])
+
+    def test_explicit_toolkit_native_encoding_uses_windows_acp_boundary(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source, output = self.files(folder)
+            encoder = NativeEncoder()
+            with patch.object(boundary, 'native_csv_encoder_backend',
+                              return_value=encoder):
+                code, result = self.execute([
+                    source, '--output', output, '--columns', 'tag_name',
+                    '--toolkit-native-encoding'])
+            self.assertEqual(code, 0)
+            expected = 'Tag Name,\r\n"灯, ""💡""",\r\n\r\n'.encode(
+                'cp1252', errors='replace')
+            self.assertEqual(output.read_bytes(), expected)
+            self.assertEqual(len(encoder.calls), 1)
+            encoding = result['output_encoding']
+            self.assertEqual(encoding['mode'], 'toolkit_native')
+            self.assertEqual(encoding['encoding'], 'windows-acp')
+            self.assertEqual(encoding['windows_code_page'], 1252)
+            self.assertTrue(encoding['original_encoding_equivalent'])
+            self.assertFalse(encoding['bom'])
+
+    @unittest.skipIf(os.name == 'nt', 'Non-Windows ordering guard')
+    def test_native_encoding_rejects_before_file_or_live_network_access(self):
+        with patch.object(boundary.os, 'lstat',
+                          side_effect=AssertionError('No input read')):
+            code, result = self.execute([
+                'missing', '--output', 'missing-output',
+                '--toolkit-native-encoding'])
+        self.assertEqual(code, 1)
+        evidence = result['toolkit_database_csv_evidence']
+        self.assertEqual(evidence['stage'], 'validate')
+        self.assertFalse(evidence['network_io_attempted'])
+
+        args = SimpleNamespace(
+            area='cgate', action='database-csv', unit='//CSVTEST/254/p/4',
+            output='missing-output', columns=None, apply_missing_area=False,
+            backup_project=None, host='127.0.0.1', port=None, timeout=5,
+            tls=False, toolkit_column_selection=False,
+            save_toolkit_column_selection=False, toolkit_native_encoding=True)
+        factory = Mock()
+        with self.assertRaisesRegex(RuntimeError, 'requires Windows'):
+            boundary.live(args, factory, None)
+        factory.assert_not_called()
+
+    def test_toolkit_registry_columns_load_before_file_io(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source, output = self.files(folder)
+            registry = SelectionRegistry('Serial Number,Unit Address,')
+            with patch.object(boundary, 'selection_registry_backend',
+                              return_value=registry):
+                code, result = self.execute([
+                    source, '--output', output, '--toolkit-column-selection'])
+            self.assertEqual(code, 0)
+            self.assertEqual(result['report']['columns'], ['address', 'serial'])
+            self.assertEqual(output.read_bytes(),
+                             b'Unit Address,Serial Number,\r\n7,000000010002,\r\n\r\n')
+            self.assertTrue(result['registry_io_attempted'])
+            self.assertEqual(result['column_selection']['source'], 'toolkit_registry')
+            self.assertIsNone(result['column_selection']['save'])
+            self.assertEqual(registry.calls[0][0], 'read')
+
+    def test_missing_toolkit_selection_defaults_all_and_explicit_save_precedes_file(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source, output = self.files(folder)
+            registry = SelectionRegistry()
+            with patch.object(boundary, 'selection_registry_backend',
+                              return_value=registry), patch.object(
+                                  boundary.os, 'lstat', side_effect=OSError('file denied')):
+                code, result = self.execute([
+                    source, '--output', output, '--toolkit-column-selection',
+                    '--save-toolkit-column-selection'])
+            self.assertEqual(code, 1)
+            selection = result['toolkit_database_csv_column_selection']
+            self.assertTrue(selection['load']['default_used'])
+            self.assertTrue(selection['save']['complete'])
+            self.assertEqual(registry.calls[0][0], 'read')
+            self.assertEqual(registry.calls[1][0], 'write')
+            self.assertTrue(registry.value.startswith('Unit Address,Part Name,'))
+            self.assertTrue(registry.value.endswith('Group 16,'))
+            self.assertFalse(output.exists())
+
+    def test_explicit_columns_can_be_saved_and_conflicts_stop_before_input(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source, output = self.files(folder)
+            registry = SelectionRegistry()
+            with patch.object(boundary, 'selection_registry_backend',
+                              return_value=registry):
+                code, result = self.execute([
+                    source, '--output', output, '--columns', 'serial', 'address',
+                    '--save-toolkit-column-selection'])
+            self.assertEqual(code, 0)
+            self.assertEqual(registry.value, 'Unit Address,Serial Number,')
+            self.assertEqual(result['column_selection']['effective_columns'],
+                             ['address', 'serial'])
+            with patch.object(boundary.os, 'lstat',
+                              side_effect=AssertionError('No input read')):
+                code, result = self.execute([
+                    'missing', '--output', 'missing-output', '--columns', 'address',
+                    '--toolkit-column-selection'])
+            self.assertEqual(code, 1)
+            self.assertIn('cannot be combined', result['error'])
+            self.assertEqual(result['toolkit_database_csv_evidence']['stage'],
+                             'validate')
+            with patch.object(boundary.os, 'lstat',
+                              side_effect=AssertionError('No input read')):
+                code, result = self.execute([
+                    'missing', '--output', 'missing-output', '--columns', 'all',
+                    '--toolkit-column-selection'])
+            self.assertEqual(code, 1)
+            self.assertIn('cannot be combined', result['error'])
+
+    def test_empty_saved_selection_stops_before_file_or_network_io(self):
+        registry = SelectionRegistry('Unknown,')
+        with patch.object(boundary, 'selection_registry_backend',
+                          return_value=registry), patch.object(
+                              boundary.os, 'lstat',
+                              side_effect=AssertionError('No input read')):
+            code, result = self.execute([
+                'missing', '--output', 'missing-output',
+                '--toolkit-column-selection'])
+        self.assertEqual(code, 1)
+        self.assertIn('no recognized selected columns', result['error'])
+        self.assertFalse(result['toolkit_database_csv_column_selection']
+                         ['load']['selection']['ok_enabled'])
+
+        args = SimpleNamespace(
+            area='cgate', action='database-csv', unit='//CSVTEST/254/p/4',
+            output='missing-output', columns=None, apply_missing_area=False,
+            backup_project=None, host='127.0.0.1', port=None, timeout=5,
+            tls=False, toolkit_column_selection=True,
+            save_toolkit_column_selection=False)
+        factory = Mock()
+        with patch.object(boundary, 'selection_registry_backend',
+                          return_value=registry), self.assertRaises(ValueError):
+            boundary.live(args, factory, None)
+        factory.assert_not_called()
+
+    def test_cached_projection_mode_exports_original_backed_row_and_evidence(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source = Path(folder) / 'cached.json'; output = Path(folder) / 'report.csv'
+            source.write_text(json.dumps(projection_input()))
+            code, result = self.execute([source, '--output', output, '--cached-projection',
+                                         '--columns', 'area', 'address'])
+            self.assertEqual(code, 0)
+            self.assertEqual(result['input_mode'], 'cached_projection')
+            self.assertTrue(result['projection']['complete'])
+            self.assertEqual(result['projection']['selected_class'], 'TRELAY4')
+            self.assertEqual(output.read_bytes(), b'Unit Address,Area,\r\n4,Area12,\r\n\r\n')
+
+    def test_cached_projection_provider_stop_creates_no_output(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source = Path(folder) / 'cached.json'; output = Path(folder) / 'report.csv'
+            value = projection_input(observations=('12', '12'))
+            value['area_observations'][0]['completed'] = False
+            source.write_text(json.dumps(value))
+            code, result = self.execute([source, '--output', output, '--cached-projection'])
+            self.assertEqual(code, 1)
+            evidence = result['toolkit_database_csv_evidence']
+            self.assertEqual(evidence['stage'], 'project_cached_unit')
+            self.assertEqual(evidence['projection']['stop_reason'], 'area_load_failed')
+            self.assertFalse(evidence['output_create_attempted'])
+            self.assertFalse(output.exists())
+
+    def test_native_xml_unit_mode_projects_read_only_snapshot(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source = Path(folder) / 'native.xml'; output = Path(folder) / 'report.csv'
+            source.write_text(native_xml())
+            code, result = self.execute([source, '--output', output,
+                '--native-xml-unit', '//CSVTEST/254/p/4', '--columns', 'area', 'address'])
+            self.assertEqual(code, 0)
+            self.assertEqual(result['input_mode'], 'native_xml')
+            self.assertFalse(result['projection']['native_database_mutated'])
+            self.assertEqual(output.read_bytes(), b'Unit Address,Area,\r\n4,Group12,\r\n\r\n')
+
+    def test_native_xml_missing_area_group_creates_no_output(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source = Path(folder) / 'native.xml'; output = Path(folder) / 'report.csv'
+            source.write_text(native_xml(area=13, missing=(13,)))
+            code, result = self.execute([source, '--output', output,
+                '--native-xml-unit', '//CSVTEST/254/p/4'])
+            self.assertEqual(code, 1)
+            evidence = result['toolkit_database_csv_evidence']
+            self.assertEqual(evidence['stage'], 'project_native_xml_unit')
+            self.assertFalse(evidence['output_create_attempted'])
+            self.assertFalse(output.exists())
+
+    def test_live_cgate_snapshot_projects_without_physical_access(self):
+        with tempfile.TemporaryDirectory() as folder:
+            output = Path(folder) / 'live.csv'
+            xml_lines = native_xml().replace('><', '>\n<').splitlines()
+            response = (b'[1] 343-Begin XML snippet\r\n[1] 347-' + xml_lines[0].encode() + b'\r\n' +
+                        b''.join(b'[1] ' + line.encode() + b'\r\n' for line in xml_lines[1:]) +
+                        b'[1] 344 End XML snippet\r\n')
+            with peer([[response]]) as ((host, port), sent):
+                out, err = io.StringIO(), io.StringIO()
+                with redirect_stdout(out), redirect_stderr(err):
+                    code = cli.main(['cgate', '--host', host, '--port', str(port), 'database-csv',
+                                     '//CSVTEST/254/p/4', '--output', str(output),
+                                     '--columns', 'area', 'address'])
+            self.assertEqual(code, 0, err.getvalue())
+            result = json.loads(out.getvalue())
+            self.assertEqual(result['database_command'], 'DBGETXML //CSVTEST')
+            self.assertFalse(result['physical_device_accessed'])
+            self.assertFalse(result['native_database_mutated'])
+            self.assertEqual(output.read_bytes(), b'Unit Address,Area,\r\n4,Group12,\r\n\r\n')
+            self.assertEqual(sent, [b'[1] DBGETXML //CSVTEST\r\n'])
+
+    def test_live_cgate_missing_area_stops_before_output(self):
+        with tempfile.TemporaryDirectory() as folder:
+            output = Path(folder) / 'live.csv'
+            response = (b'[1] 343-Begin XML snippet\r\n[1] 347-' +
+                        native_xml(area=13, missing=(13,)).encode() +
+                        b'\r\n[1] 344 End XML snippet\r\n')
+            with peer([[response]]) as ((host, port), sent):
+                out, err = io.StringIO(), io.StringIO()
+                with redirect_stdout(out), redirect_stderr(err):
+                    code = cli.main(['cgate', '--host', host, '--port', str(port), 'database-csv',
+                                     '//CSVTEST/254/p/4', '--output', str(output)])
+            self.assertEqual(code, 1)
+            self.assertIn('unperformed database mutation', json.loads(err.getvalue())['error'])
+            self.assertFalse(output.exists())
+            self.assertEqual(sent, [b'[1] DBGETXML //CSVTEST\r\n'])
+
+    def test_live_cgate_explicit_missing_area_apply_backs_up_and_exports(self):
+        with tempfile.TemporaryDirectory() as folder:
+            output = Path(folder) / 'live.csv'; client = AreaClient()
+            class Connection:
+                def __enter__(self): return client
+                def __exit__(self, kind, error, trace): return False
+            factory = Mock(return_value=Connection())
+            args = SimpleNamespace(area='cgate', action='database-csv', unit='//CSVTEST/254/p/4',
+                output=output, columns=['area', 'address'], apply_missing_area=True,
+                backup_project='BACKUP', host='127.0.0.1', port=None, timeout=5, tls=False)
+            result, code = boundary.live(args, factory, None)
+            self.assertEqual(code, 0)
+            self.assertTrue(result['native_database_mutated'])
+            self.assertEqual(result['area_group_mutation']['backup_project'], 'BACKUP')
+            self.assertTrue(result['area_group_mutation']['reload_verified'])
+            self.assertEqual(output.read_bytes(), b'Unit Address,Area,\r\n4,Group 13,\r\n\r\n')
+            factory.assert_called_once_with('127.0.0.1', 20023, timeout=5, ssl_context=None)
+
+    def test_live_cgate_apply_validation_precedes_connection(self):
+        with tempfile.TemporaryDirectory() as folder:
+            base = dict(area='cgate', action='database-csv', unit='//CSVTEST/254/p/4',
+                output=Path(folder) / 'live.csv', columns=['all'], apply_missing_area=True,
+                backup_project=None, host='127.0.0.1', port=None, timeout=5, tls=False)
+            for change in ({}, {'apply_missing_area': False, 'backup_project': 'BACKUP'},
+                           {'backup_project': 'CSVTEST'}):
+                args = SimpleNamespace(**{**base, **change}); factory = Mock()
+                with self.subTest(change=change), self.assertRaises(ValueError):
+                    boundary.live(args, factory, None)
+                factory.assert_not_called()
+
+    def test_live_cgate_output_failure_reports_completed_mutation_and_backup(self):
+        with tempfile.TemporaryDirectory() as folder:
+            output = Path(folder) / 'live.csv'; client = AreaClient()
+            class Connection:
+                def __enter__(self): return client
+                def __exit__(self, kind, error, trace): return False
+            args = SimpleNamespace(area='cgate', action='database-csv', unit='//CSVTEST/254/p/4',
+                output=output, columns=['all'], apply_missing_area=True,
+                backup_project='BACKUP', host='127.0.0.1', port=None, timeout=5, tls=False)
+            with patch.object(boundary.os, 'open', side_effect=OSError('disk failed')):
+                with self.assertRaises(boundary.DatabaseCSVLiveError) as caught:
+                    boundary.live(args, Mock(return_value=Connection()), None)
+            self.assertTrue(caught.exception.details['native_database_mutated'])
+            self.assertEqual(caught.exception.details['backup_project'], 'BACKUP')
+            self.assertEqual(caught.exception.details['output_bytes_confirmed'], 0)
+            self.assertEqual(caught.exception.details['output_encoding']['mode'],
+                             'portable_utf8')
+            self.assertTrue(client.created)
+
+    def test_live_native_encoding_failure_reports_completed_mutation(self):
+        with tempfile.TemporaryDirectory() as folder:
+            output = Path(folder) / 'live.csv'; client = AreaClient()
+            class Connection:
+                def __enter__(self): return client
+                def __exit__(self, kind, error, trace): return False
+            class FailedEncoder:
+                code_page = 1252
+                def encode(self, text): raise UnicodeError('conversion failed')
+            args = SimpleNamespace(
+                area='cgate', action='database-csv', unit='//CSVTEST/254/p/4',
+                output=output, columns=['all'], apply_missing_area=True,
+                backup_project='BACKUP', host='127.0.0.1', port=None,
+                timeout=5, tls=False, toolkit_native_encoding=True)
+            with patch.object(boundary, 'native_csv_encoder_backend',
+                              return_value=FailedEncoder()):
+                with self.assertRaises(boundary.DatabaseCSVLiveError) as caught:
+                    boundary.live(args, Mock(return_value=Connection()), None)
+            self.assertTrue(caught.exception.details['native_database_mutated'])
+            self.assertEqual(caught.exception.details['backup_project'], 'BACKUP')
+            self.assertEqual(caught.exception.details['output_bytes_confirmed'], 0)
+            self.assertIsNone(caught.exception.details['output_encoding'])
+            self.assertFalse(output.exists())
+            self.assertTrue(client.created)
+
+    def test_columns_invalid_before_input_io_and_capture_invalid_before_output_creation(self):
+        for columns in (['all', 'address'], ['address', 'address'], ['unknown']):
+            with patch.object(boundary.os, 'lstat', side_effect=AssertionError('No input read')):
+                code, result = self.execute(['missing', '--output', 'missing-output', '--columns', *columns])
+            self.assertEqual(code, 1); self.assertEqual(result['toolkit_database_csv_evidence']['stage'], 'validate')
+        with tempfile.TemporaryDirectory() as folder:
+            source, output = self.files(folder)
+            for raw in (b'<Project/>', b'{}', b'{"format":"x","format":"y"}',
+                        json.dumps(captured(unit())).replace('"address": 7', '"address": true').encode()):
+                source.write_bytes(raw)
+                code, result = self.execute([source, '--output', output])
+                self.assertEqual(code, 1); self.assertFalse(output.exists())
+                self.assertFalse(result['toolkit_database_csv_evidence']['output_create_attempted'])
+
+    def test_regular_file_bounds_symlink_and_open_replacement_reject(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source, output = self.files(folder); link = Path(folder) / 'link'; link.symlink_to(source)
+            values = [Path(folder), link]
+            if hasattr(os, 'mkfifo'):
+                fifo = Path(folder) / 'fifo'; os.mkfifo(fifo); values.append(fifo)
+            for path in values:
+                code, _ = self.execute([path, '--output', output]); self.assertEqual(code, 1)
+            source.write_bytes(b'')
+            code, _ = self.execute([source, '--output', output]); self.assertEqual(code, 1)
+            with source.open('wb') as handle: handle.truncate(boundary.MAX_CAPTURE_BYTES + 1)
+            code, _ = self.execute([source, '--output', output]); self.assertEqual(code, 1)
+            source.write_text(json.dumps(captured()))
+            target = Path(folder) / 'alternate'; target.write_bytes(source.read_bytes())
+            real_open = os.open
+            def replaced(path, flags, *args):
+                if Path(path) == source:
+                    source.unlink(); source.symlink_to(target)
+                    # Simulate a platform with no O_NOFOLLOW.
+                    flags &= ~getattr(os, 'O_NOFOLLOW', 0)
+                return real_open(path, flags, *args)
+            with patch.object(boundary.os, 'open', side_effect=replaced):
+                code, result = self.execute([source, '--output', output])
+            self.assertEqual(code, 1); self.assertFalse(output.exists())
+            self.assertFalse(result['toolkit_database_csv_evidence']['source_identity_verified'])
+
+    def test_partial_writes_are_completed_without_recreating_output(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source, output = self.files(folder); write = os.write; opened = os.open
+            def small(fd, data): return write(fd, data[:3])
+            with patch.object(boundary.os, 'write', side_effect=small) as writes, patch.object(boundary.os, 'open', wraps=opened) as opens:
+                code, result = self.execute([source, '--output', output, '--columns', 'address'])
+            self.assertEqual(code, 0); self.assertGreater(writes.call_count, 1)
+            self.assertEqual(sum(bool(call.args[1] & os.O_CREAT) for call in opens.call_args_list), 1)
+            self.assertEqual(output.read_bytes(), b'Unit Address,\r\n7,\r\n\r\n')
+            self.assertEqual(result['output_bytes_confirmed'], output.stat().st_size)
+
+    def test_partial_write_then_error_and_cleanup_interrupt_retain_first_cause(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source, output = self.files(folder); write, close = os.write, os.close
+            first = OSError('write failed'); second = KeyboardInterrupt('close failed'); writes = 0
+            def fail_write(fd, data):
+                nonlocal writes
+                writes += 1
+                if writes == 1: return write(fd, data[:5])
+                raise first
+            closed = 0
+            def fail_close(fd):
+                nonlocal closed
+                closed += 1; close(fd)
+                if closed == 2: raise second
+            op = boundary.DatabaseCSVFileOperation()
+            with patch.object(boundary.os, 'write', side_effect=fail_write), patch.object(boundary.os, 'close', side_effect=fail_close):
+                with self.assertRaises(boundary.DatabaseCSVFileError) as raised:
+                    op.run(source, output=output, columns=('address',))
+            self.assertIs(raised.exception.__cause__, first)
+            self.assertIs(raised.exception.original_error, first)
+            self.assertEqual(output.read_bytes(), b'Unit ')
+            self.assertEqual(op.last_evidence['output_bytes_confirmed'], 5)
+            self.assertTrue(op.last_evidence['output_may_be_partial'])
+            self.assertEqual(op.last_evidence['cleanup_errors'][0]['type'], 'KeyboardInterrupt')
+            self.assertEqual(closed, 2)
+
+    def test_first_interruption_identity_survives_secondary_unprintable_close(self):
+        class Broken(SystemExit):
+            def __str__(self): raise KeyboardInterrupt('message failed')
+        first, second = KeyboardInterrupt('read interrupted'), Broken()
+        with tempfile.TemporaryDirectory() as folder:
+            source, output = self.files(folder); close = os.close
+            def fail_close(fd): close(fd); raise second
+            op = boundary.DatabaseCSVFileOperation()
+            with patch.object(boundary.os, 'read', side_effect=first), patch.object(boundary.os, 'close', side_effect=fail_close):
+                with self.assertRaises(KeyboardInterrupt) as raised: op.run(source, output=output, columns=('address',))
+            self.assertIs(raised.exception, first); self.assertFalse(output.exists())
+            self.assertEqual(op.last_evidence['cleanup_errors'][0]['message'], '<exception message unavailable>')
+
+    def test_fsync_and_close_failures_mark_existing_output_uncertain_and_no_retry(self):
+        for stage in ('fsync', 'close'):
+            with self.subTest(stage=stage), tempfile.TemporaryDirectory() as folder:
+                source, output = self.files(folder); close = os.close; calls = 0
+                first = OSError(stage + ' failed')
+                def close_output(fd):
+                    nonlocal calls
+                    calls += 1; close(fd)
+                    if calls == 2: raise first
+                with patch.object(boundary.os, 'close', side_effect=close_output if stage == 'close' else close), \
+                     patch.object(boundary.os, 'fsync', side_effect=first if stage == 'fsync' else None):
+                    code, result = self.execute([source, '--output', output, '--columns', 'address'])
+                self.assertEqual(code, 1); self.assertTrue(output.exists())
+                state = result['toolkit_database_csv_evidence']
+                self.assertTrue(state['output_write_complete']); self.assertFalse(state['complete'])
+                self.assertEqual(state['error']['message'], stage + ' failed')
+                if stage == 'close': self.assertEqual(calls, 2)
+
+    def test_actual_main_interruption_and_evidence_copy_failure_preserve_identity(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source, output = self.files(folder); first = KeyboardInterrupt('read stopped')
+            with patch.object(boundary.os, 'read', side_effect=first):
+                code, result = self.execute([source, '--output', output])
+            self.assertEqual(code, 130); self.assertFalse(output.exists())
+            self.assertEqual(result['toolkit_database_csv_evidence']['stage'], 'source_read')
+            op = boundary.DatabaseCSVFileOperation()
+            with patch.object(boundary.os, 'read', side_effect=first), patch.object(boundary.copy, 'deepcopy', side_effect=SystemExit(5)):
+                with self.assertRaises(KeyboardInterrupt) as stopped: op.run(source, output=output, columns=('address',))
+            self.assertIs(stopped.exception, first); self.assertTrue(op.last_evidence['evidence_export_failed'])
+
+    def test_lost_creation_return_retains_possible_empty_output_without_replay(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source, output = self.files(folder); opened, close = os.open, os.close
+            first = KeyboardInterrupt('creation return interrupted')
+            def lost(path, flags, *args):
+                descriptor = opened(path, flags, *args)
+                if flags & os.O_CREAT:
+                    close(descriptor)  # Fixture owns this otherwise unreturned handle.
+                    raise first
+                return descriptor
+            with patch.object(boundary.os, 'open', side_effect=lost) as calls:
+                code, result = self.execute([source, '--output', output])
+            self.assertEqual(code, 130); self.assertEqual(output.read_bytes(), b'')
+            evidence = result['toolkit_database_csv_evidence']
+            self.assertFalse(evidence['output_created'])
+            self.assertTrue(evidence['output_may_exist']); self.assertTrue(evidence['output_may_be_partial'])
+            self.assertEqual(evidence['output_bytes_confirmed'], 0)
+            self.assertEqual(sum(bool(c.args[1] & os.O_CREAT) for c in calls.call_args_list), 1)
+
+
+if __name__ == '__main__': unittest.main()

@@ -1,0 +1,129 @@
+{
+  "status": "passed",
+  "scope": "Explicit Windows adapter batch 2: existing Normalization, MRA normalization, Time/Date and MRA test contracts; unchanged production, original C# probes and shared adapters.",
+  "full_suite_run": false,
+  "physical_device_verified": false,
+  "original_model_backend": "windows",
+  "backend_default": "docker",
+  "silent_fallback": false,
+  "environment_provenance": "research/fixtures/original-oracle-batch1-acceptance.json",
+  "native_service": {
+    "host": "127.0.0.1",
+    "port": 20033,
+    "version": "3.4.0 build 2001",
+    "scope": "Owned loopback service and unique closed database projects"
+  },
+  "source_hashes": {
+    "tests/test_edlt_normalization.py": "96d3a49b61c1455b7c55e1b94e85e5564554c421eca780ad06404c101ae14b9f",
+    "tests/test_edlt_mra_normalization.py": "ea6daaf5d47ed1c2099e02c7799ce7e60a289415fd238b1345e82fd9c44e5a89",
+    "tests/test_edlt_time_date.py": "b59c03f6371e88fc72ab2da917d9ca94f9a96110268cb1a81cc7ff1937dcc04e",
+    "tests/test_edlt_mra.py": "ff4b46ec8bb9cd60a90cb028fb24a1e95d529e1d27c43e3d0aec4660f887f989",
+    "research/NativeEdltNormalizationProbe.cs": "c17010830d2fb1d074905c7a4ec55cbbe1e4b180d5734b17d30e9ad1a5c016c8",
+    "research/NativeEdltTimeDateProbe.cs": "4a419c339672c78505167f808e29a85d849f6591dcd692b1b3f909da48c30397",
+    "research/NativeEdltMRAProbe.cs": "77c571fdab22ddb44410448771b5c258792b94bdd3b6605ccf2c93ffc2d9842a",
+    "src/cbus_toolkit/edlt.py": "78fcb914b21b71206b1cb381b670388dbcd8eb67afa0deb254620395ac353641",
+    "src/cbus_toolkit/edlt_mra.py": "99bf274549de55b4105acc615a620f6eebf83ebbc1a5a56379646a690e9e2636",
+    "src/cbus_toolkit/edlt_time_date.py": "35e3117cccdc5592cca2fed8d9fb4e9eff367faff397d33ebe652515769577d7",
+    "research/original_oracle.py": "5c96ba679de04921798b282dea05a5b0a1db78f4859aab5e8259b78e41a50ab8",
+    "research/windows_bridge.py": "9b2044b76fa74cb5bb06dcfb854c7a1fc7f96c19ba3f0367e5f901cfad822107",
+    "research/NativeWindowsBridge.cs": "da252f50556c70a58a039bb933b0f2dc8d25f31a1838ceac243cede07355efb1"
+  },
+  "runs": {
+    "313": {
+      "python": "Python 3.13.14",
+      "passed": 32,
+      "skipped": 0,
+      "elapsed_seconds": 189.241,
+      "log": "research/runtime/windows-bridge/adapter-batch2/tests-313.txt",
+      "log_sha256": "2b77e73410131584cdfabecc2aea6ace3d70f72108b5af840200ea2d6eed63ee",
+      "reports": {
+        "normalization-original": {
+          "path": "research/runtime/windows-bridge/adapter-batch2/normalization-original-313.json",
+          "sha256": "0b708fd3f95c4147c89e23a51dd7c61ec234858c6ecbb25116c0555364556f06"
+        },
+        "normalization-native": {
+          "path": "research/runtime/windows-bridge/adapter-batch2/normalization-native-313.json",
+          "sha256": "3614bf44984c080303e018cba81f276ddda65b1518809c6af2a1afe75a09946a"
+        },
+        "mra-normalization": {
+          "path": "research/runtime/windows-bridge/adapter-batch2/mra-normalization-313.json",
+          "sha256": "8f1326644b5a86aca47818e23a1fe2ab036959091190d5f7cc4f777535b7336c"
+        },
+        "time-date": {
+          "path": "research/runtime/windows-bridge/adapter-batch2/time-date-313.json",
+          "sha256": "4a6273b1baa264cdc1c89c9af251dc1f9977d8066856d7e8c797b0b10c85da0f"
+        },
+        "mra": {
+          "path": "research/runtime/windows-bridge/adapter-batch2/mra-313.json",
+          "sha256": "17c0eae13667f694e7423d0759c62a3e31b7d75442a21fc9d80dec6e13e6b6e5"
+        }
+      },
+      "normalization_original_cases": 8,
+      "mra_normalization_original_cases": 5,
+      "time_date_original_output_rows": 132,
+      "time_date_original_full_pp_cases": 3,
+      "time_date_native_format_combinations": 64,
+      "time_date_native_placements": 30,
+      "mra_original_output_rows": 179,
+      "mra_original_full_pp_cases": 8,
+      "mra_native_global_pairs": 24,
+      "mra_native_source_pairs": 3
+    },
+    "310": {
+      "python": "Python 3.10.20",
+      "passed": 32,
+      "skipped": 0,
+      "elapsed_seconds": 163.636,
+      "log": "research/runtime/windows-bridge/adapter-batch2/tests-310.txt",
+      "log_sha256": "60c74b5545390c254925d113b7e227bdff7c6b993a69f36c6a8caf5a5ff4b5a8",
+      "reports": {
+        "normalization-original": {
+          "path": "research/runtime/windows-bridge/adapter-batch2/normalization-original-310.json",
+          "sha256": "0b708fd3f95c4147c89e23a51dd7c61ec234858c6ecbb25116c0555364556f06"
+        },
+        "normalization-native": {
+          "path": "research/runtime/windows-bridge/adapter-batch2/normalization-native-310.json",
+          "sha256": "3614bf44984c080303e018cba81f276ddda65b1518809c6af2a1afe75a09946a"
+        },
+        "mra-normalization": {
+          "path": "research/runtime/windows-bridge/adapter-batch2/mra-normalization-310.json",
+          "sha256": "8f1326644b5a86aca47818e23a1fe2ab036959091190d5f7cc4f777535b7336c"
+        },
+        "time-date": {
+          "path": "research/runtime/windows-bridge/adapter-batch2/time-date-310.json",
+          "sha256": "1aee3c6b28b99c5595307195ccd68afeee5f15f2b87e34609b9457ae3b9bd7bd"
+        },
+        "mra": {
+          "path": "research/runtime/windows-bridge/adapter-batch2/mra-310.json",
+          "sha256": "e330e0c712f5aa0505c681d5750a9a0ccc7a6f4b788d6547a58447919165f331"
+        }
+      },
+      "normalization_original_cases": 8,
+      "mra_normalization_original_cases": 5,
+      "time_date_original_output_rows": 132,
+      "time_date_original_full_pp_cases": 3,
+      "time_date_native_format_combinations": 64,
+      "time_date_native_placements": 30,
+      "mra_original_output_rows": 179,
+      "mra_original_full_pp_cases": 8,
+      "mra_native_global_pairs": 24,
+      "mra_native_source_pairs": 3
+    }
+  },
+  "evidence_equal_between_python_versions_excluding_project_name": true,
+  "preservation_audit": {
+    "path": "research/runtime/windows-bridge/adapter-batch2/preservation-audit.json",
+    "sha256": "0c02f394af3e3d6227198eab69f7f56ad41dd27eb5763400ac2f9771201216d0",
+    "assertion_expressions_unchanged": 240,
+    "docker_command_strings_unchanged": true,
+    "test_decorators_and_environment_gates_unchanged": true
+  },
+  "coverage_boundaries": [
+    "Normalization compares eight original record/restore transitions and an independent native raw-byte/save/reload fixture; it is not eight full original PP comparisons.",
+    "MRA normalization compares five existing source/selected/save/idempotence cases; native MRA coverage is provided by its separate fixture.",
+    "Only the reported original_full_pp cases compare all874 fields and fiveCRCs to the original model; additional format, placement and global/source-pair combinations retain the existing native assertions.",
+    "All three native database fixtures saved, closed and reloaded with complete PP equality and state=new.",
+    "No physical clock, Audio Control, programming or other network operation is accepted by these fixtures.",
+    "Existing Docker paths/gates are retained; Docker was not executed for this migration."
+  ]
+}

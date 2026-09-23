@@ -1,0 +1,82 @@
+{
+  "scope": "Source CLI regression after Reset and SceneLive integration; not installed wheel acceptance",
+  "source_sha256": {
+    "tests/test_edlt_control_cli.py": "fb394b3624fe1fef06733ca91b3124c041e20a16a610c178382dfeb6da0fff4e",
+    "tests/test_cli_edlt_ordered_controls.py": "4806bdd9786a183574be3a08f83c6f27d0c224ea310705b74fdd5651941f25b4",
+    "tests/test_cli_edlt_ordered_finalization.py": "1d40470fe378450f0149a2e1e8f40b6c16b29f1ecdb22f54eaf1ab8b410c992b",
+    "tests/test_cli.py": "5e0048589ad015288bec5570efeb097d4ab970ad4de941671d92ee2bafff3313",
+    "tests/test_cgate_cleanup.py": "4e8b241f96d57b2d5f942f3e4e067748597da79f1c0d7bf4631ed88b2b20460b",
+    "tests/test_cli_edlt_blank.py": "afcedd03d2132bd6418cc0539b2d856cc8b5dd2b76b578570a80a14cbfc4cdf6",
+    "tests/test_cli_edlt_global.py": "b7685eca0b44ee9c336c841b5d92504a34bd15373895750a9a700e22d4e1c16e",
+    "tests/test_cli_edlt_scene_manager.py": "12e8b442b9cb5e3227974f4bd98144a730f7cc2fb9bde74879ae7359883e0b53",
+    "tests/test_cli_edlt_reset.py": "94112563d4d3beb4695d31a57f70b8b57b8252e138d18b423c6e76bf152e5601",
+    "tests/test_cli_edlt_scene_live.py": "54e92e34a0360626ed85f2329b277b158a551bdcf15b4958415191e3430416e7",
+    "src/cbus_toolkit/cli.py": "d849f3675f45922965b7cea0fc69e5bcd4466189e02b67e2ff61da764f40c908",
+    "src/cbus_toolkit/edlt_control_cli.py": "90807283d24976e753835a191f982f538187be2c2b5347492f34d15207e19a48",
+    "src/cbus_toolkit/edlt_global_cli.py": "cc8ddb561f050cb5024be674c95743da92687dc68ed5d23a232f8dcfda3b05cb",
+    "src/cbus_toolkit/edlt_scene_manager_cli.py": "30b6144d6e9a5a4484a03dcee82ac4c394a67ddd3748c1e2ee20806bf135b5e7",
+    "src/cbus_toolkit/edlt_scene_manager.py": "8072aa122d2578b0d4763bb8b06d6e38b278fed110cf1d0337f55b745f1b575f",
+    "src/cbus_toolkit/edlt_global_programming.py": "7a758d5969a2d2534cfad76c14b153f6e9eded45ef48d5e1cf2daea683b3edcd",
+    "src/cbus_toolkit/native_global_programming.py": "92545d29ad1693538b3a7dfeaa2436f1fcd6406329b54076914633ccf2983b70",
+    "src/cbus_toolkit/edlt_blank.py": "d111b6afee5b37f304aeec64b717bfecfe8b89b80d0b55a649cd29efc4e5ed6f",
+    "src/cbus_toolkit/edlt_applications.py": "5c06e2a0ec30ef42c17cd4d13924db5eeb1634830b5ab5bd7556f34ba64ce881",
+    "src/cbus_toolkit/edlt_corridor.py": "a00e918af4ddba1a31ce804c396f927c29c5378589d066fd33a7c01597aca0a9",
+    "src/cbus_toolkit/edlt_lifecycle.py": "4f085eac6d38b562c0e8289185638dd16152f73a68728b2a40a6268224c5a94f",
+    "src/cbus_toolkit/cgate.py": "fef71db3a4d98c1a175a8bf0287b5abcaea4689df835dea7b0c19413e206eb15",
+    "src/cbus_toolkit/programming.py": "30b0def5768e5a7f926eb07771dddb02a4ec5bf6e724fad735be8f3f59c07a96",
+    "src/cbus_toolkit/edlt_reset.py": "a6feb5fba9cd7703c0c25f85f5004d8b3a1dfc7f47f051e37cb64d5c6afd6023",
+    "src/cbus_toolkit/edlt_reset_cli.py": "6e661865721c04d43af9244f0b3d38ab2e91000934e9927e55304d0ded0244f0",
+    "src/cbus_toolkit/edlt_scene_live.py": "60b4018263dc28406e2b52e1f9fe8179c32d8ca7b57f0886bedb23984a8e8a0c",
+    "src/cbus_toolkit/edlt_scene_live_cli.py": "7cc5c9bfa7f81347df3abdbca8f36974f7c1df6963e502b5b139d303a9bc66ad",
+    "tests/test_edlt_reset.py": "a827f45f9f0bb3001fd756fce727759c48899f8dee1fba9ba29dca1dd12d68f7",
+    "tests/test_edlt_scene_manager.py": "d9fb4d82af2b5747b1012080524ed047d91511a1a93942ee7573a9acb65e3cd9",
+    "tests/test_edlt_scene_live.py": "b5342e30a534c90bde2a24387313d16ddacb0ce80f9cae02d03899545ee0dd04"
+  },
+  "modules": [
+    "tests.test_edlt_control_cli",
+    "tests.test_cli_edlt_ordered_controls",
+    "tests.test_cli_edlt_ordered_finalization",
+    "tests.test_cli",
+    "tests.test_cgate_cleanup",
+    "tests.test_cli_edlt_blank",
+    "tests.test_cli_edlt_global",
+    "tests.test_cli_edlt_scene_manager",
+    "tests.test_cli_edlt_reset",
+    "tests.test_cli_edlt_scene_live"
+  ],
+  "runs": [
+    {
+      "python": "313",
+      "returncode": 0,
+      "seconds": 73.255,
+      "log": "research/runtime/edlt-control-cli/reset-scene-live-regression-313.log",
+      "log_sha256": "0de91ebfa79cdfca0394ad2fbcab9f5dace722a1b5f1067c200b6cdb2fd4c159",
+      "tests": 75,
+      "skips": 0,
+      "test_duration_seconds": 73.056
+    },
+    {
+      "python": "310",
+      "returncode": 0,
+      "seconds": 87.894,
+      "log": "research/runtime/edlt-control-cli/reset-scene-live-regression-310.log",
+      "log_sha256": "3eb99f2255c6c720a008377356bfcf3848ebfda412d6131494ba54b28b713d99",
+      "tests": 75,
+      "skips": 0,
+      "test_duration_seconds": 87.768
+    }
+  ],
+  "source_hashes_unchanged": true,
+  "passed": true,
+  "format": "cbus-reset-scene-live-cli-regression-v1",
+  "report": {
+    "path": "research/runtime/edlt-control-cli/reset-scene-live-regression.json",
+    "sha256": "a2487dd6ab538deffc1a1ad6357058477ec4fdac6a9dba3676bb23c52e713e03"
+  },
+  "toolkit_parity_complete": false,
+  "limits": [
+    "Focused source CLI/helper regression; no installed-package or physical-device acceptance.",
+    "Original/native phase evidence is recorded separately in each feature fixture.",
+    "Source stability applies to the listed files; this is not an all-input wheel snapshot audit."
+  ]
+}

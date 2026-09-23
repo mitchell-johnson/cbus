@@ -1,5 +1,7 @@
 # Operational workflows
 
+For Python Toolkit project editing, commissioning, and C-Gate client commands, start with [toolkit.md](toolkit.md). The recipes below cover the Rust tools and shared diagnostics.
+
 ## Build and identify the current interface
 
 ```sh

@@ -1,0 +1,6 @@
+{
+  "format": "csv-projection-admission-v1",
+  "probe_sha256": "0e3acf18fa5d23a38f3a319aa36af374881ffe880926d195c42d7ce539b32e54",
+  "cases_sha256": "c2292ae1337ee2a8203eaa8eb2d2c656d8aae6015a50cf56fee8d058701b0625",
+  "authorization": "root-reviewed-cached-csv-pilot12-v1"
+}

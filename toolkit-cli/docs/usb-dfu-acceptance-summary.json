@@ -1,0 +1,184 @@
+{
+  "schema": 1,
+  "scope": "Claimed PyUSB session plus one-use Endpoint0 lease; real PyUSB1.3.1 with independent fake USB lifecycle and DFUSimulator only",
+  "physical_usb_access": false,
+  "complete_toolkit_parity": false,
+  "versions": {
+    "python": "3.13.14",
+    "pyusb": "1.3.1"
+  },
+  "tests": {
+    "focused": 25,
+    "passed": 25,
+    "failed": 0,
+    "skipped": 0,
+    "combined_with_dfu_transport_and_inspection": 75
+  },
+  "full_report": {
+    "path": "research/runtime/usb-dfu-acceptance.json",
+    "sha256": "78a0bcf55b070735eb2018e2d220995b4e875975b157e52ed9aa196b7cb6ed36",
+    "representative_outcomes": 16,
+    "request_records": 390
+  },
+  "ownership": {
+    "lease_close": "Logical invalidation only; physical owner still requires release",
+    "release_policy": "Explicit reset-first-alternate, no default",
+    "release_attempts": "Exactly one; repeated calls return stored result",
+    "release_effect": "Possible SET_INTERFACE to first alternate; modeled, not physically captured",
+    "release_and_handle_close_errors": "Preserved separately",
+    "concurrency": "Control/release entry rejects instead of waiting",
+    "timing_failures": "Guarded start/finish timer; timing_error is separate; cleanup once and first interruption preserved"
+  },
+  "preflight": "DFUClient.preflight shares constructor and execution planners; validates geometry, ranges, sequence and bytes before acquiring transport",
+  "restrictions": [
+    "Exact bus/address/expected USB serial and descriptor",
+    "Single configuration at index0, active value matches, actual alternate0",
+    "No automatic kernel detach, configuration/alternate selection, USB reset or replay",
+    "No vendor RESET/CHECK command headers; declared program bytes remain opaque",
+    "Shared sequence cannot replay or wrap",
+    "External address zero only",
+    "No end-to-end or hard real-time deadline guarantee"
+  ],
+  "outcomes": [
+    {
+      "name": "external-zero-program",
+      "acquisition_complete": true,
+      "dfu_complete": true,
+      "release_complete": true,
+      "peer_verified": true
+    },
+    {
+      "name": "real-pyusb-memory-inspect",
+      "acquisition_complete": true,
+      "dfu_complete": true,
+      "release_complete": true,
+      "peer_verified": false
+    },
+    {
+      "name": "real-pyusb-memory-program",
+      "acquisition_complete": true,
+      "dfu_complete": true,
+      "release_complete": true,
+      "peer_verified": true
+    },
+    {
+      "name": "real-pyusb-memory-erase",
+      "acquisition_complete": true,
+      "dfu_complete": true,
+      "release_complete": true,
+      "peer_verified": true
+    },
+    {
+      "name": "program-short-ack",
+      "acquisition_complete": true,
+      "dfu_complete": false,
+      "release_complete": true,
+      "peer_verified": false
+    },
+    {
+      "name": "program-timeout-ack",
+      "acquisition_complete": true,
+      "dfu_complete": false,
+      "release_complete": true,
+      "peer_verified": false
+    },
+    {
+      "name": "native-error",
+      "acquisition_complete": true,
+      "dfu_complete": false,
+      "release_complete": true,
+      "peer_verified": false
+    },
+    {
+      "name": "corrupt-readback",
+      "acquisition_complete": true,
+      "dfu_complete": false,
+      "release_complete": true,
+      "peer_verified": false
+    },
+    {
+      "name": "interrupted-program-outer-release",
+      "acquisition_complete": true,
+      "dfu_complete": false,
+      "release_complete": true,
+      "peer_verified": false
+    },
+    {
+      "name": "verified-memory-failed-release",
+      "acquisition_complete": true,
+      "dfu_complete": true,
+      "release_complete": false,
+      "peer_verified": true
+    },
+    {
+      "name": "acquisition-and-cleanup-errors",
+      "acquisition_complete": false,
+      "dfu_complete": null,
+      "release_complete": false,
+      "peer_verified": false
+    },
+    {
+      "name": "alternate-mismatch-with-release-side-effect",
+      "acquisition_complete": false,
+      "dfu_complete": null,
+      "release_complete": true,
+      "peer_verified": false
+    },
+    {
+      "name": "claim-busy",
+      "acquisition_complete": false,
+      "dfu_complete": null,
+      "release_complete": true,
+      "peer_verified": false
+    },
+    {
+      "name": "acquisition-logical-close-explicit-release",
+      "acquisition_complete": true,
+      "dfu_complete": null,
+      "release_complete": true,
+      "peer_verified": false
+    },
+    {
+      "name": "release-clock-interruption-start",
+      "acquisition_complete": true,
+      "dfu_complete": null,
+      "release_complete": false,
+      "peer_verified": false
+    },
+    {
+      "name": "release-clock-interruption-finish",
+      "acquisition_complete": true,
+      "dfu_complete": null,
+      "release_complete": false,
+      "peer_verified": false
+    }
+  ],
+  "source_files": [
+    {
+      "path": "src/cbus_toolkit/usb_dfu.py",
+      "sha256": "859a3b377ec680b1c3eb695ce840d3e7b4750bb01a4997f67541f2afc149ebe5"
+    },
+    {
+      "path": "tests/test_usb_dfu.py",
+      "sha256": "0fb6cda6229c9611f84918732f144384ce12d4675f8cc719ec86b2629ad44dbc"
+    },
+    {
+      "path": "src/cbus_toolkit/dfu_transport.py",
+      "sha256": "468952c78a19c9067233dfbac7f4234844383393c953fa65205db632a84f48e4"
+    },
+    {
+      "path": "tests/test_dfu_transport.py",
+      "sha256": "e79a5090ee5b74e3106c9cca71901354c2818b8bbd286c303d37e13980535e8b"
+    }
+  ],
+  "primary_sources_manifest": "docs/usb-inspection-acceptance-summary.json",
+  "remaining": [
+    "Physical USB/driver acceptance",
+    "Actual bootloader state after release",
+    "Firmware payload/variant compatibility",
+    "Reset and re-enumeration",
+    "Interrupted-update recovery",
+    "Live installation acceptance"
+  ],
+  "reproduce": "CBUS_USB_DFU_REPORT=research/runtime/usb-dfu-acceptance.json .venv/bin/python -m unittest tests.test_usb_dfu -v"
+}

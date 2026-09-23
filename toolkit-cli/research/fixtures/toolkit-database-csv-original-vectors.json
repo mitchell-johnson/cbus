@@ -1,0 +1,7074 @@
+{
+  "format": "cbus-toolkit-database-csv-original-v1",
+  "original_executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "scope": {
+    "raw_serializer": true,
+    "runtime_and_cached_providers_are_fixtures": true,
+    "original_constructors": false,
+    "database_projection_verified": false,
+    "native_imports": false,
+    "registry": false,
+    "network": false,
+    "file_writer": false,
+    "windows_codepage_verified": false,
+    "original_exception_path_verified": false
+  },
+  "case_count": 88,
+  "row_case_count": 73,
+  "original_spans": [
+    {
+      "name": "AsCSV",
+      "start": "0xf306bc",
+      "end": "0xf30bfd",
+      "bytes": 1345,
+      "sha256": "87a013d5432dc4782d72e9514e0c878ff64225340acba270959595e0dd54acf3"
+    },
+    {
+      "name": "QuoteStringForCSV",
+      "start": "0x7b7b84",
+      "end": "0x7b7c16",
+      "bytes": 146,
+      "sha256": "62930b442cd17303f231e879a19694c62ba92676332ac74a171aee8039ddf6f3"
+    },
+    {
+      "name": "StringContains",
+      "start": "0x7b78c4",
+      "end": "0x7b78f4",
+      "bytes": 48,
+      "sha256": "f08941497548d84581ca53b7a6c1aff1c07adf955a558a8ceaee6dbf4ce77709"
+    },
+    {
+      "name": "StringReplace",
+      "start": "0x623ecc",
+      "end": "0x624081",
+      "bytes": 437,
+      "sha256": "30e4f57aa70a8cbfa0bde6b546f995b221e2f80c5a0ded50c3d4539530996b72"
+    },
+    {
+      "name": "AnsiPos",
+      "start": "0x623498",
+      "end": "0x623576",
+      "bytes": 222,
+      "sha256": "290a176a5e9c3d401e673abeae5e9b056819627d217e8e12e09daa46a4ddb503"
+    },
+    {
+      "name": "StrPos",
+      "start": "0x61b404",
+      "end": "0x61b45b",
+      "bytes": 87,
+      "sha256": "1c96915be835c480e40063af9f459bbc8a714a8164fb54862632abd66469c847"
+    },
+    {
+      "name": "StrPosLen",
+      "start": "0x61b45c",
+      "end": "0x61b4bc",
+      "bytes": 96,
+      "sha256": "952042e5c85b0ce50860750eb5d04fbc375a34a05a93e8f1e1f8701d72ea50cb"
+    },
+    {
+      "name": "StrLComp",
+      "start": "0x61b2e8",
+      "end": "0x61b336",
+      "bytes": 78,
+      "sha256": "bd3e7b185416d5964862a954539767fd79a0195f39a8fec7972504cd45e0fe0d"
+    },
+    {
+      "name": "Pos-Unicode",
+      "start": "0x6094d4",
+      "end": "0x609520",
+      "bytes": 76,
+      "sha256": "53a3047a3b676e0e3ec79047afffb045d3a14597b1c6d6ec46cd656cd882bdcf"
+    },
+    {
+      "name": "UStrEqual-Unicode",
+      "start": "0x6090ac",
+      "end": "0x6090ed",
+      "bytes": 65,
+      "sha256": "63f8eac44241286f1ac839a66750c31ba0c1f56caf3d0ee451e9e5111917895b"
+    },
+    {
+      "name": "UStrLen",
+      "start": "0x608ca4",
+      "end": "0x608cae",
+      "bytes": 10,
+      "sha256": "d881f74727633815de75c7f1497f06fb056b9794e5cadababac473218d6efe6b"
+    },
+    {
+      "name": "CvtInt",
+      "start": "0x619800",
+      "end": "0x61984c",
+      "bytes": 76,
+      "sha256": "6f992a8868b76b0a08f7da256a1d43239983fa038b0282adba8af7bf787ebba5"
+    },
+    {
+      "name": "IntToStr",
+      "start": "0x6198ac",
+      "end": "0x6198c9",
+      "bytes": 29,
+      "sha256": "e88e22fb9945ce13aa611d1d29a5665ac9e8ec2a2682519753afe2e13958832b"
+    },
+    {
+      "name": "GetSimpleDecimalAddress-cached",
+      "start": "0xf47e88",
+      "end": "0xf47eb8",
+      "bytes": 48,
+      "sha256": "8f34b58ddf020b15c8051cf598e509d320a078b99288cffbd08b5f8c993ff2c5"
+    },
+    {
+      "name": "GetFirmwareVersion",
+      "start": "0xf2ecac",
+      "end": "0xf2eccd",
+      "bytes": 33,
+      "sha256": "d2b52e89ad5cbe3477528a9fbf554ffd650d641bde29ccca4c4a0647c61e26a1"
+    },
+    {
+      "name": "DisplayableSerialNumber",
+      "start": "0xf33c78",
+      "end": "0xf33cd4",
+      "bytes": 92,
+      "sha256": "8cbadd4ec983d8dcea14f62b02a2d8946db6cb9cb86e833d493bc6f65e4a57c4"
+    },
+    {
+      "name": "GetDisplayableSerialNumber",
+      "start": "0x7f30a4",
+      "end": "0x7f30f0",
+      "bytes": 76,
+      "sha256": "958a8b512ad687e640c42a8e2562c4ab17c7b783f2787ac331cb510229877b51"
+    },
+    {
+      "name": "FormatSerialNumber",
+      "start": "0x7f3140",
+      "end": "0x7f33a9",
+      "bytes": 617,
+      "sha256": "de613e63ea4167aa067437b330e4e0ca33c8ff518a1877b372217f3d2cfe3b0c"
+    }
+  ],
+  "actual_libraries": {
+    "/Users/mitchell/source/cbus/toolkit-cli/.venv/lib/python3.13/site-packages/capstone/lib/libcapstone.dylib": "016084c6e70d929249a2abb22f1afda95095294e6cd70f509964ffc54006bf94",
+    "/Users/mitchell/source/cbus/toolkit-cli/.venv/lib/python3.13/site-packages/unicorn/lib/libunicorn.2.dylib": "7207c8e3d7a63118fb0bca73e01816797fd51b1d8a39a4cbc7abfd562ee59c85"
+  },
+  "evidence": {
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/matrix-v1/execution-20260915T043040Z-140ec484/run-report.json": "2942326dbd751ecd3564540d36aac8bdedd9795c7a2b80140f0d116f3ca9287c",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/matrix-v1/execution-20260915T043040Z-140ec484/observation/report.json": "c1c9d10c23686ef06096f3aa96aa0a99290f82470025b3680074a84b7b5e80e0",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/matrix-v1/execution-20260915T043040Z-140ec484/probe.py": "2fe172c6f37179f7438c91f8325f0bb9f47fc7873cde41dc3c4f0ed2dcf28569",
+    "/Volumes/external/cbus-toolkit-research-20260915-document-database/matrix-v1/execution-20260915T043040Z-140ec484/cases.json": "c6d4f4b15f3b197c0e04c45b39582116aea0313b187407f654a76aa75c64cdd1"
+  },
+  "vectors": [
+    {
+      "input": {
+        "id": "empty-all",
+        "kind": "rows",
+        "mask": 67108863,
+        "units": [],
+        "expected": [
+          "Unit Address,Part Name,Tag Name,Unit Type,Catalog Number,Serial Number,Firmware Version,Primary Application,Secondary Application,Area,Group 1,Group 2,Group 3,Group 4,Group 5,Group 6,Group 7,Group 8,Group 9,Group 10,Group 11,Group 12,Group 13,Group 14,Group 15,Group 16,"
+        ]
+      },
+      "output": [
+        "Unit Address,Part Name,Tag Name,Unit Type,Catalog Number,Serial Number,Firmware Version,Primary Application,Secondary Application,Area,Group 1,Group 2,Group 3,Group 4,Group 5,Group 6,Group 7,Group 8,Group 9,Group 10,Group 11,Group 12,Group 13,Group 14,Group 15,Group 16,"
+      ]
+    },
+    {
+      "input": {
+        "id": "one-complete-all",
+        "kind": "rows",
+        "mask": 67108863,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Unit Address,Part Name,Tag Name,Unit Type,Catalog Number,Serial Number,Firmware Version,Primary Application,Secondary Application,Area,Group 1,Group 2,Group 3,Group 4,Group 5,Group 6,Group 7,Group 8,Group 9,Group 10,Group 11,Group 12,Group 13,Group 14,Group 15,Group 16,",
+          "4,P,Tag,KEYGL5,5055,123456780123,5.00,Lighting,Secondary,Area,G1,G2,G3,G4,G5,G6,G7,G8,G9,G10,G11,G12,G13,G14,G15,G16,"
+        ]
+      },
+      "output": [
+        "Unit Address,Part Name,Tag Name,Unit Type,Catalog Number,Serial Number,Firmware Version,Primary Application,Secondary Application,Area,Group 1,Group 2,Group 3,Group 4,Group 5,Group 6,Group 7,Group 8,Group 9,Group 10,Group 11,Group 12,Group 13,Group 14,Group 15,Group 16,",
+        "4,P,Tag,KEYGL5,5055,123456780123,5.00,Lighting,Secondary,Area,G1,G2,G3,G4,G5,G6,G7,G8,G9,G10,G11,G12,G13,G14,G15,G16,"
+      ]
+    },
+    {
+      "input": {
+        "id": "missing-group-shifts-to-end",
+        "kind": "rows",
+        "mask": 3072,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": false,
+                "tag": "A"
+              },
+              {
+                "used": true,
+                "tag": "B"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Group 1,Group 2,",
+          "B,<N/A>,"
+        ]
+      },
+      "output": [
+        "Group 1,Group 2,",
+        "B,<N/A>,"
+      ]
+    },
+    {
+      "input": {
+        "id": "quoted-unicode-tag",
+        "kind": "rows",
+        "mask": 4,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "a,\"b\"\r\n\u6f22",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Tag Name,",
+          "\"a,\"\"b\"\"\r\n\u6f22\","
+        ]
+      },
+      "output": [
+        "Tag Name,",
+        "\"a,\"\"b\"\"\r\n\u6f22\","
+      ]
+    },
+    {
+      "input": {
+        "id": "serial-dot",
+        "kind": "rows",
+        "mask": 32,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "1234.5",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Serial Number,",
+          "000012340005,"
+        ]
+      },
+      "output": [
+        "Serial Number,",
+        "000012340005,"
+      ]
+    },
+    {
+      "input": {
+        "id": "manager-order",
+        "kind": "rows",
+        "mask": 1,
+        "units": [
+          {
+            "address": 7,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          },
+          {
+            "address": 2,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          },
+          {
+            "address": 255,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Unit Address,",
+          "7,",
+          "2,",
+          "255,"
+        ]
+      },
+      "output": [
+        "Unit Address,",
+        "7,",
+        "2,",
+        "255,"
+      ]
+    },
+    {
+      "input": {
+        "id": "quote-0",
+        "kind": "quote",
+        "text": "",
+        "expected": ""
+      },
+      "output": ""
+    },
+    {
+      "input": {
+        "id": "quote-1",
+        "kind": "quote",
+        "text": "plain",
+        "expected": "plain"
+      },
+      "output": "plain"
+    },
+    {
+      "input": {
+        "id": "quote-2",
+        "kind": "quote",
+        "text": ",",
+        "expected": "\",\""
+      },
+      "output": "\",\""
+    },
+    {
+      "input": {
+        "id": "quote-3",
+        "kind": "quote",
+        "text": "\"",
+        "expected": "\""
+      },
+      "output": "\""
+    },
+    {
+      "input": {
+        "id": "quote-4",
+        "kind": "quote",
+        "text": "a\"b",
+        "expected": "a\"b"
+      },
+      "output": "a\"b"
+    },
+    {
+      "input": {
+        "id": "quote-5",
+        "kind": "quote",
+        "text": "\r",
+        "expected": "\r"
+      },
+      "output": "\r"
+    },
+    {
+      "input": {
+        "id": "quote-6",
+        "kind": "quote",
+        "text": "\n",
+        "expected": "\n"
+      },
+      "output": "\n"
+    },
+    {
+      "input": {
+        "id": "quote-7",
+        "kind": "quote",
+        "text": "\r\n",
+        "expected": "\r\n"
+      },
+      "output": "\r\n"
+    },
+    {
+      "input": {
+        "id": "quote-8",
+        "kind": "quote",
+        "text": "a,\"b\"",
+        "expected": "\"a,\"\"b\"\"\""
+      },
+      "output": "\"a,\"\"b\"\"\""
+    },
+    {
+      "input": {
+        "id": "quote-9",
+        "kind": "quote",
+        "text": "a\"b\"c,d",
+        "expected": "\"a\"\"b\"\"c,d\""
+      },
+      "output": "\"a\"\"b\"\"c,d\""
+    },
+    {
+      "input": {
+        "id": "quote-10",
+        "kind": "quote",
+        "text": "\u6f22\u5b57",
+        "expected": "\u6f22\u5b57"
+      },
+      "output": "\u6f22\u5b57"
+    },
+    {
+      "input": {
+        "id": "quote-11",
+        "kind": "quote",
+        "text": "\u6f22,\u5b57",
+        "expected": "\"\u6f22,\u5b57\""
+      },
+      "output": "\"\u6f22,\u5b57\""
+    },
+    {
+      "input": {
+        "id": "quote-12",
+        "kind": "quote",
+        "text": "\ud83d\ude00,\"x\"",
+        "expected": "\"\ud83d\ude00,\"\"x\"\"\""
+      },
+      "output": "\"\ud83d\ude00,\"\"x\"\"\""
+    },
+    {
+      "input": {
+        "id": "quote-13",
+        "kind": "quote",
+        "text": "a\u0000,b",
+        "expected": "a\u0000,b"
+      },
+      "output": "a\u0000,b"
+    },
+    {
+      "input": {
+        "id": "quote-14",
+        "kind": "quote",
+        "text": "a,b\u0000\"c",
+        "expected": "\"a,b\u0000\"\"c\""
+      },
+      "output": "\"a,b\u0000\"\"c\""
+    },
+    {
+      "input": {
+        "id": "column-0",
+        "kind": "rows",
+        "mask": 1,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Unit Address,",
+          "4,"
+        ]
+      },
+      "output": [
+        "Unit Address,",
+        "4,"
+      ]
+    },
+    {
+      "input": {
+        "id": "column-1",
+        "kind": "rows",
+        "mask": 2,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Part Name,",
+          "P,"
+        ]
+      },
+      "output": [
+        "Part Name,",
+        "P,"
+      ]
+    },
+    {
+      "input": {
+        "id": "column-2",
+        "kind": "rows",
+        "mask": 4,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Tag Name,",
+          "Tag,"
+        ]
+      },
+      "output": [
+        "Tag Name,",
+        "Tag,"
+      ]
+    },
+    {
+      "input": {
+        "id": "column-3",
+        "kind": "rows",
+        "mask": 8,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Unit Type,",
+          "KEYGL5,"
+        ]
+      },
+      "output": [
+        "Unit Type,",
+        "KEYGL5,"
+      ]
+    },
+    {
+      "input": {
+        "id": "column-4",
+        "kind": "rows",
+        "mask": 16,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Catalog Number,",
+          "5055,"
+        ]
+      },
+      "output": [
+        "Catalog Number,",
+        "5055,"
+      ]
+    },
+    {
+      "input": {
+        "id": "column-5",
+        "kind": "rows",
+        "mask": 32,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Serial Number,",
+          "123456780123,"
+        ]
+      },
+      "output": [
+        "Serial Number,",
+        "123456780123,"
+      ]
+    },
+    {
+      "input": {
+        "id": "column-6",
+        "kind": "rows",
+        "mask": 64,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Firmware Version,",
+          "5.00,"
+        ]
+      },
+      "output": [
+        "Firmware Version,",
+        "5.00,"
+      ]
+    },
+    {
+      "input": {
+        "id": "column-7",
+        "kind": "rows",
+        "mask": 128,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Primary Application,",
+          "Lighting,"
+        ]
+      },
+      "output": [
+        "Primary Application,",
+        "Lighting,"
+      ]
+    },
+    {
+      "input": {
+        "id": "column-8",
+        "kind": "rows",
+        "mask": 256,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Secondary Application,",
+          "Secondary,"
+        ]
+      },
+      "output": [
+        "Secondary Application,",
+        "Secondary,"
+      ]
+    },
+    {
+      "input": {
+        "id": "column-9",
+        "kind": "rows",
+        "mask": 512,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Area,",
+          "Area,"
+        ]
+      },
+      "output": [
+        "Area,",
+        "Area,"
+      ]
+    },
+    {
+      "input": {
+        "id": "column-10",
+        "kind": "rows",
+        "mask": 1024,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Group 1,",
+          "G1,"
+        ]
+      },
+      "output": [
+        "Group 1,",
+        "G1,"
+      ]
+    },
+    {
+      "input": {
+        "id": "column-11",
+        "kind": "rows",
+        "mask": 2048,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Group 2,",
+          "G2,"
+        ]
+      },
+      "output": [
+        "Group 2,",
+        "G2,"
+      ]
+    },
+    {
+      "input": {
+        "id": "column-12",
+        "kind": "rows",
+        "mask": 4096,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Group 3,",
+          "G3,"
+        ]
+      },
+      "output": [
+        "Group 3,",
+        "G3,"
+      ]
+    },
+    {
+      "input": {
+        "id": "column-13",
+        "kind": "rows",
+        "mask": 8192,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Group 4,",
+          "G4,"
+        ]
+      },
+      "output": [
+        "Group 4,",
+        "G4,"
+      ]
+    },
+    {
+      "input": {
+        "id": "column-14",
+        "kind": "rows",
+        "mask": 16384,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Group 5,",
+          "G5,"
+        ]
+      },
+      "output": [
+        "Group 5,",
+        "G5,"
+      ]
+    },
+    {
+      "input": {
+        "id": "column-15",
+        "kind": "rows",
+        "mask": 32768,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Group 6,",
+          "G6,"
+        ]
+      },
+      "output": [
+        "Group 6,",
+        "G6,"
+      ]
+    },
+    {
+      "input": {
+        "id": "column-16",
+        "kind": "rows",
+        "mask": 65536,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Group 7,",
+          "G7,"
+        ]
+      },
+      "output": [
+        "Group 7,",
+        "G7,"
+      ]
+    },
+    {
+      "input": {
+        "id": "column-17",
+        "kind": "rows",
+        "mask": 131072,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Group 8,",
+          "G8,"
+        ]
+      },
+      "output": [
+        "Group 8,",
+        "G8,"
+      ]
+    },
+    {
+      "input": {
+        "id": "column-18",
+        "kind": "rows",
+        "mask": 262144,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Group 9,",
+          "G9,"
+        ]
+      },
+      "output": [
+        "Group 9,",
+        "G9,"
+      ]
+    },
+    {
+      "input": {
+        "id": "column-19",
+        "kind": "rows",
+        "mask": 524288,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Group 10,",
+          "G10,"
+        ]
+      },
+      "output": [
+        "Group 10,",
+        "G10,"
+      ]
+    },
+    {
+      "input": {
+        "id": "column-20",
+        "kind": "rows",
+        "mask": 1048576,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Group 11,",
+          "G11,"
+        ]
+      },
+      "output": [
+        "Group 11,",
+        "G11,"
+      ]
+    },
+    {
+      "input": {
+        "id": "column-21",
+        "kind": "rows",
+        "mask": 2097152,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Group 12,",
+          "G12,"
+        ]
+      },
+      "output": [
+        "Group 12,",
+        "G12,"
+      ]
+    },
+    {
+      "input": {
+        "id": "column-22",
+        "kind": "rows",
+        "mask": 4194304,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Group 13,",
+          "G13,"
+        ]
+      },
+      "output": [
+        "Group 13,",
+        "G13,"
+      ]
+    },
+    {
+      "input": {
+        "id": "column-23",
+        "kind": "rows",
+        "mask": 8388608,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Group 14,",
+          "G14,"
+        ]
+      },
+      "output": [
+        "Group 14,",
+        "G14,"
+      ]
+    },
+    {
+      "input": {
+        "id": "column-24",
+        "kind": "rows",
+        "mask": 16777216,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Group 15,",
+          "G15,"
+        ]
+      },
+      "output": [
+        "Group 15,",
+        "G15,"
+      ]
+    },
+    {
+      "input": {
+        "id": "column-25",
+        "kind": "rows",
+        "mask": 33554432,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Group 16,",
+          "G16,"
+        ]
+      },
+      "output": [
+        "Group 16,",
+        "G16,"
+      ]
+    },
+    {
+      "input": {
+        "id": "empty-mask",
+        "kind": "rows",
+        "mask": 0,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "",
+          ""
+        ]
+      },
+      "output": [
+        "",
+        ""
+      ]
+    },
+    {
+      "input": {
+        "id": "only-high-mask-bit",
+        "kind": "rows",
+        "mask": 2147483648,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "",
+          ""
+        ]
+      },
+      "output": [
+        "",
+        ""
+      ]
+    },
+    {
+      "input": {
+        "id": "high-mask-plus-tag",
+        "kind": "rows",
+        "mask": 2147483652,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Tag Name,",
+          "Tag,"
+        ]
+      },
+      "output": [
+        "Tag Name,",
+        "Tag,"
+      ]
+    },
+    {
+      "input": {
+        "id": "no-group-collection",
+        "kind": "rows",
+        "mask": 67107840,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": []
+          }
+        ],
+        "expected": [
+          "Group 1,Group 2,Group 3,Group 4,Group 5,Group 6,Group 7,Group 8,Group 9,Group 10,Group 11,Group 12,Group 13,Group 14,Group 15,Group 16,",
+          "<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+        ]
+      },
+      "output": [
+        "Group 1,Group 2,Group 3,Group 4,Group 5,Group 6,Group 7,Group 8,Group 9,Group 10,Group 11,Group 12,Group 13,Group 14,Group 15,Group 16,",
+        "<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+      ]
+    },
+    {
+      "input": {
+        "id": "group-hole-0",
+        "kind": "rows",
+        "mask": 67107840,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": false,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Group 1,Group 2,Group 3,Group 4,Group 5,Group 6,Group 7,Group 8,Group 9,Group 10,Group 11,Group 12,Group 13,Group 14,Group 15,Group 16,",
+          "G2,G3,G4,G5,G6,G7,G8,G9,G10,G11,G12,G13,G14,G15,G16,<N/A>,"
+        ]
+      },
+      "output": [
+        "Group 1,Group 2,Group 3,Group 4,Group 5,Group 6,Group 7,Group 8,Group 9,Group 10,Group 11,Group 12,Group 13,Group 14,Group 15,Group 16,",
+        "G2,G3,G4,G5,G6,G7,G8,G9,G10,G11,G12,G13,G14,G15,G16,<N/A>,"
+      ]
+    },
+    {
+      "input": {
+        "id": "group-hole-7",
+        "kind": "rows",
+        "mask": 67107840,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": false,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Group 1,Group 2,Group 3,Group 4,Group 5,Group 6,Group 7,Group 8,Group 9,Group 10,Group 11,Group 12,Group 13,Group 14,Group 15,Group 16,",
+          "G1,G2,G3,G4,G5,G6,G7,G9,G10,G11,G12,G13,G14,G15,G16,<N/A>,"
+        ]
+      },
+      "output": [
+        "Group 1,Group 2,Group 3,Group 4,Group 5,Group 6,Group 7,Group 8,Group 9,Group 10,Group 11,Group 12,Group 13,Group 14,Group 15,Group 16,",
+        "G1,G2,G3,G4,G5,G6,G7,G9,G10,G11,G12,G13,G14,G15,G16,<N/A>,"
+      ]
+    },
+    {
+      "input": {
+        "id": "group-hole-15",
+        "kind": "rows",
+        "mask": 67107840,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": false,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Group 1,Group 2,Group 3,Group 4,Group 5,Group 6,Group 7,Group 8,Group 9,Group 10,Group 11,Group 12,Group 13,Group 14,Group 15,Group 16,",
+          "G1,G2,G3,G4,G5,G6,G7,G8,G9,G10,G11,G12,G13,G14,G15,<N/A>,"
+        ]
+      },
+      "output": [
+        "Group 1,Group 2,Group 3,Group 4,Group 5,Group 6,Group 7,Group 8,Group 9,Group 10,Group 11,Group 12,Group 13,Group 14,Group 15,Group 16,",
+        "G1,G2,G3,G4,G5,G6,G7,G8,G9,G10,G11,G12,G13,G14,G15,<N/A>,"
+      ]
+    },
+    {
+      "input": {
+        "id": "group-sparse-selection",
+        "kind": "rows",
+        "mask": 33559552,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": false,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Group 1,Group 3,Group 16,",
+          "G3,<N/A>,<N/A>,"
+        ]
+      },
+      "output": [
+        "Group 1,Group 3,Group 16,",
+        "G3,<N/A>,<N/A>,"
+      ]
+    },
+    {
+      "input": {
+        "id": "unused-area",
+        "kind": "rows",
+        "mask": 512,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": null,
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Area,",
+          "<Unused>,"
+        ]
+      },
+      "output": [
+        "Area,",
+        "<Unused>,"
+      ]
+    },
+    {
+      "input": {
+        "id": "empty-area",
+        "kind": "rows",
+        "mask": 512,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Area,",
+          ","
+        ]
+      },
+      "output": [
+        "Area,",
+        ","
+      ]
+    },
+    {
+      "input": {
+        "id": "empty-application-tags",
+        "kind": "rows",
+        "mask": 384,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "",
+            "secondary": "",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Primary Application,Secondary Application,",
+          ",,"
+        ]
+      },
+      "output": [
+        "Primary Application,Secondary Application,",
+        ",,"
+      ]
+    },
+    {
+      "input": {
+        "id": "quoted-app-and-area",
+        "kind": "rows",
+        "mask": 896,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Light,\"a\"",
+            "secondary": "\u00df,\u4e8c",
+            "area": "\nroom",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Primary Application,Secondary Application,Area,",
+          "\"Light,\"\"a\"\"\",\"\u00df,\u4e8c\",\nroom,"
+        ]
+      },
+      "output": [
+        "Primary Application,Secondary Application,Area,",
+        "\"Light,\"\"a\"\"\",\"\u00df,\u4e8c\",\nroom,"
+      ]
+    },
+    {
+      "input": {
+        "id": "quoted-group",
+        "kind": "rows",
+        "mask": 1024,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "\"A\",\r\n\ud83d\ude00"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Group 1,",
+          "\"\"\"A\"\",\r\n\ud83d\ude00\","
+        ]
+      },
+      "output": [
+        "Group 1,",
+        "\"\"\"A\"\",\r\n\ud83d\ude00\","
+      ]
+    },
+    {
+      "input": {
+        "id": "serial-edge-0",
+        "kind": "rows",
+        "mask": 32,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Serial Number,",
+          "No serial #,"
+        ]
+      },
+      "output": [
+        "Serial Number,",
+        "No serial #,"
+      ]
+    },
+    {
+      "input": {
+        "id": "serial-edge-1",
+        "kind": "rows",
+        "mask": 32,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "0",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Serial Number,",
+          "No serial #,"
+        ]
+      },
+      "output": [
+        "Serial Number,",
+        "No serial #,"
+      ]
+    },
+    {
+      "input": {
+        "id": "serial-edge-2",
+        "kind": "rows",
+        "mask": 32,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "00000000.0000",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Serial Number,",
+          "No serial #,"
+        ]
+      },
+      "output": [
+        "Serial Number,",
+        "No serial #,"
+      ]
+    },
+    {
+      "input": {
+        "id": "serial-edge-3",
+        "kind": "rows",
+        "mask": 32,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "1048575.4095",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Serial Number,",
+          "No serial #,"
+        ]
+      },
+      "output": [
+        "Serial Number,",
+        "No serial #,"
+      ]
+    },
+    {
+      "input": {
+        "id": "serial-edge-4",
+        "kind": "rows",
+        "mask": 32,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "010485754095",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Serial Number,",
+          "No serial #,"
+        ]
+      },
+      "output": [
+        "Serial Number,",
+        "No serial #,"
+      ]
+    },
+    {
+      "input": {
+        "id": "serial-edge-5",
+        "kind": "rows",
+        "mask": 32,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "1.2",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Serial Number,",
+          "000000010002,"
+        ]
+      },
+      "output": [
+        "Serial Number,",
+        "000000010002,"
+      ]
+    },
+    {
+      "input": {
+        "id": "serial-edge-6",
+        "kind": "rows",
+        "mask": 32,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "1a2b.0c3",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Serial Number,",
+          "000000120003,"
+        ]
+      },
+      "output": [
+        "Serial Number,",
+        "000000120003,"
+      ]
+    },
+    {
+      "input": {
+        "id": "serial-edge-7",
+        "kind": "rows",
+        "mask": 32,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "0x12.3",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Serial Number,",
+          "000000120003,"
+        ]
+      },
+      "output": [
+        "Serial Number,",
+        "000000120003,"
+      ]
+    },
+    {
+      "input": {
+        "id": "serial-edge-8",
+        "kind": "rows",
+        "mask": 32,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "1.2.3",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Serial Number,",
+          "0000000102.3,"
+        ]
+      },
+      "output": [
+        "Serial Number,",
+        "0000000102.3,"
+      ]
+    },
+    {
+      "input": {
+        "id": "serial-edge-9",
+        "kind": "rows",
+        "mask": 32,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "1234567890123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Serial Number,",
+          "1234567890123,"
+        ]
+      },
+      "output": [
+        "Serial Number,",
+        "1234567890123,"
+      ]
+    },
+    {
+      "input": {
+        "id": "serial-edge-10",
+        "kind": "rows",
+        "mask": 32,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "..",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Serial Number,",
+          "00000000000.,"
+        ]
+      },
+      "output": [
+        "Serial Number,",
+        "00000000000.,"
+      ]
+    },
+    {
+      "input": {
+        "id": "serial-edge-11",
+        "kind": "rows",
+        "mask": 32,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "\uff11\uff12\uff13",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Serial Number,",
+          "No serial #,"
+        ]
+      },
+      "output": [
+        "Serial Number,",
+        "No serial #,"
+      ]
+    },
+    {
+      "input": {
+        "id": "serial-edge-12",
+        "kind": "rows",
+        "mask": 32,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "\u00e942\ud83e\uddea",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Serial Number,",
+          "000000000042,"
+        ]
+      },
+      "output": [
+        "Serial Number,",
+        "000000000042,"
+      ]
+    },
+    {
+      "input": {
+        "id": "serial-edge-13",
+        "kind": "rows",
+        "mask": 32,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "FFFFFFFF",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Serial Number,",
+          "No serial #,"
+        ]
+      },
+      "output": [
+        "Serial Number,",
+        "No serial #,"
+      ]
+    },
+    {
+      "input": {
+        "id": "serial-edge-14",
+        "kind": "rows",
+        "mask": 32,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": ".5",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Serial Number,",
+          "000000000005,"
+        ]
+      },
+      "output": [
+        "Serial Number,",
+        "000000000005,"
+      ]
+    },
+    {
+      "input": {
+        "id": "serial-edge-15",
+        "kind": "rows",
+        "mask": 32,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "7.",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Serial Number,",
+          "000000070000,"
+        ]
+      },
+      "output": [
+        "Serial Number,",
+        "000000070000,"
+      ]
+    },
+    {
+      "input": {
+        "id": "serial-edge-16",
+        "kind": "rows",
+        "mask": 32,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456789.1",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Serial Number,",
+          "1234567890001,"
+        ]
+      },
+      "output": [
+        "Serial Number,",
+        "1234567890001,"
+      ]
+    },
+    {
+      "input": {
+        "id": "serial-edge-17",
+        "kind": "rows",
+        "mask": 32,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": ".222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Serial Number,",
+          "00000000222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222,"
+        ]
+      },
+      "output": [
+        "Serial Number,",
+        "00000000222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222,"
+      ]
+    },
+    {
+      "input": {
+        "id": "serial-edge-18",
+        "kind": "rows",
+        "mask": 32,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "Tag",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "3333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Serial Number,",
+          "3333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333,"
+        ]
+      },
+      "output": [
+        "Serial Number,",
+        "3333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333,"
+      ]
+    },
+    {
+      "input": {
+        "id": "tag-edge-0",
+        "kind": "rows",
+        "mask": 4,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Tag Name,",
+          ","
+        ]
+      },
+      "output": [
+        "Tag Name,",
+        ","
+      ]
+    },
+    {
+      "input": {
+        "id": "tag-edge-1",
+        "kind": "rows",
+        "mask": 4,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "a\"b",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Tag Name,",
+          "a\"b,"
+        ]
+      },
+      "output": [
+        "Tag Name,",
+        "a\"b,"
+      ]
+    },
+    {
+      "input": {
+        "id": "tag-edge-2",
+        "kind": "rows",
+        "mask": 4,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "a\nb",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Tag Name,",
+          "a\nb,"
+        ]
+      },
+      "output": [
+        "Tag Name,",
+        "a\nb,"
+      ]
+    },
+    {
+      "input": {
+        "id": "tag-edge-3",
+        "kind": "rows",
+        "mask": 4,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "a\rb",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Tag Name,",
+          "a\rb,"
+        ]
+      },
+      "output": [
+        "Tag Name,",
+        "a\rb,"
+      ]
+    },
+    {
+      "input": {
+        "id": "tag-edge-4",
+        "kind": "rows",
+        "mask": 4,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "a\r\nb",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Tag Name,",
+          "a\r\nb,"
+        ]
+      },
+      "output": [
+        "Tag Name,",
+        "a\r\nb,"
+      ]
+    },
+    {
+      "input": {
+        "id": "tag-edge-5",
+        "kind": "rows",
+        "mask": 4,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "a,b",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Tag Name,",
+          "\"a,b\","
+        ]
+      },
+      "output": [
+        "Tag Name,",
+        "\"a,b\","
+      ]
+    },
+    {
+      "input": {
+        "id": "tag-edge-6",
+        "kind": "rows",
+        "mask": 4,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "\u6f22,\ud83d\ude00",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Tag Name,",
+          "\"\u6f22,\ud83d\ude00\","
+        ]
+      },
+      "output": [
+        "Tag Name,",
+        "\"\u6f22,\ud83d\ude00\","
+      ]
+    },
+    {
+      "input": {
+        "id": "tag-edge-7",
+        "kind": "rows",
+        "mask": 4,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "=3",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Tag Name,",
+          "=3,"
+        ]
+      },
+      "output": [
+        "Tag Name,",
+        "=3,"
+      ]
+    },
+    {
+      "input": {
+        "id": "tag-edge-8",
+        "kind": "rows",
+        "mask": 4,
+        "units": [
+          {
+            "address": 4,
+            "part_name": "P",
+            "tag_name": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "unit_type": "KEYGL5",
+            "catalog": "5055",
+            "serial": "123456780123",
+            "firmware": "5.00",
+            "primary": "Lighting",
+            "secondary": "Secondary",
+            "area": "Area",
+            "groups": [
+              {
+                "used": true,
+                "tag": "G1"
+              },
+              {
+                "used": true,
+                "tag": "G2"
+              },
+              {
+                "used": true,
+                "tag": "G3"
+              },
+              {
+                "used": true,
+                "tag": "G4"
+              },
+              {
+                "used": true,
+                "tag": "G5"
+              },
+              {
+                "used": true,
+                "tag": "G6"
+              },
+              {
+                "used": true,
+                "tag": "G7"
+              },
+              {
+                "used": true,
+                "tag": "G8"
+              },
+              {
+                "used": true,
+                "tag": "G9"
+              },
+              {
+                "used": true,
+                "tag": "G10"
+              },
+              {
+                "used": true,
+                "tag": "G11"
+              },
+              {
+                "used": true,
+                "tag": "G12"
+              },
+              {
+                "used": true,
+                "tag": "G13"
+              },
+              {
+                "used": true,
+                "tag": "G14"
+              },
+              {
+                "used": true,
+                "tag": "G15"
+              },
+              {
+                "used": true,
+                "tag": "G16"
+              }
+            ]
+          }
+        ],
+        "expected": [
+          "Tag Name,",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,"
+        ]
+      },
+      "output": [
+        "Tag Name,",
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,"
+      ]
+    }
+  ]
+}

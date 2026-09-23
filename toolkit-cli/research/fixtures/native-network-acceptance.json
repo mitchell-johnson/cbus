@@ -1,0 +1,120 @@
+{
+  "schema": 1,
+  "date": "2026-09-14",
+  "scope": "Disposable C-Gate 3.4.0 oracle and independently encoded synthetic PCI peer; no physical hardware acceptance or Toolkit parity claim",
+  "results": [
+    {
+      "fixture": "synthetic",
+      "acceptance_status": "passed",
+      "healthy": true,
+      "discovered_units": [
+        {
+          "unit": 4,
+          "type": "KEYE1",
+          "state": "ok"
+        },
+        {
+          "unit": 5,
+          "type": "KEYGL5",
+          "state": "ok"
+        },
+        {
+          "unit": 16,
+          "type": "PC_CNIED",
+          "state": "ok"
+        }
+      ],
+      "unsupported_request_count": 0,
+      "wire_records": 129,
+      "cleanup_error_count": 0,
+      "native_pp_field_transfer_verified": null,
+      "restoration_verified": null,
+      "checksum_mutation_verified": null,
+      "raw_programming_write_verified": true,
+      "source_report_sha256": "31caa966d5b12ff3e41cf04b3994d2b9056d7dadfd742efcd661594217286dd7",
+      "wire_sha256": "d674de9bc0dcb5ee56bcec162c03b2d412211bd961f02e0540242304685543d1"
+    },
+    {
+      "fixture": "key4",
+      "acceptance_status": "incomplete",
+      "healthy": true,
+      "discovered_units": [
+        {
+          "unit": 4,
+          "type": "KEY4",
+          "state": "ok"
+        },
+        {
+          "unit": 16,
+          "type": "PC_CNIED",
+          "state": "ok"
+        }
+      ],
+      "unsupported_request_count": 0,
+      "wire_records": 87,
+      "cleanup_error_count": 0,
+      "native_pp_field_transfer_verified": true,
+      "restoration_verified": true,
+      "checksum_mutation_verified": false,
+      "raw_programming_write_verified": null,
+      "source_report_sha256": "75a9a5ad5578f7dac625522e4a5213df178eea64766b5ab3d055f80f327d35ad",
+      "wire_sha256": "07b90e021d46bf0cdf3894614a1edc115fb569f595a681475d3732672bbab9b3"
+    }
+  ],
+  "remaining": [
+    "Device EEPROM checksum mutation algorithm",
+    "Device protection and unlock lifecycle",
+    "Complete memory layouts and programming methods",
+    "Physical hardware validation"
+  ],
+  "application_results": [
+    {
+      "application": "labels",
+      "passed": true,
+      "persisted": true,
+      "command_records": 67,
+      "wire_records": 183,
+      "committed_label_count": 9,
+      "language_selection_count": 1,
+      "unsupported_wire_count": 0,
+      "enable_unicode_native_status": 400,
+      "source_report_sha256": "6f41621193e096e29c883a12866a4fab6e2c65ab0af4feb51fa1597d59fba526",
+      "scope": "Native C-Gate encoding to independent synthetic receiver and persisted state; no physical display claim"
+    },
+    {
+      "application": "trigger",
+      "passed": true,
+      "persisted": true,
+      "wire_records": 121,
+      "unsupported_wire_count": 0,
+      "source_report_sha256": "dc91968ee9c9e095148fe5b01efd7b1345e8453ea8eb27a0cce8400e1d43e27b",
+      "scope": "Native queued Trigger Control to independent synthetic receiver; no physical scene execution claim",
+      "native_event_count": 400
+    },
+    {
+      "application": "lighting",
+      "passed": true,
+      "persisted": true,
+      "wire_records": 121,
+      "unsupported_wire_count": 0,
+      "source_report_sha256": "f9599e8ec5ecafddff87765bb0bf314aa9a9c99a17d57fd91b8394e22d47efb3",
+      "scope": "CLI to real C-Gate to independent synthetic lighting receiver; no physical hardware claim",
+      "cleanup_error_count": 0,
+      "cli_operation_count": 6,
+      "intermediate_stop_level_verified": true
+    },
+    {
+      "application": "lighting-restart",
+      "passed": true,
+      "persisted": true,
+      "wire_records": 109,
+      "unsupported_wire_count": 0,
+      "source_report_sha256": "33acca75ab54d57749dd74f4788db0992395791ec58354936b7e37b20e3e6e9d",
+      "scope": "Fresh native project scan against restarted persisted nonzero synthetic lighting",
+      "cleanup_error_count": 0,
+      "recovered_nonzero_group_count": 2,
+      "native_fixture_mapping": "Explicit KEYE1 group slots and dynamic IDENTIFY8",
+      "edlt_only_exact_level_scan_verified": false
+    }
+  ]
+}

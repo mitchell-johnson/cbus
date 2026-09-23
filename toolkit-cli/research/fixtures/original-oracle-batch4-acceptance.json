@@ -1,0 +1,165 @@
+{
+  "status": "passed",
+  "scope": "Explicit Windows adapter batch 4: Shutter, Timer, Fan and Enable; existing literal/original CRC/native save contracts preserved.",
+  "original_model_backend": "windows",
+  "backend_default": "docker",
+  "silent_fallback": false,
+  "full_suite_run": false,
+  "physical_device_verified": false,
+  "environment_provenance": "research/fixtures/original-oracle-batch1-acceptance.json",
+  "source_hashes": {
+    "tests/test_edlt_shutter.py": "55bd97de2cc96fc13aa2f5934bd4e675feac7418623231a5e849e3260cdac6cf",
+    "tests/test_edlt_timer.py": "5c66510b452383f5f25a15092a04d15319a8b753d7f4ae254cf50d79ce2a302a",
+    "tests/test_edlt_fan.py": "df41dae62853a930d92ca1b4d60331040b74f96423ea14cc3f8df4aa29edb6e4",
+    "tests/test_edlt_enable.py": "f8236f3c975f3f6d790a49256dc68fe6c687cc1cb60da4561dc72b7d542931bd",
+    "research/NativeEdltShutterProbe.cs": "6115f9d257783b35b3dcdc0b7a15a4339a7f6e734e00bb84d7a8e707470f1684",
+    "research/NativeEdltTimerProbe.cs": "7b8e6961bfb3d6404ee87b4de91c0bbc6e481f1978bd8bf85a8533c314cb5967",
+    "research/NativeEdltFanProbe.cs": "b4e85bc0f3a8c64587a0e913534b3aae0136772d576b569ab6e018330a7e008c",
+    "research/NativeEdltEnableProbe.cs": "aca9992ac42555082c37a9c41f16cd486a5af83bf5b939b5ac48810d0f10b673",
+    "research/NativeEdltProbe.cs": "f794cadb421eab0c066464b59990961651486490456a2eaaa37ef8a748b5e9ec",
+    "src/cbus_toolkit/edlt_shutter.py": "3e26601332080d17a6d4638f7337405906138be54788ee81ab06f63ea64e92c9",
+    "src/cbus_toolkit/edlt_timer.py": "33172d6acea2456fa499020bfbe160ebdba05d6088361fc5535adab65a64ee89",
+    "src/cbus_toolkit/edlt_fan.py": "bf0f1b6cbf89527af2fb378e81d937dafcfe68f68ee1f7fc8a8fac8b32924aec",
+    "src/cbus_toolkit/edlt_enable.py": "95e1360da4f43b051c4f23d66cb956d37e28c3e2457e373eef2e533902de25c0",
+    "src/cbus_toolkit/edlt.py": "78fcb914b21b71206b1cb381b670388dbcd8eb67afa0deb254620395ac353641",
+    "research/original_oracle.py": "5c96ba679de04921798b282dea05a5b0a1db78f4859aab5e8259b78e41a50ab8",
+    "research/windows_bridge.py": "9b2044b76fa74cb5bb06dcfb854c7a1fc7f96c19ba3f0367e5f901cfad822107",
+    "research/NativeWindowsBridge.cs": "da252f50556c70a58a039bb933b0f2dc8d25f31a1838ceac243cede07355efb1"
+  },
+  "runs": {
+    "313": {
+      "python": "Python 3.13.14",
+      "passed": 39,
+      "skipped": 0,
+      "elapsed_seconds": 84.059,
+      "log": "research/runtime/windows-bridge/adapter-batch4/tests-313.txt",
+      "log_sha256": "903cde558459ddff9aa2d753654afb6201427fda4d08ddf92d4ff58b6a7007fd",
+      "families": {
+        "shutter": {
+          "original_rows": 21,
+          "record_entries": 5,
+          "native_database_fixtures": 1,
+          "independent_original_crcs": 5,
+          "all_pp_equal_after_save_close_load": true,
+          "network_state_new_asserted": true
+        },
+        "timer": {
+          "original_rows": 22,
+          "record_entries": 6,
+          "native_database_fixtures": 1,
+          "independent_original_crcs": 5,
+          "all_pp_equal_after_save_close_load": true,
+          "network_state_new_asserted": true
+        },
+        "fan": {
+          "original_rows": 33,
+          "record_entries": 11,
+          "native_database_fixtures": 1,
+          "independent_original_crcs": 5,
+          "all_pp_equal_after_save_close_load": true,
+          "network_state_new_asserted": true
+        },
+        "enable": {
+          "original_rows": 15,
+          "record_entries": 0,
+          "native_database_fixtures": 1,
+          "independent_original_crcs": 5,
+          "all_pp_equal_after_save_close_load": true,
+          "network_state_new_asserted": true
+        }
+      },
+      "reports": {
+        "shutter": {
+          "path": "research/runtime/windows-bridge/adapter-batch4/shutter-313.json",
+          "sha256": "ed0b2b13c3d509e63bf7eae9ce096184339adb34b2ea16358b23999d5606a34e"
+        },
+        "timer": {
+          "path": "research/runtime/windows-bridge/adapter-batch4/timer-313.json",
+          "sha256": "d22e864ebe410da2bca53c00bf0902d2ac7695053a1e950fc591565ba4529f20"
+        },
+        "fan": {
+          "path": "research/runtime/windows-bridge/adapter-batch4/fan-313.json",
+          "sha256": "ec8213bd5a5a3bf34abb05ee4ff1d7ab0441b240f7272553c2c0738d1421d4f1"
+        },
+        "enable": {
+          "path": "research/runtime/windows-bridge/adapter-batch4/enable-313.json",
+          "sha256": "7f9e9cbd41a7c370dc559f190fa7ad27df19a68b8a3d5e923f472c3a4eafbe55"
+        }
+      }
+    },
+    "310": {
+      "python": "Python 3.10.20",
+      "passed": 39,
+      "skipped": 0,
+      "elapsed_seconds": 89.216,
+      "log": "research/runtime/windows-bridge/adapter-batch4/tests-310.txt",
+      "log_sha256": "f599ddcd241ad4eb0440874e5cf373974ac69511cf5930d05b72a1475e51e801",
+      "families": {
+        "shutter": {
+          "original_rows": 21,
+          "record_entries": 5,
+          "native_database_fixtures": 1,
+          "independent_original_crcs": 5,
+          "all_pp_equal_after_save_close_load": true,
+          "network_state_new_asserted": true
+        },
+        "timer": {
+          "original_rows": 22,
+          "record_entries": 6,
+          "native_database_fixtures": 1,
+          "independent_original_crcs": 5,
+          "all_pp_equal_after_save_close_load": true,
+          "network_state_new_asserted": true
+        },
+        "fan": {
+          "original_rows": 33,
+          "record_entries": 11,
+          "native_database_fixtures": 1,
+          "independent_original_crcs": 5,
+          "all_pp_equal_after_save_close_load": true,
+          "network_state_new_asserted": true
+        },
+        "enable": {
+          "original_rows": 15,
+          "record_entries": 0,
+          "native_database_fixtures": 1,
+          "independent_original_crcs": 5,
+          "all_pp_equal_after_save_close_load": true,
+          "network_state_new_asserted": true
+        }
+      },
+      "reports": {
+        "shutter": {
+          "path": "research/runtime/windows-bridge/adapter-batch4/shutter-310.json",
+          "sha256": "644b81371c42b6c784e7a1538cb1a1924b1e3d8589315420cd57749ed0fe578e"
+        },
+        "timer": {
+          "path": "research/runtime/windows-bridge/adapter-batch4/timer-310.json",
+          "sha256": "99d69850f57a260f2c5e284e110d85e184b796730000212b0908b747f4b4e6a1"
+        },
+        "fan": {
+          "path": "research/runtime/windows-bridge/adapter-batch4/fan-310.json",
+          "sha256": "475a80f1c1b2e8483ad331fe422ab510d0bb13632b417d08640a4b158801bb20"
+        },
+        "enable": {
+          "path": "research/runtime/windows-bridge/adapter-batch4/enable-310.json",
+          "sha256": "c51f7d843952110448299a0672affa4d1cedb525dff5d57d17945341e1e7d425"
+        }
+      }
+    }
+  },
+  "evidence_equal_between_python_versions_excluding_project_name": true,
+  "preservation": {
+    "existing_assertions_retained": 323,
+    "docker_command_strings_and_environment_gates_retained": true,
+    "production_probes_shared_adapter_and_bridge_unchanged": true,
+    "audit_path": "research/runtime/windows-bridge/adapter-batch4/preservation-audit.json",
+    "audit_sha256": "ec9c06d15d8159f89065234d3972662f00fa7d3916e8153f2e6e9f9c248f9bf0"
+  },
+  "limits": [
+    "Focused source acceptance, not a full installed-wheel or Docker run.",
+    "Each family retains literal original widget outputs plus independent original five-CRC comparison of its final native PP state; this does not mean every transition compares a full original post-setter PP snapshot.",
+    "All four owned native fixtures assert complete PP equality after save/close/load and state=new; no network was opened or physical device behavior accepted.",
+    "Record entry counts reflect existing report collections, not every asserted native transition."
+  ]
+}

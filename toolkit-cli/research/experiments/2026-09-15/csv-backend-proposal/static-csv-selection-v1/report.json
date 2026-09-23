@@ -1,0 +1,161 @@
+{
+  "original_execution": false,
+  "scope": "bounded .text/.itext PE disassembly with exact MAP symbol annotations; spans may include trailing inline data",
+  "script_sha256": "1ef61a19fd5db4edb4457c3891156efbce84dd95b7b7ac734aae501ad3aeab07",
+  "original_inputs": {
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "methods": [
+    {
+      "start": "0xea7d70",
+      "end": "0xea8094",
+      "symbols": [
+        "CIS_TfrmCSVSelection..TfrmCSVSelection"
+      ],
+      "bytes_sha256": "a766a2da2360277213599b72c850e2cd97ede845b37a27b268074aba60ddbe6f",
+      "file": "00ea7d70.asm",
+      "file_sha256": "2821a6230c65eb5d6f422e73c16e7d4fe76553ce11df9f253ed8e0ae67ac6c9e"
+    },
+    {
+      "start": "0xea8094",
+      "end": "0xea84ec",
+      "symbols": [
+        "CIS_TfrmCSVSelection.RegisterEnumerations"
+      ],
+      "bytes_sha256": "3db4dcceca09db14a3a89d6477328a6f09a12078e6acf7701bfbaaf6ecc30ab8",
+      "file": "00ea8094.asm",
+      "file_sha256": "07cad52057a9ce7a355a4bf8b92060bef50488bcc1c26dec8f3df56829dd5f9b"
+    },
+    {
+      "start": "0xea84ec",
+      "end": "0xea85ac",
+      "symbols": [
+        "CIS_TfrmCSVSelection.TfrmCSVSelection.btnOkClick"
+      ],
+      "bytes_sha256": "e3f75504be889e82e84671219b327a4e64687be41e0e8b7ae536ac7d97dbfd96",
+      "file": "00ea84ec.asm",
+      "file_sha256": "698fac9f31c1000a34a06e64273b72849446ba97511f83c9edcd5710915f67c6"
+    },
+    {
+      "start": "0xea85ac",
+      "end": "0xea86a0",
+      "symbols": [
+        "CIS_TfrmCSVSelection.TfrmCSVSelection.btnSelectAllClick"
+      ],
+      "bytes_sha256": "aefd2d9720aace607254bb7bb3b32fe26ae2d1766f913ca62bdeb658ee030649",
+      "file": "00ea85ac.asm",
+      "file_sha256": "041195639bdf5289a7ee36c2f1e513bdf93085a2a4c670f22d1467d7e61d5da2"
+    },
+    {
+      "start": "0xea86a0",
+      "end": "0xea8794",
+      "symbols": [
+        "CIS_TfrmCSVSelection.TfrmCSVSelection.btnSelectNoneClick"
+      ],
+      "bytes_sha256": "69f58b021b63a5b6bd9d3caa33839237bef56c72eee185f598ae6b67f8483022",
+      "file": "00ea86a0.asm",
+      "file_sha256": "fdba4920a5d4196257eb81f69e707d3596374647371b606bcc20a57294dd5f11"
+    },
+    {
+      "start": "0xea8794",
+      "end": "0xea87bc",
+      "symbols": [
+        "CIS_TfrmCSVSelection.TfrmCSVSelection.CSVListNodeChanged"
+      ],
+      "bytes_sha256": "7d77a21f3c96e28a0c3519ec61e87442b0d7ae4da7a56175ddac3081f5126e58",
+      "file": "00ea8794.asm",
+      "file_sha256": "0550921ca0ff121d9b50c6779aac4bef6e19e04d6f3af66d2ac462ac82d3a576"
+    },
+    {
+      "start": "0xea87bc",
+      "end": "0xea881c",
+      "symbols": [
+        "CIS_TfrmCSVSelection.TfrmCSVSelection.FormCreate"
+      ],
+      "bytes_sha256": "b9f688abd74384a4793256b567d26b900313d3643a6ee1418832bd8cee19c5d9",
+      "file": "00ea87bc.asm",
+      "file_sha256": "3e40db92983e1c74b4047e1a022f45dc70deea051b2df526854a8d48be9c9718"
+    },
+    {
+      "start": "0xea881c",
+      "end": "0xea8834",
+      "symbols": [
+        "CIS_TfrmCSVSelection.TfrmCSVSelection.FormShow"
+      ],
+      "bytes_sha256": "7dae25cb6540f3dfd6accade877f2f7e26388e8e630135d91b10d480e6cb5561",
+      "file": "00ea881c.asm",
+      "file_sha256": "452f126d1d23565b6abacc58561a503abcb2ce95d905eed9ffbdb08b4f85fd46"
+    },
+    {
+      "start": "0xea8834",
+      "end": "0xea8938",
+      "symbols": [
+        "CIS_TfrmCSVSelection.AddCSVOptionToList"
+      ],
+      "bytes_sha256": "0134cd4669aa9e131d8d28b59aec5fe6dc260c535a3779e3552acd1a5eae29f3",
+      "file": "00ea8834.asm",
+      "file_sha256": "d6bece048222038c04fb1dd9b5017df055b713f9ca03563bf169b012448f82db"
+    },
+    {
+      "start": "0xea8938",
+      "end": "0xea89e8",
+      "symbols": [
+        "CIS_TfrmCSVSelection.TfrmCSVSelection.PrepareCSVOptionList"
+      ],
+      "bytes_sha256": "6f3d7ed499b1880f70b70dea3473118acc1276605bb695b9fb5c040b30375bcc",
+      "file": "00ea8938.asm",
+      "file_sha256": "cc7306bf73a74c977d88fd8f0f61e6b62829b5a76799bd504b78062a25d56232"
+    },
+    {
+      "start": "0xea89e8",
+      "end": "0xea8b00",
+      "symbols": [
+        "CIS_TfrmCSVSelection.TfrmCSVSelection.ReadRegistryCSVSelection"
+      ],
+      "bytes_sha256": "c78821398fba420998844dc44d6adeba1e4d89b756dc514affc9230fb5731218",
+      "file": "00ea89e8.asm",
+      "file_sha256": "380adf7aed9c5a6f30c27f665b0c9db697413a1d6988930ba0fc0264f03b3ae4"
+    },
+    {
+      "start": "0xea8b00",
+      "end": "0xea8bc0",
+      "symbols": [
+        "CIS_TfrmCSVSelection.TfrmCSVSelection.UpdateSelection"
+      ],
+      "bytes_sha256": "e9dbeb13987aee8873dcd91f69d6cb15e16e00a63295719575409f3fd2aae000",
+      "file": "00ea8b00.asm",
+      "file_sha256": "1a38576bcc38a0c27a0352dfc031b9777433f9c7dc6cc67a09db1c38a5826907"
+    },
+    {
+      "start": "0xea8bc0",
+      "end": "0xea8bf0",
+      "symbols": [
+        "CIS_TfrmCSVSelection.TfrmCSVSelection.UpdateUI"
+      ],
+      "bytes_sha256": "af0e6135f72d98b638b983fa0d12b7d7609e4264e17a51aad41059a79254b74f",
+      "file": "00ea8bc0.asm",
+      "file_sha256": "6ac41f91a742b80e2f04a50916966ebae4e8f06444649908ac2500889abc6edf"
+    },
+    {
+      "start": "0xea8bf0",
+      "end": "0xea8cf4",
+      "symbols": [
+        "CIS_TfrmCSVSelection.TfrmCSVSelection.WriteRegistryCSVSelection"
+      ],
+      "bytes_sha256": "ca5150dfb5e96ad210f112adbb7bb5e1960a3ff420ed8e7148e773a7c28996d3",
+      "file": "00ea8bf0.asm",
+      "file_sha256": "2327da527cc96d1a3137991f6210533055096aabe61f89b1742038e1f2e86446"
+    },
+    {
+      "start": "0xea8cf4",
+      "end": "0xea8cfc",
+      "symbols": [
+        "CIS_TfrmCSVSelection.Finalization"
+      ],
+      "bytes_sha256": "f429aeeeadf5152d0f67dba819db6f147a2cf1fd6c994e1f79a903d02a881f56",
+      "file": "00ea8cf4.asm",
+      "file_sha256": "f1cd9a86677b11fe092aff6bee3309d0fc92ae96f5a9dc82fae6feee1acce92a"
+    }
+  ]
+}

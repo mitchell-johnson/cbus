@@ -1,112 +1,151 @@
-# C-Bus Rust tools
+# C-Bus Toolkit CLI and Rust tools
 
-This repository contains a Rust workspace for communicating with Clipsal/Schneider C-Bus networks. Rust is the only maintained implementation in this repository.
+Manage Clipsal/Schneider C-Bus projects from the terminal and connect C-Bus lighting to MQTT and Home Assistant.
 
-The workspace provides:
+This repository has two main applications:
 
-- `cmqttd`, a C-Bus to MQTT and Home Assistant bridge.
-- `cgate-mock`, an in-memory C-Gate 3.4 compatible test server.
-- `cbus-simulator`, a fake PCI/CNI TCP endpoint for development.
-- `cbus-tools`, command-line utilities for frame decoding, project-label export, and unit interrogation.
-- Reusable protocol, transport, MQTT, and test-support crates.
+- **[`cbus-toolkit`](toolkit-cli/README.md)** — a Python CLI for Toolkit-style project editing, commissioning, unit configuration, scenes, and diagnostics. It works with project files offline and connects to C-Gate or a CNI for online operations. JSON output makes it usable from scripts and AI agents.
+- **[`cmqttd`](docs/configuration.md)** — a Rust daemon that connects a C-Bus interface directly to an MQTT broker and publishes Home Assistant discovery and state. It runs without C-Gate or the Toolkit application.
 
-The C-Gate model recognizes every command path in the maintained command inventory: 224 public manual headings and 268 registered bytecode command paths, representing 431 unique paths. Core project, database, network, unit, event, and programming operations have stateful models. Hardware-facing and specialist application families use deterministic in-memory behavior; see [C-Gate compatibility](docs/cgate.md) for the exact boundary.
+The Rust workspace also provides protocol tools, a PCI simulator, and a C-Gate compatibility server for development and testing. Install the application you need; the Python CLI and Rust bridge can be used independently.
 
-## Build
+## Which program do I need?
 
-Install a current stable Rust toolchain, then run:
+| I want to… | Use |
+| --- | --- |
+| Create, inspect, edit, validate, or export Toolkit XML/CBZ projects | `cbus-toolkit project` |
+| Manage native C-Gate projects, configure supported units, control groups, or commission a network | `cbus-toolkit cgate` |
+| Plan supported keypad, sensor, eDLT, scene, or unit-conversion settings offline | `cbus-toolkit keys`, `sensors`, `edlt`, `scene`, and `unit-conversion` |
+| Query a CNI directly or inspect routed PCI messages | `cbus-toolkit pci` and `pci-route` |
+| Connect C-Bus lights to MQTT and Home Assistant | `cmqttd` |
+| Decode a frame, export project labels, or interrogate a unit | `cbus-tools` |
+| Test a C-Gate client without a vendor server or hardware | `cgate-mock` |
+| Test PCI/CNI protocol traffic without hardware | `cbus-simulator` |
 
-```sh
-cd rust
-cargo build --release
-```
+## Toolkit CLI
 
-The binaries are written to `rust/target/release/`.
+### Install
 
-## Quick start
-
-Decode a C-Bus frame:
-
-```sh
-rust/target/release/cbus-tools decode 0538007901490D
-```
-
-Run the fake PCI on the standard CNI port:
+Requires **Python 3.13 or newer**. From the repository root, on macOS or Linux:
 
 ```sh
-rust/target/release/cbus-simulator 127.0.0.1 10001
+python3.13 -m venv toolkit-cli/.venv
+toolkit-cli/.venv/bin/python -m pip install -e ./toolkit-cli
+source toolkit-cli/.venv/bin/activate
+cbus-toolkit --help
 ```
 
-Run the C-Gate test server:
+On Windows, use `py -3.13 -m venv toolkit-cli/.venv`, then run `toolkit-cli\.venv\Scripts\python.exe -m pip install -e ./toolkit-cli` and `toolkit-cli\.venv\Scripts\cbus-toolkit.exe --help`.
+
+The base package has no external Python dependencies. Optional serial and USB features have separate extras; see the [Toolkit CLI guide](toolkit-cli/README.md).
+
+### Try it without hardware
+
+Create a project, add a network and lighting group, then inspect it:
+
+```sh
+cbus-toolkit project new demo.cbz --name DEMO
+cbus-toolkit project add demo.cbz --kind network --address 254 --name Local
+cbus-toolkit project add demo.cbz --kind application --parent /254 --address 56 --name Lighting
+cbus-toolkit project add demo.cbz --kind group --parent /254/56 --address 1 --name Lounge
+cbus-toolkit project inspect demo.cbz
+cbus-toolkit project export demo.cbz demo.xml --format xml
+```
+
+Project editing preserves unknown XML and opaque programming fields. Use `--output` on an edit to write a separate copy. Native C-Gate 3 SQLite projects are managed through `cbus-toolkit cgate project` instead of the offline XML/CBZ editor.
+
+### Connect to C-Gate
+
+Point the CLI at your C-Gate server. This example reads the project list:
+
+```sh
+cbus-toolkit cgate --host 192.168.1.20 --port 20023 project list
+```
+
+Replace the example address and port with your server's values. Use `cbus-toolkit cgate --help` for project, network, database, unit, addressing, scene, and control commands. The transport supports verified TLS and client certificates. Advanced parameter workflows may require vendor unit specifications; those files are supplied separately.
+
+For an exact C-Gate command, use `cbus-toolkit cgate exec 'PROJECT LIST'`. For a file of commands that must share one session, use `cbus-toolkit cgate run commands.txt`. Add the same connection options as above; command batches stop at the first failure.
+
+Results are JSON on stdout; operation errors are JSON on stderr and return a nonzero exit status. Put `--compact` before the command for single-line JSON. Event monitoring emits JSON lines.
+
+### Toolkit compatibility and current status
+
+The CLI targets **C-Bus Toolkit 1.18.0.2754 and C-Gate 3.4.0.2001**, with full Toolkit functionality as the goal. Implemented workflows include offline project editing, native project management, supported unit programming and addressing, keypad presets, scenes, CGL exchange, and substantial eDLT configuration. Device and firmware support is documented per workflow.
+
+**Full Toolkit parity is not complete.** The feature ledger currently records 38 areas: 17 implemented, 19 in progress, and 2 pending. These categories are not a percentage of Toolkit functionality. Check the current machine-readable status with:
+
+```sh
+cbus-toolkit coverage --require-complete
+```
+
+This intentionally returns exit status `1` while parity remains unfinished. The [completed functions and outstanding work](toolkit-cli/docs/implementation-status.md) describe supported profiles, test evidence, and remaining work. The [Toolkit CLI guide](toolkit-cli/README.md) contains detailed command examples.
+
+## MQTT and Home Assistant bridge
+
+Build the Rust tools with a current stable Rust toolchain, from the repository root:
+
+```sh
+cargo build --manifest-path rust/Cargo.toml --release --workspace
+```
+
+The binaries are written to `rust/target/release/`. Run the bridge against your MQTT broker and CNI, replacing these example addresses:
+
+```sh
+rust/target/release/cmqttd \
+  --broker-address 192.168.1.20 \
+  --broker-disable-tls \
+  --tcp 192.168.1.10:10001
+```
+
+`cmqttd` publishes Home Assistant discovery and lighting state, and forwards MQTT light commands to C-Bus. Add `--project-file house.cbz` for names from your Toolkit project and `--cbus-network 'Main Network'` to select a network. TLS is enabled by default; omit `--broker-disable-tls` when using a TLS broker. Serial and ESP32 bridge connections are also supported.
+
+For Docker, copy `.env.example` to `.env`, configure your broker and C-Bus endpoint, then run `docker compose up --build`. See [bridge configuration](docs/configuration.md) for authentication, certificates, project files, time synchronization, and status updates.
+
+## Development tools and simulation
+
+`cbus-tools` provides small inspection commands:
+
+```sh
+rust/target/release/cbus-tools decode 05013800790148
+rust/target/release/cbus-tools dump-labels --pretty 2 rust/testdata/fixtures/project.xml
+```
+
+To exercise the Toolkit CLI against the Rust C-Gate model, start the server in one terminal:
 
 ```sh
 rust/target/release/cgate-mock --bind 127.0.0.1:20033
 ```
 
-Run the MQTT bridge against a TCP CNI without TLS:
+Then, with the Python environment activated, use another terminal:
 
 ```sh
-rust/target/release/cmqttd \
-  --broker-address 127.0.0.1 \
-  --broker-disable-tls \
-  --tcp 192.168.1.10:10001
+cbus-toolkit cgate --host 127.0.0.1 --port 20033 project new DEMO
+cbus-toolkit cgate --host 127.0.0.1 --port 20033 project list
 ```
 
-## C-Bus Toolkit and C-Gate CLI compatibility
+`cgate-mock` implements all **431 unique command paths** in the maintained C-Gate inventory. It supports shared project state, per-client project selection, tagged replies, events, and programming sessions. This is complete command coverage in an in-memory test server; it does not establish full Toolkit workflow parity or physical-device behavior. State is lost when the server stops. See [C-Gate compatibility](docs/cgate.md).
 
-The Rust CLI stack provides full command-surface compatibility with the C-Gate 3.4 interface used by C-Bus Toolkit 1.18. Every command in the maintained native inventory is recognized and dispatched: 224 public manual headings and 268 registered command paths, representing 431 unique paths.
+For a PCI/CNI test endpoint, run `rust/target/release/cbus-simulator 127.0.0.1 10001`. This is a separate protocol from C-Gate: point PCI clients at the simulator and C-Gate clients at `cgate-mock`.
 
-`cgate-mock` supports tagged commands, multiline replies, here-documents, event subscriptions, cross-client event delivery, per-session project selection, access levels, and programming locks. Its stateful command model covers project and database management, networks, units, groups, labels, levels, scenes, schedules, CGL data, repository operations, and PP programming sessions. Unit-specification directories can be supplied with `--unitspec` for catalogue-backed programming parameters.
+## Documentation and AI agents
 
-The companion `cbus-tools` CLI reads Toolkit `.cbz` backups and project XML, exports network/application/group/unit metadata, decodes C-Bus frames, and interrogates units through a CNI. `cmqttd` can use the same project files for Home Assistant entity names and network selection.
-
-Full compatibility here means that every registered C-Gate command path has tested parsing, dispatch, and protocol-shaped behavior. Core project, database, network, lighting, event, and programming workflows are stateful. Commands that normally require Schneider services or physical equipment use deterministic in-memory behavior in `cgate-mock`; the CLI does not reproduce the Toolkit graphical interface or create physical device side effects. See [C-Gate compatibility](docs/cgate.md) for the detailed boundary.
-
-For Docker, copy `.env.example` to `.env`, set the broker and C-Bus endpoint, and run:
-
-```sh
-docker compose up --build
-```
-
-## Documentation
-
-- [Current implementation status](docs/status.md)
-- [Architecture and crate map](docs/architecture.md)
-- [Command-line programs](docs/commands.md)
-- [C-Gate compatibility](docs/cgate.md)
-- [Protocol and transport behavior](docs/protocol.md)
-- [cmqttd configuration](docs/configuration.md)
+- [Toolkit CLI guide](toolkit-cli/README.md) and [feature status](toolkit-cli/docs/implementation-status.md)
+- [Architecture](docs/architecture.md), [command reference](docs/commands.md), and [protocols](docs/protocol.md)
+- [MQTT bridge configuration](docs/configuration.md) and [C-Gate compatibility](docs/cgate.md)
 - [Testing and development](docs/testing.md)
-
-## AI agent support
-
-The repository includes a versioned [C-Bus CLI skill](.agents/skills/cbus-cli/SKILL.md) for AI coding and operations agents. It teaches an agent how to choose and run each Rust CLI, interpret C-Gate and Toolkit compatibility accurately, distinguish local inspection from bus-changing operations, and validate repository changes. Its focused references cover the [CLI surface](.agents/skills/cbus-cli/references/cli.md), [system architecture](.agents/skills/cbus-cli/references/system.md), [C-Gate behavior](.agents/skills/cbus-cli/references/cgate.md), and [operational workflows](.agents/skills/cbus-cli/references/workflows.md).
-
-Root-level [AI agent guidance](AGENTS.md) makes the maintained Rust boundary, secret-handling rules, crate ownership, and validation gate discoverable when an agent opens the repository.
+- [AI skill](.agents/skills/cbus-cli/SKILL.md) with command, system, and workflow references; [repository agent guidance](AGENTS.md)
 
 ## Repository layout
 
 ```text
-rust/                    Rust workspace and all maintained source code
+toolkit-cli/             Python cbus-toolkit application, tests, and feature docs
+rust/                    Rust MQTT bridge, protocol libraries, and supporting tools
 rust/testdata/           committed protocol vectors and system-test fixtures
-docs/                    maintained documentation
-.agents/skills/cbus-cli/ reusable AI skill and operational references
+docs/                    shared architecture, configuration, and development docs
+.agents/skills/cbus-cli/ AI skill and operational references
 cmqttd_config/           optional local Docker configuration
-.github/workflows/ci.yml Rust formatting, lint, test, and release-build checks
 ```
-
-## Validation
-
-```sh
-cd rust
-cargo fmt --check
-cargo clippy --workspace --all-targets -- -D warnings
-cargo test --workspace
-cargo build --release --workspace
-```
-
-The test suite includes generated tests for every committed compatibility vector, property tests, command-inventory checks, protocol tests, and full-system `cmqttd` tests using an in-process MQTT broker and scripted PCI.
 
 ## License
 
-This project is licensed under the GNU Lesser General Public License v3.0 or later. See [COPYING](COPYING) and [COPYING.LESSER](COPYING.LESSER).
+GNU Lesser General Public License v3.0 or later. See [COPYING](COPYING) and [COPYING.LESSER](COPYING.LESSER).

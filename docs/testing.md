@@ -1,6 +1,8 @@
 # Testing and development
 
-Run the repository gates from `rust/`:
+## Rust checks
+
+Run the Rust gates from `rust/`:
 
 ```sh
 cargo fmt --check
@@ -10,6 +12,22 @@ cargo build --release --workspace
 ```
 
 CI runs the same four checks for pull requests and pushes to `main`.
+
+## Toolkit CLI checks
+
+Install Python 3.13 or newer and the development extras from the repository root:
+
+```sh
+python3.13 -m venv toolkit-cli/.venv
+toolkit-cli/.venv/bin/python -m pip install -e './toolkit-cli[test,research,serial,usb]'
+cd toolkit-cli
+make check
+make check-interop
+```
+
+`make check` runs the offline Python suite. Tests requiring vendor binaries, unit specifications, native C-Gate, Windows workers, or physical devices skip unless their explicit environment gates are configured. `make check-interop` builds the Rust mock and exercises the production Python client and wrappers against it. CI runs the offline suite with the mock built; vendor and hardware acceptance remain separate.
+
+Do not equate offline test success with complete Toolkit parity. Run `cbus-toolkit coverage --require-complete` to inspect that separate gate, and consult the [Toolkit status and acceptance evidence](../toolkit-cli/docs/implementation-status.md) for full validation requirements.
 
 ## Test data
 

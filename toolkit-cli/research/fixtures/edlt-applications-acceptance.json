@@ -1,0 +1,129 @@
+{
+  "format": "cbus-edlt-applications-acceptance-v1",
+  "passed": true,
+  "profile": {
+    "unit_type": "KEYGL5",
+    "catalog_number": "5055EDL",
+    "firmware": "5.5.00"
+  },
+  "scope": "Ordered Primary/Secondary application controls bound on a single retained loaded model; original terminal model save and closed native C-Gate database persistence",
+  "full_toolkit_parity": false,
+  "physical_device_verified": false,
+  "full_form_initialization_verified": false,
+  "dependency_getters_invoked": false,
+  "fixed_original_vectors": {
+    "observations": {
+      "path": "research/fixtures/edlt-application-observations.json",
+      "sha256": "f2898e63d92ee7deedeb4a6020ad593d961c1e18e239e344d63f527867419d91"
+    },
+    "terminal": {
+      "path": "research/fixtures/edlt-application-terminal-vectors.json",
+      "sha256": "55e1a618054602361466d5d61145c5a26e4185ea01ed56991e88c0237182d54e"
+    },
+    "model_global_cases": 210,
+    "model_global_snapshots": 1167,
+    "unavailable_requests": 18,
+    "explicit_input_cache_exclusions": 16,
+    "canonical_terminal_cases": 40,
+    "canonical_terminal_accepted": 39,
+    "canonical_terminal_rejected": 1,
+    "terminal_snapshots": 156,
+    "parameters_per_snapshot": 874,
+    "parameter_comparisons_per_python_including_native": 1229718,
+    "retained_scene_observations_per_terminal_case": 8
+  },
+  "tests": [
+    {
+      "python": "3.13.14 (main, Jun 10 2026, 12:24:04) [Clang 17.0.0 (clang-1700.6.4.2)]",
+      "tests": 13,
+      "skips": 0,
+      "passed": true,
+      "elapsed_seconds": 131.908,
+      "log": {
+        "path": "research/runtime/edlt-application-phases/portable313.log",
+        "sha256": "0948ca389200b32bdea4da5e4593fd8ad23db6ce4e76773c2d92f40bbc20f6ad"
+      },
+      "native_report": {
+        "path": "research/runtime/edlt-application-phases/native-portable313-report.json",
+        "sha256": "e5d5a2f5fbe521e88b1d3b245587d28cd4bc8159572c0afc5d97088df2c0746f"
+      },
+      "proof_directory": "research/runtime/edlt-application-phases/native-7f5a5dbac036",
+      "native_cases": 14,
+      "native_parameters_per_snapshot": 874,
+      "original_phases": 4,
+      "native_full_readbacks_per_case": 2,
+      "five_crcs_compared": true,
+      "raw_bytes_before_and_after_reload_per_run": 140,
+      "each_case_saved_closed_loaded": true,
+      "cleanup_errors": []
+    },
+    {
+      "python": "3.10.20 (main, Mar  3 2026, 00:49:35) [Clang 17.0.0 (clang-1700.6.4.2)]",
+      "tests": 13,
+      "skips": 0,
+      "passed": true,
+      "elapsed_seconds": 145.089,
+      "log": {
+        "path": "research/runtime/edlt-application-phases/portable310.log",
+        "sha256": "fe92b657dacf13573cf8559aeecdc708956b3b687c30158e2aca59a61d735f4b"
+      },
+      "native_report": {
+        "path": "research/runtime/edlt-application-phases/native-portable310-report.json",
+        "sha256": "806c9a3d8d5489d9f4d0a2bab2d7ef774b072de17b622e8c52de760d9cb048cc"
+      },
+      "proof_directory": "research/runtime/edlt-application-phases/native-41819c9622c4",
+      "native_cases": 14,
+      "native_parameters_per_snapshot": 874,
+      "original_phases": 4,
+      "native_full_readbacks_per_case": 2,
+      "five_crcs_compared": true,
+      "raw_bytes_before_and_after_reload_per_run": 140,
+      "each_case_saved_closed_loaded": true,
+      "cleanup_errors": []
+    }
+  ],
+  "source_sha256": {
+    "probe.cs": "cc7ca82f109c7522cacf011905e0c8ed24ecb45ace75904dcce78addda686c1f",
+    "driver.py": "6f6de9f943a6af3cd9970a29622d3fad80b8f41ee8024de965c5dd7516ba4385",
+    "parser.py": "b04afaaa2a1d3e8c47e56d397149c6311317230d6c5fcfdf4c40fb32d69463aa",
+    "windows_bridge.py": "9b2044b76fa74cb5bb06dcfb854c7a1fc7f96c19ba3f0367e5f901cfad822107",
+    "KEYGL5.xml": "812d2f92ccf3176d9f3d4c0f35fc196ac9ba45bc419639421e4e5ff082d2af21",
+    "native_test.py": "fd56e6c6361bf102bd3b2595e1578b492c804056aa170fc96769e7a25a08a970",
+    "pure_test.py": "6554d2e56ad05ee7082ac580d35808e950a8448ad3b4df0439c0e92c1d57026f",
+    "case_inputs.json": "f2898e63d92ee7deedeb4a6020ad593d961c1e18e239e344d63f527867419d91",
+    "common_test.py": "5546612b307109a94d17d211a0b64d4f50658ab43e4ae5a589dd0e366fb96c46",
+    "edlt_applications.py": "5c06e2a0ec30ef42c17cd4d13924db5eeb1634830b5ab5bd7556f34ba64ce881",
+    "edlt_application_cache.py": "c7dc8c133fd08f3b5c974c6429add4a82f7dda2d69154165c05935b02ecd6bd4",
+    "edlt_lifecycle.py": "462c4c98c53d55f562610e696a208479982e9b2bcb09625a92bb994f74ff76ec",
+    "edlt.py": "78fcb914b21b71206b1cb381b670388dbcd8eb67afa0deb254620395ac353641",
+    "unitspec.py": "f8d9e2f30c0ab431b0897959328781fac6a7c9825a4d9d2bb5ecf348acb66747",
+    "programming.py": "30b0def5768e5a7f926eb07771dddb02a4ec5bf6e724fad735be8f3f59c07a96",
+    "native.py": "d4bb3b4e83434ace48cbd436179ec4ff68b34c065d2d88d300493cc3ebcf5051",
+    "cgate.py": "fef71db3a4d98c1a175a8bf0287b5abcaea4689df835dea7b0c19413e206eb15"
+  },
+  "source_paths": {
+    "probe.cs": "/Users/mitchell/source/cbus/toolkit-cli/research/NativeEdltApplicationPhasesProbe.cs",
+    "driver.py": "/Users/mitchell/source/cbus/toolkit-cli/research/verify_edlt_application_phases.py",
+    "parser.py": "/Users/mitchell/source/cbus/toolkit-cli/research/compact_edlt_application_vectors.py",
+    "windows_bridge.py": "/Users/mitchell/source/cbus/toolkit-cli/research/windows_bridge.py",
+    "KEYGL5.xml": "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/unitspec-plain/KEYGL5.xml",
+    "native_test.py": "/Users/mitchell/source/cbus/toolkit-cli/tests/test_edlt_applications_native.py",
+    "pure_test.py": "/Users/mitchell/source/cbus/toolkit-cli/tests/test_edlt_applications.py",
+    "case_inputs.json": "/Users/mitchell/source/cbus/toolkit-cli/research/fixtures/edlt-application-observations.json",
+    "common_test.py": "/Users/mitchell/source/cbus/toolkit-cli/tests/test_edlt.py",
+    "edlt_applications.py": "/Users/mitchell/source/cbus/toolkit-cli/src/cbus_toolkit/edlt_applications.py",
+    "edlt_application_cache.py": "/Users/mitchell/source/cbus/toolkit-cli/src/cbus_toolkit/edlt_application_cache.py",
+    "edlt_lifecycle.py": "/Users/mitchell/source/cbus/toolkit-cli/src/cbus_toolkit/edlt_lifecycle.py",
+    "edlt.py": "/Users/mitchell/source/cbus/toolkit-cli/src/cbus_toolkit/edlt.py",
+    "unitspec.py": "/Users/mitchell/source/cbus/toolkit-cli/src/cbus_toolkit/unitspec.py",
+    "programming.py": "/Users/mitchell/source/cbus/toolkit-cli/src/cbus_toolkit/programming.py",
+    "native.py": "/Users/mitchell/source/cbus/toolkit-cli/src/cbus_toolkit/native.py",
+    "cgate.py": "/Users/mitchell/source/cbus/toolkit-cli/src/cbus_toolkit/cgate.py"
+  },
+  "historical_failed_pilot": {
+    "path": "research/runtime/edlt-application-phases/native-pilot313-report.json",
+    "sha256": "19fa17e1ee9e0848d554fe6fa06c51896ec7d030103f1bc73882c6e97f2b0db9"
+  },
+  "historical_failure_reason": "Research fixture passed decimal array tokens to the original hexadecimal memory/CRC representation. Corrected the fixture encoding, not the production CRC. Original failed report retained.",
+  "cli_acceptance": "Separate CLI acceptance; this fixture covers the Python workflow and native database persistence."
+}

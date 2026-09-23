@@ -1,6 +1,27 @@
 # Command-line programs
 
-Build every program with `cargo build --release --workspace` from `rust/`. Use `--help` on a Clap-based program for the authoritative option list.
+The Python Toolkit CLI and Rust programs are installed independently. Use a program's `--help` output for its option list.
+
+## cbus-toolkit
+
+Requires Python 3.13 or newer. From the repository root:
+
+```sh
+python3.13 -m venv toolkit-cli/.venv
+toolkit-cli/.venv/bin/python -m pip install -e ./toolkit-cli
+source toolkit-cli/.venv/bin/activate
+cbus-toolkit --help
+cbus-toolkit project inspect project.cbz
+cbus-toolkit cgate --host 127.0.0.1 --port 20023 project list
+```
+
+`project` edits XML/CBZ files offline. `cgate` provides native project, network, database, unit, addressing, and application workflows; `pci` talks directly to a CNI. Other families provide device configuration planning, scenes, templates, firmware diagnostics, preferences, and compatibility reporting. Results are JSON; use `--compact` before the command for one-line output. See the [Toolkit CLI guide](../toolkit-cli/README.md) and [feature status](../toolkit-cli/docs/implementation-status.md) for supported device profiles and exact workflows.
+
+`cbus-toolkit coverage --require-complete` reports the outstanding work and deliberately returns nonzero while full Toolkit parity remains incomplete.
+
+## Build the Rust programs
+
+Run `cargo build --release --workspace` from `rust/`. Binaries are written to `rust/target/release/`.
 
 ## cmqttd
 
@@ -26,7 +47,7 @@ Key option groups:
 Decode a PCI-to-client frame:
 
 ```sh
-cbus-tools decode 0538007901490D
+cbus-tools decode 05013800790148
 ```
 
 Add `--client` for client-to-PCI direction, `--no-checksum` to accept unchecksummed data, or `--not-strict` for lenient decoding.

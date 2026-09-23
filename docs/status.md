@@ -2,9 +2,15 @@
 
 ## Maintained scope
 
-All maintained source code is in the Rust workspace. The earlier language implementation, Toolkit reimplementation, reverse-engineering artifacts, migration scripts, and standalone ESP32 firmware have been removed from the active repository.
+The maintained applications are the Python Toolkit CLI in `toolkit-cli/` and the Rust workspace in `rust/`. The older Python MQTT/protocol implementation, migration harness, and standalone ESP32 firmware are retired.
 
-## Completed functionality
+## Toolkit CLI
+
+`cbus-toolkit` targets Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001. It provides offline XML/CBZ project editing, C-Gate and PCI clients, native project and unit workflows, commissioning, scenes, and supported keypad, sensor, and eDLT configuration. It also includes JSON output, compatibility evidence, and a feature ledger.
+
+Full Toolkit parity remains unfinished. The ledger records 38 feature areas: 17 implemented, 19 in progress, and 2 pending. See [Toolkit implementation status](../toolkit-cli/docs/implementation-status.md) for per-feature behavior and limits. `cbus-toolkit coverage --require-complete` reports the current machine-readable status and returns nonzero while completion requirements remain unmet.
+
+## Rust functionality
 
 | Area | State | Notes |
 | --- | --- | --- |
@@ -29,4 +35,4 @@ All maintained source code is in the Rust workspace. The earlier language implem
 - Real-site validation remains necessary for unusual topologies, serial adapters, broker policies, and device families not represented by the committed fixtures.
 - Unit specifications must be supplied to `cgate-mock --unitspec DIR` when tests require catalogue-backed programming parameters. The repository does not distribute vendor catalogue files.
 
-The supported product boundary is the Rust workspace described here. The removed Toolkit replacement is not an outstanding component of this repository.
+Toolkit workflow parity and Rust C-Gate command coverage are separate measures. A mock handler or passing simulator test alone does not establish compatibility with every Toolkit workflow or physical unit.

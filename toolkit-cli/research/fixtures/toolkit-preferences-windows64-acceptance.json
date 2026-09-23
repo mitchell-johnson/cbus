@@ -1,0 +1,101 @@
+{
+  "format": "cbus-preferences-windows64-acceptance-v1",
+  "passed": true,
+  "scope": "Runtime-only compatibility acceptance; unchanged public adapter/store/native-case files. Official AMD64 Python3.13.14 running as a64-bit process on the owned Windows11 ARM64 VM. No actual user Toolkit registry settings or hardware touched.",
+  "files": {
+    "src/cbus_toolkit/toolkit_preferences_store.py": "833d9d057896cab472b23fdce945d69c01b52849f6a6cd1a146e65d636c00363",
+    "src/cbus_toolkit/windows_preferences.py": "6a9b9abb6a2945acd11fca52b89ac47a7fcbe26625ce232e58019fceb46a6af6",
+    "src/cbus_toolkit/toolkit_numeric.py": "10bb51a54321964f80720356fa5b2d09638fe3b0a5108c7379915a22ca0f221b",
+    "research/windows_preferences_native_cases.py": "a97d9bc186d9d7930af438b0fa79e88ca3dc15c632451e2d10345134606a8551",
+    "src/cbus_toolkit/toolkit_preferences_reset.py": "7619bbe9e590eff202ff1a5cbd6c1825817df8ca15fa18dbe240caee5c3ff6c0",
+    "src/cbus_toolkit/windows_preferences_reset.py": "d157d7e19586ec564dcc62feadbea4dbdfc82171fb2afe5cbbbb503b8d2858ea",
+    "research/windows_preferences_reset_native_cases.py": "126a158755c56912619d05920e113be4edc4872a34e20f3f410f92081549e6f1",
+    "research/fixtures/windows-python-runtime-amd64.json": "6ac0ff5ec0c0b027212b3bbc0bf4303b29fc856152af039c317170a759a0165c",
+    "docs/windows-preferences-compatibility.md": "7ff3f14ae1a44466ad4bef727dbcc23c55d25ada98dd60378c086695edbb55f2"
+  },
+  "runtime": {
+    "proof_path": "research/runtime/windows-python31314-amd64-owned/runtime-proof.json",
+    "proof_sha256": "6ed0da495d5331658263a0daa3a6209c90af945a4353c0aea8b5a7d71d62745f",
+    "manifest_path": "research/runtime/windows-python31314-amd64-owned/runtime.json",
+    "manifest_sha256": "6ac0ff5ec0c0b027212b3bbc0bf4303b29fc856152af039c317170a759a0165c",
+    "download_path": "research/runtime/windows-python31314-amd64-owned/download.json",
+    "download_sha256": "49a46eea540179400f3a570be0181faa111e6717b2b5ded8efa6ec2d6df859ea",
+    "published_archive_sha256": "90b4e5b9898b72d744650524bff92377c367f44bd5fbd09e3148656c080ad907",
+    "release_page": "https://www.python.org/downloads/release/python-31314/",
+    "files_verified": 34,
+    "bits": 64,
+    "processor_architecture": "AMD64",
+    "native_system_machine": "ARM64",
+    "windows_build": 26100,
+    "durable_manifest": "research/fixtures/windows-python-runtime-amd64.json",
+    "durable_manifest_sha256": "6ac0ff5ec0c0b027212b3bbc0bf4303b29fc856152af039c317170a759a0165c"
+  },
+  "runs": [
+    {
+      "kind": "preferences",
+      "path": "research/runtime/windows-python31314-amd64-owned/preferences-v1/result.json",
+      "sha256": "bdf8d745a5a2189034ab4763a7c02d4c266fc4826c639110c238b910329a8a4f",
+      "job_id": "job-probe-c1fc739592ed4840",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "all_owned_namespaces_removed": true,
+      "unchanged_inputs": {
+        "cbus_toolkit/toolkit_preferences_store.py": "833d9d057896cab472b23fdce945d69c01b52849f6a6cd1a146e65d636c00363",
+        "cbus_toolkit/windows_preferences.py": "6a9b9abb6a2945acd11fca52b89ac47a7fcbe26625ce232e58019fceb46a6af6",
+        "cbus_toolkit/toolkit_numeric.py": "10bb51a54321964f80720356fa5b2d09638fe3b0a5108c7379915a22ca0f221b",
+        "cases.py": "a97d9bc186d9d7930af438b0fa79e88ca3dc15c632451e2d10345134606a8551",
+        "runtime.json": "6ac0ff5ec0c0b027212b3bbc0bf4303b29fc856152af039c317170a759a0165c",
+        "cbus_toolkit/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "initial.json": "052944be2ecc59d7bd9b5d35e37e30f0a6a50836e5e11395ccd32d19d97916be"
+      },
+      "archive_sha256": "9b9f780d983a397ab6d54dc506569a96b8ecb4366cf32c89fd0225be02e65d3c"
+    },
+    {
+      "kind": "reset",
+      "path": "research/runtime/windows-python31314-amd64-owned/reset-v1/result.json",
+      "sha256": "255b7fd296be2e21f2ad3806c7b3830e69639319b7c98ed0ac62f93bc9fbb81e",
+      "job_id": "job-probe-0c163931dbef4862",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "all_owned_namespaces_removed": true,
+      "unchanged_inputs": {
+        "cbus_toolkit/toolkit_preferences_reset.py": "7619bbe9e590eff202ff1a5cbd6c1825817df8ca15fa18dbe240caee5c3ff6c0",
+        "cbus_toolkit/windows_preferences_reset.py": "d157d7e19586ec564dcc62feadbea4dbdfc82171fb2afe5cbbbb503b8d2858ea",
+        "cases.py": "126a158755c56912619d05920e113be4edc4872a34e20f3f410f92081549e6f1",
+        "runtime.json": "6ac0ff5ec0c0b027212b3bbc0bf4303b29fc856152af039c317170a759a0165c",
+        "cbus_toolkit/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "archive_sha256": "848bf1f5249f8d8999d556c9b74d36e51f4d342f6e5aeeab66fbddf54c7c72f9"
+    }
+  ],
+  "runtime_report": {
+    "path": "research/runtime/windows-python31314-amd64-owned/compatibility-report.json",
+    "sha256": "ac6bb1820ba5b273e2cb01f09e1b46df6fd6cf3bb7d65decd3d3a9e971e238ca"
+  },
+  "harness_hashes": {
+    "research/runtime/windows-python31314-amd64-owned/download.py": "c88863db13f8dc52ef4a83722477ed6dd4125ca9c5ea861bfac38db28c55c919",
+    "research/runtime/windows-python31314-amd64-owned/stage.py": "0fd5721cb60f31668ab229b8ea2e72a34a4ac6522c433b86344cf90b76a54474",
+    "research/runtime/windows-python31314-amd64-owned/run_adapters.py": "0b74bdc9a0f265b2997c528770c777232572568e80a9f3885564ed085ac65b1c"
+  },
+  "conclusion": "Both adapters pass their existing full native cases under64-bit Python. The direct HKCU0x80000001 path in the reset adapter succeeds; no predefined-handle defect reproduced and no production patch justified.",
+  "all21_owned_namespaces_removed": true,
+  "production_changes": false,
+  "default_public_gateway_changed": false,
+  "existing_x86_runtime_changed": false,
+  "frozen_full_snapshot_changed": false,
+  "limits": [
+    "AMD64 process under Windows ARM64 emulation; not a separate native AMD64 hardware run",
+    "Current explicit32-bit registry view remains unchanged",
+    "Raw preference cases contain a historicalx86 textual scope label; actual bitness and pinned runtime identify these64-bit runs",
+    "No runtime-selection change to public test gateways or immutable acceptance snapshots"
+  ],
+  "historical_native_acceptance": {
+    "path": "research/fixtures/toolkit-preferences-expanded-acceptance.json",
+    "sha256": "5867accf1558dbf9d7d56760b6b7e8bdf733a556fda90e752e2a500259879d5e",
+    "scope": "Prior94-test expanded acceptance, preserved unchanged; this fixture adds independent21-case x64 compatibility evidence only"
+  }
+}
