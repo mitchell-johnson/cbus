@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import copy
+import math
 import os
 from pathlib import Path
 import stat
@@ -18,6 +19,15 @@ def options(commands):
                       help='Replay the original-backed cached unit/group projection schema before export')
     mode.add_argument('--native-xml-unit', metavar='//PROJECT/NETWORK/p/UNIT',
                       help='Project one captured native DBGETXML Installation snapshot read-only')
+    parser.add_argument('--columns', nargs='+', default=['all'], metavar='COLUMN',
+                        help='all (default), or selected names: ' + ', '.join(COLUMNS) + '; output follows original order')
+
+
+def live_options(parser):
+    parser.add_argument('unit', metavar='//PROJECT/NETWORK/p/UNIT',
+                        help='Unit selected from one read-only DBGETXML project snapshot')
+    parser.add_argument('--output', required=True, type=Path,
+                        help='New UTF-8 CSV file; existing destinations are never overwritten')
     parser.add_argument('--columns', nargs='+', default=['all'], metavar='COLUMN',
                         help='all (default), or selected names: ' + ', '.join(COLUMNS) + '; output follows original order')
 
@@ -202,6 +212,80 @@ def run(args):
                            cached_projection=args.cached_projection,
                            native_xml_unit=args.native_xml_unit)
     return result, 0
+
+
+def live(args, client_factory, ssl_context):
+    """Acquire one project snapshot through C-Gate and project it read-only."""
+    from .native import NativeDatabase
+    from .toolkit_database_csv_native import (_path, native_xml_reply_text,
+                                               project_native_xml_unit)
+
+    if args.area != 'cgate' or args.action != 'database-csv':
+        raise ValueError('Unsupported live database CSV command')
+    selected = validate_columns(COLUMNS if args.columns == ['all'] else tuple(args.columns))
+    project, _network, _unit = _path(args.unit)
+    if type(args.host) is not str or not args.host:
+        raise ValueError('C-Gate host is required')
+    if type(args.tls) is not bool:
+        raise ValueError('TLS must be an explicit boolean')
+    port = (20123 if args.tls else 20023) if args.port is None else args.port
+    if type(port) is not int or not 1 <= port <= 65535:
+        raise ValueError('C-Gate port must be in 1..65535')
+    if type(args.timeout) not in (int, float) or not math.isfinite(args.timeout) or args.timeout <= 0:
+        raise ValueError('C-Gate timeout must be positive and finite')
+    output = Path(args.output)
+    if output.exists():
+        raise FileExistsError('Output already exists: ' + str(output))
+
+    with client_factory(args.host, port, timeout=args.timeout, ssl_context=ssl_context) as client:
+        reply = NativeDatabase(client).get('//' + project, xml=True)
+        xml = native_xml_reply_text(reply)
+        projection = project_native_xml_unit(xml, args.unit, columns=selected)
+    if not projection.complete or projection.report is None:
+        raise ValueError('Native XML projection stopped: ' + str(projection.stop_reason))
+
+    descriptor = None
+    confirmed = 0
+    primary = None
+    payload = memoryview(projection.report.utf8_bytes)
+    try:
+        descriptor = os.open(output, os.O_WRONLY | os.O_CREAT | os.O_EXCL |
+                             getattr(os, 'O_BINARY', 0), 0o666)
+        while confirmed < len(payload):
+            remaining = payload[confirmed:]
+            written = os.write(descriptor, remaining)
+            if type(written) is not int or not 0 < written <= len(remaining):
+                raise OSError('Output writer returned an invalid or zero byte count')
+            confirmed += written
+        os.fsync(descriptor)
+        closing, descriptor = descriptor, None
+        os.close(closing)
+    except BaseException as error:
+        primary = error
+    finally:
+        if descriptor is not None:
+            closing, descriptor = descriptor, None
+            try:
+                os.close(closing)
+            except BaseException as cleanup:
+                if primary is None:
+                    primary = cleanup
+                else:
+                    try:
+                        primary.database_csv_cleanup_errors = tuple(
+                            getattr(primary, 'database_csv_cleanup_errors', ())) + (cleanup,)
+                    except BaseException:
+                        pass
+    if primary is not None:
+        raise primary
+    return {
+        'format': 'cbus-toolkit-database-live-csv-v1', 'complete': True,
+        'input_mode': 'live_native_xml', 'database_command': 'DBGETXML //' + project,
+        'network_io_performed': True, 'physical_device_accessed': False,
+        'native_database_mutated': False, 'output': str(output),
+        'output_bytes_confirmed': confirmed, 'projection': projection.as_dict(),
+        'report': projection.report.as_dict(),
+    }, 0
 
 
 def error_payload(error, args):

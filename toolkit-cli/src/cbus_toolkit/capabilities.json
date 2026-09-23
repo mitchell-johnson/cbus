@@ -720,6 +720,7 @@
       "id": "toolkit-database-report-export",
       "status": "in_progress",
       "evidence": [
+        "src/cbus_toolkit/cli.py",
         "src/cbus_toolkit/toolkit_database_csv.py",
         "src/cbus_toolkit/toolkit_database_csv_cli.py",
         "src/cbus_toolkit/toolkit_database_csv_projection.py",
@@ -735,9 +736,10 @@
         "research/experiments/2026-09-24/csv-native4-analysis.json",
         "research/experiments/2026-09-24/csv-replay-complete.json",
         "research/experiments/2026-09-24/csv-cached-projection-review.json",
-        "research/experiments/2026-09-24/csv-native-xml-projection-review.json"
+        "research/experiments/2026-09-24/csv-native-xml-projection-review.json",
+        "research/experiments/2026-09-24/csv-live-cgate-review.json"
       ],
-      "limits": "Explicit captured-report values to original CSV rows and exclusive portable UTF-8 file export have a historical23-test Python3.13/3.10 checkpoint, each including88 fresh original-instruction comparisons. The current33-test host set adds the strict cached-object projector, admitted native XML adapter and public CLI modes. All12 original cached-getter/class pilot cases are covered. Three unchanged native archives project read-only: RELAY4 Area12, RELAY4 existing unused Area255 and generic nil. Missing Area13 is rejected before output because original equivalence requires mutation/save. The later backend research completed8 original cases and4 native database captures. Native reads preserve full21-parameter relay state and whole-project XML, agree across30 literal path/OID queries and verify cleanup with no CNI connections. A bounded replay drove all4 fixtures through27,661 approved original instruction entries while verifying473 historical native inputs. Live C-Gate snapshot acquisition, guarded missing-Area-group mutation/save, association construction, arbitrary unit profiles, selection preferences, native Windows encoding and physical behavior remain outstanding."
+      "limits": "Explicit captured-report values to original CSV rows and exclusive portable UTF-8 file export have a historical23-test Python3.13/3.10 checkpoint, each including88 fresh original-instruction comparisons. The current36-test host set adds the strict cached-object projector, admitted native XML adapter and file/live public CLI modes. All12 original cached-getter/class pilot cases are covered. Three unchanged native archives project read-only: RELAY4 Area12, RELAY4 existing unused Area255 and generic nil. The live command obtains one bounded project snapshot through DBGETXML, accepts native multiline framing and performs no physical access. Missing Area13 is rejected before output because original equivalence requires mutation/save. The later backend research completed8 original cases and4 native database captures. Native reads preserve full21-parameter relay state and whole-project XML, agree across30 literal path/OID queries and verify cleanup with no CNI connections. A bounded replay drove all4 fixtures through27,661 approved original instruction entries while verifying473 historical native inputs. Guarded missing-Area-group mutation/save, association construction, arbitrary unit profiles, selection preferences, native Windows encoding and physical behavior remain outstanding."
     },
     {
       "id": "thermostat-configuration",

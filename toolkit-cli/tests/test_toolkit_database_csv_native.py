@@ -1,10 +1,12 @@
 """Native C-Gate XML adapter tests for database CSV projection."""
 import unittest
 import xml.etree.ElementTree as ET
+from types import SimpleNamespace
 
 from cbus_toolkit.toolkit_database_csv import COLUMNS
 from cbus_toolkit.toolkit_database_csv_native import (
     loads_native_xml_projection,
+    native_xml_reply_text,
     project_native_xml_unit,
 )
 
@@ -93,6 +95,16 @@ class NativeXMLCSVProjectionTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             loads_native_xml_projection(b'<!DOCTYPE x><Installation/>',
                                         '//CSVTEST/254/p/4', columns=COLUMNS)
+
+    def test_native_reply_keeps_statusless_multiline_xml_payload(self):
+        reply = SimpleNamespace(lines=(
+            '343-Begin XML snippet', '347-<?xml version="1.0"?>',
+            '<Installation>', '<Project/>', '</Installation>', '344 End XML snippet'))
+        self.assertEqual(native_xml_reply_text(reply),
+                         '<?xml version="1.0"?>\n<Installation>\n<Project/>\n</Installation>')
+        with self.assertRaises(ValueError):
+            native_xml_reply_text(SimpleNamespace(lines=('343-Begin XML snippet',
+                '347-<Installation>', '342 unexpected', '344 End XML snippet')))
 
 
 if __name__ == '__main__':

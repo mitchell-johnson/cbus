@@ -12,6 +12,7 @@ from cbus_toolkit.toolkit_database_csv import COLUMNS
 from tests.test_toolkit_database_csv import captured, unit
 from tests.test_toolkit_database_csv_native import native_xml
 from tests.test_toolkit_database_csv_projection import projection_input
+from tests.test_cgate import peer
 
 
 class DatabaseCSVCLITests(unittest.TestCase):
@@ -97,6 +98,43 @@ class DatabaseCSVCLITests(unittest.TestCase):
             self.assertEqual(evidence['stage'], 'project_native_xml_unit')
             self.assertFalse(evidence['output_create_attempted'])
             self.assertFalse(output.exists())
+
+    def test_live_cgate_snapshot_projects_without_physical_access(self):
+        with tempfile.TemporaryDirectory() as folder:
+            output = Path(folder) / 'live.csv'
+            xml_lines = native_xml().replace('><', '>\n<').splitlines()
+            response = (b'[1] 343-Begin XML snippet\r\n[1] 347-' + xml_lines[0].encode() + b'\r\n' +
+                        b''.join(b'[1] ' + line.encode() + b'\r\n' for line in xml_lines[1:]) +
+                        b'[1] 344 End XML snippet\r\n')
+            with peer([[response]]) as ((host, port), sent):
+                out, err = io.StringIO(), io.StringIO()
+                with redirect_stdout(out), redirect_stderr(err):
+                    code = cli.main(['cgate', '--host', host, '--port', str(port), 'database-csv',
+                                     '//CSVTEST/254/p/4', '--output', str(output),
+                                     '--columns', 'area', 'address'])
+            self.assertEqual(code, 0, err.getvalue())
+            result = json.loads(out.getvalue())
+            self.assertEqual(result['database_command'], 'DBGETXML //CSVTEST')
+            self.assertFalse(result['physical_device_accessed'])
+            self.assertFalse(result['native_database_mutated'])
+            self.assertEqual(output.read_bytes(), b'Unit Address,Area,\r\n4,Group12,\r\n\r\n')
+            self.assertEqual(sent, [b'[1] DBGETXML //CSVTEST\r\n'])
+
+    def test_live_cgate_missing_area_stops_before_output(self):
+        with tempfile.TemporaryDirectory() as folder:
+            output = Path(folder) / 'live.csv'
+            response = (b'[1] 343-Begin XML snippet\r\n[1] 347-' +
+                        native_xml(area=13, missing=(13,)).encode() +
+                        b'\r\n[1] 344 End XML snippet\r\n')
+            with peer([[response]]) as ((host, port), sent):
+                out, err = io.StringIO(), io.StringIO()
+                with redirect_stdout(out), redirect_stderr(err):
+                    code = cli.main(['cgate', '--host', host, '--port', str(port), 'database-csv',
+                                     '//CSVTEST/254/p/4', '--output', str(output)])
+            self.assertEqual(code, 1)
+            self.assertIn('unperformed database mutation', json.loads(err.getvalue())['error'])
+            self.assertFalse(output.exists())
+            self.assertEqual(sent, [b'[1] DBGETXML //CSVTEST\r\n'])
 
     def test_columns_invalid_before_input_io_and_capture_invalid_before_output_creation(self):
         for columns in (['all', 'address'], ['address', 'address'], ['unknown']):

@@ -20,6 +20,31 @@ from .toolkit_database_csv_projection import (
 PROFILE = 'cbus-toolkit-database-native-xml-projection-v1'
 
 
+def native_xml_reply_text(reply):
+    """Extract all XML payload lines from a native DBGETXML response."""
+    lines = getattr(reply, 'lines', None)
+    if not isinstance(lines, (tuple, list)) or any(type(line) is not str for line in lines):
+        raise ValueError('Native response does not expose bounded text lines')
+    payload = []
+    started = False
+    for line in lines:
+        match = re.fullmatch(r'(?:\[[^]\r\n]+\]\s*)?([0-9]{3})[- ](.*)', line)
+        if match is not None:
+            code = int(match[1])
+            if code == 347:
+                started = True
+                payload.append(match[2])
+            elif code == 344 and started:
+                break
+            elif started:
+                raise ValueError('Native XML response contains an unexpected status line')
+        elif started:
+            payload.append(line)
+    if not payload:
+        raise ValueError('Native response does not contain an XML snippet')
+    return '\n'.join(payload)
+
+
 def _children(parent, name):
     return [node for node in parent.childNodes
             if node.nodeType == Node.ELEMENT_NODE and node.tagName == name]

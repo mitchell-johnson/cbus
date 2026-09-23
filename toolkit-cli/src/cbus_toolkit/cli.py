@@ -1154,6 +1154,10 @@ def build_parser():
     schedule_options(schedule_parser)
     compose_parser = cgops.add_parser("thermostat-schedule-compose", help="Preview or compose thermostat scheduling from a closed database unit")
     compose_options(compose_parser)
+    from .toolkit_database_csv_cli import live_options as database_csv_live_options
+    database_csv_live_parser = cgops.add_parser(
+        "database-csv", help="Export one admitted unit from a read-only live C-Gate database snapshot")
+    database_csv_live_options(database_csv_live_parser)
     from .edlt_global_cli import options as global_options
     global_parser = cgops.add_parser("edlt-global", help="Copy selected eDLT categories to existing closed database units")
     global_parser.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
@@ -1993,6 +1997,9 @@ def _cgate(args):
     if args.action in ("thermostat-schedule-levels", "thermostat-schedule-compose"):
         from .thermostat_schedule_cli import native as schedule_native
         return schedule_native(args, CGateClient, context)
+    if args.action == "database-csv":
+        from .toolkit_database_csv_cli import live as database_csv_live
+        return database_csv_live(args, CGateClient, context)
     if args.action == "edlt-scene-broadcast":
         from .edlt_scene_live_cli import broadcast
         return broadcast(args, CGateClient, context)
