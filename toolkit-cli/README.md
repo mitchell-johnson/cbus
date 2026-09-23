@@ -1375,6 +1375,16 @@ names. Networks must already exist and be routable. A skipped network produces
 a nonzero exit status and the native import summary. Export refuses to replace
 an existing file.
 
+## Rust C-Gate model
+
+The sibling `rust/cbus-cgate` crate and `cgate-mock` executable recognize every
+command in the supplied C-Gate 3.4 manual and bytecode command registry: 224
+public headings, 268 registered subcommands and 431 unique command paths after
+overlap. Core Toolkit paths have dedicated native-shaped state models; the
+remaining application, DALI and private families have deterministic stateful
+emulation. The [command coverage record](docs/rust-cgate-command-coverage.md)
+lists the sources, behavior tiers, tests and physical-hardware boundary.
+
 ## PCI simulator
 
 ```sh

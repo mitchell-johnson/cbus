@@ -6,9 +6,11 @@
 //! continues it, commands carry `[tag]` prefixes so asynchronous events
 //! cannot complete a command, and no command is retried automatically.
 //!
-//! This crate owns no sockets and talks to no hardware. It models project,
-//! network and unit lifecycle plus the application commands the Python CLI
-//! typed wrappers use, on top of `cbus-protocol` level validation. The
+//! This crate owns no sockets and talks to no hardware. It dispatches every
+//! public-manual and bytecode-registered C-Gate 3.4 command, with detailed
+//! project/network/unit lifecycle plus deterministic stateful models for the
+//! remaining application and private command families. It builds on
+//! `cbus-protocol` level validation. The
 //! access-level matrix reproduces the observed native roles documented in
 //! `toolkit-cli/docs/implementation-status.md`: a default `Program`
 //! interface grants DB/PROJECT/NET but denies `PP` programming sessions
@@ -18,6 +20,7 @@
 use std::collections::{HashMap, VecDeque};
 use std::path::PathBuf;
 
+pub mod manual;
 pub mod unitspec;
 
 /// C-Gate service-ready greeting prefix.
@@ -422,9 +425,9 @@ fn dequote_value(raw: &str) -> String {
 }
 /// Status codes that may prefix intermediate reply lines in native
 /// multi-status envelopes (calculator `134`, cached-property `300`,
-/// parameter `315`, database `342`/`233`, snippet `343`/`347`, PINGU `302`,
-/// multiplicity `120`).
-const ENVELOPE_CODES: [u16; 9] = [120, 134, 233, 300, 302, 315, 342, 343, 347];
+/// parameter `315`, database `342`/`233`, snippet/JSON `343`/`345`/`346`/`347`,
+/// PINGU `302`, multiplicity `120`).
+const ENVELOPE_CODES: [u16; 11] = [120, 134, 233, 300, 302, 315, 342, 343, 345, 346, 347];
 
 /// True when a reply line already carries a native multi-status envelope.
 ///
@@ -625,6 +628,22 @@ pub struct Server {
     /// Parsed specifications by unit type (`None` = absent/unreadable,
     /// cached so failing lookups are not re-parsed per command).
     spec_cache: HashMap<String, Option<Vec<unitspec::SpecParam>>>,
+    /// Last successfully encoded command for application-family commands.
+    application_state: HashMap<String, String>,
+    /// Mutable CONFIG values (global keys and object-qualified keys).
+    config_values: HashMap<String, String>,
+    /// General advisory locks (`LOCK`/`UNLOCK`), separate from PP locks.
+    advisory_locks: std::collections::HashSet<String>,
+    /// Human-readable label attached by `SESSION_ID TAG`.
+    session_tag: Option<String>,
+    /// Named scene snapshots recorded by `SCENE RECORD`.
+    scene_snapshots: HashMap<String, Vec<(String, u8)>>,
+    /// Two-phase shutdown state used by `SHUTDOWN`/`CONFIRM`.
+    shutdown_pending: bool,
+    /// Named in-memory database snapshots used by `DBSAVE`/`DBLOAD`.
+    database_files: HashMap<String, Project>,
+    /// Server-side files addressed by the private `FILE` command family.
+    file_store: HashMap<String, Vec<u8>>,
 }
 
 impl Server {
@@ -646,6 +665,14 @@ impl Server {
             sessions: HashMap::new(),
             unitspec_dir: None,
             spec_cache: HashMap::new(),
+            application_state: HashMap::new(),
+            config_values: HashMap::new(),
+            advisory_locks: std::collections::HashSet::new(),
+            session_tag: None,
+            scene_snapshots: HashMap::new(),
+            shutdown_pending: false,
+            database_files: HashMap::new(),
+            file_store: HashMap::new(),
         }
     }
 
@@ -759,6 +786,9 @@ impl Server {
         if words.is_empty() {
             return err(&cmd.tag, status::BAD_REQUEST, "400 Empty command");
         }
+        if let Some(response) = self.handle_manual_command(&cmd.tag, &words, &cmd.body) {
+            return response;
+        }
         match upper.as_str() {
             _ if eq_verb(&upper, "NOOP") => ok(&cmd.tag, vec![], "200 OK"),
             _ if eq_verb(&upper, "GET CGATE VERSION") => ok(
@@ -769,7 +799,7 @@ impl Server {
             _ if starts_with(&upper, "PROJECT LIST") => self.project_list(&cmd.tag),
             _ if starts_with(&upper, "PROJECT NEW") => self.project_new(&cmd.tag, &words),
             _ if starts_with(&upper, "PROJECT USE") => self.project_use(&cmd.tag, &words),
-            _ if starts_with(&upper, "PROJECT LOAD") => self.project_use(&cmd.tag, &words),
+            _ if starts_with(&upper, "PROJECT LOAD") => self.project_load(&cmd.tag, &words),
             _ if starts_with(&upper, "PROJECT CLOSE") => self.project_close(&cmd.tag),
             _ if starts_with(&upper, "PROJECT SAVE") => self.project_save(&cmd.tag, &words),
             _ if starts_with(&upper, "PROJECT DELETE") => self.project_delete(&cmd.tag, &words),
@@ -914,6 +944,13 @@ impl Server {
     }
 
     fn project_use(&mut self, tag: &str, words: &[&str]) -> Response {
+        if words.len() == 2 {
+            return if self.current.is_some() {
+                ok(tag, vec![], "200 OK")
+            } else {
+                err(tag, status::NOT_FOUND, "404 No project selected")
+            };
+        }
         if words.len() != 3 {
             // Names the invoked verb so the PROJECT LOAD alias does not
             // leak "PROJECT USE" into diagnostics.
@@ -931,6 +968,26 @@ impl Server {
             return err(tag, status::NOT_FOUND, "404 Project not found");
         }
         self.current = Some(name.to_string());
+        ok(tag, vec![], "200 OK")
+    }
+
+    fn project_load(&mut self, tag: &str, words: &[&str]) -> Response {
+        if words.len() <= 3 {
+            return self.project_use(tag, words);
+        }
+        if words.len() != 4 || !valid_name(words[2]) || !valid_target(words[3]) {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 PROJECT LOAD takes an optional project and server file",
+            );
+        }
+        let Some(mut project) = self.database_files.get(words[3]).cloned() else {
+            return err(tag, status::NOT_FOUND, "404 Project file not found");
+        };
+        project.name = words[2].to_string();
+        self.projects.insert(words[2].to_string(), project);
+        self.current = Some(words[2].to_string());
         ok(tag, vec![], "200 OK")
     }
 
@@ -958,17 +1015,24 @@ impl Server {
     }
 
     fn project_delete(&mut self, tag: &str, words: &[&str]) -> Response {
-        if words.len() != 3 {
+        if !(2..=3).contains(&words.len()) {
             return err(
                 tag,
                 status::BAD_REQUEST,
-                "400 PROJECT DELETE requires a name",
+                "400 PROJECT DELETE takes one optional name",
             );
         }
-        if self.projects.remove(words[2]).is_none() {
+        let name = words
+            .get(2)
+            .map(|name| (*name).to_string())
+            .or_else(|| self.current.clone());
+        let Some(name) = name else {
+            return err(tag, status::NOT_FOUND, "404 No project selected");
+        };
+        if self.projects.remove(&name).is_none() {
             return err(tag, status::NOT_FOUND, "404 Project not found");
         }
-        if self.current.as_deref() == Some(words[2]) {
+        if self.current.as_deref() == Some(&name) {
             self.current = None;
         }
         ok(tag, vec![], "200 OK")
@@ -1131,20 +1195,23 @@ impl Server {
     /// shape is unmodeled, so this answers project names exactly like
     /// `PROJECT LIST` (documented approximation).
     fn project_dir(&self, tag: &str, words: &[&str]) -> Response {
-        if words.len() != 2 {
+        if words.len() > 3
+            || words
+                .get(2)
+                .is_some_and(|word| !word.eq_ignore_ascii_case("ALL"))
+        {
             return err(
                 tag,
                 status::BAD_REQUEST,
-                "400 PROJECT DIR takes no arguments",
+                "400 PROJECT DIR takes only optional ALL",
             );
         }
         self.project_list(tag)
     }
 
-    /// Native `PROJECT ARCHIVE name server-path`: the mock keeps no
-    /// server files, so archiving is refused loudly instead of reporting
-    /// a backup that does not exist.
-    fn project_archive(&self, tag: &str, words: &[&str]) -> Response {
+    /// Native `PROJECT ARCHIVE name server-path`, backed by the model's
+    /// process-local database snapshot store.
+    fn project_archive(&mut self, tag: &str, words: &[&str]) -> Response {
         if words.len() != 4 || !valid_name(words[2]) || !valid_target(words[3]) {
             return err(
                 tag,
@@ -1152,16 +1219,16 @@ impl Server {
                 "400 PROJECT ARCHIVE requires a project and server path",
             );
         }
-        err(
-            tag,
-            status::BAD_REQUEST,
-            "400 Server file archives are not modeled by this mock",
-        )
+        let Some(project) = self.projects.get(words[2]).cloned() else {
+            return err(tag, status::NOT_FOUND, "404 Project not found");
+        };
+        self.database_files.insert(words[3].to_string(), project);
+        ok(tag, vec![], "200 OK")
     }
 
-    /// Native `PROJECT RESTORE name server-path`: nothing was ever
-    /// archived by this mock, so there is nothing to restore.
-    fn project_restore(&self, tag: &str, words: &[&str]) -> Response {
+    /// Native `PROJECT RESTORE name server-path` from the process-local
+    /// archive store.
+    fn project_restore(&mut self, tag: &str, words: &[&str]) -> Response {
         if words.len() != 4 || !valid_name(words[2]) || !valid_target(words[3]) {
             return err(
                 tag,
@@ -1169,7 +1236,15 @@ impl Server {
                 "400 PROJECT RESTORE requires a project and server path",
             );
         }
-        err(tag, status::NOT_FOUND, "404 No such archived project")
+        if self.projects.contains_key(words[2]) {
+            return err(tag, status::CONFLICT_EXISTS, "409 Project already exists");
+        }
+        let Some(mut project) = self.database_files.get(words[3]).cloned() else {
+            return err(tag, status::NOT_FOUND, "404 No such archived project");
+        };
+        project.name = words[2].to_string();
+        self.projects.insert(words[2].to_string(), project);
+        ok(tag, vec![], "200 OK")
     }
 
     /// Native `REPOSITORY LIST`: this mock models no server-side project
@@ -4568,11 +4643,8 @@ mod tests {
         assert_eq!(s.handle("[2] PROJECT DIR").status, 200);
         assert_eq!(s.handle("[3] PROJECT LOAD TEST").status, 200);
         assert_eq!(s.handle("[4] PROJECT LOAD NOPE").status, 404);
-        let load_arity = s.handle("[4b] PROJECT LOAD");
-        assert_eq!(load_arity.status, 400);
-        assert!(load_arity
-            .final_text
-            .contains("PROJECT LOAD requires a name"));
+        // Manual 4.5.162 permits the current project to be implicit.
+        assert_eq!(s.handle("[4b] PROJECT LOAD").status, 200);
         // State exists before the rename so key migration is exercised.
         assert_eq!(
             s.handle("[4b] DBCREATENET 254 Local Cni 127.0.0.1:10001")
@@ -4631,9 +4703,12 @@ mod tests {
         );
         let source = s.handle("[7i] GET //TEST2/254/p/20 UnitName");
         assert!(source.final_text.contains("UnitName=LOUNGE"));
-        // Server files are not modeled: archive refuses, restore is empty.
-        assert_eq!(s.handle("[8] PROJECT ARCHIVE TEST2 /tmp/x.zip").status, 400);
-        assert_eq!(s.handle("[9] PROJECT RESTORE TEST2 /tmp/x.zip").status, 404);
+        // Process-local project archives round-trip under a new name.
+        assert_eq!(s.handle("[8] PROJECT ARCHIVE TEST2 /tmp/x.zip").status, 200);
+        assert_eq!(s.handle("[9] PROJECT RESTORE TEST4 /tmp/x.zip").status, 200);
+        assert_eq!(s.handle("[9b] PROJECT USE TEST4").status, 200);
+        assert_eq!(s.handle("[9c] GET //TEST4/254/p/20 UnitName").status, 300);
+        assert_eq!(s.handle("[9d] PROJECT USE TEST2").status, 200);
         // The mock models no server repositories: exact empty 124 reply.
         let repos = s.handle("[10] REPOSITORY LIST");
         assert_eq!(repos.status, 124);
