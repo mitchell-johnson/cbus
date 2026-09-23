@@ -1,6 +1,6 @@
 # Thermostat scheduling workflow
 
-The `thermostat-scheduling` commands operate on resolved thermostat state supplied as JSON. They implement the selection predicates, ordered On/Off/Override level creation, and caller-owned save-lock release. Native unit loading and the complete settings workflow remain outstanding.
+The `thermostat-scheduling` commands operate on resolved thermostat state supplied as JSON. They implement the selection predicates, ordered On/Off/Override level creation, and caller-owned save-lock release. The original unit-load rules are now captured separately; production composition with native loading/saving and the complete settings workflow remains outstanding.
 
 ```json
 {"groups":[{"identity":"schedule","address":12,"levels":[]}],"roles":{"on":"schedule","off":null,"override":null},"enabled":true}
@@ -29,3 +29,5 @@ The new original-code capture executed **1,132,016 instrumented instruction/prov
 The first attempt stopped at an omitted trailing return instruction in the research harness. That failed report remains retained; the revised harness admits two disassembly-verified trailing returns without changing the original instruction bytes, providers or case hypotheses. [Correction record](../research/experiments/2026-09-24/thermostat-outer/preparation-note.json).
 
 This original execution uses resolved object references and declared providers for UI requests, object allocation and persistence. It does not prove cold unit loading, application/group factories, actual VCL dispatch, Delphi exception unwinding or physical-device behavior. The separate [native group scheduling adapter](native-thermostat-schedule.md) has its own backup/save/reload evidence. Full thermostat programming still requires connecting these behaviors through the original load/save workflow and verifying it independently.
+
+The subsequent [programmable-unit load capture](../research/experiments/2026-09-24/thermostat-unit-load-original.json) executes the full derived `AfterLoadProgrammingInformation` body and 26 reviewed helper methods for twelve frozen states. It confirms that Evap values above 1 normalize to 0, NonEvap values above 1 normalize to 1, and remote scheduling enable is then overwritten by their logical OR. It also confirms application203 creation even while disabled, existing group255 reuse without disabled creation, shared enabled-role identity, ordered missing-group creation and capacity refusal. Across twelve invocations it accepted 71,832 original instruction entries with all states matching; the network-denied child made no native, VM or physical CNI call. Inherited loading, original constructors, actual storage callbacks and native save composition remain outside that evidence.
