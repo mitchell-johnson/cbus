@@ -21,15 +21,21 @@ def scalar(parent, name, value):
 
 def native_xml(*, unit_type='RELAY4', area=12, missing=(), extra_unit=False,
                keye_groups=(1, 2, 255, 255, 255, 255, 255, 255, 255),
-               din_groups=None, with_oids=True):
+               din_groups=None,
+               sensor_groups=(1, 0, 4, 2, 255, 255, 255, 255), with_oids=True):
     keye = unit_type in ('KEYE1', 'KEYE2', 'KEYE3')
     din = unit_type in ('DIMDN8', 'RELDN12')
+    sensor = unit_type == 'SENPIROA'
     if din and din_groups is None:
         din_groups = ((*range(1, 9), *(255 for _ in range(8)))
                       if unit_type == 'DIMDN8'
                       else (*range(1, 14), 255, 255, 255))
-    group_cache_addresses = (tuple(dict.fromkeys(din_groups)) if din else
-                             (1, 2, 3, 4, 5, 6, 7, 8, 12, 13, 255))
+    if din:
+        group_cache_addresses = tuple(dict.fromkeys(din_groups))
+    elif sensor:
+        group_cache_addresses = tuple(dict.fromkeys(sensor_groups))
+    else:
+        group_cache_addresses = (1, 2, 3, 4, 5, 6, 7, 8, 12, 13, 255)
     root = ET.Element('Installation')
     project = ET.SubElement(root, 'Project'); scalar(project, 'Address', 'CSVTEST')
     network = ET.SubElement(project, 'Network'); scalar(network, 'Address', 254)
@@ -51,10 +57,12 @@ def native_xml(*, unit_type='RELAY4', area=12, missing=(), extra_unit=False,
     for name, value in (('TagName', 'OwnedUnit'), ('Address', 4),
                         ('UnitType', unit_type), ('UnitName', 'NativeUnit'),
                         ('SerialNumber', '1.2.3'),
-                        ('FirmwareVersion', '2.5.00' if keye else ('2.7.00' if din else '4.4')),
+                        ('FirmwareVersion', '2.5.00' if keye else
+                            ('2.7.00' if din else ('2.4.00' if sensor else '4.4'))),
                         ('CatalogNumber', '5031NMML' if keye else
                             ('L5508D1A' if unit_type == 'DIMDN8' else
-                             ('L5512RVF' if unit_type == 'RELDN12' else 'OWNED')))):
+                             ('L5512RVF' if unit_type == 'RELDN12' else
+                              ('5750WPL' if sensor else 'OWNED'))))):
         scalar(unit, name, value)
     if unit_type == 'RELAY4':
         for name, value in (('Application', '0x38 0xff'),
@@ -72,6 +80,12 @@ def native_xml(*, unit_type='RELAY4', area=12, missing=(), extra_unit=False,
         for name, value in (('Application', '0x38 0xff'),
                             ('AreaGroupAddress', '0xff'),
                             ('GroupAddress', ' '.join(hex(value) for value in din_groups))):
+            ET.SubElement(unit, 'PP', Name=name, Value=value)
+    elif sensor:
+        for name, value in (('Application', '0x38 0xff'),
+                            ('AreaGroupAddress', '0xff'),
+                            ('SecondApplicationBlocks', '0'),
+                            ('GroupAddress', ' '.join(hex(value) for value in sensor_groups))):
             ET.SubElement(unit, 'PP', Name=name, Value=value)
     if extra_unit:
         other = ET.SubElement(network, 'Unit'); scalar(other, 'Address', 5)
@@ -140,6 +154,27 @@ class NativeXMLCSVProjectionTests(unittest.TestCase):
                                  ['Group' + str(index) for index in range(1, interactions + 1)])
                 self.assertEqual(fields[10 + interactions:26],
                                  ['<N/A>'] * (16 - interactions))
+
+    def test_senpiroa_profile_uses_eight_ordered_interaction_slots(self):
+        text = native_xml(unit_type='SENPIROA', with_oids=False)
+        outcome = project_native_xml_unit(text, '//CSVTEST/254/p/4', columns=COLUMNS)
+        self.assertEqual(outcome.cached.selected_class, 'TST7SENPIROA')
+        self.assertEqual(len(outcome.cached.unit.group_identities), 8)
+        fields = outcome.report.rows[1].split(',')
+        self.assertEqual(fields[10:18],
+                         ['Group1', 'Group0', 'Group4', 'Group2', '<Unused>',
+                          '<Unused>', '<Unused>', '<Unused>'])
+        self.assertEqual(fields[18:26], ['<N/A>'] * 8)
+        for old, new, message in (
+                ('Name="Application" Value="0x38 0xff"',
+                 'Name="Application" Value="0x38 0x39"', 'unused secondary'),
+                ('Name="AreaGroupAddress" Value="0xff"',
+                 'Name="AreaGroupAddress" Value="0x1"', 'Area group 255'),
+                ('Name="SecondApplicationBlocks" Value="0"',
+                 'Name="SecondApplicationBlocks" Value="1"', 'unused secondary')):
+            with self.subTest(parameter=old), self.assertRaisesRegex(ValueError, message):
+                project_native_xml_unit(text.replace(old, new),
+                                        '//CSVTEST/254/p/4', columns=COLUMNS)
 
     def test_missing_area_group_requires_unperformed_native_mutation(self):
         with self.assertRaisesRegex(ValueError, 'unperformed database mutation'):

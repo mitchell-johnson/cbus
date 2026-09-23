@@ -1,0 +1,51 @@
+{
+  "original_execution": false,
+  "scope": "bounded .text/.itext PE disassembly with exact MAP symbol annotations; spans may include trailing inline data",
+  "script_sha256": "1ef61a19fd5db4edb4457c3891156efbce84dd95b7b7ac734aae501ad3aeab07",
+  "original_inputs": {
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "/Users/mitchell/source/cbus/toolkit-cli/research/vendor/toolkit/app/CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "methods": [
+    {
+      "start": "0xcf80a0",
+      "end": "0xcf80c4",
+      "symbols": [
+        "CIS_TCBusST7SensorCGateAgent.TCBusST7PIRSensorCGateAgent.AgentLoad"
+      ],
+      "bytes_sha256": "33a56cda921804f80251304886fd5038e66419302a9024c76c6053354c5821ee",
+      "file": "00cf80a0.asm",
+      "file_sha256": "0eb5133b8777e2297fdfedd30946b7cf0e3be3de2ab81548026ed172b0cd6c2d"
+    },
+    {
+      "start": "0xcf4cb8",
+      "end": "0xcf4dac",
+      "symbols": [
+        "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.AgentLoad"
+      ],
+      "bytes_sha256": "4161570ed1f35a0d788eb97c90b51d0ec23610af54edce7edc979f7e5a846a15",
+      "file": "00cf4cb8.asm",
+      "file_sha256": "5be09800b8597cbb39ed507652b55bcb014fb8c46dab303c5b8e8f0f745830b7"
+    },
+    {
+      "start": "0xcb8ad4",
+      "end": "0xcb8b84",
+      "symbols": [
+        "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.LoadDBParametersForLoadGroups"
+      ],
+      "bytes_sha256": "f757c354b264936ea0e8d3e3c7744dd00fdb7fa4ebb0618167deefb939e127db",
+      "file": "00cb8ad4.asm",
+      "file_sha256": "4d4ffe30ee81bdbabf595b2c7688e070eba89833371cfeec4970c44041c0d0c6"
+    },
+    {
+      "start": "0xcb8b84",
+      "end": "0xcb8c44",
+      "symbols": [
+        "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.LoadGroups"
+      ],
+      "bytes_sha256": "c3da804e6c685117639f52cc90af0e0422e59ad9fbb456cf9f02154f501460a1",
+      "file": "00cb8b84.asm",
+      "file_sha256": "88b1b41d82535a879716b6d19a048b11d3c879bd760ab82c9a50e7e93fdba7de"
+    }
+  ]
+}

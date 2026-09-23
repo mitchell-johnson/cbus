@@ -144,6 +144,22 @@ class CachedCSVProjectionTests(unittest.TestCase):
                 self.assertEqual(fields[10 + interactions:26],
                                  ['<N/A>'] * (16 - interactions))
 
+    def test_senpiroa_profile_keeps_eight_ordered_interaction_slots(self):
+        addresses = (1, 0, 4, 2, 255, 255, 255, 255)
+        groups = tuple(group(address) for address in (0, 1, 2, 4, 255))
+        identities = tuple('group-' + str(address) for address in addresses)
+        unit = CachedCSVUnit('sensor-senpiroa', 35, 'Sensor part', 'Sensor unit',
+            'SENPIROA', '5750WPL', '', '2.4.00', 'Lighting', '', identities)
+        outcome = project_cached_csv_unit(unit, group_cache=groups,
+            area_observations=(CSVAreaObservation('255'), CSVAreaObservation('255')),
+            columns=COLUMNS)
+        self.assertEqual(outcome.selected_class, 'TST7SENPIROA')
+        fields = outcome.report.rows[1].split(',')
+        self.assertEqual(fields[10:18],
+                         ['G1', 'G0', 'G4', 'G2', '<Unused>', '<Unused>',
+                          '<Unused>', '<Unused>'])
+        self.assertEqual(fields[18:26], ['<N/A>'] * 8)
+
     def test_reference_moves_between_groups_and_retains_identity(self):
         unit, groups = fixture()
         outcome = project_cached_csv_unit(unit, group_cache=groups,

@@ -25,6 +25,7 @@ PROFILE = 'cbus-toolkit-database-cached-projection-v1'
 _RELAY_FIRMWARE = frozenset(('0', '4.4', '9', '9.1', '10'))
 _KEYE_TYPES = frozenset(('KEYE1', 'KEYE2', 'KEYE3'))
 _DIN_TYPES = {'DIMDN8': 'TDIMDN8', 'RELDN12': 'TRELDN12'}
+_SENSOR_TYPES = {'SENPIROA': 'TST7SENPIROA'}
 _AREA_VALUES = frozenset(('12', '13', '255', 'invalid'))
 _ROOT_FIELDS = frozenset(('format', 'unit', 'group_cache', 'area_observations', 'group_save'))
 _UNIT_FIELDS = frozenset(('identity', 'address', 'part_name', 'tag_name', 'unit_type',
@@ -176,7 +177,9 @@ def _class(unit):
         return 'TKEYEx'
     if kind in _DIN_TYPES and unit.firmware == '2.7.00':
         return _DIN_TYPES[kind]
-    raise ValueError('Cached projection profile supports only the captured generic, RELAY4, KEYE and DIN type/firmware pairs')
+    if kind in _SENSOR_TYPES and unit.firmware == '2.4.00':
+        return _SENSOR_TYPES[kind]
+    raise ValueError('Cached projection profile supports only the captured generic, RELAY4, KEYE, DIN and sensor type/firmware pairs')
 
 
 def _validated_groups(unit, groups):
@@ -214,7 +217,8 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
         raise ValueError('area_observations must be an exact tuple of CSVAreaObservation records')
     if group_save is not None and type(group_save) is not CSVGroupSaveObservation:
         raise ValueError('group_save must be an exact CSVGroupSaveObservation or absent')
-    has_area = selected_class in ('TRELAY4', 'TKEYEx', 'TDIMDN8', 'TRELDN12')
+    has_area = selected_class in (
+        'TRELAY4', 'TKEYEx', 'TDIMDN8', 'TRELDN12', 'TST7SENPIROA')
     if has_area and len(area_observations) != 2:
         raise ValueError('The captured input/output projection requires two ordered Area observations')
     if not has_area and area_observations and len(area_observations) != 2:
