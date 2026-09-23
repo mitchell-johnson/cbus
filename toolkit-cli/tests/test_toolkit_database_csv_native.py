@@ -19,29 +19,44 @@ def scalar(parent, name, value):
     ET.SubElement(parent, name).text = str(value)
 
 
-def native_xml(*, unit_type='RELAY4', area=12, missing=(), extra_unit=False):
+def native_xml(*, unit_type='RELAY4', area=12, missing=(), extra_unit=False,
+               keye_groups=(1, 2, 255, 255, 255, 255, 255, 255, 255), with_oids=True):
     root = ET.Element('Installation')
     project = ET.SubElement(root, 'Project'); scalar(project, 'Address', 'CSVTEST')
     network = ET.SubElement(project, 'Network'); scalar(network, 'Address', 254)
     application = ET.SubElement(network, 'Application')
-    scalar(application, 'OID', oid(20)); scalar(application, 'TagName', 'Lighting'); scalar(application, 'Address', 56)
+    if with_oids:
+        scalar(application, 'OID', oid(20))
+    scalar(application, 'TagName', 'Lighting'); scalar(application, 'Address', 56)
     for address in (1, 2, 3, 4, 5, 6, 7, 8, 12, 13, 255):
         if address in missing:
             continue
         group = ET.SubElement(application, 'Group')
-        scalar(group, 'OID', oid(100 + address)); scalar(group, 'TagName', '<Unused>' if address == 255 else 'Group' + str(address))
+        if with_oids:
+            scalar(group, 'OID', oid(100 + address))
+        scalar(group, 'TagName', '<Unused>' if address == 255 else 'Group' + str(address))
         scalar(group, 'Address', address)
     unit = ET.SubElement(network, 'Unit')
-    for name, value in (('OID', oid(500)), ('TagName', 'OwnedUnit'), ('Address', 4),
+    keye = unit_type in ('KEYE1', 'KEYE2', 'KEYE3')
+    if with_oids:
+        scalar(unit, 'OID', oid(500))
+    for name, value in (('TagName', 'OwnedUnit'), ('Address', 4),
                         ('UnitType', unit_type), ('UnitName', 'NativeUnit'),
-                        ('SerialNumber', '1.2.3'), ('FirmwareVersion', '4.4'),
-                        ('CatalogNumber', 'OWNED')):
+                        ('SerialNumber', '1.2.3'),
+                        ('FirmwareVersion', '2.5.00' if keye else '4.4'),
+                        ('CatalogNumber', '5031NMML' if keye else 'OWNED')):
         scalar(unit, name, value)
     if unit_type == 'RELAY4':
         for name, value in (('Application', '0x38 0xff'),
                             ('AreaGroupAddress', hex(area)),
                             ('GroupAddress', ' '.join(hex(value) for value in
                                 (*range(1, 9), *(255 for _ in range(8)))))):
+            ET.SubElement(unit, 'PP', Name=name, Value=value)
+    elif keye:
+        for name, value in (('Application', '0x38 0xff'),
+                            ('AreaGroupAddress', '0xff'),
+                            ('SecondApplicationBlocks', '0'),
+                            ('GroupAddress', ' '.join(hex(value) for value in keye_groups))):
             ET.SubElement(unit, 'PP', Name=name, Value=value)
     if extra_unit:
         other = ET.SubElement(network, 'Unit'); scalar(other, 'Address', 5)
@@ -70,6 +85,32 @@ class NativeXMLCSVProjectionTests(unittest.TestCase):
         self.assertEqual(generic.cached.selected_class, 'TCBusUnitGeneric')
         self.assertIn(',<Unused>,Group1,Group2,Group3,Group4,Group5,Group6,Group7,Group8,',
                       generic.report.rows[1])
+
+    def test_keye_projects_all_nine_slots_without_collapsing_unused_references(self):
+        outcome = project_native_xml_unit(native_xml(unit_type='KEYE2', with_oids=False),
+                                          '//CSVTEST/254/p/4', columns=COLUMNS)
+        self.assertTrue(outcome.complete)
+        self.assertEqual(outcome.cached.selected_class, 'TKEYEx')
+        self.assertEqual(len(outcome.cached.unit.group_identities), 9)
+        self.assertEqual(outcome.cached.unit.identity, '//CSVTEST/254/p/4')
+        self.assertEqual(outcome.cached.unit.group_identities[2:],
+                         ('//CSVTEST/254/56/255',) * 7)
+        self.assertEqual(outcome.cached.groups[-1].oid, '')
+        fields = outcome.report.rows[1].split(',')
+        self.assertEqual(fields[9:18],
+            ['<Unused>', 'Group1', 'Group2', *('<Unused>' for _ in range(6))])
+        self.assertEqual(fields[18:26], ['<N/A>'] * 8)
+
+    def test_keye_profile_rejects_secondary_and_area_shapes_not_yet_admitted(self):
+        text = native_xml(unit_type='KEYE1')
+        for old, new in (('Name="SecondApplicationBlocks" Value="0"',
+                          'Name="SecondApplicationBlocks" Value="1"'),
+                         ('Name="AreaGroupAddress" Value="0xff"',
+                          'Name="AreaGroupAddress" Value="0xc"')):
+            with self.subTest(new=new):
+                with self.assertRaises(ValueError):
+                    project_native_xml_unit(text.replace(old, new),
+                                            '//CSVTEST/254/p/4', columns=COLUMNS)
 
     def test_missing_area_group_requires_unperformed_native_mutation(self):
         with self.assertRaisesRegex(ValueError, 'unperformed database mutation'):

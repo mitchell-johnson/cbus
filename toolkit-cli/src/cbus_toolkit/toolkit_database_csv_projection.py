@@ -1,9 +1,9 @@
 """Original-backed cached unit projection for Toolkit database CSV rows.
 
 This is the finite cached-object boundary captured from Toolkit 1.18.  It does
-not parse a project or access native storage.  The admitted RELAY4 profile
-replays the two Area getter loads, group lookup/reference changes and optional
-missing-unused-group save before composing the accepted CSV serializer.
+not parse a project or access native storage.  The admitted RELAY4 and KEYE
+profiles replay the two Area getter loads and group lookup/reference changes;
+the RELAY4 profile also models the captured optional missing-unused-group save.
 """
 from __future__ import annotations
 
@@ -23,6 +23,7 @@ from .toolkit_database_csv import (
 
 PROFILE = 'cbus-toolkit-database-cached-projection-v1'
 _RELAY_FIRMWARE = frozenset(('0', '4.4', '9', '9.1', '10'))
+_KEYE_TYPES = frozenset(('KEYE1', 'KEYE2', 'KEYE3'))
 _AREA_VALUES = frozenset(('12', '13', '255', 'invalid'))
 _ROOT_FIELDS = frozenset(('format', 'unit', 'group_cache', 'area_observations', 'group_save'))
 _UNIT_FIELDS = frozenset(('identity', 'address', 'part_name', 'tag_name', 'unit_type',
@@ -51,7 +52,7 @@ class CachedCSVGroup:
         if type(self.address) is not int or not 0 <= self.address <= 255:
             raise ValueError('Group address must be a byte integer')
         _text(self.tag, 'Group tag')
-        _identity(self.oid, 'Group OID token')
+        _text(self.oid, 'Group OID token')
         if (type(self.references) is not tuple
                 or any(type(value) is not str or not value for value in self.references)
                 or len(set(self.references)) != len(self.references)):
@@ -84,9 +85,8 @@ class CachedCSVUnit:
                      'firmware', 'primary', 'secondary'):
             _text(getattr(self, name), name)
         if (type(self.group_identities) is not tuple or len(self.group_identities) > 16
-                or any(type(value) is not str or not value for value in self.group_identities)
-                or len(set(self.group_identities)) != len(self.group_identities)):
-            raise ValueError('Unit groups must be at most sixteen unique identities in an exact tuple')
+                or any(type(value) is not str or not value for value in self.group_identities)):
+            raise ValueError('Unit groups must be at most sixteen nonempty identities in an exact tuple')
 
     def as_dict(self):
         return {'identity': self.identity, 'address': self.address,
@@ -171,7 +171,9 @@ def _class(unit):
         return 'TCBusUnitGeneric'
     if kind == 'RELAY4' and unit.firmware in _RELAY_FIRMWARE:
         return 'TRELAY4' if unit.firmware in ('0', '4.4', '9') else 'TCBusUnitGeneric'
-    raise ValueError('Cached projection profile supports only the captured generic/RELAY4 type and firmware pairs')
+    if kind in _KEYE_TYPES and unit.firmware == '2.5.00':
+        return 'TKEYEx'
+    raise ValueError('Cached projection profile supports only the captured generic, RELAY4 and KEYE type/firmware pairs')
 
 
 def _validated_groups(unit, groups):
@@ -181,9 +183,10 @@ def _validated_groups(unit, groups):
         raise ValueError('group_cache must contain exact CachedCSVGroup records')
     identities = [group.identity for group in groups]
     addresses = [group.address for group in groups]
-    oids = [group.oid for group in groups]
-    if len(set(identities)) != len(groups) or len(set(addresses)) != len(groups) or len(set(oids)) != len(groups):
-        raise ValueError('Cached group identities, addresses and OID tokens must be unique')
+    oids = [group.oid for group in groups if group.oid]
+    if (len(set(identities)) != len(groups) or len(set(addresses)) != len(groups)
+            or len(set(oids)) != len(oids)):
+        raise ValueError('Cached group identities, addresses and nonempty OID tokens must be unique')
     if any(identity not in set(identities) for identity in unit.group_identities):
         raise ValueError('Every unit group identity must resolve in the complete cache')
     if any(unit.identity in group.references for group in groups):
@@ -208,9 +211,10 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
         raise ValueError('area_observations must be an exact tuple of CSVAreaObservation records')
     if group_save is not None and type(group_save) is not CSVGroupSaveObservation:
         raise ValueError('group_save must be an exact CSVGroupSaveObservation or absent')
-    if selected_class == 'TRELAY4' and len(area_observations) != 2:
-        raise ValueError('The captured RELAY4 projection requires two ordered Area observations')
-    if selected_class != 'TRELAY4' and area_observations and len(area_observations) != 2:
+    has_area = selected_class in ('TRELAY4', 'TKEYEx')
+    if has_area and len(area_observations) != 2:
+        raise ValueError('The captured input/output projection requires two ordered Area observations')
+    if not has_area and area_observations and len(area_observations) != 2:
         raise ValueError('Captured generic observations are absent or an ignored pair')
 
     events = [_event('factory_selected', selected_class=selected_class)]
@@ -221,7 +225,7 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
         return CachedCSVProjection(selected_class, False, selected, unit, tuple(current),
             tuple(events), raw_area, area_identity, save_required, None, reason)
 
-    if selected_class == 'TRELAY4':
+    if has_area:
         for index, observation in enumerate(area_observations, 1):
             events.append(_event('area_load', ordinal=index, completed=observation.completed,
                                  raw=observation.raw))

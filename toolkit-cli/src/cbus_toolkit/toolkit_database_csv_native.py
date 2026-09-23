@@ -76,6 +76,15 @@ def _oid(value):
     return value
 
 
+def _optional_oid(parent):
+    rows = _children(parent, 'OID')
+    if not rows:
+        return ''
+    if len(rows) != 1:
+        raise ValueError('Expected at most one native OID field')
+    return _oid(_field(parent, 'OID'))
+
+
 def _path(value):
     if type(value) is not str:
         raise ValueError('Native XML unit path must be text')
@@ -168,10 +177,25 @@ def project_native_xml_unit(text, unit_path, *, columns):
         primary = _one_by_address(network, 'Application', primary_address)
         secondary = '' if secondary_address == 255 else _field(
             _one_by_address(network, 'Application', secondary_address), 'TagName')
-        group_addresses = tuple(value for value in group_values if value != 255)
-        if group_addresses != tuple(range(1, 9)):
-            raise ValueError('Captured native RELAY4 profile requires group addresses 1 through 8')
+        if group_values != (*range(1, 9), *(255 for _ in range(8))):
+            raise ValueError('Captured native RELAY4 profile requires groups 1 through 8 followed by eight unused slots')
+        group_addresses = group_values
         area_address = area_values[0]
+    elif unit_type in ('KEYE1', 'KEYE2', 'KEYE3') and firmware == '2.5.00':
+        app_values = _tokens(_parameter(unit, 'Application'), 'Application', count=2)
+        group_values = _tokens(_parameter(unit, 'GroupAddress'), 'GroupAddress', count=9)
+        area_values = _tokens(_parameter(unit, 'AreaGroupAddress'), 'AreaGroupAddress', count=1)
+        secondary_blocks = _tokens(
+            _parameter(unit, 'SecondApplicationBlocks'), 'SecondApplicationBlocks', count=1)
+        primary_address, secondary_address = app_values
+        if secondary_address != 255 or secondary_blocks != (0,):
+            raise ValueError('Captured native KEYE profile requires an unused secondary application')
+        if area_values != (255,):
+            raise ValueError('Captured native KEYE profile requires Area group 255')
+        primary = _one_by_address(network, 'Application', primary_address)
+        secondary = ''
+        group_addresses = group_values
+        area_address = 255
     elif unit_type == 'OWNED_UNKNOWN' and firmware == '4.4':
         if _children(unit, 'PP'):
             raise ValueError('Captured native generic profile requires no stored PP records')
@@ -182,7 +206,7 @@ def project_native_xml_unit(text, unit_path, *, columns):
         group_addresses = tuple(range(1, 9))
         area_address = None
     else:
-        raise ValueError('Native XML projection supports only captured RELAY4 4.4 and OWNED_UNKNOWN 4.4 profiles')
+        raise ValueError('Native XML projection supports only captured RELAY4 4.4, KEYE1/2/3 2.5.00 and OWNED_UNKNOWN 4.4 profiles')
 
     groups = []
     seen_addresses = set()
@@ -191,8 +215,9 @@ def project_native_xml_unit(text, unit_path, *, columns):
         if address in seen_addresses:
             raise ValueError('Native primary application contains duplicate group addresses')
         seen_addresses.add(address)
-        groups.append(CachedCSVGroup(_oid(_field(node, 'OID')), address,
-                                     _field(node, 'TagName'), _field(node, 'OID')))
+        oid = _optional_oid(node)
+        identity = oid or f'//{project_name}/{network_address}/{primary_address}/{address}'
+        groups.append(CachedCSVGroup(identity, address, _field(node, 'TagName'), oid))
     by_address = {group.address: group for group in groups}
     if any(address not in by_address for address in group_addresses):
         raise ValueError('Native unit group reference is absent from the primary application cache')
@@ -201,7 +226,8 @@ def project_native_xml_unit(text, unit_path, *, columns):
     if area_address is not None and area_address not in (12, 13, 255):
         raise ValueError('Captured native RELAY4 profile supports existing Area12, Area13 or Area255')
     identities = tuple(by_address[address].identity for address in group_addresses)
-    cached_unit = CachedCSVUnit(_oid(_field(unit, 'OID')), unit_address,
+    unit_oid = _optional_oid(unit)
+    cached_unit = CachedCSVUnit(unit_oid or unit_path, unit_address,
         _field(unit, 'UnitName'), _field(unit, 'TagName'), unit_type,
         _field(unit, 'CatalogNumber'), _field(unit, 'SerialNumber'), firmware,
         _field(primary, 'TagName'), secondary, identities)

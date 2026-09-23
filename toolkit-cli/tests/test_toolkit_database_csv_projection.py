@@ -107,6 +107,24 @@ class CachedCSVProjectionTests(unittest.TestCase):
                     self.assertEqual(outcome.rows, (HEADER,))
         self.assertEqual(len(cases), 12)
 
+    def test_keye_preserves_repeated_unused_slots_and_eight_interaction_groups(self):
+        groups = tuple(group(address) for address in (1, 2, 255))
+        unit = CachedCSVUnit('keye-unit', 15, 'Neo Pro', 'Ensuite', 'KEYE2',
+            '5031NMML', '101136.1558', '2.5.00', 'Lighting', '',
+            ('group-1', 'group-2', *('group-255' for _ in range(7))))
+        outcome = project_cached_csv_unit(unit, group_cache=groups,
+            area_observations=(CSVAreaObservation('255'), CSVAreaObservation('255')),
+            columns=COLUMNS)
+        self.assertTrue(outcome.complete)
+        self.assertEqual(outcome.selected_class, 'TKEYEx')
+        self.assertEqual(outcome.area_identity, 'group-255')
+        self.assertEqual(outcome.unit.group_identities.count('group-255'), 7)
+        self.assertEqual(outcome.groups[-1].references, ('keye-unit',))
+        fields = outcome.report.rows[1].split(',')
+        self.assertEqual(fields[9:18],
+            ['<Unused>', 'G1', 'G2', *('<Unused>' for _ in range(6))])
+        self.assertEqual(fields[18:26], ['<N/A>'] * 8)
+
     def test_reference_moves_between_groups_and_retains_identity(self):
         unit, groups = fixture()
         outcome = project_cached_csv_unit(unit, group_cache=groups,

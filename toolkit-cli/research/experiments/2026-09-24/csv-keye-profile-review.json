@@ -1,0 +1,78 @@
+{
+  "format": "cbus-toolkit-database-csv-keye-profile-review-v1",
+  "date": "2026-09-24",
+  "passed": true,
+  "scope": "Static Toolkit 1.18 KEYE class/group/Area analysis, bounded Python cached/native projection, and a read-only sweep of an unchanged VM project snapshot. The original executable was not executed; no database, CNI or physical device was mutated or accessed during the sweep.",
+  "original_inputs": {
+    "research/vendor/toolkit/app/CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "research/vendor/toolkit/app/CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "static_reports": {
+    "research/experiments/2026-09-15/csv-backend-proposal/static-keye-csv-profile-v1/report.json": "05620b0cb90f10f6baa6a3ee6f85877d10581d5832c7db5082215fa25ac8c418",
+    "research/experiments/2026-09-15/csv-backend-proposal/static-keye-csv-agent-v1/report.json": "579f6f06bd4685862b5375f010731d09bbf0d0aa1accd07b729ca1789c0c27c8",
+    "research/experiments/2026-09-15/csv-backend-proposal/static-group-manager-v1/report.json": "aabd328a10c2588445d1a5103f3ab4a36b049b4825d65c0eef99a74f8b728ed5"
+  },
+  "key_methods": [
+    {"start": "0x138b62c", "symbol": "CIS_TKEYEx.CIS_TKEYEx", "bytes_sha256": "9ed37986c37b80f17984116549404eed795fd7da89f1572397792c32d46bb889"},
+    {"start": "0xd08700", "symbol": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsInteractionGroup", "bytes_sha256": "212ba930cc1f3ea5741181ed92b5b92ff25ffd8c692ee24b3b5a6f3d353cfa1a"},
+    {"start": "0xc9d34c", "symbol": "CIS_TCBusInputUnit.TCBusInputUnit.GetAreaIfAvailable", "bytes_sha256": "e1ff3e49018b4ed286598e5d3cece5a75a63d745a953d455149a7beaf229fdbf"},
+    {"start": "0xcc75e4", "symbol": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.GetBlockGroup", "bytes_sha256": "f9c7b8a5d2a5c8e45cdcc61562850251b8d4784595834885992d83e93a906263"},
+    {"start": "0xcc7bf0", "symbol": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.LoadGroups", "bytes_sha256": "bfc5368eb3b13722627c3db492e2207adb7ca8a0009aec16528553f6c70ea941"},
+    {"start": "0xf288f0", "symbol": "CIS_TCommonCBus.TCBusGroupManager.Add", "bytes_sha256": "d704bcb463fb41fb081f4a84151545818e93ca35b31da0eb74cb763d3bd3c0a9"}
+  ],
+  "static_facts": {
+    "factory": "The KEYE initializer registers KEYE1 through KEYE4 and KEYEIR1 through KEYEIR4 to TKEYEx with firmware bounds 0 and 9.",
+    "selected_profiles": "This increment admits only the independently observed KEYE1, KEYE2 and KEYE3 firmware 2.5.00 subset.",
+    "interaction_slots": "The TKEYEx VMT resolves IsInteractionGroup to TCBusNeoInputUnit.IsInteractionGroup, which returns true for ordinal indices 0 through 7.",
+    "area": "The TKEYEx VMT resolves Area to TCBusInputUnit.GetAreaIfAvailable, which loads AreaGroupAddress and resolves the address in the primary application's group manager on each call.",
+    "group_associations": "GetBlockGroup resolves each stored block address through GroupByAddress and LoadGroups appends each non-nil block group in block order. Repeated address255 associations therefore remain repeated ordered slots.",
+    "legacy_identity": "Native project OIDs are optional. Canonical selected paths provide detached in-memory identity when an OID element is absent; the retained OID value remains empty."
+  },
+  "read_only_snapshot_sweep": {
+    "source": "unchanged GRENACHE.xml copied read-only from the user-owned Windows VM",
+    "snapshot_sha256": "8850d846aa0fc1c948420726e7ec27aa9401336945b6fe7612992c3a21c89469",
+    "raw_snapshot_committed": false,
+    "matching_units": 22,
+    "type_counts": {"KEYE1": 9, "KEYE2": 9, "KEYE3": 4},
+    "complete_projections": 22,
+    "group_slots_per_unit": 9,
+    "area_value": 255,
+    "stored_unit_oids_present": 0,
+    "canonical_record_list_sha256": "19f2b99996a436278d172f53ac01a616c17a29b14b943a34c6c0352e98186bdc",
+    "network_io": false,
+    "database_mutation": false,
+    "physical_access": false
+  },
+  "focused_acceptance": {
+    "command": "PYTHONPATH=tests:. .venv/bin/python -m unittest tests.test_toolkit_database_csv_selection tests.test_toolkit_database_csv tests.test_toolkit_database_csv_projection tests.test_toolkit_database_csv_native tests.test_toolkit_database_csv_area tests.test_cli_toolkit_database_csv",
+    "tests_run": 59,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "repository_acceptance": {
+    "command": "PYTHONPATH=tests .venv/bin/python -m unittest discover -s tests",
+    "initial_run": {
+      "tests_run": 2190,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 258,
+      "elapsed_seconds": 545.946,
+      "failure": "Unrelated loopback timing assertion in test_fragmented_srchk_and_late_conflicting_frame_are_whole_capture"
+    },
+    "failed_test_isolated_rerun": {"tests_run": 1, "failures": 0, "errors": 0, "skipped": 0},
+    "complete_rerun": {"tests_run": 2190, "failures": 0, "errors": 0, "skipped": 258, "elapsed_seconds": 542.897}
+  },
+  "implemented_sources": {
+    "src/cbus_toolkit/toolkit_database_csv_projection.py": "e19197ff4b065f7a4bd2490e913f4d78ab97dd959c0ca271e7c4076be63350d4",
+    "src/cbus_toolkit/toolkit_database_csv_native.py": "bd29195fa8f93b2f65a1212813178bdb0e13afd1152e748c97f1c0d03670415b",
+    "tests/test_toolkit_database_csv_projection.py": "9918c9d61a75512e2f332a7aa441d93f8fada92a10a31c899324620b1cfb4751",
+    "tests/test_toolkit_database_csv_native.py": "29482baaf206287cd37ed75ea9c7b2f7df501284360f34b4c04a9e59eacafe86"
+  },
+  "remaining_limits": [
+    "KEYE secondary-application block associations",
+    "KEYE4 and KEYEIR native snapshots",
+    "Other unit families and firmware profiles",
+    "Physical-device behavior"
+  ]
+}
