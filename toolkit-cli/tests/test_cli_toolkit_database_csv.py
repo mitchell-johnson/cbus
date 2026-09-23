@@ -17,6 +17,22 @@ from tests.test_cgate import peer
 from tests.test_toolkit_database_csv_area import AreaClient
 
 
+class SelectionRegistry:
+    def __init__(self, value=...):
+        self.value = value
+        self.calls = []
+
+    def read_selection(self, hive, key, name):
+        self.calls.append(('read', hive, key, name))
+        if self.value is ...:
+            raise FileNotFoundError(name)
+        return self.value
+
+    def write_selection(self, hive, key, name, value):
+        self.calls.append(('write', hive, key, name, value))
+        self.value = value
+
+
 class DatabaseCSVCLITests(unittest.TestCase):
     def execute(self, args):
         out, err = io.StringIO(), io.StringIO()
@@ -51,6 +67,99 @@ class DatabaseCSVCLITests(unittest.TestCase):
             self.assertEqual(code, 0); self.assertEqual(result['report']['columns'], list(COLUMNS))
             self.assertEqual(result['report']['unit_count'], 0)
             self.assertTrue(output.read_bytes().endswith(b'Group 16,\r\n\r\n'))
+
+    def test_toolkit_registry_columns_load_before_file_io(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source, output = self.files(folder)
+            registry = SelectionRegistry('Serial Number,Unit Address,')
+            with patch.object(boundary, 'selection_registry_backend',
+                              return_value=registry):
+                code, result = self.execute([
+                    source, '--output', output, '--toolkit-column-selection'])
+            self.assertEqual(code, 0)
+            self.assertEqual(result['report']['columns'], ['address', 'serial'])
+            self.assertEqual(output.read_bytes(),
+                             b'Unit Address,Serial Number,\r\n7,000000010002,\r\n\r\n')
+            self.assertTrue(result['registry_io_attempted'])
+            self.assertEqual(result['column_selection']['source'], 'toolkit_registry')
+            self.assertIsNone(result['column_selection']['save'])
+            self.assertEqual(registry.calls[0][0], 'read')
+
+    def test_missing_toolkit_selection_defaults_all_and_explicit_save_precedes_file(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source, output = self.files(folder)
+            registry = SelectionRegistry()
+            with patch.object(boundary, 'selection_registry_backend',
+                              return_value=registry), patch.object(
+                                  boundary.os, 'lstat', side_effect=OSError('file denied')):
+                code, result = self.execute([
+                    source, '--output', output, '--toolkit-column-selection',
+                    '--save-toolkit-column-selection'])
+            self.assertEqual(code, 1)
+            selection = result['toolkit_database_csv_column_selection']
+            self.assertTrue(selection['load']['default_used'])
+            self.assertTrue(selection['save']['complete'])
+            self.assertEqual(registry.calls[0][0], 'read')
+            self.assertEqual(registry.calls[1][0], 'write')
+            self.assertTrue(registry.value.startswith('Unit Address,Part Name,'))
+            self.assertTrue(registry.value.endswith('Group 16,'))
+            self.assertFalse(output.exists())
+
+    def test_explicit_columns_can_be_saved_and_conflicts_stop_before_input(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source, output = self.files(folder)
+            registry = SelectionRegistry()
+            with patch.object(boundary, 'selection_registry_backend',
+                              return_value=registry):
+                code, result = self.execute([
+                    source, '--output', output, '--columns', 'serial', 'address',
+                    '--save-toolkit-column-selection'])
+            self.assertEqual(code, 0)
+            self.assertEqual(registry.value, 'Unit Address,Serial Number,')
+            self.assertEqual(result['column_selection']['effective_columns'],
+                             ['address', 'serial'])
+            with patch.object(boundary.os, 'lstat',
+                              side_effect=AssertionError('No input read')):
+                code, result = self.execute([
+                    'missing', '--output', 'missing-output', '--columns', 'address',
+                    '--toolkit-column-selection'])
+            self.assertEqual(code, 1)
+            self.assertIn('cannot be combined', result['error'])
+            self.assertEqual(result['toolkit_database_csv_evidence']['stage'],
+                             'validate')
+            with patch.object(boundary.os, 'lstat',
+                              side_effect=AssertionError('No input read')):
+                code, result = self.execute([
+                    'missing', '--output', 'missing-output', '--columns', 'all',
+                    '--toolkit-column-selection'])
+            self.assertEqual(code, 1)
+            self.assertIn('cannot be combined', result['error'])
+
+    def test_empty_saved_selection_stops_before_file_or_network_io(self):
+        registry = SelectionRegistry('Unknown,')
+        with patch.object(boundary, 'selection_registry_backend',
+                          return_value=registry), patch.object(
+                              boundary.os, 'lstat',
+                              side_effect=AssertionError('No input read')):
+            code, result = self.execute([
+                'missing', '--output', 'missing-output',
+                '--toolkit-column-selection'])
+        self.assertEqual(code, 1)
+        self.assertIn('no recognized selected columns', result['error'])
+        self.assertFalse(result['toolkit_database_csv_column_selection']
+                         ['load']['selection']['ok_enabled'])
+
+        args = SimpleNamespace(
+            area='cgate', action='database-csv', unit='//CSVTEST/254/p/4',
+            output='missing-output', columns=None, apply_missing_area=False,
+            backup_project=None, host='127.0.0.1', port=None, timeout=5,
+            tls=False, toolkit_column_selection=True,
+            save_toolkit_column_selection=False)
+        factory = Mock()
+        with patch.object(boundary, 'selection_registry_backend',
+                          return_value=registry), self.assertRaises(ValueError):
+            boundary.live(args, factory, None)
+        factory.assert_not_called()
 
     def test_cached_projection_mode_exports_original_backed_row_and_evidence(self):
         with tempfile.TemporaryDirectory() as folder:

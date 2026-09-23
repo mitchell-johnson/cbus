@@ -19,8 +19,9 @@ def options(commands):
                       help='Replay the original-backed cached unit/group projection schema before export')
     mode.add_argument('--native-xml-unit', metavar='//PROJECT/NETWORK/p/UNIT',
                       help='Project one captured native DBGETXML Installation snapshot read-only')
-    parser.add_argument('--columns', nargs='+', default=['all'], metavar='COLUMN',
+    parser.add_argument('--columns', nargs='+', default=None, metavar='COLUMN',
                         help='all (default), or selected names: ' + ', '.join(COLUMNS) + '; output follows original order')
+    _selection_options(parser)
 
 
 def live_options(parser):
@@ -28,12 +29,80 @@ def live_options(parser):
                         help='Unit selected from one read-only DBGETXML project snapshot')
     parser.add_argument('--output', required=True, type=Path,
                         help='New UTF-8 CSV file; existing destinations are never overwritten')
-    parser.add_argument('--columns', nargs='+', default=['all'], metavar='COLUMN',
+    parser.add_argument('--columns', nargs='+', default=None, metavar='COLUMN',
                         help='all (default), or selected names: ' + ', '.join(COLUMNS) + '; output follows original order')
+    _selection_options(parser)
     parser.add_argument('--apply-missing-area', action='store_true',
                         help='For the exact captured B03 shape, back up and persist missing Area13 before export')
     parser.add_argument('--backup-project',
                         help='New C-Gate backup project; required with --apply-missing-area')
+
+
+def _selection_options(parser):
+    parser.add_argument(
+        '--toolkit-column-selection', action='store_true',
+        help='Load the original Toolkit 32-bit HKCU CSVSelection value; cannot be combined with explicit --columns')
+    parser.add_argument(
+        '--save-toolkit-column-selection', action='store_true',
+        help='Persist the effective columns to the original Toolkit 32-bit HKCU CSVSelection value before export')
+
+
+def selection_registry_backend():
+    from .windows_csv_selection import WindowsCSVSelectionRegistry
+    return WindowsCSVSelectionRegistry()
+
+
+def _resolve_columns(args):
+    """Resolve explicit/default/registry columns before any source or network I/O."""
+    from .toolkit_database_csv_selection import ToolkitDatabaseCSVSelectionStore
+
+    requested = getattr(args, 'columns', None)
+    use_registry = getattr(args, 'toolkit_column_selection', False)
+    save_registry = getattr(args, 'save_toolkit_column_selection', False)
+    if type(use_registry) is not bool or type(save_registry) is not bool:
+        raise ValueError('Toolkit column-selection options must be Boolean')
+    if use_registry and requested is not None:
+        raise ValueError('--toolkit-column-selection cannot be combined with explicit --columns')
+    evidence = {
+        'format': 'cbus-toolkit-database-csv-column-resolution-v1',
+        'source': 'toolkit_registry' if use_registry else 'command_line',
+        'registry_accessed': use_registry or save_registry,
+        'load': None, 'save': None, 'effective_columns': None,
+    }
+    store = None
+    try:
+        if use_registry:
+            store = ToolkitDatabaseCSVSelectionStore(selection_registry_backend())
+            args._toolkit_database_csv_selection_store = store
+            selection = store.load()
+            evidence['load'] = copy.deepcopy(store.last_evidence)
+            if not selection.ok_enabled:
+                raise ValueError('Toolkit CSV selection contains no recognized selected columns')
+            selected = selection.columns
+        else:
+            selected = validate_columns(
+                COLUMNS if requested is None or requested == ['all']
+                else tuple(requested))
+        if save_registry:
+            if store is None:
+                store = ToolkitDatabaseCSVSelectionStore(selection_registry_backend())
+                args._toolkit_database_csv_selection_store = store
+            store.save(selected)
+            evidence['save'] = copy.deepcopy(store.last_evidence)
+        evidence['effective_columns'] = list(selected)
+        args._toolkit_database_csv_selection_evidence = copy.deepcopy(evidence)
+        return selected, evidence
+    except BaseException as error:
+        if store is not None and type(store.last_evidence) is dict:
+            key = 'load' if use_registry and evidence['load'] is None else 'save'
+            evidence[key] = copy.deepcopy(store.last_evidence)
+        evidence['error'] = _failure(error)
+        args._toolkit_database_csv_selection_evidence = copy.deepcopy(evidence)
+        try:
+            error.toolkit_database_csv_column_resolution = evidence
+        except BaseException:
+            pass
+        raise
 
 
 def _failure(error):
@@ -70,7 +139,8 @@ class DatabaseCSVFileOperation:
     def __init__(self):
         self.last_error = self.last_cause = self.last_evidence = None
 
-    def run(self, source, *, output, columns, cached_projection=False, native_xml_unit=None):
+    def run(self, source, *, output, columns, cached_projection=False, native_xml_unit=None,
+            selection_evidence=None):
         self.last_error = self.last_cause = self.last_evidence = None
         if type(cached_projection) is not bool:
             raise ValueError('cached_projection must be Boolean')
@@ -90,7 +160,11 @@ class DatabaseCSVFileOperation:
                  'output_write_complete': False, 'output_fsync_succeeded': False,
                  'output_closed': False, 'output_may_exist': False, 'output_may_be_partial': False,
                  'source_modified': False, 'network_io_attempted': False, 'registry_io_attempted': False,
-                 'error': None, 'cleanup_errors': [], 'projection': None, 'report': None}
+                 'error': None, 'cleanup_errors': [], 'projection': None, 'report': None,
+                 'column_selection': (copy.deepcopy(selection_evidence)
+                                      if isinstance(selection_evidence, dict) else None)}
+        if isinstance(selection_evidence, dict):
+            state['registry_io_attempted'] = bool(selection_evidence.get('registry_accessed'))
         handles = {'source': None, 'output': None}
         primary = None
 
@@ -224,12 +298,27 @@ class DatabaseCSVFileOperation:
 def run(args):
     if args.area != 'toolkit-database-csv':
         raise ValueError('Unsupported database CSV command')
-    columns = COLUMNS if args.columns == ['all'] else tuple(args.columns)
     operation = DatabaseCSVFileOperation()
     args._toolkit_database_csv_operation = operation
+    try:
+        columns, selection = _resolve_columns(args)
+    except BaseException as error:
+        operation.last_error = operation.last_cause = error
+        operation.last_evidence = {
+            'operation': 'toolkit-database-csv', 'complete': False,
+            'stage': 'validate', 'input_mode': None,
+            'registry_io_attempted': bool(
+                getattr(args, '_toolkit_database_csv_selection_evidence', {}).get(
+                    'registry_accessed', False)),
+            'column_selection': copy.deepcopy(getattr(
+                args, '_toolkit_database_csv_selection_evidence', None)),
+            'error': _failure(error),
+        }
+        raise
     result = operation.run(args.file, output=args.output, columns=columns,
                            cached_projection=args.cached_projection,
-                           native_xml_unit=args.native_xml_unit)
+                           native_xml_unit=args.native_xml_unit,
+                           selection_evidence=selection)
     return result, 0
 
 
@@ -241,7 +330,7 @@ def live(args, client_factory, ssl_context):
 
     if args.area != 'cgate' or args.action != 'database-csv':
         raise ValueError('Unsupported live database CSV command')
-    selected = validate_columns(COLUMNS if args.columns == ['all'] else tuple(args.columns))
+    selected, selection = _resolve_columns(args)
     project, _network, _unit = _path(args.unit)
     if type(args.apply_missing_area) is not bool:
         raise ValueError('apply_missing_area must be Boolean')
@@ -327,18 +416,32 @@ def live(args, client_factory, ssl_context):
         'output_bytes_confirmed': confirmed, 'projection': projection.as_dict(),
         'area_group_mutation': mutation,
         'native_database_mutated': mutation is not None,
+        'column_selection': selection,
         'report': projection.report.as_dict(),
     }, 0
 
 
 def error_payload(error, args):
-    if getattr(args, 'area', None) != 'toolkit-database-csv':
+    is_offline = getattr(args, 'area', None) == 'toolkit-database-csv'
+    is_live = (getattr(args, 'area', None) == 'cgate' and
+               getattr(args, 'action', None) == 'database-csv')
+    if not (is_offline or is_live):
         return {}
+    result = {}
+    selection = getattr(args, '_toolkit_database_csv_selection_evidence', None)
+    if isinstance(selection, dict):
+        try:
+            result['toolkit_database_csv_column_selection'] = copy.deepcopy(selection)
+        except BaseException:
+            result['toolkit_database_csv_column_selection'] = {
+                'format': 'cbus-toolkit-database-csv-column-resolution-v1',
+                'error_export_failed': True,
+            }
     operation = getattr(args, '_toolkit_database_csv_operation', None)
     if operation is not None and operation.last_error is error and type(operation.last_evidence) is dict:
         try:
-            return {'toolkit_database_csv_evidence': copy.deepcopy(operation.last_evidence)}
+            result['toolkit_database_csv_evidence'] = copy.deepcopy(operation.last_evidence)
         except BaseException:
-            return {'toolkit_database_csv_evidence': {'operation': 'toolkit-database-csv',
-                    'complete': False, 'evidence_export_failed': True}}
-    return {}
+            result['toolkit_database_csv_evidence'] = {'operation': 'toolkit-database-csv',
+                    'complete': False, 'evidence_export_failed': True}
+    return result
