@@ -230,6 +230,11 @@ standard CAL recalls; `PP GET UnitAddress` returned the live address `0x5`.
 A relay was switched through C-Gate, independently reported 255 then
 0, and restored to its original OFF state. The container retained its database
 across recreation and maintained one CNI socket alongside its MQTT connection.
+After the physical `DO` backend was added, the deployed service also changed the
+garage relay from its observed level 255 to 0 with `DO ... OFF`, observed the
+result from the bus, restored it with `DO ... ON`, and observed level 255 again.
+Both commands returned native `202 Done: object` responses while MQTT remained
+connected and the container remained restart-free.
 The deployed service also completed a live three-block PINGU observation,
 returned the physical address list, and exposed the same list through `GET Units`.
 It then completed a whole-network `NET SYNC`, preserved the synchronized snapshot
