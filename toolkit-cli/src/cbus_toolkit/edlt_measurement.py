@@ -6,7 +6,7 @@ Measurement editor's intentionally lossy decimal composite conversion.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from decimal import Decimal, ROUND_HALF_EVEN, localcontext
+from decimal import Decimal, InvalidOperation, ROUND_HALF_EVEN, localcontext
 import math
 import re
 from types import MappingProxyType
@@ -43,7 +43,13 @@ def _format_double_without_e(number):
     """
     significant = format(number, '.15g')
     with localcontext() as context:
-        context.prec = max(128, len(significant) + 64)
+        # The fixed 50-decimal display needs headroom for the integer digits
+        # of huge magnitudes too; otherwise large but finite doubles fail
+        # with a raw decimal error instead of the original lossy reduction.
+        magnitude = 0
+        if number != 0:
+            magnitude = max(0, math.floor(math.log10(abs(number))) + 1)
+        context.prec = max(128, len(significant) + 64, magnitude + 64)
         value = Decimal(significant)
         quantum = Decimal(1).scaleb(-50)
         text = format(value.quantize(quantum, rounding=ROUND_HALF_EVEN), 'f')
@@ -51,7 +57,10 @@ def _format_double_without_e(number):
 
 
 def _try_break_number(number):
-    text = _format_double_without_e(number)
+    try:
+        text = _format_double_without_e(number)
+    except InvalidOperation as error:
+        raise EdltError('Measurement composite value could not be represented') from error
     point = text.find('.')
     if point >= 0:
         text = text.rstrip('0')
