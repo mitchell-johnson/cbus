@@ -10,6 +10,7 @@ pub fn decode_sals(data: &[u8]) -> Result<Vec<Sal>, DecodeError> {
     let mut data = data;
     while !data.is_empty() {
         let level_request;
+        let install_mmi = data.starts_with(&[0xfa, 0xff, 0x00]);
         if data[0] == 0x7a || data[0] == 0xfa {
             // 0xfa form is deprecated, decode-only; re-encodes as 0x7a
             data = &data[1..];
@@ -38,11 +39,15 @@ pub fn decode_sals(data: &[u8]) -> Result<Vec<Sal>, DecodeError> {
                 "group_address report must be a multiple of 0x20",
             ));
         }
-        out.push(Sal::StatusRequest {
-            level_request,
-            group_address,
-            child_application,
-        });
+        if install_mmi {
+            out.push(Sal::InstallMmiRequest);
+        } else {
+            out.push(Sal::StatusRequest {
+                level_request,
+                group_address,
+                child_application,
+            });
+        }
     }
     Ok(out)
 }

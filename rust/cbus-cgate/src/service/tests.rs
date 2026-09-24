@@ -186,6 +186,81 @@ async fn reconnect_opens_network_and_discards_observed_levels() {
 }
 
 #[tokio::test]
+async fn observed_trigger_enable_and_clock_state_is_live_and_cleared_on_disconnect() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    service
+        .observe(&CBusEvent::TriggerEvent {
+            source: Some(7),
+            group: 4,
+            selector: 88,
+        })
+        .await;
+    service
+        .observe(&CBusEvent::EnableSet {
+            source: Some(8),
+            variable: 5,
+            value: 66,
+        })
+        .await;
+    service
+        .observe(&CBusEvent::ClockDate {
+            source: Some(9),
+            year: 2026,
+            month: 9,
+            day: 24,
+        })
+        .await;
+    let mut client = ClientState::default();
+    let trigger = service
+        .handle(&mut client, "[1] GET //HARNESS/254/202/4 *")
+        .await;
+    assert_eq!(trigger.status, 300);
+    assert!(trigger
+        .lines
+        .iter()
+        .any(|line| line.contains("EventLevel=5")));
+    assert!(trigger.final_text.contains("State=ok"));
+    assert_eq!(
+        service
+            .handle(&mut client, "[2] GET //HARNESS/254/202/4 Level")
+            .await
+            .status,
+        402
+    );
+    assert!(service
+        .handle(&mut client, "[3] GET //HARNESS/254/202 Groups")
+        .await
+        .final_text
+        .ends_with("Groups=4"));
+    assert!(service
+        .handle(&mut client, "[4] GET //HARNESS/254/203/5 Level")
+        .await
+        .final_text
+        .ends_with("Level=66"));
+    assert!(service
+        .handle(&mut client, "[5] CLOCK DATE 254/223")
+        .await
+        .final_text
+        .ends_with("Date set to: 2026-09-24"));
+    service.observe(&CBusEvent::ConnectionLost).await;
+    assert_eq!(
+        service
+            .handle(&mut client, "[6] GET //HARNESS/254/203/5 Level")
+            .await
+            .status,
+        408
+    );
+    assert!(service
+        .handle(&mut client, "[7] CLOCK DATE 254/223")
+        .await
+        .final_text
+        .ends_with("Date set to: 1970-01-01"));
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn fragmented_command_survives_event_delivery_and_disconnect_releases_locks() {
     let path = state_path();
     let (pci, _remote) = pci();

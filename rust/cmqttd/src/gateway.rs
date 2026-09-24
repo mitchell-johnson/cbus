@@ -418,6 +418,14 @@ impl Gateway {
                     let _ = self.pci().await.clock_datetime().await;
                 }
             }
+            CBusEvent::TriggerEvent { .. }
+            | CBusEvent::TriggerIndicatorKill { .. }
+            | CBusEvent::EnableSet { .. }
+            | CBusEvent::ClockDate { .. }
+            | CBusEvent::ClockTime { .. } => {
+                // These application events are consumed by the embedded
+                // C-Gate service. MQTT's lighting contract is unchanged.
+            }
             CBusEvent::ConnectionLost => {
                 self.group_db.lock().unwrap().clear();
             }

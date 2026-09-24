@@ -12,6 +12,7 @@ path = "src/main.rs"
 [dependencies]
 cbus-protocol = { path = "../cbus-protocol" }
 cbus-transport = { path = "../cbus-transport" }
+chrono = { workspace = true }
 hex = { workspace = true }
 roxmltree = { workspace = true }
 serde = { workspace = true }

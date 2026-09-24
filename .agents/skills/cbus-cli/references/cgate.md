@@ -18,6 +18,15 @@ Dynamic labels are not read. `UNIT READMEM` and `UNIT IDENTIFY` are cmqttd
 extensions. A 502 response is a missing backend or failed device operation;
 never replace it with saved project data and describe that as a live result.
 
+The physical service also implements lighting commands, Trigger Control,
+Enable Control, clock date/time/refresh, and standard `NET PINGU`. PINGU sends
+the install-MMI request with the active PCI checksum setting and accepts only a
+confirmed sequence with contiguous coverage of addresses 0–255. Use
+`GET //PROJECT/NETWORK Units` for
+the resulting live presence snapshot. `NET CHECKUNIT` and `NET SYNC` still need
+their physical backends; do not infer duplicate count or unit identity from the
+two-bit MMI presence state.
+
 ## Mock service
 
 The user-facing CLI is Python `cbus-toolkit cgate`; see [toolkit.md](toolkit.md) for installation, typed workflows, and JSON output. This reference describes its Rust test server. Connect the CLI with `--host 127.0.0.1 --port 20033` for the default mock listener; native plain TCP defaults to 20023.

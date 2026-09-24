@@ -42,6 +42,8 @@ pub const APP_LIGHTING_FIRST: u8 = 0x30;
 pub const APP_LIGHTING: u8 = 0x38;
 /// Last lighting application address.
 pub const APP_LIGHTING_LAST: u8 = 0x5f;
+/// Trigger Control application.
+pub const APP_TRIGGER: u8 = 0xca;
 /// Clock and timekeeping application.
 pub const APP_CLOCK: u8 = 0xdf;
 /// Enable control application.
@@ -95,6 +97,16 @@ pub const LIGHT_TERMINATE_RAMP: u8 = 0x09;
 pub const LIGHT_RAMP_FASTEST: u8 = 0x02;
 /// Slowest ramp rate code (1020 s).
 pub const LIGHT_RAMP_SLOWEST: u8 = 0x7a;
+
+// Trigger Control application commands
+/// Trigger SAL command: minimum action selector (0).
+pub const TRIGGER_MIN: u8 = 0x01;
+/// Trigger SAL command: explicit action selector.
+pub const TRIGGER_EVENT: u8 = 0x02;
+/// Trigger SAL command: clear group indicators.
+pub const TRIGGER_INDICATOR_KILL: u8 = 0x09;
+/// Trigger SAL command: maximum action selector (255).
+pub const TRIGGER_MAX: u8 = 0x79;
 
 // Enable control application commands
 /// Enable SAL command: set network variable.

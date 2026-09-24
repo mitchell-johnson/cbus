@@ -1,7 +1,7 @@
 //! Buffered decode loop with a 256-byte cap and overflow recovery.
 
 use cbus_protocol::common::MAX_BUFFER_SIZE;
-use cbus_protocol::decode::decode_packet;
+use cbus_protocol::decode::{decode_packet, decode_packet_install_mmi};
 use cbus_protocol::packet::Packet;
 
 /// One decoded frame; `raw` holds the consumed wire bytes (used for the
@@ -20,6 +20,7 @@ pub struct FrameBuffer {
     buf: Vec<u8>,
     from_pci: bool,
     checksum: bool,
+    install_mmi: bool,
 }
 
 impl FrameBuffer {
@@ -29,6 +30,7 @@ impl FrameBuffer {
             buf: Vec::new(),
             from_pci: true,
             checksum: true,
+            install_mmi: false,
         }
     }
 
@@ -39,6 +41,7 @@ impl FrameBuffer {
             buf: Vec::new(),
             from_pci: false,
             checksum: false,
+            install_mmi: false,
         }
     }
 
@@ -46,6 +49,11 @@ impl FrameBuffer {
     /// client sets/clears SRCHK).
     pub fn set_checksum(&mut self, on: bool) {
         self.checksum = on;
+    }
+
+    /// Select the context-sensitive installation MMI decoder.
+    pub fn set_install_mmi(&mut self, on: bool) {
+        self.install_mmi = on;
     }
 
     /// Drop any buffered partial frame.
@@ -71,7 +79,12 @@ impl FrameBuffer {
             if self.buf.is_empty() {
                 break;
             }
-            let (packet, consumed) = decode_packet(&self.buf, self.checksum, true, self.from_pci);
+            let decode = if self.install_mmi {
+                decode_packet_install_mmi
+            } else {
+                decode_packet
+            };
+            let (packet, consumed) = decode(&self.buf, self.checksum, true, self.from_pci);
             if consumed > 0 {
                 let raw = self.buf[..consumed.min(self.buf.len())].to_vec();
                 self.buf.drain(..consumed.min(self.buf.len()));

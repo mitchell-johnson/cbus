@@ -36,6 +36,10 @@ not be committed or published.
 | Database PP locks, sessions, get/set/info/new/load/save | Existing programming model with connection ownership; staged sessions and locks are discarded on disconnect/restart |
 | ON/OFF/RAMP/TERMINATERAMP and lighting variants | Actual shared PCI, negative confirmations return errors; successful delivery is distinct from observed physical brightness |
 | GET group level | Real observed bus levels; unobserved levels return 408, never invented zero |
+| TRIGGER EVENT/INDICATORKILL | Actual Trigger Control SAL on application 202; incoming events update the live service cache and event stream |
+| ENABLE SET/REMOVE and GET | SET sends actual Enable Control SAL on application 203; REMOVE follows C-Gate's server-side saved-value behavior; incoming values update the live cache |
+| CLOCK DATE/TIME/REQUEST_REFRESH | Actual Clock and Timekeeping SAL on application 223, including `SYSTEM` date/time resolution and observed-value queries |
+| NET PINGU and GET network Units | Actual installation MMI request using cmqttd's negotiated PCI checksum mode; accepts only confirmed, contiguous coverage of all addresses 0–255 and reports the native sorted `302-Units=` form |
 | Unit identification | Source-correlated CAL replies from the physical unit |
 | OEM physical memory reads | Volatile 0x41 pointer selection plus segmented RECALL; no EEPROM writes |
 | KEYGL5 5.5.00 static strings and lighting/scene widget labels | Python reader uses the service; checks physical identity, stable header and static-text CRC |
@@ -90,10 +94,11 @@ return 502. Full replacement still requires:
 
 - Physical PP LOAD/SAVE with complete schema memory codecs, checksums,
   readback, device profiles, recovery and hardware acceptance.
-- Network discovery/synchronization, bridged networks, serial addressing,
-  readdressing, clock configuration and commissioning state transitions.
-- Physical scenes, triggers, Enable, text/icon broadcasts, dynamic eDLT label
-  cache reads, and specialist application families such as HVAC/audio/security.
+- Full network synchronization and identity population, duplicate-aware
+  `NET CHECKUNIT`, bridged networks, serial addressing, readdressing and
+  commissioning state transitions. `NET PINGU` discovery itself is implemented.
+- Physical scenes, text/icon broadcasts, dynamic eDLT label cache reads, and
+  specialist application families such as HVAC, audio and security.
 - Native repository/archive/import/export formats, document commands,
   complete server configuration/access/TLS, firmware and deployment workflows.
 - Command-by-command native interoperability and physical acceptance beyond
@@ -103,8 +108,9 @@ return 502. Full replacement still requires:
 ## Tests
 
 `cbus-transport` tests cover captured programming route bytes, source filtering,
-segmented recall, interleaved lighting, incomplete transactions, and confirmation
-success/failure. Exact incoming frames are retained in `rust/testdata/vectors/`.
+segmented recall, interleaved lighting, complete and incomplete installation MMI,
+and confirmation success/failure. Exact Trigger, Enable, Clock and MMI request or
+response bytes are pinned by vectors and the real-daemon system test.
 `cbus-cgate` service tests cover durable reload, corrupt-file preservation,
 rollback, session ownership, unsupported hardware rejection, fragmented command
 input during events, disconnect cleanup and input bounds. The real cmqttd system
@@ -118,5 +124,7 @@ lighting/scene labels through cmqttd, with stable header and matching Toolkit
 text CRC. A relay was switched through C-Gate, independently reported 255 then
 0, and restored to its original OFF state. The container retained its database
 across recreation and maintained one CNI socket alongside its MQTT connection.
+The deployed service also completed a live three-block PINGU observation,
+returned the physical address list, and exposed the same list through `GET Units`.
 These checks cover that device/profile and relay path; they do not establish
 complete physical C-Gate acceptance. Site reports are private and excluded from Git.

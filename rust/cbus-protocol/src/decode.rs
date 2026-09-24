@@ -26,6 +26,30 @@ pub fn decode_packet(
     strict: bool,
     from_pci: bool,
 ) -> (Option<Packet>, usize) {
+    decode_packet_mode(data, checksum, strict, from_pci, false)
+}
+
+/// Decode while an installation MMI response is expected.
+///
+/// Standard-status MMI blocks are byte-ambiguous with some valid addressed
+/// frames, so callers must opt into this mode only for the lifetime of a
+/// confirmed installation MMI transaction.
+pub fn decode_packet_install_mmi(
+    data: &[u8],
+    checksum: bool,
+    strict: bool,
+    from_pci: bool,
+) -> (Option<Packet>, usize) {
+    decode_packet_mode(data, checksum, strict, from_pci, true)
+}
+
+fn decode_packet_mode(
+    data: &[u8],
+    checksum: bool,
+    strict: bool,
+    from_pci: bool,
+    install_mmi: bool,
+) -> (Option<Packet>, usize) {
     let mut checksum = checksum;
     let mut confirmation: Option<u8> = None;
     let mut device_management_cal = false;
@@ -161,6 +185,7 @@ pub fn decode_packet(
         device_management_cal,
         confirmation,
         consumed,
+        install_mmi,
     ) {
         Ok((p, c)) => (Some(p), c),
         Err(_) => (Some(Packet::Invalid), consumed),
@@ -175,11 +200,42 @@ fn decode_body(
     device_management_cal: bool,
     confirmation: Option<u8>,
     consumed: usize,
+    install_mmi: bool,
 ) -> Result<(Packet, usize), DecodeError> {
     let flags = raw[0];
     let address_type = flags & 0x07;
     let dp = flags & 0x20 == 0x20;
     let priority_class = (flags >> 6) & 0x03;
+
+    // Standard-status MMI blocks are direct from-PCI messages. Their first
+    // byte is a C/D marker with a low-five-bit byte count, not an addressed
+    // packet header. The wire form is ambiguous with priority-3 addressed
+    // traffic, so only recognize installation blocks inside an active MMI
+    // transaction and only for the installation application.
+    if install_mmi && from_pci && flags & 0xe0 == 0xc0 && raw.get(1) == Some(&0xff) {
+        let count = usize::from(flags & 0x1f);
+        if count >= 3 && raw.len() == count + 1 {
+            let application = raw[1];
+            let block_start = raw[2];
+            let mut states = Vec::with_capacity((raw.len() - 3) * 4);
+            for value in &raw[3..] {
+                states.extend((0..4).map(|shift| (value >> (shift * 2)) & 0x03));
+            }
+            if usize::from(block_start) + states.len() > 256 {
+                return Err(DecodeError::new(
+                    "standard-status block extends beyond address 255",
+                ));
+            }
+            return Ok((
+                Packet::StandardStatus {
+                    application,
+                    block_start,
+                    states,
+                },
+                consumed,
+            ));
+        }
+    }
 
     // Direct CAL replies: from-PCI frames whose "flags" byte is really a
     // CAL header (address type not 3/5/6, dp clear). The *entire* payload
@@ -480,5 +536,30 @@ mod tests {
             }
             other => panic!("wrong packet {:?}", other),
         }
+    }
+
+    #[test]
+    fn installation_mmi_requires_explicit_decode_context() {
+        let wire = b"D8FF000000000001000000000000000000000000000000000028\r\n";
+        let (packet, consumed) = decode_packet_install_mmi(wire, true, true, true);
+        assert_eq!(consumed, wire.len());
+        match packet.unwrap() {
+            Packet::StandardStatus {
+                application,
+                block_start,
+                states,
+            } => {
+                assert_eq!(application, 0xff);
+                assert_eq!(block_start, 0);
+                assert_eq!(states.len(), 88);
+                assert_eq!(states[16], 1);
+                assert_eq!(states.iter().filter(|state| **state != 0).count(), 1);
+            }
+            other => panic!("wrong packet {other:?}"),
+        }
+        assert!(!matches!(
+            decode_packet(wire, true, true, true).0,
+            Some(Packet::StandardStatus { .. })
+        ));
     }
 }

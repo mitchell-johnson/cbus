@@ -4,7 +4,7 @@
 
 `cbus-toolkit` is the Python project and commissioning application. Offline workflows edit XML/CBZ or plan device settings; online workflows use its C-Gate client and typed wrappers, or its direct PCI client. Native C-Gate supplies online server behavior. Rust `cgate-mock` can stand in for that server during tests. The Toolkit CLI is maintained independently of the Rust bridge.
 
-`cmqttd` connects one C-Bus PCI/CNI endpoint to one MQTT broker and can also serve C-Gate clients through `--cgate-bind`. Both interfaces share one transport. Incoming C-Bus frames become typed protocol values, state publications, and Home Assistant discovery messages. Valid MQTT or supported C-Gate lighting commands become C-Bus commands. A Toolkit `.cbz` or bare XML project supplies human-readable network, application, group, and unit metadata; the embedded C-Gate service imports it into a persistent database.
+`cmqttd` connects one C-Bus PCI/CNI endpoint to one MQTT broker and can also serve C-Gate clients through `--cgate-bind`. Both interfaces share one transport. Incoming C-Bus frames become typed protocol values, state publications, and Home Assistant discovery messages. Valid MQTT commands and supported C-Gate lighting, Trigger, Enable, clock and install-MMI discovery commands become C-Bus traffic. A Toolkit `.cbz` or bare XML project supplies human-readable network, application, group, and unit metadata; the embedded C-Gate service imports it into a persistent database.
 
 `cbus-tools` calls the same protocol and project readers for one-shot work. `cbus-simulator` supplies a development PCI/CNI endpoint. `cbus-cgate` is an independent in-memory C-Gate protocol model exposed over TCP by `cgate-mock`.
 
@@ -29,7 +29,7 @@ Put new behavior in its owning crate. Avoid embedding byte-level rules in a bina
 
 ## Protocol behavior
 
-The protocol crate covers point-to-multipoint, point-to-point, device-management, reset, confirmation, error, and special packets. CAL support includes identify, recall, reply, and extended messages. SAL support includes lighting, clock, enable control, temperature, and status requests. Strict decoding rejects malformed input; lenient decoding retains compatibility behavior for imperfect frames.
+The protocol crate covers point-to-multipoint, point-to-point, device-management, install-MMI status, reset, confirmation, error, and special packets. CAL support includes identify, recall, reply, and extended messages. SAL support includes lighting, Trigger Control, clock, Enable Control, temperature, status requests and install-MMI requests. Strict decoding rejects malformed input; lenient decoding retains compatibility behavior for imperfect frames. Install-MMI response decoding is enabled only during its active transaction because its wire header is ambiguous with priority-three addressed traffic.
 
 The transport reassembles bounded byte streams, initializes the PCI, assigns confirmation codes, retries unconfirmed frames, and gives interactive commands priority over background status sweeps. It supports TCP CNI and serial PCI connections.
 

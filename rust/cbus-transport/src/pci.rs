@@ -23,6 +23,7 @@ use tokio::time::Instant;
 
 use crate::framing::FrameBuffer;
 
+mod mmi;
 mod programming;
 
 /// A confirmation code still unanswered after this long is abandoned.
@@ -71,6 +72,53 @@ pub enum CBusEvent {
         duration: u32,
         /// Target level 0..=255.
         level: u8,
+    },
+    /// A Trigger Control action was observed.
+    TriggerEvent {
+        /// Source unit address (`None` when the source byte was 0).
+        source: Option<u8>,
+        /// Trigger group address.
+        group: u8,
+        /// Action selector.
+        selector: u8,
+    },
+    /// A Trigger Control indicator-kill was observed.
+    TriggerIndicatorKill {
+        /// Source unit address (`None` when the source byte was 0).
+        source: Option<u8>,
+        /// Trigger group address.
+        group: u8,
+    },
+    /// An Enable Control variable update was observed.
+    EnableSet {
+        /// Source unit address (`None` when the source byte was 0).
+        source: Option<u8>,
+        /// Enable variable address.
+        variable: u8,
+        /// New variable value.
+        value: u8,
+    },
+    /// A clock date update was observed.
+    ClockDate {
+        /// Source unit address (`None` when the source byte was 0).
+        source: Option<u8>,
+        /// Four-digit year.
+        year: u16,
+        /// Month 1..=12.
+        month: u8,
+        /// Day of month.
+        day: u8,
+    },
+    /// A clock time update was observed.
+    ClockTime {
+        /// Source unit address (`None` when the source byte was 0).
+        source: Option<u8>,
+        /// Hour 0..=23.
+        hour: u8,
+        /// Minute 0..=59.
+        minute: u8,
+        /// Second 0..=59.
+        second: u8,
     },
     /// An extended-status level report arrived.
     LevelReport {
@@ -142,6 +190,9 @@ pub struct PciClient {
     packets: broadcast::Sender<Option<Packet>>,
     programming_lane: tokio::sync::Mutex<()>,
     programming_fault: std::sync::atomic::AtomicBool,
+    mmi_lane: tokio::sync::Mutex<()>,
+    mmi_fault: std::sync::atomic::AtomicBool,
+    mmi_collecting: std::sync::atomic::AtomicBool,
     disconnected: std::sync::atomic::AtomicBool,
 }
 
@@ -166,6 +217,9 @@ impl PciClient {
             packets: broadcast::channel(512).0,
             programming_lane: tokio::sync::Mutex::new(()),
             programming_fault: std::sync::atomic::AtomicBool::new(false),
+            mmi_lane: tokio::sync::Mutex::new(()),
+            mmi_fault: std::sync::atomic::AtomicBool::new(false),
+            mmi_collecting: std::sync::atomic::AtomicBool::new(false),
             disconnected: std::sync::atomic::AtomicBool::new(false),
         });
         tokio::spawn(Self::reader_loop(client.clone(), reader));
@@ -403,6 +457,10 @@ impl PciClient {
                     // The bound applies to an incomplete frame, not a TCP
                     // read containing many complete programming replies.
                     for chunk in buf[..n].chunks(64) {
+                        fb.set_install_mmi(
+                            self.mmi_collecting
+                                .load(std::sync::atomic::Ordering::Acquire),
+                        );
                         for ev in fb.feed(chunk) {
                             if let Some(p) = ev.packet {
                                 self.handle_cbus_packet(p);
@@ -473,6 +531,53 @@ impl PciClient {
                             app: application,
                             group: group_address,
                         }),
+                        Sal::TriggerEvent {
+                            group_address,
+                            action_selector,
+                        } => Some(CBusEvent::TriggerEvent {
+                            source: src,
+                            group: group_address,
+                            selector: action_selector,
+                        }),
+                        Sal::TriggerMin { group_address } => Some(CBusEvent::TriggerEvent {
+                            source: src,
+                            group: group_address,
+                            selector: 0,
+                        }),
+                        Sal::TriggerMax { group_address } => Some(CBusEvent::TriggerEvent {
+                            source: src,
+                            group: group_address,
+                            selector: 255,
+                        }),
+                        Sal::TriggerIndicatorKill { group_address } => {
+                            Some(CBusEvent::TriggerIndicatorKill {
+                                source: src,
+                                group: group_address,
+                            })
+                        }
+                        Sal::EnableSetNetworkVariable { variable, value } => {
+                            Some(CBusEvent::EnableSet {
+                                source: src,
+                                variable,
+                                value,
+                            })
+                        }
+                        Sal::ClockUpdateDate { year, month, day } => Some(CBusEvent::ClockDate {
+                            source: src,
+                            year,
+                            month,
+                            day,
+                        }),
+                        Sal::ClockUpdateTime {
+                            hour,
+                            minute,
+                            second,
+                        } => Some(CBusEvent::ClockTime {
+                            source: src,
+                            hour,
+                            minute,
+                            second,
+                        }),
                         Sal::ClockRequest => Some(CBusEvent::ClockRequest { source: src }),
                         _ => None,
                     };
@@ -490,6 +595,9 @@ impl PciClient {
                         ..
                     } = c
                     {
+                        if child_application == 0xff {
+                            continue;
+                        }
                         // the first report matching a pending status
                         // request's app+block+kind acks that request
                         self.flow.ack(AckSignal::Report {
@@ -649,19 +757,29 @@ impl PciClient {
     }
 }
 
-/// Flow-control classification of an outbound frame: user commands
-/// (lighting operations, i.e. MQTT /set traffic) outrank background
+/// Flow-control classification of an outbound frame: interactive lighting,
+/// Trigger and Enable commands outrank background
 /// frames, and the response that will release the frame's window slot
 /// is derived from what the device observably sends back.
 fn classify(cmd: &Packet, conf: Option<u8>) -> (Priority, ResponseKind) {
-    let is_lighting = |s: &Sal| {
+    let is_interactive = |s: &Sal| {
         matches!(
             s,
-            Sal::LightingOn { .. } | Sal::LightingOff { .. } | Sal::LightingRamp { .. }
+            Sal::LightingOn { .. }
+                | Sal::LightingOff { .. }
+                | Sal::LightingRamp { .. }
+                | Sal::LightingTerminateRamp { .. }
+                | Sal::TriggerEvent { .. }
+                | Sal::TriggerIndicatorKill { .. }
+                | Sal::TriggerMin { .. }
+                | Sal::TriggerMax { .. }
+                | Sal::EnableSetNetworkVariable { .. }
         )
     };
     let priority = match cmd {
-        Packet::PointToMultipoint { sals, .. } if sals.iter().any(is_lighting) => Priority::Command,
+        Packet::PointToMultipoint { sals, .. } if sals.iter().any(is_interactive) => {
+            Priority::Command
+        }
         _ => Priority::Background,
     };
     let kind = if let Some(code) = conf {
@@ -882,6 +1000,18 @@ mod tests {
         assert_eq!(
             classify(&cmd, Some(b'h')),
             (Priority::Command, ResponseKind::Confirmation(b'h'))
+        );
+        let trigger = Packet::PointToMultipoint {
+            meta: Meta::new(true, 0),
+            application: 0xca,
+            sals: vec![Sal::TriggerEvent {
+                group_address: 1,
+                action_selector: 123,
+            }],
+        };
+        assert_eq!(
+            classify(&trigger, Some(b'i')),
+            (Priority::Command, ResponseKind::Confirmation(b'i'))
         );
         // codeless status request: background, released by the first
         // report matching app+block+kind

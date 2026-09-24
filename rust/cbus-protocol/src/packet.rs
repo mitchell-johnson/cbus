@@ -73,6 +73,15 @@ pub enum Packet {
         /// The SAL messages.
         sals: Vec<Sal>,
     },
+    /// A standard-status MMI block returned directly by the PCI.
+    StandardStatus {
+        /// Application whose unit-presence states are reported.
+        application: u8,
+        /// First unit/group address covered by this block.
+        block_start: u8,
+        /// Two-bit states in ascending address order.
+        states: Vec<u8>,
+    },
     /// Point-to-point (CAL-carrying) packet.
     PointToPoint {
         /// Envelope fields.
@@ -156,6 +165,26 @@ impl Packet {
                     p.extend_from_slice(&sal.encode()?);
                 }
                 Ok(finish(p, meta))
+            }
+            Packet::StandardStatus {
+                application,
+                block_start,
+                states,
+            } => {
+                if states.is_empty()
+                    || !states.len().is_multiple_of(4)
+                    || states.len() > 116
+                    || usize::from(*block_start) + states.len() > 256
+                    || states.iter().any(|state| *state > 3)
+                {
+                    return Err(EncodeError::new("invalid standard-status block"));
+                }
+                let count = 2 + states.len() / 4;
+                let mut packet = vec![0xc0 | count as u8, *application, *block_start];
+                for chunk in states.chunks_exact(4) {
+                    packet.push(chunk[0] | (chunk[1] << 2) | (chunk[2] << 4) | (chunk[3] << 6));
+                }
+                Ok(add_cbus_checksum(&packet))
             }
             Packet::PointToPoint {
                 meta,

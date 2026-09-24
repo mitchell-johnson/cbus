@@ -5,11 +5,13 @@ pub mod enable;
 pub mod lighting;
 pub mod status_request;
 pub mod temperature;
+pub mod trigger;
 
 use crate::common::{
     duration_to_ramp_rate, APP_CLOCK, APP_ENABLE, APP_LIGHTING_FIRST, APP_LIGHTING_LAST,
-    APP_STATUS_REQUEST, APP_TEMPERATURE, CLOCK_ATTR_DATE, CLOCK_ATTR_TIME, CLOCK_REQUEST_REFRESH,
-    ENABLE_SET_NETWORK_VARIABLE, LIGHT_OFF, LIGHT_ON, LIGHT_TERMINATE_RAMP, TEMPERATURE_BROADCAST,
+    APP_STATUS_REQUEST, APP_TEMPERATURE, APP_TRIGGER, CLOCK_ATTR_DATE, CLOCK_ATTR_TIME,
+    CLOCK_REQUEST_REFRESH, ENABLE_SET_NETWORK_VARIABLE, LIGHT_OFF, LIGHT_ON, LIGHT_TERMINATE_RAMP,
+    TEMPERATURE_BROADCAST, TRIGGER_EVENT, TRIGGER_INDICATOR_KILL, TRIGGER_MAX, TRIGGER_MIN,
 };
 use crate::{DecodeError, EncodeError};
 use chrono::Datelike;
@@ -49,6 +51,28 @@ pub enum Sal {
         duration: u32,
         /// Target level 0..=255.
         level: u8,
+    },
+    /// Send an explicit Trigger Control action selector to a group.
+    TriggerEvent {
+        /// Trigger group address.
+        group_address: u8,
+        /// Action selector 0..=255.
+        action_selector: u8,
+    },
+    /// Clear the indicators associated with a Trigger Control group.
+    TriggerIndicatorKill {
+        /// Trigger group address.
+        group_address: u8,
+    },
+    /// Trigger Control compact minimum-selector command.
+    TriggerMin {
+        /// Trigger group address.
+        group_address: u8,
+    },
+    /// Trigger Control compact maximum-selector command.
+    TriggerMax {
+        /// Trigger group address.
+        group_address: u8,
     },
     /// Broadcast the network time (DST byte always 0xFF on encode).
     ClockUpdateTime {
@@ -93,6 +117,8 @@ pub enum Sal {
         /// Application whose groups are being queried.
         child_application: u8,
     },
+    /// Request the complete installation MMI presence map.
+    InstallMmiRequest,
 }
 
 impl Sal {
@@ -103,12 +129,16 @@ impl Sal {
             | Sal::LightingOff { application, .. }
             | Sal::LightingTerminateRamp { application, .. }
             | Sal::LightingRamp { application, .. } => *application,
+            Sal::TriggerEvent { .. }
+            | Sal::TriggerIndicatorKill { .. }
+            | Sal::TriggerMin { .. }
+            | Sal::TriggerMax { .. } => APP_TRIGGER,
             Sal::ClockUpdateTime { .. } | Sal::ClockUpdateDate { .. } | Sal::ClockRequest => {
                 APP_CLOCK
             }
             Sal::TemperatureBroadcast { .. } => APP_TEMPERATURE,
             Sal::EnableSetNetworkVariable { .. } => APP_ENABLE,
-            Sal::StatusRequest { .. } => APP_STATUS_REQUEST,
+            Sal::StatusRequest { .. } | Sal::InstallMmiRequest => APP_STATUS_REQUEST,
         }
     }
 
@@ -130,6 +160,15 @@ impl Sal {
                 *group_address,
                 *level,
             ]),
+            Sal::TriggerEvent {
+                group_address,
+                action_selector,
+            } => Ok(vec![TRIGGER_EVENT, *group_address, *action_selector]),
+            Sal::TriggerIndicatorKill { group_address } => {
+                Ok(vec![TRIGGER_INDICATOR_KILL, *group_address])
+            }
+            Sal::TriggerMin { group_address } => Ok(vec![TRIGGER_MIN, *group_address]),
+            Sal::TriggerMax { group_address } => Ok(vec![TRIGGER_MAX, *group_address]),
             Sal::ClockUpdateTime {
                 hour,
                 minute,
@@ -187,6 +226,7 @@ impl Sal {
                     Ok(vec![0x7a, *child_application, ga])
                 }
             }
+            Sal::InstallMmiRequest => Ok(vec![0xfa, 0xff, 0x00]),
         }
     }
 }
@@ -202,6 +242,7 @@ pub fn decode_sals(app: u8, data: &[u8]) -> Result<Vec<Sal>, DecodeError> {
         }
         APP_CLOCK => clock::decode_sals(data),
         APP_TEMPERATURE => temperature::decode_sals(data),
+        APP_TRIGGER => trigger::decode_sals(data),
         APP_ENABLE => enable::decode_sals(data),
         APP_STATUS_REQUEST => status_request::decode_sals(data),
         _ => Err(DecodeError::new(format!(

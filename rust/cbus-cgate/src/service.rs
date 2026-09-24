@@ -7,6 +7,7 @@ use cbus_protocol::{
     sal::Sal,
 };
 use cbus_transport::pci::{CBusEvent, PciClient};
+use chrono::{Datelike, Local, NaiveDate, NaiveTime, Timelike};
 use serde::{Deserialize, Serialize};
 use std::{
     collections::HashSet,
@@ -206,6 +207,8 @@ impl Service {
             return;
         };
         let mut updates = Vec::new();
+        let mut clock_update = None;
+        let mut clear_application_state = false;
         match event {
             CBusEvent::LightingOn {
                 source: Some(_),
@@ -264,10 +267,61 @@ impl Service {
                     }
                 }
             }
+            CBusEvent::TriggerEvent {
+                source: Some(source),
+                group,
+                selector,
+            } => {
+                net.levels.insert((202, *group), *selector);
+                let _ = self.events.send(format!(
+                    "#e# trigger //{}/{}/202/{group} event action={selector} sourceUnit={source}",
+                    self.project, self.network
+                ));
+            }
+            CBusEvent::TriggerIndicatorKill {
+                source: Some(source),
+                group,
+            } => {
+                let _ = self.events.send(format!(
+                    "#e# trigger //{}/{}/202/{group} indicatorkill action=-1 sourceUnit={source}",
+                    self.project, self.network
+                ));
+            }
+            CBusEvent::EnableSet {
+                source: Some(source),
+                variable,
+                value,
+            } => {
+                net.levels.insert((203, *variable), *value);
+                let _ = self.events.send(format!(
+                    "#e# enable //{}/{}/203/{variable} set value={value} sourceUnit={source}",
+                    self.project, self.network
+                ));
+            }
+            CBusEvent::ClockDate {
+                year, month, day, ..
+            } => {
+                clock_update = Some((
+                    "CLOCK DATE".to_string(),
+                    format!("{year:04}-{month:02}-{day:02}"),
+                ));
+            }
+            CBusEvent::ClockTime {
+                hour,
+                minute,
+                second,
+                ..
+            } => {
+                clock_update = Some((
+                    "CLOCK TIME".to_string(),
+                    format!("{hour:02}:{minute:02}:{second:02}"),
+                ));
+            }
             CBusEvent::ConnectionLost => {
                 net.levels.clear();
                 net.physical.clear();
                 net.state = NetworkState::Closed;
+                clear_application_state = true;
             }
             _ => {}
         }
@@ -278,11 +332,27 @@ impl Service {
                 self.project, self.network
             ));
         }
+        if clear_application_state {
+            model.application_state.clear();
+        } else if let Some((key, value)) = clock_update {
+            model.application_state.insert(key, value);
+        }
     }
 
     fn bound_group(&self, address: &str) -> Option<(u8, u8)> {
         let (p, n, a, g) = Server::split_lighting(address)?;
         (p == self.project && n == self.network).then_some((a, g))
+    }
+
+    fn bound_network(&self, address: &str) -> bool {
+        let parts: Vec<_> = address.trim_start_matches('/').split('/').collect();
+        match parts.as_slice() {
+            [network] => network.parse::<u8>() == Ok(self.network),
+            [project, network] => {
+                *project == self.project && network.parse::<u8>() == Ok(self.network)
+            }
+            _ => false,
+        }
     }
 
     /// Execute a tagged command. Hardware work releases the database mutex.
@@ -301,6 +371,8 @@ impl Service {
                 tag,
                 vec![serde_json::json!({"service":"cmqttd", "physical_bus":true,
                 "full_cgate_compatibility":false, "memory_read":true, "memory_write":false,
+                "trigger_control":true, "enable_control":true, "clock_control":true,
+                "install_mmi":true, "network_pingu":true,
                 "project":self.project,"network":self.network,"persistent_database":true})
                 .to_string()],
                 "200 OK",
@@ -334,6 +406,18 @@ impl Service {
                 None => err(tag,404,"404 Unit is not in the configured project"),
             };
         }
+        if verb == "TRIGGER" && matches!(sub, "EVENT" | "INDICATORKILL") {
+            return self.trigger(client, line, tag, &words).await;
+        }
+        if verb == "ENABLE" && matches!(sub, "SET" | "REMOVE") {
+            return self.enable(client, line, tag, &words).await;
+        }
+        if verb == "CLOCK" && matches!(sub, "DATE" | "TIME" | "REQUEST_REFRESH") {
+            return self.clock(client, line, tag, &words).await;
+        }
+        if verb == "NET" && sub == "PINGU" {
+            return self.net_pingu(client, line, tag, &words).await;
+        }
         if matches!(verb, "ON" | "OFF" | "RAMP" | "TERMINATERAMP")
             || (verb == "LIGHTING"
                 && matches!(sub, "ON" | "OFF" | "RAMP" | "STOP" | "TERMINATERAMP"))
@@ -345,6 +429,11 @@ impl Service {
             .current
             .clone()
             .or_else(|| Some(self.project.clone()));
+        if verb == "GET" && words.len() == 3 {
+            if let Some(response) = self.application_get(&model, tag, words[1], words[2]) {
+                return response;
+            }
+        }
         if matches!(verb, "GET" | "GETSTATE")
             && words
                 .last()
@@ -356,6 +445,9 @@ impl Service {
             let Some((a, g)) = self.bound_group(&address) else {
                 return err(tag, 404, "404 Network is not connected to this service");
             };
+            if !(48..=95).contains(&a) {
+                return err(tag, 402, "402 Parameter not found");
+            }
             let value = model
                 .projects
                 .get(&self.project)
@@ -438,6 +530,462 @@ impl Service {
             let _ = self.events.send(event);
         }
         response
+    }
+
+    fn application_path(&self, address: &str) -> Option<u8> {
+        let parts: Vec<_> = address
+            .trim_start_matches('/')
+            .split('/')
+            .filter(|part| !part.is_empty())
+            .collect();
+        let (project, network, application) = match parts.as_slice() {
+            [network, application] => (self.project.as_str(), *network, *application),
+            [project, network, application] => (*project, *network, *application),
+            _ => return None,
+        };
+        let network = network.parse::<u8>().ok()?;
+        let application = application.parse::<u8>().ok()?;
+        (project == self.project && network == self.network).then_some(application)
+    }
+
+    fn application_get(
+        &self,
+        model: &Server,
+        tag: &str,
+        address: &str,
+        attribute: &str,
+    ) -> Option<Response> {
+        if let Some(application) = self.application_path(address) {
+            if !matches!(application, 202 | 203) {
+                return None;
+            }
+            if !attribute.eq_ignore_ascii_case("Groups") {
+                return Some(err(tag, 402, "402 Parameter not found"));
+            }
+            let mut groups = HashSet::new();
+            if let Some(network) = model
+                .projects
+                .get(&self.project)
+                .and_then(|p| p.networks.get(&self.network))
+            {
+                groups.extend(
+                    network
+                        .levels
+                        .keys()
+                        .filter_map(|(app, group)| (*app == application).then_some(*group)),
+                );
+            }
+            let prefix = format!("//{}/{}/{application}/", self.project, self.network);
+            for key in model.db_fields.keys() {
+                if let Some(rest) = key
+                    .strip_prefix(&prefix)
+                    .and_then(|value| value.strip_suffix("/TagName"))
+                {
+                    if let Ok(group) = rest.parse::<u8>() {
+                        groups.insert(group);
+                    }
+                }
+            }
+            let mut groups: Vec<_> = groups.into_iter().collect();
+            groups.sort_unstable();
+            let value = groups
+                .into_iter()
+                .map(|group| group.to_string())
+                .collect::<Vec<_>>()
+                .join(",");
+            return Some(Server::property(tag, address, "Groups", &value));
+        }
+        let (application, group) = self.bound_group(address)?;
+        if !matches!(application, 202 | 203) {
+            return None;
+        }
+        let level = model
+            .projects
+            .get(&self.project)
+            .and_then(|p| p.networks.get(&self.network))
+            .and_then(|n| n.levels.get(&(application, group)))
+            .copied();
+        let name = model
+            .db_fields
+            .get(&format!("{address}/TagName"))
+            .cloned()
+            .unwrap_or_default();
+        let known = level.is_some() || !name.is_empty();
+        if !known {
+            return Some(err(
+                tag,
+                408,
+                "408 No live application state has been observed",
+            ));
+        }
+        let response = if attribute.eq_ignore_ascii_case("Level") {
+            if application == 202 {
+                err(tag, 402, "402 Parameter not found")
+            } else if let Some(level) = level {
+                Server::property(tag, address, "Level", &level.to_string())
+            } else {
+                err(tag, 408, "408 No live Enable level has been observed")
+            }
+        } else if attribute.eq_ignore_ascii_case("State") {
+            Server::property(tag, address, "State", "ok")
+        } else if attribute.eq_ignore_ascii_case("Name") {
+            Server::property(tag, address, "Name", &name)
+        } else if application == 202 && attribute.eq_ignore_ascii_case("EventLevel") {
+            Server::property(tag, address, "EventLevel", "5")
+        } else if attribute == "*" {
+            let mut fields = if application == 202 {
+                vec![
+                    ("EventLevel", "5".to_string()),
+                    ("Name", name),
+                    ("State", "ok".to_string()),
+                ]
+            } else {
+                vec![("Name", name), ("State", "ok".to_string())]
+            };
+            if application == 203 {
+                if let Some(level) = level {
+                    fields.insert(0, ("Level", level.to_string()));
+                }
+            }
+            let mut rows: Vec<_> = fields
+                .into_iter()
+                .map(|(name, value)| format!("300-{address}: {name}={value}"))
+                .collect();
+            let final_text = rows
+                .pop()
+                .expect("application wildcard has fields")
+                .replacen("300-", "300 ", 1);
+            Response {
+                tag: tag.to_string(),
+                lines: rows,
+                final_text,
+                status: 300,
+            }
+        } else {
+            err(tag, 402, "402 Parameter not found")
+        };
+        Some(response)
+    }
+
+    async fn net_pingu(
+        &self,
+        client: &ClientState,
+        line: &str,
+        tag: &str,
+        words: &[&str],
+    ) -> Response {
+        let _commands = self.commands.lock().await;
+        if words.len() != 3 || !self.bound_network(words[2]) {
+            let mut staged = self.model.lock().await.clone();
+            staged.current = client
+                .current
+                .clone()
+                .or_else(|| Some(self.project.clone()));
+            return staged.handle(line);
+        }
+        let validation = {
+            let mut staged = self.model.lock().await.clone();
+            staged.current = client
+                .current
+                .clone()
+                .or_else(|| Some(self.project.clone()));
+            staged.handle(line)
+        };
+        if validation.status >= 400 {
+            return validation;
+        }
+        let pci = self.pci.read().await.clone();
+        let states = match pci.install_mmi().await {
+            Ok(states) => states,
+            Err(error) => {
+                return err(
+                    tag,
+                    408,
+                    &format!("408 Physical installation MMI failed: {error}"),
+                )
+            }
+        };
+        let addresses: Vec<u8> = states
+            .iter()
+            .enumerate()
+            .filter_map(|(address, state)| (*state != 0).then_some(address as u8))
+            .collect();
+        if let Some(network) = self
+            .model
+            .lock()
+            .await
+            .projects
+            .get_mut(&self.project)
+            .and_then(|project| project.networks.get_mut(&self.network))
+        {
+            let previous = std::mem::take(&mut network.physical);
+            network.physical = addresses
+                .iter()
+                .map(|address| {
+                    let unit = previous
+                        .get(address)
+                        .cloned()
+                        .unwrap_or_else(|| Unit::blank(*address, ""));
+                    (*address, unit)
+                })
+                .collect();
+        }
+        let list = addresses
+            .iter()
+            .map(u8::to_string)
+            .collect::<Vec<_>>()
+            .join(", ");
+        ok(tag, vec![format!("302-Units={list}")], "200 OK.")
+    }
+
+    async fn trigger(
+        &self,
+        client: &ClientState,
+        line: &str,
+        tag: &str,
+        words: &[&str],
+    ) -> Response {
+        let _commands = self.commands.lock().await;
+        let response = {
+            let mut staged = self.model.lock().await.clone();
+            staged.current = client
+                .current
+                .clone()
+                .or_else(|| Some(self.project.clone()));
+            staged.handle(line)
+        };
+        if response.status >= 400 {
+            return response;
+        }
+        let Some(address) = words.get(2) else {
+            return err(tag, 400, "400 Invalid Trigger Control address");
+        };
+        let Some((application, group)) = self.bound_group(address) else {
+            return err(tag, 404, "404 Network is not connected to this service");
+        };
+        if application != 202 {
+            return err(tag, 400, "400 Trigger Control application must be 202");
+        }
+        let (sal, selector) = if words[1].eq_ignore_ascii_case("EVENT") {
+            let selector = words[3].parse::<u8>().expect("model validated selector");
+            (
+                Sal::TriggerEvent {
+                    group_address: group,
+                    action_selector: selector,
+                },
+                Some(selector),
+            )
+        } else {
+            (
+                Sal::TriggerIndicatorKill {
+                    group_address: group,
+                },
+                None,
+            )
+        };
+        let packet = Packet::PointToMultipoint {
+            meta: Meta::new(true, 0),
+            application,
+            sals: vec![sal],
+        };
+        let pci = self.pci.read().await.clone();
+        match pci.send_confirmed(&packet).await {
+            Ok(()) => {
+                if let Some(selector) = selector {
+                    if let Some(network) = self
+                        .model
+                        .lock()
+                        .await
+                        .projects
+                        .get_mut(&self.project)
+                        .and_then(|p| p.networks.get_mut(&self.network))
+                    {
+                        network.levels.insert((202, group), selector);
+                    }
+                    let _ = self.events.send(format!(
+                        "#e# trigger {address} event action={selector} sourceUnit=0"
+                    ));
+                } else {
+                    let _ = self.events.send(format!(
+                        "#e# trigger {address} indicatorkill action=-1 sourceUnit=0"
+                    ));
+                }
+                response
+            }
+            Err(error) => err(tag, 502, &format!("502 Trigger delivery failed: {error}")),
+        }
+    }
+
+    async fn enable(
+        &self,
+        client: &ClientState,
+        line: &str,
+        tag: &str,
+        words: &[&str],
+    ) -> Response {
+        let _commands = self.commands.lock().await;
+        let response = {
+            let mut staged = self.model.lock().await.clone();
+            staged.current = client
+                .current
+                .clone()
+                .or_else(|| Some(self.project.clone()));
+            staged.handle(line)
+        };
+        if response.status >= 400 {
+            return response;
+        }
+        let Some(address) = words.get(2) else {
+            return err(tag, 400, "400 Invalid Enable Control address");
+        };
+        let Some((application, variable)) = self.bound_group(address) else {
+            return err(tag, 404, "404 Network is not connected to this service");
+        };
+        if application != 203 {
+            return err(tag, 400, "400 Enable Control application must be 203");
+        }
+        if words[1].eq_ignore_ascii_case("REMOVE") {
+            // C-Gate's REMOVE is a server-side saved-value request. cmqttd
+            // has no such file and preserves the live observed cache.
+            return response;
+        }
+        let value = words[3].parse::<u8>().expect("model validated value");
+        let packet = Packet::PointToMultipoint {
+            meta: Meta::new(true, 0),
+            application,
+            sals: vec![Sal::EnableSetNetworkVariable { variable, value }],
+        };
+        let pci = self.pci.read().await.clone();
+        match pci.send_confirmed(&packet).await {
+            Ok(()) => {
+                if let Some(network) = self
+                    .model
+                    .lock()
+                    .await
+                    .projects
+                    .get_mut(&self.project)
+                    .and_then(|p| p.networks.get_mut(&self.network))
+                {
+                    network.levels.insert((203, variable), value);
+                }
+                let _ = self.events.send(format!(
+                    "#e# enable {address} set value={value} sourceUnit=0"
+                ));
+                response
+            }
+            Err(error) => err(tag, 502, &format!("502 Enable delivery failed: {error}")),
+        }
+    }
+
+    async fn clock(&self, client: &ClientState, line: &str, tag: &str, words: &[&str]) -> Response {
+        let _commands = self.commands.lock().await;
+        let target = words.get(2).copied().unwrap_or("");
+        if self.application_path(target) != Some(223) {
+            return err(tag, 404, "404 Clock application is not on this network");
+        }
+        if words[1].eq_ignore_ascii_case("REQUEST_REFRESH") {
+            let response = {
+                let mut staged = self.model.lock().await.clone();
+                staged.current = client
+                    .current
+                    .clone()
+                    .or_else(|| Some(self.project.clone()));
+                staged.handle(line)
+            };
+            if response.status >= 400 {
+                return response;
+            }
+            return self
+                .send_application(tag, Sal::ClockRequest, response, "Clock request")
+                .await;
+        }
+        if words.len() == 3 {
+            let mut model = self.model.lock().await;
+            model.current = client
+                .current
+                .clone()
+                .or_else(|| Some(self.project.clone()));
+            return model.handle(line);
+        }
+        if words.len() != 4 {
+            let mut staged = self.model.lock().await.clone();
+            return staged.handle(line);
+        }
+        let now = Local::now();
+        let resolved = if words[3].eq_ignore_ascii_case("SYSTEM") {
+            if words[1].eq_ignore_ascii_case("DATE") {
+                format!("{:04}-{:02}-{:02}", now.year(), now.month(), now.day())
+            } else {
+                format!("{:02}:{:02}:{:02}", now.hour(), now.minute(), now.second())
+            }
+        } else {
+            words[3].to_string()
+        };
+        let normalized = format!("[{tag}] CLOCK {} {target} {resolved}", words[1]);
+        let response = {
+            let mut staged = self.model.lock().await.clone();
+            staged.current = client
+                .current
+                .clone()
+                .or_else(|| Some(self.project.clone()));
+            staged.handle(&normalized)
+        };
+        if response.status >= 400 {
+            return response;
+        }
+        let (key, sal) = if words[1].eq_ignore_ascii_case("DATE") {
+            let date = NaiveDate::parse_from_str(&resolved, "%Y-%m-%d")
+                .expect("model validated clock date");
+            (
+                "CLOCK DATE",
+                Sal::ClockUpdateDate {
+                    year: date.year() as u16,
+                    month: date.month() as u8,
+                    day: date.day() as u8,
+                },
+            )
+        } else {
+            let time = NaiveTime::parse_from_str(&resolved, "%H:%M:%S")
+                .expect("model validated clock time");
+            (
+                "CLOCK TIME",
+                Sal::ClockUpdateTime {
+                    hour: time.hour() as u8,
+                    minute: time.minute() as u8,
+                    second: time.second() as u8,
+                },
+            )
+        };
+        let result = self
+            .send_application(tag, sal, response, "Clock update")
+            .await;
+        if result.status < 400 {
+            self.model
+                .lock()
+                .await
+                .application_state
+                .insert(key.to_string(), resolved);
+        }
+        result
+    }
+
+    async fn send_application(
+        &self,
+        tag: &str,
+        sal: Sal,
+        response: Response,
+        operation: &str,
+    ) -> Response {
+        let packet = Packet::PointToMultipoint {
+            meta: Meta::new(true, 0),
+            application: sal.application(),
+            sals: vec![sal],
+        };
+        let pci = self.pci.read().await.clone();
+        match pci.send_confirmed(&packet).await {
+            Ok(()) => response,
+            Err(error) => err(tag, 502, &format!("502 {operation} failed: {error}")),
+        }
     }
 
     async fn read_memory(&self, tag: &str, words: &[&str]) -> Response {
@@ -714,7 +1262,8 @@ fn local_command(words: &[&str], upper: &[String], model: &Server) -> bool {
             words.len() == 3
                 && (words[1].eq_ignore_ascii_case("CGATE")
                     || upper[2] == "STATE"
-                    || upper[2] == "TARGETINTERFACESTATE")
+                    || upper[2] == "TARGETINTERFACESTATE"
+                    || upper[2] == "UNITS")
         }
         "NET" => matches!(sub, "LIST" | "LIST_ALL" | "STATE"),
         "PP" => match sub {

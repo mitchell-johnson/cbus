@@ -35,6 +35,20 @@ pub fn sal_to_json(s: &Sal) -> Value {
         } => json!({"sal": "lighting_terminate_ramp",
                     "application": application,
                     "group_address": group_address}),
+        Sal::TriggerEvent {
+            group_address,
+            action_selector,
+        } => json!({"sal": "trigger_event", "group_address": group_address,
+                    "action_selector": action_selector}),
+        Sal::TriggerIndicatorKill { group_address } => {
+            json!({"sal": "trigger_indicator_kill", "group_address": group_address})
+        }
+        Sal::TriggerMin { group_address } => {
+            json!({"sal": "trigger_min", "group_address": group_address})
+        }
+        Sal::TriggerMax { group_address } => {
+            json!({"sal": "trigger_max", "group_address": group_address})
+        }
         Sal::ClockRequest => json!({"sal": "clock_request"}),
         Sal::ClockUpdateDate { year, month, day } => {
             json!({"sal": "clock_update_date", "year": year,
@@ -64,6 +78,7 @@ pub fn sal_to_json(s: &Sal) -> Value {
                     "level_request": level_request,
                     "group_address": group_address,
                     "child_application": child_application}),
+        Sal::InstallMmiRequest => json!({"sal": "install_mmi_request"}),
     }
 }
 
@@ -162,6 +177,12 @@ pub fn packet_to_json(p: Option<&Packet>) -> Value {
             );
             Value::Object(m)
         }
+        Packet::StandardStatus {
+            application,
+            block_start,
+            states,
+        } => json!({"type": "standard_status", "application": application,
+                   "block_start": block_start, "states": states}),
         Packet::PointToPoint {
             meta,
             unit_address,
@@ -275,6 +296,19 @@ pub fn sal_from_json(d: &Value) -> Result<Sal, JErr> {
                 .ok_or("missing duration")? as u32,
             level: get_u8(d, "level")?,
         }),
+        "trigger_event" => Ok(Sal::TriggerEvent {
+            group_address: get_u8(d, "group_address")?,
+            action_selector: get_u8(d, "action_selector")?,
+        }),
+        "trigger_indicator_kill" => Ok(Sal::TriggerIndicatorKill {
+            group_address: get_u8(d, "group_address")?,
+        }),
+        "trigger_min" => Ok(Sal::TriggerMin {
+            group_address: get_u8(d, "group_address")?,
+        }),
+        "trigger_max" => Ok(Sal::TriggerMax {
+            group_address: get_u8(d, "group_address")?,
+        }),
         "clock_request" => Ok(Sal::ClockRequest),
         "clock_update_date" => Ok(Sal::ClockUpdateDate {
             year: d
@@ -305,6 +339,7 @@ pub fn sal_from_json(d: &Value) -> Result<Sal, JErr> {
             group_address: get_u8(d, "group_address")?,
             child_application: get_u8(d, "child_application")?,
         }),
+        "install_mmi_request" => Ok(Sal::InstallMmiRequest),
         other => Err(format!("unhandled SAL json: {other}")),
     }
 }
@@ -442,6 +477,25 @@ pub fn packet_from_json(d: &Value) -> Result<JsonObject, JErr> {
                 meta: meta_from_json(d)?,
                 application,
                 sals,
+            }))
+        }
+        "standard_status" => {
+            let states = d
+                .get("states")
+                .and_then(Value::as_array)
+                .ok_or("missing states")?
+                .iter()
+                .map(|value| {
+                    value
+                        .as_u64()
+                        .and_then(|value| u8::try_from(value).ok())
+                        .ok_or_else(|| "bad standard status state".to_string())
+                })
+                .collect::<Result<Vec<_>, _>>()?;
+            Ok(JsonObject::Packet(Packet::StandardStatus {
+                application: get_u8(d, "application")?,
+                block_start: get_u8(d, "block_start")?,
+                states,
             }))
         }
         "point_to_point" => {

@@ -114,7 +114,7 @@ cbus-toolkit cgate --host 127.0.0.1 edlt-labels //PROJECT/254/p/5
 
 Replace the project/network/unit with your actual address. Live eDLT label reads verify the device identity, stable configuration header, and static-text CRC; results include the 64 stored strings and widget/scene labels. Dynamic label caches are reported as unread.
 
-**Full C-Gate replacement is the target, not the current completion claim.** Hardware-backed lighting, unit identity, extended-memory reads, live level observations, and persistent database operations are implemented. Remaining hardware workflows return explicit errors instead of simulated success. See the [supported operations and remaining work](docs/cmqttd-cgate.md).
+**Full C-Gate replacement is the target, not the current completion claim.** Hardware-backed lighting, Trigger Control, Enable Control, clock commands, complete-coverage `NET PINGU` discovery, unit identity, extended-memory reads, live observations, and persistent database operations are implemented while MQTT continues on the same CNI connection. Remaining hardware workflows return explicit errors instead of simulated success. See the [supported operations and remaining work](docs/cmqttd-cgate.md).
 
 ## Development tools and simulation
 

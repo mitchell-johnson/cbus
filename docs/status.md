@@ -24,12 +24,13 @@ Full Toolkit parity remains unfinished. The ledger records 38 feature areas: 17 
 | C-Gate command surface | Complete inventory coverage | 224 public manual headings plus 268 registered command paths, 431 unique paths |
 | C-Gate core state | Stateful | Project, database, network, unit, level, event, lock, session, and programming-session workflows |
 | C-Gate specialist families | Deterministic model | All registered commands dispatch; specialist or hardware-facing operations return stable in-memory results rather than controlling physical equipment |
+| Embedded physical C-Gate | In progress | Persistent database plus real lighting, Trigger, Enable, clock, complete-coverage PINGU discovery, identity and memory-read backends over cmqttd's shared CNI connection |
 | Test infrastructure | Implemented | Compatibility vectors, generated per-vector tests, property tests, in-process MQTT broker, scripted PCI, full-system tests, formatting and lint gates |
 | Container image | Implemented | Builds and ships `cmqttd`, `cbus-tools`, `cbus-simulator`, and `cgate-mock` |
 
 ## Current limits and outstanding work
 
-- The C-Gate server is an in-memory compatibility server. It does not embed or launch Schneider C-Gate, persist its model across restarts, or provide physical network access.
+- `cgate-mock` is an in-memory compatibility server. The separate C-Gate service embedded in `cmqttd` persists its database and implements the physical operations listed in [its replacement ledger](cmqttd-cgate.md); other physical commands fail explicitly.
 - Complete command dispatch means every inventory path has a response model. It does not mean every specialist command reproduces every device-specific side effect of native C-Gate.
 - The PCI simulator models the protocol behavior needed by the workspace and test suite. It is not a complete electrical or timing simulation of every C-Bus unit.
 - Real-site validation remains necessary for unusual topologies, serial adapters, broker policies, and device families not represented by the committed fixtures.
