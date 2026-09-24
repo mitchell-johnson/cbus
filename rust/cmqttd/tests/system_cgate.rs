@@ -106,6 +106,9 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
             sys.pci.inject(&pci_wire(&body));
         }
     }
+    assert!(command(&mut reader, &mut writer, "CMQTT CAPABILITIES")
+        .await
+        .contains("\"do_methods\":[\"lighting\",\"sync\"]"));
     assert!(
         command(&mut reader, &mut writer, "GET //HARNESS/254/56/1 level")
             .await
@@ -115,6 +118,24 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
         .await
         .contains("200 OK"));
     assert_eq!(sys.pci.count_payload("053800790149"), 1);
+    for (method, payload) in [
+        ("OFF", "0538000101C1"),
+        ("ON", "053800790149"),
+        ("RAMP 64 0", "05380002014080"),
+        ("TERMINATERAMP", "0538000901B9"),
+    ] {
+        let response = command(
+            &mut reader,
+            &mut writer,
+            &format!("DO //HARNESS/254/56/1 {method}"),
+        )
+        .await;
+        assert!(
+            response.contains("202 Done: //HARNESS/254/56/1"),
+            "{method}: {response:?}"
+        );
+        assert!(sys.pci.count_payload(payload) >= 1, "{method}: {payload}");
+    }
     // Successful delivery does not manufacture an observed brightness.
     assert!(
         command(&mut reader, &mut writer, "GET //HARNESS/254/56/1 level")
@@ -419,7 +440,7 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     let serial_255_b = [
         0x38, 0xff, 0xff, 0xff, 0xff, 0x18, 0xb1, 0x06, 0x17, 0xa2, 0x00, 0x05,
     ];
-    let sync = command(&mut reader, &mut writer, "NET SYNC //HARNESS/254 fast");
+    let sync = command(&mut reader, &mut writer, "DO //HARNESS/254 SYNC");
     let identities = async {
         require(STARTUP, "BASIC local-address request", || {
             sys.pci
@@ -447,7 +468,7 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
         answer_identify(&sys, 255, 4, 1, &[&serial_255_a, &serial_255_b]).await;
     };
     let (sync, ()) = tokio::join!(sync, identities);
-    assert!(sync.contains("200 OK"), "{sync:?}");
+    assert!(sync.contains("202 Done: //HARNESS/254"), "{sync:?}");
     assert!(command(&mut reader, &mut writer, "GET //HARNESS/254 Units")
         .await
         .contains("Units=16, 255"));
@@ -495,6 +516,11 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
         "{check:?}"
     );
     assert!(check.contains("200 OK."), "{check:?}");
+    assert!(
+        command(&mut reader, &mut writer, "DO //HARNESS/254 UNRAVEL")
+            .await
+            .contains("502 DO UNRAVEL requires a physical backend")
+    );
     assert_eq!(sys.pci.connections(), 1);
     drop(sys);
     std::fs::remove_file(path).unwrap();

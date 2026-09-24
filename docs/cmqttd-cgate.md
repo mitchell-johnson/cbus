@@ -38,6 +38,7 @@ not be committed or published.
 | Physical PP LOAD and subsequent GET/INFO | Identifies the live unit, selects its privately installed decoded schema, recalls standard CAL parameters, explicit pages for `paged`/`ncc`, OEM memory, and GOC parameter-`0xFF` memory through the shared PCI, decodes int/long/bit/string/sixbit arrays and `ArrayMap`, applies tag selection, and commits the session only after every read succeeds |
 | Physical PP SAVE/SAVE_TO_SOURCE | Writes only dirty, tag-selected `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and `goc2` parameters with `none`/`checksum`/supported `lock` protection. Page-aware writes split at 256-byte boundaries; OEM methods use the selector/data path; GIU halts and resumes the unit; DALI observes the native settling interval; GOC methods use parameter `0xFF`, a big-endian address prefix, and their native block limits. The service validates the complete plan and live type/firmware first, preserves shared bits through pre-read/encode, requires source/parameter-matched acknowledgements, and reads every stored range back before success. Specifications containing the vendor `ncc` method are classified as C-Bus 3; after a changed save, the service runs native group-0 operation-4 EXECUTE/POLL until the NVM commit succeeds |
 | ON/OFF/RAMP/TERMINATERAMP and lighting variants | Actual shared PCI, negative confirmations return errors; successful delivery is distinct from observed physical brightness |
+| `DO` lighting methods and direct-network `SYNC` | Native object-method aliases use the same physical lighting and synchronization backends and return `202 Done: object`; `DO ... UNRAVEL` remains an explicit 502 until its physical backend exists |
 | GET group level | Real observed bus levels; unobserved levels return 408, never invented zero |
 | SCENE RECORD/PLAY | RECORD atomically persists the configured network's observed lighting levels under the named set/scene. PLAY sends a confirmed zero-time ramp for every stored level, invalidates the old cache, and schedules physical status readback. Unknown scenes retain the native 401 response |
 | TRIGGER EVENT/INDICATORKILL | Actual Trigger Control SAL on application 202; incoming events update the live service cache and event stream |
@@ -169,8 +170,10 @@ return 502. Full replacement still requires:
   write-readback acceptance.
 - Bridged-network synchronization, serial-address broadcasts, unravel,
   project identification and the remaining commissioning state transitions.
-  Direct-network `NET PINGU`, `NET SYNC` identity population, duplicate-aware
-  `NET CHECKUNIT`, and guarded single-unit physical readdressing are implemented.
+  Direct-network `NET PINGU`, `NET SYNC` identity population, `DO ... SYNC`,
+  duplicate-aware `NET CHECKUNIT`, and guarded single-unit physical
+  readdressing are implemented. `DO` lighting methods also use the physical
+  lighting backend; `DO ... UNRAVEL` is rejected until unravel is implemented.
 - Device-resident scene triggering beyond PP table programming, dynamic eDLT label cache reads, and
   specialist application families such as HVAC, audio and security.
 - Native repository/archive/import/export formats, document commands,
@@ -210,7 +213,9 @@ The real cmqttd system test performs physical PP LOAD and SAVE against a scripte
 PCI, checks standard and OEM values, dirty/tag selection, read-modify-write
 encoding, acknowledgements, readback, and the exact C-Bus 3 NVM commit sequence,
 and verifies that C-Gate and MQTT retain one PCI connection while lighting events
-continue through the same transport. A separate real-daemon test verifies guarded physical
+continue through the same transport. The same test pins `DO` lighting methods to
+their physical SAL packets, exercises `DO ... SYNC`, and verifies that unsupported
+`DO ... UNRAVEL` cannot report simulated success. A separate real-daemon test verifies guarded physical
 readdressing, exact-once STORE transmission, database/physical layer separation,
 and MQTT event delivery on that same PCI during the move.
 `toolkit-cli/tests/test_cmqtt.py` tests synthetic eDLT decoding and read contracts.

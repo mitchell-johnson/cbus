@@ -18,7 +18,8 @@ Dynamic labels are not read. `UNIT READMEM` and `UNIT IDENTIFY` are cmqttd
 extensions. A 502 response is a missing backend or failed device operation;
 never replace it with saved project data and describe that as a live result.
 
-The physical service also implements lighting commands, Trigger Control,
+The physical service also implements lighting commands, C-Gate `DO` object
+methods for lighting and direct-network `SYNC`, Trigger Control,
 Enable Control, clock date/time/refresh, Temperature Broadcast, `NET PINGU`, `NET SYNC`,
 `NET CHECKUNIT`, physical `PP LOAD`, and readback-verified physical `PP SAVE` for
 `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and
@@ -63,8 +64,17 @@ Query `CMQTT CAPABILITIES`; `unit_readdress: true` denotes the readdress path an
 `dynamic_labels: true` denotes the label sender,
 `edlt_label_clear: true` denotes the one-shot KEYGL5 clear control,
 `named_scenes: true` denotes hardware-backed named-scene playback,
+and `do_methods: ["lighting", "sync"]` denotes the physical object-method aliases,
 while `full_cgate_compatibility` remains false until every remaining backend and
 acceptance requirement is complete.
+
+`DO //PROJECT/NETWORK/APPLICATION/GROUP ON|OFF|RAMP|TERMINATERAMP` uses the
+same confirmed SAL path as the corresponding lighting command. `DO
+//PROJECT/NETWORK SYNC` runs the same physical identity-populating direct-network
+synchronization as `NET SYNC` and returns native `202 Done: object` framing.
+`DO ... UNRAVEL` returns 502 until the serial-address and bridged-network unravel
+backend is implemented; never describe the mock's in-memory result as physical
+success.
 
 ## Mock service
 

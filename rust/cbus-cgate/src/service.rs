@@ -423,6 +423,7 @@ impl Service {
                 "dynamic_label_modes":["dynamic_icon","icon","language","raw","unicode"],
                 "edlt_label_clear":true,
                 "named_scenes":true,
+                "do_methods":["lighting","sync"],
                 "install_mmi":true, "network_pingu":true,
                 "network_sync":true, "network_checkunit":true,
                 "unit_readdress":true,
@@ -526,6 +527,9 @@ impl Service {
         }
         if verb == "SCENE" {
             return self.scene(client, line, tag, &words).await;
+        }
+        if verb == "DO" {
+            return self.do_method(client, tag, &words).await;
         }
         if matches!(verb, "ON" | "OFF" | "RAMP" | "TERMINATERAMP")
             || (verb == "LIGHTING"
@@ -2932,6 +2936,41 @@ impl Service {
             });
         }
         response
+    }
+
+    async fn do_method(&self, client: &ClientState, tag: &str, words: &[&str]) -> Response {
+        if words.len() < 3 {
+            return err(tag, 400, "400 DO requires an object and method");
+        }
+        let method = words[2].to_ascii_uppercase();
+        let response = if matches!(method.as_str(), "ON" | "OFF" | "RAMP" | "TERMINATERAMP") {
+            let mut command = vec![method, words[1].to_string()];
+            command.extend(words[3..].iter().map(|word| (*word).to_string()));
+            let line = format!("[{tag}] {}", command.join(" "));
+            self.lighting(client, &line, tag).await
+        } else if method == "SYNC" {
+            let command = ["NET", "SYNC", words[1]];
+            let line = format!("[{tag}] NET SYNC {}", words[1]);
+            self.net_sync(client, &line, tag, &command).await
+        } else if method == "UNRAVEL" {
+            return err(
+                tag,
+                502,
+                "502 DO UNRAVEL requires a physical backend that is not implemented",
+            );
+        } else {
+            return err(tag, 402, "402 Method not supported by object");
+        };
+        if response.status >= 400 {
+            response
+        } else {
+            Response {
+                tag: tag.to_string(),
+                lines: response.lines,
+                final_text: format!("202 Done: {}", words[1]),
+                status: 202,
+            }
+        }
     }
 
     /// Run a bounded listener. The caller owns binding and task supervision.
