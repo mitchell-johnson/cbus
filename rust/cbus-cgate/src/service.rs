@@ -373,6 +373,7 @@ impl Service {
                 "full_cgate_compatibility":false, "memory_read":true, "memory_write":false,
                 "trigger_control":true, "enable_control":true, "clock_control":true,
                 "install_mmi":true, "network_pingu":true,
+                "network_sync":true, "network_checkunit":true,
                 "project":self.project,"network":self.network,"persistent_database":true})
                 .to_string()],
                 "200 OK",
@@ -417,6 +418,12 @@ impl Service {
         }
         if verb == "NET" && sub == "PINGU" {
             return self.net_pingu(client, line, tag, &words).await;
+        }
+        if verb == "NET" && sub == "SYNC" {
+            return self.net_sync(client, line, tag, &words).await;
+        }
+        if verb == "NET" && sub == "CHECKUNIT" {
+            return self.net_checkunit(client, line, tag, &words).await;
         }
         if matches!(verb, "ON" | "OFF" | "RAMP" | "TERMINATERAMP")
             || (verb == "LIGHTING"
@@ -492,10 +499,19 @@ impl Service {
             *model = before;
             return response;
         }
-        // Database additions must not invent physical presence.
-        for project in model.projects.values_mut() {
-            for network in project.networks.values_mut() {
-                network.physical.clear();
+        // The in-memory compatibility model makes some database verbs affect
+        // its synthetic physical layer. The hardware service must preserve
+        // the independently observed bus inventory across every local command,
+        // including read-only GETs, and must never let a database edit invent
+        // physical presence.
+        for (project_name, project) in &mut model.projects {
+            for (network_address, network) in &mut project.networks {
+                network.physical = before
+                    .projects
+                    .get(project_name)
+                    .and_then(|project| project.networks.get(network_address))
+                    .map(|network| network.physical.clone())
+                    .unwrap_or_default();
             }
         }
         let after_db = Database::from_server(&model);
@@ -736,6 +752,301 @@ impl Service {
             .collect::<Vec<_>>()
             .join(", ");
         ok(tag, vec![format!("302-Units={list}")], "200 OK.")
+    }
+
+    async fn net_sync(
+        &self,
+        client: &ClientState,
+        line: &str,
+        tag: &str,
+        words: &[&str],
+    ) -> Response {
+        let _commands = self.commands.lock().await;
+        if words.len() < 3 || !self.bound_network(words[2]) {
+            let mut staged = self.model.lock().await.clone();
+            staged.current = client
+                .current
+                .clone()
+                .or_else(|| Some(self.project.clone()));
+            return staged.handle(line);
+        }
+        let validation = {
+            let mut staged = self.model.lock().await.clone();
+            staged.current = client
+                .current
+                .clone()
+                .or_else(|| Some(self.project.clone()));
+            staged.handle(line)
+        };
+        if validation.status >= 400 {
+            return validation;
+        }
+        self.set_network_state(NetworkState::Syncing).await;
+        let pci = self.pci.read().await.clone();
+        let interface_units = {
+            let model = self.model.lock().await;
+            model.projects[&self.project].networks[&self.network]
+                .units
+                .values()
+                .filter(|unit| {
+                    let unit_type = unit.unit_type.to_ascii_uppercase();
+                    unit_type.starts_with("PC_CNI") || unit_type.starts_with("PC_PCI")
+                })
+                .map(|unit| unit.address)
+                .collect::<Vec<_>>()
+        };
+        let local = match interface_units.as_slice() {
+            [address] => pci.set_local_unit_hint(*address).map(|()| *address),
+            [] => pci.discover_local_unit().await,
+            _ => Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "configured network has multiple local-interface units",
+            )),
+        };
+        if let Err(error) = local {
+            self.set_network_state(NetworkState::Open).await;
+            return err(
+                tag,
+                408,
+                &format!("408 Physical interface discovery failed: {error}"),
+            );
+        }
+        let states = match pci.install_mmi().await {
+            Ok(states) => states,
+            Err(error) => {
+                self.set_network_state(NetworkState::Open).await;
+                return err(
+                    tag,
+                    408,
+                    &format!("408 Physical network synchronization failed: {error}"),
+                );
+            }
+        };
+        let addresses: Vec<u8> = states
+            .iter()
+            .enumerate()
+            .filter_map(|(address, state)| (*state != 0).then_some(address as u8))
+            .collect();
+        let mut identities = Vec::with_capacity(addresses.len());
+        for address in addresses {
+            let unit_type = match pci.identify_first(address, 1).await {
+                Ok(Some(data)) => match identity_text(&data, "unit type") {
+                    Ok(value) => value,
+                    Err(error) => {
+                        self.set_network_state(NetworkState::Open).await;
+                        return err(
+                            tag,
+                            408,
+                            &format!(
+                                "408 Physical identity synchronization failed at address {address}: {error}"
+                            ),
+                        );
+                    }
+                },
+                Ok(None) => String::new(),
+                Err(error) => {
+                    self.set_network_state(NetworkState::Open).await;
+                    return err(
+                        tag,
+                        408,
+                        &format!(
+                            "408 Physical identity synchronization failed at address {address}: {error}"
+                        ),
+                    );
+                }
+            };
+            let firmware = match pci.identify_first(address, 2).await {
+                Ok(Some(data)) => match identity_text(&data, "firmware version") {
+                    Ok(value) => value,
+                    Err(error) => {
+                        self.set_network_state(NetworkState::Open).await;
+                        return err(
+                            tag,
+                            408,
+                            &format!(
+                                "408 Physical identity synchronization failed at address {address}: {error}"
+                            ),
+                        );
+                    }
+                },
+                Ok(None) => String::new(),
+                Err(error) => {
+                    self.set_network_state(NetworkState::Open).await;
+                    return err(
+                        tag,
+                        408,
+                        &format!(
+                            "408 Physical identity synchronization failed at address {address}: {error}"
+                        ),
+                    );
+                }
+            };
+            let serial_replies = match pci.identify_all(address, 4).await {
+                Ok(replies) => replies,
+                Err(error) => {
+                    self.set_network_state(NetworkState::Open).await;
+                    return err(
+                        tag,
+                        408,
+                        &format!(
+                            "408 Physical serial synchronization failed at address {address}: {error}"
+                        ),
+                    );
+                }
+            };
+            let serials = match known_serials(&serial_replies) {
+                Ok(serials) => serials,
+                Err(error) => {
+                    self.set_network_state(NetworkState::Open).await;
+                    return err(
+                        tag,
+                        408,
+                        &format!(
+                            "408 Physical serial synchronization failed at address {address}: {error}"
+                        ),
+                    );
+                }
+            };
+            let serial = if serials.len() == 1 {
+                serials.into_iter().next().unwrap()
+            } else {
+                String::new()
+            };
+            identities.push((address, unit_type, firmware, serial));
+        }
+
+        let mut model = self.model.lock().await;
+        if let Some(network) = model
+            .projects
+            .get_mut(&self.project)
+            .and_then(|project| project.networks.get_mut(&self.network))
+        {
+            let previous = std::mem::take(&mut network.physical);
+            network.physical = identities
+                .into_iter()
+                .map(|(address, unit_type, firmware, serial)| {
+                    let mut unit = previous
+                        .get(&address)
+                        .cloned()
+                        .unwrap_or_else(|| Unit::blank(address, ""));
+                    unit.unit_type = unit_type;
+                    unit.firmware = firmware;
+                    unit.serial = serial;
+                    (address, unit)
+                })
+                .collect();
+            network.state = NetworkState::Ok;
+        }
+        drop(model);
+        let _ = self
+            .events
+            .send(format!("#e# net {} sync ok", self.network));
+        validation
+    }
+
+    async fn net_checkunit(
+        &self,
+        client: &ClientState,
+        line: &str,
+        tag: &str,
+        words: &[&str],
+    ) -> Response {
+        let _commands = self.commands.lock().await;
+        if words.len() != 4 || !self.bound_network(words[2]) {
+            let mut staged = self.model.lock().await.clone();
+            staged.current = client
+                .current
+                .clone()
+                .or_else(|| Some(self.project.clone()));
+            return staged.handle(line);
+        }
+        let validation = {
+            let mut staged = self.model.lock().await.clone();
+            staged.current = client
+                .current
+                .clone()
+                .or_else(|| Some(self.project.clone()));
+            staged.handle(line)
+        };
+        if validation.status >= 400 {
+            return validation;
+        }
+        let pci = self.pci.read().await.clone();
+        let selected = if words[3] == "*" {
+            let states = match pci.install_mmi().await {
+                Ok(states) => states,
+                Err(error) => {
+                    return err(
+                        tag,
+                        408,
+                        &format!("408 Physical unit discovery failed: {error}"),
+                    )
+                }
+            };
+            states
+                .iter()
+                .enumerate()
+                .filter_map(|(address, state)| (*state != 0).then_some(address as u8))
+                .collect::<Vec<_>>()
+        } else {
+            words[3]
+                .split(',')
+                .map(|part| part.parse::<u8>().expect("model validated unit selection"))
+                .collect::<Vec<_>>()
+        };
+        let mut lines = Vec::with_capacity(selected.len());
+        for address in selected {
+            let replies = match pci.identify_all(address, 4).await {
+                Ok(replies) => replies,
+                Err(error) => {
+                    return err(
+                        tag,
+                        408,
+                        &format!("408 Physical unit check failed at address {address}: {error}"),
+                    )
+                }
+            };
+            let serials = match known_serials(&replies) {
+                Ok(serials) => serials,
+                Err(error) => {
+                    return err(
+                        tag,
+                        408,
+                        &format!("408 Physical unit check failed at address {address}: {error}"),
+                    )
+                }
+            };
+            let unknown = replies.len()
+                - replies
+                    .iter()
+                    .filter(|reply| serial_number(reply).ok().flatten().is_some())
+                    .count();
+            let status = match (serials.len(), unknown) {
+                (0, 0) => "No units detected",
+                (1, 0) => "Single unit detected",
+                (n, 0) if n > 1 => "Duplicate units detected",
+                (0, 1) => "Single unit with error detected",
+                _ => "One or more units with error detected",
+            };
+            lines.push(format!("120-{status} at address: {address}"));
+        }
+        let _ = self
+            .events
+            .send(format!("#e# net {} checkunit {}", self.network, words[3]));
+        ok(tag, lines, "200 OK.")
+    }
+
+    async fn set_network_state(&self, state: NetworkState) {
+        if let Some(network) = self
+            .model
+            .lock()
+            .await
+            .projects
+            .get_mut(&self.project)
+            .and_then(|project| project.networks.get_mut(&self.network))
+        {
+            network.state = state;
+        }
     }
 
     async fn trigger(
@@ -1258,13 +1569,9 @@ fn local_command(words: &[&str], upper: &[String], model: &Server) -> bool {
             sub,
             "LIST" | "USE" | "LOAD" | "SAVE" | "DIR" | "NEW" | "CLOSE"
         ),
-        "GET" => {
-            words.len() == 3
-                && (words[1].eq_ignore_ascii_case("CGATE")
-                    || upper[2] == "STATE"
-                    || upper[2] == "TARGETINTERFACESTATE"
-                    || upper[2] == "UNITS")
-        }
+        // GET is read-only. Application and live-lighting special cases are
+        // handled above; the model supplies cached network and unit fields.
+        "GET" => words.len() == 3,
         "NET" => matches!(sub, "LIST" | "LIST_ALL" | "STATE"),
         "PP" => match sub {
             "LOAD" | "SAVE" => words.get(3).is_some_and(|p| p.starts_with("/db/")),
@@ -1279,6 +1586,41 @@ fn local_command(words: &[&str], upper: &[String], model: &Server) -> bool {
         },
         _ => false,
     }
+}
+
+fn identity_text(data: &[u8], field: &str) -> io::Result<String> {
+    let value = std::str::from_utf8(data)
+        .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, format!("invalid {field}")))?
+        .trim_matches([' ', '\0'])
+        .to_string();
+    if value.is_empty() {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            format!("empty {field}"),
+        ));
+    }
+    Ok(value)
+}
+
+fn serial_number(data: &[u8]) -> io::Result<Option<String>> {
+    if data.len() != 12 {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "IDENTIFY4 reply must contain exactly twelve bytes",
+        ));
+    }
+    let packed = u32::from_be_bytes(data[5..9].try_into().unwrap());
+    if matches!(packed, 0 | u32::MAX) {
+        return Ok(None);
+    }
+    Ok(Some(format!("{}.{}", packed >> 12, packed & 0xfff)))
+}
+
+fn known_serials(replies: &[Vec<u8>]) -> io::Result<HashSet<String>> {
+    replies
+        .iter()
+        .filter_map(|reply| serial_number(reply).transpose())
+        .collect()
 }
 
 fn import_project(xml: &str, network_name: Option<&str>) -> io::Result<(Server, String, u8)> {

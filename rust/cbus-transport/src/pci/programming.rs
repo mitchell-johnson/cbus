@@ -6,6 +6,8 @@ use std::io::{Error, ErrorKind, Result};
 use std::sync::atomic::{AtomicBool, Ordering};
 
 const REPLY_TIMEOUT: Duration = Duration::from_secs(10);
+const IDENTIFY_QUIET: Duration = Duration::from_secs(2);
+const IDENTIFY_MAX_REPLIES: usize = 7;
 
 // After a cancelled/failed transaction, late untagged CAL fragments cannot be
 // distinguished from a future read. Require a fresh connection instead of
@@ -24,6 +26,127 @@ impl Drop for Transaction<'_> {
 }
 
 impl PciClient {
+    /// Supply the configured local-interface address used to correlate bare
+    /// CAL replies. A conflicting hint is rejected; this does not itself
+    /// establish physical presence or identity.
+    pub fn set_local_unit_hint(&self, unit: u8) -> Result<()> {
+        match self.local_unit.compare_exchange(
+            256,
+            u16::from(unit),
+            Ordering::AcqRel,
+            Ordering::Acquire,
+        ) {
+            Ok(_) => Ok(()),
+            Err(existing) if existing == u16::from(unit) => Ok(()),
+            Err(_) => Err(Error::new(
+                ErrorKind::InvalidInput,
+                "local-interface address conflicts with the active PCI",
+            )),
+        }
+    }
+
+    /// Discover and cache the attached PCI's own C-Bus unit address through
+    /// the read-only BASIC `@1A2001` query. Local IDENTIFY replies are bare
+    /// CALs, so callers that inventory the full network must establish this
+    /// address before correlating them.
+    pub async fn discover_local_unit(&self) -> Result<u8> {
+        let cached = self.local_unit.load(Ordering::Acquire);
+        if cached <= u8::MAX.into() {
+            return Ok(cached as u8);
+        }
+        let _lane = self.programming_lane.lock().await;
+        let cached = self.local_unit.load(Ordering::Acquire);
+        if cached <= u8::MAX.into() {
+            return Ok(cached as u8);
+        }
+        if self.programming_fault.load(Ordering::Acquire) {
+            return Err(Error::other(
+                "programming stream needs reconnect after an incomplete transaction",
+            ));
+        }
+        let mut transaction = Transaction {
+            fault: &self.programming_fault,
+            complete: false,
+        };
+        let mut replies = self.packets.subscribe();
+        self.init_done
+            .subscribe()
+            .wait_for(|&done| done)
+            .await
+            .map_err(|_| Error::new(ErrorKind::BrokenPipe, "PCI initialization ended"))?;
+        if !self.is_connected() {
+            return Err(Error::new(ErrorKind::BrokenPipe, "PCI disconnected"));
+        }
+        self.flow
+            .submit(
+                b"@1A2001\r".to_vec(),
+                Priority::Command,
+                ResponseKind::Silent,
+            )
+            .await
+            .map_err(|_| Error::new(ErrorKind::BrokenPipe, "PCI writer ended"))??;
+        let unit = tokio::time::timeout(REPLY_TIMEOUT, async {
+            loop {
+                match replies.recv().await {
+                    Ok(Some(Packet::BareCal(Cal::Reply {
+                        parameter: 0x20,
+                        data,
+                    }))) => {
+                        if data.len() != 1 {
+                            return Err(Error::new(
+                                ErrorKind::InvalidData,
+                                "BASIC local-address reply must contain exactly one byte",
+                            ));
+                        }
+                        return Ok(data[0]);
+                    }
+                    Ok(Some(Packet::PointToPoint { meta, cals, .. }))
+                        if meta.source_address.is_none()
+                            && cals.len() == 1
+                            && matches!(
+                                cals.first(),
+                                Some(Cal::Reply {
+                                    parameter: 0x20,
+                                    ..
+                                })
+                            ) =>
+                    {
+                        let Cal::Reply { data, .. } = &cals[0] else {
+                            unreachable!("reply checked above")
+                        };
+                        if data.len() != 1 {
+                            return Err(Error::new(
+                                ErrorKind::InvalidData,
+                                "BASIC local-address reply must contain exactly one byte",
+                            ));
+                        }
+                        return Ok(data[0]);
+                    }
+                    Ok(Some(Packet::PciError)) => {
+                        return Err(Error::other("PCI rejected local-address discovery"))
+                    }
+                    Ok(Some(_)) => {}
+                    Ok(None) | Err(_) => {
+                        return Err(Error::new(
+                            ErrorKind::BrokenPipe,
+                            "PCI response stream lost",
+                        ))
+                    }
+                }
+            }
+        })
+        .await
+        .unwrap_or_else(|_| {
+            Err(Error::new(
+                ErrorKind::TimedOut,
+                "local-address discovery timed out",
+            ))
+        })?;
+        self.local_unit.store(u16::from(unit), Ordering::Release);
+        transaction.complete = true;
+        Ok(unit)
+    }
+
     /// Whether the reader has observed transport loss.
     pub fn is_connected(&self) -> bool {
         !self.disconnected.load(Ordering::Acquire)
@@ -119,47 +242,55 @@ impl PciClient {
                 .map_err(|_| Error::new(ErrorKind::BrokenPipe, "PCI writer ended"))??;
             let mut result = Vec::with_capacity(count);
             loop {
-                match replies.recv().await {
+                let cals = match replies.recv().await {
                     Ok(Some(Packet::PointToPoint { meta, cals, .. }))
                         if meta.source_address == Some(unit) =>
                     {
-                        for cal in cals {
-                            match cal {
-                                Cal::Ack { parameter: p, data }
-                                    if p == parameter && ack.is_some() =>
-                                {
-                                    if data == [ack.unwrap()] {
-                                        return Ok(Vec::new());
-                                    }
-                                    return Err(Error::other("unit rejected programming selector"));
-                                }
-                                Cal::Reply { parameter: p, data }
-                                    if p == parameter && ack.is_none() =>
-                                {
-                                    if count == 0 {
-                                        return Ok(data);
-                                    }
-                                    result.extend(data);
-                                    if result.len() > count {
-                                        return Err(Error::new(
-                                            ErrorKind::InvalidData,
-                                            "unit returned excess memory bytes",
-                                        ));
-                                    }
-                                    if result.len() == count {
-                                        return Ok(result);
-                                    }
-                                }
-                                _ => {}
-                            }
-                        }
+                        cals
                     }
-                    Ok(Some(_)) => {}
+                    Ok(Some(Packet::PointToPoint { meta, cals, .. }))
+                        if meta.source_address.is_none()
+                            && self.local_unit.load(Ordering::Acquire) == u16::from(unit) =>
+                    {
+                        cals
+                    }
+                    Ok(Some(Packet::BareCal(cal)))
+                        if self.local_unit.load(Ordering::Acquire) == u16::from(unit) =>
+                    {
+                        vec![cal]
+                    }
+                    Ok(Some(_)) => continue,
                     Ok(None) | Err(_) => {
                         return Err(Error::new(
                             ErrorKind::BrokenPipe,
                             "PCI response stream lost",
                         ))
+                    }
+                };
+                for cal in cals {
+                    match cal {
+                        Cal::Ack { parameter: p, data } if p == parameter && ack.is_some() => {
+                            if data == [ack.unwrap()] {
+                                return Ok(Vec::new());
+                            }
+                            return Err(Error::other("unit rejected programming selector"));
+                        }
+                        Cal::Reply { parameter: p, data } if p == parameter && ack.is_none() => {
+                            if count == 0 {
+                                return Ok(data);
+                            }
+                            result.extend(data);
+                            if result.len() > count {
+                                return Err(Error::new(
+                                    ErrorKind::InvalidData,
+                                    "unit returned excess memory bytes",
+                                ));
+                            }
+                            if result.len() == count {
+                                return Ok(result);
+                            }
+                        }
+                        _ => {}
                     }
                 }
             }
@@ -243,6 +374,179 @@ impl PciClient {
             .await?;
         transaction.complete = true;
         Ok(result)
+    }
+
+    /// Collect every reply to one IDENTIFY request through a two-second
+    /// quiet interval. This is the native C-Gate duplicate-address probe used
+    /// by `NET CHECKUNIT`: a first reply establishes presence, but cannot
+    /// establish that only one unit owns the address.
+    ///
+    /// A positive PCI delivery confirmation is required before the observation
+    /// can complete; real CNIs may deliver unit data first, so it is buffered
+    /// until that confirmation arrives. Reaching the seven-frame native response bound is treated as
+    /// incomplete rather than silently claiming that no further identity was
+    /// present. As with memory reads, any incomplete observation poisons this
+    /// programming lane until reconnect so a late untagged reply cannot be
+    /// attributed to another request.
+    pub async fn identify_all(&self, unit: u8, attribute: u8) -> Result<Vec<Vec<u8>>> {
+        self.identify_collect(unit, attribute, false).await
+    }
+
+    /// Return the first confirmed matching IDENTIFY reply, or `None` when the
+    /// unit remains silent for the bounded response window. This populates
+    /// ordinary identity fields without claiming duplicate absence.
+    pub async fn identify_first(&self, unit: u8, attribute: u8) -> Result<Option<Vec<u8>>> {
+        Ok(self
+            .identify_collect(unit, attribute, true)
+            .await?
+            .into_iter()
+            .next())
+    }
+
+    async fn identify_collect(
+        &self,
+        unit: u8,
+        attribute: u8,
+        stop_after_first: bool,
+    ) -> Result<Vec<Vec<u8>>> {
+        let _lane = self.programming_lane.lock().await;
+        if self.programming_fault.load(Ordering::Acquire) {
+            return Err(Error::other(
+                "programming stream needs reconnect after an incomplete transaction",
+            ));
+        }
+        let mut transaction = Transaction {
+            fault: &self.programming_fault,
+            complete: false,
+        };
+        let mut replies = self.packets.subscribe();
+        if !self.is_connected() {
+            return Err(Error::new(ErrorKind::BrokenPipe, "PCI disconnected"));
+        }
+        let packet = Packet::PointToPoint {
+            meta: Meta::new(true, 1),
+            unit_address: unit,
+            bridged: false,
+            hops: vec![],
+            cals: vec![Cal::Identify { attribute }],
+        };
+        let code = self
+            .send(&packet, true, false)
+            .await?
+            .ok_or_else(|| Error::new(ErrorKind::InvalidInput, "IDENTIFY cannot be confirmed"))?;
+
+        let result = tokio::time::timeout(REPLY_TIMEOUT, async {
+            let mut confirmed = false;
+            let mut collected = Vec::new();
+            let mut quiet_deadline = None;
+            loop {
+                let next =
+                    async {
+                        match quiet_deadline {
+                            Some(deadline) => tokio::time::timeout_at(deadline, replies.recv())
+                                .await
+                                .map_err(|_| Error::new(ErrorKind::TimedOut, "identify quiet"))?,
+                            None => replies.recv().await,
+                        }
+                        .map_err(|_| Error::new(ErrorKind::BrokenPipe, "PCI response stream lost"))
+                    };
+                match next.await {
+                    Err(error)
+                        if error.kind() == ErrorKind::TimedOut && quiet_deadline.is_some() =>
+                    {
+                        return Ok(collected)
+                    }
+                    Err(error) => return Err(error),
+                    Ok(None) => {
+                        return Err(Error::new(
+                            ErrorKind::BrokenPipe,
+                            "PCI response stream lost",
+                        ))
+                    }
+                    Ok(Some(Packet::Confirmation { code: got, success })) if got == code => {
+                        if confirmed {
+                            return Err(Error::new(
+                                ErrorKind::InvalidData,
+                                "duplicate IDENTIFY confirmation",
+                            ));
+                        }
+                        if !success {
+                            return Err(Error::other("PCI rejected IDENTIFY command"));
+                        }
+                        confirmed = true;
+                        if stop_after_first && !collected.is_empty() {
+                            return Ok(collected);
+                        }
+                        quiet_deadline = Some(Instant::now() + IDENTIFY_QUIET);
+                    }
+                    Ok(Some(packet)) => {
+                        let cals = match packet {
+                            Packet::PointToPoint { meta, cals, .. }
+                                if meta.source_address == Some(unit) =>
+                            {
+                                cals
+                            }
+                            Packet::PointToPoint { meta, cals, .. }
+                                if meta.source_address.is_none()
+                                    && self.local_unit.load(Ordering::Acquire)
+                                        == u16::from(unit) =>
+                            {
+                                cals
+                            }
+                            Packet::BareCal(cal)
+                                if self.local_unit.load(Ordering::Acquire) == u16::from(unit) =>
+                            {
+                                vec![cal]
+                            }
+                            _ => continue,
+                        };
+                        if !cals.iter().any(|cal| {
+                            matches!(cal, Cal::Reply { parameter, .. } if *parameter == attribute)
+                        }) {
+                            continue;
+                        }
+                        if cals.len() != 1 {
+                            return Err(Error::new(
+                                ErrorKind::InvalidData,
+                                "IDENTIFY reply contains an ambiguous CAL chain",
+                            ));
+                        }
+                        let Cal::Reply { data, .. } = cals.into_iter().next().unwrap() else {
+                            unreachable!("matching reply checked above")
+                        };
+                        collected.push(data);
+                        if stop_after_first && confirmed {
+                            return Ok(collected);
+                        }
+                        if collected.len() >= IDENTIFY_MAX_REPLIES {
+                            return Err(Error::new(
+                                ErrorKind::InvalidData,
+                                "IDENTIFY response count reached the collection limit",
+                            ));
+                        }
+                        if confirmed {
+                            quiet_deadline = Some(Instant::now() + IDENTIFY_QUIET);
+                        }
+                    }
+                }
+            }
+        })
+        .await
+        .unwrap_or_else(|_| {
+            Err(Error::new(
+                ErrorKind::TimedOut,
+                "IDENTIFY collection timed out",
+            ))
+        });
+
+        if result.is_err() {
+            let mut state = self.state.lock().unwrap();
+            state.pending.remove(&code);
+            state.codes_in_use.remove(&code);
+        } else {
+            transaction.complete = true;
+        }
+        result
     }
 }
 
@@ -379,5 +683,134 @@ mod tests {
             .to_string()
             .contains("rejected"));
         assert!(pci.state.lock().unwrap().pending.is_empty());
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn identify_all_waits_for_quiet_and_preserves_distinct_replies() {
+        let (pci, mut remote, mut events) = setup().await;
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.identify_all(5, 4).await }
+        });
+        let request = line(&mut remote).await;
+        assert!(
+            request.starts_with(b"\\4605002104"),
+            "{}",
+            String::from_utf8_lossy(&request)
+        );
+        let code = request[request.len() - 2];
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        let first = vec![
+            0x38, 0xff, 0xff, 0xff, 0xff, 0x18, 0xb1, 0x06, 0x16, 0xa2, 0x00, 0x05,
+        ];
+        let second = vec![
+            0x38, 0xff, 0xff, 0xff, 0xff, 0x18, 0xb1, 0x06, 0x17, 0xa2, 0x00, 0x05,
+        ];
+        reply(
+            &mut remote,
+            5,
+            &[
+                0x8d, 4, first[0], first[1], first[2], first[3], first[4], first[5], first[6],
+                first[7], first[8], first[9], first[10], first[11],
+            ],
+        )
+        .await;
+        remote
+            .get_mut()
+            .write_all(b"05043800790145\r\n")
+            .await
+            .unwrap();
+        tokio::time::advance(Duration::from_millis(1500)).await;
+        tokio::task::yield_now().await;
+        assert!(!running.is_finished());
+        reply(
+            &mut remote,
+            5,
+            &[
+                0x8d, 4, second[0], second[1], second[2], second[3], second[4], second[5],
+                second[6], second[7], second[8], second[9], second[10], second[11],
+            ],
+        )
+        .await;
+        tokio::time::advance(IDENTIFY_QUIET).await;
+        tokio::task::yield_now().await;
+        assert_eq!(running.await.unwrap().unwrap(), vec![first, second]);
+        assert!(matches!(
+            events.recv().await,
+            Some(CBusEvent::LightingOn {
+                source: Some(4),
+                app: 56,
+                group: 1
+            })
+        ));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn identify_all_can_prove_no_reply_in_the_bounded_window() {
+        let (pci, mut remote, _) = setup().await;
+        let running = tokio::spawn(async move { pci.identify_all(99, 4).await });
+        let request = line(&mut remote).await;
+        let code = request[request.len() - 2];
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        tokio::time::advance(IDENTIFY_QUIET).await;
+        tokio::task::yield_now().await;
+        assert!(running.await.unwrap().unwrap().is_empty());
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn local_address_discovery_correlates_bare_identify_replies() {
+        let (pci, mut remote, _) = setup().await;
+        let discovery = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.discover_local_unit().await }
+        });
+        assert_eq!(line(&mut remote).await, b"@1A2001\r");
+        remote.get_mut().write_all(b"8220104E\r\n").await.unwrap();
+        assert_eq!(discovery.await.unwrap().unwrap(), 16);
+
+        let running = tokio::spawn(async move { pci.identify_all(16, 4).await });
+        let request = line(&mut remote).await;
+        let code = request[request.len() - 2];
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        let identity = vec![
+            0xff, 0xff, 0xff, 0x00, 0x00, 0x18, 0xa6, 0x64, 0xa3, 0xb1, 0x00, 0x05,
+        ];
+        let mut raw = Cal::Reply {
+            parameter: 4,
+            data: identity.clone(),
+        }
+        .encode();
+        raw = cbus_protocol::common::add_cbus_checksum(&raw);
+        let mut wire = raw
+            .iter()
+            .flat_map(|byte| format!("{byte:02X}").into_bytes())
+            .collect::<Vec<_>>();
+        wire.extend_from_slice(b"\r\n");
+        remote.get_mut().write_all(&wire).await.unwrap();
+        tokio::task::yield_now().await;
+        tokio::time::advance(IDENTIFY_QUIET).await;
+        tokio::task::yield_now().await;
+        assert_eq!(running.await.unwrap().unwrap(), vec![identity]);
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn identify_all_buffers_data_until_positive_confirmation() {
+        let (pci, mut remote, _) = setup().await;
+        let cloned = pci.clone();
+        let running = tokio::spawn(async move { cloned.identify_all(5, 4).await });
+        let request = line(&mut remote).await;
+        let code = request[request.len() - 2];
+        let data = [
+            0x38, 0xff, 0xff, 0xff, 0xff, 0x18, 0xb1, 0x06, 0x16, 0xa2, 0x00, 0x05,
+        ];
+        let mut cal = vec![0x8d, 4];
+        cal.extend(data);
+        reply(&mut remote, 5, &cal).await;
+        tokio::task::yield_now().await;
+        assert!(!running.is_finished());
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        tokio::time::advance(IDENTIFY_QUIET).await;
+        tokio::task::yield_now().await;
+        assert_eq!(running.await.unwrap().unwrap(), vec![data.to_vec()]);
     }
 }

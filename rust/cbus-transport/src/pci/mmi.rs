@@ -46,10 +46,12 @@ impl Drop for MmiTransaction<'_> {
 impl PciClient {
     /// Request the complete 256-address installation MMI.
     ///
-    /// Blocks must arrive after this request's positive confirmation, cover
-    /// addresses contiguously from zero, and finish at 256. After any partial
-    /// or failed observation, reconnect before another MMI so late untagged
-    /// blocks cannot be attributed to a later request.
+    /// Blocks must cover addresses contiguously from zero and finish at 256.
+    /// Some CNIs forward the first blocks before reporting the request's
+    /// delivery confirmation, so those blocks are buffered but never accepted
+    /// as a complete observation without a positive confirmation. After any
+    /// partial or failed observation, reconnect before another MMI so late
+    /// untagged blocks cannot be attributed to a later request.
     pub async fn install_mmi(&self) -> Result<Vec<u8>> {
         let _lane = self.mmi_lane.lock().await;
         if self.mmi_fault.load(Ordering::Acquire) {
@@ -89,19 +91,16 @@ impl PciClient {
                             return Err(Error::other("PCI rejected installation MMI"));
                         }
                         confirmed = true;
+                        if states.len() == 256 {
+                            return Ok(states);
+                        }
                     }
                     Ok(Some(Packet::StandardStatus {
                         application: 0xff,
                         block_start,
                         states: block,
                     })) => {
-                        if !confirmed {
-                            return Err(Error::new(
-                                ErrorKind::InvalidData,
-                                "MMI block arrived before request confirmation",
-                            ));
-                        }
-                        if append_block(&mut states, block_start, block)? {
+                        if append_block(&mut states, block_start, block)? && confirmed {
                             return Ok(states);
                         }
                     }
@@ -116,13 +115,7 @@ impl PciClient {
                             else {
                                 continue;
                             };
-                            if !confirmed {
-                                return Err(Error::new(
-                                    ErrorKind::InvalidData,
-                                    "MMI block arrived before request confirmation",
-                                ));
-                            }
-                            if append_block(&mut states, block_start, block)? {
+                            if append_block(&mut states, block_start, block)? && confirmed {
                                 return Ok(states);
                             }
                         }
@@ -245,6 +238,36 @@ mod tests {
         assert_eq!(states[16], 1);
         assert_eq!(states[255], 1);
         assert_eq!(states.iter().filter(|state| **state != 0).count(), 2);
+    }
+
+    #[tokio::test]
+    async fn buffers_blocks_that_precede_positive_confirmation() {
+        let (pci, mut remote) = setup().await;
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.install_mmi().await }
+        });
+        let mut request = Vec::new();
+        remote.read_until(b'\r', &mut request).await.unwrap();
+        let code = request[request.len() - 2];
+        remote
+            .write_all(&addressed_block(0, 88, &[16]))
+            .await
+            .unwrap();
+        remote
+            .write_all(&addressed_block(88, 88, &[]))
+            .await
+            .unwrap();
+        remote
+            .write_all(&addressed_block(176, 80, &[255]))
+            .await
+            .unwrap();
+        assert!(!running.is_finished());
+        remote.write_all(&[code, b'.']).await.unwrap();
+        let states = running.await.unwrap().unwrap();
+        assert_eq!(states.len(), 256);
+        assert_eq!(states[16], 1);
+        assert_eq!(states[255], 1);
     }
 
     #[tokio::test]

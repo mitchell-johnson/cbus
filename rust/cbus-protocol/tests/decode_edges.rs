@@ -364,6 +364,30 @@ fn bare_cal_consumed_includes_cal_length_quirk() {
 }
 
 #[test]
+fn long_bare_reply_is_not_misclassified_by_its_low_address_bits() {
+    let (packet, consumed) = decode_packet(b"8D04FFFFFF000018A664A3B10005F7\r\n", true, true, true);
+    assert_eq!(consumed, 32);
+    assert_eq!(
+        packet,
+        Some(Packet::PointToPoint {
+            meta: Meta {
+                checksum: true,
+                priority_class: 2,
+                source_address: None,
+                confirmation: None,
+            },
+            unit_address: 0,
+            bridged: false,
+            hops: vec![],
+            cals: vec![Cal::Reply {
+                parameter: 4,
+                data: vec![0xff, 0xff, 0xff, 0x00, 0x00, 0x18, 0xa6, 0x64, 0xa3, 0xb1, 0x00, 0x05,],
+            }],
+        })
+    );
+}
+
+#[test]
 fn client_confirmation_char_extracted() {
     let (p, consumed) = decode_packet(b"\\053800790149g\r", true, true, false);
     assert_eq!(consumed, 15);

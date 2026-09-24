@@ -3,8 +3,8 @@
 
 use crate::cal::Cal;
 use crate::common::{
-    bridge_length, cbus_checksum, CONFIRMATION_CODES, DAT_POINT_TO_MULTIPOINT, DAT_POINT_TO_POINT,
-    DAT_POINT_TO_POINT_TO_MULTIPOINT, HEX_CHARS, MIN_MESSAGE_SIZE,
+    bridge_length, cbus_checksum, CAL_REPLY, CONFIRMATION_CODES, DAT_POINT_TO_MULTIPOINT,
+    DAT_POINT_TO_POINT, DAT_POINT_TO_POINT_TO_MULTIPOINT, HEX_CHARS, MIN_MESSAGE_SIZE,
 };
 use crate::packet::{Meta, Packet};
 use crate::sal;
@@ -240,12 +240,18 @@ fn decode_body(
     // Direct CAL replies: from-PCI frames whose "flags" byte is really a
     // CAL header (address type not 3/5/6, dp clear). The *entire* payload
     // including the flags byte parses as a CAL stream.
+    // IDENTIFY4's twelve-byte payload encodes as reply opcode 0x8D, whose
+    // low address bits collide with an addressed packet type. Other direct
+    // replies used here do not collide. Keep this exception exact so a short
+    // ordinary 0x86 point-to-point packet is never reinterpreted as a CAL.
+    let complete_bare_reply = flags == (CAL_REPLY | 13) && raw.len() == 14;
     if from_pci
-        && !matches!(
-            address_type,
-            DAT_POINT_TO_POINT_TO_MULTIPOINT | DAT_POINT_TO_MULTIPOINT | DAT_POINT_TO_POINT
-        )
         && !dp
+        && (complete_bare_reply
+            || !matches!(
+                address_type,
+                DAT_POINT_TO_POINT_TO_MULTIPOINT | DAT_POINT_TO_MULTIPOINT | DAT_POINT_TO_POINT
+            ))
     {
         let mut cals = Vec::new();
         let mut cal_data = raw;

@@ -19,13 +19,19 @@ extensions. A 502 response is a missing backend or failed device operation;
 never replace it with saved project data and describe that as a live result.
 
 The physical service also implements lighting commands, Trigger Control,
-Enable Control, clock date/time/refresh, and standard `NET PINGU`. PINGU sends
-the install-MMI request with the active PCI checksum setting and accepts only a
-confirmed sequence with contiguous coverage of addresses 0–255. Use
-`GET //PROJECT/NETWORK Units` for
-the resulting live presence snapshot. `NET CHECKUNIT` and `NET SYNC` still need
-their physical backends; do not infer duplicate count or unit identity from the
-two-bit MMI presence state.
+Enable Control, clock date/time/refresh, `NET PINGU`, `NET SYNC`, and
+`NET CHECKUNIT`. PINGU and whole-network checks send the install-MMI request
+with the active PCI checksum setting. They buffer blocks that arrive before the
+request confirmation but accept only positively confirmed, contiguous coverage
+of addresses 0–255. SYNC uses the configured interface-unit
+address as a routing hint, or BASIC discovery when that hint is unavailable;
+fresh MMI and IDENTIFY replies physically validate the result. It probes
+IDENTIFY1/2 and collects all IDENTIFY4 replies for every present address, then
+atomically replaces the live identity cache. Silent legacy/error addresses stay
+present with unknown identity fields. CHECKUNIT actively collects IDENTIFY4
+replies through the native two-second quiet interval; it does not infer duplicate count from the
+two-bit MMI state. Use `GET //PROJECT/NETWORK Units` and unit `Type`, `Version`,
+`SerialNumber`, `Address`, and `State` getters for the resulting live snapshot.
 
 ## Mock service
 

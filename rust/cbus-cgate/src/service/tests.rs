@@ -109,7 +109,6 @@ async fn programming_ownership_and_unimplemented_hardware_are_enforced() {
     for command in [
         "PP LOAD S //HARNESS/254/p/5",
         "PP SAVE S //HARNESS/254/p/5",
-        "NET SYNC //HARNESS/254",
         "SET //HARNESS/254/p/5 Address 6",
         "AIRCON REFRESH //HARNESS/254/172 1",
         "PP WRITE_PATCH S anything",
@@ -131,6 +130,23 @@ async fn programming_ownership_and_unimplemented_hardware_are_enforced() {
         200
     );
     std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn physical_identity_fields_decode_without_inventing_unknown_serials() {
+    assert_eq!(identity_text(b"KEYGL5  ", "type").unwrap(), "KEYGL5");
+    assert_eq!(identity_text(b"5.5.00  ", "firmware").unwrap(), "5.5.00");
+    assert_eq!(
+        serial_number(&[0x38, 0xff, 0xff, 0xff, 0xff, 0x18, 0xb1, 0x06, 0x16, 0xa2, 0x00, 0x05,])
+            .unwrap()
+            .as_deref(),
+        Some("101136.1558")
+    );
+    let mut unknown = [0xff; 12];
+    unknown[5..9].fill(0);
+    assert_eq!(serial_number(&unknown).unwrap(), None);
+    assert!(serial_number(&unknown[..11]).is_err());
+    assert!(identity_text(b"        ", "type").is_err());
 }
 
 #[tokio::test]

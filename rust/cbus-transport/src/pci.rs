@@ -190,6 +190,8 @@ pub struct PciClient {
     packets: broadcast::Sender<Option<Packet>>,
     programming_lane: tokio::sync::Mutex<()>,
     programming_fault: std::sync::atomic::AtomicBool,
+    /// Attached PCI unit address, or 256 until the BASIC query succeeds.
+    local_unit: std::sync::atomic::AtomicU16,
     mmi_lane: tokio::sync::Mutex<()>,
     mmi_fault: std::sync::atomic::AtomicBool,
     mmi_collecting: std::sync::atomic::AtomicBool,
@@ -217,6 +219,7 @@ impl PciClient {
             packets: broadcast::channel(512).0,
             programming_lane: tokio::sync::Mutex::new(()),
             programming_fault: std::sync::atomic::AtomicBool::new(false),
+            local_unit: std::sync::atomic::AtomicU16::new(256),
             mmi_lane: tokio::sync::Mutex::new(()),
             mmi_fault: std::sync::atomic::AtomicBool::new(false),
             mmi_collecting: std::sync::atomic::AtomicBool::new(false),

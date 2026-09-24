@@ -39,7 +39,9 @@ not be committed or published.
 | TRIGGER EVENT/INDICATORKILL | Actual Trigger Control SAL on application 202; incoming events update the live service cache and event stream |
 | ENABLE SET/REMOVE and GET | SET sends actual Enable Control SAL on application 203; REMOVE follows C-Gate's server-side saved-value behavior; incoming values update the live cache |
 | CLOCK DATE/TIME/REQUEST_REFRESH | Actual Clock and Timekeeping SAL on application 223, including `SYSTEM` date/time resolution and observed-value queries |
-| NET PINGU and GET network Units | Actual installation MMI request using cmqttd's negotiated PCI checksum mode; accepts only confirmed, contiguous coverage of all addresses 0–255 and reports the native sorted `302-Units=` form |
+| NET PINGU and GET network Units | Actual installation MMI request using cmqttd's negotiated PCI checksum mode; buffers blocks that a CNI forwards before its positive confirmation, accepts only confirmed contiguous coverage of all addresses 0–255, and reports the native sorted `302-Units=` form |
+| NET SYNC and cached unit getters | Configured interface routing hint (physically revalidated) or BASIC discovery, complete installation MMI, then confirmed IDENTIFY1/2 probes and bounded IDENTIFY4 collection for every present address; routed and local bare-CAL replies are correlated, silent legacy/error addresses remain present with unknown identity fields, the live cache is replaced atomically, and native getters expose it |
+| NET CHECKUNIT | Active confirmed IDENTIFY4 collection through the native two-second quiet interval, with the native no-unit, single-unit, duplicate-unit and identity-error result forms; `*` expands from a fresh complete MMI |
 | Unit identification | Source-correlated CAL replies from the physical unit |
 | OEM physical memory reads | Volatile 0x41 pointer selection plus segmented RECALL; no EEPROM writes |
 | KEYGL5 5.5.00 static strings and lighting/scene widget labels | Python reader uses the service; checks physical identity, stable header and static-text CRC |
@@ -94,9 +96,10 @@ return 502. Full replacement still requires:
 
 - Physical PP LOAD/SAVE with complete schema memory codecs, checksums,
   readback, device profiles, recovery and hardware acceptance.
-- Full network synchronization and identity population, duplicate-aware
-  `NET CHECKUNIT`, bridged networks, serial addressing, readdressing and
-  commissioning state transitions. `NET PINGU` discovery itself is implemented.
+- Bridged-network synchronization, serial addressing, readdressing, unravel,
+  project identification and the remaining commissioning state transitions.
+  Direct-network `NET PINGU`, `NET SYNC` identity population and duplicate-aware
+  `NET CHECKUNIT` are implemented.
 - Physical scenes, text/icon broadcasts, dynamic eDLT label cache reads, and
   specialist application families such as HVAC, audio and security.
 - Native repository/archive/import/export formats, document commands,
@@ -109,8 +112,11 @@ return 502. Full replacement still requires:
 
 `cbus-transport` tests cover captured programming route bytes, source filtering,
 segmented recall, interleaved lighting, complete and incomplete installation MMI,
-and confirmation success/failure. Exact Trigger, Enable, Clock and MMI request or
-response bytes are pinned by vectors and the real-daemon system test.
+MMI and IDENTIFY data that precedes its positive confirmation, the confirmed
+two-second IDENTIFY collection window, duplicate replies, absence, and
+confirmation success/failure. Exact Trigger, Enable, Clock, MMI and confirmed
+IDENTIFY4 request or response bytes are pinned by vectors and the real-daemon
+system test.
 `cbus-cgate` service tests cover durable reload, corrupt-file preservation,
 rollback, session ownership, unsupported hardware rejection, fragmented command
 input during events, disconnect cleanup and input bounds. The real cmqttd system
@@ -126,5 +132,10 @@ text CRC. A relay was switched through C-Gate, independently reported 255 then
 across recreation and maintained one CNI socket alongside its MQTT connection.
 The deployed service also completed a live three-block PINGU observation,
 returned the physical address list, and exposed the same list through `GET Units`.
+It then completed a whole-network `NET SYNC`, preserved the synchronized snapshot
+across separate C-Gate reads, returned live type, version and serial fields, and
+reported a selected address as a single unit through `NET CHECKUNIT`. The Toolkit
+CLI's `cgate serials refresh` workflow completed against the same deployment with
+the selected unit present, unique and healthy while MQTT remained connected.
 These checks cover that device/profile and relay path; they do not establish
 complete physical C-Gate acceptance. Site reports are private and excluded from Git.
