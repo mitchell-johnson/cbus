@@ -731,6 +731,8 @@ fn network_rename_chain_moves_units_and_guards() {
     let dbdoc = s.handle("[15] DBGETXML //TEST/253/p/20");
     assert_eq!(dbdoc.status, 200);
     assert_eq!(s.handle("[15b] GET //TEST/254/p/20 *").status, 401);
+    // Same-project stale DB path: 401 Network not found (project scoping
+    // still matches, unlike the cross-project rename case).
     assert_eq!(s.handle("[15c] DBGETXML //TEST/254/p/20").status, 401);
     // Occupied destinations conflict with the source restored.
     assert_eq!(
@@ -815,4 +817,84 @@ fn net_set_project_identify_order_and_guards() {
         .drain_events()
         .iter()
         .all(|e| !e.to_ascii_lowercase().contains("identify")));
+}
+
+/// Mock determinism for PROJECT RENAME: exact shapes fail closed, missing
+/// sources 404, occupied destinations 409 with restore, the selection
+/// follows the rename, and monitor access is denied.
+#[test]
+fn project_rename_selection_follow_and_guards() {
+    let mut s = Server::new(AccessLevel::Program);
+    assert_eq!(s.handle("[1] PROJECT NEW TEST").status, 200);
+    assert_eq!(
+        s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
+            .status,
+        200
+    );
+    assert_eq!(s.handle("[3] PROJECT USE TEST").status, 200);
+    assert_eq!(
+        s.handle("[4] DBADDSAFE //TEST/254 Unit 20 Mover").status,
+        200
+    );
+    for (line, status, fragment) in [
+        ("[5] PROJECT RENAME", 400, "source and destination"),
+        ("[6] PROJECT RENAME TEST", 400, "source and destination"),
+        (
+            "[7] PROJECT RENAME TEST T2 extra",
+            400,
+            "source and destination",
+        ),
+        ("[8] PROJECT RENAME TEST #", 400, "Invalid project name"),
+        ("[9] PROJECT RENAME NOPE T2", 404, "Project not found"),
+    ] {
+        let response = s.handle(line);
+        assert_eq!(response.status, status, "{line}");
+        assert!(response.final_text.contains(fragment), "{line}");
+    }
+    // Occupied destinations conflict with the source restored.
+    assert_eq!(s.handle("[10] PROJECT NEW T2").status, 200);
+    let busy = s.handle("[11] PROJECT RENAME TEST T2");
+    assert_eq!(busy.status, 409);
+    let listed = s.handle("[12] PROJECT LIST");
+    assert!(listed.lines.iter().any(|l| l == "TEST"));
+    // PROJECT NEW T2 above re-selected current; select TEST back first.
+    assert_eq!(s.handle("[12b] PROJECT USE TEST").status, 200);
+    assert_eq!(s.handle("[12c] NET OPEN //TEST/254").status, 200);
+    // The rename moves the project; the selection follows it. (PROJECT
+    // NEW T2 above re-selected current, so select TEST back first.)
+    assert_eq!(s.handle("[12c] PROJECT USE TEST").status, 200);
+    // A database field keyed under the old path proves prefix remapping.
+    assert_eq!(
+        s.handle("[12d] DBSETSAFE //TEST/254/p/20/TagName Moved")
+            .status,
+        200
+    );
+    let moved = s.handle("[13] PROJECT RENAME TEST T3");
+    assert_eq!(moved.status, 200);
+    let listed = s.handle("[14] PROJECT LIST");
+    assert!(listed.lines.iter().any(|l| l == "T3"));
+    assert!(!listed.lines.iter().any(|l| l == "TEST"));
+    assert_eq!(s.handle("[15] NET OPEN //T3/254").status, 200);
+    // Stale old-path reads fail closed on every layer.
+    assert_eq!(s.handle("[15b] NET OPEN //TEST/254").status, 404);
+    assert_eq!(s.handle("[15c] GET //TEST/254/p/20 *").status, 401);
+    assert_eq!(s.handle("[15d] DBGETXML //TEST/254/p/20").status, 404);
+    // The unit travels on both layers and the db key followed the rename.
+    let arrived = s.handle("[16] GET //T3/254/p/20 *");
+    assert_eq!(arrived.status, 300);
+    let dbdoc = s.handle("[16b] DBGETXML //T3/254/p/20");
+    assert_eq!(dbdoc.status, 200);
+    let dbfield = s.handle("[16c] DBGET //T3/254/p/20/TagName");
+    assert_eq!(dbfield.status, 200);
+    assert!(dbfield
+        .lines
+        .iter()
+        .chain(std::iter::once(&dbfield.final_text))
+        .any(|line| line.contains("Moved")));
+    let events = s.drain_events();
+    assert!(events.iter().any(|e| e == "#e# project T3 renamed"));
+    // Monitor access cannot rename.
+    let mut monitor = Server::new(AccessLevel::Monitor);
+    let denied = monitor.handle("[1] PROJECT RENAME A B");
+    assert_eq!(denied.status, 420);
 }
