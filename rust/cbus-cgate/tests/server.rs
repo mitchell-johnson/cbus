@@ -233,3 +233,38 @@ fn label_clearedlt_contract_and_event() {
         .iter()
         .all(|event| event == "#e# labels cleared //TEST/252/p/30"));
 }
+
+/// Mock determinism for the LABEL key-file helpers: KFISET stores a value
+/// under the target, KFIGET reads it back, and a valueless KFISET fails.
+#[test]
+fn label_kfi_round_trip_and_valueless_reject() {
+    let mut s = Server::new(AccessLevel::Program);
+    // Never-set targets report 300 with an empty value, never 404.
+    let unset = s.handle("[0] LABEL KFIGET //TEST/252/p/99");
+    assert_eq!(unset.status, 300);
+    assert_eq!(unset.final_text, "300 ");
+    let stored = s.handle("[1] LABEL KFISET //TEST/252/p/30 myvalue");
+    assert_eq!(stored.status, 200);
+    let fetched = s.handle("[2] LABEL KFIGET //TEST/252/p/30");
+    assert_eq!(fetched.status, 300);
+    assert!(fetched.lines.is_empty());
+    assert_eq!(fetched.final_text, "300 myvalue");
+    // Distinct targets do not share one slot; multi-word values join.
+    let other = s.handle("[3] LABEL KFISET //TEST/252/p/31 hello world");
+    assert_eq!(other.status, 200);
+    let refetched = s.handle("[4] LABEL KFIGET //TEST/252/p/30");
+    assert_eq!(refetched.final_text, "300 myvalue");
+    let other_fetched = s.handle("[5] LABEL KFIGET //TEST/252/p/31");
+    assert_eq!(other_fetched.final_text, "300 hello world");
+    // A valueless KFISET fails and preserves the stored value; a second
+    // KFISET overwrites it.
+    let missing = s.handle("[6] LABEL KFISET //TEST/252/p/30");
+    assert_eq!(missing.status, 400);
+    assert!(missing.final_text.contains("requires a target and value"));
+    let preserved = s.handle("[7] LABEL KFIGET //TEST/252/p/30");
+    assert_eq!(preserved.final_text, "300 myvalue");
+    let overwrite = s.handle("[8] LABEL KFISET //TEST/252/p/30 newvalue");
+    assert_eq!(overwrite.status, 200);
+    let replaced = s.handle("[9] LABEL KFIGET //TEST/252/p/30");
+    assert_eq!(replaced.final_text, "300 newvalue");
+}
