@@ -202,6 +202,21 @@ fn finish(p: Vec<u8>, meta: &Meta) -> Vec<u8> {
     }
 }
 
+/// Encode the captured local OEM programming route, including checksum and
+/// leading PCI escape. This is a client request, not a bridged reply route.
+/// CAL payloads are validated here rather than silently truncating writes.
+pub fn programming_request(unit: u8, cal: &Cal) -> Result<Vec<u8>, EncodeError> {
+    if matches!(cal, Cal::Write { data, .. } if data.len() > 30) {
+        return Err(EncodeError::new("CAL write exceeds 30 bytes"));
+    }
+    let mut raw = vec![0x46, unit, 0x09, 0x00];
+    raw.extend(cal.encode());
+    let mut wire = vec![b'\\'];
+    wire.extend(hex::encode_upper(add_cbus_checksum(&raw)).bytes());
+    wire.push(b'\r');
+    Ok(wire)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

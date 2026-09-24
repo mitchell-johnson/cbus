@@ -1,5 +1,25 @@
 # C-Gate and Toolkit compatibility reference
 
+## Physical service in cmqttd
+
+Use cmqttd's embedded listener for supported real-network operations. It shares
+the CNI with MQTT; do not open a competing direct PCI connection or fall back to
+Windows for live eDLT static-label reads. Read `docs/cmqttd-cgate.md` for the
+current supported operations and remaining C-Gate replacement work. Query
+`CMQTT CAPABILITIES` before assuming an operation is implemented. Physical reads:
+
+```sh
+cbus-toolkit cgate --host 127.0.0.1 --timeout 30 edlt-labels //PROJECT/254/p/UNIT
+```
+
+Use the configured endpoint and project address. The command returns physical
+identity, static strings, widget labels, a stable-header check and CRC evidence.
+Dynamic labels are not read. `UNIT READMEM` and `UNIT IDENTIFY` are cmqttd
+extensions. A 502 response is a missing backend or failed device operation;
+never replace it with saved project data and describe that as a live result.
+
+## Mock service
+
 The user-facing CLI is Python `cbus-toolkit cgate`; see [toolkit.md](toolkit.md) for installation, typed workflows, and JSON output. This reference describes its Rust test server. Connect the CLI with `--host 127.0.0.1 --port 20033` for the default mock listener; native plain TCP defaults to 20023.
 
 ## What is supported

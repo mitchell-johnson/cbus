@@ -23,8 +23,10 @@ from tests.test_pci_serial_address_transport import Clock,FakeSocket
 
 
 FAST=['--timeout','5','--observation-timeout','.5','--confirmation-timeout','.1',
-      '--mmi-response-timeout','.1','--quiet-period','.02','--options-response-timeout','.02',
-      '--address-response-timeout','.02','--max-mmi-frames','7','--max-serial-frames','7',
+      # These are real TCP peers and CLI subprocesses, not the fake clock.
+      # A 20 ms reply deadline can expire before the fixture thread is scheduled.
+      '--mmi-response-timeout','.1','--quiet-period','.02','--options-response-timeout','.1',
+      '--address-response-timeout','.1','--max-mmi-frames','7','--max-serial-frames','7',
       '--max-unrelated','64','--max-bytes','65536']
 
 

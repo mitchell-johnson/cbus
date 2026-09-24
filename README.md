@@ -5,7 +5,7 @@ Manage Clipsal/Schneider C-Bus projects from the terminal and connect C-Bus ligh
 This repository has two main applications:
 
 - **[`cbus-toolkit`](toolkit-cli/README.md)** — a Python CLI for Toolkit-style project editing, commissioning, unit configuration, scenes, and diagnostics. It works with project files offline and connects to C-Gate or a CNI for online operations. JSON output makes it usable from scripts and AI agents.
-- **[`cmqttd`](docs/configuration.md)** — a Rust daemon that connects a C-Bus interface directly to an MQTT broker and publishes Home Assistant discovery and state. It runs without C-Gate or the Toolkit application.
+- **[`cmqttd`](docs/configuration.md)** — a Rust daemon providing MQTT/Home Assistant support and an embedded C-Gate service over one shared C-Bus connection. It runs without Schneider C-Gate, Windows, or the Toolkit application. Its [C-Gate replacement status](docs/cmqttd-cgate.md) distinguishes implemented hardware operations from outstanding compatibility work.
 
 The Rust workspace also provides protocol tools, a PCI simulator, and a C-Gate compatibility server for development and testing. Install the application you need; the Python CLI and Rust bridge can be used independently.
 
@@ -18,6 +18,7 @@ The Rust workspace also provides protocol tools, a PCI simulator, and a C-Gate c
 | Plan supported keypad, sensor, eDLT, scene, or unit-conversion settings offline | `cbus-toolkit keys`, `sensors`, `edlt`, `scene`, and `unit-conversion` |
 | Query a CNI directly or inspect routed PCI messages | `cbus-toolkit pci` and `pci-route` |
 | Connect C-Bus lights to MQTT and Home Assistant | `cmqttd` |
+| Read live eDLT labels without Windows, while MQTT keeps running | `cbus-toolkit cgate edlt-labels`, connected to `cmqttd` |
 | Decode a frame, export project labels, or interrogate a unit | `cbus-tools` |
 | Test a C-Gate client without a vendor server or hardware | `cgate-mock` |
 | Test PCI/CNI protocol traffic without hardware | `cbus-simulator` |
@@ -100,6 +101,20 @@ rust/target/release/cmqttd \
 `cmqttd` publishes Home Assistant discovery and lighting state, and forwards MQTT light commands to C-Bus. Add `--project-file house.cbz` for names from your Toolkit project and `--cbus-network 'Main Network'` to select a network. TLS is enabled by default; omit `--broker-disable-tls` when using a TLS broker. Serial and ESP32 bridge connections are also supported.
 
 For Docker, copy `.env.example` to `.env`, configure your broker and C-Bus endpoint, then run `docker compose up --build`. See [bridge configuration](docs/configuration.md) for authentication, certificates, project files, time synchronization, and status updates.
+
+### Use cmqttd as the CLI's server
+
+Enable `--cgate-bind 127.0.0.1:20023` together with `--project-file house.cbz`. The daemon imports your project into a persistent database and serves the Toolkit CLI while continuing MQTT on the same PCI/CNI connection. Docker Compose enables this listener and stores the database in the `cmqttd_data` volume.
+
+```sh
+cbus-toolkit cgate --host 127.0.0.1 project list
+cbus-toolkit cgate --host 127.0.0.1 exec 'CMQTT CAPABILITIES'
+cbus-toolkit cgate --host 127.0.0.1 edlt-labels //PROJECT/254/p/5
+```
+
+Replace the project/network/unit with your actual address. Live eDLT label reads verify the device identity, stable configuration header, and static-text CRC; results include the 64 stored strings and widget/scene labels. Dynamic label caches are reported as unread.
+
+**Full C-Gate replacement is the target, not the current completion claim.** Hardware-backed lighting, unit identity, extended-memory reads, live level observations, and persistent database operations are implemented. Remaining hardware workflows return explicit errors instead of simulated success. See the [supported operations and remaining work](docs/cmqttd-cgate.md).
 
 ## Development tools and simulation
 

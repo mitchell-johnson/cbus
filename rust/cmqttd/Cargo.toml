@@ -8,6 +8,7 @@ license.workspace = true
 cbus-protocol = { path = "../cbus-protocol" }
 cbus-mqtt = { path = "../cbus-mqtt" }
 cbus-transport = { path = "../cbus-transport" }
+cbus-cgate = { path = "../cbus-cgate" }
 tokio = { workspace = true }
 rumqttc = { workspace = true }
 clap = { workspace = true }

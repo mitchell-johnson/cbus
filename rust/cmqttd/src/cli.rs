@@ -106,4 +106,16 @@ pub struct Options {
     /// Name of the C-Bus network to use (may be multiple words)
     #[arg(short = 'N', long, num_args = 0..)]
     pub cbus_network: Vec<String>,
+
+    /// Enable the embedded C-Gate TCP service at this bind address
+    #[arg(long, requires = "project_file")]
+    pub cgate_bind: Option<String>,
+
+    /// Atomic C-Gate database; keep this on a persistent volume
+    #[arg(long, default_value = "cmqttd-data/cgate.json")]
+    pub cgate_state: std::path::PathBuf,
+
+    /// Optional vendor unit specification directory for PP schemas
+    #[arg(long)]
+    pub cgate_unitspec: Option<std::path::PathBuf>,
 }

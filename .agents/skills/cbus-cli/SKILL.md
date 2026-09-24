@@ -33,6 +33,13 @@ Describe `cgate-mock` as providing full C-Gate 3.4 **command-surface compatibili
 
 `cbus-toolkit` is the user-facing Python CLI, with offline project editors and online workflow implementations. It targets Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001. Full Toolkit parity remains unfinished: consult its feature ledger and `coverage --require-complete`. The Rust mock's command coverage does not establish the Python CLI's complete workflow or hardware compatibility.
 
+`cmqttd --cgate-bind` is the real embedded C-Gate service alongside MQTT. Read
+`docs/cmqttd-cgate.md` and query `CMQTT CAPABILITIES` for its supported backend.
+It is not yet a full C-Gate replacement. For live KEYGL5 labels, use
+`cbus-toolkit cgate edlt-labels` against this service; Windows is unnecessary.
+Keep saved database labels distinct from CRC-verified physical reads and
+unread dynamic label caches.
+
 ## Changing the repository
 
 Keep behavior in the owning Python module or Rust crate and add tests at the narrowest useful layer. Use a golden vector when exact bytes or JSON define compatibility, and a system test when correctness depends on multiple components. Run the applicable Python or Rust validation from `AGENTS.md`. Preserve Toolkit source, tests, feature documentation, and acceptance evidence during cleanup.

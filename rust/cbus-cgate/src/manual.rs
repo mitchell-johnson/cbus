@@ -1636,7 +1636,7 @@ impl Server {
         }
     }
 
-    fn qualify_group(&self, raw: &str) -> Option<String> {
+    pub(crate) fn qualify_group(&self, raw: &str) -> Option<String> {
         if raw.starts_with("//") {
             return Some(raw.to_string());
         }

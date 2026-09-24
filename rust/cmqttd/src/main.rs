@@ -70,8 +70,12 @@ async fn cbus_event_pump(
     mut ev_rx: mpsc::UnboundedReceiver<CBusEvent>,
     ev_tx: mpsc::UnboundedSender<CBusEvent>,
     spec: ConnSpec,
+    cgate: Option<Arc<cbus_cgate::service::Service>>,
 ) {
     while let Some(ev) = ev_rx.recv().await {
+        if let Some(service) = &cgate {
+            service.observe(&ev).await;
+        }
         if let CBusEvent::ConnectionLost = ev {
             gw.on_cbus_event(ev).await;
             if !spec.reconnect {
@@ -89,6 +93,9 @@ async fn cbus_event_pump(
                 Ok((rd, wr)) => {
                     let new_pci = PciClient::new(rd, wr, ev_tx.clone());
                     start_pci_reset(&new_pci);
+                    if let Some(service) = &cgate {
+                        service.set_pci(new_pci.clone()).await;
+                    }
                     gw.set_pci(new_pci).await;
                     // CBusHandler.connection_made calls the deduplicated
                     // sweep (a no-op after startup; the periodic resync
@@ -127,6 +134,40 @@ async fn main() {
     let pci = PciClient::new(rd, wr, ev_tx.clone());
     start_pci_reset(&pci);
 
+    let cgate = if let Some(bind) = &opts.cgate_bind {
+        let result = async {
+            let xml = cbus_mqtt::cbz::load_xml(std::path::Path::new(
+                opts.project_file.as_ref().expect("clap requires project"),
+            ))
+            .map_err(std::io::Error::other)?;
+            let network_name = opts.cbus_network.join(" ");
+            let service = cbus_cgate::service::Service::new(
+                &xml,
+                (!network_name.is_empty()).then_some(network_name.as_str()),
+                opts.cgate_state.clone(),
+                pci.clone(),
+                opts.cgate_unitspec.clone(),
+            )?;
+            let listener = tokio::net::TcpListener::bind(bind).await?;
+            tracing::info!("C-Gate service listening on {}", listener.local_addr()?);
+            let running = service.clone();
+            tokio::spawn(async move {
+                if let Err(e) = running.serve(listener).await {
+                    tracing::error!("C-Gate listener failed: {e}");
+                    std::process::exit(1);
+                }
+            });
+            Ok::<_, std::io::Error>(service)
+        }
+        .await;
+        Some(result.unwrap_or_else(|e| {
+            tracing::error!("cannot start C-Gate service: {e}");
+            std::process::exit(1);
+        }))
+    } else {
+        None
+    };
+
     // MQTT client + gateway
     let mqtt_opts = setup::mqtt_options(&opts).unwrap_or_else(|e| {
         eprintln!("{e}");
@@ -162,7 +203,7 @@ async fn main() {
         });
     }
 
-    tokio::spawn(cbus_event_pump(gateway.clone(), ev_rx, ev_tx, spec));
+    tokio::spawn(cbus_event_pump(gateway.clone(), ev_rx, ev_tx, spec, cgate));
 
     // MQTT event loop
     loop {

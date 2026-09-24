@@ -32,7 +32,7 @@ Use `--project-file project.cbz` or a bare project XML file for human-readable l
 
 ## Docker
 
-Copy `.env.example` to `.env` and set at least `MQTT_SERVER` plus `CNI_ADDR` or `SERIAL_PORT`. `docker compose up --build` uses host networking so a TCP CNI and local broker are reachable without port mapping.
+Copy `.env.example` to `.env` and set at least `MQTT_SERVER` plus `CNI_ADDR` or `SERIAL_PORT`. `docker compose up --build` uses a private bridge network, with outbound access to the configured CNI and broker. C-Gate port 20023 is published on the host's `127.0.0.1` only. Use reachable LAN addresses for the broker and CNI; container localhost is not the host's localhost.
 
 Optional container files live in `cmqttd_config/`:
 
@@ -43,4 +43,17 @@ Optional container files live in `cmqttd_config/`:
 
 These files are excluded from Git. The Docker build copies any that exist locally into `/etc/cmqttd`. Rebuild the image after changing copied files, or mount them into `/etc/cmqttd` at runtime.
 
-The entrypoint maps environment variables to `cmqttd` options. `MQTT_USE_TLS=1` enables TLS, `CBUS_TIMESYNC` sets the synchronization interval, `CBUS_CLOCK=0` disables clock replies, and `CMQTTD_CBUS_NETWORK` selects a project network.
+The entrypoint maps environment variables to `cmqttd` options. `MQTT_USE_TLS=1` enables TLS, `CBUS_TIMESYNC` sets the synchronization interval, `CBUS_STATUS_RESYNC` sets the status interval, `CBUS_CLOCK=0` disables clock replies, and `CMQTTD_CBUS_NETWORK` selects a project network. The daemon runs as PID 1 so Docker stop signals reach it directly.
+
+## Embedded C-Gate service
+
+`--cgate-bind ADDRESS:PORT` enables the command service and requires a project
+file. `--cgate-state FILE` selects its persistent database; the default is
+`cmqttd-data/cgate.json`. `--cgate-unitspec DIR` supplies optional private vendor
+schemas. Compose enables the service when a project is present, using
+`CMQTTD_CGATE_BIND=0.0.0.0:20023` inside the container and a loopback-only host
+port. Set that variable to `off` for MQTT only. State lives in the named
+`cmqttd_data` volume; do not delete that volume when recreating containers.
+
+See [C-Gate service and replacement status](cmqttd-cgate.md) for the actual
+hardware operations, live eDLT label command, tests, and outstanding workflows.

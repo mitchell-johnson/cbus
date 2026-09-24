@@ -1,11 +1,11 @@
-//! In-memory C-Gate 3.4 command model.
+//! C-Gate command model and hardware-backed service for cmqttd.
 //!
 //! Bounded, synchronous command handling compatible with C-Gate manual
 //! section 4.3.1.5: a space terminates a reply, a hyphen
 //! continues it, commands carry `[tag]` prefixes so asynchronous events
 //! cannot complete a command, and no command is retried automatically.
 //!
-//! This crate owns no sockets and talks to no hardware. It dispatches every
+//! The synchronous model dispatches every
 //! public-manual and bytecode-registered C-Gate 3.4 command, with detailed
 //! project/network/unit lifecycle plus deterministic stateful models for the
 //! remaining application and private command families. It builds on
@@ -14,11 +14,16 @@
 //! `Program` interface grants DB/PROJECT/NET but denies `PP` programming sessions
 //! with `420`, while an operator-provisioned handle with programming-lock
 //! rights allows them.
+//!
+//! [`service`] embeds a bounded TCP listener, persistent database and actual
+//! shared PCI operations. It explicitly rejects physical command families
+//! without a backend; the mock's command coverage is not hardware parity.
 
 use std::collections::{HashMap, VecDeque};
 use std::path::PathBuf;
 
 pub mod manual;
+pub mod service;
 pub mod unitspec;
 
 /// C-Gate service-ready greeting prefix.
@@ -440,8 +445,9 @@ fn has_status_prefix(line: &str) -> bool {
     ENVELOPE_CODES.contains(&code)
 }
 /// Network runtime state.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, serde::Serialize, serde::Deserialize)]
 pub enum NetworkState {
+    #[default]
     Closed,
     Open,
     Syncing,
@@ -449,7 +455,7 @@ pub enum NetworkState {
 }
 
 /// One database unit.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct Unit {
     /// Programming address 0..=255.
     pub address: u8,
@@ -529,7 +535,7 @@ pub struct PpSession {
 }
 
 /// One project network.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct Network {
     /// Network address.
     pub address: u8,
@@ -540,6 +546,7 @@ pub struct Network {
     /// Interface address as given to `DBCREATENET`.
     pub iface_addr: String,
     /// Runtime state.
+    #[serde(skip)]
     pub state: NetworkState,
     /// Database units keyed by address.
     pub units: HashMap<u8, Unit>,
@@ -553,17 +560,19 @@ pub struct Network {
     /// Serials, PINGU/CHECKUNIT, `GET` field reads, `Units` snapshots and
     /// `TREE` observe the physical layer; `DBGET`, `DBGETXML` and PP
     /// observe the database.
+    #[serde(skip)]
     pub physical: HashMap<u8, Unit>,
     /// Live group levels keyed by (application, group).
     ///
     /// This is explicitly mock behavior, not native fidelity: levels apply
     /// instantly (no ramp timing emulation) so write-then-observe flows
     /// such as scene record can run end to end. Untouched groups read 0.
+    #[serde(skip)]
     pub levels: HashMap<(u8, u8), u8>,
 }
 
 /// One project.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct Project {
     /// Project name.
     pub name: String,
@@ -580,7 +589,7 @@ pub struct Project {
 /// Value="n"><TagName>t</TagName></Level>` rows that tag resolution
 /// parses. Only this evidenced shape is modeled: no other level fields
 /// are claimed.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct DbLevel {
     /// Issued object identity (`!oid` addressing).
     pub oid: String,
@@ -597,6 +606,7 @@ pub struct DbLevel {
 }
 
 /// In-memory C-Gate server.
+#[derive(Clone)]
 pub struct Server {
     access: AccessLevel,
     allow_programming: bool,

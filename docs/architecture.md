@@ -24,7 +24,10 @@ flowchart LR
     MQTTLogic --> Bridge
     Protocol --> Tools[cbus-tools]
     Protocol --> Simulator[cbus-simulator]
-    Protocol --> CGate[cbus-cgate / cgate-mock]
+    Transport <--> CGate[cbus-cgate physical service]
+    CGate <--> CLI[Python Toolkit CLI]
+    CGate <--> DB[Persistent database]
+    Protocol --> Mock[cgate-mock test server]
 ```
 
 ## Runtime layers
@@ -35,7 +38,7 @@ flowchart LR
 
 `cbus-mqtt` owns pure MQTT behavior: topic naming, inbound command parsing, Home Assistant discovery payloads, and project-label extraction. `cmqttd` combines it with `rumqttc` and `cbus-transport`.
 
-`cbus-cgate` is a separate in-memory C-Gate protocol model. The library parses tagged commands and mutates shared state. The `cgate-mock` binary provides the TCP framing, per-connection project selection, event subscriptions, and cross-client event fanout.
+`cbus-cgate` contains a synchronous command model and the physical service embedded in cmqttd. That service adds persistent database storage, bounded TCP connections, per-client sessions, and source-correlated device reads using the bridge's existing PCI client. Only implemented physical operations reach the bus; unsupported operations return errors. The separate `cgate-mock` binary retains deterministic in-memory behavior for client tests. See [service status](cmqttd-cgate.md).
 
 ## Test layers
 

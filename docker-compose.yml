@@ -1,4 +1,3 @@
-version: '3'
 services:
   cbus:
     build:
@@ -7,6 +6,15 @@ services:
     image: cmqttd
     container_name: cbus
     restart: always
-    network_mode: host
+    ports:
+      - "127.0.0.1:20023:20023"
+    environment:
+      CMQTTD_CGATE_BIND: ${CMQTTD_CGATE_BIND:-0.0.0.0:20023}
+      CMQTTD_CGATE_STATE: /var/lib/cmqttd/cgate.json
+    volumes:
+      - cmqttd_data:/var/lib/cmqttd
     env_file:
       - .env
+
+volumes:
+  cmqttd_data:

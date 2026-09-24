@@ -11,6 +11,13 @@ See [completed functions and outstanding work](docs/implementation-status.md)
 for the current status of all 38 feature areas, detailed eDLT functions,
 accepted test checkpoints and the remaining implementation plan.
 
+For supported physical operations without Windows, connect this CLI to the
+[C-Gate service embedded in cmqttd](../docs/cmqttd-cgate.md). MQTT and CLI
+requests share one CNI connection. Read a live KEYGL5 eDLT's stored strings and
+widget labels with `cbus-toolkit cgate --host 127.0.0.1 --timeout 30 edlt-labels
+//PROJECT/254/p/5`. The result distinguishes verified static text from unread
+dynamic caches. The embedded service is not yet a full C-Gate replacement.
+
 ## Install and run
 
 Python 3.13 or newer, from the repository root:

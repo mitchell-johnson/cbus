@@ -16,12 +16,14 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
-use tokio::sync::{mpsc, watch};
+use tokio::sync::{broadcast, mpsc, watch};
 // tokio's Instant (not std): identical on a live clock, but it follows
 // the virtual clock in paused-time tests like the flow controller does.
 use tokio::time::Instant;
 
 use crate::framing::FrameBuffer;
+
+mod programming;
 
 /// A confirmation code still unanswered after this long is abandoned.
 pub const CONFIRMATION_TIMEOUT: Duration = Duration::from_secs(30);
@@ -136,6 +138,11 @@ pub struct PciClient {
     /// (asyncio wakes gate waiters FIFO; tokio's watch does not, so
     /// order it explicitly).
     send_lane: tokio::sync::Mutex<()>,
+    /// Separate fanout for correlated CAL transactions; never consumes MQTT events.
+    packets: broadcast::Sender<Option<Packet>>,
+    programming_lane: tokio::sync::Mutex<()>,
+    programming_fault: std::sync::atomic::AtomicBool,
+    disconnected: std::sync::atomic::AtomicBool,
 }
 
 impl PciClient {
@@ -156,6 +163,10 @@ impl PciClient {
             events,
             init_done: watch::Sender::new(false),
             send_lane: tokio::sync::Mutex::new(()),
+            packets: broadcast::channel(512).0,
+            programming_lane: tokio::sync::Mutex::new(()),
+            programming_fault: std::sync::atomic::AtomicBool::new(false),
+            disconnected: std::sync::atomic::AtomicBool::new(false),
         });
         tokio::spawn(Self::reader_loop(client.clone(), reader));
         tokio::spawn(Self::retry_task(client.clone()));
@@ -230,14 +241,18 @@ impl PciClient {
 
         if let Some(code) = conf {
             let mut st = self.state.lock().unwrap();
-            st.pending.insert(
-                code,
-                Pending {
-                    data: bytes,
-                    attempts: 1,
-                    next_retry: Instant::now() + flow::jittered_backoff(1),
-                },
-            );
+            // A fast PCI can confirm before the write future resumes.
+            // Do not resurrect an already acknowledged command for retry.
+            if st.codes_in_use.contains_key(&code) {
+                st.pending.insert(
+                    code,
+                    Pending {
+                        data: bytes,
+                        attempts: 1,
+                        next_retry: Instant::now() + flow::jittered_backoff(1),
+                    },
+                );
+            }
         }
         Ok(conf)
     }
@@ -385,20 +400,28 @@ impl PciClient {
             match reader.read(&mut buf).await {
                 Ok(0) | Err(_) => break,
                 Ok(n) => {
-                    for ev in fb.feed(&buf[..n]) {
-                        if let Some(p) = ev.packet {
-                            self.handle_cbus_packet(p);
+                    // The bound applies to an incomplete frame, not a TCP
+                    // read containing many complete programming replies.
+                    for chunk in buf[..n].chunks(64) {
+                        for ev in fb.feed(chunk) {
+                            if let Some(p) = ev.packet {
+                                self.handle_cbus_packet(p);
+                            }
                         }
                     }
                 }
             }
         }
         tracing::warn!("connection to PCI lost");
+        self.disconnected
+            .store(true, std::sync::atomic::Ordering::Release);
+        let _ = self.packets.send(None);
         let _ = self.events.send(CBusEvent::ConnectionLost);
     }
 
     /// `PCIProtocol.handle_cbus_packet` event dispatch.
     fn handle_cbus_packet(&self, p: Packet) {
+        let _ = self.packets.send(Some(p.clone()));
         match p {
             Packet::Confirmation { code, success } => {
                 tracing::debug!("confirmation: code {:#04x} success {}", code, success);

@@ -80,6 +80,12 @@ pub fn report_to_json(r: &StatusReport) -> Value {
 /// Canonical JSON for one CAL.
 pub fn cal_to_json(c: &Cal) -> Value {
     match c {
+        Cal::Write { parameter, data } => {
+            json!({"cal": "write", "parameter": parameter, "data_hex": hex::encode(data)})
+        }
+        Cal::Ack { parameter, data } => {
+            json!({"cal": "ack", "parameter": parameter, "data_hex": hex::encode(data)})
+        }
         Cal::Identify { attribute } => json!({"cal": "identify", "attribute": attribute}),
         Cal::Recall { param, count } => {
             json!({"cal": "recall", "param": param, "count": count})
@@ -345,6 +351,14 @@ pub fn report_from_json(d: &Value) -> Result<StatusReport, JErr> {
 /// Build a CAL from canonical JSON.
 pub fn cal_from_json(d: &Value) -> Result<Cal, JErr> {
     match get_str(d, "cal")? {
+        "write" => Ok(Cal::Write {
+            parameter: get_u8(d, "parameter")?,
+            data: hex::decode(get_str(d, "data_hex")?).map_err(|e| e.to_string())?,
+        }),
+        "ack" => Ok(Cal::Ack {
+            parameter: get_u8(d, "parameter")?,
+            data: hex::decode(get_str(d, "data_hex")?).map_err(|e| e.to_string())?,
+        }),
         "identify" => Ok(Cal::Identify {
             attribute: get_u8(d, "attribute")?,
         }),

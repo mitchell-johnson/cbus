@@ -1147,6 +1147,8 @@ def build_parser():
     cgate.add_argument("--cert", type=Path)
     cgate.add_argument("--key", type=Path)
     cgops = cgate.add_subparsers(dest="action", required=True)
+    p = cgops.add_parser("edlt-labels", help="Read live KEYGL5 labels through cmqttd, without Windows or a second CNI connection")
+    p.add_argument("address", help="Fully qualified physical unit, e.g. //PROJECT/254/p/5")
     from .repositories_cli import register as repository_options
     repository_options(cgops)
     from .thermostat_schedule_cli import compose_options, options as schedule_options
@@ -2015,7 +2017,7 @@ def _cgate(args):
                     if line.strip() and not line.lstrip().startswith(("#", "//"))]
         if not commands:
             raise ValueError("Command file is empty")
-    elif args.action not in ("project", "database", "unit", "cgl", "network", "label", "conversion", "events", "trigger", "enable", "scene", "address", "serials"):
+    elif args.action not in ("project", "database", "unit", "cgl", "network", "label", "conversion", "events", "trigger", "enable", "scene", "address", "serials", "edlt-labels"):
         tokens = ["TERMINATERAMP" if args.action == "stop" else args.action.upper(), args.address]
         if args.action == "get":
             tokens.append(args.attribute)
@@ -2031,6 +2033,9 @@ def _cgate(args):
     from .edlt_control_cli import connection_guard
     with connection_guard(args), CGateClient(args.host, args.port or (20123 if args.tls else 20023),
                      timeout=args.timeout, ssl_context=context) as client:
+        if args.action == "edlt-labels":
+            from .cmqtt import edlt_labels
+            return edlt_labels(client, args.address), 0
         if args.action == "label":
             from .labels import NativeLabels
             labels = NativeLabels(client, args.family)

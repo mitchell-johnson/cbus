@@ -25,7 +25,7 @@ LOG_LEVEL="${CMQTTD_VERBOSITY:-INFO}"
 echo "Setting log level to ${LOG_LEVEL}"
 
 # Arguments that are always required.
-CMQTTD_ARGS="--broker-address ${MQTT_SERVER:?unset} --timesync ${CBUS_TIMESYNC:-300} --verbosity ${LOG_LEVEL}"
+CMQTTD_ARGS="--broker-address ${MQTT_SERVER:?unset} --timesync ${CBUS_TIMESYNC:-300} --status-resync ${CBUS_STATUS_RESYNC:-300} --verbosity ${LOG_LEVEL}"
 
 # Simple arguments
 if [ -n "${MQTT_PORT}" ]; then
@@ -100,4 +100,8 @@ echo -n "Current time: "
 date -R
 
 echo "Running with flags: ${CMQTTD_ARGS}"
-cmqttd $CMQTTD_ARGS
+set -- $CMQTTD_ARGS
+if [ -n "${CMQTTD_CGATE_BIND}" ] && [ "${CMQTTD_CGATE_BIND}" != "off" ] && [ -e "${CMQTTD_PROJECT_FILE}" ]; then
+    set -- "$@" --cgate-bind "${CMQTTD_CGATE_BIND}" --cgate-state "${CMQTTD_CGATE_STATE:-/var/lib/cmqttd/cgate.json}"
+fi
+exec cmqttd "$@"

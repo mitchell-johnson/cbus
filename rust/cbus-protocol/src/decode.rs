@@ -261,7 +261,15 @@ fn decode_body(
         let (cal, cal_len) = Cal::decode_one(rest)?;
         return Ok((Packet::BareCal(cal), consumed + cal_len));
     } else if address_type == DAT_POINT_TO_POINT {
-        decode_pp(rest, checksum, priority_class)?
+        // Captured OEM programming responses carry a local 01 00 route,
+        // unlike the outgoing 09 00 selector and ordinary bridge lengths.
+        if from_pci && rest.get(1..3) == Some(&[0x01, 0x00]) {
+            let mut direct = vec![rest[0], 0];
+            direct.extend_from_slice(&rest[3..]);
+            decode_pp(&direct, checksum, priority_class)?
+        } else {
+            decode_pp(rest, checksum, priority_class)?
+        }
     } else if address_type == DAT_POINT_TO_MULTIPOINT {
         decode_pm(rest, checksum, priority_class)?
     } else {

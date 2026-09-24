@@ -4,7 +4,7 @@
 
 `cbus-toolkit` is the Python project and commissioning application. Offline workflows edit XML/CBZ or plan device settings; online workflows use its C-Gate client and typed wrappers, or its direct PCI client. Native C-Gate supplies online server behavior. Rust `cgate-mock` can stand in for that server during tests. The Toolkit CLI is maintained independently of the Rust bridge.
 
-`cmqttd` connects one C-Bus PCI/CNI endpoint to one MQTT broker. Incoming C-Bus frames become typed protocol values, state publications, and Home Assistant discovery messages. Valid MQTT light commands become C-Bus lighting commands. A Toolkit `.cbz` or bare XML project supplies human-readable network, application, group, and unit metadata.
+`cmqttd` connects one C-Bus PCI/CNI endpoint to one MQTT broker and can also serve C-Gate clients through `--cgate-bind`. Both interfaces share one transport. Incoming C-Bus frames become typed protocol values, state publications, and Home Assistant discovery messages. Valid MQTT or supported C-Gate lighting commands become C-Bus commands. A Toolkit `.cbz` or bare XML project supplies human-readable network, application, group, and unit metadata; the embedded C-Gate service imports it into a persistent database.
 
 `cbus-tools` calls the same protocol and project readers for one-shot work. `cbus-simulator` supplies a development PCI/CNI endpoint. `cbus-cgate` is an independent in-memory C-Gate protocol model exposed over TCP by `cgate-mock`.
 
@@ -20,7 +20,7 @@ Toolkit modules live under `toolkit-cli/src/cbus_toolkit/`; its tests are under 
 | `cmqttd` | Runtime orchestration between transport and MQTT |
 | `cbus-tools` | Frame decoding, label export, and TCP unit interrogation |
 | `cbus-simulator` | Fake PCI/CNI TCP endpoint |
-| `cbus-cgate` | C-Gate parser, command registry, state model, and `cgate-mock` server |
+| `cbus-cgate` | C-Gate parser, state model, persistent hardware service, and separate `cgate-mock` server |
 | `cbus-vector-check` | Standalone JSONL compatibility-vector runner |
 | `cbus-golden-tests` | Generated exact-vector and finite-domain tests |
 | `cbus-test-support` | In-process MQTT broker, scripted PCI, process, and wait helpers |

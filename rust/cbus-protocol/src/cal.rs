@@ -7,6 +7,20 @@ use crate::DecodeError;
 /// A Common Application Language message.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Cal {
+    /// Write a CAL parameter. Extended-memory selectors use parameter 0.
+    Write {
+        /// Parameter number.
+        parameter: u8,
+        /// Payload (at most 30 bytes on the wire).
+        data: Vec<u8>,
+    },
+    /// Unit acknowledgement of a CAL write (distinct from a PCI confirmation).
+    Ack {
+        /// Parameter acknowledged.
+        parameter: u8,
+        /// Operation-specific acknowledgement data.
+        data: Vec<u8>,
+    },
     /// Ask a unit to identify one of its attributes.
     Identify {
         /// Attribute number to identify.
@@ -43,6 +57,17 @@ impl Cal {
     /// Wire bytes of this CAL.
     pub fn encode(&self) -> Vec<u8> {
         match self {
+            Cal::Write { parameter, data } | Cal::Ack { parameter, data } => {
+                let data = &data[..data.len().min(30)];
+                let opcode = if matches!(self, Cal::Write { .. }) {
+                    0xa0
+                } else {
+                    0x30
+                };
+                let mut out = vec![opcode | (data.len() as u8 + 1), *parameter];
+                out.extend_from_slice(data);
+                out
+            }
             Cal::Identify { attribute } => vec![CAL_IDENTIFY, *attribute],
             Cal::Recall { param, count } => vec![CAL_RECALL, *param, *count],
             Cal::Reply { parameter, data } => {
@@ -79,7 +104,30 @@ impl Cal {
         let cmd = *data
             .first()
             .ok_or_else(|| DecodeError::new("empty CAL data"))?;
-        if cmd & 0xe0 == CAL_REPLY {
+        if cmd & 0xe0 == 0xa0 || cmd & 0xf0 == 0x30 {
+            let length = if cmd & 0xe0 == 0xa0 {
+                cmd & 0x1f
+            } else {
+                cmd & 0x0f
+            } as usize;
+            if length == 0 || data.len() < length + 1 {
+                return Err(DecodeError::new("truncated CAL write/ack"));
+            }
+            let parameter = data[1];
+            let payload = data[2..length + 1].to_vec();
+            let cal = if cmd & 0xe0 == 0xa0 {
+                Cal::Write {
+                    parameter,
+                    data: payload,
+                }
+            } else {
+                Cal::Ack {
+                    parameter,
+                    data: payload,
+                }
+            };
+            Ok((cal, length + 1))
+        } else if cmd & 0xe0 == CAL_REPLY {
             let cal_end = ((cmd & 0x1f) + 1) as usize;
             if data.len() < cal_end {
                 return Err(DecodeError::new(format!(

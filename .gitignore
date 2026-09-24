@@ -18,3 +18,4 @@ cmqttd_config/*.xml
 cmqttd_config/*.pem
 cmqttd_config/*.key
 cmqttd_config/project.cbz.bak-*
+cmqttd-data/

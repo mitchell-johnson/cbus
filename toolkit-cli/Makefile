@@ -10,9 +10,8 @@
 #   make check          full offline suite (operator-gated tests skip cleanly)
 #   make check-native   owned-process C-Gate + original-instruction suites
 #                       (needs CBUS_CGATE_JAVA/CBUS_CGATE_JAVAC/CBUS_LOCAL_CGATE_VENDOR)
-#   make check-interop  Python-to-Rust interop against cgate-mock
-#                       (rebuilds the mock first; the test itself skips when
-#                       the binary predates the mock sources)
+#   make check-interop  Python-to-Rust interop against cgate-mock and cmqttd
+#                       (rebuilds both binaries before exercising their servers)
 #   make coverage       print the completion ledger gate status
 #   make compile        byte-compile the package
 
@@ -40,8 +39,8 @@ coverage:
 	status=$$?; echo "coverage-gate-exit=$$status (1 while parity work remains)"; exit 0
 
 check-interop: compile
-	cd $(RUST_DIR) && cargo build -p cbus-cgate
-	$(VENV)/bin/python -m pytest tests/test_rust_cgate_interop.py -q -p no:cacheprovider
+	cd $(RUST_DIR) && cargo build -p cbus-cgate -p cmqttd
+	$(VENV)/bin/python -m pytest tests/test_rust_cgate_interop.py tests/test_cmqtt_interop.py -q -p no:cacheprovider
 
 compile:
 	$(PY) -m compileall -q src/cbus_toolkit
