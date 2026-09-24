@@ -303,6 +303,8 @@ impl Loader<'_> {
 pub enum ParameterTransfer {
     /// Standard CAL parameter recall (logical addresses below 256).
     Recall { parameter: u8, count: usize },
+    /// Page-aware logical recall used by `paged` and `ncc` units.
+    Paged { address: u32, count: usize },
     /// OEM memory read (logical address minus 256).
     Memory { address: u32, count: usize },
 }
@@ -428,7 +430,28 @@ impl ParameterLayout {
                 param.name
             ));
         }
-        let transfer = if logical_address < 256 {
+        let method = param
+            .get("ProgramMethod")
+            .unwrap_or("")
+            .trim()
+            .to_ascii_lowercase();
+        let transfer = if matches!(method.as_str(), "paged" | "ncc") {
+            let address = u32::try_from(logical_address)
+                .map_err(|_| format!("Parameter {:?} address is too large", param.name))?;
+            if address
+                .checked_add(span as u32)
+                .is_none_or(|end| end > 65_536)
+            {
+                return Err(format!(
+                    "Paged parameter {:?} exceeds the 16-bit address space",
+                    param.name
+                ));
+            }
+            ParameterTransfer::Paged {
+                address,
+                count: span,
+            }
+        } else if logical_address < 256 {
             if span > u8::MAX as usize {
                 return Err(format!(
                     "Standard parameter {:?} exceeds the CAL recall limit",
@@ -493,9 +516,9 @@ impl ParameterLayout {
     /// Decode one exact transport response to native PP value text.
     pub fn decode(&self, param: &SpecParam, data: &[u8]) -> Result<String, String> {
         let expected = match self.transfer {
-            ParameterTransfer::Recall { count, .. } | ParameterTransfer::Memory { count, .. } => {
-                count
-            }
+            ParameterTransfer::Recall { count, .. }
+            | ParameterTransfer::Paged { count, .. }
+            | ParameterTransfer::Memory { count, .. } => count,
         };
         if data.len() != expected {
             return Err(format!("Short physical value for {:?}", param.name));
@@ -576,9 +599,9 @@ impl ParameterLayout {
         data: &mut [u8],
     ) -> Result<(), String> {
         let expected = match self.transfer {
-            ParameterTransfer::Recall { count, .. } | ParameterTransfer::Memory { count, .. } => {
-                count
-            }
+            ParameterTransfer::Recall { count, .. }
+            | ParameterTransfer::Paged { count, .. }
+            | ParameterTransfer::Memory { count, .. } => count,
         };
         if data.len() != expected {
             return Err(format!("Short physical value for {:?}", param.name));
@@ -1016,6 +1039,9 @@ mod tests {
                 let supported = match method.as_str() {
                     "direct" => matches!(protection.as_str(), "none" | "checksum" | "lock"),
                     "edlt" => matches!(protection.as_str(), "none" | "checksum"),
+                    "paged" | "ncc" => {
+                        matches!(protection.as_str(), "none" | "checksum" | "lock")
+                    }
                     _ => false,
                 };
                 if !supported {
@@ -1025,9 +1051,10 @@ mod tests {
                     .unwrap_or_else(|error| panic!("{unit_type}/{}: {error}", parameter.name));
                 let count = match layout.transfer {
                     ParameterTransfer::Recall { count, .. }
+                    | ParameterTransfer::Paged { count, .. }
                     | ParameterTransfer::Memory { count, .. } => count,
                 };
-                if protection == "lock" {
+                if protection == "lock" && method == "direct" {
                     assert!(
                         count <= 29,
                         "{unit_type}/{}: lock-protected field exceeds one native STORE",

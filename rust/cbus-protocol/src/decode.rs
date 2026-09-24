@@ -328,9 +328,9 @@ fn decode_body(
         if from_pci && rest.get(1..3) == Some(&[0x01, 0x00]) {
             let mut direct = vec![rest[0], 0];
             direct.extend_from_slice(&rest[3..]);
-            decode_pp(&direct, checksum, priority_class)?
+            decode_pp(&direct, checksum, priority_class, from_pci)?
         } else {
-            decode_pp(rest, checksum, priority_class)?
+            decode_pp(rest, checksum, priority_class, from_pci)?
         }
     } else if address_type == DAT_POINT_TO_MULTIPOINT {
         decode_pm(rest, checksum, priority_class)?
@@ -384,7 +384,12 @@ fn decode_pm(data: &[u8], checksum: bool, priority_class: u8) -> Result<Packet, 
 }
 
 /// PointToPointPacket.decode_packet
-fn decode_pp(data: &[u8], checksum: bool, priority_class: u8) -> Result<Packet, DecodeError> {
+fn decode_pp(
+    data: &[u8],
+    checksum: bool,
+    priority_class: u8,
+    from_pci: bool,
+) -> Result<Packet, DecodeError> {
     let b1 = *data
         .get(1)
         .ok_or_else(|| DecodeError::new("short PP packet"))?;
@@ -424,7 +429,11 @@ fn decode_pp(data: &[u8], checksum: bool, priority_class: u8) -> Result<Packet, 
     let mut cals = Vec::new();
     let mut d = rest;
     while !d.is_empty() {
-        let (cal, cal_len) = Cal::decode_one(d)?;
+        let (cal, cal_len) = if from_pci {
+            Cal::decode_one(d)?
+        } else {
+            Cal::decode_one_to_pci(d)?
+        };
         d = d.get(cal_len..).unwrap_or(&[]);
         cals.push(cal);
     }

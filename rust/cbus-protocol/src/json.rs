@@ -102,9 +102,13 @@ pub fn cal_to_json(c: &Cal) -> Value {
             json!({"cal": "ack", "parameter": parameter, "data_hex": hex::encode(data)})
         }
         Cal::Unlock { parameter } => json!({"cal": "unlock", "parameter": parameter}),
+        Cal::SetPage { page } => json!({"cal": "set_page", "page": page}),
         Cal::Identify { attribute } => json!({"cal": "identify", "attribute": attribute}),
         Cal::Recall { param, count } => {
             json!({"cal": "recall", "param": param, "count": count})
+        }
+        Cal::PagedRecall { page, param, count } => {
+            json!({"cal": "paged_recall", "page": page, "param": param, "count": count})
         }
         Cal::Reply { parameter, data } => json!({"cal": "reply", "parameter": parameter,
                     "data_hex": hex::encode(data)}),
@@ -398,10 +402,18 @@ pub fn cal_from_json(d: &Value) -> Result<Cal, JErr> {
         "unlock" => Ok(Cal::Unlock {
             parameter: get_u8(d, "parameter")?,
         }),
+        "set_page" => Ok(Cal::SetPage {
+            page: get_u8(d, "page")?,
+        }),
         "identify" => Ok(Cal::Identify {
             attribute: get_u8(d, "attribute")?,
         }),
         "recall" => Ok(Cal::Recall {
+            param: get_u8(d, "param")?,
+            count: get_u8(d, "count")?,
+        }),
+        "paged_recall" => Ok(Cal::PagedRecall {
+            page: get_u8(d, "page")?,
             param: get_u8(d, "param")?,
             count: get_u8(d, "count")?,
         }),

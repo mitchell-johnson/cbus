@@ -26,6 +26,11 @@ pub enum Cal {
         /// Parameter number to unlock.
         parameter: u8,
     },
+    /// Select the active 256-byte programming page for subsequent STOREs.
+    SetPage {
+        /// Page number.
+        page: u8,
+    },
     /// Ask a unit to identify one of its attributes.
     Identify {
         /// Attribute number to identify.
@@ -34,6 +39,15 @@ pub enum Cal {
     /// Recall a parameter block from a unit.
     Recall {
         /// First parameter number.
+        param: u8,
+        /// Number of parameters to recall.
+        count: u8,
+    },
+    /// Recall bytes from an explicit 256-byte programming page.
+    PagedRecall {
+        /// Page number.
+        page: u8,
+        /// First parameter within the page.
         param: u8,
         /// Number of parameters to recall.
         count: u8,
@@ -74,8 +88,10 @@ impl Cal {
                 out
             }
             Cal::Unlock { parameter } => vec![0x11, *parameter],
+            Cal::SetPage { page } => vec![0x39, *page],
             Cal::Identify { attribute } => vec![CAL_IDENTIFY, *attribute],
             Cal::Recall { param, count } => vec![CAL_RECALL, *param, *count],
+            Cal::PagedRecall { page, param, count } => vec![0x1b, *page, *param, *count],
             Cal::Reply { parameter, data } => {
                 // reply data is clipped to 0x1E bytes on encode
                 let data = &data[..data.len().min(0x1e)];
@@ -208,8 +224,34 @@ impl Cal {
                 .get(2)
                 .ok_or_else(|| DecodeError::new("truncated recall CAL"))?;
             Ok((Cal::Recall { param, count }, 3))
+        } else if cmd == 0x1b {
+            let page = *data
+                .get(1)
+                .ok_or_else(|| DecodeError::new("truncated paged recall CAL"))?;
+            let param = *data
+                .get(2)
+                .ok_or_else(|| DecodeError::new("truncated paged recall CAL"))?;
+            let count = *data
+                .get(3)
+                .ok_or_else(|| DecodeError::new("truncated paged recall CAL"))?;
+            Ok((Cal::PagedRecall { page, param, count }, 4))
         } else {
             Err(DecodeError::new(format!("unknown CAL command {:#x}", cmd)))
+        }
+    }
+
+    /// Decode one client-to-PCI CAL. Opcode `0x39` is direction-sensitive:
+    /// on this path it is the native two-byte page selector, while incoming
+    /// `0x39` remains the length-coded eight-byte ACK handled by
+    /// [`Self::decode_one`].
+    pub fn decode_one_to_pci(data: &[u8]) -> Result<(Cal, usize), DecodeError> {
+        if data.first() == Some(&0x39) {
+            let page = *data
+                .get(1)
+                .ok_or_else(|| DecodeError::new("truncated page selection CAL"))?;
+            Ok((Cal::SetPage { page }, 2))
+        } else {
+            Self::decode_one(data)
         }
     }
 }
@@ -224,6 +266,16 @@ mod tests {
         let (c, n) = Cal::decode_one(&[0x11, 0x20, 0xff]).unwrap();
         assert_eq!(c, Cal::Unlock { parameter: 0x20 });
         assert_eq!(n, 2);
+        assert_eq!(Cal::SetPage { page: 4 }.encode(), vec![0x39, 4]);
+        let (c, n) = Cal::decode_one_to_pci(&[0x39, 4, 0xff]).unwrap();
+        assert_eq!(c, Cal::SetPage { page: 4 });
+        assert_eq!(n, 2);
+        let ack = Cal::Ack {
+            parameter: 4,
+            data: vec![0; 8],
+        };
+        let encoded = ack.encode();
+        assert_eq!(Cal::decode_one(&encoded).unwrap(), (ack, 10));
         assert_eq!(Cal::Identify { attribute: 2 }.encode(), vec![0x21, 0x02]);
         assert_eq!(
             Cal::Recall {
@@ -245,6 +297,25 @@ mod tests {
             }
         );
         assert_eq!(n, 3);
+        assert_eq!(
+            Cal::PagedRecall {
+                page: 4,
+                param: 0x20,
+                count: 12
+            }
+            .encode(),
+            vec![0x1b, 4, 0x20, 12]
+        );
+        let (c, n) = Cal::decode_one(&[0x1b, 4, 0x20, 12, 0xff]).unwrap();
+        assert_eq!(
+            c,
+            Cal::PagedRecall {
+                page: 4,
+                param: 0x20,
+                count: 12
+            }
+        );
+        assert_eq!(n, 4);
     }
 
     #[test]

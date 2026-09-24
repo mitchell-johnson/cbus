@@ -17,6 +17,13 @@ struct Transaction<'a> {
     complete: bool,
 }
 
+#[derive(Clone, Copy)]
+enum ProgrammingRoute {
+    DirectChecksummed,
+    DirectUnchecksummed,
+    Oem,
+}
+
 impl Drop for Transaction<'_> {
     fn drop(&mut self) {
         if !self.complete {
@@ -205,12 +212,12 @@ impl PciClient {
         parameter: u8,
         count: usize,
         ack: Option<u8>,
-        direct_route: bool,
+        route: ProgrammingRoute,
     ) -> Result<Vec<u8>> {
         let mut replies = self.packets.subscribe();
-        let bytes = if direct_route {
+        let bytes = if !matches!(route, ProgrammingRoute::Oem) {
             let packet = Packet::PointToPoint {
-                meta: Meta::new(true, 1),
+                meta: Meta::new(matches!(route, ProgrammingRoute::DirectChecksummed), 1),
                 unit_address: unit,
                 bridged: false,
                 hops: vec![],
@@ -340,7 +347,7 @@ impl PciClient {
                 0,
                 0,
                 Some(0x41),
-                false,
+                ProgrammingRoute::Oem,
             )
             .await?;
             let count = (length - result.len()).min(128) as u8;
@@ -351,7 +358,7 @@ impl PciClient {
                     1,
                     usize::from(count),
                     None,
-                    false,
+                    ProgrammingRoute::Oem,
                 )
                 .await?,
             );
@@ -401,11 +408,182 @@ impl PciClient {
                 parameter,
                 length,
                 None,
-                true,
+                ProgrammingRoute::DirectChecksummed,
             )
             .await?;
         transaction.complete = true;
         Ok(result)
+    }
+
+    /// Recall a bounded logical range using C-Gate's page-aware `0x1B`
+    /// command. Requests never cross a 256-byte page and preserve the exact
+    /// unchecksummed direct route used by native `paged` and `ncc` PP loads.
+    pub async fn recall_paged_parameter(
+        &self,
+        unit: u8,
+        address: u32,
+        length: usize,
+    ) -> Result<Vec<u8>> {
+        if length == 0
+            || length > 65_536
+            || address
+                .checked_add(length as u32)
+                .is_none_or(|end| end > 65_536)
+        {
+            return Err(Error::new(
+                ErrorKind::InvalidInput,
+                "paged recall requires 1..65536 bytes within the 16-bit address space",
+            ));
+        }
+        let _lane = self.programming_lane.lock().await;
+        if self.programming_fault.load(Ordering::Acquire) {
+            return Err(Error::other(
+                "programming stream needs reconnect after an incomplete transaction",
+            ));
+        }
+        let mut transaction = Transaction {
+            fault: &self.programming_fault,
+            complete: false,
+        };
+        let mut result = Vec::with_capacity(length);
+        while result.len() < length {
+            let logical = address + result.len() as u32;
+            let page = (logical >> 8) as u8;
+            let parameter = logical as u8;
+            let page_remaining = 256 - usize::from(parameter);
+            let count = (length - result.len()).min(page_remaining).min(255) as u8;
+            result.extend(
+                self.programming_exchange(
+                    unit,
+                    Cal::PagedRecall {
+                        page,
+                        param: parameter,
+                        count,
+                    },
+                    parameter,
+                    usize::from(count),
+                    None,
+                    ProgrammingRoute::DirectUnchecksummed,
+                )
+                .await?,
+            );
+        }
+        transaction.complete = true;
+        Ok(result)
+    }
+
+    /// Select each required programming page, issue native tagged STOREs,
+    /// and verify the complete logical range through page-aware recalls.
+    /// C-Gate limits these STORE groups to twelve bytes and unlocks the
+    /// low-byte parameter after selecting a page when protection is `lock`.
+    pub async fn store_paged_parameter_verified(
+        &self,
+        unit: u8,
+        address: u32,
+        data: &[u8],
+        locked: bool,
+    ) -> Result<()> {
+        if data.is_empty()
+            || data.len() > 65_536
+            || address
+                .checked_add(data.len() as u32)
+                .is_none_or(|end| end > 65_536)
+        {
+            return Err(Error::new(
+                ErrorKind::InvalidInput,
+                "paged store requires 1..65536 bytes within the 16-bit address space",
+            ));
+        }
+        let _lane = self.programming_lane.lock().await;
+        if self.programming_fault.load(Ordering::Acquire) {
+            return Err(Error::other(
+                "programming stream needs reconnect after an incomplete transaction",
+            ));
+        }
+        let mut transaction = Transaction {
+            fault: &self.programming_fault,
+            complete: false,
+        };
+        let mut written = 0usize;
+        let mut selected_page = None;
+        let mut transaction_tag = 0u8;
+        while written < data.len() {
+            let logical = address + written as u32;
+            let page = (logical >> 8) as u8;
+            let parameter = logical as u8;
+            if selected_page != Some(page) {
+                let reply = self
+                    .programming_exchange(
+                        unit,
+                        Cal::SetPage { page },
+                        page,
+                        0,
+                        None,
+                        ProgrammingRoute::DirectUnchecksummed,
+                    )
+                    .await?;
+                if !reply.is_empty() {
+                    return Err(Error::new(
+                        ErrorKind::InvalidData,
+                        "page selection reply must not contain data",
+                    ));
+                }
+                selected_page = Some(page);
+            }
+            let count = (data.len() - written)
+                .min(12)
+                .min(256 - usize::from(parameter));
+            if locked {
+                self.programming_unlock(unit, parameter).await?;
+            }
+            let mut tagged = Vec::with_capacity(count + 1);
+            tagged.push(transaction_tag);
+            tagged.extend_from_slice(&data[written..written + count]);
+            self.programming_exchange(
+                unit,
+                Cal::Write {
+                    parameter,
+                    data: tagged,
+                },
+                parameter,
+                0,
+                Some(transaction_tag),
+                ProgrammingRoute::DirectChecksummed,
+            )
+            .await?;
+            written += count;
+            transaction_tag = transaction_tag.wrapping_add(1);
+        }
+
+        let mut actual = Vec::with_capacity(data.len());
+        while actual.len() < data.len() {
+            let logical = address + actual.len() as u32;
+            let page = (logical >> 8) as u8;
+            let parameter = logical as u8;
+            let count = (data.len() - actual.len())
+                .min(256 - usize::from(parameter))
+                .min(255) as u8;
+            actual.extend(
+                self.programming_exchange(
+                    unit,
+                    Cal::PagedRecall {
+                        page,
+                        param: parameter,
+                        count,
+                    },
+                    parameter,
+                    usize::from(count),
+                    None,
+                    ProgrammingRoute::DirectUnchecksummed,
+                )
+                .await?,
+            );
+        }
+        if actual != data {
+            return Err(Error::other("paged parameter readback did not match STORE"));
+        }
+        transaction.complete = true;
+        Ok(())
     }
 
     async fn programming_unlock(&self, unit: u8, parameter: u8) -> Result<()> {
@@ -575,7 +753,7 @@ impl PciClient {
                 target,
                 0,
                 Some(tag),
-                true,
+                ProgrammingRoute::DirectChecksummed,
             )
             .await?;
         }
@@ -590,7 +768,7 @@ impl PciClient {
                 parameter,
                 data.len(),
                 None,
-                true,
+                ProgrammingRoute::DirectChecksummed,
             )
             .await?;
         if actual != data {
@@ -639,7 +817,7 @@ impl PciClient {
                 0,
                 0,
                 Some(0x41),
-                false,
+                ProgrammingRoute::Oem,
             )
             .await?;
             let mut tagged = Vec::with_capacity(chunk.len() + 1);
@@ -654,7 +832,7 @@ impl PciClient {
                 1,
                 0,
                 Some(0x42),
-                false,
+                ProgrammingRoute::Oem,
             )
             .await?;
         }
@@ -674,7 +852,7 @@ impl PciClient {
                 0,
                 0,
                 Some(0x41),
-                false,
+                ProgrammingRoute::Oem,
             )
             .await?;
             let count = (data.len() - actual.len()).min(128) as u8;
@@ -685,7 +863,7 @@ impl PciClient {
                     1,
                     usize::from(count),
                     None,
-                    false,
+                    ProgrammingRoute::Oem,
                 )
                 .await?,
             );
@@ -710,7 +888,14 @@ impl PciClient {
             complete: false,
         };
         let result = self
-            .programming_exchange(unit, Cal::Identify { attribute }, attribute, 0, None, true)
+            .programming_exchange(
+                unit,
+                Cal::Identify { attribute },
+                attribute,
+                0,
+                None,
+                ProgrammingRoute::DirectChecksummed,
+            )
             .await?;
         transaction.complete = true;
         Ok(result)
@@ -981,6 +1166,59 @@ mod tests {
             pci.recall_parameter(5, 1, 256).await.unwrap_err().kind(),
             ErrorKind::InvalidInput
         );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn paged_recall_carries_page_and_splits_at_page_boundary() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let read = tokio::spawn(async move { worker.recall_paged_parameter(5, 0x01fe, 4).await });
+        assert_eq!(line(&mut remote).await, b"\\4605001B01FE02\r");
+        reply(&mut remote, 5, &[0x83, 0xfe, 1, 2]).await;
+        assert_eq!(line(&mut remote).await, b"\\4605001B020002\r");
+        reply(&mut remote, 4, &[0x83, 0, 9, 9]).await;
+        reply(&mut remote, 5, &[0x83, 0, 3, 4]).await;
+        assert_eq!(read.await.unwrap().unwrap(), vec![1, 2, 3, 4]);
+        assert_eq!(
+            pci.recall_paged_parameter(5, 0, 0)
+                .await
+                .unwrap_err()
+                .kind(),
+            ErrorKind::InvalidInput
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn locked_paged_store_selects_each_page_unlocks_and_verifies() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let write = tokio::spawn(async move {
+            worker
+                .store_paged_parameter_verified(5, 0x01fe, &[0xaa, 0xbb, 0xcc, 0xdd], true)
+                .await
+        });
+
+        assert_eq!(line(&mut remote).await, b"\\4605003901\r");
+        reply(&mut remote, 5, &[0x81, 1]).await;
+        assert_eq!(line(&mut remote).await, b"\\46050011FEh\r");
+        reply(&mut remote, 5, &[0x82, 0xfe, 0x5a]).await;
+        remote.get_mut().write_all(b"h.\r\n").await.unwrap();
+        assert_eq!(line(&mut remote).await, b"\\460500A4FE00AABBAE\r");
+        reply(&mut remote, 5, &[0x32, 0xfe, 0]).await;
+
+        assert_eq!(line(&mut remote).await, b"\\4605003902\r");
+        reply(&mut remote, 5, &[0x81, 2]).await;
+        assert_eq!(line(&mut remote).await, b"\\4605001100i\r");
+        reply(&mut remote, 5, &[0x82, 0, 0x5a]).await;
+        remote.get_mut().write_all(b"i.\r\n").await.unwrap();
+        assert_eq!(line(&mut remote).await, b"\\460500A40001CCDD67\r");
+        reply(&mut remote, 5, &[0x32, 0, 1]).await;
+
+        assert_eq!(line(&mut remote).await, b"\\4605001B01FE02\r");
+        reply(&mut remote, 5, &[0x83, 0xfe, 0xaa, 0xbb]).await;
+        assert_eq!(line(&mut remote).await, b"\\4605001B020002\r");
+        reply(&mut remote, 5, &[0x83, 0, 0xcc, 0xdd]).await;
+        write.await.unwrap().unwrap();
     }
 
     #[tokio::test(start_paused = true)]

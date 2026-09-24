@@ -397,9 +397,9 @@ impl Service {
                 vec![serde_json::json!({"service":"cmqttd", "physical_bus":true,
                 "full_cgate_compatibility":false, "memory_read":true, "memory_write":true,
                 "physical_pp_load":true, "physical_pp_save":true,
-                "physical_pp_save_methods":["direct","edlt"],
+                "physical_pp_save_methods":["direct","edlt","ncc","paged"],
                 "physical_pp_save_protection":["none","checksum","lock"],
-                "physical_pp_save_lock_methods":["direct"],
+                "physical_pp_save_lock_methods":["direct","ncc","paged"],
                 "trigger_control":true, "enable_control":true, "clock_control":true,
                 "temperature_broadcast":true,
                 "install_mmi":true, "network_pingu":true,
@@ -1598,6 +1598,7 @@ impl Service {
         }
         let mut layouts = Vec::with_capacity(selected.len());
         let mut recalls = HashMap::<u8, usize>::new();
+        let mut paged_ranges = Vec::<(u32, u32)>::new();
         let mut memory_ranges = Vec::<(u32, u32)>::new();
         for param in &selected {
             let layout = match unitspec::ParameterLayout::for_param(param) {
@@ -1611,11 +1612,25 @@ impl Service {
                         .and_modify(|current| *current = (*current).max(count))
                         .or_insert(count);
                 }
+                unitspec::ParameterTransfer::Paged { address, count } => {
+                    paged_ranges.push((address, address + count as u32));
+                }
                 unitspec::ParameterTransfer::Memory { address, count } => {
                     memory_ranges.push((address, address + count as u32));
                 }
             }
             layouts.push((*param, layout));
+        }
+        paged_ranges.sort_unstable();
+        let mut paged_merged = Vec::<(u32, u32)>::new();
+        for (start, end) in paged_ranges {
+            if let Some(last) = paged_merged.last_mut() {
+                if start <= last.1 {
+                    last.1 = last.1.max(end);
+                    continue;
+                }
+            }
+            paged_merged.push((start, end));
         }
         memory_ranges.sort_unstable();
         let mut merged = Vec::<(u32, u32)>::new();
@@ -1629,6 +1644,10 @@ impl Service {
             merged.push((start, end));
         }
         let unique_bytes = recalls.values().sum::<usize>()
+            + paged_merged
+                .iter()
+                .map(|(start, end)| (*end - *start) as usize)
+                .sum::<usize>()
             + merged
                 .iter()
                 .map(|(start, end)| (*end - *start) as usize)
@@ -1658,6 +1677,22 @@ impl Service {
                 }
             }
         }
+        let mut paged = Vec::<(u32, Vec<u8>)>::with_capacity(paged_merged.len());
+        for (start, end) in paged_merged {
+            match pci
+                .recall_paged_parameter(unit, start, (end - start) as usize)
+                .await
+            {
+                Ok(bytes) => paged.push((start, bytes)),
+                Err(error) => {
+                    return err(
+                        tag,
+                        502,
+                        &format!("502 Physical PP paged read failed: {error}"),
+                    )
+                }
+            }
+        }
         let mut memory = Vec::<(u32, Vec<u8>)>::with_capacity(merged.len());
         for (start, end) in merged {
             let mut bytes = Vec::with_capacity((end - start) as usize);
@@ -1683,6 +1718,17 @@ impl Service {
             let data = match layout.transfer {
                 unitspec::ParameterTransfer::Recall { parameter, count } => {
                     &recalled[&parameter][..count]
+                }
+                unitspec::ParameterTransfer::Paged { address, count } => {
+                    let Some((start, bytes)) = paged.iter().find(|(start, bytes)| {
+                        address >= *start
+                            && u64::from(address) + count as u64
+                                <= u64::from(*start) + bytes.len() as u64
+                    }) else {
+                        return err(tag, 500, "500 Physical PP paged plan was incomplete");
+                    };
+                    let offset = (address - *start) as usize;
+                    &bytes[offset..offset + count]
                 }
                 unitspec::ParameterTransfer::Memory { address, count } => {
                     let Some((start, bytes)) = memory.iter().find(|(start, bytes)| {
@@ -1735,6 +1781,7 @@ impl Service {
         #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
         enum Space {
             Standard,
+            Paged,
             Memory,
         }
         struct Pending<'a> {
@@ -1937,6 +1984,11 @@ impl Service {
                 unitspec::ParameterTransfer::Recall { parameter, count } if method == "direct" => {
                     (Space::Standard, u32::from(parameter), count)
                 }
+                unitspec::ParameterTransfer::Paged { address, count }
+                    if matches!(method.as_str(), "paged" | "ncc") =>
+                {
+                    (Space::Paged, address, count)
+                }
                 unitspec::ParameterTransfer::Memory { address, count }
                     if method == "edlt" && !locked =>
                 {
@@ -1950,7 +2002,7 @@ impl Service {
                     )
                 }
             };
-            if locked && count > 29 {
+            if locked && space == Space::Standard && count > 29 {
                 return err(
                     tag,
                     502,
@@ -2009,6 +2061,7 @@ impl Service {
                     pci.recall_parameter(unit, start as u8, count).await
                 }
                 Space::Standard => return err(tag, 502, "502 Standard PP save range is too large"),
+                Space::Paged => pci.recall_paged_parameter(unit, start, count).await,
                 Space::Memory => pci.read_memory(unit, start, count).await,
             };
             let original = match original {
@@ -2069,6 +2122,10 @@ impl Service {
                 }
                 Space::Standard => {
                     pci.store_parameter_verified(unit, item.start as u8, modified)
+                        .await
+                }
+                Space::Paged => {
+                    pci.store_paged_parameter_verified(unit, item.start, modified, item.locked)
                         .await
                 }
                 Space::Memory => pci.write_memory_verified(unit, item.start, modified).await,

@@ -148,6 +148,11 @@ fn arb_cal() -> impl Strategy<Value = Cal> {
         any::<u8>().prop_map(|parameter| Cal::Unlock { parameter }),
         any::<u8>().prop_map(|attribute| Cal::Identify { attribute }),
         (any::<u8>(), any::<u8>()).prop_map(|(param, count)| Cal::Recall { param, count }),
+        (any::<u8>(), any::<u8>(), any::<u8>()).prop_map(|(page, param, count)| Cal::PagedRecall {
+            page,
+            param,
+            count
+        }),
         (
             any::<u8>(),
             proptest::collection::vec(any::<u8>(), 0..=0x1e)

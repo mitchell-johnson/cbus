@@ -377,7 +377,7 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
 }
 
 #[tokio::test]
-async fn physical_pp_load_and_save_use_standard_and_oem_memory_on_shared_pci() {
+async fn physical_pp_load_and_save_use_all_supported_routes_on_shared_pci() {
     let state = cbus_test_support::proc::temp_path("physical-pp-cgate.json");
     let specs = cbus_test_support::proc::temp_path("physical-pp-unitspec");
     std::fs::create_dir_all(&specs).unwrap();
@@ -386,6 +386,8 @@ async fn physical_pp_load_and_save_use_standard_and_oem_memory_on_shared_pci() {
         r#"<UnitSpecification><Parameters>
         <Param><Name>Standard</Name><Type>int</Type><Address>$20</Address><ArraySize>2</ArraySize><ProgramMethod>direct</ProgramMethod><Protection>checksum</Protection><Tag>Core</Tag></Param>
         <Param><Name>Locked</Name><Type>int</Type><Address>$22</Address><ProgramMethod>direct</ProgramMethod><Protection>lock</Protection><Tag>Core</Tag></Param>
+        <Param><Name>Paged</Name><Type>int</Type><Address>$1FE</Address><ArraySize>4</ArraySize><ProgramMethod>paged</ProgramMethod><Protection>none</Protection><Tag>Core</Tag></Param>
+        <Param><Name>Ncc</Name><Type>int</Type><Address>$300</Address><ArraySize>2</ArraySize><ProgramMethod>ncc</ProgramMethod><Protection>checksum</Protection><Tag>Core</Tag></Param>
         <Param><Name>Mapped</Name><Type>int</Type><Address>$110</Address><ArraySize>3</ArraySize><BitSize>4</BitSize><BitAddress>4</BitAddress><ArraySkip>1</ArraySkip><ArrayMap>2 3 1</ArrayMap><ProgramMethod>edlt</ProgramMethod><Protection>none</Protection><Tag>Core</Tag></Param>
         <Param><Name>Excluded</Name><Type>string</Type><Address>$120</Address><ArraySize>4</ArraySize><Tag>Other</Tag></Param>
         </Parameters></UnitSpecification>"#,
@@ -501,6 +503,37 @@ async fn physical_pp_load_and_save_use_standard_and_oem_memory_on_shared_pci() {
         sys.pci
             .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x82, 0x22, 0x9a]));
 
+        require(COMMAND_DRAIN, "paged PP recall at page boundary", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload == "4605001B01FE02")
+        })
+        .await;
+        sys.pci.inject(&pci_wire(&[
+            0x86, 5, 0x10, 0x01, 0x00, 0x83, 0xfe, 0xaa, 0xbb,
+        ]));
+        require(COMMAND_DRAIN, "paged PP recall continuation", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload == "4605001B020002")
+        })
+        .await;
+        sys.pci.inject(&pci_wire(&[
+            0x86, 5, 0x10, 0x01, 0x00, 0x83, 0x00, 0xcc, 0xdd,
+        ]));
+        require(COMMAND_DRAIN, "NCC PP recall", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload == "4605001B030002")
+        })
+        .await;
+        sys.pci.inject(&pci_wire(&[
+            0x86, 5, 0x10, 0x01, 0x00, 0x83, 0x00, 0x11, 0x22,
+        ]));
+
         require(COMMAND_DRAIN, "OEM PP memory selector", || {
             sys.pci
                 .frames()
@@ -526,6 +559,11 @@ async fn physical_pp_load_and_save_use_standard_and_oem_memory_on_shared_pci() {
     let values = command(&mut reader, &mut writer, "PP GET S *").await;
     assert!(values.contains("315-Mapped=0xC 0xA 0xB"), "{values:?}");
     assert!(values.contains("315-Locked=0x9A"), "{values:?}");
+    assert!(values.contains("315-Ncc=0x11 0x22"), "{values:?}");
+    assert!(
+        values.contains("315-Paged=0xAA 0xBB 0xCC 0xDD"),
+        "{values:?}"
+    );
     assert!(values.contains("315 Standard=0x12 0x34"), "{values:?}");
     assert!(!values.contains("Excluded="), "{values:?}");
 
@@ -540,6 +578,16 @@ async fn physical_pp_load_and_save_use_standard_and_oem_memory_on_shared_pci() {
             .contains("200 OK")
     );
     assert!(command(&mut reader, &mut writer, "PP SET S Locked 0xBC")
+        .await
+        .contains("200 OK"));
+    assert!(command(
+        &mut reader,
+        &mut writer,
+        "PP SET S Paged 0x01 0x02 0x03 0x04"
+    )
+    .await
+    .contains("200 OK"));
+    assert!(command(&mut reader, &mut writer, "PP SET S Ncc 0x05 0x06")
         .await
         .contains("200 OK"));
     let save = command(&mut reader, &mut writer, "PP SAVE S //HARNESS/254/p/5 Core");
@@ -581,6 +629,46 @@ async fn physical_pp_load_and_save_use_standard_and_oem_memory_on_shared_pci() {
         .await;
         sys.pci.inject(&pci_wire(&[
             0x86, 5, 0x10, 0x01, 0x00, 0x84, 0x20, 0x12, 0x34, 0x9a,
+        ]));
+        require(
+            COMMAND_DRAIN,
+            "paged PP save pre-read at page boundary",
+            || {
+                sys.pci
+                    .frames()
+                    .iter()
+                    .filter(|frame| frame.payload == "4605001B01FE02")
+                    .count()
+                    >= 2
+            },
+        )
+        .await;
+        sys.pci.inject(&pci_wire(&[
+            0x86, 5, 0x10, 0x01, 0x00, 0x83, 0xfe, 0xaa, 0xbb,
+        ]));
+        require(COMMAND_DRAIN, "paged PP save pre-read continuation", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload == "4605001B020002")
+                .count()
+                >= 2
+        })
+        .await;
+        sys.pci.inject(&pci_wire(&[
+            0x86, 5, 0x10, 0x01, 0x00, 0x83, 0x00, 0xcc, 0xdd,
+        ]));
+        require(COMMAND_DRAIN, "NCC PP save pre-read", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload == "4605001B030002")
+                .count()
+                >= 2
+        })
+        .await;
+        sys.pci.inject(&pci_wire(&[
+            0x86, 5, 0x10, 0x01, 0x00, 0x83, 0x00, 0x11, 0x22,
         ]));
         require(COMMAND_DRAIN, "OEM PP save pre-read selector", || {
             sys.pci
@@ -657,6 +745,98 @@ async fn physical_pp_load_and_save_use_standard_and_oem_memory_on_shared_pci() {
         .await;
         sys.pci
             .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x82, 0x22, 0xbc]));
+
+        require(COMMAND_DRAIN, "paged PP page 1 selection", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload == "4605003901")
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x81, 0x01]));
+        require(COMMAND_DRAIN, "paged PP first STORE", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload.starts_with("460500A4FE000102"))
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0xfe, 0x00]));
+        require(COMMAND_DRAIN, "paged PP page 2 selection", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload == "4605003902")
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x81, 0x02]));
+        require(COMMAND_DRAIN, "paged PP second STORE", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload.starts_with("460500A400010304"))
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0x00, 0x01]));
+        require(COMMAND_DRAIN, "paged PP first readback", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload == "4605001B01FE02")
+                .count()
+                >= 3
+        })
+        .await;
+        sys.pci.inject(&pci_wire(&[
+            0x86, 5, 0x10, 0x01, 0x00, 0x83, 0xfe, 0x01, 0x02,
+        ]));
+        require(COMMAND_DRAIN, "paged PP second readback", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload == "4605001B020002")
+                .count()
+                >= 3
+        })
+        .await;
+        sys.pci.inject(&pci_wire(&[
+            0x86, 5, 0x10, 0x01, 0x00, 0x83, 0x00, 0x03, 0x04,
+        ]));
+
+        require(COMMAND_DRAIN, "NCC PP page selection", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload == "4605003903")
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x81, 0x03]));
+        require(COMMAND_DRAIN, "NCC PP STORE", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload.starts_with("460500A400000506"))
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0x00, 0x00]));
+        require(COMMAND_DRAIN, "NCC PP readback", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload == "4605001B030002")
+                .count()
+                >= 3
+        })
+        .await;
+        sys.pci.inject(&pci_wire(&[
+            0x86, 5, 0x10, 0x01, 0x00, 0x83, 0x00, 0x05, 0x06,
+        ]));
 
         require(COMMAND_DRAIN, "OEM PP STORE selector", || {
             sys.pci
@@ -741,6 +921,22 @@ async fn physical_pp_load_and_save_use_standard_and_oem_memory_on_shared_pci() {
         .iter()
         .filter(|frame| frame.payload.starts_with("460500A32200BC"))
         .count();
+    let page_selections = sys
+        .pci
+        .frames()
+        .iter()
+        .filter(|frame| frame.payload.starts_with("46050039"))
+        .count();
+    let paged_stores = sys
+        .pci
+        .frames()
+        .iter()
+        .filter(|frame| {
+            frame.payload.starts_with("460500A4FE000102")
+                || frame.payload.starts_with("460500A400010304")
+                || frame.payload.starts_with("460500A400000506")
+        })
+        .count();
     let save_again = command(&mut reader, &mut writer, "PP SAVE_TO_SOURCE S Core");
     let identity_responses = async {
         for (attribute, data) in [(1, b"TESTUNIT".as_slice()), (2, b"1.2.03".as_slice())] {
@@ -811,6 +1007,24 @@ async fn physical_pp_load_and_save_use_standard_and_oem_memory_on_shared_pci() {
             .filter(|frame| frame.payload.starts_with("460500A32200BC"))
             .count(),
         locked_stores
+    );
+    assert_eq!(
+        frames
+            .iter()
+            .filter(|frame| frame.payload.starts_with("46050039"))
+            .count(),
+        page_selections
+    );
+    assert_eq!(
+        frames
+            .iter()
+            .filter(|frame| {
+                frame.payload.starts_with("460500A4FE000102")
+                    || frame.payload.starts_with("460500A400010304")
+                    || frame.payload.starts_with("460500A400000506")
+            })
+            .count(),
+        paged_stores
     );
     assert_eq!(sys.pci.connections(), 1);
 

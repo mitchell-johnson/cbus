@@ -35,8 +35,8 @@ not be committed or published.
 | Tagged/untagged commands, per-client project selection, EVENT subscriptions | TCP service; 64 clients, 1 MiB command limit, bounded event queues and writer deadlines |
 | Project list/use/load/save/new/close; database CRUD and database snapshots | Persistent JSON database; atomic replacement, restrictive permissions, failed-write rollback |
 | Database PP locks, sessions, get/set/info/new/load/save | Existing programming model with connection ownership; staged sessions and locks are discarded on disconnect/restart |
-| Physical PP LOAD and subsequent GET/INFO | Identifies the live unit, selects its privately installed decoded schema, recalls standard CAL parameters and OEM memory through the shared PCI, decodes int/long/bit/string/sixbit arrays and `ArrayMap`, applies tag selection, and commits the session only after every read succeeds |
-| Physical PP SAVE/SAVE_TO_SOURCE | Writes only dirty, tag-selected `direct` and `edlt` parameters with `none`/`checksum` protection and direct `lock` parameters through the captured unlock phase; validates the complete plan and live type/firmware first, preserves shared bits through pre-read/encode, requires source/parameter-matched acknowledgements, and reads every stored range back before success |
+| Physical PP LOAD and subsequent GET/INFO | Identifies the live unit, selects its privately installed decoded schema, recalls standard CAL parameters, explicit pages for `paged`/`ncc`, and OEM memory through the shared PCI, decodes int/long/bit/string/sixbit arrays and `ArrayMap`, applies tag selection, and commits the session only after every read succeeds |
+| Physical PP SAVE/SAVE_TO_SOURCE | Writes only dirty, tag-selected `direct`, `edlt`, `paged`, and `ncc` parameters with `none`/`checksum`/supported `lock` protection; page-aware writes split at 256-byte boundaries, select each page and use native tagged STORE, while eDLT uses its OEM selector/data path. The service validates the complete plan and live type/firmware first, preserves shared bits through pre-read/encode, requires source/parameter-matched acknowledgements, and reads every stored range back before success |
 | ON/OFF/RAMP/TERMINATERAMP and lighting variants | Actual shared PCI, negative confirmations return errors; successful delivery is distinct from observed physical brightness |
 | GET group level | Real observed bus levels; unobserved levels return 408, never invented zero |
 | TRIGGER EVENT/INDICATORKILL | Actual Trigger Control SAL on application 202; incoming events update the live service cache and event stream |
@@ -59,19 +59,23 @@ in this repository. Docker automatically passes `/etc/cmqttd/unitspec` when that
 directory exists. Copying private specs into `cmqttd_config/unitspec/` includes
 them in a local image build while Git ignores the directory.
 
-Physical `PP LOAD session //PROJECT/NETWORK/p/UNIT [tags...]` is read-only. It
-uses native logical addresses below 256 as standard CAL parameter numbers and
-maps logical addresses at or above 256 to OEM physical offset `logical - 256`.
+Physical `PP LOAD session //PROJECT/NETWORK/p/UNIT [tags...]` is read-only.
+`direct` uses standard CAL parameter numbers. `paged` and `ncc` carry the
+logical page and low-byte parameter explicitly, splitting at page boundaries.
+The evidenced eDLT path maps logical addresses at or above 256 to OEM physical
+offset `logical - 256`.
 Reads are bounded, coalesced, source-correlated and serialized with MQTT traffic.
 Unknown schemas, unsupported layouts, incomplete replies and changed or ended
 sessions fail without replacing the previously staged values.
 
-Physical SAVE uses captured tagged direct STORE for standard parameters and the
-OEM `0x41` address selector plus tagged `0x42` STORE for eDLT memory. Factory and
-special parameters follow native behavior and are skipped by ordinary SAVE.
-Program methods other than `direct` and `edlt` return 502 before any write.
-Direct `lock` fields require the native unchecksummed, PCI-confirmed unlock and
-one-byte unit challenge reply before STORE. All dirty parameters are encoded
+Physical SAVE uses captured tagged direct STORE for standard parameters, native
+page selection plus tagged STORE for `paged`/`ncc`, and the OEM `0x41` address
+selector plus tagged `0x42` STORE for eDLT memory. Factory and special
+parameters follow native behavior and are skipped by ordinary SAVE. Methods
+other than `direct`, `edlt`, `paged`, and `ncc` return 502 before any write.
+Supported `lock` fields require the native unchecksummed, PCI-confirmed unlock
+and one-byte unit challenge reply after selecting the relevant page and before
+STORE. All dirty parameters are encoded
 and physically pre-read before the first STORE. Each changed range is
 acknowledged and read back; a
 transport failure can still leave earlier independently acknowledged ranges
@@ -119,11 +123,12 @@ all 431 have physical implementations in this service. `CMQTT CAPABILITIES`
 returns `full_cgate_compatibility: false`; unimplemented physical operations
 return 502. Full replacement still requires:
 
-- Physical PP SAVE methods beyond captured `direct` and `edlt`, multi-range
+- Physical PP SAVE methods beyond captured `direct`, `edlt`, `paged`, and
+  `ncc` (`giu`, `sgiu`, `goc2`, `gocbyt`, and `dali` remain), multi-range
   failure recovery, power-loss behavior and hardware
   write acceptance. LOAD has full decoded-catalogue layout coverage plus live
   KEYGL5 acceptance; SAVE has full supported-default catalogue encoding and
-  fake-PCI direct/OEM write-readback acceptance.
+  fake-PCI direct/page-aware/OEM write-readback acceptance.
 - Bridged-network synchronization, serial addressing, readdressing, unravel,
   project identification and the remaining commissioning state transitions.
   Direct-network `NET PINGU`, `NET SYNC` identity population and duplicate-aware
@@ -139,7 +144,8 @@ return 502. Full replacement still requires:
 ## Tests
 
 `cbus-transport` tests pin direct routing for standard recall/tagged STORE,
-the native protected-parameter unlock request/reply phase, and
+page-aware recall, page selection, cross-page tagged STORE, the native
+protected-parameter unlock request/reply phase, and
 the separate programming route for segmented OEM recall/tagged STORE, including
 mandatory readback, plus source filtering,
 interleaved lighting, complete and incomplete installation MMI,

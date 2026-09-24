@@ -128,6 +128,13 @@ The bounded checksum/protection investigation established:
   a one-byte REPLY, then STORE. Factory/special fields are skipped by the normal
   native save path. Unlock expiry, allowed memory ranges and firmware checksum
   mutation are not established; the simulator rejects unsupported unlocks.
+* `lP` maps both `paged` and `ncc` reads through `L`: CAL `1B`, page, low-byte
+  parameter and count. Their writes use `K` page selection (`39`, page), then
+  the same tagged direct STORE as ordinary parameters. Native groups never
+  cross a 256-byte boundary; STORE groups are capped at 12 bytes. A
+  lock-protected paged field selects the page before issuing `dd` UNLOCK for
+  the low-byte parameter. The committed protocol vectors and Rust transport
+  tests preserve those literal constructor bytes and page-boundary behavior.
 * The native UnitName SAVE sends the field STORE and waits for its ACK; it
   does not send an EEPROM checksum update. No exact 0x1E/0x1F RECALL or STORE
   was found in the 950 parsed packets in the repository proxy capture.
