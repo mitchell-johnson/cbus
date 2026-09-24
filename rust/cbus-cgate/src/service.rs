@@ -6,7 +6,7 @@ use cbus_protocol::{
     packet::{Meta, Packet},
     sal::Sal,
 };
-use cbus_transport::pci::{CBusEvent, PciClient};
+use cbus_transport::pci::{CBusEvent, GocProgramming, PciClient};
 use chrono::{Datelike, Local, NaiveDate, NaiveTime, Timelike};
 use serde::{Deserialize, Serialize};
 use std::{
@@ -24,6 +24,21 @@ use tokio::{
 
 const MAX_LINE: usize = 1024 * 1024;
 const MAX_STATE: usize = 32 * 1024 * 1024;
+
+fn goc_programming(param: &unitspec::SpecParam) -> Option<GocProgramming> {
+    match param
+        .get("ProgramMethod")
+        .unwrap_or("")
+        .trim()
+        .to_ascii_lowercase()
+        .as_str()
+    {
+        "goc" => Some(GocProgramming::Goc),
+        "gocbyt" => Some(GocProgramming::GocByt),
+        "goc2" => Some(GocProgramming::Goc2),
+        _ => None,
+    }
+}
 
 #[cfg(test)]
 mod tests;
@@ -397,7 +412,7 @@ impl Service {
                 vec![serde_json::json!({"service":"cmqttd", "physical_bus":true,
                 "full_cgate_compatibility":false, "memory_read":true, "memory_write":true,
                 "physical_pp_load":true, "physical_pp_save":true,
-                "physical_pp_save_methods":["direct","edlt","ncc","paged"],
+                "physical_pp_save_methods":["dali","direct","edlt","giu","goc","goc2","gocbyt","ncc","paged","sgiu"],
                 "physical_pp_save_protection":["none","checksum","lock"],
                 "physical_pp_save_lock_methods":["direct","ncc","paged"],
                 "trigger_control":true, "enable_control":true, "clock_control":true,
@@ -1600,6 +1615,7 @@ impl Service {
         let mut recalls = HashMap::<u8, usize>::new();
         let mut paged_ranges = Vec::<(u32, u32)>::new();
         let mut memory_ranges = Vec::<(u32, u32)>::new();
+        let mut goc_ranges = Vec::<(GocProgramming, u32, u32)>::new();
         for param in &selected {
             let layout = match unitspec::ParameterLayout::for_param(param) {
                 Ok(layout) => layout,
@@ -1617,6 +1633,12 @@ impl Service {
                 }
                 unitspec::ParameterTransfer::Memory { address, count } => {
                     memory_ranges.push((address, address + count as u32));
+                }
+                unitspec::ParameterTransfer::GocMemory { address, count } => {
+                    let Some(dialect) = goc_programming(param) else {
+                        return err(tag, 502, "502 GOC parameter has no programming dialect");
+                    };
+                    goc_ranges.push((dialect, address, address + count as u32));
                 }
             }
             layouts.push((*param, layout));
@@ -1643,6 +1665,17 @@ impl Service {
             }
             merged.push((start, end));
         }
+        goc_ranges.sort_unstable();
+        let mut goc_merged = Vec::<(GocProgramming, u32, u32)>::new();
+        for (dialect, start, end) in goc_ranges {
+            if let Some(last) = goc_merged.last_mut() {
+                if last.0 == dialect && start <= last.2 {
+                    last.2 = last.2.max(end);
+                    continue;
+                }
+            }
+            goc_merged.push((dialect, start, end));
+        }
         let unique_bytes = recalls.values().sum::<usize>()
             + paged_merged
                 .iter()
@@ -1651,6 +1684,10 @@ impl Service {
             + merged
                 .iter()
                 .map(|(start, end)| (*end - *start) as usize)
+                .sum::<usize>()
+            + goc_merged
+                .iter()
+                .map(|(_, start, end)| (*end - *start) as usize)
                 .sum::<usize>();
         if unique_bytes > MAX_UNIQUE_BYTES {
             return err(
@@ -1712,6 +1749,22 @@ impl Service {
             }
             memory.push((start, bytes));
         }
+        let mut goc = Vec::<(GocProgramming, u32, Vec<u8>)>::with_capacity(goc_merged.len());
+        for (dialect, start, end) in goc_merged {
+            match pci
+                .read_goc_memory(unit, start, (end - start) as usize, dialect)
+                .await
+            {
+                Ok(bytes) => goc.push((dialect, start, bytes)),
+                Err(error) => {
+                    return err(
+                        tag,
+                        502,
+                        &format!("502 Physical PP GOC read failed: {error}"),
+                    )
+                }
+            }
+        }
 
         let mut params = HashMap::with_capacity(layouts.len());
         for (param, layout) in layouts {
@@ -1737,6 +1790,21 @@ impl Service {
                                 <= u64::from(*start) + bytes.len() as u64
                     }) else {
                         return err(tag, 500, "500 Physical PP memory plan was incomplete");
+                    };
+                    let offset = (address - *start) as usize;
+                    &bytes[offset..offset + count]
+                }
+                unitspec::ParameterTransfer::GocMemory { address, count } => {
+                    let Some(dialect) = goc_programming(param) else {
+                        return err(tag, 502, "502 GOC parameter has no programming dialect");
+                    };
+                    let Some((_, start, bytes)) = goc.iter().find(|(candidate, start, bytes)| {
+                        *candidate == dialect
+                            && address >= *start
+                            && u64::from(address) + count as u64
+                                <= u64::from(*start) + bytes.len() as u64
+                    }) else {
+                        return err(tag, 500, "500 Physical PP GOC plan was incomplete");
                     };
                     let offset = (address - *start) as usize;
                     &bytes[offset..offset + count]
@@ -1783,6 +1851,12 @@ impl Service {
             Standard,
             Paged,
             Memory,
+            Giu,
+            Sgiu,
+            Dali,
+            Goc,
+            GocByt,
+            Goc2,
         }
         struct Pending<'a> {
             param: &'a unitspec::SpecParam,
@@ -1974,14 +2048,22 @@ impl Service {
                 Ok(layout) => layout,
                 Err(error) => return err(tag, 502, &format!("502 {error}")),
             };
-            let method = param
+            let mut method = param
                 .get("ProgramMethod")
                 .unwrap_or("")
                 .trim()
                 .to_ascii_lowercase();
+            if method.is_empty() {
+                method = "direct".to_string();
+            }
             let locked = protection == "lock";
             let (space, start, count) = match layout.transfer {
-                unitspec::ParameterTransfer::Recall { parameter, count } if method == "direct" => {
+                unitspec::ParameterTransfer::Recall { parameter, count }
+                    if matches!(
+                        method.as_str(),
+                        "direct" | "giu" | "sgiu" | "dali" | "goc" | "gocbyt" | "goc2"
+                    ) =>
+                {
                     (Space::Standard, u32::from(parameter), count)
                 }
                 unitspec::ParameterTransfer::Paged { address, count }
@@ -1994,6 +2076,36 @@ impl Service {
                 {
                     (Space::Memory, address, count)
                 }
+                unitspec::ParameterTransfer::Memory { address, count }
+                    if method == "giu" && !locked =>
+                {
+                    (Space::Giu, address, count)
+                }
+                unitspec::ParameterTransfer::Memory { address, count }
+                    if method == "sgiu" && !locked =>
+                {
+                    (Space::Sgiu, address, count)
+                }
+                unitspec::ParameterTransfer::Memory { address, count }
+                    if method == "dali" && !locked =>
+                {
+                    (Space::Dali, address, count)
+                }
+                unitspec::ParameterTransfer::GocMemory { address, count }
+                    if method == "goc" && !locked =>
+                {
+                    (Space::Goc, address, count)
+                }
+                unitspec::ParameterTransfer::GocMemory { address, count }
+                    if method == "gocbyt" && !locked =>
+                {
+                    (Space::GocByt, address, count)
+                }
+                unitspec::ParameterTransfer::GocMemory { address, count }
+                    if method == "goc2" && !locked =>
+                {
+                    (Space::Goc2, address, count)
+                }
                 _ => {
                     return err(
                         tag,
@@ -2002,13 +2114,6 @@ impl Service {
                     )
                 }
             };
-            if locked && space == Space::Standard && count > 29 {
-                return err(
-                    tag,
-                    502,
-                    &format!("502 Lock-protected parameter {name:?} exceeds one native STORE"),
-                );
-            }
             let Some(value) = params.get(name).cloned() else {
                 return err(
                     tag,
@@ -2062,7 +2167,21 @@ impl Service {
                 }
                 Space::Standard => return err(tag, 502, "502 Standard PP save range is too large"),
                 Space::Paged => pci.recall_paged_parameter(unit, start, count).await,
-                Space::Memory => pci.read_memory(unit, start, count).await,
+                Space::Memory | Space::Giu | Space::Sgiu | Space::Dali => {
+                    pci.read_memory(unit, start, count).await
+                }
+                Space::Goc => {
+                    pci.read_goc_memory(unit, start, count, GocProgramming::Goc)
+                        .await
+                }
+                Space::GocByt => {
+                    pci.read_goc_memory(unit, start, count, GocProgramming::GocByt)
+                        .await
+                }
+                Space::Goc2 => {
+                    pci.read_goc_memory(unit, start, count, GocProgramming::Goc2)
+                        .await
+                }
             };
             let original = match original {
                 Ok(bytes) => bytes,
@@ -2129,6 +2248,35 @@ impl Service {
                         .await
                 }
                 Space::Memory => pci.write_memory_verified(unit, item.start, modified).await,
+                Space::Giu => {
+                    pci.write_giu_memory_verified(unit, item.start, modified)
+                        .await
+                }
+                Space::Sgiu => {
+                    pci.write_sgiu_memory_verified(unit, item.start, modified)
+                        .await
+                }
+                Space::Dali => {
+                    pci.write_dali_memory_verified(unit, item.start, modified)
+                        .await
+                }
+                Space::Goc => {
+                    pci.write_goc_memory_verified(unit, item.start, modified, GocProgramming::Goc)
+                        .await
+                }
+                Space::GocByt => {
+                    pci.write_goc_memory_verified(
+                        unit,
+                        item.start,
+                        modified,
+                        GocProgramming::GocByt,
+                    )
+                    .await
+                }
+                Space::Goc2 => {
+                    pci.write_goc_memory_verified(unit, item.start, modified, GocProgramming::Goc2)
+                        .await
+                }
             };
             if let Err(error) = result {
                 return err(tag, 502, &format!("502 Physical PP save failed: {error}"));

@@ -35,8 +35,8 @@ not be committed or published.
 | Tagged/untagged commands, per-client project selection, EVENT subscriptions | TCP service; 64 clients, 1 MiB command limit, bounded event queues and writer deadlines |
 | Project list/use/load/save/new/close; database CRUD and database snapshots | Persistent JSON database; atomic replacement, restrictive permissions, failed-write rollback |
 | Database PP locks, sessions, get/set/info/new/load/save | Existing programming model with connection ownership; staged sessions and locks are discarded on disconnect/restart |
-| Physical PP LOAD and subsequent GET/INFO | Identifies the live unit, selects its privately installed decoded schema, recalls standard CAL parameters, explicit pages for `paged`/`ncc`, and OEM memory through the shared PCI, decodes int/long/bit/string/sixbit arrays and `ArrayMap`, applies tag selection, and commits the session only after every read succeeds |
-| Physical PP SAVE/SAVE_TO_SOURCE | Writes only dirty, tag-selected `direct`, `edlt`, `paged`, and `ncc` parameters with `none`/`checksum`/supported `lock` protection; page-aware writes split at 256-byte boundaries, select each page and use native tagged STORE, while eDLT uses its OEM selector/data path. The service validates the complete plan and live type/firmware first, preserves shared bits through pre-read/encode, requires source/parameter-matched acknowledgements, and reads every stored range back before success |
+| Physical PP LOAD and subsequent GET/INFO | Identifies the live unit, selects its privately installed decoded schema, recalls standard CAL parameters, explicit pages for `paged`/`ncc`, OEM memory, and GOC parameter-`0xFF` memory through the shared PCI, decodes int/long/bit/string/sixbit arrays and `ArrayMap`, applies tag selection, and commits the session only after every read succeeds |
+| Physical PP SAVE/SAVE_TO_SOURCE | Writes only dirty, tag-selected `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and `goc2` parameters with `none`/`checksum`/supported `lock` protection. Page-aware writes split at 256-byte boundaries; OEM methods use the selector/data path; GIU halts and resumes the unit; DALI observes the native settling interval; GOC methods use parameter `0xFF`, a big-endian address prefix, and their native block limits. The service validates the complete plan and live type/firmware first, preserves shared bits through pre-read/encode, requires source/parameter-matched acknowledgements, and reads every stored range back before success |
 | ON/OFF/RAMP/TERMINATERAMP and lighting variants | Actual shared PCI, negative confirmations return errors; successful delivery is distinct from observed physical brightness |
 | GET group level | Real observed bus levels; unobserved levels return 408, never invented zero |
 | TRIGGER EVENT/INDICATORKILL | Actual Trigger Control SAL on application 202; incoming events update the live service cache and event stream |
@@ -70,9 +70,11 @@ sessions fail without replacing the previously staged values.
 
 Physical SAVE uses captured tagged direct STORE for standard parameters, native
 page selection plus tagged STORE for `paged`/`ncc`, and the OEM `0x41` address
-selector plus tagged `0x42` STORE for eDLT memory. Factory and special
-parameters follow native behavior and are skipped by ordinary SAVE. Methods
-other than `direct`, `edlt`, `paged`, and `ncc` return 502 before any write.
+selector plus tagged `0x42` STORE for eDLT/GIU/SGIU/DALI memory. GIU is halted
+and resumed around its stores; DALI observes the native one-second settling
+interval. GOC methods use parameter `0xFF` with a big-endian address prefix and
+their native per-method limits. Factory and special parameters follow native
+behavior and are skipped by ordinary SAVE.
 Supported `lock` fields require the native unchecksummed, PCI-confirmed unlock
 and one-byte unit challenge reply after selecting the relevant page and before
 STORE. All dirty parameters are encoded
@@ -123,12 +125,12 @@ all 431 have physical implementations in this service. `CMQTT CAPABILITIES`
 returns `full_cgate_compatibility: false`; unimplemented physical operations
 return 502. Full replacement still requires:
 
-- Physical PP SAVE methods beyond captured `direct`, `edlt`, `paged`, and
-  `ncc` (`giu`, `sgiu`, `goc2`, `gocbyt`, and `dali` remain), multi-range
-  failure recovery, power-loss behavior and hardware
-  write acceptance. LOAD has full decoded-catalogue layout coverage plus live
-  KEYGL5 acceptance; SAVE has full supported-default catalogue encoding and
-  fake-PCI direct/page-aware/OEM write-readback acceptance.
+- Physical PP multi-range failure recovery, power-loss behavior, native
+  save-to-NVM execution for C-Bus 3 units, and hardware write acceptance for
+  every programming method and unit family. LOAD has full decoded-catalogue
+  layout coverage plus live KEYGL5 acceptance; SAVE audits every well-formed
+  writable catalogue default and has fake-PCI direct/page-aware/OEM/GOC
+  write-readback acceptance.
 - Bridged-network synchronization, serial addressing, readdressing, unravel,
   project identification and the remaining commissioning state transitions.
   Direct-network `NET PINGU`, `NET SYNC` identity population and duplicate-aware

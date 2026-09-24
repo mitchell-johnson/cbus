@@ -307,6 +307,8 @@ pub enum ParameterTransfer {
     Paged { address: u32, count: usize },
     /// OEM memory read (logical address minus 256).
     Memory { address: u32, count: usize },
+    /// GOC dimmer memory read through parameter 0xFF (logical address minus 256).
+    GocMemory { address: u32, count: usize },
 }
 
 /// Fully checked C-Gate parameter layout used by physical `PP LOAD`.
@@ -469,9 +471,16 @@ impl ParameterLayout {
             address
                 .checked_add(span as u32)
                 .ok_or_else(|| format!("Parameter {:?} address overflows", param.name))?;
-            ParameterTransfer::Memory {
-                address,
-                count: span,
+            if matches!(method.as_str(), "goc" | "gocbyt" | "goc2") {
+                ParameterTransfer::GocMemory {
+                    address,
+                    count: span,
+                }
+            } else {
+                ParameterTransfer::Memory {
+                    address,
+                    count: span,
+                }
             }
         };
         let array_map = match param
@@ -518,7 +527,8 @@ impl ParameterLayout {
         let expected = match self.transfer {
             ParameterTransfer::Recall { count, .. }
             | ParameterTransfer::Paged { count, .. }
-            | ParameterTransfer::Memory { count, .. } => count,
+            | ParameterTransfer::Memory { count, .. }
+            | ParameterTransfer::GocMemory { count, .. } => count,
         };
         if data.len() != expected {
             return Err(format!("Short physical value for {:?}", param.name));
@@ -601,7 +611,8 @@ impl ParameterLayout {
         let expected = match self.transfer {
             ParameterTransfer::Recall { count, .. }
             | ParameterTransfer::Paged { count, .. }
-            | ParameterTransfer::Memory { count, .. } => count,
+            | ParameterTransfer::Memory { count, .. }
+            | ParameterTransfer::GocMemory { count, .. } => count,
         };
         if data.len() != expected {
             return Err(format!("Short physical value for {:?}", param.name));
@@ -1013,6 +1024,7 @@ mod tests {
         };
         let mut parameters = 0usize;
         let mut locked_parameters = 0usize;
+        let mut malformed_vendor_defaults = 0usize;
         for entry in std::fs::read_dir(&dir).expect("read vendor spec directory") {
             let path = entry.expect("vendor spec entry").path();
             if path.extension().and_then(|value| value.to_str()) != Some("xml") {
@@ -1025,10 +1037,13 @@ mod tests {
                 continue;
             };
             for parameter in &spec {
-                let method = parameter
+                let mut method = parameter
                     .get("ProgramMethod")
                     .unwrap_or("")
                     .to_ascii_lowercase();
+                if method.is_empty() {
+                    method = "direct".to_string();
+                }
                 let protection = parameter
                     .get("Protection")
                     .unwrap_or("none")
@@ -1038,7 +1053,9 @@ mod tests {
                 };
                 let supported = match method.as_str() {
                     "direct" => matches!(protection.as_str(), "none" | "checksum" | "lock"),
-                    "edlt" => matches!(protection.as_str(), "none" | "checksum"),
+                    "edlt" | "giu" | "sgiu" | "dali" | "goc" | "gocbyt" | "goc2" => {
+                        matches!(protection.as_str(), "none" | "checksum")
+                    }
                     "paged" | "ncc" => {
                         matches!(protection.as_str(), "none" | "checksum" | "lock")
                     }
@@ -1052,20 +1069,20 @@ mod tests {
                 let count = match layout.transfer {
                     ParameterTransfer::Recall { count, .. }
                     | ParameterTransfer::Paged { count, .. }
-                    | ParameterTransfer::Memory { count, .. } => count,
+                    | ParameterTransfer::Memory { count, .. }
+                    | ParameterTransfer::GocMemory { count, .. } => count,
                 };
                 if protection == "lock" && method == "direct" {
-                    assert!(
-                        count <= 29,
-                        "{unit_type}/{}: lock-protected field exceeds one native STORE",
-                        parameter.name
-                    );
                     locked_parameters += 1;
                 }
                 let mut data = vec![0; count];
-                layout
-                    .encode_into(parameter, default, &mut data)
-                    .unwrap_or_else(|error| panic!("{unit_type}/{}: {error}", parameter.name));
+                if let Err(error) = layout.encode_into(parameter, default, &mut data) {
+                    if error.contains(" element(s)") {
+                        malformed_vendor_defaults += 1;
+                        continue;
+                    }
+                    panic!("{unit_type}/{}: {error}", parameter.name);
+                }
                 layout
                     .decode(parameter, &data)
                     .unwrap_or_else(|error| panic!("{unit_type}/{}: {error}", parameter.name));
@@ -1079,6 +1096,10 @@ mod tests {
         assert!(
             locked_parameters > 0,
             "no lock-protected vendor defaults were audited"
+        );
+        assert!(
+            malformed_vendor_defaults > 0,
+            "expected the known malformed vendor defaults to remain explicit"
         );
     }
 

@@ -21,9 +21,9 @@ never replace it with saved project data and describe that as a live result.
 The physical service also implements lighting commands, Trigger Control,
 Enable Control, clock date/time/refresh, Temperature Broadcast, `NET PINGU`, `NET SYNC`,
 `NET CHECKUNIT`, physical `PP LOAD`, and readback-verified physical `PP SAVE` for
-`direct`, `edlt`, `paged`, and `ncc` parameters using decoded unit
-specifications. Direct and page-aware `lock` parameters use the captured unlock
-phase. Other program methods remain explicit backend errors.
+`direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and
+`goc2` parameters using decoded unit specifications. Direct and page-aware
+`lock` parameters use the captured unlock phase.
 PINGU and whole-network checks send the install-MMI request
 with the active PCI checksum setting. They buffer blocks that arrive before the
 request confirmation but accept only positively confirmed, contiguous coverage

@@ -367,6 +367,86 @@ impl PciClient {
         Ok(result)
     }
 
+    /// Read GOC programming memory through the native parameter-0xFF
+    /// address selector. The dialect controls the exact C-Gate recall limit.
+    pub async fn read_goc_memory(
+        &self,
+        unit: u8,
+        address: u32,
+        length: usize,
+        dialect: GocProgramming,
+    ) -> Result<Vec<u8>> {
+        if length == 0
+            || length > 65_536
+            || address
+                .checked_add(length as u32)
+                .is_none_or(|end| end > 65_536)
+        {
+            return Err(Error::new(
+                ErrorKind::InvalidInput,
+                "GOC memory read requires 1..65536 bytes in the 16-bit address space",
+            ));
+        }
+        let _lane = self.programming_lane.lock().await;
+        if self.programming_fault.load(Ordering::Acquire) {
+            return Err(Error::other(
+                "programming stream needs reconnect after an incomplete transaction",
+            ));
+        }
+        let mut transaction = Transaction {
+            fault: &self.programming_fault,
+            complete: false,
+        };
+        let result = self
+            .read_goc_memory_inner(unit, address, length, dialect)
+            .await?;
+        transaction.complete = true;
+        Ok(result)
+    }
+
+    async fn read_goc_memory_inner(
+        &self,
+        unit: u8,
+        address: u32,
+        length: usize,
+        dialect: GocProgramming,
+    ) -> Result<Vec<u8>> {
+        let mut result = Vec::with_capacity(length);
+        while result.len() < length {
+            let offset = address + result.len() as u32;
+            let offset = u16::try_from(offset)
+                .map_err(|_| Error::new(ErrorKind::InvalidInput, "GOC address exceeds 16 bits"))?;
+            self.programming_exchange(
+                unit,
+                Cal::Write {
+                    parameter: u8::MAX,
+                    data: vec![0x42, (offset >> 8) as u8, offset as u8],
+                },
+                u8::MAX,
+                0,
+                Some(0x42),
+                ProgrammingRoute::DirectChecksummed,
+            )
+            .await?;
+            let count = (length - result.len()).min(dialect.recall_limit()) as u8;
+            result.extend(
+                self.programming_exchange(
+                    unit,
+                    Cal::Recall {
+                        param: u8::MAX,
+                        count,
+                    },
+                    u8::MAX,
+                    usize::from(count),
+                    None,
+                    ProgrammingRoute::DirectChecksummed,
+                )
+                .await?,
+            );
+        }
+        Ok(result)
+    }
+
     /// Recall one standard CAL programming parameter. This is the transport
     /// used by native PP for unit-spec logical addresses below 256; larger
     /// logical addresses use [`Self::read_memory`] with the 256-byte bias.
@@ -684,7 +764,7 @@ impl PciClient {
 
     /// Store one contiguous standard CAL parameter range and verify it with
     /// an immediate direct RECALL. Each STORE carries an explicit transaction
-    /// tag, and large ranges are split at the 29-data-byte CAL limit.
+    /// tag, and large ranges are split at native C-Gate's twelve-byte limit.
     pub async fn store_parameter_verified(
         &self,
         unit: u8,
@@ -717,7 +797,6 @@ impl PciClient {
         if data.is_empty()
             || data.len() > u8::MAX as usize
             || usize::from(parameter) + data.len() > 256
-            || locked && data.len() > 29
         {
             return Err(Error::new(
                 ErrorKind::InvalidInput,
@@ -734,12 +813,12 @@ impl PciClient {
             fault: &self.programming_fault,
             complete: false,
         };
-        if locked {
-            self.programming_unlock(unit, parameter).await?;
-        }
-        for (chunk_index, chunk) in data.chunks(29).enumerate() {
-            let offset = chunk_index * 29;
+        for (chunk_index, chunk) in data.chunks(12).enumerate() {
+            let offset = chunk_index * 12;
             let target = parameter + offset as u8;
+            if locked {
+                self.programming_unlock(unit, target).await?;
+            }
             let tag = chunk_index as u8;
             let mut tagged = Vec::with_capacity(chunk.len() + 1);
             tagged.push(tag);
@@ -784,6 +863,53 @@ impl PciClient {
     /// pointer and tagged 0x42 data path, then reselect and read the entire
     /// range back before reporting success.
     pub async fn write_memory_verified(&self, unit: u8, address: u32, data: &[u8]) -> Result<()> {
+        self.write_oem_memory_verified_inner(unit, address, data, false, false)
+            .await
+    }
+
+    /// Store GIU memory while the native run flag is halted, restore it, and
+    /// verify the complete range through the OEM recall path.
+    pub async fn write_giu_memory_verified(
+        &self,
+        unit: u8,
+        address: u32,
+        data: &[u8],
+    ) -> Result<()> {
+        self.write_oem_memory_verified_inner(unit, address, data, true, false)
+            .await
+    }
+
+    /// Store SGIU memory with the native twelve-byte block limit and verify it.
+    pub async fn write_sgiu_memory_verified(
+        &self,
+        unit: u8,
+        address: u32,
+        data: &[u8],
+    ) -> Result<()> {
+        self.write_oem_memory_verified_inner(unit, address, data, false, false)
+            .await
+    }
+
+    /// Store DALI-unit programming memory after C-Gate's one-second settling
+    /// interval, then verify the complete range.
+    pub async fn write_dali_memory_verified(
+        &self,
+        unit: u8,
+        address: u32,
+        data: &[u8],
+    ) -> Result<()> {
+        self.write_oem_memory_verified_inner(unit, address, data, false, true)
+            .await
+    }
+
+    async fn write_oem_memory_verified_inner(
+        &self,
+        unit: u8,
+        address: u32,
+        data: &[u8],
+        halt: bool,
+        settle: bool,
+    ) -> Result<()> {
         if data.is_empty()
             || data.len() > 65_536
             || address.checked_add(data.len() as u32).is_none()
@@ -803,8 +929,25 @@ impl PciClient {
             fault: &self.programming_fault,
             complete: false,
         };
-        for (chunk_index, chunk) in data.chunks(29).enumerate() {
-            let offset = address + (chunk_index * 29) as u32;
+        if halt {
+            self.programming_exchange(
+                unit,
+                Cal::Write {
+                    parameter: 0xfc,
+                    data: vec![3, 0],
+                },
+                0xfc,
+                0,
+                Some(3),
+                ProgrammingRoute::Oem,
+            )
+            .await?;
+        }
+        if settle {
+            tokio::time::sleep(Duration::from_secs(1)).await;
+        }
+        for (chunk_index, chunk) in data.chunks(12).enumerate() {
+            let offset = address + (chunk_index * 12) as u32;
             let mut selector = vec![0x41];
             selector
                 .extend_from_slice(&offset.to_le_bytes()[..if offset <= 0xffff { 2 } else { 4 }]);
@@ -832,6 +975,21 @@ impl PciClient {
                 1,
                 0,
                 Some(0x42),
+                ProgrammingRoute::Oem,
+            )
+            .await?;
+        }
+
+        if halt {
+            self.programming_exchange(
+                unit,
+                Cal::Write {
+                    parameter: 0xfc,
+                    data: vec![3, 1],
+                },
+                0xfc,
+                0,
+                Some(3),
                 ProgrammingRoute::Oem,
             )
             .await?;
@@ -870,6 +1028,67 @@ impl PciClient {
         }
         if actual != data {
             return Err(Error::other("physical memory readback did not match STORE"));
+        }
+        transaction.complete = true;
+        Ok(())
+    }
+
+    /// Store one GOC programming range with its native address prefix and
+    /// dialect-specific block size, then read the range back before success.
+    pub async fn write_goc_memory_verified(
+        &self,
+        unit: u8,
+        address: u32,
+        data: &[u8],
+        dialect: GocProgramming,
+    ) -> Result<()> {
+        if data.is_empty()
+            || data.len() > 65_536
+            || address
+                .checked_add(data.len() as u32)
+                .is_none_or(|end| end > 65_536)
+        {
+            return Err(Error::new(
+                ErrorKind::InvalidInput,
+                "GOC memory store requires 1..65536 bytes in the 16-bit address space",
+            ));
+        }
+        let _lane = self.programming_lane.lock().await;
+        if self.programming_fault.load(Ordering::Acquire) {
+            return Err(Error::other(
+                "programming stream needs reconnect after an incomplete transaction",
+            ));
+        }
+        let mut transaction = Transaction {
+            fault: &self.programming_fault,
+            complete: false,
+        };
+        for (chunk_index, chunk) in data.chunks(dialect.store_limit()).enumerate() {
+            let offset = address + (chunk_index * dialect.store_limit()) as u32;
+            let offset = u16::try_from(offset)
+                .map_err(|_| Error::new(ErrorKind::InvalidInput, "GOC address exceeds 16 bits"))?;
+            let tag = chunk_index as u8;
+            let mut tagged = Vec::with_capacity(chunk.len() + 3);
+            tagged.extend_from_slice(&[tag, (offset >> 8) as u8, offset as u8]);
+            tagged.extend_from_slice(chunk);
+            self.programming_exchange(
+                unit,
+                Cal::Write {
+                    parameter: u8::MAX,
+                    data: tagged,
+                },
+                u8::MAX,
+                0,
+                Some(tag),
+                ProgrammingRoute::DirectChecksummed,
+            )
+            .await?;
+        }
+        let actual = self
+            .read_goc_memory_inner(unit, address, data.len(), dialect)
+            .await?;
+        if actual != data {
+            return Err(Error::other("GOC memory readback did not match STORE"));
         }
         transaction.complete = true;
         Ok(())
@@ -1274,7 +1493,7 @@ mod tests {
         reply(&mut remote, 4, &[0x82, 0x20, 0x06]).await;
         write.await.unwrap().unwrap();
         assert_eq!(
-            pci.store_locked_parameter_verified(4, 0x20, &[0; 30])
+            pci.store_locked_parameter_verified(4, 0xf0, &[0; 30])
                 .await
                 .unwrap_err()
                 .kind(),
@@ -1304,6 +1523,35 @@ mod tests {
     }
 
     #[tokio::test(start_paused = true)]
+    async fn locked_parameter_store_splits_at_native_twelve_byte_limit() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let write = tokio::spawn(async move {
+            worker
+                .store_locked_parameter_verified(4, 0x40, &[0; 13])
+                .await
+        });
+        assert_eq!(line(&mut remote).await, b"\\4604001140h\r");
+        reply(&mut remote, 4, &[0x82, 0x40, 0x5a]).await;
+        remote.get_mut().write_all(b"h.\r\n").await.unwrap();
+        assert_eq!(
+            line(&mut remote).await,
+            b"\\460400AE4000000000000000000000000000C8\r"
+        );
+        reply(&mut remote, 4, &[0x32, 0x40, 0]).await;
+        assert_eq!(line(&mut remote).await, b"\\460400114Ci\r");
+        reply(&mut remote, 4, &[0x82, 0x4c, 0x5a]).await;
+        remote.get_mut().write_all(b"i.\r\n").await.unwrap();
+        assert_eq!(line(&mut remote).await, b"\\460400A34C0100C6\r");
+        reply(&mut remote, 4, &[0x32, 0x4c, 1]).await;
+        assert_eq!(line(&mut remote).await, b"\\4604001A400D4F\r");
+        let mut recalled = vec![0x8e, 0x40];
+        recalled.extend([0; 13]);
+        reply(&mut remote, 4, &recalled).await;
+        write.await.unwrap().unwrap();
+    }
+
+    #[tokio::test(start_paused = true)]
     async fn oem_memory_store_uses_captured_tags_and_verifies_readback() {
         let (pci, mut remote, _) = setup().await;
         let worker = pci.clone();
@@ -1329,6 +1577,49 @@ mod tests {
                 .kind(),
             ErrorKind::InvalidInput
         );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn giu_store_halts_writes_resumes_and_verifies() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let write = tokio::spawn(async move {
+            worker
+                .write_giu_memory_verified(5, 0x1000, &[0xaa, 0xbb, 0xcc])
+                .await
+        });
+        assert_eq!(line(&mut remote).await, b"\\46050900A3FC03000A\r");
+        reply(&mut remote, 5, &[0x32, 0xfc, 3]).await;
+        assert_eq!(line(&mut remote).await, b"\\46050900A400410010B7\r");
+        reply(&mut remote, 5, &[0x32, 0, 0x41]).await;
+        assert_eq!(line(&mut remote).await, b"\\46050900A50142AABBCC93\r");
+        reply(&mut remote, 5, &[0x32, 1, 0x42]).await;
+        assert_eq!(line(&mut remote).await, b"\\46050900A3FC030109\r");
+        reply(&mut remote, 5, &[0x32, 0xfc, 3]).await;
+        assert_eq!(line(&mut remote).await, b"\\46050900A400410010B7\r");
+        reply(&mut remote, 5, &[0x32, 0, 0x41]).await;
+        assert_eq!(line(&mut remote).await, b"\\460509001A01038E\r");
+        reply(&mut remote, 5, &[0x84, 1, 0xaa, 0xbb, 0xcc]).await;
+        write.await.unwrap().unwrap();
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn goc_store_prefixes_big_endian_address_and_verifies() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let write = tokio::spawn(async move {
+            worker
+                .write_goc_memory_verified(5, 0x1234, &[0xaa, 0xbb, 0xcc], GocProgramming::Goc2)
+                .await
+        });
+        assert_eq!(line(&mut remote).await, b"\\460500A7FF001234AABBCC98\r");
+        reply(&mut remote, 4, &[0x32, 0xff, 0]).await;
+        reply(&mut remote, 5, &[0x32, 0xff, 0]).await;
+        assert_eq!(line(&mut remote).await, b"\\460500A4FF4212348A\r");
+        reply(&mut remote, 5, &[0x32, 0xff, 0x42]).await;
+        assert_eq!(line(&mut remote).await, b"\\4605001AFF0399\r");
+        reply(&mut remote, 5, &[0x84, 0xff, 0xaa, 0xbb, 0xcc]).await;
+        write.await.unwrap().unwrap();
     }
 
     #[tokio::test(start_paused = true)]

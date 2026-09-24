@@ -135,6 +135,15 @@ The bounded checksum/protection investigation established:
   lock-protected paged field selects the page before issuing `dd` UNLOCK for
   the low-byte parameter. The committed protocol vectors and Rust transport
   tests preserve those literal constructor bytes and page-boundary behavior.
+* `lP`, `aV`, `aU`, `bm`, `bn`, and `bo` establish the remaining programming
+  methods. GIU, SGIU and DALI map logical addresses above 255 to OEM offsets
+  (`logical-256`) using selector tag `41` and data tag `42`; GIU brackets its
+  stores with parameter `FC`, tag `03`, values `00`/`01`, while DALI waits one
+  second before its first store. GOC/GOCBYT/GOC2 select and store through
+  parameter `FF`, prefix a two-byte big-endian physical address, and use native
+  store limits 10/10/11 and recall limits 6/6/255 respectively. Exact Rust
+  transport tests and the fake-PCI cmqttd system test preserve these frames,
+  source matching, readback verification, and GIU halt/resume ordering.
 * The native UnitName SAVE sends the field STORE and waits for its ACK; it
   does not send an EEPROM checksum update. No exact 0x1E/0x1F RECALL or STORE
   was found in the 950 parsed packets in the repository proxy capture.

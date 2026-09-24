@@ -26,6 +26,33 @@ use crate::framing::FrameBuffer;
 mod mmi;
 mod programming;
 
+/// Native C-Gate GOC programming dialect and its wire-size limits.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum GocProgramming {
+    /// Legacy GOC block transport (ten-byte stores, six-byte recalls).
+    Goc,
+    /// Byte-oriented GOC transport (ten-byte stores, six-byte recalls).
+    GocByt,
+    /// GOC2 transport (eleven-byte stores, up to 255-byte recalls).
+    Goc2,
+}
+
+impl GocProgramming {
+    fn store_limit(self) -> usize {
+        match self {
+            Self::Goc | Self::GocByt => 10,
+            Self::Goc2 => 11,
+        }
+    }
+
+    fn recall_limit(self) -> usize {
+        match self {
+            Self::Goc | Self::GocByt => 6,
+            Self::Goc2 => u8::MAX as usize,
+        }
+    }
+}
+
 /// A confirmation code still unanswered after this long is abandoned.
 pub const CONFIRMATION_TIMEOUT: Duration = Duration::from_secs(30);
 /// Total transmission attempts for an unconfirmed frame.

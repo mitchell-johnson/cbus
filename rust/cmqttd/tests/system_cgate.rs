@@ -389,6 +389,8 @@ async fn physical_pp_load_and_save_use_all_supported_routes_on_shared_pci() {
         <Param><Name>Paged</Name><Type>int</Type><Address>$1FE</Address><ArraySize>4</ArraySize><ProgramMethod>paged</ProgramMethod><Protection>none</Protection><Tag>Core</Tag></Param>
         <Param><Name>Ncc</Name><Type>int</Type><Address>$300</Address><ArraySize>2</ArraySize><ProgramMethod>ncc</ProgramMethod><Protection>checksum</Protection><Tag>Core</Tag></Param>
         <Param><Name>Mapped</Name><Type>int</Type><Address>$110</Address><ArraySize>3</ArraySize><BitSize>4</BitSize><BitAddress>4</BitAddress><ArraySkip>1</ArraySkip><ArrayMap>2 3 1</ArrayMap><ProgramMethod>edlt</ProgramMethod><Protection>none</Protection><Tag>Core</Tag></Param>
+        <Param><Name>Giu</Name><Type>int</Type><Address>$130</Address><ProgramMethod>giu</ProgramMethod><Protection>none</Protection><Tag>Core</Tag></Param>
+        <Param><Name>Goc2</Name><Type>int</Type><Address>$140</Address><ArraySize>2</ArraySize><ProgramMethod>goc2</ProgramMethod><Protection>none</Protection><Tag>Core</Tag></Param>
         <Param><Name>Excluded</Name><Type>string</Type><Address>$120</Address><ArraySize>4</ArraySize><Tag>Other</Tag></Param>
         </Parameters></UnitSpecification>"#,
     )
@@ -553,11 +555,52 @@ async fn physical_pp_load_and_save_use_all_supported_routes_on_shared_pci() {
         sys.pci.inject(&pci_wire(&[
             0x86, 5, 0x10, 0x01, 0x00, 0x86, 0x01, 0xa1, 0x77, 0xb2, 0x88, 0xc3,
         ]));
+
+        require(COMMAND_DRAIN, "GIU PP memory selector", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload.starts_with("46050900A400413000"))
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0x00, 0x41]));
+        require(COMMAND_DRAIN, "GIU PP memory recall", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload.starts_with("460509001A0101"))
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x82, 0x01, 0x44]));
+
+        require(COMMAND_DRAIN, "GOC2 PP address selector", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload.starts_with("460500A4FF420040"))
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0xff, 0x42]));
+        require(COMMAND_DRAIN, "GOC2 PP recall", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload.starts_with("4605001AFF02"))
+        })
+        .await;
+        sys.pci.inject(&pci_wire(&[
+            0x86, 5, 0x10, 0x01, 0x00, 0x83, 0xff, 0x45, 0x46,
+        ]));
     };
     let (loaded, ()) = tokio::join!(load, responses);
     assert!(loaded.contains("200 OK"), "{loaded:?}");
     let values = command(&mut reader, &mut writer, "PP GET S *").await;
     assert!(values.contains("315-Mapped=0xC 0xA 0xB"), "{values:?}");
+    assert!(values.contains("315-Giu=0x44"), "{values:?}");
+    assert!(values.contains("315-Goc2=0x45 0x46"), "{values:?}");
     assert!(values.contains("315-Locked=0x9A"), "{values:?}");
     assert!(values.contains("315-Ncc=0x11 0x22"), "{values:?}");
     assert!(
@@ -588,6 +631,12 @@ async fn physical_pp_load_and_save_use_all_supported_routes_on_shared_pci() {
     .await
     .contains("200 OK"));
     assert!(command(&mut reader, &mut writer, "PP SET S Ncc 0x05 0x06")
+        .await
+        .contains("200 OK"));
+    assert!(command(&mut reader, &mut writer, "PP SET S Giu 0x55")
+        .await
+        .contains("200 OK"));
+    assert!(command(&mut reader, &mut writer, "PP SET S Goc2 0x66 0x77")
         .await
         .contains("200 OK"));
     let save = command(&mut reader, &mut writer, "PP SAVE S //HARNESS/254/p/5 Core");
@@ -692,6 +741,53 @@ async fn physical_pp_load_and_save_use_all_supported_routes_on_shared_pci() {
         .await;
         sys.pci.inject(&pci_wire(&[
             0x86, 5, 0x10, 0x01, 0x00, 0x86, 0x01, 0xa1, 0x77, 0xb2, 0x88, 0xc3,
+        ]));
+
+        require(COMMAND_DRAIN, "GIU PP save pre-read selector", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload.starts_with("46050900A400413000"))
+                .count()
+                >= 2
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0x00, 0x41]));
+        require(COMMAND_DRAIN, "GIU PP save pre-read", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload.starts_with("460509001A0101"))
+                .count()
+                >= 2
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x82, 0x01, 0x44]));
+
+        require(COMMAND_DRAIN, "GOC2 PP save pre-read selector", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload.starts_with("460500A4FF420040"))
+                .count()
+                >= 2
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0xff, 0x42]));
+        require(COMMAND_DRAIN, "GOC2 PP save pre-read", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload.starts_with("4605001AFF02"))
+                .count()
+                >= 2
+        })
+        .await;
+        sys.pci.inject(&pci_wire(&[
+            0x86, 5, 0x10, 0x01, 0x00, 0x83, 0xff, 0x45, 0x46,
         ]));
 
         require(COMMAND_DRAIN, "standard PP STORE", || {
@@ -881,6 +977,100 @@ async fn physical_pp_load_and_save_use_all_supported_routes_on_shared_pci() {
         sys.pci.inject(&pci_wire(&[
             0x86, 5, 0x10, 0x01, 0x00, 0x86, 0x01, 0x21, 0x77, 0x32, 0x88, 0x13,
         ]));
+
+        require(COMMAND_DRAIN, "GIU PP halt", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload.starts_with("46050900A3FC0300"))
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0xfc, 0x03]));
+        require(COMMAND_DRAIN, "GIU PP STORE selector", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload.starts_with("46050900A400413000"))
+                .count()
+                >= 3
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0x00, 0x41]));
+        require(COMMAND_DRAIN, "GIU PP STORE data", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload.starts_with("46050900A3014255"))
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0x01, 0x42]));
+        require(COMMAND_DRAIN, "GIU PP resume", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload.starts_with("46050900A3FC0301"))
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0xfc, 0x03]));
+        require(COMMAND_DRAIN, "GIU PP readback selector", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload.starts_with("46050900A400413000"))
+                .count()
+                >= 4
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0x00, 0x41]));
+        require(COMMAND_DRAIN, "GIU PP readback", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload.starts_with("460509001A0101"))
+                .count()
+                >= 3
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x82, 0x01, 0x55]));
+
+        require(COMMAND_DRAIN, "GOC2 PP STORE", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload.starts_with("460500A6FF0000406677"))
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0xff, 0x00]));
+        require(COMMAND_DRAIN, "GOC2 PP readback selector", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload.starts_with("460500A4FF420040"))
+                .count()
+                >= 3
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0xff, 0x42]));
+        require(COMMAND_DRAIN, "GOC2 PP readback", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload.starts_with("4605001AFF02"))
+                .count()
+                >= 3
+        })
+        .await;
+        sys.pci.inject(&pci_wire(&[
+            0x86, 5, 0x10, 0x01, 0x00, 0x83, 0xff, 0x66, 0x77,
+        ]));
     };
     let (saved, ()) = tokio::join!(save, save_responses);
     assert!(saved.contains("200 OK"), "{saved:?}");
@@ -936,6 +1126,18 @@ async fn physical_pp_load_and_save_use_all_supported_routes_on_shared_pci() {
                 || frame.payload.starts_with("460500A400010304")
                 || frame.payload.starts_with("460500A400000506")
         })
+        .count();
+    let giu_stores = sys
+        .pci
+        .frames()
+        .iter()
+        .filter(|frame| frame.payload.starts_with("46050900A3014255"))
+        .count();
+    let goc_stores = sys
+        .pci
+        .frames()
+        .iter()
+        .filter(|frame| frame.payload.starts_with("460500A6FF0000406677"))
         .count();
     let save_again = command(&mut reader, &mut writer, "PP SAVE_TO_SOURCE S Core");
     let identity_responses = async {
@@ -1025,6 +1227,20 @@ async fn physical_pp_load_and_save_use_all_supported_routes_on_shared_pci() {
             })
             .count(),
         paged_stores
+    );
+    assert_eq!(
+        frames
+            .iter()
+            .filter(|frame| frame.payload.starts_with("46050900A3014255"))
+            .count(),
+        giu_stores
+    );
+    assert_eq!(
+        frames
+            .iter()
+            .filter(|frame| frame.payload.starts_with("460500A6FF0000406677"))
+            .count(),
+        goc_stores
     );
     assert_eq!(sys.pci.connections(), 1);
 
