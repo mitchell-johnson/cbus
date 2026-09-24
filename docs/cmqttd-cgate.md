@@ -46,6 +46,7 @@ not be committed or published.
 | NET PINGU and GET network Units | Actual installation MMI request using cmqttd's negotiated PCI checksum mode; buffers blocks that a CNI forwards before its positive confirmation, accepts only confirmed contiguous coverage of all addresses 0–255, and reports the native sorted `302-Units=` form |
 | NET SYNC and cached unit getters | Configured interface routing hint (physically revalidated) or BASIC discovery, complete installation MMI, then confirmed IDENTIFY1/2 probes and bounded IDENTIFY4 collection for every present address; routed and local bare-CAL replies are correlated, silent legacy/error addresses remain present with unknown identity fields, the live cache is replaced atomically, and native getters expose it |
 | NET CHECKUNIT | Active confirmed IDENTIFY4 collection through the native two-second quiet interval, with the native no-unit, single-unit, duplicate-unit and identity-error result forms; `*` expands from a fresh complete MMI |
+| `SET //PROJECT/NETWORK/p/UNIT Address DESTINATION` | Physical unit readdressing through native C-Gate's protected parameter-`0x20` exchange. The service proves one source identity and an empty destination, obtains the one-use challenge, sends exactly one special address STORE, requires both PCI confirmation and the unit ACK from the destination, moves only the observed physical cache, and leaves the database address unchanged |
 | Unit identification | Source-correlated CAL replies from the physical unit |
 | OEM physical memory reads | Volatile 0x41 pointer selection plus segmented RECALL; no EEPROM writes |
 | KEYGL5 5.5.00 static strings and lighting/scene widget labels | Python reader uses the service; checks physical identity, stable header and static-text CRC |
@@ -75,9 +76,12 @@ and resumed around its stores; DALI observes the native one-second settling
 interval. GOC methods use parameter `0xFF` with a big-endian address prefix and
 their native per-method limits. Factory and special parameters follow native
 behavior and are skipped by ordinary SAVE.
-Supported `lock` fields require the native unchecksummed, PCI-confirmed unlock
-and one-byte unit challenge reply after selecting the relevant page and before
-STORE. All dirty parameters are encoded
+Supported `lock` fields and physical unit readdressing use the native
+unchecksummed, PCI-confirmed unlock and one-byte unit challenge reply after
+selecting the relevant page and before STORE. Readdressing uses the vendor's
+fixed `A3 20 4E <destination> <challenge>` form and recognizes its fixed success
+and rejection replies rather than treating them as ordinary variable-length CAL
+messages. All dirty parameters are encoded
 and physically pre-read before the first STORE. Each changed range is
 acknowledged and read back; a
 transport failure can still leave earlier independently acknowledged ranges
@@ -131,10 +135,10 @@ return 502. Full replacement still requires:
   layout coverage plus live KEYGL5 acceptance; SAVE audits every well-formed
   writable catalogue default and has fake-PCI direct/page-aware/OEM/GOC
   write-readback acceptance.
-- Bridged-network synchronization, serial addressing, readdressing, unravel,
+- Bridged-network synchronization, serial-address broadcasts, unravel,
   project identification and the remaining commissioning state transitions.
-  Direct-network `NET PINGU`, `NET SYNC` identity population and duplicate-aware
-  `NET CHECKUNIT` are implemented.
+  Direct-network `NET PINGU`, `NET SYNC` identity population, duplicate-aware
+  `NET CHECKUNIT`, and guarded single-unit physical readdressing are implemented.
 - Physical scenes, text/icon broadcasts, dynamic eDLT label cache reads, and
   specialist application families such as HVAC, audio and security.
 - Native repository/archive/import/export formats, document commands,
@@ -148,7 +152,8 @@ return 502. Full replacement still requires:
 `cbus-transport` tests pin direct routing for standard recall/tagged STORE,
 page-aware recall, page selection, cross-page tagged STORE, the native
 protected-parameter unlock request/reply phase, and
-the separate programming route for segmented OEM recall/tagged STORE, including
+the separate programming route for segmented OEM recall/tagged STORE, plus the
+protected unit-address challenge and special STORE, including
 mandatory readback, plus source filtering,
 interleaved lighting, complete and incomplete installation MMI,
 MMI and IDENTIFY data that precedes its positive confirmation, the confirmed
@@ -163,7 +168,9 @@ The decoded vendor catalogue is optionally audited through `CBUS_UNITSPEC_DIR`.
 The real cmqttd system test performs physical PP LOAD and SAVE against a scripted
 PCI, checks standard and OEM values, dirty/tag selection, read-modify-write
 encoding, acknowledgements and readback, and verifies that C-Gate and MQTT retain
-one PCI connection.
+one PCI connection. A separate real-daemon test verifies guarded physical
+readdressing, exact-once STORE transmission, database/physical layer separation,
+and MQTT event delivery on that same PCI during the move.
 `toolkit-cli/tests/test_cmqtt.py` tests synthetic eDLT decoding and read contracts.
 None of these fixtures contains a user's project or labels.
 

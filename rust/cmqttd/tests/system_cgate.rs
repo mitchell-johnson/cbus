@@ -377,6 +377,120 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
 }
 
 #[tokio::test]
+async fn physical_readdress_runs_once_through_real_daemon_and_shared_pci() {
+    let state = cbus_test_support::proc::temp_path("physical-readdress-cgate.json");
+    let sys = start_with(Options {
+        extra: vec![
+            "--cgate-bind".into(),
+            "127.0.0.1:0".into(),
+            "--cgate-state".into(),
+            state.to_string_lossy().into_owned(),
+        ],
+        ..Default::default()
+    })
+    .await;
+    wait_started(&sys).await;
+    require(STARTUP, "C-Gate listener", || {
+        sys.daemon.stderr().contains("C-Gate service listening on ")
+    })
+    .await;
+    let logs = sys.daemon.stderr();
+    let address = logs
+        .lines()
+        .find_map(|line| {
+            line.split_once("C-Gate service listening on ")
+                .map(|(_, address)| address.trim())
+        })
+        .unwrap();
+    let stream = TcpStream::connect(address).await.unwrap();
+    let (reader, mut writer) = stream.into_split();
+    let mut reader = BufReader::new(reader);
+    let mut greeting = String::new();
+    reader.read_line(&mut greeting).await.unwrap();
+    assert!(greeting.starts_with("201 "));
+
+    let command = async {
+        writer
+            .write_all(b"[9] SET //HARNESS/254/p/5 Address 6\r\n")
+            .await
+            .unwrap();
+        let mut result = String::new();
+        loop {
+            let mut line = String::new();
+            reader.read_line(&mut line).await.unwrap();
+            result.push_str(&line);
+            if line.starts_with("[9]") && line.as_bytes().get(7) == Some(&b' ') {
+                break result;
+            }
+        }
+    };
+    let bus = async {
+        require(COMMAND_DRAIN, "readdress source identity check", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload.starts_with("4605002104"))
+        })
+        .await;
+        let serial = [
+            0x38, 0xff, 0xff, 0xff, 0xff, 0x18, 0xb1, 0x06, 0x16, 0xa2, 0x00, 0x05,
+        ];
+        let mut identity = vec![0x86, 5, 0x10, 0x01, 0x00, 0x8d, 4];
+        identity.extend(serial);
+        sys.pci.inject(&pci_wire(&identity));
+        require(COMMAND_DRAIN, "readdress empty destination check", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload.starts_with("4606002104"))
+        })
+        .await;
+        require(COMMAND_DRAIN, "readdress unlock", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload.starts_with("4605001120"))
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x82, 0x20, 0x5a]));
+        require(COMMAND_DRAIN, "protected address STORE", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload == "460500A3204E065A")
+        })
+        .await;
+        sys.pci.inject(&pci_wire(&[5, 4, 56, 0, 121, 1]));
+        sys.pci
+            .inject(&pci_wire(&[0x86, 6, 0x10, 0x01, 0x00, 0x32, 0x20, 0x4e]));
+    };
+    let (response, ()) = tokio::join!(command, bus);
+    assert!(
+        response.contains("[9] 200 OK: //HARNESS/254/p/6"),
+        "{response:?}"
+    );
+    assert_eq!(
+        sys.pci
+            .frames()
+            .iter()
+            .filter(|frame| frame.payload == "460500A3204E065A")
+            .count(),
+        1
+    );
+    require(STARTUP, "lighting event in MQTT during readdress", || {
+        sys.broker
+            .publishes()
+            .iter()
+            .any(|publish| publish.topic == "homeassistant/light/cbus_1/state")
+    })
+    .await;
+    assert_eq!(sys.pci.connections(), 1);
+    drop(sys);
+    std::fs::remove_file(state).unwrap();
+}
+
+#[tokio::test]
 async fn physical_pp_load_and_save_use_all_supported_routes_on_shared_pci() {
     let state = cbus_test_support::proc::temp_path("physical-pp-cgate.json");
     let specs = cbus_test_support::proc::temp_path("physical-pp-unitspec");

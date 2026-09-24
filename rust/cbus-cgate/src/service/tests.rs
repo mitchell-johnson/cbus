@@ -1,5 +1,5 @@
 use super::*;
-use tokio::io::AsyncReadExt;
+use tokio::io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader};
 
 fn fixture() -> String {
     include_str!("../../../testdata/fixtures/project.xml").replace("</Network>",
@@ -114,7 +114,6 @@ async fn programming_ownership_and_unimplemented_hardware_are_enforced() {
         408
     );
     for command in [
-        "SET //HARNESS/254/p/5 Address 6",
         "AIRCON REFRESH //HARNESS/254/172 1",
         "PP WRITE_PATCH S anything",
     ] {
@@ -129,11 +128,121 @@ async fn programming_ownership_and_unimplemented_hardware_are_enforced() {
     }
     assert_eq!(
         service
+            .handle(&mut first, "[5] SET //HARNESS/254/p/5 Address 5")
+            .await
+            .status,
+        400
+    );
+    assert_eq!(
+        service
             .handle(&mut first, "[6] PP LOAD S /db//HARNESS/254/p/5")
             .await
             .status,
         200
     );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test(start_paused = true)]
+async fn physical_readdress_is_guarded_acknowledged_and_keeps_database_address() {
+    async fn pci_line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+    async fn pci_reply<W: tokio::io::AsyncWrite + Unpin>(writer: &mut W, source: u8, cal: &[u8]) {
+        let mut bytes = vec![0x86, source, 0x10, 0x00];
+        bytes.extend_from_slice(cal);
+        let sum = bytes.iter().fold(0u8, |sum, byte| sum.wrapping_add(*byte));
+        bytes.push(0u8.wrapping_sub(sum));
+        let mut wire = hex::encode_upper(bytes).into_bytes();
+        wire.extend_from_slice(b"\r\n");
+        writer.write_all(&wire).await.unwrap();
+    }
+
+    let path = state_path();
+    let (pci, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        pci_line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    {
+        let mut model = service.model.lock().await;
+        let network = model
+            .projects
+            .get_mut("HARNESS")
+            .unwrap()
+            .networks
+            .get_mut(&254)
+            .unwrap();
+        network
+            .physical
+            .insert(5, network.units.get(&5).unwrap().clone());
+    }
+    let moving = tokio::spawn({
+        let service = service.clone();
+        async move {
+            let mut client = ClientState::default();
+            service
+                .handle(&mut client, "[1] SET //HARNESS/254/p/5 Address 6")
+                .await
+        }
+    });
+
+    let source_check = pci_line(&mut remote_read).await;
+    assert!(source_check.starts_with(b"\\4605002104"));
+    let source_code = source_check[source_check.len() - 2];
+    remote_write.write_all(&[source_code, b'.']).await.unwrap();
+    pci_reply(
+        &mut remote_write,
+        5,
+        &[
+            0x8d, 4, 0x38, 0xff, 0xff, 0xff, 0xff, 0x18, 0xb1, 0x06, 0x16, 0xa2, 0, 5,
+        ],
+    )
+    .await;
+    tokio::time::advance(Duration::from_secs(2)).await;
+    tokio::task::yield_now().await;
+
+    let destination_check = pci_line(&mut remote_read).await;
+    assert!(destination_check.starts_with(b"\\4606002104"));
+    let destination_code = destination_check[destination_check.len() - 2];
+    remote_write
+        .write_all(&[destination_code, b'.'])
+        .await
+        .unwrap();
+    tokio::time::advance(Duration::from_secs(2)).await;
+    tokio::task::yield_now().await;
+
+    let unlock = pci_line(&mut remote_read).await;
+    assert!(unlock.starts_with(b"\\4605001120"));
+    let unlock_code = unlock[unlock.len() - 2];
+    pci_reply(&mut remote_write, 5, &[0x82, 0x20, 0x5a]).await;
+    remote_write.write_all(&[unlock_code, b'.']).await.unwrap();
+    let store = pci_line(&mut remote_read).await;
+    assert!(store.starts_with(b"\\460500A3204E065A"));
+    let store_code = store[store.len() - 2];
+    pci_reply(&mut remote_write, 6, &[0x32, 0x20, 0x4e]).await;
+    remote_write.write_all(&[store_code, b'.']).await.unwrap();
+
+    let response = moving.await.unwrap();
+    assert_eq!(response.status, 200);
+    assert_eq!(response.final_text, "200 OK: //HARNESS/254/p/6");
+    let model = service.model.lock().await;
+    let network = &model.projects["HARNESS"].networks[&254];
+    assert!(network.units.contains_key(&5));
+    assert!(!network.units.contains_key(&6));
+    assert!(!network.physical.contains_key(&5));
+    assert_eq!(network.physical[&6].address, 6);
+    drop(model);
     std::fs::remove_file(path).unwrap();
 }
 

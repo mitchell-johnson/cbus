@@ -666,7 +666,7 @@ impl PciClient {
         Ok(())
     }
 
-    async fn programming_unlock(&self, unit: u8, parameter: u8) -> Result<()> {
+    async fn programming_unlock(&self, unit: u8, parameter: u8) -> Result<u8> {
         let mut replies = self.packets.subscribe();
         let packet = Packet::PointToPoint {
             // Native C-Gate's dd command is deliberately unchecksummed and
@@ -683,7 +683,7 @@ impl PciClient {
             .ok_or_else(|| Error::new(ErrorKind::InvalidInput, "unlock cannot be confirmed"))?;
         let result = tokio::time::timeout(REPLY_TIMEOUT, async {
             let mut confirmed = false;
-            let mut unlocked = false;
+            let mut challenge = None;
             loop {
                 match replies.recv().await {
                     Ok(Some(Packet::Confirmation { code: got, success })) if got == code => {
@@ -733,7 +733,7 @@ impl PciClient {
                                 "parameter unlock reply must contain one byte",
                             ));
                         }
-                        unlocked = true;
+                        challenge = Some(data[0]);
                     }
                     Ok(None) | Err(_) => {
                         return Err(Error::new(
@@ -742,8 +742,10 @@ impl PciClient {
                         ))
                     }
                 }
-                if confirmed && unlocked {
-                    return Ok(());
+                if confirmed {
+                    if let Some(challenge) = challenge {
+                        return Ok(challenge);
+                    }
                 }
             }
         })
@@ -758,6 +760,140 @@ impl PciClient {
             let mut state = self.state.lock().unwrap();
             state.pending.remove(&code);
             state.codes_in_use.remove(&code);
+        }
+        result
+    }
+
+    async fn programming_send_once(&self, packet: &Packet) -> Result<u8> {
+        let lane = self.send_lane.lock().await;
+        self.init_done
+            .subscribe()
+            .wait_for(|&done| done)
+            .await
+            .map_err(|_| Error::new(ErrorKind::BrokenPipe, "PCI initialization ended"))?;
+        if !self.is_connected() {
+            return Err(Error::new(ErrorKind::BrokenPipe, "PCI disconnected"));
+        }
+        let mut bytes = packet
+            .encode_packet()
+            .map_err(|error| Error::new(ErrorKind::InvalidInput, error.0))?;
+        bytes.insert(0, b'\\');
+        let code = self.get_confirmation_code();
+        bytes.push(code);
+        bytes.push(b'\r');
+        let written = self
+            .flow
+            .submit(bytes, Priority::Command, ResponseKind::Confirmation(code));
+        drop(lane);
+        if let Err(error) = written
+            .await
+            .map_err(|_| Error::new(ErrorKind::BrokenPipe, "flow controller ended"))?
+        {
+            let mut state = self.state.lock().unwrap();
+            state.pending.remove(&code);
+            state.codes_in_use.remove(&code);
+            return Err(error);
+        }
+        // Deliberately do not add this write to `pending`: the protected
+        // address STORE may already have moved the unit when confirmation is
+        // lost, so replaying it would violate the zero-retry contract.
+        Ok(code)
+    }
+
+    /// Readdress one unit using native C-Gate's protected parameter-0x20
+    /// challenge exchange. The operation is sent exactly once and completes
+    /// only after both PCI delivery confirmation and the unit's address-store
+    /// ACK have been received.
+    pub async fn readdress_unit(&self, source: u8, destination: u8) -> Result<()> {
+        if source == 0 || !(1..=254).contains(&destination) || source == destination {
+            return Err(Error::new(
+                ErrorKind::InvalidInput,
+                "readdress requires a source in 1..255 and a distinct destination in 1..254",
+            ));
+        }
+        let _lane = self.programming_lane.lock().await;
+        if self.programming_fault.load(Ordering::Acquire) {
+            return Err(Error::other(
+                "programming stream needs reconnect after an incomplete transaction",
+            ));
+        }
+        let mut transaction = Transaction {
+            fault: &self.programming_fault,
+            complete: false,
+        };
+        let challenge = self.programming_unlock(source, 0x20).await?;
+        let mut replies = self.packets.subscribe();
+        let packet = Packet::PointToPoint {
+            meta: Meta::new(false, 1),
+            unit_address: source,
+            bridged: false,
+            hops: vec![],
+            cals: vec![Cal::Readdress {
+                destination,
+                challenge,
+            }],
+        };
+        let code = self.programming_send_once(&packet).await?;
+        let result = tokio::time::timeout(REPLY_TIMEOUT, async {
+            let mut confirmed = false;
+            let mut accepted = None;
+            loop {
+                match replies.recv().await {
+                    Ok(Some(Packet::Confirmation { code: got, success })) if got == code => {
+                        if !success {
+                            return Err(Error::other("PCI rejected readdress command"));
+                        }
+                        confirmed = true;
+                    }
+                    Ok(Some(Packet::PointToPoint { meta, cals, .. }))
+                        if meta.source_address == Some(destination)
+                            && cals
+                                == [Cal::Ack {
+                                    parameter: 0x20,
+                                    data: vec![0x4e],
+                                }] =>
+                    {
+                        accepted = Some(true);
+                    }
+                    Ok(Some(Packet::PointToPoint { meta, cals, .. }))
+                        if meta.source_address == Some(source) && cals == [Cal::ReaddressNak] =>
+                    {
+                        accepted = Some(false);
+                    }
+                    Ok(Some(_)) => {}
+                    Ok(None) | Err(_) => {
+                        return Err(Error::new(
+                            ErrorKind::BrokenPipe,
+                            "PCI response stream lost",
+                        ));
+                    }
+                }
+                if confirmed {
+                    match accepted {
+                        Some(true) => return Ok(()),
+                        Some(false) => {
+                            return Err(Error::other("unit rejected readdress command"));
+                        }
+                        None => {}
+                    }
+                }
+            }
+        })
+        .await
+        .unwrap_or_else(|_| Err(Error::new(ErrorKind::TimedOut, "readdress timed out")));
+        if result.is_err() {
+            let mut state = self.state.lock().unwrap();
+            state.pending.remove(&code);
+            state.codes_in_use.remove(&code);
+        }
+        // A positive ACK or a definitive NAK closes the transaction. A
+        // transport/timeout error remains uncertain and faults this lane.
+        if result.is_ok()
+            || result
+                .as_ref()
+                .is_err_and(|error| error.to_string() == "unit rejected readdress command")
+        {
+            transaction.complete = true;
         }
         result
     }
@@ -1499,6 +1635,85 @@ mod tests {
                 .kind(),
             ErrorKind::InvalidInput
         );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn readdress_uses_native_challenge_and_preserves_mqtt_fanout() {
+        let (pci, mut remote, mut events) = setup().await;
+        let worker = pci.clone();
+        let moving = tokio::spawn(async move { worker.readdress_unit(4, 6).await });
+        assert_eq!(line(&mut remote).await, b"\\4604001120h\r");
+        reply(&mut remote, 4, &[0x82, 0x20, 0x5a]).await;
+        remote.get_mut().write_all(b"h.\r\n").await.unwrap();
+        assert_eq!(line(&mut remote).await, b"\\460400A3204E065Ai\r");
+        remote
+            .get_mut()
+            .write_all(b"05043800790145\r\n")
+            .await
+            .unwrap();
+        // C-Gate's cu command accepts the ACK from the destination address.
+        reply(&mut remote, 6, &[0x32, 0x20, 0x4e]).await;
+        remote.get_mut().write_all(b"i.\r\n").await.unwrap();
+        moving.await.unwrap().unwrap();
+        assert!(matches!(
+            events.recv().await,
+            Some(CBusEvent::LightingOn {
+                source: Some(4),
+                app: 56,
+                group: 1
+            })
+        ));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn definitive_readdress_nak_does_not_fault_programming_lane() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let moving = tokio::spawn(async move { worker.readdress_unit(4, 6).await });
+        assert_eq!(line(&mut remote).await, b"\\4604001120h\r");
+        reply(&mut remote, 4, &[0x82, 0x20, 0x5a]).await;
+        remote.get_mut().write_all(b"h.\r\n").await.unwrap();
+        assert_eq!(line(&mut remote).await, b"\\460400A3204E065Ai\r");
+        reply(&mut remote, 4, &[0x3b, 0x20, 0x4e]).await;
+        remote.get_mut().write_all(b"i.\r\n").await.unwrap();
+        assert!(moving
+            .await
+            .unwrap()
+            .unwrap_err()
+            .to_string()
+            .contains("unit rejected"));
+        assert!(!pci.programming_fault.load(Ordering::Acquire));
+        assert_eq!(
+            pci.readdress_unit(4, 4).await.unwrap_err().kind(),
+            ErrorKind::InvalidInput
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn lost_readdress_confirmation_is_never_replayed() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let moving = tokio::spawn(async move { worker.readdress_unit(4, 6).await });
+        assert_eq!(line(&mut remote).await, b"\\4604001120h\r");
+        reply(&mut remote, 4, &[0x82, 0x20, 0x5a]).await;
+        remote.get_mut().write_all(b"h.\r\n").await.unwrap();
+        assert_eq!(line(&mut remote).await, b"\\460400A3204E065Ai\r");
+        reply(&mut remote, 6, &[0x32, 0x20, 0x4e]).await;
+        // The unit moved, but the PCI confirmation is lost. The normal send
+        // path would retry after about one second; this mutation must not.
+        assert!(
+            tokio::time::timeout(Duration::from_secs(5), line(&mut remote))
+                .await
+                .is_err()
+        );
+        tokio::time::advance(Duration::from_secs(6)).await;
+        tokio::task::yield_now().await;
+        assert_eq!(
+            moving.await.unwrap().unwrap_err().kind(),
+            ErrorKind::TimedOut
+        );
+        assert!(pci.programming_fault.load(Ordering::Acquire));
+        assert!(pci.state.lock().unwrap().pending.is_empty());
     }
 
     #[tokio::test(start_paused = true)]

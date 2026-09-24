@@ -24,6 +24,11 @@ Enable Control, clock date/time/refresh, Temperature Broadcast, `NET PINGU`, `NE
 `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and
 `goc2` parameters using decoded unit specifications. Direct and page-aware
 `lock` parameters use the captured unlock phase.
+It also implements guarded scalar `SET //PROJECT/NETWORK/p/UNIT Address DEST`
+against the physical bus. That command proves one source and an empty
+destination, uses the native parameter-`0x20` one-use challenge, sends the
+special address STORE once, requires the destination ACK, and deliberately
+leaves the database unit address unchanged for the Toolkit workflow to verify.
 PINGU and whole-network checks send the install-MMI request
 with the active PCI checksum setting. They buffer blocks that arrive before the
 request confirmation but accept only positively confirmed, contiguous coverage
@@ -36,6 +41,9 @@ present with unknown identity fields. CHECKUNIT actively collects IDENTIFY4
 replies through the native two-second quiet interval; it does not infer duplicate count from the
 two-bit MMI state. Use `GET //PROJECT/NETWORK Units` and unit `Type`, `Version`,
 `SerialNumber`, `Address`, and `State` getters for the resulting live snapshot.
+Query `CMQTT CAPABILITIES`; `unit_readdress: true` denotes this physical path,
+while `full_cgate_compatibility` remains false until every remaining backend and
+acceptance requirement is complete.
 
 ## Mock service
 

@@ -419,6 +419,7 @@ impl Service {
                 "temperature_broadcast":true,
                 "install_mmi":true, "network_pingu":true,
                 "network_sync":true, "network_checkunit":true,
+                "unit_readdress":true,
                 "project":self.project,"network":self.network,"persistent_database":true})
                 .to_string()],
                 "200 OK",
@@ -501,6 +502,13 @@ impl Service {
         }
         if verb == "NET" && sub == "CHECKUNIT" {
             return self.net_checkunit(client, line, tag, &words).await;
+        }
+        if verb == "SET"
+            && words
+                .get(2)
+                .is_some_and(|field| field.eq_ignore_ascii_case("Address"))
+        {
+            return self.readdress_unit(tag, &words).await;
         }
         if matches!(verb, "ON" | "OFF" | "RAMP" | "TERMINATERAMP")
             || (verb == "LIGHTING"
@@ -1111,6 +1119,86 @@ impl Service {
             .events
             .send(format!("#e# net {} checkunit {}", self.network, words[3]));
         ok(tag, lines, "200 OK.")
+    }
+
+    async fn readdress_unit(&self, tag: &str, words: &[&str]) -> Response {
+        let _commands = self.commands.lock().await;
+        if words.len() != 4 || !words[2].eq_ignore_ascii_case("Address") {
+            return err(
+                tag,
+                400,
+                "400 SET requires a source path and Address destination",
+            );
+        }
+        let Some((project, network, source)) = Server::split_unit(words[1]) else {
+            return err(tag, 400, "400 Invalid source path");
+        };
+        if project != self.project || network != self.network {
+            return err(tag, 404, "404 Network is not connected to this service");
+        }
+        let Ok(destination) = words[3].parse::<u8>() else {
+            return err(tag, 400, "400 Invalid destination address");
+        };
+        if source == 0 || !(1..=254).contains(&destination) || source == destination {
+            return err(tag, 400, "400 Invalid destination address");
+        }
+
+        let pci = self.pci.read().await.clone();
+        let source_replies = match pci.identify_all(source, 4).await {
+            Ok(replies) => replies,
+            Err(error) => {
+                return err(
+                    tag,
+                    408,
+                    &format!("408 Source address check failed: {error}"),
+                )
+            }
+        };
+        match source_replies.len() {
+            0 => return err(tag, 401, "401 Unit not found"),
+            1 => {}
+            _ => return err(tag, 409, "409 Source address contains multiple units"),
+        }
+        let destination_replies = match pci.identify_all(destination, 4).await {
+            Ok(replies) => replies,
+            Err(error) => {
+                return err(
+                    tag,
+                    408,
+                    &format!("408 Destination address check failed: {error}"),
+                )
+            }
+        };
+        if !destination_replies.is_empty() {
+            return err(tag, 409, "409 Destination occupied");
+        }
+        if let Err(error) = pci.readdress_unit(source, destination).await {
+            let code = if error.to_string().contains("unit rejected") {
+                409
+            } else {
+                408
+            };
+            return err(tag, code, &format!("{code} Readdress failed: {error}"));
+        }
+
+        let destination_path = format!("//{project}/{network}/p/{destination}");
+        let mut model = self.model.lock().await;
+        if let Some(physical) = model
+            .projects
+            .get_mut(&project)
+            .and_then(|project| project.networks.get_mut(&network))
+            .map(|network| &mut network.physical)
+        {
+            if let Some(mut unit) = physical.remove(&source) {
+                unit.address = destination;
+                physical.insert(destination, unit);
+            }
+        }
+        drop(model);
+        let _ = self
+            .events
+            .send(format!("#e# unit moved {source} {destination}"));
+        ok(tag, vec![], &format!("200 OK: {destination_path}"))
     }
 
     async fn set_network_state(&self, state: NetworkState) {

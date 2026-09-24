@@ -26,6 +26,16 @@ pub enum Cal {
         /// Parameter number to unlock.
         parameter: u8,
     },
+    /// Move a unit using the challenge returned by unlocking parameter 0x20.
+    /// The challenge is outside the ordinary `0xA3` CAL length.
+    Readdress {
+        /// New unit address.
+        destination: u8,
+        /// One-use challenge returned by the unit.
+        challenge: u8,
+    },
+    /// Rejection of the fixed-length protected-address store.
+    ReaddressNak,
     /// Select the active 256-byte programming page for subsequent STOREs.
     SetPage {
         /// Page number.
@@ -88,6 +98,11 @@ impl Cal {
                 out
             }
             Cal::Unlock { parameter } => vec![0x11, *parameter],
+            Cal::Readdress {
+                destination,
+                challenge,
+            } => vec![0xa3, 0x20, 0x4e, *destination, *challenge],
+            Cal::ReaddressNak => vec![0x3b, 0x20, 0x4e],
             Cal::SetPage { page } => vec![0x39, *page],
             Cal::Identify { attribute } => vec![CAL_IDENTIFY, *attribute],
             Cal::Recall { param, count } => vec![CAL_RECALL, *param, *count],
@@ -126,7 +141,9 @@ impl Cal {
         let cmd = *data
             .first()
             .ok_or_else(|| DecodeError::new("empty CAL data"))?;
-        if cmd & 0xe0 == 0xa0 || cmd & 0xf0 == 0x30 {
+        if data.starts_with(&[0x3b, 0x20, 0x4e]) {
+            Ok((Cal::ReaddressNak, 3))
+        } else if cmd & 0xe0 == 0xa0 || cmd & 0xf0 == 0x30 {
             let length = if cmd & 0xe0 == 0xa0 {
                 cmd & 0x1f
             } else {
@@ -245,7 +262,21 @@ impl Cal {
     /// `0x39` remains the length-coded eight-byte ACK handled by
     /// [`Self::decode_one`].
     pub fn decode_one_to_pci(data: &[u8]) -> Result<(Cal, usize), DecodeError> {
-        if data.first() == Some(&0x39) {
+        if data.starts_with(&[0xa3, 0x20, 0x4e]) {
+            let destination = *data
+                .get(3)
+                .ok_or_else(|| DecodeError::new("truncated readdress CAL"))?;
+            let challenge = *data
+                .get(4)
+                .ok_or_else(|| DecodeError::new("truncated readdress CAL"))?;
+            Ok((
+                Cal::Readdress {
+                    destination,
+                    challenge,
+                },
+                5,
+            ))
+        } else if data.first() == Some(&0x39) {
             let page = *data
                 .get(1)
                 .ok_or_else(|| DecodeError::new("truncated page selection CAL"))?;
@@ -266,6 +297,28 @@ mod tests {
         let (c, n) = Cal::decode_one(&[0x11, 0x20, 0xff]).unwrap();
         assert_eq!(c, Cal::Unlock { parameter: 0x20 });
         assert_eq!(n, 2);
+        assert_eq!(
+            Cal::Readdress {
+                destination: 6,
+                challenge: 0x5a
+            }
+            .encode(),
+            vec![0xa3, 0x20, 0x4e, 6, 0x5a]
+        );
+        assert_eq!(
+            Cal::decode_one_to_pci(&[0xa3, 0x20, 0x4e, 6, 0x5a]).unwrap(),
+            (
+                Cal::Readdress {
+                    destination: 6,
+                    challenge: 0x5a
+                },
+                5
+            )
+        );
+        assert_eq!(
+            Cal::decode_one(&[0x3b, 0x20, 0x4e]).unwrap(),
+            (Cal::ReaddressNak, 3)
+        );
         assert_eq!(Cal::SetPage { page: 4 }.encode(), vec![0x39, 4]);
         let (c, n) = Cal::decode_one_to_pci(&[0x39, 4, 0xff]).unwrap();
         assert_eq!(c, Cal::SetPage { page: 4 });

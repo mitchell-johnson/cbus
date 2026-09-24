@@ -102,6 +102,12 @@ pub fn cal_to_json(c: &Cal) -> Value {
             json!({"cal": "ack", "parameter": parameter, "data_hex": hex::encode(data)})
         }
         Cal::Unlock { parameter } => json!({"cal": "unlock", "parameter": parameter}),
+        Cal::Readdress {
+            destination,
+            challenge,
+        } => json!({"cal": "readdress", "destination": destination,
+                    "challenge": challenge}),
+        Cal::ReaddressNak => json!({"cal": "readdress_nak"}),
         Cal::SetPage { page } => json!({"cal": "set_page", "page": page}),
         Cal::Identify { attribute } => json!({"cal": "identify", "attribute": attribute}),
         Cal::Recall { param, count } => {
@@ -402,6 +408,11 @@ pub fn cal_from_json(d: &Value) -> Result<Cal, JErr> {
         "unlock" => Ok(Cal::Unlock {
             parameter: get_u8(d, "parameter")?,
         }),
+        "readdress" => Ok(Cal::Readdress {
+            destination: get_u8(d, "destination")?,
+            challenge: get_u8(d, "challenge")?,
+        }),
+        "readdress_nak" => Ok(Cal::ReaddressNak),
         "set_page" => Ok(Cal::SetPage {
             page: get_u8(d, "page")?,
         }),
