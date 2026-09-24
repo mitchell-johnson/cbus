@@ -205,9 +205,10 @@ impl PciClient {
         parameter: u8,
         count: usize,
         ack: Option<u8>,
+        direct_route: bool,
     ) -> Result<Vec<u8>> {
         let mut replies = self.packets.subscribe();
-        let bytes = if matches!(request, Cal::Identify { .. }) {
+        let bytes = if direct_route {
             let packet = Packet::PointToPoint {
                 meta: Meta::new(true, 1),
                 unit_address: unit,
@@ -339,6 +340,7 @@ impl PciClient {
                 0,
                 0,
                 Some(0x41),
+                false,
             )
             .await?;
             let count = (length - result.len()).min(128) as u8;
@@ -349,6 +351,7 @@ impl PciClient {
                     1,
                     usize::from(count),
                     None,
+                    false,
                 )
                 .await?,
             );
@@ -398,6 +401,7 @@ impl PciClient {
                 parameter,
                 length,
                 None,
+                true,
             )
             .await?;
         transaction.complete = true;
@@ -417,7 +421,7 @@ impl PciClient {
             complete: false,
         };
         let result = self
-            .programming_exchange(unit, Cal::Identify { attribute }, attribute, 0, None)
+            .programming_exchange(unit, Cal::Identify { attribute }, attribute, 0, None, true)
             .await?;
         transaction.complete = true;
         Ok(result)
@@ -675,7 +679,7 @@ mod tests {
         let (pci, mut remote, _) = setup().await;
         let worker = pci.clone();
         let read = tokio::spawn(async move { worker.recall_parameter(5, 0x22, 3).await });
-        assert_eq!(line(&mut remote).await, b"\\460509001A22036D\r");
+        assert_eq!(line(&mut remote).await, b"\\4605001A220376\r");
         reply(&mut remote, 4, &[0x83, 0x22, 9, 9]).await;
         reply(&mut remote, 5, &[0x82, 0x22, 1]).await;
         reply(&mut remote, 5, &[0x83, 0x22, 2, 3]).await;

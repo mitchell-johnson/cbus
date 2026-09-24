@@ -482,7 +482,7 @@ async fn physical_pp_load_decodes_standard_and_oem_memory_on_shared_pci() {
             sys.pci
                 .frames()
                 .iter()
-                .any(|frame| frame.payload.starts_with("460509001A2002"))
+                .any(|frame| frame.payload.starts_with("4605001A2002"))
         })
         .await;
         sys.pci.inject(&pci_wire(&[

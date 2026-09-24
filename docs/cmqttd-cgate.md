@@ -109,8 +109,9 @@ return 502. Full replacement still requires:
 
 - Physical PP SAVE with schema encoders, protection/checksum phases, readback,
   recovery and hardware acceptance. Physical PP LOAD is implemented and has
-  full decoded-catalogue layout coverage plus fake-PCI system acceptance; live
-  unit/profile acceptance is still incomplete.
+  full decoded-catalogue layout coverage, fake-PCI system acceptance and live
+  KEYGL5 acceptance for standard and OEM parameters; broader unit/profile
+  acceptance is still incomplete.
 - Bridged-network synchronization, serial addressing, readdressing, unravel,
   project identification and the remaining commissioning state transitions.
   Direct-network `NET PINGU`, `NET SYNC` identity population and duplicate-aware
@@ -125,8 +126,9 @@ return 502. Full replacement still requires:
 
 ## Tests
 
-`cbus-transport` tests cover captured programming route bytes, standard parameter
-recall, source filtering, segmented OEM recall, interleaved lighting, complete and incomplete installation MMI,
+`cbus-transport` tests pin direct routing for standard parameter recall and the
+separate programming route for segmented OEM recall, plus source filtering,
+interleaved lighting, complete and incomplete installation MMI,
 MMI and IDENTIFY data that precedes its positive confirmation, the confirmed
 two-second IDENTIFY collection window, duplicate replies, absence, and
 confirmation success/failure. Exact Trigger, Enable, Clock, Temperature Broadcast, MMI and confirmed
@@ -145,7 +147,10 @@ None of these fixtures contains a user's project or labels.
 On 24 September 2026, the Docker deployment was also checked against a real
 KEYGL5 running 5.5.00. The CLI read all 64 static strings and the five visible
 lighting/scene labels through cmqttd, with stable header and matching Toolkit
-text CRC. A relay was switched through C-Gate, independently reported 255 then
+text CRC. A physical `PP LOAD` also decoded all 64 `StaticText` parameters from
+one 4 KiB OEM-memory range and loaded the six `Direct` parameters through
+standard CAL recalls; `PP GET UnitAddress` returned the live address `0x5`.
+A relay was switched through C-Gate, independently reported 255 then
 0, and restored to its original OFF state. The container retained its database
 across recreation and maintained one CNI socket alongside its MQTT connection.
 The deployed service also completed a live three-block PINGU observation,
