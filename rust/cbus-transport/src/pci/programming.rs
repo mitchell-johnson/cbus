@@ -357,6 +357,53 @@ impl PciClient {
         Ok(result)
     }
 
+    /// Recall one standard CAL programming parameter. This is the transport
+    /// used by native PP for unit-spec logical addresses below 256; larger
+    /// logical addresses use [`Self::read_memory`] with the 256-byte bias.
+    pub async fn recall_parameter(
+        &self,
+        unit: u8,
+        parameter: u8,
+        length: usize,
+    ) -> Result<Vec<u8>> {
+        let count = u8::try_from(length).map_err(|_| {
+            Error::new(
+                ErrorKind::InvalidInput,
+                "parameter recall requires 1..255 bytes",
+            )
+        })?;
+        if count == 0 {
+            return Err(Error::new(
+                ErrorKind::InvalidInput,
+                "parameter recall requires 1..255 bytes",
+            ));
+        }
+        let _lane = self.programming_lane.lock().await;
+        if self.programming_fault.load(Ordering::Acquire) {
+            return Err(Error::other(
+                "programming stream needs reconnect after an incomplete transaction",
+            ));
+        }
+        let mut transaction = Transaction {
+            fault: &self.programming_fault,
+            complete: false,
+        };
+        let result = self
+            .programming_exchange(
+                unit,
+                Cal::Recall {
+                    param: parameter,
+                    count,
+                },
+                parameter,
+                length,
+                None,
+            )
+            .await?;
+        transaction.complete = true;
+        Ok(result)
+    }
+
     /// Identify a real unit attribute, preserving its original reply bytes.
     pub async fn identify(&self, unit: u8, attribute: u8) -> Result<Vec<u8>> {
         let _lane = self.programming_lane.lock().await;
@@ -621,6 +668,26 @@ mod tests {
                 group: 1
             })
         ));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn standard_parameter_recall_uses_declared_parameter_and_exact_length() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let read = tokio::spawn(async move { worker.recall_parameter(5, 0x22, 3).await });
+        assert_eq!(line(&mut remote).await, b"\\460509001A22036D\r");
+        reply(&mut remote, 4, &[0x83, 0x22, 9, 9]).await;
+        reply(&mut remote, 5, &[0x82, 0x22, 1]).await;
+        reply(&mut remote, 5, &[0x83, 0x22, 2, 3]).await;
+        assert_eq!(read.await.unwrap().unwrap(), vec![1, 2, 3]);
+        assert_eq!(
+            pci.recall_parameter(5, 1, 0).await.unwrap_err().kind(),
+            ErrorKind::InvalidInput
+        );
+        assert_eq!(
+            pci.recall_parameter(5, 1, 256).await.unwrap_err().kind(),
+            ErrorKind::InvalidInput
+        );
     }
 
     #[tokio::test(start_paused = true)]

@@ -375,3 +375,149 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     drop(sys);
     std::fs::remove_file(path).unwrap();
 }
+
+#[tokio::test]
+async fn physical_pp_load_decodes_standard_and_oem_memory_on_shared_pci() {
+    let state = cbus_test_support::proc::temp_path("physical-pp-cgate.json");
+    let specs = cbus_test_support::proc::temp_path("physical-pp-unitspec");
+    std::fs::create_dir_all(&specs).unwrap();
+    std::fs::write(
+        specs.join("TESTUNIT.xml"),
+        r#"<UnitSpecification><Parameters>
+        <Param><Name>Standard</Name><Type>int</Type><Address>$20</Address><ArraySize>2</ArraySize><Tag>Core</Tag></Param>
+        <Param><Name>Mapped</Name><Type>int</Type><Address>$110</Address><ArraySize>3</ArraySize><BitSize>4</BitSize><BitAddress>4</BitAddress><ArraySkip>1</ArraySkip><ArrayMap>2 3 1</ArrayMap><Tag>Core</Tag></Param>
+        <Param><Name>Excluded</Name><Type>string</Type><Address>$120</Address><ArraySize>4</ArraySize><Tag>Other</Tag></Param>
+        </Parameters></UnitSpecification>"#,
+    )
+    .unwrap();
+    let sys = start_with(Options {
+        extra: vec![
+            "--cgate-bind".into(),
+            "127.0.0.1:0".into(),
+            "--cgate-state".into(),
+            state.to_string_lossy().into_owned(),
+            "--cgate-unitspec".into(),
+            specs.to_string_lossy().into_owned(),
+        ],
+        ..Default::default()
+    })
+    .await;
+    wait_started(&sys).await;
+    require(STARTUP, "C-Gate listener", || {
+        sys.daemon.stderr().contains("C-Gate service listening on ")
+    })
+    .await;
+    let logs = sys.daemon.stderr();
+    let addr = logs
+        .lines()
+        .find_map(|line| {
+            line.split_once("C-Gate service listening on ")
+                .map(|(_, addr)| addr.trim())
+        })
+        .unwrap();
+    let stream = TcpStream::connect(addr).await.unwrap();
+    let (reader, mut writer) = stream.into_split();
+    let mut reader = BufReader::new(reader);
+    let mut greeting = String::new();
+    reader.read_line(&mut greeting).await.unwrap();
+    assert!(greeting.starts_with("201 "));
+
+    async fn command(
+        reader: &mut BufReader<tokio::net::tcp::OwnedReadHalf>,
+        writer: &mut tokio::net::tcp::OwnedWriteHalf,
+        text: &str,
+    ) -> String {
+        writer
+            .write_all(format!("[7] {text}\r\n").as_bytes())
+            .await
+            .unwrap();
+        let mut result = String::new();
+        loop {
+            let mut line = String::new();
+            reader.read_line(&mut line).await.unwrap();
+            result.push_str(&line);
+            if line.starts_with("[7]") && line.as_bytes().get(7) == Some(&b' ') {
+                return result;
+            }
+        }
+    }
+
+    assert!(command(&mut reader, &mut writer, "PROJECT USE HARNESS")
+        .await
+        .contains("200 OK"));
+    assert!(command(&mut reader, &mut writer, "PP LOCK L //HARNESS/254")
+        .await
+        .contains("200 OK"));
+    assert!(command(&mut reader, &mut writer, "PP START S L")
+        .await
+        .contains("200 OK"));
+
+    let load = command(&mut reader, &mut writer, "PP LOAD S //HARNESS/254/p/5 Core");
+    let responses = async {
+        async fn identify(sys: &System, attribute: u8, data: &[u8]) {
+            let prefix = format!("46050021{attribute:02X}");
+            require(COMMAND_DRAIN, "physical PP IDENTIFY", || {
+                sys.pci
+                    .frames()
+                    .iter()
+                    .any(|frame| frame.payload.starts_with(&prefix))
+            })
+            .await;
+            let mut body = vec![
+                0x86,
+                5,
+                0x10,
+                0x01,
+                0x00,
+                0x80 | (data.len() as u8 + 1),
+                attribute,
+            ];
+            body.extend_from_slice(data);
+            sys.pci.inject(&pci_wire(&body));
+        }
+        identify(&sys, 1, b"TESTUNIT").await;
+        identify(&sys, 2, b"1.2.03").await;
+
+        require(COMMAND_DRAIN, "standard PP parameter recall", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload.starts_with("460509001A2002"))
+        })
+        .await;
+        sys.pci.inject(&pci_wire(&[
+            0x86, 5, 0x10, 0x01, 0x00, 0x83, 0x20, 0x12, 0x34,
+        ]));
+
+        require(COMMAND_DRAIN, "OEM PP memory selector", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload.starts_with("46050900A400411000"))
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0x00, 0x41]));
+        require(COMMAND_DRAIN, "OEM PP memory recall", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload.starts_with("460509001A0105"))
+        })
+        .await;
+        sys.pci.inject(&pci_wire(&[
+            0x86, 5, 0x10, 0x01, 0x00, 0x86, 0x01, 0xa1, 0x77, 0xb2, 0x88, 0xc3,
+        ]));
+    };
+    let (loaded, ()) = tokio::join!(load, responses);
+    assert!(loaded.contains("200 OK"), "{loaded:?}");
+    let values = command(&mut reader, &mut writer, "PP GET S *").await;
+    assert!(values.contains("315-Mapped=0xC 0xA 0xB"), "{values:?}");
+    assert!(values.contains("315 Standard=0x12 0x34"), "{values:?}");
+    assert!(!values.contains("Excluded="), "{values:?}");
+    assert_eq!(sys.pci.connections(), 1);
+
+    drop(sys);
+    std::fs::remove_file(state).unwrap();
+    std::fs::remove_dir_all(specs).unwrap();
+}

@@ -19,6 +19,9 @@ CMQTTD_CLIENT_KEY_PATH="/etc/cmqttd/client.key"
 # Optional C-Bus project backup file
 CMQTTD_PROJECT_FILE="/etc/cmqttd/project.cbz"
 
+# Optional private decoded C-Gate unit specifications
+CMQTTD_UNITSPEC_PATH="/etc/cmqttd/unitspec"
+
 # Valid levels: DEBUG, INFO, WARNING, ERROR, CRITICAL
 # Use CMQTTD_VERBOSITY from environment, default to INFO if not set
 LOG_LEVEL="${CMQTTD_VERBOSITY:-INFO}"
@@ -103,5 +106,8 @@ echo "Running with flags: ${CMQTTD_ARGS}"
 set -- $CMQTTD_ARGS
 if [ -n "${CMQTTD_CGATE_BIND}" ] && [ "${CMQTTD_CGATE_BIND}" != "off" ] && [ -e "${CMQTTD_PROJECT_FILE}" ]; then
     set -- "$@" --cgate-bind "${CMQTTD_CGATE_BIND}" --cgate-state "${CMQTTD_CGATE_STATE:-/var/lib/cmqttd/cgate.json}"
+    if [ -d "${CMQTTD_UNITSPEC_PATH}" ]; then
+        set -- "$@" --cgate-unitspec "${CMQTTD_UNITSPEC_PATH}"
+    fi
 fi
 exec cmqttd "$@"

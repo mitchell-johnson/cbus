@@ -40,6 +40,7 @@ Optional container files live in `cmqttd_config/`:
 - `auth`
 - `certificates/`
 - `client.pem` and `client.key`
+- `unitspec/` containing privately installed decoded C-Gate unit specifications
 
 These files are excluded from Git. The Docker build copies any that exist locally into `/etc/cmqttd`. Rebuild the image after changing copied files, or mount them into `/etc/cmqttd` at runtime.
 
@@ -49,8 +50,9 @@ The entrypoint maps environment variables to `cmqttd` options. `MQTT_USE_TLS=1` 
 
 `--cgate-bind ADDRESS:PORT` enables the command service and requires a project
 file. `--cgate-state FILE` selects its persistent database; the default is
-`cmqttd-data/cgate.json`. `--cgate-unitspec DIR` supplies optional private vendor
-schemas. Compose enables the service when a project is present, using
+`cmqttd-data/cgate.json`. `--cgate-unitspec DIR` supplies optional private decoded
+vendor schemas for PP INFO/defaults and physical PP LOAD. The container entrypoint
+passes `/etc/cmqttd/unitspec` automatically when that directory exists. Compose enables the service when a project is present, using
 `CMQTTD_CGATE_BIND=0.0.0.0:20023` inside the container and a loopback-only host
 port. Set that variable to `off` for MQTT only. State lives in the named
 `cmqttd_data` volume; do not delete that volume when recreating containers.

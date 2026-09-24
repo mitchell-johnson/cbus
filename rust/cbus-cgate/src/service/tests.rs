@@ -107,7 +107,6 @@ async fn programming_ownership_and_unimplemented_hardware_are_enforced() {
         420
     );
     for command in [
-        "PP LOAD S //HARNESS/254/p/5",
         "PP SAVE S //HARNESS/254/p/5",
         "SET //HARNESS/254/p/5 Address 6",
         "AIRCON REFRESH //HARNESS/254/172 1",

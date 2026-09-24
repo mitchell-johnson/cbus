@@ -19,8 +19,10 @@ extensions. A 502 response is a missing backend or failed device operation;
 never replace it with saved project data and describe that as a live result.
 
 The physical service also implements lighting commands, Trigger Control,
-Enable Control, clock date/time/refresh, Temperature Broadcast, `NET PINGU`, `NET SYNC`, and
-`NET CHECKUNIT`. PINGU and whole-network checks send the install-MMI request
+Enable Control, clock date/time/refresh, Temperature Broadcast, `NET PINGU`, `NET SYNC`,
+`NET CHECKUNIT`, and read-only physical `PP LOAD` using decoded unit specifications.
+Physical PP SAVE remains unsupported and returns an explicit backend error.
+PINGU and whole-network checks send the install-MMI request
 with the active PCI checksum setting. They buffer blocks that arrive before the
 request confirmation but accept only positively confirmed, contiguous coverage
 of addresses 0–255. SYNC uses the configured interface-unit

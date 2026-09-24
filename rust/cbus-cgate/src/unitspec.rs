@@ -30,6 +30,8 @@ pub struct SpecParam {
     pub name: String,
     /// Ordered `(tag, text)` field pairs, `Tag` children excluded.
     pub fields: Vec<(String, String)>,
+    /// Selection tags declared by repeated `<Tag>` children.
+    pub tags: Vec<String>,
 }
 
 impl SpecParam {
@@ -205,12 +207,14 @@ impl Loader<'_> {
         let mut param = SpecParam {
             name: String::new(),
             fields: Vec::new(),
+            tags: Vec::new(),
         };
         let mut seen_name = false;
         let mut seen_kind = false;
         for child in element.children().filter(|n| n.is_element()) {
             let tag = child.tag_name().name().to_string();
             if tag == "Tag" {
+                param.tags.push(child.text().unwrap_or("").to_string());
                 continue;
             }
             let value: String = child.text().unwrap_or("").to_string();
@@ -294,6 +298,284 @@ impl Loader<'_> {
     }
 }
 
+/// How one schema parameter is retrieved from a unit.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum ParameterTransfer {
+    /// Standard CAL parameter recall (logical addresses below 256).
+    Recall { parameter: u8, count: usize },
+    /// OEM memory read (logical address minus 256).
+    Memory { address: u32, count: usize },
+}
+
+/// Fully checked C-Gate parameter layout used by physical `PP LOAD`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ParameterLayout {
+    kind: String,
+    array_size: usize,
+    bit_size: usize,
+    bit_address: usize,
+    byte_width: usize,
+    stride: usize,
+    endian: String,
+    array_map: Option<Vec<usize>>,
+    /// Exact bounded transport operation needed for this parameter.
+    pub transfer: ParameterTransfer,
+}
+
+const MAX_PARAMETER_BYTES: usize = 65_536;
+
+fn field_usize(param: &SpecParam, name: &str, default: &str) -> Result<usize, String> {
+    let raw = param
+        .get(name)
+        .filter(|value| !value.is_empty())
+        .unwrap_or(default);
+    let value = parse_integer(raw).ok_or_else(|| format!("Invalid {name} for {:?}", param.name))?;
+    usize::try_from(value).map_err(|_| format!("Invalid {name} for {:?}", param.name))
+}
+
+impl ParameterLayout {
+    /// Parse the memory rules implemented by native C-Gate's PP codec.
+    pub fn for_param(param: &SpecParam) -> Result<Self, String> {
+        let logical_address = field_usize(param, "Address", "")?;
+        let array_size = field_usize(param, "ArraySize", "1")?;
+        let mut bit_size = field_usize(param, "BitSize", "8")?;
+        let bit_address = field_usize(param, "BitAddress", "0")?;
+        let array_skip = field_usize(param, "ArraySkip", "0")?;
+        let kind = param.get("Type").unwrap_or("").trim().to_ascii_lowercase();
+        let mut endian = param
+            .get("Endian")
+            .filter(|value| !value.is_empty())
+            .unwrap_or("little")
+            .trim()
+            .to_ascii_lowercase();
+        let (byte_width, stride, span) = match kind.as_str() {
+            "int" => {
+                if !(1..=16).contains(&bit_size) || bit_address + bit_size > 16 {
+                    return Err(format!(
+                        "Unsupported int layout for {:?}: width and BitAddress must fit two bytes",
+                        param.name
+                    ));
+                }
+                endian = "little".to_string();
+                let width = (bit_address + bit_size).div_ceil(8);
+                let stride = width
+                    .checked_mul(array_skip + 1)
+                    .ok_or_else(|| format!("Parameter {:?} layout overflows", param.name))?;
+                let span = (array_size - 1)
+                    .checked_mul(stride)
+                    .and_then(|value| value.checked_add(width))
+                    .ok_or_else(|| format!("Parameter {:?} layout overflows", param.name))?;
+                (width, stride, span)
+            }
+            "long" => {
+                if !(8..=64).contains(&bit_size) || bit_size % 8 != 0 || bit_address != 0 {
+                    return Err(format!(
+                        "Unsupported long layout for {:?}: byte-aligned width 8..64 is required",
+                        param.name
+                    ));
+                }
+                if !matches!(endian.as_str(), "little" | "big") {
+                    return Err(format!("Unsupported byte order for {:?}", param.name));
+                }
+                let width = bit_size / 8;
+                let stride = width
+                    .checked_mul(array_skip + 1)
+                    .ok_or_else(|| format!("Parameter {:?} layout overflows", param.name))?;
+                let span = (array_size - 1)
+                    .checked_mul(stride)
+                    .and_then(|value| value.checked_add(width))
+                    .ok_or_else(|| format!("Parameter {:?} layout overflows", param.name))?;
+                (width, stride, span)
+            }
+            "bit" => {
+                // Native C-Gate packs bit arrays contiguously and ignores
+                // BitSize/ArraySkip for this type.
+                bit_size = 1;
+                endian = "little".to_string();
+                let span = (bit_address + array_size).div_ceil(8);
+                (1, 0, span)
+            }
+            "string" => {
+                if bit_address != 0 || array_skip != 0 {
+                    return Err(format!(
+                        "Unsupported text layout for {:?}: BitAddress and ArraySkip must be zero",
+                        param.name
+                    ));
+                }
+                endian = "latin-1".to_string();
+                (array_size, 0, array_size)
+            }
+            "sixbit" => {
+                if array_size != 8 || bit_address != 0 || array_skip != 0 {
+                    return Err(format!(
+                        "Unsupported sixbit layout for {:?}: ArraySize 8 with no offsets is required",
+                        param.name
+                    ));
+                }
+                endian = "big".to_string();
+                (6, 0, 6)
+            }
+            _ => {
+                return Err(format!(
+                    "Unsupported parameter type {:?} for {:?}",
+                    kind, param.name
+                ))
+            }
+        };
+        if span == 0 || span > MAX_PARAMETER_BYTES {
+            return Err(format!(
+                "Parameter {:?} exceeds transfer bounds",
+                param.name
+            ));
+        }
+        let transfer = if logical_address < 256 {
+            if span > u8::MAX as usize {
+                return Err(format!(
+                    "Standard parameter {:?} exceeds the CAL recall limit",
+                    param.name
+                ));
+            }
+            ParameterTransfer::Recall {
+                parameter: logical_address as u8,
+                count: span,
+            }
+        } else {
+            let physical = logical_address - 256;
+            let address = u32::try_from(physical)
+                .map_err(|_| format!("Parameter {:?} address is too large", param.name))?;
+            address
+                .checked_add(span as u32)
+                .ok_or_else(|| format!("Parameter {:?} address overflows", param.name))?;
+            ParameterTransfer::Memory {
+                address,
+                count: span,
+            }
+        };
+        let array_map = match param
+            .get("ArrayMap")
+            .map(str::trim)
+            .filter(|v| !v.is_empty())
+        {
+            None => None,
+            Some(raw) => {
+                if kind != "int" || bit_address + bit_size > 8 {
+                    return Err(format!("Unsupported ArrayMap layout for {:?}", param.name));
+                }
+                let mut mapping = Vec::new();
+                for token in raw.split_whitespace() {
+                    let value = parse_integer(token)
+                        .and_then(|value| usize::try_from(value).ok())
+                        .and_then(|value| value.checked_sub(1))
+                        .ok_or_else(|| format!("Invalid ArrayMap for {:?}", param.name))?;
+                    mapping.push(value);
+                }
+                let mut sorted = mapping.clone();
+                sorted.sort_unstable();
+                if sorted != (0..array_size).collect::<Vec<_>>() {
+                    return Err(format!("Invalid ArrayMap for {:?}", param.name));
+                }
+                Some(mapping)
+            }
+        };
+        Ok(Self {
+            kind,
+            array_size,
+            bit_size,
+            bit_address,
+            byte_width,
+            stride,
+            endian,
+            array_map,
+            transfer,
+        })
+    }
+
+    /// Decode one exact transport response to native PP value text.
+    pub fn decode(&self, param: &SpecParam, data: &[u8]) -> Result<String, String> {
+        let expected = match self.transfer {
+            ParameterTransfer::Recall { count, .. } | ParameterTransfer::Memory { count, .. } => {
+                count
+            }
+        };
+        if data.len() != expected {
+            return Err(format!("Short physical value for {:?}", param.name));
+        }
+        match self.kind.as_str() {
+            "string" => Ok(data
+                .iter()
+                .copied()
+                .take_while(|byte| *byte != 0)
+                .map(char::from)
+                .collect()),
+            "sixbit" => {
+                let bits = data
+                    .iter()
+                    .fold(0u64, |value, byte| (value << 8) | u64::from(*byte));
+                Ok((0..8)
+                    .map(|index| {
+                        let code = ((bits >> (6 * (7 - index))) & 63) as u8;
+                        if code == 30 {
+                            ' '
+                        } else {
+                            char::from(code + 33)
+                        }
+                    })
+                    .collect())
+            }
+            "bit" => {
+                let values = (0..self.array_size)
+                    .map(|element| {
+                        let bit = self.bit_address + element;
+                        ((data[bit / 8] >> (bit % 8)) & 1) as u64
+                    })
+                    .collect::<Vec<_>>();
+                Ok(format_numbers(&values, self.array_size))
+            }
+            "int" | "long" => {
+                let mut values = Vec::with_capacity(self.array_size);
+                for element in 0..self.array_size {
+                    let start = element * self.stride;
+                    let bytes = &data[start..start + self.byte_width];
+                    let raw = if self.endian == "big" {
+                        bytes
+                            .iter()
+                            .fold(0u64, |value, byte| (value << 8) | u64::from(*byte))
+                    } else {
+                        bytes.iter().enumerate().fold(0u64, |value, (shift, byte)| {
+                            value | (u64::from(*byte) << (shift * 8))
+                        })
+                    };
+                    let mask = if self.bit_size == 64 {
+                        u64::MAX
+                    } else {
+                        (1u64 << self.bit_size) - 1
+                    };
+                    values.push((raw >> self.bit_address) & mask);
+                }
+                if let Some(mapping) = &self.array_map {
+                    let mut logical = vec![0; values.len()];
+                    for (physical, logical_index) in mapping.iter().copied().enumerate() {
+                        logical[logical_index] = values[physical];
+                    }
+                    values = logical;
+                }
+                Ok(format_numbers(&values, self.array_size))
+            }
+            _ => unreachable!("layout kind was validated"),
+        }
+    }
+}
+
+fn format_numbers(values: &[u64], declared: usize) -> String {
+    let text = values
+        .iter()
+        .map(|value| format!("0x{value:X}"))
+        .collect::<Vec<_>>()
+        .join(" ");
+    debug_assert_eq!(values.len(), declared);
+    text
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -324,7 +606,7 @@ mod tests {
             &dir,
             "KEYGL5.xml",
             "<Parameters><Param><Name>Application</Name><Type>int</Type><Address>$21</Address>\
-             <DefaultValue>$FF $FF</DefaultValue></Param></Parameters>",
+             <DefaultValue>$FF $FF</DefaultValue><Tag>Lighting</Tag></Param></Parameters>",
         );
         let params = load_spec(&dir, "KEYGL5").expect("spec loads");
         assert_eq!(params.len(), 1);
@@ -334,7 +616,137 @@ mod tests {
             .expect("Application");
         assert_eq!(app.get("Address"), Some("$21"));
         assert_eq!(app.get("DefaultValue"), Some("$FF $FF"));
+        assert_eq!(app.tags, vec!["Lighting"]);
         let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    fn param(name: &str, kind: &str, fields: &[(&str, &str)]) -> SpecParam {
+        let mut values = vec![
+            ("Name".to_string(), name.to_string()),
+            ("Type".to_string(), kind.to_string()),
+        ];
+        values.extend(
+            fields
+                .iter()
+                .map(|(key, value)| ((*key).to_string(), (*value).to_string())),
+        );
+        SpecParam {
+            name: name.to_string(),
+            fields: values,
+            tags: Vec::new(),
+        }
+    }
+
+    #[test]
+    fn physical_layout_decodes_native_numeric_text_and_array_map() {
+        let mapped = param(
+            "Mapped",
+            "int",
+            &[
+                ("Address", "$110"),
+                ("ArraySize", "3"),
+                ("BitSize", "4"),
+                ("BitAddress", "4"),
+                ("ArraySkip", "1"),
+                ("ArrayMap", "2 3 1"),
+            ],
+        );
+        let layout = ParameterLayout::for_param(&mapped).unwrap();
+        assert_eq!(
+            layout.transfer,
+            ParameterTransfer::Memory {
+                address: 0x10,
+                count: 5
+            }
+        );
+        assert_eq!(
+            layout.decode(&mapped, &[0xa1, 0x77, 0xb2, 0x88, 0xc3]),
+            Ok("0xC 0xA 0xB".to_string())
+        );
+
+        let bits = param(
+            "Bits",
+            "bit",
+            &[
+                ("Address", "$20"),
+                ("ArraySize", "5"),
+                ("BitAddress", "6"),
+                ("BitSize", "7"),
+                ("ArraySkip", "9"),
+            ],
+        );
+        let layout = ParameterLayout::for_param(&bits).unwrap();
+        assert_eq!(
+            layout.transfer,
+            ParameterTransfer::Recall {
+                parameter: 0x20,
+                count: 2
+            }
+        );
+        assert_eq!(
+            layout.decode(&bits, &[0xc0, 0x05]),
+            Ok("0x1 0x1 0x1 0x0 0x1".to_string())
+        );
+
+        let long = param(
+            "Wide",
+            "long",
+            &[("Address", "3"), ("BitSize", "16"), ("Endian", "big")],
+        );
+        let layout = ParameterLayout::for_param(&long).unwrap();
+        assert_eq!(layout.decode(&long, &[1, 2]), Ok("0x102".to_string()));
+
+        let text = param("Text", "string", &[("Address", "$101"), ("ArraySize", "4")]);
+        let layout = ParameterLayout::for_param(&text).unwrap();
+        assert_eq!(
+            layout.decode(&text, &[b'A', 0xff, 0, b'Z']),
+            Ok("Aÿ".to_string())
+        );
+    }
+
+    #[test]
+    fn physical_layout_rejects_unverified_or_unbounded_shapes() {
+        for parameter in [
+            param("WideInt", "int", &[("Address", "1"), ("BitSize", "17")]),
+            param(
+                "OffsetText",
+                "string",
+                &[("Address", "1"), ("ArraySize", "8"), ("BitAddress", "1")],
+            ),
+            param(
+                "BadMap",
+                "int",
+                &[("Address", "1"), ("ArraySize", "2"), ("ArrayMap", "1 1")],
+            ),
+        ] {
+            assert!(ParameterLayout::for_param(&parameter).is_err());
+        }
+    }
+
+    #[test]
+    fn installed_vendor_specs_have_supported_physical_layouts() {
+        let Some(dir) = std::env::var_os("CBUS_UNITSPEC_DIR").map(PathBuf::from) else {
+            return;
+        };
+        let mut parameters = 0usize;
+        for entry in std::fs::read_dir(&dir).expect("read vendor spec directory") {
+            let path = entry.expect("vendor spec entry").path();
+            if path.extension().and_then(|value| value.to_str()) != Some("xml") {
+                continue;
+            }
+            let Some(unit_type) = path.file_stem().and_then(|value| value.to_str()) else {
+                continue;
+            };
+            let Ok(spec) = load_spec(&dir, unit_type) else {
+                continue;
+            };
+            for parameter in &spec {
+                ParameterLayout::for_param(parameter)
+                    .unwrap_or_else(|error| panic!("{unit_type}/{}: {error}", parameter.name));
+                parameters += 1;
+            }
+        }
+        assert!(parameters > 0, "no decoded vendor parameters were audited");
     }
 
     #[test]

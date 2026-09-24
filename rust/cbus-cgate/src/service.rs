@@ -10,7 +10,7 @@ use cbus_transport::pci::{CBusEvent, PciClient};
 use chrono::{Datelike, Local, NaiveDate, NaiveTime, Timelike};
 use serde::{Deserialize, Serialize};
 use std::{
-    collections::HashSet,
+    collections::{HashMap, HashSet},
     io::{self, Write},
     path::Path,
     sync::Arc,
@@ -396,6 +396,7 @@ impl Service {
                 tag,
                 vec![serde_json::json!({"service":"cmqttd", "physical_bus":true,
                 "full_cgate_compatibility":false, "memory_read":true, "memory_write":false,
+                "physical_pp_load":true,
                 "trigger_control":true, "enable_control":true, "clock_control":true,
                 "temperature_broadcast":true,
                 "install_mmi":true, "network_pingu":true,
@@ -422,6 +423,14 @@ impl Service {
                 Ok(bytes) => ok(tag,vec![serde_json::json!({"address":words[2],"attribute":attribute,"data_hex":hex::encode(bytes),"source":"physical"}).to_string()],"200 OK"),
                 Err(e) => err(tag,502,&format!("502 Identify failed: {e}")),
             };
+        }
+        if verb == "PP"
+            && sub == "LOAD"
+            && words
+                .get(3)
+                .is_some_and(|source| !source.to_ascii_lowercase().starts_with("/db/"))
+        {
+            return self.pp_load_physical(client, line, tag, &words).await;
         }
         if verb == "CMQTT" && sub == "UNIT" && words.len() == 3 {
             let model = self.model.lock().await;
@@ -1431,6 +1440,267 @@ impl Service {
             Ok(bytes) => ok(tag, vec![serde_json::json!({"address":words[2],"physical_address":address,"data_hex":hex::encode(bytes),"source":"physical"}).to_string()], "200 OK"),
             Err(e) => err(tag, 502, &format!("502 Memory read failed: {e}")),
         }
+    }
+
+    async fn pp_load_physical(
+        &self,
+        client: &ClientState,
+        line: &str,
+        tag: &str,
+        words: &[&str],
+    ) -> Response {
+        const MAX_PARAMETERS: usize = 4096;
+        const MAX_UNIQUE_BYTES: usize = 1024 * 1024;
+
+        let _commands = self.commands.lock().await;
+        if words.len() < 4 {
+            return err(tag, 400, "400 PP LOAD requires a session and source");
+        }
+        let Some((project, network, unit)) = Server::split_unit(words[3]) else {
+            return err(tag, 400, "400 Invalid physical unit source");
+        };
+        if project != self.project || network != self.network {
+            return err(tag, 404, "404 Network is not connected to this service");
+        }
+        let (session_name, session_lock) = {
+            let mut staged = self.model.lock().await.clone();
+            staged.current = client
+                .current
+                .clone()
+                .or_else(|| Some(self.project.clone()));
+            let name = words[2];
+            if staged.sessions.contains_key(name) && !client.sessions.contains(name) {
+                return err(
+                    tag,
+                    420,
+                    "420 Programming object belongs to another connection",
+                );
+            }
+            let response = staged.handle(line);
+            if response.status >= 400 {
+                return response;
+            }
+            let Some(session) = staged.sessions.get(name) else {
+                return err(tag, 404, "404 Session not found");
+            };
+            let Some(lock_address) = staged.locks.get(&session.lock) else {
+                return err(tag, 409, "409 Lock not held");
+            };
+            if !self.bound_network(lock_address) {
+                return err(
+                    tag,
+                    409,
+                    "409 Session lock does not cover the physical network",
+                );
+            }
+            (session.name.clone(), session.lock.clone())
+        };
+
+        let pci = self.pci.read().await.clone();
+        let unit_type = match pci.identify_first(unit, 1).await {
+            Ok(Some(bytes)) => match identity_text(&bytes, "unit type") {
+                Ok(value) => value,
+                Err(error) => {
+                    return err(
+                        tag,
+                        502,
+                        &format!("502 Physical PP identity failed: {error}"),
+                    )
+                }
+            },
+            Ok(None) => return err(tag, 401, "401 Physical unit did not answer IDENTIFY"),
+            Err(error) => {
+                return err(
+                    tag,
+                    502,
+                    &format!("502 Physical PP identity failed: {error}"),
+                )
+            }
+        };
+        let firmware = match pci.identify_first(unit, 2).await {
+            Ok(Some(bytes)) => match identity_text(&bytes, "firmware version") {
+                Ok(value) => value,
+                Err(error) => {
+                    return err(
+                        tag,
+                        502,
+                        &format!("502 Physical PP identity failed: {error}"),
+                    )
+                }
+            },
+            Ok(None) => return err(tag, 408, "408 Physical unit provided no firmware identity"),
+            Err(error) => {
+                return err(
+                    tag,
+                    502,
+                    &format!("502 Physical PP identity failed: {error}"),
+                )
+            }
+        };
+
+        let tags = words[4..]
+            .iter()
+            .map(|value| dequote_value(value).to_ascii_lowercase())
+            .collect::<HashSet<_>>();
+        let spec = {
+            let mut model = self.model.lock().await;
+            match model.spec_for(&unit_type) {
+                Some(spec) => spec,
+                None => {
+                    return err(
+                        tag,
+                        502,
+                        &format!("502 No decoded unit specification is configured for {unit_type}"),
+                    )
+                }
+            }
+        };
+        let selected = spec
+            .iter()
+            .filter(|param| {
+                tags.is_empty()
+                    || param
+                        .tags
+                        .iter()
+                        .any(|candidate| tags.contains(&candidate.to_ascii_lowercase()))
+            })
+            .collect::<Vec<_>>();
+        if selected.len() > MAX_PARAMETERS {
+            return err(
+                tag,
+                502,
+                "502 Unit specification exceeds the PP parameter limit",
+            );
+        }
+        let mut layouts = Vec::with_capacity(selected.len());
+        let mut recalls = HashMap::<u8, usize>::new();
+        let mut memory_ranges = Vec::<(u32, u32)>::new();
+        for param in &selected {
+            let layout = match unitspec::ParameterLayout::for_param(param) {
+                Ok(layout) => layout,
+                Err(error) => return err(tag, 502, &format!("502 {error}")),
+            };
+            match layout.transfer {
+                unitspec::ParameterTransfer::Recall { parameter, count } => {
+                    recalls
+                        .entry(parameter)
+                        .and_modify(|current| *current = (*current).max(count))
+                        .or_insert(count);
+                }
+                unitspec::ParameterTransfer::Memory { address, count } => {
+                    memory_ranges.push((address, address + count as u32));
+                }
+            }
+            layouts.push((*param, layout));
+        }
+        memory_ranges.sort_unstable();
+        let mut merged = Vec::<(u32, u32)>::new();
+        for (start, end) in memory_ranges {
+            if let Some(last) = merged.last_mut() {
+                if start <= last.1 {
+                    last.1 = last.1.max(end);
+                    continue;
+                }
+            }
+            merged.push((start, end));
+        }
+        let unique_bytes = recalls.values().sum::<usize>()
+            + merged
+                .iter()
+                .map(|(start, end)| (*end - *start) as usize)
+                .sum::<usize>();
+        if unique_bytes > MAX_UNIQUE_BYTES {
+            return err(
+                tag,
+                502,
+                "502 Unit specification exceeds the PP transfer limit",
+            );
+        }
+
+        let mut recalled = HashMap::<u8, Vec<u8>>::new();
+        let mut ordered_recalls = recalls.into_iter().collect::<Vec<_>>();
+        ordered_recalls.sort_unstable_by_key(|(parameter, _)| *parameter);
+        for (parameter, count) in ordered_recalls {
+            match pci.recall_parameter(unit, parameter, count).await {
+                Ok(bytes) => {
+                    recalled.insert(parameter, bytes);
+                }
+                Err(error) => {
+                    return err(
+                        tag,
+                        502,
+                        &format!("502 Physical PP parameter {parameter} read failed: {error}"),
+                    )
+                }
+            }
+        }
+        let mut memory = Vec::<(u32, Vec<u8>)>::with_capacity(merged.len());
+        for (start, end) in merged {
+            let mut bytes = Vec::with_capacity((end - start) as usize);
+            while bytes.len() < (end - start) as usize {
+                let address = start + bytes.len() as u32;
+                let count = ((end - address) as usize).min(65_536);
+                match pci.read_memory(unit, address, count).await {
+                    Ok(chunk) => bytes.extend(chunk),
+                    Err(error) => {
+                        return err(
+                            tag,
+                            502,
+                            &format!("502 Physical PP memory read failed: {error}"),
+                        )
+                    }
+                }
+            }
+            memory.push((start, bytes));
+        }
+
+        let mut params = HashMap::with_capacity(layouts.len());
+        for (param, layout) in layouts {
+            let data = match layout.transfer {
+                unitspec::ParameterTransfer::Recall { parameter, count } => {
+                    &recalled[&parameter][..count]
+                }
+                unitspec::ParameterTransfer::Memory { address, count } => {
+                    let Some((start, bytes)) = memory.iter().find(|(start, bytes)| {
+                        address >= *start
+                            && u64::from(address) + count as u64
+                                <= u64::from(*start) + bytes.len() as u64
+                    }) else {
+                        return err(tag, 500, "500 Physical PP memory plan was incomplete");
+                    };
+                    let offset = (address - *start) as usize;
+                    &bytes[offset..offset + count]
+                }
+            };
+            let value = match layout.decode(param, data) {
+                Ok(value) => value,
+                Err(error) => return err(tag, 502, &format!("502 {error}")),
+            };
+            params.insert(param.name.clone(), value);
+        }
+
+        let mut model = self.model.lock().await;
+        let lock_held = model.locks.contains_key(&session_lock);
+        let Some(session) = model.sessions.get_mut(&session_name) else {
+            return err(
+                tag,
+                409,
+                "409 Programming session ended during physical load",
+            );
+        };
+        if session.lock != session_lock || !lock_held || !client.sessions.contains(&session_name) {
+            return err(
+                tag,
+                409,
+                "409 Programming session changed during physical load",
+            );
+        }
+        session.source = Some(words[3].to_string());
+        session.unit_type = Some(unit_type);
+        session.firmware = Some(firmware);
+        session.catalog_number = None;
+        session.params = params;
+        ok(tag, vec![], "200 OK")
     }
 
     async fn lighting(&self, client: &ClientState, line: &str, tag: &str) -> Response {

@@ -13,6 +13,7 @@ rust/target/
 
 cmqttd_config/auth
 cmqttd_config/certificates/
+cmqttd_config/unitspec/
 cmqttd_config/*.cbz
 cmqttd_config/*.xml
 cmqttd_config/*.pem

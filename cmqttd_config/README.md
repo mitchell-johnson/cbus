@@ -6,5 +6,6 @@ Files in this directory are copied to `/etc/cmqttd` by the Docker image. Sensiti
 - `auth`: optional MQTT username on the first line and password on the second line.
 - `certificates/`: optional PEM CA certificates for the MQTT broker.
 - `client.pem` and `client.key`: optional MQTT client certificate and private key.
+- `unitspec/`: optional private decoded C-Gate unit specifications for physical PP LOAD and PP INFO.
 
 Without a project file, `cmqttd` generates labels from C-Bus addresses. Without custom CA files, TLS uses the operating system trust store.

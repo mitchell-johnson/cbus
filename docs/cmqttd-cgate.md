@@ -10,7 +10,8 @@ operations listed here. `cgate-mock` remains a separate test server.
 ```sh
 rust/target/release/cmqttd --broker-address BROKER --broker-disable-tls \
   --tcp CNI:10001 --project-file house.cbz \
-  --cgate-bind 127.0.0.1:20023 --cgate-state cmqttd-data/cgate.json
+  --cgate-bind 127.0.0.1:20023 --cgate-state cmqttd-data/cgate.json \
+  --cgate-unitspec /private/decoded/unitspec
 cbus-toolkit cgate --host 127.0.0.1 exec 'CMQTT CAPABILITIES'
 ```
 
@@ -34,6 +35,7 @@ not be committed or published.
 | Tagged/untagged commands, per-client project selection, EVENT subscriptions | TCP service; 64 clients, 1 MiB command limit, bounded event queues and writer deadlines |
 | Project list/use/load/save/new/close; database CRUD and database snapshots | Persistent JSON database; atomic replacement, restrictive permissions, failed-write rollback |
 | Database PP locks, sessions, get/set/info/new/load/save | Existing programming model with connection ownership; staged sessions and locks are discarded on disconnect/restart |
+| Physical PP LOAD and subsequent GET/INFO | Identifies the live unit, selects its privately installed decoded schema, recalls standard CAL parameters and OEM memory through the shared PCI, decodes int/long/bit/string/sixbit arrays and `ArrayMap`, applies tag selection, and commits the session only after every read succeeds |
 | ON/OFF/RAMP/TERMINATERAMP and lighting variants | Actual shared PCI, negative confirmations return errors; successful delivery is distinct from observed physical brightness |
 | GET group level | Real observed bus levels; unobserved levels return 408, never invented zero |
 | TRIGGER EVENT/INDICATORKILL | Actual Trigger Control SAL on application 202; incoming events update the live service cache and event stream |
@@ -50,8 +52,18 @@ not be committed or published.
 Runtime levels and physical presence are not persisted. The persistent data is
 cmqttd's own database format, not a Schneider SQLite database. Database PP
 editing does not program the corresponding physical unit. Optional
-`--cgate-unitspec DIR` supplies privately installed vendor schemas for PP INFO
-and defaults; no vendor specifications are distributed in this repository.
+`--cgate-unitspec DIR` supplies privately installed decoded vendor schemas for
+PP INFO, defaults and physical PP LOAD; no vendor specifications are distributed
+in this repository. Docker automatically passes `/etc/cmqttd/unitspec` when that
+directory exists. Copying private specs into `cmqttd_config/unitspec/` includes
+them in a local image build while Git ignores the directory.
+
+Physical `PP LOAD session //PROJECT/NETWORK/p/UNIT [tags...]` is read-only. It
+uses native logical addresses below 256 as standard CAL parameter numbers and
+maps logical addresses at or above 256 to OEM physical offset `logical - 256`.
+Reads are bounded, coalesced, source-correlated and serialized with MQTT traffic.
+Unknown schemas, unsupported layouts, incomplete replies and changed or ended
+sessions fail without replacing the previously staged values.
 
 ## Live label reads
 
@@ -95,8 +107,10 @@ all 431 have physical implementations in this service. `CMQTT CAPABILITIES`
 returns `full_cgate_compatibility: false`; unimplemented physical operations
 return 502. Full replacement still requires:
 
-- Physical PP LOAD/SAVE with complete schema memory codecs, checksums,
-  readback, device profiles, recovery and hardware acceptance.
+- Physical PP SAVE with schema encoders, protection/checksum phases, readback,
+  recovery and hardware acceptance. Physical PP LOAD is implemented and has
+  full decoded-catalogue layout coverage plus fake-PCI system acceptance; live
+  unit/profile acceptance is still incomplete.
 - Bridged-network synchronization, serial addressing, readdressing, unravel,
   project identification and the remaining commissioning state transitions.
   Direct-network `NET PINGU`, `NET SYNC` identity population and duplicate-aware
@@ -111,8 +125,8 @@ return 502. Full replacement still requires:
 
 ## Tests
 
-`cbus-transport` tests cover captured programming route bytes, source filtering,
-segmented recall, interleaved lighting, complete and incomplete installation MMI,
+`cbus-transport` tests cover captured programming route bytes, standard parameter
+recall, source filtering, segmented OEM recall, interleaved lighting, complete and incomplete installation MMI,
 MMI and IDENTIFY data that precedes its positive confirmation, the confirmed
 two-second IDENTIFY collection window, duplicate replies, absence, and
 confirmation success/failure. Exact Trigger, Enable, Clock, Temperature Broadcast, MMI and confirmed
@@ -120,8 +134,11 @@ IDENTIFY4 request or response bytes are pinned by vectors and the real-daemon
 system test.
 `cbus-cgate` service tests cover durable reload, corrupt-file preservation,
 rollback, session ownership, unsupported hardware rejection, fragmented command
-input during events, disconnect cleanup and input bounds. The real cmqttd system
-test sends commands through C-Gate and MQTT and verifies a single PCI connection.
+input during events, disconnect cleanup, schema layout decoding and input bounds.
+The decoded vendor catalogue is optionally audited through `CBUS_UNITSPEC_DIR`.
+The real cmqttd system test performs a physical PP LOAD against a scripted PCI,
+checks standard and OEM values plus tag selection, and verifies that C-Gate and
+MQTT retain one PCI connection.
 `toolkit-cli/tests/test_cmqtt.py` tests synthetic eDLT decoding and read contracts.
 None of these fixtures contains a user's project or labels.
 
