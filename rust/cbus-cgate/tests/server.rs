@@ -898,3 +898,63 @@ fn project_rename_selection_follow_and_guards() {
     let denied = monitor.handle("[1] PROJECT RENAME A B");
     assert_eq!(denied.status, 420);
 }
+
+/// Mock determinism for CALCULATOR TEST: the 134 envelope on every line
+/// including the final, unit count from physical presence, and guards.
+#[test]
+fn calculator_envelope_count_and_guards() {
+    let mut s = Server::new(AccessLevel::Program);
+    assert_eq!(s.handle("[1] PROJECT NEW TEST").status, 200);
+    assert_eq!(
+        s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
+            .status,
+        200
+    );
+    assert_eq!(s.handle("[3] PROJECT USE TEST").status, 200);
+    assert_eq!(s.handle("[4] DBADDSAFE //TEST/254 Unit 20 A").status, 200);
+    assert_eq!(s.handle("[5] DBADDSAFE //TEST/254 Unit 21 B").status, 200);
+    let calc = s.handle("[6] CALCULATOR TEST //TEST/254");
+    assert_eq!(calc.status, 134);
+    assert!(calc
+        .lines
+        .iter()
+        .chain(std::iter::once(&calc.final_text))
+        .all(|l| l.starts_with("134-") || l.starts_with("134 ")));
+    assert!(calc.lines.iter().any(|l| l == "134-units_calculated=2"));
+    assert_eq!(calc.final_text, "134 result: OK");
+    assert!(calc.lines.iter().any(|l| l == "134-units_not_calculated=0"));
+    // Empty networks calculate zero units with the envelope intact.
+    assert_eq!(
+        s.handle("[6b] DBCREATENET 253 Local Cni 127.0.0.1:10001")
+            .status,
+        200
+    );
+    let empty = s.handle("[6c] CALCULATOR TEST //TEST/253");
+    assert_eq!(empty.status, 134);
+    assert!(empty.lines.iter().any(|l| l == "134-units_calculated=0"));
+    // A database-only unit (physical record dropped) is not calculated:
+    // the count observes physical presence, not database records.
+    assert_eq!(s.handle("[6d] MOCK BUS-DEL //TEST/254 20").status, 200);
+    let dbonly = s.handle("[6e] CALCULATOR TEST //TEST/254");
+    assert_eq!(dbonly.status, 134);
+    assert!(dbonly.lines.iter().any(|l| l == "134-units_calculated=1"));
+    for (line, status, fragment) in [
+        ("[7] CALCULATOR TEST", 400, "requires a network"),
+        (
+            "[8] CALCULATOR TEST //TEST/254 extra",
+            400,
+            "requires a network",
+        ),
+        ("[9] CALCULATOR TEST //TEST/250", 404, "Network not found"),
+    ] {
+        let response = s.handle(line);
+        assert_eq!(response.status, status, "{line}");
+        assert!(response.final_text.contains(fragment), "{line}");
+    }
+    // Selected-away projects are refused.
+    assert_eq!(s.handle("[10] PROJECT NEW T2").status, 200);
+    assert_eq!(s.handle("[11] PROJECT USE T2").status, 200);
+    let away = s.handle("[12] CALCULATOR TEST //TEST/254");
+    assert_eq!(away.status, 404);
+    assert!(away.final_text.contains("Project not selected"));
+}
