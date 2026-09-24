@@ -657,3 +657,104 @@ fn dbset_unit_field_store_readback_and_absent() {
         .chain(std::iter::once(&dbread.final_text))
         .any(|line| line.contains("Two Words")));
 }
+
+/// Mock determinism for the network rename chain: DBRENAMENETSAFE moves the
+/// database network, NET RENAME moves it again, units travel with their
+/// network on both layers, and guard rails fail closed.
+#[test]
+fn network_rename_chain_moves_units_and_guards() {
+    let mut s = Server::new(AccessLevel::Program);
+    assert_eq!(s.handle("[1] PROJECT NEW TEST").status, 200);
+    assert_eq!(
+        s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
+            .status,
+        200
+    );
+    assert_eq!(s.handle("[3] PROJECT USE TEST").status, 200);
+    assert_eq!(
+        s.handle("[4] DBADDSAFE //TEST/254 Unit 20 Traveller")
+            .status,
+        200
+    );
+    // Malformed shapes fail before any lookup.
+    for (line, status, fragment) in [
+        ("[5] DBRENAMENETSAFE", 400, "network and destination"),
+        ("[6] DBRENAMENETSAFE 254 254", 400, "must differ"),
+        (
+            "[7] DBRENAMENETSAFE 254 999",
+            400,
+            "Invalid network address",
+        ),
+        ("[8] NET RENAME //TEST/254", 400, "address and destination"),
+        (
+            "[9] NET RENAME //TEST/254 253 bogus",
+            400,
+            "Unknown rename argument",
+        ),
+        ("[9b] NET RENAME //TEST/254 254", 400, "must differ"),
+        (
+            "[9c] NET RENAME //TEST/ABC 252",
+            400,
+            "Invalid network address",
+        ),
+        ("[9d] NET RENAME //TEST/250 252", 404, "Network not found"),
+    ] {
+        let response = s.handle(line);
+        assert_eq!(response.status, status, "{line}");
+        assert!(response.final_text.contains(fragment), "{line}");
+    }
+    // Unselected projects refuse both verbs before any lookup. NOTE:
+    // PROJECT NEW selects, so select away to T2 (which exists but holds
+    // no networks, hence Network-not-found on the database verb).
+    assert_eq!(s.handle("[10a] PROJECT NEW T2").status, 200);
+    assert_eq!(s.handle("[10b] PROJECT USE T2").status, 200);
+    for (line, fragment) in [
+        ("[10c] DBRENAMENETSAFE 254 253", "Network not found"),
+        ("[10d] NET RENAME //TEST/254 253", "Project not selected"),
+    ] {
+        let response = s.handle(line);
+        assert_eq!(response.status, 404, "{line}");
+        assert!(response.final_text.contains(fragment), "{line}");
+    }
+    assert_eq!(s.handle("[10e] PROJECT USE TEST").status, 200);
+    // Missing source network fails closed.
+    let missing = s.handle("[10f] DBRENAMENETSAFE 253 252");
+    assert_eq!(missing.status, 404);
+    // The database rename moves the network; the old path is gone.
+    let moved = s.handle("[11] DBRENAMENETSAFE 254 253");
+    assert_eq!(moved.status, 200);
+    assert_eq!(s.handle("[12] NET OPEN //TEST/254").status, 404);
+    assert_eq!(s.handle("[13] NET OPEN //TEST/253").status, 200);
+    // The unit travels with its network on both layers; stale paths 401.
+    let arrived = s.handle("[14] GET //TEST/253/p/20 *");
+    assert_eq!(arrived.status, 300);
+    let dbdoc = s.handle("[15] DBGETXML //TEST/253/p/20");
+    assert_eq!(dbdoc.status, 200);
+    assert_eq!(s.handle("[15b] GET //TEST/254/p/20 *").status, 401);
+    assert_eq!(s.handle("[15c] DBGETXML //TEST/254/p/20").status, 401);
+    // Occupied destinations conflict with the source restored.
+    assert_eq!(
+        s.handle("[15d] DBCREATENET 252 Local Cni 127.0.0.1:10001")
+            .status,
+        200
+    );
+    let busy = s.handle("[15e] DBRENAMENETSAFE 253 252");
+    assert_eq!(busy.status, 409);
+    assert_eq!(s.handle("[15f] NET OPEN //TEST/253").status, 200);
+    let busy = s.handle("[15g] NET RENAME //TEST/253 252");
+    assert_eq!(busy.status, 409);
+    assert_eq!(s.handle("[15h] NET OPEN //TEST/253").status, 200);
+    // NET RENAME moves it again, with reference fixing by default.
+    let renamed = s.handle("[16] NET RENAME //TEST/253 251 nofixrefs");
+    assert_eq!(renamed.status, 200);
+    assert_eq!(s.handle("[17] NET OPEN //TEST/251").status, 200);
+    assert_eq!(s.handle("[17b] NET OPEN //TEST/253").status, 404);
+    let arrived = s.handle("[18] GET //TEST/251/p/20 *");
+    assert_eq!(arrived.status, 300);
+    let dbdoc = s.handle("[18b] DBGETXML //TEST/251/p/20");
+    assert_eq!(dbdoc.status, 200);
+    assert_eq!(s.handle("[18c] GET //TEST/253/p/20 *").status, 401);
+    let events = s.drain_events();
+    assert!(events.iter().any(|e| e == "#e# net renamed 254 253"));
+    assert!(events.iter().any(|e| e == "#e# net renamed 253 251"));
+}
