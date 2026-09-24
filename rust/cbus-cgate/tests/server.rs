@@ -1046,3 +1046,89 @@ fn mock_bus_del_drops_physical_keeps_database() {
         1
     );
 }
+
+/// Mock determinism for here-document commands: DBSETXML stores and mirrors
+/// single-line field writes, multi-line documents stay opaque, CGL IMPORT
+/// counts non-blank lines, and malformed shapes fail closed.
+#[test]
+fn document_store_mirror_import_and_rejects() {
+    let mut s = Server::new(AccessLevel::Program);
+    assert_eq!(s.handle("[1] PROJECT NEW TEST").status, 200);
+    assert_eq!(
+        s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
+            .status,
+        200
+    );
+    assert_eq!(s.handle("[3] PROJECT USE TEST").status, 200);
+    assert_eq!(s.handle("[4] DBADDSAFE //TEST/254 Unit 20 Doc").status, 200);
+    // Malformed document verbs fail closed.
+    for (line, doc, status, fragment) in [
+        // Bare verbs never reach a document arm at all.
+        ("[5] DBSETXML", "", 400, "does not accept"),
+        (
+            "[6] DBSETXML //TEST/254/p/#/UnitName",
+            "x",
+            400,
+            "requires a path",
+        ),
+        ("[7] CGL IMPORT", "", 400, "does not accept"),
+        ("[8] CGL IMPORT NOPE", "a\n", 404, "Project not found"),
+        ("[9] FROBNICATE //TEST/254", "x", 400, "does not accept"),
+    ] {
+        let response = s.handle_document(line, doc);
+        assert_eq!(response.status, status, "{line}");
+        assert!(response.final_text.contains(fragment), "{line}");
+    }
+    // Single-line field store mirrors into both read layers (trailing
+    // newline trimmed); no-trailing-newline stores identically.
+    let stored = s.handle_document("[10] DBSETXML //TEST/254/p/20/UnitName", "LOUNGE\n");
+    assert_eq!(stored.status, 200);
+    let read = s.handle("[11] GET //TEST/254/p/20 UnitName");
+    assert_eq!(read.status, 300);
+    assert!(read
+        .lines
+        .iter()
+        .chain(std::iter::once(&read.final_text))
+        .any(|line| line.contains("UnitName=LOUNGE")));
+    let dbread = s.handle("[11b] DBGET //TEST/254/p/20/UnitName");
+    assert_eq!(dbread.status, 200);
+    assert!(dbread
+        .lines
+        .iter()
+        .chain(std::iter::once(&dbread.final_text))
+        .any(|line| line.contains("LOUNGE")));
+    let plain = s.handle_document("[11c] DBSETXML //TEST/254/p/20/UnitName", "PLAIN");
+    assert_eq!(plain.status, 200);
+    // Multi-line documents stay opaque without mirroring, but the opaque
+    // content itself remains readable through the database layer.
+    let opaque = s.handle_document("[12] DBSETXML //TEST/254/p/20/UnitName", "one\ntwo\n");
+    assert_eq!(opaque.status, 200);
+    let kept = s.handle("[13] GET //TEST/254/p/20 UnitName");
+    assert!(kept
+        .lines
+        .iter()
+        .chain(std::iter::once(&kept.final_text))
+        .any(|line| line.contains("UnitName=PLAIN")));
+    let odoc = s.handle("[13b] DBGET //TEST/254/p/20/UnitName");
+    assert_eq!(odoc.status, 200);
+    // Unlike DBSETSAFE, document bodies accept `#` without rejection,
+    // and the value mirrors like any single-line write.
+    let hash = s.handle_document("[13c] DBSETXML //TEST/254/p/20/UnitName", "a#b\n");
+    assert_eq!(hash.status, 200);
+    let hashed = s.handle("[13d] GET //TEST/254/p/20 UnitName");
+    assert!(hashed
+        .lines
+        .iter()
+        .chain(std::iter::once(&hashed.final_text))
+        .any(|line| line.contains("UnitName=a#b")));
+    // CGL import counts non-blank lines and records the event.
+    let import = s.handle_document("[14] CGL IMPORT TEST", "a\n\nb\nc\n");
+    assert_eq!(import.status, 200);
+    assert!(import.lines.iter().any(|l| l.contains("imported=3")));
+    let events = s.drain_events();
+    assert!(events.iter().any(|e| e == "#e# cgl import TEST"));
+    // Config-level access refuses documents outright.
+    let mut config = Server::new(AccessLevel::Config);
+    let refused = config.handle_document("[1] DBSETXML //TEST/254/p/20/UnitName", "X");
+    assert_eq!(refused.status, 421);
+}
