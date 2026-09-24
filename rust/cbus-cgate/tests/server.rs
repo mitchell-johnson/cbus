@@ -509,6 +509,95 @@ fn dbdelete_boundary_repeat_and_unselected() {
     );
 }
 
+/// Mock determinism for DBCOPYSAFE unit copies: the copy lands as a new
+/// database record with the given name and a fresh OID; occupied
+/// destinations conflict; missing sources copy opaquely with 200
+/// (mock-only pin, pending native capture). The `!oid` level-source 301
+/// flow lives in `level_lifecycle_group_xml_and_copy`, not here.
+#[test]
+fn dbcopy_unit_copy_fresh_identity_and_conflicts() {
+    let mut s = Server::new(AccessLevel::Program);
+    assert_eq!(s.handle("[1] PROJECT NEW TEST").status, 200);
+    assert_eq!(
+        s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
+            .status,
+        200
+    );
+    assert_eq!(s.handle("[3] PROJECT USE TEST").status, 200);
+    assert_eq!(s.handle("[4] DBADDSAFE //TEST/254 Unit 20 Src").status, 200);
+    let copied = s.handle("[5] DBCOPYSAFE //TEST/254/p/20 //TEST/254 21 Hall");
+    assert_eq!(copied.status, 200);
+    assert_eq!(copied.final_text, "200 OK");
+    // The copy reads back as a database record under the new name, and the
+    // source record is unaffected (no aliasing).
+    let doc = s.handle("[6] DBGETXML //TEST/254/p/21");
+    assert_eq!(doc.status, 200);
+    assert!(doc
+        .lines
+        .iter()
+        .chain(std::iter::once(&doc.final_text))
+        .any(|line| line.contains("<Unit address=\"21\" name=\"Hall\"/>")));
+    let srcdoc = s.handle("[6b] DBGETXML //TEST/254/p/20");
+    assert!(srcdoc
+        .lines
+        .iter()
+        .chain(std::iter::once(&srcdoc.final_text))
+        .any(|line| line.contains("Src") && !line.contains("Hall")));
+    // Fresh identity: the two records resolve distinct OIDs.
+    let netdoc = s.handle("[6c] DBGETXML //TEST/254");
+    assert_eq!(netdoc.status, 200);
+    let oid_of = |addr: u8| {
+        netdoc
+            .lines
+            .iter()
+            .chain(std::iter::once(&netdoc.final_text))
+            .find(|line| line.contains(&format!("<Address>{addr}</Address>")))
+            .and_then(|line| {
+                // The document can carry every unit on one line: search
+                // for the OID after this unit's own address anchor.
+                let anchor = line.find(&format!("<Address>{addr}</Address>"))?;
+                let after = &line[anchor..];
+                let start = after.find("<OID>")? + "<OID>".len();
+                let end = after.find("</OID>")?;
+                Some(after[start..end].to_string())
+            })
+            .expect("network XML carries the unit with its OID")
+    };
+    assert_ne!(oid_of(20), oid_of(21));
+    // Copying onto an occupied address conflicts.
+    let conflict = s.handle("[7] DBCOPYSAFE //TEST/254/p/20 //TEST/254 21 Hall");
+    assert_eq!(conflict.status, 409);
+    // A missing source copies opaquely with 200 (no 404 on this path).
+    let opaque = s.handle("[8] DBCOPYSAFE //TEST/254/p/99 //TEST/254 40 X");
+    assert_eq!(opaque.status, 200);
+    // Malformed shapes fail closed.
+    for (line, status, fragment) in [
+        ("[9] DBCOPYSAFE //TEST/254/p/20", 400, "source, parent"),
+        (
+            "[10] DBCOPYSAFE //TEST/254/p/20 //TEST/254 256 X",
+            400,
+            "Invalid database address",
+        ),
+        (
+            "[11] DBCOPYSAFE //TEST/254/p/20 //TEST/254 22 #",
+            400,
+            "Invalid tag name",
+        ),
+        (
+            "[12] DBCOPYSAFE //TEST/254/p/20 //TEST/253 22 X",
+            404,
+            "Network not found",
+        ),
+    ] {
+        let response = s.handle(line);
+        assert_eq!(response.status, status, "{line}");
+        assert!(response.final_text.contains(fragment), "{line}");
+    }
+    // Mixed-case verbs fold like the rest of the surface.
+    let mixed = s.handle("[13] DBcopysafe //TEST/254/p/20 //TEST/254 22 Mixed");
+    assert_eq!(mixed.status, 200);
+}
+
 /// Mock determinism for DBSETSAFE unit fields: absent units fail with 401,
 /// stored fields mirror into later GET reads, values join across words.
 #[test]
