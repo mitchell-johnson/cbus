@@ -1185,9 +1185,58 @@ async fn physical_pp_load_and_save_use_all_supported_routes_on_shared_pci() {
         sys.pci.inject(&pci_wire(&[
             0x86, 5, 0x10, 0x01, 0x00, 0x83, 0xff, 0x66, 0x77,
         ]));
+
+        require(COMMAND_DRAIN, "C-Bus 3 Save-to-NVM EXECUTE", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload == "460500E3810004" && frame.conf.is_none())
+        })
+        .await;
+        // The same PCI remains the live MQTT feed during the NVM operation.
+        sys.pci.inject(&pci_wire(&[5, 4, 56, 0, 121, 2]));
+        sys.pci.inject(&pci_wire(&[
+            0x86, 5, 0x10, 0x01, 0x00, 0xe4, 0x83, 0x00, 0x04, 0x01,
+        ]));
+        require(COMMAND_DRAIN, "C-Bus 3 Save-to-NVM first POLL", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload == "460500E3820004" && frame.conf.is_none())
+        })
+        .await;
+        sys.pci.inject(&pci_wire(&[
+            0x86, 5, 0x10, 0x01, 0x00, 0xe4, 0x83, 0x00, 0x04, 0x01,
+        ]));
+        require(COMMAND_DRAIN, "C-Bus 3 Save-to-NVM completion POLL", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload == "460500E3820004" && frame.conf.is_none())
+                .count()
+                >= 2
+        })
+        .await;
+        sys.pci.inject(&pci_wire(&[
+            0x86, 5, 0x10, 0x01, 0x00, 0xe4, 0x83, 0x00, 0x04, 0x00,
+        ]));
     };
     let (saved, ()) = tokio::join!(save, save_responses);
     assert!(saved.contains("200 OK"), "{saved:?}");
+    require(STARTUP, "lighting event in MQTT during Save-to-NVM", || {
+        sys.broker
+            .publishes()
+            .iter()
+            .any(|publish| publish.topic == "homeassistant/light/cbus_2/state")
+    })
+    .await;
+    let nvm_executes = sys
+        .pci
+        .frames()
+        .iter()
+        .filter(|frame| frame.payload == "460500E3810004" && frame.conf.is_none())
+        .count();
+    assert_eq!(nvm_executes, 1);
 
     let standard_reads = sys
         .pci
@@ -1355,6 +1404,13 @@ async fn physical_pp_load_and_save_use_all_supported_routes_on_shared_pci() {
             .filter(|frame| frame.payload.starts_with("460500A6FF0000406677"))
             .count(),
         goc_stores
+    );
+    assert_eq!(
+        frames
+            .iter()
+            .filter(|frame| frame.payload == "460500E3810004" && frame.conf.is_none())
+            .count(),
+        nvm_executes
     );
     assert_eq!(sys.pci.connections(), 1);
 

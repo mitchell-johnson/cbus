@@ -412,6 +412,7 @@ impl Service {
                 vec![serde_json::json!({"service":"cmqttd", "physical_bus":true,
                 "full_cgate_compatibility":false, "memory_read":true, "memory_write":true,
                 "physical_pp_load":true, "physical_pp_save":true,
+                "physical_pp_save_cbus3_nvm":true,
                 "physical_pp_save_methods":["dali","direct","edlt","giu","goc","goc2","gocbyt","ncc","paged","sgiu"],
                 "physical_pp_save_protection":["none","checksum","lock"],
                 "physical_pp_save_lock_methods":["direct","ncc","paged"],
@@ -2043,6 +2044,7 @@ impl Service {
                 }
             }
         };
+        let requires_nvm_commit = unitspec::requires_nvm_commit(&spec);
         let pci = self.pci.read().await.clone();
         let live_type = match pci.identify_first(unit, 1).await {
             Ok(Some(bytes)) => match identity_text(&bytes, "unit type") {
@@ -2288,6 +2290,7 @@ impl Service {
                 original,
             });
         }
+        let mut wrote_any = false;
         for item in &pending {
             let Some(region) = regions.iter_mut().find(|region| {
                 region.space == item.space
@@ -2368,6 +2371,16 @@ impl Service {
             };
             if let Err(error) = result {
                 return err(tag, 502, &format!("502 Physical PP save failed: {error}"));
+            }
+            wrote_any = true;
+        }
+        if wrote_any && requires_nvm_commit {
+            if let Err(error) = pci.save_to_nvm(unit).await {
+                return err(
+                    tag,
+                    502,
+                    &format!("502 Physical PP Save-to-NVM failed: {error}"),
+                );
             }
         }
 

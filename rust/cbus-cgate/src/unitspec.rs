@@ -34,6 +34,17 @@ pub struct SpecParam {
     pub tags: Vec<String>,
 }
 
+/// Native C-Gate commits C-Bus 3 parameter changes after a successful write.
+/// The decoded vendor catalogue identifies those families through the NCC
+/// programming method, including parameters inherited from include files.
+pub fn requires_nvm_commit(spec: &[SpecParam]) -> bool {
+    spec.iter().any(|param| {
+        param
+            .get("ProgramMethod")
+            .is_some_and(|method| method.trim().eq_ignore_ascii_case("ncc"))
+    })
+}
+
 impl SpecParam {
     /// Raw field value by tag, if present.
     pub fn get(&self, tag: &str) -> Option<&str> {
@@ -824,6 +835,14 @@ mod tests {
         assert_eq!(app.get("DefaultValue"), Some("$FF $FF"));
         assert_eq!(app.tags, vec!["Lighting"]);
         let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn ncc_programming_marks_a_cbus3_spec_for_nvm_commit() {
+        let ncc = param("C-Bus 3", "int", &[("ProgramMethod", " NCC ")]);
+        let direct = param("Legacy", "int", &[("ProgramMethod", "direct")]);
+        assert!(requires_nvm_commit(&[direct.clone(), ncc]));
+        assert!(!requires_nvm_commit(&[direct]));
     }
 
     fn param(name: &str, kind: &str, fields: &[(&str, &str)]) -> SpecParam {

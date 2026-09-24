@@ -36,6 +36,42 @@ pub enum Cal {
     },
     /// Rejection of the fixed-length protected-address store.
     ReaddressNak,
+    /// A unit rejected a CAL operation. Unlike the length-coded `0x3x`
+    /// acknowledgement family, native C-Gate treats `0x3B` as a fixed NAK
+    /// prefix followed by operation-specific correlation/error bytes.
+    Nak {
+        /// Parameter or extended-command group being rejected.
+        parameter: u8,
+        /// Operation-specific correlation/error bytes.
+        data: Vec<u8>,
+    },
+    /// Start an extended CAL operation (`0x81`).
+    Execute {
+        /// Extended-command group.
+        group: u8,
+        /// Operation within the group.
+        operation: u8,
+        /// Operation-specific request data.
+        data: Vec<u8>,
+    },
+    /// Query an extended CAL operation (`0x82`).
+    Poll {
+        /// Extended-command group.
+        group: u8,
+        /// Operation within the group.
+        operation: u8,
+    },
+    /// Extended CAL operation status (`0x83`).
+    ExtendedReply {
+        /// Extended-command group.
+        group: u8,
+        /// Operation within the group.
+        operation: u8,
+        /// Native status code (`0` complete, `1` still running, `2` busy).
+        status: u8,
+        /// Optional operation-specific response data.
+        data: Vec<u8>,
+    },
     /// Select the active 256-byte programming page for subsequent STOREs.
     SetPage {
         /// Page number.
@@ -103,6 +139,40 @@ impl Cal {
                 challenge,
             } => vec![0xa3, 0x20, 0x4e, *destination, *challenge],
             Cal::ReaddressNak => vec![0x3b, 0x20, 0x4e],
+            Cal::Nak { parameter, data } => {
+                let mut out = vec![0x3b, *parameter];
+                out.extend_from_slice(data);
+                out
+            }
+            Cal::Execute {
+                group,
+                operation,
+                data,
+            } => {
+                // Schneider's extended-command parser accepts lengths 3..14.
+                let data = &data[..data.len().min(11)];
+                let mut out = vec![0xe0 | (data.len() as u8 + 3), 0x81, *group, *operation];
+                out.extend_from_slice(data);
+                out
+            }
+            Cal::Poll { group, operation } => vec![0xe3, 0x82, *group, *operation],
+            Cal::ExtendedReply {
+                group,
+                operation,
+                status,
+                data,
+            } => {
+                let data = &data[..data.len().min(10)];
+                let mut out = vec![
+                    0xe0 | (data.len() as u8 + 4),
+                    0x83,
+                    *group,
+                    *operation,
+                    *status,
+                ];
+                out.extend_from_slice(data);
+                out
+            }
             Cal::SetPage { page } => vec![0x39, *page],
             Cal::Identify { attribute } => vec![CAL_IDENTIFY, *attribute],
             Cal::Recall { param, count } => vec![CAL_RECALL, *param, *count],
@@ -143,6 +213,20 @@ impl Cal {
             .ok_or_else(|| DecodeError::new("empty CAL data"))?;
         if data.starts_with(&[0x3b, 0x20, 0x4e]) {
             Ok((Cal::ReaddressNak, 3))
+        } else if cmd == 0x3b {
+            let parameter = *data
+                .get(1)
+                .ok_or_else(|| DecodeError::new("truncated CAL negative acknowledgement"))?;
+            if data.len() < 3 {
+                return Err(DecodeError::new("truncated CAL negative acknowledgement"));
+            }
+            Ok((
+                Cal::Nak {
+                    parameter,
+                    data: data[2..].to_vec(),
+                },
+                data.len(),
+            ))
         } else if cmd & 0xe0 == 0xa0 || cmd & 0xf0 == 0x30 {
             let length = if cmd & 0xe0 == 0xa0 {
                 cmd & 0x1f
@@ -190,6 +274,33 @@ impl Cal {
         } else if cmd & 0xe0 == 0xc0 {
             // STANDARD_STATUS is not supported by this decoder.
             Err(DecodeError::new("standard status cal"))
+        } else if cmd & 0xe0 == CAL_EXTENDED_STATUS && matches!(data.get(1), Some(0x81..=0x83)) {
+            let length = usize::from(cmd & 0x1f);
+            let cal_end = length + 1;
+            if !(3..=14).contains(&length) || data.len() < cal_end {
+                return Err(DecodeError::new("truncated extended CAL command"));
+            }
+            let verb = data[1];
+            let group = data[2];
+            let operation = data[3];
+            let cal = match verb {
+                0x81 => Cal::Execute {
+                    group,
+                    operation,
+                    data: data[4..cal_end].to_vec(),
+                },
+                0x82 if length == 3 => Cal::Poll { group, operation },
+                0x82 => return Err(DecodeError::new("invalid extended CAL poll length")),
+                0x83 if length >= 4 => Cal::ExtendedReply {
+                    group,
+                    operation,
+                    status: data[4],
+                    data: data[5..cal_end].to_vec(),
+                },
+                0x83 => return Err(DecodeError::new("extended CAL reply has no status")),
+                _ => unreachable!("extended CAL verb was range checked"),
+            };
+            Ok((cal, cal_end))
         } else if cmd & 0xe0 == CAL_EXTENDED_STATUS {
             let cal_end = ((cmd & 0x1f) + 1) as usize;
             if data.len() < cal_end {
@@ -369,6 +480,45 @@ mod tests {
             }
         );
         assert_eq!(n, 4);
+        assert_eq!(
+            Cal::Execute {
+                group: 0,
+                operation: 4,
+                data: vec![]
+            }
+            .encode(),
+            vec![0xe3, 0x81, 0, 4]
+        );
+        assert_eq!(
+            Cal::Poll {
+                group: 0,
+                operation: 4
+            }
+            .encode(),
+            vec![0xe3, 0x82, 0, 4]
+        );
+        assert_eq!(
+            Cal::decode_one(&[0xe4, 0x83, 0, 4, 1]).unwrap(),
+            (
+                Cal::ExtendedReply {
+                    group: 0,
+                    operation: 4,
+                    status: 1,
+                    data: vec![]
+                },
+                5
+            )
+        );
+        assert_eq!(
+            Cal::decode_one(&[0x3b, 0, 4, 2]).unwrap(),
+            (
+                Cal::Nak {
+                    parameter: 0,
+                    data: vec![4, 2]
+                },
+                4
+            )
+        );
     }
 
     #[test]

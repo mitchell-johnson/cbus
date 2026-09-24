@@ -108,6 +108,25 @@ pub fn cal_to_json(c: &Cal) -> Value {
         } => json!({"cal": "readdress", "destination": destination,
                     "challenge": challenge}),
         Cal::ReaddressNak => json!({"cal": "readdress_nak"}),
+        Cal::Nak { parameter, data } => {
+            json!({"cal": "nak", "parameter": parameter, "data_hex": hex::encode(data)})
+        }
+        Cal::Execute {
+            group,
+            operation,
+            data,
+        } => json!({"cal": "execute", "group": group, "operation": operation,
+                    "data_hex": hex::encode(data)}),
+        Cal::Poll { group, operation } => {
+            json!({"cal": "poll", "group": group, "operation": operation})
+        }
+        Cal::ExtendedReply {
+            group,
+            operation,
+            status,
+            data,
+        } => json!({"cal": "extended_reply", "group": group, "operation": operation,
+                    "status": status, "data_hex": hex::encode(data)}),
         Cal::SetPage { page } => json!({"cal": "set_page", "page": page}),
         Cal::Identify { attribute } => json!({"cal": "identify", "attribute": attribute}),
         Cal::Recall { param, count } => {
@@ -413,6 +432,25 @@ pub fn cal_from_json(d: &Value) -> Result<Cal, JErr> {
             challenge: get_u8(d, "challenge")?,
         }),
         "readdress_nak" => Ok(Cal::ReaddressNak),
+        "nak" => Ok(Cal::Nak {
+            parameter: get_u8(d, "parameter")?,
+            data: hex::decode(get_str(d, "data_hex")?).map_err(|e| e.to_string())?,
+        }),
+        "execute" => Ok(Cal::Execute {
+            group: get_u8(d, "group")?,
+            operation: get_u8(d, "operation")?,
+            data: hex::decode(get_str(d, "data_hex")?).map_err(|e| e.to_string())?,
+        }),
+        "poll" => Ok(Cal::Poll {
+            group: get_u8(d, "group")?,
+            operation: get_u8(d, "operation")?,
+        }),
+        "extended_reply" => Ok(Cal::ExtendedReply {
+            group: get_u8(d, "group")?,
+            operation: get_u8(d, "operation")?,
+            status: get_u8(d, "status")?,
+            data: hex::decode(get_str(d, "data_hex")?).map_err(|e| e.to_string())?,
+        }),
         "set_page" => Ok(Cal::SetPage {
             page: get_u8(d, "page")?,
         }),

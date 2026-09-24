@@ -36,7 +36,7 @@ not be committed or published.
 | Project list/use/load/save/new/close; database CRUD and database snapshots | Persistent JSON database; atomic replacement, restrictive permissions, failed-write rollback |
 | Database PP locks, sessions, get/set/info/new/load/save | Existing programming model with connection ownership; staged sessions and locks are discarded on disconnect/restart |
 | Physical PP LOAD and subsequent GET/INFO | Identifies the live unit, selects its privately installed decoded schema, recalls standard CAL parameters, explicit pages for `paged`/`ncc`, OEM memory, and GOC parameter-`0xFF` memory through the shared PCI, decodes int/long/bit/string/sixbit arrays and `ArrayMap`, applies tag selection, and commits the session only after every read succeeds |
-| Physical PP SAVE/SAVE_TO_SOURCE | Writes only dirty, tag-selected `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and `goc2` parameters with `none`/`checksum`/supported `lock` protection. Page-aware writes split at 256-byte boundaries; OEM methods use the selector/data path; GIU halts and resumes the unit; DALI observes the native settling interval; GOC methods use parameter `0xFF`, a big-endian address prefix, and their native block limits. The service validates the complete plan and live type/firmware first, preserves shared bits through pre-read/encode, requires source/parameter-matched acknowledgements, and reads every stored range back before success |
+| Physical PP SAVE/SAVE_TO_SOURCE | Writes only dirty, tag-selected `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and `goc2` parameters with `none`/`checksum`/supported `lock` protection. Page-aware writes split at 256-byte boundaries; OEM methods use the selector/data path; GIU halts and resumes the unit; DALI observes the native settling interval; GOC methods use parameter `0xFF`, a big-endian address prefix, and their native block limits. The service validates the complete plan and live type/firmware first, preserves shared bits through pre-read/encode, requires source/parameter-matched acknowledgements, and reads every stored range back before success. Specifications containing the vendor `ncc` method are classified as C-Bus 3; after a changed save, the service runs native group-0 operation-4 EXECUTE/POLL until the NVM commit succeeds |
 | ON/OFF/RAMP/TERMINATERAMP and lighting variants | Actual shared PCI, negative confirmations return errors; successful delivery is distinct from observed physical brightness |
 | GET group level | Real observed bus levels; unobserved levels return 408, never invented zero |
 | TRIGGER EVENT/INDICATORKILL | Actual Trigger Control SAL on application 202; incoming events update the live service cache and event stream |
@@ -83,7 +83,13 @@ fixed `A3 20 4E <destination> <challenge>` form and recognizes its fixed success
 and rejection replies rather than treating them as ordinary variable-length CAL
 messages. All dirty parameters are encoded
 and physically pre-read before the first STORE. Each changed range is
-acknowledged and read back; a
+acknowledged and read back. For a C-Bus 3 specification, a changed save then
+sends `E3 81 00 04`, polls with `E3 82 00 04` at 500 ms intervals, and returns
+success only after the unit replies with status zero. Busy, NAK, unexpected
+status, timeout, or transport loss fail the save; an uncertain outcome faults
+the programming lane until reconnect so a late reply cannot be assigned to a
+later transaction. MQTT remains active through the shared packet fanout. An
+unchanged or tag-filtered save issues no NVM command. A
 transport failure can still leave earlier independently acknowledged ranges
 written, so multi-range recovery and power-loss acceptance remain outstanding.
 
@@ -129,8 +135,7 @@ all 431 have physical implementations in this service. `CMQTT CAPABILITIES`
 returns `full_cgate_compatibility: false`; unimplemented physical operations
 return 502. Full replacement still requires:
 
-- Physical PP multi-range failure recovery, power-loss behavior, native
-  save-to-NVM execution for C-Bus 3 units, and hardware write acceptance for
+- Physical PP multi-range failure recovery, power-loss behavior, and hardware write acceptance for
   every programming method and unit family. LOAD has full decoded-catalogue
   layout coverage plus live KEYGL5 acceptance; SAVE audits every well-formed
   writable catalogue default and has fake-PCI direct/page-aware/OEM/GOC
@@ -154,7 +159,8 @@ page-aware recall, page selection, cross-page tagged STORE, the native
 protected-parameter unlock request/reply phase, and
 the separate programming route for segmented OEM recall/tagged STORE, plus the
 protected unit-address challenge and special STORE, including
-mandatory readback, plus source filtering,
+mandatory readback, plus the C-Bus 3 Save-to-NVM EXECUTE/POLL status sequence,
+definitive rejection and uncertain-reply fault handling, source filtering,
 interleaved lighting, complete and incomplete installation MMI,
 MMI and IDENTIFY data that precedes its positive confirmation, the confirmed
 two-second IDENTIFY collection window, duplicate replies, absence, and
@@ -167,8 +173,9 @@ input during events, disconnect cleanup, schema layout decoding and input bounds
 The decoded vendor catalogue is optionally audited through `CBUS_UNITSPEC_DIR`.
 The real cmqttd system test performs physical PP LOAD and SAVE against a scripted
 PCI, checks standard and OEM values, dirty/tag selection, read-modify-write
-encoding, acknowledgements and readback, and verifies that C-Gate and MQTT retain
-one PCI connection. A separate real-daemon test verifies guarded physical
+encoding, acknowledgements, readback, and the exact C-Bus 3 NVM commit sequence,
+and verifies that C-Gate and MQTT retain one PCI connection while lighting events
+continue through the same transport. A separate real-daemon test verifies guarded physical
 readdressing, exact-once STORE transmission, database/physical layer separation,
 and MQTT event delivery on that same PCI during the move.
 `toolkit-cli/tests/test_cmqtt.py` tests synthetic eDLT decoding and read contracts.

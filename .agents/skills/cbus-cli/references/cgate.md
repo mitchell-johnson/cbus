@@ -23,7 +23,11 @@ Enable Control, clock date/time/refresh, Temperature Broadcast, `NET PINGU`, `NE
 `NET CHECKUNIT`, physical `PP LOAD`, and readback-verified physical `PP SAVE` for
 `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and
 `goc2` parameters using decoded unit specifications. Direct and page-aware
-`lock` parameters use the captured unlock phase.
+`lock` parameters use the captured unlock phase. A specification containing
+`ProgramMethod=ncc` identifies the vendor C-Bus 3 families; after at least one
+changed store, SAVE performs native group-0 operation-4 EXECUTE followed by
+500 ms POLLs for up to 15 seconds and succeeds only on status zero. An unchanged
+or tag-filtered save does not issue the NVM command.
 It also implements guarded scalar `SET //PROJECT/NETWORK/p/UNIT Address DEST`
 against the physical bus. That command proves one source and an empty
 destination, uses the native parameter-`0x20` one-use challenge, sends the
@@ -41,7 +45,8 @@ present with unknown identity fields. CHECKUNIT actively collects IDENTIFY4
 replies through the native two-second quiet interval; it does not infer duplicate count from the
 two-bit MMI state. Use `GET //PROJECT/NETWORK Units` and unit `Type`, `Version`,
 `SerialNumber`, `Address`, and `State` getters for the resulting live snapshot.
-Query `CMQTT CAPABILITIES`; `unit_readdress: true` denotes this physical path,
+Query `CMQTT CAPABILITIES`; `unit_readdress: true` denotes the readdress path and
+`physical_pp_save_cbus3_nvm: true` denotes the NVM commit path,
 while `full_cgate_compatibility` remains false until every remaining backend and
 acceptance requirement is complete.
 

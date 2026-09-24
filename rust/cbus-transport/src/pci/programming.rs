@@ -8,6 +8,8 @@ use std::sync::atomic::{AtomicBool, Ordering};
 const REPLY_TIMEOUT: Duration = Duration::from_secs(10);
 const IDENTIFY_QUIET: Duration = Duration::from_secs(2);
 const IDENTIFY_MAX_REPLIES: usize = 7;
+const NVM_POLL_INTERVAL: Duration = Duration::from_millis(500);
+const NVM_POLL_TIMEOUT: Duration = Duration::from_secs(15);
 
 // After a cancelled/failed transaction, late untagged CAL fragments cannot be
 // distinguished from a future read. Require a fresh connection instead of
@@ -22,6 +24,12 @@ enum ProgrammingRoute {
     DirectChecksummed,
     DirectUnchecksummed,
     Oem,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ExtendedOutcome {
+    Status(u8),
+    Nak,
 }
 
 impl Drop for Transaction<'_> {
@@ -310,6 +318,188 @@ impl PciClient {
                 "unit programming reply timed out",
             ))
         })
+    }
+
+    /// Send one native extended CAL command and wait for its source-correlated
+    /// status or NAK. These commands receive a unit response and therefore do
+    /// not carry a separate PCI confirmation character.
+    async fn programming_extended_exchange(
+        &self,
+        unit: u8,
+        request: Cal,
+        group: u8,
+        operation: u8,
+    ) -> Result<ExtendedOutcome> {
+        let mut replies = self.packets.subscribe();
+        let packet = Packet::PointToPoint {
+            meta: Meta::new(false, 1),
+            unit_address: unit,
+            bridged: false,
+            hops: vec![],
+            cals: vec![request],
+        };
+        let mut bytes = vec![b'\\'];
+        bytes.extend(
+            packet
+                .encode_packet()
+                .map_err(|error| Error::new(ErrorKind::InvalidInput, error.0))?,
+        );
+        bytes.push(b'\r');
+        tokio::time::timeout(REPLY_TIMEOUT, async {
+            self.init_done
+                .subscribe()
+                .wait_for(|&done| done)
+                .await
+                .map_err(|_| Error::new(ErrorKind::BrokenPipe, "PCI initialization ended"))?;
+            if !self.is_connected() {
+                return Err(Error::new(ErrorKind::BrokenPipe, "PCI disconnected"));
+            }
+            self.flow
+                .submit(bytes, Priority::Command, ResponseKind::Silent)
+                .await
+                .map_err(|_| Error::new(ErrorKind::BrokenPipe, "PCI writer ended"))??;
+            loop {
+                let cals = match replies.recv().await {
+                    Ok(Some(Packet::PointToPoint { meta, cals, .. }))
+                        if meta.source_address == Some(unit) =>
+                    {
+                        cals
+                    }
+                    Ok(Some(Packet::PointToPoint { meta, cals, .. }))
+                        if meta.source_address.is_none()
+                            && self.local_unit.load(Ordering::Acquire) == u16::from(unit) =>
+                    {
+                        cals
+                    }
+                    Ok(Some(Packet::BareCal(cal)))
+                        if self.local_unit.load(Ordering::Acquire) == u16::from(unit) =>
+                    {
+                        vec![cal]
+                    }
+                    Ok(Some(_)) => continue,
+                    Ok(None) | Err(_) => {
+                        return Err(Error::new(
+                            ErrorKind::BrokenPipe,
+                            "PCI response stream lost",
+                        ));
+                    }
+                };
+                for cal in cals {
+                    match cal {
+                        Cal::ExtendedReply {
+                            group: got_group,
+                            operation: got_operation,
+                            status,
+                            ..
+                        } if got_group == group && got_operation == operation => {
+                            return Ok(ExtendedOutcome::Status(status));
+                        }
+                        // Native aQ accepts any 0x3B response from the
+                        // correlated unit as the command's negative ACK.
+                        Cal::Nak { .. } | Cal::ReaddressNak => {
+                            return Ok(ExtendedOutcome::Nak);
+                        }
+                        _ => {}
+                    }
+                }
+            }
+        })
+        .await
+        .unwrap_or_else(|_| {
+            Err(Error::new(
+                ErrorKind::TimedOut,
+                "extended CAL reply timed out",
+            ))
+        })
+    }
+
+    /// Commit volatile programming changes in a C-Bus 3 unit to NVM using
+    /// native C-Gate's group-0 operation-4 EXECUTE/POLL sequence.
+    pub async fn save_to_nvm(&self, unit: u8) -> Result<()> {
+        let _lane = self.programming_lane.lock().await;
+        if self.programming_fault.load(Ordering::Acquire) {
+            return Err(Error::other(
+                "programming stream needs reconnect after an incomplete transaction",
+            ));
+        }
+        let mut transaction = Transaction {
+            fault: &self.programming_fault,
+            complete: false,
+        };
+        let execute = self
+            .programming_extended_exchange(
+                unit,
+                Cal::Execute {
+                    group: 0,
+                    operation: 4,
+                    data: vec![],
+                },
+                0,
+                4,
+            )
+            .await?;
+        match execute {
+            ExtendedOutcome::Status(0) => {
+                transaction.complete = true;
+                return Ok(());
+            }
+            ExtendedOutcome::Status(1) => {}
+            ExtendedOutcome::Status(2) => {
+                transaction.complete = true;
+                return Err(Error::other("C-Bus 3 unit is busy saving to NVM"));
+            }
+            ExtendedOutcome::Status(status) => {
+                transaction.complete = true;
+                return Err(Error::other(format!(
+                    "Save-to-NVM EXECUTE returned status 0x{status:02X}"
+                )));
+            }
+            ExtendedOutcome::Nak => {
+                transaction.complete = true;
+                return Err(Error::other("unit rejected Save-to-NVM EXECUTE"));
+            }
+        }
+
+        let polled = tokio::time::timeout(NVM_POLL_TIMEOUT, async {
+            loop {
+                let outcome = self
+                    .programming_extended_exchange(
+                        unit,
+                        Cal::Poll {
+                            group: 0,
+                            operation: 4,
+                        },
+                        0,
+                        4,
+                    )
+                    .await?;
+                match outcome {
+                    ExtendedOutcome::Status(1) => {
+                        tokio::time::sleep(NVM_POLL_INTERVAL).await;
+                    }
+                    other => return Ok(other),
+                }
+            }
+        })
+        .await;
+        let outcome = match polled {
+            Ok(Ok(outcome)) => outcome,
+            Ok(Err(error)) => return Err(error),
+            Err(_) => {
+                return Err(Error::new(
+                    ErrorKind::TimedOut,
+                    "Save-to-NVM polling timed out",
+                ));
+            }
+        };
+        transaction.complete = true;
+        match outcome {
+            ExtendedOutcome::Status(0) => Ok(()),
+            ExtendedOutcome::Status(status) => Err(Error::other(format!(
+                "Save-to-NVM POLL returned status 0x{status:02X}"
+            ))),
+            ExtendedOutcome::Nak => Err(Error::other("unit rejected Save-to-NVM POLL")),
+        }
     }
 
     /// Read a bounded range of OEM physical memory. Each block explicitly
@@ -1687,6 +1877,82 @@ mod tests {
             pci.readdress_unit(4, 4).await.unwrap_err().kind(),
             ErrorKind::InvalidInput
         );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn save_to_nvm_polls_and_preserves_mqtt_fanout() {
+        let (pci, mut remote, mut events) = setup().await;
+        let worker = pci.clone();
+        let saving = tokio::spawn(async move { worker.save_to_nvm(5).await });
+        assert_eq!(line(&mut remote).await, b"\\460500E3810004\r");
+
+        // Normal bus traffic must continue to reach the MQTT side while the
+        // programming lane waits for a source-correlated extended reply.
+        remote
+            .get_mut()
+            .write_all(b"05043800790145\r\n")
+            .await
+            .unwrap();
+        reply(&mut remote, 5, &[0xe4, 0x83, 0, 4, 1]).await;
+
+        assert_eq!(line(&mut remote).await, b"\\460500E3820004\r");
+        reply(&mut remote, 5, &[0xe4, 0x83, 0, 4, 1]).await;
+        tokio::time::advance(NVM_POLL_INTERVAL).await;
+        tokio::task::yield_now().await;
+        assert_eq!(line(&mut remote).await, b"\\460500E3820004\r");
+        reply(&mut remote, 5, &[0xe4, 0x83, 0, 4, 0]).await;
+
+        saving.await.unwrap().unwrap();
+        assert!(matches!(
+            events.recv().await,
+            Some(CBusEvent::LightingOn {
+                source: Some(4),
+                app: 56,
+                group: 1
+            })
+        ));
+        assert!(!pci.programming_fault.load(Ordering::Acquire));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn definitive_save_to_nvm_failures_do_not_fault_programming_lane() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let busy = tokio::spawn(async move { worker.save_to_nvm(5).await });
+        assert_eq!(line(&mut remote).await, b"\\460500E3810004\r");
+        reply(&mut remote, 5, &[0xe4, 0x83, 0, 4, 2]).await;
+        assert!(busy
+            .await
+            .unwrap()
+            .unwrap_err()
+            .to_string()
+            .contains("busy"));
+        assert!(!pci.programming_fault.load(Ordering::Acquire));
+
+        let worker = pci.clone();
+        let rejected = tokio::spawn(async move { worker.save_to_nvm(5).await });
+        assert_eq!(line(&mut remote).await, b"\\460500E3810004\r");
+        reply(&mut remote, 5, &[0x3b, 0, 4, 2]).await;
+        assert!(rejected
+            .await
+            .unwrap()
+            .unwrap_err()
+            .to_string()
+            .contains("rejected"));
+        assert!(!pci.programming_fault.load(Ordering::Acquire));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn lost_save_to_nvm_reply_faults_programming_lane() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let saving = tokio::spawn(async move { worker.save_to_nvm(5).await });
+        assert_eq!(line(&mut remote).await, b"\\460500E3810004\r");
+        assert_eq!(
+            saving.await.unwrap().unwrap_err().kind(),
+            ErrorKind::TimedOut
+        );
+        assert!(pci.programming_fault.load(Ordering::Acquire));
     }
 
     #[tokio::test(start_paused = true)]
