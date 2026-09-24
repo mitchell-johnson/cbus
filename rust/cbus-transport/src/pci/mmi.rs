@@ -7,6 +7,12 @@ use std::sync::atomic::Ordering;
 const MMI_TIMEOUT: Duration = Duration::from_secs(10);
 
 fn append_block(states: &mut Vec<u8>, block_start: u8, block: Vec<u8>) -> Result<bool> {
+    if block.is_empty() {
+        return Err(Error::new(
+            ErrorKind::InvalidData,
+            "MMI block carries no coverage",
+        ));
+    }
     if usize::from(block_start) != states.len() {
         return Err(Error::new(
             ErrorKind::InvalidData,
@@ -294,5 +300,226 @@ mod tests {
             .unwrap_err()
             .to_string()
             .contains("needs reconnect"));
+    }
+
+    /// Issue #10 Phase 3: a negative delivery confirmation rejects the
+    /// observation and faults the lane until reconnect, exactly like a gap.
+    #[tokio::test]
+    async fn negative_confirmation_rejects_and_faults_lane() {
+        let (pci, mut remote) = setup().await;
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.install_mmi().await }
+        });
+        let mut request = Vec::new();
+        remote.read_until(b'\r', &mut request).await.unwrap();
+        let code = request[request.len() - 2];
+        remote.write_all(&[code, b'#']).await.unwrap();
+        assert!(running
+            .await
+            .unwrap()
+            .unwrap_err()
+            .to_string()
+            .contains("rejected"));
+        assert!(pci
+            .install_mmi()
+            .await
+            .unwrap_err()
+            .to_string()
+            .contains("needs reconnect"));
+    }
+
+    /// Issue #10 Phase 3: broadcast multipoint blocks correlate with routed
+    /// addressed blocks into one contiguous 0..255 observation.
+    #[tokio::test]
+    async fn broadcast_and_addressed_blocks_correlate_into_full_coverage() {
+        let (pci, mut remote) = setup().await;
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.install_mmi().await }
+        });
+        let mut request = Vec::new();
+        remote.read_until(b'\r', &mut request).await.unwrap();
+        let code = request[request.len() - 2];
+        remote.write_all(&[code, b'.']).await.unwrap();
+        // Broadcast multipoint and routed addressed blocks share the
+        // canonical 88/88/80 boundaries and correlate into one observation.
+        remote.write_all(&block(0, 88, &[16])).await.unwrap();
+        remote
+            .write_all(&addressed_block(88, 88, &[100]))
+            .await
+            .unwrap();
+        remote.write_all(&block(176, 80, &[255])).await.unwrap();
+        let states = running.await.unwrap().unwrap();
+        assert_eq!(states.len(), 256);
+        assert_eq!(states[16], 1);
+        assert_eq!(states[100], 1);
+        assert_eq!(states[255], 1);
+        assert_eq!(states.iter().filter(|state| **state != 0).count(), 3);
+    }
+
+    /// Issue #10 Phase 3: bridged routed replies carry the same 0xff status
+    /// blocks and correlate like local ones. The encoder never emits
+    /// bridged PTP, so the frame is re-addressed on the decoded wire with a
+    /// fresh checksum instead.
+    #[tokio::test]
+    async fn bridged_addressed_blocks_accepted() {
+        use cbus_protocol::common::add_cbus_checksum;
+
+        let (pci, mut remote) = setup().await;
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.install_mmi().await }
+        });
+        let mut request = Vec::new();
+        remote.read_until(b'\r', &mut request).await.unwrap();
+        let code = request[request.len() - 2];
+        remote.write_all(&[code, b'.']).await.unwrap();
+        // Wire form is uppercase hex ASCII: [flags, source, unit, 0x00,
+        // CAL..., checksum]. Route the unit block through bridge 0x20 with
+        // a zero-hop length code and recompute the checksum.
+        let plain = addressed_block(0, 88, &[16]);
+        let binary = hex::decode(&plain[..plain.len() - 2]).unwrap();
+        assert_eq!(binary[1], 0x10, "source address");
+        assert_eq!(binary[2], 0x10, "unit address");
+        assert_eq!(binary[3], 0x00, "local route marker");
+        let mut routed = Vec::with_capacity(binary.len() + 1);
+        routed.extend_from_slice(&binary[..2]);
+        routed.extend_from_slice(&[0x20, 0x09, 0x10]);
+        routed.extend_from_slice(&binary[4..binary.len() - 1]);
+        let mut line = hex::encode_upper(add_cbus_checksum(&routed)).into_bytes();
+        line.extend_from_slice(b"\r\n");
+        remote.write_all(&line).await.unwrap();
+        remote
+            .write_all(&addressed_block(88, 88, &[]))
+            .await
+            .unwrap();
+        remote
+            .write_all(&addressed_block(176, 80, &[255]))
+            .await
+            .unwrap();
+        let states = running.await.unwrap().unwrap();
+        assert_eq!(states.len(), 256);
+        assert_eq!(states[16], 1);
+        assert_eq!(states[255], 1);
+    }
+
+    /// Issue #10 Phase 3: block assembly accepts only contiguous coverage
+    /// from zero that ends exactly at 256.
+    #[test]
+    fn append_block_pins_contiguity_and_bounds() {
+        let mut states = Vec::new();
+        assert!(!append_block(&mut states, 0, vec![0; 128]).unwrap());
+        assert!(append_block(&mut states, 128, vec![0; 128]).unwrap());
+        // Repeated start.
+        let mut repeated = vec![0; 4];
+        assert!(append_block(&mut repeated, 0, vec![0; 4]).is_err());
+        // Overlapping start.
+        let mut overlapping = vec![0; 8];
+        assert!(append_block(&mut overlapping, 4, vec![0; 4]).is_err());
+        // Gap.
+        let mut gapped = vec![0; 8];
+        assert!(append_block(&mut gapped, 16, vec![0; 8]).is_err());
+        // Coverage past address 255.
+        let mut full = vec![0; 255];
+        assert!(append_block(&mut full, 255, vec![0; 2]).is_err());
+        // Empty blocks carry no coverage and fast-fault instead of stalling.
+        let mut empty = Vec::new();
+        assert!(append_block(&mut empty, 0, Vec::new()).is_err());
+        // Exactly-256 completion.
+        let mut exact = vec![0; 255];
+        assert!(append_block(&mut exact, 255, vec![0; 1]).unwrap());
+    }
+
+    /// Reverse cross-family order: addressed blocks before broadcast ones
+    /// correlate the same way.
+    #[tokio::test]
+    async fn addressed_before_broadcast_correlates() {
+        let (pci, mut remote) = setup().await;
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.install_mmi().await }
+        });
+        let mut request = Vec::new();
+        remote.read_until(b'\r', &mut request).await.unwrap();
+        let code = request[request.len() - 2];
+        remote.write_all(&[code, b'.']).await.unwrap();
+        remote
+            .write_all(&addressed_block(0, 88, &[16]))
+            .await
+            .unwrap();
+        remote.write_all(&block(88, 88, &[100])).await.unwrap();
+        remote
+            .write_all(&addressed_block(176, 80, &[255]))
+            .await
+            .unwrap();
+        let states = running.await.unwrap().unwrap();
+        assert_eq!(states.len(), 256);
+        assert_eq!(states[16], 1);
+        assert_eq!(states[100], 1);
+        assert_eq!(states[255], 1);
+    }
+
+    /// Non-canonical wire fragmentation within the encoder limits
+    /// (multiples of 4, at most 116 states) assembles all the same.
+    #[tokio::test]
+    async fn non_canonical_broadcast_sizes_assemble() {
+        let (pci, mut remote) = setup().await;
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.install_mmi().await }
+        });
+        let mut request = Vec::new();
+        remote.read_until(b'\r', &mut request).await.unwrap();
+        let code = request[request.len() - 2];
+        remote.write_all(&[code, b'.']).await.unwrap();
+        remote.write_all(&block(0, 116, &[16])).await.unwrap();
+        remote.write_all(&block(116, 116, &[])).await.unwrap();
+        remote.write_all(&block(232, 24, &[255])).await.unwrap();
+        let states = running.await.unwrap().unwrap();
+        assert_eq!(states.len(), 256);
+        assert_eq!(states[16], 1);
+        assert_eq!(states[255], 1);
+        assert_eq!(states.iter().filter(|state| **state != 0).count(), 2);
+    }
+
+    /// Single-hop bridged replies route through the hop byte to the unit.
+    #[tokio::test]
+    async fn single_hop_bridged_block_accepted() {
+        use cbus_protocol::common::add_cbus_checksum;
+
+        let (pci, mut remote) = setup().await;
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.install_mmi().await }
+        });
+        let mut request = Vec::new();
+        remote.read_until(b'\r', &mut request).await.unwrap();
+        let code = request[request.len() - 2];
+        remote.write_all(&[code, b'.']).await.unwrap();
+        let plain = addressed_block(0, 88, &[16]);
+        let binary = hex::decode(&plain[..plain.len() - 2]).unwrap();
+        assert_eq!(binary[1], 0x10, "source address");
+        assert_eq!(binary[2], 0x10, "unit address");
+        assert_eq!(binary[3], 0x00, "local route marker");
+        let mut routed = Vec::with_capacity(binary.len() + 2);
+        routed.extend_from_slice(&binary[..2]);
+        routed.extend_from_slice(&[0x20, 0x12, 0x05, 0x10]);
+        routed.extend_from_slice(&binary[4..binary.len() - 1]);
+        let mut line = hex::encode_upper(add_cbus_checksum(&routed)).into_bytes();
+        line.extend_from_slice(b"\r\n");
+        remote.write_all(&line).await.unwrap();
+        remote
+            .write_all(&addressed_block(88, 88, &[]))
+            .await
+            .unwrap();
+        remote
+            .write_all(&addressed_block(176, 80, &[255]))
+            .await
+            .unwrap();
+        let states = running.await.unwrap().unwrap();
+        assert_eq!(states.len(), 256);
+        assert_eq!(states[16], 1);
+        assert_eq!(states[255], 1);
     }
 }

@@ -342,6 +342,19 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     assert_eq!(sys.pci.count_payload("46050900A4FF43C1EA1B"), 1);
     let observed = command(&mut reader, &mut writer, "CMQTT LABELS //HARNESS/254/p/5").await;
     assert!(observed.contains("\"observations\":[]"), "{observed:?}");
+    // Attribute-suffixed and foreign scopes are not a network or unit.
+    for address in [
+        "CMQTT LABELS //HARNESS/254/p/5/TagName",
+        "CMQTT LABELS //OTHER/254",
+        "CMQTT LABELS //OTHER/254/p/5",
+    ] {
+        assert!(
+            command(&mut reader, &mut writer, address)
+                .await
+                .contains("400 CMQTT LABELS requires the configured network or unit"),
+            "{address}"
+        );
+    }
     assert!(
         command(&mut reader, &mut writer, "GET //HARNESS/254/203/1 Level")
             .await

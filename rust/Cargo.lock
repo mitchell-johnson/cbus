@@ -220,6 +220,7 @@ version = "0.1.0"
 dependencies = [
  "cbus-protocol",
  "chrono",
+ "hex",
  "proptest",
  "tokio",
  "tokio-serial",

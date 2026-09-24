@@ -156,7 +156,10 @@ UNIT IDENTIFY //PROJECT/254/p/5 1
 UNIT READMEM //PROJECT/254/p/5 4096 256
 ```
 
-`CMQTT LABELS` accepts the configured network or a unit on it. Its network-wide
+`CMQTT LABELS` accepts the configured network (including the bare `254` and
+`PROJECT/254` forms) or exactly one unit on it (`//PROJECT/254/p/5` — four
+path parts, no more). Attribute-suffixed paths, foreign projects, and other
+networks are rejected with 400 rather than answered or invented. Its network-wide
 observation ring is volatile, resets on reconnect, and is cleared after an
 accepted eDLT clear request so stale entries cannot be presented for that unit.
 It does not infer what a display received before cmqttd connected or whether a
