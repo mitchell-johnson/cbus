@@ -41,6 +41,124 @@ impl Drop for Transaction<'_> {
 }
 
 impl PciClient {
+    /// Send the native eDLT dynamic-label clear control exactly once.
+    ///
+    /// The unit ACK proves only that the programming control was accepted;
+    /// C-Bus exposes no readback for the erased dynamic-label cache.
+    pub async fn clear_edlt_dynamic_labels(&self, unit: u8) -> Result<()> {
+        if unit == 0 || unit == 255 {
+            return Err(Error::new(
+                ErrorKind::InvalidInput,
+                "eDLT label clear requires a unit address in 1..254",
+            ));
+        }
+        let _lane = self.programming_lane.lock().await;
+        if self.programming_fault.load(Ordering::Acquire) {
+            return Err(Error::other(
+                "programming stream needs reconnect after an incomplete transaction",
+            ));
+        }
+        let mut transaction = Transaction {
+            fault: &self.programming_fault,
+            complete: false,
+        };
+        let mut replies = self.packets.subscribe();
+        let mut bytes = cbus_protocol::packet::programming_request(
+            unit,
+            &Cal::Write {
+                parameter: 0xff,
+                data: vec![0x43, 0xc1, 0xea],
+            },
+        )
+        .map_err(|error| Error::new(ErrorKind::InvalidInput, error.0))?;
+        let code = self.get_confirmation_code();
+        bytes.insert(bytes.len() - 1, code);
+
+        let result = tokio::time::timeout(REPLY_TIMEOUT, async {
+            self.init_done
+                .subscribe()
+                .wait_for(|&done| done)
+                .await
+                .map_err(|_| Error::new(ErrorKind::BrokenPipe, "PCI initialization ended"))?;
+            if !self.is_connected() {
+                return Err(Error::new(ErrorKind::BrokenPipe, "PCI disconnected"));
+            }
+            self.flow
+                .submit(bytes, Priority::Command, ResponseKind::Confirmation(code))
+                .await
+                .map_err(|_| Error::new(ErrorKind::BrokenPipe, "PCI writer ended"))??;
+            let mut confirmed = None;
+            let mut accepted = None;
+            loop {
+                match replies.recv().await {
+                    Ok(Some(Packet::Confirmation { code: got, success })) if got == code => {
+                        confirmed = Some(success)
+                    }
+                    Ok(Some(Packet::PointToPoint { meta, cals, .. }))
+                        if meta.source_address == Some(unit) =>
+                    {
+                        for cal in cals {
+                            match cal {
+                                Cal::Ack {
+                                    parameter: 0xff,
+                                    data,
+                                } if data == [0x43] => accepted = Some(true),
+                                Cal::Nak {
+                                    parameter: 0xff,
+                                    data,
+                                } if data.starts_with(&[0x43]) => accepted = Some(false),
+                                _ => {}
+                            }
+                        }
+                    }
+                    Ok(Some(Packet::PciError)) => {
+                        return Err(Error::other("PCI rejected eDLT label clear"));
+                    }
+                    Ok(Some(_)) => {}
+                    Ok(None) | Err(_) => {
+                        return Err(Error::new(
+                            ErrorKind::BrokenPipe,
+                            "PCI response stream lost",
+                        ));
+                    }
+                }
+                if confirmed == Some(false) {
+                    return Err(Error::other("PCI rejected eDLT label clear"));
+                }
+                if accepted == Some(false) {
+                    return Err(Error::other("unit rejected eDLT label clear"));
+                }
+                if confirmed == Some(true) && accepted == Some(true) {
+                    return Ok(());
+                }
+            }
+        })
+        .await
+        .unwrap_or_else(|_| {
+            Err(Error::new(
+                ErrorKind::TimedOut,
+                "eDLT label clear timed out",
+            ))
+        });
+
+        {
+            let mut state = self.state.lock().unwrap();
+            state.pending.remove(&code);
+            state.codes_in_use.remove(&code);
+        }
+        if result.is_ok()
+            || result.as_ref().is_err_and(|error| {
+                matches!(
+                    error.to_string().as_str(),
+                    "PCI rejected eDLT label clear" | "unit rejected eDLT label clear"
+                )
+            })
+        {
+            transaction.complete = true;
+        }
+        result
+    }
+
     /// Supply the configured local-interface address used to correlate bare
     /// CAL replies. A conflicting hint is rejected; this does not itself
     /// establish physical presence or identity.
@@ -1660,6 +1778,91 @@ mod tests {
             bytes.iter().map(|b| format!("{b:02X}")).collect::<String>()
         );
         remote.get_mut().write_all(wire.as_bytes()).await.unwrap();
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn edlt_label_clear_requires_confirmation_and_source_tagged_ack() {
+        let (pci, mut remote, mut events) = setup().await;
+        let worker = pci.clone();
+        let clear = tokio::spawn(async move { worker.clear_edlt_dynamic_labels(5).await });
+        let request = line(&mut remote).await;
+        assert_eq!(&request[..request.len() - 2], b"\\46050900A4FF43C1EA1B");
+        let code = request[request.len() - 2];
+
+        // A foreign ACK and unrelated lighting traffic must not complete or
+        // disappear into the programming transaction.
+        reply(&mut remote, 4, &[0x32, 0xff, 0x43]).await;
+        remote
+            .get_mut()
+            .write_all(b"05043800790145\r\n")
+            .await
+            .unwrap();
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        assert!(!clear.is_finished());
+        reply(&mut remote, 5, &[0x32, 0xff, 0x43]).await;
+        clear.await.unwrap().unwrap();
+        assert!(matches!(
+            events.recv().await,
+            Some(CBusEvent::LightingOn {
+                source: Some(4),
+                app: 56,
+                group: 1
+            })
+        ));
+        assert_eq!(
+            pci.clear_edlt_dynamic_labels(0).await.unwrap_err().kind(),
+            ErrorKind::InvalidInput
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn definitive_edlt_label_clear_nak_keeps_programming_lane_usable() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let clear = tokio::spawn(async move { worker.clear_edlt_dynamic_labels(5).await });
+        let request = line(&mut remote).await;
+        let code = request[request.len() - 2];
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        reply(&mut remote, 5, &[0x3b, 0xff, 0x43]).await;
+        assert!(clear
+            .await
+            .unwrap()
+            .unwrap_err()
+            .to_string()
+            .contains("unit rejected"));
+
+        let worker = pci.clone();
+        let recall = tokio::spawn(async move { worker.recall_parameter(5, 1, 1).await });
+        assert_eq!(line(&mut remote).await, b"\\4605001A010199\r");
+        reply(&mut remote, 5, &[0x82, 1, 9]).await;
+        assert_eq!(recall.await.unwrap().unwrap(), vec![9]);
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn lost_edlt_label_clear_ack_is_not_retried_and_faults_programming_lane() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let clear = tokio::spawn(async move { worker.clear_edlt_dynamic_labels(5).await });
+        let request = line(&mut remote).await;
+        let code = request[request.len() - 2];
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        assert!(
+            tokio::time::timeout(Duration::from_secs(5), line(&mut remote))
+                .await
+                .is_err()
+        );
+        assert_eq!(
+            clear.await.unwrap().unwrap_err().kind(),
+            ErrorKind::TimedOut
+        );
+        assert!(pci.programming_fault.load(Ordering::Acquire));
+        assert!(pci.state.lock().unwrap().pending.is_empty());
+        assert!(pci
+            .recall_parameter(5, 1, 1)
+            .await
+            .unwrap_err()
+            .to_string()
+            .contains("needs reconnect"));
     }
 
     #[tokio::test(start_paused = true)]

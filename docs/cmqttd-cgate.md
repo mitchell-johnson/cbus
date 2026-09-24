@@ -45,6 +45,7 @@ not be committed or published.
 | CLOCK DATE/TIME/REQUEST_REFRESH | Actual Clock and Timekeeping SAL on application 223, including `SYSTEM` date/time resolution and observed-value queries |
 | TEMPERATURE BROADCAST | Actual Temperature Broadcast SAL on application 25 with decimal or `$19` addressing, native one-decimal input, range checks, quarter-degree wire conversion, incoming event delivery and disconnect-safe live caching |
 | LIGHTING/TRIGGER/ENABLE LABEL and UNICODELABEL | Actual checksummed dynamic-label SAL on the selected application. Supports raw/text payloads, built-in icon references, language selection, native segmented UTF-8, and start/header/chunk/commit dynamic bitmap uploads. Every fragment requires positive PCI delivery confirmation; Enable Unicode and invalid native bounds fail before transmission |
+| LABEL CLEAREDLT | Sends the native KEYGL5 programming control through the shared PCI exactly once, requires both PCI confirmation and the source/tag-correlated unit ACK, and reports acceptance separately from physical erasure or persistence |
 | NET PINGU and GET network Units | Actual installation MMI request using cmqttd's negotiated PCI checksum mode; buffers blocks that a CNI forwards before its positive confirmation, accepts only confirmed contiguous coverage of all addresses 0–255, and reports the native sorted `302-Units=` form |
 | NET SYNC and cached unit getters | Configured interface routing hint (physically revalidated) or BASIC discovery, complete installation MMI, then confirmed IDENTIFY1/2 probes and bounded IDENTIFY4 collection for every present address; routed and local bare-CAL replies are correlated, silent legacy/error addresses remain present with unknown identity fields, the live cache is replaced atomically, and native getters expose it |
 | NET CHECKUNIT | Active confirmed IDENTIFY4 collection through the native two-second quiet interval, with the native no-unit, single-unit, duplicate-unit and identity-error result forms; `*` expands from a fresh complete MMI |
@@ -110,6 +111,14 @@ cmqttd has physically observed on its configured network; it does not invent
 unknown values. Playback stops on the first failed delivery and reports how many
 earlier actions were confirmed. Its 200 response proves PCI delivery, while
 fresh status reports establish the resulting physical levels.
+
+`LABEL CLEAREDLT //PROJECT/NETWORK/p/UNIT` accepts a database unit classified
+as KEYGL5, sends the native `A4 FF 43 C1 EA` programming control, and never
+automatically retries it. A 200 response proves correlated command acceptance;
+C-Bus provides no readback that can prove which cached dynamic labels the
+firmware erased. Definitive PCI or unit rejection leaves the programming lane
+available, while a timeout or transport loss faults it until reconnect so a
+late reply cannot be assigned to a later command.
 
 ## Live label reads
 
@@ -187,6 +196,9 @@ IDENTIFY4 request or response bytes are pinned by vectors and the real-daemon
 system test. Dynamic-label vectors pin exact encode/decode JSON and wire bytes;
 the real-daemon test covers text, icon, Unicode, bitmap, language selection,
 vendor-invalid rejection, and confirmed multi-frame delivery on the shared PCI.
+Transport tests pin the eDLT clear control bytes, positive PCI and unit replies,
+source filtering, MQTT fanout and definitive NAK recovery. The real-daemon case
+verifies exact-once delivery through the same PCI connection.
 The real-daemon scene case records an observed level, verifies durable storage,
 plays it as the exact confirmed zero-time ramp, and verifies that acknowledgement
 does not fabricate a level observation.

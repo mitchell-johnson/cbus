@@ -421,6 +421,7 @@ impl Service {
                 "dynamic_labels":true,
                 "dynamic_label_families":["enable","lighting","trigger"],
                 "dynamic_label_modes":["dynamic_icon","icon","language","raw","unicode"],
+                "edlt_label_clear":true,
                 "named_scenes":true,
                 "install_mmi":true, "network_pingu":true,
                 "network_sync":true, "network_checkunit":true,
@@ -491,6 +492,9 @@ impl Service {
             && matches!(sub, "LABEL" | "UNICODELABEL")
         {
             return self.label(client, line, tag, &words, &upper).await;
+        }
+        if verb == "LABEL" && sub == "CLEAREDLT" {
+            return self.clear_edlt_labels(client, line, tag, &words).await;
         }
         if verb == "TRIGGER" && matches!(sub, "EVENT" | "INDICATORKILL") {
             return self.trigger(client, line, tag, &words).await;
@@ -1506,6 +1510,61 @@ impl Service {
             }
         }
         response
+    }
+
+    async fn clear_edlt_labels(
+        &self,
+        client: &ClientState,
+        line: &str,
+        tag: &str,
+        words: &[&str],
+    ) -> Response {
+        let _commands = self.commands.lock().await;
+        let response = {
+            let mut staged = self.model.lock().await.clone();
+            staged.current = client
+                .current
+                .clone()
+                .or_else(|| Some(self.project.clone()));
+            staged.handle(line)
+        };
+        if response.status >= 400 {
+            return response;
+        }
+        let Some((project, network, unit)) = words
+            .get(2)
+            .and_then(|address| Server::split_unit(address))
+            .filter(|(project, network, unit)| {
+                *project == self.project && *network == self.network && (1..=254).contains(unit)
+            })
+        else {
+            return err(tag, 404, "404 eDLT is not on this network");
+        };
+        let unit_type = self
+            .model
+            .lock()
+            .await
+            .projects
+            .get(&project)
+            .and_then(|project| project.networks.get(&network))
+            .and_then(|network| network.units.get(&unit))
+            .map(|record| record.unit_type.clone());
+        match unit_type {
+            None => return err(tag, 401, "401 Unit not found"),
+            Some(unit_type) if !unit_type.eq_ignore_ascii_case("KEYGL5") => {
+                return err(tag, 402, "402 Target is not a supported eDLT")
+            }
+            Some(_) => {}
+        }
+
+        let pci = self.pci.read().await.clone();
+        match pci.clear_edlt_dynamic_labels(unit).await {
+            Ok(()) => {
+                let _ = self.events.send(format!("#e# labels cleared {}", words[2]));
+                response
+            }
+            Err(error) => err(tag, 502, &format!("502 eDLT label clear failed: {error}")),
+        }
     }
 
     async fn enable(

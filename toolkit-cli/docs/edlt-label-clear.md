@@ -16,6 +16,12 @@ cbus-toolkit cgate --host 127.0.0.1 edlt-label-clear request //OWNED/254/p/5 \
 
 Each CLI invocation builds a fresh plan. An optional output path must be new; the CLI writes and synchronizes that evidence before the request. It contains observed identity, runtime and database fingerprints. It is not a backup of the physical unit's dynamic-label cache. The request repeats the plan guards before issuing the native command. Exit zero means a plan was produced or the native request was accepted; it does not mean labels were independently observed to disappear.
 
+The same workflow can use cmqttd's embedded C-Gate listener when
+`CMQTT CAPABILITIES` reports `edlt_label_clear: true`. cmqttd sends the control
+through its shared CNI connection while MQTT remains active, so Windows and the
+vendor C-Gate process are not required. The evidence and verification limits
+are unchanged.
+
 ```python
 from cbus_toolkit.edlt_label_clear import EdltDynamicLabelClear
 

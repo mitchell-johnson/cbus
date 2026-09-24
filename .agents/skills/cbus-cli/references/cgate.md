@@ -37,6 +37,10 @@ from the configured network. `SCENE PLAY set name` sends confirmed zero-time
 ramps and requests status readback; its success does not by itself prove the
 loads reached those levels. These named server snapshots are separate from
 device PP scene tables.
+`LABEL CLEAREDLT //PROJECT/NETWORK/p/UNIT` is hardware-backed for KEYGL5. It
+sends one native clear control and requires a correlated unit ACK. Report it as
+accepted, never as verified erasure or persistence; there is no dynamic-label
+cache readback operation.
 It also implements guarded scalar `SET //PROJECT/NETWORK/p/UNIT Address DEST`
 against the physical bus. That command proves one source and an empty
 destination, uses the native parameter-`0x20` one-use challenge, sends the
@@ -57,6 +61,7 @@ two-bit MMI state. Use `GET //PROJECT/NETWORK Units` and unit `Type`, `Version`,
 Query `CMQTT CAPABILITIES`; `unit_readdress: true` denotes the readdress path and
 `physical_pp_save_cbus3_nvm: true` denotes the NVM commit path,
 `dynamic_labels: true` denotes the label sender,
+`edlt_label_clear: true` denotes the one-shot KEYGL5 clear control,
 `named_scenes: true` denotes hardware-backed named-scene playback,
 while `full_cgate_compatibility` remains false until every remaining backend and
 acceptance requirement is complete.

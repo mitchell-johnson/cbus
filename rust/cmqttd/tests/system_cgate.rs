@@ -261,6 +261,43 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     )
     .await
     .contains("400 ENABLE has no UNICODELABEL"));
+    assert!(command(
+        &mut reader,
+        &mut writer,
+        "LABEL CLEAREDLT //HARNESS/254/p/5"
+    )
+    .await
+    .contains("401 Unit not found"));
+    assert!(command(
+        &mut reader,
+        &mut writer,
+        "DBADDSAFE //HARNESS/254 Unit 5 Fixture_eDLT"
+    )
+    .await
+    .contains("200 OK"));
+    assert!(command(
+        &mut reader,
+        &mut writer,
+        "DBSETSAFE //HARNESS/254/p/5/UnitType KEYGL5"
+    )
+    .await
+    .contains("200 OK"));
+    let clear = command(
+        &mut reader,
+        &mut writer,
+        "LABEL CLEAREDLT //HARNESS/254/p/5",
+    );
+    let clear_reply = async {
+        require(COMMAND_DRAIN, "eDLT label clear control", || {
+            sys.pci.count_payload("46050900A4FF43C1EA1B") == 1
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0xff, 0x43]));
+    };
+    let (clear, ()) = tokio::join!(clear, clear_reply);
+    assert!(clear.contains("200 OK."), "{clear:?}");
+    assert_eq!(sys.pci.count_payload("46050900A4FF43C1EA1B"), 1);
     assert!(
         command(&mut reader, &mut writer, "GET //HARNESS/254/203/1 Level")
             .await
