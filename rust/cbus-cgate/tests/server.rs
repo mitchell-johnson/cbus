@@ -380,3 +380,30 @@ fn scalar_set_move_contract_and_guards() {
     let events = s.drain_events();
     assert!(events.iter().any(|event| event == "#e# unit moved 30 32"));
 }
+
+/// Mock determinism for DBVALIDATE: status 233 with every line (including
+/// the final) in the exact native `233[- ]<path>: Valid` shape; malformed
+/// shapes fail closed. Mock-only pins: no project-selection gating and no
+/// existence check, both pending native capture before any parity claim.
+#[test]
+fn dbvalidate_envelope_shape_and_rejects() {
+    let mut s = Server::new(AccessLevel::Program);
+    let valid = s.handle("[1] DBVALIDATE //TEST/254/p/20");
+    assert_eq!(valid.status, 233);
+    assert_eq!(valid.lines, vec!["233-//TEST/254/p/20: Valid"]);
+    assert_eq!(valid.final_text, "233 //TEST/254/p/20: Valid");
+    // Shape-only: absent paths validate the same way.
+    let absent = s.handle("[2] DBVALIDATE //TEST/254/p/99");
+    assert_eq!(absent.status, 233);
+    assert_eq!(absent.lines, vec!["233-//TEST/254/p/99: Valid"]);
+    assert_eq!(absent.final_text, "233 //TEST/254/p/99: Valid");
+    for (line, fragment) in [
+        ("[3] DBVALIDATE", "requires a path"),
+        ("[4] DBVALIDATE //TEST/254/p/20 extra", "requires a path"),
+        ("[5] DBVALIDATE //TEST/254/p/#", "requires a path"),
+    ] {
+        let response = s.handle(line);
+        assert_eq!(response.status, 400, "{line}");
+        assert!(response.final_text.contains(fragment), "{line}");
+    }
+}
