@@ -958,3 +958,91 @@ fn calculator_envelope_count_and_guards() {
     assert_eq!(away.status, 404);
     assert!(away.final_text.contains("Project not selected"));
 }
+
+/// Mock determinism for MOCK BUS-DEL: drops the physical-bus record while
+/// the database record stays, with guards for shapes, addresses, networks
+/// and selection.
+#[test]
+fn mock_bus_del_drops_physical_keeps_database() {
+    let mut s = Server::new(AccessLevel::Program);
+    assert_eq!(s.handle("[1] PROJECT NEW TEST").status, 200);
+    assert_eq!(
+        s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
+            .status,
+        200
+    );
+    assert_eq!(s.handle("[3] PROJECT USE TEST").status, 200);
+    assert_eq!(
+        s.handle("[4] DBADDSAFE //TEST/254 Unit 20 Ghost").status,
+        200
+    );
+    // Opaque database fields survive the physical drop.
+    assert_eq!(
+        s.handle("[4c] DBSETSAFE //TEST/254/p/20/TagName Kept")
+            .status,
+        200
+    );
+    for (line, status, fragment) in [
+        ("[5] MOCK BUS-DEL", 400, "network path and address"),
+        (
+            "[6] MOCK BUS-DEL //TEST/254 256",
+            400,
+            "Invalid bus address",
+        ),
+        (
+            "[6b] MOCK BUS-DEL //TEST/254 -1",
+            400,
+            "Invalid bus address",
+        ),
+        ("[6c] MOCK BUS-DEL //TEST/254 x", 400, "Invalid bus address"),
+        ("[7] MOCK BUS-DEL //TEST/250 20", 404, "Network not found"),
+        (
+            "[8] MOCK BUS-DEL //TEST/254 99",
+            404,
+            "No physical unit at address",
+        ),
+    ] {
+        let response = s.handle(line);
+        assert_eq!(response.status, status, "{line}");
+        assert!(response.final_text.contains(fragment), "{line}");
+    }
+    // Selected-away projects are refused.
+    assert_eq!(s.handle("[9] PROJECT NEW T2").status, 200);
+    assert_eq!(s.handle("[10] PROJECT USE T2").status, 200);
+    let away = s.handle("[11] MOCK BUS-DEL //TEST/254 20");
+    assert_eq!(away.status, 404);
+    assert!(away.final_text.contains("Project not selected"));
+    assert_eq!(s.handle("[12] PROJECT USE TEST").status, 200);
+    // The drop removes physical presence; the database record stays.
+    // Bare network forms resolve the same lookup path: an absent address
+    // proves the form parses (no extra OID-issuing units are created, so
+    // the process-global counter other tests pin is undisturbed).
+    let bare = s.handle("[12b] MOCK BUS-DEL 254 21");
+    assert_eq!(bare.status, 404);
+    assert!(bare.final_text.contains("No physical unit at address"));
+    let dropped = s.handle("[13] MOCK BUS-DEL //TEST/254 20");
+    assert_eq!(dropped.status, 200);
+    assert_eq!(dropped.final_text, "200 OK");
+    assert_eq!(s.handle("[14] GET //TEST/254/p/20 *").status, 401);
+    let dbdoc = s.handle("[15] DBGETXML //TEST/254/p/20");
+    assert_eq!(dbdoc.status, 200);
+    let dbfield = s.handle("[15b] DBGET //TEST/254/p/20/TagName");
+    assert_eq!(dbfield.status, 200);
+    assert!(dbfield
+        .lines
+        .iter()
+        .chain(std::iter::once(&dbfield.final_text))
+        .any(|line| line.contains("Kept")));
+    // Repeating the drop reports the now-absent physical record.
+    let repeat = s.handle("[16] MOCK BUS-DEL //TEST/254 20");
+    assert_eq!(repeat.status, 404);
+    let events = s.drain_events();
+    assert!(events.iter().any(|e| e == "#e# mock bus-del 20"));
+    assert_eq!(
+        events
+            .iter()
+            .filter(|e| e == &"#e# mock bus-del 20")
+            .count(),
+        1
+    );
+}
