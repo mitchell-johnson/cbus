@@ -11,7 +11,7 @@ import unittest
 from uuid import uuid4
 
 from cbus_toolkit.edlt import EdltError, EdltApplyError, EdltLighting
-from cbus_toolkit.edlt_measurement import EdltMeasurementWidget
+from cbus_toolkit.edlt_measurement import EdltMeasurementWidget, measurement_composite
 from cbus_toolkit.unitspec import UnitSpecStore, ParameterSpec
 from test_edlt import fixture as base_fixture, Session
 
@@ -77,6 +77,42 @@ class MeasurementTests(unittest.TestCase):
         exact = self.plan(gain_mantissa=29, gain_exponent=-2)
         self.assertEqual(exact.record[4:7], bytes((29, 0, 254)))
         self.assertEqual(exact.as_dict()['gain_value'], '0.29')
+
+    def test_original_composite_conversion_and_lossy_native_vectors(self):
+        vectors = {
+            '0': (1, 0, '1'), '-1': (-1, 0, '-1'), '0.125': (125, -3, '0.125'),
+            '32767': (32767, 0, '32767'), '-32768': (-32768, 0, '-32768'),
+            '32768': (3276, 1, '32760'), '-32769': (-3276, 1, '-32760'),
+            '123456': (12345, 1, '123450'), '0.00001': (1, -5, '0.00001'),
+            '1000000': (1, 6, '1000000'), '1.23456': (12346, -4, '1.2346'),
+            '0.29': (28, -2, '0.28'), '1.15': (114, -2, '1.14'),
+            '0.07': (7, -2, '0.07'), '0.58': (57, -2, '0.57'),
+            '-0.29': (-28, -2, '-0.28'), '1.000000000000001': (1, 0, '1'),
+            '1e-20': (1, -20, '0.00000000000000000001'),
+            '1e-50': (1, -50, '0.00000000000000000000000000000000000000000000000001'),
+            '1e-51': (1, 0, '1'),
+        }
+        for value, expected in vectors.items():
+            with self.subTest(value=value):
+                conversion = measurement_composite(value, gain=True)
+                self.assertEqual((conversion['mantissa'], conversion['exponent'], conversion['stored_value']), expected)
+        plan = self.plan(gain_value='0.29', offset_value='-2.5')
+        self.assertEqual(plan.record[4:10], bytes((28, 0, 254, 255, 231, 255)))
+        result = plan.as_dict()
+        self.assertTrue(result['ui_composite_conversion'])
+        self.assertEqual(result['gain_value'], '0.28')
+        self.assertEqual(result['offset_value'], '-2.5')
+        self.assertTrue(result['composite_conversions']['gain']['exact'])
+        self.assertEqual(result['composite_conversions']['gain']['input'], '0.29')
+        self.assertEqual(result['composite_conversions']['gain']['stored_value'], '0.28')
+        self.assertFalse(self.plan(gain_mantissa=29, gain_exponent=-2).as_dict()['ui_composite_conversion'])
+        for options in ({'gain_value': '0.29', 'gain_mantissa': 29},
+                        {'gain_value': '1', 'gain_exponent': 0},
+                        {'offset_value': '1', 'offset_mantissa': 1},
+                        {'gain_value': 'nan'}, {'gain_value': '1_000'},
+                        {'gain_value': '123456789012345678901'}, {'offset_value': object()}):
+            with self.subTest(options=options), self.assertRaises(EdltError):
+                self.plan(**options)
 
     def test_original_static_allocations_sharing_exact_indexes_and_clear(self):
         plan = self.scaled()

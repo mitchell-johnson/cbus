@@ -2,9 +2,10 @@
 import json
 from unittest.mock import Mock
 import pytest
-from cbus_toolkit.cmqtt import decode_edlt_labels, edlt_labels, read_memory
+from cbus_toolkit.cmqtt import decode_edlt_labels, decode_observed_labels, edlt_labels, read_memory
 from cbus_toolkit.edlt import configuration_crc
 from cbus_toolkit.cgate import CGateResponse
+from cbus_toolkit.labels import encode_dynamic_icon, encode_label, encode_unicode_label
 
 
 def memory():
@@ -32,6 +33,15 @@ def response(value):
     return CGateResponse(('200-'+json.dumps(value),'200 OK'),'200 OK',200)
 
 
+def observed(*payloads):
+    return {'format': 'cmqttd-observed-dynamic-labels-v1', 'source': 'observed-sal-traffic',
+            'complete': False, 'device_readback': False, 'reset_on_reconnect': True,
+            'capacity': 4096, 'observations': [
+                {'sequence': sequence, 'direction': 'sent-confirmed', 'source_unit': None,
+                 'application': application, 'payload_hex': payload.hex()}
+                for sequence, (application, payload) in enumerate(payloads)]}
+
+
 def test_decodes_scene_selector_and_all_64_strings():
     result = decode_edlt_labels(memory())
     assert [w['label'] for w in result['widgets']] == ['Kitchen','Goodnight']
@@ -52,6 +62,38 @@ def test_toolkit_crc_ignores_old_bytes_after_shortened_string_terminator():
     assert result['static_text_crc_method'] == 'toolkit-zero-padded-strings'
 
 
+def test_assembles_observed_standard_unicode_icons_and_language_without_claiming_readback():
+    packets = [(56, encode_label(1, 0, 0, b'Lounge', variant=2))]
+    packets.extend((202, payload) for payload in encode_unicode_label(8, 2, '東京'.encode(), variant=1, sequence=14))
+    packets.append((203, encode_label(9, 0, 2, b'\x01\x01\x02', action_selector=0)))
+    packets.extend((56, payload) for payload in encode_dynamic_icon(3, 7, 65535, 8, 7,
+                   b'\x01\x02\x04\x08\x10\x20\x40', vertical_offset=2))
+    packets.append((56, encode_label(1, 3, 6, b'')))
+    result = decode_observed_labels(observed(*packets))
+    assert not result['complete'] and not result['device_readback']
+    assert result['observation_count'] == len(packets)
+    assert result['incomplete_transactions'] == 0
+    assert not result['errors']
+    by_kind = {item['kind']: item for item in result['entries']}
+    assert by_kind['standard']['text'] == 'Lounge'
+    assert by_kind['standard']['variant'] == 2
+    assert by_kind['unicode-text']['text'] == '東京'
+    assert by_kind['built-in-icon']['icon'] == 258
+    assert by_kind['built-in-icon']['action_selector'] == 0
+    assert by_kind['dynamic-icon']['icon'] == 65535
+    assert by_kind['dynamic-icon']['data_hex'] == '01020408102040'
+    assert result['language_selections'][0]['language'] == 3
+
+
+def test_observed_cache_retains_incomplete_and_rejects_unsafe_provenance():
+    first = encode_unicode_label(8, 2, b'a' * 20, sequence=4)[0]
+    result = decode_observed_labels(observed((202, first)))
+    assert result['incomplete_transactions'] == 1
+    assert not result['entries']
+    bad = observed((56, encode_label(1, 0, 0, b'X'))); bad['complete'] = True
+    with pytest.raises(ValueError): decode_observed_labels(bad)
+
+
 @pytest.mark.parametrize('position,value',[(0,3),(0x1000,88),(0x2002,254)])
 def test_rejects_incompatible_corrupt_or_malformed_memory(position,value):
     image = bytearray(memory()); image[position]=value
@@ -63,6 +105,7 @@ def test_reads_via_cgate_only_and_checks_live_identity_and_stability():
     def command(text):
         calls.append(text); words=text.split()
         if words[:2] == ['CMQTT','UNIT']: return response({'name':'Fixture'})
+        if words[:2] == ['CMQTT','LABELS']: return response(observed())
         if words[:2] == ['UNIT','IDENTIFY']:
             attribute=int(words[3]); data=b'KEYGL5  ' if attribute==1 else b'05.05.00'
             return response(dict(source='physical',address=address,attribute=attribute,data_hex=data.hex()))
@@ -72,7 +115,10 @@ def test_reads_via_cgate_only_and_checks_live_identity_and_stability():
     result=edlt_labels(client,address)
     assert result['source']=='physical-via-cmqttd'
     assert result['widgets'][1]['label']=='Goodnight'
-    assert calls[-1]==f'UNIT READMEM {address} 0 16'
+    assert calls[-2]==f'UNIT READMEM {address} 0 16'
+    assert calls[-1]==f'CMQTT LABELS {address}'
+    assert not result['dynamic_labels_observed']
+    assert not result['observed_dynamic_labels']['complete']
     assert not any('WRITE' in call for call in calls)
 
 

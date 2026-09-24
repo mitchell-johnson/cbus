@@ -391,6 +391,8 @@ def _edlt_measurement_options(parser):
     for prefix in ("gain", "offset"):
         parser.add_argument("--" + prefix + "-mantissa", type=_number, help="Signed 16-bit scaling mantissa")
         parser.add_argument("--" + prefix + "-exponent", type=_number, help="Signed 8-bit power of ten")
+        parser.add_argument("--" + prefix + "-value",
+                            help="Decimal value using Toolkit's lossy Measurement editor conversion")
     parser.add_argument("--page-mode", choices=("single", "multiple"))
     for prefix in ("prefix", "suffix", "label"):
         parser.add_argument("--" + prefix + "-text", help="Shared static text; empty text detaches the reference")
@@ -401,7 +403,7 @@ def _edlt_measurement_options(parser):
 def _edlt_measurement_settings(args):
     return {name: getattr(args, name) for name in (
         "page", "position", "device_id", "channel", "icon_index", "decimal_places", "gain_mantissa", "gain_exponent",
-        "offset_mantissa", "offset_exponent", "page_mode", "prefix_text", "prefix_index", "suffix_text",
+        "offset_mantissa", "offset_exponent", "gain_value", "offset_value", "page_mode", "prefix_text", "prefix_index", "suffix_text",
         "suffix_index", "label_text", "label_index")}
 
 

@@ -38,7 +38,9 @@ Describe `cgate-mock` as providing full C-Gate 3.4 **command-surface compatibili
 It is not yet a full C-Gate replacement. For live KEYGL5 labels, use
 `cbus-toolkit cgate edlt-labels` against this service; Windows is unnecessary.
 Keep saved database labels distinct from CRC-verified physical reads and
-unread dynamic label caches.
+the bounded current-connection dynamic-label observations. The observation
+view is incomplete and does not read labels that were already cached by a
+device.
 
 ## Changing the repository
 

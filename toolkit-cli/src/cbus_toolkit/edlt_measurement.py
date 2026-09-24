@@ -1,12 +1,14 @@
 """Exact KEYGL5 Measurement fields and static references in database PP.
 
-Scaling uses explicit signed mantissa/exponent pairs. The original UI's
-lossy floating-point composite conversion is deliberately not implemented.
+Scaling accepts either explicit signed mantissa/exponent pairs or the original
+Measurement editor's intentionally lossy decimal composite conversion.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_EVEN, localcontext
+import math
+import re
 from types import MappingProxyType
 from typing import Mapping
 
@@ -15,6 +17,7 @@ from .edlt import EdltLighting, EdltError, EdltApplyError, _field, _int, _render
 _STANDBY_TYPES = frozenset((0, 10, 11, 12, 13, 255))
 _FUNCTION_TYPES = frozenset((0, *range(2, 11), *range(12, 17), 255))
 BUILTIN_ICON_INDICES = frozenset((*range(39), *range(128, 142), 252, 253, 254))
+_COMPOSITE_RE = re.compile(r'[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?\Z')
 
 
 def _signed(value):
@@ -29,6 +32,98 @@ def _decimal_value(mantissa, exponent):
     # Construct an exact value without depending on the caller's Decimal
     # precision/traps or rounding through a binary floating-point conversion.
     return format(Decimal((int(mantissa < 0), tuple(map(int, str(abs(mantissa)))), exponent)), 'f')
+
+
+def _format_double_without_e(number):
+    """Reproduce the original Framework/Mono ``F50`` display boundary.
+
+    Toolkit 1.18 was built against the legacy .NET formatter, which carries
+    fifteen significant double digits into a fixed 50-decimal representation.
+    The final fixed-place rounding is needed for values below 1e-50.
+    """
+    significant = format(number, '.15g')
+    with localcontext() as context:
+        context.prec = max(128, len(significant) + 64)
+        value = Decimal(significant)
+        quantum = Decimal(1).scaleb(-50)
+        text = format(value.quantize(quantum, rounding=ROUND_HALF_EVEN), 'f')
+    return text.rstrip('0').rstrip('.') or '0'
+
+
+def _try_break_number(number):
+    text = _format_double_without_e(number)
+    point = text.find('.')
+    if point >= 0:
+        text = text.rstrip('0')
+        point = text.find('.')
+        exponent = -(len(text) - point - 1)
+        integer = math.trunc(number * math.pow(10.0, -exponent))
+    else:
+        trimmed = text.rstrip('0')
+        exponent = len(text) - len(trimmed)
+        integer = math.trunc(number / math.pow(10.0, exponent))
+        if integer == 0:
+            exponent = 0
+    return integer, exponent
+
+
+def measurement_composite(value, *, gain=False):
+    """Convert one invariant decimal exactly as Toolkit's Measurement editor.
+
+    The returned dictionary retains whether the value was representable on the
+    first pass. ``gain=True`` applies the original zero-to-one Gain rule.
+    Invalid input is rejected rather than silently retaining an earlier GUI
+    value, which is the only sensible contract for a non-interactive CLI.
+    """
+    if not isinstance(value, str):
+        raise EdltError('Measurement composite value must be text')
+    if len(value) > 20:
+        raise EdltError('Measurement composite value exceeds the original 20-character field')
+    source = value.strip()
+    if not source or not _COMPOSITE_RE.fullmatch(source):
+        raise EdltError('Measurement composite value must be an invariant decimal number')
+    try:
+        number = float(source)
+    except ValueError as error:
+        raise EdltError('Measurement composite value must be an invariant decimal number') from error
+    if not math.isfinite(number):
+        raise EdltError('Measurement composite value must be finite')
+    if gain and number == 0.0:
+        number = 1.0
+    adjusted = number
+    integer, exponent = _try_break_number(adjusted)
+    exact = -32768 <= integer <= 32767
+    iterations = 0
+    while not (-32768 <= integer <= 32767):
+        text = _format_double_without_e(adjusted)
+        point = text.find('.')
+        if point < 0:
+            candidate = adjusted
+            digits = 1
+            while candidate == adjusted:
+                power = math.pow(10.0, digits)
+                candidate = math.trunc(candidate / power) * power
+                digits += 1
+            adjusted = candidate
+        else:
+            places = len(text) - point - 1
+            adjusted = round(adjusted, places - 1)
+        integer, exponent = _try_break_number(adjusted)
+        iterations += 1
+        if iterations > 128:
+            raise EdltError('Measurement composite value could not be represented')
+    if not -128 <= exponent <= 127:
+        raise EdltError('Measurement composite exponent is outside the stored signed-byte range')
+    if gain and integer == 0:
+        integer, exponent = 1, 0
+    return {
+        'input': value,
+        'normalized_value': _format_double_without_e(adjusted),
+        'mantissa': integer,
+        'exponent': exponent,
+        'stored_value': _decimal_value(integer, exponent),
+        'exact': exact,
+    }
 
 
 @dataclass(frozen=True)
@@ -52,10 +147,11 @@ class MeasurementWidgetPlan:
     changes: Mapping
     record: bytes
     allocations: Mapping
+    composite_conversions: Mapping
     options: Mapping
 
     def __post_init__(self):
-        for name in ('expected', 'changes', 'allocations', 'options'):
+        for name in ('expected', 'changes', 'allocations', 'composite_conversions', 'options'):
             object.__setattr__(self, name, MappingProxyType(dict(getattr(self, name))))
 
     def as_dict(self):
@@ -74,7 +170,9 @@ class MeasurementWidgetPlan:
                 'record_hex': self.record.hex(),
                 'changes': {k: list(v) if isinstance(v, tuple) else v for k, v in self.changes.items()},
                 'allocations': {k: v.as_dict() if v else None for k, v in self.allocations.items()},
-                'ui_composite_conversion': False, 'saved': False, 'physical_device_verified': False}
+                'composite_conversions': {k: dict(v) for k, v in self.composite_conversions.items()},
+                'ui_composite_conversion': bool(self.composite_conversions),
+                'saved': False, 'physical_device_verified': False}
 
 
 class EdltMeasurementWidget:
@@ -97,14 +195,31 @@ class EdltMeasurementWidget:
 
     def plan(self, current, *, page, position, device_id, channel, decimal_places=None,
              gain_mantissa=None, gain_exponent=None, offset_mantissa=None, offset_exponent=None,
+             gain_value=None, offset_value=None,
              page_mode=None, prefix_text=None, prefix_index=None, suffix_text=None, suffix_index=None,
              label_text=None, label_index=None, icon_index=None):
         options = dict(page=page, position=position, device_id=device_id, channel=channel,
                        decimal_places=decimal_places, gain_mantissa=gain_mantissa, gain_exponent=gain_exponent,
-                       offset_mantissa=offset_mantissa, offset_exponent=offset_exponent, page_mode=page_mode,
+                       offset_mantissa=offset_mantissa, offset_exponent=offset_exponent,
+                       gain_value=gain_value, offset_value=offset_value, page_mode=page_mode,
                        prefix_text=prefix_text, prefix_index=prefix_index, suffix_text=suffix_text,
                        suffix_index=suffix_index, label_text=label_text, label_index=label_index,
                        icon_index=icon_index)
+        conversions = {}
+        for name, value, mantissa, exponent, is_gain in (
+                ('gain', gain_value, gain_mantissa, gain_exponent, True),
+                ('offset', offset_value, offset_mantissa, offset_exponent, False)):
+            if value is None:
+                continue
+            if mantissa is not None or exponent is not None:
+                raise EdltError(f'{name}_value cannot accompany an explicit mantissa or exponent')
+            conversions[name] = measurement_composite(value, gain=is_gain)
+        if 'gain' in conversions:
+            gain_mantissa = conversions['gain']['mantissa']
+            gain_exponent = conversions['gain']['exponent']
+        if 'offset' in conversions:
+            offset_mantissa = conversions['offset']['mantissa']
+            offset_exponent = conversions['offset']['exponent']
         _int(device_id, 'Measurement device ID', 0, 254)
         _int(channel, 'Measurement channel', 0, 254)
         if decimal_places is not None:
@@ -208,7 +323,7 @@ class EdltMeasurementWidget:
         return MeasurementWidgetPlan(page, position, widget, page_mode, device_id, channel, record[3],
                                      _word(record, 4), _signed(record[6]), _word(record, 8), _signed(record[7]),
                                      gain_normalized, record[12], icon_editable, restore,
-                                     original, changes, bytes(record), allocations, options)
+                                     original, changes, bytes(record), allocations, conversions, options)
 
     def apply(self, session, plan):
         if not isinstance(plan, MeasurementWidgetPlan) or not isinstance(plan.options, Mapping):

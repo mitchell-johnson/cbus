@@ -112,11 +112,13 @@ cbus-toolkit cgate --host 127.0.0.1 exec 'CMQTT CAPABILITIES'
 cbus-toolkit cgate --host 127.0.0.1 edlt-labels //PROJECT/254/p/5
 ```
 
-Replace the project/network/unit with your actual address. Live eDLT label reads verify the device identity, stable configuration header, and static-text CRC; results include the 64 stored strings and widget/scene labels. Dynamic label caches are reported as unread.
+Replace the project/network/unit with your actual address. Live eDLT label reads verify the device identity, stable configuration header, and static-text CRC; results include the 64 stored strings and widget/scene labels. The result also assembles dynamic-label SAL traffic observed since `cmqttd` connected. That volatile view is explicitly marked incomplete and is not a query of labels that were already cached by the device.
 
 The embedded service also runs physical `NET CLOCKS` inspection, target-count
 configuration, and gateway recovery after `NET SYNC`, using source-correlated
-status reads and schema-backed writes with mandatory readback.
+status reads and schema-backed writes with mandatory readback. It retains a
+bounded current-connection history of incoming and confirmed outgoing dynamic
+label traffic for Toolkit CLI inspection.
 
 **Full C-Gate replacement is the target, not the current completion claim.** Hardware-backed lighting, C-Gate `DO` object methods for lighting and direct-network synchronization, persistent named-scene record/playback, Trigger Control, Enable Control, clock, Temperature Broadcast, native text/icon/Unicode/dynamic-bitmap label commands, and the eDLT dynamic-label clear control, complete-coverage `NET PINGU`, identity-populating `NET SYNC`, duplicate-aware `NET CHECKUNIT`, guarded physical unit readdressing, unit identity, schema-driven physical `PP LOAD`, verified physical `PP SAVE` for `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and `goc2` parameters, extended-memory access, live observations, and persistent database operations are implemented while MQTT continues on the same CNI connection. Scene recording captures observed lighting levels on the configured network; playback sends confirmed zero-time ramps and requests physical readback. Direct and page-aware lock-protected fields and unit readdressing use the native one-use challenge phase; GIU uses native halt/store/resume, GOC-family programming uses its address-prefixed parameter-`0xFF` transport, and changed C-Bus 3 saves complete the native Save-to-NVM EXECUTE/POLL sequence before reporting success. Physical programming requires privately installed decoded unit specifications. Unsupported protection modes return explicit errors instead of simulated success. See the [supported operations and remaining work](docs/cmqttd-cgate.md).
 

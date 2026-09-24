@@ -421,6 +421,7 @@ impl Gateway {
             CBusEvent::TriggerEvent { .. }
             | CBusEvent::TriggerIndicatorKill { .. }
             | CBusEvent::EnableSet { .. }
+            | CBusEvent::DynamicLabel { .. }
             | CBusEvent::TemperatureBroadcast { .. }
             | CBusEvent::ClockDate { .. }
             | CBusEvent::ClockTime { .. } => {

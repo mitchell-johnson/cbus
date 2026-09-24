@@ -10,7 +10,7 @@ use cbus_transport::pci::{CBusEvent, GocProgramming, PciClient};
 use chrono::{Datelike, Local, NaiveDate, NaiveTime, Timelike};
 use serde::{Deserialize, Serialize};
 use std::{
-    collections::{HashMap, HashSet},
+    collections::{HashMap, HashSet, VecDeque},
     io::{self, Write},
     path::Path,
     sync::Arc,
@@ -24,6 +24,7 @@ use tokio::{
 
 const MAX_LINE: usize = 1024 * 1024;
 const MAX_STATE: usize = 32 * 1024 * 1024;
+const MAX_LABEL_OBSERVATIONS: usize = 4096;
 
 fn goc_programming(param: &unitspec::SpecParam) -> Option<GocProgramming> {
     match param
@@ -146,8 +147,24 @@ pub struct Service {
     network: u8,
     state_path: PathBuf,
     events: broadcast::Sender<String>,
+    observed_labels: Mutex<ObservedLabels>,
     // Serialize command intents without preventing readback/event processing.
     commands: Mutex<()>,
+}
+
+#[derive(Clone, Serialize)]
+struct LabelObservation {
+    sequence: u64,
+    direction: String,
+    source_unit: Option<u8>,
+    application: u8,
+    payload_hex: String,
+}
+
+#[derive(Default)]
+struct ObservedLabels {
+    next_sequence: u64,
+    observations: VecDeque<LabelObservation>,
 }
 
 #[derive(Clone, Copy)]
@@ -199,6 +216,7 @@ impl Service {
             network,
             state_path,
             events: broadcast::channel(512).0,
+            observed_labels: Mutex::new(ObservedLabels::default()),
             commands: Mutex::new(()),
         }))
     }
@@ -221,6 +239,18 @@ impl Service {
 
     /// Feed genuine bus observations to C-Gate clients as well as MQTT.
     pub async fn observe(&self, event: &CBusEvent) {
+        match event {
+            CBusEvent::DynamicLabel {
+                source,
+                application,
+                payload,
+            } => {
+                self.record_label("received", *source, *application, payload)
+                    .await;
+            }
+            CBusEvent::ConnectionLost => self.observed_labels.lock().await.observations.clear(),
+            _ => {}
+        }
         let mut model = self.model.lock().await;
         let Some(net) = model
             .projects
@@ -378,6 +408,28 @@ impl Service {
         }
     }
 
+    async fn record_label(
+        &self,
+        direction: &str,
+        source_unit: Option<u8>,
+        application: u8,
+        payload: &[u8],
+    ) {
+        let mut labels = self.observed_labels.lock().await;
+        let sequence = labels.next_sequence;
+        labels.next_sequence = labels.next_sequence.wrapping_add(1);
+        if labels.observations.len() == MAX_LABEL_OBSERVATIONS {
+            labels.observations.pop_front();
+        }
+        labels.observations.push_back(LabelObservation {
+            sequence,
+            direction: direction.to_string(),
+            source_unit,
+            application,
+            payload_hex: hex::encode(payload),
+        });
+    }
+
     fn bound_group(&self, address: &str) -> Option<(u8, u8)> {
         if address.starts_with('!') {
             return None;
@@ -427,6 +479,8 @@ impl Service {
                 "trigger_control":true, "enable_control":true, "clock_control":true,
                 "temperature_broadcast":true,
                 "dynamic_labels":true,
+                "dynamic_label_observation":true,
+                "dynamic_label_device_readback":false,
                 "dynamic_label_families":["enable","lighting","trigger"],
                 "dynamic_label_modes":["dynamic_icon","icon","language","raw","unicode"],
                 "edlt_label_clear":true,
@@ -437,6 +491,38 @@ impl Service {
                 "network_sync":true, "network_checkunit":true,
                 "unit_readdress":true,
                 "project":self.project,"network":self.network,"persistent_database":true})
+                .to_string()],
+                "200 OK",
+            );
+        }
+        if verb == "CMQTT" && sub == "LABELS" && words.len() == 3 {
+            let address = words[2];
+            let valid = self.bound_network(address)
+                || Server::split_unit(address).is_some_and(|(project, network, _)| {
+                    project == self.project && network == self.network
+                });
+            if !valid {
+                return err(
+                    tag,
+                    400,
+                    "400 CMQTT LABELS requires the configured network or unit",
+                );
+            }
+            let labels = self.observed_labels.lock().await;
+            return ok(
+                tag,
+                vec![serde_json::json!({
+                    "format":"cmqttd-observed-dynamic-labels-v1",
+                    "address":address,
+                    "project":self.project,
+                    "network":self.network,
+                    "source":"observed-sal-traffic",
+                    "complete":false,
+                    "device_readback":false,
+                    "reset_on_reconnect":true,
+                    "capacity":MAX_LABEL_OBSERVATIONS,
+                    "observations":labels.observations,
+                })
                 .to_string()],
                 "200 OK",
             );
@@ -1518,12 +1604,14 @@ impl Service {
                 application,
                 sals: vec![Sal::DynamicLabel {
                     application,
-                    payload,
+                    payload: payload.clone(),
                 }],
             };
             if let Err(error) = pci.send_confirmed(&packet).await {
                 return err(tag, 502, &format!("502 Label delivery failed: {error}"));
             }
+            self.record_label("sent-confirmed", None, application, &payload)
+                .await;
         }
         response
     }
@@ -1576,6 +1664,10 @@ impl Service {
         let pci = self.pci.read().await.clone();
         match pci.clear_edlt_dynamic_labels(unit).await {
             Ok(()) => {
+                // The clear operation is unit-specific while observed SAL is
+                // network-wide. Discard the cache rather than return entries
+                // that may now be stale for the requested display.
+                self.observed_labels.lock().await.observations.clear();
                 let _ = self.events.send(format!("#e# labels cleared {}", words[2]));
                 response
             }

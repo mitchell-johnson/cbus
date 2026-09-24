@@ -24,10 +24,9 @@ The CLI provides `edlt measurement-plan SNAPSHOT ...` and `cgate ... unit ... ed
 |---|---|
 | `device_id`, `channel` | Required integers 0..254 |
 | `decimal_places` | Integer 0..5; fresh default 2 |
-| `gain_mantissa` | Signed integer -32768..32767, excluding zero; fresh default 1 |
-| `gain_exponent` | Signed integer -128..127; fresh default 0 |
-| `offset_mantissa` | Signed integer -32768..32767; fresh default 0 |
-| `offset_exponent` | Signed integer -128..127; fresh default 0 |
+| `gain_mantissa` / `gain_exponent` | Exact signed integer pair: mantissa -32768..32767 excluding zero, exponent -128..127; fresh default 1×10⁰ |
+| `offset_mantissa` / `offset_exponent` | Exact signed integer pair: mantissa -32768..32767, exponent -128..127; fresh default 0×10⁰ |
+| `gain_value`, `offset_value` | Alternative invariant decimal text up to 20 characters, converted with Toolkit's original lossy Measurement editor algorithm; cannot accompany the corresponding explicit pair |
 | `page_mode` | `single` or `multiple`; omitted retains the current interpretation |
 | `page`, `position` | Standby: page 0, positions 1..5 in either page mode. Functional single: page 1, positions 1..5. Functional multiple: pages 1..4, positions 1..4 |
 | `prefix_index`, `suffix_index` | Exact static slot 0..63, or detached value 255 |
@@ -41,13 +40,32 @@ The optional `icon_index` maps directly to byte 12. The original selector offers
 
 The model has no group/application selector, action macro, threshold, units enum or dynamic-label variant. Its `DeviceID` is the named measurement source field; this workflow does not equate it with a physical unit address or perform source discovery. Prefix and suffix are caller-chosen text. The global primary and secondary application choices remain unchanged; their ordinary save-time `Application` mirror is maintained.
 
-## Explicit scaling and original UI conversion limits
+## Exact scaling and original UI conversion
 
 The effective gain is `gain_mantissa × 10**gain_exponent`; offset uses the corresponding pair. The result reports exact decimal strings `gain_value` and `offset_value` without binary floating-point rounding or dependence on the caller's Decimal context.
 
-This API implements the original public integer/exponent model properties. It **does not implement the UI's `GainComposite` and `OffsetComposite` conversion**. The unchanged DLL probe demonstrates that converter losing values: `0.29` becomes `0.28`, `1.15` becomes `1.14`, `32768` becomes `32760`, and `1.23456` becomes `1.2346`. The first two conversions even return the converter's “exact” result. These observations come from the pinned original-DLL Mono test environment; they do not establish every platform's floating-point formatting behavior.
+The CLI accepts `--gain-value` and `--offset-value` as alternatives to the
+explicit pairs. These options reproduce `MeasurementData.GainComposite`,
+`OffsetComposite`, `PPHelper.FormatDoubleWithoutE`, and
+`BreakNumberIntoIntegerAndExponent` under the invariant culture used by the
+original acceptance probe. The original 20-character form limit is enforced.
+Invalid, non-finite, culture-specific, or out-of-storage-range values fail
+before mutation rather than silently retaining an earlier interactive value.
 
-Explicit pairs avoid claiming parity with that converter. For example, mantissa 29 and exponent -2 intentionally store exactly 0.29. Plans set `ui_composite_conversion=False`. Native tests confirm the actual signed bytes at both mantissa and exponent boundaries; physical display range or behavior at those extremes is unverified.
+The conversion intentionally reproduces the original losses: `0.29` becomes
+`0.28`, `1.15` becomes `1.14`, `32768` becomes `32760`, and `1.23456` becomes
+`1.2346`. The first two are accepted on the original converter's first pass
+even though the stored binary-double multiplication truncates them. Plans set
+`ui_composite_conversion=true` and retain the input, normalized value, stored
+mantissa/exponent, resulting decimal value, and original first-pass result in
+`composite_conversions`.
+
+Explicit pairs remain available when exact storage is required. For example,
+mantissa 29 and exponent -2 stores exactly 0.29, while `--gain-value 0.29`
+stores 28 and -2. Plans using only explicit pairs set
+`ui_composite_conversion=false`. Native tests confirm the actual signed bytes
+at both mantissa and exponent boundaries; physical display range or behavior
+at those extremes is unverified.
 
 The original `Gain` setter replaces zero with one, and its getter also mutates an existing stored zero to one. Explicit zero gain is rejected because it would not be retained. A source zero normalizes to one when planning, with its exponent preserved and `gain_normalized=True` reported. This is a getter-side model behavior, distinct from `SetForcedValues`, which is a no-op for Measurement.
 
@@ -88,7 +106,8 @@ Only blank, unused or existing Measurement slots can be configured, including on
 | `MeasurementData.BigIconIndex`, `MeasurementWidget.SetUpDataSource` | Byte 12, default 135; explicit built-in edits require functional placement and existing large-icon mode |
 | `MeasurementData.SetToDefault`, `.GetUsedStaticText` | Label sentinel 64 remains a counted reference |
 | `EDLTUnit.GetStaticTextIndex` | Empty text →255, exact-string reuse, counted-reference capacity and highest unused allocation |
-| `PPHelper.BreakNumberIntoIntegerAndExponent` | UI composite conversion is separate from the implemented integer/exponent properties |
+| `PPHelper.FormatDoubleWithoutE`, `.TryBreakNumber`, `.BreakNumberIntoIntegerAndExponent` | Legacy fixed-decimal formatting, truncation, progressive rounding, signed 16-bit mantissa fit and the reported first-pass result |
+| `MeasurementWidget` validation and `MeasurementData.GainComposite` / `.OffsetComposite` | 20-character fields, gain zero→one, invariant accepted CLI syntax and final pair assignment |
 
 Literal records:
 
@@ -101,7 +120,16 @@ native text:      0C2A03017D00FEFFE7FF123F873E0000000000000000000000000000000000
 all text cleared:0C2A03017D00FEFFE7FFFFFF87FF000000000000000000000000000000000000
 ```
 
-`tests/test_edlt_measurement.py` covers original literals, signed bounds, exact reporting, zero normalization, sentinel scope/capacity, text allocation and clearing, defaults/opaque values, page placement, identity/schema/stale/forged plans and rollback. Its native test uses an owned unopened C-Gate 3.4.0.2001 project, confirms literal raw widget/restore/text bytes, checks all five CRCs against the original DLL, and verifies complete PP equality after save/close/load with label 64 retained. It also checks that an existing Room Courtesy allocator safely handles a Measurement neighbor containing 64.
+`tests/test_edlt_measurement.py` covers 21 retained original composite vectors,
+including lossy decimals, range rounding and 10⁻⁵⁰/10⁻⁵¹, plus original
+literals, signed bounds, exact reporting, zero normalization, sentinel
+scope/capacity, text allocation and clearing, defaults/opaque values, page
+placement, identity/schema/stale/forged plans and rollback. Its native test uses
+an owned unopened C-Gate 3.4.0.2001 project, confirms literal raw
+widget/restore/text bytes, checks all five CRCs against the original DLL, and
+verifies complete PP equality after save/close/load with label 64 retained. It
+also checks that an existing Room Courtesy allocator safely handles a
+Measurement neighbor containing 64.
 
 `tests/test_cli_edlt_measurement.py` covers offline planning, native preview and save/reload, original native text reuse, scaling options, bounds and database destination guards. Run both suites from `toolkit-cli`:
 

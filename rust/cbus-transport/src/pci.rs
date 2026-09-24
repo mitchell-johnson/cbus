@@ -125,6 +125,17 @@ pub enum CBusEvent {
         /// New variable value.
         value: u8,
     },
+    /// One exact dynamic-label SAL observed on the network. Higher layers may
+    /// assemble Unicode or dynamic-icon transactions, while retaining the raw
+    /// payload so an incomplete observation is never presented as a cache read.
+    DynamicLabel {
+        /// Source unit address (`None` when the source byte was 0).
+        source: Option<u8>,
+        /// Target application (Lighting, Trigger Control, or Enable Control).
+        application: u8,
+        /// Complete length-prefixed dynamic-label SAL payload.
+        payload: Vec<u8>,
+    },
     /// A Temperature Broadcast value was observed.
     TemperatureBroadcast {
         /// Source unit address (`None` when the source byte was 0).
@@ -626,6 +637,14 @@ impl PciClient {
                             second,
                         }),
                         Sal::ClockRequest => Some(CBusEvent::ClockRequest { source: src }),
+                        Sal::DynamicLabel {
+                            application,
+                            payload,
+                        } => Some(CBusEvent::DynamicLabel {
+                            source: src,
+                            application,
+                            payload,
+                        }),
                         _ => None,
                     };
                     if let Some(e) = event {
@@ -1059,6 +1078,36 @@ mod tests {
                 source: Some(9),
                 group: 3,
                 temperature: 21.25,
+            }
+        );
+    }
+
+    #[tokio::test]
+    async fn dynamic_label_packets_surface_exact_transport_events() {
+        let (client_side, _pci_side) = tokio::io::duplex(4096);
+        let (rd, wr) = tokio::io::split(client_side);
+        let (tx, mut rx) = mpsc::unbounded_channel();
+        let pci = PciClient::new(Box::new(rd), Box::new(wr), tx);
+        let payload = b"\xa9\x01\x40\x00Lounge".to_vec();
+        pci.handle_cbus_packet(Packet::PointToMultipoint {
+            meta: Meta {
+                checksum: true,
+                priority_class: 0,
+                source_address: Some(5),
+                confirmation: None,
+            },
+            application: 56,
+            sals: vec![Sal::DynamicLabel {
+                application: 56,
+                payload: payload.clone(),
+            }],
+        });
+        assert_eq!(
+            rx.try_recv().unwrap(),
+            CBusEvent::DynamicLabel {
+                source: Some(5),
+                application: 56,
+                payload,
             }
         );
     }

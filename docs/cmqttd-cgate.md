@@ -46,6 +46,7 @@ not be committed or published.
 | CLOCK DATE/TIME/REQUEST_REFRESH | Actual Clock and Timekeeping SAL on application 223, including `SYSTEM` date/time resolution and observed-value queries |
 | TEMPERATURE BROADCAST | Actual Temperature Broadcast SAL on application 25 with decimal or `$19` addressing, native one-decimal input, range checks, quarter-degree wire conversion, incoming event delivery and disconnect-safe live caching |
 | LIGHTING/TRIGGER/ENABLE LABEL and UNICODELABEL | Actual checksummed dynamic-label SAL on the selected application. Supports raw/text payloads, built-in icon references, language selection, native segmented UTF-8, and start/header/chunk/commit dynamic bitmap uploads. Every fragment requires positive PCI delivery confirmation; Enable Unicode and invalid native bounds fail before transmission |
+| Observed dynamic-label cache | Retains up to 4,096 exact incoming and confirmed outgoing label SAL payloads since the current connection, including source/direction and order. `CMQTT LABELS` exposes the bounded observations; the Toolkit CLI assembles standard text/icons, Unicode, language selection and dynamic bitmaps while reporting incomplete transactions. This is explicitly not a complete eDLT device-cache readback |
 | LABEL CLEAREDLT | Sends the native KEYGL5 programming control through the shared PCI exactly once, requires both PCI confirmation and the source/tag-correlated unit ACK, and reports acceptance separately from physical erasure or persistence |
 | NET PINGU and GET network Units | Actual installation MMI request using cmqttd's negotiated PCI checksum mode; buffers blocks that a CNI forwards before its positive confirmation, accepts only confirmed contiguous coverage of all addresses 0–255, and reports the native sorted `302-Units=` form |
 | NET SYNC and cached unit getters | Configured interface routing hint (physically revalidated) or BASIC discovery, complete installation MMI, then confirmed IDENTIFY1/2 probes and bounded IDENTIFY4 collection for every present address; routed and local bare-CAL replies are correlated, silent legacy/error addresses remain present with unknown identity fields, the live cache is replaced atomically, and native getters expose it |
@@ -130,9 +131,14 @@ cbus-toolkit cgate --host 127.0.0.1 --timeout 30 \
 ```
 
 The JSON includes the device identity, all 64 static strings, widget positions,
-scene names, verification flags and a memory SHA-256. Identity is read from the
-device; the display name comes from the imported database. Dynamic labels are
-explicitly unverified. Other device families/configuration versions are rejected.
+scene names, verification flags, a memory SHA-256, and the dynamic-label SAL
+traffic observed by cmqttd during the current connection. Identity is read from
+the device; the display name comes from the imported database. Standard text
+and icons, segmented Unicode, language selections, and complete dynamic bitmap
+transactions are assembled from the retained traffic. The result always marks
+that cache incomplete and `device_readback=false`: C-Bus exposes no evidenced
+query that inventories a display's pre-existing dynamic-label cache. Other
+device families/configuration versions are rejected.
 
 Physical string slots can retain old bytes after a shortened string's null
 terminator. The reader reports whether the stored CRC matches the physical
@@ -145,9 +151,16 @@ C-Gate syntax:
 ```text
 CMQTT CAPABILITIES
 CMQTT UNIT //PROJECT/254/p/5
+CMQTT LABELS //PROJECT/254/p/5
 UNIT IDENTIFY //PROJECT/254/p/5 1
 UNIT READMEM //PROJECT/254/p/5 4096 256
 ```
+
+`CMQTT LABELS` accepts the configured network or a unit on it. Its network-wide
+observation ring is volatile, resets on reconnect, and is cleared after an
+accepted eDLT clear request so stale entries cannot be presented for that unit.
+It does not infer what a display received before cmqttd connected or whether a
+display rendered or persisted a confirmed broadcast.
 
 `READMEM` uses decimal **physical** offsets and accepts 1–4096 bytes per command.
 For the evidenced OEM mapping, a unit-spec logical offset of 256 or greater maps
@@ -179,7 +192,8 @@ return 502. Full replacement still requires:
   implemented for units whose decoded schema exposes a supported direct
   `ClockGenEnable` field; electrical arbitration remains outside software
   verification.
-- Device-resident scene triggering beyond PP table programming, dynamic eDLT label cache reads, and
+- Device-resident scene triggering beyond PP table programming, a physical
+  eDLT operation that can query pre-existing dynamic-label cache contents, and
   specialist application families such as HVAC, audio and security.
 - Native repository/archive/import/export formats, document commands,
   complete server configuration/access/TLS, firmware and deployment workflows.
@@ -203,7 +217,9 @@ confirmation success/failure. Exact Trigger, Enable, Clock, Temperature Broadcas
 IDENTIFY4 request or response bytes are pinned by vectors and the real-daemon
 system test. Dynamic-label vectors pin exact encode/decode JSON and wire bytes;
 the real-daemon test covers text, icon, Unicode, bitmap, language selection,
-vendor-invalid rejection, and confirmed multi-frame delivery on the shared PCI.
+vendor-invalid rejection, confirmed multi-frame delivery, exact observed-cache
+retention for sent and received SAL, cache invalidation after clear, and the
+shared PCI connection.
 Transport tests pin the eDLT clear control bytes, positive PCI and unit replies,
 source filtering, MQTT fanout and definitive NAK recovery. The real-daemon case
 verifies exact-once delivery through the same PCI connection.

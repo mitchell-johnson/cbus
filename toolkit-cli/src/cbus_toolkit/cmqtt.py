@@ -46,6 +46,183 @@ def read_memory(client, address, offset, length):
     return bytes(result)
 
 
+def decode_observed_labels(value):
+    """Assemble cmqttd's bounded SAL observations without claiming readback."""
+    if not isinstance(value, dict) or value.get('format') != 'cmqttd-observed-dynamic-labels-v1':
+        raise ValueError('Invalid cmqttd dynamic-label observation document')
+    if value.get('source') != 'observed-sal-traffic' or value.get('complete') is not False or value.get('device_readback') is not False:
+        raise ValueError('cmqttd dynamic-label provenance is missing or unsafe')
+    observations = value.get('observations')
+    capacity = value.get('capacity')
+    if type(capacity) is not int or not 1 <= capacity <= 65536 or not isinstance(observations, list) or len(observations) > capacity:
+        raise ValueError('Invalid cmqttd dynamic-label observation bounds')
+    current, unicode_pending, icon_pending = {}, {}, {}
+    languages, decoded, errors = {}, [], []
+    previous = -1
+
+    def target(application, payload, selected, action_index, variant):
+        action = payload[action_index] if selected else None
+        return application, payload[1], action, variant
+
+    def commit(key, item):
+        current[key] = item
+        decoded.append(item)
+
+    for row in observations:
+        if not isinstance(row, dict) or set(row) != {'sequence', 'direction', 'source_unit', 'application', 'payload_hex'}:
+            raise ValueError('Invalid dynamic-label observation row')
+        sequence, direction = row['sequence'], row['direction']
+        source_unit, application, payload_hex = row['source_unit'], row['application'], row['payload_hex']
+        if type(sequence) is not int or sequence <= previous or direction not in ('received', 'sent-confirmed'):
+            raise ValueError('Invalid dynamic-label observation sequence')
+        previous = sequence
+        if source_unit is not None and (type(source_unit) is not int or not 0 <= source_unit <= 255):
+            raise ValueError('Invalid dynamic-label source unit')
+        if type(application) is not int or application not in (*range(48, 96), 202, 203):
+            raise ValueError('Invalid dynamic-label application')
+        if not isinstance(payload_hex, str) or len(payload_hex) % 2 or not re.fullmatch('[0-9a-fA-F]+', payload_hex):
+            raise ValueError('Invalid dynamic-label payload encoding')
+        payload = bytes.fromhex(payload_hex)
+        if not payload or (payload[0] & 0xe0) not in (0xa0, 0xc0) or (payload[0] & 0x1f) + 1 != len(payload):
+            raise ValueError('Invalid dynamic-label payload length')
+        common = {'application': application, 'sequence': sequence, 'direction': direction,
+                  'source_unit': source_unit, 'delivery_confirmed': direction == 'sent-confirmed',
+                  'device_readback': False, 'payload_hex': payload_hex.lower()}
+        if payload[0] & 0xe0 == 0xc0:
+            if application == 203 or len(payload) < 5:
+                raise ValueError('Invalid Unicode dynamic-label payload')
+            control, options = payload[2], payload[3]
+            selected, variant = bool(options & 0x80), options & 3
+            if control & 3 != (3 if selected else 2):
+                raise ValueError('Invalid Unicode dynamic-label target')
+            index = 4
+            key_base = target(application, payload, selected, index, variant)
+            index += int(selected)
+            if index >= len(payload):
+                raise ValueError('Truncated Unicode dynamic-label payload')
+            language, data = payload[index], payload[index + 1:]
+            key = (*key_base, language)
+            phase, fragment = control & 0x0c, control >> 4
+            if phase == 12:
+                chunks, raw = [data], [payload_hex.lower()]
+            elif phase == 0:
+                unicode_pending[key] = {'next': (fragment + 1) & 15, 'chunks': [data],
+                                        'raw': [payload_hex.lower()], 'common': common}
+                continue
+            else:
+                pending = unicode_pending.get(key)
+                if pending is None or pending['next'] != fragment:
+                    errors.append({'sequence': sequence, 'error': 'unmatched Unicode label fragment'})
+                    unicode_pending.pop(key, None)
+                    continue
+                pending['chunks'].append(data); pending['raw'].append(payload_hex.lower())
+                pending['next'] = (fragment + 1) & 15
+                if phase == 4:
+                    continue
+                if phase != 8:
+                    errors.append({'sequence': sequence, 'error': 'invalid Unicode label phase'})
+                    unicode_pending.pop(key, None)
+                    continue
+                chunks, raw = pending['chunks'], pending['raw']
+                common = pending['common'] | common
+                unicode_pending.pop(key, None)
+            try:
+                text = b''.join(chunks).decode('utf-8', errors='strict')
+            except UnicodeDecodeError:
+                errors.append({'sequence': sequence, 'error': 'invalid assembled Unicode label'})
+                continue
+            commit(key, {**common, 'group': key_base[1], 'action_selector': key_base[2],
+                         'variant': variant, 'language': language, 'kind': 'unicode-text',
+                         'text': text, 'payloads_hex': raw})
+            continue
+
+        if len(payload) < 4:
+            raise ValueError('Truncated standard dynamic-label payload')
+        options, selected = payload[2], bool(payload[2] & 1)
+        variant, mode, index = (options >> 5) & 3, options & 0x1e, 3
+        key_base = target(application, payload, selected, index, variant)
+        index += int(selected)
+        transaction = key_base
+        if mode == 4 and transaction in icon_pending:
+            pending = icon_pending[transaction]
+            if pending['phase'] == 'metadata':
+                if len(payload[index:]) != 6:
+                    errors.append({'sequence': sequence, 'error': 'invalid dynamic-icon metadata'})
+                    icon_pending.pop(transaction, None); continue
+                language, icon_high, icon_low, width, height, vertical = payload[index:]
+                pending.update(phase='control', language=language, icon=(icon_high << 8) | icon_low,
+                               width=width, height=height, vertical_offset=vertical)
+            elif pending['phase'] == 'data':
+                pending['data'].extend(payload[index:]); pending['phase'] = 'control'
+            else:
+                errors.append({'sequence': sequence, 'error': 'unexpected dynamic-icon data'})
+                icon_pending.pop(transaction, None); continue
+            pending['raw'].append(payload_hex.lower())
+            continue
+        if index >= len(payload):
+            raise ValueError('Truncated standard dynamic-label payload')
+        language, data = payload[index], payload[index + 1:]
+        key = (*key_base, language)
+        if mode == 8 and len(data) == 1 and data[0] in (0x20, 0x21, 0x22):
+            control = data[0]
+            if control == 0x20:
+                icon_pending[transaction] = {'phase': 'metadata', 'data': bytearray(),
+                                             'raw': [payload_hex.lower()], 'common': common}
+            elif control == 0x21:
+                pending = icon_pending.get(transaction)
+                if pending is None or pending['phase'] != 'control':
+                    errors.append({'sequence': sequence, 'error': 'unmatched dynamic-icon chunk control'})
+                else:
+                    pending['phase'] = 'data'; pending['raw'].append(payload_hex.lower())
+            else:
+                pending = icon_pending.pop(transaction, None)
+                if pending is None or pending['phase'] != 'control' or 'language' not in pending:
+                    errors.append({'sequence': sequence, 'error': 'unmatched dynamic-icon commit'}); continue
+                expected = (pending['width'] * pending['height'] + 7) // 8
+                if not 1 <= pending['width'] <= 240 or not 1 <= pending['height'] <= 60 or len(pending['data']) != expected:
+                    errors.append({'sequence': sequence, 'error': 'invalid assembled dynamic icon'}); continue
+                final_key = (*key_base, pending['language'])
+                commit(final_key, {**pending['common'], **common, 'group': key_base[1],
+                    'action_selector': key_base[2], 'variant': variant, 'language': pending['language'],
+                    'kind': 'dynamic-icon', 'icon': pending['icon'], 'width': pending['width'],
+                    'height': pending['height'], 'vertical_offset': pending['vertical_offset'],
+                    'data_hex': bytes(pending['data']).hex(),
+                    'payloads_hex': pending['raw'] + [payload_hex.lower()]})
+            continue
+        if mode == 0:
+            text = None
+            try:
+                text = (b'' if data == b'\0' else data).decode('ascii', errors='strict')
+                if any(ord(character) < 32 or ord(character) == 127 for character in text):
+                    text = None
+            except UnicodeDecodeError:
+                pass
+            item = {**common, 'group': key_base[1], 'action_selector': key_base[2],
+                    'variant': variant, 'language': language, 'kind': 'standard',
+                    'data_hex': data.hex(), 'text': text, 'payloads_hex': [payload_hex.lower()]}
+            commit(key, item)
+        elif mode == 2 and len(data) == 3 and data[0] == 1:
+            commit(key, {**common, 'group': key_base[1], 'action_selector': key_base[2],
+                         'variant': variant, 'language': language, 'kind': 'built-in-icon',
+                         'icon': int.from_bytes(data[1:], 'big'), 'payloads_hex': [payload_hex.lower()]})
+        elif mode == 6 and not data:
+            languages[(application, key_base[1], key_base[2])] = {
+                **common, 'group': key_base[1], 'action_selector': key_base[2], 'language': language}
+        else:
+            commit(key, {**common, 'group': key_base[1], 'action_selector': key_base[2],
+                         'variant': variant, 'language': language, 'kind': 'raw',
+                         'options': mode, 'data_hex': data.hex(),
+                         'payloads_hex': [payload_hex.lower()]})
+    entries = sorted(current.values(), key=lambda row: (
+        row['application'], row['group'], -1 if row['action_selector'] is None else row['action_selector'],
+        row['variant'], row['language']))
+    return {'format': 'cbus-observed-dynamic-label-cache-v1', 'complete': False,
+            'device_readback': False, 'reset_on_reconnect': value.get('reset_on_reconnect') is True,
+            'observation_count': len(observations), 'entries': entries,
+            'language_selections': sorted(languages.values(), key=lambda row: row['sequence']),
+            'incomplete_transactions': len(unicode_pending) + len(icon_pending), 'errors': errors}
+
+
 def decode_edlt_labels(memory):
     """Decode the evidenced KEYGL5 5.5.00 static-label/widget memory layout."""
     if not isinstance(memory, bytes) or len(memory) != 9216:
@@ -153,6 +330,8 @@ def edlt_labels(client, address):
     after = read_memory(client, address, 0, 16)
     if before != memory[:16] or before != after:
         raise ValueError('eDLT configuration changed during the read; retry the snapshot')
+    observed = decode_observed_labels(_object(client, f'CMQTT LABELS {address}'))
     return {'address': address, 'name': metadata.get('name'), 'unit_type': unit_type,
             'firmware': firmware, 'source': 'physical-via-cmqttd', 'configuration_header_stable': True,
-            **decode_edlt_labels(memory)}
+            **decode_edlt_labels(memory), 'observed_dynamic_labels': observed,
+            'dynamic_labels_observed': bool(observed['entries'])}

@@ -275,6 +275,27 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     .await
     .contains("200 OK"));
     assert_eq!(sys.pci.count_payload("053800A301060316"), 1);
+    let observed = command(&mut reader, &mut writer, "CMQTT LABELS //HARNESS/254/p/5").await;
+    assert!(observed.contains("cmqttd-observed-dynamic-labels-v1"));
+    assert!(observed.contains("observed-sal-traffic"));
+    assert!(observed.contains("\"complete\":false"));
+    assert!(observed.contains("\"device_readback\":false"));
+    assert!(observed.contains("\"direction\":\"sent-confirmed\""));
+    assert!(observed.contains("a90140004c6f756e6765"));
+    assert!(observed.contains("ca080e0002e5a49ce99693"));
+    assert!(observed.contains("a403080022"));
+    let mut incoming_label = vec![5, 9, 56, 0];
+    incoming_label.extend_from_slice(&[0xa6, 2, 0, 0, b'B', b'u', b's']);
+    sys.pci.inject(&pci_wire(&incoming_label));
+    let observed = command_until(
+        &mut reader,
+        &mut writer,
+        "CMQTT LABELS //HARNESS/254",
+        "a6020000427573",
+    )
+    .await;
+    assert!(observed.contains("\"direction\":\"received\""));
+    assert!(observed.contains("\"source_unit\":9"));
     assert!(command(
         &mut reader,
         &mut writer,
@@ -319,6 +340,8 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     let (clear, ()) = tokio::join!(clear, clear_reply);
     assert!(clear.contains("200 OK."), "{clear:?}");
     assert_eq!(sys.pci.count_payload("46050900A4FF43C1EA1B"), 1);
+    let observed = command(&mut reader, &mut writer, "CMQTT LABELS //HARNESS/254/p/5").await;
+    assert!(observed.contains("\"observations\":[]"), "{observed:?}");
     assert!(
         command(&mut reader, &mut writer, "GET //HARNESS/254/203/1 Level")
             .await

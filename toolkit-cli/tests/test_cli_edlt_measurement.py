@@ -120,6 +120,13 @@ class EdltMeasurementCLITests(unittest.TestCase):
                 self.assertEqual(scale_plan['record_hex'].upper(), SCALED)
                 self.assertEqual((scale_plan['gain_value'], scale_plan['offset_value']), ('1.25', '-2.5'))
                 self.assertFalse(scale_plan['ui_composite_conversion'])
+                composite = self.cli('edlt', 'measurement-plan', path, *location, *identity,
+                                     '--gain-value', '0.29', '--offset-value', '-2.5')
+                self.assertTrue(composite['ui_composite_conversion'])
+                self.assertEqual((composite['gain_value'], composite['offset_value']), ('0.28', '-2.5'))
+                self.assertEqual(composite['composite_conversions']['gain']['input'], '0.29')
+                self.assertEqual(bytes.fromhex(composite['record_hex'])[4:10],
+                                 bytes((28, 0, 254, 255, 231, 255)))
                 plan = self.cli('edlt', 'measurement-plan', path, *custom)
                 self.assertEqual(plan['record_hex'].upper(), CUSTOM)
                 self.assertEqual(plan['text_indices'], {'prefix': 18, 'suffix': 63, 'label': 62})

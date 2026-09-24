@@ -14,9 +14,12 @@ cbus-toolkit cgate --host 127.0.0.1 --timeout 30 edlt-labels //PROJECT/254/p/UNI
 
 Use the configured endpoint and project address. The command returns physical
 identity, static strings, widget labels, a stable-header check and CRC evidence.
-Dynamic labels are not read. `UNIT READMEM` and `UNIT IDENTIFY` are cmqttd
-extensions. A 502 response is a missing backend or failed device operation;
-never replace it with saved project data and describe that as a live result.
+It also returns bounded dynamic-label SAL observations from the current cmqttd
+connection. `complete: false` and `device_readback: false` distinguish those
+observations from an inventory of the display's pre-existing cache. `CMQTT
+LABELS`, `UNIT READMEM` and `UNIT IDENTIFY` are cmqttd extensions. A 502 response
+is a missing backend or failed device operation; never replace it with saved
+project data and describe that as a live result.
 
 The physical service also implements lighting commands, C-Gate `DO` object
 methods for lighting and direct-network `SYNC`, Trigger Control,
@@ -62,6 +65,8 @@ two-bit MMI state. Use `GET //PROJECT/NETWORK Units` and unit `Type`, `Version`,
 Query `CMQTT CAPABILITIES`; `unit_readdress: true` denotes the readdress path and
 `physical_pp_save_cbus3_nvm: true` denotes the NVM commit path,
 `dynamic_labels: true` denotes the label sender,
+`dynamic_label_observation: true` denotes the volatile observed SAL cache while
+`dynamic_label_device_readback: false` preserves the unsupported device-query boundary,
 `edlt_label_clear: true` denotes the one-shot KEYGL5 clear control,
 `named_scenes: true` denotes hardware-backed named-scene playback,
 and `do_methods: ["lighting", "sync"]` denotes the physical object-method aliases,
