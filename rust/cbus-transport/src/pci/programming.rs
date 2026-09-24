@@ -408,6 +408,172 @@ impl PciClient {
         Ok(result)
     }
 
+    /// Store one contiguous standard CAL parameter range and verify it with
+    /// an immediate direct RECALL. Each STORE carries an explicit transaction
+    /// tag, and large ranges are split at the 29-data-byte CAL limit.
+    pub async fn store_parameter_verified(
+        &self,
+        unit: u8,
+        parameter: u8,
+        data: &[u8],
+    ) -> Result<()> {
+        if data.is_empty()
+            || data.len() > u8::MAX as usize
+            || usize::from(parameter) + data.len() > 256
+        {
+            return Err(Error::new(
+                ErrorKind::InvalidInput,
+                "parameter store requires 1..255 bytes within the parameter address space",
+            ));
+        }
+        let _lane = self.programming_lane.lock().await;
+        if self.programming_fault.load(Ordering::Acquire) {
+            return Err(Error::other(
+                "programming stream needs reconnect after an incomplete transaction",
+            ));
+        }
+        let mut transaction = Transaction {
+            fault: &self.programming_fault,
+            complete: false,
+        };
+        for (chunk_index, chunk) in data.chunks(29).enumerate() {
+            let offset = chunk_index * 29;
+            let target = parameter + offset as u8;
+            let tag = chunk_index as u8;
+            let mut tagged = Vec::with_capacity(chunk.len() + 1);
+            tagged.push(tag);
+            tagged.extend_from_slice(chunk);
+            self.programming_exchange(
+                unit,
+                Cal::Write {
+                    parameter: target,
+                    data: tagged,
+                },
+                target,
+                0,
+                Some(tag),
+                true,
+            )
+            .await?;
+        }
+        let count = data.len() as u8;
+        let actual = self
+            .programming_exchange(
+                unit,
+                Cal::Recall {
+                    param: parameter,
+                    count,
+                },
+                parameter,
+                data.len(),
+                None,
+                true,
+            )
+            .await?;
+        if actual != data {
+            return Err(Error::other(
+                "standard parameter readback did not match STORE",
+            ));
+        }
+        transaction.complete = true;
+        Ok(())
+    }
+
+    /// Store a bounded OEM physical-memory range through the captured 0x41
+    /// pointer and tagged 0x42 data path, then reselect and read the entire
+    /// range back before reporting success.
+    pub async fn write_memory_verified(&self, unit: u8, address: u32, data: &[u8]) -> Result<()> {
+        if data.is_empty()
+            || data.len() > 65_536
+            || address.checked_add(data.len() as u32).is_none()
+        {
+            return Err(Error::new(
+                ErrorKind::InvalidInput,
+                "memory store requires 1..65536 bytes without address overflow",
+            ));
+        }
+        let _lane = self.programming_lane.lock().await;
+        if self.programming_fault.load(Ordering::Acquire) {
+            return Err(Error::other(
+                "programming stream needs reconnect after an incomplete transaction",
+            ));
+        }
+        let mut transaction = Transaction {
+            fault: &self.programming_fault,
+            complete: false,
+        };
+        for (chunk_index, chunk) in data.chunks(29).enumerate() {
+            let offset = address + (chunk_index * 29) as u32;
+            let mut selector = vec![0x41];
+            selector
+                .extend_from_slice(&offset.to_le_bytes()[..if offset <= 0xffff { 2 } else { 4 }]);
+            self.programming_exchange(
+                unit,
+                Cal::Write {
+                    parameter: 0,
+                    data: selector,
+                },
+                0,
+                0,
+                Some(0x41),
+                false,
+            )
+            .await?;
+            let mut tagged = Vec::with_capacity(chunk.len() + 1);
+            tagged.push(0x42);
+            tagged.extend_from_slice(chunk);
+            self.programming_exchange(
+                unit,
+                Cal::Write {
+                    parameter: 1,
+                    data: tagged,
+                },
+                1,
+                0,
+                Some(0x42),
+                false,
+            )
+            .await?;
+        }
+
+        let mut actual = Vec::with_capacity(data.len());
+        while actual.len() < data.len() {
+            let offset = address + actual.len() as u32;
+            let mut selector = vec![0x41];
+            selector
+                .extend_from_slice(&offset.to_le_bytes()[..if offset <= 0xffff { 2 } else { 4 }]);
+            self.programming_exchange(
+                unit,
+                Cal::Write {
+                    parameter: 0,
+                    data: selector,
+                },
+                0,
+                0,
+                Some(0x41),
+                false,
+            )
+            .await?;
+            let count = (data.len() - actual.len()).min(128) as u8;
+            actual.extend(
+                self.programming_exchange(
+                    unit,
+                    Cal::Recall { param: 1, count },
+                    1,
+                    usize::from(count),
+                    None,
+                    false,
+                )
+                .await?,
+            );
+        }
+        if actual != data {
+            return Err(Error::other("physical memory readback did not match STORE"));
+        }
+        transaction.complete = true;
+        Ok(())
+    }
+
     /// Identify a real unit attribute, preserving its original reply bytes.
     pub async fn identify(&self, unit: u8, attribute: u8) -> Result<Vec<u8>> {
         let _lane = self.programming_lane.lock().await;
@@ -690,6 +856,68 @@ mod tests {
         );
         assert_eq!(
             pci.recall_parameter(5, 1, 256).await.unwrap_err().kind(),
+            ErrorKind::InvalidInput
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn standard_parameter_store_is_tagged_direct_and_read_back() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let data = [0xbe, 0xfd, 0xb1, 0xa3, 0x39, 0x1e];
+        let write =
+            tokio::spawn(async move { worker.store_parameter_verified(5, 0x2a, &data).await });
+        assert_eq!(line(&mut remote).await, b"\\460500A82A00BEFDB1A3391E7D\r");
+        reply(&mut remote, 4, &[0x32, 0x2a, 0]).await;
+        reply(&mut remote, 5, &[0x32, 0x2a, 0]).await;
+        assert_eq!(line(&mut remote).await, b"\\4605001A2A066B\r");
+        reply(
+            &mut remote,
+            5,
+            &[0x87, 0x2a, 0xbe, 0xfd, 0xb1, 0xa3, 0x39, 0x1e],
+        )
+        .await;
+        write.await.unwrap().unwrap();
+        assert_eq!(
+            pci.store_parameter_verified(5, 1, &[])
+                .await
+                .unwrap_err()
+                .kind(),
+            ErrorKind::InvalidInput
+        );
+        assert_eq!(
+            pci.store_parameter_verified(5, 255, &[1, 2])
+                .await
+                .unwrap_err()
+                .kind(),
+            ErrorKind::InvalidInput
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn oem_memory_store_uses_captured_tags_and_verifies_readback() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let write = tokio::spawn(async move {
+            worker
+                .write_memory_verified(5, 0x1000, &[0xaa, 0xbb, 0xcc])
+                .await
+        });
+        assert_eq!(line(&mut remote).await, b"\\46050900A400410010B7\r");
+        reply(&mut remote, 5, &[0x32, 0, 0x41]).await;
+        assert_eq!(line(&mut remote).await, b"\\46050900A50142AABBCC93\r");
+        reply(&mut remote, 4, &[0x32, 1, 0x42]).await;
+        reply(&mut remote, 5, &[0x32, 1, 0x42]).await;
+        assert_eq!(line(&mut remote).await, b"\\46050900A400410010B7\r");
+        reply(&mut remote, 5, &[0x32, 0, 0x41]).await;
+        assert_eq!(line(&mut remote).await, b"\\460509001A01038E\r");
+        reply(&mut remote, 5, &[0x84, 1, 0xaa, 0xbb, 0xcc]).await;
+        write.await.unwrap().unwrap();
+        assert_eq!(
+            pci.write_memory_verified(5, u32::MAX, &[1])
+                .await
+                .unwrap_err()
+                .kind(),
             ErrorKind::InvalidInput
         );
     }

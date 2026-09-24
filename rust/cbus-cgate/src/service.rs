@@ -395,8 +395,10 @@ impl Service {
             return ok(
                 tag,
                 vec![serde_json::json!({"service":"cmqttd", "physical_bus":true,
-                "full_cgate_compatibility":false, "memory_read":true, "memory_write":false,
-                "physical_pp_load":true,
+                "full_cgate_compatibility":false, "memory_read":true, "memory_write":true,
+                "physical_pp_load":true, "physical_pp_save":true,
+                "physical_pp_save_methods":["direct","edlt"],
+                "physical_pp_save_protection":["none","checksum"],
                 "trigger_control":true, "enable_control":true, "clock_control":true,
                 "temperature_broadcast":true,
                 "install_mmi":true, "network_pingu":true,
@@ -431,6 +433,27 @@ impl Service {
                 .is_some_and(|source| !source.to_ascii_lowercase().starts_with("/db/"))
         {
             return self.pp_load_physical(client, line, tag, &words).await;
+        }
+        if verb == "PP"
+            && sub == "SAVE"
+            && words
+                .get(3)
+                .is_some_and(|source| !source.to_ascii_lowercase().starts_with("/db/"))
+        {
+            return self.pp_save_physical(client, tag, &words).await;
+        }
+        if verb == "PP" && sub == "SAVE_TO_SOURCE" {
+            let physical = {
+                let model = self.model.lock().await;
+                words
+                    .get(2)
+                    .and_then(|name| model.sessions.get(*name))
+                    .and_then(|session| session.source.as_deref())
+                    .is_some_and(|source| !source.to_ascii_lowercase().starts_with("/db/"))
+            };
+            if physical {
+                return self.pp_save_physical(client, tag, &words).await;
+            }
         }
         if verb == "CMQTT" && sub == "UNIT" && words.len() == 3 {
             let model = self.model.lock().await;
@@ -1700,6 +1723,354 @@ impl Service {
         session.firmware = Some(firmware);
         session.catalog_number = None;
         session.params = params;
+        session.dirty.clear();
+        ok(tag, vec![], "200 OK")
+    }
+
+    async fn pp_save_physical(&self, client: &ClientState, tag: &str, words: &[&str]) -> Response {
+        const MAX_PARAMETERS: usize = 4096;
+        const MAX_UNIQUE_BYTES: usize = 1024 * 1024;
+
+        #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+        enum Space {
+            Standard,
+            Memory,
+        }
+        struct Pending<'a> {
+            param: &'a unitspec::SpecParam,
+            layout: unitspec::ParameterLayout,
+            value: String,
+            space: Space,
+            start: u32,
+            end: u32,
+        }
+        struct Region {
+            space: Space,
+            start: u32,
+            original: Vec<u8>,
+            modified: Vec<u8>,
+        }
+
+        let _commands = self.commands.lock().await;
+        let save_to_source = words
+            .get(1)
+            .is_some_and(|verb| verb.eq_ignore_ascii_case("SAVE_TO_SOURCE"));
+        if (save_to_source && words.len() < 3) || (!save_to_source && words.len() < 4) {
+            return err(tag, 400, "400 PP SAVE requires a session and destination");
+        }
+        let (session_name, session_lock, target, expected_type, expected_firmware, params, dirty) = {
+            let model = self.model.lock().await;
+            let name = words[2];
+            if model.sessions.contains_key(name) && !client.sessions.contains(name) {
+                return err(
+                    tag,
+                    420,
+                    "420 Programming object belongs to another connection",
+                );
+            }
+            let Some(session) = model.sessions.get(name) else {
+                return err(tag, 404, "404 Session not found");
+            };
+            let Some(lock_address) = model.locks.get(&session.lock) else {
+                return err(tag, 409, "409 Lock not held");
+            };
+            if !self.bound_network(lock_address) {
+                return err(
+                    tag,
+                    409,
+                    "409 Session lock does not cover the physical network",
+                );
+            }
+            let target = if save_to_source {
+                let Some(source) = session.source.clone() else {
+                    return err(tag, 408, "408 Session has no loaded source");
+                };
+                source
+            } else {
+                words[3].to_string()
+            };
+            let Some(unit_type) = session.unit_type.clone() else {
+                return err(tag, 408, "408 Session has no unit type");
+            };
+            let Some(firmware) = session.firmware.clone() else {
+                return err(tag, 408, "408 Session has no firmware version");
+            };
+            (
+                session.name.clone(),
+                session.lock.clone(),
+                target,
+                unit_type,
+                firmware,
+                session.params.clone(),
+                session.dirty.clone(),
+            )
+        };
+        let Some((project, network, unit)) = Server::split_unit(&target) else {
+            return err(tag, 400, "400 Invalid physical unit destination");
+        };
+        if project != self.project || network != self.network {
+            return err(tag, 404, "404 Network is not connected to this service");
+        }
+
+        let tag_start = if save_to_source { 3 } else { 4 };
+        let tags = words[tag_start..]
+            .iter()
+            .map(|value| dequote_value(value).to_ascii_lowercase())
+            .collect::<HashSet<_>>();
+        let spec = {
+            let mut model = self.model.lock().await;
+            match model.spec_for(&expected_type) {
+                Some(spec) => spec,
+                None => {
+                    return err(
+                        tag,
+                        502,
+                        &format!(
+                            "502 No decoded unit specification is configured for {expected_type}"
+                        ),
+                    )
+                }
+            }
+        };
+        let pci = self.pci.read().await.clone();
+        let live_type = match pci.identify_first(unit, 1).await {
+            Ok(Some(bytes)) => match identity_text(&bytes, "unit type") {
+                Ok(value) => value,
+                Err(error) => {
+                    return err(
+                        tag,
+                        502,
+                        &format!("502 Physical PP identity failed: {error}"),
+                    )
+                }
+            },
+            Ok(None) => return err(tag, 401, "401 Physical unit did not answer IDENTIFY"),
+            Err(error) => {
+                return err(
+                    tag,
+                    502,
+                    &format!("502 Physical PP identity failed: {error}"),
+                )
+            }
+        };
+        let live_firmware = match pci.identify_first(unit, 2).await {
+            Ok(Some(bytes)) => match identity_text(&bytes, "firmware version") {
+                Ok(value) => value,
+                Err(error) => {
+                    return err(
+                        tag,
+                        502,
+                        &format!("502 Physical PP identity failed: {error}"),
+                    )
+                }
+            },
+            Ok(None) => return err(tag, 408, "408 Physical unit provided no firmware identity"),
+            Err(error) => {
+                return err(
+                    tag,
+                    502,
+                    &format!("502 Physical PP identity failed: {error}"),
+                )
+            }
+        };
+        if live_type != expected_type || live_firmware != expected_firmware {
+            return err(
+                tag,
+                409,
+                "409 Physical destination identity does not match the programming session",
+            );
+        }
+
+        let mut pending = Vec::new();
+        let mut cleared = HashSet::new();
+        for name in &dirty {
+            if !spec.iter().any(|candidate| candidate.name == *name) {
+                return err(
+                    tag,
+                    502,
+                    &format!("502 No schema exists for parameter {name:?}"),
+                );
+            }
+        }
+        // Unit-spec order is significant when several logical parameters
+        // share one physical byte. Never let HashSet iteration choose which
+        // staged value is applied last.
+        for param in spec.iter().filter(|param| dirty.contains(&param.name)) {
+            let name = &param.name;
+            if !tags.is_empty()
+                && !param
+                    .tags
+                    .iter()
+                    .any(|candidate| tags.contains(&candidate.to_ascii_lowercase()))
+            {
+                continue;
+            }
+            let protection = param
+                .get("Protection")
+                .unwrap_or("none")
+                .trim()
+                .to_ascii_lowercase();
+            if matches!(protection.as_str(), "factory" | "special") {
+                cleared.insert(name.clone());
+                continue;
+            }
+            if !matches!(protection.as_str(), "none" | "checksum") {
+                return err(
+                    tag,
+                    502,
+                    &format!("502 Unsupported protection {protection:?} for {name:?}"),
+                );
+            }
+            let layout = match unitspec::ParameterLayout::for_param(param) {
+                Ok(layout) => layout,
+                Err(error) => return err(tag, 502, &format!("502 {error}")),
+            };
+            let method = param
+                .get("ProgramMethod")
+                .unwrap_or("")
+                .trim()
+                .to_ascii_lowercase();
+            let (space, start, count) = match layout.transfer {
+                unitspec::ParameterTransfer::Recall { parameter, count } if method == "direct" => {
+                    (Space::Standard, u32::from(parameter), count)
+                }
+                unitspec::ParameterTransfer::Memory { address, count } if method == "edlt" => {
+                    (Space::Memory, address, count)
+                }
+                _ => {
+                    return err(
+                        tag,
+                        502,
+                        &format!("502 Unsupported program method {method:?} for {name:?}"),
+                    )
+                }
+            };
+            let Some(value) = params.get(name).cloned() else {
+                return err(
+                    tag,
+                    502,
+                    &format!("502 No staged value exists for {name:?}"),
+                );
+            };
+            pending.push(Pending {
+                param,
+                layout,
+                value,
+                space,
+                start,
+                end: start + count as u32,
+            });
+            cleared.insert(name.clone());
+        }
+        if pending.len() > MAX_PARAMETERS {
+            return err(tag, 502, "502 PP save exceeds the parameter limit");
+        }
+
+        let mut ranges = pending
+            .iter()
+            .map(|item| (item.space, item.start, item.end))
+            .collect::<Vec<_>>();
+        ranges.sort_unstable();
+        let mut merged = Vec::<(Space, u32, u32)>::new();
+        for (space, start, end) in ranges {
+            if let Some(last) = merged.last_mut() {
+                if last.0 == space && start <= last.2 {
+                    last.2 = last.2.max(end);
+                    continue;
+                }
+            }
+            merged.push((space, start, end));
+        }
+        let unique_bytes = merged
+            .iter()
+            .map(|(_, start, end)| (*end - *start) as usize)
+            .sum::<usize>();
+        if unique_bytes > MAX_UNIQUE_BYTES {
+            return err(tag, 502, "502 PP save exceeds the transfer limit");
+        }
+        let mut regions = Vec::with_capacity(merged.len());
+        for (space, start, end) in merged {
+            let count = (end - start) as usize;
+            let original = match space {
+                Space::Standard if count <= u8::MAX as usize && end <= 256 => {
+                    pci.recall_parameter(unit, start as u8, count).await
+                }
+                Space::Standard => return err(tag, 502, "502 Standard PP save range is too large"),
+                Space::Memory => pci.read_memory(unit, start, count).await,
+            };
+            let original = match original {
+                Ok(bytes) => bytes,
+                Err(error) => {
+                    return err(
+                        tag,
+                        502,
+                        &format!("502 Physical PP pre-read failed: {error}"),
+                    )
+                }
+            };
+            regions.push(Region {
+                space,
+                start,
+                modified: original.clone(),
+                original,
+            });
+        }
+        for item in &pending {
+            let Some(region) = regions.iter_mut().find(|region| {
+                region.space == item.space
+                    && item.start >= region.start
+                    && item.end <= region.start + region.modified.len() as u32
+            }) else {
+                return err(tag, 500, "500 Physical PP save plan was incomplete");
+            };
+            let offset = (item.start - region.start) as usize;
+            let count = (item.end - item.start) as usize;
+            if let Err(error) = item.layout.encode_into(
+                item.param,
+                &item.value,
+                &mut region.modified[offset..offset + count],
+            ) {
+                return err(tag, 502, &format!("502 {error}"));
+            }
+        }
+
+        for region in &regions {
+            if region.modified == region.original {
+                continue;
+            }
+            let result = match region.space {
+                Space::Standard => {
+                    pci.store_parameter_verified(unit, region.start as u8, &region.modified)
+                        .await
+                }
+                Space::Memory => {
+                    pci.write_memory_verified(unit, region.start, &region.modified)
+                        .await
+                }
+            };
+            if let Err(error) = result {
+                return err(tag, 502, &format!("502 Physical PP save failed: {error}"));
+            }
+        }
+
+        let mut model = self.model.lock().await;
+        let lock_held = model.locks.contains_key(&session_lock);
+        let Some(session) = model.sessions.get_mut(&session_name) else {
+            return err(
+                tag,
+                409,
+                "409 Programming session ended during physical save",
+            );
+        };
+        if session.lock != session_lock || !lock_held || !client.sessions.contains(&session_name) {
+            return err(
+                tag,
+                409,
+                "409 Programming session changed during physical save",
+            );
+        }
+        session.source = Some(target);
+        session.dirty.retain(|name| !cleared.contains(name));
         ok(tag, vec![], "200 OK")
     }
 

@@ -377,15 +377,15 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
 }
 
 #[tokio::test]
-async fn physical_pp_load_decodes_standard_and_oem_memory_on_shared_pci() {
+async fn physical_pp_load_and_save_use_standard_and_oem_memory_on_shared_pci() {
     let state = cbus_test_support::proc::temp_path("physical-pp-cgate.json");
     let specs = cbus_test_support::proc::temp_path("physical-pp-unitspec");
     std::fs::create_dir_all(&specs).unwrap();
     std::fs::write(
         specs.join("TESTUNIT.xml"),
         r#"<UnitSpecification><Parameters>
-        <Param><Name>Standard</Name><Type>int</Type><Address>$20</Address><ArraySize>2</ArraySize><Tag>Core</Tag></Param>
-        <Param><Name>Mapped</Name><Type>int</Type><Address>$110</Address><ArraySize>3</ArraySize><BitSize>4</BitSize><BitAddress>4</BitAddress><ArraySkip>1</ArraySkip><ArrayMap>2 3 1</ArrayMap><Tag>Core</Tag></Param>
+        <Param><Name>Standard</Name><Type>int</Type><Address>$20</Address><ArraySize>2</ArraySize><ProgramMethod>direct</ProgramMethod><Protection>checksum</Protection><Tag>Core</Tag></Param>
+        <Param><Name>Mapped</Name><Type>int</Type><Address>$110</Address><ArraySize>3</ArraySize><BitSize>4</BitSize><BitAddress>4</BitAddress><ArraySkip>1</ArraySkip><ArrayMap>2 3 1</ArrayMap><ProgramMethod>edlt</ProgramMethod><Protection>none</Protection><Tag>Core</Tag></Param>
         <Param><Name>Excluded</Name><Type>string</Type><Address>$120</Address><ArraySize>4</ArraySize><Tag>Other</Tag></Param>
         </Parameters></UnitSpecification>"#,
     )
@@ -454,13 +454,15 @@ async fn physical_pp_load_decodes_standard_and_oem_memory_on_shared_pci() {
 
     let load = command(&mut reader, &mut writer, "PP LOAD S //HARNESS/254/p/5 Core");
     let responses = async {
-        async fn identify(sys: &System, attribute: u8, data: &[u8]) {
+        async fn identify(sys: &System, attribute: u8, data: &[u8], occurrence: usize) {
             let prefix = format!("46050021{attribute:02X}");
             require(COMMAND_DRAIN, "physical PP IDENTIFY", || {
                 sys.pci
                     .frames()
                     .iter()
-                    .any(|frame| frame.payload.starts_with(&prefix))
+                    .filter(|frame| frame.payload.starts_with(&prefix))
+                    .count()
+                    >= occurrence
             })
             .await;
             let mut body = vec![
@@ -475,8 +477,8 @@ async fn physical_pp_load_decodes_standard_and_oem_memory_on_shared_pci() {
             body.extend_from_slice(data);
             sys.pci.inject(&pci_wire(&body));
         }
-        identify(&sys, 1, b"TESTUNIT").await;
-        identify(&sys, 2, b"1.2.03").await;
+        identify(&sys, 1, b"TESTUNIT", 1).await;
+        identify(&sys, 2, b"1.2.03", 1).await;
 
         require(COMMAND_DRAIN, "standard PP parameter recall", || {
             sys.pci
@@ -515,6 +517,231 @@ async fn physical_pp_load_decodes_standard_and_oem_memory_on_shared_pci() {
     assert!(values.contains("315-Mapped=0xC 0xA 0xB"), "{values:?}");
     assert!(values.contains("315 Standard=0x12 0x34"), "{values:?}");
     assert!(!values.contains("Excluded="), "{values:?}");
+
+    assert!(
+        command(&mut reader, &mut writer, "PP SET S Standard 0x56 0x78")
+            .await
+            .contains("200 OK")
+    );
+    assert!(
+        command(&mut reader, &mut writer, "PP SET S Mapped 0x1 0x2 0x3")
+            .await
+            .contains("200 OK")
+    );
+    let save = command(&mut reader, &mut writer, "PP SAVE S //HARNESS/254/p/5 Core");
+    let save_responses = async {
+        async fn identify(sys: &System, attribute: u8, data: &[u8]) {
+            let prefix = format!("46050021{attribute:02X}");
+            require(COMMAND_DRAIN, "physical PP SAVE identity", || {
+                sys.pci
+                    .frames()
+                    .iter()
+                    .filter(|frame| frame.payload.starts_with(&prefix))
+                    .count()
+                    >= 2
+            })
+            .await;
+            let mut body = vec![
+                0x86,
+                5,
+                0x10,
+                0x01,
+                0x00,
+                0x80 | (data.len() as u8 + 1),
+                attribute,
+            ];
+            body.extend_from_slice(data);
+            sys.pci.inject(&pci_wire(&body));
+        }
+        identify(&sys, 1, b"TESTUNIT").await;
+        identify(&sys, 2, b"1.2.03").await;
+
+        require(COMMAND_DRAIN, "standard PP save pre-read", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload.starts_with("4605001A2002"))
+                .count()
+                >= 2
+        })
+        .await;
+        sys.pci.inject(&pci_wire(&[
+            0x86, 5, 0x10, 0x01, 0x00, 0x83, 0x20, 0x12, 0x34,
+        ]));
+        require(COMMAND_DRAIN, "OEM PP save pre-read selector", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload.starts_with("46050900A400411000"))
+                .count()
+                >= 2
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0x00, 0x41]));
+        require(COMMAND_DRAIN, "OEM PP save pre-read", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload.starts_with("460509001A0105"))
+                .count()
+                >= 2
+        })
+        .await;
+        sys.pci.inject(&pci_wire(&[
+            0x86, 5, 0x10, 0x01, 0x00, 0x86, 0x01, 0xa1, 0x77, 0xb2, 0x88, 0xc3,
+        ]));
+
+        require(COMMAND_DRAIN, "standard PP STORE", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload.starts_with("460500A420005678"))
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0x20, 0x00]));
+        require(COMMAND_DRAIN, "standard PP STORE readback", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload.starts_with("4605001A2002"))
+                .count()
+                >= 3
+        })
+        .await;
+        sys.pci.inject(&pci_wire(&[
+            0x86, 5, 0x10, 0x01, 0x00, 0x83, 0x20, 0x56, 0x78,
+        ]));
+
+        require(COMMAND_DRAIN, "OEM PP STORE selector", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload.starts_with("46050900A400411000"))
+                .count()
+                >= 3
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0x00, 0x41]));
+        require(COMMAND_DRAIN, "OEM PP STORE data", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload.starts_with("46050900A701422177328813"))
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0x01, 0x42]));
+        require(COMMAND_DRAIN, "OEM PP STORE readback selector", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload.starts_with("46050900A400411000"))
+                .count()
+                >= 4
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0x00, 0x41]));
+        require(COMMAND_DRAIN, "OEM PP STORE readback", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload.starts_with("460509001A0105"))
+                .count()
+                >= 3
+        })
+        .await;
+        sys.pci.inject(&pci_wire(&[
+            0x86, 5, 0x10, 0x01, 0x00, 0x86, 0x01, 0x21, 0x77, 0x32, 0x88, 0x13,
+        ]));
+    };
+    let (saved, ()) = tokio::join!(save, save_responses);
+    assert!(saved.contains("200 OK"), "{saved:?}");
+
+    let standard_reads = sys
+        .pci
+        .frames()
+        .iter()
+        .filter(|frame| frame.payload.starts_with("4605001A2002"))
+        .count();
+    let memory_selectors = sys
+        .pci
+        .frames()
+        .iter()
+        .filter(|frame| frame.payload.starts_with("46050900A400411000"))
+        .count();
+    let standard_stores = sys
+        .pci
+        .frames()
+        .iter()
+        .filter(|frame| frame.payload.starts_with("460500A420005678"))
+        .count();
+    let memory_stores = sys
+        .pci
+        .frames()
+        .iter()
+        .filter(|frame| frame.payload.starts_with("46050900A701422177328813"))
+        .count();
+    let save_again = command(&mut reader, &mut writer, "PP SAVE_TO_SOURCE S Core");
+    let identity_responses = async {
+        for (attribute, data) in [(1, b"TESTUNIT".as_slice()), (2, b"1.2.03".as_slice())] {
+            let prefix = format!("46050021{attribute:02X}");
+            require(COMMAND_DRAIN, "unchanged PP SAVE identity", || {
+                sys.pci
+                    .frames()
+                    .iter()
+                    .filter(|frame| frame.payload.starts_with(&prefix))
+                    .count()
+                    >= 3
+            })
+            .await;
+            let mut body = vec![
+                0x86,
+                5,
+                0x10,
+                0x01,
+                0x00,
+                0x80 | (data.len() as u8 + 1),
+                attribute,
+            ];
+            body.extend_from_slice(data);
+            sys.pci.inject(&pci_wire(&body));
+        }
+    };
+    let (saved_again, ()) = tokio::join!(save_again, identity_responses);
+    assert!(saved_again.contains("200 OK"), "{saved_again:?}");
+    let frames = sys.pci.frames();
+    assert_eq!(
+        frames
+            .iter()
+            .filter(|frame| frame.payload.starts_with("4605001A2002"))
+            .count(),
+        standard_reads
+    );
+    assert_eq!(
+        frames
+            .iter()
+            .filter(|frame| frame.payload.starts_with("46050900A400411000"))
+            .count(),
+        memory_selectors
+    );
+    assert_eq!(
+        frames
+            .iter()
+            .filter(|frame| frame.payload.starts_with("460500A420005678"))
+            .count(),
+        standard_stores
+    );
+    assert_eq!(
+        frames
+            .iter()
+            .filter(|frame| frame.payload.starts_with("46050900A701422177328813"))
+            .count(),
+        memory_stores
+    );
     assert_eq!(sys.pci.connections(), 1);
 
     drop(sys);

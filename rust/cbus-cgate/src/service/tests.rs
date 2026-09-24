@@ -106,8 +106,14 @@ async fn programming_ownership_and_unimplemented_hardware_are_enforced() {
             .status,
         420
     );
+    assert_eq!(
+        service
+            .handle(&mut first, "[5] PP SAVE S //HARNESS/254/p/5")
+            .await
+            .status,
+        408
+    );
     for command in [
-        "PP SAVE S //HARNESS/254/p/5",
         "SET //HARNESS/254/p/5 Address 6",
         "AIRCON REFRESH //HARNESS/254/172 1",
         "PP WRITE_PATCH S anything",

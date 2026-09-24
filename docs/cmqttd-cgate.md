@@ -36,6 +36,7 @@ not be committed or published.
 | Project list/use/load/save/new/close; database CRUD and database snapshots | Persistent JSON database; atomic replacement, restrictive permissions, failed-write rollback |
 | Database PP locks, sessions, get/set/info/new/load/save | Existing programming model with connection ownership; staged sessions and locks are discarded on disconnect/restart |
 | Physical PP LOAD and subsequent GET/INFO | Identifies the live unit, selects its privately installed decoded schema, recalls standard CAL parameters and OEM memory through the shared PCI, decodes int/long/bit/string/sixbit arrays and `ArrayMap`, applies tag selection, and commits the session only after every read succeeds |
+| Physical PP SAVE/SAVE_TO_SOURCE | Writes only dirty, tag-selected `direct` and `edlt` parameters with `none`/`checksum` protection; validates the complete plan and live type/firmware first, preserves shared bits through pre-read/encode, requires source/parameter-matched acknowledgements, and reads every stored range back before success |
 | ON/OFF/RAMP/TERMINATERAMP and lighting variants | Actual shared PCI, negative confirmations return errors; successful delivery is distinct from observed physical brightness |
 | GET group level | Real observed bus levels; unobserved levels return 408, never invented zero |
 | TRIGGER EVENT/INDICATORKILL | Actual Trigger Control SAL on application 202; incoming events update the live service cache and event stream |
@@ -64,6 +65,15 @@ maps logical addresses at or above 256 to OEM physical offset `logical - 256`.
 Reads are bounded, coalesced, source-correlated and serialized with MQTT traffic.
 Unknown schemas, unsupported layouts, incomplete replies and changed or ended
 sessions fail without replacing the previously staged values.
+
+Physical SAVE uses captured tagged direct STORE for standard parameters and the
+OEM `0x41` address selector plus tagged `0x42` STORE for eDLT memory. Factory and
+special parameters follow native behavior and are skipped by ordinary SAVE.
+`lock` protection and program methods other than `direct` and `edlt` return 502
+before any write. All dirty parameters are encoded and physically pre-read
+before the first STORE. Each changed range is acknowledged and read back; a
+transport failure can still leave earlier independently acknowledged ranges
+written, so multi-range recovery and power-loss acceptance remain outstanding.
 
 ## Live label reads
 
@@ -107,11 +117,11 @@ all 431 have physical implementations in this service. `CMQTT CAPABILITIES`
 returns `full_cgate_compatibility: false`; unimplemented physical operations
 return 502. Full replacement still requires:
 
-- Physical PP SAVE with schema encoders, protection/checksum phases, readback,
-  recovery and hardware acceptance. Physical PP LOAD is implemented and has
-  full decoded-catalogue layout coverage, fake-PCI system acceptance and live
-  KEYGL5 acceptance for standard and OEM parameters; broader unit/profile
-  acceptance is still incomplete.
+- Physical PP SAVE methods beyond captured `direct` and `edlt`, `lock`
+  protection, multi-range failure recovery, power-loss behavior and hardware
+  write acceptance. LOAD has full decoded-catalogue layout coverage plus live
+  KEYGL5 acceptance; SAVE has full supported-default catalogue encoding and
+  fake-PCI direct/OEM write-readback acceptance.
 - Bridged-network synchronization, serial addressing, readdressing, unravel,
   project identification and the remaining commissioning state transitions.
   Direct-network `NET PINGU`, `NET SYNC` identity population and duplicate-aware
@@ -126,8 +136,9 @@ return 502. Full replacement still requires:
 
 ## Tests
 
-`cbus-transport` tests pin direct routing for standard parameter recall and the
-separate programming route for segmented OEM recall, plus source filtering,
+`cbus-transport` tests pin direct routing for standard recall/tagged STORE and
+the separate programming route for segmented OEM recall/tagged STORE, including
+mandatory readback, plus source filtering,
 interleaved lighting, complete and incomplete installation MMI,
 MMI and IDENTIFY data that precedes its positive confirmation, the confirmed
 two-second IDENTIFY collection window, duplicate replies, absence, and
@@ -138,9 +149,10 @@ system test.
 rollback, session ownership, unsupported hardware rejection, fragmented command
 input during events, disconnect cleanup, schema layout decoding and input bounds.
 The decoded vendor catalogue is optionally audited through `CBUS_UNITSPEC_DIR`.
-The real cmqttd system test performs a physical PP LOAD against a scripted PCI,
-checks standard and OEM values plus tag selection, and verifies that C-Gate and
-MQTT retain one PCI connection.
+The real cmqttd system test performs physical PP LOAD and SAVE against a scripted
+PCI, checks standard and OEM values, dirty/tag selection, read-modify-write
+encoding, acknowledgements and readback, and verifies that C-Gate and MQTT retain
+one PCI connection.
 `toolkit-cli/tests/test_cmqtt.py` tests synthetic eDLT decoding and read contracts.
 None of these fixtures contains a user's project or labels.
 

@@ -19,7 +19,7 @@
 //! shared PCI operations. It explicitly rejects physical command families
 //! without a backend; the mock's command coverage is not hardware parity.
 
-use std::collections::{HashMap, VecDeque};
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::path::PathBuf;
 
 pub mod manual;
@@ -532,6 +532,8 @@ pub struct PpSession {
     pub catalog_number: Option<String>,
     /// Staged parameter values.
     pub params: HashMap<String, String>,
+    /// Parameters changed since the last successful load or save.
+    pub dirty: HashSet<String>,
 }
 
 /// One project network.
@@ -2174,6 +2176,7 @@ impl Server {
                 firmware: None,
                 catalog_number: None,
                 params: HashMap::new(),
+                dirty: HashSet::new(),
             },
         );
         ok(tag, vec![], "200 OK")
@@ -2248,6 +2251,7 @@ impl Server {
                 }
             }
         }
+        session.dirty = session.params.keys().cloned().collect();
         self.pp_store(tag, session)
     }
 
@@ -2266,6 +2270,7 @@ impl Server {
         };
         session.source = Some(words[3].to_string());
         session.params.clear();
+        session.dirty.clear();
         session.unit_type = None;
         session.firmware = None;
         session.catalog_number = None;
@@ -2425,13 +2430,14 @@ impl Server {
             e.tag = tag.to_string();
             return e;
         }
+        session.dirty.clear();
         self.push_event(format!("#e# pp save {}", session.name));
         self.pp_store(tag, session)
     }
 
     /// Native `PP SAVE_TO_SOURCE name [tags...]`.
     fn pp_save_to_source(&mut self, tag: &str, words: &[&str]) -> Response {
-        let (_, session) = match self.pp_session(tag, words) {
+        let (_, mut session) = match self.pp_session(tag, words) {
             Ok(v) => v,
             Err(r) => return r,
         };
@@ -2453,8 +2459,9 @@ impl Server {
             e.tag = tag.to_string();
             return e;
         }
+        session.dirty.clear();
         self.push_event(format!("#e# pp save {}", session.name));
-        ok(tag, vec![], "200 OK")
+        self.pp_store(tag, session)
     }
 
     /// Native `PP GET name [parameter]`; parameter values travel as 315 rows.
@@ -2505,6 +2512,7 @@ impl Server {
         session
             .params
             .insert(words[3].to_string(), dequote_value(&raw));
+        session.dirty.insert(words[3].to_string());
         self.pp_store(tag, session)
     }
 
@@ -2620,12 +2628,14 @@ impl Server {
                             .map(|d| (p.name.clone(), d.to_string()))
                     })
                     .collect();
+                session.dirty = session.params.keys().cloned().collect();
                 return self.pp_store(tag, session);
             }
         }
         session
             .params
             .retain(|k, _| matches!(k.as_str(), "UnitType" | "FirmwareVersion" | "CatalogNumber"));
+        session.dirty = session.params.keys().cloned().collect();
         self.pp_store(tag, session)
     }
 
@@ -4559,6 +4569,10 @@ mod tests {
             s.handle("[12b] PP SET S1 Note \"Hello\\ World\"").status,
             200
         );
+        assert_eq!(
+            s.sessions["S1"].dirty,
+            HashSet::from(["Note".to_string(), "UnitName".to_string()])
+        );
         let all = s.handle("[13] PP GET S1 *");
         assert_eq!(all.status, 315);
         assert_eq!(all.final_text, "315 UnitName=LOUNGE");
@@ -4570,12 +4584,14 @@ mod tests {
         // SAVE persists staged values to the database record (physical
         // transfer is a separate unverified step, so read back via DBGET).
         assert_eq!(s.handle("[15] PP SAVE S1 /db//TEST/254/p/20").status, 200);
+        assert!(s.sessions["S1"].dirty.is_empty());
         let back = s.handle("[16] DBGET //TEST/254/p/20/UnitName");
         assert!(back.lines.iter().any(|l| l.ends_with("UnitName=LOUNGE")));
         // LOAD seeds parameters but not identity rows; the struct
         // carries identity (see export_parameters).
         assert_eq!(s.handle("[17] PP START S2 L1").status, 200);
         assert_eq!(s.handle("[18] PP LOAD S2 /db//TEST/254/p/20").status, 200);
+        assert!(s.sessions["S2"].dirty.is_empty());
         assert_eq!(s.handle("[19] PP GET S2 FirmwareVersion").status, 404);
         let reloaded = s.handle("[19b] PP GET S2 UnitName");
         assert_eq!(reloaded.final_text, "315 UnitName=LOUNGE");

@@ -20,8 +20,9 @@ never replace it with saved project data and describe that as a live result.
 
 The physical service also implements lighting commands, Trigger Control,
 Enable Control, clock date/time/refresh, Temperature Broadcast, `NET PINGU`, `NET SYNC`,
-`NET CHECKUNIT`, and read-only physical `PP LOAD` using decoded unit specifications.
-Physical PP SAVE remains unsupported and returns an explicit backend error.
+`NET CHECKUNIT`, physical `PP LOAD`, and readback-verified physical `PP SAVE` for
+`direct` and `edlt` parameters using decoded unit specifications. Other program
+methods and `lock` protection remain explicit backend errors.
 PINGU and whole-network checks send the install-MMI request
 with the active PCI checksum setting. They buffer blocks that arrive before the
 request confirmation but accept only positively confirmed, contiguous coverage

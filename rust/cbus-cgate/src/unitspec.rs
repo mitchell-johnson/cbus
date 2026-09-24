@@ -564,6 +564,178 @@ impl ParameterLayout {
             _ => unreachable!("layout kind was validated"),
         }
     }
+
+    /// Encode one native PP value into an exact physical value buffer.
+    /// Bitfields and skipped array bytes retain the caller-supplied contents,
+    /// allowing the service to perform a read-modify-write without damaging
+    /// neighbouring parameters.
+    pub fn encode_into(
+        &self,
+        param: &SpecParam,
+        value: &str,
+        data: &mut [u8],
+    ) -> Result<(), String> {
+        let expected = match self.transfer {
+            ParameterTransfer::Recall { count, .. } | ParameterTransfer::Memory { count, .. } => {
+                count
+            }
+        };
+        if data.len() != expected {
+            return Err(format!("Short physical value for {:?}", param.name));
+        }
+        match self.kind.as_str() {
+            "string" => {
+                let bytes = value
+                    .chars()
+                    .map(|character| {
+                        u8::try_from(u32::from(character))
+                            .map_err(|_| format!("Value for {:?} is not Latin-1", param.name))
+                    })
+                    .collect::<Result<Vec<_>, _>>()?;
+                if bytes.len() > self.array_size {
+                    return Err(format!("Value for {:?} is too long", param.name));
+                }
+                data.fill(0);
+                data[..bytes.len()].copy_from_slice(&bytes);
+            }
+            "sixbit" => {
+                let mut characters = value.trim_end_matches(' ').chars().collect::<Vec<_>>();
+                if characters.len() > 8 {
+                    return Err(format!("Value for {:?} is too long", param.name));
+                }
+                characters.resize(8, ' ');
+                let mut bits = 0u64;
+                for character in characters {
+                    let code = if character == ' ' {
+                        30
+                    } else {
+                        let byte = u8::try_from(u32::from(character)).map_err(|_| {
+                            format!("Value for {:?} is not six-bit text", param.name)
+                        })?;
+                        let code = byte.checked_sub(33).ok_or_else(|| {
+                            format!("Value for {:?} is not six-bit text", param.name)
+                        })?;
+                        if code > 63 || code == 30 {
+                            return Err(format!("Value for {:?} is not six-bit text", param.name));
+                        }
+                        code
+                    };
+                    bits = (bits << 6) | u64::from(code);
+                }
+                let width = data.len();
+                for (index, byte) in data.iter_mut().enumerate() {
+                    *byte = (bits >> (8 * (width - 1 - index))) as u8;
+                }
+            }
+            "bit" => {
+                let values = parse_numbers(param, value, self.array_size)?;
+                for (element, number) in values.into_iter().enumerate() {
+                    if number > 1 {
+                        return Err(format!("Value for {:?} exceeds one bit", param.name));
+                    }
+                    let bit = self.bit_address + element;
+                    let mask = 1 << (bit % 8);
+                    if number == 0 {
+                        data[bit / 8] &= !mask;
+                    } else {
+                        data[bit / 8] |= mask;
+                    }
+                }
+            }
+            "int" | "long" => {
+                let mut values = parse_numbers(param, value, self.array_size)?;
+                let maximum = if self.bit_size == 64 {
+                    u64::MAX
+                } else {
+                    (1u64 << self.bit_size) - 1
+                };
+                let minimum = match param
+                    .get("MinValue")
+                    .map(str::trim)
+                    .filter(|raw| !raw.is_empty())
+                {
+                    Some(raw) => parse_integer(raw)
+                        .and_then(|number| u64::try_from(number).ok())
+                        .ok_or_else(|| format!("Invalid MinValue for {:?}", param.name))?,
+                    None => 0,
+                };
+                let declared_maximum = match param
+                    .get("MaxValue")
+                    .map(str::trim)
+                    .filter(|raw| !raw.is_empty())
+                {
+                    Some(raw) => parse_integer(raw)
+                        .and_then(|number| u64::try_from(number).ok())
+                        .ok_or_else(|| format!("Invalid MaxValue for {:?}", param.name))?
+                        .min(maximum),
+                    None => maximum,
+                };
+                if minimum > declared_maximum {
+                    return Err(format!("Invalid value range for {:?}", param.name));
+                }
+                if values
+                    .iter()
+                    .any(|number| *number < minimum || *number > declared_maximum)
+                {
+                    return Err(format!("Value for {:?} is outside its range", param.name));
+                }
+                if let Some(mapping) = &self.array_map {
+                    values = mapping.iter().map(|logical| values[*logical]).collect();
+                }
+                for (element, number) in values.into_iter().enumerate() {
+                    let start = element * self.stride;
+                    let bytes = &mut data[start..start + self.byte_width];
+                    let mut raw = if self.endian == "big" {
+                        bytes
+                            .iter()
+                            .fold(0u64, |current, byte| (current << 8) | u64::from(*byte))
+                    } else {
+                        bytes
+                            .iter()
+                            .enumerate()
+                            .fold(0u64, |current, (shift, byte)| {
+                                current | (u64::from(*byte) << (shift * 8))
+                            })
+                    };
+                    let shifted_mask = maximum << self.bit_address;
+                    raw = (raw & !shifted_mask) | (number << self.bit_address);
+                    if self.endian == "big" {
+                        let width = bytes.len();
+                        for (index, byte) in bytes.iter_mut().enumerate() {
+                            *byte = (raw >> (8 * (width - 1 - index))) as u8;
+                        }
+                    } else {
+                        for (index, byte) in bytes.iter_mut().enumerate() {
+                            *byte = (raw >> (8 * index)) as u8;
+                        }
+                    }
+                }
+            }
+            _ => unreachable!("layout kind was validated"),
+        }
+        Ok(())
+    }
+}
+
+fn parse_numbers(param: &SpecParam, value: &str, count: usize) -> Result<Vec<u64>, String> {
+    let mut values = value
+        .split_whitespace()
+        .map(|token| {
+            parse_integer(token)
+                .and_then(|number| u64::try_from(number).ok())
+                .ok_or_else(|| format!("Invalid numeric value for {:?}", param.name))
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    if values.len() == 1 && count > 1 {
+        values.resize(count, values[0]);
+    }
+    if values.len() != count {
+        return Err(format!(
+            "Value for {:?} requires {count} element(s)",
+            param.name
+        ));
+    }
+    Ok(values)
 }
 
 fn format_numbers(values: &[u64], declared: usize) -> String {
@@ -705,6 +877,68 @@ mod tests {
     }
 
     #[test]
+    fn physical_layout_encodes_with_read_modify_write_preservation() {
+        let mapped = param(
+            "Mapped",
+            "int",
+            &[
+                ("Address", "$110"),
+                ("ArraySize", "3"),
+                ("BitSize", "4"),
+                ("BitAddress", "4"),
+                ("ArraySkip", "1"),
+                ("ArrayMap", "2 3 1"),
+            ],
+        );
+        let layout = ParameterLayout::for_param(&mapped).unwrap();
+        let mut data = [0xa1, 0x77, 0xb2, 0x88, 0xc3];
+        layout
+            .encode_into(&mapped, "0x1 0x2 0x3", &mut data)
+            .unwrap();
+        assert_eq!(data, [0x21, 0x77, 0x32, 0x88, 0x13]);
+        assert_eq!(layout.decode(&mapped, &data), Ok("0x1 0x2 0x3".to_string()));
+
+        let bits = param(
+            "Bits",
+            "bit",
+            &[("Address", "$20"), ("ArraySize", "5"), ("BitAddress", "6")],
+        );
+        let layout = ParameterLayout::for_param(&bits).unwrap();
+        let mut data = [0x3f, 0xf8];
+        layout.encode_into(&bits, "1 0 1 0 1", &mut data).unwrap();
+        assert_eq!(data, [0x7f, 0xfd]);
+
+        let text = param("Text", "string", &[("Address", "$101"), ("ArraySize", "4")]);
+        let layout = ParameterLayout::for_param(&text).unwrap();
+        let mut data = [0xff; 4];
+        layout.encode_into(&text, "Aé", &mut data).unwrap();
+        assert_eq!(data, [b'A', 0xe9, 0, 0]);
+        assert_eq!(layout.decode(&text, &data), Ok("Aé".to_string()));
+
+        let sixbit = param("Name", "sixbit", &[("Address", "$23"), ("ArraySize", "8")]);
+        let layout = ParameterLayout::for_param(&sixbit).unwrap();
+        let mut data = [0; 6];
+        layout.encode_into(&sixbit, "ABC", &mut data).unwrap();
+        assert_eq!(layout.decode(&sixbit, &data), Ok("ABC     ".to_string()));
+
+        let long = param(
+            "Wide",
+            "long",
+            &[("Address", "3"), ("BitSize", "16"), ("Endian", "big")],
+        );
+        let layout = ParameterLayout::for_param(&long).unwrap();
+        let mut data = [0; 2];
+        layout.encode_into(&long, "0x102", &mut data).unwrap();
+        assert_eq!(data, [1, 2]);
+
+        assert!(layout.encode_into(&long, "0x10000", &mut data).is_err());
+        assert!(ParameterLayout::for_param(&text)
+            .unwrap()
+            .encode_into(&text, "toolong", &mut [0; 4])
+            .is_err());
+    }
+
+    #[test]
     fn physical_layout_rejects_unverified_or_unbounded_shapes() {
         for parameter in [
             param("WideInt", "int", &[("Address", "1"), ("BitSize", "17")]),
@@ -747,6 +981,62 @@ mod tests {
             }
         }
         assert!(parameters > 0, "no decoded vendor parameters were audited");
+    }
+
+    #[test]
+    fn installed_vendor_save_defaults_encode_for_supported_methods() {
+        let Some(dir) = std::env::var_os("CBUS_UNITSPEC_DIR").map(PathBuf::from) else {
+            return;
+        };
+        let mut parameters = 0usize;
+        for entry in std::fs::read_dir(&dir).expect("read vendor spec directory") {
+            let path = entry.expect("vendor spec entry").path();
+            if path.extension().and_then(|value| value.to_str()) != Some("xml") {
+                continue;
+            }
+            let Some(unit_type) = path.file_stem().and_then(|value| value.to_str()) else {
+                continue;
+            };
+            let Ok(spec) = load_spec(&dir, unit_type) else {
+                continue;
+            };
+            for parameter in &spec {
+                let method = parameter
+                    .get("ProgramMethod")
+                    .unwrap_or("")
+                    .to_ascii_lowercase();
+                let protection = parameter
+                    .get("Protection")
+                    .unwrap_or("none")
+                    .to_ascii_lowercase();
+                let Some(default) = parameter.get("DefaultValue") else {
+                    continue;
+                };
+                if !matches!(method.as_str(), "direct" | "edlt")
+                    || !matches!(protection.as_str(), "none" | "checksum")
+                {
+                    continue;
+                }
+                let layout = ParameterLayout::for_param(parameter)
+                    .unwrap_or_else(|error| panic!("{unit_type}/{}: {error}", parameter.name));
+                let count = match layout.transfer {
+                    ParameterTransfer::Recall { count, .. }
+                    | ParameterTransfer::Memory { count, .. } => count,
+                };
+                let mut data = vec![0; count];
+                layout
+                    .encode_into(parameter, default, &mut data)
+                    .unwrap_or_else(|error| panic!("{unit_type}/{}: {error}", parameter.name));
+                layout
+                    .decode(parameter, &data)
+                    .unwrap_or_else(|error| panic!("{unit_type}/{}: {error}", parameter.name));
+                parameters += 1;
+            }
+        }
+        assert!(
+            parameters > 0,
+            "no decoded vendor save defaults were audited"
+        );
     }
 
     #[test]
