@@ -407,3 +407,104 @@ fn dbvalidate_envelope_shape_and_rejects() {
         assert!(response.final_text.contains(fragment), "{line}");
     }
 }
+
+/// Mock determinism for DBDELETE: boundary-checked prefix removal takes the
+/// database unit but leaves physical presence and numeric siblings alone;
+/// repeats and absent paths fail closed; unselected projects are refused.
+/// The DB read layer observes the removal and the unit OID retires.
+#[test]
+fn dbdelete_boundary_repeat_and_unselected() {
+    let mut s = Server::new(AccessLevel::Program);
+    assert_eq!(s.handle("[1] PROJECT NEW TEST").status, 200);
+    assert_eq!(
+        s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
+            .status,
+        200
+    );
+    assert_eq!(s.handle("[3] PROJECT USE TEST").status, 200);
+    for (tag, addr, name) in [("4", 20, "A"), ("5", 200, "B"), ("6", 30, "C")] {
+        assert_eq!(
+            s.handle(&format!("[{tag}] DBADDSAFE //TEST/254 Unit {addr} {name}"))
+                .status,
+            200
+        );
+    }
+    // Capture unit 20's OID from the network document while it exists;
+    // deletion must retire it. Unit snippets carry no OID themselves.
+    let netdoc = s.handle("[6b] DBGETXML //TEST/254");
+    assert_eq!(netdoc.status, 200);
+    let oid = netdoc
+        .lines
+        .iter()
+        .chain(std::iter::once(&netdoc.final_text))
+        .find(|line| line.contains("<Address>20</Address>"))
+        .and_then(|line| {
+            let start = line.find("<OID>")? + "<OID>".len();
+            let end = line.find("</OID>")?;
+            Some(line[start..end].to_string())
+        })
+        .expect("network XML carries unit 20 with its OID");
+    let resolved = s.handle(&format!("[6c] DBGET !{oid}/OID"));
+    assert_eq!(resolved.status, 342);
+    assert_eq!(resolved.final_text, format!("342 !{oid}/OID={oid}"));
+    let deleted = s.handle("[7] DBDELETE //TEST/254/p/20");
+    assert_eq!(deleted.status, 200);
+    assert_eq!(deleted.final_text, "200 OK");
+    // Repeat and never-present paths fail closed; p/20 must not wipe p/200.
+    for (line, status, fragment) in [
+        ("[8] DBDELETE //TEST/254/p/20", 404, "Object not found"),
+        ("[9] DBDELETE //TEST/254/p/3", 404, "Object not found"),
+        ("[10] DBDELETE", 400, "requires a path"),
+    ] {
+        let response = s.handle(line);
+        assert_eq!(response.status, status, "{line}");
+        assert!(response.final_text.contains(fragment), "{line}");
+    }
+    // Physical presence and siblings survive the database removal
+    // (mock-only layer split, like the scalar move: unit reads observe
+    // physical, DB reads observe the database layer).
+    for addr in [200, 30] {
+        let present = s.handle(&format!("[11] GET //TEST/254/p/{addr} *"));
+        assert_eq!(present.status, 300);
+    }
+    // The DB read layer observes the removal; the sibling still reads.
+    let db_gone = s.handle("[11b] DBGET //TEST/254/p/20");
+    assert_eq!(db_gone.status, 401);
+    let db_sibling = s.handle("[11c] DBGET //TEST/254/p/200");
+    assert_eq!(db_sibling.status, 200);
+    let xml_sibling = s.handle("[11d] DBGETXML //TEST/254/p/200");
+    assert_eq!(xml_sibling.status, 200);
+    // Unselected projects are refused before any lookup, even for an
+    // existing object: select away first since PROJECT NEW selects.
+    let mut unselected = Server::new(AccessLevel::Program);
+    assert_eq!(unselected.handle("[1] PROJECT NEW T2").status, 200);
+    assert_eq!(
+        unselected
+            .handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
+            .status,
+        200
+    );
+    assert_eq!(
+        unselected
+            .handle("[3] DBADDSAFE //T2/254 Unit 20 Present")
+            .status,
+        200
+    );
+    assert_eq!(unselected.handle("[4] PROJECT NEW T3").status, 200);
+    assert_eq!(unselected.handle("[5] PROJECT USE T3").status, 200);
+    let noselect = unselected.handle("[6] DBDELETE //T2/254/p/20");
+    assert_eq!(noselect.status, 404);
+    assert!(noselect.final_text.contains("Project not selected"));
+    // Unit OID retires with the record: resolvable before, gone after.
+    let retired = s.handle(&format!("[19b] DBGET !{oid}/OID"));
+    assert_eq!(retired.status, 401);
+    let events = s.drain_events();
+    assert!(events.iter().any(|e| e == "#e# db unit 20 deleted"));
+    assert_eq!(
+        events
+            .iter()
+            .filter(|e| e == &"#e# db unit 20 deleted")
+            .count(),
+        1
+    );
+}
