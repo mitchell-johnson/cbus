@@ -28,6 +28,10 @@ Enable Control, clock date/time/refresh, Temperature Broadcast, `NET PINGU`, `NE
 changed store, SAVE performs native group-0 operation-4 EXECUTE followed by
 500 ms POLLs for up to 15 seconds and succeeds only on status zero. An unchanged
 or tag-filtered save does not issue the NVM command.
+`LIGHTING`, `TRIGGER`, and `ENABLE` label commands also use the physical bus.
+They support the Toolkit CLI's raw/text, icon, language, segmented Unicode, and
+dynamic bitmap forms. Enable Unicode is a native-invalid form. A 200 response
+proves confirmed fragment delivery, not display rendering or persistence.
 It also implements guarded scalar `SET //PROJECT/NETWORK/p/UNIT Address DEST`
 against the physical bus. That command proves one source and an empty
 destination, uses the native parameter-`0x20` one-use challenge, sends the
@@ -47,6 +51,7 @@ two-bit MMI state. Use `GET //PROJECT/NETWORK Units` and unit `Type`, `Version`,
 `SerialNumber`, `Address`, and `State` getters for the resulting live snapshot.
 Query `CMQTT CAPABILITIES`; `unit_readdress: true` denotes the readdress path and
 `physical_pp_save_cbus3_nvm: true` denotes the NVM commit path,
+`dynamic_labels: true` denotes the label sender,
 while `full_cgate_compatibility` remains false until every remaining backend and
 acceptance requirement is complete.
 

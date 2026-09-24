@@ -174,6 +174,70 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     .await
     .contains("200 OK"));
     assert_eq!(sys.pci.count_payload("05CB0002017FAE"), 1);
+    assert!(command(
+        &mut reader,
+        &mut writer,
+        "LIGHTING LABEL //HARNESS/254/56 0 1 - F2 0 4c6f756e6765"
+    )
+    .await
+    .contains("200 OK"));
+    assert_eq!(sys.pci.count_payload("053800A90140004C6F756E67656F"), 1);
+    assert!(command(
+        &mut reader,
+        &mut writer,
+        "TRIGGER LABEL //HARNESS/254/202 0 7 9 F3 0 5363656e65"
+    )
+    .await
+    .contains("200 OK"));
+    assert_eq!(sys.pci.count_payload("05CA00A9076109005363656E6529"), 1);
+    assert!(command(
+        &mut reader,
+        &mut writer,
+        "TRIGGER UNICODELABEL //HARNESS/254/202 2 8 - F0 RAW e5a49ce99693"
+    )
+    .await
+    .contains("200 OK"));
+    assert_eq!(sys.pci.count_payload("05CA00CA080E0002E5A49CE9969318"), 1);
+    assert!(command(
+        &mut reader,
+        &mut writer,
+        "ENABLE LABEL //HARNESS/254/203 0 9 0 F0 ICON 258"
+    )
+    .await
+    .contains("200 OK"));
+    assert_eq!(sys.pci.count_payload("05CB00A70903000001010279"), 1);
+    assert!(command(
+        &mut reader,
+        &mut writer,
+        "LIGHTING LABEL //HARNESS/254/56 7 3 - F0 DYNAMIC 65535 8 7 2 01020408102040"
+    )
+    .await
+    .contains("200 OK"));
+    for payload in [
+        "053800A403080020F4",
+        "053800A8030407FFFF080702FE",
+        "053800A80304010204081020D5",
+        "053800A3030440D9",
+        "053800A403080022F2",
+    ] {
+        assert_eq!(sys.pci.count_payload(payload), 1, "{payload}");
+    }
+    assert_eq!(sys.pci.count_payload("053800A403080021F3"), 2);
+    assert!(command(
+        &mut reader,
+        &mut writer,
+        "LIGHTING LABEL //HARNESS/254/56 3 1 - F0 SET_LANGUAGE"
+    )
+    .await
+    .contains("200 OK"));
+    assert_eq!(sys.pci.count_payload("053800A301060316"), 1);
+    assert!(command(
+        &mut reader,
+        &mut writer,
+        "ENABLE UNICODELABEL //HARNESS/254/203 0 1 - F0 RAW 41"
+    )
+    .await
+    .contains("400 ENABLE has no UNICODELABEL"));
     assert!(
         command(&mut reader, &mut writer, "GET //HARNESS/254/203/1 Level")
             .await

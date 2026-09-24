@@ -43,6 +43,7 @@ not be committed or published.
 | ENABLE SET/REMOVE and GET | SET sends actual Enable Control SAL on application 203; REMOVE follows C-Gate's server-side saved-value behavior; incoming values update the live cache |
 | CLOCK DATE/TIME/REQUEST_REFRESH | Actual Clock and Timekeeping SAL on application 223, including `SYSTEM` date/time resolution and observed-value queries |
 | TEMPERATURE BROADCAST | Actual Temperature Broadcast SAL on application 25 with decimal or `$19` addressing, native one-decimal input, range checks, quarter-degree wire conversion, incoming event delivery and disconnect-safe live caching |
+| LIGHTING/TRIGGER/ENABLE LABEL and UNICODELABEL | Actual checksummed dynamic-label SAL on the selected application. Supports raw/text payloads, built-in icon references, language selection, native segmented UTF-8, and start/header/chunk/commit dynamic bitmap uploads. Every fragment requires positive PCI delivery confirmation; Enable Unicode and invalid native bounds fail before transmission |
 | NET PINGU and GET network Units | Actual installation MMI request using cmqttd's negotiated PCI checksum mode; buffers blocks that a CNI forwards before its positive confirmation, accepts only confirmed contiguous coverage of all addresses 0–255, and reports the native sorted `302-Units=` form |
 | NET SYNC and cached unit getters | Configured interface routing hint (physically revalidated) or BASIC discovery, complete installation MMI, then confirmed IDENTIFY1/2 probes and bounded IDENTIFY4 collection for every present address; routed and local bare-CAL replies are correlated, silent legacy/error addresses remain present with unknown identity fields, the live cache is replaced atomically, and native getters expose it |
 | NET CHECKUNIT | Active confirmed IDENTIFY4 collection through the native two-second quiet interval, with the native no-unit, single-unit, duplicate-unit and identity-error result forms; `*` expands from a fresh complete MMI |
@@ -92,6 +93,15 @@ later transaction. MQTT remains active through the shared packet fanout. An
 unchanged or tag-filtered save issues no NVM command. A
 transport failure can still leave earlier independently acknowledged ranges
 written, so multi-range recovery and power-loss acceptance remain outstanding.
+
+Dynamic-label commands use the same syntax produced by `cbus-toolkit` for
+lighting applications 48–95, Trigger Control 202, and Enable Control 203.
+Standard payloads retain the native 14-byte limit. Unicode payloads are checked
+as UTF-8 and split into at most eighteen native fragments. Dynamic bitmap data
+must exactly match `ceil(width * height / 8)` and uses the native control
+sequence around six-byte chunks. A successful response establishes PCI delivery
+of every fragment; it does not prove that a particular display rendered or
+persisted the label.
 
 ## Live label reads
 
@@ -144,7 +154,7 @@ return 502. Full replacement still requires:
   project identification and the remaining commissioning state transitions.
   Direct-network `NET PINGU`, `NET SYNC` identity population, duplicate-aware
   `NET CHECKUNIT`, and guarded single-unit physical readdressing are implemented.
-- Physical scenes, text/icon broadcasts, dynamic eDLT label cache reads, and
+- Physical scenes, dynamic eDLT label cache reads, and
   specialist application families such as HVAC, audio and security.
 - Native repository/archive/import/export formats, document commands,
   complete server configuration/access/TLS, firmware and deployment workflows.
@@ -166,7 +176,9 @@ MMI and IDENTIFY data that precedes its positive confirmation, the confirmed
 two-second IDENTIFY collection window, duplicate replies, absence, and
 confirmation success/failure. Exact Trigger, Enable, Clock, Temperature Broadcast, MMI and confirmed
 IDENTIFY4 request or response bytes are pinned by vectors and the real-daemon
-system test.
+system test. Dynamic-label vectors pin exact encode/decode JSON and wire bytes;
+the real-daemon test covers text, icon, Unicode, bitmap, language selection,
+vendor-invalid rejection, and confirmed multi-frame delivery on the shared PCI.
 `cbus-cgate` service tests cover durable reload, corrupt-file preservation,
 rollback, session ownership, unsupported hardware rejection, fragmented command
 input during events, disconnect cleanup, schema layout decoding and input bounds.

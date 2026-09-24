@@ -4,7 +4,7 @@
 use super::*;
 use cbus_protocol::{
     packet::{Meta, Packet},
-    sal::Sal,
+    sal::{label, Sal},
 };
 use cbus_transport::pci::{CBusEvent, GocProgramming, PciClient};
 use chrono::{Datelike, Local, NaiveDate, NaiveTime, Timelike};
@@ -418,6 +418,9 @@ impl Service {
                 "physical_pp_save_lock_methods":["direct","ncc","paged"],
                 "trigger_control":true, "enable_control":true, "clock_control":true,
                 "temperature_broadcast":true,
+                "dynamic_labels":true,
+                "dynamic_label_families":["enable","lighting","trigger"],
+                "dynamic_label_modes":["dynamic_icon","icon","language","raw","unicode"],
                 "install_mmi":true, "network_pingu":true,
                 "network_sync":true, "network_checkunit":true,
                 "unit_readdress":true,
@@ -482,6 +485,11 @@ impl Service {
                 Some(u) => ok(tag, vec![serde_json::json!({"address":words[2],"unit_type":u.unit_type,"firmware":u.firmware,"serial":u.serial,"name":u.fields.get("TagName"),"source":"database"}).to_string()], "200 OK"),
                 None => err(tag,404,"404 Unit is not in the configured project"),
             };
+        }
+        if matches!(verb, "LIGHTING" | "TRIGGER" | "ENABLE")
+            && matches!(sub, "LABEL" | "UNICODELABEL")
+        {
+            return self.label(client, line, tag, &words, &upper).await;
         }
         if verb == "TRIGGER" && matches!(sub, "EVENT" | "INDICATORKILL") {
             return self.trigger(client, line, tag, &words).await;
@@ -1291,6 +1299,209 @@ impl Service {
             }
             Err(error) => err(tag, 502, &format!("502 Trigger delivery failed: {error}")),
         }
+    }
+
+    async fn label(
+        &self,
+        client: &ClientState,
+        line: &str,
+        tag: &str,
+        words: &[&str],
+        upper: &[String],
+    ) -> Response {
+        use std::sync::atomic::{AtomicU8, Ordering};
+        static UNICODE_SEQUENCE: AtomicU8 = AtomicU8::new(0);
+
+        let _commands = self.commands.lock().await;
+        let response = {
+            let mut staged = self.model.lock().await.clone();
+            staged.current = client
+                .current
+                .clone()
+                .or_else(|| Some(self.project.clone()));
+            staged.handle(line)
+        };
+        if response.status >= 400 {
+            return response;
+        }
+        if words.len() < 8 {
+            return err(
+                tag,
+                400,
+                "400 Label command requires application, language, group, action, variant and mode",
+            );
+        }
+        let Some(application) = self.application_path(words[2]) else {
+            return err(tag, 404, "404 Label application is not on this network");
+        };
+        let expected = match upper[0].as_str() {
+            "LIGHTING" if (48..=95).contains(&application) => true,
+            "TRIGGER" if application == 202 => true,
+            "ENABLE" if application == 203 => true,
+            _ => false,
+        };
+        if !expected {
+            return err(tag, 400, "400 Label family does not match the application");
+        }
+        if upper[0] == "ENABLE" && upper[1] == "UNICODELABEL" {
+            return err(tag, 400, "400 ENABLE has no UNICODELABEL command");
+        }
+        let (Ok(language), Ok(group)) = (words[3].parse::<u8>(), words[4].parse::<u8>()) else {
+            return err(tag, 400, "400 Invalid label language or group");
+        };
+        let action_selector = if words[5] == "-" {
+            None
+        } else {
+            let Ok(action) = words[5].parse::<u8>() else {
+                return err(tag, 400, "400 Invalid label action selector");
+            };
+            Some(action)
+        };
+        let Some(variant_text) = words[6]
+            .strip_prefix('F')
+            .or_else(|| words[6].strip_prefix('f'))
+        else {
+            return err(tag, 400, "400 Label variant must be F0..F3");
+        };
+        let Ok(variant) = variant_text.parse::<u8>() else {
+            return err(tag, 400, "400 Label variant must be F0..F3");
+        };
+        if variant > 3 {
+            return err(tag, 400, "400 Label variant must be F0..F3");
+        }
+        let decode_hex = |value: &str| {
+            hex::decode(value).map_err(|_| "Label data must be contiguous hexadecimal bytes")
+        };
+        let encoded = if upper[1] == "UNICODELABEL" {
+            if upper[7] != "RAW" || words.len() > 9 {
+                return err(
+                    tag,
+                    400,
+                    "400 UNICODELABEL requires RAW and optional hex data",
+                );
+            }
+            let data = match words.get(8).map(|value| decode_hex(value)) {
+                Some(Ok(data)) => data,
+                Some(Err(error)) => return err(tag, 400, &format!("400 {error}")),
+                None => Vec::new(),
+            };
+            let sequence = UNICODE_SEQUENCE.fetch_add(1, Ordering::Relaxed) & 15;
+            match label::encode_unicode(
+                application,
+                group,
+                language,
+                &data,
+                action_selector,
+                variant,
+                sequence,
+            ) {
+                Ok(encoded) => encoded,
+                Err(error) => return err(tag, 400, &format!("400 {error}")),
+            }
+        } else {
+            match upper[7].as_str() {
+                "ICON" if words.len() == 9 => {
+                    let Ok(icon) = words[8].parse::<u16>() else {
+                        return err(tag, 400, "400 Invalid label icon selector");
+                    };
+                    let [high, low] = icon.to_be_bytes();
+                    match label::encode_standard(
+                        application,
+                        group,
+                        language,
+                        2,
+                        &[1, high, low],
+                        action_selector,
+                        variant,
+                    ) {
+                        Ok(payload) => vec![payload],
+                        Err(error) => return err(tag, 400, &format!("400 {error}")),
+                    }
+                }
+                "DYNAMIC" if words.len() == 13 => {
+                    let (Ok(icon), Ok(width), Ok(height), Ok(vertical_offset)) = (
+                        words[8].parse::<u16>(),
+                        words[9].parse::<u8>(),
+                        words[10].parse::<u8>(),
+                        words[11].parse::<u8>(),
+                    ) else {
+                        return err(tag, 400, "400 Invalid dynamic icon metadata");
+                    };
+                    let data = match decode_hex(words[12]) {
+                        Ok(data) => data,
+                        Err(error) => return err(tag, 400, &format!("400 {error}")),
+                    };
+                    match label::encode_dynamic_icon(
+                        application,
+                        group,
+                        language,
+                        icon,
+                        width,
+                        height,
+                        vertical_offset,
+                        &data,
+                        action_selector,
+                        variant,
+                    ) {
+                        Ok(encoded) => encoded,
+                        Err(error) => return err(tag, 400, &format!("400 {error}")),
+                    }
+                }
+                "SET_LANGUAGE" if words.len() == 8 => {
+                    match label::encode_standard(
+                        application,
+                        group,
+                        language,
+                        6,
+                        &[],
+                        action_selector,
+                        variant,
+                    ) {
+                        Ok(payload) => vec![payload],
+                        Err(error) => return err(tag, 400, &format!("400 {error}")),
+                    }
+                }
+                _ if words.len() <= 9 => {
+                    let Ok(options) = words[7].parse::<u8>() else {
+                        return err(tag, 400, "400 Invalid label mode");
+                    };
+                    let data = match words.get(8).map(|value| decode_hex(value)) {
+                        Some(Ok(data)) => data,
+                        Some(Err(error)) => return err(tag, 400, &format!("400 {error}")),
+                        None => Vec::new(),
+                    };
+                    match label::encode_standard(
+                        application,
+                        group,
+                        language,
+                        options,
+                        &data,
+                        action_selector,
+                        variant,
+                    ) {
+                        Ok(payload) => vec![payload],
+                        Err(error) => return err(tag, 400, &format!("400 {error}")),
+                    }
+                }
+                _ => return err(tag, 400, "400 Invalid label command"),
+            }
+        };
+
+        let pci = self.pci.read().await.clone();
+        for payload in encoded {
+            let packet = Packet::PointToMultipoint {
+                meta: Meta::new(true, 0),
+                application,
+                sals: vec![Sal::DynamicLabel {
+                    application,
+                    payload,
+                }],
+            };
+            if let Err(error) = pci.send_confirmed(&packet).await {
+                return err(tag, 502, &format!("502 Label delivery failed: {error}"));
+            }
+        }
+        response
     }
 
     async fn enable(

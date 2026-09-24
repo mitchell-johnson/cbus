@@ -2,6 +2,7 @@
 
 pub mod clock;
 pub mod enable;
+pub mod label;
 pub mod lighting;
 pub mod status_request;
 pub mod temperature;
@@ -119,6 +120,14 @@ pub enum Sal {
     },
     /// Request the complete installation MMI presence map.
     InstallMmiRequest,
+    /// Exact native dynamic-label SAL payload. The application is retained
+    /// because label payloads are shared by lighting, Trigger, and Enable.
+    DynamicLabel {
+        /// Target application (lighting 48..95, Trigger 202, or Enable 203).
+        application: u8,
+        /// Complete length-prefixed `0xAx` or `0xCx` SAL payload.
+        payload: Vec<u8>,
+    },
 }
 
 impl Sal {
@@ -139,6 +148,7 @@ impl Sal {
             Sal::TemperatureBroadcast { .. } => APP_TEMPERATURE,
             Sal::EnableSetNetworkVariable { .. } => APP_ENABLE,
             Sal::StatusRequest { .. } | Sal::InstallMmiRequest => APP_STATUS_REQUEST,
+            Sal::DynamicLabel { application, .. } => *application,
         }
     }
 
@@ -227,6 +237,13 @@ impl Sal {
                 }
             }
             Sal::InstallMmiRequest => Ok(vec![0xfa, 0xff, 0x00]),
+            Sal::DynamicLabel {
+                application,
+                payload,
+            } => {
+                label::validate_payload(*application, payload)?;
+                Ok(payload.clone())
+            }
         }
     }
 }
@@ -236,6 +253,12 @@ impl Sal {
 /// enable (0xCB), lighting (0x30-0x5F) and temperature (0x19) are
 /// registered; anything else errors (-> Invalid packet).
 pub fn decode_sals(app: u8, data: &[u8]) -> Result<Vec<Sal>, DecodeError> {
+    if data
+        .first()
+        .is_some_and(|opcode| matches!(opcode & 0xe0, 0xa0 | 0xc0))
+    {
+        return label::decode_sals(app, data);
+    }
     match app {
         a if (APP_LIGHTING_FIRST..=APP_LIGHTING_LAST).contains(&a) => {
             lighting::decode_sals(a, data)

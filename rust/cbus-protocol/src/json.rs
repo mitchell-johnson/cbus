@@ -79,6 +79,11 @@ pub fn sal_to_json(s: &Sal) -> Value {
                     "group_address": group_address,
                     "child_application": child_application}),
         Sal::InstallMmiRequest => json!({"sal": "install_mmi_request"}),
+        Sal::DynamicLabel {
+            application,
+            payload,
+        } => json!({"sal": "dynamic_label", "application": application,
+                    "payload_hex": hex::encode(payload)}),
     }
 }
 
@@ -370,6 +375,10 @@ pub fn sal_from_json(d: &Value) -> Result<Sal, JErr> {
             child_application: get_u8(d, "child_application")?,
         }),
         "install_mmi_request" => Ok(Sal::InstallMmiRequest),
+        "dynamic_label" => Ok(Sal::DynamicLabel {
+            application: get_u8(d, "application")?,
+            payload: hex::decode(get_str(d, "payload_hex")?).map_err(|e| e.to_string())?,
+        }),
         other => Err(format!("unhandled SAL json: {other}")),
     }
 }
