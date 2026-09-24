@@ -228,6 +228,17 @@ async fn observed_trigger_enable_and_clock_state_is_live_and_cleared_on_disconne
             day: 24,
         })
         .await;
+    service
+        .observe(&CBusEvent::TemperatureBroadcast {
+            source: Some(10),
+            group: 3,
+            temperature: 21.25,
+        })
+        .await;
+    assert_eq!(
+        service.model.lock().await.application_state["TEMPERATURE BROADCAST"],
+        "//HARNESS/254/25/3 21.25"
+    );
     let mut client = ClientState::default();
     let trigger = service
         .handle(&mut client, "[1] GET //HARNESS/254/202/4 *")
@@ -261,6 +272,12 @@ async fn observed_trigger_enable_and_clock_state_is_live_and_cleared_on_disconne
         .final_text
         .ends_with("Date set to: 2026-09-24"));
     service.observe(&CBusEvent::ConnectionLost).await;
+    assert!(!service
+        .model
+        .lock()
+        .await
+        .application_state
+        .contains_key("TEMPERATURE BROADCAST"));
     assert_eq!(
         service
             .handle(&mut client, "[6] GET //HARNESS/254/203/5 Level")
@@ -274,6 +291,20 @@ async fn observed_trigger_enable_and_clock_state_is_live_and_cleared_on_disconne
         .final_text
         .ends_with("Date set to: 1970-01-01"));
     std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn temperature_syntax_is_bounded_and_accepts_symbolic_application_addresses() {
+    assert_eq!(parse_application("$19"), Some(25));
+    assert_eq!(parse_application("25"), Some(25));
+    assert_eq!(parse_application("$100"), None);
+    assert_eq!(parse_temperature("21.3"), Some(21.3));
+    assert_eq!(parse_temperature("21"), Some(21.0));
+    assert_eq!(parse_temperature("21.25"), None);
+    assert_eq!(parse_temperature("-1"), None);
+    assert_eq!(parse_temperature("63.8"), None);
+    assert_eq!(format_temperature(21.25), "21.25");
+    assert_eq!(format_temperature(20.0), "20");
 }
 
 #[tokio::test]

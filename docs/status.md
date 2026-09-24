@@ -24,7 +24,7 @@ Full Toolkit parity remains unfinished. The ledger records 38 feature areas: 17 
 | C-Gate command surface | Complete inventory coverage | 224 public manual headings plus 268 registered command paths, 431 unique paths |
 | C-Gate core state | Stateful | Project, database, network, unit, level, event, lock, session, and programming-session workflows |
 | C-Gate specialist families | Deterministic model | All registered commands dispatch; specialist or hardware-facing operations return stable in-memory results rather than controlling physical equipment |
-| Embedded physical C-Gate | In progress | Persistent database plus real lighting, Trigger, Enable, clock, complete-coverage PINGU discovery, identity-populating SYNC, duplicate-aware CHECKUNIT, identity and memory-read backends over cmqttd's shared CNI connection |
+| Embedded physical C-Gate | In progress | Persistent database plus real lighting, Trigger, Enable, clock, Temperature Broadcast, complete-coverage PINGU discovery, identity-populating SYNC, duplicate-aware CHECKUNIT, identity and memory-read backends over cmqttd's shared CNI connection |
 | Test infrastructure | Implemented | Compatibility vectors, generated per-vector tests, property tests, in-process MQTT broker, scripted PCI, full-system tests, formatting and lint gates |
 | Container image | Implemented | Builds and ships `cmqttd`, `cbus-tools`, `cbus-simulator`, and `cgate-mock` |
 

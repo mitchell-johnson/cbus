@@ -421,6 +421,7 @@ impl Gateway {
             CBusEvent::TriggerEvent { .. }
             | CBusEvent::TriggerIndicatorKill { .. }
             | CBusEvent::EnableSet { .. }
+            | CBusEvent::TemperatureBroadcast { .. }
             | CBusEvent::ClockDate { .. }
             | CBusEvent::ClockTime { .. } => {
                 // These application events are consumed by the embedded

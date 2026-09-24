@@ -207,7 +207,7 @@ impl Service {
             return;
         };
         let mut updates = Vec::new();
-        let mut clock_update = None;
+        let mut application_update = None;
         let mut clear_application_state = false;
         match event {
             CBusEvent::LightingOn {
@@ -301,7 +301,7 @@ impl Service {
             CBusEvent::ClockDate {
                 year, month, day, ..
             } => {
-                clock_update = Some((
+                application_update = Some((
                     "CLOCK DATE".to_string(),
                     format!("{year:04}-{month:02}-{day:02}"),
                 ));
@@ -312,9 +312,25 @@ impl Service {
                 second,
                 ..
             } => {
-                clock_update = Some((
+                application_update = Some((
                     "CLOCK TIME".to_string(),
                     format!("{hour:02}:{minute:02}:{second:02}"),
+                ));
+            }
+            CBusEvent::TemperatureBroadcast {
+                source,
+                group,
+                temperature,
+            } => {
+                let address = format!("//{}/{}/25/{group}", self.project, self.network);
+                let value = format_temperature(*temperature);
+                application_update = Some((
+                    "TEMPERATURE BROADCAST".to_string(),
+                    format!("{address} {value}"),
+                ));
+                let source = source.map_or_else(|| "0".to_string(), |value| value.to_string());
+                let _ = self.events.send(format!(
+                    "#e# temperature broadcast {address} {value} sourceUnit={source}"
                 ));
             }
             CBusEvent::ConnectionLost => {
@@ -334,14 +350,23 @@ impl Service {
         }
         if clear_application_state {
             model.application_state.clear();
-        } else if let Some((key, value)) = clock_update {
+        } else if let Some((key, value)) = application_update {
             model.application_state.insert(key, value);
         }
     }
 
     fn bound_group(&self, address: &str) -> Option<(u8, u8)> {
-        let (p, n, a, g) = Server::split_lighting(address)?;
-        (p == self.project && n == self.network).then_some((a, g))
+        if address.starts_with('!') {
+            return None;
+        }
+        let parts: Vec<_> = address.trim_start_matches('/').split('/').collect();
+        let [project, network, application, group] = parts.as_slice() else {
+            return None;
+        };
+        let network = network.parse::<u8>().ok()?;
+        let application = parse_application(application)?;
+        let group = group.parse::<u8>().ok()?;
+        (*project == self.project && network == self.network).then_some((application, group))
     }
 
     fn bound_network(&self, address: &str) -> bool {
@@ -372,6 +397,7 @@ impl Service {
                 vec![serde_json::json!({"service":"cmqttd", "physical_bus":true,
                 "full_cgate_compatibility":false, "memory_read":true, "memory_write":false,
                 "trigger_control":true, "enable_control":true, "clock_control":true,
+                "temperature_broadcast":true,
                 "install_mmi":true, "network_pingu":true,
                 "network_sync":true, "network_checkunit":true,
                 "project":self.project,"network":self.network,"persistent_database":true})
@@ -415,6 +441,9 @@ impl Service {
         }
         if verb == "CLOCK" && matches!(sub, "DATE" | "TIME" | "REQUEST_REFRESH") {
             return self.clock(client, line, tag, &words).await;
+        }
+        if verb == "TEMPERATURE" && sub == "BROADCAST" {
+            return self.temperature(client, line, tag, &words).await;
         }
         if verb == "NET" && sub == "PINGU" {
             return self.net_pingu(client, line, tag, &words).await;
@@ -560,7 +589,7 @@ impl Service {
             _ => return None,
         };
         let network = network.parse::<u8>().ok()?;
-        let application = application.parse::<u8>().ok()?;
+        let application = parse_application(application)?;
         (project == self.project && network == self.network).then_some(application)
     }
 
@@ -1280,6 +1309,73 @@ impl Service {
         result
     }
 
+    async fn temperature(
+        &self,
+        client: &ClientState,
+        line: &str,
+        tag: &str,
+        words: &[&str],
+    ) -> Response {
+        let _commands = self.commands.lock().await;
+        let (response, address) = {
+            let mut staged = self.model.lock().await.clone();
+            staged.current = client
+                .current
+                .clone()
+                .or_else(|| Some(self.project.clone()));
+            let response = staged.handle(line);
+            let address = words
+                .get(2)
+                .and_then(|address| staged.qualify_group(address));
+            (response, address)
+        };
+        if response.status >= 400 {
+            return response;
+        }
+        if words
+            .get(4)
+            .is_some_and(|option| !option.eq_ignore_ascii_case("FORCE"))
+        {
+            return err(tag, 400, "400 Invalid TEMPERATURE BROADCAST option");
+        }
+        let Some(address) = address else {
+            return err(tag, 400, "400 Invalid temperature group address");
+        };
+        let Some((application, group)) = self.bound_group(&address) else {
+            return err(tag, 404, "404 Network is not connected to this service");
+        };
+        if application != 25 {
+            return err(tag, 400, "400 Temperature application must be 25");
+        }
+        let Some(temperature) = words.get(3).and_then(|value| parse_temperature(value)) else {
+            return err(tag, 405, "405 Temperature is out of range");
+        };
+        let temperature = f64::from((temperature * 4.0) as u8) / 4.0;
+        let result = self
+            .send_application(
+                tag,
+                Sal::TemperatureBroadcast {
+                    group_address: group,
+                    temperature,
+                },
+                response,
+                "Temperature broadcast",
+            )
+            .await;
+        if result.status < 400 {
+            let address = format!("//{}/{}/25/{group}", self.project, self.network);
+            let value = format_temperature(temperature);
+            self.model.lock().await.application_state.insert(
+                "TEMPERATURE BROADCAST".to_string(),
+                format!("{address} {value}"),
+            );
+            let _ = self.events.send(format!(
+                "#e# temperature broadcast {address} {value} sourceUnit=0"
+            ));
+        }
+        result
+    }
+
     async fn send_application(
         &self,
         tag: &str,
@@ -1586,6 +1682,41 @@ fn local_command(words: &[&str], upper: &[String], model: &Server) -> bool {
         },
         _ => false,
     }
+}
+
+fn parse_application(value: &str) -> Option<u8> {
+    value.strip_prefix('$').map_or_else(
+        || value.parse().ok(),
+        |hex| u8::from_str_radix(hex, 16).ok(),
+    )
+}
+
+fn parse_temperature(value: &str) -> Option<f64> {
+    let unsigned = value.strip_prefix('+').unwrap_or(value);
+    let mut parts = unsigned.split('.');
+    let whole = parts.next()?;
+    let fraction = parts.next();
+    if parts.next().is_some()
+        || whole.is_empty()
+        || !whole.bytes().all(|byte| byte.is_ascii_digit())
+        || fraction
+            .is_some_and(|part| part.len() != 1 || !part.bytes().all(|byte| byte.is_ascii_digit()))
+    {
+        return None;
+    }
+    let temperature = value.parse::<f64>().ok()?;
+    (temperature.is_finite() && (0.0..=63.75).contains(&temperature)).then_some(temperature)
+}
+
+fn format_temperature(value: f64) -> String {
+    let mut value = format!("{value:.2}");
+    while value.contains('.') && value.ends_with('0') {
+        value.pop();
+    }
+    if value.ends_with('.') {
+        value.pop();
+    }
+    value
 }
 
 fn identity_text(data: &[u8], field: &str) -> io::Result<String> {

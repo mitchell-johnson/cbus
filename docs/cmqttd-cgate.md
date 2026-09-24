@@ -39,6 +39,7 @@ not be committed or published.
 | TRIGGER EVENT/INDICATORKILL | Actual Trigger Control SAL on application 202; incoming events update the live service cache and event stream |
 | ENABLE SET/REMOVE and GET | SET sends actual Enable Control SAL on application 203; REMOVE follows C-Gate's server-side saved-value behavior; incoming values update the live cache |
 | CLOCK DATE/TIME/REQUEST_REFRESH | Actual Clock and Timekeeping SAL on application 223, including `SYSTEM` date/time resolution and observed-value queries |
+| TEMPERATURE BROADCAST | Actual Temperature Broadcast SAL on application 25 with decimal or `$19` addressing, native one-decimal input, range checks, quarter-degree wire conversion, incoming event delivery and disconnect-safe live caching |
 | NET PINGU and GET network Units | Actual installation MMI request using cmqttd's negotiated PCI checksum mode; buffers blocks that a CNI forwards before its positive confirmation, accepts only confirmed contiguous coverage of all addresses 0–255, and reports the native sorted `302-Units=` form |
 | NET SYNC and cached unit getters | Configured interface routing hint (physically revalidated) or BASIC discovery, complete installation MMI, then confirmed IDENTIFY1/2 probes and bounded IDENTIFY4 collection for every present address; routed and local bare-CAL replies are correlated, silent legacy/error addresses remain present with unknown identity fields, the live cache is replaced atomically, and native getters expose it |
 | NET CHECKUNIT | Active confirmed IDENTIFY4 collection through the native two-second quiet interval, with the native no-unit, single-unit, duplicate-unit and identity-error result forms; `*` expands from a fresh complete MMI |
@@ -114,7 +115,7 @@ return 502. Full replacement still requires:
 segmented recall, interleaved lighting, complete and incomplete installation MMI,
 MMI and IDENTIFY data that precedes its positive confirmation, the confirmed
 two-second IDENTIFY collection window, duplicate replies, absence, and
-confirmation success/failure. Exact Trigger, Enable, Clock, MMI and confirmed
+confirmation success/failure. Exact Trigger, Enable, Clock, Temperature Broadcast, MMI and confirmed
 IDENTIFY4 request or response bytes are pinned by vectors and the real-daemon
 system test.
 `cbus-cgate` service tests cover durable reload, corrupt-file preservation,

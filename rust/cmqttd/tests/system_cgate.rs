@@ -208,6 +208,22 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     assert!(command(
         &mut reader,
         &mut writer,
+        "TEMPERATURE BROADCAST //HARNESS/254/$19/1 21.3"
+    )
+    .await
+    .contains("200 OK"));
+    assert_eq!(sys.pci.count_payload("0519000201558A"), 1);
+    assert!(command(
+        &mut reader,
+        &mut writer,
+        "TEMPERATURE BROADCAST //HARNESS/254/25/1 64"
+    )
+    .await
+    .contains("405 Temperature is out of range"));
+    assert_eq!(sys.pci.count_payload("0519000201558A"), 1);
+    assert!(command(
+        &mut reader,
+        &mut writer,
         "TRIGGER EVENT //HARNESS/254/203/1 1"
     )
     .await

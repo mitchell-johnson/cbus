@@ -98,6 +98,15 @@ pub enum CBusEvent {
         /// New variable value.
         value: u8,
     },
+    /// A Temperature Broadcast value was observed.
+    TemperatureBroadcast {
+        /// Source unit address (`None` when the source byte was 0).
+        source: Option<u8>,
+        /// Temperature group address.
+        group: u8,
+        /// Decoded temperature in degrees Celsius.
+        temperature: f64,
+    },
     /// A clock date update was observed.
     ClockDate {
         /// Source unit address (`None` when the source byte was 0).
@@ -565,6 +574,14 @@ impl PciClient {
                                 value,
                             })
                         }
+                        Sal::TemperatureBroadcast {
+                            group_address,
+                            temperature,
+                        } => Some(CBusEvent::TemperatureBroadcast {
+                            source: src,
+                            group: group_address,
+                            temperature,
+                        }),
                         Sal::ClockUpdateDate { year, month, day } => Some(CBusEvent::ClockDate {
                             source: src,
                             year,
@@ -777,6 +794,7 @@ fn classify(cmd: &Packet, conf: Option<u8>) -> (Priority, ResponseKind) {
                 | Sal::TriggerMin { .. }
                 | Sal::TriggerMax { .. }
                 | Sal::EnableSetNetworkVariable { .. }
+                | Sal::TemperatureBroadcast { .. }
         )
     };
     let priority = match cmd {
@@ -989,6 +1007,35 @@ mod tests {
         assert!(pci.state.lock().unwrap().pending.is_empty());
     }
 
+    #[tokio::test]
+    async fn temperature_packets_surface_as_transport_events() {
+        let (client_side, _pci_side) = tokio::io::duplex(4096);
+        let (rd, wr) = tokio::io::split(client_side);
+        let (tx, mut rx) = mpsc::unbounded_channel();
+        let pci = PciClient::new(Box::new(rd), Box::new(wr), tx);
+        pci.handle_cbus_packet(Packet::PointToMultipoint {
+            meta: Meta {
+                checksum: true,
+                priority_class: 0,
+                source_address: Some(9),
+                confirmation: None,
+            },
+            application: 25,
+            sals: vec![Sal::TemperatureBroadcast {
+                group_address: 3,
+                temperature: 21.25,
+            }],
+        });
+        assert_eq!(
+            rx.try_recv().unwrap(),
+            CBusEvent::TemperatureBroadcast {
+                source: Some(9),
+                group: 3,
+                temperature: 21.25,
+            }
+        );
+    }
+
     #[test]
     fn classify_priorities_and_response_kinds() {
         // lighting command with a code: user priority, conf-released
@@ -1015,6 +1062,18 @@ mod tests {
         assert_eq!(
             classify(&trigger, Some(b'i')),
             (Priority::Command, ResponseKind::Confirmation(b'i'))
+        );
+        let temperature = Packet::PointToMultipoint {
+            meta: Meta::new(true, 0),
+            application: 25,
+            sals: vec![Sal::TemperatureBroadcast {
+                group_address: 3,
+                temperature: 21.25,
+            }],
+        };
+        assert_eq!(
+            classify(&temperature, Some(b'j')),
+            (Priority::Command, ResponseKind::Confirmation(b'j'))
         );
         // codeless status request: background, released by the first
         // report matching app+block+kind
