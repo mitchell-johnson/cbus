@@ -268,3 +268,115 @@ fn label_kfi_round_trip_and_valueless_reject() {
     let replaced = s.handle("[9] LABEL KFIGET //TEST/252/p/30");
     assert_eq!(replaced.final_text, "300 newvalue");
 }
+
+/// Mock determinism for the scalar address move: the reply confirms the
+/// destination in the exact native shape, the database record stays put,
+/// and guard rails fail closed in existence-before-occupancy order.
+#[test]
+fn scalar_set_move_contract_and_guards() {
+    let mut s = Server::new(AccessLevel::Program);
+    assert_eq!(s.handle("[1] PROJECT NEW TEST").status, 200);
+    assert_eq!(
+        s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
+            .status,
+        200
+    );
+    assert_eq!(s.handle("[3] PROJECT USE TEST").status, 200);
+    assert_eq!(
+        s.handle("[4] DBADDSAFE //TEST/254 Unit 30 Study").status,
+        200
+    );
+    assert_eq!(
+        s.handle("[5] DBADDSAFE //TEST/254 Unit 31 Spare").status,
+        200
+    );
+    // Malformed shapes fail before any lookup.
+    for (line, fragment) in [
+        (
+            "[6] SET //TEST/254/p/30",
+            "source path and Address destination",
+        ),
+        (
+            "[7] SET //TEST/254/p/30 Name 31",
+            "source path and Address destination",
+        ),
+        (
+            "[8] SET //TEST/254/p/30 Address 256",
+            "Invalid destination address",
+        ),
+        (
+            "[9] SET //TEST/254/p/30 Address x",
+            "Invalid destination address",
+        ),
+        (
+            "[9b] SET //TEST/254/p/30 Address -1",
+            "Invalid destination address",
+        ),
+        ("[10] SET //TEST/254/p/# Address 40", "Invalid source path"),
+    ] {
+        let response = s.handle(line);
+        assert_eq!(response.status, 400, "{line}");
+        assert!(response.final_text.contains(fragment), "{line}");
+    }
+    // Boundary addresses 0 and 255 move on a scratch unit.
+    assert_eq!(
+        s.handle("[10b] DBADDSAFE //TEST/254 Unit 40 Scratch")
+            .status,
+        200
+    );
+    let zero = s.handle("[10c] SET //TEST/254/p/40 Address 0");
+    assert_eq!(zero.status, 200);
+    assert_eq!(zero.final_text, "200 OK: //TEST/254/p/0");
+    let max = s.handle("[10d] SET //TEST/254/p/0 Address 255");
+    assert_eq!(max.status, 200);
+    assert_eq!(max.final_text, "200 OK: //TEST/254/p/255");
+    // A selected-away project refuses the move before any lookup.
+    assert_eq!(s.handle("[10e] PROJECT NEW T2").status, 200);
+    assert_eq!(s.handle("[10f] PROJECT USE T2").status, 200);
+    let noselect = s.handle("[10g] SET //TEST/254/p/30 Address 33");
+    assert_eq!(noselect.status, 404);
+    assert!(noselect.final_text.contains("Project not selected"));
+    assert_eq!(s.handle("[10h] PROJECT USE TEST").status, 200);
+    // Missing source beats occupied destination (existence first). The
+    // occupied unit is proven physically present first.
+    let missing = s.handle("[11] SET //TEST/254/p/99 Address 31");
+    assert_eq!(missing.status, 401);
+    let present = s.handle("[11b] GET //TEST/254/p/31 *");
+    assert_eq!(present.status, 300);
+    let occupied = s.handle("[12] SET //TEST/254/p/30 Address 31");
+    assert_eq!(occupied.status, 409);
+    // The move confirms the destination; the physical record travels
+    // while the database record stays put (unit reads observe physical,
+    // DBGETXML observes the database layer).
+    let moved = s.handle("[13] SET //TEST/254/p/30 Address 32");
+    assert_eq!(moved.status, 200);
+    assert!(moved.lines.is_empty());
+    assert_eq!(moved.final_text, "200 OK: //TEST/254/p/32");
+    let gone = s.handle("[14] GET //TEST/254/p/30 *");
+    assert_eq!(gone.status, 401);
+    let arrived = s.handle("[15] GET //TEST/254/p/32 *");
+    assert_eq!(arrived.status, 300);
+    assert!(arrived
+        .lines
+        .iter()
+        .chain(std::iter::once(&arrived.final_text))
+        .any(|line| line.contains("UnitName=Study")));
+    let db = s.handle("[16] DBGETXML //TEST/254/p/30");
+    assert_eq!(db.status, 200);
+    assert!(db
+        .lines
+        .iter()
+        .filter(|line| line.starts_with("347-"))
+        .any(|line| line.contains("Study")));
+    // Post-move state machine: move back, stale source stays 401,
+    // re-occupancy stays 409.
+    let back = s.handle("[17] SET //TEST/254/p/32 Address 30");
+    assert_eq!(back.status, 200);
+    assert_eq!(back.final_text, "200 OK: //TEST/254/p/30");
+    let stale = s.handle("[18] SET //TEST/254/p/32 Address 33");
+    assert_eq!(stale.status, 401);
+    let reoccupied = s.handle("[19] SET //TEST/254/p/30 Address 31");
+    assert_eq!(reoccupied.status, 409);
+    let events = s.drain_events();
+    assert!(events.iter().any(|event| event == "#e# unit moved 30 32"));
+}
