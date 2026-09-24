@@ -508,3 +508,63 @@ fn dbdelete_boundary_repeat_and_unselected() {
         1
     );
 }
+
+/// Mock determinism for DBSETSAFE unit fields: absent units fail with 401,
+/// stored fields mirror into later GET reads, values join across words.
+#[test]
+fn dbset_unit_field_store_readback_and_absent() {
+    let mut s = Server::new(AccessLevel::Program);
+    assert_eq!(s.handle("[1] PROJECT NEW TEST").status, 200);
+    assert_eq!(
+        s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
+            .status,
+        200
+    );
+    assert_eq!(s.handle("[3] PROJECT USE TEST").status, 200);
+    assert_eq!(
+        s.handle("[4] DBADDSAFE //TEST/254 Unit 30 Study").status,
+        200
+    );
+    // No record on either layer: 401, never an invented store. (An
+    // unknown *network* instead stores opaquely with 200: unit_of only
+    // resolves existing networks, so the 401 guard is bypassed.)
+    let absent = s.handle("[5] DBSETSAFE //TEST/254/p/99/TagName X");
+    assert_eq!(absent.status, 401);
+    let absent_net = s.handle("[5b] DBSETSAFE //TEST/253/p/99/TagName X");
+    assert_eq!(absent_net.status, 200);
+    // Malformed shapes and values fail closed.
+    for (line, fragment) in [
+        ("[6] DBSETSAFE", "requires a path and value"),
+        ("[7] DBSETSAFE //TEST/254/p/#/TagName X", "requires a path"),
+        (
+            "[8] DBSETSAFE //TEST/254/p/30/TagName #",
+            "Invalid field value",
+        ),
+    ] {
+        let response = s.handle(line);
+        assert_eq!(response.status, 400, "{line}");
+        assert!(response.final_text.contains(fragment), "{line}");
+    }
+    // Baseline: TagName is not seeded by DBADDSAFE, so the later readback
+    // must come from the mirror, not setup data.
+    let baseline = s.handle("[8b] GET //TEST/254/p/30 TagName");
+    assert_eq!(baseline.status, 404);
+    // Multi-word values join; the write mirrors into GET reads.
+    let stored = s.handle("[9] DBSETSAFE //TEST/254/p/30/TagName Two Words");
+    assert_eq!(stored.status, 200);
+    let read = s.handle("[10] GET //TEST/254/p/30 TagName");
+    assert_eq!(read.status, 300);
+    assert!(read
+        .lines
+        .iter()
+        .chain(std::iter::once(&read.final_text))
+        .any(|line| line.contains("TagName=Two Words")));
+    // The database layer observes the same write (rules out half-mirror).
+    let dbread = s.handle("[10b] DBGET //TEST/254/p/30/TagName");
+    assert_eq!(dbread.status, 200);
+    assert!(dbread
+        .lines
+        .iter()
+        .chain(std::iter::once(&dbread.final_text))
+        .any(|line| line.contains("Two Words")));
+}
