@@ -497,10 +497,13 @@ impl Service {
         }
         if verb == "CMQTT" && sub == "LABELS" && words.len() == 3 {
             let address = words[2];
+            // split_unit also matches attribute paths (//P/N/p/U/field), which
+            // are not a network or unit scope, so require exactly four parts.
             let valid = self.bound_network(address)
-                || Server::split_unit(address).is_some_and(|(project, network, _)| {
-                    project == self.project && network == self.network
-                });
+                || (address.trim_start_matches('/').split('/').count() == 4
+                    && Server::split_unit(address).is_some_and(|(project, network, _)| {
+                        project == self.project && network == self.network
+                    }));
             if !valid {
                 return err(
                     tag,
@@ -612,6 +615,11 @@ impl Service {
         }
         if verb == "NET" && sub == "CHECKUNIT" {
             return self.net_checkunit(client, line, tag, &words).await;
+        }
+        // Native C-Gate declares CHECK_UNRAVEL obsolete and returns 400
+        // without running it. Answer likewise: no physical I/O exists.
+        if verb == "NET" && sub == "CHECK_UNRAVEL" {
+            return err(tag, 400, "400 NET CHECK_UNRAVEL is obsolete");
         }
         if verb == "SET"
             && words

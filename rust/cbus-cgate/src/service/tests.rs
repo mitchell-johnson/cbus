@@ -516,3 +516,293 @@ async fn line_bound_is_enforced_before_newline() {
     assert!(response.unwrap_err().to_string().contains("1 MiB"));
     writer.abort();
 }
+
+/// Issue #12 Phase 1: capabilities must advertise observation while honestly
+/// reporting that no device-cache readback exists and no full compatibility
+/// is claimed.
+#[tokio::test]
+async fn capabilities_report_observation_without_device_readback() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut client = ClientState::default();
+    let response = service.handle(&mut client, "[1] CMQTT CAPABILITIES").await;
+    assert_eq!(response.status, 200);
+    assert_eq!(response.lines.len(), 1);
+    let document: serde_json::Value = serde_json::from_str(&response.lines[0]).unwrap();
+    assert_eq!(document["full_cgate_compatibility"], false);
+    assert_eq!(document["dynamic_labels"], true);
+    assert_eq!(document["dynamic_label_observation"], true);
+    assert_eq!(document["dynamic_label_device_readback"], false);
+    std::fs::remove_file(path).unwrap();
+}
+
+/// Issue #12 Phase 1: an empty observation cache reports observed-only
+/// provenance — never a complete device readback.
+#[tokio::test]
+async fn labels_empty_document_pins_observed_only_provenance() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut client = ClientState::default();
+    let response = service
+        .handle(&mut client, "[1] CMQTT LABELS //HARNESS/254")
+        .await;
+    assert_eq!(response.status, 200);
+    assert_eq!(response.lines.len(), 1);
+    let document: serde_json::Value = serde_json::from_str(&response.lines[0]).unwrap();
+    assert_eq!(document["format"], "cmqttd-observed-dynamic-labels-v1");
+    assert_eq!(document["source"], "observed-sal-traffic");
+    assert_eq!(document["complete"], false);
+    assert_eq!(document["device_readback"], false);
+    assert_eq!(document["reset_on_reconnect"], true);
+    assert_eq!(document["capacity"], MAX_LABEL_OBSERVATIONS);
+    assert_eq!(document["observations"].as_array().unwrap().len(), 0);
+    assert_eq!(document["address"], "//HARNESS/254");
+    assert_eq!(document["project"], "HARNESS");
+    assert_eq!(document["network"], 254);
+    // Unit-scoped address on the configured network is accepted too.
+    let unit = service
+        .handle(&mut client, "[2] CMQTT LABELS //HARNESS/254/p/5")
+        .await;
+    assert_eq!(unit.status, 200);
+    // Bare canonical network forms accepted; trailing-slash forms rejected.
+    for address in ["254", "HARNESS/254"] {
+        let response = service
+            .handle(&mut client, &format!("[3] CMQTT LABELS {address}"))
+            .await;
+        assert_eq!(response.status, 200, "{address}");
+    }
+    for address in ["//HARNESS/254/", "//HARNESS/254/p/5/"] {
+        let response = service
+            .handle(&mut client, &format!("[4] CMQTT LABELS {address}"))
+            .await;
+        assert_eq!(response.status, 400, "{address}");
+    }
+    std::fs::remove_file(path).unwrap();
+}
+
+/// Issue #12 Phase 1: label observations are scoped to the configured
+/// network; foreign projects or networks are rejected, never invented.
+#[tokio::test]
+async fn labels_reject_foreign_network() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut client = ClientState::default();
+    for address in [
+        "//OTHER/254",
+        "//HARNESS/253",
+        "//OTHER/254/p/5",
+        "//HARNESS/253/p/5",
+        "//HARNESS/254/p/5/extra",
+    ] {
+        let response = service
+            .handle(&mut client, &format!("[1] CMQTT LABELS {address}"))
+            .await;
+        assert_eq!(response.status, 400, "{address}");
+    }
+    std::fs::remove_file(path).unwrap();
+}
+
+/// Issue #12 Phase 1: the bounded observation ring evicts the oldest entry
+/// at capacity while sequence numbers stay strictly monotonic.
+#[tokio::test]
+async fn observed_label_ring_evicts_oldest_at_capacity() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let payload = vec![0xa4, 0x01, 0x00, 0x00, 0x41];
+    for _ in 0..MAX_LABEL_OBSERVATIONS + 3 {
+        service
+            .record_label("received", Some(5), 56, &payload)
+            .await;
+    }
+    let labels = service.observed_labels.lock().await;
+    assert_eq!(labels.observations.len(), MAX_LABEL_OBSERVATIONS);
+    assert_eq!(labels.next_sequence, (MAX_LABEL_OBSERVATIONS + 3) as u64);
+    let first = labels.observations.front().unwrap();
+    let last = labels.observations.back().unwrap();
+    assert_eq!(first.sequence, 3);
+    assert_eq!(last.sequence, (MAX_LABEL_OBSERVATIONS + 3) as u64 - 1);
+    assert_eq!(first.payload_hex, "a401000041");
+    let mut previous = None;
+    for observation in labels.observations.iter() {
+        if let Some(previous) = previous {
+            assert!(observation.sequence > previous);
+        }
+        previous = Some(observation.sequence);
+    }
+    drop(labels);
+    // The served wire document reflects the same eviction window.
+    let mut client = ClientState::default();
+    let response = service
+        .handle(&mut client, "[1] CMQTT LABELS //HARNESS/254")
+        .await;
+    assert_eq!(response.status, 200);
+    let document: serde_json::Value = serde_json::from_str(&response.lines[0]).unwrap();
+    let observations = document["observations"].as_array().unwrap();
+    assert_eq!(observations.len(), MAX_LABEL_OBSERVATIONS);
+    assert_eq!(observations[0]["sequence"], 3);
+    assert_eq!(
+        observations[MAX_LABEL_OBSERVATIONS - 1]["sequence"],
+        (MAX_LABEL_OBSERVATIONS + 3) as u64 - 1
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+/// Issue #12 Phase 1: genuine bus label traffic surfaces as `received`
+/// observations and a dropped connection discards them (they were never a
+/// persistent device-cache readback).
+#[tokio::test]
+async fn observed_dynamic_label_surfaces_received_and_clears_on_disconnect() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    service
+        .observe(&CBusEvent::DynamicLabel {
+            source: Some(5),
+            application: 56,
+            payload: vec![0xa4, 0x01, 0x00, 0x00, 0x41],
+        })
+        .await;
+    let mut client = ClientState::default();
+    let response = service
+        .handle(&mut client, "[1] CMQTT LABELS //HARNESS/254")
+        .await;
+    assert_eq!(response.status, 200);
+    let document: serde_json::Value = serde_json::from_str(&response.lines[0]).unwrap();
+    let observations = document["observations"].as_array().unwrap();
+    assert_eq!(observations.len(), 1);
+    assert_eq!(observations[0]["direction"], "received");
+    assert_eq!(observations[0]["source_unit"], 5);
+    assert_eq!(observations[0]["application"], 56);
+    assert_eq!(observations[0]["payload_hex"], "a401000041");
+    assert_eq!(document["complete"], false);
+    assert_eq!(document["device_readback"], false);
+    service.observe(&CBusEvent::ConnectionLost).await;
+    let cleared = service
+        .handle(&mut client, "[2] CMQTT LABELS //HARNESS/254")
+        .await;
+    let cleared: serde_json::Value = serde_json::from_str(&cleared.lines[0]).unwrap();
+    assert_eq!(cleared["observations"].as_array().unwrap().len(), 0);
+    std::fs::remove_file(path).unwrap();
+}
+
+/// Issue #12 Phase 1: the send-confirmed record path serves rows matching
+/// the exact key contract the Python `decode_observed_labels` requires
+/// (`sequence/direction/source_unit/application/payload_hex` — no extras).
+#[tokio::test]
+async fn sent_confirmed_observation_row_matches_decoder_contract() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    service
+        .record_label("sent-confirmed", None, 56, &[0xa4, 0x01, 0x00, 0x00, 0x41])
+        .await;
+    let mut client = ClientState::default();
+    let response = service
+        .handle(&mut client, "[1] CMQTT LABELS //HARNESS/254")
+        .await;
+    assert_eq!(response.status, 200);
+    let document: serde_json::Value = serde_json::from_str(&response.lines[0]).unwrap();
+    let observations = document["observations"].as_array().unwrap();
+    assert_eq!(observations.len(), 1);
+    let row = observations[0].as_object().unwrap();
+    let mut keys: Vec<&str> = row.keys().map(String::as_str).collect();
+    keys.sort_unstable();
+    assert_eq!(
+        keys,
+        [
+            "application",
+            "direction",
+            "payload_hex",
+            "sequence",
+            "source_unit"
+        ]
+    );
+    assert_eq!(row["sequence"], 0);
+    assert_eq!(row["direction"], "sent-confirmed");
+    assert!(row["source_unit"].is_null());
+    assert_eq!(row["application"], 56);
+    assert_eq!(row["payload_hex"], "a401000041");
+    std::fs::remove_file(path).unwrap();
+}
+
+/// Issue #10 Phase 5 entry: UNRAVEL has no physical backend yet and must
+/// fail closed with 502 — never simulated success. Unknown methods stay 402.
+#[tokio::test]
+async fn do_unravel_fails_closed_until_physical_backend_exists() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut client = ClientState::default();
+    let response = service
+        .handle(&mut client, "[1] DO //HARNESS/254 UNRAVEL")
+        .await;
+    assert_eq!(response.status, 502);
+    assert!(
+        response.final_text.contains("physical backend"),
+        "{}",
+        response.final_text
+    );
+    let unknown = service
+        .handle(&mut client, "[2] DO //HARNESS/254/56/1 FROBNICATE")
+        .await;
+    assert_eq!(unknown.status, 402);
+    let short = service.handle(&mut client, "[3] DO").await;
+    assert_eq!(short.status, 400);
+    let missing_method = service
+        .handle(&mut client, "[4] DO //HARNESS/254/56/1")
+        .await;
+    assert_eq!(missing_method.status, 400);
+    std::fs::remove_file(path).unwrap();
+}
+
+/// Issue #10 Phase 5 entry: native NET UNRAVEL[UNIT] likewise has no
+/// physical backend yet and fails closed with the generic 502 — never a
+/// simulator-only success standing in for physical I/O.
+#[tokio::test]
+async fn net_unravel_fails_closed_until_physical_backend_exists() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut client = ClientState::default();
+    for line in [
+        "[1] NET UNRAVEL //HARNESS/254",
+        "[2] NET UNRAVELUNIT //HARNESS/254 20",
+        // The fail-closed gate precedes argument validation: even a bare
+        // verb reports 502, never a mock 400.
+        "[3] NET UNRAVEL",
+    ] {
+        let response = service.handle(&mut client, line).await;
+        assert_eq!(response.status, 502, "{line}");
+        assert_eq!(
+            response.final_text, "502 Command requires a physical backend that is not implemented",
+            "{line}"
+        );
+    }
+    std::fs::remove_file(path).unwrap();
+}
+
+/// Native C-Gate declares CHECK_UNRAVEL obsolete and returns 400 without
+/// running it; the service answers likewise instead of the generic 502.
+#[tokio::test]
+async fn net_check_unravel_is_obsolete_400() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut client = ClientState::default();
+    for line in [
+        "[1] NET CHECK_UNRAVEL //HARNESS/254",
+        "[2] NET CHECK_UNRAVEL",
+    ] {
+        let response = service.handle(&mut client, line).await;
+        assert_eq!(response.status, 400, "{line}");
+        assert_eq!(
+            response.final_text, "400 NET CHECK_UNRAVEL is obsolete",
+            "{line}"
+        );
+    }
+    std::fs::remove_file(path).unwrap();
+}
