@@ -421,6 +421,7 @@ impl Service {
                 "dynamic_labels":true,
                 "dynamic_label_families":["enable","lighting","trigger"],
                 "dynamic_label_modes":["dynamic_icon","icon","language","raw","unicode"],
+                "named_scenes":true,
                 "install_mmi":true, "network_pingu":true,
                 "network_sync":true, "network_checkunit":true,
                 "unit_readdress":true,
@@ -518,6 +519,9 @@ impl Service {
                 .is_some_and(|field| field.eq_ignore_ascii_case("Address"))
         {
             return self.readdress_unit(tag, &words).await;
+        }
+        if verb == "SCENE" {
+            return self.scene(client, line, tag, &words).await;
         }
         if matches!(verb, "ON" | "OFF" | "RAMP" | "TERMINATERAMP")
             || (verb == "LIGHTING"
@@ -2729,6 +2733,146 @@ impl Service {
             }
             Err(e) => err(tag, 502, &format!("502 Lighting delivery failed: {e}")),
         }
+    }
+
+    async fn scene(&self, client: &ClientState, line: &str, tag: &str, words: &[&str]) -> Response {
+        let _commands = self.commands.lock().await;
+        let (response, snapshot) = {
+            let mut model = self.model.lock().await;
+            model.current = client
+                .current
+                .clone()
+                .or_else(|| Some(self.project.clone()));
+
+            // Let the compatibility model own the command grammar and the
+            // native 401 response for an unknown scene. RECORD must use only
+            // genuine observations from this service's configured network.
+            if words.len() == 4 && words[1].eq_ignore_ascii_case("RECORD") {
+                let key = format!("{}/{}", words[2], words[3]);
+                let snapshot = model
+                    .projects
+                    .get(&self.project)
+                    .and_then(|project| project.networks.get(&self.network))
+                    .map(|network| {
+                        let mut values = network
+                            .levels
+                            .iter()
+                            .filter(|((application, _), _)| (48..=95).contains(application))
+                            .map(|((application, group), level)| {
+                                (
+                                    format!(
+                                        "//{}/{}/{application}/{group}",
+                                        self.project, self.network
+                                    ),
+                                    *level,
+                                )
+                            })
+                            .collect::<Vec<_>>();
+                        values.sort();
+                        values
+                    })
+                    .unwrap_or_default();
+                let before = model.scene_snapshots.insert(key.clone(), snapshot);
+                let database = Database::from_server(&model);
+                if let Err(error) = database.save(&self.state_path) {
+                    if let Some(before) = before {
+                        model.scene_snapshots.insert(key, before);
+                    } else {
+                        model.scene_snapshots.remove(&key);
+                    }
+                    tracing::error!("C-Gate scene commit failed: {error}");
+                    return err(tag, 500, "500 Database commit failed; scene not recorded");
+                }
+                (ok(tag, vec![], "200 OK."), None)
+            } else {
+                let mut staged = model.clone();
+                staged.current = model.current.clone();
+                let response = staged.handle(line);
+                let snapshot = if response.status < 400
+                    && words.len() == 4
+                    && words[1].eq_ignore_ascii_case("PLAY")
+                {
+                    model
+                        .scene_snapshots
+                        .get(&format!("{}/{}", words[2], words[3]))
+                        .cloned()
+                } else {
+                    None
+                };
+                (response, snapshot)
+            }
+        };
+        if response.status >= 400
+            || words
+                .get(1)
+                .is_some_and(|word| word.eq_ignore_ascii_case("RECORD"))
+        {
+            return response;
+        }
+        let Some(snapshot) = snapshot else {
+            return response;
+        };
+
+        let mut actions = Vec::with_capacity(snapshot.len());
+        for (address, level) in snapshot {
+            let Some((application, group)) = self.bound_group(&address) else {
+                return err(
+                    tag,
+                    409,
+                    "409 Scene contains an address outside this network",
+                );
+            };
+            if !(48..=95).contains(&application) {
+                return err(tag, 409, "409 Scene contains a non-lighting address");
+            }
+            actions.push((address, application, group, level));
+        }
+
+        let pci = self.pci.read().await.clone();
+        let total = actions.len();
+        let mut status_blocks = HashSet::new();
+        for (delivered, (address, application, group, level)) in actions.into_iter().enumerate() {
+            if let Some(network) = self
+                .model
+                .lock()
+                .await
+                .projects
+                .get_mut(&self.project)
+                .and_then(|project| project.networks.get_mut(&self.network))
+            {
+                network.levels.remove(&(application, group));
+            }
+            let packet = Packet::PointToMultipoint {
+                meta: Meta::new(true, 0),
+                application,
+                sals: vec![Sal::LightingRamp {
+                    application,
+                    group_address: group,
+                    level,
+                    duration: 0,
+                }],
+            };
+            if let Err(error) = pci.send_confirmed(&packet).await {
+                return err(
+                    tag,
+                    502,
+                    &format!(
+                        "502 Scene delivery failed after {delivered} of {total} actions: {error}"
+                    ),
+                );
+            }
+            status_blocks.insert((application, group & 0xe0));
+            let _ = self
+                .events
+                .send(format!("#e# lighting {address} RAMP {level} 0"));
+        }
+        for (application, block) in status_blocks {
+            let pci = pci.clone();
+            tokio::spawn(async move {
+                let _ = pci.request_status(block, application, true).await;
+            });
+        }
+        response
     }
 
     /// Run a bounded listener. The caller owns binding and task supervision.

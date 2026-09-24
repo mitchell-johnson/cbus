@@ -39,6 +39,7 @@ not be committed or published.
 | Physical PP SAVE/SAVE_TO_SOURCE | Writes only dirty, tag-selected `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and `goc2` parameters with `none`/`checksum`/supported `lock` protection. Page-aware writes split at 256-byte boundaries; OEM methods use the selector/data path; GIU halts and resumes the unit; DALI observes the native settling interval; GOC methods use parameter `0xFF`, a big-endian address prefix, and their native block limits. The service validates the complete plan and live type/firmware first, preserves shared bits through pre-read/encode, requires source/parameter-matched acknowledgements, and reads every stored range back before success. Specifications containing the vendor `ncc` method are classified as C-Bus 3; after a changed save, the service runs native group-0 operation-4 EXECUTE/POLL until the NVM commit succeeds |
 | ON/OFF/RAMP/TERMINATERAMP and lighting variants | Actual shared PCI, negative confirmations return errors; successful delivery is distinct from observed physical brightness |
 | GET group level | Real observed bus levels; unobserved levels return 408, never invented zero |
+| SCENE RECORD/PLAY | RECORD atomically persists the configured network's observed lighting levels under the named set/scene. PLAY sends a confirmed zero-time ramp for every stored level, invalidates the old cache, and schedules physical status readback. Unknown scenes retain the native 401 response |
 | TRIGGER EVENT/INDICATORKILL | Actual Trigger Control SAL on application 202; incoming events update the live service cache and event stream |
 | ENABLE SET/REMOVE and GET | SET sends actual Enable Control SAL on application 203; REMOVE follows C-Gate's server-side saved-value behavior; incoming values update the live cache |
 | CLOCK DATE/TIME/REQUEST_REFRESH | Actual Clock and Timekeeping SAL on application 223, including `SYSTEM` date/time resolution and observed-value queries |
@@ -103,6 +104,13 @@ sequence around six-byte chunks. A successful response establishes PCI delivery
 of every fragment; it does not prove that a particular display rendered or
 persisted the label.
 
+Named scenes are server-side snapshots, distinct from scene tables programmed
+into individual units through PP. Recording includes only lighting levels that
+cmqttd has physically observed on its configured network; it does not invent
+unknown values. Playback stops on the first failed delivery and reports how many
+earlier actions were confirmed. Its 200 response proves PCI delivery, while
+fresh status reports establish the resulting physical levels.
+
 ## Live label reads
 
 ```sh
@@ -154,7 +162,7 @@ return 502. Full replacement still requires:
   project identification and the remaining commissioning state transitions.
   Direct-network `NET PINGU`, `NET SYNC` identity population, duplicate-aware
   `NET CHECKUNIT`, and guarded single-unit physical readdressing are implemented.
-- Physical scenes, dynamic eDLT label cache reads, and
+- Device-resident scene triggering beyond PP table programming, dynamic eDLT label cache reads, and
   specialist application families such as HVAC, audio and security.
 - Native repository/archive/import/export formats, document commands,
   complete server configuration/access/TLS, firmware and deployment workflows.
@@ -179,6 +187,9 @@ IDENTIFY4 request or response bytes are pinned by vectors and the real-daemon
 system test. Dynamic-label vectors pin exact encode/decode JSON and wire bytes;
 the real-daemon test covers text, icon, Unicode, bitmap, language selection,
 vendor-invalid rejection, and confirmed multi-frame delivery on the shared PCI.
+The real-daemon scene case records an observed level, verifies durable storage,
+plays it as the exact confirmed zero-time ramp, and verifies that acknowledgement
+does not fabricate a level observation.
 `cbus-cgate` service tests cover durable reload, corrupt-file preservation,
 rollback, session ownership, unsupported hardware rejection, fragmented command
 input during events, disconnect cleanup, schema layout decoding and input bounds.

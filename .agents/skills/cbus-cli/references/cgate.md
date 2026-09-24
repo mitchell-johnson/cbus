@@ -32,6 +32,11 @@ or tag-filtered save does not issue the NVM command.
 They support the Toolkit CLI's raw/text, icon, language, segmented Unicode, and
 dynamic bitmap forms. Enable Unicode is a native-invalid form. A 200 response
 proves confirmed fragment delivery, not display rendering or persistence.
+`SCENE RECORD set name` atomically persists currently observed lighting levels
+from the configured network. `SCENE PLAY set name` sends confirmed zero-time
+ramps and requests status readback; its success does not by itself prove the
+loads reached those levels. These named server snapshots are separate from
+device PP scene tables.
 It also implements guarded scalar `SET //PROJECT/NETWORK/p/UNIT Address DEST`
 against the physical bus. That command proves one source and an empty
 destination, uses the native parameter-`0x20` one-use challenge, sends the
@@ -52,6 +57,7 @@ two-bit MMI state. Use `GET //PROJECT/NETWORK Units` and unit `Type`, `Version`,
 Query `CMQTT CAPABILITIES`; `unit_readdress: true` denotes the readdress path and
 `physical_pp_save_cbus3_nvm: true` denotes the NVM commit path,
 `dynamic_labels: true` denotes the label sender,
+`named_scenes: true` denotes hardware-backed named-scene playback,
 while `full_cgate_compatibility` remains false until every remaining backend and
 acceptance requirement is complete.
 

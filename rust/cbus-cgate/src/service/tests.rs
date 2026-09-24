@@ -52,6 +52,13 @@ async fn database_survives_restart_but_live_state_and_sessions_do_not() {
         .ends_with("level=255"));
     assert_eq!(
         service
+            .handle(&mut client, "[2a] SCENE RECORD house evening")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
             .handle(&mut client, "[3] PP LOCK L //HARNESS/254")
             .await
             .status,
@@ -66,6 +73,10 @@ async fn database_survives_restart_but_live_state_and_sessions_do_not() {
     assert!(model.projects["HARNESS"].networks[&254].levels.is_empty());
     assert!(model.projects["HARNESS"].networks[&254].physical.is_empty());
     assert!(model.locks.is_empty());
+    assert_eq!(
+        model.scene_snapshots["house/evening"],
+        vec![("//HARNESS/254/56/1".to_string(), 255)]
+    );
     drop(model);
     assert_eq!(
         restarted
@@ -281,6 +292,24 @@ async fn failed_persistence_rolls_back_database_changes() {
         service.model.lock().await.projects["HARNESS"].networks[&254].units[&5].fields["TagName"],
         "Fixture eDLT"
     );
+    service
+        .observe(&CBusEvent::LightingOn {
+            source: Some(4),
+            app: 56,
+            group: 1,
+        })
+        .await;
+    assert_eq!(
+        service
+            .handle(
+                &mut ClientState::default(),
+                "[2] SCENE RECORD house evening"
+            )
+            .await
+            .status,
+        500
+    );
+    assert!(service.model.lock().await.scene_snapshots.is_empty());
     std::fs::remove_dir(path).unwrap();
 }
 

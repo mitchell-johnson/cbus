@@ -134,11 +134,34 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
             .await
             .contains("level=255")
     );
+    assert!(command(&mut reader, &mut writer, "SCENE PLAY house absent")
+        .await
+        .contains("401 Scene not found"));
+    assert!(
+        command(&mut reader, &mut writer, "SCENE RECORD house evening")
+            .await
+            .contains("200 OK")
+    );
+    assert!(String::from_utf8(std::fs::read(&path).unwrap())
+        .unwrap()
+        .contains("house/evening"));
     assert!(
         command(&mut reader, &mut writer, "RAMP //HARNESS/254/56/1 128 4")
             .await
             .contains("200 OK")
     );
+    assert!(
+        command(&mut reader, &mut writer, "GET //HARNESS/254/56/1 level")
+            .await
+            .contains("408 No live level")
+    );
+    assert!(
+        command(&mut reader, &mut writer, "SCENE PLAY house evening")
+            .await
+            .contains("200 OK")
+    );
+    assert_eq!(sys.pci.count_payload("0538000201FFC1"), 1);
+    // Command confirmation is not a physical level report.
     assert!(
         command(&mut reader, &mut writer, "GET //HARNESS/254/56/1 level")
             .await
