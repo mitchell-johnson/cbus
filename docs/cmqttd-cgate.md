@@ -36,7 +36,7 @@ not be committed or published.
 | Project list/use/load/save/new/close; database CRUD and database snapshots | Persistent JSON database; atomic replacement, restrictive permissions, failed-write rollback |
 | Database PP locks, sessions, get/set/info/new/load/save | Existing programming model with connection ownership; staged sessions and locks are discarded on disconnect/restart |
 | Physical PP LOAD and subsequent GET/INFO | Identifies the live unit, selects its privately installed decoded schema, recalls standard CAL parameters and OEM memory through the shared PCI, decodes int/long/bit/string/sixbit arrays and `ArrayMap`, applies tag selection, and commits the session only after every read succeeds |
-| Physical PP SAVE/SAVE_TO_SOURCE | Writes only dirty, tag-selected `direct` and `edlt` parameters with `none`/`checksum` protection; validates the complete plan and live type/firmware first, preserves shared bits through pre-read/encode, requires source/parameter-matched acknowledgements, and reads every stored range back before success |
+| Physical PP SAVE/SAVE_TO_SOURCE | Writes only dirty, tag-selected `direct` and `edlt` parameters with `none`/`checksum` protection and direct `lock` parameters through the captured unlock phase; validates the complete plan and live type/firmware first, preserves shared bits through pre-read/encode, requires source/parameter-matched acknowledgements, and reads every stored range back before success |
 | ON/OFF/RAMP/TERMINATERAMP and lighting variants | Actual shared PCI, negative confirmations return errors; successful delivery is distinct from observed physical brightness |
 | GET group level | Real observed bus levels; unobserved levels return 408, never invented zero |
 | TRIGGER EVENT/INDICATORKILL | Actual Trigger Control SAL on application 202; incoming events update the live service cache and event stream |
@@ -69,9 +69,11 @@ sessions fail without replacing the previously staged values.
 Physical SAVE uses captured tagged direct STORE for standard parameters and the
 OEM `0x41` address selector plus tagged `0x42` STORE for eDLT memory. Factory and
 special parameters follow native behavior and are skipped by ordinary SAVE.
-`lock` protection and program methods other than `direct` and `edlt` return 502
-before any write. All dirty parameters are encoded and physically pre-read
-before the first STORE. Each changed range is acknowledged and read back; a
+Program methods other than `direct` and `edlt` return 502 before any write.
+Direct `lock` fields require the native unchecksummed, PCI-confirmed unlock and
+one-byte unit challenge reply before STORE. All dirty parameters are encoded
+and physically pre-read before the first STORE. Each changed range is
+acknowledged and read back; a
 transport failure can still leave earlier independently acknowledged ranges
 written, so multi-range recovery and power-loss acceptance remain outstanding.
 
@@ -117,8 +119,8 @@ all 431 have physical implementations in this service. `CMQTT CAPABILITIES`
 returns `full_cgate_compatibility: false`; unimplemented physical operations
 return 502. Full replacement still requires:
 
-- Physical PP SAVE methods beyond captured `direct` and `edlt`, `lock`
-  protection, multi-range failure recovery, power-loss behavior and hardware
+- Physical PP SAVE methods beyond captured `direct` and `edlt`, multi-range
+  failure recovery, power-loss behavior and hardware
   write acceptance. LOAD has full decoded-catalogue layout coverage plus live
   KEYGL5 acceptance; SAVE has full supported-default catalogue encoding and
   fake-PCI direct/OEM write-readback acceptance.
@@ -136,7 +138,8 @@ return 502. Full replacement still requires:
 
 ## Tests
 
-`cbus-transport` tests pin direct routing for standard recall/tagged STORE and
+`cbus-transport` tests pin direct routing for standard recall/tagged STORE,
+the native protected-parameter unlock request/reply phase, and
 the separate programming route for segmented OEM recall/tagged STORE, including
 mandatory readback, plus source filtering,
 interleaved lighting, complete and incomplete installation MMI,

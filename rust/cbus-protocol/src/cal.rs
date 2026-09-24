@@ -21,6 +21,11 @@ pub enum Cal {
         /// Operation-specific acknowledgement data.
         data: Vec<u8>,
     },
+    /// Temporarily unlock one protected programming parameter.
+    Unlock {
+        /// Parameter number to unlock.
+        parameter: u8,
+    },
     /// Ask a unit to identify one of its attributes.
     Identify {
         /// Attribute number to identify.
@@ -68,6 +73,7 @@ impl Cal {
                 out.extend_from_slice(data);
                 out
             }
+            Cal::Unlock { parameter } => vec![0x11, *parameter],
             Cal::Identify { attribute } => vec![CAL_IDENTIFY, *attribute],
             Cal::Recall { param, count } => vec![CAL_RECALL, *param, *count],
             Cal::Reply { parameter, data } => {
@@ -184,6 +190,11 @@ impl Cal {
                 },
                 cal_end,
             ))
+        } else if cmd == 0x11 {
+            let parameter = *data
+                .get(1)
+                .ok_or_else(|| DecodeError::new("truncated unlock CAL"))?;
+            Ok((Cal::Unlock { parameter }, 2))
         } else if cmd == CAL_IDENTIFY {
             let attribute = *data
                 .get(1)
@@ -209,6 +220,10 @@ mod tests {
 
     #[test]
     fn identify_recall() {
+        assert_eq!(Cal::Unlock { parameter: 0x20 }.encode(), vec![0x11, 0x20]);
+        let (c, n) = Cal::decode_one(&[0x11, 0x20, 0xff]).unwrap();
+        assert_eq!(c, Cal::Unlock { parameter: 0x20 });
+        assert_eq!(n, 2);
         assert_eq!(Cal::Identify { attribute: 2 }.encode(), vec![0x21, 0x02]);
         assert_eq!(
             Cal::Recall {

@@ -408,6 +408,102 @@ impl PciClient {
         Ok(result)
     }
 
+    async fn programming_unlock(&self, unit: u8, parameter: u8) -> Result<()> {
+        let mut replies = self.packets.subscribe();
+        let packet = Packet::PointToPoint {
+            // Native C-Gate's dd command is deliberately unchecksummed and
+            // asks the PCI to confirm delivery separately.
+            meta: Meta::new(false, 1),
+            unit_address: unit,
+            bridged: false,
+            hops: vec![],
+            cals: vec![Cal::Unlock { parameter }],
+        };
+        let code = self
+            .send(&packet, true, false)
+            .await?
+            .ok_or_else(|| Error::new(ErrorKind::InvalidInput, "unlock cannot be confirmed"))?;
+        let result = tokio::time::timeout(REPLY_TIMEOUT, async {
+            let mut confirmed = false;
+            let mut unlocked = false;
+            loop {
+                match replies.recv().await {
+                    Ok(Some(Packet::Confirmation { code: got, success })) if got == code => {
+                        if !success {
+                            return Err(Error::other("PCI rejected parameter unlock"));
+                        }
+                        confirmed = true;
+                    }
+                    Ok(Some(packet)) => {
+                        let cals = match packet {
+                            Packet::PointToPoint { meta, cals, .. }
+                                if meta.source_address == Some(unit) =>
+                            {
+                                cals
+                            }
+                            Packet::PointToPoint { meta, cals, .. }
+                                if meta.source_address.is_none()
+                                    && self.local_unit.load(Ordering::Acquire)
+                                        == u16::from(unit) =>
+                            {
+                                cals
+                            }
+                            Packet::BareCal(cal)
+                                if self.local_unit.load(Ordering::Acquire) == u16::from(unit) =>
+                            {
+                                vec![cal]
+                            }
+                            _ => continue,
+                        };
+                        if !cals.iter().any(|cal| {
+                            matches!(cal, Cal::Reply { parameter: got, .. } if *got == parameter)
+                        }) {
+                            continue;
+                        }
+                        if cals.len() != 1 {
+                            return Err(Error::new(
+                                ErrorKind::InvalidData,
+                                "parameter unlock reply contains an ambiguous CAL chain",
+                            ));
+                        }
+                        let Cal::Reply { data, .. } = &cals[0] else {
+                            unreachable!("matching unlock reply checked above")
+                        };
+                        if data.len() != 1 {
+                            return Err(Error::new(
+                                ErrorKind::InvalidData,
+                                "parameter unlock reply must contain one byte",
+                            ));
+                        }
+                        unlocked = true;
+                    }
+                    Ok(None) | Err(_) => {
+                        return Err(Error::new(
+                            ErrorKind::BrokenPipe,
+                            "PCI response stream lost",
+                        ))
+                    }
+                }
+                if confirmed && unlocked {
+                    return Ok(());
+                }
+            }
+        })
+        .await
+        .unwrap_or_else(|_| {
+            Err(Error::new(
+                ErrorKind::TimedOut,
+                "parameter unlock timed out",
+            ))
+        });
+        if result.is_err() {
+            let mut state = self.state.lock().unwrap();
+            state.pending.remove(&code);
+            state.codes_in_use.remove(&code);
+        }
+        result
+    }
+
     /// Store one contiguous standard CAL parameter range and verify it with
     /// an immediate direct RECALL. Each STORE carries an explicit transaction
     /// tag, and large ranges are split at the 29-data-byte CAL limit.
@@ -417,9 +513,33 @@ impl PciClient {
         parameter: u8,
         data: &[u8],
     ) -> Result<()> {
+        self.store_parameter_verified_inner(unit, parameter, data, false)
+            .await
+    }
+
+    /// Unlock, store and verify one lock-protected standard CAL parameter.
+    /// The captured native path supports one STORE-sized field per unlock.
+    pub async fn store_locked_parameter_verified(
+        &self,
+        unit: u8,
+        parameter: u8,
+        data: &[u8],
+    ) -> Result<()> {
+        self.store_parameter_verified_inner(unit, parameter, data, true)
+            .await
+    }
+
+    async fn store_parameter_verified_inner(
+        &self,
+        unit: u8,
+        parameter: u8,
+        data: &[u8],
+        locked: bool,
+    ) -> Result<()> {
         if data.is_empty()
             || data.len() > u8::MAX as usize
             || usize::from(parameter) + data.len() > 256
+            || locked && data.len() > 29
         {
             return Err(Error::new(
                 ErrorKind::InvalidInput,
@@ -436,6 +556,9 @@ impl PciClient {
             fault: &self.programming_fault,
             complete: false,
         };
+        if locked {
+            self.programming_unlock(unit, parameter).await?;
+        }
         for (chunk_index, chunk) in data.chunks(29).enumerate() {
             let offset = chunk_index * 29;
             let target = parameter + offset as u8;
@@ -892,6 +1015,54 @@ mod tests {
                 .kind(),
             ErrorKind::InvalidInput
         );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn locked_parameter_store_uses_native_unlock_then_verifies_readback() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let write = tokio::spawn(async move {
+            worker
+                .store_locked_parameter_verified(4, 0x20, &[0x06])
+                .await
+        });
+        assert_eq!(line(&mut remote).await, b"\\4604001120h\r");
+        reply(&mut remote, 5, &[0x82, 0x20, 0x99]).await;
+        reply(&mut remote, 4, &[0x82, 0x20, 0x5a]).await;
+        remote.get_mut().write_all(b"h.\r\n").await.unwrap();
+        assert_eq!(line(&mut remote).await, b"\\460400A3200006ED\r");
+        reply(&mut remote, 4, &[0x32, 0x20, 0]).await;
+        assert_eq!(line(&mut remote).await, b"\\4604001A20017B\r");
+        reply(&mut remote, 4, &[0x82, 0x20, 0x06]).await;
+        write.await.unwrap().unwrap();
+        assert_eq!(
+            pci.store_locked_parameter_verified(4, 0x20, &[0; 30])
+                .await
+                .unwrap_err()
+                .kind(),
+            ErrorKind::InvalidInput
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn rejected_locked_parameter_unlock_poisons_the_programming_lane() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let write = tokio::spawn(async move {
+            worker
+                .store_locked_parameter_verified(4, 0x20, &[0x06])
+                .await
+        });
+        assert_eq!(line(&mut remote).await, b"\\4604001120h\r");
+        remote.get_mut().write_all(b"h#\r\n").await.unwrap();
+        assert!(write
+            .await
+            .unwrap()
+            .unwrap_err()
+            .to_string()
+            .contains("rejected"));
+        assert!(pci.programming_fault.load(Ordering::Acquire));
+        assert!(pci.state.lock().unwrap().pending.is_empty());
     }
 
     #[tokio::test(start_paused = true)]

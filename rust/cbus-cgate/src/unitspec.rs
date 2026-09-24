@@ -989,6 +989,7 @@ mod tests {
             return;
         };
         let mut parameters = 0usize;
+        let mut locked_parameters = 0usize;
         for entry in std::fs::read_dir(&dir).expect("read vendor spec directory") {
             let path = entry.expect("vendor spec entry").path();
             if path.extension().and_then(|value| value.to_str()) != Some("xml") {
@@ -1012,9 +1013,12 @@ mod tests {
                 let Some(default) = parameter.get("DefaultValue") else {
                     continue;
                 };
-                if !matches!(method.as_str(), "direct" | "edlt")
-                    || !matches!(protection.as_str(), "none" | "checksum")
-                {
+                let supported = match method.as_str() {
+                    "direct" => matches!(protection.as_str(), "none" | "checksum" | "lock"),
+                    "edlt" => matches!(protection.as_str(), "none" | "checksum"),
+                    _ => false,
+                };
+                if !supported {
                     continue;
                 }
                 let layout = ParameterLayout::for_param(parameter)
@@ -1023,6 +1027,14 @@ mod tests {
                     ParameterTransfer::Recall { count, .. }
                     | ParameterTransfer::Memory { count, .. } => count,
                 };
+                if protection == "lock" {
+                    assert!(
+                        count <= 29,
+                        "{unit_type}/{}: lock-protected field exceeds one native STORE",
+                        parameter.name
+                    );
+                    locked_parameters += 1;
+                }
                 let mut data = vec![0; count];
                 layout
                     .encode_into(parameter, default, &mut data)
@@ -1036,6 +1048,10 @@ mod tests {
         assert!(
             parameters > 0,
             "no decoded vendor save defaults were audited"
+        );
+        assert!(
+            locked_parameters > 0,
+            "no lock-protected vendor defaults were audited"
         );
     }
 

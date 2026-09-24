@@ -385,6 +385,7 @@ async fn physical_pp_load_and_save_use_standard_and_oem_memory_on_shared_pci() {
         specs.join("TESTUNIT.xml"),
         r#"<UnitSpecification><Parameters>
         <Param><Name>Standard</Name><Type>int</Type><Address>$20</Address><ArraySize>2</ArraySize><ProgramMethod>direct</ProgramMethod><Protection>checksum</Protection><Tag>Core</Tag></Param>
+        <Param><Name>Locked</Name><Type>int</Type><Address>$22</Address><ProgramMethod>direct</ProgramMethod><Protection>lock</Protection><Tag>Core</Tag></Param>
         <Param><Name>Mapped</Name><Type>int</Type><Address>$110</Address><ArraySize>3</ArraySize><BitSize>4</BitSize><BitAddress>4</BitAddress><ArraySkip>1</ArraySkip><ArrayMap>2 3 1</ArrayMap><ProgramMethod>edlt</ProgramMethod><Protection>none</Protection><Tag>Core</Tag></Param>
         <Param><Name>Excluded</Name><Type>string</Type><Address>$120</Address><ArraySize>4</ArraySize><Tag>Other</Tag></Param>
         </Parameters></UnitSpecification>"#,
@@ -490,6 +491,15 @@ async fn physical_pp_load_and_save_use_standard_and_oem_memory_on_shared_pci() {
         sys.pci.inject(&pci_wire(&[
             0x86, 5, 0x10, 0x01, 0x00, 0x83, 0x20, 0x12, 0x34,
         ]));
+        require(COMMAND_DRAIN, "locked PP parameter recall", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload.starts_with("4605001A2201"))
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x82, 0x22, 0x9a]));
 
         require(COMMAND_DRAIN, "OEM PP memory selector", || {
             sys.pci
@@ -515,6 +525,7 @@ async fn physical_pp_load_and_save_use_standard_and_oem_memory_on_shared_pci() {
     assert!(loaded.contains("200 OK"), "{loaded:?}");
     let values = command(&mut reader, &mut writer, "PP GET S *").await;
     assert!(values.contains("315-Mapped=0xC 0xA 0xB"), "{values:?}");
+    assert!(values.contains("315-Locked=0x9A"), "{values:?}");
     assert!(values.contains("315 Standard=0x12 0x34"), "{values:?}");
     assert!(!values.contains("Excluded="), "{values:?}");
 
@@ -528,6 +539,9 @@ async fn physical_pp_load_and_save_use_standard_and_oem_memory_on_shared_pci() {
             .await
             .contains("200 OK")
     );
+    assert!(command(&mut reader, &mut writer, "PP SET S Locked 0xBC")
+        .await
+        .contains("200 OK"));
     let save = command(&mut reader, &mut writer, "PP SAVE S //HARNESS/254/p/5 Core");
     let save_responses = async {
         async fn identify(sys: &System, attribute: u8, data: &[u8]) {
@@ -560,13 +574,13 @@ async fn physical_pp_load_and_save_use_standard_and_oem_memory_on_shared_pci() {
             sys.pci
                 .frames()
                 .iter()
-                .filter(|frame| frame.payload.starts_with("4605001A2002"))
+                .filter(|frame| frame.payload.starts_with("4605001A2003"))
                 .count()
-                >= 2
+                >= 1
         })
         .await;
         sys.pci.inject(&pci_wire(&[
-            0x86, 5, 0x10, 0x01, 0x00, 0x83, 0x20, 0x12, 0x34,
+            0x86, 5, 0x10, 0x01, 0x00, 0x84, 0x20, 0x12, 0x34, 0x9a,
         ]));
         require(COMMAND_DRAIN, "OEM PP save pre-read selector", || {
             sys.pci
@@ -607,12 +621,42 @@ async fn physical_pp_load_and_save_use_standard_and_oem_memory_on_shared_pci() {
                 .iter()
                 .filter(|frame| frame.payload.starts_with("4605001A2002"))
                 .count()
-                >= 3
+                >= 2
         })
         .await;
         sys.pci.inject(&pci_wire(&[
             0x86, 5, 0x10, 0x01, 0x00, 0x83, 0x20, 0x56, 0x78,
         ]));
+
+        require(COMMAND_DRAIN, "locked PP unlock", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload.starts_with("4605001122") && frame.conf.is_some())
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x82, 0x22, 0x5a]));
+        require(COMMAND_DRAIN, "locked PP STORE", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload.starts_with("460500A32200BC"))
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0x22, 0x00]));
+        require(COMMAND_DRAIN, "locked PP STORE readback", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload.starts_with("4605001A2201"))
+                .count()
+                >= 2
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x82, 0x22, 0xbc]));
 
         require(COMMAND_DRAIN, "OEM PP STORE selector", || {
             sys.pci
@@ -685,6 +729,18 @@ async fn physical_pp_load_and_save_use_standard_and_oem_memory_on_shared_pci() {
         .iter()
         .filter(|frame| frame.payload.starts_with("46050900A701422177328813"))
         .count();
+    let unlocks = sys
+        .pci
+        .frames()
+        .iter()
+        .filter(|frame| frame.payload.starts_with("4605001122"))
+        .count();
+    let locked_stores = sys
+        .pci
+        .frames()
+        .iter()
+        .filter(|frame| frame.payload.starts_with("460500A32200BC"))
+        .count();
     let save_again = command(&mut reader, &mut writer, "PP SAVE_TO_SOURCE S Core");
     let identity_responses = async {
         for (attribute, data) in [(1, b"TESTUNIT".as_slice()), (2, b"1.2.03".as_slice())] {
@@ -741,6 +797,20 @@ async fn physical_pp_load_and_save_use_standard_and_oem_memory_on_shared_pci() {
             .filter(|frame| frame.payload.starts_with("46050900A701422177328813"))
             .count(),
         memory_stores
+    );
+    assert_eq!(
+        frames
+            .iter()
+            .filter(|frame| frame.payload.starts_with("4605001122"))
+            .count(),
+        unlocks
+    );
+    assert_eq!(
+        frames
+            .iter()
+            .filter(|frame| frame.payload.starts_with("460500A32200BC"))
+            .count(),
+        locked_stores
     );
     assert_eq!(sys.pci.connections(), 1);
 

@@ -145,6 +145,7 @@ fn arb_report() -> impl Strategy<Value = StatusReport> {
 
 fn arb_cal() -> impl Strategy<Value = Cal> {
     prop_oneof![
+        any::<u8>().prop_map(|parameter| Cal::Unlock { parameter }),
         any::<u8>().prop_map(|attribute| Cal::Identify { attribute }),
         (any::<u8>(), any::<u8>()).prop_map(|(param, count)| Cal::Recall { param, count }),
         (

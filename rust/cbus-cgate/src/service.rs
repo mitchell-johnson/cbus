@@ -398,7 +398,8 @@ impl Service {
                 "full_cgate_compatibility":false, "memory_read":true, "memory_write":true,
                 "physical_pp_load":true, "physical_pp_save":true,
                 "physical_pp_save_methods":["direct","edlt"],
-                "physical_pp_save_protection":["none","checksum"],
+                "physical_pp_save_protection":["none","checksum","lock"],
+                "physical_pp_save_lock_methods":["direct"],
                 "trigger_control":true, "enable_control":true, "clock_control":true,
                 "temperature_broadcast":true,
                 "install_mmi":true, "network_pingu":true,
@@ -1743,6 +1744,7 @@ impl Service {
             space: Space,
             start: u32,
             end: u32,
+            locked: bool,
         }
         struct Region {
             space: Space,
@@ -1914,7 +1916,7 @@ impl Service {
                 cleared.insert(name.clone());
                 continue;
             }
-            if !matches!(protection.as_str(), "none" | "checksum") {
+            if !matches!(protection.as_str(), "none" | "checksum" | "lock") {
                 return err(
                     tag,
                     502,
@@ -1930,11 +1932,14 @@ impl Service {
                 .unwrap_or("")
                 .trim()
                 .to_ascii_lowercase();
+            let locked = protection == "lock";
             let (space, start, count) = match layout.transfer {
                 unitspec::ParameterTransfer::Recall { parameter, count } if method == "direct" => {
                     (Space::Standard, u32::from(parameter), count)
                 }
-                unitspec::ParameterTransfer::Memory { address, count } if method == "edlt" => {
+                unitspec::ParameterTransfer::Memory { address, count }
+                    if method == "edlt" && !locked =>
+                {
                     (Space::Memory, address, count)
                 }
                 _ => {
@@ -1945,6 +1950,13 @@ impl Service {
                     )
                 }
             };
+            if locked && count > 29 {
+                return err(
+                    tag,
+                    502,
+                    &format!("502 Lock-protected parameter {name:?} exceeds one native STORE"),
+                );
+            }
             let Some(value) = params.get(name).cloned() else {
                 return err(
                     tag,
@@ -1959,6 +1971,7 @@ impl Service {
                 space,
                 start,
                 end: start + count as u32,
+                locked,
             });
             cleared.insert(name.clone());
         }
@@ -2034,19 +2047,31 @@ impl Service {
             }
         }
 
-        for region in &regions {
-            if region.modified == region.original {
+        for item in &pending {
+            let Some(region) = regions.iter().find(|region| {
+                region.space == item.space
+                    && item.start >= region.start
+                    && item.end <= region.start + region.modified.len() as u32
+            }) else {
+                return err(tag, 500, "500 Physical PP save plan was incomplete");
+            };
+            let offset = (item.start - region.start) as usize;
+            let count = (item.end - item.start) as usize;
+            let original = &region.original[offset..offset + count];
+            let modified = &region.modified[offset..offset + count];
+            if modified == original {
                 continue;
             }
-            let result = match region.space {
+            let result = match item.space {
+                Space::Standard if item.locked => {
+                    pci.store_locked_parameter_verified(unit, item.start as u8, modified)
+                        .await
+                }
                 Space::Standard => {
-                    pci.store_parameter_verified(unit, region.start as u8, &region.modified)
+                    pci.store_parameter_verified(unit, item.start as u8, modified)
                         .await
                 }
-                Space::Memory => {
-                    pci.write_memory_verified(unit, region.start, &region.modified)
-                        .await
-                }
+                Space::Memory => pci.write_memory_verified(unit, item.start, modified).await,
             };
             if let Err(error) = result {
                 return err(tag, 502, &format!("502 Physical PP save failed: {error}"));
