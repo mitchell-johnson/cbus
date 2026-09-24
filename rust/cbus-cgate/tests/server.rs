@@ -192,3 +192,44 @@ fn level_netvar_document_and_rename_travel() {
     let stale = s.handle("[7] DBGETXML //TEST/254/201/1");
     assert_eq!(stale.status, 401);
 }
+
+/// Mock determinism for the guarded one-shot label clear: the accepted
+/// reply is exactly one `200 OK.` line (note the period), malformed shapes
+/// fail closed, and each accepted clear records one `#e#` event.
+#[test]
+fn label_clearedlt_contract_and_event() {
+    let mut s = Server::new(AccessLevel::Program);
+    let clear = s.handle("[1] LABEL CLEAREDLT //TEST/252/p/30");
+    assert_eq!(clear.status, 200);
+    assert!(clear.lines.is_empty());
+    assert_eq!(clear.final_text, "200 OK.");
+    // Case-insensitive verb, exact same reply shape.
+    for line in [
+        "[2] LABEL clearedlt //TEST/252/p/30",
+        "[2b] LABEL ClearEdlt //TEST/252/p/30",
+    ] {
+        let response = s.handle(line);
+        assert_eq!(response.status, 200, "{line}");
+        assert!(response.lines.is_empty(), "{line}");
+        assert_eq!(response.final_text, "200 OK.", "{line}");
+    }
+    // Malformed shapes and targets fail closed.
+    for (line, fragment) in [
+        ("[3] LABEL CLEAREDLT", "only supports CLEAREDLT"),
+        ("[4] LABEL CLEAR //TEST/252/p/30", "only supports CLEAREDLT"),
+        (
+            "[5] LABEL CLEAREDLT //TEST/252/p/30 extra",
+            "only supports CLEAREDLT",
+        ),
+        ("[6] LABEL CLEAREDLT //TEST/252/p/#", "Invalid clear target"),
+    ] {
+        let response = s.handle(line);
+        assert_eq!(response.status, 400, "{line}");
+        assert!(response.final_text.contains(fragment), "{line}");
+    }
+    let events = s.drain_events();
+    assert_eq!(events.len(), 3);
+    assert!(events
+        .iter()
+        .all(|event| event == "#e# labels cleared //TEST/252/p/30"));
+}
