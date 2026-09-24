@@ -150,6 +150,14 @@ pub struct Service {
     commands: Mutex<()>,
 }
 
+#[derive(Clone, Copy)]
+struct ClockSummary {
+    address: u8,
+    enabled: bool,
+    active: bool,
+    burden: bool,
+}
+
 impl Service {
     /// Import the supplied project on first start; thereafter load the atomic
     /// database. A corrupt or mismatched database is an error, never reset.
@@ -424,6 +432,7 @@ impl Service {
                 "edlt_label_clear":true,
                 "named_scenes":true,
                 "do_methods":["lighting","sync"],
+                "network_clocks":true,
                 "install_mmi":true, "network_pingu":true,
                 "network_sync":true, "network_checkunit":true,
                 "unit_readdress":true,
@@ -530,6 +539,9 @@ impl Service {
         }
         if verb == "DO" {
             return self.do_method(client, tag, &words).await;
+        }
+        if verb == "NET" && sub == "CLOCKS" {
+            return self.net_clocks(tag, &words).await;
         }
         if matches!(verb, "ON" | "OFF" | "RAMP" | "TERMINATERAMP")
             || (verb == "LIGHTING"
@@ -2971,6 +2983,221 @@ impl Service {
                 status: 202,
             }
         }
+    }
+
+    async fn clock_summaries(&self) -> Result<(Vec<ClockSummary>, Vec<String>), String> {
+        let mut addresses = {
+            let model = self.model.lock().await;
+            model.projects[&self.project].networks[&self.network]
+                .physical
+                .keys()
+                .copied()
+                .collect::<Vec<_>>()
+        };
+        if addresses.is_empty() {
+            return Err(
+                "network has no synchronized physical inventory; run NET SYNC first".into(),
+            );
+        }
+        addresses.sort_unstable();
+        let pci = self.pci.read().await.clone();
+        let mut summaries = Vec::new();
+        let mut failures = Vec::new();
+        for address in addresses {
+            match pci.identify_first(address, 16).await {
+                Ok(Some(data)) if data.len() == 4 => {
+                    summaries.push(ClockSummary {
+                        address,
+                        active: data[0] & 0x01 != 0,
+                        enabled: data[0] & 0x02 != 0,
+                        burden: data[0] & 0x80 != 0,
+                    });
+                }
+                Ok(_) => failures.push(format!(
+                    "120-Failed to obtain output unit summary from address {address}."
+                )),
+                Err(error) => {
+                    return Err(format!(
+                        "output unit summary failed at address {address}: {error}"
+                    ));
+                }
+            }
+        }
+        Ok((summaries, failures))
+    }
+
+    async fn set_clock_enabled(&self, address: u8, enabled: bool) -> Result<bool, String> {
+        let unit_type = {
+            let model = self.model.lock().await;
+            model.projects[&self.project].networks[&self.network]
+                .physical
+                .get(&address)
+                .map(|unit| unit.unit_type.clone())
+                .filter(|value| !value.is_empty())
+                .ok_or_else(|| "physical unit type is unknown; run NET SYNC first".to_string())?
+        };
+        let (param, layout) = {
+            let mut model = self.model.lock().await;
+            let spec = model.spec_for(&unit_type).ok_or_else(|| {
+                format!("no decoded unit specification is configured for {unit_type}")
+            })?;
+            let param = spec
+                .into_iter()
+                .find(|param| param.name == "ClockGenEnable")
+                .ok_or_else(|| format!("{unit_type} has no ClockGenEnable parameter"))?;
+            let method = param
+                .get("ProgramMethod")
+                .unwrap_or("direct")
+                .trim()
+                .to_ascii_lowercase();
+            if !method.is_empty() && method != "direct" {
+                return Err(format!(
+                    "ClockGenEnable uses unsupported programming method {method:?}"
+                ));
+            }
+            let layout = unitspec::ParameterLayout::for_param(&param)?;
+            (param, layout)
+        };
+        let unitspec::ParameterTransfer::Recall { parameter, count } = layout.transfer else {
+            return Err("ClockGenEnable is not a direct CAL parameter".into());
+        };
+        let pci = self.pci.read().await.clone();
+        let mut data = pci
+            .recall_parameter(address, parameter, count)
+            .await
+            .map_err(|error| format!("ClockGenEnable read failed: {error}"))?;
+        let before = data.clone();
+        layout.encode_into(&param, if enabled { "1" } else { "0" }, &mut data)?;
+        if data == before {
+            return Ok(false);
+        }
+        match param
+            .get("Protection")
+            .unwrap_or("none")
+            .trim()
+            .to_ascii_lowercase()
+            .as_str()
+        {
+            "none" | "checksum" => {
+                pci.store_parameter_verified(address, parameter, &data)
+                    .await
+            }
+            "lock" => {
+                pci.store_locked_parameter_verified(address, parameter, &data)
+                    .await
+            }
+            protection => {
+                return Err(format!(
+                    "ClockGenEnable uses unsupported protection {protection:?}"
+                ));
+            }
+        }
+        .map_err(|error| format!("ClockGenEnable write failed: {error}"))?;
+        Ok(true)
+    }
+
+    async fn net_clocks(&self, tag: &str, words: &[&str]) -> Response {
+        let _commands = self.commands.lock().await;
+        if !(3..=4).contains(&words.len()) || !self.bound_network(words[2]) {
+            return err(tag, 400, "400 NET CLOCKS requires the configured network");
+        }
+        enum Action {
+            Inspect,
+            Target(usize),
+            Recover,
+        }
+        let action = match words.get(3) {
+            None => Action::Inspect,
+            Some(value) if value.eq_ignore_ascii_case("R") => Action::Recover,
+            Some(value) => match value.parse::<usize>() {
+                Ok(target @ 1..=10) => Action::Target(target),
+                _ => return err(tag, 400, "400 Clock target must be in 1..10"),
+            },
+        };
+        let (summaries, mut lines) = match self.clock_summaries().await {
+            Ok(value) => value,
+            Err(error) => {
+                return err(
+                    tag,
+                    408,
+                    &format!("408 Physical clock query failed: {error}"),
+                )
+            }
+        };
+        for summary in &summaries {
+            lines.push(format!(
+                "120-address={} output_units=1 clocks_enabled={} clocks_active={} burdens_enabled={}",
+                summary.address,
+                u8::from(summary.enabled),
+                u8::from(summary.active),
+                u8::from(summary.burden)
+            ));
+        }
+        match action {
+            Action::Inspect => {}
+            Action::Recover => {
+                let gateways = {
+                    let model = self.model.lock().await;
+                    model.projects[&self.project].networks[&self.network]
+                        .units
+                        .values()
+                        .filter(|unit| {
+                            let unit_type = unit.unit_type.to_ascii_uppercase();
+                            unit_type.starts_with("PC_CNI") || unit_type.starts_with("PC_PCI")
+                        })
+                        .map(|unit| unit.address)
+                        .collect::<Vec<_>>()
+                };
+                let [gateway] = gateways.as_slice() else {
+                    return err(tag, 408, "408 Physical gateway identity is not unique");
+                };
+                match self.set_clock_enabled(*gateway, true).await {
+                    Ok(true) => lines.push(format!(
+                        "120-Gateway clock at address {gateway} is now enabled."
+                    )),
+                    Ok(false) => {}
+                    Err(error) => lines.push(format!(
+                        "120-Clock at address {gateway} could NOT be enabled: {error}"
+                    )),
+                }
+            }
+            Action::Target(target) => {
+                let enabled = summaries.iter().filter(|summary| summary.enabled).count();
+                let changes = if enabled < target {
+                    summaries
+                        .iter()
+                        .filter(|summary| !summary.enabled)
+                        .map(|summary| (summary.address, true))
+                        .take(target - enabled)
+                        .collect::<Vec<_>>()
+                } else {
+                    let mut candidates = summaries
+                        .iter()
+                        .filter(|summary| summary.enabled)
+                        .copied()
+                        .collect::<Vec<_>>();
+                    candidates.sort_by_key(|summary| summary.active);
+                    candidates
+                        .into_iter()
+                        .map(|summary| (summary.address, false))
+                        .take(enabled - target)
+                        .collect::<Vec<_>>()
+                };
+                for (address, value) in changes {
+                    let operation = if value { "enabled" } else { "disabled" };
+                    match self.set_clock_enabled(address, value).await {
+                        Ok(true) => lines.push(format!(
+                            "120-Clock at address {address} is now {operation}."
+                        )),
+                        Ok(false) => {}
+                        Err(error) => lines.push(format!(
+                            "120-Clock at address {address} could NOT be {operation}: {error}"
+                        )),
+                    }
+                }
+            }
+        }
+        ok(tag, lines, "200 OK.")
     }
 
     /// Run a bounded listener. The caller owns binding and task supervision.

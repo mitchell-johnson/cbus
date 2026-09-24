@@ -8,6 +8,10 @@
 
 `cbus-tools` calls the same protocol and project readers for one-shot work. `cbus-simulator` supplies a development PCI/CNI endpoint. `cbus-cgate` is an independent in-memory C-Gate protocol model exposed over TCP by `cgate-mock`.
 
+Physical `NET CLOCKS` uses the synchronized unit inventory, IDENTIFY16 status,
+and decoded direct `ClockGenEnable` fields for target counts and gateway
+recovery. It retains native per-unit failure lines and requires write readback.
+
 ## Source ownership
 
 Toolkit modules live under `toolkit-cli/src/cbus_toolkit/`; its tests are under `toolkit-cli/tests/`. Its feature docs, compatibility ledger, and retained acceptance evidence describe supported workflows and profiles. The Rust workspace is organized as follows.

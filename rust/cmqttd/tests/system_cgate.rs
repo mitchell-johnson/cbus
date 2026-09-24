@@ -484,6 +484,30 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     )
     .await
     .contains("SerialNumber=100966.1187"));
+    let clocks = command(&mut reader, &mut writer, "NET CLOCKS //HARNESS/254");
+    let clock_status = async {
+        answer_identify(&sys, 16, 16, 1, &[&[0x03, 0x00, 0x00, 0xff]]).await;
+        answer_identify(&sys, 255, 16, 1, &[&[0x80, 0x00, 0x00, 0xff]]).await;
+    };
+    let (clocks, ()) = tokio::join!(clocks, clock_status);
+    assert!(
+        clocks.contains(
+            "120-address=16 output_units=1 clocks_enabled=1 clocks_active=1 burdens_enabled=0"
+        ),
+        "{clocks:?}"
+    );
+    assert!(
+        clocks.contains(
+            "120-address=255 output_units=1 clocks_enabled=0 clocks_active=0 burdens_enabled=1"
+        ),
+        "{clocks:?}"
+    );
+    assert!(clocks.contains("200 OK."), "{clocks:?}");
+    assert!(
+        command(&mut reader, &mut writer, "NET CLOCKS //HARNESS/254 11")
+            .await
+            .contains("400 Clock target must be in 1..10")
+    );
     assert!(command(
         &mut reader,
         &mut writer,

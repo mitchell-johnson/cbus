@@ -50,6 +50,7 @@ not be committed or published.
 | NET PINGU and GET network Units | Actual installation MMI request using cmqttd's negotiated PCI checksum mode; buffers blocks that a CNI forwards before its positive confirmation, accepts only confirmed contiguous coverage of all addresses 0–255, and reports the native sorted `302-Units=` form |
 | NET SYNC and cached unit getters | Configured interface routing hint (physically revalidated) or BASIC discovery, complete installation MMI, then confirmed IDENTIFY1/2 probes and bounded IDENTIFY4 collection for every present address; routed and local bare-CAL replies are correlated, silent legacy/error addresses remain present with unknown identity fields, the live cache is replaced atomically, and native getters expose it |
 | NET CHECKUNIT | Active confirmed IDENTIFY4 collection through the native two-second quiet interval, with the native no-unit, single-unit, duplicate-unit and identity-error result forms; `*` expands from a fresh complete MMI |
+| NET CLOCKS | Reads physical IDENTIFY16 summaries for the synchronized inventory. Target counts and gateway recovery use decoded `ClockGenEnable` layouts, read-modify-write CAL stores and mandatory readback; native-style per-unit failures remain visible in `120` lines even with final status 200 |
 | `SET //PROJECT/NETWORK/p/UNIT Address DESTINATION` | Physical unit readdressing through native C-Gate's protected parameter-`0x20` exchange. The service proves one source identity and an empty destination, obtains the one-use challenge, sends exactly one special address STORE, requires both PCI confirmation and the unit ACK from the destination, moves only the observed physical cache, and leaves the database address unchanged |
 | Unit identification | Source-correlated CAL replies from the physical unit |
 | OEM physical memory reads | Volatile 0x41 pointer selection plus segmented RECALL; no EEPROM writes |
@@ -174,6 +175,10 @@ return 502. Full replacement still requires:
   duplicate-aware `NET CHECKUNIT`, and guarded single-unit physical
   readdressing are implemented. `DO` lighting methods also use the physical
   lighting backend; `DO ... UNRAVEL` is rejected until unravel is implemented.
+  Direct-network clock inspection, target-count changes and gateway recovery are
+  implemented for units whose decoded schema exposes a supported direct
+  `ClockGenEnable` field; electrical arbitration remains outside software
+  verification.
 - Device-resident scene triggering beyond PP table programming, dynamic eDLT label cache reads, and
   specialist application families such as HVAC, audio and security.
 - Native repository/archive/import/export formats, document commands,
@@ -215,7 +220,9 @@ encoding, acknowledgements, readback, and the exact C-Bus 3 NVM commit sequence,
 and verifies that C-Gate and MQTT retain one PCI connection while lighting events
 continue through the same transport. The same test pins `DO` lighting methods to
 their physical SAL packets, exercises `DO ... SYNC`, and verifies that unsupported
-`DO ... UNRAVEL` cannot report simulated success. A separate real-daemon test verifies guarded physical
+`DO ... UNRAVEL` cannot report simulated success. It also pins source-correlated
+IDENTIFY16 clock summaries and their native `120` response fields while MQTT
+shares the PCI. A separate real-daemon test verifies guarded physical
 readdressing, exact-once STORE transmission, database/physical layer separation,
 and MQTT event delivery on that same PCI during the move.
 `toolkit-cli/tests/test_cmqtt.py` tests synthetic eDLT decoding and read contracts.

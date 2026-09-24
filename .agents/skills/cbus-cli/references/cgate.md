@@ -21,7 +21,7 @@ never replace it with saved project data and describe that as a live result.
 The physical service also implements lighting commands, C-Gate `DO` object
 methods for lighting and direct-network `SYNC`, Trigger Control,
 Enable Control, clock date/time/refresh, Temperature Broadcast, `NET PINGU`, `NET SYNC`,
-`NET CHECKUNIT`, physical `PP LOAD`, and readback-verified physical `PP SAVE` for
+`NET CHECKUNIT`, physical `NET CLOCKS`, physical `PP LOAD`, and readback-verified physical `PP SAVE` for
 `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and
 `goc2` parameters using decoded unit specifications. Direct and page-aware
 `lock` parameters use the captured unlock phase. A specification containing
@@ -65,8 +65,17 @@ Query `CMQTT CAPABILITIES`; `unit_readdress: true` denotes the readdress path an
 `edlt_label_clear: true` denotes the one-shot KEYGL5 clear control,
 `named_scenes: true` denotes hardware-backed named-scene playback,
 and `do_methods: ["lighting", "sync"]` denotes the physical object-method aliases,
+`network_clocks: true` denotes IDENTIFY16 inspection plus schema-backed target
+count and gateway recovery,
 while `full_cgate_compatibility` remains false until every remaining backend and
 acceptance requirement is complete.
+
+Run `NET SYNC` before `NET CLOCKS`; clock operations use the synchronized
+physical inventory. Query mode reports native `120-address=...` rows. A target
+of 1..10 and recovery `R` change `ClockGenEnable` only when the live unit has a
+decoded direct schema, preserving neighbouring bits and requiring physical
+readback. Inspect the response lines because native behavior can report a
+per-unit failure before final status 200.
 
 `DO //PROJECT/NETWORK/APPLICATION/GROUP ON|OFF|RAMP|TERMINATERAMP` uses the
 same confirmed SAL path as the corresponding lighting command. `DO
