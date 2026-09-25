@@ -201,6 +201,13 @@ async fn lost_confirmation_blocks_opposite_command_and_reports_uncertain() {
 async fn pci_disconnect_plain_tcp_exits() {
     let mut sys = start_default().await;
     wait_started(&sys).await;
+    require(STARTUP, "initial connected state", || {
+        sys.broker
+            .retained("homeassistant/binary_sensor/cbus_cmqttd/state")
+            .as_deref()
+            == Some(b"ON")
+    })
+    .await;
     sys.pci.kick();
     let status = sys
         .daemon
@@ -208,6 +215,17 @@ async fn pci_disconnect_plain_tcp_exits() {
         .await
         .expect("daemon must exit after losing the PCI in -t mode");
     assert!(status.success(), "clean shutdown expected, got {status:?}");
+    require(
+        Duration::from_secs(2),
+        "retained disconnected state",
+        || {
+            sys.broker
+                .retained("homeassistant/binary_sensor/cbus_cmqttd/state")
+                .as_deref()
+                == Some(b"OFF")
+        },
+    )
+    .await;
 }
 
 #[tokio::test]

@@ -16,6 +16,17 @@ use std::sync::Arc;
 use std::time::Duration;
 use tokio::sync::mpsc;
 
+/// Queue a clean MQTT DISCONNECT behind any preceding publish, then give the
+/// still-running event loop a bounded opportunity to write both to the broker.
+async fn flush_mqtt_before_exit(client: &AsyncClient) {
+    // rumqttc only drains its request channel while a broker connection is up;
+    // if the channel is full, disconnect() can block forever, so bound the wait.
+    match tokio::time::timeout(Duration::from_secs(2), client.disconnect()).await {
+        Ok(Ok(())) => tokio::time::sleep(Duration::from_millis(250)).await,
+        _ => tracing::warn!("MQTT disconnect not flushed; exiting anyway"),
+    }
+}
+
 /// On SIGINT/SIGTERM: send a clean MQTT DISCONNECT (the main loop keeps
 /// polling so it actually flushes), then exit.
 fn spawn_shutdown_handler(client: AsyncClient) {
@@ -41,13 +52,7 @@ fn spawn_shutdown_handler(client: AsyncClient) {
             let _ = ctrl_c.await;
         }
         tracing::info!("shutdown signal received; disconnecting from MQTT");
-        // rumqttc only drains its request channel while a broker connection
-        // is up; if the channel is full (broker down, busy C-Bus network)
-        // disconnect() would block forever, so bound the wait.
-        match tokio::time::timeout(Duration::from_secs(2), client.disconnect()).await {
-            Ok(Ok(())) => tokio::time::sleep(Duration::from_millis(250)).await,
-            _ => tracing::warn!("MQTT disconnect not flushed; exiting anyway"),
-        }
+        flush_mqtt_before_exit(&client).await;
         std::process::exit(0);
     });
 }
@@ -67,6 +72,7 @@ fn start_pci_reset(pci: &Arc<PciClient>) {
 /// (discovery modes) or shut down (plain `-t`).
 async fn cbus_event_pump(
     gw: Arc<Gateway>,
+    mqtt: AsyncClient,
     mut ev_rx: mpsc::UnboundedReceiver<CBusEvent>,
     ev_tx: mpsc::UnboundedSender<CBusEvent>,
     spec: ConnSpec,
@@ -80,6 +86,7 @@ async fn cbus_event_pump(
             gw.on_cbus_event(ev).await;
             if !spec.reconnect {
                 tracing::error!("C-Bus connection lost; shutting down");
+                flush_mqtt_before_exit(&mqtt).await;
                 std::process::exit(0);
             }
             tracing::warn!("C-Bus connection lost; reconnecting...");
@@ -177,7 +184,7 @@ async fn main() {
     });
     let (client, mut eventloop) = AsyncClient::new(mqtt_opts, 100);
     spawn_shutdown_handler(client.clone());
-    let gateway = Gateway::new(client, pci, labels, opts.no_clock);
+    let gateway = Gateway::new(client.clone(), pci, labels, opts.no_clock);
 
     // timesync loop (every -T seconds); 0 disables
     if opts.timesync > 0 {
@@ -205,7 +212,14 @@ async fn main() {
         });
     }
 
-    tokio::spawn(cbus_event_pump(gateway.clone(), ev_rx, ev_tx, spec, cgate));
+    tokio::spawn(cbus_event_pump(
+        gateway.clone(),
+        client,
+        ev_rx,
+        ev_tx,
+        spec,
+        cgate,
+    ));
 
     // MQTT event loop
     loop {
