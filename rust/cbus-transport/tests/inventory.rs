@@ -269,6 +269,211 @@ async fn mmi_transport_failure_is_overall_error() {
     );
 }
 
+/// Byte-identical IDENTIFY4 duplicates are two observations, not one:
+/// the same twelve bytes twice must both be preserved in order.
+#[tokio::test(start_paused = true)]
+async fn byte_identical_duplicate_serials_both_preserved_in_order() {
+    let (pci, mut remote) = setup().await;
+    let worker = tokio::spawn({
+        let pci = pci.clone();
+        async move { collect_full_inventory(&pci, options()).await }
+    });
+
+    // MMI phase: address 5 present.
+    let request = line(&mut remote).await;
+    assert!(request.starts_with(b"\\05FF00FAFF0003"));
+    let code = request[request.len() - 2];
+    remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+    remote.write_all(&mmi_block(0, 88, &[5])).await.unwrap();
+    remote.write_all(&mmi_block(88, 88, &[])).await.unwrap();
+    remote.write_all(&mmi_block(176, 80, &[])).await.unwrap();
+
+    // Three IDENTIFY probes; the IDENTIFY4 probe answers the same
+    // twelve bytes twice.
+    for _ in 0..3 {
+        let request = line(&mut remote).await;
+        assert!(
+            request.starts_with(b"\\46"),
+            "expected IDENTIFY request, got {:?}",
+            String::from_utf8_lossy(&request)
+        );
+        let unit = u8::from_str_radix(&String::from_utf8_lossy(&request[3..5]), 16).unwrap();
+        let attribute = u8::from_str_radix(&String::from_utf8_lossy(&request[9..11]), 16).unwrap();
+        let code = request[request.len() - 2];
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        match (unit, attribute) {
+            (5, 1) => reply(&mut remote, 5, &identify_reply(1, b"DIMMER")).await,
+            (5, 2) => reply(&mut remote, 5, &identify_reply(2, b"1.0.0")).await,
+            (5, 4) => {
+                reply(&mut remote, 5, &identify_reply(4, &serial_a())).await;
+                reply(&mut remote, 5, &identify_reply(4, &serial_a())).await;
+            }
+            other => panic!("unexpected scripted probe {other:?}"),
+        }
+        tokio::task::yield_now().await;
+        tokio::time::advance(IDENTIFY_QUIET).await;
+        tokio::task::yield_now().await;
+    }
+
+    let inventory = worker.await.unwrap().unwrap();
+    assert!(inventory.coverage_complete);
+    assert!(!inventory.partial, "{inventory:#?}");
+    assert_eq!(inventory.units.len(), 1);
+    let five = &inventory.units[0];
+    assert_eq!(five.address, 5);
+    assert_eq!(five.serial_replies.len(), 2);
+    assert_eq!(five.serial_replies[0].raw, serial_a());
+    assert_eq!(five.serial_replies[1].raw, serial_a());
+    assert_eq!(five.serial_replies[0].serial, five.serial_replies[1].serial);
+    assert!(five.serial_replies[0].serial.is_some());
+    assert!(five.serial_replies.iter().all(|r| r.parse_error.is_none()));
+    assert!(five.errors.is_empty());
+}
+
+/// A mid-walk probe failure faults the shared programming lane, so later
+/// addresses record needs-reconnect errors while the walk still
+/// completes (bounded by the timeouts, never a hang) as a partial
+/// inventory with earlier data intact.
+#[tokio::test(start_paused = true)]
+async fn mid_walk_probe_failure_faults_lane_and_walk_completes_partial() {
+    // SHORT timeouts: just above the single 2s IDENTIFY quiet window
+    // this walk needs, far below the 30s/120s of the other tests. The
+    // paused clock makes this fast (no real sleeping) and flake-free.
+    let short = InventoryOptions {
+        per_address_timeout: Duration::from_secs(3),
+        total_deadline: Duration::from_secs(20),
+    };
+    let (pci, mut remote) = setup().await;
+    let worker = tokio::spawn({
+        let pci = pci.clone();
+        async move { collect_full_inventory(&pci, short).await }
+    });
+
+    // MMI phase: addresses 5, 6, and 7 present.
+    let request = line(&mut remote).await;
+    assert!(request.starts_with(b"\\05FF00FAFF0003"));
+    let code = request[request.len() - 2];
+    remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+    remote
+        .write_all(&mmi_block(0, 88, &[5, 6, 7]))
+        .await
+        .unwrap();
+    remote.write_all(&mmi_block(88, 88, &[])).await.unwrap();
+    remote.write_all(&mmi_block(176, 80, &[])).await.unwrap();
+
+    // Address 5 IDENTIFY1/2: reply-before-confirmation, so identify_first
+    // returns without consuming a quiet window (no clock advance needed).
+    for (attribute, payload) in [(1u8, b"DIMMER".as_slice()), (2u8, b"1.0.0".as_slice())] {
+        let request = line(&mut remote).await;
+        assert!(
+            request.starts_with(b"\\46"),
+            "expected IDENTIFY request, got {:?}",
+            String::from_utf8_lossy(&request)
+        );
+        let unit = u8::from_str_radix(&String::from_utf8_lossy(&request[3..5]), 16).unwrap();
+        let got = u8::from_str_radix(&String::from_utf8_lossy(&request[9..11]), 16).unwrap();
+        assert_eq!((unit, got), (5, attribute));
+        let code = request[request.len() - 2];
+        reply(&mut remote, 5, &identify_reply(attribute, payload)).await;
+        tokio::task::yield_now().await;
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        tokio::task::yield_now().await;
+    }
+    // Address 5 IDENTIFY4: confirmation, two distinct replies, then the
+    // single 2s quiet window this walk needs.
+    {
+        let request = line(&mut remote).await;
+        assert!(
+            request.starts_with(b"\\46"),
+            "expected IDENTIFY request, got {:?}",
+            String::from_utf8_lossy(&request)
+        );
+        let unit = u8::from_str_radix(&String::from_utf8_lossy(&request[3..5]), 16).unwrap();
+        let attribute = u8::from_str_radix(&String::from_utf8_lossy(&request[9..11]), 16).unwrap();
+        assert_eq!((unit, attribute), (5, 4));
+        let code = request[request.len() - 2];
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        reply(&mut remote, 5, &identify_reply(4, &serial_a())).await;
+        reply(&mut remote, 5, &identify_reply(4, &serial_b())).await;
+        tokio::task::yield_now().await;
+        tokio::time::advance(IDENTIFY_QUIET).await;
+        tokio::task::yield_now().await;
+    }
+
+    // Address 6 IDENTIFY1: the PCI rejects the probe, faulting the
+    // shared programming lane until reconnect.
+    {
+        let request = line(&mut remote).await;
+        assert!(
+            request.starts_with(b"\\46"),
+            "expected IDENTIFY request, got {:?}",
+            String::from_utf8_lossy(&request)
+        );
+        let code = request[request.len() - 2];
+        remote.get_mut().write_all(&[code, b'#']).await.unwrap();
+        tokio::task::yield_now().await;
+    }
+
+    // No further remote traffic: the faulted lane fails the rest
+    // locally. Awaiting the worker proves the walk completes (no hang).
+    let inventory = worker.await.unwrap().unwrap();
+    assert!(inventory.coverage_complete);
+    assert!(inventory.partial);
+    assert_eq!(
+        inventory
+            .units
+            .iter()
+            .map(|u| u.address)
+            .collect::<Vec<_>>(),
+        vec![5, 6, 7]
+    );
+
+    // Earlier address data intact.
+    let five = &inventory.units[0];
+    assert_eq!(five.unit_type.as_deref(), Some("DIMMER"));
+    assert_eq!(five.firmware.as_deref(), Some("1.0.0"));
+    assert_eq!(five.serial_replies.len(), 2);
+    assert_eq!(five.serial_replies[0].raw, serial_a());
+    assert_eq!(five.serial_replies[1].raw, serial_b());
+    assert!(five.errors.is_empty());
+
+    // The failed address records the rejection, then needs-reconnect.
+    let six = &inventory.units[1];
+    assert_eq!(six.address, 6);
+    assert_eq!(six.serial_replies.len(), 0);
+    assert_eq!(six.unit_type, None);
+    assert_eq!(six.firmware, None);
+    assert_eq!(six.errors.len(), 3);
+    assert!(
+        six.errors[0].contains("IDENTIFY1 failed") && six.errors[0].contains("rejected"),
+        "unexpected first error: {}",
+        six.errors[0]
+    );
+    assert!(
+        six.errors[1].contains("needs reconnect"),
+        "unexpected second error: {}",
+        six.errors[1]
+    );
+    assert!(
+        six.errors[2].contains("needs reconnect"),
+        "unexpected third error: {}",
+        six.errors[2]
+    );
+
+    // Later addresses are needs-reconnect errors, not silent success.
+    let seven = &inventory.units[2];
+    assert_eq!(seven.address, 7);
+    assert_eq!(seven.unit_type, None);
+    assert_eq!(seven.firmware, None);
+    assert!(seven.serial_replies.is_empty());
+    assert_eq!(seven.errors.len(), 3);
+    assert!(
+        seven.errors.iter().all(|e| e.contains("needs reconnect")),
+        "unexpected errors: {:?}",
+        seven.errors
+    );
+}
+
 /// The addressed-block MMI route correlates like the broadcast route, so
 /// the collector must accept it as coverage too.
 #[tokio::test(start_paused = true)]

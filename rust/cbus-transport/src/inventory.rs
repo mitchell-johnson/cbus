@@ -3,12 +3,16 @@
 //! This is the transport-layer primitive a future commissioning
 //! coordinator needs: one sequential, read-only observation per
 //! MMI-present address (IDENTIFY1 unit type, IDENTIFY2 firmware,
-//! IDENTIFY4 serials) with every reply preserved verbatim. It is the
-//! transport-layer answer to the snapshot-collapses-duplicates gap:
-//! duplicate or conflicting identities are preserved with multiplicity
-//! in this result. It never touches the stored service model, never
-//! claims movement or persistence, and never collapses observations to
-//! a single serial or an empty string.
+//! IDENTIFY4 serials). IDENTIFY4 serial replies are preserved with
+//! multiplicity (observed order, duplicates kept, raw bytes verbatim);
+//! IDENTIFY1/2 use first-reply semantics (the first unit-type and
+//! firmware replies win, so conflicting duplicates collapse to the
+//! first). It is the transport-layer answer to the
+//! snapshot-collapses-duplicates gap for serials: duplicate serials
+//! are preserved with multiplicity in this result. It never touches
+//! the stored service model, never claims movement or persistence,
+//! and never collapses serial observations to a single serial or an
+//! empty string.
 //!
 //! Failure semantics (mirroring the Python `PCIInventoryCollector`):
 //! contiguous MMI coverage is required first, per-address IDENTIFY
@@ -62,20 +66,21 @@ pub struct SerialReply {
     pub parse_error: Option<String>,
 }
 
-/// Identity observed at one MMI-present address. Duplicate or
-/// conflicting replies are kept side by side; nothing here is
+/// Identity observed at one MMI-present address. Every IDENTIFY4
+/// serial reply is kept in observed order (duplicates included);
+/// IDENTIFY1/2 keep only the first reply. Nothing else here is
 /// deduplicated, merged, or collapsed.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct UnitIdentity {
     /// Unit address from the MMI present set.
     pub address: u8,
-    /// Raw IDENTIFY1 reply, when the unit answered.
+    /// First IDENTIFY1 reply, when the unit answered.
     pub unit_type_raw: Option<Vec<u8>>,
-    /// Decoded IDENTIFY1 unit type, when the unit answered legibly.
+    /// Decoded first IDENTIFY1 unit type, when the unit answered legibly.
     pub unit_type: Option<String>,
-    /// Raw IDENTIFY2 reply, when the unit answered.
+    /// First IDENTIFY2 reply, when the unit answered.
     pub firmware_raw: Option<Vec<u8>>,
-    /// Decoded IDENTIFY2 firmware version, when the unit answered legibly.
+    /// Decoded first IDENTIFY2 firmware version, when the unit answered legibly.
     pub firmware: Option<String>,
     /// Every IDENTIFY4 reply in observed order, duplicates included.
     pub serial_replies: Vec<SerialReply>,
@@ -84,7 +89,7 @@ pub struct UnitIdentity {
     pub errors: Vec<String>,
 }
 
-/// Duplicate-preserving full-inventory result: one [`UnitIdentity`] per
+/// Serial-duplicate-preserving full-inventory result: one [`UnitIdentity`] per
 /// MMI-present address, in ascending address order.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct FullInventory {
@@ -277,8 +282,7 @@ async fn collect_unit(pci: &PciClient, address: u8, per_address_timeout: Duratio
         .is_err()
     {
         identity.errors.push(format!(
-            "address {address} probe timed out after {}s",
-            per_address_timeout.as_secs()
+            "address {address} probe timed out after {per_address_timeout:?}"
         ));
     }
     identity
