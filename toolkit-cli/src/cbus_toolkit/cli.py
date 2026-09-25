@@ -1186,10 +1186,13 @@ def build_parser():
     global_parser = cgops.add_parser("edlt-global", help="Copy selected eDLT categories to existing closed database units")
     global_parser.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
     global_options(global_parser, native=True)
-    from .edlt_scene_live_cli import options as scene_live_options
+    from .edlt_scene_live_cli import options as scene_live_options, trigger_options as scene_trigger_options
     live_parser = cgops.add_parser("edlt-scene-broadcast", help="Broadcast retained scene levels using immediate forced ramps")
     live_parser.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
     scene_live_options(live_parser, broadcast=True)
+    trigger_parser = cgops.add_parser("edlt-scene-trigger", help="Invoke one retained eDLT scene Trigger binding")
+    trigger_parser.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
+    scene_trigger_options(trigger_parser)
     ex = cgops.add_parser("exec", help="One exact C-Gate command; preserves spaces and quotes")
     ex.add_argument("command")
     batch = cgops.add_parser("run", help="Run a UTF-8 file of commands in one session; stop on first error")
@@ -2054,6 +2057,9 @@ def _cgate(args):
     if args.action == "edlt-scene-broadcast":
         from .edlt_scene_live_cli import broadcast
         return broadcast(args, CGateClient, context)
+    if args.action == "edlt-scene-trigger":
+        from .edlt_scene_live_cli import trigger
+        return trigger(args, CGateClient, context)
     if args.action == "edlt-global":
         from .edlt_global_cli import native
         return native(args, CGateClient, context)

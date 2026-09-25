@@ -21,6 +21,7 @@ Python 3.13 or newer is required. The base package has no external dependencies.
 | Create, inspect, validate, edit, export XML/CBZ | `project` | Local files |
 | Manage native projects, networks, databases, units | `cgate project`, `network`, `database`, `unit` | C-Gate server |
 | Control groups, scenes, labels, triggers, Enable | `cgate on`, `off`, `ramp`, `scene`, `label`, `trigger`, `enable` | C-Gate server; may reach hardware |
+| Invoke a stored KEYGL5 scene Trigger binding | `cgate edlt-scene-trigger` | One Trigger event through C-Gate; may reach every listener for the pair |
 | Inspect or change addressing and serials | `cgate address`, `serials` | C-Gate; profile and identity guards apply |
 | Direct CNI queries and commissioning | `pci`, `serial-address` | Explicit PCI/CNI endpoint |
 | Inspect route bytes | `pci-route` | Offline |

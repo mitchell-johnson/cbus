@@ -94,6 +94,24 @@ Text is nonblank, contains no NUL and is at most 63 UTF-8 bytes. Inspect
 fails before any PP write or SAVE. This workflow edits database PP only; it
 does not verify a physical display or complete SceneManager form behavior.
 
+### Invoke a retained eDLT scene binding
+
+Use the same exact-profile parameter export and SceneManager cache to resolve a
+stored Trigger Control group/action pair and submit one event:
+
+```sh
+cbus-toolkit cgate --host 127.0.0.1 edlt-scene-trigger snapshot.json \
+  --metadata scene-cache.json --network //PROJECT/254 --scene 1 --force
+```
+
+Preflight rejects missing, disabled or stale bindings before connecting. The
+command sends exactly one `TRIGGER EVENT //PROJECT/NETWORK/202/GROUP ACTION`
+request, optionally with `FORCE`, and never retries or changes PP data. A
+terminal `200` is native acceptance only. The event is group-scoped rather
+than point-to-point. The caller-supplied source/cache are not compared with a
+physical unit; binding freshness, physical scene execution and persistence
+remain unverified. See `toolkit-cli/docs/edlt-scene-trigger.md`.
+
 ### Live eDLT WidgetGroups mapping
 
 Consume cmqttd's physical synchronized KEYGL5 mapping with:

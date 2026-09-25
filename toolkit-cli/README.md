@@ -944,13 +944,16 @@ stores 232 tokens. The declarative [scene-table editor](docs/edlt-scenes.md)
 uses the normalized stored representation. Full form binding and physical-device
 behavior remain separate work.
 
-Capture current lighting levels into a database scene, or broadcast stored levels:
+Capture current lighting levels into a database scene, broadcast stored levels,
+or invoke the scene's retained Trigger binding:
 
 ```sh
 cbus-toolkit cgate unit --lock-address //TEST/253 --source /db//TEST/253/p/20 \
   --dry-run edlt-scene-capture --metadata scene-cache.json --network //TEST/254 --scene 1
 cbus-toolkit cgate edlt-scene-broadcast snapshot.json --metadata scene-cache.json \
   --network //TEST/254 --scene 1 --scope current --item 1
+cbus-toolkit cgate edlt-scene-trigger snapshot.json --metadata scene-cache.json \
+  --network //TEST/254 --scene 1 --force
 ```
 
 [Scene capture and broadcast](docs/edlt-scene-live.md) sends one command at a time.
@@ -961,6 +964,12 @@ records each acceptance or failure. Seventeen tests pass on both Python versions
 including fourteen fresh original-DLL cases per version, native save/reload and
 independent simulator persistence. Toolkit's background UI timer and physical
 device behavior remain unverified.
+
+The [retained scene trigger](docs/edlt-scene-trigger.md) resolves the stored
+application-202 group/action pair before connecting, then submits one native
+Trigger event without retry. A terminal `200` proves C-Gate acceptance only;
+the event is group-scoped and can reach every configured listener. It performs
+no PP write or save and does not claim that a physical eDLT executed the scene.
 
 The reusable load/save lifecycle also passes a separate 45-test checkpoint on
 both versions, retaining the earlier 76-case original matrix, 2,048 Enable

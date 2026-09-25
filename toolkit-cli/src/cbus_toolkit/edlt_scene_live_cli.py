@@ -16,6 +16,14 @@ def options(parser, *, broadcast=False):
         parser.add_argument('--item', type=int, help='One-based retained item; required with --scope current')
 
 
+def trigger_options(parser):
+    parser.add_argument('file', type=Path, help='Complete exact-profile eDLT PP source export')
+    parser.add_argument('--metadata', type=Path, required=True, help='Scene Manager application and group cache facts')
+    parser.add_argument('--network', required=True, help='Explicit live target network, such as //PROJECT/254')
+    parser.add_argument('--scene', type=int, choices=range(1, 9), required=True)
+    parser.add_argument('--force', action='store_true', help='Request native Trigger Control FORCE behavior')
+
+
 def settings(args):
     from .edlt_global_cli import read_json
     from .edlt_scene_manager import SceneManagerCache
@@ -135,4 +143,41 @@ def broadcast(args, client_factory, ssl_context):
             try: setattr(wrapped, EVIDENCE, evidence)
             except BaseException: pass
             if wrapped is not error: raise wrapped from error
+        raise
+
+
+def trigger(args, client_factory, ssl_context):
+    """Resolve a retained scene binding, then submit exactly one Trigger event."""
+    from .edlt_global_cli import spec, read_parameters
+    from .edlt_scene_manager import EdltSceneManager
+    from .edlt_scene_trigger import NativeEdltSceneTrigger
+    args._scene_live_evidence = None
+    manager = EdltSceneManager(spec(args))
+    configured = settings(args)
+    state = manager.load(read_parameters(args.file), metadata=configured['metadata'])
+    client = client_factory(args.host, args.port or (20123 if args.tls else 20023),
+                            timeout=args.timeout, ssl_context=ssl_context)
+    sender = NativeEdltSceneTrigger(manager, client, network=args.network)
+    # Complete all source/cache/route validation before opening a connection.
+    sender.plan(state, scene=args.scene, force=args.force)
+    result = None
+    try:
+        with client:
+            result = sender.trigger(state, scene=args.scene, force=args.force).as_dict()
+            args._scene_live_evidence = result
+        return result, int(not result['complete'])
+    except BaseException as error:
+        evidence = sender.last_evidence
+        if result is not None:
+            evidence = {**result, 'operation_completed': False,
+                        'failure_phase': 'connection_cleanup'}
+        if isinstance(evidence, dict):
+            args._scene_live_evidence = evidence
+            wrapped = SceneLiveCommandError(error, evidence) if isinstance(error, Exception) else error
+            try:
+                setattr(wrapped, EVIDENCE, evidence)
+            except BaseException:
+                pass
+            if wrapped is not error:
+                raise wrapped from error
         raise

@@ -241,9 +241,13 @@
         "docs/scene-acceptance-summary.json",
         "tests/test_device_scenes.py",
         "tests/test_cli_device_scenes.py",
-        "docs/device-scene-acceptance-summary.json"
+        "docs/device-scene-acceptance-summary.json",
+        "src/cbus_toolkit/edlt_scene_trigger.py",
+        "tests/test_edlt_scene_trigger.py",
+        "tests/test_cli_edlt_scene_trigger.py",
+        "docs/edlt-scene-trigger.md"
       ],
-      "limits": "Labels, typed native whole-unit/per-key LABEL CLEAR requests, Trigger Control and C-Gate scene-file editing/execution/cached recording are tested. Cache-clear validation is pre-I/O; native acceptance and a PCI confirmation record do not verify delivery outcome, cache erasure, persistence or device readback. KEYE1 2.5.00 stored scene packing, 40-command capacity, key binding, native raw bytes and save/reload tested. Native named SCENE commands fail401. Other device scenes, physical invocation/learning and persistent scene triggers remain incomplete."
+      "limits": "Labels, typed native whole-unit/per-key LABEL CLEAR requests, Trigger Control and C-Gate scene-file editing/execution/cached recording are tested. Cache-clear validation is pre-I/O; native acceptance and a PCI confirmation record do not verify delivery outcome, cache erasure, persistence or device readback. KEYE1 2.5.00 stored scene packing, 40-command capacity, key binding, native raw bytes and save/reload tested. Native named SCENE commands fail401. A retained KEYGL5 5.5.00 scene binding can now submit one group-scoped native Trigger event. Physical receipt/execution, learning, persistent trigger behavior and other device scenes remain incomplete."
     },
     {
       "id": "dlt-edlt-widgets-and-labels",
@@ -473,9 +477,13 @@
         "docs/edlt-scene-live.md",
         "research/fixtures/edlt-scene-live-vectors.json",
         "research/fixtures/edlt-scene-live-acceptance.json",
-        "research/fixtures/edlt-reset-scene-live-cli-regression.json"
+        "research/fixtures/edlt-reset-scene-live-cli-regression.json",
+        "src/cbus_toolkit/edlt_scene_trigger.py",
+        "tests/test_edlt_scene_trigger.py",
+        "tests/test_cli_edlt_scene_trigger.py",
+        "docs/edlt-scene-trigger.md"
       ],
-      "limits": "KEYGL5 / 5055EDL firmware5.5.00 one-shot serial capture and broadcast with retained scene state and explicit cache/network. Capture preserves group identities and ramps; only complete verified readings can enter database save. Failed or partial readings retain a nonpersistable prefix. Broadcast uses original immediate RAMP payloads, records definite rejections and stops on uncertainty without replay. Seventeen tests pass on both Python versions with fourteen fresh original-DLL cases each, full874 parameters,232 scene bytes,five CRCs,save-close-load and independent simulator persistence. Interruption identity and evidence survive secondary failures. GUI timer/asynchronous timing, full form binding and physical devices remain unverified. A separate75-test combined CLI/helper regression passes both versions."
+      "limits": "KEYGL5 / 5055EDL firmware5.5.00 one-shot serial capture and broadcast with retained scene state and explicit cache/network. Capture preserves group identities and ramps; only complete verified readings can enter database save. Failed or partial readings retain a nonpersistable prefix. Broadcast uses original immediate RAMP payloads, records definite rejections and stops on uncertainty without replay. Seventeen tests pass on both Python versions with fourteen fresh original-DLL cases each, full874 parameters,232 scene bytes,five CRCs,save-close-load and independent simulator persistence. Interruption identity and evidence survive secondary failures. GUI timer/asynchronous timing, full form binding and physical devices remain unverified. Retained trigger invocation additionally resolves one original-model group/action pair before connection and submits one exact native Trigger event without retry; focused tests cover exact tagged bytes, rejection and uncertainty. Native acceptance does not verify Trigger delivery or physical scene execution. A separate75-test combined CLI/helper regression passes both versions."
     },
     {
       "id": "sensors-wizard-semantics",

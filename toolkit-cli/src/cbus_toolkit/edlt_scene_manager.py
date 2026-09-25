@@ -348,6 +348,26 @@ class EdltSceneManager:
             raise EdltError('An incomplete scene state is review-only')
         return state.scenes[scene - 1].items
 
+    def live_trigger(self, state, *, scene):
+        """Resolve one retained Trigger Control binding for live invocation.
+
+        The resolution deliberately follows the retained model's trigger and
+        action getters.  It performs no metadata creation, state mutation or
+        network I/O.
+        """
+        self._check(state); _int(scene, 'Scene', 1, 8)
+        if not state.complete:
+            raise EdltError('An incomplete scene state is review-only')
+        selected, trigger = self._trigger(state, state.scenes[scene - 1])
+        if trigger == 255:
+            raise EdltError('The selected scene has no enabled trigger group')
+        selected, action = self._action(state, selected)
+        if action < 0:
+            raise EdltError('The selected scene has no valid action selector')
+        _int(trigger, 'Trigger group', 0, 254)
+        _int(action, 'Action selector')
+        return trigger, action
+
     def capture_levels(self, state, *, scene, readings, finished):
         """Issue an immutable captured prefix; failed observations block saving.
 

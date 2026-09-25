@@ -2,6 +2,12 @@
 
 `NativeEdltSceneLive` operates on the retained scene state for KEYGL5 / 5055EDL firmware 5.5.00. It captures current group levels or broadcasts stored levels through an explicitly selected C-Gate network. Capture can then use the existing verified database programming workflow. Broadcast never stages or saves PP data.
 
+The separate [retained scene trigger](edlt-scene-trigger.md) command resolves a
+scene's stored application-202 group/action pair and submits one native Trigger
+event. It does not replace broadcast: broadcast directly drives the retained
+lighting outputs, while a Trigger event can be observed by every configured
+listener for that group/action pair.
+
 The original Toolkit control sends broadcast requests asynchronously. This API deliberately sends one command at a time and waits for its terminal C-Gate response. It implements the observed request payloads and retained-model effects; it does not reproduce the WinForms checkbox timer, asynchronous dispatch timing, or physical device acceptance.
 
 ```python
@@ -65,6 +71,7 @@ The original pending-timer cancellation behavior was researched separately. Unch
 cbus-toolkit cgate unit --lock-address //OWNED/253 --source /db//OWNED/253/p/20 --dry-run edlt-scene-capture --metadata cache.json --network //OWNED/254 --scene 1
 cbus-toolkit cgate edlt-scene-broadcast source.json --metadata cache.json --network //OWNED/254 --scene 1 --scope current --item 1
 cbus-toolkit cgate edlt-scene-broadcast source.json --metadata cache.json --network //OWNED/254 --scene 1 --scope all
+cbus-toolkit cgate edlt-scene-trigger source.json --metadata cache.json --network //OWNED/254 --scene 1 --force
 ```
 
 Capture requires a database destination. Its dry run performs live GET reads, stages and verifies temporary PP changes, and discards them without persistent SAVE. It does not issue RAMP. Without `--dry-run`, a complete verified capture is staged, checked and explicitly saved through the established programming finalization path. Failed/partial capture makes no PP SET or SAVE attempt. Evidence survives later plan, staging, save and cleanup failures.
