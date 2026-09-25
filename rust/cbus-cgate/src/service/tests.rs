@@ -1964,5 +1964,348 @@ async fn physical_pp_save_tag_filter_retains_untagged_dirty() {
     assert_eq!(session.dirty.len(), 1, "dirty={:?}", session.dirty);
     drop(model);
 
-    // Cleanup runs via the PpSaveCleanup drop-guard.
+    // Cleanup runs via the PpSaveCleanup drop-guard (tag-filter test).
+}
+
+/// P3d: physical NET SYNC that observes MULTIPLE distinct serials at one
+/// address must surface the conflict on the event channel instead of
+/// silently collapsing the stored serial to "". The response stays 200
+/// and the stored snapshot keeps "" (stored-multiplicity modelling is
+/// explicitly follow-up work, not this slice).
+#[tokio::test(start_paused = true)]
+async fn physical_net_sync_surfaces_duplicate_serial_conflict_on_events() {
+    async fn pci_line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+    async fn pci_reply<W: tokio::io::AsyncWrite + Unpin>(writer: &mut W, source: u8, cal: &[u8]) {
+        let mut bytes = vec![0x86, source, 0x10, 0x00];
+        bytes.extend_from_slice(cal);
+        let sum = bytes.iter().fold(0u8, |sum, byte| sum.wrapping_add(*byte));
+        bytes.push(0u8.wrapping_sub(sum));
+        let mut wire = hex::encode_upper(bytes).into_bytes();
+        wire.extend_from_slice(b"\r\n");
+        writer.write_all(&wire).await.unwrap();
+    }
+    fn mmi_block(start: u8, count: usize, present: &[usize]) -> Vec<u8> {
+        let mut states = vec![0u8; count];
+        for address in present {
+            states[*address - usize::from(start)] = 1;
+        }
+        let mut wire = cbus_protocol::packet::Packet::StandardStatus {
+            application: 0xff,
+            block_start: start,
+            states,
+        }
+        .encode_packet()
+        .unwrap();
+        wire.extend_from_slice(b"\r\n");
+        wire
+    }
+
+    let path = state_path();
+    let (pci, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        pci_line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut events = service.events.subscribe();
+    let syncing = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(&mut ClientState::default(), "[1] NET SYNC //HARNESS/254")
+                .await
+        }
+    });
+
+    // Local-interface discovery: the fixture has no PC_PCI/PC_CNI unit.
+    assert_eq!(pci_line(&mut remote_read).await, b"@1A2001\r");
+    remote_write.write_all(b"8220104E\r\n").await.unwrap();
+    tokio::task::yield_now().await;
+
+    // Installation MMI: only address 5 is present.
+    let request = pci_line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\05FF00FAFF"), "{request:?}");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    remote_write
+        .write_all(&mmi_block(0, 88, &[5]))
+        .await
+        .unwrap();
+    remote_write
+        .write_all(&mmi_block(88, 88, &[]))
+        .await
+        .unwrap();
+    remote_write
+        .write_all(&mmi_block(176, 80, &[]))
+        .await
+        .unwrap();
+    tokio::task::yield_now().await;
+
+    // Unit type + firmware via identify_first (confirm, then first reply).
+    let request = pci_line(&mut remote_read).await;
+    assert!(
+        request.windows(4).any(|window| window == b"2101"),
+        "{request:?}"
+    );
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    pci_reply(
+        &mut remote_write,
+        5,
+        &[0x87, 0x01, b'K', b'E', b'Y', b'G', b'L', b'5'],
+    )
+    .await;
+    tokio::task::yield_now().await;
+    let request = pci_line(&mut remote_read).await;
+    assert!(
+        request.windows(4).any(|window| window == b"2102"),
+        "{request:?}"
+    );
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    pci_reply(
+        &mut remote_write,
+        5,
+        &[0x87, 0x02, b'5', b'.', b'5', b'.', b'0', b'0'],
+    )
+    .await;
+    tokio::task::yield_now().await;
+
+    // Serial probe returns TWO distinct valid IDENTIFY4 replies.
+    let first = [
+        0x38, 0xff, 0xff, 0xff, 0xff, 0x18, 0xb1, 0x06, 0x16, 0xa2, 0x00, 0x05,
+    ];
+    let mut second = first;
+    second[8] = 0x17;
+    let request = pci_line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\4605002104"), "{request:?}");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    let mut first_cal = vec![0x8d, 4];
+    first_cal.extend_from_slice(&first);
+    let mut second_cal = vec![0x8d, 4];
+    second_cal.extend_from_slice(&second);
+    pci_reply(&mut remote_write, 5, &first_cal).await;
+    tokio::time::advance(Duration::from_secs(1)).await;
+    tokio::task::yield_now().await;
+    assert!(
+        !syncing.is_finished(),
+        "quiet interval must still be open after the first serial reply"
+    );
+    pci_reply(&mut remote_write, 5, &second_cal).await;
+    tokio::time::advance(Duration::from_secs(2)).await;
+    tokio::task::yield_now().await;
+
+    let response = syncing.await.unwrap();
+    assert_eq!(
+        response.status, 200,
+        "conflict must not fail SYNC: {response:?}"
+    );
+
+    // Stored snapshot still collapses to "" (pinned; multiplicity model is
+    // follow-up work).
+    let model = service.model.lock().await;
+    let snapshot = model.projects["HARNESS"].networks[&254]
+        .physical
+        .get(&5)
+        .expect("address 5 was present in the scripted MMI");
+    assert_eq!(
+        snapshot.serial, "",
+        "stored serial stays collapsed: {snapshot:?}"
+    );
+    assert_eq!(snapshot.unit_type, "KEYGL5");
+    assert_eq!(snapshot.firmware, "5.5.00");
+    drop(model);
+
+    let mut seen = Vec::new();
+    while let Ok(event) = events.try_recv() {
+        seen.push(event);
+    }
+    assert!(
+        seen.iter().any(|event| event.contains("sync ok")),
+        "sync-ok event must still be emitted: {seen:?}"
+    );
+    assert!(
+        seen.iter()
+            .any(|event| event == "#e# net 254 sync duplicate 5 101136.1558 101136.1559"),
+        "RED: no exact duplicate event with sorted serials: {seen:?}"
+    );
+    let duplicate_pos = seen
+        .iter()
+        .position(|event| event == "#e# net 254 sync duplicate 5 101136.1558 101136.1559")
+        .expect("exact duplicate event must be present");
+    let ok_pos = seen
+        .iter()
+        .position(|event| event == "#e# net 254 sync ok")
+        .expect("sync-ok event must be present");
+    assert!(
+        duplicate_pos < ok_pos,
+        "duplicate event must precede sync ok: {seen:?}"
+    );
+
+    std::fs::remove_file(path).unwrap();
+}
+
+/// Single-serial negative pin: one IDENTIFY4 reply stores that serial and
+/// emits no `sync duplicate` event.
+#[tokio::test(start_paused = true)]
+async fn physical_net_sync_single_serial_emits_no_duplicate_event() {
+    async fn pci_line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+    async fn pci_reply<W: tokio::io::AsyncWrite + Unpin>(writer: &mut W, source: u8, cal: &[u8]) {
+        let mut bytes = vec![0x86, source, 0x10, 0x00];
+        bytes.extend_from_slice(cal);
+        let sum = bytes.iter().fold(0u8, |sum, byte| sum.wrapping_add(*byte));
+        bytes.push(0u8.wrapping_sub(sum));
+        let mut wire = hex::encode_upper(bytes).into_bytes();
+        wire.extend_from_slice(b"\r\n");
+        writer.write_all(&wire).await.unwrap();
+    }
+    fn mmi_block(start: u8, count: usize, present: &[usize]) -> Vec<u8> {
+        let mut states = vec![0u8; count];
+        for address in present {
+            states[*address - usize::from(start)] = 1;
+        }
+        let mut wire = cbus_protocol::packet::Packet::StandardStatus {
+            application: 0xff,
+            block_start: start,
+            states,
+        }
+        .encode_packet()
+        .unwrap();
+        wire.extend_from_slice(b"\r\n");
+        wire
+    }
+
+    let path = state_path();
+    let (pci, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        pci_line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut events = service.events.subscribe();
+    let syncing = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(&mut ClientState::default(), "[1] NET SYNC //HARNESS/254")
+                .await
+        }
+    });
+
+    // Local-interface discovery: the fixture has no PC_PCI/PC_CNI unit.
+    assert_eq!(pci_line(&mut remote_read).await, b"@1A2001\r");
+    remote_write.write_all(b"8220104E\r\n").await.unwrap();
+    tokio::task::yield_now().await;
+
+    // Installation MMI: only address 5 is present.
+    let request = pci_line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\05FF00FAFF"), "{request:?}");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    remote_write
+        .write_all(&mmi_block(0, 88, &[5]))
+        .await
+        .unwrap();
+    remote_write
+        .write_all(&mmi_block(88, 88, &[]))
+        .await
+        .unwrap();
+    remote_write
+        .write_all(&mmi_block(176, 80, &[]))
+        .await
+        .unwrap();
+    tokio::task::yield_now().await;
+
+    // Unit type + firmware via identify_first (confirm, then first reply).
+    let request = pci_line(&mut remote_read).await;
+    assert!(
+        request.windows(4).any(|window| window == b"2101"),
+        "{request:?}"
+    );
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    pci_reply(
+        &mut remote_write,
+        5,
+        &[0x87, 0x01, b'K', b'E', b'Y', b'G', b'L', b'5'],
+    )
+    .await;
+    tokio::task::yield_now().await;
+    let request = pci_line(&mut remote_read).await;
+    assert!(
+        request.windows(4).any(|window| window == b"2102"),
+        "{request:?}"
+    );
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    pci_reply(
+        &mut remote_write,
+        5,
+        &[0x87, 0x02, b'5', b'.', b'5', b'.', b'0', b'0'],
+    )
+    .await;
+    tokio::task::yield_now().await;
+
+    // Serial probe returns a SINGLE valid IDENTIFY4 reply.
+    let serial = [
+        0x38, 0xff, 0xff, 0xff, 0xff, 0x18, 0xb1, 0x06, 0x16, 0xa2, 0x00, 0x05,
+    ];
+    let request = pci_line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\4605002104"), "{request:?}");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    let mut cal = vec![0x8d, 4];
+    cal.extend_from_slice(&serial);
+    pci_reply(&mut remote_write, 5, &cal).await;
+    tokio::time::advance(Duration::from_secs(2)).await;
+    tokio::task::yield_now().await;
+
+    let response = syncing.await.unwrap();
+    assert_eq!(response.status, 200, "single-serial SYNC: {response:?}");
+
+    let model = service.model.lock().await;
+    let snapshot = model.projects["HARNESS"].networks[&254]
+        .physical
+        .get(&5)
+        .expect("address 5 was present in the scripted MMI");
+    assert_eq!(snapshot.serial, "101136.1558", "{snapshot:?}");
+    drop(model);
+
+    let mut seen = Vec::new();
+    while let Ok(event) = events.try_recv() {
+        seen.push(event);
+    }
+    assert!(
+        seen.iter().any(|event| event == "#e# net 254 sync ok"),
+        "sync-ok event must still be emitted: {seen:?}"
+    );
+    assert!(
+        !seen.iter().any(|event| event.contains("sync duplicate")),
+        "single serial must not emit a duplicate event: {seen:?}"
+    );
+
+    std::fs::remove_file(path).unwrap();
 }

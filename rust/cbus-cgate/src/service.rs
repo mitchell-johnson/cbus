@@ -1119,9 +1119,24 @@ impl Service {
                     );
                 }
             };
+            // P3d: surface duplicate-address conflicts on the event channel.
+            // The stored snapshot keeps "" on conflict (stored-multiplicity
+            // modelling is follow-up work). The event names the address and
+            // every observed serial, sorted for deterministic output:
+            // `#e# net {network} sync duplicate {address} {serial...}`.
+            // Single/zero observations stay silent and store "" as before.
             let serial = if serials.len() == 1 {
                 serials.into_iter().next().unwrap()
             } else {
+                if serials.len() > 1 {
+                    let mut duplicates: Vec<_> = serials.into_iter().collect();
+                    duplicates.sort();
+                    let _ = self.events.send(format!(
+                        "#e# net {} sync duplicate {address} {}",
+                        self.network,
+                        duplicates.join(" ")
+                    ));
+                }
                 String::new()
             };
             identities.push((address, unit_type, firmware, serial));
