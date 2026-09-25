@@ -4708,6 +4708,38 @@ mod tests {
         let resolved = server.handle("[3] DBGET !oid-252/OID");
         assert_eq!(resolved.status, 342);
         assert_eq!(resolved.final_text, "342 !oid-252/OID=oid-252");
+
+        // Selected C-Gate 3.4.0_2001 treats START == END as a failed path,
+        // regardless of the requested/default output mode. Its parser chooses
+        // COMPACT only for that literal fourth token; unknown modes fall back
+        // to OID and trailing tokens are ignored.
+        for command in [
+            "[4] DBNETWORKPATH 254 254 COMPACT",
+            "[5] DBNETWORKPATH 254 254 OID",
+            "[6] DBNETWORKPATH 254 254",
+            "[7] DBNETWORKPATH 254 254 BANANA",
+        ] {
+            let response = server.handle(command);
+            assert_eq!(response.status, 408);
+            assert_eq!(
+                response.final_text,
+                "408 Operation failed: Network path discovery failed: No path found"
+            );
+        }
+        let unknown_mode = server.handle("[8] DBNETWORKPATH 254 253 BANANA");
+        assert_eq!(unknown_mode.status, 137);
+        assert_eq!(unknown_mode.final_text, "137 oid-253");
+        let trailing = server.handle("[9] DBNETWORKPATH 254 253 COMPACT EXTRA");
+        assert_eq!(trailing.status, 136);
+        assert_eq!(trailing.final_text, "136 FD");
+        assert_eq!(
+            server.handle("[10] DBNETWORKPATH").final_text,
+            "400 Syntax Error: No starting network given"
+        );
+        assert_eq!(
+            server.handle("[11] DBNETWORKPATH 254").final_text,
+            "400 Syntax Error: No ending address given"
+        );
     }
 
     #[test]

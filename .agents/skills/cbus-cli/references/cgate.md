@@ -141,12 +141,18 @@ The final `/p/<interface-unit>` component may differ from the child network;
 native 3.4 accepts that address but still requires and emits the far-side
 network address under its standard bridge convention. Native 3.4 continues to
 resolve the path after the distinct suffix unit is deleted, so do not require
-that unit for `DBNETWORKPATH`.
+that unit for `DBNETWORKPATH`. A zero-hop request whose START equals END returns
+the exact native 408 no-path response in default, OID and COMPACT forms. Only
+the literal optional `COMPACT` token selects compact output; another fourth
+token uses the default OID form, and later tokens are ignored like native 3.4.
 The retained [native topology acceptance](../../../../toolkit-cli/research/experiments/2026-09-26/cgate-bridged-topology-native-acceptance.json)
 contains the disposable C-Gate 3.4 path results and exact missing-unit 408. Its
 one-hop outbound PINGU frame is explicitly a separate C-Gate 2.11.11 capture,
 consistent with the published serial interface guide; no selected-version or
-physical bridge reply acceptance is inferred from it.
+physical bridge reply acceptance is inferred from it. The companion
+[`DBNETWORKPATH` grammar acceptance](../../../../toolkit-cli/research/experiments/2026-09-26/cgate-dbnetworkpath-grammar-native-acceptance.json)
+pins the selected-version zero-hop, mode, trailing-token and missing-address
+behavior.
 PINGU and whole-network checks send either the direct install-MMI request or a
 native PPM source route through one to six bridge unit addresses. They buffer
 blocks that arrive before confirmation but accept only positively confirmed,

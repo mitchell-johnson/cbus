@@ -2145,11 +2145,18 @@ impl Server {
     }
 
     fn db_network_path(&self, tag: &str, words: &[&str]) -> Response {
-        if !(3..=4).contains(&words.len()) {
+        if words.len() == 1 {
             return err(
                 tag,
                 status::BAD_REQUEST,
-                "400 DBNETWORKPATH requires start and end networks",
+                "400 Syntax Error: No starting network given",
+            );
+        }
+        if words.len() == 2 {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 Syntax Error: No ending address given",
             );
         }
         let start = words[1]
@@ -2175,10 +2182,21 @@ impl Server {
         if !project.networks.contains_key(&start) || !project.networks.contains_key(&end) {
             return err(tag, status::NOT_FOUND, "401 Network not found");
         }
-        let mode = words.get(3).copied().unwrap_or("OID");
-        if !mode.eq_ignore_ascii_case("OID") && !mode.eq_ignore_ascii_case("COMPACT") {
-            return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
+        // Native 3.4 treats a zero-hop lookup as no path in every output mode.
+        // It resolves the path before interpreting the optional mode token, so
+        // even an unknown token retains this exact 408 for START == END.
+        if start == end {
+            return err(
+                tag,
+                408,
+                "408 Operation failed: Network path discovery failed: No path found",
+            );
         }
+        // Native 3.4 selects COMPACT only for that literal option. Any other
+        // fourth token uses the default OID form, and later tokens are ignored.
+        let compact = words
+            .get(3)
+            .is_some_and(|mode| mode.eq_ignore_ascii_case("COMPACT"));
         let path = match network_path(project, start, end) {
             Ok(path) => path,
             Err(_) => {
@@ -2189,7 +2207,7 @@ impl Server {
                 )
             }
         };
-        if mode.eq_ignore_ascii_case("COMPACT") {
+        if compact {
             envelope(
                 tag,
                 136,

@@ -1,0 +1,35 @@
+{
+  "format": "cbus-cgate-dbnetworkpath-grammar-native-acceptance-v1",
+  "date": "2026-09-26",
+  "passed": true,
+  "scope": "Owned C-Gate 3.4.0_2001 DBNETWORKPATH grammar oracle using a disposable project and no C-Bus connection",
+  "runtime": {
+    "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+    "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4"
+  },
+  "topology": {
+    "source_network": 254,
+    "child_network": 253,
+    "child_interface_address": "254/p/253",
+    "source_bridge_unit": 253,
+    "child_oid": "9ab84d70-9b50-103f-a514-b96b8de6a05c",
+    "note": "The OID is disposable evidence and has no site identity."
+  },
+  "cases": [
+    {"command": "DBNETWORKPATH 254 253 COMPACT", "reply": ["136 FD"]},
+    {"command": "DBNETWORKPATH 254 253 BANANA", "reply": ["137 9ab84d70-9b50-103f-a514-b96b8de6a05c"], "note": "An unknown fourth token selects the default OID output."},
+    {"command": "DBNETWORKPATH 254 253 COMPACT EXTRA", "reply": ["136 FD"], "note": "Tokens after the optional mode are ignored."},
+    {"command": "DBNETWORKPATH 254 253 OID EXTRA", "reply": ["137 9ab84d70-9b50-103f-a514-b96b8de6a05c"]},
+    {"command": "DBNETWORKPATH 254 253", "reply": ["137 9ab84d70-9b50-103f-a514-b96b8de6a05c"]},
+    {"command": "DBNETWORKPATH 254 254 COMPACT", "reply": ["408 Operation failed: Network path discovery failed: No path found"]},
+    {"command": "DBNETWORKPATH 254 254 OID", "reply": ["408 Operation failed: Network path discovery failed: No path found"]},
+    {"command": "DBNETWORKPATH 254 254", "reply": ["408 Operation failed: Network path discovery failed: No path found"]},
+    {"command": "DBNETWORKPATH 254", "reply": ["400 Syntax Error: No ending address given"]},
+    {"command": "DBNETWORKPATH", "reply": ["400 Syntax Error: No starting network given"]}
+  ],
+  "boundaries": [
+    "This evidence concerns command parsing and database path resolution only.",
+    "It makes no physical bridge, routed packet, commissioning or mutation claim."
+  ]
+}
