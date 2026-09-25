@@ -20,6 +20,11 @@ serde_json = { workspace = true }
 thiserror = { workspace = true }
 tracing = { workspace = true }
 tokio = { workspace = true }
+rustls = { workspace = true }
+tokio-rustls = "0.25"
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["test-util"] }
+cbus-transport = { path = "../cbus-transport" }
+rustls-pemfile = { workspace = true }
+tokio-rustls = "0.25"

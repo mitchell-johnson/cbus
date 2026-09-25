@@ -118,4 +118,70 @@ pub struct Options {
     /// Optional vendor unit specification directory for PP schemas
     #[arg(long)]
     pub cgate_unitspec: Option<std::path::PathBuf>,
+
+    /// PEM certificate chain enabling TLS on the embedded C-Gate
+    /// listener; requires --cgate-tls-key (no auth yet — keep the bind
+    /// on loopback unless TLS termination is understood)
+    #[arg(long, requires = "cgate_bind", requires = "cgate_tls_key")]
+    pub cgate_tls_cert: Option<std::path::PathBuf>,
+
+    /// PEM private key (PKCS#8/RSA/EC) enabling TLS on the embedded
+    /// C-Gate listener; requires --cgate-tls-cert
+    #[arg(long, requires = "cgate_bind", requires = "cgate_tls_cert")]
+    pub cgate_tls_key: Option<std::path::PathBuf>,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use clap::Parser;
+
+    fn base_args() -> Vec<&'static str> {
+        vec![
+            "cmqttd",
+            "-b",
+            "127.0.0.1",
+            "-t",
+            "127.0.0.1:10001",
+            "-P",
+            "proj.cbz",
+            "--cgate-bind",
+            "127.0.0.1:0",
+        ]
+    }
+
+    #[test]
+    fn cgate_tls_flags_default_to_plaintext() {
+        let opts = Options::try_parse_from(base_args()).expect("parse");
+        assert!(opts.cgate_tls_cert.is_none());
+        assert!(opts.cgate_tls_key.is_none());
+    }
+
+    #[test]
+    fn cgate_tls_cert_requires_key() {
+        let mut args = base_args();
+        args.push("--cgate-tls-cert");
+        args.push("cert.pem");
+        assert!(Options::try_parse_from(args).is_err());
+    }
+
+    #[test]
+    fn cgate_tls_key_requires_cert() {
+        let mut args = base_args();
+        args.push("--cgate-tls-key");
+        args.push("key.pem");
+        assert!(Options::try_parse_from(args).is_err());
+    }
+
+    #[test]
+    fn cgate_tls_pair_parses() {
+        let mut args = base_args();
+        args.push("--cgate-tls-cert");
+        args.push("cert.pem");
+        args.push("--cgate-tls-key");
+        args.push("key.pem");
+        let opts = Options::try_parse_from(args).expect("parse");
+        assert!(opts.cgate_tls_cert.is_some());
+        assert!(opts.cgate_tls_key.is_some());
+    }
 }

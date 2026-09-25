@@ -2681,6 +2681,7 @@ impl Service {
             });
         }
         let mut wrote_any = false;
+        let mut confirmed: u32 = 0;
         for item in &pending {
             let Some(region) = regions.iter_mut().find(|region| {
                 region.space == item.space
@@ -2760,16 +2761,25 @@ impl Service {
                 }
             };
             if let Err(error) = result {
-                return err(tag, 502, &format!("502 Physical PP save failed: {error}"));
+                return err(
+                    tag,
+                    502,
+                    &format!(
+                        "502 Physical PP save failed after {confirmed} confirmed write(s): {error}"
+                    ),
+                );
             }
             wrote_any = true;
+            confirmed += 1;
         }
         if wrote_any && requires_nvm_commit {
             if let Err(error) = pci.save_to_nvm(unit).await {
                 return err(
                     tag,
                     502,
-                    &format!("502 Physical PP Save-to-NVM failed: {error}"),
+                    &format!(
+                        "502 Physical PP Save-to-NVM failed after {confirmed} confirmed write(s): {error}"
+                    ),
                 );
             }
         }
@@ -2792,6 +2802,8 @@ impl Service {
         }
         session.source = Some(target);
         session.dirty.retain(|name| !cleared.contains(name));
+        // Bare 200 covers the tag-selected subset only: tag-filtered params
+        // stay dirty for a later matching-tags SAVE, discoverable via dirty.
         ok(tag, vec![], "200 OK")
     }
 
@@ -3320,9 +3332,63 @@ impl Service {
         }
     }
 
+    /// TLS variant of [`Service::serve`]: each accepted connection
+    /// completes a rustls server handshake before entering the shared
+    /// per-connection handler. A failed handshake drops only that
+    /// connection; the listener stays up. No client authentication or
+    /// access control is performed here (P4b is transport-only).
+    /// The caller owns binding and task supervision.
+    pub async fn serve_tls(
+        self: Arc<Self>,
+        listener: TcpListener,
+        tls: Arc<rustls::ServerConfig>,
+    ) -> io::Result<()> {
+        let acceptor = tokio_rustls::TlsAcceptor::from(tls);
+        let slots = Arc::new(Semaphore::new(64));
+        loop {
+            let permit = slots
+                .clone()
+                .acquire_owned()
+                .await
+                .map_err(io::Error::other)?;
+            let (stream, _) = listener.accept().await?;
+            let acceptor = acceptor.clone();
+            let service = self.clone();
+            tokio::spawn(async move {
+                let _permit = permit;
+                match acceptor.accept(stream).await {
+                    Ok(tls_stream) => {
+                        if let Err(e) = service.connection_tls(tls_stream).await {
+                            tracing::debug!("C-Gate TLS connection ended: {e}");
+                        }
+                    }
+                    Err(e) => {
+                        tracing::debug!("C-Gate TLS handshake failed: {e}");
+                    }
+                }
+            });
+        }
+    }
+
     async fn connection(&self, stream: TcpStream) -> io::Result<()> {
-        let (reader, mut writer) = stream.into_split();
-        let mut reader = BufReader::new(reader);
+        let (reader, writer) = stream.into_split();
+        self.connection_io(BufReader::new(reader), writer).await
+    }
+
+    async fn connection_tls(
+        &self,
+        stream: tokio_rustls::server::TlsStream<TcpStream>,
+    ) -> io::Result<()> {
+        let (reader, writer) = tokio::io::split(stream);
+        self.connection_io(BufReader::new(reader), writer).await
+    }
+
+    /// Shared per-connection handler for plaintext and TLS streams alike.
+    async fn connection_io<R, W>(&self, mut reader: BufReader<R>, mut writer: W) -> io::Result<()>
+    where
+        R: tokio::io::AsyncRead + Unpin,
+        W: tokio::io::AsyncWrite + Unpin,
+    {
         let mut events = self.events.subscribe();
         let mut mode = EventMode::OFF;
         let mut client = ClientState::default();

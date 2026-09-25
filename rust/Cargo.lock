@@ -139,10 +139,13 @@ dependencies = [
  "chrono",
  "hex",
  "roxmltree",
+ "rustls",
+ "rustls-pemfile",
  "serde",
  "serde_json",
  "thiserror 1.0.69",
  "tokio",
+ "tokio-rustls",
  "tracing",
 ]
 

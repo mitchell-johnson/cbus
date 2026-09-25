@@ -26,9 +26,12 @@ def load_vectors():
 
 def test_vector_file_pins_observed_cache_contract():
     rows = load_vectors()
-    assert len(rows) >= 10, "expected ~10-15 compatibility cases"
+    assert len(rows) == 15, f"expected 15 compatibility cases, got {len(rows)}"
+    seen_ids: set[str] = set()
     for item in rows:
         assert isinstance(item.get("id"), str) and item["id"]
+        assert item["id"] not in seen_ids, f"duplicate vector id {item['id']}"
+        seen_ids.add(item["id"])
         assert isinstance(item.get("document"), dict)
         assert ("expect" in item) ^ ("expect_error" in item), item["id"]
 
@@ -44,14 +47,24 @@ def test_vectors_match_decode_observed_labels():
         result = decode_observed_labels(doc)
         assert result["complete"] is False, item["id"]
         assert result["device_readback"] is False, item["id"]
+        assert result["format"] == "cbus-observed-dynamic-label-cache-v1", item["id"]
+        assert result["observation_count"] == len(doc["observations"]), item["id"]
+        assert result["reset_on_reconnect"] == (doc.get("reset_on_reconnect") is True), item["id"]
         assert len(result["entries"]) == expect["entries"], item["id"]
         assert result["incomplete_transactions"] == expect.get("incomplete_transactions", 0), item["id"]
         assert len(result["errors"]) == expect.get("errors", 0), item["id"]
         if "kinds" in expect:
             assert sorted(e["kind"] for e in result["entries"]) == sorted(expect["kinds"]), item["id"]
         if "texts" in expect:
-            got = sorted(e["text"] for e in result["entries"] if "text" in e and e["text"] is not None)
-            assert got == sorted(expect["texts"]), item["id"]
+            got = sorted(
+                (e["text"] for e in result["entries"] if "text" in e),
+                key=lambda v: (v is None, "" if v is None else v),
+            )
+            want = sorted(
+                expect["texts"],
+                key=lambda v: (v is None, "" if v is None else v),
+            )
+            assert got == want, item["id"]
         if "error_substrings" in expect:
             for needle in expect["error_substrings"]:
                 assert any(needle in e["error"] for e in result["errors"]), (item["id"], needle)

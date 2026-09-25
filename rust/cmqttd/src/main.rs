@@ -148,11 +148,22 @@ async fn main() {
                 pci.clone(),
                 opts.cgate_unitspec.clone(),
             )?;
-            let listener = tokio::net::TcpListener::bind(bind).await?;
-            tracing::info!("C-Gate service listening on {}", listener.local_addr()?);
+            let listener = {
+                // Fail closed before binding: unreadable/invalid TLS
+                // files must never leave a plaintext listener behind.
+                let tls = setup::cgate_tls_config(&opts).map_err(std::io::Error::other)?;
+                let listener = tokio::net::TcpListener::bind(bind).await?;
+                (listener, tls)
+            };
+            tracing::info!("C-Gate service listening on {}", listener.0.local_addr()?);
             let running = service.clone();
             tokio::spawn(async move {
-                if let Err(e) = running.serve(listener).await {
+                let (listener, tls) = listener;
+                let result = match tls {
+                    Some(config) => running.serve_tls(listener, config).await,
+                    None => running.serve(listener).await,
+                };
+                if let Err(e) = result {
                     tracing::error!("C-Gate listener failed: {e}");
                     std::process::exit(1);
                 }

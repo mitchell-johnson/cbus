@@ -205,6 +205,34 @@ fn tls_configuration(opts: &Options) -> Result<rumqttc::TlsConfiguration, String
     Ok(rumqttc::TlsConfiguration::Rustls(Arc::new(config)))
 }
 
+/// TLS server configuration for the embedded C-Gate listener. `None`
+/// keeps the byte-identical plaintext path. Both cert and key are
+/// required together; any load failure is fatal at startup (no listener
+/// is opened). No client authentication is requested (P4b transport-only).
+pub fn cgate_tls_config(opts: &Options) -> Result<Option<Arc<rustls::ServerConfig>>, String> {
+    match (&opts.cgate_tls_cert, &opts.cgate_tls_key) {
+        (None, None) => Ok(None),
+        (Some(cert_path), Some(key_path)) => {
+            let certs = pem_certs(cert_path)?;
+            if certs.is_empty() {
+                return Err(format!("no certificates found in {}", cert_path.display()));
+            }
+            let key_data = std::fs::read(key_path)
+                .map_err(|e| format!("cannot read {}: {e}", key_path.display()))?;
+            let key = rustls_pemfile::private_key(&mut key_data.as_slice())
+                .map_err(|e| format!("bad PEM in {}: {e}", key_path.display()))?
+                .ok_or_else(|| format!("no private key found in {}", key_path.display()))?;
+            rustls::ServerConfig::builder()
+                .with_no_client_auth()
+                .with_single_cert(certs, key)
+                .map(Arc::new)
+                .map(Some)
+                .map_err(|e| format!("bad C-Gate TLS cert/key: {e}"))
+        }
+        _ => Err("both --cgate-tls-cert and --cgate-tls-key must be specified together".into()),
+    }
+}
+
 pub fn mqtt_options(opts: &Options) -> Result<MqttOptions, String> {
     let port = if opts.broker_port != 0 {
         opts.broker_port
@@ -252,5 +280,88 @@ mod tests {
         let r = ca_roots(Some(dir.to_str().unwrap()));
         std::fs::remove_dir_all(&dir).ok();
         assert!(r.is_err());
+    }
+
+    fn tls_fixture(name: &str) -> std::path::PathBuf {
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../testdata/fixtures")
+            .join(name)
+    }
+
+    fn tls_opts(cert: Option<std::path::PathBuf>, key: Option<std::path::PathBuf>) -> Options {
+        Options {
+            debug: false,
+            log: None,
+            verbosity: "INFO".into(),
+            broker_address: "127.0.0.1".into(),
+            broker_port: 0,
+            broker_keepalive: 60,
+            broker_disable_tls: true,
+            broker_auth: None,
+            broker_ca: None,
+            broker_client_cert: None,
+            broker_client_key: None,
+            tcp: Some("127.0.0.1:10001".into()),
+            esp32_wifi: None,
+            esp32_serial: None,
+            esp32_discover: false,
+            esp32_baudrate: 9600,
+            esp32_reconnect_interval: 5,
+            esp32_max_reconnect: 0,
+            timesync: 0,
+            no_clock: false,
+            status_resync: 0,
+            project_file: None,
+            cbus_network: vec![],
+            cgate_bind: None,
+            cgate_state: std::path::PathBuf::from("cmqttd-data/cgate.json"),
+            cgate_unitspec: None,
+            cgate_tls_cert: cert,
+            cgate_tls_key: key,
+        }
+    }
+
+    #[test]
+    fn cgate_tls_disabled_by_default() {
+        assert!(cgate_tls_config(&tls_opts(None, None)).unwrap().is_none());
+    }
+
+    #[test]
+    fn cgate_tls_loads_test_fixtures() {
+        let opts = tls_opts(
+            Some(tls_fixture("cgate-tls-test-cert.pem")),
+            Some(tls_fixture("cgate-tls-test-key.pem")),
+        );
+        assert!(cgate_tls_config(&opts).unwrap().is_some());
+    }
+
+    #[test]
+    fn cgate_tls_missing_files_fail_closed() {
+        let opts = tls_opts(
+            Some(std::path::PathBuf::from("/nonexistent/cgate-cert.pem")),
+            Some(std::path::PathBuf::from("/nonexistent/cgate-key.pem")),
+        );
+        assert!(cgate_tls_config(&opts).is_err());
+    }
+
+    #[test]
+    fn cgate_tls_half_config_fails_closed() {
+        let opts = tls_opts(Some(tls_fixture("cgate-tls-test-cert.pem")), None);
+        assert!(cgate_tls_config(&opts).is_err());
+        let opts = tls_opts(None, Some(tls_fixture("cgate-tls-test-key.pem")));
+        assert!(cgate_tls_config(&opts).is_err());
+    }
+
+    #[test]
+    fn cgate_tls_garbage_pem_fails_closed() {
+        let dir = std::env::temp_dir();
+        let cert = dir.join(format!("cgate-garbage-{}-cert.pem", std::process::id()));
+        let key = dir.join(format!("cgate-garbage-{}-key.pem", std::process::id()));
+        std::fs::write(&cert, "not a certificate\n").unwrap();
+        std::fs::write(&key, "not a key\n").unwrap();
+        let opts = tls_opts(Some(cert.clone()), Some(key.clone()));
+        assert!(cgate_tls_config(&opts).is_err());
+        std::fs::remove_file(cert).ok();
+        std::fs::remove_file(key).ok();
     }
 }

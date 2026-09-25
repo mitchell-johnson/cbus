@@ -60,7 +60,10 @@ fn observed_dynamic_label_vectors_pin_json_contract() {
         // Provenance envelope stays present on every row (valid rows carry
         // the safe values; rejection rows intentionally carry the bad value
         // this vector pins). Presence is checked here; semantics are pinned
-        // by the Python vector test via decode_observed_labels.
+        // by the Python vector test via decode_observed_labels. For success
+        // rows only, pin the exact safe provenance values so a
+        // complete:true success vector cannot pass here while Python must
+        // reject it; rejection rows keep presence-only by design.
         for key in [
             "format",
             "source",
@@ -70,6 +73,28 @@ fn observed_dynamic_label_vectors_pin_json_contract() {
             "observations",
         ] {
             assert!(document.contains_key(key), "{id}: document missing {key}");
+        }
+        if item.get("expect").is_some() {
+            assert_eq!(
+                document.get("format").and_then(Value::as_str),
+                Some("cmqttd-observed-dynamic-labels-v1"),
+                "{id}: document.format must be cmqttd-observed-dynamic-labels-v1"
+            );
+            assert_eq!(
+                document.get("source").and_then(Value::as_str),
+                Some("observed-sal-traffic"),
+                "{id}: document.source must be observed-sal-traffic"
+            );
+            assert_eq!(
+                document.get("complete").and_then(Value::as_bool),
+                Some(false),
+                "{id}: document.complete must be false"
+            );
+            assert_eq!(
+                document.get("device_readback").and_then(Value::as_bool),
+                Some(false),
+                "{id}: document.device_readback must be false"
+            );
         }
         let observations = document
             .get("observations")
