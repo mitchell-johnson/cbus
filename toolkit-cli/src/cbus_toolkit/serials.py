@@ -105,14 +105,7 @@ class SerialInventory:
 
     @property
     def complete(self):
-        resolved = {"ok"}
-        if self.mode == "refresh" and self.requested is None:
-            # A wildcard CHECKUNIT row that conclusively reports no unit is a
-            # resolved MMI candidate, not a missing identity. Explicitly
-            # requested absent addresses remain incomplete for callers that
-            # expected an identity at that address.
-            resolved.add("absent")
-        return not self.errors and all(record.status in resolved for record in self.records)
+        return not self.errors and all(record.status == "ok" for record in self.records)
 
     def as_dict(self):
         return {"format": "cbus-native-serial-inventory-v1", "network": self.network, "mode": self.mode,

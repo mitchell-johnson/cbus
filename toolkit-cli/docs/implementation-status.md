@@ -157,10 +157,10 @@ KEYGL5 5.5.00 devices in numeric address order. It preserves successful static
 configuration reads alongside unsupported firmware, unknown or ambiguous
 identities and per-device failures; an incomplete report is returned with a
 nonzero exit status.
-An address nominated by the wildcard MMI pass and then conclusively reported
-absent by `NET CHECKUNIT` is retained under `absent` as resolved negative
-evidence. It does not make whole-network selection incomplete; an explicitly
-requested absent address in the generic serial workflow still does.
+An address nominated by the fresh wildcard MMI but producing no IDENTIFY4 reply
+remains an unknown identity, even when CHECKUNIT describes the observation as
+`No units detected`. This prevents a silent physical unit from being excluded
+while the all-eDLT inventory is reported complete.
 
 Each selected read obtains live identity and OEM memory without Windows or a
 second CNI connection, resolves all 64 static strings and their widget, page and

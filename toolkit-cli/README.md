@@ -1434,10 +1434,10 @@ per-device read error and cannot attach stale identity evidence. The snapshots
 are read one at a time and therefore are not an atomic network image. If
 selection, a device read, or the final observation query is incomplete, the CLI
 still prints the partial report with `complete: false` and exits nonzero.
-An MMI candidate that `NET CHECKUNIT` conclusively reports absent is retained in
-`absent` and does not make a whole-network eDLT selection incomplete. Explicitly
-requesting an absent address through the generic serial workflow remains
-incomplete because that caller expected an identity at the address.
+If a whole-network MMI candidate produces no IDENTIFY4 reply, its native
+`No units detected` CHECKUNIT row remains an unknown identity and keeps the
+selection incomplete. A silent physical unit cannot be excluded merely because
+it missed that reply window; successful eDLT snapshots are still retained.
 
 The command issues `CMQTT LABELS` once after the device reads, at network scope.
 Those bounded records are traffic observed during the current `cmqttd`

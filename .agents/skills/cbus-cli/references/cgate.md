@@ -23,9 +23,9 @@ bracket each selected memory snapshot. The fresh inventory identity is attached
 only when both physical serials match it; a mismatch remains a per-unit error
 without stale identity attachment. An incomplete report is still emitted and
 the command exits nonzero.
-An MMI candidate proven absent by `NET CHECKUNIT` is reported under `absent`
-without making candidate selection incomplete; top-level
-`inventory_complete` records that eDLT-specific resolution boundary.
+Treat a wildcard MMI candidate with a `No units detected` CHECKUNIT result as
+an unresolved identity, not proof of physical absence. The network inventory
+must remain incomplete while preserving successful eDLT snapshots.
 
 Each successful device read returns physical identity, all 64 static strings
 and their widget, page and scene references, a stable-header check and CRC

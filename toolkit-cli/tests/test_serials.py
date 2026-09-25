@@ -175,7 +175,7 @@ class SerialInventoryTests(unittest.TestCase):
         self.assertEqual(inventory.as_dict()["refresh_scope"], "entire_network")
         self.assertFalse(inventory.complete)
 
-    def test_wildcard_refresh_treats_confirmed_absent_candidate_as_resolved(self):
+    def test_wildcard_refresh_keeps_no_identify_reply_incomplete(self):
         self.client.overrides["NET CHECKUNIT " + NET + " *"] = reply(
             "120-No units detected at address: 0",
             "120-Single unit detected at address: 4",
@@ -186,7 +186,7 @@ class SerialInventoryTests(unittest.TestCase):
 
         inventory = self.serials.refresh(NET)
 
-        self.assertTrue(inventory.complete)
+        self.assertFalse(inventory.complete)
         self.assertEqual([record.address for record in inventory.records], [0, 4, 5, 16])
         self.assertEqual([record.status for record in inventory.records],
                          ["absent", "ok", "ok", "ok"])
