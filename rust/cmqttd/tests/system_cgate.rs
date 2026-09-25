@@ -147,6 +147,8 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     assert!(capabilities.contains("\"label_clear\":true"));
     assert!(capabilities.contains("\"label_kfi\":true"));
     assert!(capabilities.contains("\"edlt_widget_groups\":true"));
+    assert!(capabilities.contains("\"edlt_extended_firmware\":true"));
+    assert!(capabilities.contains("\"edlt_applications\":true"));
     assert!(
         command(&mut reader, &mut writer, "GET //HARNESS/254/56/1 level")
             .await
@@ -709,7 +711,7 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
 }
 
 #[tokio::test]
-async fn keygl5_sync_populates_native_widgetgroups_property() {
+async fn keygl5_sync_populates_native_metadata_properties_in_classfile_order() {
     let state = cbus_test_support::proc::temp_path("widgetgroups-cgate.json");
     let sys = start_with(Options {
         extra: vec![
@@ -820,6 +822,32 @@ async fn keygl5_sync_populates_native_widgetgroups_property() {
         answer_identify(&sys, 5, 2, b"5.5.00").await;
         answer_identify(&sys, 5, 4, &serial_identity("101136.1558", 5)).await;
 
+        require(COMMAND_DRAIN, "KEYGL5 extended-firmware recall", || {
+            sys.pci.count_payload("4605001AFB0997") == 1
+        })
+        .await;
+        let firmware = cbus_protocol::Cal::Reply {
+            parameter: 0xfb,
+            data: b"01.05.00\0".to_vec(),
+        }
+        .encode();
+        let mut body = vec![0x86, 5, 0x10, 0x01, 0x00];
+        body.extend(firmware);
+        sys.pci.inject(&pci_wire(&body));
+
+        require(COMMAND_DRAIN, "KEYGL5 application address selector", || {
+            sys.pci.count_payload("46050900A400411000B7") == 1
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0, 0x41]));
+        require(COMMAND_DRAIN, "KEYGL5 application recall", || {
+            sys.pci.count_payload("460509001A01028F") == 1
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x83, 1, 56, 255]));
+
         require(COMMAND_DRAIN, "KEYGL5 WidgetGroups recall", || {
             sys.pci.count_payload("4605001AFA2C75") == 1
         })
@@ -838,13 +866,22 @@ async fn keygl5_sync_populates_native_widgetgroups_property() {
     };
     let (sync, ()) = tokio::join!(sync, peer);
     assert!(sync.contains("200 OK"), "{sync:?}");
+    assert_eq!(sys.pci.count_payload("4605001AFB0997"), 1);
+    assert_eq!(sys.pci.count_payload("46050900A400411000B7"), 1);
+    assert_eq!(sys.pci.count_payload("460509001A01028F"), 1);
     assert_eq!(sys.pci.count_payload("4605001AFA2C75"), 1);
-    assert!(
-        !sys.pci
-            .frames()
+    let frames = sys.pci.frames();
+    let position = |payload: &str| {
+        frames
             .iter()
-            .any(|frame| frame.payload.starts_with("4605001AFB09")),
-        "parameter 0xFB is extended firmware, not WidgetGroups"
+            .position(|frame| frame.payload == payload)
+            .unwrap_or_else(|| panic!("missing {payload}"))
+    };
+    assert!(
+        position("4605001AFB0997") < position("46050900A400411000B7")
+            && position("46050900A400411000B7") < position("460509001A01028F")
+            && position("460509001A01028F") < position("4605001AFA2C75"),
+        "retained CBusEdlt classfile order: {frames:?}"
     );
 
     let expected = (0..44)
@@ -867,7 +904,29 @@ async fn keygl5_sync_populates_native_widgetgroups_property() {
         "GET //HARNESS/254/p/5 FirmwareVersion",
     )
     .await;
-    assert!(firmware.contains("FirmwareVersion=5.5.00"), "{firmware:?}");
+    assert!(
+        firmware.contains("FirmwareVersion=01.05.00"),
+        "{firmware:?}"
+    );
+    let version = command(&mut reader, &mut writer, "GET //HARNESS/254/p/5 Version").await;
+    assert!(version.contains("Version=5.5.00"), "{version:?}");
+    let application = command(
+        &mut reader,
+        &mut writer,
+        "GET //HARNESS/254/p/5 Application",
+    )
+    .await;
+    assert!(application.contains("Application=56"), "{application:?}");
+    let application2 = command(
+        &mut reader,
+        &mut writer,
+        "GET //HARNESS/254/p/5 Application2",
+    )
+    .await;
+    assert!(
+        application2.contains("Application2=255"),
+        "{application2:?}"
+    );
 
     drop(sys);
     std::fs::remove_file(state).unwrap();

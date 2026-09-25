@@ -873,6 +873,8 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["dynamic_label_device_readback"], false);
     assert_eq!(document["edlt_factory_default"], true);
     assert_eq!(document["edlt_widget_groups"], true);
+    assert_eq!(document["edlt_extended_firmware"], true);
+    assert_eq!(document["edlt_applications"], true);
     assert_eq!(document["network_syncnew"], true);
     assert_eq!(document["network_set_project_identify"], true);
     assert_eq!(document["net_unravelunit_matchdb_duplicate_255"], true);
@@ -1875,7 +1877,7 @@ async fn physical_pp_save_reports_partial_write_evidence_and_retains_dirty() {
 
     let request = pci_line(&mut remote_read).await;
     assert!(request.starts_with(b"\\460500A43000"), "{request:?}");
-    pci_reply(&mut remote_write, 5, &[0x32, 0x30, 0x01]).await;
+    pci_reply(&mut remote_write, 5, &[0x3b, 0x30, 0x00]).await;
 
     let response = saving.await.unwrap();
     assert_eq!(
@@ -2207,11 +2209,11 @@ async fn physical_pp_save_first_store_failure_reports_zero_confirmed_and_retains
     assert!(request.starts_with(b"\\4605001A3002"), "{request:?}");
     pci_reply(&mut remote_write, 5, &[0x83, 0x30, 0x00, 0x00]).await;
 
-    // The FIRST STORE fails (right parameter, wrong tag), so no write is
-    // ever confirmed. Beta is never attempted.
+    // The FIRST STORE receives the matching tagged NAK, so no write is ever
+    // confirmed. Beta is never attempted.
     let request = pci_line(&mut remote_read).await;
     assert!(request.starts_with(b"\\460500A42000"), "{request:?}");
-    pci_reply(&mut remote_write, 5, &[0x32, 0x20, 0x01]).await;
+    pci_reply(&mut remote_write, 5, &[0x3b, 0x20, 0x00]).await;
 
     // Negative read: no retry, readback, or next-range STORE may follow the
     // definitive failure. The save future is concurrently pending, so any
@@ -2373,15 +2375,15 @@ async fn physical_pp_save_counts_paged_write_toward_confirmed_total() {
     assert!(request.starts_with(b"\\4605001A2002"), "{request:?}");
     pci_reply(&mut remote_write, 5, &[0x83, 0x20, 0x56, 0x78]).await;
 
-    // The Paged STORE then fails (page select succeeds, tagged STORE is
-    // rejected with the wrong tag). The shared counter must still report
-    // the one confirmed Standard write.
+    // The Paged STORE then fails (page select succeeds, tagged STORE receives
+    // its matching NAK). The shared counter must still report the one
+    // confirmed Standard write.
     let request = pci_line(&mut remote_read).await;
     assert!(request.starts_with(b"\\4605003901"), "{request:?}");
     pci_reply(&mut remote_write, 5, &[0x81, 0x01]).await;
     let request = pci_line(&mut remote_read).await;
     assert!(request.starts_with(b"\\460500A40000"), "{request:?}");
-    pci_reply(&mut remote_write, 5, &[0x32, 0x00, 0x01]).await;
+    pci_reply(&mut remote_write, 5, &[0x3b, 0x00, 0x00]).await;
 
     // Negative read: no retry, readback, or further STORE may follow the
     // definitive paged failure. The save future is concurrently pending, so
@@ -2556,7 +2558,7 @@ async fn physical_pp_save_skips_unchanged_items_without_counting() {
 
     let request = pci_line(&mut remote_read).await;
     assert!(request.starts_with(b"\\460500A44000"), "{request:?}");
-    pci_reply(&mut remote_write, 5, &[0x32, 0x40, 0x01]).await;
+    pci_reply(&mut remote_write, 5, &[0x3b, 0x40, 0x00]).await;
 
     // Negative read: no retry, readback, or further STORE may follow the
     // definitive Gamma failure (Beta was skipped without touching the wire).
@@ -3060,9 +3062,25 @@ async fn physical_net_sync_surfaces_duplicate_serial_conflict_on_events() {
     tokio::time::advance(Duration::from_secs(2)).await;
     tokio::task::yield_now().await;
 
-    // Native KEYGL5 sync reads the static WidgetGroups mapping from
-    // parameter 0xFA as exactly 44 bytes. It is separate from parameter
-    // 0xFB's extended-firmware string.
+    // Retained classfile order is exact: extended FirmwareVersion from
+    // parameter 0xFB/9, Application/Application2 from OEM address 16/2,
+    // then WidgetGroups from parameter 0xFA/44.
+    assert_eq!(pci_line(&mut remote_read).await, b"\\4605001AFB0997\r");
+    let firmware = cbus_protocol::Cal::Reply {
+        parameter: 0xfb,
+        data: b"01.05.00\0".to_vec(),
+    }
+    .encode();
+    pci_reply(&mut remote_write, 5, &firmware).await;
+
+    assert_eq!(
+        pci_line(&mut remote_read).await,
+        b"\\46050900A400411000B7\r"
+    );
+    pci_reply(&mut remote_write, 5, &[0x32, 0, 0x41]).await;
+    assert_eq!(pci_line(&mut remote_read).await, b"\\460509001A01028F\r");
+    pci_reply(&mut remote_write, 5, &[0x83, 1, 56, 255]).await;
+
     assert_eq!(pci_line(&mut remote_read).await, b"\\4605001AFA2C75\r");
     let widget_bytes = (0..44u8).collect::<Vec<_>>();
     for fragment in widget_bytes.chunks(22) {
@@ -3098,6 +3116,10 @@ async fn physical_net_sync_surfaces_duplicate_serial_conflict_on_events() {
     );
     assert_eq!(snapshot.unit_type, "KEYGL5");
     assert_eq!(snapshot.firmware, "5.5.00");
+    assert_eq!(snapshot.field("Version"), "5.5.00");
+    assert_eq!(snapshot.field("FirmwareVersion"), "01.05.00");
+    assert_eq!(snapshot.field("Application"), "56");
+    assert_eq!(snapshot.field("Application2"), "255");
     assert_eq!(
         snapshot.field("WidgetGroups"),
         (0..44)
@@ -3105,6 +3127,9 @@ async fn physical_net_sync_surfaces_duplicate_serial_conflict_on_events() {
             .collect::<Vec<_>>()
             .join(",")
     );
+    let configured = &model.projects["HARNESS"].networks[&254].units[&5];
+    assert_eq!(configured.unit_type, "KEYGL5");
+    assert_eq!(configured.field("FirmwareVersion"), "5.5.00");
     drop(model);
 
     let get = service
@@ -3124,6 +3149,24 @@ async fn physical_net_sync_surfaces_duplicate_serial_conflict_on_events() {
                 .join(",")
         )
     );
+    for (sequence, field, value) in [
+        ("1f", "FirmwareVersion", "01.05.00"),
+        ("1v", "Version", "5.5.00"),
+        ("1a", "Application", "56"),
+        ("1a2", "Application2", "255"),
+    ] {
+        let get = service
+            .handle(
+                &mut ClientState::default(),
+                &format!("[{sequence}] GET //HARNESS/254/p/5 {field}"),
+            )
+            .await;
+        assert_eq!(get.status, 300, "{field}: {get:?}");
+        assert_eq!(
+            get.final_text,
+            format!("300 //HARNESS/254/p/5: {field}={value}")
+        );
+    }
 
     let mut seen = Vec::new();
     while let Ok(event) = events.try_recv() {
@@ -3151,11 +3194,10 @@ async fn physical_net_sync_surfaces_duplicate_serial_conflict_on_events() {
         "duplicate event must precede sync ok: {seen:?}"
     );
 
-    // Native CBusEdlt.n() ignores the WidgetGroups helper's boolean. A later
-    // optional 0xFA timeout therefore keeps a valid identity SYNC successful,
-    // but this service invalidates the older volatile property rather than
-    // serving stale mapping bytes. The transport lane remains faulted because
-    // late untagged CAL fragments cannot be safely attributed.
+    // A later optional 0xFB timeout keeps a valid identity SYNC successful.
+    // It faults the programming lane before the remaining optional reads, and
+    // commit invalidates every older eDLT-only volatile property rather than
+    // serving stale values or substituting IDENTIFY2 for FirmwareVersion.
     let syncing_again = tokio::spawn({
         let service = service.clone();
         async move {
@@ -3207,40 +3249,260 @@ async fn physical_net_sync_surfaces_duplicate_serial_conflict_on_events() {
     remote_write.write_all(&[code, b'.']).await.unwrap();
     tokio::time::advance(Duration::from_secs(2)).await;
     tokio::task::yield_now().await;
-    assert_eq!(pci_line(&mut remote_read).await, b"\\4605001AFA2C75\r");
+    assert_eq!(pci_line(&mut remote_read).await, b"\\4605001AFB0997\r");
     tokio::time::advance(Duration::from_secs(10)).await;
     tokio::task::yield_now().await;
     let response = syncing_again.await.unwrap();
     assert_eq!(
         response.status, 200,
-        "optional WidgetGroups failure: {response:?}"
+        "optional eDLT metadata failure: {response:?}"
     );
     let model = service.model.lock().await;
     let snapshot = &model.projects["HARNESS"].networks[&254].physical[&5];
     assert_eq!(snapshot.unit_type, "KEYGL5");
-    assert!(!snapshot.fields.contains_key("WidgetGroups"));
+    assert_eq!(snapshot.field("Version"), "5.5.00");
+    for field in [
+        "FirmwareVersion",
+        "Application",
+        "Application2",
+        "WidgetGroups",
+    ] {
+        assert!(
+            !snapshot.fields.contains_key(field),
+            "stale {field}: {snapshot:?}"
+        );
+    }
     drop(model);
-    assert_eq!(
-        service
-            .handle(
-                &mut ClientState::default(),
-                "[2g] GET //HARNESS/254/p/5 WidgetGroups",
-            )
-            .await
-            .status,
-        404
-    );
+    for (sequence, field) in [
+        ("2f", "FirmwareVersion"),
+        ("2a", "Application"),
+        ("2a2", "Application2"),
+        ("2g", "WidgetGroups"),
+    ] {
+        assert_eq!(
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    &format!("[{sequence}] GET //HARNESS/254/p/5 {field}"),
+                )
+                .await
+                .status,
+            404,
+            "stale {field} must be unavailable"
+        );
+    }
+    let version = service
+        .handle(
+            &mut ClientState::default(),
+            "[2v] GET //HARNESS/254/p/5 Version",
+        )
+        .await;
+    assert_eq!(version.status, 300);
+    assert!(version.final_text.ends_with("Version=5.5.00"));
     assert!(service
         .pci
         .read()
         .await
-        .read_edlt_widget_groups(5)
+        .read_edlt_extended_firmware(5)
         .await
         .unwrap_err()
         .to_string()
         .contains("needs reconnect"));
 
     std::fs::remove_file(path).unwrap();
+}
+
+#[derive(Clone, Copy)]
+enum OptionalEdltFailure {
+    ApplicationRecall,
+    WidgetGroups,
+}
+
+async fn run_partial_edlt_sync_failure(failure: OptionalEdltFailure) -> Unit {
+    async fn line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+    async fn reply<W: tokio::io::AsyncWrite + Unpin>(writer: &mut W, source: u8, cal: &[u8]) {
+        let mut bytes = vec![0x86, source, 0x10, 0x00];
+        bytes.extend_from_slice(cal);
+        let sum = bytes.iter().fold(0u8, |sum, byte| sum.wrapping_add(*byte));
+        bytes.push(0u8.wrapping_sub(sum));
+        let mut wire = hex::encode_upper(bytes).into_bytes();
+        wire.extend_from_slice(b"\r\n");
+        writer.write_all(&wire).await.unwrap();
+    }
+    fn mmi(start: u8, count: usize, present: &[usize]) -> Vec<u8> {
+        let mut states = vec![0u8; count];
+        for address in present {
+            states[*address - usize::from(start)] = 1;
+        }
+        let mut wire = cbus_protocol::Packet::StandardStatus {
+            application: 0xff,
+            block_start: start,
+            states,
+        }
+        .encode_packet()
+        .unwrap();
+        wire.extend_from_slice(b"\r\n");
+        wire
+    }
+
+    let path = state_path();
+    let (pci, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut stale = Unit::blank(5, "");
+    stale.unit_type = "KEYGL5".into();
+    stale.firmware = "old-identify".into();
+    for (field, value) in [
+        ("FirmwareVersion", "old-extended"),
+        ("Application", "1"),
+        ("Application2", "2"),
+        ("WidgetGroups", "old-widget-groups"),
+    ] {
+        stale.fields.insert(field.into(), value.into());
+    }
+    service
+        .model
+        .lock()
+        .await
+        .projects
+        .get_mut("HARNESS")
+        .unwrap()
+        .networks
+        .get_mut(&254)
+        .unwrap()
+        .physical
+        .insert(5, stale);
+
+    let syncing = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(&mut ClientState::default(), "[p] NET SYNC //HARNESS/254")
+                .await
+        }
+    });
+
+    assert_eq!(line(&mut remote_read).await, b"@1A2001\r");
+    remote_write.write_all(b"8220104E\r\n").await.unwrap();
+    let request = line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\05FF00FAFF"), "{request:?}");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    for block in [mmi(0, 88, &[5]), mmi(88, 88, &[]), mmi(176, 80, &[])] {
+        remote_write.write_all(&block).await.unwrap();
+    }
+
+    for (attribute, value) in [(1, &b"KEYGL5"[..]), (2, &b"5.5.00"[..])] {
+        let request = line(&mut remote_read).await;
+        assert!(
+            request
+                .windows(4)
+                .any(|window| window == [0x32, 0x31, 0x30, b'0' + attribute]),
+            "{request:?}"
+        );
+        let code = request[request.len() - 2];
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+        let mut cal = vec![0x80 | (value.len() as u8 + 1), attribute];
+        cal.extend_from_slice(value);
+        reply(&mut remote_write, 5, &cal).await;
+    }
+
+    let request = line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\4605002104"), "{request:?}");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    let identity = [
+        0x38, 0xff, 0xff, 0xff, 0xff, 0x18, 0xb1, 0x06, 0x16, 0xa2, 0x00, 0x05,
+    ];
+    let mut cal = vec![0x8d, 4];
+    cal.extend_from_slice(&identity);
+    reply(&mut remote_write, 5, &cal).await;
+    tokio::time::advance(Duration::from_secs(2)).await;
+    tokio::task::yield_now().await;
+
+    assert_eq!(line(&mut remote_read).await, b"\\4605001AFB0997\r");
+    let firmware = cbus_protocol::Cal::Reply {
+        parameter: 0xfb,
+        data: b"02.00.00\0".to_vec(),
+    }
+    .encode();
+    reply(&mut remote_write, 5, &firmware).await;
+    assert_eq!(line(&mut remote_read).await, b"\\46050900A400411000B7\r");
+    reply(&mut remote_write, 5, &[0x32, 0, 0x41]).await;
+    assert_eq!(line(&mut remote_read).await, b"\\460509001A01028F\r");
+
+    if matches!(failure, OptionalEdltFailure::WidgetGroups) {
+        reply(&mut remote_write, 5, &[0x83, 1, 57, 202]).await;
+        assert_eq!(line(&mut remote_read).await, b"\\4605001AFA2C75\r");
+    }
+    tokio::time::advance(Duration::from_secs(10)).await;
+    tokio::task::yield_now().await;
+
+    let response = syncing.await.unwrap();
+    assert_eq!(
+        response.status, 200,
+        "optional metadata failure: {response:?}"
+    );
+    assert!(
+        tokio::time::timeout(Duration::from_secs(1), line(&mut remote_read))
+            .await
+            .is_err(),
+        "a timed-out optional request must not replay or start a later request"
+    );
+    let snapshot =
+        service.model.lock().await.projects["HARNESS"].networks[&254].physical[&5].clone();
+    std::fs::remove_file(path).unwrap();
+    snapshot
+}
+
+#[tokio::test(start_paused = true)]
+async fn physical_net_sync_retains_only_metadata_fresh_before_each_optional_failure() {
+    let application_failure =
+        run_partial_edlt_sync_failure(OptionalEdltFailure::ApplicationRecall).await;
+    assert_eq!(application_failure.field("Version"), "5.5.00");
+    assert_eq!(
+        application_failure.fields.get("FirmwareVersion"),
+        Some(&"02.00.00".to_string())
+    );
+    for field in ["Application", "Application2", "WidgetGroups"] {
+        assert!(
+            !application_failure.fields.contains_key(field),
+            "stale {field}: {application_failure:?}"
+        );
+    }
+
+    let widget_failure = run_partial_edlt_sync_failure(OptionalEdltFailure::WidgetGroups).await;
+    assert_eq!(widget_failure.field("Version"), "5.5.00");
+    assert_eq!(
+        widget_failure.fields.get("FirmwareVersion"),
+        Some(&"02.00.00".to_string())
+    );
+    assert_eq!(
+        widget_failure.fields.get("Application"),
+        Some(&"57".to_string())
+    );
+    assert_eq!(
+        widget_failure.fields.get("Application2"),
+        Some(&"202".to_string())
+    );
+    assert!(
+        !widget_failure.fields.contains_key("WidgetGroups"),
+        "stale WidgetGroups: {widget_failure:?}"
+    );
 }
 
 /// Single-serial negative pin: one IDENTIFY4 reply stores that serial and

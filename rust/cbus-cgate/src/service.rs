@@ -611,6 +611,8 @@ impl Service {
             capabilities["label_kfi"] = serde_json::Value::Bool(true);
             capabilities["label_clear"] = serde_json::Value::Bool(true);
             capabilities["edlt_widget_groups"] = serde_json::Value::Bool(true);
+            capabilities["edlt_extended_firmware"] = serde_json::Value::Bool(true);
+            capabilities["edlt_applications"] = serde_json::Value::Bool(true);
             return ok(tag, vec![capabilities.to_string()], "200 OK");
         }
         if verb == "CMQTT" && sub == "LABELS" && words.len() == 3 {
@@ -1324,6 +1326,17 @@ impl Service {
             .enumerate()
             .filter_map(|(address, state)| (*state != 0).then_some(address as u8))
             .collect();
+        struct SyncedIdentity {
+            address: u8,
+            unit_type: String,
+            identify_version: String,
+            serial: String,
+            serial_alternates: Vec<String>,
+            extended_firmware: Option<String>,
+            applications: Option<[u8; 2]>,
+            widget_groups: Option<String>,
+        }
+
         let mut identities = Vec::with_capacity(addresses.len());
         for address in addresses {
             let unit_type = match pci.identify_first(address, 1).await {
@@ -1427,28 +1440,34 @@ impl Service {
             } else {
                 (String::new(), Vec::new())
             };
-            identities.push((
+            identities.push(SyncedIdentity {
                 address,
                 unit_type,
-                firmware,
+                identify_version: firmware,
                 serial,
                 serial_alternates,
-                None,
-            ));
+                extended_firmware: None,
+                applications: None,
+                widget_groups: None,
+            });
         }
 
         // Complete every required identity transaction before the optional
-        // KEYGL5 reads. A WidgetGroups timeout faults the programming lane to
-        // prevent late untagged CAL replies being misattributed, but native
-        // CBusEdlt.n() does not combine this helper's boolean with the unit's
-        // synchronization result. Required identity data already collected
-        // for other units can therefore still be committed successfully.
-        for (address, unit_type, _, _, _, widget_groups) in &mut identities {
-            if unit_type.eq_ignore_ascii_case("KEYGL5") && configured_keygl5.contains(address) {
-                // A failed read deliberately leaves this as None. Commit then
-                // invalidates an older volatile WidgetGroups value instead of
-                // serving stale mapping bytes.
-                *widget_groups = pci.read_edlt_widget_groups(*address).await.ok();
+        // KEYGL5 reads. Retained C-Gate classfile bytecode proves this order:
+        // CBusOEMUnit.o() dispatches CBusEdlt.t() (0xFB/9), then CBusEdlt.n()
+        // reads OEM memory address 16/2 before invoking the ignored-result
+        // 0xFA/44 WidgetGroups helper. The reads remain optional for overall
+        // identity SYNC. An incomplete read faults the programming lane, so
+        // later optional calls fail closed without replay; every unavailable
+        // value remains None and is invalidated at commit.
+        for identity in &mut identities {
+            if identity.unit_type.eq_ignore_ascii_case("KEYGL5")
+                && configured_keygl5.contains(&identity.address)
+            {
+                identity.extended_firmware =
+                    pci.read_edlt_extended_firmware(identity.address).await.ok();
+                identity.applications = pci.read_edlt_applications(identity.address).await.ok();
+                identity.widget_groups = pci.read_edlt_widget_groups(identity.address).await.ok();
             }
         }
 
@@ -1461,23 +1480,41 @@ impl Service {
             let previous = std::mem::take(&mut network.physical);
             network.physical = identities
                 .into_iter()
-                .map(
-                    |(address, unit_type, firmware, serial, serial_alternates, widget_groups)| {
-                        let mut unit = previous
-                            .get(&address)
-                            .cloned()
-                            .unwrap_or_else(|| Unit::blank(address, ""));
-                        unit.unit_type = unit_type;
-                        unit.firmware = firmware;
-                        unit.serial = serial;
-                        unit.serial_alternates = serial_alternates;
-                        unit.fields.remove("WidgetGroups");
-                        if let Some(widget_groups) = widget_groups {
-                            unit.fields.insert("WidgetGroups".into(), widget_groups);
-                        }
-                        (address, unit)
-                    },
-                )
+                .map(|identity| {
+                    let mut unit = previous
+                        .get(&identity.address)
+                        .cloned()
+                        .unwrap_or_else(|| Unit::blank(identity.address, ""));
+                    unit.unit_type = identity.unit_type;
+                    // Version remains the ordinary IDENTIFY2 value. The
+                    // separate native 0xFB result is a volatile field override
+                    // for FirmwareVersion only; database records are untouched.
+                    unit.firmware = identity.identify_version;
+                    unit.serial = identity.serial;
+                    unit.serial_alternates = identity.serial_alternates;
+                    for field in [
+                        "Version",
+                        "FirmwareVersion",
+                        "Application",
+                        "Application2",
+                        "WidgetGroups",
+                    ] {
+                        unit.fields.remove(field);
+                    }
+                    if let Some(firmware) = identity.extended_firmware {
+                        unit.fields.insert("FirmwareVersion".into(), firmware);
+                    }
+                    if let Some([primary, secondary]) = identity.applications {
+                        unit.fields
+                            .insert("Application".into(), primary.to_string());
+                        unit.fields
+                            .insert("Application2".into(), secondary.to_string());
+                    }
+                    if let Some(widget_groups) = identity.widget_groups {
+                        unit.fields.insert("WidgetGroups".into(), widget_groups);
+                    }
+                    (identity.address, unit)
+                })
                 .collect();
             network.state = NetworkState::Ok;
         }

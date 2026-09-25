@@ -140,15 +140,20 @@ fresh MMI and IDENTIFY replies physically validate the result. It probes
 IDENTIFY1/2 and collects all IDENTIFY4 replies for every present address, then
 atomically replaces the live identity cache. Silent legacy/error addresses stay
 present with unknown identity fields. When both the configured database type
-and fresh IDENTIFY1 are KEYGL5, SYNC also sends the exact parameter-`0xFA`,
-length-44 recall and stores the source/parameter/length-correlated reply as the
-opaque native decimal CSV `WidgetGroups` property. Read it with `GET
-//PROJECT/NETWORK/p/UNIT WidgetGroups`; the result is a cached `300` property
-and does not issue new bus I/O. A failed optional read invalidates an older
-mapping without failing the otherwise valid identity SYNC; the programming
-lane remains faulted until reconnect and the request is not replayed. Parameter
-`0xFB` length 9 is extended firmware, not WidgetGroups. This static mapping is
-not dynamic-label cache readback. CHECKUNIT actively collects IDENTIFY4
+and fresh IDENTIFY1 are KEYGL5, SYNC follows retained CBusEdlt classfile order:
+parameter `0xFB` length 9 becomes the NUL-terminated volatile
+`FirmwareVersion`; an OEM address-16 selector plus parameter-1 length-2 recall
+becomes decimal `Application` and `Application2`; parameter `0xFA` length 44
+becomes opaque decimal-CSV `WidgetGroups`. `Version` remains the separate
+IDENTIFY2 value and the persistent database `FirmwareVersion` is unchanged.
+Read the properties with `GET //PROJECT/NETWORK/p/UNIT PROPERTY`; these cached
+`300` getters issue no bus I/O. Every request is exact-once and responses must
+match source, selector tag or parameter, and total length. A failed optional
+read leaves earlier values from the same sequence fresh, invalidates the failed
+and all later unrefreshed values, and does not fail an otherwise valid identity
+SYNC. The programming lane remains faulted until reconnect and no request is
+replayed. `WidgetGroups` is static mapping, not dynamic-label cache readback.
+CHECKUNIT actively collects IDENTIFY4
 replies through the native two-second quiet interval; it does not infer duplicate count from the
 two-bit MMI state. Use `GET //PROJECT/NETWORK Units` and unit `Type`, `Version`,
 `SerialNumber`, `Address`, and `State` getters for the resulting live snapshot.
@@ -186,6 +191,10 @@ recipient), while
 `label_clear: true` denotes the standard physical all-key/one-key cache-clear
 command above,
 `label_kfi: true` denotes the native physical KFIGET/KFISET sequences above,
+`edlt_extended_firmware: true` denotes parameter-`0xFB` physical firmware
+readback during KEYGL5 NET SYNC,
+`edlt_applications: true` denotes the native OEM address-16
+Application/Application2 readback,
 `edlt_widget_groups: true` denotes the bounded KEYGL5 static mapping populated
 by NET SYNC,
 `cgate_auth: true` denotes the armed opt-in LOGIN gate (`false` dormant

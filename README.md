@@ -171,13 +171,19 @@ confirmation. Native C-Gate treats either confirmation outcome as command
 completion, and there is no unit ACK or cache readback, so a 200 response does
 not prove erasure, rendering or persistence.
 
-`NET SYNC` also populates native KEYGL5 `WidgetGroups` readback. For a unit
-classified as KEYGL5 by both the configured database and fresh physical
-IDENTIFY1, cmqttd recalls parameter `0xFA` with the native fixed length of 44
-bytes and exposes the opaque bytes through `GET //PROJECT/NETWORK/p/UNIT
-WidgetGroups` as one comma-separated decimal `300` property. This is the
-static widget mapping used by C-Gate; it is separate from parameter `0xFB`'s
-extended firmware string and from the unsupported dynamic-label cache query.
+`NET SYNC` also populates the native KEYGL5 synchronization properties. For a
+unit classified as KEYGL5 by both the configured database and fresh physical
+IDENTIFY1, cmqttd follows retained C-Gate classfile order: parameter `0xFB`
+length 9 supplies the NUL-terminated `FirmwareVersion`, OEM memory address 16
+length 2 supplies decimal `Application` and `Application2`, and parameter
+`0xFA` length 44 supplies `WidgetGroups` as opaque comma-separated decimal
+bytes. `Version` remains the separate IDENTIFY2 value. Read the cached values
+with `GET //PROJECT/NETWORK/p/UNIT PROPERTY`; these GETs issue no new bus I/O.
+Each physical request is exact-once and source/parameter/length correlated. An
+optional failure does not fail an otherwise valid identity sync, but clears
+that value and every later unrefreshed value and faults the programming lane
+until reconnect. These properties are separate from the unsupported dynamic
+label-cache query.
 
 **Full C-Gate replacement is the target, not the current completion claim.** Hardware-backed lighting, C-Gate `DO` object methods for lighting, direct-network synchronization and guarded KEYGL5 FactoryDefault, persistent named-scene record/playback, Trigger Control, Enable Control, clock, Temperature Broadcast, native text/icon/Unicode/dynamic-bitmap label commands, standard label-cache clear, eDLT dynamic-label clear, complete-coverage `NET PINGU`, identity-populating `NET SYNC`, five-pass `NET SYNCNEW` with native duplicate challenges, verified physical `NET SET_PROJECT_IDENTIFY` parameter-35 writes, duplicate-aware `NET CHECKUNIT`, guarded physical unit readdressing, the bounded two-unit `NET UNRAVELUNIT ... 255 MATCHDB` workflow, unit identity, schema-driven physical `PP LOAD`, verified physical `PP SAVE` for `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and `goc2` parameters, extended-memory access, live observations, and persistent database operations are implemented while MQTT continues on the same CNI connection. `NET SYNCNEW` and `NET SET_PROJECT_IDENTIFY` update the volatile physical cache and do not create persistent project units. The unravel backend requires exactly two known serials at address 255, two unique empty database destinations, and a direct network; broader unravel cases remain unavailable. FactoryDefault acceptance proves the one-shot unit ACK but does not yet prove post-reset readback, reboot, retained address or persistence. Scene recording captures observed lighting levels on the configured network; playback sends confirmed zero-time ramps and requests physical readback. Direct and page-aware lock-protected fields and unit readdressing use the native one-use challenge phase; GIU uses native halt/store/resume, GOC-family programming uses its address-prefixed parameter-`0xFF` transport, and changed C-Bus 3 saves complete the native Save-to-NVM EXECUTE/POLL sequence before reporting success. Physical programming requires privately installed decoded unit specifications. Unsupported protection modes return explicit errors instead of simulated success. See the [supported operations and remaining work](docs/cmqttd-cgate.md).
 

@@ -996,7 +996,10 @@ impl PciClient {
                             if data == [ack.unwrap()] {
                                 return Ok(Vec::new());
                             }
-                            return Err(Error::other("unit rejected programming selector"));
+                            // A different acknowledgement tag belongs to a
+                            // separate programming operation. Native command
+                            // handlers correlate both parameter and tag; only
+                            // the matching 0x3B form below is a rejection.
                         }
                         Cal::Nak { parameter: p, data }
                             if p == parameter && ack.is_some() && data.first().copied() == ack =>
@@ -1413,6 +1416,42 @@ impl PciClient {
             )
             .await?;
         cbus_protocol::edlt_widget_groups::decode_reply(&data)
+            .map_err(|error| Error::new(ErrorKind::InvalidData, error.0))
+    }
+
+    /// Read the native KEYGL5 extended-firmware string.
+    ///
+    /// This is parameter `0xFB`, exactly nine bytes, decoded up to the first
+    /// NUL. It is distinct from the ordinary IDENTIFY2 version string. The
+    /// request is exact-once and an incomplete exchange faults the programming
+    /// lane until reconnect.
+    pub async fn read_edlt_extended_firmware(&self, unit: u8) -> Result<String> {
+        let data = self
+            .recall_parameter(
+                unit,
+                cbus_protocol::edlt_sync_metadata::FIRMWARE_PARAMETER,
+                cbus_protocol::edlt_sync_metadata::FIRMWARE_LENGTH,
+            )
+            .await?;
+        cbus_protocol::edlt_sync_metadata::decode_firmware(&data)
+            .map_err(|error| Error::new(ErrorKind::InvalidData, error.0))
+    }
+
+    /// Read the native KEYGL5 primary and secondary applications.
+    ///
+    /// Native C-Gate selects OEM memory address 16 once, then recalls exactly
+    /// two bytes from parameter 1. [`Self::read_memory`] provides the required
+    /// source, selector-tag, parameter, and total-length correlation and
+    /// faults the programming lane after any incomplete phase.
+    pub async fn read_edlt_applications(&self, unit: u8) -> Result<[u8; 2]> {
+        let data = self
+            .read_memory(
+                unit,
+                cbus_protocol::edlt_sync_metadata::APPLICATION_ADDRESS,
+                cbus_protocol::edlt_sync_metadata::APPLICATION_LENGTH,
+            )
+            .await?;
+        cbus_protocol::edlt_sync_metadata::decode_applications(&data)
             .map_err(|error| Error::new(ErrorKind::InvalidData, error.0))
     }
 
@@ -3372,6 +3411,74 @@ mod tests {
                 .map(|value| value.to_string())
                 .collect::<Vec<_>>()
                 .join(",")
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn edlt_extended_firmware_uses_fb_9_and_native_nul_projection() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let read = tokio::spawn(async move { worker.read_edlt_extended_firmware(5).await });
+        assert_eq!(line(&mut remote).await, b"\\4605001AFB0997\r");
+
+        reply(&mut remote, 4, &[0x85, 0xfb, b'w', b'r', b'o', b'n']).await;
+        reply(&mut remote, 5, &[0x84, 0xfa, b'w', b'r', b'o']).await;
+        tokio::task::yield_now().await;
+        assert!(!read.is_finished());
+
+        reply(&mut remote, 5, &[0x85, 0xfb, b'0', b'1', b'.', b'0']).await;
+        reply(&mut remote, 5, &[0x86, 0xfb, b'5', b'.', b'0', b'0', 0]).await;
+        assert_eq!(read.await.unwrap().unwrap(), "01.05.00");
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn edlt_applications_select_address_16_once_and_correlate_both_phases() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let read = tokio::spawn(async move { worker.read_edlt_applications(5).await });
+        assert_eq!(line(&mut remote).await, b"\\46050900A400411000B7\r");
+
+        reply(&mut remote, 4, &[0x32, 0, 0x41]).await;
+        reply(&mut remote, 5, &[0x32, 0, 0x42]).await;
+        tokio::task::yield_now().await;
+        assert!(!read.is_finished());
+        reply(&mut remote, 5, &[0x32, 0, 0x41]).await;
+
+        assert_eq!(line(&mut remote).await, b"\\460509001A01028F\r");
+        reply(&mut remote, 4, &[0x82, 1, 99]).await;
+        reply(&mut remote, 5, &[0x82, 2, 88]).await;
+        tokio::task::yield_now().await;
+        assert!(!read.is_finished());
+        reply(&mut remote, 5, &[0x82, 1, 56]).await;
+        tokio::task::yield_now().await;
+        assert!(!read.is_finished());
+        reply(&mut remote, 5, &[0x82, 1, 255]).await;
+        assert_eq!(read.await.unwrap().unwrap(), [56, 255]);
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn edlt_application_recall_timeout_does_not_replay_and_faults_lane() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let read = tokio::spawn(async move { worker.read_edlt_applications(5).await });
+        assert_eq!(line(&mut remote).await, b"\\46050900A400411000B7\r");
+        reply(&mut remote, 5, &[0x32, 0, 0x41]).await;
+        assert_eq!(line(&mut remote).await, b"\\460509001A01028F\r");
+        tokio::time::advance(REPLY_TIMEOUT).await;
+        tokio::task::yield_now().await;
+        assert_eq!(read.await.unwrap().unwrap_err().kind(), ErrorKind::TimedOut);
+        assert!(pci.programming_fault.load(Ordering::Acquire));
+        assert!(pci
+            .read_edlt_extended_firmware(5)
+            .await
+            .unwrap_err()
+            .to_string()
+            .contains("needs reconnect"));
+        assert!(
+            tokio::time::timeout(Duration::from_secs(1), line(&mut remote))
+                .await
+                .is_err(),
+            "neither phase may be replayed after an incomplete recall"
         );
     }
 

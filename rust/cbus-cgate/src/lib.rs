@@ -3769,15 +3769,20 @@ impl Server {
                     // final line, so all but the last row travel as
                     // 300-prefixed continuations via the passthrough
                     // formatter.
+                    let identity_names = if unit.unit_type.eq_ignore_ascii_case("KEYGL5") {
+                        // KEYGL5 FirmwareVersion is the optional native 0xFB
+                        // property. Version remains IDENTIFY2 even when that
+                        // optional recall failed, so do not manufacture a
+                        // FirmwareVersion row from the IDENTIFY value.
+                        ["UnitType", "Version", "SerialNumber", "UnitAddress"]
+                    } else {
+                        ["UnitType", "FirmwareVersion", "SerialNumber", "UnitAddress"]
+                    };
                     let mut names: Vec<String> = unit
                         .fields
                         .keys()
                         .cloned()
-                        .chain(
-                            ["UnitType", "FirmwareVersion", "SerialNumber", "UnitAddress"]
-                                .iter()
-                                .map(|s| s.to_string()),
-                        )
+                        .chain(identity_names.iter().map(|s| s.to_string()))
                         .collect::<std::collections::HashSet<_>>()
                         .into_iter()
                         .collect();
@@ -3797,6 +3802,12 @@ impl Server {
                         final_text,
                         status: 300,
                     };
+                }
+                if attribute == "FirmwareVersion"
+                    && unit.unit_type.eq_ignore_ascii_case("KEYGL5")
+                    && !unit.fields.contains_key(attribute)
+                {
+                    return err(tag, status::NOT_FOUND, "404 Parameter not found");
                 }
                 if unit.fields.contains_key(attribute)
                     || [
