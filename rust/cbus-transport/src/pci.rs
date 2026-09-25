@@ -1186,9 +1186,35 @@ impl PciClient {
         .await
     }
 
+    /// Switch up to 9 groups on and wait for the correlated PCI delivery
+    /// confirmation. Byte-identical transport retries remain active while the
+    /// caller waits; a negative confirmation, timeout, or disconnect is an
+    /// error rather than a successful state transition.
+    pub async fn lighting_group_on_confirmed(&self, groups: &[u8], app: u8) -> std::io::Result<()> {
+        self.send_lighting_confirmed(groups, app, |application, group_address| Sal::LightingOn {
+            application,
+            group_address,
+        })
+        .await
+    }
+
     /// `PCIProtocol.lighting_group_off`: switch up to 9 groups off.
     pub async fn lighting_group_off(&self, groups: &[u8], app: u8) -> std::io::Result<Option<u8>> {
         self.send_lighting(groups, app, |application, group_address| Sal::LightingOff {
+            application,
+            group_address,
+        })
+        .await
+    }
+
+    /// Switch up to 9 groups off and wait for the correlated PCI delivery
+    /// confirmation.
+    pub async fn lighting_group_off_confirmed(
+        &self,
+        groups: &[u8],
+        app: u8,
+    ) -> std::io::Result<()> {
+        self.send_lighting_confirmed(groups, app, |application, group_address| Sal::LightingOff {
             application,
             group_address,
         })
@@ -1207,6 +1233,20 @@ impl PciClient {
             sals: groups.iter().map(|&g| make(app, g)).collect(),
         };
         self.send(&p, true, false).await
+    }
+
+    async fn send_lighting_confirmed(
+        &self,
+        groups: &[u8],
+        app: u8,
+        make: impl Fn(u8, u8) -> Sal,
+    ) -> std::io::Result<()> {
+        let p = Packet::PointToMultipoint {
+            meta: Meta::new(true, 0),
+            application: app,
+            sals: groups.iter().map(|&g| make(app, g)).collect(),
+        };
+        self.send_confirmed(&p).await
     }
 
     /// `PCIProtocol.lighting_group_ramp`: ramp one group to a level.
@@ -1228,6 +1268,27 @@ impl PciClient {
             }],
         };
         self.send(&p, true, false).await
+    }
+
+    /// Ramp one group and wait for the correlated PCI delivery confirmation.
+    pub async fn lighting_group_ramp_confirmed(
+        &self,
+        group: u8,
+        app: u8,
+        duration: u32,
+        level: u8,
+    ) -> std::io::Result<()> {
+        let p = Packet::PointToMultipoint {
+            meta: Meta::new(true, 0),
+            application: app,
+            sals: vec![Sal::LightingRamp {
+                application: app,
+                group_address: group,
+                duration,
+                level,
+            }],
+        };
+        self.send_confirmed(&p).await
     }
 
     /// `PCIProtocol.request_status`: binary or level status request for

@@ -16,6 +16,8 @@ use util::*;
 const CMD_TOPIC: &str = "homeassistant/light/cbus_10/set";
 const CMD_PAYLOAD: &[u8] = br#"{"state": "OFF"}"#;
 const CMD_FRAME: &str = "053800010AB8";
+const ON_FRAME: &str = "053800790A40";
+const LEVEL_READBACK: &str = "05FF00730738004A";
 
 #[tokio::test]
 async fn unconfirmed_command_retransmitted_byte_identical() {
@@ -60,16 +62,90 @@ async fn unconfirmed_frame_abandoned_after_three_attempts() {
 }
 
 #[tokio::test]
-async fn other_frames_still_confirmed_while_one_is_withheld() {
+async fn late_confirmation_holds_immediate_opposite_qos1_command_fifo() {
+    let sys = start_default().await;
+    wait_started(&sys).await;
+    require(STARTUP, "startup status sweep", || {
+        configured_sweep()
+            .iter()
+            .all(|payload| sys.pci.count_payload(payload) >= 1)
+    })
+    .await;
+    let readbacks_before = sys.pci.count_payload(LEVEL_READBACK);
+    sys.pci.set_conf_delay(Duration::from_millis(400));
+
+    sys.broker.inject_qos1(CMD_TOPIC, CMD_PAYLOAD);
+    sys.broker.inject_qos1(CMD_TOPIC, br#"{"state": "ON"}"#);
+    require(Duration::from_secs(5), "first command frame", || {
+        sys.pci.count_payload(CMD_FRAME) == 1
+    })
+    .await;
+    require(Duration::from_secs(2), "both MQTT PUBACKs", || {
+        sys.broker.injected_pubacks() >= 2
+    })
+    .await;
+    tokio::time::sleep(Duration::from_millis(100)).await;
+    assert_eq!(
+        sys.pci.count_payload(ON_FRAME),
+        0,
+        "ON must wait for OFF's correlated late confirmation"
+    );
+    assert!(
+        sys.broker
+            .find_publishes("homeassistant/light/cbus_10/state")
+            .is_empty(),
+        "socket transmission is not a successful state transition"
+    );
+
+    require(
+        Duration::from_secs(5),
+        "opposite command after confirmation",
+        || sys.pci.count_payload(ON_FRAME) == 1,
+    )
+    .await;
+    require(Duration::from_secs(5), "one readback per command", || {
+        sys.pci.count_payload(LEVEL_READBACK) >= readbacks_before + 2
+    })
+    .await;
+    require(Duration::from_secs(5), "confirmed command receipts", || {
+        sys.broker
+            .find_publishes("cmqttd/cbus/command_result")
+            .iter()
+            .filter_map(|publish| {
+                serde_json::from_slice::<serde_json::Value>(&publish.payload).ok()
+            })
+            .filter(|payload| {
+                payload["group"] == 10
+                    && payload["delivery"] == "confirmed"
+                    && payload["readback"] == "queued"
+            })
+            .count()
+            >= 2
+    })
+    .await;
+
+    let commands = sys
+        .pci
+        .frames()
+        .into_iter()
+        .filter(|frame| frame.payload == CMD_FRAME || frame.payload == ON_FRAME)
+        .map(|frame| frame.payload)
+        .collect::<Vec<_>>();
+    assert_eq!(commands, vec![CMD_FRAME.to_string(), ON_FRAME.to_string()]);
+}
+
+#[tokio::test]
+async fn lost_confirmation_blocks_opposite_command_and_reports_uncertain() {
     let sys = start_with(Options {
         withhold_first_conf: true,
         ..Default::default()
     })
     .await;
     wait_started(&sys).await;
-    // first command's confirmation is withheld...
+    // The first command's confirmation is withheld. An immediate opposite
+    // command is accepted by MQTT but must not overtake its unresolved PCI
+    // delivery lifecycle.
     sys.broker.inject(CMD_TOPIC, CMD_PAYLOAD);
-    // ...a different command afterwards is confirmed and never retried
     sys.broker
         .inject("homeassistant/light/cbus_1/set", br#"{"state": "ON"}"#);
     require(Duration::from_secs(20), "withheld frame retried", || {
@@ -78,8 +154,44 @@ async fn other_frames_still_confirmed_while_one_is_withheld() {
     .await;
     assert_eq!(
         sys.pci.count_payload("053800790149"),
+        0,
+        "later command must remain behind unresolved delivery"
+    );
+    assert!(
+        sys.broker
+            .find_publishes("homeassistant/light/cbus_10/state")
+            .is_empty(),
+        "an unconfirmed command must not get a success-looking state echo"
+    );
+
+    require(
+        Duration::from_secs(20),
+        "uncertain delivery receipt",
+        || {
+            sys.broker
+                .find_publishes("cmqttd/cbus/command_result")
+                .iter()
+                .filter_map(|publish| {
+                    serde_json::from_slice::<serde_json::Value>(&publish.payload).ok()
+                })
+                .any(|payload| {
+                    payload["group"] == 10
+                        && payload["delivery"] == "uncertain"
+                        && payload["readback"] == "not-requested"
+                })
+        },
+    )
+    .await;
+    require(
+        Duration::from_secs(10),
+        "later command after bounded failure",
+        || sys.pci.count_payload("053800790149") == 1,
+    )
+    .await;
+    assert_eq!(
+        sys.pci.count_payload("053800790149"),
         1,
-        "the confirmed command must be sent exactly once"
+        "the later command is submitted exactly once after bounded failure"
     );
 }
 
@@ -104,6 +216,7 @@ async fn esp32_wifi_mode_reconnects_and_reinitialises() {
     let pci = cbus_test_support::pci::FakePci::start(false).await;
     let broker_port = broker.port().to_string();
     let wifi = format!("127.0.0.1:{}", pci.port());
+    let project = project_file();
     let daemon = Daemon::spawn(
         BIN,
         &[
@@ -116,6 +229,8 @@ async fn esp32_wifi_mode_reconnects_and_reinitialises() {
             &wifi,
             "--esp32-reconnect-interval",
             "1",
+            "-P",
+            &project,
             "-T",
             "0",
             "-v",
@@ -128,6 +243,19 @@ async fn esp32_wifi_mode_reconnects_and_reinitialises() {
         daemon,
     };
     wait_started(&sys).await;
+    require(STARTUP, "initial configured status sweep", || {
+        configured_sweep()
+            .iter()
+            .all(|payload| sys.pci.count_payload(payload) >= 1)
+    })
+    .await;
+    require(STARTUP, "initial connected state", || {
+        sys.broker
+            .retained("homeassistant/binary_sensor/cbus_cmqttd/state")
+            .as_deref()
+            == Some(b"ON")
+    })
+    .await;
     assert_eq!(sys.pci.connections(), 1);
     sys.pci.kick();
     require(Duration::from_secs(15), "reconnection", || {
@@ -142,6 +270,32 @@ async fn esp32_wifi_mode_reconnects_and_reinitialises() {
     require(Duration::from_secs(15), "re-init smart connect", || {
         sys.pci.smart_connect_count() >= 2
     })
+    .await;
+    require(
+        Duration::from_secs(15),
+        "forced post-reconnect status sweep",
+        || {
+            configured_sweep()
+                .iter()
+                .all(|payload| sys.pci.count_payload(payload) >= 2)
+        },
+    )
+    .await;
+    require(
+        Duration::from_secs(15),
+        "disconnect and reconnect state",
+        || {
+            let states = sys
+                .broker
+                .find_publishes("homeassistant/binary_sensor/cbus_cmqttd/state")
+                .into_iter()
+                .map(|publish| publish.payload)
+                .collect::<Vec<_>>();
+            states
+                .windows(3)
+                .any(|window| window == [b"ON".to_vec(), b"OFF".to_vec(), b"ON".to_vec()])
+        },
+    )
     .await;
 }
 

@@ -64,6 +64,7 @@ struct State {
     clients: Vec<ClientHandle>,
     connections: usize,
     clean_disconnects: usize,
+    injected_pubacks: usize,
 }
 
 /// The broker: `start()` binds an ephemeral port; queries are snapshots.
@@ -168,21 +169,32 @@ impl MiniBroker {
         self.state.lock().unwrap().clean_disconnects
     }
 
+    /// PUBACK packets received for broker-injected QoS 1 publishes.
+    pub fn injected_pubacks(&self) -> usize {
+        self.state.lock().unwrap().injected_pubacks
+    }
+
     /// Deliver a message to subscribed clients as if published by an
     /// external client (e.g. Home Assistant sending a /set command).
     pub fn inject(&self, topic: &str, payload: &[u8]) {
-        self.inject_with_retain(topic, payload, false);
+        self.inject_with_options(topic, payload, 0, false);
+    }
+
+    /// Deliver a QoS 1 publish and record the client's PUBACK. This mirrors
+    /// command delivery from brokers that grant QoS 1 to Home Assistant.
+    pub fn inject_qos1(&self, topic: &str, payload: &[u8]) {
+        self.inject_with_options(topic, payload, 1, false);
     }
 
     /// Like [`MiniBroker::inject`] but with the RETAIN flag set, as a
     /// broker replaying stored state to a fresh subscriber would.
     pub fn inject_retained(&self, topic: &str, payload: &[u8]) {
-        self.inject_with_retain(topic, payload, true);
+        self.inject_with_options(topic, payload, 0, true);
     }
 
-    fn inject_with_retain(&self, topic: &str, payload: &[u8], retain: bool) {
+    fn inject_with_options(&self, topic: &str, payload: &[u8], qos: u8, retain: bool) {
         let st = self.state.lock().unwrap();
-        let pkt = publish_packet(topic, payload, 0, retain);
+        let pkt = publish_packet(topic, payload, qos, retain);
         for c in &st.clients {
             if c.subscriptions.iter().any(|f| topic_matches(f, topic)) {
                 let _ = c.tx.send(pkt.clone());
@@ -336,7 +348,7 @@ async fn handle_client(stream: tokio::net::TcpStream, state: Arc<Mutex<State>>) 
                 state.lock().unwrap().clean_disconnects += 1;
                 break;
             }
-            4 => { /* PUBACK for our injected qos1: ignore */ }
+            4 => state.lock().unwrap().injected_pubacks += 1,
             _ => {
                 state
                     .lock()

@@ -97,10 +97,11 @@ async fn cbus_event_pump(
                         service.set_pci(new_pci.clone()).await;
                     }
                     gw.set_pci(new_pci).await;
-                    // CBusHandler.connection_made calls the deduplicated
-                    // sweep (a no-op after startup; the periodic resync
-                    // covers post-reconnect state refresh)
-                    gw.queue_configured_status_requests(false);
+                    gw.on_cbus_reconnected().await;
+                    // Every cached observation was invalidated on transport
+                    // loss. Force a fresh configured sweep instead of relying
+                    // on the startup-only deduplication or a later timer.
+                    gw.queue_configured_status_requests(true);
                     tracing::info!("reconnected; MQTT bridge re-bound");
                 }
                 Err(e) => {

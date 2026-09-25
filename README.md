@@ -106,7 +106,7 @@ rust/target/release/cmqttd \
   --tcp 192.168.1.10:10001
 ```
 
-`cmqttd` publishes Home Assistant discovery and lighting state, and forwards MQTT light commands to C-Bus. Add `--project-file house.cbz` for names from your Toolkit project and `--cbus-network 'Main Network'` to select a network. TLS is enabled by default; omit `--broker-disable-tls` when using a TLS broker. Serial and ESP32 bridge connections are also supported.
+`cmqttd` publishes Home Assistant discovery and lighting state, and forwards MQTT light commands to C-Bus. `/set` commands remain FIFO until each command receives its correlated PCI confirmation; only then does cmqttd publish the compatibility state echo and queue a physical level report request. The echo's `cbus_source_addr: null` records requested state, while a later source-bearing bus event or status report is the physical observation. Non-retained delivery/readback receipts are published on `cmqttd/cbus/command_result`, and the retained `homeassistant/binary_sensor/cbus_cmqttd/state` topic changes to `OFF` during C-Bus transport loss and `ON` after reconnect. Add `--project-file house.cbz` for names from your Toolkit project and `--cbus-network 'Main Network'` to select a network. TLS is enabled by default; omit `--broker-disable-tls` when using a TLS broker. Serial and ESP32 bridge connections are also supported.
 
 For Docker, copy `.env.example` to `.env`, configure your broker and C-Bus endpoint, then run `docker compose up --build`. See [bridge configuration](docs/configuration.md) for authentication, certificates, project files, time synchronization, and status updates.
 

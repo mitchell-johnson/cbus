@@ -37,7 +37,7 @@ Do not equate offline test success with complete Toolkit parity. Run `cbus-toolk
 
 ## Full-system tests
 
-`cmqttd` tests launch the compiled daemon against an in-process MQTT 3.1.1 broker and a scripted fake PCI. They verify startup, subscriptions, discovery, state publication, command delivery, status sweeps, clock behavior, and reconnect-related flows without external services.
+`cmqttd` tests launch the compiled daemon against an in-process MQTT 3.1.1 broker and a scripted fake PCI. They verify startup, subscriptions, discovery, state publication, command delivery, status sweeps, clock behavior, and reconnect-related flows without external services. The MQTT consistency regressions cover immediate opposite QoS 1 commands, PUBACKs, delayed and lost PCI confirmations, FIFO blocking, outcome-uncertain failure, per-command physical level requests, C-Gate cache population only from bus reports, transport-state publication, and a forced post-reconnect sweep.
 
 `cgate-mock` tests exercise tagged framing, multiline replies, shared state, per-session project selection, event filtering and fanout, here-documents, command inventory reachability, and programming access. The hardware-service tests separately pin bounded `DBSETXML` document framing, durable project archive/restore/rename/copy/delete rollback, read-only repository listing, and MQTT continuity through those local administrative commands. `cmqttd/tests/system_cgate_project_copy_delete.rs` is the dedicated real-daemon copy/delete and MQTT-continuity regression.
 

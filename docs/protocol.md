@@ -44,6 +44,8 @@ CBUS-SIUG forms are pinned in `testdata/vectors/encode.jsonl` and
 
 `cmqttd` publishes Home Assistant discovery and state under `homeassistant/light/` and `homeassistant/binary_sensor/` topic families. Incoming light `/set` payloads are parsed by `cbus-mqtt` and converted into C-Bus lighting commands. Project labels improve entity names; addresses provide deterministic fallback names.
 
+MQTT command ordering extends through the correlated PCI confirmation rather than ending when bytes reach the socket. Positive confirmation produces the legacy null-source state echo and queues one codeless level-status request; the physical report is a separate observation. Negative confirmation produces no success echo. Timeout or connection loss is reported as outcome-uncertain and the command is not replayed after reconnect. Operational receipts use the non-retained `cmqttd/cbus/command_result` topic. The retained cmqttd binary-sensor state is `OFF` while the C-Bus transport is lost and `ON` after a replacement is installed; reconnect forces a configured status sweep.
+
 ## Project data
 
 Project metadata can be read from a one-file `.cbz` zip archive or bare XML. The reader extracts networks, applications, groups, units, serial/catalogue metadata, and group-address channel mappings. Select a named network with `cmqttd --cbus-network ...`; otherwise the first network is used.

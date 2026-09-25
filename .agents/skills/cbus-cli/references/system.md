@@ -91,6 +91,8 @@ scripted-loopback acceptance is not hardware parity evidence.
 
 Home Assistant discovery and state use `homeassistant/light/` and `homeassistant/binary_sensor/` topic families. Incoming light `/set` payloads are validated by `cbus-mqtt` before the bridge converts them to lighting commands. Project labels improve entity names; deterministic address-based names are used without a project file.
 
+The MQTT command worker preserves FIFO through correlated PCI confirmation, including byte-identical retries and late confirmations. A QoS 1 PUBACK proves only broker-to-cmqttd delivery. A light state echo with `cbus_source_addr: null` is published only after positive PCI confirmation and remains requested-state data, not physical brightness evidence. Every confirmed command queues a level-status request for its application/block on the independent readback lane before the worker advances; only the resulting bus report populates the embedded C-Gate live-level cache. `cmqttd/cbus/command_result` carries non-retained `confirmed`, `rejected`, `uncertain`, or pre-send rejection outcomes plus readback-request status. Timeout or disconnect is outcome-uncertain and is never automatically replayed on a fresh connection. The cmqttd meta binary sensor publishes retained `OFF` on C-Bus loss and `ON` after reconnect, when a forced configured sweep replaces invalidated observations.
+
 `cmqttd` can periodically synchronize time, answer C-Bus clock requests, and request status updates. Set the corresponding interval to zero to disable periodic time or status work; use `--no-clock` to disable clock replies.
 
 ## Project data

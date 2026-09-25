@@ -1,10 +1,10 @@
 //! MQTT-to-C-Bus event relays and command handling built on rumqttc.
 //!
-//! Outbound C-Bus traffic runs through two ordered lanes instead of the
-//! old single 0.2 s throttle queue: one worker for /set commands and one
-//! for status-sweep batches. Each worker processes strictly in order,
-//! and the adaptive flow controller in cbus-transport paces the wire
-//! (giving command frames priority over sweep frames).
+//! Outbound C-Bus traffic runs through ordered command, command-readback,
+//! and status-sweep lanes instead of the old single 0.2 s throttle queue.
+//! Each worker processes strictly in order, and the adaptive flow controller
+//! in cbus-transport paces the wire (giving command frames priority over
+//! status traffic).
 
 use cbus_mqtt::command::{parse_set_command, CommandError, SetCommand};
 use cbus_mqtt::discovery::{light_discovery, meta_discovery, AppLabels};
@@ -17,16 +17,34 @@ use serde_json::{json, Value};
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
-use tokio::sync::{mpsc, RwLock};
+use tokio::sync::{mpsc, watch, RwLock};
 
 /// One status request of a sweep batch: (app, block, level_request).
 type StatusProbe = (u8, u8, bool);
+/// One post-command physical level readback: (app, block, group-for-log).
+type CommandReadback = (u8, u8, u8);
+
+/// State topic advertised by [`meta_discovery`]. `ON` means the current
+/// C-Bus transport is connected; `OFF` means its live caches were invalidated.
+const BRIDGE_STATE_TOPIC: &str = "homeassistant/binary_sensor/cbus_cmqttd/state";
+
+/// Non-retained operational receipts for MQTT lighting commands. The regular
+/// light state topic remains the Home Assistant compatibility contract.
+const COMMAND_RESULT_TOPIC: &str = "cmqttd/cbus/command_result";
 
 pub struct Gateway {
     mqtt: AsyncClient,
     pci: RwLock<Arc<PciClient>>,
+    /// Changes whenever reconnect installs a fresh transport. Command workers
+    /// use this as a barrier instead of submitting queued commands to a dead
+    /// client during the reconnect window.
+    pci_generation: watch::Sender<u64>,
     /// Ordered lane for /set commands (FIFO, one at a time).
     commands: mpsc::UnboundedSender<SetCommand>,
+    /// Ordered lane for post-command level readbacks. Kept separate from a
+    /// potentially long configured sweep so live commands are re-observed
+    /// promptly even while startup discovery is still draining.
+    readbacks: mpsc::UnboundedSender<CommandReadback>,
     /// Ordered lane for status-sweep batches (FIFO, one batch at a time,
     /// so an overlapping resync can never interleave two sweeps).
     sweeps: mpsc::UnboundedSender<Vec<StatusProbe>>,
@@ -53,41 +71,57 @@ impl Gateway {
             l
         });
         let (commands, cmd_rx) = mpsc::unbounded_channel();
+        let (readbacks, readback_rx) = mpsc::unbounded_channel();
         let (sweeps, sweep_rx) = mpsc::unbounded_channel();
+        let (pci_generation, _) = watch::channel(0);
         let gw = Arc::new(Gateway {
             mqtt,
             pci: RwLock::new(pci),
+            pci_generation,
             commands,
+            readbacks,
             sweeps,
             labels,
             no_clock,
             group_db: Mutex::new(HashMap::new()),
             status_requests_queued: AtomicBool::new(false),
         });
-        gw.clone().spawn_workers(cmd_rx, sweep_rx);
+        gw.clone().spawn_workers(cmd_rx, readback_rx, sweep_rx);
         gw
     }
 
-    /// The two ordered outbound lanes. Awaiting each send before taking
-    /// the next item keeps wire order equal to arrival order per lane;
-    /// pipelining across the window still happens because a send
-    /// resolves at transmission, not at acknowledgement.
+    /// The three ordered outbound lanes. MQTT commands wait for their correlated
+    /// PCI delivery confirmation before the next command is taken. Physical
+    /// readback and status sweeps remain ordered background traffic.
     fn spawn_workers(
         self: Arc<Self>,
         mut cmd_rx: mpsc::UnboundedReceiver<SetCommand>,
+        mut readback_rx: mpsc::UnboundedReceiver<CommandReadback>,
         mut sweep_rx: mpsc::UnboundedReceiver<Vec<StatusProbe>>,
     ) {
         let gw = self.clone();
         tokio::spawn(async move {
             while let Some(cmd) = cmd_rx.recv().await {
-                gw.switch_light(
-                    cmd.group_addr,
-                    cmd.app_addr,
-                    cmd.light_on,
-                    cmd.brightness,
-                    cmd.transition,
-                )
-                .await;
+                gw.switch_light(cmd).await;
+            }
+        });
+        let gw = self.clone();
+        tokio::spawn(async move {
+            while let Some((app, block, group)) = readback_rx.recv().await {
+                tracing::info!(
+                    "requesting post-command level status for app={app} block={block} group={group}"
+                );
+                if let Err(error) = gw
+                    .connected_pci()
+                    .await
+                    .request_status(block, app, true)
+                    .await
+                {
+                    tracing::error!(
+                        "MQTT lighting readback request failed for app={app} \
+                         block={block} group={group}: {error}"
+                    );
+                }
             }
         });
         tokio::spawn(async move {
@@ -95,11 +129,16 @@ impl Gateway {
                 for (app, block, level_request) in batch {
                     let kind = if level_request { "level" } else { "binary" };
                     tracing::info!("requesting {kind} status for app={app} block={block}");
-                    let _ = self
+                    if let Err(error) = self
                         .pci()
                         .await
                         .request_status(block, app, level_request)
-                        .await;
+                        .await
+                    {
+                        tracing::error!(
+                            "{kind} status request failed for app={app} block={block}: {error}"
+                        );
+                    }
                 }
             }
         });
@@ -113,6 +152,24 @@ impl Gateway {
     /// Swap in a fresh PCI client after a reconnect.
     pub async fn set_pci(&self, pci: Arc<PciClient>) {
         *self.pci.write().await = pci;
+        self.pci_generation.send_modify(|generation| {
+            *generation = generation.wrapping_add(1);
+        });
+    }
+
+    /// Wait for a connected transport. An MQTT command that was already sent
+    /// when the old connection failed reports an uncertain outcome and is not
+    /// replayed; only later, unsent commands wait on this reconnect barrier.
+    async fn connected_pci(&self) -> Arc<PciClient> {
+        let mut generation = self.pci_generation.subscribe();
+        loop {
+            let pci = self.pci().await;
+            if pci.is_connected() {
+                return pci;
+            }
+            // The sender lives as long as Gateway, so closure is unreachable.
+            let _ = generation.changed().await;
+        }
     }
 
     // ------------------------------------------------------------- startup
@@ -132,6 +189,9 @@ impl Gateway {
             .publish(topic, QoS::AtLeastOnce, true, config.to_string())
             .await;
 
+        self.publish_bridge_state(self.pci().await.is_connected())
+            .await;
+
         let pairs: Vec<(u8, i64)> = self
             .labels
             .iter()
@@ -142,6 +202,12 @@ impl Gateway {
         }
 
         self.queue_configured_status_requests(false);
+    }
+
+    /// Publish that reconnect installed a fresh live transport. Retained light
+    /// state is refreshed separately by the forced configured status sweep.
+    pub async fn on_cbus_reconnected(&self) {
+        self.publish_bridge_state(true).await;
     }
 
     /// `MqttClient._configured_status_blocks`: block starts to sweep for
@@ -267,6 +333,50 @@ impl Gateway {
             .mqtt
             .publish(topic, QoS::AtLeastOnce, true, payload.to_string())
             .await;
+    }
+
+    async fn publish_bridge_state(&self, connected: bool) {
+        let payload = if connected { "ON" } else { "OFF" };
+        if let Err(error) = self
+            .mqtt
+            .publish(BRIDGE_STATE_TOPIC, QoS::AtLeastOnce, true, payload)
+            .await
+        {
+            tracing::error!("cannot publish C-Bus connection state {payload}: {error}");
+        }
+    }
+
+    async fn publish_command_result(
+        &self,
+        command: &SetCommand,
+        delivery: &str,
+        readback: &str,
+        error: Option<&str>,
+    ) {
+        let mut payload = json!({
+            "application": command.app_addr,
+            "group": command.group_addr,
+            "requested_state": if command.light_on { "ON" } else { "OFF" },
+            "brightness": command.brightness,
+            "transition": command.transition,
+            "delivery": delivery,
+            "readback": readback,
+        });
+        if let Some(error) = error {
+            payload["error"] = Value::String(error.to_string());
+        }
+        if let Err(error) = self
+            .mqtt
+            .publish(
+                COMMAND_RESULT_TOPIC,
+                QoS::AtLeastOnce,
+                false,
+                payload.to_string(),
+            )
+            .await
+        {
+            tracing::error!("cannot publish MQTT command result: {error}");
+        }
     }
 
     async fn publish_binary_sensor(&self, group_addr: u8, app_addr: i64, state: bool) {
@@ -432,6 +542,7 @@ impl Gateway {
             }
             CBusEvent::ConnectionLost => {
                 self.group_db.lock().unwrap().clear();
+                self.publish_bridge_state(false).await;
             }
         }
     }
@@ -471,36 +582,87 @@ impl Gateway {
 
     /// `MqttClient.switchLight`: C-Bus send then MQTT echo
     /// (`cbus_source_addr: null`).
-    async fn switch_light(
-        &self,
-        group_addr: u8,
-        app_addr: i64,
-        light_on: bool,
-        brightness: u8,
-        transition: u32,
-    ) {
+    async fn switch_light(&self, command: SetCommand) {
+        let group_addr = command.group_addr;
+        let app_addr = command.app_addr;
+        let light_on = command.light_on;
+        let brightness = command.brightness;
+        let transition = command.transition;
         // LightingSAL raises for apps outside 0x30..=0x5F before any send
         if !(0x30..=0x5f).contains(&app_addr) {
             tracing::error!("invalid lighting application address {app_addr}");
+            self.publish_command_result(
+                &command,
+                "rejected-before-send",
+                "not-requested",
+                Some("invalid lighting application address"),
+            )
+            .await;
             return;
         }
         let app8 = app_addr as u8;
-        let pci = self.pci().await;
+        let pci = self.connected_pci().await;
+        let delivery = if light_on {
+            if brightness == 255 && transition == 0 {
+                pci.lighting_group_on_confirmed(&[group_addr], app8).await
+            } else {
+                pci.lighting_group_ramp_confirmed(group_addr, app8, transition, brightness)
+                    .await
+            }
+        } else {
+            pci.lighting_group_off_confirmed(&[group_addr], app8).await
+        };
+        if let Err(error) = delivery {
+            let detail = error.to_string();
+            let outcome = if detail == "PCI rejected command" {
+                "rejected"
+            } else {
+                // A timeout or lost socket cannot prove whether bytes already
+                // reached the interface. Never replay that command implicitly.
+                "uncertain"
+            };
+            tracing::error!(
+                "MQTT lighting delivery {outcome} for app={app_addr} group={group_addr} \
+                 state={}: {error}",
+                if light_on { "ON" } else { "OFF" }
+            );
+            self.publish_command_result(&command, outcome, "not-requested", Some(&detail))
+                .await;
+            return;
+        }
+
+        // Compatibility echo: this records the requested value only. It does
+        // not populate C-Gate's physical cache; the following level request
+        // supplies the authoritative observation when the network replies.
         if light_on {
             if brightness == 255 && transition == 0 {
-                if pci.lighting_group_on(&[group_addr], app8).await.is_ok() {
-                    self.mqtt_light_on(None, group_addr, app_addr).await;
-                }
-            } else if pci
-                .lighting_group_ramp(group_addr, app8, transition, brightness)
-                .await
-                .is_ok()
-            {
+                self.mqtt_light_on(None, group_addr, app_addr).await;
+            } else {
                 self.mqtt_light_ramp(None, group_addr, app_addr, transition, brightness)
                     .await;
             }
-        } else if pci.lighting_group_off(&[group_addr], app8).await.is_ok() {
+        } else {
             self.mqtt_light_off(None, group_addr, app_addr).await;
         }
+
+        if self
+            .readbacks
+            .send((app8, group_addr & 0xe0, group_addr))
+            .is_err()
+        {
+            tracing::error!(
+                "MQTT lighting readback queue failed for app={app_addr} group={group_addr}"
+            );
+            self.publish_command_result(
+                &command,
+                "confirmed",
+                "queue-failed",
+                Some("status worker unavailable"),
+            )
+            .await;
+            return;
+        }
+        self.publish_command_result(&command, "confirmed", "queued", None)
+            .await;
     }
 }

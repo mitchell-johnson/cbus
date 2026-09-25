@@ -62,6 +62,19 @@ generic 502 rather than reporting a simulated import or repository switch.
 Project files and the persistent database contain site information and must
 not be committed or published.
 
+MQTT lighting commands and C-Gate share the PCI but retain separate response
+contracts. The MQTT worker keeps commands FIFO through correlated positive or
+negative PCI confirmation, including bounded byte-identical retries. A positive
+confirmation publishes the existing `cbus_source_addr: null` requested-state
+echo and queues one level-status request for the affected block on an
+independent readback lane before advancing to the next MQTT command. The echo does not populate C-Gate's live cache; only an incoming
+lighting or status report does. Negative confirmation has no success echo, and
+timeout or transport loss is outcome-uncertain and is never replayed after a
+reconnect. Non-retained diagnostics are published on
+`cmqttd/cbus/command_result`. The retained cmqttd binary sensor changes to
+`OFF` on C-Bus loss and `ON` when a fresh transport is installed; reconnect
+also forces a configured status sweep to replace invalidated observations.
+
 ## Implemented behavior
 
 The project-administration success envelope and data-readback boundary below
