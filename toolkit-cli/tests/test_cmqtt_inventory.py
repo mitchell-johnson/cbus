@@ -191,6 +191,23 @@ def test_unsupported_unknown_and_ambiguous_records_make_inventory_incomplete():
     assert not any(call.startswith('UNIT IDENTIFY //TEST/254/p/13') for call in client.calls)
 
 
+def test_absent_probe_candidate_is_resolved_without_making_selection_incomplete():
+    identities = {5: ('KEYGL5', '5.5.00', '100.5')}
+    checks = {0: 'No units detected', 5: 'Single unit detected'}
+    client = InventoryClient(identities, images={5: labelled('Five')}, checks=checks)
+
+    result = edlt_label_inventory(client, '//TEST/254')
+
+    assert result['complete']
+    assert result['selection_complete']
+    assert result['inventory_complete']
+    assert result['fresh_inventory']['complete']
+    assert [item['address'] for item in result['absent']] == [0]
+    assert result['unknown'] == []
+    assert result['supported_addresses'] == [5]
+    assert not any('/p/0' in call for call in client.calls)
+
+
 def test_read_failure_retains_prior_success_and_network_observations():
     identities = {5: ('KEYGL5', '5.5.00', '100.5'), 6: ('KEYGL5', '5.5.00', '100.6')}
     corrupt = bytearray(labelled('Six'))

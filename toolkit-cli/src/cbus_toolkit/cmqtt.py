@@ -507,6 +507,9 @@ def edlt_labels(client, address):
 
 def _record_kind(record):
     """Classify one fresh native record for complete eDLT selection."""
+    if (record.presence == 'absent' and record.status == 'absent'
+            and not record.errors and record.state is None):
+        return 'absent'
     ambiguous = (record.presence in {'duplicate_address', 'uncertain', 'multiple_error'}
                  or record.status == 'duplicate_serial')
     if ambiguous:
@@ -538,7 +541,7 @@ def edlt_label_inventory(client, network):
     from .cgate import CGateError
     from .serials import NativeSerials
     inventory = NativeSerials(client).refresh(network)
-    classified = {'unsupported': [], 'unknown': [], 'ambiguous': [], 'other': []}
+    classified = {'unsupported': [], 'unknown': [], 'ambiguous': [], 'other': [], 'absent': []}
     supported = []
     for record in sorted(inventory.records, key=lambda item: item.address):
         kind = _record_kind(record)
@@ -586,10 +589,11 @@ def edlt_label_inventory(client, network):
         observation_error = {'address': network, 'type': 'NotAttempted',
                              'error': 'A prior transport failure made the connection unusable'}
 
-    selection_complete = (inventory.refresh_completed and not inventory.errors
+    inventory_complete = inventory.refresh_completed and inventory.complete
+    selection_complete = (inventory_complete
                           and not classified['unsupported'] and not classified['unknown']
                           and not classified['ambiguous'])
-    complete = (selection_complete and inventory.complete and not read_errors
+    complete = (selection_complete and not read_errors
                 and observation_error is None and len(units) == len(supported))
     return {
         'format': 'cbus-edlt-label-inventory-v1',
@@ -597,13 +601,14 @@ def edlt_label_inventory(client, network):
         'source': 'physical-via-cmqttd',
         'complete': complete,
         'selection_complete': selection_complete,
-        'inventory_complete': inventory.complete,
+        'inventory_complete': inventory_complete,
         'fresh_inventory': inventory.as_dict(),
         'supported_addresses': [record.address for record in supported],
         'units': units,
         'unsupported': classified['unsupported'],
         'unknown': classified['unknown'],
         'ambiguous': classified['ambiguous'],
+        'absent': classified['absent'],
         'other_units': classified['other'],
         'read_errors': read_errors,
         'observed_dynamic_labels_scope': network,

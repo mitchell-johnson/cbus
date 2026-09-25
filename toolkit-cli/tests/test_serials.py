@@ -175,6 +175,25 @@ class SerialInventoryTests(unittest.TestCase):
         self.assertEqual(inventory.as_dict()["refresh_scope"], "entire_network")
         self.assertFalse(inventory.complete)
 
+    def test_wildcard_refresh_treats_confirmed_absent_candidate_as_resolved(self):
+        self.client.overrides["NET CHECKUNIT " + NET + " *"] = reply(
+            "120-No units detected at address: 0",
+            "120-Single unit detected at address: 4",
+            "120-Single unit detected at address: 5",
+            "120-Single unit detected at address: 16",
+            "200 OK.",
+        )
+
+        inventory = self.serials.refresh(NET)
+
+        self.assertTrue(inventory.complete)
+        self.assertEqual([record.address for record in inventory.records], [0, 4, 5, 16])
+        self.assertEqual([record.status for record in inventory.records],
+                         ["absent", "ok", "ok", "ok"])
+        self.assertEqual([identity.address for identity in inventory.identities], [4, 5, 16])
+        self.assertFalse(any(command.startswith("GET " + NET + "/p/0 ")
+                             for command in self.client.commands))
+
     def test_refresh_guards_do_not_modify_network_configuration(self):
         for field, value in (("InterfaceState", "closed"), ("TargetInterfaceState", "closed"),
                              ("SyncState", "running"), ("AutoUnravel", "yes"), ("AutoUpdate", "yes")):

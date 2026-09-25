@@ -222,6 +222,12 @@ firmware, unknown or ambiguous identities, successful device reads and
 per-device failures are all retained in the report. Failed reads do not discard
 earlier evidence. A selection, device-read or observation failure leaves
 `complete=false`; the CLI still writes the JSON report and exits nonzero.
+Fresh MMI candidates that the physical multiplicity check conclusively reports
+absent remain visible under `absent` and do not make the eDLT selection
+incomplete. Whole-network `fresh_inventory.complete` and top-level
+`inventory_complete` both treat that negative check as resolved; explicitly
+requesting an absent address through the generic serial workflow remains
+incomplete.
 
 For each selected device, the JSON includes the live identity, all 64 static
 strings and their widget, page and scene references, verification flags and a

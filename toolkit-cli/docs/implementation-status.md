@@ -145,7 +145,7 @@ Disposable-server access: the owned C-Gate configuration defaults to `Program`, 
 
 Reproducible-verification recipe (all locally provisionable gates): task-owned Temurin 11.0.32.1+1 JDK (`CBUS_CGATE_JAVA`/`CBUS_CGATE_JAVAC`), vendor dir (`CBUS_LOCAL_CGATE_VENDOR=toolkit-cli/research/vendor/cgate/app`, `cgate.jar` SHA256 `3ec483…`), `PYTHONPATH=src:tests`, host Python 3.13.14. Consolidated current-tree result: full `tests/` **1,838 passed, 222 skipped, 20,458 subtests**, plus `test_native_thermostat_schedule_integration.py` **5 passed**, plus javac-gated originals (`pci_routing`, `pci_incoming`, both routed originals, `project_repair`) **51 passed** — 0 failures; every skip maps to an operator provision (TEST_HOST server, Windows/mono, Toolkit EXE, CSV admission). This is the starting point for the fresh-wheel run, not a substitute for its 14 gates.
 
-The latest Python 3.13 current-tree run passes **2,196 tests**, with **258 provisioning-gated skips** and no failures or errors; the separate owned C-Gate B03 acceptance also passes ([KEYE secondary-association review](../research/experiments/2026-09-24/csv-keye-secondary-application-review.json)). The earlier source-pinned offline/mock checkpoint remains **1,872 tests**, 239 skips and 17,337 passing subtests ([report](../research/experiments/2026-09-24/offline-test-summary.json)). These are source-tree results, not a fresh installed-wheel or zero-skip acceptance. Later wheel-audit metadata changes have separate focused tests.
+The latest Python 3.13 current-tree run passes **2,229 tests**, with **256 provisioning-gated skips** and **18,319 passing subtests**, with no failures or errors; the separate owned C-Gate B03 acceptance also passes ([KEYE secondary-association review](../research/experiments/2026-09-24/csv-keye-secondary-application-review.json)). The earlier source-pinned offline/mock checkpoint remains **1,872 tests**, 239 skips and 17,337 passing subtests ([report](../research/experiments/2026-09-24/offline-test-summary.json)). These are source-tree results, not a fresh installed-wheel or zero-skip acceptance. Later wheel-audit metadata changes have separate focused tests.
 ## cmqttd hardware-service addition (2026-09-24)
 
 The CLI provides both a selected-device
@@ -157,6 +157,10 @@ KEYGL5 5.5.00 devices in numeric address order. It preserves successful static
 configuration reads alongside unsupported firmware, unknown or ambiguous
 identities and per-device failures; an incomplete report is returned with a
 nonzero exit status.
+An address nominated by the wildcard MMI pass and then conclusively reported
+absent by `NET CHECKUNIT` is retained under `absent` as resolved negative
+evidence. It does not make whole-network selection incomplete; an explicitly
+requested absent address in the generic serial workflow still does.
 
 Each selected read obtains live identity and OEM memory without Windows or a
 second CNI connection, resolves all 64 static strings and their widget, page and

@@ -642,7 +642,7 @@
         "tests/test_cli_serials.py",
         "docs/serials.md"
       ],
-      "limits": "Native cached identities and explicit whole-network fast refresh, multiplicity checks, partial results, native decimal-dot comparison and transport failure handling tested against captured fixture identities. Generic results explicitly report mmi_coverage_verified=false because native SYNC/CHECKUNIT may miss response ranges. Typed physical address changes add an independent PINGU coverage guard. Broader compatibility remains separate."
+      "limits": "Native cached identities and explicit whole-network fast refresh, multiplicity checks, partial results, native decimal-dot comparison and transport failure handling tested against captured fixture identities. A wildcard MMI candidate conclusively reported absent by CHECKUNIT is resolved negative evidence; an explicitly requested absent address remains incomplete. Generic results explicitly report mmi_coverage_verified=false because native SYNC/CHECKUNIT may miss response ranges. Typed physical address changes add an independent PINGU coverage guard. Broader compatibility remains separate."
     },
     {
       "id": "database-serial-population",
