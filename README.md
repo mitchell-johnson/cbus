@@ -173,7 +173,8 @@ completion, and there is no unit ACK or cache readback, so a 200 response does
 not prove erasure, rendering or persistence.
 
 `NET SYNC` also populates the native KEYGL5 synchronization properties. A unit
-must have MMI state one, exactly one known IDENTIFY4 serial, and KEYGL5 types
+must have non-error present MMI state one or two, exactly one known IDENTIFY4
+serial, and KEYGL5 types
 in both the configured database and fresh physical IDENTIFY1. Eligible units
 follow retained C-Gate classfile order over the OEM `09 00` route: parameter
 `0xFB` length 9 supplies the NUL-terminated `FirmwareVersion`, memory address

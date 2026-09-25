@@ -476,8 +476,9 @@ or MMI-duplicate address. Results populate cmqttd's volatile physical cache;
 add or update project database units separately.
 Against cmqttd, `network set-project` performs the native physical
 `NET SET_PROJECT_IDENTIFY` operation. The identity is uppercased, packed into
-the six-byte native value, written to parameter 35 on the first MMI-state-one
-unit with valid type data and exactly one valid known serial reply, and read
+the six-byte native value, written to parameter 35 on the first unit in
+non-error present MMI state one or two with valid type data and exactly one
+valid known serial reply, and read
 back before success. It updates cmqttd's volatile physical
 snapshot only; it does not select, rename, create, or save a project. The name
 must contain 1–8 UTF-16 code units whose uppercase form fits the native
@@ -1488,8 +1489,9 @@ display rendering, or persistence. `NET SYNC` leaves persistent device
 configuration unchanged, but its KEYGL5 metadata sequence does write a
 volatile OEM selector before reading the two application bytes; the JSON
 reports both facts. It shares cmqttd's CNI and never opens a direct connection.
-cmqttd only creates the property for an MMI-state-one address with exactly one
-known serial and matching configured/fresh KEYGL5 types. Ambiguous addresses
+cmqttd only creates the property for a non-error present MMI-state-one-or-two
+address with exactly one known serial and matching configured/fresh KEYGL5
+types. Ambiguous addresses
 fail with no metadata read or stale property, and reconnect invalidates an
 in-flight snapshot.
 See [the strict response contract](docs/edlt-widget-groups.md).

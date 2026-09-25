@@ -1476,15 +1476,17 @@ impl Service {
         // faults the programming lane, so later optional calls fail closed
         // without replay; every unavailable
         // value remains None and is invalidated at commit. These addressed
-        // replies carry no serial identity, so only healthy MMI state one
-        // with exactly one known IDENTIFY4 serial is eligible. State three,
-        // state two's unverified meaning, and zero or multiple known serials
-        // are ambiguous and must not be queried or exposed as one device's
-        // metadata.
+        // replies carry no serial identity, so only a non-error present MMI
+        // state (one or two) with exactly one known IDENTIFY4 serial is
+        // eligible. Live direct networks legitimately report unique units in
+        // both states, and the bounded IDENTIFY4 collection supplies the
+        // independent uniqueness guard. State three and zero or multiple
+        // known serials remain ambiguous and must not be queried or exposed as
+        // one device's metadata.
         for identity in &mut identities {
             if identity.unit_type.eq_ignore_ascii_case("KEYGL5")
                 && configured_keygl5.contains(&identity.address)
-                && identity.mmi_state == 1
+                && mmi_state_is_present_non_error(identity.mmi_state)
                 && !identity.serial.is_empty()
                 && identity.serial_alternates.is_empty()
             {
@@ -1865,12 +1867,11 @@ impl Service {
 
         let mut selected = None;
         for (address, state) in states.iter().enumerate().skip(1) {
-            // Native C-Gate chooses the first present nonzero unit. Refuse an
-            // MMI duplicate/error state, then require exactly one valid serial
-            // reply in a complete quiet-bounded IDENTIFY4 observation. An MMI
-            // state of one alone is not a uniqueness proof: colliding units
-            // can still appear as state one on a real CNI.
-            if *state != 1 {
+            // Native C-Gate chooses the first present nonzero unit. Admit both
+            // non-error present states, then require exactly one valid serial
+            // reply in a complete quiet-bounded IDENTIFY4 observation. Neither
+            // MMI state is a uniqueness proof: the fresh serial window is.
+            if !mmi_state_is_present_non_error(*state) {
                 continue;
             }
             let address = address as u8;
@@ -5062,6 +5063,10 @@ fn known_serials(replies: &[Vec<u8>]) -> io::Result<HashSet<String>> {
         .iter()
         .filter_map(|reply| serial_number(reply).transpose())
         .collect()
+}
+
+fn mmi_state_is_present_non_error(state: u8) -> bool {
+    matches!(state, 1 | 2)
 }
 
 async fn syncnew_identity(pci: &Arc<PciClient>, address: u8) -> io::Result<Unit> {

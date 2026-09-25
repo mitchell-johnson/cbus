@@ -139,9 +139,9 @@ address as a routing hint, or BASIC discovery when that hint is unavailable;
 fresh MMI and IDENTIFY replies physically validate the result. It probes
 IDENTIFY1/2 and collects all IDENTIFY4 replies for every present address, then
 atomically replaces the live identity cache. Silent legacy/error addresses stay
-present with unknown identity fields. Native eDLT metadata requires MMI state
-one, exactly one known IDENTIFY4 serial, and both the configured database type
-and fresh IDENTIFY1 to be KEYGL5. Eligible units follow retained CBusEdlt
+present with unknown identity fields. Native eDLT metadata requires non-error
+present MMI state one or two, exactly one known IDENTIFY4 serial, and both the
+configured database type and fresh IDENTIFY1 to be KEYGL5. Eligible units follow retained CBusEdlt
 classfile order:
 OEM-routed parameter `0xFB` length 9 becomes the NUL-terminated volatile
 `FirmwareVersion`; an OEM address-16 selector plus parameter-1 length-2 recall
@@ -155,7 +155,7 @@ read leaves earlier values from the same sequence fresh, invalidates the failed
 and all later unrefreshed values, and does not fail an otherwise valid identity
 SYNC. The programming lane remains faulted until reconnect and no request is
 replayed. `WidgetGroups` is static mapping, not dynamic-label cache readback.
-State two, state three, zero-serial, and multi-serial addresses receive no
+State three, zero-serial, and multi-serial addresses receive no
 source-address-only metadata traffic and expose no stale metadata. Reconnect or
 transport loss invalidates an in-flight snapshot before commit and returns 408
 without a sync-ok event.
@@ -178,8 +178,9 @@ physical cache only and retain native progress/result codes (`120`, `303`,
 `408`); they do not create persistent database units.
 `NET SET_PROJECT_IDENTIFY //PROJECT/NETWORK NAME` is also hardware-backed.
 It packs the uppercased 1–8 character native six-bit identity, selects the
-first MMI-state-one unit with valid IDENTIFY1 data and exactly one valid known
-IDENTIFY4 serial reply over the complete quiet window, stores parameter 35,
+first unit in non-error present MMI state one or two with valid IDENTIFY1 data
+and exactly one valid known IDENTIFY4 serial reply over the complete quiet
+window, stores parameter 35,
 and requires exact RECALL readback. A failed or uncertain write invalidates an
 older cached `ProjectName`. The typed CLI mK-quotes spaces, quotes and
 backslashes; the cached `ProjectName` is decoded from verified bytes so the

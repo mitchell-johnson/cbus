@@ -17,9 +17,19 @@ fn serial_identity(serial: &str, address: u8) -> Vec<u8> {
 }
 
 fn installation_mmi_block(start: u8, count: usize, present: &[usize]) -> Vec<u8> {
+    installation_mmi_block_with_state(start, count, present, 1)
+}
+
+fn installation_mmi_block_with_state(
+    start: u8,
+    count: usize,
+    present: &[usize],
+    state: u8,
+) -> Vec<u8> {
+    assert!((1..=3).contains(&state));
     let mut states = vec![0u8; count];
     for address in present {
-        states[*address - usize::from(start)] = 1;
+        states[*address - usize::from(start)] = state;
     }
     let mut wire = cbus_protocol::packet::Packet::StandardStatus {
         application: 0xff,
@@ -814,9 +824,15 @@ async fn keygl5_sync_populates_native_metadata_properties_in_classfile_order() {
             sys.pci.count_payload("05FF00FAFF0003") == 1
         })
         .await;
-        sys.pci.inject(&installation_mmi_block(0, 88, &[5]));
-        sys.pci.inject(&installation_mmi_block(88, 88, &[]));
-        sys.pci.inject(&installation_mmi_block(176, 80, &[]));
+        // Real direct networks can report a healthy, uniquely identified unit
+        // as state two. The single complete IDENTIFY4 window below is the
+        // independent uniqueness guard for source-address-only OEM reads.
+        sys.pci
+            .inject(&installation_mmi_block_with_state(0, 88, &[5], 2));
+        sys.pci
+            .inject(&installation_mmi_block_with_state(88, 88, &[], 2));
+        sys.pci
+            .inject(&installation_mmi_block_with_state(176, 80, &[], 2));
 
         answer_identify(&sys, 5, 1, b"KEYGL5").await;
         answer_identify(&sys, 5, 2, b"5.5.00").await;

@@ -4047,9 +4047,9 @@ async fn physical_project_identify_writes_native_sixbit_parameter_and_verifies_r
     let code = request[request.len() - 2];
     remote_write.write_all(&[code, b'.']).await.unwrap();
     for block in [
-        mmi_block(0, 88, &[(5, 1), (6, 1)]),
-        mmi_block(88, 88, &[(5, 1), (6, 1)]),
-        mmi_block(176, 80, &[(5, 1), (6, 1)]),
+        mmi_block(0, 88, &[(5, 1), (6, 2)]),
+        mmi_block(88, 88, &[(5, 1), (6, 2)]),
+        mmi_block(176, 80, &[(5, 1), (6, 2)]),
     ] {
         remote_write.write_all(&block).await.unwrap();
     }
@@ -4074,9 +4074,10 @@ async fn physical_project_identify_writes_native_sixbit_parameter_and_verifies_r
     .await;
     tokio::task::yield_now().await;
 
-    // MMI state one is not sufficient evidence of a unique physical unit.
-    // The service completes an IDENTIFY4 quiet window and admits the STORE
-    // only when exactly one valid known serial replied.
+    // State two is a non-error present state on real direct networks. It is
+    // not sufficient evidence of a unique physical unit, so the service
+    // completes an IDENTIFY4 quiet window and admits the STORE only when
+    // exactly one valid known serial replied.
     let identify = pci_line(&mut remote_read).await;
     assert!(identify.starts_with(b"\\4606002104"), "{identify:?}");
     let code = identify[identify.len() - 2];
@@ -4280,7 +4281,7 @@ async fn physical_project_identify_fails_closed_before_store_and_on_bad_readback
         tokio::time::timeout(Duration::from_millis(25), remote_read.read_u8())
             .await
             .is_err(),
-        "duplicate MMI state must not issue IDENTIFY or STORE"
+        "MMI error state must not issue IDENTIFY or STORE"
     );
     assert!(
         service.model.lock().await.projects["HARNESS"].networks[&254]
@@ -4288,7 +4289,7 @@ async fn physical_project_identify_fails_closed_before_store_and_on_bad_readback
             .is_empty()
     );
 
-    // A state-one MMI address can still hide multiple physical units. Two
+    // A state-two MMI address can still hide multiple physical units. Two
     // distinct serial replies must therefore abort before parameter 35 is
     // written, even though IDENTIFY1 returned a usable type.
     let duplicate_serials = tokio::spawn({
@@ -4307,9 +4308,9 @@ async fn physical_project_identify_fails_closed_before_store_and_on_bad_readback
     let code = request[request.len() - 2];
     remote_write.write_all(&[code, b'.']).await.unwrap();
     for block in [
-        mmi_block(0, 88, 6, 1),
-        mmi_block(88, 88, 6, 1),
-        mmi_block(176, 80, 6, 1),
+        mmi_block(0, 88, 6, 2),
+        mmi_block(88, 88, 6, 2),
+        mmi_block(176, 80, 6, 2),
     ] {
         remote_write.write_all(&block).await.unwrap();
     }

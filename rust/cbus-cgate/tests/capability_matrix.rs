@@ -86,8 +86,8 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // fail_closed_502 -> physical with five-pass MMI and native duplicate
     // challenges for its targeted and general forms. NET
     // SET_PROJECT_IDENTIFY moved fail_closed_502 -> physical with a verified
-    // parameter-35 write to the first state-one unit that yields exactly one
-    // valid known serial during the bounded observation window.
+    // parameter-35 write to the first non-error state-one-or-two unit that
+    // yields exactly one valid known serial during the bounded observation window.
     // EVENT, QUIT, SESSION_ID, SESSION_ID ALL, and SESSION_ID TAG are now
     // native-shaped per-connection operations in the real cmqttd endpoint.
     // PP RESET_TO_DEFAULTS is locally staged when an exact unit
