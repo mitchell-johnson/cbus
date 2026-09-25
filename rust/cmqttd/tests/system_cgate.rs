@@ -6,6 +6,32 @@ use tokio::{
 };
 use util::*;
 
+fn serial_identity(serial: &str, address: u8) -> Vec<u8> {
+    let packed = cbus_protocol::serial_address::parse_native_serial(serial)
+        .unwrap()
+        .packed;
+    let mut data = vec![0x38, 0xff, 0xff, 0xff, 0xff];
+    data.extend_from_slice(&packed);
+    data.extend_from_slice(&[0xa2, 0, address]);
+    data
+}
+
+fn installation_mmi_block(start: u8, count: usize, present: &[usize]) -> Vec<u8> {
+    let mut states = vec![0u8; count];
+    for address in present {
+        states[*address - usize::from(start)] = 1;
+    }
+    let mut wire = cbus_protocol::packet::Packet::StandardStatus {
+        application: 0xff,
+        block_start: start,
+        states,
+    }
+    .encode_packet()
+    .unwrap();
+    wire.extend_from_slice(b"\r\n");
+    wire
+}
+
 #[tokio::test]
 async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     let path = cbus_test_support::proc::temp_path("cgate.json");
@@ -604,6 +630,183 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     assert_eq!(sys.pci.connections(), 1);
     drop(sys);
     std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn bounded_matchdb_unravel_runs_through_real_daemon_and_shared_pci() {
+    let state = cbus_test_support::proc::temp_path("physical-unravel-cgate.json");
+    let project = cbus_test_support::proc::temp_path("physical-unravel-project.xml");
+    let units = r#"
+      <Unit><Address>6</Address><TagName>First target</TagName><UnitType>KEYE1</UnitType><SerialNumber>101136.1558</SerialNumber><FirmwareVersion>2.5.00</FirmwareVersion></Unit>
+      <Unit><Address>7</Address><TagName>Second target</TagName><UnitType>KEYE1</UnitType><SerialNumber>101136.1559</SerialNumber><FirmwareVersion>2.5.00</FirmwareVersion></Unit>
+      <Unit><Address>16</Address><TagName>Local CNI</TagName><UnitType>PC_CNI</UnitType><SerialNumber>100966.1187</SerialNumber><FirmwareVersion>5.5.00</FirmwareVersion></Unit>
+    "#;
+    std::fs::write(
+        &project,
+        include_str!("../../testdata/fixtures/project.xml")
+            .replace("    </Network>", &format!("{units}    </Network>")),
+    )
+    .unwrap();
+    let sys = start_with(Options {
+        project: false,
+        extra: vec![
+            "-P".into(),
+            project.to_string_lossy().into_owned(),
+            "--cgate-bind".into(),
+            "127.0.0.1:0".into(),
+            "--cgate-state".into(),
+            state.to_string_lossy().into_owned(),
+        ],
+        ..Default::default()
+    })
+    .await;
+    wait_started(&sys).await;
+    require(STARTUP, "C-Gate listener", || {
+        sys.daemon.stderr().contains("C-Gate service listening on ")
+    })
+    .await;
+    let logs = sys.daemon.stderr();
+    let address = logs
+        .lines()
+        .find_map(|line| {
+            line.split_once("C-Gate service listening on ")
+                .map(|(_, address)| address.trim())
+        })
+        .unwrap();
+    let stream = TcpStream::connect(address).await.unwrap();
+    let (reader, mut writer) = stream.into_split();
+    let mut reader = BufReader::new(reader);
+    let mut greeting = String::new();
+    reader.read_line(&mut greeting).await.unwrap();
+    assert!(greeting.starts_with("201 "));
+
+    async fn wait_for_payload(sys: &System, description: &str, prefix: &str, occurrence: usize) {
+        require(COMMAND_DRAIN, description, || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload.starts_with(prefix))
+                .count()
+                >= occurrence
+        })
+        .await;
+    }
+    async fn inject_mmi(sys: &System, occurrence: usize, present: &[usize]) {
+        wait_for_payload(
+            sys,
+            "unravel installation MMI request",
+            "05FF00FAFF",
+            occurrence,
+        )
+        .await;
+        for (start, count) in [(0, 88), (88, 88), (176, 80)] {
+            let block_present = present
+                .iter()
+                .copied()
+                .filter(|address| (start..start + count).contains(address))
+                .collect::<Vec<_>>();
+            sys.pci
+                .inject(&installation_mmi_block(start as u8, count, &block_present));
+        }
+    }
+    async fn answer_identity(sys: &System, address: u8, occurrence: usize, serials: &[&str]) {
+        let prefix = format!("46{address:02X}002104");
+        wait_for_payload(sys, "unravel IDENTIFY4 request", &prefix, occurrence).await;
+        for serial in serials {
+            let data = serial_identity(serial, address);
+            let mut body = vec![0x86, address, 0x10, 0x00, 0x8d, 4];
+            body.extend_from_slice(&data);
+            sys.pci.inject(&pci_wire(&body));
+        }
+    }
+    async fn answer_local_options(sys: &System, occurrence: usize) {
+        wait_for_payload(
+            sys,
+            "unravel local PCI option request",
+            "4610001A4201",
+            occurrence,
+        )
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 16, 0x10, 0x00, 0x82, 0x42, 5]));
+    }
+    async fn answer_selected_serial(sys: &System, serial: &str, destination: u8) {
+        let expected =
+            cbus_protocol::serial_address::encode_serial_address(serial, destination, true, b'g')
+                .unwrap();
+        let expected = std::str::from_utf8(&expected[1..expected.len() - 2]).unwrap();
+        wait_for_payload(sys, "selected-serial address request", expected, 1).await;
+        if destination == 6 {
+            sys.pci.inject(&pci_wire(&[5, 4, 56, 0, 121, 1]));
+        }
+        let packed = cbus_protocol::serial_address::parse_native_serial(serial)
+            .unwrap()
+            .packed;
+        let mut body = vec![0x86, destination, 0x10, 0x00, 0x87, 0];
+        body.extend_from_slice(&packed);
+        body.extend_from_slice(&[0, 0]);
+        sys.pci.inject(&pci_wire(&body));
+    }
+
+    let command = async {
+        writer
+            .write_all(b"[42] NET UNRAVELUNIT //HARNESS/254 255 MATCHDB\r\n")
+            .await
+            .unwrap();
+        let mut result = String::new();
+        loop {
+            let mut line = String::new();
+            reader.read_line(&mut line).await.unwrap();
+            result.push_str(&line);
+            if line.starts_with("[42] ") && line.as_bytes().get(8) == Some(&b' ') {
+                break result;
+            }
+        }
+    };
+    let bus = async {
+        inject_mmi(&sys, 1, &[16, 255]).await;
+        answer_identity(&sys, 16, 1, &["100966.1187"]).await;
+        answer_identity(&sys, 255, 1, &["101136.1558", "101136.1559"]).await;
+        answer_local_options(&sys, 1).await;
+        answer_identity(&sys, 6, 1, &[]).await;
+        answer_identity(&sys, 7, 1, &[]).await;
+
+        answer_selected_serial(&sys, "101136.1558", 6).await;
+        answer_identity(&sys, 6, 2, &["101136.1558"]).await;
+        answer_selected_serial(&sys, "101136.1559", 7).await;
+        answer_identity(&sys, 7, 2, &["101136.1559"]).await;
+
+        inject_mmi(&sys, 2, &[6, 7, 16]).await;
+        answer_identity(&sys, 6, 3, &["101136.1558"]).await;
+        answer_identity(&sys, 7, 3, &["101136.1559"]).await;
+        answer_identity(&sys, 16, 2, &["100966.1187"]).await;
+        answer_local_options(&sys, 2).await;
+    };
+    let (response, ()) = tokio::join!(command, bus);
+    assert!(response.contains("[42] 200 OK"), "{response:?}");
+
+    for (serial, destination) in [("101136.1558", 6), ("101136.1559", 7)] {
+        let expected =
+            cbus_protocol::serial_address::encode_serial_address(serial, destination, true, b'g')
+                .unwrap();
+        let expected = std::str::from_utf8(&expected[1..expected.len() - 2]).unwrap();
+        assert_eq!(
+            sys.pci.count_payload(expected),
+            1,
+            "{serial} -> {destination}"
+        );
+    }
+    require(STARTUP, "lighting event in MQTT during unravel", || {
+        sys.broker
+            .publishes()
+            .iter()
+            .any(|publish| publish.topic == "homeassistant/light/cbus_1/state")
+    })
+    .await;
+    assert_eq!(sys.pci.connections(), 1);
+    drop(sys);
+    std::fs::remove_file(state).unwrap();
+    std::fs::remove_file(project).unwrap();
 }
 
 #[tokio::test]

@@ -77,6 +77,12 @@ present with unknown identity fields. CHECKUNIT actively collects IDENTIFY4
 replies through the native two-second quiet interval; it does not infer duplicate count from the
 two-bit MMI state. Use `GET //PROJECT/NETWORK Units` and unit `Type`, `Version`,
 `SerialNumber`, `Address`, and `State` getters for the resulting live snapshot.
+For Rust commissioning work that must preserve duplicates rather than populate
+the service cache, use `cbus_transport::inventory::collect_full_inventory`. It
+requires complete contiguous MMI coverage, retains raw IDENTIFY4 replies with
+multiplicity, bounds each address and the full collection, and marks silent or
+malformed identities partial. Its observations are sequential and are not an
+atomic network snapshot.
 Query `CMQTT CAPABILITIES`; `unit_readdress: true` denotes the readdress path and
 `physical_pp_save_cbus3_nvm: true` denotes the NVM commit path,
 `dynamic_labels: true` denotes the label sender,

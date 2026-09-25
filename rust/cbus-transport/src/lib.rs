@@ -5,6 +5,7 @@
 pub mod conn;
 pub mod flow;
 pub mod framing;
+pub mod inventory;
 pub mod pci;
 pub mod serial_address;
 

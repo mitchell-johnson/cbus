@@ -305,7 +305,15 @@ confirmation plus source/route/serial-correlated receipt, the quiet interval,
 zero replay, interleaved lighting fanout, definite rejection recovery, and
 ambiguous-reply lane faulting. A paused-time service test exercises the complete
 two-unit MATCHDB inventory, move and final verification sequence through a real
-`PciClient` over a duplex fake PCI.
+`PciClient` over a duplex fake PCI. A real-daemon system test also drives that
+workflow through the TCP C-Gate endpoint, checks both exact selected-serial
+requests are sent once, and verifies that C-Gate and MQTT keep one shared PCI
+connection throughout the operation.
+The public `cbus-transport::inventory` collector combines complete contiguous
+MMI coverage with bounded IDENTIFY1/2/4 probes, preserves every duplicate serial
+reply and its raw bytes, and marks silent or malformed unit observations partial.
+Its duplex integration tests cover duplicate identities, silent units, MMI
+rejection, and addressed MMI blocks.
 The real-daemon scene case records an observed level, verifies durable storage,
 plays it as the exact confirmed zero-time ramp, and verifies that acknowledgement
 does not fabricate a level observation.
