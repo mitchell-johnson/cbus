@@ -1,0 +1,128 @@
+{
+  "format": "cbus-cgate-project-identify-native-acceptance-v1",
+  "date": "2026-09-26",
+  "passed": true,
+  "scope": "Owned C-Gate 3.4.0 build 2001 NET PROJECT_IDENTIFY grammar, bytecode semantics and scripted direct-CNI wire acceptance; no live C-Bus or site data",
+  "runtime": {
+    "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+    "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4"
+  },
+  "grammar_cases": [
+    {
+      "command": "NET PROJECT_IDENTIFY",
+      "reply": [
+        "400 Syntax Error: Missing parameter : <interface>"
+      ]
+    },
+    {
+      "command": "NET PROJECT_IDENTIFY cni@127.0.0.1:9 EXTRA",
+      "reply": [
+        "400 Syntax Error: Too many parameters"
+      ]
+    },
+    {
+      "command": "NET PROJECT_IDENTIFY x",
+      "reply": [
+        "470-Bad interface specification for NET0 x",
+        "408 Operation failed: Can not open network (bad interface specification"
+      ]
+    },
+    {
+      "command": "NET PROJECT_IDENTIFY cni@",
+      "reply": [
+        "470-Bad interface specification for NET0 cni@",
+        "408 Operation failed: Can not open network (bad interface specification"
+      ]
+    },
+    {
+      "command": "NET PROJECT_IDENTIFY madeup@127.0.0.1:9",
+      "reply": [
+        "471-Can not create networkNET0 madeup@127.0.0.1:9",
+        "408 Operation failed: Can not open network (Can not create network"
+      ]
+    },
+    {
+      "command": "NET PROJECT_IDENTIFY cni@127.0.0.1:9",
+      "reply": [
+        "408 Operation failed: Can not open network (Open failed: failure opening port"
+      ]
+    }
+  ],
+  "scripted_acceptance": {
+    "interface": "cni@127.0.0.1:<ephemeral>",
+    "mmi_present": {
+      "address": 253,
+      "state": 1
+    },
+    "outbound_lines": [
+      "\\05FF00FAFF00h",
+      "\\46FD002101i",
+      "21021A2102j",
+      "1A2306k"
+    ],
+    "expanded_outbound_packets": [
+      "05FF00FAFF00",
+      "46FD002101",
+      "46FD0021021A2102",
+      "46FD001A2306"
+    ],
+    "accepted_reply_packets": [
+      {
+        "purpose": "IDENTIFY1 fixed-width unit type",
+        "hex": "86FD1000890152454C4159342020F2"
+      },
+      {
+        "purpose": "IDENTIFY2 fixed-width version plus parameter-33 two-byte reply",
+        "hex": "86FD10008902312E302E3030202083210000E1"
+      },
+      {
+        "purpose": "parameter-35 six-byte project identity TEST",
+        "hex": "86FD10008723CE4CB379E79EF8"
+      }
+    ],
+    "reply": [
+      "305 Project=TEST UnitCount=1"
+    ],
+    "notes": [
+      "The CNI compressed common direct-packet prefixes on the second and third unit requests; expanded packets are recorded beside raw outbound lines.",
+      "The six parameter-35 bytes CE 4C B3 79 E7 9E decode to fixed-width TEST and native trims it in the 305 response."
+    ]
+  },
+  "bytecode_semantics": [
+    {
+      "class": "kP",
+      "finding": "NET PROJECT_IDENTIFY passes the supplied interface to the topology explorer in project-identify mode."
+    },
+    {
+      "class": "nu",
+      "finding": "Project-identify mode creates and opens one temporary network, performs one installation MMI, reads CBusBaseNetwork project identity and UnitCount, then emits one 305 response; it does not traverse imported bridge topology."
+    },
+    {
+      "class": "com.clipsal.cgate.cbus.core.CBusBaseNetwork",
+      "methods": [
+        "e(aX)",
+        "l(aX)"
+      ],
+      "finding": "UnitCount is every nonzero MMI state. Candidate scan is numeric, skips address zero, and returns the first unit that level-zero identification can create."
+    },
+    {
+      "class": "de",
+      "finding": "Level-zero discovery sends IDENTIFY2 and parameter-33 count 2 together and accepts an eight-byte fixed-width version plus two-byte reply."
+    },
+    {
+      "class": "com.clipsal.cgate.cbus.core.CBusUnit",
+      "methods": [
+        "e(aX)",
+        "r()"
+      ],
+      "finding": "Project identity recalls parameter 35 length 6 and exposes the decoded string."
+    }
+  ],
+  "cmqttd_boundaries": [
+    "cmqttd reuses its one configured shared PCI/CNI and returns 502 for another otherwise-valid interface instead of opening a second connection.",
+    "The shared SRCHK-enabled connection sends checksummed requests and may send native combined operations as separately correlated frames; response semantics and source correlation are preserved.",
+    "PROJECT_IDENTIFY is read-only and does not populate or persist the imported project cache.",
+    "This scripted acceptance proves direct interface behavior only. It makes no routed, mutation, live-hardware, MQTT-broker or site-topology claim."
+  ]
+}

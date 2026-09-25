@@ -104,10 +104,12 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // guarded secondary-project lifecycle, and a read-only cmqttd-json row.
     // DBNETWORKPATH moved fail_closed_502 -> local_database with native 136
     // COMPACT and 137 OID topology resolution and no PCI traffic.
-    // The eleven maintained AIRCON commands moved fail_closed_502 -> physical.
-    assert_eq!(class_count(RoutingClass::Physical), 46);
-    assert_eq!(class_count(RoutingClass::LocalDatabase), 49);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 335);
+    // The eleven maintained AIRCON commands and NET PROJECT_IDENTIFY moved
+    // fail_closed_502 -> physical. PROJECT_IDENTIFY uses the selected shared
+    // interface's native read-only MMI/parameter-35 workflow.
+    assert_eq!(class_count(RoutingClass::Physical), 47);
+    assert_eq!(class_count(RoutingClass::LocalDatabase), 50);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 333);
     assert_eq!(class_count(RoutingClass::Obsolete400), 1);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here

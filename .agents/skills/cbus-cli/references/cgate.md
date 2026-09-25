@@ -259,6 +259,14 @@ already-modeled address before bus I/O, runs native duplicate challenges
 new identities and MMI state-3 duplicate addresses. Results update the volatile
 physical cache only and retain native progress/result codes (`120`, `303`,
 `408`); they do not create persistent database units.
+`NET PROJECT_IDENTIFY TYPE@ADDRESS` is hardware-backed for the one interface
+already shared with MQTT. It runs one complete MMI, counts every nonzero state,
+skips address zero while scanning candidates, and returns the first readable
+six-byte parameter-35 identity as native `305 Project=... UnitCount=...`. It
+does not update the project cache. A different valid interface returns 502;
+cmqttd never opens a second PCI/CNI for this command. See the retained
+[C-Gate 3.4 native acceptance](../../../../toolkit-cli/research/experiments/2026-09-26/cgate-project-identify-native-acceptance.json)
+for exact grammar, bytecode and scripted wire evidence.
 `NET SET_PROJECT_IDENTIFY //PROJECT/NETWORK NAME` is also hardware-backed.
 It packs the uppercased 1–8 character native six-bit identity, selects the
 first unit in non-error present MMI state one or two with valid IDENTIFY1 data
@@ -269,7 +277,7 @@ older cached `ProjectName`. The typed CLI mK-quotes spaces, quotes and
 backslashes; the cached `ProjectName` is decoded from verified bytes so the
 native `?`/space alias stays canonical. It updates only the volatile physical
 snapshot and does not rename or persist a project. This is distinct from the
-unsupported topology-discovery command `NET PROJECT_IDENTIFY`.
+read-only interface discovery performed by `NET PROJECT_IDENTIFY`.
 Query `CMQTT CAPABILITIES`; `unit_readdress: true` denotes the readdress path and
 `physical_pp_save_cbus3_nvm: true` denotes the NVM commit path,
 `dynamic_labels: true` denotes the label sender,

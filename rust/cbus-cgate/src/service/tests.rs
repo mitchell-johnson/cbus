@@ -1424,6 +1424,7 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["edlt_extended_firmware"], true);
     assert_eq!(document["edlt_applications"], true);
     assert_eq!(document["network_syncnew"], true);
+    assert_eq!(document["network_project_identify"], true);
     assert_eq!(document["network_set_project_identify"], true);
     assert_eq!(document["bridged_read_only_discovery"], true);
     assert_eq!(document["bridged_network_max_hops"], 6);
@@ -4513,6 +4514,221 @@ async fn physical_syncnew_rejects_an_already_modeled_target_without_bus_io() {
             .await
             .is_err(),
         "an already modeled target must fail before physical I/O"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test(start_paused = true)]
+async fn project_identify_uses_shared_interface_and_native_parameter_35() {
+    async fn line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+    async fn reply<W: tokio::io::AsyncWrite + Unpin>(writer: &mut W, source: u8, cal: &[u8]) {
+        let mut bytes = vec![0x86, source, 0x10, 0x00];
+        bytes.extend_from_slice(cal);
+        let sum = bytes.iter().fold(0u8, |sum, byte| sum.wrapping_add(*byte));
+        bytes.push(0u8.wrapping_sub(sum));
+        let mut wire = hex::encode_upper(bytes).into_bytes();
+        wire.extend_from_slice(b"\r\n");
+        writer.write_all(&wire).await.unwrap();
+    }
+    fn mmi(start: u8, count: usize) -> Vec<u8> {
+        let mut states = vec![0; count];
+        if (usize::from(start)..usize::from(start) + count).contains(&4) {
+            states[4 - usize::from(start)] = 1;
+        }
+        let mut wire = Packet::StandardStatus {
+            application: 0xff,
+            block_start: start,
+            states,
+        }
+        .encode_packet()
+        .unwrap();
+        wire.extend_from_slice(b"\r\n");
+        wire
+    }
+
+    let path = state_path();
+    let (pci, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        let _ = line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+    let service = Service::new(&topology_fixture(), None, path.clone(), pci, None).unwrap();
+    let identifying = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[pi] NET PROJECT_IDENTIFY cni@127.0.0.1:10001",
+                )
+                .await
+        }
+    });
+
+    let request = line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\05FF00FAFF00"), "{request:?}");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    for (start, count) in [(0, 88), (88, 88), (176, 80)] {
+        remote_write.write_all(&mmi(start, count)).await.unwrap();
+    }
+    tokio::task::yield_now().await;
+
+    for (attribute, payload) in [(1, b"RELAY4  ".as_slice()), (2, b"1.0.00  ".as_slice())] {
+        let request = line(&mut remote_read).await;
+        assert!(
+            request
+                .windows(4)
+                .any(|window| window == format!("21{attribute:02X}").as_bytes()),
+            "{request:?}"
+        );
+        let code = request[request.len() - 2];
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+        let mut cal = vec![0x81 + payload.len() as u8, attribute];
+        cal.extend_from_slice(payload);
+        reply(&mut remote_write, 4, &cal).await;
+        tokio::task::yield_now().await;
+    }
+
+    let request = line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\4604001A2102"), "{request:?}");
+    reply(&mut remote_write, 4, &[0x83, 33, 0, 0]).await;
+
+    let request = line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\4604001A2306"), "{request:?}");
+    let mut cal = vec![0x87, 35];
+    cal.extend_from_slice(&[0xce, 0x4c, 0xb3, 0x79, 0xe7, 0x9e]);
+    reply(&mut remote_write, 4, &cal).await;
+
+    let response = identifying.await.unwrap();
+    assert_eq!(response.status, 305, "{response:?}");
+    assert_eq!(response.final_text, "305 Project=TEST UnitCount=1");
+    assert!(
+        service.model.lock().await.projects["TOPO"].networks[&254]
+            .physical
+            .is_empty(),
+        "PROJECT_IDENTIFY must not populate the project cache"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn project_identify_pins_native_grammar_and_refuses_a_second_interface() {
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&topology_fixture(), None, path.clone(), pci, None).unwrap();
+    let mut client = ClientState::default();
+    let missing = service
+        .handle(&mut client, "[1] NET PROJECT_IDENTIFY")
+        .await;
+    assert_eq!(
+        missing.final_text,
+        "400 Syntax Error: Missing parameter : <interface>"
+    );
+    let extra = service
+        .handle(
+            &mut client,
+            "[2] NET PROJECT_IDENTIFY cni@127.0.0.1:10001 EXTRA",
+        )
+        .await;
+    assert_eq!(extra.final_text, "400 Syntax Error: Too many parameters");
+    let malformed = service
+        .handle(&mut client, "[3] NET PROJECT_IDENTIFY cni@")
+        .await;
+    assert_eq!(
+        malformed.lines,
+        ["470-Bad interface specification for NET0 cni@"]
+    );
+    assert_eq!(
+        malformed.final_text,
+        "408 Operation failed: Can not open network (bad interface specification"
+    );
+    let other = service
+        .handle(&mut client, "[4] NET PROJECT_IDENTIFY cni@127.0.0.1:10002")
+        .await;
+    assert_eq!(other.status, 502);
+    assert!(
+        tokio::time::timeout(Duration::from_millis(25), remote.read_u8())
+            .await
+            .is_err(),
+        "a non-shared interface must fail before physical I/O"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn project_identify_reconnect_generation_invalidates_the_result() {
+    async fn line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+    fn empty_mmi(start: u8, count: usize) -> Vec<u8> {
+        let mut wire = Packet::StandardStatus {
+            application: 0xff,
+            block_start: start,
+            states: vec![0; count],
+        }
+        .encode_packet()
+        .unwrap();
+        wire.extend_from_slice(b"\r\n");
+        wire
+    }
+
+    let path = state_path();
+    let (pci, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        let _ = line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+    let service = Service::new(&topology_fixture(), None, path.clone(), pci, None).unwrap();
+    let identifying = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[generation] NET PROJECT_IDENTIFY cni@127.0.0.1:10001",
+                )
+                .await
+        }
+    });
+    let request = line(&mut remote_read).await;
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+
+    let gate = service.pci_generation_gate.lock().await;
+    for (start, count) in [(0, 88), (88, 88), (176, 80)] {
+        remote_write
+            .write_all(&empty_mmi(start, count))
+            .await
+            .unwrap();
+    }
+    tokio::task::yield_now().await;
+    service.pci_generation.fetch_add(1, Ordering::AcqRel);
+    drop(gate);
+
+    let response = identifying.await.unwrap();
+    assert_eq!(response.status, 408, "{response:?}");
+    assert_eq!(
+        response.final_text,
+        "408 Operation failed: PCI reconnected during project discovery"
     );
     std::fs::remove_file(path).unwrap();
 }

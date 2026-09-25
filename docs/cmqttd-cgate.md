@@ -105,6 +105,7 @@ explicitly unavailable.
 | LABEL KFIGET / KFISET | Operates on configured-network application paths for native label-capable applications 48–95, 202 and 203. The application token is only the native `LabelSupportingApplication` class/scope gate; it is not encoded into KFIGET's fixed selector `0x1c`. KFIGET performs three source-acknowledged volatile parameter-`0xFF` writes before IDENTIFY attribute `0x3D`; exactly one source-correlated `8D 3D 80` reply produces eight ordered `300` rows, while zero or multiple replies produce native 524 outcomes. KFISET accepts exactly eight values from 0 through 15, packs them low-nibble then high-nibble, and sends four source-acknowledged parameter-`0xFF` writes, stopping at the first failure. Every write and the GET IDENTIFY request is a generation-safe exact-once send with no transport replay. Both commands use the programming lane and optional LOGIN gate |
 | `DO //PROJECT/NETWORK/p/UNIT FactoryDefault` | Sends native `A4 FF 43 B2 B2` exactly once for a database-classified KEYGL5 and reports the 202 receipt separately from post-reset defaults, reboot, address retention and persistence |
 | NET PINGU and GET network Units | Actual direct or one-to-six-bridge installation MMI using cmqttd's negotiated PCI checksum mode. Routed requests use native PPM source routing and exact-once transmission; only the matching Reply Network can contribute blocks. Both forms require positive confirmation and contiguous coverage of all addresses 0–255, replace only the addressed network's volatile cache, and report native sorted `302-Units=` output |
+| NET PROJECT_IDENTIFY | Runs the native interface-rooted read-only discovery on cmqttd's configured shared PCI/CNI: one complete installation MMI, all nonzero states counted, address zero skipped, and level-zero IDENTIFY1/IDENTIFY2/parameter-33 discovery followed by a source-correlated six-byte parameter-35 recall from the first readable unit. It returns native `305 Project=NAME UnitCount=N` (or `Project=null`) without changing a project or physical cache. The interface type is case-insensitive and its address must exactly match the imported shared interface; another valid interface returns 502 instead of opening a second connection |
 | NET SYNC and cached unit getters | Uses the configured direct-interface hint or BASIC discovery, then performs complete direct or one-to-six-bridge MMI and confirmed IDENTIFY1/2 plus bounded IDENTIFY4 for every present address. Routed replies must match the first bridge, remaining Reply Network and replying unit; other routes and direct replies are ignored. The addressed network cache is replaced atomically and its sync/duplicate events carry that network address. Direct KEYGL5 metadata retains the configured/fresh type, non-error MMI and unique known-serial guards before the captured OEM `0xFB`, applications and `0xFA` sequence. Those source-only OEM reads are not route-proven and therefore remain disabled for bridged networks. Cached `GET` issues no bus I/O and `Version` remains IDENTIFY2. Reconnect or transport loss clears every network's volatile presence/level cache, invalidates an in-flight snapshot before commit, returns 408, and emits no false sync-ok |
 | NET SYNCNEW | Five complete MMI passes for direct networks. Targeted mode rejects an address already in the model, runs the native three duplicate challenges, and reads IDENTIFY1/2/4; general mode reports new identities and MMI state-3 duplicates. Results update the volatile physical cache and retain native progress/result codes without creating database units |
 | NET SET_PROJECT_IDENTIFY | Uppercases and packs the 1–8 character native six-bit value, obtains a fresh complete MMI, and selects the first unit in non-error present state one or two that supplies valid IDENTIFY1 data plus exactly one valid known IDENTIFY4 serial in a complete quiet window. It stores the six bytes at parameter 35 and requires an exact RECALL before returning 200. MMI state three, multiple serial replies, unknown serials, and malformed identities are skipped; a failed or uncertain STORE/readback invalidates any older cached `ProjectName`. The database is not changed |
@@ -277,9 +278,17 @@ physical snapshot's `ProjectName` field by decoding the verified bytes,
 including the native `?`/space alias, with eight-character padding. A failed
 or uncertain STORE/readback removes an older cached `ProjectName` so GET cannot
 serve stale physical state. It does not rename, select, create, or persist a
-project. The separate `NET PROJECT_IDENTIFY`
-topology-discovery workflow remains unimplemented. A valid target for another
-loaded network fails closed with 502 rather than reporting a local success.
+project. The separate `NET PROJECT_IDENTIFY TYPE@ADDRESS` command is read-only
+and interface-rooted, as in C-Gate 3.4: it runs one MMI, counts every nonzero
+address, skips address zero while searching, identifies candidates in numeric
+order, and recalls the six-byte parameter 35 from the first readable unit. It
+returns a single native `305 Project=NAME UnitCount=N` response and does not
+populate cmqttd's project cache. cmqttd accepts only the imported interface
+already used by MQTT; a different valid interface fails closed with 502 rather
+than creating a second transport. A valid SET target for another loaded
+network likewise fails closed instead of reporting a local success. The exact
+C-Gate 3.4 grammar, bytecode path and successful scripted wire exchange are
+retained in the [native PROJECT_IDENTIFY acceptance](../toolkit-cli/research/experiments/2026-09-26/cgate-project-identify-native-acceptance.json).
 
 ## Live label reads
 
@@ -411,8 +420,8 @@ The existing mock dispatches 431 command paths. That is **not** evidence that
 all 431 have physical implementations in this service. `CMQTT CAPABILITIES`
 returns `full_cgate_compatibility: false`; unimplemented physical operations
 return 502. The enumerable gap tracker is the executable capability matrix in
-`cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 46
-physical, 49 local/session, 335 fail-closed 502, and 1 obsolete 400 over the
+`cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 47
+physical, 50 local/session, 333 fail-closed 502, and 1 obsolete 400 over the
 431 inventoried paths, plus a separately asserted 6-row supplement for
 non-inventoried service commands. Full replacement still requires:
 
@@ -426,8 +435,9 @@ non-inventoried service commands. Full replacement still requires:
   silently without a write while tag-filtered parameters stay dirty for a later
   matching-tags SAVE; a bare 200 covers the tag-selected subset only.
 - Routed write/programming operations, general serial-address commissioning,
-  topology-wide `NET PROJECT_IDENTIFY` discovery, and the remaining
-  commissioning state transitions. The distinct physical
+  arbitrary second-interface discovery, and the remaining commissioning state
+  transitions. The read-only interface-rooted `NET PROJECT_IDENTIFY` workflow
+  is implemented for cmqttd's configured shared interface. The distinct physical
   `NET SET_PROJECT_IDENTIFY` parameter-35 write is implemented with readback.
   Direct-network `NET SYNCNEW` is implemented in both native forms: five
   merged installation MMI passes, the targeted unit form's three exact CAL

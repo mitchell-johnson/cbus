@@ -710,6 +710,7 @@ impl Service {
             // Keep the new flat flag out of the already recursion-deep json!
             // invocation while retaining one static capability document.
             capabilities["label_kfi"] = serde_json::Value::Bool(true);
+            capabilities["network_project_identify"] = serde_json::Value::Bool(true);
             capabilities["label_clear"] = serde_json::Value::Bool(true);
             capabilities["edlt_widget_groups"] = serde_json::Value::Bool(true);
             capabilities["edlt_extended_firmware"] = serde_json::Value::Bool(true);
@@ -901,6 +902,9 @@ impl Service {
         }
         if verb == "NET" && sub == "PINGU" {
             return self.net_pingu(client, line, tag, &words).await;
+        }
+        if verb == "NET" && sub == "PROJECT_IDENTIFY" {
+            return self.net_project_identify(tag, &words).await;
         }
         if verb == "NET" && sub == "SET_PROJECT_IDENTIFY" {
             return self
@@ -2086,6 +2090,117 @@ impl Service {
             statuses.push((408, "No new units found".to_string()));
         }
         syncnew_response(tag, statuses)
+    }
+
+    /// Identify the project attached to the service's one shared physical
+    /// interface. Native C-Gate creates a temporary network for the supplied
+    /// interface, runs one installation MMI, counts every non-zero address,
+    /// then reads parameter 35 from the first identifiable non-zero unit.
+    ///
+    /// cmqttd deliberately owns one PCI/CNI connection for MQTT and C-Gate.
+    /// Consequently only the imported interface that backs that connection
+    /// is admitted; another otherwise-valid interface remains fail-closed
+    /// instead of opening a second transport behind MQTT's back.
+    async fn net_project_identify(&self, tag: &str, words: &[&str]) -> Response {
+        let _commands = self.commands.lock().await;
+        let Some(interface) = words.get(2) else {
+            return err(
+                tag,
+                400,
+                "400 Syntax Error: Missing parameter : <interface>",
+            );
+        };
+        if words.len() > 3 {
+            return err(tag, 400, "400 Syntax Error: Too many parameters");
+        }
+        let Some((interface_type, interface_address)) = parse_interface_spec(interface) else {
+            return Response {
+                tag: tag.to_string(),
+                lines: vec![format!(
+                    "470-Bad interface specification for NET0 {interface}"
+                )],
+                final_text:
+                    "408 Operation failed: Can not open network (bad interface specification"
+                        .to_string(),
+                status: 408,
+            };
+        };
+
+        let matches_shared_interface = {
+            let model = self.model.lock().await;
+            let network = &model.projects[&self.project].networks[&self.network];
+            network.iface_type.eq_ignore_ascii_case(interface_type)
+                && network.iface_addr == interface_address
+        };
+        if !matches_shared_interface {
+            return err(
+                tag,
+                502,
+                "502 Command requires the configured shared physical interface",
+            );
+        }
+
+        let generation = self.pci_generation.load(Ordering::Acquire);
+        let pci = self.pci.read().await.clone();
+        let states = match pci.install_mmi().await {
+            Ok(states) if states.len() == 256 => states,
+            Ok(_) => {
+                return err(
+                    tag,
+                    408,
+                    "408 Operation failed: Installation MMI returned incomplete address coverage",
+                );
+            }
+            Err(error) => {
+                return err(
+                    tag,
+                    408,
+                    &format!("408 Operation failed: Installation MMI failed: {error}"),
+                );
+            }
+        };
+        let unit_count = states.iter().filter(|state| **state != 0).count();
+        let mut project = None;
+        for address in 1u16..=255 {
+            let address = address as u8;
+            if states[address as usize] == 0 {
+                continue;
+            }
+            // Native creates a level-zero unit before asking it for
+            // ProjectName: IDENTIFY1, then IDENTIFY2 plus parameter 33. Keep
+            // those prerequisites so a stray parameter-35 reply from an
+            // address that cannot be identified cannot become the result.
+            if project_identify_candidate(&pci, address).await.is_err() {
+                continue;
+            }
+            let Ok(encoded) = pci.recall_parameter(address, 35, 6).await else {
+                continue;
+            };
+            let Ok(decoded) = cbus_protocol::project_identity::decode_project_identity(&encoded)
+            else {
+                continue;
+            };
+            project = Some(decoded.trim().to_string());
+            break;
+        }
+
+        let _generation_gate = self.pci_generation_gate.lock().await;
+        if self.pci_generation.load(Ordering::Acquire) != generation {
+            return err(
+                tag,
+                408,
+                "408 Operation failed: PCI reconnected during project discovery",
+            );
+        }
+        Response {
+            tag: tag.to_string(),
+            lines: Vec::new(),
+            final_text: format!(
+                "305 Project={} UnitCount={unit_count}",
+                project.as_deref().unwrap_or("null")
+            ),
+            status: 305,
+        }
     }
 
     async fn net_set_project_identify(
@@ -5941,6 +6056,27 @@ fn known_serials(replies: &[Vec<u8>]) -> io::Result<HashSet<String>> {
 
 fn mmi_state_is_present_non_error(state: u8) -> bool {
     matches!(state, 1 | 2)
+}
+
+fn parse_interface_spec(specification: &str) -> Option<(&str, &str)> {
+    let (interface_type, address) = specification.split_once('@')?;
+    if interface_type.is_empty() || address.is_empty() || address.contains('@') {
+        return None;
+    }
+    Some((interface_type, address))
+}
+
+async fn project_identify_candidate(pci: &Arc<PciClient>, address: u8) -> io::Result<()> {
+    pci.identify_first(address, 1)
+        .await?
+        .ok_or_else(|| io::Error::other("unit type did not reply"))
+        .and_then(|data| identity_text(&data, "unit type"))?;
+    pci.identify_first(address, 2)
+        .await?
+        .ok_or_else(|| io::Error::other("firmware version did not reply"))
+        .and_then(|data| identity_text(&data, "firmware version"))?;
+    let _applications = pci.recall_parameter(address, 33, 2).await?;
+    Ok(())
 }
 
 async fn syncnew_identity(pci: &Arc<PciClient>, address: u8) -> io::Result<Unit> {
