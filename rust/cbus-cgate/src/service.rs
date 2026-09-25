@@ -728,10 +728,12 @@ impl Service {
             capabilities["cgl_import"] = serde_json::Value::Bool(false);
             capabilities["cgl_export"] = serde_json::Value::Bool(false);
             capabilities["bridged_read_only_discovery"] = serde_json::Value::Bool(true);
+            capabilities["bridged_syncnew_general"] = serde_json::Value::Bool(true);
             capabilities["bridged_read_only_commands"] = serde_json::json!([
                 "DBNETWORKPATH",
                 "NET PINGU",
                 "NET SYNC",
+                "NET SYNCNEW",
                 "NET CHECKUNIT",
                 "DO SYNC"
             ]);
@@ -1919,18 +1921,41 @@ impl Service {
         if validation.status >= 400 || !(3..=4).contains(&words.len()) {
             return validation;
         }
-        if !self.bound_network(words[2]) {
-            return validation;
-        }
+        let Some(target) = self.addressed_network(words[2]) else {
+            return err(
+                tag,
+                502,
+                "502 Command requires a physical backend that is not implemented",
+            );
+        };
+        let route = match self.route_to_network(target).await {
+            Ok(route) => route,
+            Err(error) => {
+                return syncnew_response(
+                    tag,
+                    vec![(408, format!("Physical network route unavailable:{error}"))],
+                );
+            }
+        };
         let selected = words.get(3).map(|unit| {
             unit.parse::<u8>()
                 .expect("the staged C-Gate model validated the unit address")
         });
+        // Native routed duplicate challenges have not been captured or
+        // published. The read-only whole-network form is evidenced; keep the
+        // optional targeted commissioning form closed before physical I/O.
+        if selected.is_some() && !route.is_empty() {
+            return err(
+                tag,
+                502,
+                "502 Routed NET SYNCNEW targeted discovery is not implemented",
+            );
+        }
 
         if let Some(address) = selected {
             let already_modeled = {
                 let model = self.model.lock().await;
-                let network = &model.projects[&self.project].networks[&self.network];
+                let network = &model.projects[&self.project].networks[&target];
                 network.units.contains_key(&address) || network.physical.contains_key(&address)
             };
             if already_modeled {
@@ -1938,6 +1963,7 @@ impl Service {
             }
         }
 
+        let pci_generation = self.pci_generation.load(Ordering::Acquire);
         let pci = self.pci.read().await.clone();
         let interface_units = {
             let model = self.model.lock().await;
@@ -1969,7 +1995,11 @@ impl Service {
         let mut statuses = Vec::new();
         let mut merged = vec![0u8; 256];
         for pass in 1..=5 {
-            let states = match pci.install_mmi().await {
+            let states = match if route.is_empty() {
+                pci.install_mmi().await
+            } else {
+                pci.install_mmi_routed(&route).await
+            } {
                 Ok(states) => states,
                 Err(error) => {
                     statuses.push((408, format!("Installation MMI failure:{error}")));
@@ -2007,11 +2037,20 @@ impl Service {
                     }
                 };
                 if count > 1 {
-                    self.remove_physical_unit(address).await;
-                    let _ = self.events.send(format!(
-                        "#e# net {} syncnew duplicate {address}",
-                        self.network
-                    ));
+                    if let Err(error) = self
+                        .commit_syncnew_changes(
+                            target,
+                            pci_generation,
+                            &pci,
+                            &[address],
+                            Vec::new(),
+                            vec![format!("#e# net {target} syncnew duplicate {address}")],
+                        )
+                        .await
+                    {
+                        statuses.push((408, error));
+                        return syncnew_response(tag, statuses);
+                    }
                     statuses.push((408, format!("Duplicate units at address {address}")));
                     return syncnew_response(tag, statuses);
                 }
@@ -2021,23 +2060,48 @@ impl Service {
             match syncnew_identity(&pci, address).await {
                 Ok(unit) => {
                     let detail = syncnew_unit_detail(&unit);
-                    self.store_physical_unit(unit).await;
-                    let _ = self
-                        .events
-                        .send(format!("#e# net {} syncnew unit {address}", self.network));
-                    statuses.push((303, detail));
+                    match self
+                        .commit_syncnew_changes(
+                            target,
+                            pci_generation,
+                            &pci,
+                            &[],
+                            vec![unit],
+                            vec![format!("#e# net {target} syncnew unit {address}")],
+                        )
+                        .await
+                    {
+                        Ok(()) => statuses.push((303, detail)),
+                        Err(error) => statuses.push((408, error)),
+                    }
                 }
-                Err(error) => statuses.push((
-                    408,
-                    format!("Identify failed for unit at address {address}: {error}"),
-                )),
+                Err(error) => {
+                    if let Err(invalidated) = self
+                        .commit_syncnew_changes(
+                            target,
+                            pci_generation,
+                            &pci,
+                            &[],
+                            Vec::new(),
+                            Vec::new(),
+                        )
+                        .await
+                    {
+                        statuses.push((408, invalidated));
+                    } else {
+                        statuses.push((
+                            408,
+                            format!("Identify failed for unit at address {address}: {error}"),
+                        ));
+                    }
+                }
             }
             return syncnew_response(tag, statuses);
         }
 
         let modeled_identity = {
             let model = self.model.lock().await;
-            let network = &model.projects[&self.project].networks[&self.network];
+            let network = &model.projects[&self.project].networks[&target];
             (0u16..=255)
                 .map(|address| {
                     let address = address as u8;
@@ -2053,14 +2117,14 @@ impl Service {
                 .collect::<Vec<_>>()
         };
         let mut found = false;
+        let mut removals = Vec::new();
+        let mut units = Vec::new();
+        let mut events = Vec::new();
         for (address, state) in merged.into_iter().enumerate() {
             let address = address as u8;
             if state == 3 {
-                self.remove_physical_unit(address).await;
-                let _ = self.events.send(format!(
-                    "#e# net {} syncnew duplicate {address}",
-                    self.network
-                ));
+                removals.push(address);
+                events.push(format!("#e# net {target} syncnew duplicate {address}"));
                 statuses.push((303, format!("Duplicate Units Found: address={address}")));
                 found = true;
                 continue;
@@ -2070,13 +2134,11 @@ impl Service {
             {
                 continue;
             }
-            match syncnew_identity(&pci, address).await {
+            match syncnew_identity_routed(&pci, &route, address).await {
                 Ok(unit) => {
                     let detail = syncnew_unit_detail(&unit);
-                    self.store_physical_unit(unit).await;
-                    let _ = self
-                        .events
-                        .send(format!("#e# net {} syncnew unit {address}", self.network));
+                    units.push(unit);
+                    events.push(format!("#e# net {target} syncnew unit {address}"));
                     statuses.push((303, detail));
                 }
                 Err(_) => statuses.push((
@@ -2089,7 +2151,60 @@ impl Service {
         if !found {
             statuses.push((408, "No new units found".to_string()));
         }
+        if let Err(error) = self
+            .commit_syncnew_changes(target, pci_generation, &pci, &removals, units, events)
+            .await
+        {
+            statuses.push((408, error));
+        }
         syncnew_response(tag, statuses)
+    }
+
+    /// Publish a SYNCNEW discovery batch only while it still belongs to the
+    /// active shared PCI generation. Holding the generation gate makes the
+    /// transport check, cache update and event publication indivisible with
+    /// respect to `set_pci`; a stale routed scan cannot repopulate either the
+    /// direct or bridged cache after reconnect invalidation.
+    async fn commit_syncnew_changes(
+        &self,
+        target: u8,
+        generation: u64,
+        pci: &Arc<PciClient>,
+        removals: &[u8],
+        units: Vec<Unit>,
+        events: Vec<String>,
+    ) -> Result<(), String> {
+        let _generation_gate = self.pci_generation_gate.lock().await;
+        let current_pci = self.pci.read().await;
+        if self.pci_generation.load(Ordering::Acquire) != generation
+            || !Arc::ptr_eq(&current_pci, pci)
+        {
+            return Err("Discovery invalidated by PCI reconnect".to_string());
+        }
+        if !pci.is_connected() {
+            return Err("Discovery lost the PCI connection".to_string());
+        }
+        drop(current_pci);
+
+        if let Some(network) = self
+            .model
+            .lock()
+            .await
+            .projects
+            .get_mut(&self.project)
+            .and_then(|project| project.networks.get_mut(&target))
+        {
+            for address in removals {
+                network.physical.remove(address);
+            }
+            for unit in units {
+                network.physical.insert(unit.address, unit);
+            }
+        }
+        for event in events {
+            let _ = self.events.send(event);
+        }
+        Ok(())
     }
 
     /// Identify the project attached to the service's one shared physical
@@ -2394,32 +2509,6 @@ impl Service {
             .and_then(|network| network.physical.get_mut(&address))
         {
             unit.fields.remove("ProjectName");
-        }
-    }
-
-    async fn remove_physical_unit(&self, address: u8) {
-        if let Some(network) = self
-            .model
-            .lock()
-            .await
-            .projects
-            .get_mut(&self.project)
-            .and_then(|project| project.networks.get_mut(&self.network))
-        {
-            network.physical.remove(&address);
-        }
-    }
-
-    async fn store_physical_unit(&self, unit: Unit) {
-        if let Some(network) = self
-            .model
-            .lock()
-            .await
-            .projects
-            .get_mut(&self.project)
-            .and_then(|project| project.networks.get_mut(&self.network))
-        {
-            network.physical.insert(unit.address, unit);
         }
     }
 
@@ -6080,17 +6169,33 @@ async fn project_identify_candidate(pci: &Arc<PciClient>, address: u8) -> io::Re
 }
 
 async fn syncnew_identity(pci: &Arc<PciClient>, address: u8) -> io::Result<Unit> {
-    let unit_type = pci
-        .identify_first(address, 1)
-        .await?
-        .ok_or_else(|| io::Error::other("unit type did not reply"))
-        .and_then(|data| identity_text(&data, "unit type"))?;
-    let firmware = pci
-        .identify_first(address, 2)
-        .await?
-        .ok_or_else(|| io::Error::other("firmware version did not reply"))
-        .and_then(|data| identity_text(&data, "firmware version"))?;
-    let replies = pci.identify_all(address, 4).await?;
+    syncnew_identity_routed(pci, &[], address).await
+}
+
+async fn syncnew_identity_routed(
+    pci: &Arc<PciClient>,
+    route: &[u8],
+    address: u8,
+) -> io::Result<Unit> {
+    let unit_type = if route.is_empty() {
+        pci.identify_first(address, 1).await
+    } else {
+        pci.identify_first_routed(route, address, 1).await
+    }?
+    .ok_or_else(|| io::Error::other("unit type did not reply"))
+    .and_then(|data| identity_text(&data, "unit type"))?;
+    let firmware = if route.is_empty() {
+        pci.identify_first(address, 2).await
+    } else {
+        pci.identify_first_routed(route, address, 2).await
+    }?
+    .ok_or_else(|| io::Error::other("firmware version did not reply"))
+    .and_then(|data| identity_text(&data, "firmware version"))?;
+    let replies = if route.is_empty() {
+        pci.identify_all(address, 4).await
+    } else {
+        pci.identify_all_routed(route, address, 4).await
+    }?;
     if replies.len() > 1 {
         return Err(io::Error::new(
             io::ErrorKind::InvalidData,

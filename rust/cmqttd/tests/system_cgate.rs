@@ -80,6 +80,14 @@ fn routed_installation_mmi_block(
     pci_wire(&routed)
 }
 
+fn routed_reply(bridges: &[u8], unit: u8, cal: &[u8]) -> Vec<u8> {
+    let mut body = vec![0x86, bridges[0], 0x10, bridges.len() as u8];
+    body.extend_from_slice(&bridges[1..]);
+    body.push(unit);
+    body.extend_from_slice(cal);
+    pci_wire(&body)
+}
+
 #[tokio::test]
 async fn bridged_pingu_keeps_mqtt_live_and_plain_tcp_fault_is_clean() {
     let project = cbus_test_support::proc::temp_path("bridged-project.xml");
@@ -161,6 +169,7 @@ async fn bridged_pingu_keeps_mqtt_live_and_plain_tcp_fault_is_clean() {
     assert!(path.contains("136 FD"), "{path:?}");
     let capabilities = command(&mut reader, &mut writer, "CMQTT CAPABILITIES").await;
     assert!(capabilities.contains("\"bridged_read_only_discovery\":true"));
+    assert!(capabilities.contains("\"bridged_syncnew_general\":true"));
     assert!(capabilities.contains("\"bridged_network_max_hops\":6"));
 
     let pingu = command(&mut reader, &mut writer, "NET PINGU //TOPO/253");
@@ -190,6 +199,83 @@ async fn bridged_pingu_keeps_mqtt_live_and_plain_tcp_fault_is_clean() {
     let (pingu, ()) = tokio::join!(pingu, peer);
     assert!(pingu.contains("302-Units=4"), "{pingu:?}");
     assert_eq!(sys.pci.connections(), 1);
+
+    let publishes_before_syncnew = sys
+        .broker
+        .find_publishes("homeassistant/light/cbus_1/state")
+        .len();
+    let syncnew = command(&mut reader, &mut writer, "NET SYNCNEW //TOPO/253");
+    let peer = async {
+        // PINGU emitted occurrence one. SYNCNEW performs five complete routed
+        // installation MMIs through the same CNI connection.
+        for occurrence in 2..=6 {
+            require(STARTUP, "routed SYNCNEW installation MMI", || {
+                sys.pci.count_payload("03FD09FFFAFF00FF") >= occurrence
+            })
+            .await;
+            if occurrence == 2 {
+                // Direct-network MQTT observation remains live while the
+                // routed MMI collector owns an untagged request window.
+                sys.pci.inject(&pci_wire(&[5, 4, 56, 0, 121, 1]));
+                require(STARTUP, "MQTT state during routed SYNCNEW", || {
+                    sys.broker
+                        .find_publishes("homeassistant/light/cbus_1/state")
+                        .len()
+                        > publishes_before_syncnew
+                })
+                .await;
+            }
+            for (start, count) in [(0, 88), (88, 88), (176, 80)] {
+                sys.pci
+                    .inject(&routed_installation_mmi_block(&[253], start, count, &[4]));
+            }
+        }
+
+        for (attribute, value) in [(1u8, b"KEYE1".as_slice()), (2, b"1.2.30".as_slice())] {
+            let prefix = format!("46FD090421{attribute:02X}");
+            require(STARTUP, "routed SYNCNEW identity", || {
+                sys.pci
+                    .frames()
+                    .iter()
+                    .any(|frame| frame.payload.starts_with(&prefix))
+            })
+            .await;
+            let mut cal = vec![0x80 | (value.len() as u8 + 1), attribute];
+            cal.extend_from_slice(value);
+            // A complete-looking neighbour-route response must not satisfy
+            // the target transaction.
+            sys.pci.inject(&routed_reply(&[252], 4, &cal));
+            sys.pci.inject(&routed_reply(&[253], 4, &cal));
+        }
+
+        require(STARTUP, "routed SYNCNEW serial identity", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload.starts_with("46FD09042104"))
+        })
+        .await;
+        let serial = serial_identity("101136.1558", 4);
+        let mut cal = vec![0x80 | (serial.len() as u8 + 1), 4];
+        cal.extend_from_slice(&serial);
+        sys.pci.inject(&routed_reply(&[253], 4, &cal));
+    };
+    let (syncnew, ()) = tokio::join!(syncnew, peer);
+    assert!(
+        syncnew
+            .contains("303 New Unit Found: address=4 type=KEYE1 version=1.2.30 serial=101136.1558"),
+        "{syncnew:?}"
+    );
+    assert_eq!(sys.pci.connections(), 1);
+
+    let before = sys.pci.frames().len();
+    let targeted = command(&mut reader, &mut writer, "NET SYNCNEW //TOPO/253 5").await;
+    assert!(targeted.contains("502 Routed NET SYNCNEW targeted discovery"));
+    assert_eq!(
+        sys.pci.frames().len(),
+        before,
+        "unevidenced routed duplicate challenges must fail before PCI I/O"
+    );
 
     let before = sys.pci.frames().len();
     let mutation = command(&mut reader, &mut writer, "ON //TOPO/253/56/1").await;

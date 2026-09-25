@@ -309,6 +309,215 @@ async fn bridged_sync_populates_identity_rejects_cross_route_and_clears_on_recon
 }
 
 #[tokio::test(start_paused = true)]
+async fn bridged_syncnew_all_discovers_into_only_the_target_cache() {
+    async fn line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+
+    let path = state_path();
+    let (pci_client, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci_client.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+    let service = Service::new(&topology_fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut events = service.events.subscribe();
+    let command = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[syncnew] NET SYNCNEW //TOPO/253",
+                )
+                .await
+        }
+    });
+
+    for _ in 0..5 {
+        let request = line(&mut remote_read).await;
+        assert!(request.starts_with(b"\\03FD09FFFAFF00FF"), "{request:?}");
+        let code = request[request.len() - 2];
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+        for (start, count) in [(0, 88), (88, 88), (176, 80)] {
+            remote_write
+                .write_all(&routed_mmi_block(&[253], start, count, &[(4, 1)]))
+                .await
+                .unwrap();
+        }
+    }
+
+    for (attribute, value) in [(1u8, b"KEYE1".as_slice()), (2u8, b"1.2.30".as_slice())] {
+        let request = line(&mut remote_read).await;
+        assert!(
+            request.starts_with(format!("\\46FD090421{attribute:02X}").as_bytes()),
+            "{request:?}"
+        );
+        let code = request[request.len() - 2];
+        // A matching source address on another route cannot satisfy this
+        // routed discovery transaction.
+        let mut cal = vec![0x80 | (value.len() as u8 + 1), attribute];
+        cal.extend_from_slice(value);
+        routed_pci_reply(&mut remote_write, &[252], 4, &cal).await;
+        routed_pci_reply(&mut remote_write, &[253], 4, &cal).await;
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+    }
+
+    let request = line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\46FD09042104"), "{request:?}");
+    let code = request[request.len() - 2];
+    let serial = [
+        0x38, 0xff, 0xff, 0xff, 0xff, 0x18, 0xb1, 0x06, 0x16, 0xa2, 0x00, 0x05,
+    ];
+    let mut cal = vec![0x8d, 4];
+    cal.extend_from_slice(&serial);
+    routed_pci_reply(&mut remote_write, &[253], 4, &cal).await;
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    tokio::time::advance(Duration::from_secs(2)).await;
+    tokio::task::yield_now().await;
+
+    let response = command.await.unwrap();
+    assert_eq!(response.status, 303, "{response:?}");
+    assert_eq!(response.lines.len(), 5, "{response:?}");
+    assert_eq!(response.lines[0], "120-completed MMI 1 of 5.");
+    assert_eq!(response.lines[4], "120-completed MMI 5 of 5.");
+    assert_eq!(
+        response.final_text,
+        "303 New Unit Found: address=4 type=KEYE1 version=1.2.30 serial=101136.1558"
+    );
+    {
+        let model = service.model.lock().await;
+        let unit = &model.projects["TOPO"].networks[&253].physical[&4];
+        assert_eq!(unit.unit_type, "KEYE1");
+        assert_eq!(unit.firmware, "1.2.30");
+        assert_eq!(unit.serial, "101136.1558");
+        assert!(model.projects["TOPO"].networks[&254].physical.is_empty());
+    }
+    assert_eq!(events.recv().await.unwrap(), "#e# net 253 syncnew unit 4");
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn bridged_syncnew_target_remains_fail_closed_before_bus_io() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&topology_fixture(), None, path.clone(), pci_client, None).unwrap();
+    let response = service
+        .handle(
+            &mut ClientState::default(),
+            "[target] NET SYNCNEW //TOPO/253 5",
+        )
+        .await;
+    assert_eq!(response.status, 502, "{response:?}");
+    assert_eq!(
+        response.final_text,
+        "502 Routed NET SYNCNEW targeted discovery is not implemented"
+    );
+    assert!(
+        tokio::time::timeout(Duration::from_millis(25), remote.read_u8())
+            .await
+            .is_err(),
+        "an unevidenced routed duplicate challenge must fail before PCI I/O"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test(start_paused = true)]
+async fn bridged_syncnew_reconnect_discards_the_staged_cache_and_event() {
+    async fn line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+
+    let path = state_path();
+    let (pci_client, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci_client.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+    let service = Service::new(&topology_fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut events = service.events.subscribe();
+    let command = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[generation] NET SYNCNEW //TOPO/253",
+                )
+                .await
+        }
+    });
+
+    for _ in 0..5 {
+        let request = line(&mut remote_read).await;
+        let code = request[request.len() - 2];
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+        for (start, count) in [(0, 88), (88, 88), (176, 80)] {
+            remote_write
+                .write_all(&routed_mmi_block(&[253], start, count, &[(4, 1)]))
+                .await
+                .unwrap();
+        }
+    }
+    for (attribute, value) in [(1u8, b"KEYE1".as_slice()), (2u8, b"1.2.30".as_slice())] {
+        let request = line(&mut remote_read).await;
+        let code = request[request.len() - 2];
+        let mut cal = vec![0x80 | (value.len() as u8 + 1), attribute];
+        cal.extend_from_slice(value);
+        routed_pci_reply(&mut remote_write, &[253], 4, &cal).await;
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+    }
+    let request = line(&mut remote_read).await;
+    let code = request[request.len() - 2];
+    let serial = [
+        0x38, 0xff, 0xff, 0xff, 0xff, 0x18, 0xb1, 0x06, 0x16, 0xa2, 0x00, 0x05,
+    ];
+    let mut cal = vec![0x8d, 4];
+    cal.extend_from_slice(&serial);
+    let gate = service.pci_generation_gate.lock().await;
+    routed_pci_reply(&mut remote_write, &[253], 4, &cal).await;
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    tokio::time::advance(Duration::from_secs(2)).await;
+    tokio::task::yield_now().await;
+    service.pci_generation.fetch_add(1, Ordering::AcqRel);
+    drop(gate);
+
+    let response = command.await.unwrap();
+    assert_eq!(response.status, 408, "{response:?}");
+    assert_eq!(
+        response.final_text,
+        "408 Operation failed: Discovery invalidated by PCI reconnect"
+    );
+    assert!(
+        service.model.lock().await.projects["TOPO"].networks[&253]
+            .physical
+            .is_empty(),
+        "a stale routed identity must not repopulate the volatile cache"
+    );
+    assert!(matches!(
+        events.try_recv(),
+        Err(tokio::sync::broadcast::error::TryRecvError::Empty)
+    ));
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test(start_paused = true)]
 async fn bridged_checkunit_reconnect_returns_408_without_a_stale_event() {
     let path = state_path();
     let (pci_client, remote) = pci();
@@ -1427,6 +1636,7 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["network_project_identify"], true);
     assert_eq!(document["network_set_project_identify"], true);
     assert_eq!(document["bridged_read_only_discovery"], true);
+    assert_eq!(document["bridged_syncnew_general"], true);
     assert_eq!(document["bridged_network_max_hops"], 6);
     assert_eq!(
         document["bridged_read_only_commands"],
@@ -1434,6 +1644,7 @@ async fn capabilities_report_observation_without_device_readback() {
             "DBNETWORKPATH",
             "NET PINGU",
             "NET SYNC",
+            "NET SYNCNEW",
             "NET CHECKUNIT",
             "DO SYNC"
         ])

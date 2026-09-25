@@ -120,7 +120,7 @@ explicitly unavailable.
 | NET PINGU and GET network Units | Actual direct or one-to-six-bridge installation MMI using cmqttd's negotiated PCI checksum mode. Routed requests use native PPM source routing and exact-once transmission; only the matching Reply Network can contribute blocks. Both forms require positive confirmation and contiguous coverage of all addresses 0–255, replace only the addressed network's volatile cache, and report native sorted `302-Units=` output |
 | NET PROJECT_IDENTIFY | Runs the native interface-rooted read-only discovery on cmqttd's configured shared PCI/CNI: one complete installation MMI, all nonzero states counted, address zero skipped, and level-zero IDENTIFY1/IDENTIFY2/parameter-33 discovery followed by a source-correlated six-byte parameter-35 recall from the first readable unit. It returns native `305 Project=NAME UnitCount=N` (or `Project=null`) without changing a project or physical cache. The interface type is case-insensitive and its address must exactly match the imported shared interface; another valid interface returns 502 instead of opening a second connection |
 | NET SYNC and cached unit getters | Uses the configured direct-interface hint or BASIC discovery, then performs complete direct or one-to-six-bridge MMI and confirmed IDENTIFY1/2 plus bounded IDENTIFY4 for every present address. Routed replies must match the first bridge, remaining Reply Network and replying unit; other routes and direct replies are ignored. The addressed network cache is replaced atomically and its sync/duplicate events carry that network address. Direct KEYGL5 metadata retains the configured/fresh type, non-error MMI and unique known-serial guards before the captured OEM `0xFB`, applications and `0xFA` sequence. Those source-only OEM reads are not route-proven and therefore remain disabled for bridged networks. Cached `GET` issues no bus I/O and `Version` remains IDENTIFY2. Reconnect or transport loss clears every network's volatile presence/level cache, invalidates an in-flight snapshot before commit, returns 408, and emits no false sync-ok |
-| NET SYNCNEW | Five complete MMI passes for direct networks. Targeted mode rejects an address already in the model, runs the native three duplicate challenges, and reads IDENTIFY1/2/4; general mode reports new identities and MMI state-3 duplicates. Results update the volatile physical cache and retain native progress/result codes without creating database units |
+| NET SYNCNEW | Five complete MMI passes for direct networks and for the general form on one-to-six-bridge networks. General routed discovery accepts only route-matched IDENTIFY1/2/4 replies, stages every result, then updates only the addressed network's volatile cache after a shared-PCI generation check; reconnect-stale results and events are discarded. Direct targeted mode rejects an address already in the model, runs the native three duplicate challenges, and reads IDENTIFY1/2/4. Routed targeted mode returns 502 before PCI I/O because its duplicate-challenge completion is not evidenced. All admitted forms retain native progress/result codes without creating database units |
 | NET SET_PROJECT_IDENTIFY | Uppercases and packs the 1–8 character native six-bit value, obtains a fresh complete MMI, and selects the first unit in non-error present state one or two that supplies valid IDENTIFY1 data plus exactly one valid known IDENTIFY4 serial in a complete quiet window. It stores the six bytes at parameter 35 and requires an exact RECALL before returning 200. MMI state three, multiple serial replies, unknown serials, and malformed identities are skipped; a failed or uncertain STORE/readback invalidates any older cached `ProjectName`. The database is not changed |
 | NET CHECKUNIT | Active direct or one-to-six-bridge IDENTIFY4 collection through the native two-second quiet interval, with strict Reply Network correlation and native no-unit, single-unit, duplicate-unit and identity-error result forms; `*` expands from a fresh route-matched complete MMI |
 | NET CLOCKS | Reads physical IDENTIFY16 summaries for the synchronized inventory. Target counts and gateway recovery use decoded `ClockGenEnable` layouts, read-modify-write CAL stores and mandatory readback; native-style per-unit failures remain visible in `120` lines even with final status 200 |
@@ -452,20 +452,24 @@ non-inventoried service commands. Full replacement still requires:
   transitions. The read-only interface-rooted `NET PROJECT_IDENTIFY` workflow
   is implemented for cmqttd's configured shared interface. The distinct physical
   `NET SET_PROJECT_IDENTIFY` parameter-35 write is implemented with readback.
-  Direct-network `NET SYNCNEW` is implemented in both native forms: five
-  merged installation MMI passes, the targeted unit form's three exact CAL
-  Unlock duplicate challenges, IDENTIFY1/2/4 population of the volatile live
-  cache, and native `120`/`303`/`408` response envelopes. It does not add the
-  discovered unit to the persistent project database.
+  `NET SYNCNEW` is implemented for both direct forms and for general discovery
+  across one to six bridges: five merged installation MMI passes,
+  route-correlated IDENTIFY1/2/4, atomic target-network cache/event commit, and
+  native `120`/`303`/`408` response envelopes. The direct targeted form also
+  runs three exact CAL Unlock duplicate challenges. Routed targeted SYNCNEW
+  remains 502 before I/O because that challenge exchange has no retained
+  routed completion evidence. No admitted form adds a discovered unit to the
+  persistent project database.
   The bounded direct-network two-serial collision at address 255 is implemented
   by `NET UNRAVELUNIT ... 255 MATCHDB`, including full inventory and independent
   verification. Whole-network `NET UNRAVEL`, other UNRAVELUNIT shapes,
   occupied-address displacement, larger duplicate sets, cycles, and bridges
   remain 502. `DO ... UNRAVEL` also remains 502.
   Direct and one-to-six-bridge `NET PINGU`, `NET SYNC` identity population,
-  `DO ... SYNC`, and duplicate-aware `NET CHECKUNIT` are implemented with
-  route-isolated caches. Bridged `SYNCNEW`, OEM eDLT metadata, readdressing,
-  PP programming, clocks, labels and bus-control mutations remain fail-closed.
+  general `NET SYNCNEW`, `DO ... SYNC`, and duplicate-aware `NET CHECKUNIT`
+  are implemented with route-isolated caches. Bridged targeted SYNCNEW, OEM
+  eDLT metadata, readdressing, PP programming, clocks, labels and bus-control
+  mutations remain fail-closed.
   Guarded direct-network single-unit physical readdressing is implemented.
   `DO` lighting methods also use the physical
   lighting backend; `DO ... UNRAVEL` is rejected until unravel is implemented.
@@ -566,10 +570,11 @@ The routed-topology suite pins Schneider's one- and two-bridge PPM/PTP bytes,
 native smart-mode Reply Network decoding, forward/reverse `DBNETWORKPATH`,
 wrong-route rejection, per-network cache replacement, reconnect invalidation,
 and remote sync event addresses. A real `cmqttd` process is driven through its
-TCP C-Gate endpoint against the scripted PCI and in-process broker: a remote
-PINGU completes while direct-network lighting reaches MQTT, a wrong-route MMI
-block is ignored, an attempted remote mutation emits no PCI frame, and loss of
-the single plain-TCP CNI produces the expected clean daemon shutdown.
+TCP C-Gate endpoint against the scripted PCI and in-process broker: remote
+PINGU and general SYNCNEW complete while direct-network lighting reaches MQTT,
+wrong-route MMI and identity replies are ignored, routed targeted SYNCNEW and a
+remote mutation emit no PCI frame, and loss of the single plain-TCP CNI
+produces the expected clean daemon shutdown.
 The retained [native topology acceptance](../toolkit-cli/research/experiments/2026-09-26/cgate-bridged-topology-native-acceptance.json)
 pins C-Gate 3.4.0_2001's forward/reverse COMPACT and OID database paths on
 disposable loopback endpoints, including the exact 408 result when the
@@ -578,11 +583,12 @@ conventional bridge unit is absent and continued success after the distinct
 [`DBNETWORKPATH` grammar acceptance](../toolkit-cli/research/experiments/2026-09-26/cgate-dbnetworkpath-grammar-native-acceptance.json)
 pins zero-hop failure, default and unknown-mode OID output, ignored trailing
 tokens and exact missing-address responses on the same selected runtime. The
-exact one-hop PINGU request is retained separately as a
-version-scoped C-Gate 2.11.11 capture and agrees with the published serial
-interface contract; it is not presented as 3.4 wire acceptance. Scripted reply
-tests supply the strict Reply Network behavior. No physical bridge or routed-
-write acceptance is claimed.
+companion [bridged general SYNCNEW evidence](../toolkit-cli/research/experiments/2026-09-26/cgate-bridged-syncnew-readonly-evidence.json)
+pins C-Gate 3.4's generic five-pass `CBusBridgeNetwork` classfile path and a
+selected-version one-hop MMI request. Published SIUG routing plus scripted
+reply tests supply the strict Reply Network success behavior. No physical
+bridge, routed targeted SYNCNEW, persistent native unit creation, or
+routed-write acceptance is claimed.
 `cbus-cgate` service tests cover durable reload, corrupt-file preservation,
 rollback, session ownership, unsupported hardware rejection, fragmented command
 input during events, native-shaped command-session enumeration/tagging,

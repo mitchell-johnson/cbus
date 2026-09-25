@@ -1,0 +1,75 @@
+{
+  "format": "cbus-cgate-bridged-syncnew-readonly-evidence-v1",
+  "date": "2026-09-26",
+  "passed": true,
+  "scope": "Owned C-Gate 3.4.0_2001 classfile and disposable one-bridge outbound-wire evidence, published C-Bus routing grammar, and cmqttd scripted-PCI acceptance; no live C-Bus network or site project was used",
+  "selected_native_runtime": {
+    "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+    "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "manual_text_sha256": "8a954aeddde94e3825bbfab5889b138d10f2c7be6b95ecbb4f607c8ec95a9d30"
+  },
+  "native_classfile_findings": [
+    {
+      "class": "com.clipsal.cgate.cbus.net.NetCommand",
+      "finding": "The NET command registry maps the syncnew subcommand to class kV."
+    },
+    {
+      "class": "kV",
+      "finding": "The command resolves exactly one address through argAsNetworkList to CBusBaseNetwork, then constructs dk with that resolved network and invokes dk.a(access, 5, response, false). This is five installation-MMI passes for both direct and Bridge network subclasses."
+    },
+    {
+      "class": "dk",
+      "finding": "The shared MMI collector explicitly recognizes CBusBridgeNetwork for bridge-recovery retries; it does not substitute the root network. Completed passes merge into one 256-address result."
+    },
+    {
+      "class": "kV",
+      "finding": "Without an optional unit address, kV scans the merged result in numeric address order. A present identity needing refresh calls CBusBaseNetwork.d(access,address), then emits 303 New Unit Found. MMI duplicate state emits 303 Duplicate Units Found. No optional-address duplicate challenge is needed by this general form."
+    },
+    {
+      "class": "kV",
+      "finding": "With an optional unit address, kV runs three dd commands with parameters 0x80 through 0x82 before identity. This separate routed targeted form has no retained routed completion capture and remains outside cmqttd's admitted subset."
+    }
+  ],
+  "native_manual_contract": {
+    "command": "NET SYNCNEW net-address [unit-number]",
+    "general_form": "Checks the addressed network for new units and returns type, version and serial number; native examples use 120 progress and 303 results.",
+    "database_difference": "Native C-Gate identity may create a database unit. cmqttd's admitted bridged general subset is deliberately read-only on the bus and updates only the reconnect-invalidated volatile physical cache; it does not claim persistent project commissioning parity."
+  },
+  "selected_runtime_wire_evidence": {
+    "capture_sha256": "d02308d50bc7930b02a4f257bf2cc040736b2add27cc37a2a7f71ae91f30c705",
+    "topology": "Disposable network 253 reached from network 254 through bridge unit 253",
+    "observed_outbound_body_hex": "03FD09FFFAFF00",
+    "classification": "C-Gate 3.4 one-bridge point-to-point-to-multipoint installation-MMI request with the confirmation character omitted",
+    "relationship_to_syncnew": "The capture was obtained from NET PINGU. kV uses the same dk installation-MMI collector against the resolved Bridge network for general NET SYNCNEW, so this pins the selected-version routed request grammar without claiming a native routed SYNCNEW completion.",
+    "operation_completed": false
+  },
+  "published_protocol_evidence": {
+    "cgate_manual": {
+      "title": "C-Gate Manual",
+      "design_version": "3.4.0",
+      "document_version": "1.2.0",
+      "relevant_contract": "NET SYNCNEW accepts a network address and optional unit number, reports progress with 120, new identities and duplicates with 303, and failures with 408."
+    },
+    "serial_interface_guide": {
+      "title": "C-Bus Serial Interface User Guide",
+      "document_number": "CBUS-SIUG",
+      "issue": "1.17",
+      "pdf_sha256": "b578dd11553aab2bb297e76c648d764ca10d7778ce363a7de9e234d2e913ec41",
+      "relevant_contract": "A one-bridge PPM source route uses stack header 09. Routed point-to-point replies use Reply Network count and reverse-route fields; routes are bounded at six bridges."
+    }
+  },
+  "cmqttd_acceptance": [
+    "A one-bridge service test completes five route-matched MMI passes plus routed IDENTIFY1, IDENTIFY2 and IDENTIFY4, rejects a complete-looking neighbour-route identity, and writes only network 253's volatile cache and event.",
+    "A reconnect-generation race after identity discards the staged cache and event and returns 408.",
+    "The routed optional-unit form returns 502 before any PCI traffic.",
+    "A real cmqttd system test completes general routed SYNCNEW while direct-network bus traffic still reaches MQTT over the same single CNI connection, then verifies clean connection-loss handling.",
+    "Golden vectors pin checksummed outbound 46FD090421018E and matching one-bridge Reply Network identity decoding."
+  ],
+  "evidence_boundaries": [
+    "No physical bridge or routed C-Bus device completed NET SYNCNEW in this acceptance run.",
+    "The selected-version classfile proves that native general SYNCNEW applies its five-pass MMI and identity logic to the resolved CBusBridgeNetwork; the selected-version wire capture pins the shared routed MMI grammar.",
+    "Reply Network success and strict route correlation are implementation acceptance against CBUS-SIUG 1.17 and scripted PCI, not live-hardware acceptance.",
+    "Routed targeted SYNCNEW, duplicate challenges, persistent unit creation, routed writes, readdressing and OEM eDLT metadata remain fail-closed or outside this subset."
+  ]
+}

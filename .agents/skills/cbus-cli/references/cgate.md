@@ -94,7 +94,7 @@ pins that a report does not consume the pending command confirmation. No live
 HVAC acceptance has been performed.
 
 The physical service also implements lighting commands, C-Gate `DO` object
-methods for lighting and direct-network `SYNC`, Trigger Control,
+methods for lighting and direct/bridged read-only `SYNC`, Trigger Control,
 Enable Control, clock date/time/refresh, Temperature Broadcast, `NET PINGU`, `NET SYNC`,
 `NET CHECKUNIT`, physical `NET CLOCKS`, physical `PP LOAD`, and readback-verified physical `PP SAVE` for
 `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and
@@ -252,13 +252,18 @@ requires complete contiguous MMI coverage, retains raw IDENTIFY4 replies with
 multiplicity, bounds each address and the full collection, and marks silent or
 malformed identities partial. Its observations are sequential and are not an
 atomic network snapshot.
-`NET SYNCNEW //PROJECT/NETWORK [unit]` is hardware-backed for direct networks.
-It merges five complete MMI passes. The optional targeted form rejects an
+`NET SYNCNEW //PROJECT/NETWORK [unit]` is hardware-backed for direct networks,
+and its general form is hardware-backed through one to six bridges. It merges
+five complete MMI passes. The direct optional targeted form rejects an
 already-modeled address before bus I/O, runs native duplicate challenges
-`0x80`, `0x81`, and `0x82`, then reads IDENTIFY1/2/4. The general form reports
-new identities and MMI state-3 duplicate addresses. Results update the volatile
-physical cache only and retain native progress/result codes (`120`, `303`,
-`408`); they do not create persistent database units.
+`0x80`, `0x81`, and `0x82`, then reads IDENTIFY1/2/4. General routed discovery
+uses exact Reply Network correlation for IDENTIFY1/2/4 and commits its staged
+cache and event changes only if the shared PCI generation is still current.
+Routed targeted discovery returns 502 before PCI I/O because its duplicate
+challenge completion has not been captured. Results update only the addressed
+network's volatile physical cache and retain native progress/result codes
+(`120`, `303`, `408`); they do not create persistent database units. See the
+[retained C-Gate 3.4 classfile and routed-wire evidence](../../../../toolkit-cli/research/experiments/2026-09-26/cgate-bridged-syncnew-readonly-evidence.json).
 `NET PROJECT_IDENTIFY TYPE@ADDRESS` is hardware-backed for the one interface
 already shared with MQTT. It runs one complete MMI, counts every nonzero state,
 skips address zero while scanning candidates, and returns the first readable
@@ -305,9 +310,12 @@ Not native `access.txt` parity; loopback-only first slice;
 and `do_methods: ["factorydefault", "lighting", "sync"]` denotes the physical object-method aliases,
 `network_clocks: true` denotes IDENTIFY16 inspection plus schema-backed target
 count and gateway recovery,
-`network_syncnew: true` denotes the direct-network five-pass discovery backend,
+`network_syncnew: true` denotes the five-pass direct backend,
+`bridged_syncnew_general: true` denotes routed general discovery while the
+optional routed targeted form remains unavailable,
 `bridged_read_only_discovery: true` denotes `DBNETWORKPATH` plus routed
-`NET PINGU`, `NET SYNC`, `DO ... SYNC`, and `NET CHECKUNIT`,
+`NET PINGU`, `NET SYNC`, general `NET SYNCNEW`, `DO ... SYNC`, and
+`NET CHECKUNIT`,
 `bridged_network_max_hops: 6` is the proven source-route bound,
 `network_set_project_identify: true` denotes the verified parameter-35 write,
 `pp_reset_to_defaults: true` denotes specification-backed staged
