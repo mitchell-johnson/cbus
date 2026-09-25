@@ -982,9 +982,12 @@ reproduces the original stored value of 255. The Application workflow passes
 Corridor passes ten tests with 74 original vectors and twelve native cases.
 Twelve ordered CLI/helper tests cover persistence, input guards and failure
 evidence through the final save and both cleanup stages. See [Applications](docs/edlt-applications.md)
-and [Corridor](docs/edlt-corridor.md) for cache formats and exact limits.
-Dependent panel bindings, the complete form, metadata creation and physical
-operation remain separate work.
+and [Corridor](docs/edlt-corridor.md) for cache formats and exact limits. These
+standalone paths still require caller-supplied metadata. The composed parent
+transaction can derive and create its bounded application, group and static-label
+metadata from one admitted project snapshot. Dependent panel bindings, the
+complete form, project/DLTP image-dependent metadata and physical operation
+remain separate work.
 
 Select Blank for one visible widget while retaining the loaded scenes, static
 text and original MRA globals:
