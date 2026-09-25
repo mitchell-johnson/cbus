@@ -78,7 +78,8 @@ are 1–8. The all-key form emits `A3 FF 00 27`; the keyed form emits
 `A4 FF 00 66 KEY`. cmqttd sends one point-to-point frame with no replay and
 waits only for its matching PCI confirmation. Native C-Gate considers both
 `.` and `#` confirmation outcomes complete. There is no unit ACK or readback,
-and native C-Gate publishes no event for the command. Report
+and the native handler publishes no label-specific success event. Optional
+high-verbosity audit events remain generic command/response logging. Report
 `native_accepted` and `pci_confirmation_received`, while keeping delivery
 outcome, erasure and persistence unverified. This is also distinct from
 `cgate label clear`, which sends an empty group-label SAL.

@@ -177,7 +177,9 @@ complete. cmqttd preserves that response contract, then discards its
 recipient-unverified observed-label ring because any retained entries may be
 stale. No unit acknowledgement or label-cache query follows, so `200 OK`
 establishes native command completion only. Native C-Gate publishes no event
-for this command, so cmqttd returns only the command response. A missing
+from the label-clear handler, so cmqttd does not invent a label-specific success
+event. Native's optional high-verbosity command/response audit events are
+generic to all commands and are outside this domain-event contract. A missing
 confirmation makes the outcome uncertain and faults the programming lane until
 reconnect.
 
