@@ -106,8 +106,10 @@ The command validates the exact unit path, requires a successful network-wide
 `GET //PROJECT/NETWORK/p/UNIT WidgetGroups` response. The payload is exactly 44
 canonical unsigned decimal bytes joined by commas. It is an opaque static
 mapping from the physical synchronized cache, not dynamic-label cache readback.
-The JSON keeps rendering, persistence, and network atomicity false. It uses
-cmqttd's shared CNI connection and never opens a direct one. Query `CMQTT
+The JSON keeps rendering, persistence, and network atomicity false. It records
+that persistent device configuration stays unchanged while the metadata read
+writes a volatile OEM selector. It uses cmqttd's shared CNI connection and
+never opens a direct one. Query `CMQTT
 CAPABILITIES`; this extension is advertised as `edlt_widget_groups: true`.
 
 ## cbus-tools

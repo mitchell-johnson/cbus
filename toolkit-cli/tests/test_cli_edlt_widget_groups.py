@@ -50,7 +50,12 @@ class EdltWidgetGroupsCliTests(unittest.TestCase):
         self.assertEqual(result["source"], "physical-synchronized-cache")
         self.assertTrue(result["widget_groups_device_readback"])
         self.assertEqual(result["network_sync"]["scope"], "entire-network")
-        self.assertTrue(result["network_sync"]["read_only"])
+        self.assertTrue(
+            result["network_sync"]["persistent_configuration_read_only"]
+        )
+        self.assertTrue(result["network_sync"]["volatile_oem_selector_write"])
+        self.assertTrue(result["physical_device_volatile_state_modified"])
+        self.assertFalse(result["persistent_device_configuration_modified"])
         self.assertFalse(result["dynamic_label_cache_readback"])
         self.assertFalse(result["rendering_verified"])
         self.assertFalse(result["persistence_verified"])

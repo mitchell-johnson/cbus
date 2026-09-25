@@ -59,16 +59,20 @@ class EdltWidgetGroupsTests(unittest.TestCase):
         self.assertTrue(document["opaque"])
         self.assertTrue(document["network_sync"]["completed"])
         self.assertEqual(document["network_sync"]["scope"], "entire-network")
-        self.assertTrue(document["network_sync"]["read_only"])
+        self.assertTrue(
+            document["network_sync"]["persistent_configuration_read_only"]
+        )
+        self.assertTrue(document["network_sync"]["volatile_oem_selector_write"])
         self.assertTrue(document["widget_groups_device_readback"])
         self.assertTrue(document["physical_observations_sequential"])
+        self.assertTrue(document["physical_device_volatile_state_modified"])
         for field in (
             "dynamic_label_cache_readback",
             "rendering_verified",
             "persistence_verified",
             "network_snapshot_atomic",
             "database_updated",
-            "physical_device_modified",
+            "persistent_device_configuration_modified",
         ):
             self.assertFalse(document[field], field)
 

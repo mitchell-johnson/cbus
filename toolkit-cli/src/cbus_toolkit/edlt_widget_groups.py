@@ -97,7 +97,8 @@ class EdltWidgetGroups:
                 "status": 200,
                 "completed": True,
                 "scope": "entire-network",
-                "read_only": True,
+                "persistent_configuration_read_only": True,
+                "volatile_oem_selector_write": True,
             },
             "property_read": {
                 "command": self.get_command,
@@ -111,7 +112,8 @@ class EdltWidgetGroups:
             "network_snapshot_atomic": False,
             "physical_observations_sequential": True,
             "database_updated": False,
-            "physical_device_modified": False,
+            "persistent_device_configuration_modified": False,
+            "physical_device_volatile_state_modified": True,
         }
 
 

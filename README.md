@@ -113,6 +113,7 @@ cbus-toolkit cgate --host 127.0.0.1 --timeout 120 network sync-new //PROJECT/254
 cbus-toolkit cgate --host 127.0.0.1 network set-project //PROJECT/254 PROJECT
 cbus-toolkit cgate --host 127.0.0.1 --timeout 120 edlt-labels --network //PROJECT/254
 cbus-toolkit cgate --host 127.0.0.1 edlt-labels //PROJECT/254/p/5
+cbus-toolkit cgate --host 127.0.0.1 --timeout 120 edlt-widget-groups //PROJECT/254/p/5
 cbus-toolkit cgate --host 127.0.0.1 label cache-clear //PROJECT/254/56 5 --key 2
 ```
 
@@ -179,6 +180,10 @@ length 2 supplies decimal `Application` and `Application2`, and parameter
 `0xFA` length 44 supplies `WidgetGroups` as opaque comma-separated decimal
 bytes. `Version` remains the separate IDENTIFY2 value. Read the cached values
 with `GET //PROJECT/NETWORK/p/UNIT PROPERTY`; these GETs issue no new bus I/O.
+The synchronization leaves persistent configuration unchanged, but the OEM
+application read writes a volatile address-16 selector on the unit before its
+recall. The typed `edlt-widget-groups` command reports that distinction in its
+JSON evidence.
 Each physical request is exact-once and source/parameter/length correlated. An
 optional failure does not fail an otherwise valid identity sync, but clears
 that value and every later unrefreshed value and faults the programming lane

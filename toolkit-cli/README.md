@@ -1484,8 +1484,11 @@ response containing 44 comma-separated decimal bytes. The JSON identifies the
 result as a physical synchronized-cache read and preserves the native CSV. The
 mapping stays opaque and the physical observations are sequential, so the
 result does not claim an atomic network snapshot, dynamic-label cache readback,
-display rendering, or persistence. It shares cmqttd's CNI and never opens a
-direct connection. See [the strict response contract](docs/edlt-widget-groups.md).
+display rendering, or persistence. `NET SYNC` leaves persistent device
+configuration unchanged, but its KEYGL5 metadata sequence does write a
+volatile OEM selector before reading the two application bytes; the JSON
+reports both facts. It shares cmqttd's CNI and never opens a direct connection.
+See [the strict response contract](docs/edlt-widget-groups.md).
 
 cmqttd also exposes the native physical KFI commands through raw C-Gate
 execution:

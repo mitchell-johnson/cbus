@@ -29,8 +29,14 @@ network-wide physical `NET SYNC` populated cmqttd's volatile cache and the GET
 read consumed that cache. `widget_groups_device_readback: true` refers to that
 physical synchronization; GET is not a second direct device read.
 
-Network synchronization is read-only with respect to device configuration but
-observes the entire network sequentially. The report therefore keeps
+Network synchronization does not change persistent device configuration, but
+the KEYGL5 metadata sequence writes a volatile OEM address-16 selector before
+reading `Application` and `Application2`. The JSON records both facts as
+`persistent_configuration_read_only: true` and
+`volatile_oem_selector_write: true`; at the document level it reports
+`persistent_device_configuration_modified: false` and
+`physical_device_volatile_state_modified: true`. Synchronization observes the
+entire network sequentially. The report therefore keeps
 `network_snapshot_atomic: false` and `physical_observations_sequential: true`.
 It also reports `dynamic_label_cache_readback`, `rendering_verified`, and
 `persistence_verified` as false. WidgetGroups is a static opaque mapping, not a
