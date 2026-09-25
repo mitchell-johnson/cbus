@@ -236,8 +236,8 @@ The existing mock dispatches 431 command paths. That is **not** evidence that
 all 431 have physical implementations in this service. `CMQTT CAPABILITIES`
 returns `full_cgate_compatibility: false`; unimplemented physical operations
 return 502. The enumerable gap tracker is the executable capability matrix in
-`cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 30
-physical, 36 local-database, 364 fail-closed 502, and 1 obsolete 400 over the
+`cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 31
+physical, 36 local-database, 363 fail-closed 502, and 1 obsolete 400 over the
 431 inventoried paths, plus a separately asserted 6-row supplement for
 non-inventoried service commands. Full replacement still requires:
 
@@ -252,6 +252,11 @@ non-inventoried service commands. Full replacement still requires:
   matching-tags SAVE; a bare 200 covers the tag-selected subset only.
 - Bridged-network synchronization, general serial-address commissioning,
   project identification and the remaining commissioning state transitions.
+  Direct-network `NET SYNCNEW` is implemented in both native forms: five
+  merged installation MMI passes, the targeted unit form's three exact CAL
+  Unlock duplicate challenges, IDENTIFY1/2/4 population of the volatile live
+  cache, and native `120`/`303`/`408` response envelopes. It does not add the
+  discovered unit to the persistent project database.
   The bounded direct-network two-serial collision at address 255 is implemented
   by `NET UNRAVELUNIT ... 255 MATCHDB`, including full inventory and independent
   verification. Whole-network `NET UNRAVEL`, other UNRAVELUNIT shapes,

@@ -9,6 +9,8 @@ use std::sync::atomic::{AtomicBool, Ordering};
 const REPLY_TIMEOUT: Duration = Duration::from_secs(10);
 const IDENTIFY_QUIET: Duration = Duration::from_secs(2);
 const IDENTIFY_MAX_REPLIES: usize = 7;
+const DUPLICATE_PROBE_QUIET: Duration = Duration::from_secs(2);
+const DUPLICATE_PROBE_MAX_REPLIES: usize = 7;
 const SERIAL_ADDRESS_QUIET: Duration = Duration::from_secs(2);
 const NVM_POLL_INTERVAL: Duration = Duration::from_millis(500);
 const NVM_POLL_TIMEOUT: Duration = Duration::from_secs(15);
@@ -1846,6 +1848,166 @@ impl PciClient {
             .next())
     }
 
+    /// Run one native C-Gate duplicate-address challenge for `NET SYNCNEW`.
+    ///
+    /// Native C-Gate sends CAL Unlock parameters `0x80`, `0x81`, and `0x82`
+    /// on the three successive attempts and counts every matching one-byte
+    /// reply. The byte value is deliberately ignored: two matching replies
+    /// prove that more than one unit answered at this address. A positive PCI
+    /// confirmation is required before the two-second quiet interval can
+    /// complete, and reaching the native seven-reply bound faults the lane
+    /// rather than silently claiming a complete count.
+    pub async fn duplicate_address_probe(&self, unit: u8, attempt: u8) -> Result<usize> {
+        if attempt > 2 {
+            return Err(Error::new(
+                ErrorKind::InvalidInput,
+                "duplicate-address probe attempt must be in 0..=2",
+            ));
+        }
+        let parameter = 0x80 + attempt;
+        let _lane = self.programming_lane.lock().await;
+        if self.programming_fault.load(Ordering::Acquire) {
+            return Err(Error::other(
+                "programming stream needs reconnect after an incomplete transaction",
+            ));
+        }
+        let mut transaction = Transaction {
+            fault: &self.programming_fault,
+            complete: false,
+        };
+        let mut replies = self.packets.subscribe();
+        if !self.is_connected() {
+            return Err(Error::new(ErrorKind::BrokenPipe, "PCI disconnected"));
+        }
+        let packet = Packet::PointToPoint {
+            meta: Meta::new(true, 1),
+            unit_address: unit,
+            bridged: false,
+            hops: vec![],
+            cals: vec![Cal::Unlock { parameter }],
+        };
+        let code = self.send(&packet, true, false).await?.ok_or_else(|| {
+            Error::new(
+                ErrorKind::InvalidInput,
+                "duplicate-address probe cannot be confirmed",
+            )
+        })?;
+
+        let result = tokio::time::timeout(REPLY_TIMEOUT, async {
+            let mut confirmed = false;
+            let mut count = 0usize;
+            let mut quiet_deadline = None;
+            loop {
+                let next = async {
+                    match quiet_deadline {
+                        Some(deadline) => tokio::time::timeout_at(deadline, replies.recv())
+                            .await
+                            .map_err(|_| {
+                            Error::new(ErrorKind::TimedOut, "duplicate-address probe quiet")
+                        })?,
+                        None => replies.recv().await,
+                    }
+                    .map_err(|_| Error::new(ErrorKind::BrokenPipe, "PCI response stream lost"))
+                };
+                match next.await {
+                    Err(error)
+                        if error.kind() == ErrorKind::TimedOut && quiet_deadline.is_some() =>
+                    {
+                        return Ok(count);
+                    }
+                    Err(error) => return Err(error),
+                    Ok(None) => {
+                        return Err(Error::new(
+                            ErrorKind::BrokenPipe,
+                            "PCI response stream lost",
+                        ));
+                    }
+                    Ok(Some(Packet::Confirmation { code: got, success })) if got == code => {
+                        if confirmed {
+                            return Err(Error::new(
+                                ErrorKind::InvalidData,
+                                "duplicate duplicate-address probe confirmation",
+                            ));
+                        }
+                        if !success {
+                            return Err(Error::other("PCI rejected duplicate-address probe"));
+                        }
+                        confirmed = true;
+                        quiet_deadline = Some(Instant::now() + DUPLICATE_PROBE_QUIET);
+                    }
+                    Ok(Some(packet)) => {
+                        let cals = match packet {
+                            Packet::PointToPoint { meta, cals, .. }
+                                if meta.source_address == Some(unit) =>
+                            {
+                                cals
+                            }
+                            Packet::PointToPoint { meta, cals, .. }
+                                if meta.source_address.is_none()
+                                    && self.local_unit.load(Ordering::Acquire)
+                                        == u16::from(unit) =>
+                            {
+                                cals
+                            }
+                            Packet::BareCal(cal)
+                                if self.local_unit.load(Ordering::Acquire) == u16::from(unit) =>
+                            {
+                                vec![cal]
+                            }
+                            _ => continue,
+                        };
+                        if !cals.iter().any(|cal| {
+                            matches!(cal, Cal::Reply { parameter: got, .. } if *got == parameter)
+                        }) {
+                            continue;
+                        }
+                        if cals.len() != 1 {
+                            return Err(Error::new(
+                                ErrorKind::InvalidData,
+                                "duplicate-address reply contains an ambiguous CAL chain",
+                            ));
+                        }
+                        let Cal::Reply { data, .. } = cals.into_iter().next().unwrap() else {
+                            unreachable!("matching reply checked above")
+                        };
+                        if data.len() != 1 {
+                            return Err(Error::new(
+                                ErrorKind::InvalidData,
+                                "duplicate-address reply must contain one byte",
+                            ));
+                        }
+                        count += 1;
+                        if count >= DUPLICATE_PROBE_MAX_REPLIES {
+                            return Err(Error::new(
+                                ErrorKind::InvalidData,
+                                "duplicate-address response count reached the collection limit",
+                            ));
+                        }
+                        if confirmed {
+                            quiet_deadline = Some(Instant::now() + DUPLICATE_PROBE_QUIET);
+                        }
+                    }
+                }
+            }
+        })
+        .await
+        .unwrap_or_else(|_| {
+            Err(Error::new(
+                ErrorKind::TimedOut,
+                "duplicate-address probe timed out",
+            ))
+        });
+
+        if result.is_err() {
+            let mut state = self.state.lock().unwrap();
+            state.pending.remove(&code);
+            state.codes_in_use.remove(&code);
+        } else {
+            transaction.complete = true;
+        }
+        result
+    }
+
     async fn identify_collect(
         &self,
         unit: u8,
@@ -2939,5 +3101,65 @@ mod tests {
         tokio::time::advance(IDENTIFY_QUIET).await;
         tokio::task::yield_now().await;
         assert_eq!(running.await.unwrap().unwrap(), vec![data.to_vec()]);
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn duplicate_address_probes_use_native_challenges_and_count_every_reply() {
+        let (pci, mut remote, mut events) = setup().await;
+        for (attempt, expected) in [
+            (0, b"\\460500118024".as_slice()),
+            (1, b"\\460500118123".as_slice()),
+            (2, b"\\460500118222".as_slice()),
+        ] {
+            let running = tokio::spawn({
+                let pci = pci.clone();
+                async move { pci.duplicate_address_probe(5, attempt).await }
+            });
+            let request = line(&mut remote).await;
+            assert_eq!(&request[..request.len() - 2], expected);
+            let code = request[request.len() - 2];
+            remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+            reply(&mut remote, 4, &[0x82, 0x80 + attempt, 0xaa]).await;
+            reply(&mut remote, 5, &[0x82, 0x80 + attempt, 0x11]).await;
+            reply(&mut remote, 5, &[0x82, 0x80 + attempt, 0x11]).await;
+            remote
+                .get_mut()
+                .write_all(b"05043800790145\r\n")
+                .await
+                .unwrap();
+            tokio::time::advance(DUPLICATE_PROBE_QUIET).await;
+            tokio::task::yield_now().await;
+            assert_eq!(running.await.unwrap().unwrap(), 2);
+        }
+        assert!(matches!(
+            events.recv().await,
+            Some(CBusEvent::LightingOn {
+                source: Some(4),
+                app: 56,
+                group: 1
+            })
+        ));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn duplicate_address_probe_can_prove_silence_after_confirmation() {
+        let (pci, mut remote, _) = setup().await;
+        let running = tokio::spawn(async move { pci.duplicate_address_probe(99, 0).await });
+        let request = line(&mut remote).await;
+        let code = request[request.len() - 2];
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        tokio::time::advance(DUPLICATE_PROBE_QUIET).await;
+        tokio::task::yield_now().await;
+        assert_eq!(running.await.unwrap().unwrap(), 0);
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn duplicate_address_probe_rejects_an_unknown_attempt_without_faulting_lane() {
+        let (pci, _remote, _) = setup().await;
+        assert_eq!(
+            pci.duplicate_address_probe(5, 3).await.unwrap_err().kind(),
+            ErrorKind::InvalidInput
+        );
+        assert!(!pci.programming_fault.load(Ordering::Acquire));
     }
 }

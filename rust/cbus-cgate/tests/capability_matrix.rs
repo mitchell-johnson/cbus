@@ -3,7 +3,8 @@
 //! Classification only: every maintained C-Gate command path (the 224
 //! public-manual headings plus the 268 bytecode registrations, 431 unique
 //! paths) classified by how cmqttd's physical `Service::handle` routes it.
-//! No backend changes, no dispatch changes, no capability flips.
+//! Backend changes update the corresponding row and pinned class counts in the
+//! same commit, so the executable ledger cannot drift from service routing.
 
 use cbus_cgate::capability_matrix::{RoutingClass, CAPABILITY_MATRIX, SUPPLEMENT_ROUTING};
 use cbus_cgate::manual::{DECOMPILED_COMMAND_GROUPS, DOCUMENTED_COMMANDS};
@@ -81,10 +82,12 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // -> local_database (observed-cache read, no per-read PCI I/O).
     // NET UNRAVELUNIT moved fail_closed_502 -> physical after the bounded
     // duplicate-address-255 MATCHDB backend was added; unsupported shapes
-    // remain an explicit 502 within that service branch.
-    assert_eq!(class_count(RoutingClass::Physical), 30);
+    // remain an explicit 502 within that service branch. NET SYNCNEW moved
+    // fail_closed_502 -> physical with five-pass MMI and native duplicate
+    // challenges for its targeted and general forms.
+    assert_eq!(class_count(RoutingClass::Physical), 31);
     assert_eq!(class_count(RoutingClass::LocalDatabase), 36);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 364);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 363);
     assert_eq!(class_count(RoutingClass::Obsolete400), 1);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here

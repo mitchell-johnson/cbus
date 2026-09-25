@@ -444,6 +444,8 @@ cbus-toolkit cgate network list --project TEST
 cbus-toolkit cgate network state //TEST/254
 cbus-toolkit cgate network open //TEST/254
 cbus-toolkit cgate --timeout 60 network sync //TEST/254 --fast
+cbus-toolkit cgate --timeout 120 network sync-new //TEST/254
+cbus-toolkit cgate --timeout 120 network sync-new //TEST/254 --unit 6
 cbus-toolkit cgate --timeout 120 network unravel //TEST/254 --unit 255 --match-database
 cbus-toolkit cgate network tree //TEST/254 --details
 cbus-toolkit cgate network close //TEST/254
@@ -458,6 +460,11 @@ destination checks. Other unravel forms return 502. Native C-Gate retains its
 broader and potentially unsafe fallback semantics described below. Discovery,
 duplicate checks and clock management have their own explicit commands; broader
 physical-network acceptance is still in progress.
+Against cmqttd, both `sync-new` forms use five complete MMI passes. The targeted
+form rejects an address already in the model, runs the native three duplicate
+challenges, and reads the new unit identity. The general form reports every new
+or MMI-duplicate address. Results populate cmqttd's volatile physical cache;
+add or update project database units separately.
 Reopening an existing model can defer its next scan. Use `network sync --fast`
 with the network address to request a fresh scan; waiting alone does not start it.
 

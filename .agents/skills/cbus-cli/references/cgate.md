@@ -83,6 +83,13 @@ requires complete contiguous MMI coverage, retains raw IDENTIFY4 replies with
 multiplicity, bounds each address and the full collection, and marks silent or
 malformed identities partial. Its observations are sequential and are not an
 atomic network snapshot.
+`NET SYNCNEW //PROJECT/NETWORK [unit]` is hardware-backed for direct networks.
+It merges five complete MMI passes. The optional targeted form rejects an
+already-modeled address before bus I/O, runs native duplicate challenges
+`0x80`, `0x81`, and `0x82`, then reads IDENTIFY1/2/4. The general form reports
+new identities and MMI state-3 duplicate addresses. Results update the volatile
+physical cache only and retain native progress/result codes (`120`, `303`,
+`408`); they do not create persistent database units.
 Query `CMQTT CAPABILITIES`; `unit_readdress: true` denotes the readdress path and
 `physical_pp_save_cbus3_nvm: true` denotes the NVM commit path,
 `dynamic_labels: true` denotes the label sender,
@@ -99,6 +106,7 @@ Not native `access.txt` parity; loopback-only first slice;
 and `do_methods: ["factorydefault", "lighting", "sync"]` denotes the physical object-method aliases,
 `network_clocks: true` denotes IDENTIFY16 inspection plus schema-backed target
 count and gateway recovery,
+`network_syncnew: true` denotes the direct-network five-pass discovery backend,
 while `full_cgate_compatibility` remains false until every remaining backend and
 acceptance requirement is complete.
 

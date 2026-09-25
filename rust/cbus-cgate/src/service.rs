@@ -532,7 +532,7 @@ impl Service {
                 "do_methods":["factorydefault","lighting","sync"],
                 "network_clocks":true,
                 "install_mmi":true, "network_pingu":true,
-                "network_sync":true, "network_checkunit":true,
+                "network_sync":true, "network_syncnew":true, "network_checkunit":true,
                 "unit_readdress":true,
                 "net_unravelunit_matchdb_duplicate_255":true,
                 "project":self.project,"network":self.network,"persistent_database":true,
@@ -657,6 +657,9 @@ impl Service {
         }
         if verb == "NET" && sub == "PINGU" {
             return self.net_pingu(client, line, tag, &words).await;
+        }
+        if verb == "NET" && sub == "SYNCNEW" {
+            return self.net_syncnew(client, line, tag, &words).await;
         }
         if verb == "NET" && sub == "SYNC" {
             return self.net_sync(client, line, tag, &words).await;
@@ -1267,6 +1270,224 @@ impl Service {
             .events
             .send(format!("#e# net {} sync ok", self.network));
         validation
+    }
+
+    async fn net_syncnew(
+        &self,
+        client: &ClientState,
+        line: &str,
+        tag: &str,
+        words: &[&str],
+    ) -> Response {
+        let _commands = self.commands.lock().await;
+        let validation = {
+            let mut staged = self.model.lock().await.clone();
+            staged.current = client
+                .current
+                .clone()
+                .or_else(|| Some(self.project.clone()));
+            staged.handle(line)
+        };
+        if validation.status >= 400 || !(3..=4).contains(&words.len()) {
+            return validation;
+        }
+        if !self.bound_network(words[2]) {
+            return validation;
+        }
+        let selected = words.get(3).map(|unit| {
+            unit.parse::<u8>()
+                .expect("the staged C-Gate model validated the unit address")
+        });
+
+        if let Some(address) = selected {
+            let already_modeled = {
+                let model = self.model.lock().await;
+                let network = &model.projects[&self.project].networks[&self.network];
+                network.units.contains_key(&address) || network.physical.contains_key(&address)
+            };
+            if already_modeled {
+                return syncnew_response(tag, vec![(408, "Unit already in model".to_string())]);
+            }
+        }
+
+        let pci = self.pci.read().await.clone();
+        let interface_units = {
+            let model = self.model.lock().await;
+            model.projects[&self.project].networks[&self.network]
+                .units
+                .values()
+                .filter(|unit| {
+                    let unit_type = unit.unit_type.to_ascii_uppercase();
+                    unit_type.starts_with("PC_CNI") || unit_type.starts_with("PC_PCI")
+                })
+                .map(|unit| unit.address)
+                .collect::<Vec<_>>()
+        };
+        let local = match interface_units.as_slice() {
+            [address] => pci.set_local_unit_hint(*address).map(|()| *address),
+            [] => pci.discover_local_unit().await,
+            _ => Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "configured network has multiple local-interface units",
+            )),
+        };
+        if let Err(error) = local {
+            return syncnew_response(
+                tag,
+                vec![(408, format!("Interface discovery failed:{error}"))],
+            );
+        }
+
+        let mut statuses = Vec::new();
+        let mut merged = vec![0u8; 256];
+        for pass in 1..=5 {
+            let states = match pci.install_mmi().await {
+                Ok(states) => states,
+                Err(error) => {
+                    statuses.push((408, format!("Installation MMI failure:{error}")));
+                    return syncnew_response(tag, statuses);
+                }
+            };
+            if states.len() != merged.len() {
+                statuses.push((
+                    408,
+                    "Installation MMI failure:incomplete address coverage".to_string(),
+                ));
+                return syncnew_response(tag, statuses);
+            }
+            for (combined, observed) in merged.iter_mut().zip(states) {
+                if *combined != 3 && observed != 0 {
+                    *combined = observed;
+                }
+            }
+            statuses.push((120, format!("completed MMI {pass} of 5.")));
+        }
+
+        if let Some(address) = selected {
+            if merged[address as usize] == 0 {
+                statuses.push((408, "Unit at given address not found".to_string()));
+                return syncnew_response(tag, statuses);
+            }
+            statuses.push((120, "unit found".to_string()));
+            for attempt in 0..3 {
+                statuses.push((120, format!("duplicate test {}/3", attempt + 1)));
+                let count = match pci.duplicate_address_probe(address, attempt).await {
+                    Ok(count) => count,
+                    Err(error) => {
+                        statuses.push((408, format!("Duplicate test failed:{error}")));
+                        return syncnew_response(tag, statuses);
+                    }
+                };
+                if count > 1 {
+                    self.remove_physical_unit(address).await;
+                    let _ = self.events.send(format!(
+                        "#e# net {} syncnew duplicate {address}",
+                        self.network
+                    ));
+                    statuses.push((408, format!("Duplicate units at address {address}")));
+                    return syncnew_response(tag, statuses);
+                }
+            }
+            statuses.push((120, "no duplicate found".to_string()));
+            statuses.push((120, "identifying unit".to_string()));
+            match syncnew_identity(&pci, address).await {
+                Ok(unit) => {
+                    let detail = syncnew_unit_detail(&unit);
+                    self.store_physical_unit(unit).await;
+                    let _ = self
+                        .events
+                        .send(format!("#e# net {} syncnew unit {address}", self.network));
+                    statuses.push((303, detail));
+                }
+                Err(error) => statuses.push((
+                    408,
+                    format!("Identify failed for unit at address {address}: {error}"),
+                )),
+            }
+            return syncnew_response(tag, statuses);
+        }
+
+        let modeled_identity = {
+            let model = self.model.lock().await;
+            let network = &model.projects[&self.project].networks[&self.network];
+            (0u16..=255)
+                .map(|address| {
+                    let address = address as u8;
+                    let modeled = network.units.contains_key(&address)
+                        || network.physical.contains_key(&address);
+                    let identified = network
+                        .physical
+                        .get(&address)
+                        .or_else(|| network.units.get(&address))
+                        .is_some_and(|unit| !unit.serial.is_empty());
+                    (modeled, identified)
+                })
+                .collect::<Vec<_>>()
+        };
+        let mut found = false;
+        for (address, state) in merged.into_iter().enumerate() {
+            let address = address as u8;
+            if state == 3 {
+                self.remove_physical_unit(address).await;
+                let _ = self.events.send(format!(
+                    "#e# net {} syncnew duplicate {address}",
+                    self.network
+                ));
+                statuses.push((303, format!("Duplicate Units Found: address={address}")));
+                found = true;
+                continue;
+            }
+            if state == 0
+                || (modeled_identity[address as usize].0 && modeled_identity[address as usize].1)
+            {
+                continue;
+            }
+            match syncnew_identity(&pci, address).await {
+                Ok(unit) => {
+                    let detail = syncnew_unit_detail(&unit);
+                    self.store_physical_unit(unit).await;
+                    let _ = self
+                        .events
+                        .send(format!("#e# net {} syncnew unit {address}", self.network));
+                    statuses.push((303, detail));
+                }
+                Err(_) => statuses.push((
+                    408,
+                    format!("Identify failed for unit at address {address}"),
+                )),
+            }
+            found = true;
+        }
+        if !found {
+            statuses.push((408, "No new units found".to_string()));
+        }
+        syncnew_response(tag, statuses)
+    }
+
+    async fn remove_physical_unit(&self, address: u8) {
+        if let Some(network) = self
+            .model
+            .lock()
+            .await
+            .projects
+            .get_mut(&self.project)
+            .and_then(|project| project.networks.get_mut(&self.network))
+        {
+            network.physical.remove(&address);
+        }
+    }
+
+    async fn store_physical_unit(&self, unit: Unit) {
+        if let Some(network) = self
+            .model
+            .lock()
+            .await
+            .projects
+            .get_mut(&self.project)
+            .and_then(|project| project.networks.get_mut(&self.network))
+        {
+            network.physical.insert(unit.address, unit);
+        }
     }
 
     async fn net_checkunit(
@@ -4163,6 +4384,73 @@ fn known_serials(replies: &[Vec<u8>]) -> io::Result<HashSet<String>> {
         .iter()
         .filter_map(|reply| serial_number(reply).transpose())
         .collect()
+}
+
+async fn syncnew_identity(pci: &Arc<PciClient>, address: u8) -> io::Result<Unit> {
+    let unit_type = pci
+        .identify_first(address, 1)
+        .await?
+        .ok_or_else(|| io::Error::other("unit type did not reply"))
+        .and_then(|data| identity_text(&data, "unit type"))?;
+    let firmware = pci
+        .identify_first(address, 2)
+        .await?
+        .ok_or_else(|| io::Error::other("firmware version did not reply"))
+        .and_then(|data| identity_text(&data, "firmware version"))?;
+    let replies = pci.identify_all(address, 4).await?;
+    if replies.len() > 1 {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "multiple serial identity replies",
+        ));
+    }
+    let serial = replies
+        .first()
+        .map(|reply| serial_number(reply))
+        .transpose()?
+        .flatten()
+        .unwrap_or_default();
+    let mut unit = Unit::blank(address, "");
+    unit.unit_type = unit_type;
+    unit.firmware = firmware;
+    unit.serial = serial;
+    Ok(unit)
+}
+
+fn syncnew_unit_detail(unit: &Unit) -> String {
+    let serial = if unit.serial.is_empty() {
+        "{none}"
+    } else {
+        &unit.serial
+    };
+    format!(
+        "New Unit Found: address={} type={} version={} serial={serial}",
+        unit.address, unit.unit_type, unit.firmware
+    )
+}
+
+fn syncnew_response(tag: &str, mut statuses: Vec<(u16, String)>) -> Response {
+    let (status, detail) = statuses
+        .pop()
+        .expect("NET SYNCNEW always emits a final status");
+    let lines = statuses
+        .into_iter()
+        .map(|(code, detail)| format!("{code}-{}", syncnew_status_text(code, &detail)))
+        .collect();
+    Response {
+        tag: tag.to_string(),
+        lines,
+        final_text: format!("{status} {}", syncnew_status_text(status, &detail)),
+        status,
+    }
+}
+
+fn syncnew_status_text(status: u16, detail: &str) -> String {
+    if status == 408 {
+        format!("Operation failed: {detail}")
+    } else {
+        detail.to_string()
+    }
 }
 
 async fn physical_serial_inventory(

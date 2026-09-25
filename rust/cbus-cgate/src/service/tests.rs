@@ -535,6 +535,7 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["dynamic_label_observation"], true);
     assert_eq!(document["dynamic_label_device_readback"], false);
     assert_eq!(document["edlt_factory_default"], true);
+    assert_eq!(document["network_syncnew"], true);
     assert_eq!(document["net_unravelunit_matchdb_duplicate_255"], true);
     assert_eq!(
         document["do_methods"],
@@ -2586,6 +2587,279 @@ async fn physical_net_sync_single_serial_emits_no_duplicate_event() {
         "single serial must not emit a duplicate event: {seen:?}"
     );
 
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn physical_syncnew_rejects_an_already_modeled_target_without_bus_io() {
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let response = service
+        .handle(
+            &mut ClientState::default(),
+            "[1] NET SYNCNEW //HARNESS/254 5",
+        )
+        .await;
+    assert_eq!(response.status, 408);
+    assert_eq!(
+        response.final_text,
+        "408 Operation failed: Unit already in model"
+    );
+    assert!(
+        tokio::time::timeout(Duration::from_millis(25), remote.read_u8())
+            .await
+            .is_err(),
+        "an already modeled target must fail before physical I/O"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test(start_paused = true)]
+async fn physical_syncnew_target_runs_native_discovery_and_stores_new_identity() {
+    async fn pci_line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+    async fn pci_reply<W: tokio::io::AsyncWrite + Unpin>(writer: &mut W, source: u8, cal: &[u8]) {
+        let mut bytes = vec![0x86, source, 0x10, 0x00];
+        bytes.extend_from_slice(cal);
+        let sum = bytes.iter().fold(0u8, |sum, byte| sum.wrapping_add(*byte));
+        bytes.push(0u8.wrapping_sub(sum));
+        let mut wire = hex::encode_upper(bytes).into_bytes();
+        wire.extend_from_slice(b"\r\n");
+        writer.write_all(&wire).await.unwrap();
+    }
+    fn mmi_block(start: u8, count: usize, address: usize, state: u8) -> Vec<u8> {
+        let mut states = vec![0u8; count];
+        if (usize::from(start)..usize::from(start) + count).contains(&address) {
+            states[address - usize::from(start)] = state;
+        }
+        let mut wire = cbus_protocol::packet::Packet::StandardStatus {
+            application: 0xff,
+            block_start: start,
+            states,
+        }
+        .encode_packet()
+        .unwrap();
+        wire.extend_from_slice(b"\r\n");
+        wire
+    }
+
+    let path = state_path();
+    let (pci, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        pci_line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let syncing = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[41] NET SYNCNEW //HARNESS/254 6",
+                )
+                .await
+        }
+    });
+
+    assert_eq!(pci_line(&mut remote_read).await, b"@1A2001\r");
+    remote_write.write_all(b"8220104E\r\n").await.unwrap();
+    tokio::task::yield_now().await;
+
+    for _ in 0..5 {
+        let request = pci_line(&mut remote_read).await;
+        assert!(request.starts_with(b"\\05FF00FAFF"), "{request:?}");
+        let code = request[request.len() - 2];
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+        remote_write
+            .write_all(&mmi_block(0, 88, 6, 1))
+            .await
+            .unwrap();
+        remote_write
+            .write_all(&mmi_block(88, 88, 6, 1))
+            .await
+            .unwrap();
+        remote_write
+            .write_all(&mmi_block(176, 80, 6, 1))
+            .await
+            .unwrap();
+        tokio::task::yield_now().await;
+    }
+
+    for (attempt, expected) in [
+        (0u8, b"\\460600118023".as_slice()),
+        (1u8, b"\\460600118122".as_slice()),
+        (2u8, b"\\460600118221".as_slice()),
+    ] {
+        let request = pci_line(&mut remote_read).await;
+        assert_eq!(&request[..request.len() - 2], expected);
+        let code = request[request.len() - 2];
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+        pci_reply(&mut remote_write, 6, &[0x82, 0x80 + attempt, 0x33]).await;
+        tokio::task::yield_now().await;
+        tokio::time::advance(Duration::from_secs(2)).await;
+        tokio::task::yield_now().await;
+    }
+
+    for (attribute, text) in [(1u8, b"KEYE1".as_slice()), (2u8, b"1.2.30".as_slice())] {
+        let request = pci_line(&mut remote_read).await;
+        assert!(
+            request
+                .windows(4)
+                .any(|window| { window == format!("21{attribute:02X}").as_bytes() }),
+            "{request:?}"
+        );
+        let code = request[request.len() - 2];
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+        let mut cal = vec![0x81 + text.len() as u8, attribute];
+        cal.extend_from_slice(text);
+        pci_reply(&mut remote_write, 6, &cal).await;
+        tokio::task::yield_now().await;
+    }
+
+    let serial = [
+        0x38, 0xff, 0xff, 0xff, 0xff, 0x18, 0xb1, 0x06, 0x16, 0xa2, 0x00, 0x05,
+    ];
+    let request = pci_line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\4606002104"), "{request:?}");
+    let code = request[request.len() - 2];
+    let mut cal = vec![0x8d, 4];
+    cal.extend_from_slice(&serial);
+    pci_reply(&mut remote_write, 6, &cal).await;
+    tokio::task::yield_now().await;
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    tokio::task::yield_now().await;
+    tokio::time::advance(Duration::from_secs(2)).await;
+    tokio::task::yield_now().await;
+
+    let response = syncing.await.unwrap();
+    assert_eq!(response.status, 303, "{response:?}");
+    assert_eq!(response.lines.len(), 11, "{response:?}");
+    assert_eq!(response.lines[0], "120-completed MMI 1 of 5.");
+    assert_eq!(response.lines[4], "120-completed MMI 5 of 5.");
+    assert_eq!(response.lines[5], "120-unit found");
+    assert_eq!(response.lines[6], "120-duplicate test 1/3");
+    assert_eq!(response.lines[10], "120-identifying unit");
+    assert_eq!(
+        response.final_text,
+        "303 New Unit Found: address=6 type=KEYE1 version=1.2.30 serial=101136.1558"
+    );
+    let wire = format_response(&response);
+    assert!(wire.contains("[41] 120-completed MMI 1 of 5.\n"));
+    assert!(wire.ends_with(
+        "[41] 303 New Unit Found: address=6 type=KEYE1 version=1.2.30 serial=101136.1558\n"
+    ));
+
+    let model = service.model.lock().await;
+    let network = &model.projects["HARNESS"].networks[&254];
+    assert!(!network.units.contains_key(&6));
+    assert_eq!(network.physical[&6].unit_type, "KEYE1");
+    assert_eq!(network.physical[&6].firmware, "1.2.30");
+    assert_eq!(network.physical[&6].serial, "101136.1558");
+    drop(model);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test(start_paused = true)]
+async fn physical_syncnew_all_reports_mmi_duplicate_and_drops_live_identity() {
+    async fn pci_line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+    fn mmi_block(start: u8, count: usize, address: usize, state: u8) -> Vec<u8> {
+        let mut states = vec![0u8; count];
+        if (usize::from(start)..usize::from(start) + count).contains(&address) {
+            states[address - usize::from(start)] = state;
+        }
+        let mut wire = cbus_protocol::packet::Packet::StandardStatus {
+            application: 0xff,
+            block_start: start,
+            states,
+        }
+        .encode_packet()
+        .unwrap();
+        wire.extend_from_slice(b"\r\n");
+        wire
+    }
+
+    let path = state_path();
+    let (pci, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        pci_line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    {
+        let mut model = service.model.lock().await;
+        model
+            .projects
+            .get_mut("HARNESS")
+            .unwrap()
+            .networks
+            .get_mut(&254)
+            .unwrap()
+            .physical
+            .insert(7, Unit::blank(7, "101.7"));
+    }
+    let syncing = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[42] NET SYNCNEW //HARNESS/254",
+                )
+                .await
+        }
+    });
+    assert_eq!(pci_line(&mut remote_read).await, b"@1A2001\r");
+    remote_write.write_all(b"8220104E\r\n").await.unwrap();
+    tokio::task::yield_now().await;
+    for _ in 0..5 {
+        let request = pci_line(&mut remote_read).await;
+        let code = request[request.len() - 2];
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+        remote_write
+            .write_all(&mmi_block(0, 88, 7, 3))
+            .await
+            .unwrap();
+        remote_write
+            .write_all(&mmi_block(88, 88, 7, 3))
+            .await
+            .unwrap();
+        remote_write
+            .write_all(&mmi_block(176, 80, 7, 3))
+            .await
+            .unwrap();
+        tokio::task::yield_now().await;
+    }
+    let response = syncing.await.unwrap();
+    assert_eq!(response.status, 303, "{response:?}");
+    assert_eq!(response.final_text, "303 Duplicate Units Found: address=7");
+    assert!(
+        !service.model.lock().await.projects["HARNESS"].networks[&254]
+            .physical
+            .contains_key(&7)
+    );
     std::fs::remove_file(path).unwrap();
 }
 

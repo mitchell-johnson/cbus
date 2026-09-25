@@ -428,8 +428,10 @@ fn dequote_value(raw: &str) -> String {
 /// Status codes that may prefix intermediate reply lines in native
 /// multi-status envelopes (calculator `134`, cached-property `300`,
 /// parameter `315`, database `342`/`233`, snippet/JSON `343`/`345`/`346`/`347`,
-/// PINGU `302`, multiplicity `120`).
-const ENVELOPE_CODES: [u16; 11] = [120, 134, 233, 300, 302, 315, 342, 343, 345, 346, 347];
+/// PINGU `302`, SYNCNEW discovery/failure `303`/`408`, multiplicity `120`).
+const ENVELOPE_CODES: [u16; 13] = [
+    120, 134, 233, 300, 302, 303, 315, 342, 343, 345, 346, 347, 408,
+];
 
 /// True when a reply line already carries a native multi-status envelope.
 ///
@@ -4921,6 +4923,8 @@ mod tests {
         assert!(has_status_prefix("134-result: OK"));
         assert!(has_status_prefix("315-UnitName=X"));
         assert!(has_status_prefix("342-//T/254/p/20/UnitType=KEY1"));
+        assert!(has_status_prefix("303-New Unit Found: address=5"));
+        assert!(has_status_prefix("408-Operation failed: no unit"));
         assert!(!has_status_prefix("200-foo"));
         assert!(!has_status_prefix("301 OID=x"));
         let mut s = Server::new(AccessLevel::Program);
