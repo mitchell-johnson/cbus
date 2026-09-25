@@ -17,6 +17,11 @@
 //! upgrading to `argon2` (with a versioned file format) is recorded
 //! follow-up work for any password-oriented use.
 //!
+//! Single-token rule: the token must be a single whitespace-free token.
+//! LOGIN splits the command line on ASCII whitespace, so a token containing
+//! whitespace could never be presented; the loader rejects such files
+//! fail-closed instead of arming a gate the operator can never open.
+//!
 //! Rate limiting: the service compares in constant time, never logs or
 //! echoes the secret, and counts consecutive per-connection failures
 //! (`ClientState::login_attempts`, saturating). No attempt cap or
@@ -128,9 +133,12 @@ pub fn constant_time_eq(a: &[u8; 32], b: &[u8; 32]) -> bool {
     diff == 0
 }
 
-/// Minimum accepted token length in characters (32 = 128 bits for a hex
-/// token). The file holds a high-entropy token, not a password; short values
-/// are rejected fail-closed so a placeholder can never arm the gate.
+/// Minimum accepted token length in characters (32; `str::len()` counts
+/// bytes, and any whitespace-free characters are accepted — 32 characters
+/// hold 128 bits when rendered as hex). Framed as a placeholder floor
+/// rather than a reviewed strength target; do not lower it. The file holds
+/// a high-entropy token, not a password; short values are rejected
+/// fail-closed so a placeholder can never arm the gate.
 /// Generate with e.g. `python3 -c "import secrets;
 /// print(secrets.token_hex(32))"` (64 hex chars) and store with mode 0400.
 pub const MIN_TOKEN_LEN: usize = 32;
@@ -144,7 +152,8 @@ pub const MIN_TOKEN_LEN: usize = 32;
 /// is an error. Expected permissions are `0400` (or `0600`); the mode
 /// itself is not rewritten.
 pub fn load_token_hash(path: &Path) -> io::Result<[u8; 32]> {
-    let data = std::fs::read(path)?;
+    // Permissions first: fail closed on group/other access before the
+    // secret bytes are ever read.
     #[cfg(unix)]
     {
         use std::os::unix::fs::MetadataExt;
@@ -159,6 +168,7 @@ pub fn load_token_hash(path: &Path) -> io::Result<[u8; 32]> {
             ));
         }
     }
+    let data = std::fs::read(path)?;
     let text = String::from_utf8(data)
         .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "C-Gate auth file is not UTF-8"))?;
     let token = text.lines().next().unwrap_or("").trim();
@@ -175,7 +185,7 @@ pub fn load_token_hash(path: &Path) -> io::Result<[u8; 32]> {
     if token.as_bytes().iter().any(u8::is_ascii_whitespace) {
         return Err(io::Error::new(
             io::ErrorKind::InvalidData,
-            "C-Gate auth token must not contain whitespace (LOGIN takes one token)",
+            "C-Gate auth token must be a single whitespace-free token (LOGIN takes one token)",
         ));
     }
     if token.len() < MIN_TOKEN_LEN {
@@ -183,7 +193,7 @@ pub fn load_token_hash(path: &Path) -> io::Result<[u8; 32]> {
             io::ErrorKind::InvalidData,
             format!(
                 "C-Gate auth token is shorter than {MIN_TOKEN_LEN} characters; \
-                 provision a high-entropy token, not a password"
+                 provision a high-entropy token (use 32+ random bytes, hex-encoded), not a password"
             ),
         ));
     }
@@ -219,6 +229,33 @@ mod tests {
         assert_eq!(
             hex(&sha256(b"abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu")),
             "cf5b16a778af8380036ce59e7b0492370b249b11e8f07a51afac45037afee9d1"
+        );
+        // SHA-256 padding-boundary lengths: 55 bytes (last length that pads
+        // into one block) and 64 bytes (first length needing a second
+        // padding block). Expected digests computed with `python3 -c
+        // "import hashlib; print(hashlib.sha256(<bytes>).hexdigest())"`,
+        // never hand-computed.
+        assert_eq!(
+            b"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnop".len(),
+            55,
+            "55-byte fixture must sit exactly on the one-block padding boundary"
+        );
+        assert_eq!(
+            b"abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl".len(),
+            64,
+            "64-byte fixture must sit exactly on the two-block padding boundary"
+        );
+        assert_eq!(
+            hex(&sha256(
+                b"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnop"
+            )),
+            "aa353e009edbaebfc6e494c8d847696896cb8b398e0173a4b5c1b636292d87c7"
+        );
+        assert_eq!(
+            hex(&sha256(
+                b"abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl"
+            )),
+            "2fcd5a0d60e4c941381fcc4e00a4bf8be422c3ddfafb93c809e8d1e2bfffae8e"
         );
     }
 

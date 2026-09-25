@@ -532,7 +532,10 @@ impl Service {
                 "install_mmi":true, "network_pingu":true,
                 "network_sync":true, "network_checkunit":true,
                 "unit_readdress":true,
-                "project":self.project,"network":self.network,"persistent_database":true})
+                "project":self.project,"network":self.network,"persistent_database":true,
+                // Opt-in command-layer LOGIN gate (see Service::set_auth_token_hash):
+                // false with the dormant default, true once armed.
+                "cgate_auth":self.auth_token_hash.get().is_some()})
                 .to_string()],
                 "200 OK",
             );
@@ -3439,8 +3442,8 @@ impl Service {
     /// TLS variant of [`Service::serve`]: each accepted connection
     /// completes a rustls server handshake before entering the shared
     /// per-connection handler. A failed handshake drops only that
-    /// connection; the listener stays up. No client authentication or
-    /// access control is performed here (P4b is transport-only); the
+    /// connection; the listener stays up. No TLS client authentication
+    /// is performed here (P4b is transport-only); the
     /// optional command-layer LOGIN gate (see [`Service::set_auth_token_hash`])
     /// is independent of TLS.
     /// The caller owns binding and task supervision.

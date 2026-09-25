@@ -68,6 +68,12 @@ Query `CMQTT CAPABILITIES`; `unit_readdress: true` denotes the readdress path an
 `dynamic_label_observation: true` denotes the volatile observed SAL cache while
 `dynamic_label_device_readback: false` preserves the unsupported device-query boundary,
 `edlt_label_clear: true` denotes the one-shot KEYGL5 clear control,
+`cgate_auth: true` denotes the armed opt-in LOGIN gate (`false` dormant
+default): with `--cgate-auth-file` configured, each connection needs
+`LOGIN <token>` before programming verbs while reads and bus control stay
+open; failures answer `420 LOGIN required` / `420 LOGIN failed` (malformed
+`LOGIN` with no token is 400 and also clears the flag), never `401`.
+Not native `access.txt` parity; loopback-only first slice;
 `named_scenes: true` denotes hardware-backed named-scene playback,
 and `do_methods: ["lighting", "sync"]` denotes the physical object-method aliases,
 `network_clocks: true` denotes IDENTIFY16 inspection plus schema-backed target

@@ -534,7 +534,22 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["dynamic_labels"], true);
     assert_eq!(document["dynamic_label_observation"], true);
     assert_eq!(document["dynamic_label_device_readback"], false);
+    // Dormant default: no --cgate-auth-file, so the LOGIN gate is off.
+    assert_eq!(document["cgate_auth"], false);
     std::fs::remove_file(path).unwrap();
+}
+
+/// The armed LOGIN gate is discoverable via capabilities, without needing
+/// a denied-write probe.
+#[tokio::test]
+async fn capabilities_report_armed_login_gate() {
+    let (service, path) = authed_service();
+    let mut client = ClientState::default();
+    let response = service.handle(&mut client, "[1] CMQTT CAPABILITIES").await;
+    assert_eq!(response.status, 200);
+    let document: serde_json::Value = serde_json::from_str(&response.lines[0]).unwrap();
+    assert_eq!(document["cgate_auth"], true);
+    std::fs::remove_file(path).ok();
 }
 
 /// Issue #12 Phase 1: an empty observation cache reports observed-only
@@ -2344,14 +2359,18 @@ async fn auth_gate_dormant_without_auth_file_is_byte_identical() {
     let (pci, _remote) = pci();
     let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
     let mut client = ClientState::default();
+    let login = service.handle(&mut client, "[1] LOGIN anything").await;
+    assert_eq!(login.status, 502);
     assert_eq!(
-        service
-            .handle(&mut client, "[1] LOGIN anything")
-            .await
-            .status,
-        502
+        login.final_text, "502 Command requires a physical backend that is not implemented",
+        "dormant LOGIN must be byte-identical to the generic 502"
     );
-    assert_eq!(service.handle(&mut client, "[2] LOGOUT").await.status, 502);
+    let logout = service.handle(&mut client, "[2] LOGOUT").await;
+    assert_eq!(logout.status, 502);
+    assert_eq!(
+        logout.final_text, "502 Command requires a physical backend that is not implemented",
+        "dormant LOGOUT must be byte-identical to the generic 502"
+    );
     assert_eq!(
         service
             .handle(&mut client, "[3] PP LOCK L //HARNESS/254")

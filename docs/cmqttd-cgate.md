@@ -28,9 +28,31 @@ transport via `--cgate-tls-cert`/`--cgate-tls-key` (both required together,
 and only alongside `--cgate-bind`); a TLS configuration failure exits before
 binding and before the state file is created. The TLS handshake times out
 after 10 s so a stalled client cannot hold a connection slot. TLS here is
-transport-only with no client authentication or access control, so keep the
+transport-only with no TLS client authentication, so keep the
 default loopback binding unless TLS termination is understood.
 MQTT's existing TLS/authentication options remain independent.
+
+The command listener also offers an opt-in command-layer LOGIN gate via
+`--cgate-auth-file <token-file>` (requires `--cgate-bind`; loopback-only
+first slice, explicitly not native `access.txt` parity). The file holds one
+high-entropy token on its first line (generate with
+`python3 -c "import secrets; print(secrets.token_hex(32))"`) with mode
+`0400` or `0600`; a missing/unreadable/short/whitespace-containing token or
+group/other-accessible file fails closed at startup before bind and before the
+state file is created. `CMQTT CAPABILITIES` reports `cgate_auth: false`
+dormant by default and `true` once armed. Armed, each connection needs
+`LOGIN <token>` (200) before PP mutating verbs (`PP LOCK/LOAD/SAVE/...`;
+`PP GET/INFO/LIST` stay open), `PROJECT` lifecycle, `DB...` writes, `SET`,
+`LABEL CLEAREDLT`, and `SCENE RECORD`; `GET`/`INFO`/`DBGET`-style reads,
+bus-control SAL traffic, and `SCENE PLAY` stay open. Gated verbs attempted
+without the flag answer `420 LOGIN required`; a wrong token answers
+`420 LOGIN failed`; a malformed `LOGIN` with no token answers 400 and also
+clears the flag (never `401`, which already means
+absent-object/model-denied readings); when armed, `LOGOUT` answers 200 and
+clears the per-connection flag (dormant `LOGIN`/`LOGOUT` remain the generic
+502). There is no attempt cap in this slice: the
+loopback bind plus high-entropy token makes online guessing infeasible, and
+a cap is follow-up work.
 Project files and the persistent database contain site information and must
 not be committed or published.
 
@@ -218,9 +240,10 @@ non-inventoried service commands. Full replacement still requires:
   specialist application families such as HVAC, audio and security.
 - Native repository/archive/import/export formats, document commands,
   complete server configuration/access/TLS, firmware and deployment workflows.
-  C-Gate TLS is transport-only: no client authentication or access control is
-  performed, no client certificates are requested, and ACCESS/ACCESS_CONTROL
-  paths remain fail-closed 502.
+  C-Gate TLS is transport-only: no TLS client authentication is performed,
+  no client certificates are requested, and ACCESS/ACCESS_CONTROL
+  paths remain fail-closed 502. (Command-layer access control is only the
+  separate opt-in LOGIN gate described above.)
 - Command-by-command native interoperability and physical acceptance beyond
   the supported device profiles. Full Toolkit workflow parity remains tracked
   separately in `toolkit-cli/docs/implementation-status.md`.

@@ -120,8 +120,10 @@ pub struct Options {
     pub cgate_unitspec: Option<std::path::PathBuf>,
 
     /// PEM certificate chain enabling TLS on the embedded C-Gate
-    /// listener; requires --cgate-tls-key (no auth yet — keep the bind
-    /// on loopback unless TLS termination is understood)
+    /// listener; requires --cgate-tls-key (TLS has no client auth —
+    /// command-layer auth is only the opt-in --cgate-auth-file LOGIN
+    /// gate; keep the bind on loopback unless TLS termination is
+    /// understood)
     #[arg(long, requires = "cgate_bind", requires = "cgate_tls_key")]
     pub cgate_tls_cert: Option<std::path::PathBuf>,
 
@@ -131,7 +133,7 @@ pub struct Options {
     pub cgate_tls_key: Option<std::path::PathBuf>,
 
     /// Optional file holding a high-entropy C-Gate LOGIN token (first
-    /// line); arms the session-local LOGIN gate over programming verbs.
+    /// line, single whitespace-free token); arms the session-local LOGIN gate over programming verbs.
     /// Loopback-only first slice: NOT native access.txt parity. Fails
     /// closed at startup when missing/unreadable/too short, or (on unix)
     /// accessible by group/other — expect 0400 or 0600 permissions.
