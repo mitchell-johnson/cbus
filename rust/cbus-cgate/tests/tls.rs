@@ -15,7 +15,8 @@ use cbus_cgate::service::Service;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
-use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
+use std::time::{Duration, Instant};
+use tokio::io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader};
 use tokio::net::{TcpListener, TcpStream};
 
 fn fixture(name: &str) -> PathBuf {
@@ -190,5 +191,105 @@ async fn tls_handshake_with_untrusted_cert_fails_but_server_stays_up() {
     let mut writer = wr;
     assert!(read_greeting(&mut reader).await.starts_with("201 "));
     assert_eq!(command(&mut reader, &mut writer, "1", "NOOP").await, 200);
+    std::fs::remove_file(state).ok();
+}
+
+#[tokio::test]
+async fn tls_stalled_handshake_times_out_and_listener_stays_up() {
+    let (service, _remote, state) = test_service();
+    let listener = TcpListener::bind("127.0.0.1:0").await.expect("bind");
+    let port = listener.local_addr().expect("addr").port();
+    let running = service.clone();
+    let tls = test_server_config();
+    tokio::spawn(async move {
+        running
+            .serve_tls_with_timeout(listener, tls, Duration::from_millis(200))
+            .await
+            .expect("serve_tls");
+    });
+    let start = Instant::now();
+    let mut stream = TcpStream::connect(("127.0.0.1", port))
+        .await
+        .expect("connect");
+    // Send nothing: the server must drop/close within the bound.
+    // Ceiling is 2s = 10x the 200ms handshake bound: generous enough to stay
+    // flake-safe on loaded CI while still proving the timeout fires promptly
+    // instead of lingering unbounded with no handshake bound.
+    let mut buf = [0u8; 64];
+    let n = tokio::time::timeout(Duration::from_secs(2), stream.read(&mut buf))
+        .await
+        .expect("server closes stalled handshake within ceiling")
+        .expect("read stalled handshake");
+    let elapsed = start.elapsed();
+    assert_eq!(n, 0, "stalled pre-handshake connection must be terminated");
+    assert!(
+        elapsed < Duration::from_secs(2),
+        "stalled handshake took {elapsed:?}, exceeding ceiling"
+    );
+    // The 64-slot permit must be freed and the listener still serving: a
+    // second connection completes a full TLS handshake plus NOOP round-trip.
+    let stream = tls_connect(port, client_config(trusted_roots()))
+        .await
+        .expect("TLS handshake after stalled attempt");
+    let (rd, wr) = tokio::io::split(stream);
+    let mut reader = BufReader::new(rd);
+    let mut writer = wr;
+    assert!(read_greeting(&mut reader).await.starts_with("201 "));
+    assert_eq!(command(&mut reader, &mut writer, "1", "NOOP").await, 200);
+    std::fs::remove_file(state).ok();
+}
+
+#[tokio::test]
+async fn plaintext_client_to_tls_port_gets_no_greeting() {
+    let (service, _remote, state) = test_service();
+    let listener = TcpListener::bind("127.0.0.1:0").await.expect("bind");
+    let port = listener.local_addr().expect("addr").port();
+    let running = service.clone();
+    let tls = test_server_config();
+    tokio::spawn(async move {
+        running.serve_tls(listener, tls).await.expect("serve_tls");
+    });
+    let stream = TcpStream::connect(("127.0.0.1", port))
+        .await
+        .expect("connect");
+    let (rd, wr) = stream.into_split();
+    let mut reader = BufReader::new(rd);
+    let mut writer = wr;
+    writer.write_all(b"[1] NOOP\n").await.expect("write");
+    // Garbage fails the handshake fast: the server answers with a TLS
+    // alert (never a C-Gate greeting) and then drops the connection.
+    let mut line = String::new();
+    match tokio::time::timeout(Duration::from_secs(3), reader.read_line(&mut line)).await {
+        Ok(Ok(_)) => assert!(
+            !line.trim_start().starts_with("201 "),
+            "plaintext client must not receive a C-Gate greeting from a TLS port"
+        ),
+        Ok(Err(_)) => {} // reset / non-UTF8 alert bytes: also no greeting
+        Err(_) => panic!("TLS server never answered plaintext garbage; handshake must fail fast"),
+    }
+    // The failed-handshake connection must then close (EOF or reset).
+    let mut buf = [0u8; 64];
+    match tokio::time::timeout(Duration::from_secs(3), reader.read(&mut buf)).await {
+        Ok(Ok(0)) => {}
+        Ok(Ok(n)) => panic!("expected close after failed handshake, got {n} more bytes"),
+        Ok(Err(_)) => {} // RST is also a close
+        Err(_) => panic!("failed-handshake connection stayed open"),
+    }
+    std::fs::remove_file(state).ok();
+}
+
+#[tokio::test]
+async fn tls_client_to_plaintext_port_fails_handshake() {
+    let (service, _remote, state) = test_service();
+    let listener = TcpListener::bind("127.0.0.1:0").await.expect("bind");
+    let port = listener.local_addr().expect("addr").port();
+    tokio::spawn(async move {
+        service.serve(listener).await.expect("serve");
+    });
+    let result = tls_connect(port, client_config(trusted_roots())).await;
+    assert!(
+        result.is_err(),
+        "TLS handshake against a plaintext port must fail"
+    );
     std::fs::remove_file(state).ok();
 }

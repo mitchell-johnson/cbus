@@ -26,6 +26,11 @@ const MAX_LINE: usize = 1024 * 1024;
 const MAX_STATE: usize = 32 * 1024 * 1024;
 const MAX_LABEL_OBSERVATIONS: usize = 4096;
 
+/// Default bound for the TLS pre-handshake accept (matches the existing
+/// 10s per-write deadlines). A stalled pre-handshake connection must not
+/// hold a 64-slot semaphore permit forever.
+pub const TLS_HANDSHAKE_TIMEOUT: Duration = Duration::from_secs(10);
+
 fn goc_programming(param: &unitspec::SpecParam) -> Option<GocProgramming> {
     match param
         .get("ProgramMethod")
@@ -3353,10 +3358,26 @@ impl Service {
     /// connection; the listener stays up. No client authentication or
     /// access control is performed here (P4b is transport-only).
     /// The caller owns binding and task supervision.
+    ///
+    /// The pre-handshake accept is bounded by
+    /// [`TLS_HANDSHAKE_TIMEOUT`] so a stalled client cannot hold a
+    /// 64-slot semaphore permit forever. Use
+    /// [`Service::serve_tls_with_timeout`] in tests for a short bound.
     pub async fn serve_tls(
         self: Arc<Self>,
         listener: TcpListener,
         tls: Arc<rustls::ServerConfig>,
+    ) -> io::Result<()> {
+        self.serve_tls_with_timeout(listener, tls, TLS_HANDSHAKE_TIMEOUT)
+            .await
+    }
+
+    /// [`Service::serve_tls`] with an explicit handshake bound.
+    pub async fn serve_tls_with_timeout(
+        self: Arc<Self>,
+        listener: TcpListener,
+        tls: Arc<rustls::ServerConfig>,
+        timeout: Duration,
     ) -> io::Result<()> {
         let acceptor = tokio_rustls::TlsAcceptor::from(tls);
         let slots = Arc::new(Semaphore::new(64));
@@ -3371,14 +3392,17 @@ impl Service {
             let service = self.clone();
             tokio::spawn(async move {
                 let _permit = permit;
-                match acceptor.accept(stream).await {
-                    Ok(tls_stream) => {
+                match tokio::time::timeout(timeout, acceptor.accept(stream)).await {
+                    Ok(Ok(tls_stream)) => {
                         if let Err(e) = service.connection_tls(tls_stream).await {
                             tracing::debug!("C-Gate TLS connection ended: {e}");
                         }
                     }
-                    Err(e) => {
+                    Ok(Err(e)) => {
                         tracing::debug!("C-Gate TLS handshake failed: {e}");
+                    }
+                    Err(_) => {
+                        tracing::debug!("C-Gate TLS handshake timed out");
                     }
                 }
             });

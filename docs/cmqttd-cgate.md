@@ -23,8 +23,14 @@ Malformed state fails startup rather than discarding the database.
 Docker Compose publishes port 20023 on the host loopback only (the container
 listens on `0.0.0.0:20023` on its private bridge network) and mounts the named
 `cmqttd_data` volume at `/var/lib/cmqttd`. `CMQTTD_CGATE_BIND=off` disables it.
-The command listener currently has no TLS or authentication; keep its default
-loopback binding. MQTT's existing TLS/authentication options remain independent.
+The command listener speaks plaintext by default and offers optional TLS
+transport via `--cgate-tls-cert`/`--cgate-tls-key` (both required together,
+and only alongside `--cgate-bind`); a TLS configuration failure exits before
+binding and before the state file is created. The TLS handshake times out
+after 10 s so a stalled client cannot hold a connection slot. TLS here is
+transport-only with no client authentication or access control, so keep the
+default loopback binding unless TLS termination is understood.
+MQTT's existing TLS/authentication options remain independent.
 Project files and the persistent database contain site information and must
 not be committed or published.
 
@@ -178,15 +184,27 @@ fragments must not be mistaken for a new result. MQTT traffic is independent.
 The existing mock dispatches 431 command paths. That is **not** evidence that
 all 431 have physical implementations in this service. `CMQTT CAPABILITIES`
 returns `full_cgate_compatibility: false`; unimplemented physical operations
-return 502. Full replacement still requires:
+return 502. The enumerable gap tracker is the executable capability matrix in
+`cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 29
+physical, 36 local-database, 365 fail-closed 502, and 1 obsolete 400 over the
+431 inventoried paths, plus a separately asserted 6-row supplement for
+non-inventoried service commands. Full replacement still requires:
 
 - Physical PP multi-range failure recovery, power-loss behavior, and hardware write acceptance for
   every programming method and unit family. LOAD has full decoded-catalogue
   layout coverage plus live KEYGL5 acceptance; SAVE audits every well-formed
   writable catalogue default and has fake-PCI direct/page-aware/OEM/GOC
-  write-readback acceptance.
-- Bridged-network synchronization, serial-address broadcasts, unravel,
+  write-readback acceptance. STORE failures report `after N confirmed write(s)`
+  with the count of independently acknowledged ranges, and Save-to-NVM failures
+  carry the same confirmed-count evidence. Factory/special parameters clear
+  silently without a write while tag-filtered parameters stay dirty for a later
+  matching-tags SAVE; a bare 200 covers the tag-selected subset only.
+- Bridged-network synchronization, serial-address commissioning, unravel,
   project identification and the remaining commissioning state transitions.
+  The pure selected-serial codec (`cbus-protocol::serial_address`) and the
+  tokio one-shot transport (`cbus-transport::serial_address`) exist with
+  committed vectors, but perform no inventory, commissioning, retry, or
+  persistence; `DO ... UNRAVEL` and `NET UNRAVEL[UNIT]` still return 502.
   Direct-network `NET PINGU`, `NET SYNC` identity population, `DO ... SYNC`,
   duplicate-aware `NET CHECKUNIT`, and guarded single-unit physical
   readdressing are implemented. `DO` lighting methods also use the physical
@@ -200,6 +218,9 @@ return 502. Full replacement still requires:
   specialist application families such as HVAC, audio and security.
 - Native repository/archive/import/export formats, document commands,
   complete server configuration/access/TLS, firmware and deployment workflows.
+  C-Gate TLS is transport-only: no client authentication or access control is
+  performed, no client certificates are requested, and ACCESS/ACCESS_CONTROL
+  paths remain fail-closed 502.
 - Command-by-command native interoperability and physical acceptance beyond
   the supported device profiles. Full Toolkit workflow parity remains tracked
   separately in `toolkit-cli/docs/implementation-status.md`.

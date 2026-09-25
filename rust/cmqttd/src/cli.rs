@@ -184,4 +184,42 @@ mod tests {
         assert!(opts.cgate_tls_cert.is_some());
         assert!(opts.cgate_tls_key.is_some());
     }
+
+    fn base_args_without_bind() -> Vec<&'static str> {
+        vec![
+            "cmqttd",
+            "-b",
+            "127.0.0.1",
+            "-t",
+            "127.0.0.1:10001",
+            "-P",
+            "proj.cbz",
+        ]
+    }
+
+    #[test]
+    fn cgate_tls_pair_without_bind_rejected() {
+        let mut args = base_args_without_bind();
+        args.push("--cgate-tls-cert");
+        args.push("cert.pem");
+        args.push("--cgate-tls-key");
+        args.push("key.pem");
+        assert!(Options::try_parse_from(args).is_err());
+    }
+
+    #[test]
+    fn cgate_tls_cert_without_bind_rejected() {
+        let mut args = base_args_without_bind();
+        args.push("--cgate-tls-cert");
+        args.push("cert.pem");
+        assert!(Options::try_parse_from(args).is_err());
+    }
+
+    #[test]
+    fn cgate_tls_key_without_bind_rejected() {
+        let mut args = base_args_without_bind();
+        args.push("--cgate-tls-key");
+        args.push("key.pem");
+        assert!(Options::try_parse_from(args).is_err());
+    }
 }

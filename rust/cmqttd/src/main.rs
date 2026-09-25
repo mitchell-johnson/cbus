@@ -140,25 +140,15 @@ async fn main() {
                 opts.project_file.as_ref().expect("clap requires project"),
             ))
             .map_err(std::io::Error::other)?;
-            let network_name = opts.cbus_network.join(" ");
-            let service = cbus_cgate::service::Service::new(
-                &xml,
-                (!network_name.is_empty()).then_some(network_name.as_str()),
-                opts.cgate_state.clone(),
-                pci.clone(),
-                opts.cgate_unitspec.clone(),
-            )?;
-            let listener = {
-                // Fail closed before binding: unreadable/invalid TLS
-                // files must never leave a plaintext listener behind.
-                let tls = setup::cgate_tls_config(&opts).map_err(std::io::Error::other)?;
-                let listener = tokio::net::TcpListener::bind(bind).await?;
-                (listener, tls)
-            };
-            tracing::info!("C-Gate service listening on {}", listener.0.local_addr()?);
+            // TLS config loads FIRST inside prepare_cgate_service, before
+            // Service::new creates the state file: a bad cert exits before
+            // listener bind and before state-file creation.
+            let (service, tls) = setup::prepare_cgate_service(&opts, &xml, pci.clone())
+                .map_err(std::io::Error::other)?;
+            let listener = tokio::net::TcpListener::bind(bind).await?;
+            tracing::info!("C-Gate service listening on {}", listener.local_addr()?);
             let running = service.clone();
             tokio::spawn(async move {
-                let (listener, tls) = listener;
                 let result = match tls {
                     Some(config) => running.serve_tls(listener, config).await,
                     None => running.serve(listener).await,

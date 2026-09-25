@@ -233,6 +233,37 @@ pub fn cgate_tls_config(opts: &Options) -> Result<Option<Arc<rustls::ServerConfi
     }
 }
 
+/// Prepare the embedded C-Gate service with fail-closed TLS ordering.
+///
+/// Loads [`cgate_tls_config`] FIRST, before [`Service::new`] creates the
+/// state file. A bad cert therefore exits before listener bind and before
+/// state-file creation. `xml` is the already-loaded project XML.
+pub fn prepare_cgate_service(
+    opts: &Options,
+    xml: &str,
+    pci: Arc<cbus_transport::pci::PciClient>,
+) -> Result<
+    (
+        Arc<cbus_cgate::service::Service>,
+        Option<Arc<rustls::ServerConfig>>,
+    ),
+    String,
+> {
+    // Fail closed before bind and state-file creation: unreadable/invalid
+    // TLS files must never create the state file nor leave a listener behind.
+    let tls = cgate_tls_config(opts)?;
+    let network_name = opts.cbus_network.join(" ");
+    let service = cbus_cgate::service::Service::new(
+        xml,
+        (!network_name.is_empty()).then_some(network_name.as_str()),
+        opts.cgate_state.clone(),
+        pci,
+        opts.cgate_unitspec.clone(),
+    )
+    .map_err(|e| e.to_string())?;
+    Ok((service, tls))
+}
+
 pub fn mqtt_options(opts: &Options) -> Result<MqttOptions, String> {
     let port = if opts.broker_port != 0 {
         opts.broker_port
@@ -363,5 +394,62 @@ mod tests {
         assert!(cgate_tls_config(&opts).is_err());
         std::fs::remove_file(cert).ok();
         std::fs::remove_file(key).ok();
+    }
+
+    fn dummy_pci() -> Arc<cbus_transport::pci::PciClient> {
+        let (client, _remote) = tokio::io::duplex(8192);
+        let (rd, wr) = tokio::io::split(client);
+        let (tx, _) = tokio::sync::mpsc::unbounded_channel();
+        cbus_transport::pci::PciClient::new(Box::new(rd), Box::new(wr), tx)
+    }
+
+    fn unique_state_path(tag: &str) -> std::path::PathBuf {
+        static ID: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+        std::env::temp_dir().join(format!(
+            "cmqttd-cgate-order-{}-{}-{}.json",
+            std::process::id(),
+            ID.fetch_add(1, std::sync::atomic::Ordering::Relaxed),
+            tag
+        ))
+    }
+
+    #[tokio::test]
+    async fn cgate_startup_bad_cert_creates_no_state_file() {
+        // TLS config must load BEFORE Service::new creates the state file.
+        let state = unique_state_path("bad-cert");
+        assert!(!state.exists());
+        let mut opts = tls_opts(
+            Some(std::path::PathBuf::from("/nonexistent/cgate-cert.pem")),
+            Some(std::path::PathBuf::from("/nonexistent/cgate-key.pem")),
+        );
+        opts.cgate_state = state.clone();
+        let xml = std::fs::read_to_string(tls_fixture("project.xml")).expect("project fixture");
+        let err = match prepare_cgate_service(&opts, &xml, dummy_pci()) {
+            Ok(_) => panic!("bad cert must fail"),
+            Err(e) => e,
+        };
+        assert!(!err.is_empty());
+        assert!(
+            !state.exists(),
+            "bad TLS cert must not create the C-Gate state file"
+        );
+    }
+
+    #[tokio::test]
+    async fn cgate_startup_valid_tls_creates_service() {
+        let state = unique_state_path("good-cert");
+        assert!(!state.exists());
+        let mut opts = tls_opts(
+            Some(tls_fixture("cgate-tls-test-cert.pem")),
+            Some(tls_fixture("cgate-tls-test-key.pem")),
+        );
+        opts.cgate_state = state.clone();
+        let xml = std::fs::read_to_string(tls_fixture("project.xml")).expect("project fixture");
+        let (service, tls) =
+            prepare_cgate_service(&opts, &xml, dummy_pci()).expect("valid TLS startup");
+        assert!(tls.is_some());
+        drop(service);
+        assert!(state.exists(), "valid startup creates the state file");
+        std::fs::remove_file(state).ok();
     }
 }
