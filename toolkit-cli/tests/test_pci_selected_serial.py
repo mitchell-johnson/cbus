@@ -4,6 +4,7 @@ from dataclasses import replace
 import json
 from pathlib import Path
 import tempfile
+import time
 import types
 import unittest
 from unittest.mock import patch
@@ -24,7 +25,10 @@ from tests.test_pci_serial_address_transport import Clock
 LOCAL='100966.1187'
 SETTINGS=dict(local_unit=16,expected_local_serial=LOCAL,overall_timeout=5.,observation_timeout=.5,
               confirmation_timeout=.1,mmi_response_timeout=.1,quiet_period=.02,
-              options_response_timeout=.02,address_response_timeout=.02)
+              # The real-socket fixture persists successful moves before it
+              # replies. Leave scheduling and fsync headroom while remaining
+              # far below the production two-second native response window.
+              options_response_timeout=.02,address_response_timeout=.2)
 OPTIONS=b'g.82420537\r\n'
 LOCAL_REQUEST=b'\\4610002104g\r'
 OPTIONS_REQUEST=b'\\4610001A4201g\r'
@@ -76,6 +80,19 @@ class SelectedSerialTests(unittest.TestCase):
             ('wrong_source',SerialAddressFault(reported_source=9),'observed_expected_change',False)):
             with self.subTest(case=label),tempfile.TemporaryDirectory() as tmp:
                 path=Path(tmp)/'fixture.json';sim=fixture(state_path=path,faults={A:fault})
+                if label == 'move_and_reply':
+                    # A successful fixture move durably persists before its
+                    # confirmation and receipt can be sent. Model modest
+                    # scheduler/filesystem latency so this real-socket test
+                    # cannot silently depend on a 20 ms response turnaround.
+                    native_co = sim._co
+
+                    def delayed_co(payload):
+                        response = native_co(payload)
+                        time.sleep(.03)
+                        return response
+
+                    sim._co = delayed_co
                 with sim.running() as endpoint:
                     subject=manager(endpoint);plan=subject.plan(A,6)
                     result=subject.apply(plan,recovery_path=Path(tmp)/'journal.json')
