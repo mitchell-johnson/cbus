@@ -1755,6 +1755,35 @@ impl Server {
         } else if method == "UNRAVEL" {
             let args = ["NET", "UNRAVEL", words[1]];
             self.net_unravel(tag, &args)
+        } else if method == "FACTORYDEFAULT" {
+            if words.len() != 3 || !valid_target(words[1]) {
+                return err(
+                    tag,
+                    status::BAD_REQUEST,
+                    "400 FactoryDefault requires one unit object",
+                );
+            }
+            let Some((project, network, unit)) = self.unit_of(words[1]) else {
+                return err(tag, status::ABSENT, "401 Unit not found");
+            };
+            if project != self.current.clone().unwrap_or_default() {
+                return err(tag, status::NOT_FOUND, "404 Project not selected");
+            }
+            let Some(record) = self
+                .projects
+                .get(&project)
+                .and_then(|project| project.networks.get(&network))
+                .and_then(|network| network.units.get(&unit))
+            else {
+                return err(tag, status::ABSENT, "401 Unit not found");
+            };
+            if !record.unit_type.eq_ignore_ascii_case("KEYGL5") {
+                return err(tag, 402, "402 Method not supported by object");
+            }
+            // Deterministic mock acceptance only. The hardware-backed service
+            // intercepts this method and sends the native OEM control; without
+            // a UnitSpec the mock must not invent post-reset PP values.
+            ok(tag, vec![], "200 OK")
         } else {
             return err(tag, 402, "402 Method not supported by object");
         };

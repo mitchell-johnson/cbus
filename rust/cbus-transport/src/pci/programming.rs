@@ -46,10 +46,30 @@ impl PciClient {
     /// The unit ACK proves only that the programming control was accepted;
     /// C-Bus exposes no readback for the erased dynamic-label cache.
     pub async fn clear_edlt_dynamic_labels(&self, unit: u8) -> Result<()> {
+        self.edlt_oem_control(unit, [0xc1, 0xea], "eDLT label clear")
+            .await
+    }
+
+    /// Send the native C-Gate `CBusEdlt.FactoryDefault` control exactly once.
+    ///
+    /// The source-correlated unit ACK proves acceptance of the OEM control.
+    /// It does not prove the post-reboot defaults, retained address, rendered
+    /// state, or power-cycle persistence; callers must report those separately.
+    pub async fn factory_default_edlt(&self, unit: u8) -> Result<()> {
+        self.edlt_oem_control(unit, [0xb2, 0xb2], "eDLT factory default")
+            .await
+    }
+
+    async fn edlt_oem_control(
+        &self,
+        unit: u8,
+        control: [u8; 2],
+        operation: &'static str,
+    ) -> Result<()> {
         if unit == 0 || unit == 255 {
             return Err(Error::new(
                 ErrorKind::InvalidInput,
-                "eDLT label clear requires a unit address in 1..254",
+                format!("{operation} requires a unit address in 1..254"),
             ));
         }
         let _lane = self.programming_lane.lock().await;
@@ -67,7 +87,7 @@ impl PciClient {
             unit,
             &Cal::Write {
                 parameter: 0xff,
-                data: vec![0x43, 0xc1, 0xea],
+                data: vec![0x43, control[0], control[1]],
             },
         )
         .map_err(|error| Error::new(ErrorKind::InvalidInput, error.0))?;
@@ -112,7 +132,7 @@ impl PciClient {
                         }
                     }
                     Ok(Some(Packet::PciError)) => {
-                        return Err(Error::other("PCI rejected eDLT label clear"));
+                        return Err(Error::other(format!("PCI rejected {operation}")));
                     }
                     Ok(Some(_)) => {}
                     Ok(None) | Err(_) => {
@@ -123,10 +143,10 @@ impl PciClient {
                     }
                 }
                 if confirmed == Some(false) {
-                    return Err(Error::other("PCI rejected eDLT label clear"));
+                    return Err(Error::other(format!("PCI rejected {operation}")));
                 }
                 if accepted == Some(false) {
-                    return Err(Error::other("unit rejected eDLT label clear"));
+                    return Err(Error::other(format!("unit rejected {operation}")));
                 }
                 if confirmed == Some(true) && accepted == Some(true) {
                     return Ok(());
@@ -137,7 +157,7 @@ impl PciClient {
         .unwrap_or_else(|_| {
             Err(Error::new(
                 ErrorKind::TimedOut,
-                "eDLT label clear timed out",
+                format!("{operation} timed out"),
             ))
         });
 
@@ -146,12 +166,12 @@ impl PciClient {
             state.pending.remove(&code);
             state.codes_in_use.remove(&code);
         }
+        let pci_rejected = format!("PCI rejected {operation}");
+        let unit_rejected = format!("unit rejected {operation}");
         if result.is_ok()
             || result.as_ref().is_err_and(|error| {
-                matches!(
-                    error.to_string().as_str(),
-                    "PCI rejected eDLT label clear" | "unit rejected eDLT label clear"
-                )
+                let message = error.to_string();
+                message == pci_rejected || message == unit_rejected
             })
         {
             transaction.complete = true;
@@ -1813,6 +1833,64 @@ mod tests {
             pci.clear_edlt_dynamic_labels(0).await.unwrap_err().kind(),
             ErrorKind::InvalidInput
         );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn edlt_factory_default_requires_confirmation_and_source_tagged_ack() {
+        let (pci, mut remote, mut events) = setup().await;
+        let worker = pci.clone();
+        let reset = tokio::spawn(async move { worker.factory_default_edlt(5).await });
+        let request = line(&mut remote).await;
+        assert_eq!(&request[..request.len() - 2], b"\\46050900A4FF43B2B262");
+        let code = request[request.len() - 2];
+
+        // A foreign ACK and unrelated application traffic must not complete
+        // or disappear into this destructive programming transaction.
+        reply(&mut remote, 4, &[0x32, 0xff, 0x43]).await;
+        remote
+            .get_mut()
+            .write_all(b"05043800790145\r\n")
+            .await
+            .unwrap();
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        assert!(!reset.is_finished());
+        reply(&mut remote, 5, &[0x32, 0xff, 0x43]).await;
+        reset.await.unwrap().unwrap();
+        assert!(matches!(
+            events.recv().await,
+            Some(CBusEvent::LightingOn {
+                source: Some(4),
+                app: 56,
+                group: 1
+            })
+        ));
+        assert_eq!(
+            pci.factory_default_edlt(255).await.unwrap_err().kind(),
+            ErrorKind::InvalidInput
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn definitive_edlt_factory_default_nak_keeps_programming_lane_usable() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let reset = tokio::spawn(async move { worker.factory_default_edlt(5).await });
+        let request = line(&mut remote).await;
+        let code = request[request.len() - 2];
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        reply(&mut remote, 5, &[0x3b, 0xff, 0x43]).await;
+        assert!(reset
+            .await
+            .unwrap()
+            .unwrap_err()
+            .to_string()
+            .contains("unit rejected"));
+
+        let worker = pci.clone();
+        let recall = tokio::spawn(async move { worker.recall_parameter(5, 1, 1).await });
+        assert_eq!(line(&mut remote).await, b"\\4605001A010199\r");
+        reply(&mut remote, 5, &[0x82, 1, 9]).await;
+        assert_eq!(recall.await.unwrap().unwrap(), vec![9]);
     }
 
     #[tokio::test(start_paused = true)]

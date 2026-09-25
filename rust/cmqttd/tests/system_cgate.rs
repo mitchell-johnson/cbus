@@ -108,7 +108,7 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     }
     assert!(command(&mut reader, &mut writer, "CMQTT CAPABILITIES")
         .await
-        .contains("\"do_methods\":[\"lighting\",\"sync\"]"));
+        .contains("\"do_methods\":[\"factorydefault\",\"lighting\",\"sync\"]"));
     assert!(
         command(&mut reader, &mut writer, "GET //HARNESS/254/56/1 level")
             .await
@@ -342,6 +342,26 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     assert_eq!(sys.pci.count_payload("46050900A4FF43C1EA1B"), 1);
     let observed = command(&mut reader, &mut writer, "CMQTT LABELS //HARNESS/254/p/5").await;
     assert!(observed.contains("\"observations\":[]"), "{observed:?}");
+
+    // The destructive CBusEdlt object method uses its distinct captured OEM
+    // control exactly once. A 202 means the source-correlated ACK arrived; it
+    // does not claim post-reboot defaults or persistence.
+    let reset = command(
+        &mut reader,
+        &mut writer,
+        "DO //HARNESS/254/p/5 FactoryDefault",
+    );
+    let reset_reply = async {
+        require(COMMAND_DRAIN, "eDLT factory-default control", || {
+            sys.pci.count_payload("46050900A4FF43B2B262") == 1
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0xff, 0x43]));
+    };
+    let (reset, ()) = tokio::join!(reset, reset_reply);
+    assert!(reset.contains("202 Done: //HARNESS/254/p/5"), "{reset:?}");
+    assert_eq!(sys.pci.count_payload("46050900A4FF43B2B262"), 1);
     // Attribute-suffixed and foreign scopes are not a network or unit.
     for address in [
         "CMQTT LABELS //HARNESS/254/p/5/TagName",

@@ -71,6 +71,38 @@ fn full_project_network_cycle() {
 }
 
 #[test]
+fn edlt_factory_default_method_has_a_bounded_mock_contract() {
+    let mut s = Server::new(AccessLevel::Program).with_programming(true);
+    assert_eq!(s.handle("[1] PROJECT NEW TEST").status, 200);
+    assert_eq!(
+        s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
+            .status,
+        200
+    );
+    assert_eq!(
+        s.handle("[3] DBADDSAFE //TEST/254 Unit 5 Kitchen_eDLT")
+            .status,
+        200
+    );
+    assert_eq!(
+        s.handle("[4] DBSETSAFE //TEST/254/p/5/UnitType KEYGL5")
+            .status,
+        200
+    );
+    let reset = s.handle("[5] DO //TEST/254/p/5 FactoryDefault");
+    assert_eq!(reset.status, 202);
+    assert!(reset.lines.is_empty());
+    assert_eq!(reset.final_text, "202 Done: //TEST/254/p/5");
+    for (command, status) in [
+        ("[6] DO //TEST/254/p/5 FactoryDefault extra", 400),
+        ("[7] DO //TEST/254/p/6 FactoryDefault", 401),
+        ("[8] DO //TEST/254/p/5 UnknownMethod", 402),
+    ] {
+        assert_eq!(s.handle(command).status, status, "{command}");
+    }
+}
+
+#[test]
 fn level_lifecycle_group_xml_and_copy() {
     let mut s = Server::new(AccessLevel::Program).with_programming(true);
     assert_eq!(s.handle("[1] PROJECT NEW TEST").status, 200);

@@ -43,7 +43,7 @@ state file is created. `CMQTT CAPABILITIES` reports `cgate_auth: false`
 dormant by default and `true` once armed. Armed, each connection needs
 `LOGIN <token>` (200) before PP mutating verbs (`PP LOCK/LOAD/SAVE/...`;
 `PP GET/INFO/LIST` stay open), `PROJECT` lifecycle, `DB...` writes, `SET`,
-`LABEL CLEAREDLT`, and `SCENE RECORD`; `GET`/`INFO`/`DBGET`-style reads,
+`LABEL CLEAREDLT`, `DO ... FactoryDefault`, and `SCENE RECORD`; `GET`/`INFO`/`DBGET`-style reads,
 bus-control SAL traffic, and `SCENE PLAY` stay open. Gated verbs attempted
 without the flag answer `420 LOGIN required`; a wrong token answers
 `420 LOGIN failed`; a malformed `LOGIN` with no token answers 400 and also
@@ -66,7 +66,7 @@ not be committed or published.
 | Physical PP LOAD and subsequent GET/INFO | Identifies the live unit, selects its privately installed decoded schema, recalls standard CAL parameters, explicit pages for `paged`/`ncc`, OEM memory, and GOC parameter-`0xFF` memory through the shared PCI, decodes int/long/bit/string/sixbit arrays and `ArrayMap`, applies tag selection, and commits the session only after every read succeeds |
 | Physical PP SAVE/SAVE_TO_SOURCE | Writes only dirty, tag-selected `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and `goc2` parameters with `none`/`checksum`/supported `lock` protection. Page-aware writes split at 256-byte boundaries; OEM methods use the selector/data path; GIU halts and resumes the unit; DALI observes the native settling interval; GOC methods use parameter `0xFF`, a big-endian address prefix, and their native block limits. The service validates the complete plan and live type/firmware first, preserves shared bits through pre-read/encode, requires source/parameter-matched acknowledgements, and reads every stored range back before success. Specifications containing the vendor `ncc` method are classified as C-Bus 3; after a changed save, the service runs native group-0 operation-4 EXECUTE/POLL until the NVM commit succeeds |
 | ON/OFF/RAMP/TERMINATERAMP and lighting variants | Actual shared PCI, negative confirmations return errors; successful delivery is distinct from observed physical brightness |
-| `DO` lighting methods and direct-network `SYNC` | Native object-method aliases use the same physical lighting and synchronization backends and return `202 Done: object`; `DO ... UNRAVEL` remains an explicit 502 until its physical backend exists |
+| `DO` lighting methods, direct-network `SYNC`, and KEYGL5 `FactoryDefault` | Lighting and synchronization aliases use their physical backends. FactoryDefault sends the captured OEM control once, requires PCI confirmation plus the source-correlated unit ACK, clears stale observed-label traffic, and returns `202 Done: object`; `DO ... UNRAVEL` remains an explicit 502 until its physical backend exists |
 | GET group level | Real observed bus levels; unobserved levels return 408, never invented zero |
 | SCENE RECORD/PLAY | RECORD atomically persists the configured network's observed lighting levels under the named set/scene. PLAY sends a confirmed zero-time ramp for every stored level, invalidates the old cache, and schedules physical status readback. Unknown scenes retain the native 401 response |
 | TRIGGER EVENT/INDICATORKILL | Actual Trigger Control SAL on application 202; incoming events update the live service cache and event stream |
@@ -76,6 +76,7 @@ not be committed or published.
 | LIGHTING/TRIGGER/ENABLE LABEL and UNICODELABEL | Actual checksummed dynamic-label SAL on the selected application. Supports raw/text payloads, built-in icon references, language selection, native segmented UTF-8, and start/header/chunk/commit dynamic bitmap uploads. Every fragment requires positive PCI delivery confirmation; Enable Unicode and invalid native bounds fail before transmission |
 | Observed dynamic-label cache | Retains up to 4,096 exact incoming and confirmed outgoing label SAL payloads since the current connection, including source/direction and order. `CMQTT LABELS` exposes the bounded observations; the Toolkit CLI assembles standard text/icons, Unicode, language selection and dynamic bitmaps while reporting incomplete transactions. This is explicitly not a complete eDLT device-cache readback |
 | LABEL CLEAREDLT | Sends the native KEYGL5 programming control through the shared PCI exactly once, requires both PCI confirmation and the source/tag-correlated unit ACK, and reports acceptance separately from physical erasure or persistence |
+| `DO //PROJECT/NETWORK/p/UNIT FactoryDefault` | Sends native `A4 FF 43 B2 B2` exactly once for a database-classified KEYGL5 and reports the 202 receipt separately from post-reset defaults, reboot, address retention and persistence |
 | NET PINGU and GET network Units | Actual installation MMI request using cmqttd's negotiated PCI checksum mode; buffers blocks that a CNI forwards before its positive confirmation, accepts only confirmed contiguous coverage of all addresses 0–255, and reports the native sorted `302-Units=` form |
 | NET SYNC and cached unit getters | Configured interface routing hint (physically revalidated) or BASIC discovery, complete installation MMI, then confirmed IDENTIFY1/2 probes and bounded IDENTIFY4 collection for every present address; routed and local bare-CAL replies are correlated, silent legacy/error addresses remain present with unknown identity fields, the live cache is replaced atomically, and native getters expose it. An address with multiple distinct serials emits `#e# net {network} sync duplicate {address} {serial...}` (sorted) while the stored snapshot keeps `""` (stored-multiplicity modelling is follow-up work) |
 | NET CHECKUNIT | Active confirmed IDENTIFY4 collection through the native two-second quiet interval, with the native no-unit, single-unit, duplicate-unit and identity-error result forms; `*` expands from a fresh complete MMI |
@@ -150,6 +151,16 @@ C-Bus provides no readback that can prove which cached dynamic labels the
 firmware erased. Definitive PCI or unit rejection leaves the programming lane
 available, while a timeout or transport loss faults it until reconnect so a
 late reply cannot be assigned to a later command.
+
+`DO //PROJECT/NETWORK/p/UNIT FactoryDefault` accepts a database unit classified
+as KEYGL5 and sends the native `A4 FF 43 B2 B2` programming control. It uses the
+same strict confirmation and source/tag-correlated ACK policy as label clear and
+never retries automatically. A `202 Done` response proves control acceptance,
+not post-reboot defaults, address retention, rendering or power-cycle
+persistence. The database record is not rewritten. The observed dynamic-label
+ring is cleared because its entries may be stale after reset. Use the guarded
+[`cbus-toolkit` workflow](../toolkit-cli/docs/edlt-factory-default.md) to bind the
+request to a fresh complete inventory and expected serial.
 
 ## Live label reads
 

@@ -1243,6 +1243,26 @@ def build_parser():
         p.add_argument("--serial", required=True, help="Expected native unit serial")
         p.add_argument("--plan-output", type=Path, help="Exclusively create and flush pre-request evidence before any clear request")
 
+    factory_default = cgops.add_parser(
+        "edlt-factory-default",
+        help="Plan or request one destructive physical KEYGL5 FactoryDefault control",
+    )
+    factory_ops = factory_default.add_subparsers(dest="remote_action", required=True)
+    for action in ("plan", "request"):
+        p = factory_ops.add_parser(
+            action,
+            help="Refresh an already open idle network"
+            if action == "plan"
+            else "Repeat identity guards and send one non-replayed FactoryDefault request",
+        )
+        p.add_argument("source", help="One physical //PROJECT/NETWORK/p/UNIT path")
+        p.add_argument("--serial", required=True, help="Expected native unit serial")
+        p.add_argument(
+            "--plan-output",
+            type=Path,
+            help="Exclusively create and flush pre-request evidence before the reset request",
+        )
+
     network = cgops.add_parser("network", help="Explicit native network lifecycle, discovery and commissioning")
     netops = network.add_subparsers(dest="remote_action", required=True)
     p = netops.add_parser("list")
@@ -2012,6 +2032,8 @@ def _cgate(args):
         return native(args, CGateClient, context)
     if args.action == "edlt-label-clear":
         return _edlt_label_clear(args, CGateClient, context)
+    if args.action == "edlt-factory-default":
+        return _edlt_factory_default(args, CGateClient, context)
     if args.action == "exec":
         commands = [args.command]
     elif args.action == "run":
@@ -2445,6 +2467,59 @@ def _edlt_label_clear(args, client_factory, ssl_context):
 def _edlt_label_clear_payload(error):
     evidence = getattr(error, "edlt_label_clear_evidence", None)
     return {"edlt_label_clear_evidence": evidence} if isinstance(evidence, dict) else {}
+
+
+def _edlt_factory_default(args, client_factory, ssl_context):
+    from .edlt_factory_default import EdltFactoryDefault
+    from .edlt_label_clear import _path
+    from .serials import parse_native_serial
+    try:
+        _path(args.source)
+    except ValueError as error:
+        message = str(error).replace("Clear", "Factory default").replace(
+            "clear", "factory default"
+        )
+        raise ValueError(message) from error
+    if not parse_native_serial(args.serial).known:
+        raise ValueError("Factory default requires a known expected native serial")
+    if args.plan_output is not None:
+        if args.plan_output.exists() or args.plan_output.is_symlink():
+            raise ValueError("Factory-default plan output already exists")
+        if not args.plan_output.parent.is_dir():
+            raise ValueError("Factory-default plan output parent must be an existing directory")
+    manager = None
+    try:
+        with client_factory(
+            args.host,
+            args.port or (20123 if args.tls else 20023),
+            timeout=args.timeout,
+            ssl_context=ssl_context,
+        ) as client:
+            manager = EdltFactoryDefault(client)
+            plan = manager.plan(args.source, expected_serial=args.serial)
+            if args.plan_output is not None:
+                with args.plan_output.open("x", encoding="utf-8") as output:
+                    json.dump(plan.as_dict(), output, indent=2, ensure_ascii=False)
+                    output.write("\n")
+                    output.flush()
+                    os.fsync(output.fileno())
+            if args.remote_action == "plan":
+                return plan.as_dict(), 0
+            result = manager.request(plan)
+            return result, int(result["outcome"] != "native_accepted")
+    except BaseException as error:
+        if manager is not None and isinstance(manager.last_evidence, dict):
+            error.edlt_factory_default_evidence = manager.last_evidence
+        raise
+
+
+def _edlt_factory_default_payload(error):
+    evidence = getattr(error, "edlt_factory_default_evidence", None)
+    return (
+        {"edlt_factory_default_evidence": evidence}
+        if isinstance(evidence, dict)
+        else {}
+    )
 
 
 def _programming_cleanup_payload(error):
@@ -3072,7 +3147,7 @@ def main(argv=None):
             return 1
         print(json.dumps({"error": str(exc), "type": type(exc).__name__, **getattr(exc, "details", {}),
                           **_selected_serial_error_payload(exc), **_programming_cleanup_payload(exc),
-                          **_cgate_cleanup_payload(exc), **_edlt_label_clear_payload(exc), **_edlt_ordered_payload(exc, args), **global_error_payload(exc, args), **live_error_payload(exc, args), **preference_error_payload(exc, args), **update_error_payload(exc, args), **metadata_error_payload(exc, args), **revocation_error_payload(exc, args), **condition_error_payload(exc, args), **live_condition_error_payload(exc, args), **database_csv_error_payload(exc, args), **routed_recall_error_payload(exc, args), **routed_identify_error_payload(exc, args), **project_repair_error_payload(exc, args)},
+                          **_cgate_cleanup_payload(exc), **_edlt_label_clear_payload(exc), **_edlt_factory_default_payload(exc), **_edlt_ordered_payload(exc, args), **global_error_payload(exc, args), **live_error_payload(exc, args), **preference_error_payload(exc, args), **update_error_payload(exc, args), **metadata_error_payload(exc, args), **revocation_error_payload(exc, args), **condition_error_payload(exc, args), **live_condition_error_payload(exc, args), **database_csv_error_payload(exc, args), **routed_recall_error_payload(exc, args), **routed_identify_error_payload(exc, args), **project_repair_error_payload(exc, args)},
                          default=_json_default), file=sys.stderr)
         return 1
     except KeyboardInterrupt as exc:
@@ -3086,6 +3161,7 @@ def main(argv=None):
         result.update(_programming_cleanup_payload(exc))
         result.update(_cgate_cleanup_payload(exc))
         result.update(_edlt_label_clear_payload(exc))
+        result.update(_edlt_factory_default_payload(exc))
         result.update(_edlt_ordered_payload(exc, args))
         result.update(global_error_payload(exc, args))
         result.update(live_error_payload(exc, args))

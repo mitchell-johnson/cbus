@@ -504,7 +504,7 @@ impl Service {
             if verb == "LOGIN" || verb == "LOGOUT" {
                 return self.session_auth(client, tag, &words);
             }
-            if !client.authenticated && requires_programming_auth(verb, sub) {
+            if !client.authenticated && requires_programming_auth(verb, sub, &upper) {
                 return err(tag, 420, "420 LOGIN required");
             }
         }
@@ -526,8 +526,9 @@ impl Service {
                 "dynamic_label_families":["enable","lighting","trigger"],
                 "dynamic_label_modes":["dynamic_icon","icon","language","raw","unicode"],
                 "edlt_label_clear":true,
+                "edlt_factory_default":true,
                 "named_scenes":true,
-                "do_methods":["lighting","sync"],
+                "do_methods":["factorydefault","lighting","sync"],
                 "network_clocks":true,
                 "install_mmi":true, "network_pingu":true,
                 "network_sync":true, "network_checkunit":true,
@@ -3189,6 +3190,8 @@ impl Service {
                 502,
                 "502 DO UNRAVEL requires a physical backend that is not implemented",
             );
+        } else if method == "FACTORYDEFAULT" {
+            self.factory_default_edlt(client, tag, words).await
         } else {
             return err(tag, 402, "402 Method not supported by object");
         };
@@ -3201,6 +3204,69 @@ impl Service {
                 final_text: format!("202 Done: {}", words[1]),
                 status: 202,
             }
+        }
+    }
+
+    async fn factory_default_edlt(
+        &self,
+        client: &ClientState,
+        tag: &str,
+        words: &[&str],
+    ) -> Response {
+        let _commands = self.commands.lock().await;
+        let response = {
+            let mut staged = self.model.lock().await.clone();
+            staged.current = client
+                .current
+                .clone()
+                .or_else(|| Some(self.project.clone()));
+            staged.handle(&format!("[{tag}] {}", words.join(" ")))
+        };
+        if response.status >= 400 {
+            return response;
+        }
+        let Some((project, network, unit)) = words
+            .get(1)
+            .and_then(|address| Server::split_unit(address))
+            .filter(|(project, network, unit)| {
+                *project == self.project && *network == self.network && (1..=254).contains(unit)
+            })
+        else {
+            return err(tag, 404, "404 eDLT is not on this network");
+        };
+        let unit_type = self
+            .model
+            .lock()
+            .await
+            .projects
+            .get(&project)
+            .and_then(|project| project.networks.get(&network))
+            .and_then(|network| network.units.get(&unit))
+            .map(|record| record.unit_type.clone());
+        match unit_type {
+            None => return err(tag, 401, "401 Unit not found"),
+            Some(unit_type) if !unit_type.eq_ignore_ascii_case("KEYGL5") => {
+                return err(tag, 402, "402 Target is not a supported eDLT")
+            }
+            Some(_) => {}
+        }
+
+        let pci = self.pci.read().await.clone();
+        match pci.factory_default_edlt(unit).await {
+            Ok(()) => {
+                // FactoryDefault can invalidate every cached display label.
+                // It does not change the saved database representation here.
+                self.observed_labels.lock().await.observations.clear();
+                let _ = self
+                    .events
+                    .send(format!("#e# factory default accepted {}", words[1]));
+                ok(tag, vec![], "200 OK")
+            }
+            Err(error) => err(
+                tag,
+                502,
+                &format!("502 eDLT factory default failed: {error}"),
+            ),
         }
     }
 
@@ -3629,10 +3695,12 @@ async fn bounded_line<R: tokio::io::AsyncBufRead + Unpin>(
 ///   would be theater, while programming verbs have no MQTT equivalent.
 /// - SCENE RECORD (persists snapshots to the state file). SCENE PLAY stays
 ///   open (snapshot read plus bus control).
+/// - DO ... FactoryDefault (destructive KEYGL5 OEM programming control).
+///   Other DO methods remain ordinary bus-control operations.
 ///
 /// NET LOAD/SAVE need no entry: the local_command NET arm admits only
 /// LIST|LIST_ALL|STATE, so they already fail closed with 502.
-fn requires_programming_auth(verb: &str, sub: &str) -> bool {
+fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
     match verb {
         "PP" => matches!(
             sub,
@@ -3667,6 +3735,9 @@ fn requires_programming_auth(verb: &str, sub: &str) -> bool {
         "SET" => true,
         "LABEL" => sub == "CLEAREDLT",
         "SCENE" => sub == "RECORD",
+        "DO" => words
+            .get(2)
+            .is_some_and(|method| method == "FACTORYDEFAULT"),
         "DBSETSAFE" | "DBSETXML" | "DBADDSAFE" | "DBCOPYSAFE" | "DBDELETE" | "DBSAVE"
         | "DBLOAD" | "DBCREATENET" | "DBCREATEAPP" | "DBCREATEGROUP" | "DBCREATEUNIT"
         | "DBRENAMENETSAFE" => true,

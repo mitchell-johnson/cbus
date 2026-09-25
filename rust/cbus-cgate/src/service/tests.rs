@@ -534,6 +534,11 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["dynamic_labels"], true);
     assert_eq!(document["dynamic_label_observation"], true);
     assert_eq!(document["dynamic_label_device_readback"], false);
+    assert_eq!(document["edlt_factory_default"], true);
+    assert_eq!(
+        document["do_methods"],
+        serde_json::json!(["factorydefault", "lighting", "sync"])
+    );
     // Dormant default: no --cgate-auth-file, so the LOGIN gate is off.
     assert_eq!(document["cgate_auth"], false);
     std::fs::remove_file(path).unwrap();
@@ -771,6 +776,67 @@ async fn do_unravel_fails_closed_until_physical_backend_exists() {
         .handle(&mut client, "[4] DO //HARNESS/254/56/1")
         .await;
     assert_eq!(missing_method.status, 400);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test(start_paused = true)]
+async fn do_edlt_factory_default_is_guarded_and_sent_once() {
+    async fn pci_line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+    async fn pci_reply<W: tokio::io::AsyncWrite + Unpin>(writer: &mut W, source: u8, cal: &[u8]) {
+        let mut bytes = vec![0x86, source, 0x10, 0x00];
+        bytes.extend_from_slice(cal);
+        let sum = bytes.iter().fold(0u8, |sum, byte| sum.wrapping_add(*byte));
+        bytes.push(0u8.wrapping_sub(sum));
+        let mut wire = hex::encode_upper(bytes).into_bytes();
+        wire.extend_from_slice(b"\r\n");
+        writer.write_all(&wire).await.unwrap();
+    }
+
+    let path = state_path();
+    let (pci, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        pci_line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    service
+        .record_label("received", Some(5), 56, &[0xa4, 1, 0, 0, b'X'])
+        .await;
+    let mut client = ClientState::default();
+    let request = service.handle(&mut client, "[1] DO //HARNESS/254/p/5 FactoryDefault");
+    let peer = async {
+        let wire = pci_line(&mut remote_read).await;
+        assert_eq!(&wire[..wire.len() - 2], b"\\46050900A4FF43B2B262");
+        let confirmation = wire[wire.len() - 2];
+        remote_write.write_all(&[confirmation, b'.']).await.unwrap();
+        pci_reply(&mut remote_write, 5, &[0x32, 0xff, 0x43]).await;
+    };
+    let (response, ()) = tokio::join!(request, peer);
+    assert_eq!(response.status, 202);
+    assert_eq!(response.final_text, "202 Done: //HARNESS/254/p/5");
+    assert!(service.observed_labels.lock().await.observations.is_empty());
+
+    for command in [
+        "[2] DO //HARNESS/254/p/4 FactoryDefault",
+        "[3] DO //HARNESS/253/p/5 FactoryDefault",
+        "[4] DO //HARNESS/254/p/5 FactoryDefault extra",
+    ] {
+        assert!(
+            service.handle(&mut client, command).await.status >= 400,
+            "{command}"
+        );
+    }
     std::fs::remove_file(path).unwrap();
 }
 
@@ -2409,6 +2475,7 @@ async fn auth_wrong_secret_denied_and_gate_holds() {
         "[12] SET //HARNESS/254/p/5 Address 6",
         "[13] LABEL CLEAREDLT //HARNESS/254/p/5",
         "[14] SCENE RECORD house evening",
+        "[15] DO //HARNESS/254/p/5 FactoryDefault",
     ] {
         let response = service.handle(&mut client, command).await;
         assert_eq!(response.status, 420, "{command}: {response:?}");

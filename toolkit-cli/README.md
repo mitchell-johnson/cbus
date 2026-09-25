@@ -839,7 +839,9 @@ The [Blank workflow](docs/edlt-blank.md) passes 54 tests per Python version,
 including 31 original control cases, thirteen native save/reload cases and
 the prior lifecycle/restore regressions. Plans distinguish the selected Blank
 from a stored end marker, and reject covered standby or navigation positions.
-Physical Factory Reset remains separate work.
+The database Blank workflow remains separate from the guarded physical
+FactoryDefault command below; physical post-reset readback and persistence are
+still separate acceptance work.
 
 Reset eDLT controls using an exact raw export and explicit form context:
 
@@ -944,6 +946,23 @@ verified erasure; uncertain outcomes are never automatically retried. The
 27-test suite passes on both Python versions using native C-Gate and an
 independent persistent per-unit label fixture. Physical erasure remains
 unverified. See [the clear-label contract](docs/edlt-label-clear.md).
+
+Request a physical KEYGL5 FactoryDefault only after reviewing a fresh guarded
+plan and recording the expected native serial:
+
+```sh
+cbus-toolkit cgate edlt-factory-default plan //TEST/254/p/5 \
+  --serial 101183.1666 --plan-output factory-default-plan.json
+cbus-toolkit cgate edlt-factory-default request //TEST/254/p/5 \
+  --serial 101183.1666 --plan-output factory-default-intent.json
+```
+
+The request repeats the complete identity, inventory, topology, runtime and
+database guards, then sends one non-replayed `DO ... FactoryDefault`. An exact
+202 receipt proves the source-correlated unit ACK only. The result keeps reset,
+defaults readback, retained address, reboot, rendering and power-cycle
+persistence unverified. No database record is rewritten. See the
+[FactoryDefault contract](docs/edlt-factory-default.md).
 
 Navigation settings configure page mode, time/temperature formats, logos and
 static or dynamic page labels:

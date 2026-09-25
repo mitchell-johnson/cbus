@@ -45,6 +45,13 @@ device PP scene tables.
 sends one native clear control and requires a correlated unit ACK. Report it as
 accepted, never as verified erasure or persistence; there is no dynamic-label
 cache readback operation.
+`DO //PROJECT/NETWORK/p/UNIT FactoryDefault` is also hardware-backed for
+KEYGL5. Use `cbus-toolkit cgate edlt-factory-default plan|request` with the
+expected native serial. cmqttd sends captured control `A4 FF 43 B2 B2` exactly
+once and requires PCI confirmation plus the source-correlated unit ACK. A 202
+proves acceptance only; reset values, reboot, retained address, rendering and
+persistence require separate verification. When the optional LOGIN gate is
+armed, this destructive method requires authentication.
 It also implements guarded scalar `SET //PROJECT/NETWORK/p/UNIT Address DEST`
 against the physical bus. That command proves one source and an empty
 destination, uses the native parameter-`0x20` one-use challenge, sends the
@@ -75,7 +82,7 @@ open; failures answer `420 LOGIN required` / `420 LOGIN failed` (malformed
 `LOGIN` with no token is 400 and also clears the flag), never `401`.
 Not native `access.txt` parity; loopback-only first slice;
 `named_scenes: true` denotes hardware-backed named-scene playback,
-and `do_methods: ["lighting", "sync"]` denotes the physical object-method aliases,
+and `do_methods: ["factorydefault", "lighting", "sync"]` denotes the physical object-method aliases,
 `network_clocks: true` denotes IDENTIFY16 inspection plus schema-backed target
 count and gateway recovery,
 while `full_cgate_compatibility` remains false until every remaining backend and
