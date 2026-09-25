@@ -5,7 +5,7 @@ use super::*;
 use crate::auth;
 use cbus_protocol::{
     packet::{Meta, Packet},
-    sal::{label, Sal},
+    sal::{aircon::AirconCommand, label, Sal},
     serial_address::parse_native_serial,
 };
 use cbus_transport::pci::{CBusEvent, GocProgramming, PciClient};
@@ -31,6 +31,22 @@ const MAX_LINE: usize = 1024 * 1024;
 const MAX_DOCUMENT: usize = 16 * 1024 * 1024;
 const MAX_STATE: usize = 32 * 1024 * 1024;
 const MAX_LABEL_OBSERVATIONS: usize = 4096;
+
+const AIRCON_HELP: &[&str] = &[
+    "Help: AIRCON commands:",
+    "Help:  AIRCON ? Help for these commands",
+    "Help:  AIRCON REFRESH - Send a refresh request to the air-conditioning ward",
+    "Help:  AIRCON SET_HUMIDITY_LOWER_GUARD_LIMIT - Sets the absolute minimum humidity allowed in the Zone.",
+    "Help:  AIRCON SET_HUMIDITY_SETBACK_LIMIT - Sets the error allowed in the set humidity for the Zone. ",
+    "Help:  AIRCON SET_HUMIDITY_UPPER_GUARD_LIMIT - Sets the absolute maximum humidity allowed in the Zone.",
+    "Help:  AIRCON SET_HVAC_LOWER_GUARD_LIMIT - Sets the absolute minimum temperature allowed in the Zone.",
+    "Help:  AIRCON SET_HVAC_SETBACK_LIMIT - Sets the error allowed in the set temperature for the Zone. ",
+    "Help:  AIRCON SET_HVAC_UPPER_GUARD_LIMIT - Sets the absolute maximum temperature allowed in the Zone.",
+    "Help:  AIRCON SET_WARD_OFF - Switches off all plant in all of the zones of the specific ward.",
+    "Help:  AIRCON SET_WARD_ON - Returns the ward to its previous operational state.",
+    "Help:  AIRCON SET_ZONE_HUMIDITY_MODE - Broadcast of Humidity mode and level required for a Zone or Zones.",
+    "Help:  AIRCON SET_ZONE_HVAC_MODE - Broadcast of HVAC mode and level required for a Zone or Zones.",
+];
 
 /// Default bound for the TLS pre-handshake accept (matches the existing
 /// 10s per-write deadlines). A stalled pre-handshake connection must not
@@ -390,6 +406,26 @@ impl Service {
         let mut updates = Vec::new();
         let mut application_update = None;
         match event {
+            CBusEvent::AirconCommand { source, command } => {
+                let source = source.unwrap_or(0);
+                let _ = self.events.send(format!(
+                    "#e# aircon {} //{}/{}/172 {} sourceUnit={source}",
+                    command.event_name(),
+                    self.project,
+                    self.network,
+                    command.event_arguments()
+                ));
+            }
+            CBusEvent::AirconStatus { source, status } => {
+                let source = source.unwrap_or(0);
+                let _ = self.events.send(format!(
+                    "#e# aircon {} //{}/{}/172 {} sourceUnit={source}",
+                    status.event_name(),
+                    self.project,
+                    self.network,
+                    status.event_arguments()
+                ));
+            }
             CBusEvent::LightingOn {
                 source: Some(_),
                 app,
@@ -699,7 +735,45 @@ impl Service {
                 "DO SYNC"
             ]);
             capabilities["bridged_network_max_hops"] = serde_json::Value::from(6);
+            capabilities["aircon_control"] = serde_json::Value::Bool(true);
+            capabilities["aircon_application"] = serde_json::Value::from(172);
+            capabilities["aircon_delivery_semantics"] =
+                serde_json::Value::String("pci-confirmed-broadcast".to_string());
+            capabilities["aircon_commands"] = serde_json::json!([
+                "refresh",
+                "set_ward_off",
+                "set_ward_on",
+                "set_zone_hvac_mode",
+                "set_zone_humidity_mode",
+                "set_hvac_upper_guard_limit",
+                "set_hvac_lower_guard_limit",
+                "set_hvac_setback_limit",
+                "set_humidity_upper_guard_limit",
+                "set_humidity_lower_guard_limit",
+                "set_humidity_setback_limit"
+            ]);
+            capabilities["aircon_reports"] = serde_json::json!([
+                "hvac_schedule_entry",
+                "humidity_schedule_entry",
+                "zone_hvac_plant_status",
+                "zone_humidity_plant_status",
+                "zone_temperature",
+                "zone_humidity",
+                "set_plant_hvac_level",
+                "set_plant_humidity_level"
+            ]);
+            capabilities["aircon_event_fanout"] = serde_json::Value::Bool(true);
+            capabilities["aircon_mqtt_state"] = serde_json::Value::Bool(false);
             return ok(tag, vec![capabilities.to_string()], "200 OK");
+        }
+        if verb == "AIRCON" {
+            if words.len() == 1 || (words.len() == 2 && words[1] == "?") {
+                return aircon_help(tag);
+            }
+            if !is_aircon_subcommand(sub) {
+                return err(tag, 400, "400 Syntax Error.");
+            }
+            return self.aircon(tag, &words, sub).await;
         }
         if verb == "REPOSITORY" && sub == "LIST" {
             return self.repository_list(tag, &words);
@@ -2765,6 +2839,247 @@ impl Service {
         {
             network.state = state;
         }
+    }
+
+    async fn aircon(&self, tag: &str, words: &[&str], sub: &str) -> Response {
+        let parameters: &[&str] = match sub {
+            "REFRESH" | "SET_WARD_OFF" | "SET_WARD_ON" => &["application", "ward"],
+            "SET_ZONE_HVAC_MODE" | "SET_ZONE_HUMIDITY_MODE" => &[
+                "application",
+                "ward",
+                "zone-list",
+                "mode",
+                "rawlevel",
+                "setbackenabled",
+                "guardenabled",
+                "useauxlevel",
+                "type",
+                "level",
+                "auxlevel",
+            ],
+            "SET_HVAC_UPPER_GUARD_LIMIT"
+            | "SET_HVAC_LOWER_GUARD_LIMIT"
+            | "SET_HVAC_SETBACK_LIMIT"
+            | "SET_HUMIDITY_UPPER_GUARD_LIMIT"
+            | "SET_HUMIDITY_LOWER_GUARD_LIMIT"
+            | "SET_HUMIDITY_SETBACK_LIMIT" => &[
+                "application",
+                "ward",
+                "zone-list",
+                "limit",
+                "mode",
+                "rawlevel",
+            ],
+            _ => return err(tag, 400, "400 Syntax Error."),
+        };
+        let supplied = words.len().saturating_sub(2);
+        if supplied < parameters.len() {
+            return err(
+                tag,
+                400,
+                &format!(
+                    "400 Syntax Error: Missing parameter : <{}>",
+                    parameters[supplied]
+                ),
+            );
+        }
+        if supplied > parameters.len() {
+            return err(tag, 400, "400 Syntax Error: Too many parameters");
+        }
+
+        let target = words[2];
+        let Some(application) = self.application_path(target) else {
+            return err(tag, 404, "404 Network is not connected to this service");
+        };
+        if application != 172 {
+            return err(
+                tag,
+                402,
+                &format!("402 Operation not supported by: {target}"),
+            );
+        }
+        let ward = match parse_aircon_ward(tag, target, words[3]) {
+            Ok(value) => value,
+            Err(response) => return response,
+        };
+
+        let command = match sub {
+            "REFRESH" => AirconCommand::Refresh { ward },
+            "SET_WARD_OFF" => AirconCommand::WardOff { ward },
+            "SET_WARD_ON" => AirconCommand::WardOn { ward },
+            "SET_ZONE_HVAC_MODE" | "SET_ZONE_HUMIDITY_MODE" => {
+                let zones = match parse_aircon_zones(tag, target, words[4]) {
+                    Ok(value) => value,
+                    Err(response) => return response,
+                };
+                let mode = match parse_aircon_integer(tag, words[5], "mode", None) {
+                    Ok(value) => value,
+                    Err(response) => return response,
+                };
+                let humidity = sub == "SET_ZONE_HUMIDITY_MODE";
+                let maximum = if humidity { 3 } else { 4 };
+                if !(0..=maximum).contains(&mode) {
+                    let family = if humidity { "Humidity" } else { "HVAC" };
+                    return err(
+                        tag,
+                        408,
+                        &format!(
+                            "408 Operation failed: {target} ({family} Plant Mode is out of range: {mode})"
+                        ),
+                    );
+                }
+                let raw_level = match parse_aircon_boolean(tag, words[6], "rawlevel") {
+                    Ok(value) => value,
+                    Err(response) => return response,
+                };
+                let setback_enabled = match parse_aircon_boolean(tag, words[7], "setbackenabled") {
+                    Ok(value) => value,
+                    Err(response) => return response,
+                };
+                let guard_enabled = match parse_aircon_boolean(tag, words[8], "guardenabled") {
+                    Ok(value) => value,
+                    Err(response) => return response,
+                };
+                let use_aux_level = match parse_aircon_boolean(tag, words[9], "useauxlevel") {
+                    Ok(value) => value,
+                    Err(response) => return response,
+                };
+                let plant_type = match parse_aircon_integer(tag, words[10], "type", None) {
+                    Ok(value) if value >= 0 => value.min(i32::from(u8::MAX)) as u8,
+                    Ok(value) => {
+                        let family = if humidity { "Humidity" } else { "HVAC" };
+                        return err(
+                            tag,
+                            408,
+                            &format!(
+                                "408 Operation failed: {target} ({family} Plant Type is out of range: {value})"
+                            ),
+                        );
+                    }
+                    Err(response) => return response,
+                };
+                let level = match parse_aircon_integer(tag, words[11], "level", Some((0, 65535))) {
+                    Ok(value) => value as u16,
+                    Err(response) => return response,
+                };
+                let aux_level =
+                    match parse_aircon_integer(tag, words[12], "auxlevel", Some((0, 255))) {
+                        Ok(value) => value as u8,
+                        Err(response) => return response,
+                    };
+                if humidity {
+                    AirconCommand::ZoneHumidityMode {
+                        ward,
+                        zones,
+                        mode: mode as u8,
+                        raw_level,
+                        setback_enabled,
+                        guard_enabled,
+                        use_aux_level,
+                        plant_type,
+                        level,
+                        aux_level,
+                    }
+                } else {
+                    AirconCommand::ZoneHvacMode {
+                        ward,
+                        zones,
+                        mode: mode as u8,
+                        raw_level,
+                        setback_enabled,
+                        guard_enabled,
+                        use_aux_level,
+                        plant_type,
+                        level,
+                        aux_level,
+                    }
+                }
+            }
+            _ => {
+                let zones = match parse_aircon_zones(tag, target, words[4]) {
+                    Ok(value) => value,
+                    Err(response) => return response,
+                };
+                let limit = match parse_aircon_integer(tag, words[5], "limit", Some((0, 65535))) {
+                    Ok(value) => value as u16,
+                    Err(response) => return response,
+                };
+                let mode = match parse_aircon_integer(tag, words[6], "mode", Some((0, 7))) {
+                    Ok(value) => value,
+                    Err(response) => return response,
+                };
+                let humidity = sub.starts_with("SET_HUMIDITY_");
+                let maximum = if humidity { 3 } else { 4 };
+                if mode > maximum {
+                    let family = if humidity { "Humidity" } else { "HVAC" };
+                    return err(
+                        tag,
+                        408,
+                        &format!(
+                            "408 Operation failed: {target} ({family} Plant Mode is out of range: {mode})"
+                        ),
+                    );
+                }
+                let raw_level = match parse_aircon_boolean(tag, words[7], "rawlevel") {
+                    Ok(value) => value,
+                    Err(response) => return response,
+                };
+                match sub {
+                    "SET_HVAC_UPPER_GUARD_LIMIT" => AirconCommand::HvacUpperGuardLimit {
+                        ward,
+                        zones,
+                        limit,
+                        mode: mode as u8,
+                        raw_level,
+                    },
+                    "SET_HVAC_LOWER_GUARD_LIMIT" => AirconCommand::HvacLowerGuardLimit {
+                        ward,
+                        zones,
+                        limit,
+                        mode: mode as u8,
+                        raw_level,
+                    },
+                    "SET_HVAC_SETBACK_LIMIT" => AirconCommand::HvacSetbackLimit {
+                        ward,
+                        zones,
+                        limit,
+                        mode: mode as u8,
+                        raw_level,
+                    },
+                    "SET_HUMIDITY_UPPER_GUARD_LIMIT" => AirconCommand::HumidityUpperGuardLimit {
+                        ward,
+                        zones,
+                        limit,
+                        mode: mode as u8,
+                        raw_level,
+                    },
+                    "SET_HUMIDITY_LOWER_GUARD_LIMIT" => AirconCommand::HumidityLowerGuardLimit {
+                        ward,
+                        zones,
+                        limit,
+                        mode: mode as u8,
+                        raw_level,
+                    },
+                    "SET_HUMIDITY_SETBACK_LIMIT" => AirconCommand::HumiditySetbackLimit {
+                        ward,
+                        zones,
+                        limit,
+                        mode: mode as u8,
+                        raw_level,
+                    },
+                    _ => unreachable!(),
+                }
+            }
+        };
+
+        let _commands = self.commands.lock().await;
+        self.send_application(
+            tag,
+            Sal::Aircon(command),
+            ok(tag, vec![], "200 OK."),
+            "Air-Conditioning delivery",
+        )
+        .await
     }
 
     async fn trigger(
@@ -5296,11 +5611,118 @@ async fn bounded_line<R: tokio::io::AsyncBufRead + Unpin>(
     }
 }
 
+fn is_aircon_subcommand(sub: &str) -> bool {
+    matches!(
+        sub,
+        "REFRESH"
+            | "SET_WARD_OFF"
+            | "SET_WARD_ON"
+            | "SET_ZONE_HVAC_MODE"
+            | "SET_ZONE_HUMIDITY_MODE"
+            | "SET_HVAC_UPPER_GUARD_LIMIT"
+            | "SET_HVAC_LOWER_GUARD_LIMIT"
+            | "SET_HVAC_SETBACK_LIMIT"
+            | "SET_HUMIDITY_UPPER_GUARD_LIMIT"
+            | "SET_HUMIDITY_LOWER_GUARD_LIMIT"
+            | "SET_HUMIDITY_SETBACK_LIMIT"
+    )
+}
+
+fn aircon_help(tag: &str) -> Response {
+    let mut rows = AIRCON_HELP
+        .iter()
+        .map(|row| (*row).to_string())
+        .collect::<Vec<_>>();
+    let final_text = format!("101 {}", rows.pop().expect("AIRCON help is nonempty"));
+    Response {
+        tag: tag.to_string(),
+        lines: rows,
+        final_text,
+        status: 101,
+    }
+}
+
+fn parse_aircon_ward(tag: &str, target: &str, value: &str) -> Result<u8, Response> {
+    match value.parse::<i32>() {
+        Ok(value) => u8::try_from(value).map_err(|_| {
+            err(
+                tag,
+                408,
+                &format!("408 Operation failed: {target} (bad ward number: {value})"),
+            )
+        }),
+        Err(_) => Err(err(
+            tag,
+            405,
+            &format!("405 Parameter out of range: {target} (For input string: \"{value}\")"),
+        )),
+    }
+}
+
+fn parse_aircon_zones(tag: &str, target: &str, value: &str) -> Result<u8, Response> {
+    let mut zones = 0u8;
+    for token in value.split(',').filter(|token| !token.is_empty()) {
+        let zone = token.parse::<i32>().map_err(|_| {
+            err(
+                tag,
+                408,
+                &format!(
+                    "408 Operation failed: {target} (Zone List token is not a valid integer: {token})"
+                ),
+            )
+        })?;
+        if !(0..=6).contains(&zone) {
+            return Err(err(
+                tag,
+                408,
+                &format!("408 Operation failed: {target} (Zone index is out of range: {token})"),
+            ));
+        }
+        zones |= 1 << zone;
+    }
+    Ok(zones)
+}
+
+fn parse_aircon_integer(
+    tag: &str,
+    value: &str,
+    parameter: &str,
+    range: Option<(i32, i32)>,
+) -> Result<i32, Response> {
+    let parsed = value.parse::<i32>().map_err(|_| {
+        err(
+            tag,
+            400,
+            &format!("400 Syntax Error: Invalid integer parameter : <{parameter}>"),
+        )
+    })?;
+    if range.is_some_and(|(minimum, maximum)| !(minimum..=maximum).contains(&parsed)) {
+        return Err(err(
+            tag,
+            400,
+            &format!("400 Syntax Error: Integer parameter is out of range : <{parameter}>"),
+        ));
+    }
+    Ok(parsed)
+}
+
+fn parse_aircon_boolean(tag: &str, value: &str, parameter: &str) -> Result<bool, Response> {
+    match value {
+        "0" => Ok(false),
+        "1" => Ok(true),
+        _ => Err(err(
+            tag,
+            400,
+            &format!("400 Syntax Error: Invalid boolean parameter : <{parameter}>"),
+        )),
+    }
+}
+
 /// Session-gate predicate for the optional shared-secret LOGIN gate: true
 /// when the (verb, sub) path mutates durable state, unit memory, or the
 /// session/lock tables, and therefore needs the per-connection LOGIN flag
 /// while the gate is armed. Read-only verbs (GET/INFO/LIST/QUICKGET/scans/
-/// serials/observed-label reads), bus-control verbs (lighting/trigger/enable/clock/
+/// serials/observed-label reads), most bus-control verbs (lighting/trigger/enable/clock/
 /// temperature/label writes, DO methods, NET scans) and session-local
 /// LOGIN/LOGOUT stay open.
 ///
@@ -5327,6 +5749,9 @@ async fn bounded_line<R: tokio::io::AsyncBufRead + Unpin>(
 ///   writes stay open: they are bus-control SAL traffic with MQTT
 ///   equivalents, like lighting ON/OFF — gating them without gating MQTT
 ///   would be theater, while programming verbs have no MQTT equivalent.
+/// - The ten state-changing AIRCON subcommands. HVAC control has no MQTT
+///   equivalent in cmqttd. REFRESH is a read/state request and remains open,
+///   as do the parent help endpoint and unknown syntax.
 /// - SCENE RECORD (persists snapshots to the state file). SCENE PLAY stays
 ///   open (snapshot read plus bus control).
 /// - DO ... FactoryDefault (destructive KEYGL5 OEM programming control).
@@ -5336,6 +5761,7 @@ async fn bounded_line<R: tokio::io::AsyncBufRead + Unpin>(
 /// LIST|LIST_ALL|STATE, so they already fail closed with 502.
 fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
     match verb {
+        "AIRCON" => is_aircon_subcommand(sub) && sub != "REFRESH",
         "PP" => matches!(
             sub,
             "LOCK"

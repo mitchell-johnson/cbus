@@ -96,14 +96,18 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // native confirmed CAL sequences and source-correlated responses. LABEL
     // CLEAR moved fail_closed_502 -> physical with its native exact-once,
     // confirmation-only all-key and one-key CAL forms.
+    // AIRCON root help moved fail_closed_502 -> local_database, and all 11
+    // maintained AIRCON commands moved fail_closed_502 -> physical with exact
+    // native 3.4 SAL encoding and correlated PCI confirmation.
     // PROJECT ARCHIVE/RESTORE/RENAME/COPY/DELETE and REPOSITORY LIST moved
     // fail_closed_502 -> local_database with durable internal snapshots,
     // guarded secondary-project lifecycle, and a read-only cmqttd-json row.
     // DBNETWORKPATH moved fail_closed_502 -> local_database with native 136
     // COMPACT and 137 OID topology resolution and no PCI traffic.
-    assert_eq!(class_count(RoutingClass::Physical), 35);
+    // The eleven maintained AIRCON commands moved fail_closed_502 -> physical.
+    assert_eq!(class_count(RoutingClass::Physical), 46);
     assert_eq!(class_count(RoutingClass::LocalDatabase), 49);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 346);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 335);
     assert_eq!(class_count(RoutingClass::Obsolete400), 1);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here
@@ -111,6 +115,47 @@ fn matrix_class_counts_pin_the_routing_gap() {
     assert_eq!(class_count(RoutingClass::Rejected4xx), 0);
     let total: usize = counts.values().sum();
     assert_eq!(total, 431);
+}
+
+#[test]
+fn aircon_rows_retain_native_command_boundaries_and_report_evidence() {
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_aircon.json"
+    ))
+    .expect("native AIRCON evidence must remain valid JSON");
+    assert_eq!(fixture["oracle"]["version"], "3.4.0.2001");
+    assert_eq!(fixture["commands"].as_array().unwrap().len(), 11);
+    assert_eq!(
+        fixture["oracle"]["jar_sha256"],
+        "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+    );
+    let boundary = fixture["boundary_examples"].as_array().unwrap();
+    assert!(boundary.iter().any(|row| {
+        row["command"].as_str().unwrap().contains("2147483647")
+            && row["payload_hex"] == "05AC002F010153FF001740"
+    }));
+    assert!(boundary.iter().any(|row| {
+        row["command"].as_str().unwrap().contains(" 1 , 3")
+            && row["payload_hex"] == "05AC002F01005300000000"
+    }));
+    assert_eq!(
+        fixture["inbound_reports"]["sample_sal_hex"]
+            .as_array()
+            .unwrap()
+            .len(),
+        8
+    );
+    for entry in CAPABILITY_MATRIX
+        .iter()
+        .filter(|entry| entry.path.starts_with("AIRCON "))
+    {
+        assert_eq!(entry.class, RoutingClass::Physical, "{}", entry.path);
+        assert!(
+            entry.evidence.contains("native_cgate_aircon.json"),
+            "{}",
+            entry.path
+        );
+    }
 }
 
 #[test]

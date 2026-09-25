@@ -40,6 +40,59 @@ cmqttd extensions.
 A 502 response is a missing backend or failed device operation; never replace
 it with saved project data and describe that as a live result.
 
+### AIRCON/HVAC commands
+
+cmqttd implements every AIRCON subcommand registered by C-Gate 3.4 for its
+configured direct network. Inspect native-shaped help with `AIRCON ?`. The
+application target must resolve to application 172 (`$AC`), using either
+`NETWORK/APPLICATION` or `//PROJECT/NETWORK/APPLICATION` form:
+
+```text
+AIRCON REFRESH APP WARD
+AIRCON SET_WARD_OFF APP WARD
+AIRCON SET_WARD_ON APP WARD
+AIRCON SET_ZONE_HVAC_MODE APP WARD ZONES MODE RAW SETBACK GUARD USE_AUX TYPE LEVEL AUX_LEVEL
+AIRCON SET_ZONE_HUMIDITY_MODE APP WARD ZONES MODE RAW SETBACK GUARD USE_AUX TYPE LEVEL AUX_LEVEL
+AIRCON SET_HVAC_UPPER_GUARD_LIMIT APP WARD ZONES LIMIT MODE RAW
+AIRCON SET_HVAC_LOWER_GUARD_LIMIT APP WARD ZONES LIMIT MODE RAW
+AIRCON SET_HVAC_SETBACK_LIMIT APP WARD ZONES LIMIT MODE RAW
+AIRCON SET_HUMIDITY_UPPER_GUARD_LIMIT APP WARD ZONES LIMIT MODE RAW
+AIRCON SET_HUMIDITY_LOWER_GUARD_LIMIT APP WARD ZONES LIMIT MODE RAW
+AIRCON SET_HUMIDITY_SETBACK_LIMIT APP WARD ZONES LIMIT MODE RAW
+```
+
+Wards are 0–255. `ZONES` is a comma-separated list of indices 0–6; duplicates
+collapse and empty comma-delimited tokens are ignored, so a comma-only value
+encodes an empty bitmap. HVAC modes are 0–4 and humidity modes 0–3. Boolean
+flags are exactly `0` or `1`; levels and limits are 0–65535; auxiliary level is
+0–255. C-Gate accepts a nonnegative signed-32-bit plant type and maps values
+above 255 to byte `FF`; cmqttd retains that behavior. Every valid command is
+sent as one application-`0xAC` broadcast
+and waits for its correlated PCI confirmation. A 200 proves confirmed delivery
+to the interface only. It does not prove HVAC-controller acceptance, resulting
+mode/temperature/humidity, or persistence. Do not infer state from the command
+response, and do not claim bridged-network support. When the optional LOGIN
+gate is armed, authenticate before the ten state-changing AIRCON subcommands;
+`REFRESH` and help stay open.
+
+Incoming HVAC/humidity schedule entries, plant status and level reports, and
+zone temperature/humidity reports are decoded as application-172 events and
+fanned out to clients with `EVENT ON`. A report received while `REFRESH` is
+pending remains an event; only the correlated PCI confirmation completes the
+command. cmqttd does not invent an MQTT HVAC entity or state schema for these
+reports.
+
+`CMQTT CAPABILITIES` advertises `aircon_control: true`,
+`aircon_application: 172`, `aircon_delivery_semantics:
+"pci-confirmed-broadcast"`, the exact `aircon_commands` and `aircon_reports`
+lists, `aircon_event_fanout: true`, and `aircon_mqtt_state: false`. Ground byte
+claims in `rust/testdata/fixtures/native_cgate_aircon.json` and
+`rust/testdata/vectors/aircon.jsonl`. The real-daemon fake-PCI test validates
+all eleven commands, native parser boundaries, report fanout, NAK recovery,
+authentication, pre-I/O rejection, and MQTT continuity. A transport regression
+pins that a report does not consume the pending command confirmation. No live
+HVAC acceptance has been performed.
+
 The physical service also implements lighting commands, C-Gate `DO` object
 methods for lighting and direct-network `SYNC`, Trigger Control,
 Enable Control, clock date/time/refresh, Temperature Broadcast, `NET PINGU`, `NET SYNC`,
@@ -236,8 +289,8 @@ Application/Application2 readback,
 by NET SYNC,
 `cgate_auth: true` denotes the armed opt-in LOGIN gate (`false` dormant
 default): with `--cgate-auth-file` configured, each connection needs
-`LOGIN <token>` before programming verbs while reads and bus control stay
-open; failures answer `420 LOGIN required` / `420 LOGIN failed` (malformed
+`LOGIN <token>` before programming verbs and AIRCON mutations while reads and
+other bus control stay open; failures answer `420 LOGIN required` / `420 LOGIN failed` (malformed
 `LOGIN` with no token is 400 and also clears the flag), never `401`.
 Not native `access.txt` parity; loopback-only first slice;
 `named_scenes: true` denotes hardware-backed named-scene playback,

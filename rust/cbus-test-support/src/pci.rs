@@ -76,6 +76,8 @@ struct State {
     withheld_seen: usize,
     /// Auto-confirmations are delayed by this much (slow-CNI emulation).
     conf_delay: Option<Duration>,
+    /// Reject exactly the next confirmed frame (`<code>!`).
+    reject_next_conf: bool,
     writer: Option<mpsc::UnboundedSender<Vec<u8>>>,
     writer_abort: Option<tokio::task::AbortHandle>,
 }
@@ -164,6 +166,12 @@ impl FakePci {
         self.state.lock().unwrap().conf_delay = Some(delay);
     }
 
+    /// Make the next frame carrying a confirmation code receive a negative
+    /// confirmation. The flag clears atomically when consumed.
+    pub fn reject_next_confirmation(&self) {
+        self.state.lock().unwrap().reject_next_conf = true;
+    }
+
     /// Write raw server->client bytes (a from-PCI frame incl. CRLF).
     /// Panics if no client is connected.
     pub fn inject(&self, wire: &[u8]) {
@@ -247,6 +255,11 @@ fn handle_frame(state: &Arc<Mutex<State>>, tx: &mpsc::UnboundedSender<Vec<u8>>, 
             st.withheld_seen += 1;
             return; // keep withholding: client should retry then abandon
         }
+    }
+    if st.reject_next_conf {
+        st.reject_next_conf = false;
+        let _ = tx.send(vec![conf, b'!']);
+        return;
     }
     // ordinary confirmation: `<code>.` with no CR/LF (s4.3.3.3)
     match st.conf_delay {

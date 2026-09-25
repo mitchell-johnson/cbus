@@ -1,5 +1,6 @@
 //! Simple Application Language model and application dispatch.
 
+pub mod aircon;
 pub mod clock;
 pub mod enable;
 pub mod label;
@@ -9,10 +10,11 @@ pub mod temperature;
 pub mod trigger;
 
 use crate::common::{
-    duration_to_ramp_rate, APP_CLOCK, APP_ENABLE, APP_LIGHTING_FIRST, APP_LIGHTING_LAST,
-    APP_STATUS_REQUEST, APP_TEMPERATURE, APP_TRIGGER, CLOCK_ATTR_DATE, CLOCK_ATTR_TIME,
-    CLOCK_REQUEST_REFRESH, ENABLE_SET_NETWORK_VARIABLE, LIGHT_OFF, LIGHT_ON, LIGHT_TERMINATE_RAMP,
-    TEMPERATURE_BROADCAST, TRIGGER_EVENT, TRIGGER_INDICATOR_KILL, TRIGGER_MAX, TRIGGER_MIN,
+    duration_to_ramp_rate, APP_AIRCON, APP_CLOCK, APP_ENABLE, APP_LIGHTING_FIRST,
+    APP_LIGHTING_LAST, APP_STATUS_REQUEST, APP_TEMPERATURE, APP_TRIGGER, CLOCK_ATTR_DATE,
+    CLOCK_ATTR_TIME, CLOCK_REQUEST_REFRESH, ENABLE_SET_NETWORK_VARIABLE, LIGHT_OFF, LIGHT_ON,
+    LIGHT_TERMINATE_RAMP, TEMPERATURE_BROADCAST, TRIGGER_EVENT, TRIGGER_INDICATOR_KILL,
+    TRIGGER_MAX, TRIGGER_MIN,
 };
 use crate::{DecodeError, EncodeError};
 use chrono::Datelike;
@@ -20,6 +22,10 @@ use chrono::Datelike;
 /// A Smart Application Language message.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Sal {
+    /// An Air-Conditioning application command.
+    Aircon(aircon::AirconCommand),
+    /// An Air-Conditioning device status/report.
+    AirconStatus(aircon::AirconStatus),
     /// Switch a lighting group on.
     LightingOn {
         /// Lighting application address (0x30..=0x5F).
@@ -134,6 +140,7 @@ impl Sal {
     /// Application byte this SAL belongs to.
     pub fn application(&self) -> u8 {
         match self {
+            Sal::Aircon(_) | Sal::AirconStatus(_) => APP_AIRCON,
             Sal::LightingOn { application, .. }
             | Sal::LightingOff { application, .. }
             | Sal::LightingTerminateRamp { application, .. }
@@ -155,6 +162,8 @@ impl Sal {
     /// Wire bytes of this SAL.
     pub fn encode(&self) -> Result<Vec<u8>, EncodeError> {
         match self {
+            Sal::Aircon(command) => command.encode(),
+            Sal::AirconStatus(status) => status.encode(),
             Sal::LightingOn { group_address, .. } => Ok(vec![LIGHT_ON, *group_address]),
             Sal::LightingOff { group_address, .. } => Ok(vec![LIGHT_OFF, *group_address]),
             Sal::LightingTerminateRamp { group_address, .. } => {
@@ -250,9 +259,22 @@ impl Sal {
 
 /// Application dispatch: decode the SAL payload of a PM packet.
 /// The supported registry includes status-request (0xFF), clock (0xDF),
-/// enable (0xCB), lighting (0x30-0x5F) and temperature (0x19) are
+/// enable (0xCB), Air-Conditioning (0xAC), lighting (0x30-0x5F) and temperature (0x19) are
 /// registered; anything else errors (-> Invalid packet).
 pub fn decode_sals(app: u8, data: &[u8]) -> Result<Vec<Sal>, DecodeError> {
+    // Extended AIRCON schedule entries use the 0xA9 opcode. Application
+    // dispatch must happen before the generic dynamic-label prefix check.
+    if app == APP_AIRCON {
+        return aircon::decode_sals(data).map(|messages| {
+            messages
+                .into_iter()
+                .map(|message| match message {
+                    aircon::AirconSal::Command(command) => Sal::Aircon(command),
+                    aircon::AirconSal::Status(status) => Sal::AirconStatus(status),
+                })
+                .collect()
+        });
+    }
     if data
         .first()
         .is_some_and(|opcode| matches!(opcode & 0xe0, 0xa0 | 0xc0))

@@ -45,8 +45,9 @@ dormant by default and `true` once armed. Armed, each connection needs
 `PP GET/INFO/LIST` stay open), `PROJECT` lifecycle, `DB...` writes, `SET`,
 `LABEL CLEAR/CLEAREDLT/KFIGET/KFISET`, `DO ... FactoryDefault`,
 `NET SET_PROJECT_IDENTIFY`, and
-`SCENE RECORD`; `GET`/`INFO`/`DBGET`-style reads,
-bus-control SAL traffic, and `SCENE PLAY` stay open. Gated verbs attempted
+`SCENE RECORD`, and the ten state-changing `AIRCON` subcommands;
+`GET`/`INFO`/`DBGET`-style reads, other bus-control SAL traffic, the `AIRCON`
+help and `AIRCON REFRESH` endpoints, and `SCENE PLAY` stay open. Gated verbs attempted
 without the flag answer `420 LOGIN required`; a wrong token answers
 `420 LOGIN failed`; a malformed `LOGIN` with no token answers 400 and also
 clears the flag (never `401`, which already means
@@ -96,6 +97,7 @@ explicitly unavailable.
 | ENABLE SET/REMOVE and GET | SET sends actual Enable Control SAL on application 203; REMOVE follows C-Gate's server-side saved-value behavior; incoming values update the live cache |
 | CLOCK DATE/TIME/REQUEST_REFRESH | Actual Clock and Timekeeping SAL on application 223, including `SYSTEM` date/time resolution and observed-value queries |
 | TEMPERATURE BROADCAST | Actual Temperature Broadcast SAL on application 25 with decimal or `$19` addressing, native one-decimal input, range checks, quarter-degree wire conversion, incoming event delivery and disconnect-safe live caching |
+| `AIRCON` and all 11 subcommands | The bare and `?` forms return the captured native 101 help envelope. `REFRESH`, ward on/off, zone HVAC/humidity mode, and all HVAC/humidity upper/lower/setback limit commands encode the C-Gate 3.4 application-172 SAL exactly and wait for the correlated PCI confirmation. The parser preserves native ward, zone, mode, boolean, type, level, limit and auxiliary-level bounds, including duplicate/empty zone tokens and the native saturating plant type; invalid input performs no I/O. With the optional LOGIN gate armed, the ten state-changing subcommands require authentication and `REFRESH` stays open. Incoming schedule, plant status/level and zone measurement SALs fan out to event clients without completing a pending command; no MQTT HVAC state contract is claimed. A 200 proves only confirmed broadcast delivery to the PCI, not HVAC-controller acceptance or resulting state. Only the configured direct network is supported; bridged AIRCON routing remains unavailable. See `rust/testdata/fixtures/native_cgate_aircon.json` and `rust/testdata/vectors/aircon.jsonl` |
 | LIGHTING/TRIGGER/ENABLE LABEL and UNICODELABEL | Actual checksummed dynamic-label SAL on the selected application. Supports raw/text payloads, built-in icon references, language selection, native segmented UTF-8, and start/header/chunk/commit dynamic bitmap uploads. Every fragment requires positive PCI delivery confirmation; Enable Unicode and invalid native bounds fail before transmission |
 | Observed dynamic-label cache | Retains one network-wide ring of up to 4,096 exact incoming and confirmed outgoing label SAL payloads since the current connection, including source/direction and order. `CMQTT LABELS` exposes the bounded observations with network scope and an unverified recipient; a unit-shaped request is a compatibility alias for the same ring. The Toolkit CLI assembles standard text/icons, Unicode, language selection and dynamic bitmaps while reporting incomplete transactions. This is explicitly not eDLT device-cache readback |
 | LABEL CLEAR | Sends native standard point-to-point label-cache controls for all keys (`A3 FF 00 27`) or one key 1–8 (`A4 FF 00 66 KEY`) to unit 0–255. It uses one generation-safe exact-once send and waits only for the correlated PCI confirmation; there is no unit ACK or device readback. Native C-Gate treats either confirmation outcome as completion, so success reports command acceptance without claiming cache erasure or persistence |
@@ -409,8 +411,8 @@ The existing mock dispatches 431 command paths. That is **not** evidence that
 all 431 have physical implementations in this service. `CMQTT CAPABILITIES`
 returns `full_cgate_compatibility: false`; unimplemented physical operations
 return 502. The enumerable gap tracker is the executable capability matrix in
-`cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 35
-physical, 49 local/session, 346 fail-closed 502, and 1 obsolete 400 over the
+`cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 46
+physical, 49 local/session, 335 fail-closed 502, and 1 obsolete 400 over the
 431 inventoried paths, plus a separately asserted 6-row supplement for
 non-inventoried service commands. Full replacement still requires:
 
@@ -450,7 +452,9 @@ non-inventoried service commands. Full replacement still requires:
   verification.
 - Device-resident scene triggering beyond PP table programming, a physical
   eDLT operation that can query pre-existing dynamic-label cache contents, and
-  specialist application families such as HVAC, audio and security.
+  specialist application families such as audio and security. The maintained
+  AIRCON/HVAC command family is implemented for the configured direct network;
+  bridged routing, controller acceptance and state readback remain unverified.
 - Schneider repository/archive and CGL import/export file formats, repository
   selection, repository repair, the remaining document commands, complete server
   configuration/access/TLS, firmware and deployment workflows. cmqttd's
@@ -468,6 +472,20 @@ non-inventoried service commands. Full replacement still requires:
   separately in `toolkit-cli/docs/implementation-status.md`.
 
 ## Tests
+
+The sanitized `native_cgate_aircon.json` fixture records the owned C-Gate
+3.4.0.2001 version/hash, exact success payloads for all eleven maintained
+commands, parser boundary envelopes, and the eight report forms recognized by
+the owned decoder. The `aircon.jsonl` protocol vectors pin exact unchecksummed
+application payloads and canonical JSON for commands and reports.
+`system_cgate_aircon.rs` drives the real daemon through its TCP C-Gate endpoint,
+checks every checksummed PCI frame and correlated positive confirmation,
+forces a negative confirmation to verify 502 recovery/correlation, verifies
+mutation-only LOGIN gating, native parser boundaries, pre-I/O validation and
+report event fanout, and sends MQTT traffic through the same PCI afterward. A
+transport test proves a report received during `REFRESH` remains an event and
+does not satisfy the command confirmation. This is isolated fake-PCI evidence;
+it does not establish physical HVAC acceptance or readback.
 
 `cbus-transport` tests pin direct routing for standard recall/tagged STORE,
 page-aware recall, page selection, cross-page tagged STORE, the native

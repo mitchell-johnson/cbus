@@ -10,7 +10,10 @@ use cbus_protocol::cal::Cal;
 use cbus_protocol::common::CONFIRMATION_CODES;
 use cbus_protocol::packet::{Meta, Packet};
 use cbus_protocol::report::StatusReport;
-use cbus_protocol::sal::Sal;
+use cbus_protocol::sal::{
+    aircon::{AirconCommand, AirconStatus},
+    Sal,
+};
 use chrono::{Datelike, Timelike};
 use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, Mutex, Weak};
@@ -87,6 +90,20 @@ const FORCE_CLEANUP_PERCENTAGE: f64 = 0.25;
 /// `PCIProtocol.on_*` handlers consumed by `mqtt_gateway.CBusHandler`).
 #[derive(Debug, Clone, PartialEq)]
 pub enum CBusEvent {
+    /// One AIRCON command observed on the shared PCI receive stream.
+    AirconCommand {
+        /// Source unit address (`None` when the source byte was 0).
+        source: Option<u8>,
+        /// Fully decoded command/event payload.
+        command: AirconCommand,
+    },
+    /// One AIRCON device status observed on the shared PCI receive stream.
+    AirconStatus {
+        /// Source unit address (`None` when the source byte was 0).
+        source: Option<u8>,
+        /// Fully decoded status/report payload.
+        status: AirconStatus,
+    },
     /// A lighting group was switched on.
     LightingOn {
         /// Source unit address (`None` when the source byte was 0).
@@ -980,6 +997,14 @@ impl PciClient {
                 for s in sals {
                     let src = meta.source_address;
                     let event = match s {
+                        Sal::Aircon(command) => Some(CBusEvent::AirconCommand {
+                            source: src,
+                            command,
+                        }),
+                        Sal::AirconStatus(status) => Some(CBusEvent::AirconStatus {
+                            source: src,
+                            status,
+                        }),
                         Sal::LightingRamp {
                             application,
                             group_address,
@@ -1251,14 +1276,15 @@ impl PciClient {
 }
 
 /// Flow-control classification of an outbound frame: interactive lighting,
-/// Trigger and Enable commands outrank background
+/// Trigger, Enable, and Air-Conditioning commands outrank background
 /// frames, and the response that will release the frame's window slot
 /// is derived from what the device observably sends back.
 fn classify(cmd: &Packet, conf: Option<u8>) -> (Priority, ResponseKind) {
     let is_interactive = |s: &Sal| {
         matches!(
             s,
-            Sal::LightingOn { .. }
+            Sal::Aircon(_)
+                | Sal::LightingOn { .. }
                 | Sal::LightingOff { .. }
                 | Sal::LightingRamp { .. }
                 | Sal::LightingTerminateRamp { .. }
@@ -1629,6 +1655,17 @@ mod tests {
         assert_eq!(
             classify(&temperature, Some(b'j')),
             (Priority::Command, ResponseKind::Confirmation(b'j'))
+        );
+        let aircon = Packet::PointToMultipoint {
+            meta: Meta::new(true, 0),
+            application: 0xac,
+            sals: vec![Sal::Aircon(
+                cbus_protocol::sal::aircon::AirconCommand::Refresh { ward: 1 },
+            )],
+        };
+        assert_eq!(
+            classify(&aircon, Some(b'k')),
+            (Priority::Command, ResponseKind::Confirmation(b'k'))
         );
         // codeless status request: background, released by the first
         // report matching app+block+kind

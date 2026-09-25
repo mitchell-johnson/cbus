@@ -1,0 +1,213 @@
+{
+  "format": "native-cgate-aircon-evidence-v1",
+  "oracle": {
+    "product": "C-Gate",
+    "version": "3.4.0.2001",
+    "build": "20241023-0011",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "aircon_decoder_class_sha256": "af34d97282d0bab1d743c7b95750d555de51f7b90640e2a59f7f792a6a6cfef6",
+    "sal_framing_class_sha256": "9d5f9621b601fe77483982a187e6543f425b371d014c677cfe05dcf6dda2bb36"
+  },
+  "scope": "Isolated owned C-Gate with a fake PCI; no house or HVAC traffic. Payloads exclude the optional PCI checksum and confirmation character.",
+  "commands": [
+    {
+      "command": "AIRCON REFRESH 254/172 1",
+      "response": "200 OK.",
+      "payload_hex": "05AC002101"
+    },
+    {
+      "command": "AIRCON SET_WARD_OFF 254/172 1",
+      "response": "200 OK.",
+      "payload_hex": "05AC000101"
+    },
+    {
+      "command": "AIRCON SET_WARD_ON 254/172 1",
+      "response": "200 OK.",
+      "payload_hex": "05AC007901"
+    },
+    {
+      "command": "AIRCON SET_ZONE_HVAC_MODE 254/172 1 0,1,2 3 0 1 0 1 255 23 64",
+      "response": "200 OK.",
+      "payload_hex": "05AC002F010753FF001740"
+    },
+    {
+      "command": "AIRCON SET_ZONE_HUMIDITY_MODE 254/172 1 0,1,2 3 0 0 0 1 2 40 64",
+      "response": "200 OK.",
+      "payload_hex": "05AC004701074302002840"
+    },
+    {
+      "command": "AIRCON SET_HVAC_UPPER_GUARD_LIMIT 254/172 1 1,2 27 3 0",
+      "response": "200 OK.",
+      "payload_hex": "05AC00550106001B03"
+    },
+    {
+      "command": "AIRCON SET_HVAC_LOWER_GUARD_LIMIT 254/172 1 0,1,2 18 3 0",
+      "response": "200 OK.",
+      "payload_hex": "05AC005D0107001203"
+    },
+    {
+      "command": "AIRCON SET_HVAC_SETBACK_LIMIT 254/172 1 0,1,2 2 3 0",
+      "response": "200 OK.",
+      "payload_hex": "05AC00650107000203"
+    },
+    {
+      "command": "AIRCON SET_HUMIDITY_UPPER_GUARD_LIMIT 254/172 1 1,2 70 3 0",
+      "response": "200 OK.",
+      "payload_hex": "05AC006D0106004603"
+    },
+    {
+      "command": "AIRCON SET_HUMIDITY_LOWER_GUARD_LIMIT 254/172 1 0,1,2 20 3 0",
+      "response": "200 OK.",
+      "payload_hex": "05AC00750107001403"
+    },
+    {
+      "command": "AIRCON SET_HUMIDITY_SETBACK_LIMIT 254/172 1 3,4 15 1 0",
+      "response": "200 OK.",
+      "payload_hex": "05AC007D0118000F01"
+    }
+  ],
+  "validated_boundaries": {
+    "ward": "0..255; bad numeric values return 408, non-integers return 405",
+    "zones": "comma-separated 0..6; duplicates collapse; Java StringTokenizer ignores leading, trailing, and comma-only empty tokens (zero tokens encodes bitmap 0)",
+    "hvac_mode": "0..4 after integer parsing",
+    "humidity_mode": "0..3 after integer parsing",
+    "booleans": "only 0 or 1",
+    "level_and_limit": "0..65535, big-endian",
+    "aux_level": "0..255",
+    "plant_type": "nonnegative signed 32-bit; values above 255 encode as FF due to the native encoder"
+  },
+  "negative_examples": [
+    {
+      "command": "AIRCON REFRESH 254/172",
+      "response": "400 Syntax Error: Missing parameter : <ward>"
+    },
+    {
+      "command": "AIRCON REFRESH 254/172 1 EXTRA",
+      "response": "400 Syntax Error: Too many parameters"
+    },
+    {
+      "command": "AIRCON REFRESH 254/171 1",
+      "response": "402 Operation not supported by: 254/171"
+    },
+    {
+      "command": "AIRCON REFRESH 254/172 256",
+      "response": "408 Operation failed: 254/172 (bad ward number: 256)"
+    },
+    {
+      "command": "AIRCON SET_ZONE_HVAC_MODE 254/172 1 7 3 0 1 0 1 255 23 64",
+      "response": "408 Operation failed: 254/172 (Zone index is out of range: 7)"
+    },
+    {
+      "command": "AIRCON SET_ZONE_HVAC_MODE 254/172 1 0,1,2 5 0 1 0 1 255 23 64",
+      "response": "408 Operation failed: 254/172 (HVAC Plant Mode is out of range: 5)"
+    },
+    {
+      "command": "AIRCON SET_ZONE_HUMIDITY_MODE 254/172 1 0,1,2 4 0 0 0 1 2 40 64",
+      "response": "408 Operation failed: 254/172 (Humidity Plant Mode is out of range: 4)"
+    },
+    {
+      "command": "AIRCON SET_ZONE_HVAC_MODE 254/172 1 0,1,2 3 2 1 0 1 255 23 64",
+      "response": "400 Syntax Error: Invalid boolean parameter : <rawlevel>"
+    },
+    {
+      "command": "AIRCON SET_ZONE_HVAC_MODE 254/172 1 0,1,2 3 0 1 0 1 255 65536 64",
+      "response": "400 Syntax Error: Integer parameter is out of range : <level>"
+    }
+  ],
+  "acceptance_boundary": "A 200 response establishes PCI-confirmed broadcast delivery only. No physical HVAC controller acceptance or state readback was tested. Bridged-network routing was not evidenced and remains unsupported.",
+  "boundary_examples": [
+    {
+      "command": "AIRCON REFRESH 254/$AC 1",
+      "response": "200 OK.",
+      "payload_hex": "05AC002101",
+      "evidence": "native fake-PCI capture"
+    },
+    {
+      "command": "AIRCON SET_ZONE_HVAC_MODE 254/172 1 0,0 3 0 1 0 1 255 23 64",
+      "response": "200 OK.",
+      "payload_hex": "05AC002F010153FF001740",
+      "evidence": "native fake-PCI capture; duplicate zones collapse"
+    },
+    {
+      "command": "AIRCON SET_ZONE_HVAC_MODE 254/172 1 0, 3 0 1 0 1 255 23 64",
+      "response": "200 OK.",
+      "payload_hex": "05AC002F010153FF001740",
+      "evidence": "native fake-PCI capture; trailing empty token ignored"
+    },
+    {
+      "command": "AIRCON SET_ZONE_HVAC_MODE 254/172 1 ,0 3 0 1 0 1 255 23 64",
+      "response": "200 OK.",
+      "payload_hex": "05AC002F010153FF001740",
+      "evidence": "native fake-PCI capture; leading empty token ignored"
+    },
+    {
+      "command": "AIRCON SET_ZONE_HVAC_MODE 254/172 1 , 3 0 1 0 1 0 0 0",
+      "response": "200 OK.",
+      "payload_hex": "05AC002F01005300000000",
+      "evidence": "owned decoder uses java.util.StringTokenizer(zone-list, comma); comma-only has zero tokens and encodes zone bitmap 0"
+    },
+    {
+      "command": "AIRCON SET_ZONE_HVAC_MODE 254/172 1 0 3 0 1 0 1 -1 23 64",
+      "response": "408 Operation failed: 254/172 (HVAC Plant Type is out of range: -1)",
+      "evidence": "native response"
+    },
+    {
+      "command": "AIRCON SET_ZONE_HVAC_MODE 254/172 1 0 3 0 1 0 1 256 23 64",
+      "response": "200 OK.",
+      "payload_hex": "05AC002F010153FF001740",
+      "evidence": "native fake-PCI capture; positive type saturates at FF"
+    },
+    {
+      "command": "AIRCON SET_ZONE_HVAC_MODE 254/172 1 0 3 0 1 0 1 65535 23 64",
+      "response": "200 OK.",
+      "payload_hex": "05AC002F010153FF001740",
+      "evidence": "native fake-PCI capture; positive type saturates at FF"
+    },
+    {
+      "command": "AIRCON SET_ZONE_HVAC_MODE 254/172 1 0 3 0 1 0 1 2147483647 23 64",
+      "response": "200 OK.",
+      "payload_hex": "05AC002F010153FF001740",
+      "evidence": "native fake-PCI capture; signed-int maximum saturates at FF"
+    },
+    {
+      "command": "AIRCON SET_ZONE_HVAC_MODE 254/172 1 0 3 0 1 0 1 2147483648 23 64",
+      "response": "400 Syntax Error: Invalid integer parameter : <type>",
+      "evidence": "native response; outside signed-int parser"
+    },
+    {
+      "command": "AIRCON SET_ZONE_HVAC_MODE 254/172 1 0 3 0 1 0 1 255 65535 255",
+      "response": "200 OK.",
+      "payload_hex": "05AC002F010153FFFFFFFF",
+      "evidence": "native fake-PCI capture; maximum level and auxiliary level"
+    },
+    {
+      "command": "AIRCON SET_ZONE_HVAC_MODE 254/172 1 0 3 0 1 0 1 255 23 256",
+      "response": "400 Syntax Error: Integer parameter is out of range : <auxlevel>",
+      "evidence": "native response"
+    }
+  ],
+  "inbound_reports": {
+    "evidence": "C-Gate Manual 3.4 section 4.7.2.3 samples plus owned decoder class; no physical HVAC controller traffic",
+    "opcodes": {
+      "0x89": "hvac_schedule_entry",
+      "0xA9": "humidity_schedule_entry",
+      "0x05": "zone_hvac_plant_status",
+      "0x0D": "zone_humidity_plant_status",
+      "0x15": "zone_temperature",
+      "0x1D": "zone_humidity",
+      "0x36": "set_plant_hvac_level",
+      "0x4E": "set_plant_humidity_level"
+    },
+    "sample_sal_hex": [
+      "89010700070305DC1400",
+      "A9010700010302EE3333",
+      "050107030100",
+      "0D0106030100",
+      "150107140000",
+      "1D010728F500",
+      "36010773FF40FF",
+      "4E010773024064"
+    ],
+    "delivery_boundary": "Reports are decoded and fanned to C-Gate event subscribers; MQTT intentionally publishes no invented HVAC entity/state schema."
+  }
+}

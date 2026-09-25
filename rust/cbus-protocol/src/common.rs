@@ -36,6 +36,8 @@ pub const PRIORITY_CLASS_2: u8 = 0x02; // default for DeviceManagement
 // Applications
 /// Temperature broadcast application.
 pub const APP_TEMPERATURE: u8 = 0x19;
+/// Air-Conditioning application.
+pub const APP_AIRCON: u8 = 0xac;
 /// First lighting application address.
 pub const APP_LIGHTING_FIRST: u8 = 0x30;
 /// The default lighting application.

@@ -418,7 +418,9 @@ impl Gateway {
                     let _ = self.pci().await.clock_datetime().await;
                 }
             }
-            CBusEvent::TriggerEvent { .. }
+            CBusEvent::AirconCommand { .. }
+            | CBusEvent::AirconStatus { .. }
+            | CBusEvent::TriggerEvent { .. }
             | CBusEvent::TriggerIndicatorKill { .. }
             | CBusEvent::EnableSet { .. }
             | CBusEvent::DynamicLabel { .. }

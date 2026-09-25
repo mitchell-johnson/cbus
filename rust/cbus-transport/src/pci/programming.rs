@@ -4924,6 +4924,47 @@ mod tests {
     }
 
     #[tokio::test(start_paused = true)]
+    async fn aircon_status_is_fanned_out_without_completing_confirmed_send() {
+        let (pci, mut remote, mut events) = setup().await;
+        let worker = pci.clone();
+        let command = tokio::spawn(async move {
+            worker
+                .send_confirmed(&Packet::PointToMultipoint {
+                    meta: Meta::new(true, 0),
+                    application: cbus_protocol::common::APP_AIRCON,
+                    sals: vec![Sal::Aircon(AirconCommand::Refresh { ward: 1 })],
+                })
+                .await
+        });
+        assert_eq!(line(&mut remote).await, b"\\05AC0021012Dh\r");
+
+        // A REFRESH response is normal PM traffic. It must be decoded and
+        // delivered while the sender continues waiting for its assigned PCI
+        // confirmation character.
+        remote
+            .get_mut()
+            .write_all(b"0504AC000501070301003A\r\n")
+            .await
+            .unwrap();
+        assert_eq!(
+            events.recv().await,
+            Some(CBusEvent::AirconStatus {
+                source: Some(4),
+                status: AirconStatus::ZoneHvacPlantStatus {
+                    ward: 1,
+                    zones: 7,
+                    plant_type: 3,
+                    status: 1,
+                    error: 0,
+                },
+            })
+        );
+        assert!(!command.is_finished());
+        remote.get_mut().write_all(b"h.\r\n").await.unwrap();
+        assert!(command.await.unwrap().is_ok());
+    }
+
+    #[tokio::test(start_paused = true)]
     async fn identify_all_waits_for_quiet_and_preserves_distinct_replies() {
         let (pci, mut remote, mut events) = setup().await;
         let running = tokio::spawn({

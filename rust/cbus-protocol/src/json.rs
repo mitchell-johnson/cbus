@@ -3,6 +3,7 @@
 use crate::cal::Cal;
 use crate::packet::{Meta, Packet};
 use crate::report::StatusReport;
+use crate::sal::aircon::{AirconCommand, AirconStatus};
 use crate::sal::Sal;
 use serde_json::{json, Map, Value};
 
@@ -11,6 +12,8 @@ use serde_json::{json, Map, Value};
 /// Canonical JSON for one SAL.
 pub fn sal_to_json(s: &Sal) -> Value {
     match s {
+        Sal::Aircon(command) => aircon_to_json(command),
+        Sal::AirconStatus(status) => aircon_status_to_json(status),
         Sal::LightingRamp {
             application,
             group_address,
@@ -85,6 +88,254 @@ pub fn sal_to_json(s: &Sal) -> Value {
         } => json!({"sal": "dynamic_label", "application": application,
                     "payload_hex": hex::encode(payload)}),
     }
+}
+
+fn aircon_status_to_json(status: &AirconStatus) -> Value {
+    match status {
+        AirconStatus::HvacScheduleEntry {
+            ward,
+            zones,
+            entry,
+            format,
+            mode,
+            raw_level,
+            setback_enabled,
+            guard_enabled,
+            use_aux_level,
+            start_time,
+            set_level,
+        }
+        | AirconStatus::HumidityScheduleEntry {
+            ward,
+            zones,
+            entry,
+            format,
+            mode,
+            raw_level,
+            setback_enabled,
+            guard_enabled,
+            use_aux_level,
+            start_time,
+            set_level,
+        } => json!({"sal":"aircon_status",
+            "event": if matches!(status, AirconStatus::HumidityScheduleEntry { .. }) {
+                "humidity_schedule_entry"
+            } else { "hvac_schedule_entry" },
+            "ward":ward, "zones":zones, "entry":entry, "format":format,
+            "mode":mode, "raw_level":raw_level,
+            "setback_enabled":setback_enabled, "guard_enabled":guard_enabled,
+            "use_aux_level":use_aux_level, "start_time":start_time,
+            "set_level":set_level}),
+        AirconStatus::ZoneHvacPlantStatus {
+            ward,
+            zones,
+            plant_type,
+            status: plant_status,
+            error,
+        }
+        | AirconStatus::ZoneHumidityPlantStatus {
+            ward,
+            zones,
+            plant_type,
+            status: plant_status,
+            error,
+        } => json!({"sal":"aircon_status",
+            "event": if matches!(status, AirconStatus::ZoneHumidityPlantStatus { .. }) {
+                "zone_humidity_plant_status"
+            } else { "zone_hvac_plant_status" },
+            "ward":ward, "zones":zones, "plant_type":plant_type,
+            "status":plant_status, "error":error}),
+        AirconStatus::ZoneTemperature {
+            ward,
+            zones,
+            level,
+            sensor_status,
+        }
+        | AirconStatus::ZoneHumidity {
+            ward,
+            zones,
+            level,
+            sensor_status,
+        } => json!({"sal":"aircon_status",
+            "event": if matches!(status, AirconStatus::ZoneHumidity { .. }) {
+                "zone_humidity"
+            } else { "zone_temperature" },
+            "ward":ward, "zones":zones, "level":level,
+            "sensor_status":sensor_status}),
+        AirconStatus::PlantHvacLevel {
+            ward,
+            zones,
+            mode,
+            raw_level,
+            setback_enabled,
+            guard_enabled,
+            use_aux_level,
+            plant_type,
+            level,
+            aux_level,
+        }
+        | AirconStatus::PlantHumidityLevel {
+            ward,
+            zones,
+            mode,
+            raw_level,
+            setback_enabled,
+            guard_enabled,
+            use_aux_level,
+            plant_type,
+            level,
+            aux_level,
+        } => json!({"sal":"aircon_status",
+            "event": if matches!(status, AirconStatus::PlantHumidityLevel { .. }) {
+                "set_plant_humidity_level"
+            } else { "set_plant_hvac_level" },
+            "ward":ward, "zones":zones, "mode":mode, "raw_level":raw_level,
+            "setback_enabled":setback_enabled, "guard_enabled":guard_enabled,
+            "use_aux_level":use_aux_level, "plant_type":plant_type,
+            "level":level, "aux_level":aux_level}),
+    }
+}
+
+fn aircon_to_json(command: &AirconCommand) -> Value {
+    match command {
+        AirconCommand::WardOff { ward } => {
+            json!({"sal":"aircon", "command":"set_ward_off", "ward":ward})
+        }
+        AirconCommand::Refresh { ward } => {
+            json!({"sal":"aircon", "command":"refresh", "ward":ward})
+        }
+        AirconCommand::WardOn { ward } => {
+            json!({"sal":"aircon", "command":"set_ward_on", "ward":ward})
+        }
+        AirconCommand::ZoneHvacMode {
+            ward,
+            zones,
+            mode,
+            raw_level,
+            setback_enabled,
+            guard_enabled,
+            use_aux_level,
+            plant_type,
+            level,
+            aux_level,
+        } => json!({"sal":"aircon", "command":"set_zone_hvac_mode",
+            "ward":ward, "zones":zones, "mode":mode, "raw_level":raw_level,
+            "setback_enabled":setback_enabled, "guard_enabled":guard_enabled,
+            "use_aux_level":use_aux_level, "plant_type":plant_type,
+            "level":level, "aux_level":aux_level}),
+        AirconCommand::ZoneHumidityMode {
+            ward,
+            zones,
+            mode,
+            raw_level,
+            setback_enabled,
+            guard_enabled,
+            use_aux_level,
+            plant_type,
+            level,
+            aux_level,
+        } => json!({"sal":"aircon", "command":"set_zone_humidity_mode",
+            "ward":ward, "zones":zones, "mode":mode, "raw_level":raw_level,
+            "setback_enabled":setback_enabled, "guard_enabled":guard_enabled,
+            "use_aux_level":use_aux_level, "plant_type":plant_type,
+            "level":level, "aux_level":aux_level}),
+        AirconCommand::HvacUpperGuardLimit {
+            ward,
+            zones,
+            limit,
+            mode,
+            raw_level,
+        } => aircon_limit_json(
+            "set_hvac_upper_guard_limit",
+            *ward,
+            *zones,
+            *limit,
+            *mode,
+            *raw_level,
+        ),
+        AirconCommand::HvacLowerGuardLimit {
+            ward,
+            zones,
+            limit,
+            mode,
+            raw_level,
+        } => aircon_limit_json(
+            "set_hvac_lower_guard_limit",
+            *ward,
+            *zones,
+            *limit,
+            *mode,
+            *raw_level,
+        ),
+        AirconCommand::HvacSetbackLimit {
+            ward,
+            zones,
+            limit,
+            mode,
+            raw_level,
+        } => aircon_limit_json(
+            "set_hvac_setback_limit",
+            *ward,
+            *zones,
+            *limit,
+            *mode,
+            *raw_level,
+        ),
+        AirconCommand::HumidityUpperGuardLimit {
+            ward,
+            zones,
+            limit,
+            mode,
+            raw_level,
+        } => aircon_limit_json(
+            "set_humidity_upper_guard_limit",
+            *ward,
+            *zones,
+            *limit,
+            *mode,
+            *raw_level,
+        ),
+        AirconCommand::HumidityLowerGuardLimit {
+            ward,
+            zones,
+            limit,
+            mode,
+            raw_level,
+        } => aircon_limit_json(
+            "set_humidity_lower_guard_limit",
+            *ward,
+            *zones,
+            *limit,
+            *mode,
+            *raw_level,
+        ),
+        AirconCommand::HumiditySetbackLimit {
+            ward,
+            zones,
+            limit,
+            mode,
+            raw_level,
+        } => aircon_limit_json(
+            "set_humidity_setback_limit",
+            *ward,
+            *zones,
+            *limit,
+            *mode,
+            *raw_level,
+        ),
+    }
+}
+
+fn aircon_limit_json(
+    command: &str,
+    ward: u8,
+    zones: u8,
+    limit: u16,
+    mode: u8,
+    raw_level: bool,
+) -> Value {
+    json!({"sal":"aircon", "command":command, "ward":ward, "zones":zones,
+        "limit":limit, "mode":mode, "raw_level":raw_level})
 }
 
 /// Canonical JSON for a status report.
@@ -308,7 +559,14 @@ type JErr = String;
 fn get_u8(d: &Value, k: &str) -> Result<u8, JErr> {
     d.get(k)
         .and_then(Value::as_u64)
-        .map(|v| v as u8)
+        .and_then(|value| u8::try_from(value).ok())
+        .ok_or_else(|| format!("missing/invalid field {k}"))
+}
+
+fn get_u16(d: &Value, k: &str) -> Result<u16, JErr> {
+    d.get(k)
+        .and_then(Value::as_u64)
+        .and_then(|value| u16::try_from(value).ok())
         .ok_or_else(|| format!("missing/invalid field {k}"))
 }
 
@@ -327,6 +585,8 @@ fn get_str<'a>(d: &'a Value, k: &str) -> Result<&'a str, JErr> {
 /// Build a SAL from canonical JSON.
 pub fn sal_from_json(d: &Value) -> Result<Sal, JErr> {
     match get_str(d, "sal")? {
+        "aircon" => aircon_from_json(d).map(Sal::Aircon),
+        "aircon_status" => aircon_status_from_json(d).map(Sal::AirconStatus),
         "lighting_on" => Ok(Sal::LightingOn {
             application: get_u8(d, "application")?,
             group_address: get_u8(d, "group_address")?,
@@ -398,6 +658,240 @@ pub fn sal_from_json(d: &Value) -> Result<Sal, JErr> {
         }),
         other => Err(format!("unhandled SAL json: {other}")),
     }
+}
+
+fn aircon_status_from_json(d: &Value) -> Result<AirconStatus, JErr> {
+    let event = get_str(d, "event")?;
+    let ward = get_u8(d, "ward")?;
+    let zones = get_u8(d, "zones")?;
+    if matches!(event, "hvac_schedule_entry" | "humidity_schedule_entry") {
+        let fields = (
+            get_u8(d, "entry")?,
+            get_u8(d, "format")?,
+            get_u8(d, "mode")?,
+            get_bool(d, "raw_level")?,
+            get_bool(d, "setback_enabled")?,
+            get_bool(d, "guard_enabled")?,
+            get_bool(d, "use_aux_level")?,
+            get_u16(d, "start_time")?,
+            get_u16(d, "set_level")?,
+        );
+        return Ok(if event == "humidity_schedule_entry" {
+            AirconStatus::HumidityScheduleEntry {
+                ward,
+                zones,
+                entry: fields.0,
+                format: fields.1,
+                mode: fields.2,
+                raw_level: fields.3,
+                setback_enabled: fields.4,
+                guard_enabled: fields.5,
+                use_aux_level: fields.6,
+                start_time: fields.7,
+                set_level: fields.8,
+            }
+        } else {
+            AirconStatus::HvacScheduleEntry {
+                ward,
+                zones,
+                entry: fields.0,
+                format: fields.1,
+                mode: fields.2,
+                raw_level: fields.3,
+                setback_enabled: fields.4,
+                guard_enabled: fields.5,
+                use_aux_level: fields.6,
+                start_time: fields.7,
+                set_level: fields.8,
+            }
+        });
+    }
+    if matches!(
+        event,
+        "zone_hvac_plant_status" | "zone_humidity_plant_status"
+    ) {
+        let fields = (
+            get_u8(d, "plant_type")?,
+            get_u8(d, "status")?,
+            get_u8(d, "error")?,
+        );
+        return Ok(if event == "zone_humidity_plant_status" {
+            AirconStatus::ZoneHumidityPlantStatus {
+                ward,
+                zones,
+                plant_type: fields.0,
+                status: fields.1,
+                error: fields.2,
+            }
+        } else {
+            AirconStatus::ZoneHvacPlantStatus {
+                ward,
+                zones,
+                plant_type: fields.0,
+                status: fields.1,
+                error: fields.2,
+            }
+        });
+    }
+    if matches!(event, "zone_temperature" | "zone_humidity") {
+        let level = get_u16(d, "level")?;
+        let sensor_status = get_u8(d, "sensor_status")?;
+        return Ok(if event == "zone_humidity" {
+            AirconStatus::ZoneHumidity {
+                ward,
+                zones,
+                level,
+                sensor_status,
+            }
+        } else {
+            AirconStatus::ZoneTemperature {
+                ward,
+                zones,
+                level,
+                sensor_status,
+            }
+        });
+    }
+    if matches!(event, "set_plant_hvac_level" | "set_plant_humidity_level") {
+        let fields = (
+            get_u8(d, "mode")?,
+            get_bool(d, "raw_level")?,
+            get_bool(d, "setback_enabled")?,
+            get_bool(d, "guard_enabled")?,
+            get_bool(d, "use_aux_level")?,
+            get_u8(d, "plant_type")?,
+            get_u8(d, "level")?,
+            get_u8(d, "aux_level")?,
+        );
+        return Ok(if event == "set_plant_humidity_level" {
+            AirconStatus::PlantHumidityLevel {
+                ward,
+                zones,
+                mode: fields.0,
+                raw_level: fields.1,
+                setback_enabled: fields.2,
+                guard_enabled: fields.3,
+                use_aux_level: fields.4,
+                plant_type: fields.5,
+                level: fields.6,
+                aux_level: fields.7,
+            }
+        } else {
+            AirconStatus::PlantHvacLevel {
+                ward,
+                zones,
+                mode: fields.0,
+                raw_level: fields.1,
+                setback_enabled: fields.2,
+                guard_enabled: fields.3,
+                use_aux_level: fields.4,
+                plant_type: fields.5,
+                level: fields.6,
+                aux_level: fields.7,
+            }
+        });
+    }
+    Err(format!("unhandled AIRCON status json: {event}"))
+}
+
+fn aircon_from_json(d: &Value) -> Result<AirconCommand, JErr> {
+    let ward = get_u8(d, "ward")?;
+    let command = get_str(d, "command")?;
+    if command == "refresh" {
+        return Ok(AirconCommand::Refresh { ward });
+    }
+    if command == "set_ward_off" {
+        return Ok(AirconCommand::WardOff { ward });
+    }
+    if command == "set_ward_on" {
+        return Ok(AirconCommand::WardOn { ward });
+    }
+    let zones = get_u8(d, "zones")?;
+    let mode = get_u8(d, "mode")?;
+    let raw_level = get_bool(d, "raw_level")?;
+    if matches!(command, "set_zone_hvac_mode" | "set_zone_humidity_mode") {
+        let fields = (
+            get_bool(d, "setback_enabled")?,
+            get_bool(d, "guard_enabled")?,
+            get_bool(d, "use_aux_level")?,
+            get_u8(d, "plant_type")?,
+            get_u16(d, "level")?,
+            get_u8(d, "aux_level")?,
+        );
+        return Ok(if command == "set_zone_hvac_mode" {
+            AirconCommand::ZoneHvacMode {
+                ward,
+                zones,
+                mode,
+                raw_level,
+                setback_enabled: fields.0,
+                guard_enabled: fields.1,
+                use_aux_level: fields.2,
+                plant_type: fields.3,
+                level: fields.4,
+                aux_level: fields.5,
+            }
+        } else {
+            AirconCommand::ZoneHumidityMode {
+                ward,
+                zones,
+                mode,
+                raw_level,
+                setback_enabled: fields.0,
+                guard_enabled: fields.1,
+                use_aux_level: fields.2,
+                plant_type: fields.3,
+                level: fields.4,
+                aux_level: fields.5,
+            }
+        });
+    }
+    let limit = get_u16(d, "limit")?;
+    Ok(match command {
+        "set_hvac_upper_guard_limit" => AirconCommand::HvacUpperGuardLimit {
+            ward,
+            zones,
+            limit,
+            mode,
+            raw_level,
+        },
+        "set_hvac_lower_guard_limit" => AirconCommand::HvacLowerGuardLimit {
+            ward,
+            zones,
+            limit,
+            mode,
+            raw_level,
+        },
+        "set_hvac_setback_limit" => AirconCommand::HvacSetbackLimit {
+            ward,
+            zones,
+            limit,
+            mode,
+            raw_level,
+        },
+        "set_humidity_upper_guard_limit" => AirconCommand::HumidityUpperGuardLimit {
+            ward,
+            zones,
+            limit,
+            mode,
+            raw_level,
+        },
+        "set_humidity_lower_guard_limit" => AirconCommand::HumidityLowerGuardLimit {
+            ward,
+            zones,
+            limit,
+            mode,
+            raw_level,
+        },
+        "set_humidity_setback_limit" => AirconCommand::HumiditySetbackLimit {
+            ward,
+            zones,
+            limit,
+            mode,
+            raw_level,
+        },
+        other => return Err(format!("unhandled AIRCON command json: {other}")),
+    })
 }
 
 /// Build a status report from canonical JSON.
@@ -689,5 +1183,24 @@ mod tests {
                        "temperature": 25.0});
         let s = sal_from_json(&v).unwrap();
         assert_eq!(sal_to_json(&s), v);
+    }
+
+    #[test]
+    fn aircon_report_roundtrip() {
+        let v = json!({
+            "sal": "aircon_status",
+            "event": "zone_hvac_plant_status",
+            "ward": 1,
+            "zones": 7,
+            "plant_type": 3,
+            "status": 1,
+            "error": 0
+        });
+        let sal = sal_from_json(&v).unwrap();
+        assert_eq!(sal_to_json(&sal), v);
+
+        let mut out_of_range = v;
+        out_of_range["plant_type"] = json!(256);
+        assert!(sal_from_json(&out_of_range).is_err());
     }
 }

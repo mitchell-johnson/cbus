@@ -8,6 +8,14 @@
 
 `cbus-tools` calls the same protocol and project readers for one-shot work. `cbus-simulator` supplies a development PCI/CNI endpoint. `cbus-cgate` is an independent in-memory C-Gate protocol model exposed over TCP by `cgate-mock`.
 
+The embedded C-Gate endpoint implements the eleven C-Gate 3.4 AIRCON commands
+for application 172 on the configured direct network. Commands use the shared
+PCI confirmation lane; incoming schedule, plant and zone report SALs stay on
+the shared event fanout and do not complete a pending command. The endpoint
+does not publish an invented MQTT HVAC state model. A successful command proves
+PCI-confirmed broadcast delivery only; controller acceptance, resulting state,
+physical persistence and bridged routing remain outside the retained evidence.
+
 Physical `NET CLOCKS` uses the synchronized unit inventory, IDENTIFY16 status,
 and decoded direct `ClockGenEnable` fields for target counts and gateway
 recovery. It retains native per-unit failure lines and requires write readback.
@@ -49,7 +57,7 @@ Put new behavior in its owning crate. Avoid embedding byte-level rules in a bina
 
 ## Protocol behavior
 
-The protocol crate covers point-to-multipoint, point-to-point, device-management, install-MMI status, reset, confirmation, error, and special packets. CAL support includes identify, recall, reply, NAK, standard label-cache clear, and extended execute, poll, status reply, and legacy extended messages. SAL support includes lighting, Trigger Control, clock, Enable Control, temperature, dynamic labels, status requests and install-MMI requests. Strict decoding rejects malformed input; lenient decoding retains compatibility behavior for imperfect frames. Install-MMI response decoding is enabled only during its active transaction because its wire header is ambiguous with priority-three addressed traffic.
+The protocol crate covers point-to-multipoint, point-to-point, device-management, install-MMI status, reset, confirmation, error, and special packets. CAL support includes identify, recall, reply, NAK, standard label-cache clear, and extended execute, poll, status reply, and legacy extended messages. SAL support includes lighting, Air-Conditioning commands and reports, Trigger Control, clock, Enable Control, temperature, dynamic labels, status requests and install-MMI requests. Strict decoding rejects malformed input; lenient decoding retains compatibility behavior for imperfect frames. Install-MMI response decoding is enabled only during its active transaction because its wire header is ambiguous with priority-three addressed traffic.
 
 The transport reassembles bounded byte streams, initializes the PCI, assigns confirmation codes, retries unconfirmed frames, and gives interactive commands priority over background status sweeps. It supports TCP CNI and serial PCI connections.
 
@@ -91,10 +99,10 @@ Supported project inputs are a one-file `.cbz` zip archive or bare project XML. 
 
 ## Test data and evidence
 
-- `rust/testdata/vectors/` contains JSONL cases for checksums, frame encode/decode, native label-cache clear, ramp rates, MQTT topics, Home Assistant discovery, and strict selected-serial plan interchange.
-- `rust/testdata/fixtures/` contains small non-production project and behavior fixtures, including sanitized disposable-native evidence for project copy/delete.
+- `rust/testdata/vectors/` contains JSONL cases for checksums, frame encode/decode, native AIRCON commands/reports, native label-cache clear, ramp rates, MQTT topics, Home Assistant discovery, and strict selected-serial plan interchange.
+- `rust/testdata/fixtures/` contains small non-production project and behavior fixtures, including sanitized disposable-native evidence for AIRCON behavior and project copy/delete.
 - `cbus-golden-tests` generates a named test per committed vector.
-- `cmqttd` system tests run the real daemon against an in-process MQTT broker and scripted PCI, including dedicated MQTT-continuity coverage after project copy/delete and after other project/repository/document administration.
+- `cmqttd` system tests run the real daemon against an in-process MQTT broker and scripted PCI, including AIRCON command/report, correlation, authentication and MQTT-continuity coverage plus dedicated continuity checks after project administration.
 - `cgate-mock` integration tests cover framing, state, sessions, event fanout, here-documents, inventory reachability, and programming access.
 - `toolkit-cli/tests/test_rust_cgate_interop.py` drives the Rust mock using the production Python C-Gate client and typed workflows.
 

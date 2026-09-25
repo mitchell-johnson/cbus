@@ -364,6 +364,174 @@ async fn bridged_checkunit_reconnect_returns_408_without_a_stale_event() {
 }
 
 #[tokio::test]
+async fn aircon_help_and_native_validation_fail_before_pci_io() {
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut client = ClientState::default();
+
+    let help = service.handle(&mut client, "[h] AIRCON").await;
+    assert_eq!(help.status, 101);
+    let help = format_response(&help);
+    assert!(help.starts_with("[h] 101-Help: AIRCON commands:\n"));
+    assert!(help.ends_with(
+        "[h] 101 Help:  AIRCON SET_ZONE_HVAC_MODE - Broadcast of HVAC mode and level required for a Zone or Zones.\n"
+    ));
+
+    let cases = [
+        ("AIRCON BOGUS", 400, "400 Syntax Error."),
+        (
+            "AIRCON REFRESH 254/172",
+            400,
+            "400 Syntax Error: Missing parameter : <ward>",
+        ),
+        (
+            "AIRCON REFRESH 254/172 1 EXTRA",
+            400,
+            "400 Syntax Error: Too many parameters",
+        ),
+        (
+            "AIRCON REFRESH 254/171 1",
+            402,
+            "402 Operation not supported by: 254/171",
+        ),
+        (
+            "AIRCON REFRESH //OTHER/254/172 1",
+            404,
+            "404 Network is not connected to this service",
+        ),
+        (
+            "AIRCON REFRESH 254/172 x",
+            405,
+            "405 Parameter out of range: 254/172 (For input string: \"x\")",
+        ),
+        (
+            "AIRCON REFRESH 254/172 256",
+            408,
+            "408 Operation failed: 254/172 (bad ward number: 256)",
+        ),
+        (
+            "AIRCON SET_ZONE_HVAC_MODE 254/172 1 7 3 0 1 0 1 255 23 64",
+            408,
+            "408 Operation failed: 254/172 (Zone index is out of range: 7)",
+        ),
+        (
+            "AIRCON SET_ZONE_HVAC_MODE 254/172 1 0,1,2 5 0 1 0 1 255 23 64",
+            408,
+            "408 Operation failed: 254/172 (HVAC Plant Mode is out of range: 5)",
+        ),
+        (
+            "AIRCON SET_ZONE_HUMIDITY_MODE 254/172 1 0,1,2 4 0 0 0 1 2 40 64",
+            408,
+            "408 Operation failed: 254/172 (Humidity Plant Mode is out of range: 4)",
+        ),
+        (
+            "AIRCON SET_ZONE_HVAC_MODE 254/172 1 0,1,2 3 2 1 0 1 255 23 64",
+            400,
+            "400 Syntax Error: Invalid boolean parameter : <rawlevel>",
+        ),
+        (
+            "AIRCON SET_ZONE_HVAC_MODE 254/172 1 0,1,2 3 0 1 0 1 255 65536 64",
+            400,
+            "400 Syntax Error: Integer parameter is out of range : <level>",
+        ),
+        (
+            "AIRCON SET_ZONE_HVAC_MODE 254/172 1 0 3 0 1 0 1 -1 23 64",
+            408,
+            "408 Operation failed: 254/172 (HVAC Plant Type is out of range: -1)",
+        ),
+        (
+            "AIRCON SET_ZONE_HVAC_MODE 254/172 1 0 3 0 1 0 1 2147483648 23 64",
+            400,
+            "400 Syntax Error: Invalid integer parameter : <type>",
+        ),
+        (
+            "AIRCON SET_ZONE_HVAC_MODE 254/172 1 0 3 0 1 0 1 255 23 256",
+            400,
+            "400 Syntax Error: Integer parameter is out of range : <auxlevel>",
+        ),
+    ];
+    for (index, (command, status, final_text)) in cases.into_iter().enumerate() {
+        let response = service
+            .handle(&mut client, &format!("[{index}] {command}"))
+            .await;
+        assert_eq!(response.status, status, "{command}: {response:?}");
+        assert_eq!(response.final_text, final_text, "{command}");
+    }
+    assert!(
+        tokio::time::timeout(std::time::Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err(),
+        "invalid AIRCON commands must not reach PCI"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn armed_auth_gate_covers_aircon_mutations_but_not_help() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    service
+        .set_auth_token_hash(crate::auth::sha256(b"aircon-test-token"))
+        .unwrap();
+    let mut client = ClientState::default();
+    assert_eq!(
+        service.handle(&mut client, "[1] AIRCON ?").await.status,
+        101
+    );
+    assert!(!super::requires_programming_auth(
+        "AIRCON",
+        "REFRESH",
+        &["AIRCON".into(), "REFRESH".into()]
+    ));
+    let response = service
+        .handle(&mut client, "[2] AIRCON SET_WARD_OFF 254/$AC 1")
+        .await;
+    assert_eq!(response.status, 420);
+    assert_eq!(response.final_text, "420 LOGIN required");
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn observed_aircon_status_and_command_are_fanned_to_event_clients() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut events = service.events.subscribe();
+
+    service
+        .observe(&CBusEvent::AirconStatus {
+            source: Some(4),
+            status: cbus_protocol::sal::aircon::AirconStatus::ZoneHvacPlantStatus {
+                ward: 1,
+                zones: 7,
+                plant_type: 3,
+                status: 1,
+                error: 0,
+            },
+        })
+        .await;
+    assert_eq!(
+        events.try_recv().unwrap(),
+        "#e# aircon zone_hvac_plant_status //HARNESS/254/172 1 0,1,2 3 1 0 sourceUnit=4"
+    );
+
+    service
+        .observe(&CBusEvent::AirconCommand {
+            source: None,
+            command: AirconCommand::Refresh { ward: 1 },
+        })
+        .await;
+    assert_eq!(
+        events.try_recv().unwrap(),
+        "#e# aircon refresh //HARNESS/254/172 1 sourceUnit=0"
+    );
+
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn database_survives_restart_but_live_state_and_sessions_do_not() {
     let path = state_path();
     let (pci, _remote) = pci();
@@ -493,7 +661,7 @@ async fn programming_ownership_and_unimplemented_hardware_are_enforced() {
         408
     );
     for command in [
-        "AIRCON REFRESH //HARNESS/254/172 1",
+        "AUDIO PLAY //HARNESS/254/192 1",
         "PP WRITE_PATCH S anything",
     ] {
         assert_eq!(
