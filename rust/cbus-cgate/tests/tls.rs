@@ -8,8 +8,9 @@
 //! Covers: (a) TLS handshake + NOOP round-trip over TLS on a loopback
 //! listener; (b) the plaintext `serve` path is unchanged; (d) a client
 //! with an untrusted cert fails the handshake while the server stays up
-//! for a later trusted client. (c) missing cert/key files fail closed at
-//! startup is covered by `cmqttd` `cgate_tls_config` unit tests.
+//! for a later trusted client; (e) QUIT and EXIT flush their exact 204 reply
+//! before the TLS connection reaches EOF. (c) missing cert/key files fail
+//! closed at startup is covered by `cmqttd` `cgate_tls_config` unit tests.
 
 use cbus_cgate::service::Service;
 use std::path::{Path, PathBuf};
@@ -147,6 +148,47 @@ async fn tls_handshake_and_noop_round_trip() {
     let mut writer = wr;
     assert!(read_greeting(&mut reader).await.starts_with("201 "));
     assert_eq!(command(&mut reader, &mut writer, "1", "NOOP").await, 200);
+    std::fs::remove_file(state).ok();
+}
+
+#[tokio::test]
+async fn tls_quit_and_exit_flush_reply_before_eof() {
+    let (service, _remote, state) = test_service();
+    let listener = TcpListener::bind("127.0.0.1:0").await.expect("bind");
+    let port = listener.local_addr().expect("addr").port();
+    let running = service.clone();
+    let tls = test_server_config();
+    tokio::spawn(async move {
+        running.serve_tls(listener, tls).await.expect("serve_tls");
+    });
+
+    for (tag, verb) in [("q", "QUIT"), ("e", "EXIT")] {
+        let stream = tls_connect(port, client_config(trusted_roots()))
+            .await
+            .expect("TLS handshake");
+        let (rd, mut writer) = tokio::io::split(stream);
+        let mut reader = BufReader::new(rd);
+        assert!(read_greeting(&mut reader).await.starts_with("201 "));
+        writer
+            .write_all(format!("[{tag}] {verb}\r\n").as_bytes())
+            .await
+            .expect("write close command");
+
+        let mut reply = String::new();
+        tokio::time::timeout(Duration::from_secs(3), reader.read_line(&mut reply))
+            .await
+            .expect("closing reply deadline")
+            .expect("closing reply");
+        assert_eq!(reply, format!("[{tag}] 204 Closing connection.\r\n"));
+
+        let mut tail = String::new();
+        let read = tokio::time::timeout(Duration::from_secs(3), reader.read_line(&mut tail))
+            .await
+            .expect("TLS EOF deadline")
+            .expect("TLS EOF");
+        assert_eq!(read, 0, "{verb} left TLS connection open: {tail:?}");
+    }
+
     std::fs::remove_file(state).ok();
 }
 

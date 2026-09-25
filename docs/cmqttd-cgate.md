@@ -61,9 +61,11 @@ not be committed or published.
 
 | Operation | Backend and verification |
 | --- | --- |
-| Tagged/untagged commands, per-client project selection, EVENT subscriptions | TCP service; 64 clients, 1 MiB command limit, bounded event queues and writer deadlines |
+| Tagged/untagged commands, per-client project selection, `EVENT`/`EVENTS` subscriptions | TCP/TLS service; native `e0s0c0` connection default, 64 clients, 1 MiB command limit, bounded event queues and writer deadlines |
+| `SESSION_ID`, `SESSION_ID ALL`, `SESSION_ID TAG`, `QUIT`/`EXIT` | Volatile command-session registry with odd `cmdN` identifiers, peer origin, local connection time, one-shot application tags and native 300 envelopes. A successful 204 shutdown reply is flushed before the connection closes; no project, database or PCI state is changed |
 | Project list/use/load/save/new/close; database CRUD and database snapshots | Persistent JSON database; atomic replacement, restrictive permissions, failed-write rollback |
 | Database PP locks, sessions, get/set/info/new/load/save | Existing programming model with connection ownership; staged sessions and locks are discarded on disconnect/restart |
+| `PP RESET_TO_DEFAULTS` | Replaces one owned loaded session with exactly the `DefaultValue` fields in its parsed unit specification. The result remains staged until an explicit save; missing or malformed specifications return 408 unchanged, with no PCI access |
 | Physical PP LOAD and subsequent GET/INFO | Identifies the live unit, selects its privately installed decoded schema, recalls standard CAL parameters, explicit pages for `paged`/`ncc`, OEM memory, and GOC parameter-`0xFF` memory through the shared PCI, decodes int/long/bit/string/sixbit arrays and `ArrayMap`, applies tag selection, and commits the session only after every read succeeds |
 | Physical PP SAVE/SAVE_TO_SOURCE | Writes only dirty, tag-selected `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and `goc2` parameters with `none`/`checksum`/supported `lock` protection. Page-aware writes split at 256-byte boundaries; OEM methods use the selector/data path; GIU halts and resumes the unit; DALI observes the native settling interval; GOC methods use parameter `0xFF`, a big-endian address prefix, and their native block limits. The service validates the complete plan and live type/firmware first, preserves shared bits through pre-read/encode, requires source/parameter-matched acknowledgements, and reads every stored range back before success. Specifications containing the vendor `ncc` method are classified as C-Bus 3; after a changed save, the service runs native group-0 operation-4 EXECUTE/POLL until the NVM commit succeeds |
 | ON/OFF/RAMP/TERMINATERAMP and lighting variants | Actual shared PCI, negative confirmations return errors; successful delivery is distinct from observed physical brightness |
@@ -252,6 +254,13 @@ data, and time out. After an incomplete/cancelled programming transaction, a
 fresh PCI connection is required before another programming read: late untagged
 fragments must not be mistaken for a new result. MQTT traffic is independent.
 
+`PP RESET_TO_DEFAULTS SESSION` is admitted only for a loaded session whose unit
+type has an exact decoded specification. It replaces the staged parameters with
+that specification's declared `DefaultValue` fields and marks them dirty. The
+operation performs no PCI or database write; persistence or hardware transfer
+still requires the later explicit save command. Missing and malformed
+specifications return 408 and leave the session unchanged.
+
 ## Outstanding replacement work
 
 The existing mock dispatches 431 command paths. That is **not** evidence that
@@ -259,7 +268,7 @@ all 431 have physical implementations in this service. `CMQTT CAPABILITIES`
 returns `full_cgate_compatibility: false`; unimplemented physical operations
 return 502. The enumerable gap tracker is the executable capability matrix in
 `cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 32
-physical, 36 local-database, 362 fail-closed 502, and 1 obsolete 400 over the
+physical, 42 local/session, 356 fail-closed 502, and 1 obsolete 400 over the
 431 inventoried paths, plus a separately asserted 6-row supplement for
 non-inventoried service commands. Full replacement still requires:
 
@@ -348,7 +357,13 @@ plays it as the exact confirmed zero-time ramp, and verifies that acknowledgemen
 does not fabricate a level observation.
 `cbus-cgate` service tests cover durable reload, corrupt-file preservation,
 rollback, session ownership, unsupported hardware rejection, fragmented command
-input during events, disconnect cleanup, schema layout decoding and input bounds.
+input during events, native-shaped command-session enumeration/tagging,
+`EVENTS` alias state, reply-before-close `QUIT`/`EXIT`, disconnect cleanup,
+specification-backed staged reset success/failure/ownership/persistence,
+schema layout decoding and input bounds. The retained owned C-Gate 3.4.0.2001
+[session capture](../toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json)
+pins those statuses, envelopes, aliases and closure semantics on disposable
+loopback listeners with no project or physical network configured.
 The decoded vendor catalogue is optionally audited through `CBUS_UNITSPEC_DIR`.
 The real cmqttd system test performs physical PP LOAD and SAVE against a scripted
 PCI, checks standard and OEM values, dirty/tag selection, read-modify-write

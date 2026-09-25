@@ -1,0 +1,201 @@
+{
+  "format": "cbus-cgate-session-native-acceptance-v1",
+  "date": "2026-09-25",
+  "passed": true,
+  "scope": "Owned C-Gate 3.4.0.2001 command-session behavior on disposable loopback listeners with no project or physical CNI configured",
+  "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+  "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+  "java_version": [
+    "openjdk version \"11.0.32.1\" 2026-08-18",
+    "OpenJDK Runtime Environment Temurin-11.0.32.1+1 (build 11.0.32.1+1)",
+    "OpenJDK 64-Bit Server VM Temurin-11.0.32.1+1 (build 11.0.32.1+1, mixed mode)"
+  ],
+  "lifecycle_helper": {
+    "path": "research/local_cgate.py",
+    "sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+    "role": "owned temporary process startup, loopback listener reservation and cleanup"
+  },
+  "greetings": [
+    "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+    "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0"
+  ],
+  "cases": [
+    {
+      "connection": "a",
+      "command": "SESSION_ID",
+      "status": 300,
+      "reply": [
+        "300 sessionID=cmd3"
+      ]
+    },
+    {
+      "connection": "b",
+      "command": "SESSION_ID",
+      "status": 300,
+      "reply": [
+        "300 sessionID=cmd5"
+      ]
+    },
+    {
+      "connection": "a",
+      "command": "SESSION_ID ALL",
+      "status": 300,
+      "reply": [
+        "300-sessionID=cmd1 origin=internal from=20260925-211912 tag=Console",
+        "300-sessionID=cmd3 origin=/127.0.0.1:65343 from=20260925-211912",
+        "300 sessionID=cmd5 origin=/127.0.0.1:65344 from=20260925-211912"
+      ]
+    },
+    {
+      "connection": "a",
+      "command": "SESSION_ID TAG C-Bus   Toolkit test",
+      "status": 200,
+      "reply": [
+        "200 OK."
+      ]
+    },
+    {
+      "connection": "b",
+      "command": "SESSION_ID ALL",
+      "status": 300,
+      "reply": [
+        "300-sessionID=cmd1 origin=internal from=20260925-211912 tag=Console",
+        "300-sessionID=cmd3 origin=/127.0.0.1:65343 from=20260925-211912 tag=C-Bus Toolkit test",
+        "300 sessionID=cmd5 origin=/127.0.0.1:65344 from=20260925-211912"
+      ]
+    },
+    {
+      "connection": "a",
+      "command": "SESSION_ID TAG replacement",
+      "status": 408,
+      "reply": [
+        "408 Operation failed: tag name has already been set"
+      ]
+    },
+    {
+      "connection": "a",
+      "command": "SESSION_ID TAG",
+      "status": 400,
+      "reply": [
+        "400 Syntax Error: tag name not supplied"
+      ]
+    },
+    {
+      "connection": "a",
+      "command": "SESSION_ID bogus",
+      "status": 400,
+      "reply": [
+        "400 Syntax Error."
+      ]
+    },
+    {
+      "connection": "a",
+      "command": "SESSION_ID ALL ignored-by-native",
+      "status": 300,
+      "reply": [
+        "300-sessionID=cmd1 origin=internal from=20260925-211912 tag=Console",
+        "300-sessionID=cmd3 origin=/127.0.0.1:65343 from=20260925-211912 tag=C-Bus Toolkit test",
+        "300 sessionID=cmd5 origin=/127.0.0.1:65344 from=20260925-211912"
+      ]
+    },
+    {
+      "connection": "a",
+      "command": "EVENT",
+      "status": 306,
+      "reply": [
+        "306 e0s0c0"
+      ]
+    },
+    {
+      "connection": "b",
+      "command": "EVENTS",
+      "status": 306,
+      "reply": [
+        "306 e0s0c0"
+      ]
+    },
+    {
+      "connection": "a",
+      "command": "EVENTS ON",
+      "status": 200,
+      "reply": [
+        "200 OK."
+      ]
+    },
+    {
+      "connection": "a",
+      "command": "EVENT",
+      "status": 306,
+      "reply": [
+        "306 e+s0c0"
+      ]
+    },
+    {
+      "connection": "a",
+      "command": "EVENT OFF",
+      "status": 200,
+      "reply": [
+        "200 OK."
+      ]
+    },
+    {
+      "connection": "a",
+      "command": "EVENT e5s1c1",
+      "status": 200,
+      "reply": [
+        "200 OK."
+      ]
+    },
+    {
+      "connection": "a",
+      "command": "EVENTS",
+      "status": 306,
+      "reply": [
+        "306 e5s1c1"
+      ]
+    }
+  ],
+  "connection_close_cases": [
+    {
+      "command": "QUIT",
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "reply": "[q] 204 Closing connection.",
+      "eof_after_reply": true
+    },
+    {
+      "command": "EXIT",
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "reply": "[e] 204 Closing connection.",
+      "eof_after_reply": true
+    }
+  ],
+  "observations": {
+    "external_session_ids_are_odd_cmd_numbers": true,
+    "session_all_reports_origin_connection_time_and_optional_tag": true,
+    "session_tag_is_one_shot": true,
+    "session_all_ignores_trailing_words": true,
+    "event_default": "e0s0c0",
+    "events_alias_supported": true,
+    "quit_and_exit_flush_204_then_close": true
+  },
+  "environment": {
+    "owned_temporary_process": true,
+    "configured_project_start_empty": true,
+    "listeners_loopback_only": true,
+    "listener_count": 6,
+    "physical_networks_opened": false
+  },
+  "cleanup": {
+    "process_exit_confirmed": true,
+    "reserved_sockets_closed": true,
+    "log_closed": true,
+    "work_removed": true,
+    "cleanup_complete": true,
+    "errors": []
+  },
+  "limitations": [
+    "No TLS session capture",
+    "No access.txt permission rejection capture",
+    "No physical C-Bus network or Toolkit GUI workflow"
+  ]
+}

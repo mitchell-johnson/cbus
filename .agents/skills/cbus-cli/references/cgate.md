@@ -118,8 +118,23 @@ and `do_methods: ["factorydefault", "lighting", "sync"]` denotes the physical ob
 count and gateway recovery,
 `network_syncnew: true` denotes the direct-network five-pass discovery backend,
 `network_set_project_identify: true` denotes the verified parameter-35 write,
+`pp_reset_to_defaults: true` denotes specification-backed staged
+`PP RESET_TO_DEFAULTS` behavior,
 while `full_cgate_compatibility` remains false until every remaining backend and
 acceptance requirement is complete.
+
+Command connections also provide native-shaped `SESSION_ID`, `SESSION_ID ALL`
+and one-shot `SESSION_ID TAG` state, including live TCP/TLS peer and connection
+time fields. `EVENT` and its `EVENTS` alias default to `e0s0c0` on a new cmqttd
+connection. `QUIT` and `EXIT` flush `204 Closing connection.` before closing the
+stream. These operations are volatile and perform no PCI or persistent database
+I/O.
+
+`PP RESET_TO_DEFAULTS SESSION` replaces the loaded session values with exactly
+the `DefaultValue` fields from its decoded unit specification. The change is
+staged: it performs no PCI or database write until a later `PP SAVE` or
+`PP SAVE_TO_SOURCE`. A missing or malformed exact specification returns 408
+without changing the session.
 
 Run `NET SYNC` before `NET CLOCKS`; clock operations use the synchronized
 physical inventory. Query mode reports native `120-address=...` rows. A target

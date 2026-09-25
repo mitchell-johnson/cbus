@@ -144,6 +144,9 @@ pub struct ClientState {
     current: Option<String>,
     locks: HashSet<String>,
     sessions: HashSet<String>,
+    /// Native-style command-session identifier assigned by the TCP/TLS
+    /// listener. Direct `Service::handle` callers have no command session.
+    command_session: Option<u64>,
     /// Session-local LOGIN flag for the optional shared-secret gate (auth
     /// first-slice). `false` until a correct `LOGIN` on this connection;
     /// cleared by `LOGOUT` or a failed `LOGIN`. Dormant (`false` forever
@@ -163,6 +166,7 @@ pub struct Service {
     state_path: PathBuf,
     events: broadcast::Sender<String>,
     observed_labels: Mutex<ObservedLabels>,
+    command_sessions: Mutex<CommandSessions>,
     // Serialize command intents without preventing readback/event processing.
     commands: Mutex<()>,
     /// SHA-256 digest of the optional shared-secret LOGIN token. `None`
@@ -185,6 +189,50 @@ struct LabelObservation {
 struct ObservedLabels {
     next_sequence: u64,
     observations: VecDeque<LabelObservation>,
+}
+
+#[derive(Clone)]
+struct CommandSession {
+    origin: String,
+    connected_at: String,
+    tag: Option<String>,
+}
+
+/// Live command sessions are endpoint state, not durable C-Gate database
+/// state. Native C-Gate allocates odd-numbered `cmdN` identifiers to command
+/// connections (the intervening identifiers belong to its other interfaces),
+/// so this service preserves that externally visible sequence shape.
+struct CommandSessions {
+    next_id: u64,
+    sessions: BTreeMap<u64, CommandSession>,
+}
+
+impl Default for CommandSessions {
+    fn default() -> Self {
+        Self {
+            // Native C-Gate reserves cmd1 for its internal console. cmqttd has
+            // no console session to report, so the first real client is cmd3.
+            next_id: 3,
+            sessions: BTreeMap::new(),
+        }
+    }
+}
+
+impl CommandSessions {
+    fn register(&mut self, origin: String) -> u64 {
+        loop {
+            let id = self.next_id;
+            self.next_id = self.next_id.checked_add(2).unwrap_or(3);
+            if let std::collections::btree_map::Entry::Vacant(slot) = self.sessions.entry(id) {
+                slot.insert(CommandSession {
+                    origin,
+                    connected_at: Local::now().format("%Y%m%d-%H%M%S").to_string(),
+                    tag: None,
+                });
+                return id;
+            }
+        }
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -237,6 +285,7 @@ impl Service {
             state_path,
             events: broadcast::channel(512).0,
             observed_labels: Mutex::new(ObservedLabels::default()),
+            command_sessions: Mutex::new(CommandSessions::default()),
             commands: Mutex::new(()),
             auth_token_hash: OnceLock::new(),
         }))
@@ -495,6 +544,21 @@ impl Service {
         let tag = &cmd.tag;
         let verb = upper.first().map(String::as_str).unwrap_or("");
         let sub = upper.get(1).map(String::as_str).unwrap_or("");
+        if verb == "SESSION_ID" {
+            return self.session_id(client, tag, &words, &upper).await;
+        }
+        if verb == "QUIT" || verb == "EXIT" {
+            return if words.len() == 1 {
+                Response {
+                    tag: tag.to_string(),
+                    lines: Vec::new(),
+                    final_text: "204 Closing connection.".to_string(),
+                    status: 204,
+                }
+            } else {
+                err(tag, 400, "400 Syntax Error.")
+            };
+        }
         // Optional cmqttd-local shared-secret gate (auth first-slice).
         // Dormant when no --cgate-auth-file is configured: LOGIN/LOGOUT
         // fall through to the generic 502 exactly as before, and no verb
@@ -519,6 +583,7 @@ impl Service {
                 "physical_pp_save_methods":["dali","direct","edlt","giu","goc","goc2","gocbyt","ncc","paged","sgiu"],
                 "physical_pp_save_protection":["none","checksum","lock"],
                 "physical_pp_save_lock_methods":["direct","ncc","paged"],
+                "pp_reset_to_defaults":true,
                 "trigger_control":true, "enable_control":true, "clock_control":true,
                 "temperature_broadcast":true,
                 "dynamic_labels":true,
@@ -536,6 +601,9 @@ impl Service {
                 "network_set_project_identify":true, "network_checkunit":true,
                 "unit_readdress":true,
                 "net_unravelunit_matchdb_duplicate_255":true,
+                "event_subscriptions":true,
+                "session_id":true,
+                "quit":true,
                 "project":self.project,"network":self.network,"persistent_database":true,
                 // Opt-in command-layer LOGIN gate (see Service::set_auth_token_hash):
                 // false with the dormant default, true once armed.
@@ -763,6 +831,28 @@ impl Service {
             {
                 return err(tag, 420, "420 Lock belongs to another connection");
             }
+            if sub == "RESET_TO_DEFAULTS" && words.len() == 3 {
+                // The mock has a deterministic identity-only fallback when no
+                // catalogue exists. The real service must never erase staged
+                // parameters under that approximation: only an exact parsed
+                // specification can define the native defaults.
+                if let Some(session) = model.sessions.get(name) {
+                    let Some(unit_type) = session.unit_type.clone() else {
+                        return err(
+                            tag,
+                            408,
+                            "408 RESET_TO_DEFAULTS requires a loaded unit specification",
+                        );
+                    };
+                    if model.spec_for(&unit_type).is_none() {
+                        return err(
+                            tag,
+                            408,
+                            "408 RESET_TO_DEFAULTS requires a loaded unit specification",
+                        );
+                    }
+                }
+            }
         }
         let before = model.clone();
         let before_db = Database::from_server(&model);
@@ -818,6 +908,76 @@ impl Service {
             let _ = self.events.send(event);
         }
         response
+    }
+
+    /// Native C-Gate command-session inspection. The registry is populated
+    /// only by real TCP/TLS connections, remains independent of project and
+    /// PCI state, and is discarded when the connection ends.
+    async fn session_id(
+        &self,
+        client: &ClientState,
+        response_tag: &str,
+        words: &[&str],
+        upper: &[String],
+    ) -> Response {
+        let Some(id) = client.command_session else {
+            return err(response_tag, 500, "500 no session found");
+        };
+        match upper.get(1).map(String::as_str) {
+            None if words.len() == 1 => Response {
+                tag: response_tag.to_string(),
+                lines: Vec::new(),
+                final_text: format!("300 sessionID=cmd{id}"),
+                status: 300,
+            },
+            Some("ALL") => {
+                // C-Gate 3.4 ignores words after ALL. Preserve that observed
+                // behavior even though the public syntax documents no tail.
+                let sessions = self.command_sessions.lock().await;
+                let mut rows = sessions
+                    .sessions
+                    .iter()
+                    .map(|(session_id, session)| {
+                        let tag = session
+                            .tag
+                            .as_ref()
+                            .map_or_else(String::new, |value| format!(" tag={value}"));
+                        format!(
+                            "sessionID=cmd{session_id} origin={} from={}{}",
+                            session.origin, session.connected_at, tag
+                        )
+                    })
+                    .collect::<Vec<_>>();
+                let Some(last) = rows.pop() else {
+                    return err(response_tag, 500, "500 no session found");
+                };
+                Response {
+                    tag: response_tag.to_string(),
+                    lines: rows.into_iter().map(|row| format!("300-{row}")).collect(),
+                    final_text: format!("300 {last}"),
+                    status: 300,
+                }
+            }
+            Some("TAG") if words.len() >= 3 => {
+                let mut sessions = self.command_sessions.lock().await;
+                let Some(session) = sessions.sessions.get_mut(&id) else {
+                    return err(response_tag, 500, "500 no session found");
+                };
+                if session.tag.is_some() {
+                    return err(
+                        response_tag,
+                        408,
+                        "408 Operation failed: tag name has already been set",
+                    );
+                }
+                // Native C-Gate collapses command whitespace, retains quote
+                // characters literally, and publishes the joined tail.
+                session.tag = Some(words[2..].join(" "));
+                ok(response_tag, vec![], "200 OK.")
+            }
+            Some("TAG") => err(response_tag, 400, "400 Syntax Error: tag name not supplied"),
+            _ => err(response_tag, 400, "400 Syntax Error."),
+        }
     }
 
     /// Session-local LOGIN/LOGOUT for the optional shared-secret gate.
@@ -4311,20 +4471,29 @@ impl Service {
     }
 
     async fn connection(&self, stream: TcpStream) -> io::Result<()> {
+        let origin = format!("/{}", stream.peer_addr()?);
         let (reader, writer) = stream.into_split();
-        self.connection_io(BufReader::new(reader), writer).await
+        self.connection_io(BufReader::new(reader), writer, origin)
+            .await
     }
 
     async fn connection_tls(
         &self,
         stream: tokio_rustls::server::TlsStream<TcpStream>,
     ) -> io::Result<()> {
+        let origin = format!("/{}", stream.get_ref().0.peer_addr()?);
         let (reader, writer) = tokio::io::split(stream);
-        self.connection_io(BufReader::new(reader), writer).await
+        self.connection_io(BufReader::new(reader), writer, origin)
+            .await
     }
 
     /// Shared per-connection handler for plaintext and TLS streams alike.
-    async fn connection_io<R, W>(&self, mut reader: BufReader<R>, mut writer: W) -> io::Result<()>
+    async fn connection_io<R, W>(
+        &self,
+        mut reader: BufReader<R>,
+        mut writer: W,
+        origin: String,
+    ) -> io::Result<()>
     where
         R: tokio::io::AsyncRead + Unpin,
         W: tokio::io::AsyncWrite + Unpin,
@@ -4332,7 +4501,10 @@ impl Service {
         let mut events = self.events.subscribe();
         let mut mode = EventMode::OFF;
         let mut client = ClientState::default();
+        let command_session = self.command_sessions.lock().await.register(origin);
+        client.command_session = Some(command_session);
         let mut pending_line = Vec::new();
+        let mut graceful_close = false;
         let result = async {
             writer.write_all(b"201 cmqttd C-Gate service ready\r\n").await?;
             loop {
@@ -4342,17 +4514,32 @@ impl Service {
                         let tagged = line.starts_with('[');
                         let command = if tagged {line} else {format!("[untagged] {line}")};
                         let parsed = parse_command(&command).ok();
-                        let mut response = if let Some(c) = parsed.as_ref().filter(|c| c.body.split_whitespace().next().is_some_and(|w| w.eq_ignore_ascii_case("EVENT"))) {
+                        let close = parsed.as_ref().is_some_and(|c| {
+                            let words: Vec<_> = c.body.split_whitespace().collect();
+                            words.len() == 1 && matches!(words[0].to_ascii_uppercase().as_str(), "QUIT" | "EXIT")
+                        });
+                        let mut response = if let Some(c) = parsed.as_ref().filter(|c| c.body.split_whitespace().next().is_some_and(|w| w.eq_ignore_ascii_case("EVENT") || w.eq_ignore_ascii_case("EVENTS"))) {
                             let words: Vec<_> = c.body.split_whitespace().collect();
                             if words.len() == 1 { Response {tag:c.tag.clone(), lines:vec![], final_text:format!("306 {}", mode), status:306} }
                             else if words.len() == 2 {
-                                if let Some(new) = EventMode::parse(words[1]) { mode = new; ok(&c.tag, vec![], "200 OK") }
+                                if let Some(new) = EventMode::parse(words[1]) { mode = new; ok(&c.tag, vec![], "200 OK.") }
                                 else { err(&c.tag, 400, "400 Invalid event mode") }
                             } else { err(&c.tag, 400, "400 Invalid event command") }
                         } else { self.handle(&mut client, &command).await };
                         if !tagged { response.tag.clear(); }
                         tokio::time::timeout(Duration::from_secs(10), writer.write_all(format_response(&response).replace('\n', "\r\n").as_bytes())).await
                             .map_err(|_| io::Error::new(io::ErrorKind::TimedOut,"C-Gate client is not reading"))??;
+                        if close && response.status == 204 {
+                            // `write_all` only guarantees that the plaintext
+                            // was accepted by the AsyncWrite implementation.
+                            // In particular, rustls may still hold the final
+                            // TLS record, so flush it before dropping the
+                            // connection and making the 204 observable.
+                            tokio::time::timeout(Duration::from_secs(10), writer.flush()).await
+                                .map_err(|_| io::Error::new(io::ErrorKind::TimedOut,"C-Gate closing reply did not flush"))??;
+                            graceful_close = true;
+                            return Ok(());
+                        }
                     }
                     event = events.recv() => match event {
                         Ok(event) if mode.delivers(event_category(&event)) => {
@@ -4365,12 +4552,28 @@ impl Service {
                 }
             }
         }.await;
+        self.command_sessions
+            .lock()
+            .await
+            .sessions
+            .remove(&command_session);
         let mut model = self.model.lock().await;
         for name in client.sessions {
             model.sessions.remove(&name);
         }
         for name in client.locks {
             model.locks.remove(&name);
+        }
+        drop(model);
+        if graceful_close {
+            tokio::time::timeout(Duration::from_secs(10), writer.shutdown())
+                .await
+                .map_err(|_| {
+                    io::Error::new(
+                        io::ErrorKind::TimedOut,
+                        "C-Gate connection did not close cleanly",
+                    )
+                })??;
         }
         result
     }
@@ -4515,8 +4718,8 @@ fn local_command(words: &[&str], upper: &[String], model: &Server) -> bool {
                 .and_then(|s| model.sessions.get(*s))
                 .and_then(|s| s.source.as_ref())
                 .is_some_and(|p| p.starts_with("/db/")),
-            "LOCK" | "UNLOCK" | "START" | "END" | "NEW" | "GET" | "SET" | "INFO" | "RESET"
-            | "LIST" | "QUICKGET" | "COPY" => true,
+            "LOCK" | "UNLOCK" | "START" | "END" | "NEW" | "GET" | "SET" | "INFO"
+            | "RESET_TO_DEFAULTS" | "LIST" | "QUICKGET" | "COPY" => true,
             _ => false,
         },
         _ => false,

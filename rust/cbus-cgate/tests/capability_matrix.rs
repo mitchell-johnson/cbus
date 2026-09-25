@@ -88,9 +88,13 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // SET_PROJECT_IDENTIFY moved fail_closed_502 -> physical with a verified
     // parameter-35 write to the first state-one unit that yields exactly one
     // valid known serial during the bounded observation window.
+    // EVENT, QUIT, SESSION_ID, SESSION_ID ALL, and SESSION_ID TAG are now
+    // native-shaped per-connection operations in the real cmqttd endpoint.
+    // PP RESET_TO_DEFAULTS is locally staged when an exact unit
+    // specification is installed; it performs no bus I/O or database write.
     assert_eq!(class_count(RoutingClass::Physical), 32);
-    assert_eq!(class_count(RoutingClass::LocalDatabase), 36);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 362);
+    assert_eq!(class_count(RoutingClass::LocalDatabase), 42);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 356);
     assert_eq!(class_count(RoutingClass::Obsolete400), 1);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here

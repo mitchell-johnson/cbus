@@ -22,6 +22,48 @@ fn pci() -> (Arc<PciClient>, tokio::io::DuplexStream) {
     (PciClient::new(Box::new(rd), Box::new(wr), tx), remote)
 }
 
+async fn connect_command_session(
+    address: std::net::SocketAddr,
+) -> (
+    BufReader<tokio::net::tcp::OwnedReadHalf>,
+    tokio::net::tcp::OwnedWriteHalf,
+) {
+    let stream = TcpStream::connect(address).await.unwrap();
+    let (reader, writer) = stream.into_split();
+    let mut reader = BufReader::new(reader);
+    let mut greeting = String::new();
+    reader.read_line(&mut greeting).await.unwrap();
+    assert_eq!(greeting, "201 cmqttd C-Gate service ready\r\n");
+    (reader, writer)
+}
+
+async fn command_lines(
+    reader: &mut BufReader<tokio::net::tcp::OwnedReadHalf>,
+    writer: &mut tokio::net::tcp::OwnedWriteHalf,
+    tag: &str,
+    command: &str,
+) -> Vec<String> {
+    writer
+        .write_all(format!("[{tag}] {command}\r\n").as_bytes())
+        .await
+        .unwrap();
+    let prefix = format!("[{tag}] ");
+    let mut lines = Vec::new();
+    loop {
+        let mut line = String::new();
+        assert_ne!(reader.read_line(&mut line).await.unwrap(), 0);
+        let line = line.trim_end_matches(['\r', '\n']).to_string();
+        let payload = line
+            .strip_prefix(&prefix)
+            .unwrap_or_else(|| panic!("unexpected response line: {line}"));
+        let complete = payload.as_bytes().get(3) == Some(&b' ');
+        lines.push(line);
+        if complete {
+            return lines;
+        }
+    }
+}
+
 #[tokio::test]
 async fn database_survives_restart_but_live_state_and_sessions_do_not() {
     let path = state_path();
@@ -152,6 +194,194 @@ async fn programming_ownership_and_unimplemented_hardware_are_enforced() {
         200
     );
     std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn pp_reset_to_defaults_is_spec_backed_staged_and_persisted_only_by_save() {
+    let path = state_path();
+    let spec_dir = state_path().with_extension("unitspec");
+    std::fs::create_dir_all(&spec_dir).unwrap();
+    std::fs::write(
+        spec_dir.join("KEYGL5.xml"),
+        r#"<UnitSpecification><Parameters>
+        <Param><Name>StaticTextString0</Name><Type>string</Type><Address>$20</Address><DefaultValue>Factory text</DefaultValue></Param>
+        <Param><Name>UnitName</Name><Type>string</Type><Address>$21</Address><DefaultValue>Factory name</DefaultValue></Param>
+        <Param><Name>WithoutDefault</Name><Type>int</Type><Address>$22</Address></Param>
+        </Parameters></UnitSpecification>"#,
+    )
+    .unwrap();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(
+        &fixture(),
+        None,
+        path.clone(),
+        pci_client,
+        Some(spec_dir.clone()),
+    )
+    .unwrap();
+    let mut owner = ClientState::default();
+    for line in [
+        "[1] PP LOCK L //HARNESS/254",
+        "[2] PP START S L",
+        "[3] PP LOAD S /db//HARNESS/254/p/5",
+        "[4] PP SET S StaticTextString0 Custom",
+        "[5] PP SET S AdHoc staged-only",
+    ] {
+        let response = service.handle(&mut owner, line).await;
+        assert_eq!(response.status, 200, "{line}: {}", response.final_text);
+    }
+    let before_database = service.model.lock().await.projects["HARNESS"].networks[&254].units[&5]
+        .fields["StaticTextString0"]
+        .clone();
+    assert_eq!(before_database, "Fixture");
+
+    let mut foreign = ClientState::default();
+    assert_eq!(
+        service
+            .handle(&mut foreign, "[6] PP RESET_TO_DEFAULTS S")
+            .await
+            .status,
+        420
+    );
+    let reset = service
+        .handle(&mut owner, "[7] PP RESET_TO_DEFAULTS S")
+        .await;
+    assert_eq!(reset.status, 200, "{}", reset.final_text);
+    {
+        let model = service.model.lock().await;
+        let session = &model.sessions["S"];
+        assert_eq!(
+            session.params,
+            HashMap::from([
+                ("StaticTextString0".to_string(), "Factory text".to_string()),
+                ("UnitName".to_string(), "Factory name".to_string()),
+            ])
+        );
+        assert_eq!(
+            session.dirty,
+            HashSet::from(["StaticTextString0".to_string(), "UnitName".to_string()])
+        );
+        // RESET is staged only; the database still holds its original value.
+        assert_eq!(
+            model.projects["HARNESS"].networks[&254].units[&5].fields["StaticTextString0"],
+            "Fixture"
+        );
+    }
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err(),
+        "RESET_TO_DEFAULTS must not perform PCI I/O"
+    );
+
+    assert_eq!(
+        service
+            .handle(&mut owner, "[8] PP SAVE_TO_SOURCE S")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(service.handle(&mut owner, "[9] PP END S").await.status, 200);
+    assert_eq!(
+        service.handle(&mut owner, "[10] PP UNLOCK L").await.status,
+        200
+    );
+    let (pci, _remote) = pci();
+    let restarted =
+        Service::new(&fixture(), None, path.clone(), pci, Some(spec_dir.clone())).unwrap();
+    let model = restarted.model.lock().await;
+    let fields = &model.projects["HARNESS"].networks[&254].units[&5].fields;
+    assert_eq!(fields["StaticTextString0"], "Factory text");
+    assert_eq!(fields["UnitName"], "Factory name");
+    assert!(!fields.contains_key("AdHoc"));
+    assert!(model.sessions.is_empty());
+    drop(model);
+
+    std::fs::remove_file(path).unwrap();
+    std::fs::remove_dir_all(spec_dir).unwrap();
+}
+
+#[tokio::test]
+async fn pp_reset_to_defaults_without_exact_spec_fails_unchanged_and_without_pci() {
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut owner = ClientState::default();
+    for line in [
+        "[1] PP LOCK L //HARNESS/254",
+        "[2] PP START S L",
+        "[3] PP LOAD S /db//HARNESS/254/p/5",
+        "[4] PP SET S StaticTextString0 Custom",
+    ] {
+        assert_eq!(service.handle(&mut owner, line).await.status, 200, "{line}");
+    }
+    let before = service.model.lock().await.sessions["S"].clone();
+    let response = service
+        .handle(&mut owner, "[5] PP RESET_TO_DEFAULTS S")
+        .await;
+    assert_eq!(response.status, 408);
+    assert_eq!(
+        response.final_text,
+        "408 RESET_TO_DEFAULTS requires a loaded unit specification"
+    );
+    assert_eq!(service.model.lock().await.sessions["S"], before);
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err(),
+        "failed RESET_TO_DEFAULTS must not perform PCI I/O"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn pp_reset_to_defaults_with_invalid_spec_fails_unchanged_and_without_pci() {
+    let path = state_path();
+    let spec_dir = state_path().with_extension("invalid-unitspec");
+    std::fs::create_dir_all(&spec_dir).unwrap();
+    std::fs::write(
+        spec_dir.join("KEYGL5.xml"),
+        r#"<UnitSpecification><Parameters>
+        <Param><Name>StaticTextString0</Name><Type>string</Type></Param>
+        </Parameters></UnitSpecification>"#,
+    )
+    .unwrap();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(
+        &fixture(),
+        None,
+        path.clone(),
+        pci_client,
+        Some(spec_dir.clone()),
+    )
+    .unwrap();
+    let mut owner = ClientState::default();
+    for line in [
+        "[1] PP LOCK L //HARNESS/254",
+        "[2] PP START S L",
+        "[3] PP LOAD S /db//HARNESS/254/p/5",
+        "[4] PP SET S StaticTextString0 Custom",
+    ] {
+        assert_eq!(service.handle(&mut owner, line).await.status, 200, "{line}");
+    }
+    let before = service.model.lock().await.sessions["S"].clone();
+    let response = service
+        .handle(&mut owner, "[5] PP RESET_TO_DEFAULTS S")
+        .await;
+    assert_eq!(response.status, 408);
+    assert_eq!(
+        response.final_text,
+        "408 RESET_TO_DEFAULTS requires a loaded unit specification"
+    );
+    assert_eq!(service.model.lock().await.sessions["S"], before);
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err(),
+        "failed RESET_TO_DEFAULTS must not perform PCI I/O"
+    );
+    std::fs::remove_file(path).unwrap();
+    std::fs::remove_dir_all(spec_dir).unwrap();
 }
 
 #[tokio::test(start_paused = true)]
@@ -504,6 +734,111 @@ async fn fragmented_command_survives_event_delivery_and_disconnect_releases_lock
 }
 
 #[tokio::test]
+async fn native_session_event_alias_and_quit_are_connection_local() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let address = listener.local_addr().unwrap();
+    let server = tokio::spawn(service.clone().serve(listener));
+    let (mut first_reader, mut first_writer) = connect_command_session(address).await;
+    let (mut second_reader, mut second_writer) = connect_command_session(address).await;
+
+    assert_eq!(
+        command_lines(&mut first_reader, &mut first_writer, "1", "SESSION_ID").await,
+        ["[1] 300 sessionID=cmd3"]
+    );
+    assert_eq!(
+        command_lines(&mut second_reader, &mut second_writer, "2", "SESSION_ID").await,
+        ["[2] 300 sessionID=cmd5"]
+    );
+    let all = command_lines(
+        &mut first_reader,
+        &mut first_writer,
+        "3",
+        "SESSION_ID ALL ignored-by-native",
+    )
+    .await;
+    assert_eq!(all.len(), 2);
+    assert!(all[0].starts_with("[3] 300-sessionID=cmd3 origin=/127.0.0.1:"));
+    assert!(all[0].contains(" from="));
+    assert!(all[1].starts_with("[3] 300 sessionID=cmd5 origin=/127.0.0.1:"));
+
+    assert_eq!(
+        command_lines(
+            &mut first_reader,
+            &mut first_writer,
+            "4",
+            "SESSION_ID TAG C-Bus   Toolkit test",
+        )
+        .await,
+        ["[4] 200 OK."]
+    );
+    let tagged = command_lines(
+        &mut second_reader,
+        &mut second_writer,
+        "5",
+        "SESSION_ID ALL",
+    )
+    .await;
+    assert!(tagged[0].ends_with(" tag=C-Bus Toolkit test"));
+    assert_eq!(
+        command_lines(
+            &mut first_reader,
+            &mut first_writer,
+            "6",
+            "SESSION_ID TAG replacement",
+        )
+        .await,
+        ["[6] 408 Operation failed: tag name has already been set"]
+    );
+    assert_eq!(
+        command_lines(&mut first_reader, &mut first_writer, "7", "SESSION_ID TAG",).await,
+        ["[7] 400 Syntax Error: tag name not supplied"]
+    );
+
+    assert_eq!(
+        command_lines(&mut first_reader, &mut first_writer, "8", "EVENTS").await,
+        ["[8] 306 e0s0c0"]
+    );
+    assert_eq!(
+        command_lines(&mut first_reader, &mut first_writer, "9", "EVENTS ON").await,
+        ["[9] 200 OK."]
+    );
+    assert_eq!(
+        command_lines(&mut first_reader, &mut first_writer, "10", "EVENT").await,
+        ["[10] 306 e+s0c0"]
+    );
+
+    assert_eq!(
+        command_lines(&mut first_reader, &mut first_writer, "11", "QUIT").await,
+        ["[11] 204 Closing connection."]
+    );
+    let mut eof = String::new();
+    assert_eq!(first_reader.read_line(&mut eof).await.unwrap(), 0);
+    let remaining = command_lines(
+        &mut second_reader,
+        &mut second_writer,
+        "12",
+        "SESSION_ID ALL",
+    )
+    .await;
+    assert_eq!(remaining.len(), 1);
+    assert!(remaining[0].starts_with("[12] 300 sessionID=cmd5 "));
+    assert!(!remaining[0].contains("cmd3"));
+
+    assert_eq!(
+        command_lines(&mut second_reader, &mut second_writer, "13", "EXIT").await,
+        ["[13] 204 Closing connection."]
+    );
+    eof.clear();
+    assert_eq!(second_reader.read_line(&mut eof).await.unwrap(), 0);
+
+    server.abort();
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn line_bound_is_enforced_before_newline() {
     let (mut tx, rx) = tokio::io::duplex(8192);
     let mut rd = BufReader::new(rx);
@@ -538,6 +873,10 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["network_syncnew"], true);
     assert_eq!(document["network_set_project_identify"], true);
     assert_eq!(document["net_unravelunit_matchdb_duplicate_255"], true);
+    assert_eq!(document["pp_reset_to_defaults"], true);
+    assert_eq!(document["event_subscriptions"], true);
+    assert_eq!(document["session_id"], true);
+    assert_eq!(document["quit"], true);
     assert_eq!(
         document["do_methods"],
         serde_json::json!(["factorydefault", "lighting", "sync"])
