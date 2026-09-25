@@ -93,10 +93,12 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // PP RESET_TO_DEFAULTS is locally staged when an exact unit
     // specification is installed; it performs no bus I/O or database write.
     // LABEL KFIGET and KFISET moved fail_closed_502 -> physical with their
-    // native confirmed CAL sequences and source-correlated responses.
-    assert_eq!(class_count(RoutingClass::Physical), 34);
+    // native confirmed CAL sequences and source-correlated responses. LABEL
+    // CLEAR moved fail_closed_502 -> physical with its native exact-once,
+    // confirmation-only all-key and one-key CAL forms.
+    assert_eq!(class_count(RoutingClass::Physical), 35);
     assert_eq!(class_count(RoutingClass::LocalDatabase), 42);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 354);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 353);
     assert_eq!(class_count(RoutingClass::Obsolete400), 1);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here
@@ -121,6 +123,19 @@ fn label_kfi_paths_are_physical_and_evidence_the_operational_get() {
         .find(|entry| entry.path == "LABEL KFIGET")
         .unwrap();
     assert!(get.evidence.contains("GET as programming"));
+}
+
+#[test]
+fn label_clear_is_physical_and_evidences_confirmation_only_exact_once_delivery() {
+    let row = CAPABILITY_MATRIX
+        .iter()
+        .find(|entry| entry.path == "LABEL CLEAR")
+        .expect("LABEL CLEAR row exists");
+    assert_eq!(row.class, RoutingClass::Physical);
+    assert!(row.evidence.contains("A3 FF 00 27"));
+    assert!(row.evidence.contains("A4 FF 00 66"));
+    assert!(row.evidence.contains("no unit ACK/readback"));
+    assert!(row.evidence.contains("never replays"));
 }
 
 #[test]

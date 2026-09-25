@@ -43,7 +43,8 @@ state file is created. `CMQTT CAPABILITIES` reports `cgate_auth: false`
 dormant by default and `true` once armed. Armed, each connection needs
 `LOGIN <token>` (200) before PP mutating verbs (`PP LOCK/LOAD/SAVE/...`;
 `PP GET/INFO/LIST` stay open), `PROJECT` lifecycle, `DB...` writes, `SET`,
-`LABEL CLEAREDLT`, `DO ... FactoryDefault`, `NET SET_PROJECT_IDENTIFY`, and
+`LABEL CLEAR/CLEAREDLT/KFIGET/KFISET`, `DO ... FactoryDefault`,
+`NET SET_PROJECT_IDENTIFY`, and
 `SCENE RECORD`; `GET`/`INFO`/`DBGET`-style reads,
 bus-control SAL traffic, and `SCENE PLAY` stay open. Gated verbs attempted
 without the flag answer `420 LOGIN required`; a wrong token answers
@@ -78,6 +79,7 @@ not be committed or published.
 | TEMPERATURE BROADCAST | Actual Temperature Broadcast SAL on application 25 with decimal or `$19` addressing, native one-decimal input, range checks, quarter-degree wire conversion, incoming event delivery and disconnect-safe live caching |
 | LIGHTING/TRIGGER/ENABLE LABEL and UNICODELABEL | Actual checksummed dynamic-label SAL on the selected application. Supports raw/text payloads, built-in icon references, language selection, native segmented UTF-8, and start/header/chunk/commit dynamic bitmap uploads. Every fragment requires positive PCI delivery confirmation; Enable Unicode and invalid native bounds fail before transmission |
 | Observed dynamic-label cache | Retains one network-wide ring of up to 4,096 exact incoming and confirmed outgoing label SAL payloads since the current connection, including source/direction and order. `CMQTT LABELS` exposes the bounded observations with network scope and an unverified recipient; a unit-shaped request is a compatibility alias for the same ring. The Toolkit CLI assembles standard text/icons, Unicode, language selection and dynamic bitmaps while reporting incomplete transactions. This is explicitly not eDLT device-cache readback |
+| LABEL CLEAR | Sends native standard point-to-point label-cache controls for all keys (`A3 FF 00 27`) or one key 1–8 (`A4 FF 00 66 KEY`) to unit 0–255. It uses one generation-safe exact-once send and waits only for the correlated PCI confirmation; there is no unit ACK or device readback. Native C-Gate treats either confirmation outcome as completion, so success reports command acceptance without claiming cache erasure or persistence |
 | LABEL CLEAREDLT | Sends the native KEYGL5 programming control through the shared PCI exactly once, requires both PCI confirmation and the source/tag-correlated unit ACK, and reports acceptance separately from physical erasure or persistence |
 | LABEL KFIGET / KFISET | Operates on configured-network application paths for native label-capable applications 48–95, 202 and 203. The application token is only the native `LabelSupportingApplication` class/scope gate; it is not encoded into KFIGET's fixed selector `0x1c`. KFIGET performs three source-acknowledged volatile parameter-`0xFF` writes before IDENTIFY attribute `0x3D`; exactly one source-correlated `8D 3D 80` reply produces eight ordered `300` rows, while zero or multiple replies produce native 524 outcomes. KFISET accepts exactly eight values from 0 through 15, packs them low-nibble then high-nibble, and sends four source-acknowledged parameter-`0xFF` writes, stopping at the first failure. Every write and the GET IDENTIFY request is a generation-safe exact-once send with no transport replay. Both commands use the programming lane and optional LOGIN gate |
 | `DO //PROJECT/NETWORK/p/UNIT FactoryDefault` | Sends native `A4 FF 43 B2 B2` exactly once for a database-classified KEYGL5 and reports the 202 receipt separately from post-reset defaults, reboot, address retention and persistence |
@@ -159,9 +161,29 @@ firmware erased. Definitive PCI or unit rejection leaves the programming lane
 available, while a timeout or transport loss faults it until reconnect so a
 late reply cannot be assigned to a later command.
 
+The standard native cache-clear forms are:
+
+```text
+LABEL CLEAR //PROJECT/NETWORK/APPLICATION UNIT
+LABEL CLEAR //PROJECT/NETWORK/APPLICATION UNIT KEY
+```
+
+The application must be label-capable (48–95, 202 or 203), the unit is 0–255,
+and the optional key is 1–8. The no-key form sends only `A3 FF 00 27`; the
+keyed form sends only `A4 FF 00 66 KEY`. Each is a single confirmed
+point-to-point frame and is never replayed. Decompiled native C-Gate considers
+both the matching positive (`.`) and negative (`#`) PCI confirmation characters
+complete. cmqttd preserves that response contract, then discards its
+recipient-unverified observed-label ring because any retained entries may be
+stale. No unit acknowledgement or label-cache query follows, so `200 OK`
+establishes native command completion only. Native C-Gate publishes no event
+for this command, so cmqttd returns only the command response. A missing
+confirmation makes the outcome uncertain and faults the programming lane until
+reconnect.
+
 `DO //PROJECT/NETWORK/p/UNIT FactoryDefault` accepts a database unit classified
 as KEYGL5 and sends the native `A4 FF 43 B2 B2` programming control. It uses the
-same strict confirmation and source/tag-correlated ACK policy as label clear and
+same strict confirmation and source/tag-correlated ACK policy as `CLEAREDLT` and
 never retries automatically. A `202 Done` response proves control acceptance,
 not post-reboot defaults, address retention, rendering or power-cycle
 persistence. The database record is not rewritten. The observed dynamic-label
@@ -267,7 +289,8 @@ each KFISET value must be 0–15. KFIGET returns `300-kfi1=...` through final
 `300 kfi8=...`; KFISET returns `200 OK` only after all four writes are acknowledged.
 Zero or multiple valid KFIGET replies return `524 No response.` or
 `524 Too many responses.`; setup, write and transport failures use the native
-application-scoped 408 envelope. `CMQTT CAPABILITIES` reports `label_kfi: true`.
+application-scoped 408 envelope. `CMQTT CAPABILITIES` reports
+`label_clear: true` and `label_kfi: true`.
 
 The application token implements native `LabelSupportingApplication`
 admission and command-address scoping only. It is not placed in the physical KFI
@@ -305,8 +328,8 @@ UNIT READMEM //PROJECT/254/p/5 4096 256
 path parts, no more). Attribute-suffixed paths, foreign projects, and other
 networks are rejected with 400 rather than answered or invented. Its network-wide
 observation ring is volatile, resets on reconnect, and is cleared after an
-accepted eDLT clear request so pre-clear observations are not carried across
-the action.
+accepted standard or eDLT clear request so pre-clear observations are not
+carried across the action.
 The unit-shaped request is only a compatibility alias: it returns the same
 network ring and records the requested address, `observation_scope="network"`
 and `recipient_verified=false`. It does not filter by, or attribute traffic to,
@@ -334,8 +357,8 @@ The existing mock dispatches 431 command paths. That is **not** evidence that
 all 431 have physical implementations in this service. `CMQTT CAPABILITIES`
 returns `full_cgate_compatibility: false`; unimplemented physical operations
 return 502. The enumerable gap tracker is the executable capability matrix in
-`cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 34
-physical, 42 local/session, 354 fail-closed 502, and 1 obsolete 400 over the
+`cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 35
+physical, 42 local/session, 353 fail-closed 502, and 1 obsolete 400 over the
 431 inventoried paths, plus a separately asserted 6-row supplement for
 non-inventoried service commands. Full replacement still requires:
 

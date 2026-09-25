@@ -65,6 +65,24 @@ sends one native clear control and requires a correlated unit ACK. Report it as
 accepted, never as verified erasure or persistence; there is no dynamic-label
 cache readback operation.
 
+Standard native cache clear is a separate operation:
+
+```text
+LABEL CLEAR //PROJECT/NETWORK/APPLICATION UNIT
+LABEL CLEAR //PROJECT/NETWORK/APPLICATION UNIT KEY
+```
+
+Use `cbus-toolkit cgate label cache-clear APPLICATION UNIT [--key KEY]` for
+the typed form. Applications are 48–95, 202 or 203, units are 0–255 and keys
+are 1–8. The all-key form emits `A3 FF 00 27`; the keyed form emits
+`A4 FF 00 66 KEY`. cmqttd sends one point-to-point frame with no replay and
+waits only for its matching PCI confirmation. Native C-Gate considers both
+`.` and `#` confirmation outcomes complete. There is no unit ACK or readback,
+and native C-Gate publishes no event for the command. Report
+`native_accepted` and `pci_confirmation_received`, while keeping delivery
+outcome, erasure and persistence unverified. This is also distinct from
+`cgate label clear`, which sends an empty group-label SAL.
+
 The native KFI commands are also hardware-backed on the configured direct
 network:
 
@@ -155,6 +173,8 @@ SAL ring (including unit-shaped compatibility aliases with no verified
 recipient), while
 `dynamic_label_device_readback: false` preserves the unsupported device-query boundary,
 `edlt_label_clear: true` denotes the one-shot KEYGL5 clear control,
+`label_clear: true` denotes the standard physical all-key/one-key cache-clear
+command above,
 `label_kfi: true` denotes the native physical KFIGET/KFISET sequences above,
 `cgate_auth: true` denotes the armed opt-in LOGIN gate (`false` dormant
 default): with `--cgate-auth-file` configured, each connection needs

@@ -247,11 +247,11 @@ fn label_clearedlt_contract_and_event() {
     }
     // Malformed shapes and targets fail closed.
     for (line, fragment) in [
-        ("[3] LABEL CLEAREDLT", "only supports CLEAREDLT"),
-        ("[4] LABEL CLEAR //TEST/252/p/30", "only supports CLEAREDLT"),
+        ("[3] LABEL CLEAREDLT", "only supports CLEAR or CLEAREDLT"),
+        ("[4] LABEL CLEAR //TEST/252/p/30", "requires an application"),
         (
             "[5] LABEL CLEAREDLT //TEST/252/p/30 extra",
-            "only supports CLEAREDLT",
+            "only supports CLEAR or CLEAREDLT",
         ),
         ("[6] LABEL CLEAREDLT //TEST/252/p/#", "Invalid clear target"),
     ] {
@@ -264,6 +264,45 @@ fn label_clearedlt_contract_and_event() {
     assert!(events
         .iter()
         .all(|event| event == "#e# labels cleared //TEST/252/p/30"));
+}
+
+/// The mock keeps native `LABEL CLEAR` distinct from `CLEAREDLT`: both
+/// all-key and one-key forms validate deterministically and return only their
+/// command response, while malformed application/unit/key values have no
+/// side effect.
+#[test]
+fn label_clear_cache_contract_has_no_synthetic_event() {
+    let mut s = Server::new(AccessLevel::Program);
+    for line in [
+        "[1] LABEL CLEAR //TEST/252/56 0",
+        "[2] label clear //TEST/252/202 255 1",
+        "[3] LABEL CLEAR /252/203 5 8",
+        "[3b] LABEL CLEAR //TEST/252/$38 5",
+    ] {
+        let response = s.handle(line);
+        assert_eq!(response.status, 200, "{line}: {response:?}");
+        assert_eq!(response.final_text, "200 OK", "{line}");
+    }
+    assert!(s.drain_events().is_empty());
+
+    for line in [
+        "[4] LABEL CLEAR",
+        "[5] LABEL CLEAR //TEST/252/56",
+        "[6] LABEL CLEAR //TEST/252/56 5 1 extra",
+        "[7] LABEL CLEAR //TEST/252/p/5",
+        "[9] LABEL CLEAR //TEST/252/56 256",
+        "[10] LABEL CLEAR //TEST/252/56 nope",
+        "[11] LABEL CLEAR //TEST/252/56 5 0",
+        "[12] LABEL CLEAR //TEST/252/56 5 9",
+        "[13] LABEL CLEAR //TEST/252/56 5 nope",
+    ] {
+        let response = s.handle(line);
+        assert_eq!(response.status, 400, "{line}: {response:?}");
+    }
+    let unsupported = s.handle("[8] LABEL CLEAR //TEST/252/25 5");
+    assert_eq!(unsupported.status, 402, "{unsupported:?}");
+    assert!(unsupported.final_text.contains("does not support labels"));
+    assert!(s.drain_events().is_empty());
 }
 
 /// Mock determinism for the LABEL key-file helpers: KFISET stores a value

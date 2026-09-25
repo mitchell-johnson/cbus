@@ -867,6 +867,7 @@ async fn capabilities_report_observation_without_device_readback() {
     let document: serde_json::Value = serde_json::from_str(&response.lines[0]).unwrap();
     assert_eq!(document["full_cgate_compatibility"], false);
     assert_eq!(document["dynamic_labels"], true);
+    assert_eq!(document["label_clear"], true);
     assert_eq!(document["label_kfi"], true);
     assert_eq!(document["dynamic_label_observation"], true);
     assert_eq!(document["dynamic_label_device_readback"], false);
@@ -1196,6 +1197,127 @@ async fn do_edlt_factory_default_is_guarded_and_sent_once() {
             "{command}"
         );
     }
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test(start_paused = true)]
+async fn physical_label_clear_matches_native_wire_and_confirmation_contract() {
+    async fn pci_line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+
+    let path = state_path();
+    let (pci, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        pci_line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    service
+        .record_label("received", Some(5), 56, &[0xa4, 1, 0, 0, b'X'])
+        .await;
+    let mut events = service.events.subscribe();
+    let mut client = ClientState::default();
+
+    let all = service.handle(&mut client, "[1] LABEL CLEAR //HARNESS/254/56 5");
+    let peer = async {
+        let wire = pci_line(&mut remote_read).await;
+        assert_eq!(&wire[..wire.len() - 2], b"\\460500A3FF0027EC");
+        let confirmation = wire[wire.len() - 2];
+        remote_write.write_all(&[confirmation, b'.']).await.unwrap();
+    };
+    let (response, ()) = tokio::join!(all, peer);
+    assert_eq!(response.status, 200, "{response:?}");
+    assert_eq!(response.final_text, "200 OK");
+    assert!(service.observed_labels.lock().await.observations.is_empty());
+    assert!(
+        events.try_recv().is_err(),
+        "native LABEL CLEAR does not emit a synthetic event"
+    );
+
+    // Native C-Gate considers either correlated PCI confirmation outcome to
+    // complete this command. No unit ACK/readback follows the confirmation.
+    let one = service.handle(&mut client, "[2] LABEL CLEAR //HARNESS/254/202 5 8");
+    let peer = async {
+        let wire = pci_line(&mut remote_read).await;
+        assert_eq!(&wire[..wire.len() - 2], b"\\460500A4FF006608A4");
+        let confirmation = wire[wire.len() - 2];
+        remote_write.write_all(&[confirmation, b'#']).await.unwrap();
+    };
+    let (response, ()) = tokio::join!(one, peer);
+    assert_eq!(response.status, 200, "{response:?}");
+    assert_eq!(response.final_text, "200 OK");
+    assert!(
+        events.try_recv().is_err(),
+        "keyed native LABEL CLEAR does not emit a synthetic event"
+    );
+
+    let missing = service.handle(&mut client, "[3] LABEL CLEAR //HARNESS/254/95 5 1");
+    let peer = async {
+        let wire = pci_line(&mut remote_read).await;
+        assert_eq!(&wire[..wire.len() - 2], b"\\460500A4FF006601AB");
+        tokio::time::advance(Duration::from_secs(2)).await;
+        tokio::task::yield_now().await;
+    };
+    let (response, ()) = tokio::join!(missing, peer);
+    assert_eq!(response.status, 408, "{response:?}");
+    assert!(
+        response
+            .final_text
+            .starts_with("408 //HARNESS/254/95 (command failed:"),
+        "{response:?}"
+    );
+    let mut unexpected = Vec::new();
+    assert!(
+        tokio::time::timeout(
+            Duration::from_millis(1),
+            remote_read.read_until(b'\r', &mut unexpected)
+        )
+        .await
+        .is_err(),
+        "LABEL CLEAR must not replay after a missing confirmation: {unexpected:?}"
+    );
+
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn physical_label_clear_parser_rejects_bad_scope_and_values_without_io() {
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut client = ClientState::default();
+    for command in [
+        "[1] LABEL CLEAR",
+        "[2] LABEL CLEAR //HARNESS/254/56",
+        "[3] LABEL CLEAR //HARNESS/254/56 5 1 extra",
+        "[4] LABEL CLEAR //OTHER/254/56 5",
+        "[5] LABEL CLEAR //HARNESS/253/56 5",
+        "[6] LABEL CLEAR //HARNESS/254/25 5",
+        "[7] LABEL CLEAR //HARNESS/254/56 256",
+        "[8] LABEL CLEAR //HARNESS/254/56 unit",
+        "[9] LABEL CLEAR //HARNESS/254/56 5 0",
+        "[10] LABEL CLEAR //HARNESS/254/56 5 9",
+        "[11] LABEL CLEAR //HARNESS/254/56 5 key",
+    ] {
+        let response = service.handle(&mut client, command).await;
+        assert!(response.status >= 400, "{command}: {response:?}");
+    }
+    let mut byte = [0u8; 1];
+    assert!(
+        tokio::time::timeout(Duration::from_millis(1), remote.read(&mut byte))
+            .await
+            .is_err()
+    );
     std::fs::remove_file(path).unwrap();
 }
 
@@ -3989,12 +4111,13 @@ async fn auth_wrong_secret_denied_and_gate_holds() {
         "[11] DBSETSAFE //HARNESS/254/p/5/TagName Changed",
         "[12] SET //HARNESS/254/p/5 Address 6",
         "[13] LABEL CLEAREDLT //HARNESS/254/p/5",
-        "[14] LABEL KFIGET //HARNESS/254/56 5",
-        "[15] LABEL KFISET //HARNESS/254/56 5 0 1 2 3 4 5 6 7",
-        "[16] SCENE RECORD house evening",
-        "[17] DO //HARNESS/254/p/5 FactoryDefault",
-        "[18] NET UNRAVELUNIT //HARNESS/254 255 MATCHDB",
-        "[19] NET SET_PROJECT_IDENTIFY //HARNESS/254 TEST",
+        "[14] LABEL CLEAR //HARNESS/254/56 5",
+        "[15] LABEL KFIGET //HARNESS/254/56 5",
+        "[16] LABEL KFISET //HARNESS/254/56 5 0 1 2 3 4 5 6 7",
+        "[17] SCENE RECORD house evening",
+        "[18] DO //HARNESS/254/p/5 FactoryDefault",
+        "[19] NET UNRAVELUNIT //HARNESS/254 255 MATCHDB",
+        "[20] NET SET_PROJECT_IDENTIFY //HARNESS/254 TEST",
     ] {
         let response = service.handle(&mut client, command).await;
         assert_eq!(response.status, 420, "{command}: {response:?}");

@@ -199,6 +199,24 @@ class RustInteropTests(unittest.TestCase):
 
         projects.operation("save", "TEST")
 
+    def test_native_label_cache_clear_wrapper_matches_rust_mock_contract(self):
+        from cbus_toolkit.labels import NativeLabelCache
+
+        labels = NativeLabelCache(self.client)
+        all_keys = labels.clear("//TEST/252/56", 0)
+        one_key = labels.clear("//TEST/252/203", 255, key=8)
+        self.assertEqual(all_keys["native_command"], "LABEL CLEAR //TEST/252/56 0")
+        self.assertEqual(
+            one_key["native_command"], "LABEL CLEAR //TEST/252/203 255 8"
+        )
+        for result in (all_keys, one_key):
+            self.assertTrue(result["native_accepted"])
+            self.assertTrue(result["pci_confirmation_received"])
+            self.assertFalse(result["delivery_outcome_known"])
+            self.assertFalse(result["labels_cleared_verified"])
+            self.assertFalse(result["persistence_verified"])
+            self.assertFalse(result["device_readback"])
+
     def test_create_unit_parameter_round_trip(self):
         # Full native creation flow through the real database + programmer
         # wrappers: DBADD, field writes, PP LOCK/START/NEW/SET/SAVE and

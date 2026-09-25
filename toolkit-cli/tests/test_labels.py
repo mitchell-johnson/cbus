@@ -7,19 +7,28 @@ import time
 import unittest
 from uuid import uuid4
 
-from cbus_toolkit.labels import LabelError, NativeLabels, encode_label, encode_unicode_label, encode_dynamic_icon
+from cbus_toolkit.cgate import CGateResponse
+from cbus_toolkit.labels import (
+    LabelError,
+    NativeLabelCache,
+    NativeLabels,
+    encode_dynamic_icon,
+    encode_label,
+    encode_unicode_label,
+)
 
 
 class Client:
-    def __init__(self):
+    def __init__(self, response='accepted'):
         self.commands = []
         self.failure = None
+        self.response = response
 
     def command(self, command):
         self.commands.append(command)
         if self.failure:
             raise self.failure
-        return 'accepted'
+        return self.response
 
 
 class LabelTests(unittest.TestCase):
@@ -101,6 +110,63 @@ class LabelTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'network closed'):
             self.labels.text(self.app, 1, 'Label')
         self.assertEqual(len(self.client.commands), 1)
+
+    def test_native_cache_clear_all_or_one_key_has_conservative_evidence(self):
+        response = CGateResponse(("200 OK",), "200 OK", 200)
+        client = Client(response)
+        cache = NativeLabelCache(client)
+        all_keys = cache.clear("//TEST/254/48", 0)
+        one_key = cache.clear("//TEST/254/203", 255, key=8)
+        self.assertEqual(client.commands, [
+            "LABEL CLEAR //TEST/254/48 0",
+            "LABEL CLEAR //TEST/254/203 255 8",
+        ])
+        self.assertEqual(all_keys["native_command"], client.commands[0])
+        self.assertIsNone(all_keys["key"])
+        self.assertEqual(one_key["key"], 8)
+        for result in (all_keys, one_key):
+            self.assertTrue(result["native_accepted"])
+            self.assertTrue(result["pci_confirmation_received"])
+            self.assertFalse(result["delivery_outcome_known"])
+            self.assertFalse(result.get("delivery_confirmed", False))
+            self.assertFalse(result["labels_cleared_verified"])
+            self.assertFalse(result["persistence_verified"])
+            self.assertFalse(result["device_readback"])
+            self.assertIs(result["response"], response)
+
+    def test_native_cache_clear_validates_scope_unit_and_key_before_io(self):
+        response = CGateResponse(("200 OK",), "200 OK", 200)
+        client = Client(response)
+        cache = NativeLabelCache(client)
+        invalid = [
+            ("//TEST/254/47", 5, None),
+            ("//TEST/254/96", 5, None),
+            ("//TEST/254/201", 5, None),
+            ("//TEST/254/204", 5, None),
+            ("//TEST/256/56", 5, None),
+            ("/db//TEST/254/56", 5, None),
+            ("//TEST/254/56/1", 5, None),
+            ("//TEST/254/56\nNOOP", 5, None),
+            ("//TEST/254/56", -1, None),
+            ("//TEST/254/56", 256, None),
+            ("//TEST/254/56", True, None),
+            ("//TEST/254/56", "5", None),
+            ("//TEST/254/56", 5, 0),
+            ("//TEST/254/56", 5, 9),
+            ("//TEST/254/56", 5, True),
+            ("//TEST/254/56", 5, "1"),
+        ]
+        for application, unit, key in invalid:
+            with self.subTest(application=application, unit=unit, key=key), self.assertRaises(ValueError):
+                cache.clear(application, unit, key=key)
+        self.assertEqual(client.commands, [])
+
+    def test_native_cache_clear_requires_exact_native_acceptance_without_retry(self):
+        response = CGateResponse(("300 Pending",), "300 Pending", 300)
+        client = Client(response)
+        with self.assertRaisesRegex(RuntimeError, "did not accept"):
+            NativeLabelCache(client).clear("//TEST/254/95", 5, key=1)
+        self.assertEqual(client.commands, ["LABEL CLEAR //TEST/254/95 5 1"])
 
 
 @unittest.skipUnless(os.environ.get('CBUS_CGATE_TEST_HOST'), 'Set CBUS_CGATE_TEST_HOST for disposable native label acceptance')

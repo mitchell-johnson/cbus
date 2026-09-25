@@ -243,7 +243,7 @@
         "tests/test_cli_device_scenes.py",
         "docs/device-scene-acceptance-summary.json"
       ],
-      "limits": "Labels, Trigger Control and C-Gate scene-file editing/execution/cached recording tested with native C-Gate and independent receivers. KEYE1 2.5.00 stored scene packing, 40-command capacity, key binding, native raw bytes and save/reload tested. Native named SCENE commands fail401. Other device scenes, physical invocation/learning and persistent scene triggers remain incomplete."
+      "limits": "Labels, typed native whole-unit/per-key LABEL CLEAR requests, Trigger Control and C-Gate scene-file editing/execution/cached recording are tested. Cache-clear validation is pre-I/O; native acceptance and a PCI confirmation record do not verify delivery outcome, cache erasure, persistence or device readback. KEYE1 2.5.00 stored scene packing, 40-command capacity, key binding, native raw bytes and save/reload tested. Native named SCENE commands fail401. Other device scenes, physical invocation/learning and persistent scene triggers remain incomplete."
     },
     {
       "id": "dlt-edlt-widgets-and-labels",

@@ -46,6 +46,14 @@ def _byte(value):
     return result
 
 
+def _label_application(value):
+    from .labels import validate_label_application
+    try:
+        return validate_label_application(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError(str(error)) from error
+
+
 def _unit(value):
     return None if value.lower() == "local" else _byte(value)
 
@@ -1236,6 +1244,13 @@ def build_parser():
             p.add_argument("--vertical-offset", type=_byte, default=0)
         if action == "clear":
             p.add_argument("--unicode", dest="unicode_label", action="store_true")
+    p = labelops.add_parser(
+        "cache-clear",
+        help="Request native LABEL CLEAR for every cached key or one key; erasure is not verified",
+    )
+    p.add_argument("application", type=_label_application)
+    p.add_argument("unit", type=_byte)
+    p.add_argument("--key", dest="key_number", type=_number, choices=range(1, 9))
 
     clear_labels = cgops.add_parser("edlt-label-clear", help="Plan or request one eDLT dynamic-label clear; no physical erasure verification")
     clear_ops = clear_labels.add_subparsers(dest="remote_action", required=True)
@@ -2066,6 +2081,11 @@ def _cgate(args):
                 return result, int(not result["complete"])
             return edlt_labels(client, args.address), 0
         if args.action == "label":
+            if args.remote_action == "cache-clear":
+                from .labels import NativeLabelCache
+                return NativeLabelCache(client).clear(
+                    args.application, args.unit, key=args.key_number
+                ), 0
             from .labels import NativeLabels
             labels = NativeLabels(client, args.family)
             options = {"language": args.language, "action_selector": args.action_selector}

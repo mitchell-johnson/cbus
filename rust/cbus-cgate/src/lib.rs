@@ -2786,16 +2786,65 @@ impl Server {
         ok(tag, vec![], "200 OK")
     }
 
-    /// Native `LABEL CLEAREDLT source`: guarded one-shot dynamic-label
-    /// clear. The caller's coverage/identity guards run client-side; the
-    /// accepted reply is exactly one `200 OK.` line (note the period),
-    /// which the clear workflow requires verbatim.
+    /// Native label clear helpers. `CLEAREDLT` is the guarded OEM unit
+    /// operation; `CLEAR application unit [key]` is the standard
+    /// confirmation-only point-to-point cache command.
     fn label_clear(&mut self, tag: &str, words: &[&str]) -> Response {
+        if words
+            .get(1)
+            .is_some_and(|word| word.eq_ignore_ascii_case("CLEAR"))
+        {
+            if !matches!(words.len(), 4 | 5) {
+                return err(
+                    tag,
+                    status::BAD_REQUEST,
+                    "400 LABEL CLEAR requires an application, unit-id and optional key-number",
+                );
+            }
+            let parts = words[2]
+                .trim_start_matches('/')
+                .split('/')
+                .filter(|part| !part.is_empty())
+                .collect::<Vec<_>>();
+            let application = match parts.as_slice() {
+                [_, application] | [_, _, application] => {
+                    application.strip_prefix('$').map_or_else(
+                        || application.parse::<u8>().ok(),
+                        |hex| u8::from_str_radix(hex, 16).ok(),
+                    )
+                }
+                _ => None,
+            };
+            let Some(application) = application else {
+                return err(tag, status::BAD_REQUEST, "400 Invalid label application");
+            };
+            if !((48..=95).contains(&application) || matches!(application, 202 | 203)) {
+                return err(tag, 402, "402 Application does not support labels");
+            }
+            let Ok(_unit) = words[3].parse::<u8>() else {
+                return err(tag, status::BAD_REQUEST, "400 Invalid label unit-id");
+            };
+            let _key = match words.get(4) {
+                Some(word) => match word.parse::<u8>() {
+                    Ok(key @ 1..=8) => Some(key),
+                    _ => {
+                        return err(
+                            tag,
+                            status::BAD_REQUEST,
+                            "400 Label key-number must be in 1..8",
+                        )
+                    }
+                },
+                None => None,
+            };
+            return ok(tag, vec![], "200 OK");
+        }
+
         if words.len() != 3 || !words[1].eq_ignore_ascii_case("CLEAREDLT") {
             return err(
                 tag,
                 status::BAD_REQUEST,
-                "400 LABEL only supports CLEAREDLT in this model",
+                "400 LABEL only supports CLEAR or CLEAREDLT in this model",
             );
         }
         if !valid_target(words[2]) {

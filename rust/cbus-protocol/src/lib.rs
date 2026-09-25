@@ -9,6 +9,7 @@ pub mod consts;
 pub mod decode;
 pub mod json;
 pub mod kfi;
+pub mod label_clear;
 pub mod packet;
 pub mod pci_observation;
 pub mod project_identity;

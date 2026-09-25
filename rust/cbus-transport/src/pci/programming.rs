@@ -2,8 +2,8 @@
 //! Pointer selection is volatile; memory reads never issue a memory write.
 
 use super::*;
-use cbus_protocol::kfi;
 use cbus_protocol::serial_address::{encode_serial_address, parse_native_serial};
+use cbus_protocol::{kfi, label_clear};
 use std::io::{Error, ErrorKind, Result};
 use std::sync::atomic::{AtomicBool, Ordering};
 
@@ -548,6 +548,72 @@ impl PciClient {
                 error.to_string() == "PCI rejected selected-serial address command"
             })
         {
+            transaction.complete = true;
+        }
+        result
+    }
+
+    /// Send one native standard dynamic-label cache clear exactly once.
+    ///
+    /// `None` clears every key; `Some(key)` clears one key in `1..=8`. Native
+    /// completion is the correlated PCI confirmation only; native behavior
+    /// treats both confirmation forms as completion without exposing their
+    /// polarity. There is no unit acknowledgement or cache readback, so
+    /// success proves neither delivery, erasure, nor persistence on the
+    /// target unit.
+    pub async fn clear_dynamic_label_cache(&self, unit: u8, key: Option<u8>) -> Result<()> {
+        // Validate before taking a lane or attempting any I/O.
+        let request = label_clear::request(key)
+            .map_err(|error| Error::new(ErrorKind::InvalidInput, error.0))?;
+        let _lane = self.programming_lane.lock().await;
+        if self.programming_fault.load(Ordering::Acquire) {
+            return Err(Error::other(
+                "programming stream needs reconnect after an incomplete transaction",
+            ));
+        }
+        let mut transaction = Transaction {
+            fault: &self.programming_fault,
+            complete: false,
+        };
+        let mut replies = self.packets.subscribe();
+        if !self.is_connected() {
+            return Err(Error::new(ErrorKind::BrokenPipe, "PCI disconnected"));
+        }
+        let packet = Packet::PointToPoint {
+            meta: Meta::new(true, 1),
+            unit_address: unit,
+            bridged: false,
+            hops: vec![],
+            cals: vec![request],
+        };
+        let confirmation = self.send_guarded_once(&packet).await?;
+        let code = confirmation.code;
+        let result = tokio::time::timeout(REPLY_TIMEOUT, async {
+            loop {
+                match replies.recv().await {
+                    Ok(Some(Packet::Confirmation { code: got, .. })) if got == code => {
+                        return Ok(());
+                    }
+                    Ok(Some(_)) => {}
+                    Ok(None) | Err(_) => {
+                        return Err(Error::new(
+                            ErrorKind::BrokenPipe,
+                            "PCI response stream lost",
+                        ));
+                    }
+                }
+            }
+        })
+        .await
+        .unwrap_or_else(|_| {
+            Err(Error::new(
+                ErrorKind::TimedOut,
+                "dynamic-label clear confirmation timed out",
+            ))
+        });
+        if result.is_ok() {
+            // Native LABEL CLEAR records correlation only. Both `.` and `#`
+            // complete the transaction, with no delivery polarity exposed.
             transaction.complete = true;
         }
         result
@@ -2868,6 +2934,124 @@ mod tests {
             pci.factory_default_edlt(255).await.unwrap_err().kind(),
             ErrorKind::InvalidInput
         );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn label_clear_all_uses_native_cal_and_only_its_confirmation() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let clear = tokio::spawn(async move { worker.clear_dynamic_label_cache(5, None).await });
+        let request = line(&mut remote).await;
+        assert_eq!(&request[..request.len() - 2], b"\\460500A3FF0027EC");
+        let code = request[request.len() - 2];
+
+        // Another command's confirmation does not complete this transaction.
+        // The correlated PCI confirmation does, without a unit response or
+        // readback.
+        let foreign = if code == b'h' { b'i' } else { b'h' };
+        remote.get_mut().write_all(&[foreign, b'.']).await.unwrap();
+        assert!(!clear.is_finished());
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        clear.await.unwrap().unwrap();
+        assert!(!pci.programming_fault.load(Ordering::Acquire));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn keyed_label_clear_hash_completes_and_keeps_lane_usable() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let clear = tokio::spawn(async move { worker.clear_dynamic_label_cache(5, Some(8)).await });
+        let request = line(&mut remote).await;
+        assert_eq!(&request[..request.len() - 2], b"\\460500A4FF006608A4");
+        let code = request[request.len() - 2];
+        remote.get_mut().write_all(&[code, b'#']).await.unwrap();
+        clear.await.unwrap().unwrap();
+        assert!(!pci.programming_fault.load(Ordering::Acquire));
+        assert!(pci.state.lock().unwrap().pending.is_empty());
+
+        let worker = pci.clone();
+        let next = tokio::spawn(async move { worker.clear_dynamic_label_cache(5, None).await });
+        let request = line(&mut remote).await;
+        let code = request[request.len() - 2];
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        next.await.unwrap().unwrap();
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn label_clear_rejects_invalid_key_before_io() {
+        let (pci, mut remote, _) = setup().await;
+        for key in [0, 9, u8::MAX] {
+            assert_eq!(
+                pci.clear_dynamic_label_cache(5, Some(key))
+                    .await
+                    .unwrap_err()
+                    .kind(),
+                ErrorKind::InvalidInput
+            );
+        }
+        tokio::select! {
+            unexpected = line(&mut remote) => {
+                panic!("invalid label-clear key wrote to PCI: {unexpected:?}")
+            }
+            _ = tokio::time::sleep(Duration::from_millis(1)) => {}
+        }
+        assert!(!pci.programming_fault.load(Ordering::Acquire));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn lost_label_clear_confirmation_is_not_replayed_and_faults_lane() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let clear = tokio::spawn(async move { worker.clear_dynamic_label_cache(5, Some(1)).await });
+        let request = line(&mut remote).await;
+        let code = request[request.len() - 2];
+        assert!(pci.state.lock().unwrap().pending.is_empty());
+
+        tokio::time::advance(REPLY_TIMEOUT - Duration::from_millis(1)).await;
+        tokio::task::yield_now().await;
+        tokio::select! {
+            unexpected = line(&mut remote) => {
+                panic!("label clear was replayed after lost confirmation: {unexpected:?}")
+            }
+            _ = tokio::time::sleep(Duration::from_millis(1)) => {}
+        }
+        tokio::task::yield_now().await;
+        assert_eq!(
+            clear.await.unwrap().unwrap_err().kind(),
+            ErrorKind::TimedOut
+        );
+        assert!(pci.programming_fault.load(Ordering::Acquire));
+        {
+            let state = pci.state.lock().unwrap();
+            assert!(state.pending.is_empty());
+            assert!(state.quarantined_codes.contains(&code));
+        }
+        assert!(pci
+            .clear_dynamic_label_cache(5, None)
+            .await
+            .unwrap_err()
+            .to_string()
+            .contains("needs reconnect"));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn label_clear_response_stream_loss_faults_lane() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let clear = tokio::spawn(async move { worker.clear_dynamic_label_cache(5, None).await });
+        let _request = line(&mut remote).await;
+        drop(remote);
+        assert_eq!(
+            clear.await.unwrap().unwrap_err().kind(),
+            ErrorKind::BrokenPipe
+        );
+        assert!(pci.programming_fault.load(Ordering::Acquire));
+        assert!(pci
+            .clear_dynamic_label_cache(5, None)
+            .await
+            .unwrap_err()
+            .to_string()
+            .contains("needs reconnect"));
     }
 
     async fn selected_serial_reply(

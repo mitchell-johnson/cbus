@@ -15,6 +15,23 @@ The Python `cbus-toolkit` application is installed separately; see [toolkit.md](
 | Emulate the C-Gate 3.4 command surface | `cgate-mock` | Opens a TCP listener and mutates in-memory state |
 | Recheck committed compatibility vectors | `cbus-vector-check` | Reads local JSONL vectors |
 
+### Native dynamic-label cache clear
+
+Use the typed native command to request all cached labels or one key be cleared
+for one unit:
+
+```sh
+cbus-toolkit cgate label cache-clear //PROJECT/254/56 5
+cbus-toolkit cgate label cache-clear //PROJECT/254/56 5 --key 3
+```
+
+The application path must resolve to native label-capable ID 48–95, 202 or
+203; the unit is 0–255 and the optional key is 1–8. Successful native
+acceptance reports that a PCI confirmation was received, while delivery
+outcome, cache erasure, persistence and device readback remain unverified.
+This is native `LABEL CLEAR`, separate from the empty-SAL `cgate label clear`
+action and the guarded KEYGL5 `cgate edlt-label-clear` workflow.
+
 ### Live eDLT label inventory
 
 Against cmqttd's embedded C-Gate service, inventory the supported physical

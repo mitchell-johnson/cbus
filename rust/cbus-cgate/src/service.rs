@@ -609,6 +609,7 @@ impl Service {
             // Keep the new flat flag out of the already recursion-deep json!
             // invocation while retaining one static capability document.
             capabilities["label_kfi"] = serde_json::Value::Bool(true);
+            capabilities["label_clear"] = serde_json::Value::Bool(true);
             return ok(tag, vec![capabilities.to_string()], "200 OK");
         }
         if verb == "CMQTT" && sub == "LABELS" && words.len() == 3 {
@@ -710,6 +711,9 @@ impl Service {
             && matches!(sub, "LABEL" | "UNICODELABEL")
         {
             return self.label(client, line, tag, &words, &upper).await;
+        }
+        if verb == "LABEL" && sub == "CLEAR" {
+            return self.clear_dynamic_label_cache(tag, &words).await;
         }
         if verb == "LABEL" && matches!(sub, "KFIGET" | "KFISET") {
             return self.label_kfi(tag, &words, &upper).await;
@@ -2699,6 +2703,57 @@ impl Service {
                 response
             }
             Err(error) => err(tag, 502, &format!("502 eDLT label clear failed: {error}")),
+        }
+    }
+
+    /// Native `LABEL CLEAR <application> <unit-id> [<key-number>]`.
+    ///
+    /// This is the standard point-to-point label-cache command, distinct
+    /// from both an empty dynamic-label SAL and the OEM eDLT `CLEAREDLT`
+    /// operation. Native accepts units 0..255 and keys 1..8. Completion is
+    /// based only on the correlated PCI confirmation; there is no unit ACK
+    /// or device readback, so a successful response does not prove that the
+    /// target erased or persisted anything.
+    async fn clear_dynamic_label_cache(&self, tag: &str, words: &[&str]) -> Response {
+        let _commands = self.commands.lock().await;
+        if !matches!(words.len(), 4 | 5) {
+            return err(
+                tag,
+                400,
+                "400 LABEL CLEAR requires an application, unit-id and optional key-number",
+            );
+        }
+        let Some(application) = self.application_path(words[2]) else {
+            return err(tag, 404, "404 Label application is not on this network");
+        };
+        if !((48..=95).contains(&application) || matches!(application, 202 | 203)) {
+            return err(tag, 402, "402 Application does not support labels");
+        }
+        let Ok(unit) = words[3].parse::<u8>() else {
+            return err(tag, 400, "400 Invalid label unit-id");
+        };
+        let key = match words.get(4) {
+            Some(word) => match word.parse::<u8>() {
+                Ok(key @ 1..=8) => Some(key),
+                _ => return err(tag, 400, "400 Label key-number must be in 1..8"),
+            },
+            None => None,
+        };
+
+        let pci = self.pci.read().await.clone();
+        match pci.clear_dynamic_label_cache(unit, key).await {
+            Ok(()) => {
+                // Observed dynamic-label traffic is network-wide and cannot
+                // be attributed to a recipient. Any accepted cache clear can
+                // therefore make every retained observation stale.
+                self.observed_labels.lock().await.observations.clear();
+                ok(tag, vec![], "200 OK")
+            }
+            Err(error) => err(
+                tag,
+                408,
+                &format!("408 {} (command failed: {error})", words[2]),
+            ),
         }
     }
 
@@ -4718,7 +4773,8 @@ async fn bounded_line<R: tokio::io::AsyncBufRead + Unpin>(
 ///   leaving them open would bypass the gate.
 /// - SET in all forms (unit readdress via the pre-gate Address branch and
 ///   scalar database sets via the model): every form mutates.
-/// - LABEL CLEAREDLT (clears unit labels) and LABEL KFIGET/KFISET. KFIGET is
+/// - LABEL CLEAR/CLEAREDLT (clear label caches/unit labels) and LABEL
+///   KFIGET/KFISET. KFIGET is
 ///   operational rather than read-only: native C-Gate sends three parameter-
 ///   `0xFF` writes before its IDENTIFY. LIGHTING/TRIGGER/ENABLE label
 ///   writes stay open: they are bus-control SAL traffic with MQTT
@@ -4765,7 +4821,7 @@ fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
         ),
         "SET" => true,
         "NET" => matches!(sub, "SET_PROJECT_IDENTIFY" | "UNRAVEL" | "UNRAVELUNIT"),
-        "LABEL" => matches!(sub, "CLEAREDLT" | "KFIGET" | "KFISET"),
+        "LABEL" => matches!(sub, "CLEAR" | "CLEAREDLT" | "KFIGET" | "KFISET"),
         "SCENE" => sub == "RECORD",
         "DO" => words
             .get(2)

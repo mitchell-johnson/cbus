@@ -144,6 +144,7 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     assert!(capabilities.contains("\"do_methods\":[\"factorydefault\",\"lighting\",\"sync\"]"));
     assert!(capabilities.contains("\"full_cgate_compatibility\":false"));
     assert!(capabilities.contains("\"dynamic_label_device_readback\":false"));
+    assert!(capabilities.contains("\"label_clear\":true"));
     assert!(capabilities.contains("\"label_kfi\":true"));
     assert!(
         command(&mut reader, &mut writer, "GET //HARNESS/254/56/1 level")
@@ -380,6 +381,22 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     assert!(observed.contains("\"device_readback\":false"));
     assert!(observed.contains("\"direction\":\"received\""));
     assert!(observed.contains("\"source_unit\":9"));
+    assert!(
+        command(&mut reader, &mut writer, "LABEL CLEAR //HARNESS/254/56 5")
+            .await
+            .contains("200 OK")
+    );
+    assert_eq!(sys.pci.count_payload("460500A3FF0027EC"), 1);
+    assert!(command(
+        &mut reader,
+        &mut writer,
+        "LABEL CLEAR //HARNESS/254/203 5 8"
+    )
+    .await
+    .contains("200 OK"));
+    assert_eq!(sys.pci.count_payload("460500A4FF006608A4"), 1);
+    let observed = command(&mut reader, &mut writer, "CMQTT LABELS //HARNESS/254").await;
+    assert!(observed.contains("\"observations\":[]"), "{observed:?}");
     assert!(command(
         &mut reader,
         &mut writer,

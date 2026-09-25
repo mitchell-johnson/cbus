@@ -196,6 +196,44 @@ class CLITests(unittest.TestCase):
                 self.assertIn("error", result)
                 self.assertNotIn("queued", result)
 
+    def test_label_cache_clear_cli_uses_distinct_native_command_and_honest_result(self):
+        from test_cgate import peer
+        cases = (
+            (("//TEST/254/56", "0"), b"LABEL CLEAR //TEST/254/56 0"),
+            (("//TEST/254/202", "255", "--key", "8"), b"LABEL CLEAR //TEST/254/202 255 8"),
+        )
+        for arguments, expected in cases:
+            with self.subTest(arguments=arguments), peer([[b"[1] 200 OK\r\n"]]) as ((host, port), sent):
+                result = self.cli(
+                    "cgate", "--host", host, "--port", port,
+                    "label", "cache-clear", *arguments,
+                )
+            self.assertEqual(sent, [b"[1] " + expected + b"\r\n"])
+            self.assertTrue(result["native_accepted"])
+            self.assertTrue(result["pci_confirmation_received"])
+            self.assertFalse(result["delivery_outcome_known"])
+            self.assertFalse(result.get("delivery_confirmed", False))
+            self.assertFalse(result["labels_cleared_verified"])
+            self.assertFalse(result["persistence_verified"])
+            self.assertFalse(result["device_readback"])
+
+    def test_label_cache_clear_cli_rejects_scope_unit_and_key_before_connecting(self):
+        cases = (
+            (("//TEST/254/47", "5"), "48..95"),
+            (("//TEST/254/56", "256"), "0..255"),
+            (("//TEST/254/56", "5", "--key", "0"), "invalid choice"),
+        )
+        for arguments, message in cases:
+            with self.subTest(arguments=arguments):
+                process = subprocess.run(
+                    [sys.executable, "-m", "cbus_toolkit", "cgate", "label", "cache-clear", *arguments],
+                    text=True,
+                    capture_output=True,
+                )
+                self.assertEqual(process.returncode, 2, process.stderr + process.stdout)
+                self.assertIn(message, process.stderr)
+                self.assertNotIn("Unable to establish", process.stderr)
+
     def test_valid_schema_defaults_return_success_and_invalid_defaults_fail(self):
         with tempfile.TemporaryDirectory() as folder:
             spec = Path(folder) / "fixture.xml"

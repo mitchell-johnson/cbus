@@ -12,9 +12,25 @@ cbus-toolkit cgate label --family trigger text //TEST/254/202 7 'Scene' --action
 cbus-toolkit cgate label --family enable text //TEST/254/203 9 'Enable' --action-selector 0
 cbus-toolkit cgate label clear //TEST/254/56 1 --unicode --variant 1
 cbus-toolkit cgate label clear //TEST/254/56 1 --variant 2
+cbus-toolkit cgate label cache-clear //TEST/254/56 5
+cbus-toolkit cgate label cache-clear //TEST/254/202 5 --key 3
 ```
 
 The application must exist on the selected network. Sending labels can communicate with devices; the CLI does not open networks implicitly. A successful native reply produces `queued: true, device_verified: false`. The acceptance capture proves why this distinction matters: C-Gate returned `200 OK` even when the independent interface initially rejected an unsupported SAL packet. No automatic retry is performed after an error.
+
+`cache-clear` is the distinct native `LABEL CLEAR APPLICATION UNIT [KEY]`
+operation. Its application must be a fully qualified numeric path whose ID is
+48–95, 202 or 203; units are 0–255 and an optional key is 1–8. The CLI and
+typed wrapper validate all three fields before command I/O. A native 200 result
+reports `native_accepted: true` and `pci_confirmation_received: true`, while
+retaining `delivery_outcome_known: false`, `labels_cleared_verified: false`,
+`persistence_verified: false` and `device_readback: false`. C-Gate exposes no
+unit acknowledgement or cache readback through this command.
+
+This operation does not replace `cgate label clear`, which sends an empty ASCII
+or Unicode label for one application group. It is also separate from
+`cgate edlt-label-clear`, the guarded OEM `LABEL CLEAREDLT` workflow for one
+identified KEYGL5 unit.
 
 `--language` and `--action-selector` are bytes in 0–255. An omitted action selector sends native `-`; variants are integers 0–3. ASCII labels are limited to 14 bytes and preserve spaces and punctuation by using the equivalent options-zero raw form. `text ''` and ASCII `clear` send the native NUL representation. Unicode strings are encoded as UTF-8 and always sent through native `RAW`, avoiding the server's platform-dependent text decoding. `unicode ''` and Unicode `clear` send an empty Unicode label. Native documentation specifies that an existing Unicode label takes precedence over an ASCII replacement until the Unicode label is cleared.
 
@@ -24,7 +40,7 @@ The Unicode sender splits data into 13-byte fragments, or 12 bytes with an actio
 
 Python uses `NativeLabels(client, family="lighting")`. Methods `text`, `unicode`, `unicode_raw`, `raw`, `icon`, `dynamic`, and `set_language` take application and group first; optional fields use the CLI names with underscores. `raw(application, group, options, data)` accepts bytes, and `dynamic(application, group, icon, width, height, data)` accepts packed bitmap bytes. Pure `encode_label`, `encode_unicode_label`, and `encode_dynamic_icon` functions return SAL payloads without PCI/application framing. The simulator receiver is independently implemented and does not import these encoders.
 
-Nineteen tests pass: nine typed API/encoding tests, nine independent receiver tests using literal native vectors, and one native-to-simulator acceptance test exercising twelve commands. The native test creates a unique project and its own temporary synthetic interface, verifies nine exact stored labels plus language selection, clears both text types, verifies reload from disk, and removes the project. It also verifies native rejection of ENABLE Unicode and obsolete colon-form bitmap input. The two CLI tests cover exact generated commands, queued semantics, and native error handling.
+Twenty-two tests pass: twelve typed API/encoding tests, nine independent receiver tests using literal native vectors, and one native-to-simulator acceptance test exercising twelve commands. The native test creates a unique project and its own temporary synthetic interface, verifies nine exact stored labels plus language selection, clears both text types, verifies reload from disk, and removes the project. It also verifies native rejection of ENABLE Unicode and obsolete colon-form bitmap input. CLI tests cover exact generated SAL and `LABEL CLEAR` commands, pre-I/O cache-clear validation, conservative result semantics, queued semantics, and native error handling.
 
 ```sh
 CBUS_CGATE_TEST_HOST=127.0.0.1 \

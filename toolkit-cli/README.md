@@ -1402,13 +1402,21 @@ cbus-toolkit cgate label unicode //TEST/254/56 1 'Māori' --variant 1
 cbus-toolkit cgate label --family trigger text //TEST/254/202 7 'Scene' --action-selector 9
 cbus-toolkit cgate label dynamic //TEST/254/56 1 80 --icon 1 --width 8 --height 1
 cbus-toolkit cgate label clear //TEST/254/56 1 --unicode --variant 1
+cbus-toolkit cgate label cache-clear //TEST/254/56 5
+cbus-toolkit cgate label cache-clear //TEST/254/56 5 --key 3
 ```
 
 Label commands also support built-in icons, language selection, raw payloads
 and ASCII clearing. The CLI reports `queued: true, device_verified: false` for
 native acceptance. The independent simulator verifies completed Unicode and
 bitmap payloads and reloads their stored state; it does not establish physical
-display behavior. See [label limits and acceptance evidence](docs/labels.md).
+display behavior. The separate `cache-clear` command emits native
+`LABEL CLEAR APPLICATION UNIT [KEY]` after validating a label-capable
+application (48–95, 202 or 203), unit 0–255 and optional key 1–8. Its native
+acceptance and PCI confirmation record do not prove device delivery, cache
+erasure, persistence or readback. It is distinct from the empty-label
+`label clear` action and the guarded KEYGL5 `edlt-label-clear` workflow. See
+[label limits and acceptance evidence](docs/labels.md).
 
 ### Live eDLT label inventory
 

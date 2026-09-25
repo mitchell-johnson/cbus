@@ -1,9 +1,12 @@
-"""Typed C-Gate dynamic labels and native-compatible SAL payload encoding.
+"""Typed C-Gate label operations and native-compatible SAL payload encoding.
 
-These commands send application messages. A successful C-Gate response means
-the server accepted the command, not that a physical display applied it.
+Dynamic-label commands send application messages; cache clearing uses the
+distinct native point-to-point command. A successful C-Gate response does not
+by itself establish what a physical display applied or retained.
 """
 from __future__ import annotations
+
+import re
 
 from .native import _token
 
@@ -33,6 +36,31 @@ def _bytes(value, maximum=None):
     if maximum is not None and len(data) > maximum:
         raise LabelError(f"Label data exceeds {maximum} bytes")
     return data
+
+
+def validate_label_application(application):
+    """Return one native label-capable application path.
+
+    ``LABEL CLEAR`` targets a unit through an application object, rather than
+    a physical-unit or group path.  Validate the complete path locally so an
+    invalid scope cannot reach C-Gate or a physical backend.
+    """
+    try:
+        application = _token(application, "label application address")
+    except ValueError as error:
+        raise LabelError(str(error)) from error
+    match = re.fullmatch(
+        r"//[A-Za-z0-9_]{1,8}/(?P<network>[0-9]{1,3})/(?P<application>[0-9]{1,3})",
+        application,
+    )
+    if match is None or int(match["network"]) > 255:
+        raise LabelError(
+            "Label application must be a fully qualified path such as //PROJECT/254/56"
+        )
+    application_id = int(match["application"])
+    if not (48 <= application_id <= 95 or application_id in (202, 203)):
+        raise LabelError("Label application ID must be in 48..95, 202 or 203")
+    return application
 
 
 def encode_label(group, language, options, data, *, action_selector=None, variant=0):
@@ -163,3 +191,43 @@ class NativeLabels:
         except UnicodeEncodeError as error:
             raise LabelError("Unicode label contains an unpaired surrogate") from error
         return self.unicode_raw(application, group, data, language=language, action_selector=action_selector, variant=variant)
+
+
+class NativeLabelCache:
+    """Typed native ``LABEL CLEAR`` requests with conservative evidence.
+
+    This command is separate from an empty dynamic-label SAL and from the OEM
+    ``LABEL CLEAREDLT`` operation.  A native 200 response establishes only
+    C-Gate acceptance and completion of its PCI confirmation exchange.  It
+    does not reveal the confirmation polarity, a unit acknowledgement, cache
+    contents, erasure, or persistence.
+    """
+
+    def __init__(self, client):
+        self.client = client
+
+    def clear(self, application, unit, *, key=None):
+        application = validate_label_application(application)
+        unit = _integer(unit, "Unit")
+        if key is not None:
+            key = _integer(key, "Key", 1, 8)
+        command = f"LABEL CLEAR {application} {unit}" + (
+            "" if key is None else f" {key}"
+        )
+        response = self.client.command(command)
+        if getattr(response, "status", None) != 200:
+            final = getattr(response, "final", str(response))
+            raise RuntimeError("C-Gate did not accept the label cache clear: " + final)
+        return {
+            "application": application,
+            "unit": unit,
+            "key": key,
+            "native_command": command,
+            "native_accepted": True,
+            "pci_confirmation_received": True,
+            "delivery_outcome_known": False,
+            "labels_cleared_verified": False,
+            "persistence_verified": False,
+            "device_readback": False,
+            "response": response,
+        }
