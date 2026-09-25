@@ -69,6 +69,39 @@ selection-binding and save sequences, but reports
 behavior are outside this bounded workflow. See
 `toolkit-cli/docs/edlt-parent-form.md`.
 
+### eDLT ordered parent transaction
+
+Use an ordered JSON array when one edit contains distinct Measurement,
+Lighting or proximity activation controls:
+
+```sh
+cbus-toolkit edlt parent-transaction-plan snapshot.json \
+  --metadata lifecycle-cache.json --operations operations.json
+cbus-toolkit cgate unit --lock-address //PROJECT/254 \
+  --source /db//PROJECT/254/p/20 --dry-run edlt-parent-transaction \
+  --metadata lifecycle-cache.json --operations operations.json
+```
+
+The array requires two through 22 operations and at least one widget. Widget
+operations use the standalone editor's exact option names; activation uses
+`level_percent` or `action`. Percentages must be quoted canonical fixed-point
+text. Duplicate widget targets, a second activation owner, conflicting page
+modes, unknown fields and duplicate JSON keys fail before PP mutation.
+
+Inspect `operation_results`, `ownership`, `transaction_guards`,
+`preservation`, `execution_counts` and `write_order`. Successful non-dry-run
+native execution uses one parameter-write pass, complete readback and database
+save. A save exception or interruption is never retried: inspect
+`edlt_parent_transaction_evidence`, where `saved=false` means persistence was
+not confirmed and `save_outcome_uncertain=true` keeps the database outcome
+explicit. The plan has retained original evidence for each component, while
+`native_multi_edit_parent_form_executed=false` and physical behavior remains
+unverified. See `toolkit-cli/docs/edlt-parent-transaction.md`.
+
+Use `lifecycle.crc_fields_calculated` to confirm the single five-field CRC
+pass. `phases.crc` is a changed-only delta and may omit a field whose stored
+value was already correct.
+
 ### Native dynamic-label cache clear
 
 Use the typed native command to request all cached labels or one key be cleared

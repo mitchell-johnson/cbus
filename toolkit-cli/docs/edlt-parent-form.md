@@ -7,6 +7,11 @@ that joins these controls with `AfterLoadPPData`, source-pinned binding
 semantics, `BeforeSavePPData`, all five configuration CRCs, stale-plan checks,
 full readback and database save.
 
+For several distinct widget edits in one retained save, use the
+[ordered parent transaction](edlt-parent-transaction.md). It accepts
+Measurement, Lighting and proximity activation operations, rejects overlapping
+byte ownership and performs one terminal lifecycle/CRC projection.
+
 Preview a database export without I/O:
 
 ```sh

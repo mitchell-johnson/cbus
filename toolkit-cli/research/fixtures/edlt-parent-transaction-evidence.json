@@ -1,0 +1,113 @@
+{
+  "format": "cbus-edlt-parent-transaction-evidence-v1",
+  "profile": {
+    "unit_type": "KEYGL5",
+    "catalog_number": "5055EDL",
+    "firmware": "5.5.00",
+    "toolkit": "1.18.0.2754"
+  },
+  "scope": "Ordered distinct Measurement, Lighting and proximity activation bindings composed into one retained parent save projection",
+  "original_sources": [
+    {
+      "path": "eDLT/eDLT/FrmBaseUnit.cs",
+      "sha256": "060323b11494c7a697656d048f97351526a143e339db767731675a87ba1b1b16"
+    },
+    {
+      "path": "eDLT/eDLT.WidgetPanels/MeasurementWidget.cs",
+      "sha256": "ad042de0f8db88e3dabf750f0cc51243a38944afaa26d626c5c4738d39626891"
+    },
+    {
+      "path": "eDLT/eDLT.WidgetPanels/LightingWidget.cs",
+      "sha256": "8ae8dd93d3b11e1d2b8b6bea9dba55336bb15d28902dc5a91d3562bd49731b72"
+    },
+    {
+      "path": "eDLT/eDLT.WidgetPanels.baseWidgePanels/BaseWidget.cs",
+      "sha256": "e2ecee24752731238d7901b8e2a20e7482e2e8225e76ad0afa660cc602b407d8"
+    },
+    {
+      "path": "eDLT/eDLT.Controls/NumUpDownPercentage.cs",
+      "sha256": "8af1e7a0096314fbd393c28f9d0989f813c91a0a26adc946ea7ceee0a3c1af70"
+    },
+    {
+      "path": "CBusLogicModel/CBusLogicModel.Units.EDLT.WidgetData/LightingData.cs",
+      "sha256": "aa272e496f89d83e66bc4defe79476cc00c1bb42065835fd0e42b1c8644da873"
+    },
+    {
+      "path": "CBusLogicModel/CBusLogicModel.Units.EDLT/EDLTUnit.cs",
+      "sha256": "641f5abc1c3762cd86a0c4b18bc125424a39017a3d78d6edfa4e1e2964af62b2"
+    },
+    {
+      "path": "CBusLogicModel/CBusLogicModel.Units/CBusBaseUnit.cs",
+      "sha256": "4f0468941222c6696db5836a32fc0b70d18fcf704ea8fe6dd0c2d709a3842487"
+    }
+  ],
+  "retained_native_evidence": [
+    {
+      "path": "research/fixtures/edlt-measurement-culture-acceptance.json",
+      "sha256": "0a784c21d59a7ed49b4558e27d7a198297d60c1aca76ec3ed132e974cc946591",
+      "establishes": "original Measurement model and actual panel validation handlers"
+    },
+    {
+      "path": "research/fixtures/edlt-acceptance.json",
+      "sha256": "d41cd9fb23a980b8ddc06c31f876bc5fcd9745d0c7728a41a5fc100a740cac59",
+      "establishes": "original Lighting model records, shared static allocation and configuration CRCs"
+    },
+    {
+      "path": "research/fixtures/edlt-normalization-acceptance.json",
+      "sha256": "a37fccc273cb9feee3d3b5fa1b919ad3f9aab5cf26293c8fe01b6d039cb8dee9",
+      "establishes": "original widget terminator normalization and native database persistence for the standalone workflow"
+    },
+    {
+      "path": "research/fixtures/edlt-percentage-control-observations.json",
+      "sha256": "9abcfde6a37f490341442eb86d01b9f96ae7835a546c22708001299b81f71031",
+      "establishes": "actual standalone original NumUpDownPercentage behavior"
+    },
+    {
+      "path": "research/fixtures/edlt-percentage-vectors.json",
+      "sha256": "b29e2754378450320d431313ac5a96ac549209f4875dda65b6c1b851e7940454",
+      "establishes": "original percentage arithmetic differential vectors"
+    },
+    {
+      "path": "research/fixtures/edlt-parent-form-evidence.json",
+      "sha256": "9e194f47a6dbcfd73ec6e83a91b63cb0bf9f55ef2b3181866b3c3eb2be2c046e",
+      "establishes": "source-pinned parent construction, worker, selection binding and save ordering"
+    }
+  ],
+  "lighting_selection_binding_order": [
+    "BaseWidget.SetWidgetData",
+    "BaseWidget.SetUpDataSource",
+    "assign LightingData source",
+    "ResetBindings(false)"
+  ],
+  "lighting_bindings": {
+    "Lighting.RampRate": "OnValidation",
+    "Lighting.Offset": "OnValidation",
+    "Lighting.TargetLevel1": "OnValidation",
+    "Lighting.RampRateEditable visibility": "Never",
+    "Lighting.OffsetEditable visibility": "Never",
+    "Lighting.TargetLevel1Editable visibility": "Never"
+  },
+  "composition_boundary": {
+    "operation_order_is_cli_input": true,
+    "each_widget_projection_uses_an_accepted_standalone_model": true,
+    "navigation_mode_is_reconciled_once": true,
+    "distinct_widget_and_parent_byte_ownership_is_required": true,
+    "all_controls_enter_one_retained_before_save_projection": true,
+    "one_terminal_crc_projection": true,
+    "all_five_crc_fields_calculated_even_if_some_values_are_unchanged": true,
+    "one_database_save_after_verified_apply": true,
+    "failed_or_interrupted_save_is_not_retried": true,
+    "unconfirmed_save_does_not_claim_database_rollback": true
+  },
+  "evidence_boundaries": {
+    "original_source_inspected": true,
+    "retained_original_component_probes": true,
+    "python_multi_edit_composition_tests": true,
+    "python_save_failure_and_interruption_tests": true,
+    "original_full_parent_form_executed": false,
+    "original_multi_edit_sequence_executed": false,
+    "winforms_focus_caret_dialogs_verified": false,
+    "native_database_multi_edit_executed": false,
+    "physical_device_verified": false
+  }
+}

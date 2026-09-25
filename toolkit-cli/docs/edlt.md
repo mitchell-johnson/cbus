@@ -242,6 +242,13 @@ session.save_to_source()
 a database source such as `/db//TEST/254/p/20`; physical sources are rejected.
 `plan.as_dict()` includes all changed PP fields and the 32-byte widget record.
 
+When the same database edit also changes distinct Measurement widgets or the
+parent proximity activation/Percentage binding, use the
+[ordered parent transaction](edlt-parent-transaction.md). It runs the accepted
+Lighting planner as a validated bound-control projection, rejects overlapping
+widget bytes and enters every control before one retained terminal save/CRC
+projection.
+
 The native acceptance creates a unique marked project with an unopened CNI at
 `127.0.0.1:1`, loads a database-backed 5055EDL PP session and resets defaults.
 It configures an Off/On widget and a page-4 Dimmer, allocates the UTF-8 label

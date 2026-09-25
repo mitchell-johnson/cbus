@@ -28,6 +28,7 @@ Use the Python Toolkit CLI for project and commissioning workflows, and the Rust
 9. Report the command used, its exit result, and the relevant output. When the command can affect hardware, state which endpoint was targeted.
 10. For eDLT Measurement decimal Gain/Offset values, never infer a locale from the host. Keep the default `canonical` grammar or choose one of the source-pinned Toolkit profiles explicitly, then inspect exponent-wrap metadata before applying the plan.
 11. When one edit needs both a Measurement panel and the proximity percentage/action control, use the bounded `edlt parent-form-plan` or database `edlt-parent-form` workflow with explicit lifecycle metadata. Inspect its phase, cross-control and preservation evidence. Do not turn its source-pinned order into a claim that the complete original WinForms parent executed.
+12. When one KEYGL5 edit needs several distinct Measurement, Lighting or proximity activation controls, use `edlt parent-transaction-plan` or database `edlt-parent-transaction` with an ordered JSON operation file. Inspect byte ownership, operation results, terminal lifecycle fields and execution counts before applying. Never split an intended atomic edit into standalone saves, reuse a widget slot, or describe retained component evidence as an executed original multi-edit form. If SAVE fails or is interrupted, treat `saved=false` as unconfirmed persistence and do not retry the uncertain operation.
 
 ## Compatibility language
 

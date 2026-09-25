@@ -120,6 +120,14 @@ an unedited lifecycle save. The full original parent form was not executed for
 that composition; per-keystroke focus/caret/dialog behavior and all other form
 controls remain outside its scope.
 
+The [ordered parent transaction](edlt-parent-transaction.md) extends that
+bounded composition to distinct Measurement and Lighting slots plus one
+proximity activation binding. It preserves each standalone Measurement record,
+rejects overlapping byte ownership and runs one terminal retained save/CRC
+projection after every operation validates. This remains Python composition
+over retained component evidence, not an executed original multi-selection
+form.
+
 ## The label value 64 and shared text capacity
 
 The original default label is **64**, while prefix and suffix default to 255. Its label getter returns empty for 64, and explicitly assigning empty text writes 255. Both values survive native PP storage, but this workflow does not claim their physical display meanings are identical.

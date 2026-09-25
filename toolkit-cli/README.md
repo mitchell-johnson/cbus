@@ -713,6 +713,48 @@ WinForms dialog, focus/caret/message-box behavior and physical display/wake
 behavior remain unverified. See
 [edlt-parent-form.md](docs/edlt-parent-form.md).
 
+For several distinct controls in one retained database transaction, put the
+ordered operations in JSON and use the parent transaction workflow:
+
+```json
+[
+  {"op":"measurement","page":1,"position":1,"device_id":42,"channel":3,
+   "gain_value":"1.5","measurement_culture":"en-NZ"},
+  {"op":"lighting","page":1,"position":2,"group":12,"mode":"dimmer",
+   "ramp_seconds":20,"restore_level":99},
+  {"op":"activation","wake_mode":"primary-event","group":42,
+   "level_percent":"50"}
+]
+```
+
+```sh
+cbus-toolkit edlt parent-transaction-plan snapshot.json \
+  --metadata lifecycle-cache.json --operations operations.json
+cbus-toolkit cgate unit --lock-address //TEST/254 \
+  --source /db//TEST/254/p/20 --dry-run edlt-parent-transaction \
+  --metadata lifecycle-cache.json --operations operations.json
+```
+
+The JSON array contains two through 22 operations and must include a widget.
+Supported operations are Measurement, Lighting and the proximity
+percentage/action binding. The planner rejects duplicate widget slots, a
+second activation owner, conflicting page modes, duplicate JSON keys and
+unknown fields. It composes shared static allocation in order, preserves every
+unowned control byte, runs one terminal retained normalization and five-CRC
+projection, then uses one parameter-write/readback/rollback sequence and one
+database save on successful non-dry-run execution. The original component
+models have retained independent evidence; the complete original multi-edit
+WinForms sequence and physical behavior remain unverified. See
+[edlt-parent-transaction.md](docs/edlt-parent-transaction.md).
+
+`lifecycle.crc_fields_calculated` names all five fields. A field already holding
+the calculated value is correctly absent from the changed-only `phases.crc`.
+
+If the final database save raises or is interrupted, the CLI makes no retry
+and reports `edlt_parent_transaction_evidence`. `saved=false` means the save
+was not confirmed; `save_outcome_uncertain=true` and the separate PP/database
+state fields prevent that result from being mistaken for a known rollback.
+
 Time/Date widgets support standby and functional positions, with unit-wide
 date formats, time formats and leading zeroes:
 
@@ -1764,7 +1806,7 @@ Later changes have separate passing acceptance on both Python versions and are
 outside that frozen wheel:
 
 - [Configuration CRC](docs/edlt-crc.md): 21 tests, including 65,588 fresh original CRC results per run.
-- [Percentage conversion](docs/edlt-percentage.md) and [bounded parent composition](docs/edlt-parent-form.md): pure conversion and CLI acceptance, standalone original Windows 12- and 528-case captures, plus 14 portable Measurement/Percentage lifecycle composition tests. The complete original parent dialog and optional native database composition gate remain outstanding.
+- [Percentage conversion](docs/edlt-percentage.md), [bounded parent composition](docs/edlt-parent-form.md) and [ordered parent transaction](docs/edlt-parent-transaction.md): pure conversion and CLI acceptance, standalone original Windows 12- and 528-case captures, 14 portable Measurement/Percentage lifecycle composition tests, and a separate multi-edit suite for Measurement, Lighting and activation with one terminal save projection. The complete original parent dialog and optional native database composition gates remain outstanding.
 - [About information](docs/toolkit-about.md): 16 tests, including 51 original instruction cases per run.
 - [Signed update metadata](docs/toolkit-update-metadata.md), [revocation stages](docs/toolkit-update-revocation.md) and [supplied-context registry conditions](docs/toolkit-update-registry-conditions.md): separate 56-, 53- and 78-test checkpoints with explicit trust and availability limits.
 - [PCI routing](docs/pci-routing.md), [incoming routing](docs/pci-incoming-routing.md), [routed RECALL](docs/pci-routed-recall.md) and [routed IDENTIFY](docs/pci-routed-identify.md): separate codec and transport checkpoints; IDENTIFY passes 104 tests with fresh original matcher comparisons and owned loopback exchanges.

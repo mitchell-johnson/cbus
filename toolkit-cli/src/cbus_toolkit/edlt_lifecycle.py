@@ -668,6 +668,27 @@ class EdltLifecycle:
         after_load = loaded.after_load if reset is None else reset.base.after_load
         values = dict(reset.after_controls if reset is not None else
                       after_load if blank is None else blank.after_controls)
+        return self._prepare_save_values(
+            loaded, original=original, after_load=after_load, values=values,
+            blank=blank, reset=reset)
+
+    def _prepare_composed_save(self, loaded, after_controls):
+        """Run one terminal save projection over validated bound controls.
+
+        This private composition point exists so a bounded parent-form editor
+        can retain the issued load models while entering all of its validated
+        control values before the single BeforeSavePPData/CRC projection.  It
+        is deliberately not a general PP override API.
+        """
+        self._validate_loaded(loaded)
+        values = self.snapshot(after_controls)
+        return self._prepare_save_values(
+            loaded, original=loaded.expected, after_load=loaded.after_load,
+            values=values, composition=True)
+
+    def _prepare_save_values(self, loaded, *, original, after_load, values,
+                             blank=None, reset=None, composition=False):
+        values = dict(values)
         def reset_type(widget, wanted):
             key = _field(widget)
             if values[key] != (wanted,):
@@ -699,11 +720,16 @@ class EdltLifecycle:
                 control=values[_field(widget,1)][0]
                 if control&15 != 5:values[_field(widget,10)]=(0,)
                 values[_field(widget,1)]=((control&0xF0)|5,)
-        before_save=dict(values); values.update(self.crcs(values))
+        before_save=dict(values); calculated_crcs=self.crcs(values); values.update(calculated_crcs)
         evidence={'metadata_facts_consumed':json.loads(loaded.consumed_facts),'events':json.loads(loaded.events),'scene_count':8,'scene_item_count':sum(len(scene.items) for scene in loaded.scenes),
                   'scene_pointers':pointers,'scene_bucket_hex':bytes(before_save['SceneBucket']).hex(),
                   'mra_source_widget':first_mra,'source_scene_count_ignored':original['SceneCount'][0],
                   'blank_fallback_widgets':[{'widget':widget,'stored_type':values[_field(widget)][0]} for widget in range(1,22) if 17<=values[_field(widget)][0]<=254]}
+        if composition:
+            evidence['validated_controls_entered_before_save_projection'] = True
+            evidence['terminal_normalization_passes'] = 1
+            evidence['terminal_crc_passes'] = 1
+            evidence['crc_fields_calculated'] = list(calculated_crcs)
         if blank is not None:
             evidence['blank_transition'] = blank.as_dict()
         if reset is not None:

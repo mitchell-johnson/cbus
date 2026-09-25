@@ -99,6 +99,26 @@ native probes, but `native_parent_form_executed=false`: do not describe it as
 an end-to-end execution of the original WinForms dialog. See
 `toolkit-cli/docs/edlt-parent-form.md`.
 
+For two or more distinct Measurement, Lighting or proximity activation edits,
+use `edlt parent-transaction-plan` offline or database-unit
+`edlt-parent-transaction`. Supply `--operations` as a strict ordered JSON
+array and the same explicit lifecycle cache. The transaction reconciles one
+page mode, rejects duplicate/conflicting byte ownership, composes shared text
+allocation in order and enters every validated control before one terminal
+lifecycle/CRC projection. Review `operation_results`, `ownership`,
+`preservation` and `execution_counts`. The original component evidence does
+not establish an executed original multi-selection form; see
+`toolkit-cli/docs/edlt-parent-transaction.md`.
+
+The lifecycle receipt names all five calculated CRC fields. Do not infer a
+missing calculation from `phases.crc`, because that changed-only view omits an
+already-correct stored CRC.
+
+The database save follows verified PP staging. If its reply fails or is
+interrupted, do not replay the command: `saved=false` means unconfirmed, while
+the transaction evidence marks both save outcome and current PP/database state
+uncertain.
+
 ## Compatibility and tests
 
 Target: Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001. Full Toolkit parity is unfinished. `coverage --require-complete` deliberately exits 1 until both implementation and acceptance requirements are complete. Command forwarding, the Rust mock's 431 paths, and simulator results do not establish physical-device or full Toolkit equivalence.
