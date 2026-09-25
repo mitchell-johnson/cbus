@@ -805,8 +805,10 @@ DATABASE_REPORT_EXPORT_EVIDENCE = {
 # research fixtures plus the offline committed-vector replay tests
 # (test_toolkit_database_csv.py 70+13 vectors,
 # test_toolkit_database_csv_projection.py 12 per-execution outcomes,
-# test_toolkit_database_csv_native.py synthetic native-XML cases) and the
-# gated fresh-original / owned-C-Gate / Windows probes (whose prior runs
+# test_toolkit_database_csv_native.py synthetic native-XML cases, and
+# test_toolkit_database_csv_selection_export.py ordered multi-unit composition),
+# together with the gated fresh-original / owned-C-Gate / Windows probes
+# (whose prior runs
 # are recorded in the acceptance/review fixtures) are the audit trail;
 # guard/CLI-shape/adapter-guard tests are self-referential (never flip a
 # slot alone) and docs/toolkit-database-csv.md is the bounded-scope
@@ -823,6 +825,7 @@ DATABASE_REPORT_EXPORT_EVIDENCE_PATHS = [
     "tests/test_toolkit_database_csv_original.py",
     "tests/test_toolkit_database_csv_area_native.py",
     "tests/test_toolkit_database_csv_selection.py",
+    "tests/test_toolkit_database_csv_selection_export.py",
     "tests/test_windows_csv_selection.py",
     "tests/test_windows_csv_encoding.py",
     "research/fixtures/toolkit-database-csv-original-vectors.json",

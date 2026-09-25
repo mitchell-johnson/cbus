@@ -145,6 +145,7 @@ class CachedCSVProjection:
     group_save_required: bool
     report: DatabaseCSV | None
     stop_reason: str | None
+    csv_unit: CSVUnitValues | None = None
 
     @property
     def rows(self):
@@ -282,7 +283,7 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
     report = document_database_csv((csv_unit,), columns=selected)
     events.append(_event('row_projected', columns=len(selected), bytes=len(report.utf8_bytes)))
     return CachedCSVProjection(selected_class, True, selected, unit, tuple(current),
-        tuple(events), raw_area, area_identity, save_required, report, None)
+        tuple(events), raw_area, area_identity, save_required, report, None, csv_unit)
 
 
 def parse_cached_projection(value, *, columns):

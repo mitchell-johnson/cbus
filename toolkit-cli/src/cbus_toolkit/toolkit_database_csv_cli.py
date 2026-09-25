@@ -15,13 +15,17 @@ from .toolkit_database_csv import (COLUMNS, MAX_CAPTURE_BYTES, MAX_OUTPUT_BYTES,
 
 def options(commands):
     parser = commands.add_parser('toolkit-database-csv', help='Export captured Toolkit report values as CSV offline')
-    parser.add_argument('file', type=Path, help='Captured report or bounded cached-projection JSON; generic project XML is not accepted')
+    parser.add_argument('file', type=Path, help='Captured report, bounded cached-projection JSON or explicitly selected native XML snapshot')
     parser.add_argument('--output', required=True, type=Path, help='New CSV file; existing destinations are never overwritten')
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument('--cached-projection', action='store_true',
                       help='Replay the original-backed cached unit/group projection schema before export')
     mode.add_argument('--native-xml-unit', metavar='//PROJECT/NETWORK/p/UNIT',
                       help='Project one captured native DBGETXML Installation snapshot read-only')
+    mode.add_argument('--native-xml-units', nargs='+', metavar='//PROJECT/NETWORK/p/UNIT',
+                      help='Project admitted units from one native XML snapshot in the supplied order')
+    mode.add_argument('--native-xml-network', metavar='//PROJECT/NETWORK',
+                      help='Project every unit in one native XML network, preserving document order')
     parser.add_argument('--columns', nargs='+', default=None, metavar='COLUMN',
                         help='all (default), or selected names: ' + ', '.join(COLUMNS) + '; output follows original order')
     _selection_options(parser)
@@ -29,8 +33,13 @@ def options(commands):
 
 
 def live_options(parser):
-    parser.add_argument('unit', metavar='//PROJECT/NETWORK/p/UNIT',
+    parser.add_argument('unit', nargs='?', metavar='//PROJECT/NETWORK/p/UNIT',
                         help='Unit selected from one read-only DBGETXML project snapshot')
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument('--units', nargs='+', metavar='//PROJECT/NETWORK/p/UNIT',
+                      help='Admitted units from one project snapshot in the supplied order')
+    mode.add_argument('--network', metavar='//PROJECT/NETWORK',
+                      help='Every unit in one snapshot network, preserving document order')
     parser.add_argument('--output', required=True, type=Path,
                         help='New CSV file; existing destinations are never overwritten')
     parser.add_argument('--columns', nargs='+', default=None, metavar='COLUMN',
@@ -194,15 +203,19 @@ class DatabaseCSVFileOperation:
         self.last_error = self.last_cause = self.last_evidence = None
 
     def run(self, source, *, output, columns, cached_projection=False, native_xml_unit=None,
+            native_xml_units=None, native_xml_network=None,
             selection_evidence=None, toolkit_native_encoding=False):
         self.last_error = self.last_cause = self.last_evidence = None
         if type(cached_projection) is not bool:
             raise ValueError('cached_projection must be Boolean')
         if native_xml_unit is not None and type(native_xml_unit) is not str:
             raise ValueError('native_xml_unit must be text or absent')
-        if cached_projection and native_xml_unit is not None:
+        batch = native_xml_units is not None or native_xml_network is not None
+        if sum((cached_projection, native_xml_unit is not None,
+                native_xml_units is not None, native_xml_network is not None)) > 1:
             raise ValueError('Select at most one database CSV input mode')
-        input_mode = ('native_xml' if native_xml_unit is not None else
+        input_mode = ('native_xml_selection' if batch else
+                      'native_xml' if native_xml_unit is not None else
                       'cached_projection' if cached_projection else 'captured_report')
         state = {'operation': 'toolkit-database-csv', 'complete': False, 'stage': 'validate',
                  'input_mode': input_mode,
@@ -234,6 +247,9 @@ class DatabaseCSVFileOperation:
         try:
             encoder = _prepare_output_encoder(toolkit_native_encoding)
             selected = validate_columns(columns)
+            if batch:
+                from .toolkit_database_csv_native import _selection_project
+                _selection_project(unit_paths=native_xml_units, network_path=native_xml_network)
             source, output = Path(source), Path(output)
             state.update(source=str(source), output=str(output), stage='source_stat')
             initial = os.lstat(source)
@@ -269,7 +285,14 @@ class DatabaseCSVFileOperation:
             state['stage'] = 'source_close'
             close('source')
             raw = b''.join(chunks)
-            if native_xml_unit is not None:
+            if batch:
+                from .toolkit_database_csv_native import loads_native_xml_selection
+                state['stage'] = 'project_native_xml_selection'
+                projection = loads_native_xml_selection(raw, unit_paths=native_xml_units,
+                    network_path=native_xml_network, columns=selected)
+                state['projection'] = projection.as_dict()
+                report = projection.report
+            elif native_xml_unit is not None:
                 from .toolkit_database_csv_native import loads_native_xml_projection
                 state['stage'] = 'project_native_xml_unit'
                 projection = loads_native_xml_projection(raw, native_xml_unit, columns=selected)
@@ -377,6 +400,9 @@ def run(args):
     result = operation.run(args.file, output=args.output, columns=columns,
                            cached_projection=args.cached_projection,
                            native_xml_unit=args.native_xml_unit,
+                           native_xml_units=(tuple(args.native_xml_units)
+                               if getattr(args, 'native_xml_units', None) is not None else None),
+                           native_xml_network=getattr(args, 'native_xml_network', None),
                            selection_evidence=selection,
                            toolkit_native_encoding=getattr(
                                args, 'toolkit_native_encoding', False))
@@ -386,18 +412,32 @@ def run(args):
 def live(args, client_factory, ssl_context):
     """Acquire one project snapshot through C-Gate and project it read-only."""
     from .native import NativeDatabase
-    from .toolkit_database_csv_native import (_path, native_xml_reply_text,
-                                               project_native_xml_unit)
+    from .toolkit_database_csv_native import (_path, _selection_project, native_xml_reply_text,
+                                               project_native_xml_selection, project_native_xml_unit)
 
     if args.area != 'cgate' or args.action != 'database-csv':
         raise ValueError('Unsupported live database CSV command')
     selected, selection = _resolve_columns(args)
     toolkit_native_encoding = getattr(args, 'toolkit_native_encoding', False)
     encoder = _prepare_output_encoder(toolkit_native_encoding)
-    project, _network, _unit = _path(args.unit)
+    unit_paths = getattr(args, 'units', None)
+    network_path = getattr(args, 'network', None)
+    batch = unit_paths is not None or network_path is not None
+    if batch:
+        if args.unit is not None:
+            raise ValueError('Select either a positional unit, --units or --network')
+        if unit_paths is not None:
+            if type(unit_paths) not in (list, tuple):
+                raise ValueError('--units must contain unit paths')
+            unit_paths = tuple(unit_paths)
+        project = _selection_project(unit_paths=unit_paths, network_path=network_path)
+    else:
+        project, _network, _unit = _path(args.unit)
     if type(args.apply_missing_area) is not bool:
         raise ValueError('apply_missing_area must be Boolean')
     if args.apply_missing_area:
+        if batch:
+            raise ValueError('--apply-missing-area requires one positional unit; selections are read-only')
         if type(args.backup_project) is not str:
             raise ValueError('--apply-missing-area requires --backup-project')
         from .native import _project
@@ -430,7 +470,9 @@ def live(args, client_factory, ssl_context):
         else:
             reply = NativeDatabase(client).get('//' + project, xml=True)
             xml = native_xml_reply_text(reply)
-        projection = project_native_xml_unit(xml, args.unit, columns=selected)
+        projection = (project_native_xml_selection(xml, unit_paths=unit_paths,
+                        network_path=network_path, columns=selected) if batch else
+                      project_native_xml_unit(xml, args.unit, columns=selected))
     if not projection.complete or projection.report is None:
         raise ValueError('Native XML projection stopped: ' + str(projection.stop_reason))
 

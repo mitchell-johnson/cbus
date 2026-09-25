@@ -1160,7 +1160,7 @@ def build_parser():
     compose_options(compose_parser)
     from .toolkit_database_csv_cli import live_options as database_csv_live_options
     database_csv_live_parser = cgops.add_parser(
-        "database-csv", help="Export one admitted unit from a read-only live C-Gate database snapshot")
+        "database-csv", help="Export admitted units from a read-only live C-Gate database snapshot")
     database_csv_live_options(database_csv_live_parser)
     from .edlt_global_cli import options as global_options
     global_parser = cgops.add_parser("edlt-global", help="Copy selected eDLT categories to existing closed database units")

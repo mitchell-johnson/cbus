@@ -8,6 +8,8 @@ from uuid import UUID
 from xml.dom import Node
 
 from .addressing import _container
+from .toolkit_database_csv import (DatabaseCSV, MAX_CAPTURE_BYTES, MAX_UNITS,
+                                   document_database_csv, validate_columns)
 from .toolkit_database_csv_projection import (
     CSVAreaObservation,
     CachedCSVGroup,
@@ -155,13 +157,24 @@ class NativeXMLCSVProjection:
 
 def project_native_xml_unit(text, unit_path, *, columns):
     """Project one unit from the exact captured native XML profile."""
-    project_name, network_address, unit_address = _path(unit_path)
+    project_name, _network_address, _unit_address = _path(unit_path)
+    project = _snapshot_project(text, project_name)
+    return _project_native_xml_unit(project, unit_path, columns=columns,
+                                   xml_sha256=hashlib.sha256(text.encode('utf-8')).hexdigest())
+
+
+def _snapshot_project(text, project_name):
     document = _container(text, 'Installation')
     root = document.documentElement
     projects = _children(root, 'Project')
     if len(projects) != 1 or _field(projects[0], 'Address') != project_name:
         raise ValueError('Native XML must contain exactly the selected project')
-    network = _one_by_address(projects[0], 'Network', network_address)
+    return projects[0]
+
+
+def _project_native_xml_unit(project, unit_path, *, columns, xml_sha256):
+    project_name, network_address, unit_address = _path(unit_path)
+    network = _one_by_address(project, 'Network', network_address)
     unit = _one_by_address(network, 'Unit', unit_address)
     unit_type = _field(unit, 'UnitType')
     firmware = _field(unit, 'FirmwareVersion')
@@ -283,10 +296,119 @@ def project_native_xml_unit(text, unit_path, *, columns):
         CSVAreaObservation(str(area_address)), CSVAreaObservation(str(area_address)))
     cached = project_cached_csv_unit(cached_unit, group_cache=tuple(groups),
                                      area_observations=observations, columns=columns)
-    return NativeXMLCSVProjection(unit_path, hashlib.sha256(text.encode('utf-8')).hexdigest(), cached)
+    return NativeXMLCSVProjection(unit_path, xml_sha256, cached)
 
 
 def loads_native_xml_projection(raw, unit_path, *, columns):
-    if type(raw) is not bytes or not 1 <= len(raw) <= 8 * 1024 * 1024:
+    if type(raw) is not bytes or not 1 <= len(raw) <= MAX_CAPTURE_BYTES:
         raise ValueError('Native XML snapshot must be nonempty bytes within the 8 MiB bound')
     return project_native_xml_unit(raw.decode('utf-8'), unit_path, columns=columns)
+
+
+def _network_path(value):
+    if type(value) is not str:
+        raise ValueError('Native XML network path must be text')
+    match = re.fullmatch(r'//([A-Za-z0-9_]{1,8})/(0|[1-9][0-9]{0,2})', value)
+    if match is None or int(match[2]) > 255:
+        raise ValueError('Use //PROJECT/network with a byte network address')
+    return match[1], int(match[2])
+
+
+def _selection_project(*, unit_paths=None, network_path=None):
+    """Validate a selection without XML or I/O and return its one project name."""
+    if (unit_paths is None) == (network_path is None):
+        raise ValueError('Select exactly one ordered unit selection or one network')
+    if network_path is not None:
+        return _network_path(network_path)[0]
+    if type(unit_paths) is not tuple or not 1 <= len(unit_paths) <= MAX_UNITS:
+        raise ValueError('Unit selection must be a nonempty exact tuple of at most 4096 paths')
+    projects = {_path(path)[0] for path in unit_paths}
+    if len(set(unit_paths)) != len(unit_paths):
+        raise ValueError('Unit selection contains duplicate paths')
+    if len(projects) != 1:
+        raise ValueError('Unit selection must belong to one project snapshot')
+    return next(iter(projects))
+
+
+@dataclass(frozen=True)
+class NativeXMLCSVSelection:
+    unit_paths: tuple[str, ...]
+    network_path: str | None
+    xml_sha256: str
+    projections: tuple[NativeXMLCSVProjection, ...]
+    report: DatabaseCSV
+
+    @property
+    def complete(self):
+        return True
+
+    @property
+    def stop_reason(self):
+        return None
+
+    def as_dict(self):
+        return {
+            'format': 'cbus-toolkit-database-native-xml-selection-v1',
+            'complete': True, 'unit_paths': list(self.unit_paths),
+            'network_path': self.network_path,
+            'unit_order': ('snapshot_document' if self.network_path is not None
+                           else 'explicit_selection'),
+            'xml_sha256': self.xml_sha256,
+            'projections': [item.as_dict() for item in self.projections],
+            'report': self.report.as_dict(),
+            'input_scope': 'one explicit native DBGETXML Installation snapshot',
+            'native_database_loaded': True, 'native_database_mutated': False,
+            'network_io_performed': False, 'physical_device_accessed': False,
+            'original_instructions_executed': False,
+            'original_manager_enumeration_verified': False,
+            'missing_area_group_creation_supported': False,
+        }
+
+
+def project_native_xml_selection(text, *, unit_paths=None, network_path=None, columns):
+    """Project an ordered unit selection or all units in one snapshot network.
+
+    Network selection preserves XML document order. This composes the admitted
+    per-unit profiles; it does not infer Toolkit's manager enumeration order.
+    Every selected unit must project successfully before a report is returned.
+    """
+    project_name = _selection_project(unit_paths=unit_paths, network_path=network_path)
+    selected = validate_columns(columns)
+    project = _snapshot_project(text, project_name)
+    xml_sha256 = hashlib.sha256(text.encode('utf-8')).hexdigest()
+    if network_path is not None:
+        network_address = _network_path(network_path)[1]
+        network = _one_by_address(project, 'Network', network_address)
+        units = _children(network, 'Unit')
+        if len(units) > MAX_UNITS:
+            raise ValueError('Network unit selection exceeds 4096 units')
+        addresses = tuple(_byte(_field(unit, 'Address'), 'Unit address') for unit in units)
+        if len(set(addresses)) != len(addresses):
+            raise ValueError('Native network contains duplicate unit addresses')
+        unit_paths = tuple(f'{network_path}/p/{address}' for address in addresses)
+
+    projections = []
+    identities = set()
+    for path in unit_paths:
+        try:
+            projection = _project_native_xml_unit(project, path, columns=selected,
+                                                  xml_sha256=xml_sha256)
+            if not projection.complete or projection.cached.csv_unit is None:
+                raise ValueError('Native XML projection stopped: ' + str(projection.stop_reason))
+            identity = projection.cached.unit.identity
+            if identity in identities:
+                raise ValueError('Selected units contain duplicate object identities')
+            identities.add(identity)
+            projections.append(projection)
+        except ValueError as error:
+            raise ValueError(path + ': ' + str(error)) from error
+    report = document_database_csv(tuple(item.cached.csv_unit for item in projections),
+                                    columns=selected)
+    return NativeXMLCSVSelection(unit_paths, network_path, xml_sha256, tuple(projections), report)
+
+
+def loads_native_xml_selection(raw, *, unit_paths=None, network_path=None, columns):
+    if type(raw) is not bytes or not 1 <= len(raw) <= MAX_CAPTURE_BYTES:
+        raise ValueError('Native XML snapshot must be nonempty bytes within the 8 MiB bound')
+    return project_native_xml_selection(raw.decode('utf-8'), unit_paths=unit_paths,
+                                        network_path=network_path, columns=columns)
