@@ -222,8 +222,46 @@ count and gateway recovery,
 `network_set_project_identify: true` denotes the verified parameter-35 write,
 `pp_reset_to_defaults: true` denotes specification-backed staged
 `PP RESET_TO_DEFAULTS` behavior,
+`document_framing: true` denotes bounded, synchronized here-document transport;
+`database_documents: false` records that native DBSETXML replacement semantics
+and its 301 OID receipt remain unavailable,
+`project_archive_restore: "cmqttd-internal"` denotes durable snapshot keys in
+the cmqttd JSON repository (never vendor archive files),
+`project_rename_secondary: true` denotes rename support except for the running
+hardware-bound project,
+`repository_list: true` and `repository_type: "cmqttd-json"` denote the one
+read-only repository descriptor, and explicit `cgl_import: false` /
+`cgl_export: false` preserve the vendor-format boundary,
 while `full_cgate_compatibility` remains false until every remaining backend and
 acceptance requirement is complete.
+
+For local project administration, `PROJECT ARCHIVE NAME cmqttd:KEY` stores a
+database snapshot under an opaque key inside `--cgate-state`; it does not open
+the key as a path. `PROJECT RESTORE NAME cmqttd:KEY` restores the modeled
+project/network/unit records and unit fields without physical presence,
+observed levels or network runtime state. Opaque auxiliary database maps are
+outside this snapshot contract. `PROJECT RENAME OLD NEW`
+atomically migrates a secondary project's path-keyed fields and follows that
+connection's current selection. Renaming the configured PCI/MQTT project
+returns 408 while cmqttd is running. All three use the retained native success
+text `200 OK.`, are covered by the optional LOGIN gate, persist atomically and
+roll memory back if the state-file commit fails.
+Archive tokens outside the explicit `cmqttd:` namespace return 408, preserving
+the unsupported Schneider ZIP/GZ/DB file-format boundary.
+
+`REPOSITORY LIST` returns exactly one native-grammar 123 row for the configured
+state file with type `cmqttd-json` and `current=yes`. Treat the type literally:
+it is not Schneider SQLite, XML `file`, or `db` storage. Do not issue
+`REPOSITORY USE`; its server-global selection semantics remain unimplemented.
+
+cmqttd recognizes `[tag] COMMAND << DELIMITER`, followed by a body and the exact
+delimiter on its own line. It limits individual lines to 1 MiB and the document
+to 16 MiB, drains an oversized body before returning tagged 400, and closes
+after a tagged 400 if EOF arrives before the delimiter. Completed `DBSETXML`
+and `CGL IMPORT` documents return 502 unchanged. Native DBSETXML replaces a
+typed object and the retained Toolkit workflows require a `301 OID=...`
+receipt plus XML readback; the mock's opaque string store does not establish
+that behavior. CGL format and transaction behavior also remain unimplemented.
 
 Command connections also provide native-shaped `SESSION_ID`, `SESSION_ID ALL`
 and one-shot `SESSION_ID TAG` state, including live TCP/TLS peer and connection

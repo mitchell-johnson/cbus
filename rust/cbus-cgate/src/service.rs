@@ -28,6 +28,7 @@ use tokio::{
 };
 
 const MAX_LINE: usize = 1024 * 1024;
+const MAX_DOCUMENT: usize = 16 * 1024 * 1024;
 const MAX_STATE: usize = 32 * 1024 * 1024;
 const MAX_LABEL_OBSERVATIONS: usize = 4096;
 
@@ -625,7 +626,19 @@ impl Service {
             capabilities["edlt_widget_groups"] = serde_json::Value::Bool(true);
             capabilities["edlt_extended_firmware"] = serde_json::Value::Bool(true);
             capabilities["edlt_applications"] = serde_json::Value::Bool(true);
+            capabilities["document_framing"] = serde_json::Value::Bool(true);
+            capabilities["database_documents"] = serde_json::Value::Bool(false);
+            capabilities["project_archive_restore"] =
+                serde_json::Value::String("cmqttd-internal".to_string());
+            capabilities["project_rename_secondary"] = serde_json::Value::Bool(true);
+            capabilities["repository_list"] = serde_json::Value::Bool(true);
+            capabilities["repository_type"] = serde_json::Value::String("cmqttd-json".to_string());
+            capabilities["cgl_import"] = serde_json::Value::Bool(false);
+            capabilities["cgl_export"] = serde_json::Value::Bool(false);
             return ok(tag, vec![capabilities.to_string()], "200 OK");
+        }
+        if verb == "REPOSITORY" && sub == "LIST" {
+            return self.repository_list(tag, &words);
         }
         if verb == "CMQTT" && sub == "LABELS" && words.len() == 3 {
             let address = words[2];
@@ -795,6 +808,28 @@ impl Service {
         {
             return self.lighting(client, line, tag).await;
         }
+        if verb == "PROJECT"
+            && matches!(sub, "ARCHIVE" | "RESTORE")
+            && words.len() == 4
+            && !valid_internal_archive_key(words[3])
+        {
+            return err(
+                tag,
+                408,
+                "408 Schneider archive files are not supported; use a cmqttd: archive key",
+            );
+        }
+        // The selected project names the network bound to the shared PCI and
+        // MQTT gateway for this Service instance. Renaming it would leave the
+        // immutable hardware binding pointing at a project that no longer
+        // exists. Other durable projects can be renamed locally.
+        if verb == "PROJECT" && sub == "RENAME" && words.len() == 4 && words[2] == self.project {
+            return err(
+                tag,
+                408,
+                "408 The configured hardware project cannot be renamed while the service is running",
+            );
+        }
         let mut model = self.model.lock().await;
         model.current = client
             .current
@@ -885,21 +920,20 @@ impl Service {
             *model = before;
             return response;
         }
+        if verb == "PROJECT" && sub == "ARCHIVE" {
+            if let Some(snapshot) = words
+                .get(3)
+                .and_then(|archive_key| model.database_files.get_mut(*archive_key))
+            {
+                clear_project_runtime(snapshot);
+            }
+        }
         // The in-memory compatibility model makes some database verbs affect
         // its synthetic physical layer. The hardware service must preserve
         // the independently observed bus inventory across every local command,
         // including read-only GETs, and must never let a database edit invent
         // physical presence.
-        for (project_name, project) in &mut model.projects {
-            for (network_address, network) in &mut project.networks {
-                network.physical = before
-                    .projects
-                    .get(project_name)
-                    .and_then(|project| project.networks.get(network_address))
-                    .map(|network| network.physical.clone())
-                    .unwrap_or_default();
-            }
-        }
+        preserve_physical_state(&before, &mut model);
         let after_db = Database::from_server(&model);
         if before_db != after_db {
             if let Err(error) = after_db.save(&self.state_path) {
@@ -932,6 +966,63 @@ impl Service {
             let _ = self.events.send(event);
         }
         response
+    }
+
+    /// Gate a C-Gate here-document after the connection has bounded and
+    /// collected it. Framing support is deliberately separate from document
+    /// semantics: native DBSETXML replaces typed objects and returns a 301 OID
+    /// envelope, while CGL has a vendor exchange format. The in-memory mock's
+    /// opaque store/count behavior cannot stand in for either operation, so the
+    /// hardware service keeps both fail-closed.
+    pub async fn handle_document(
+        &self,
+        client: &mut ClientState,
+        line: &str,
+        document: &str,
+    ) -> Response {
+        let cmd = match parse_command(line) {
+            Ok(command) => command,
+            Err(error) => return err("", 400, &format!("400 {error}")),
+        };
+        let words: Vec<&str> = cmd.body.split_whitespace().collect();
+        let upper: Vec<String> = words.iter().map(|word| word.to_ascii_uppercase()).collect();
+        let tag = &cmd.tag;
+        let verb = upper.first().map(String::as_str).unwrap_or("");
+        let sub = upper.get(1).map(String::as_str).unwrap_or("");
+
+        if self.auth_token_hash.get().is_some()
+            && !client.authenticated
+            && requires_programming_auth(verb, sub, &upper)
+        {
+            return err(tag, 420, "420 LOGIN required");
+        }
+        let _ = (line, document);
+        err(
+            tag,
+            502,
+            "502 Document command semantics are not implemented",
+        )
+    }
+
+    /// Read-only native repository-list envelope for cmqttd's one durable
+    /// JSON state repository. The type token is intentionally cmqttd-specific;
+    /// this is not presented as a Schneider SQLite/XML repository.
+    fn repository_list(&self, tag: &str, words: &[&str]) -> Response {
+        if words.len() != 2 {
+            return err(tag, 400, "400 REPOSITORY LIST takes no arguments");
+        }
+        let Some(path) = self.state_path.to_str() else {
+            return err(tag, 500, "500 Repository path cannot be represented");
+        };
+        if path.chars().any(|character| character.is_control()) {
+            return err(tag, 500, "500 Repository path cannot be represented");
+        }
+        Response {
+            tag: tag.to_string(),
+            lines: Vec::new(),
+            final_text: format!("123 index=1 type=cmqttd-json path={path} current=yes"),
+            status: 123,
+        }
     }
 
     /// Native C-Gate command-session inspection. The registry is populated
@@ -4782,6 +4873,29 @@ impl Service {
                     result = bounded_line(&mut reader, &mut pending_line) => {
                         let Some(line) = result? else { return Ok(()); };
                         let tagged = line.starts_with('[');
+                        if let Some((head, delimiter)) = split_heredoc(&line) {
+                            let command = if tagged { head } else { format!("[untagged] {head}") };
+                            let (mut response, close_after_reply) = match bounded_document(&mut reader, &delimiter).await? {
+                                DocumentRead::Complete(document) => {
+                                    (self.handle_document(&mut client, &command, &document).await, false)
+                                }
+                                DocumentRead::Exceeded => {
+                                    let tag = parse_command(&command).map_or_else(|_| String::new(), |c| c.tag);
+                                    (err(&tag, 400, "400 document exceeded configured limit"), false)
+                                }
+                                DocumentRead::Truncated => {
+                                    let tag = parse_command(&command).map_or_else(|_| String::new(), |c| c.tag);
+                                    (err(&tag, 400, "400 truncated here-document"), true)
+                                }
+                            };
+                            if !tagged { response.tag.clear(); }
+                            tokio::time::timeout(Duration::from_secs(10), writer.write_all(format_response(&response).replace('\n', "\r\n").as_bytes())).await
+                                .map_err(|_| io::Error::new(io::ErrorKind::TimedOut,"C-Gate client is not reading"))??;
+                            if close_after_reply {
+                                return Ok(());
+                            }
+                            continue;
+                        }
                         let command = if tagged {line} else {format!("[untagged] {line}")};
                         let parsed = parse_command(&command).ok();
                         let close = parsed.as_ref().is_some_and(|c| {
@@ -4847,6 +4961,127 @@ impl Service {
         }
         result
     }
+}
+
+enum DocumentLine {
+    Line(String),
+    Exceeded,
+    Eof,
+}
+
+enum DocumentRead {
+    Complete(String),
+    Exceeded,
+    Truncated,
+}
+
+/// Collect a normalized LF-separated here-document without allocating an
+/// unbounded line. Once a limit is exceeded the rest of the document is still
+/// drained through its delimiter, keeping the command stream synchronized.
+async fn bounded_document<R: tokio::io::AsyncBufRead + Unpin>(
+    reader: &mut R,
+    delimiter: &str,
+) -> io::Result<DocumentRead> {
+    let mut document = String::new();
+    let mut exceeded = false;
+    loop {
+        match bounded_document_line(reader).await? {
+            DocumentLine::Line(line) if line == delimiter => {
+                return Ok(if exceeded {
+                    DocumentRead::Exceeded
+                } else {
+                    DocumentRead::Complete(document)
+                });
+            }
+            DocumentLine::Line(line) => {
+                if exceeded || document.len() + line.len() + 1 > MAX_DOCUMENT {
+                    exceeded = true;
+                } else {
+                    document.push_str(&line);
+                    document.push('\n');
+                }
+            }
+            DocumentLine::Exceeded => exceeded = true,
+            DocumentLine::Eof => return Ok(DocumentRead::Truncated),
+        }
+    }
+}
+
+async fn bounded_document_line<R: tokio::io::AsyncBufRead + Unpin>(
+    reader: &mut R,
+) -> io::Result<DocumentLine> {
+    let mut line = Vec::new();
+    let mut exceeded = false;
+    loop {
+        let buf = reader.fill_buf().await?;
+        if buf.is_empty() {
+            return Ok(DocumentLine::Eof);
+        }
+        let count = buf
+            .iter()
+            .position(|byte| *byte == b'\n')
+            .map_or(buf.len(), |position| position + 1);
+        if !exceeded && line.len() + count <= MAX_LINE {
+            line.extend_from_slice(&buf[..count]);
+        } else {
+            exceeded = true;
+        }
+        let done = buf[count - 1] == b'\n';
+        reader.consume(count);
+        if !done {
+            continue;
+        }
+        if exceeded {
+            return Ok(DocumentLine::Exceeded);
+        }
+        line.pop();
+        if line.last() == Some(&b'\r') {
+            line.pop();
+        }
+        return String::from_utf8(line)
+            .map(DocumentLine::Line)
+            .map_err(|error| io::Error::new(io::ErrorKind::InvalidData, error));
+    }
+}
+
+/// Split a native `[tag] COMMAND << DELIMITER` header. Delimiters are short,
+/// visible, single tokens; malformed headers remain ordinary commands and are
+/// rejected by their command handler.
+fn split_heredoc(line: &str) -> Option<(String, String)> {
+    let (head, delimiter) = line.split_once(" << ")?;
+    let delimiter = delimiter.trim();
+    if delimiter.is_empty() || delimiter.len() > 128 || delimiter.contains([' ', '\t', '\r', '\n'])
+    {
+        return None;
+    }
+    Some((head.to_string(), delimiter.to_string()))
+}
+
+fn preserve_physical_state(before: &Server, model: &mut Server) {
+    for (project_name, project) in &mut model.projects {
+        for (network_address, network) in &mut project.networks {
+            network.physical = before
+                .projects
+                .get(project_name)
+                .and_then(|project| project.networks.get(network_address))
+                .map(|network| network.physical.clone())
+                .unwrap_or_default();
+        }
+    }
+}
+
+fn clear_project_runtime(project: &mut Project) {
+    for network in project.networks.values_mut() {
+        network.state = NetworkState::Closed;
+        network.physical.clear();
+        network.levels.clear();
+    }
+}
+
+fn valid_internal_archive_key(value: &str) -> bool {
+    value
+        .strip_prefix("cmqttd:")
+        .is_some_and(|key| !key.is_empty() && !key.contains('#'))
 }
 
 async fn bounded_line<R: tokio::io::AsyncBufRead + Unpin>(
@@ -4954,6 +5189,8 @@ fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
                 | "RESTORE"
                 | "REPAIR"
         ),
+        "CGL" => sub == "IMPORT",
+        "REPOSITORY" => sub == "USE",
         "SET" => true,
         "NET" => matches!(sub, "SET_PROJECT_IDENTIFY" | "UNRAVEL" | "UNRAVELUNIT"),
         "LABEL" => matches!(sub, "CLEAR" | "CLEAREDLT" | "KFIGET" | "KFISET"),
@@ -4978,7 +5215,16 @@ fn local_command(words: &[&str], upper: &[String], model: &Server) -> bool {
         | "DBCREATEAPP" | "DBCREATEGROUP" | "DBCREATEUNIT" => true,
         "PROJECT" => matches!(
             sub,
-            "LIST" | "USE" | "LOAD" | "SAVE" | "DIR" | "NEW" | "CLOSE"
+            "LIST"
+                | "USE"
+                | "LOAD"
+                | "SAVE"
+                | "DIR"
+                | "NEW"
+                | "CLOSE"
+                | "RENAME"
+                | "ARCHIVE"
+                | "RESTORE"
         ),
         // GET is read-only. Application and live-lighting special cases are
         // handled above; the model supplies cached network and unit fields.

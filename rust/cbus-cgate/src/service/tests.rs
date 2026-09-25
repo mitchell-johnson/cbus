@@ -522,6 +522,17 @@ async fn failed_persistence_rolls_back_database_changes() {
         service.model.lock().await.projects["HARNESS"].networks[&254].units[&5].fields["TagName"],
         "Fixture eDLT"
     );
+    assert_eq!(
+        service
+            .handle(
+                &mut ClientState::default(),
+                "[1a] PROJECT ARCHIVE HARNESS cmqttd:rollback-slot",
+            )
+            .await
+            .status,
+        500
+    );
+    assert!(service.model.lock().await.database_files.is_empty());
     service
         .observe(&CBusEvent::LightingOn {
             source: Some(4),
@@ -852,6 +863,27 @@ async fn line_bound_is_enforced_before_newline() {
     writer.abort();
 }
 
+#[tokio::test]
+async fn document_total_bound_drains_through_the_delimiter() {
+    let line = vec![b'x'; MAX_LINE - 1];
+    let mut input = Vec::with_capacity(MAX_DOCUMENT + MAX_LINE + 64);
+    for _ in 0..17 {
+        input.extend_from_slice(&line);
+        input.push(b'\n');
+    }
+    input.extend_from_slice(b"END\nNOOP\n");
+    let mut reader = BufReader::new(input.as_slice());
+    assert!(matches!(
+        bounded_document(&mut reader, "END").await.unwrap(),
+        DocumentRead::Exceeded
+    ));
+    let mut pending = Vec::new();
+    assert_eq!(
+        bounded_line(&mut reader, &mut pending).await.unwrap(),
+        Some("NOOP".to_string())
+    );
+}
+
 /// Issue #12 Phase 1: capabilities must advertise observation while honestly
 /// reporting that no device-cache readback exists and no full compatibility
 /// is claimed.
@@ -882,6 +914,14 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["event_subscriptions"], true);
     assert_eq!(document["session_id"], true);
     assert_eq!(document["quit"], true);
+    assert_eq!(document["document_framing"], true);
+    assert_eq!(document["database_documents"], false);
+    assert_eq!(document["project_archive_restore"], "cmqttd-internal");
+    assert_eq!(document["project_rename_secondary"], true);
+    assert_eq!(document["repository_list"], true);
+    assert_eq!(document["repository_type"], "cmqttd-json");
+    assert_eq!(document["cgl_import"], false);
+    assert_eq!(document["cgl_export"], false);
     assert_eq!(
         document["do_methods"],
         serde_json::json!(["factorydefault", "lighting", "sync"])
@@ -4770,6 +4810,10 @@ async fn auth_wrong_secret_denied_and_gate_holds() {
         "[18] DO //HARNESS/254/p/5 FactoryDefault",
         "[19] NET UNRAVELUNIT //HARNESS/254 255 MATCHDB",
         "[20] NET SET_PROJECT_IDENTIFY //HARNESS/254 TEST",
+        "[21] PROJECT ARCHIVE HARNESS slot",
+        "[22] PROJECT RESTORE RESTORED slot",
+        "[23] PROJECT RENAME OTHER RENAMED",
+        "[24] REPOSITORY USE 1",
     ] {
         let response = service.handle(&mut client, command).await;
         assert_eq!(response.status, 420, "{command}: {response:?}");
@@ -5050,5 +5094,308 @@ async fn auth_db_project_and_scene_mutations_gate_together() {
             .status,
         200
     );
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[5] PROJECT ARCHIVE AUTHTEST cmqttd:auth-snapshot",
+            )
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[6] PROJECT RENAME AUTHTEST AUTHRENAMED")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[7] PROJECT RESTORE AUTHRESTORED cmqttd:auth-snapshot",
+            )
+            .await
+            .status,
+        200
+    );
     std::fs::remove_file(path).ok();
+}
+
+#[tokio::test]
+async fn project_archive_restore_and_secondary_rename_are_durable_database_only() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci.clone(), None).unwrap();
+    let mut client = ClientState::default();
+    for command in [
+        "[1] PROJECT NEW AUX",
+        "[2] DBCREATENET 1 Auxiliary Cni loopback",
+        "[3] DBADDSAFE //AUX/1 Unit 20 Original",
+        "[4] DBSETSAFE //AUX/1/p/20/TagName Archived",
+        "[4a] DBSETSAFE //AUX/1/p/20/UnitName Unrelated",
+    ] {
+        let response = service.handle(&mut client, command).await;
+        assert_eq!(response.status, 200, "{command}: {response:?}");
+    }
+    let archived = service
+        .handle(&mut client, "[5] PROJECT ARCHIVE AUX cmqttd:archive-one")
+        .await;
+    assert_eq!(archived.final_text, "200 OK.");
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[6] DBSETSAFE //AUX/1/p/20/TagName ChangedAfterArchive"
+            )
+            .await
+            .status,
+        200
+    );
+    let renamed = service
+        .handle(&mut client, "[7] PROJECT RENAME AUX RENAMED")
+        .await;
+    assert_eq!(renamed.final_text, "200 OK.");
+    assert_eq!(client.current.as_deref(), Some("RENAMED"));
+    let restored = service
+        .handle(
+            &mut client,
+            "[8] PROJECT RESTORE RESTORED cmqttd:archive-one",
+        )
+        .await;
+    assert_eq!(restored.final_text, "200 OK.");
+    {
+        let model = service.model.lock().await;
+        let original = &model.projects["RENAMED"].networks[&1].units[&20];
+        let restored = &model.projects["RESTORED"].networks[&1];
+        assert_eq!(original.fields["TagName"], "ChangedAfterArchive");
+        assert_eq!(restored.units[&20].fields["TagName"], "Archived");
+        assert_eq!(restored.units[&20].fields["UnitName"], "Unrelated");
+        assert!(restored.physical.is_empty());
+        assert!(restored.levels.is_empty());
+        assert_eq!(restored.state, NetworkState::Closed);
+        assert!(model.projects.contains_key("HARNESS"));
+    }
+
+    drop(service);
+    let restarted = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut restarted_client = ClientState::default();
+    assert_eq!(
+        restarted
+            .handle(
+                &mut restarted_client,
+                "[9] PROJECT RESTORE RESTORED2 cmqttd:archive-one"
+            )
+            .await
+            .final_text,
+        "200 OK."
+    );
+    let model = restarted.model.lock().await;
+    assert_eq!(
+        model.projects["RESTORED2"].networks[&1].units[&20].fields["TagName"],
+        "Archived"
+    );
+    assert!(model.projects["RESTORED2"].networks[&1].physical.is_empty());
+    drop(model);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn administrative_guards_keep_configured_binding_and_unsupported_formats_closed() {
+    let path = state_path();
+    let before = std::fs::read(&path).ok();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let state_before = std::fs::read(&path).unwrap();
+    let mut client = ClientState::default();
+    let configured = service
+        .handle(&mut client, "[1] PROJECT RENAME HARNESS MOVED")
+        .await;
+    assert_eq!(configured.status, 408);
+    assert!(configured
+        .final_text
+        .contains("configured hardware project"));
+    assert!(service.model.lock().await.projects.contains_key("HARNESS"));
+    assert_eq!(std::fs::read(&path).unwrap(), state_before);
+    assert_eq!(
+        service
+            .handle(&mut client, "[2] PROJECT RENAME HARNESS")
+            .await
+            .status,
+        400
+    );
+    let vendor_path = path.with_extension("vendor.zip");
+    for command in [
+        format!("[2a] PROJECT ARCHIVE HARNESS {}", vendor_path.display()),
+        format!("[2b] PROJECT RESTORE COPY {}", vendor_path.display()),
+    ] {
+        let response = service.handle(&mut client, &command).await;
+        assert_eq!(response.status, 408, "{command}: {response:?}");
+        assert!(response.final_text.contains("cmqttd: archive key"));
+    }
+    assert!(!vendor_path.exists());
+    for command in [
+        "[3] PROJECT COPY HARNESS COPY",
+        "[4] PROJECT DELETE HARNESS",
+        "[5] PROJECT REPAIR HARNESS",
+        "[6] REPOSITORY USE 1",
+        "[7] CGL EXPORT HARNESS * *",
+    ] {
+        assert_eq!(
+            service.handle(&mut client, command).await.status,
+            502,
+            "{command}"
+        );
+    }
+    drop(service);
+    if before.is_none() {
+        std::fs::remove_file(path).unwrap();
+    }
+}
+
+#[tokio::test]
+async fn repository_list_is_one_exact_read_only_cmqttd_descriptor() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut client = ClientState::default();
+    let response = service.handle(&mut client, "[repo] REPOSITORY LIST").await;
+    assert_eq!(response.status, 123);
+    assert!(response.lines.is_empty());
+    assert_eq!(
+        response.final_text,
+        format!(
+            "123 index=1 type=cmqttd-json path={} current=yes",
+            path.display()
+        )
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[bad] REPOSITORY LIST extra")
+            .await
+            .final_text,
+        "400 REPOSITORY LIST takes no arguments"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn document_semantics_fail_closed_without_mutation_and_remain_authenticated() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let state_before = std::fs::read(&path).unwrap();
+    let mut client = ClientState::default();
+    for (line, document) in [
+        (
+            "[doc] DBSETXML //HARNESS/254/p/5",
+            "<Unit><Address>5</Address></Unit>\n",
+        ),
+        ("[cgl] CGL IMPORT HARNESS", "opaque\n"),
+    ] {
+        let response = service.handle_document(&mut client, line, document).await;
+        assert_eq!(response.status, 502, "{line}: {response:?}");
+        assert!(response
+            .final_text
+            .contains("semantics are not implemented"));
+    }
+    assert_eq!(
+        service.model.lock().await.projects["HARNESS"].networks[&254].units[&5].fields["TagName"],
+        "Fixture eDLT"
+    );
+    assert_eq!(std::fs::read(&path).unwrap(), state_before);
+
+    let (authed, auth_path) = authed_service();
+    let mut authenticated = ClientState::default();
+    for line in ["[1] DBSETXML //HARNESS/254/p/5", "[2] CGL IMPORT HARNESS"] {
+        assert_eq!(
+            authed
+                .handle_document(&mut authenticated, line, "opaque\n")
+                .await
+                .status,
+            420,
+            "{line}"
+        );
+    }
+    assert_eq!(
+        authed
+            .handle(
+                &mut authenticated,
+                "[3] LOGIN throwaway-loopback-token-0123456789abcdef",
+            )
+            .await
+            .status,
+        200
+    );
+    for line in ["[4] DBSETXML //HARNESS/254/p/5", "[5] CGL IMPORT HARNESS"] {
+        assert_eq!(
+            authed
+                .handle_document(&mut authenticated, line, "opaque\n")
+                .await
+                .status,
+            502,
+            "{line}"
+        );
+    }
+    std::fs::remove_file(path).unwrap();
+    std::fs::remove_file(auth_path).unwrap();
+}
+
+#[tokio::test]
+async fn tcp_here_documents_preserve_tags_drain_limits_and_close_on_truncation() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let address = listener.local_addr().unwrap();
+    let server = tokio::spawn(service.clone().serve(listener));
+    let (mut reader, mut writer) = connect_command_session(address).await;
+
+    writer
+        .write_all(b"[doc] DBSETXML //HARNESS/254/p/5 << END\r\n<Unit><Address>5</Address></Unit>\r\nEND\r\n")
+        .await
+        .unwrap();
+    let mut reply = String::new();
+    reader.read_line(&mut reply).await.unwrap();
+    assert_eq!(
+        reply,
+        "[doc] 502 Document command semantics are not implemented\r\n"
+    );
+    let readback = command_lines(
+        &mut reader,
+        &mut writer,
+        "get",
+        "DBGET //HARNESS/254/p/5/TagName",
+    )
+    .await;
+    assert!(readback.iter().any(|line| line.contains("Fixture eDLT")));
+
+    let mut oversized = Vec::with_capacity(MAX_LINE + 64);
+    oversized.extend_from_slice(b"[large] DBSETXML //HARNESS/254/p/5/TagName << END\r\n");
+    oversized.extend(std::iter::repeat_n(b'x', MAX_LINE + 1));
+    oversized.extend_from_slice(b"\r\nEND\r\n[after] NOOP\r\n");
+    writer.write_all(&oversized).await.unwrap();
+    reply.clear();
+    reader.read_line(&mut reply).await.unwrap();
+    assert_eq!(reply, "[large] 400 document exceeded configured limit\r\n");
+    reply.clear();
+    reader.read_line(&mut reply).await.unwrap();
+    assert_eq!(reply, "[after] 200 OK\r\n");
+
+    let (mut truncated_reader, mut truncated_writer) = connect_command_session(address).await;
+    truncated_writer
+        .write_all(b"[cut] DBSETXML //HARNESS/254/p/5/TagName << END\r\npartial\r\n")
+        .await
+        .unwrap();
+    truncated_writer.shutdown().await.unwrap();
+    reply.clear();
+    truncated_reader.read_line(&mut reply).await.unwrap();
+    assert_eq!(reply, "[cut] 400 truncated here-document\r\n");
+    reply.clear();
+    assert_eq!(truncated_reader.read_line(&mut reply).await.unwrap(), 0);
+
+    server.abort();
+    std::fs::remove_file(path).unwrap();
 }

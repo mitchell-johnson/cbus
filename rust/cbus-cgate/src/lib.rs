@@ -1276,7 +1276,7 @@ impl Server {
         // under the new path miss while stale old-path entries leak.
         self.remap_prefix(&format!("//{src}"), &format!("//{dst}"));
         self.push_event(format!("#e# project {dst} renamed"));
-        ok(tag, vec![], "200 OK")
+        ok(tag, vec![], "200 OK.")
     }
 
     /// Native `PROJECT DIR`: directory listing. The exact native entry
@@ -1311,7 +1311,7 @@ impl Server {
             return err(tag, status::NOT_FOUND, "404 Project not found");
         };
         self.database_files.insert(words[3].to_string(), project);
-        ok(tag, vec![], "200 OK")
+        ok(tag, vec![], "200 OK.")
     }
 
     /// Native `PROJECT RESTORE name server-path` from the process-local
@@ -1332,7 +1332,7 @@ impl Server {
         };
         project.name = words[2].to_string();
         self.projects.insert(words[2].to_string(), project);
-        ok(tag, vec![], "200 OK")
+        ok(tag, vec![], "200 OK.")
     }
 
     /// Native `REPOSITORY LIST`: this mock models no server-side project

@@ -12,6 +12,20 @@ Physical `NET CLOCKS` uses the synchronized unit inventory, IDENTIFY16 status,
 and decoded direct `ClockGenEnable` fields for target counts and gateway
 recovery. It retains native per-unit failure lines and requires write readback.
 
+The embedded service also owns one atomic JSON state repository. Read it with
+`REPOSITORY LIST` as the explicit `cmqttd-json` type. Secondary projects can be
+renamed, archived to an explicit `cmqttd:KEY` internal key and restored from
+that key; the configured hardware project cannot be renamed during service
+operation. Archive keys never name host files. The bounded snapshot contains
+project/network/unit records and unit fields, excluding opaque auxiliary maps
+and all runtime bus state. TCP and TLS command sessions bound and drain native
+here-document framing, but completed DBSETXML/CGL documents return 502 without
+mutation because their typed-object/vendor-format semantics remain unavailable.
+Schneider archive/CGL formats and `REPOSITORY USE` remain unavailable. These
+operations perform no PCI I/O, and a real-daemon system regression verifies
+that MQTT commands continue through the shared PCI after the administrative
+workflow.
+
 ## Source ownership
 
 Toolkit modules live under `toolkit-cli/src/cbus_toolkit/`; its tests are under `toolkit-cli/tests/`. Its feature docs, compatibility ledger, and retained acceptance evidence describe supported workflows and profiles. The Rust workspace is organized as follows.
@@ -78,7 +92,7 @@ Supported project inputs are a one-file `.cbz` zip archive or bare project XML. 
 - `rust/testdata/vectors/` contains JSONL cases for checksums, frame encode/decode, native label-cache clear, ramp rates, MQTT topics, Home Assistant discovery, and strict selected-serial plan interchange.
 - `rust/testdata/fixtures/` contains small non-production project and behavior fixtures.
 - `cbus-golden-tests` generates a named test per committed vector.
-- `cmqttd` system tests run the real daemon against an in-process MQTT broker and scripted PCI.
+- `cmqttd` system tests run the real daemon against an in-process MQTT broker and scripted PCI, including MQTT continuity after project/repository/document administration.
 - `cgate-mock` integration tests cover framing, state, sessions, event fanout, here-documents, inventory reachability, and programming access.
 - `toolkit-cli/tests/test_rust_cgate_interop.py` drives the Rust mock using the production Python C-Gate client and typed workflows.
 

@@ -55,16 +55,31 @@ clears the per-connection flag (dormant `LOGIN`/`LOGOUT` remain the generic
 502). There is no attempt cap in this slice: the
 loopback bind plus high-entropy token makes online guessing infeasible, and
 a cap is follow-up work.
+Unsupported mutating `CGL IMPORT` documents and `REPOSITORY USE` are also
+denied before dispatch while unauthenticated; after LOGIN they retain their
+generic 502 rather than reporting a simulated import or repository switch.
 Project files and the persistent database contain site information and must
 not be committed or published.
 
 ## Implemented behavior
+
+The project-administration success envelope and data-readback boundary below
+are grounded in the retained native
+[`PROJECT ARCHIVE`/`RESTORE`/`RENAME` acceptance](../toolkit-cli/docs/native-project-acceptance.json).
+The repository row grammar is grounded in the retained
+[repository inventory evidence](../toolkit-cli/docs/repositories.md). These
+captures do not establish Schneider archive bytes, CGL bytes, repository
+selection scope, or arbitrary server-file behavior, so those paths remain
+explicitly unavailable.
 
 | Operation | Backend and verification |
 | --- | --- |
 | Tagged/untagged commands, per-client project selection, `EVENT`/`EVENTS` subscriptions | TCP/TLS service; native `e0s0c0` connection default, 64 clients, 1 MiB command limit, bounded event queues and writer deadlines |
 | `SESSION_ID`, `SESSION_ID ALL`, `SESSION_ID TAG`, `QUIT`/`EXIT` | Volatile command-session registry with odd `cmdN` identifiers, peer origin, local connection time, one-shot application tags and native 300 envelopes. A successful 204 shutdown reply is flushed before the connection closes; no project, database or PCI state is changed |
 | Project list/use/load/save/new/close; database CRUD and database snapshots | Persistent JSON database; atomic replacement, restrictive permissions, failed-write rollback |
+| `PROJECT ARCHIVE`, `PROJECT RESTORE`, secondary-project `PROJECT RENAME` | Exact retained native success envelope (`200 OK.`), optional LOGIN gating, and atomic durable commit/rollback. Archive tokens must use the explicit `cmqttd:KEY` namespace and address snapshots inside cmqttd's JSON state repository; other tokens return 408 and are never opened as filesystem paths. These are not Schneider ZIP/GZ/DB files. Snapshots retain modeled project/network/unit records and their unit fields; opaque auxiliary database maps are outside this bounded snapshot contract. Runtime physical presence, levels, and network state are excluded. The configured hardware project cannot be renamed while the service is running and returns 408 because the PCI/MQTT binding is immutable |
+| `REPOSITORY LIST` | One read-only native `123 index=1 type=cmqttd-json path=... current=yes` record for `--cgate-state`. `REPOSITORY USE` remains unavailable because native server-wide selection and concurrency behavior are not retained |
+| Here-document framing | TCP and TLS recognize native `COMMAND << DELIMITER` framing and apply the optional LOGIN gate. Lines are limited to 1 MiB and bodies to 16 MiB; an oversized body is drained to its delimiter and returns tagged 400 so the connection remains synchronized, while EOF before the delimiter returns tagged 400 and closes the connection. Completed `DBSETXML` and `CGL IMPORT` documents return explicit 502 without changing state: native DBSETXML typed-object replacement and its 301 OID receipt, and the vendor CGL format, are not implemented merely by accepting their framing |
 | Database PP locks, sessions, get/set/info/new/load/save | Existing programming model with connection ownership; staged sessions and locks are discarded on disconnect/restart |
 | `PP RESET_TO_DEFAULTS` | Replaces one owned loaded session with exactly the `DefaultValue` fields in its parsed unit specification. The result remains staged until an explicit save; missing or malformed specifications return 408 unchanged, with no PCI access |
 | Physical PP LOAD and subsequent GET/INFO | Identifies the live unit, selects its privately installed decoded schema, recalls standard CAL parameters, explicit pages for `paged`/`ncc`, OEM memory, and GOC parameter-`0xFF` memory through the shared PCI, decodes int/long/bit/string/sixbit arrays and `ArrayMap`, applies tag selection, and commits the session only after every read succeeds |
@@ -391,7 +406,7 @@ all 431 have physical implementations in this service. `CMQTT CAPABILITIES`
 returns `full_cgate_compatibility: false`; unimplemented physical operations
 return 502. The enumerable gap tracker is the executable capability matrix in
 `cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 35
-physical, 42 local/session, 353 fail-closed 502, and 1 obsolete 400 over the
+physical, 46 local/session, 349 fail-closed 502, and 1 obsolete 400 over the
 431 inventoried paths, plus a separately asserted 6-row supplement for
 non-inventoried service commands. Full replacement still requires:
 
@@ -429,8 +444,13 @@ non-inventoried service commands. Full replacement still requires:
 - Device-resident scene triggering beyond PP table programming, a physical
   eDLT operation that can query pre-existing dynamic-label cache contents, and
   specialist application families such as HVAC, audio and security.
-- Native repository/archive/import/export formats, document commands,
-  complete server configuration/access/TLS, firmware and deployment workflows.
+- Schneider repository/archive and CGL import/export file formats, repository
+  selection, the remaining document commands, complete server
+  configuration/access/TLS, firmware and deployment workflows. cmqttd's
+  internal project snapshots and read-only `cmqttd-json` repository descriptor
+  are implemented. Here-document transport is bounded and synchronized, but
+  native DBSETXML/CGL document semantics remain explicit 502; none is
+  presented as vendor-file interoperability.
   C-Gate TLS is transport-only: no TLS client authentication is performed,
   no client certificates are requested, and ACCESS/ACCESS_CONTROL
   paths remain fail-closed 502. (Command-layer access control is only the

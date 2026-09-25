@@ -96,9 +96,12 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // native confirmed CAL sequences and source-correlated responses. LABEL
     // CLEAR moved fail_closed_502 -> physical with its native exact-once,
     // confirmation-only all-key and one-key CAL forms.
+    // PROJECT ARCHIVE/RESTORE/RENAME and REPOSITORY LIST moved
+    // fail_closed_502 -> local_database with durable internal snapshots,
+    // guarded secondary-project rename, and a read-only cmqttd-json row.
     assert_eq!(class_count(RoutingClass::Physical), 35);
-    assert_eq!(class_count(RoutingClass::LocalDatabase), 42);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 353);
+    assert_eq!(class_count(RoutingClass::LocalDatabase), 46);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 349);
     assert_eq!(class_count(RoutingClass::Obsolete400), 1);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here
@@ -106,6 +109,36 @@ fn matrix_class_counts_pin_the_routing_gap() {
     assert_eq!(class_count(RoutingClass::Rejected4xx), 0);
     let total: usize = counts.values().sum();
     assert_eq!(total, 431);
+}
+
+#[test]
+fn administrative_subset_is_local_while_vendor_formats_stay_fail_closed() {
+    let class = |path| {
+        CAPABILITY_MATRIX
+            .iter()
+            .find(|entry| entry.path == path)
+            .unwrap_or_else(|| panic!("missing capability row {path}"))
+            .class
+    };
+    for path in [
+        "PROJECT ARCHIVE",
+        "PROJECT RESTORE",
+        "PROJECT RENAME",
+        "REPOSITORY LIST",
+        "DBSETXML",
+    ] {
+        assert_eq!(class(path), RoutingClass::LocalDatabase, "{path}");
+    }
+    for path in [
+        "CGL IMPORT",
+        "CGL EXPORT",
+        "REPOSITORY USE",
+        "PROJECT COPY",
+        "PROJECT DELETE",
+        "PROJECT REPAIR",
+    ] {
+        assert_eq!(class(path), RoutingClass::FailClosed502, "{path}");
+    }
 }
 
 #[test]
