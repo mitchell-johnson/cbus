@@ -39,6 +39,19 @@ rust/target/release/cbus-simulator 127.0.0.1 10001
 
 Then point the client at `127.0.0.1:10001`. Use an ephemeral or otherwise unused port when a test owns process management. The simulator is useful for framing, initialization, confirmation, selected SAL, and status-response workflows; it is not evidence of every physical-unit behavior.
 
+## Discover a CNI without opening it
+
+```sh
+cbus-toolkit interface discover-cni --bind LOCAL_IPV4 --timeout 3
+# Equivalent Rust command:
+cbus-tools cni-discover --bind LOCAL_IPV4 --timeout 3
+```
+
+Review `devices[].endpoint`, product and raw fields. A zero-result collection
+does not prove absence. To create a native network, pass the chosen endpoint
+explicitly to `cbus-toolkit cgate database network-new`; discovery itself
+performs no project mutation or TCP connection.
+
 ## Interrogate a real CNI
 
 1. Obtain the actual `HOST:PORT` and the intended unit address or scan ceiling.

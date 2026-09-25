@@ -8,7 +8,7 @@ This directory contains the Rust MQTT bridge, protocol libraries, inspection too
 | `cbus-transport` | library | TCP/serial connections, framing, PCI state machine, retries, and flow control |
 | `cbus-mqtt` | library | MQTT topics, command parsing, Home Assistant discovery, and CBZ label extraction |
 | `cmqttd` | binary | C-Bus to MQTT/Home Assistant bridge |
-| `cbus-tools` | binary | `decode`, `dump-labels`, and `interrogate` commands |
+| `cbus-tools` | binary | `decode`, `dump-labels`, `interrogate`, and bounded `cni-discover` commands |
 | `cbus-simulator` | binary | fake PCI/CNI TCP server |
 | `cbus-cgate` | library + binary | stateful C-Gate model and `cgate-mock` TCP server |
 | `cbus-vector-check` | binary | standalone compatibility-vector runner |

@@ -17,6 +17,12 @@ cbus-toolkit cgate --host 127.0.0.1 --port 20023 project list
 
 `project` edits XML/CBZ files offline. `cgate` provides native project, network, database, unit, addressing, and application workflows; `pci` talks directly to a CNI. Other families provide device configuration planning, scenes, templates, firmware diagnostics, preferences, and compatibility reporting. Results are JSON; use `--compact` before the command for one-line output. See the [Toolkit CLI guide](../toolkit-cli/README.md) and [feature status](../toolkit-cli/docs/implementation-status.md) for supported device profiles and exact workflows.
 
+Use `cbus-toolkit interface discover-cni` or `cbus-tools cni-discover` to send
+one bounded IPv4 UDP interface-discovery query. Both return the same endpoint
+and raw-field schema without opening the advertised TCP service. Pass
+`--bind LOCAL_IPV4` on a multi-adapter host; no-reply output is not proof that
+an interface is absent. See [CNI discovery](../toolkit-cli/docs/cni-discovery.md).
+
 `cbus-toolkit coverage --require-complete` reports the outstanding work and deliberately returns nonzero while full Toolkit parity remains incomplete.
 
 ## Build the Rust programs

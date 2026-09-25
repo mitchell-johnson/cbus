@@ -3,6 +3,7 @@
 #![deny(missing_docs)]
 
 pub mod apply;
+pub mod cni_discovery;
 pub mod conn;
 pub mod flow;
 pub mod framing;

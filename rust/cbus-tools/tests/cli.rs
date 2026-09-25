@@ -85,7 +85,7 @@ fn decode_missing_argument_usage_error() {
 fn help_exits_zero_and_lists_subcommands() {
     let (status, out, _err) = run(BIN, &["--help"]);
     assert!(status.success());
-    for sub in ["decode", "dump-labels", "interrogate"] {
+    for sub in ["decode", "dump-labels", "interrogate", "cni-discover"] {
         assert!(out.contains(sub), "missing {sub} in help: {out}");
     }
 }
@@ -95,6 +95,81 @@ fn unknown_subcommand_usage_error() {
     let (status, _out, err) = run(BIN, &["frobnicate"]);
     assert_eq!(status.code(), Some(2));
     assert!(!err.is_empty());
+}
+
+// --------------------------------------------------------- CNI discovery
+
+#[test]
+fn cni_discover_reports_valid_duplicate_hidden_and_malformed_datagrams() {
+    let socket = std::net::UdpSocket::bind("127.0.0.1:0").unwrap();
+    socket
+        .set_read_timeout(Some(std::time::Duration::from_secs(2)))
+        .unwrap();
+    let port = socket.local_addr().unwrap().port();
+    let peer = std::thread::spawn(move || {
+        let mut query = [0u8; 64];
+        let (size, source) = socket.recv_from(&mut query).unwrap();
+        assert_eq!(
+            &query[..size],
+            cbus_protocol::cni_discovery::DISCOVERY_QUERY
+        );
+        let visible =
+            hex::decode("cb81000020e8f5528101000101810b00022711811d000101800100028c26").unwrap();
+        let hidden =
+            hex::decode("cb810000000000028101000102810b00022711811d000100800100020000").unwrap();
+        for payload in [&visible[..], &visible[..], &hidden[..], b"noise"] {
+            socket.send_to(payload, source).unwrap();
+        }
+    });
+    let port = port.to_string();
+    let (status, out, err) = run(
+        BIN,
+        &[
+            "cni-discover",
+            "--bind",
+            "127.0.0.1",
+            "--listen-port",
+            "0",
+            "--destination",
+            "127.0.0.1",
+            "--discovery-port",
+            &port,
+            "--timeout",
+            "0.1",
+            "--max-datagrams",
+            "16",
+        ],
+    );
+    peer.join().unwrap();
+    assert!(status.success(), "{err}");
+    let report: Value = serde_json::from_str(&out).unwrap();
+    assert_eq!(report["format"], "cbus-cni-discovery-v1");
+    assert_eq!(report["devices"].as_array().unwrap().len(), 1);
+    assert_eq!(report["devices"][0]["endpoint"], "127.0.0.1:10001");
+    assert_eq!(report["devices"][0]["product"], "cni2");
+    assert_eq!(report["devices"][0]["unknown1_hex"], "20e8f552");
+    assert!(report["devices"][0].get("device_id_hex").is_none());
+    assert_eq!(report["duplicates_ignored"], 1);
+    assert_eq!(report["hidden_ignored"], 1);
+    assert_eq!(report["malformed"].as_array().unwrap().len(), 1);
+    assert_eq!(report["query_sent_once"], true);
+    assert_eq!(report["tcp_connection_opened"], false);
+    assert_eq!(report["absence_proven"], false);
+}
+
+#[test]
+fn cni_discover_rejects_unbounded_inputs_before_socket_io() {
+    for args in [
+        vec!["cni-discover", "--timeout", "0"],
+        vec!["cni-discover", "--timeout", "301"],
+        vec!["cni-discover", "--max-datagrams", "0"],
+        vec!["cni-discover", "--max-datagrams", "4097"],
+        vec!["cni-discover", "--discovery-port", "0"],
+    ] {
+        let (status, _out, err) = run(BIN, &args);
+        assert_eq!(status.code(), Some(1), "{args:?}: {err}");
+        assert!(err.contains("CNI discovery"), "{args:?}: {err}");
+    }
 }
 
 // ------------------------------------------------------------ dump-labels

@@ -15,6 +15,7 @@ use cbus_transport::{conn, PciClient};
 use clap::{Parser, Subcommand};
 use serde_json::{json, Map, Value};
 use std::io::Read;
+use std::net::{Ipv4Addr, SocketAddrV4};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::Duration;
@@ -28,6 +29,30 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Command {
+    /// Discover CNI2/Wiser interfaces with one bounded UDP query
+    CniDiscover {
+        /// Local IPv4 address to bind
+        #[arg(long, default_value = "0.0.0.0")]
+        bind: Ipv4Addr,
+        /// Local UDP port; 0 selects an ephemeral port
+        #[arg(long, default_value_t = cbus_protocol::cni_discovery::DISCOVERY_PORT)]
+        listen_port: u16,
+        /// Broadcast or unicast IPv4 destination
+        #[arg(long, default_value = "255.255.255.255")]
+        destination: Ipv4Addr,
+        /// Destination UDP port
+        #[arg(long, default_value_t = cbus_protocol::cni_discovery::DISCOVERY_PORT)]
+        discovery_port: u16,
+        /// Total reply window in seconds, in (0, 300]
+        #[arg(long, default_value_t = 2.0)]
+        timeout: f64,
+        /// Maximum accepted datagrams before reporting an incomplete result
+        #[arg(long, default_value_t = 256)]
+        max_datagrams: usize,
+        /// Include product-id 2 replies hidden by captured Toolkit behavior
+        #[arg(long)]
+        include_hidden: bool,
+    },
     /// Decode a single C-Bus serial frame (ASCII as seen on the wire)
     Decode {
         /// The frame, e.g. '0538007901490D' or '\\053800790149g'
@@ -136,6 +161,29 @@ enum Command {
 fn main() {
     let cli = Cli::parse();
     match cli.command {
+        Command::CniDiscover {
+            bind,
+            listen_port,
+            destination,
+            discovery_port,
+            timeout,
+            max_datagrams,
+            include_hidden,
+        } => {
+            let rt = tokio::runtime::Runtime::new().unwrap();
+            if let Err(error) = rt.block_on(cni_discover_cmd(
+                bind,
+                listen_port,
+                destination,
+                discovery_port,
+                timeout,
+                max_datagrams,
+                include_hidden,
+            )) {
+                eprintln!("error: {error}");
+                std::process::exit(1);
+            }
+        }
         Command::Decode {
             packet,
             no_checksum,
@@ -202,6 +250,84 @@ fn main() {
             }
         }
     }
+}
+
+async fn cni_discover_cmd(
+    bind: Ipv4Addr,
+    listen_port: u16,
+    destination: Ipv4Addr,
+    discovery_port: u16,
+    timeout: f64,
+    max_datagrams: usize,
+    include_hidden: bool,
+) -> Result<(), String> {
+    use cbus_transport::cni_discovery::{discover, DiscoveryConfig};
+
+    if !timeout.is_finite() || timeout <= 0.0 || timeout > 300.0 {
+        return Err("CNI discovery timeout must be finite and in (0, 300]".to_string());
+    }
+    let report = discover(&DiscoveryConfig {
+        bind: SocketAddrV4::new(bind, listen_port),
+        destination: SocketAddrV4::new(destination, discovery_port),
+        timeout: Duration::from_secs_f64(timeout),
+        max_datagrams,
+        include_hidden,
+    })
+    .await?;
+    let devices = report
+        .devices
+        .iter()
+        .map(|item| {
+            json!({
+                "source_address": item.source.ip().to_string(),
+                "source_port": item.source.port(),
+                "service_address": item.source.ip().to_string(),
+                "service_port": item.reply.service_port,
+                "endpoint": format!("{}:{}", item.source.ip(), item.reply.service_port),
+                "unknown1_hex": hex::encode(item.reply.unknown1),
+                "product_id": item.reply.product_id,
+                "product": item.reply.product_name(),
+                "visible_by_default": item.reply.visible_by_default(),
+                "status_raw": item.reply.status,
+                "trailer_hex": hex::encode(item.reply.trailer),
+                "raw_hex": hex::encode(&item.raw),
+            })
+        })
+        .collect::<Vec<_>>();
+    let malformed = report
+        .malformed
+        .iter()
+        .map(|item| {
+            json!({
+                "source": item.source.to_string(),
+                "raw_hex": hex::encode(&item.raw),
+                "error": item.error,
+            })
+        })
+        .collect::<Vec<_>>();
+    println!(
+        "{}",
+        serde_json::to_string_pretty(&json!({
+            "format": "cbus-cni-discovery-v1",
+            "query_hex": hex::encode(cbus_protocol::cni_discovery::DISCOVERY_QUERY),
+            "query_sent_once": true,
+            "listen": {"address": report.local.ip().to_string(), "port": report.local.port()},
+            "destination": {"address": report.destination.ip().to_string(), "port": report.destination.port()},
+            "collection_complete": report.collection_complete,
+            "collection_ended": if report.collection_complete {"deadline"} else {"datagram_limit"},
+            "datagrams_received": report.datagrams_received,
+            "duplicates_ignored": report.duplicates_ignored,
+            "hidden_ignored": report.hidden_ignored,
+            "devices": devices,
+            "malformed": malformed,
+            "read_only": true,
+            "tcp_connection_opened": false,
+            "absence_proven": false,
+            "scope": "Captured fixed-layout IPv4 UDP discovery; no TCP reachability, ownership, identity authenticity or physical-network validation",
+        }))
+        .map_err(|error| format!("Unable to encode CNI discovery report: {error}"))?
+    );
+    Ok(())
 }
 
 // ------------------------------------------------------------------ decode

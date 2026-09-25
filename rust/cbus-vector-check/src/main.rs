@@ -97,6 +97,7 @@ fn check_vector(fname: &str, v: &Value) -> Result<(), String> {
         "mqtt_topics.jsonl" => check_topic(v),
         "ha_discovery.jsonl" => check_ha(v),
         "kfi.jsonl" => check_kfi(v),
+        "cni_discovery.jsonl" => check_cni_discovery(v),
         _ => Err(format!("unimplemented suite {fname}")),
     }
 }
@@ -347,6 +348,50 @@ fn check_kfi(v: &Value) -> Result<(), String> {
             }
         }
         other => return Err(format!("unknown KFI vector kind {other}")),
+    }
+    Ok(())
+}
+
+fn check_cni_discovery(v: &Value) -> Result<(), String> {
+    use cbus_protocol::cni_discovery::{decode_discovery_reply, DISCOVERY_QUERY};
+
+    match need_str(v, "kind")? {
+        "query" => {
+            let got = hex::encode(DISCOVERY_QUERY);
+            let expect = need_str(v, "expect_hex")?;
+            if got != expect {
+                return Err(format!("query {got} != {expect}"));
+            }
+        }
+        "reply" => {
+            let wire = hex::decode(need_str(v, "wire_hex")?).map_err(|e| e.to_string())?;
+            let reply =
+                decode_discovery_reply(&wire).map_err(|e| format!("reply decode raised {e}"))?;
+            let got = serde_json::json!({
+                "unknown1_hex": hex::encode(reply.unknown1),
+                "product_id": reply.product_id,
+                "product": reply.product_name(),
+                "service_port": reply.service_port,
+                "status": reply.status,
+                "trailer_hex": hex::encode(reply.trailer),
+                "visible_by_default": reply.visible_by_default(),
+            });
+            let expect = v.get("expect").ok_or("vector missing expect")?;
+            if &got != expect {
+                return Err(format!("reply {got} != {expect}"));
+            }
+        }
+        "reply_error" => {
+            let wire = hex::decode(need_str(v, "wire_hex")?).map_err(|e| e.to_string())?;
+            let error = decode_discovery_reply(&wire)
+                .expect_err("reply_error vector unexpectedly decoded")
+                .to_string();
+            let expect = need_str(v, "expect_error")?;
+            if !error.contains(expect) {
+                return Err(format!("error {error:?} does not contain {expect:?}"));
+            }
+        }
+        other => return Err(format!("unknown CNI discovery vector kind {other}")),
     }
     Ok(())
 }

@@ -4,6 +4,7 @@
 #![deny(missing_docs)]
 
 pub mod cal;
+pub mod cni_discovery;
 pub mod common;
 pub mod consts;
 pub mod decode;

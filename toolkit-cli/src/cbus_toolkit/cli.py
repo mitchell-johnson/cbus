@@ -1164,6 +1164,26 @@ def build_parser():
     from .thermostat_scheduling_cli import options as thermostat_scheduling_options
     thermostat_scheduling_options(commands)
 
+    interface = commands.add_parser(
+        "interface", help="Discover CNI network interfaces without opening their TCP service"
+    )
+    interface_ops = interface.add_subparsers(dest="action", required=True)
+    discover = interface_ops.add_parser(
+        "discover-cni", help="Send one captured Toolkit-compatible IPv4 UDP discovery query"
+    )
+    discover.add_argument("--bind", default="0.0.0.0", help="Numeric local IPv4 bind address")
+    discover.add_argument("--listen-port", type=int, default=20050,
+                          help="Local UDP port; 0 selects an ephemeral test port")
+    discover.add_argument("--destination", default="255.255.255.255",
+                          help="Numeric broadcast or unicast IPv4 destination")
+    discover.add_argument("--discovery-port", type=int, default=20050)
+    discover.add_argument("--timeout", type=float, default=2.0,
+                          help="Total reply window in seconds, in (0, 300]")
+    discover.add_argument("--max-datagrams", type=int, default=256,
+                          help="Bound in 1..4096; reaching it marks collection incomplete")
+    discover.add_argument("--include-hidden", action="store_true",
+                          help="Include product-id 2 replies hidden by captured Toolkit behavior")
+
     project = commands.add_parser("project", help="Edit legacy Toolkit XML/CBZ projects without discarding unknown data")
     ops = project.add_subparsers(dest="action", required=True)
     from .project_repair_cli import options as project_repair_options
@@ -2916,6 +2936,17 @@ def _memory(args):
 
 
 def run(args):
+    if args.area == "interface":
+        from .cni_discovery import discover_cni
+        return discover_cni(
+            bind=args.bind,
+            listen_port=args.listen_port,
+            destination=args.destination,
+            discovery_port=args.discovery_port,
+            timeout=args.timeout,
+            max_datagrams=args.max_datagrams,
+            include_hidden=args.include_hidden,
+        ), 0
     if args.area == "thermostat-temperature":
         from .thermostat_temperature_cli import run as run_thermostat_temperature
         return run_thermostat_temperature(args)

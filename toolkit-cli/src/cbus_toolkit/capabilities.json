@@ -125,8 +125,12 @@
       "status": "in_progress",
       "evidence": [
         "tests/test_simulator.py",
-        "research/verify_network.py"
-      ]
+        "research/verify_network.py",
+        "tests/test_cni_discovery.py",
+        "docs/cni-discovery.md",
+        "../rust/testdata/vectors/cni_discovery.jsonl"
+      ],
+      "limits": "Exact captured 19-byte IPv4 UDP query and strict 30-byte CNI2/Wiser reply decoding are shared by the Python and Rust CLIs, with bounded loopback transport, hidden-product handling, deterministic evidence and no TCP/project mutation. Existing native Serial/CNI/Bridge network creation remains explicit. Fresh original Toolkit differential, multi-adapter/firewall/subnet behavior, broad physical-interface acceptance and complete Toolkit interface setup remain incomplete; a zero-reply run does not prove absence."
     },
     {
       "id": "network-scan-unravel-routing",

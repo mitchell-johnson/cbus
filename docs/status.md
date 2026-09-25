@@ -17,6 +17,7 @@ Full Toolkit parity remains unfinished. The ledger records 38 feature areas: 17 
 | C-Bus wire codec | Complete for the supported packet families | Checksums, PM, PP, DM, CAL, SAL, reset, confirmation, error, status reports, JSON conversion, strict and lenient decoding |
 | SAL applications | Implemented | Lighting, clock, enable control, temperature broadcast, and status request |
 | PCI/CNI transport | Implemented | TCP and serial endpoints, framing, initialization, confirmations, retries, reconnection, and adaptive flow control |
+| CNI interface discovery | Implemented for the captured IPv4 UDP profile | Exact query and strict CNI2/Wiser reply codec, bounded collection, hidden-product policy, malformed evidence, deterministic JSON in `cbus-tools`; discovery does not prove absence, reachability or physical-network identity |
 | MQTT bridge | Implemented | Light commands and state, Home Assistant discovery, binary sensors, time synchronization, status resync, TLS, authentication, and project labels |
 | Project backups | Implemented | One-file `.cbz` archives and bare project XML; network selection; application, group, unit, and channel metadata export |
 | Unit interrogation | Implemented | Unit discovery and CAL identify/recall queries over a TCP CNI |

@@ -10,12 +10,24 @@ The Python `cbus-toolkit` application is installed separately; see [toolkit.md](
 | Decode one serial frame | `cbus-tools decode` | None |
 | Read a Toolkit backup or project XML | `cbus-tools dump-labels` | Reads locally; optionally writes JSON |
 | Query one unit or discover units | `cbus-tools interrogate` | Sends requests through a TCP CNI |
+| Discover CNI2/Wiser endpoints | `cbus-toolkit interface discover-cni` or `cbus-tools cni-discover` | One bounded IPv4 UDP query; does not open TCP or C-Bus |
 | Verify a selected-serial plan | `cbus-tools serial-verify` | Sends bounded read-only MMI and IDENTIFY traffic |
 | Apply a selected-serial plan | `cbus-tools serial-apply` | Writes a durable local journal, sends one address broadcast, then reads state |
 | Bridge C-Bus and MQTT/Home Assistant | `cmqttd` | Long-running network and MQTT traffic; accepts control messages |
 | Emulate a PCI/CNI endpoint | `cbus-simulator` | Opens a local TCP listener |
 | Emulate the C-Gate 3.4 command surface | `cgate-mock` | Opens a TCP listener and mutates in-memory state |
 | Recheck committed compatibility vectors | `cbus-vector-check` | Reads local JSONL vectors |
+
+### CNI interface discovery
+
+Run `cbus-toolkit interface discover-cni` for the Python workflow or
+`cbus-tools cni-discover` for the Rust equivalent. Defaults bind and broadcast
+on UDP 20050; use `--bind` to select a local adapter. Both send the exact
+captured query once, enforce a monotonic timeout and datagram cap, decode only
+the fixed 30-byte reply shape, hide product id 2 unless `--include-hidden` is
+set, and emit `cbus-cni-discovery-v1` JSON. Use a returned `endpoint` only after
+review; discovery does not prove TCP reachability, exclusive ownership,
+identity authenticity, physical C-Bus attachment or absence after zero replies.
 
 ### eDLT Measurement scaling
 

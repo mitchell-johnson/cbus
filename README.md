@@ -17,6 +17,7 @@ The Rust workspace also provides protocol tools, a PCI simulator, and a C-Gate c
 | Manage native C-Gate projects, configure supported units, control groups, or commission a network | `cbus-toolkit cgate` |
 | Plan supported keypad, sensor, eDLT, scene, or unit-conversion settings offline | `cbus-toolkit keys`, `sensors`, `edlt`, `scene`, and `unit-conversion` |
 | Query a CNI directly or inspect routed PCI messages | `cbus-toolkit pci` and `pci-route` |
+| Discover CNI2/Wiser interfaces without opening them | `cbus-toolkit interface discover-cni` or `cbus-tools cni-discover` |
 | Connect C-Bus lights to MQTT and Home Assistant | `cmqttd` |
 | Inventory live eDLT labels without Windows, while MQTT keeps running | `cbus-toolkit cgate edlt-labels --network //PROJECT/NETWORK`, connected to `cmqttd` |
 | Decode a frame, export project labels, or interrogate a unit | `cbus-tools` |
@@ -68,6 +69,13 @@ Replace the example address and port with your server's values. Use `cbus-toolki
 For an exact C-Gate command, use `cbus-toolkit cgate exec 'PROJECT LIST'`. For a file of commands that must share one session, use `cbus-toolkit cgate run commands.txt`. Add the same connection options as above; command batches stop at the first failure.
 
 Results are JSON on stdout; operation errors are JSON on stderr and return a nonzero exit status. Put `--compact` before the command for single-line JSON. Event monitoring emits JSON lines.
+
+To find a CNI2 or Wiser endpoint first, run `cbus-toolkit interface
+discover-cni`. It sends one bounded IPv4 UDP query and reports the source
+address plus advertised TCP port without opening the interface. A zero-reply
+result does not prove that no interface exists. The Rust tools expose the same
+wire codec and JSON boundary as `cbus-tools cni-discover`; see the [discovery
+contract](toolkit-cli/docs/cni-discovery.md).
 
 ### Toolkit compatibility and current status
 

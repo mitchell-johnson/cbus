@@ -10,6 +10,11 @@ Strict decoding rejects malformed input. Lenient decoding retains compatibility 
 
 `cbus-transport` reassembles byte streams with a bounded buffer, performs the PCI initialization sequence, assigns confirmation codes, retransmits unconfirmed frames, and prioritizes interactive commands over background status sweeps. It supports TCP CNI connections and serial PCI connections.
 
+Network-interface discovery is a separate IPv4 UDP exchange. `cbus-tools
+cni-discover` and `cbus-toolkit interface discover-cni` send the exact retained
+19-byte query once and strictly decode fixed 30-byte CNI2/Wiser replies through
+a bounded deadline. See the [discovery contract](../toolkit-cli/docs/cni-discovery.md).
+
 The transport emits typed events to consumers and retains raw consumed bytes where tests or diagnostics need them.
 
 ## MQTT convention

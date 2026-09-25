@@ -38,6 +38,35 @@ The event monitor always emits one JSON object per line.
 JSON output escapes non-ASCII characters so redirected Windows output works
 with legacy code pages; decoding the JSON restores the exact Unicode text.
 
+## Discover a CNI
+
+Discover CNI2 and Wiser interfaces with the captured Toolkit-compatible IPv4
+UDP exchange, without opening their TCP service:
+
+```sh
+cbus-toolkit interface discover-cni
+```
+
+The command sends one query, collects replies through a bounded monotonic
+window, rejects malformed fixed-layout packets, suppresses exact duplicates and
+returns each source address with its advertised TCP port as JSON. Product-id 2
+is hidden by default to match the retained behavior; use `--include-hidden` to
+inspect it. A zero-result run does not prove absence. On hosts with several
+adapters, pass the numeric local address with `--bind`.
+
+After reviewing a result, use its `endpoint` explicitly when creating a native
+network:
+
+```sh
+cbus-toolkit cgate --host your-cgate project new TEST
+cbus-toolkit cgate --host your-cgate database network-new TEST 254 Local Cni 192.0.2.10:10001
+cbus-toolkit cgate --host your-cgate project save TEST
+```
+
+Discovery does not choose a device, edit a project, open C-Bus, or test TCP
+reachability. See [CNI interface discovery](docs/cni-discovery.md) for the
+wire vectors, result fields, Rust equivalent, and acceptance boundary.
+
 ## Toolkit preferences
 
 ```sh

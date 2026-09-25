@@ -1,0 +1,8 @@
+{"id":"cni-0001-query","kind":"query","expect_hex":"cb800000000000000101010b011d80010247ff"}
+{"id":"cni-0002-cni2-capture","kind":"reply","wire_hex":"cb81000020e8f5528101000101810b00022711811d000101800100028c26","expect":{"unknown1_hex":"20e8f552","product_id":1,"product":"cni2","service_port":10001,"status":1,"trailer_hex":"8c26","visible_by_default":true}}
+{"id":"cni-0003-wiser-capture","kind":"reply","wire_hex":"cb810000000000018101000103810b00022711811d00010080010002661e","expect":{"unknown1_hex":"00000001","product_id":3,"product":"wiser","service_port":10001,"status":0,"trailer_hex":"661e","visible_by_default":true}}
+{"id":"cni-0004-hidden-product","kind":"reply","wire_hex":"cb810000000000028101000102810b00022711811d000100800100020000","expect":{"unknown1_hex":"00000002","product_id":2,"product":"hidden","service_port":10001,"status":0,"trailer_hex":"0000","visible_by_default":false}}
+{"id":"cni-0005-unknown-product","kind":"reply","wire_hex":"cb8100000102030481010001fe810b0002ffff811d0001aa800100021234","expect":{"unknown1_hex":"01020304","product_id":254,"product":"unknown","service_port":65535,"status":170,"trailer_hex":"1234","visible_by_default":true}}
+{"id":"cni-0006-truncated","kind":"reply_error","wire_hex":"cb81000020e8f5528101000101810b00022711811d000101800100028c","expect_error":"exactly 30 bytes"}
+{"id":"cni-0007-wrong-magic","kind":"reply_error","wire_hex":"ca81000020e8f5528101000101810b00022711811d000101800100028c26","expect_error":"reply magic"}
+{"id":"cni-0008-wrong-port-tag","kind":"reply_error","wire_hex":"cb81000020e8f5528101000101800b00022711811d000101800100028c26","expect_error":"service-port field tag"}
