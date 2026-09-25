@@ -108,6 +108,7 @@ const VECTOR_FILES: &[(&str, &str, &str)] = &[
     ("ramp_rates.jsonl", "ramp_rates", "rr-"),
     ("mqtt_topics.jsonl", "mqtt_topics", "mt-"),
     ("ha_discovery.jsonl", "ha_discovery", "ha-"),
+    ("kfi.jsonl", "kfi", "kfi-"),
 ];
 
 fn generate_golden(vectors_dir: &Path) -> String {

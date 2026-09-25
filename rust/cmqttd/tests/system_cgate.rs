@@ -132,9 +132,19 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
             sys.pci.inject(&pci_wire(&body));
         }
     }
-    assert!(command(&mut reader, &mut writer, "CMQTT CAPABILITIES")
-        .await
-        .contains("\"do_methods\":[\"factorydefault\",\"lighting\",\"sync\"]"));
+    async fn answer_kfi_write(sys: &System, payload: &str, occurrence: usize) {
+        require(COMMAND_DRAIN, "KFI parameter-FF write", || {
+            sys.pci.count_payload(payload) >= occurrence
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0xff, 0]));
+    }
+    let capabilities = command(&mut reader, &mut writer, "CMQTT CAPABILITIES").await;
+    assert!(capabilities.contains("\"do_methods\":[\"factorydefault\",\"lighting\",\"sync\"]"));
+    assert!(capabilities.contains("\"full_cgate_compatibility\":false"));
+    assert!(capabilities.contains("\"dynamic_label_device_readback\":false"));
+    assert!(capabilities.contains("\"label_kfi\":true"));
     assert!(
         command(&mut reader, &mut writer, "GET //HARNESS/254/56/1 level")
             .await
@@ -301,9 +311,53 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     .await
     .contains("200 OK"));
     assert_eq!(sys.pci.count_payload("053800A301060316"), 1);
+
+    let kfi_get = command(&mut reader, &mut writer, "LABEL KFIGET //HARNESS/254/56 5");
+    let kfi_peer = async {
+        for payload in [
+            "460500A3FF00090A",
+            "460500A5FF0082001C73",
+            "460500A5FF008404FF8A",
+        ] {
+            answer_kfi_write(&sys, payload, 1).await;
+        }
+        require(COMMAND_DRAIN, "KFI IDENTIFY 0x3D", || {
+            sys.pci.count_payload("460500213D57") == 1
+        })
+        .await;
+        let mut reply = vec![0x86, 5, 0x10, 0x01, 0x00, 0x8d, 0x3d, 0x80];
+        reply.extend_from_slice(&[0x21, 0x43, 0x65, 0x87]);
+        reply.extend_from_slice(&[0; 7]);
+        sys.pci.inject(&pci_wire(&reply));
+    };
+    let (kfi_get, ()) = tokio::join!(kfi_get, kfi_peer);
+    assert!(kfi_get.contains("300-kfi1=1"), "{kfi_get:?}");
+    assert!(kfi_get.contains("300 kfi8=8"), "{kfi_get:?}");
+
+    let kfi_set = command(
+        &mut reader,
+        &mut writer,
+        "LABEL KFISET //HARNESS/254/56 5 1 2 3 4 5 6 7 8",
+    );
+    let kfi_peer = async {
+        for (payload, occurrence) in [
+            ("460500A3FF00090A", 2),
+            ("460500A5FF0084214329", 1),
+            ("460500A5FF00846587A1", 1),
+            ("460500A4FF006BACFB", 1),
+        ] {
+            answer_kfi_write(&sys, payload, occurrence).await;
+        }
+    };
+    let (kfi_set, ()) = tokio::join!(kfi_set, kfi_peer);
+    assert!(kfi_set.contains("200 OK"), "{kfi_set:?}");
+
     let observed = command(&mut reader, &mut writer, "CMQTT LABELS //HARNESS/254/p/5").await;
     assert!(observed.contains("cmqttd-observed-dynamic-labels-v1"));
     assert!(observed.contains("observed-sal-traffic"));
+    assert!(observed.contains("\"observation_scope\":\"network\""));
+    assert!(observed.contains("\"requested_address\":\"//HARNESS/254/p/5\""));
+    assert!(observed.contains("\"recipient_verified\":false"));
     assert!(observed.contains("\"complete\":false"));
     assert!(observed.contains("\"device_readback\":false"));
     assert!(observed.contains("\"direction\":\"sent-confirmed\""));
@@ -320,6 +374,10 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
         "a6020000427573",
     )
     .await;
+    assert!(observed.contains("\"observation_scope\":\"network\""));
+    assert!(observed.contains("\"requested_address\":\"//HARNESS/254\""));
+    assert!(observed.contains("\"recipient_verified\":false"));
+    assert!(observed.contains("\"device_readback\":false"));
     assert!(observed.contains("\"direction\":\"received\""));
     assert!(observed.contains("\"source_unit\":9"));
     assert!(command(

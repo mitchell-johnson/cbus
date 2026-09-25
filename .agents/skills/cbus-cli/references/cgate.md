@@ -9,17 +9,33 @@ current supported operations and remaining C-Gate replacement work. Query
 `CMQTT CAPABILITIES` before assuming an operation is implemented. Physical reads:
 
 ```sh
+cbus-toolkit cgate --host 127.0.0.1 --timeout 120 edlt-labels --network //PROJECT/254
 cbus-toolkit cgate --host 127.0.0.1 --timeout 30 edlt-labels //PROJECT/254/p/UNIT
 ```
 
-Use the configured endpoint and project address. The command returns physical
-identity, static strings, widget labels, a stable-header check and CRC evidence.
-It also returns bounded dynamic-label SAL observations from the current cmqttd
-connection. `complete: false` and `device_readback: false` distinguish those
-observations from an inventory of the display's pre-existing cache. `CMQTT
-LABELS`, `UNIT READMEM` and `UNIT IDENTIFY` are cmqttd extensions. A 502 response
-is a missing backend or failed device operation; never replace it with saved
-project data and describe that as a live result.
+Use the configured endpoint and project address. The network form runs one
+whole-network serial refresh (`NET SYNC` plus `NET CHECKUNIT`), reports every
+fresh record and reads exact KEYGL5 5.5.00 devices in numeric address order.
+Unsupported firmware, unknown or ambiguous identities and per-device failures
+remain in the JSON beside successful reads. The physical configurations are
+sequential rather than an atomic network snapshot. Physical IDENTIFY4 reads
+bracket each selected memory snapshot. The fresh inventory identity is attached
+only when both physical serials match it; a mismatch remains a per-unit error
+without stale identity attachment. An incomplete report is still emitted and
+the command exits nonzero.
+
+Each successful device read returns physical identity, all 64 static strings
+and their widget, page and scene references, a stable-header check and CRC
+evidence. The network form then requests `CMQTT LABELS` exactly once at network
+scope. Its bounded current-connection SAL observations remain top-level,
+network-wide, transient and recipient-unverified; they are never assigned to a
+device. A unit-shaped `CMQTT LABELS` request is only a compatibility alias for
+the same network ring. The nested observation document's `complete: false` and
+`device_readback: false` distinguish it from an inventory of a display's
+pre-existing cache. `CMQTT LABELS`, `UNIT READMEM` and `UNIT IDENTIFY` are
+cmqttd extensions.
+A 502 response is a missing backend or failed device operation; never replace
+it with saved project data and describe that as a live result.
 
 The physical service also implements lighting commands, C-Gate `DO` object
 methods for lighting and direct-network `SYNC`, Trigger Control,
@@ -45,6 +61,34 @@ device PP scene tables.
 sends one native clear control and requires a correlated unit ACK. Report it as
 accepted, never as verified erasure or persistence; there is no dynamic-label
 cache readback operation.
+
+The native KFI commands are also hardware-backed on the configured direct
+network:
+
+```text
+LABEL KFIGET //PROJECT/NETWORK/APPLICATION UNIT
+LABEL KFISET //PROJECT/NETWORK/APPLICATION UNIT KFI1 KFI2 KFI3 KFI4 KFI5 KFI6 KFI7 KFI8
+```
+
+The application must be one of the label-capable native IDs 48–95, 202 or 203;
+the unit is 0–255 and KFISET requires exactly eight values from 0 through 15.
+The application token is a native `LabelSupportingApplication` scope/class
+gate; it is not encoded into KFIGET's fixed selector `0x1c`.
+KFIGET returns eight ordered `300` KFI rows from exactly one source-correlated
+native reply; zero or multiple replies return 524. KFISET sends four packed
+parameter-`0xFF` writes and stops at the first failed confirmation or unit ACK.
+Despite the GET name, KFIGET first sends three volatile parameter-`0xFF` selector
+writes. It is a programming operation behind the optional LOGIN gate and should
+not be run casually on live hardware. It does not read a dynamic-label cache,
+does not require a modeled KEYGL5 unit type, and has scripted rather than live
+hardware acceptance.
+
+Every KFI parameter-`0xFF` write and the GET IDENTIFY request is a
+generation-safe exact-once send and never enters automatic retry. A lost
+confirmation faults the programming lane until reconnect, preventing a late
+confirmation or identical untagged ACK from advancing a later selector and
+preventing GET replay from manufacturing response multiplicity.
+
 `DO //PROJECT/NETWORK/p/UNIT FactoryDefault` is also hardware-backed for
 KEYGL5. Use `cbus-toolkit cgate edlt-factory-default plan|request` with the
 expected native serial. cmqttd sends captured control `A4 FF 43 B2 B2` exactly
@@ -103,9 +147,12 @@ unsupported topology-discovery command `NET PROJECT_IDENTIFY`.
 Query `CMQTT CAPABILITIES`; `unit_readdress: true` denotes the readdress path and
 `physical_pp_save_cbus3_nvm: true` denotes the NVM commit path,
 `dynamic_labels: true` denotes the label sender,
-`dynamic_label_observation: true` denotes the volatile observed SAL cache while
+`dynamic_label_observation: true` denotes the volatile network-wide observed
+SAL ring (including unit-shaped compatibility aliases with no verified
+recipient), while
 `dynamic_label_device_readback: false` preserves the unsupported device-query boundary,
 `edlt_label_clear: true` denotes the one-shot KEYGL5 clear control,
+`label_kfi: true` denotes the native physical KFIGET/KFISET sequences above,
 `cgate_auth: true` denotes the armed opt-in LOGIN gate (`false` dormant
 default): with `--cgate-auth-file` configured, each connection needs
 `LOGIN <token>` before programming verbs while reads and bus control stay

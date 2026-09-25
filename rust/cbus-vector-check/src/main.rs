@@ -6,6 +6,7 @@
 use cbus_protocol::common::{cbus_checksum, duration_to_ramp_rate, ramp_rate_to_duration};
 use cbus_protocol::decode::decode_packet;
 use cbus_protocol::json::{packet_from_json, packet_to_json};
+use cbus_protocol::{Meta, Packet};
 use serde_json::Value;
 
 const MAX_FAILURES_PRINTED: usize = 50;
@@ -95,6 +96,7 @@ fn check_vector(fname: &str, v: &Value) -> Result<(), String> {
         "ramp_rates.jsonl" => check_ramp(v),
         "mqtt_topics.jsonl" => check_topic(v),
         "ha_discovery.jsonl" => check_ha(v),
+        "kfi.jsonl" => check_kfi(v),
         _ => Err(format!("unimplemented suite {fname}")),
     }
 }
@@ -115,6 +117,48 @@ fn need_u64(v: &Value, k: &str) -> Result<u64, String> {
     v.get(k)
         .and_then(Value::as_u64)
         .ok_or_else(|| format!("vector missing {k}"))
+}
+
+fn need_u8(v: &Value, k: &str) -> Result<u8, String> {
+    u8::try_from(need_u64(v, k)?).map_err(|_| format!("vector {k} is outside u8"))
+}
+
+fn need_kfi_values(v: &Value) -> Result<[u8; cbus_protocol::kfi::COUNT], String> {
+    let values = v
+        .get("values")
+        .and_then(Value::as_array)
+        .ok_or("vector missing values")?;
+    values
+        .iter()
+        .map(|value| {
+            let value = value
+                .as_u64()
+                .ok_or("KFI value must be an unsigned integer")?;
+            u8::try_from(value).map_err(|_| format!("KFI value {value} is outside u8"))
+        })
+        .collect::<Result<Vec<_>, _>>()?
+        .try_into()
+        .map_err(|values: Vec<u8>| {
+            format!(
+                "expected {} KFI values, got {}",
+                cbus_protocol::kfi::COUNT,
+                values.len()
+            )
+        })
+}
+
+fn need_frames(v: &Value) -> Result<Vec<String>, String> {
+    v.get("frames")
+        .and_then(Value::as_array)
+        .ok_or("vector missing frames")?
+        .iter()
+        .map(|frame| {
+            frame
+                .as_str()
+                .map(str::to_owned)
+                .ok_or_else(|| "KFI frame must be a string".to_string())
+        })
+        .collect()
 }
 
 fn check_decode(v: &Value) -> Result<(), String> {
@@ -202,6 +246,73 @@ fn check_ramp(v: &Value) -> Result<(), String> {
     };
     if got != expect {
         return Err(format!("{got} != {expect}"));
+    }
+    Ok(())
+}
+
+fn check_kfi(v: &Value) -> Result<(), String> {
+    fn frames(
+        unit: u8,
+        requests: impl IntoIterator<Item = cbus_protocol::Cal>,
+    ) -> Result<Vec<String>, String> {
+        requests
+            .into_iter()
+            .map(|cal| {
+                let packet = Packet::PointToPoint {
+                    meta: Meta::new(true, 1),
+                    unit_address: unit,
+                    bridged: false,
+                    hops: vec![],
+                    cals: vec![cal],
+                };
+                let encoded = packet
+                    .encode_packet()
+                    .map_err(|e| format!("KFI request encode raised {e}"))?;
+                let encoded = String::from_utf8(encoded)
+                    .map_err(|e| format!("KFI request was not ASCII: {e}"))?;
+                Ok(format!("\\{encoded}"))
+            })
+            .collect()
+    }
+
+    match need_str(v, "kind")? {
+        "get" => {
+            let got = frames(need_u8(v, "unit")?, cbus_protocol::kfi::get_requests())?;
+            let expect = need_frames(v)?;
+            if got != expect {
+                return Err(format!("frames {got:?} != {expect:?}"));
+            }
+        }
+        "set" => {
+            let requests = cbus_protocol::kfi::set_requests(need_kfi_values(v)?)
+                .map_err(|e| format!("KFI set raised {e}"))?;
+            let got = frames(need_u8(v, "unit")?, requests)?;
+            let expect = need_frames(v)?;
+            if got != expect {
+                return Err(format!("frames {got:?} != {expect:?}"));
+            }
+        }
+        "reply" => {
+            let data = hex::decode(need_str(v, "data_hex")?).map_err(|e| e.to_string())?;
+            let got = cbus_protocol::kfi::decode_reply(&data)
+                .map_err(|e| format!("KFI reply decode raised {e}"))?;
+            let expect = need_kfi_values(v)?;
+            if got != expect {
+                return Err(format!("values {got:?} != {expect:?}"));
+            }
+        }
+        "reply_error" => {
+            let data = hex::decode(need_str(v, "data_hex")?).map_err(|e| e.to_string())?;
+            if let Ok(values) = cbus_protocol::kfi::decode_reply(&data) {
+                return Err(format!("KFI reply unexpectedly decoded as {values:?}"));
+            }
+        }
+        "set_error" => {
+            if let Ok(requests) = cbus_protocol::kfi::set_requests(need_kfi_values(v)?) {
+                return Err(format!("KFI set unexpectedly encoded as {requests:?}"));
+            }
+        }
+        other => return Err(format!("unknown KFI vector kind {other}")),
     }
     Ok(())
 }

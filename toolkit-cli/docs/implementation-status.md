@@ -106,6 +106,7 @@ These functions have implementation and focused evidence for **KEYGL5 / 5055EDL 
 | Quick Status | Four modes, palettes, groups and linked threshold control ordering. [Quick Status](edlt-quick-status.md), [Windows comparisons](edlt-quick-status-windows.md). |
 | Activation and Page Control | Wake modes, events, activation page/first key; fixed Enable application page group. [Activation](edlt-activation.md), [Page Control](edlt-page-control.md). |
 | Clear Dynamic Labels | Guarded one-shot native request, identity/inventory checks and separate receipt/fixture-erasure evidence. [Label clear](edlt-label-clear.md). |
+| Live label inventory | One fresh network serial refresh selects exact KEYGL5 5.5.00 records in numeric order for sequential, CRC-checked static configuration reads through `cmqttd`. Physical IDENTIFY4 brackets each memory snapshot; the inventory identity is attached only when both serials match it. Partial identities, per-unit errors and one network-wide transient observation ring remain explicit. [Service scope](../../docs/cmqttd-cgate.md#live-label-reads). |
 | Physical FactoryDefault | Guarded one-shot KEYGL5 request through `cmqttd`, exact native OEM control, durable intent, fresh identity/inventory checks, strict ACK correlation, no replay, and separate delivery/readback/persistence evidence. [FactoryDefault](edlt-factory-default.md). |
 | Retained model lifecycle and restore editor | Supported load/save phases, supplied cache, all 16 restore controls, display-name coupling and type-reset precedence. [Lifecycle](edlt-lifecycle.md), [restore levels](edlt-restore-levels.md). |
 | Ordered application and Corridor controls | Primary/Secondary applications, role exclusions, missing-group handling and timer byte-clamp behavior. [Applications](edlt-applications.md), [Corridor](edlt-corridor.md). |
@@ -147,16 +148,41 @@ Reproducible-verification recipe (all locally provisionable gates): task-owned T
 The latest Python 3.13 current-tree run passes **2,196 tests**, with **258 provisioning-gated skips** and no failures or errors; the separate owned C-Gate B03 acceptance also passes ([KEYE secondary-association review](../research/experiments/2026-09-24/csv-keye-secondary-application-review.json)). The earlier source-pinned offline/mock checkpoint remains **1,872 tests**, 239 skips and 17,337 passing subtests ([report](../research/experiments/2026-09-24/offline-test-summary.json)). These are source-tree results, not a fresh installed-wheel or zero-skip acceptance. Later wheel-audit metadata changes have separate focused tests.
 ## cmqttd hardware-service addition (2026-09-24)
 
-The CLI now provides `cgate edlt-labels //PROJECT/NETWORK/p/UNIT` through
-cmqttd's physical C-Gate service. It reads live KEYGL5 5.5.00 identity and OEM
-memory without Windows or a second CNI connection, resolves static text and
-lighting/scene widget labels, and checks a stable header plus the stored text
-CRC. The CRC check accounts for Toolkit's zero-padded text projection when
-physical slots retain old bytes after the null terminator. It also assembles
-standard text/icons, segmented Unicode, language selections and dynamic bitmap
-transactions from cmqttd's bounded current-connection SAL observations. Those
-observations are always incomplete and are not device cache readback. See
+The CLI provides both a selected-device
+`cgate edlt-labels //PROJECT/NETWORK/p/UNIT` read and a bounded fresh-network
+`cgate edlt-labels --network //PROJECT/NETWORK` inventory through cmqttd's
+physical C-Gate service. The network form performs one `NET SYNC` plus
+`NET CHECKUNIT` serial refresh, classifies every fresh record and reads exact
+KEYGL5 5.5.00 devices in numeric address order. It preserves successful static
+configuration reads alongside unsupported firmware, unknown or ambiguous
+identities and per-device failures; an incomplete report is returned with a
+nonzero exit status.
+
+Each selected read obtains live identity and OEM memory without Windows or a
+second CNI connection, resolves all 64 static strings and their widget, page and
+scene references, and checks a stable header plus the stored text CRC. The CRC
+check accounts for Toolkit's zero-padded text projection when physical slots
+retain old bytes after the null terminator. Physical IDENTIFY4 reads bracket
+each selected memory snapshot. Its fresh inventory identity is attached only
+when the before/after physical serials both equal the fresh inventory serial;
+mismatches remain per-unit errors without stale identity attachment. Device
+reads are sequential, so the result is explicitly non-atomic. The network
+command then queries `CMQTT LABELS`
+once at network scope and keeps the resulting bounded SAL observations separate
+from every device. They are transient, network-wide, recipient-unverified and
+always incomplete. Unit-shaped `CMQTT LABELS` requests are compatibility aliases
+for that same network ring; they do not prove which display received traffic.
+Physical dynamic-label cache readback remains unimplemented and false. See
 [service implementation and remaining work](../../docs/cmqttd-cgate.md).
+
+The service separately implements physical `LABEL KFIGET` and `LABEL KFISET`.
+Their application token is a native `LabelSupportingApplication` class/scope
+gate and is not encoded into KFIGET's fixed selector `0x1c`. The GET operation
+performs three volatile parameter-`0xFF` writes before IDENTIFY. Every KFI write
+and the GET IDENTIFY request is generation-safe, exact-once and excluded from
+transport replay; a lost confirmation faults the programming lane until
+reconnect. This remains separate from dynamic-label device-cache readback and
+does not complete C-Gate compatibility.
 
 This adds hardware functionality to the separate persistent cmqttd service;
 it does not change the mock's compatibility claims or complete the feature census.

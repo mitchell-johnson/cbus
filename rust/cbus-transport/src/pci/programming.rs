@@ -2,6 +2,7 @@
 //! Pointer selection is volatile; memory reads never issue a memory write.
 
 use super::*;
+use cbus_protocol::kfi;
 use cbus_protocol::serial_address::{encode_serial_address, parse_native_serial};
 use std::io::{Error, ErrorKind, Result};
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -61,6 +62,282 @@ impl Drop for Transaction<'_> {
 }
 
 impl PciClient {
+    /// Run native C-Gate's operational `LABEL KFIGET` sequence.
+    ///
+    /// Despite its name, the operation first performs three volatile
+    /// parameter-`0xFF` writes. Each write must receive the source-correlated
+    /// `32 FF 00` unit acknowledgement before the attribute-`0x3D` IDENTIFY is
+    /// sent. The returned vector deliberately retains response multiplicity so
+    /// the C-Gate endpoint can distinguish native 524 no-response and
+    /// too-many-response outcomes.
+    pub async fn get_key_function_indicators(&self, unit: u8) -> Result<Vec<[u8; kfi::COUNT]>> {
+        let requests = kfi::get_requests();
+        let _lane = self.programming_lane.lock().await;
+        if self.programming_fault.load(Ordering::Acquire) {
+            return Err(Error::other(
+                "programming stream needs reconnect after an incomplete transaction",
+            ));
+        }
+        let mut transaction = Transaction {
+            fault: &self.programming_fault,
+            complete: false,
+        };
+        for request in requests.iter().take(3).cloned() {
+            self.kfi_write(unit, request).await?;
+        }
+        let replies = self.collect_kfi_replies(unit, requests[3].clone()).await?;
+        transaction.complete = true;
+        Ok(replies)
+    }
+
+    /// Run native C-Gate's operational `LABEL KFISET` sequence.
+    ///
+    /// All eight values must be in `0..=15`. The four parameter-`0xFF`
+    /// writes are serialized and the sequence stops at the first missing,
+    /// rejected, or malformed source-correlated acknowledgement.
+    pub async fn set_key_function_indicators(
+        &self,
+        unit: u8,
+        values: [u8; kfi::COUNT],
+    ) -> Result<()> {
+        let requests = kfi::set_requests(values)
+            .map_err(|error| Error::new(ErrorKind::InvalidInput, error.0))?;
+        let _lane = self.programming_lane.lock().await;
+        if self.programming_fault.load(Ordering::Acquire) {
+            return Err(Error::other(
+                "programming stream needs reconnect after an incomplete transaction",
+            ));
+        }
+        let mut transaction = Transaction {
+            fault: &self.programming_fault,
+            complete: false,
+        };
+        for request in requests {
+            self.kfi_write(unit, request).await?;
+        }
+        transaction.complete = true;
+        Ok(())
+    }
+
+    // Caller holds programming_lane. Native ct requires both normal PCI
+    // delivery confirmation and a source-correlated `32 FF 00` unit ACK.
+    async fn kfi_write(&self, unit: u8, request: Cal) -> Result<()> {
+        let mut replies = self.packets.subscribe();
+        if !self.is_connected() {
+            return Err(Error::new(ErrorKind::BrokenPipe, "PCI disconnected"));
+        }
+        let packet = Packet::PointToPoint {
+            meta: Meta::new(true, 1),
+            unit_address: unit,
+            bridged: false,
+            hops: vec![],
+            cals: vec![request],
+        };
+        // KFI selector writes are stateful and their unit ACK is untagged.
+        // Send exactly once: replay after a lost confirmation could create a
+        // delayed identical ACK that a following selector write cannot
+        // distinguish from its own response.
+        let confirmation = self.send_guarded_once(&packet).await?;
+        let code = confirmation.code;
+        tokio::time::timeout(REPLY_TIMEOUT, async {
+            let mut confirmed = false;
+            let mut accepted = false;
+            loop {
+                match replies.recv().await {
+                    Ok(Some(Packet::Confirmation { code: got, success })) if got == code => {
+                        if confirmed {
+                            return Err(Error::new(
+                                ErrorKind::InvalidData,
+                                "duplicate KFI write confirmation",
+                            ));
+                        }
+                        if !success {
+                            return Err(Error::other("PCI rejected KFI write"));
+                        }
+                        confirmed = true;
+                    }
+                    Ok(Some(Packet::PciError)) => {
+                        return Err(Error::other("PCI rejected KFI write"));
+                    }
+                    Ok(Some(packet)) => {
+                        let cals = match packet {
+                            Packet::PointToPoint { meta, cals, .. }
+                                if meta.source_address == Some(unit) =>
+                            {
+                                cals
+                            }
+                            Packet::PointToPoint { meta, cals, .. }
+                                if meta.source_address.is_none()
+                                    && self.local_unit.load(Ordering::Acquire)
+                                        == u16::from(unit) =>
+                            {
+                                cals
+                            }
+                            Packet::BareCal(cal)
+                                if self.local_unit.load(Ordering::Acquire) == u16::from(unit) =>
+                            {
+                                vec![cal]
+                            }
+                            _ => continue,
+                        };
+                        for cal in cals {
+                            match cal {
+                                Cal::Ack {
+                                    parameter: 0xff,
+                                    data,
+                                } if data == [0] => accepted = true,
+                                // Native ct accepts only the exact `32 FF 00`
+                                // success prefix. A `3B FF` NAK can carry
+                                // operation-specific error detail, but no tail
+                                // can turn that source-correlated rejection
+                                // into success.
+                                Cal::Nak {
+                                    parameter: 0xff, ..
+                                } => {
+                                    return Err(Error::other("unit rejected KFI write"));
+                                }
+                                _ => {}
+                            }
+                        }
+                    }
+                    Ok(None) | Err(_) => {
+                        return Err(Error::new(
+                            ErrorKind::BrokenPipe,
+                            "PCI response stream lost",
+                        ));
+                    }
+                }
+                if confirmed && accepted {
+                    return Ok(());
+                }
+            }
+        })
+        .await
+        .unwrap_or_else(|_| Err(Error::new(ErrorKind::TimedOut, "KFI write timed out")))
+    }
+
+    // Caller holds programming_lane across the three KFIGET selector writes
+    // and this complete response window.
+    async fn collect_kfi_replies(&self, unit: u8, request: Cal) -> Result<Vec<[u8; kfi::COUNT]>> {
+        let mut replies = self.packets.subscribe();
+        if !self.is_connected() {
+            return Err(Error::new(ErrorKind::BrokenPipe, "PCI disconnected"));
+        }
+        let packet = Packet::PointToPoint {
+            meta: Meta::new(true, 1),
+            unit_address: unit,
+            bridged: false,
+            hops: vec![],
+            cals: vec![request],
+        };
+        // Reply multiplicity is part of KFIGET's native result, so replaying
+        // the IDENTIFY would also turn one unit into a false multi-response.
+        let confirmation = self.send_guarded_once(&packet).await?;
+        let code = confirmation.code;
+
+        tokio::time::timeout(REPLY_TIMEOUT, async {
+            let mut confirmed = false;
+            let mut collected = Vec::new();
+            let mut quiet_deadline = None;
+            loop {
+                let next = async {
+                    match quiet_deadline {
+                        Some(deadline) => tokio::time::timeout_at(deadline, replies.recv())
+                            .await
+                            .map_err(|_| Error::new(ErrorKind::TimedOut, "KFIGET quiet"))?,
+                        None => replies.recv().await,
+                    }
+                    .map_err(|_| Error::new(ErrorKind::BrokenPipe, "PCI response stream lost"))
+                };
+                let packet = match next.await {
+                    Err(error)
+                        if error.kind() == ErrorKind::TimedOut && quiet_deadline.is_some() =>
+                    {
+                        return Ok(collected);
+                    }
+                    Err(error) => return Err(error),
+                    Ok(None) => {
+                        return Err(Error::new(
+                            ErrorKind::BrokenPipe,
+                            "PCI response stream lost",
+                        ));
+                    }
+                    Ok(Some(packet)) => packet,
+                };
+                if let Packet::Confirmation { code: got, success } = &packet {
+                    if *got != code {
+                        continue;
+                    }
+                    if confirmed {
+                        return Err(Error::new(
+                            ErrorKind::InvalidData,
+                            "duplicate KFIGET confirmation",
+                        ));
+                    }
+                    if !*success {
+                        return Err(Error::other("PCI rejected KFIGET IDENTIFY command"));
+                    }
+                    confirmed = true;
+                    if collected.len() > 1 {
+                        return Ok(collected);
+                    }
+                    quiet_deadline = Some(Instant::now() + IDENTIFY_QUIET);
+                    continue;
+                }
+                if matches!(packet, Packet::PciError) {
+                    return Err(Error::other("PCI rejected KFIGET IDENTIFY command"));
+                }
+                let cals = match packet {
+                    Packet::PointToPoint { meta, cals, .. }
+                        if meta.source_address == Some(unit) =>
+                    {
+                        cals
+                    }
+                    Packet::PointToPoint { meta, cals, .. }
+                        if meta.source_address.is_none()
+                            && self.local_unit.load(Ordering::Acquire) == u16::from(unit) =>
+                    {
+                        cals
+                    }
+                    Packet::BareCal(cal)
+                        if self.local_unit.load(Ordering::Acquire) == u16::from(unit) =>
+                    {
+                        vec![cal]
+                    }
+                    _ => continue,
+                };
+                let matches_attribute = cals.iter().any(
+                    |cal| matches!(cal, Cal::Reply { parameter, .. } if *parameter == kfi::ATTRIBUTE),
+                );
+                if !matches_attribute {
+                    continue;
+                }
+                if cals.len() != 1 {
+                    return Err(Error::new(
+                        ErrorKind::InvalidData,
+                        "KFIGET reply contains an ambiguous CAL chain",
+                    ));
+                }
+                let Cal::Reply { data, .. } = &cals[0] else {
+                    unreachable!("matching KFIGET reply checked above")
+                };
+                let values = kfi::decode_reply(data)
+                    .map_err(|error| Error::new(ErrorKind::InvalidData, error.0))?;
+                if collected.len() < 2 {
+                    collected.push(values);
+                }
+                if confirmed && collected.len() > 1 {
+                    return Ok(collected);
+                }
+                if confirmed {
+                    quiet_deadline = Some(Instant::now() + IDENTIFY_QUIET);
+                }
+            }
+        })
+        .await
+        .unwrap_or_else(|_| Err(Error::new(ErrorKind::TimedOut, "KFIGET reply timed out")))
+    }
+
     /// Send one selected-serial address broadcast on this shared PCI.
     ///
     /// cmqttd enables SRCHK, so the exact request includes both the native
@@ -2242,6 +2519,285 @@ mod tests {
             bytes.iter().map(|b| format!("{b:02X}")).collect::<String>()
         );
         remote.get_mut().write_all(wire.as_bytes()).await.unwrap();
+    }
+
+    async fn drive_kfi_get_preamble(
+        remote: &mut BufReader<tokio::io::DuplexStream>,
+        unit: u8,
+    ) -> u8 {
+        let expected = [
+            b"\\460500A3FF00090A".as_slice(),
+            b"\\460500A5FF0082001C73".as_slice(),
+            b"\\460500A5FF008404FF8A".as_slice(),
+        ];
+        assert_eq!(unit, 5, "literal KFI oracle frames are for unit 5");
+        for (index, frame) in expected.into_iter().enumerate() {
+            let request = line(remote).await;
+            assert_eq!(&request[..request.len() - 2], frame);
+            let code = request[request.len() - 2];
+            // The source-correlated unit ACK may arrive on either side of
+            // the independent PCI delivery confirmation.
+            if index == 0 {
+                reply(remote, unit, &[0x32, 0xff, 0x00]).await;
+                remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+            } else {
+                remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+                reply(remote, unit, &[0x32, 0xff, 0x00]).await;
+            }
+        }
+        let request = line(remote).await;
+        assert_eq!(&request[..request.len() - 2], b"\\460500213D57");
+        request[request.len() - 2]
+    }
+
+    async fn kfi_reply(remote: &mut BufReader<tokio::io::DuplexStream>, unit: u8, packed: [u8; 4]) {
+        let mut cal = vec![0x8d, kfi::ATTRIBUTE, 0x80];
+        cal.extend_from_slice(&packed);
+        cal.extend_from_slice(&[0; 7]);
+        reply(remote, unit, &cal).await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn kfiget_uses_native_sequence_and_correlates_one_reply() {
+        let (pci, mut remote, _) = setup().await;
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.get_key_function_indicators(5).await }
+        });
+        let code = drive_kfi_get_preamble(&mut remote, 5).await;
+
+        // A valid reply may precede confirmation, but the command must not
+        // complete until delivery is positively confirmed. A different
+        // source cannot satisfy the unit-scoped transaction.
+        kfi_reply(&mut remote, 4, [0xff; 4]).await;
+        kfi_reply(&mut remote, 5, [0x21, 0x43, 0x65, 0x87]).await;
+        tokio::task::yield_now().await;
+        assert!(!running.is_finished());
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        tokio::time::advance(IDENTIFY_QUIET).await;
+        tokio::task::yield_now().await;
+        assert_eq!(
+            running.await.unwrap().unwrap(),
+            vec![[1, 2, 3, 4, 5, 6, 7, 8]]
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn kfiget_preserves_zero_and_multiple_native_outcomes() {
+        let (pci, mut remote, _) = setup().await;
+        let none = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.get_key_function_indicators(5).await }
+        });
+        let code = drive_kfi_get_preamble(&mut remote, 5).await;
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        tokio::time::advance(IDENTIFY_QUIET).await;
+        tokio::task::yield_now().await;
+        assert!(none.await.unwrap().unwrap().is_empty());
+
+        let multiple = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.get_key_function_indicators(5).await }
+        });
+        let code = drive_kfi_get_preamble(&mut remote, 5).await;
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        kfi_reply(&mut remote, 5, [0x21, 0x43, 0x65, 0x87]).await;
+        kfi_reply(&mut remote, 5, [0x10, 0x32, 0x54, 0x76]).await;
+        let replies = multiple.await.unwrap().unwrap();
+        assert_eq!(replies.len(), 2);
+        assert_eq!(replies[0], [1, 2, 3, 4, 5, 6, 7, 8]);
+        assert_eq!(replies[1], [0, 1, 2, 3, 4, 5, 6, 7]);
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn kfiget_rejects_a_short_correlated_reply() {
+        let (pci, mut remote, _) = setup().await;
+        let running = tokio::spawn(async move { pci.get_key_function_indicators(5).await });
+        let code = drive_kfi_get_preamble(&mut remote, 5).await;
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        // 0x85 carries parameter plus four data bytes, shorter than native
+        // 0x8D while retaining the correlated attribute/selector prefix.
+        reply(
+            &mut remote,
+            5,
+            &[0x85, kfi::ATTRIBUTE, 0x80, 0x21, 0x43, 0x65],
+        )
+        .await;
+        assert_eq!(
+            running.await.unwrap().unwrap_err().kind(),
+            ErrorKind::InvalidData
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn kfiget_negative_identify_confirmation_is_an_error() {
+        let (pci, mut remote, _) = setup().await;
+        let running = tokio::spawn(async move { pci.get_key_function_indicators(5).await });
+        let code = drive_kfi_get_preamble(&mut remote, 5).await;
+        remote.get_mut().write_all(&[code, b'#']).await.unwrap();
+        assert!(running
+            .await
+            .unwrap()
+            .unwrap_err()
+            .to_string()
+            .contains("PCI rejected KFIGET"));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn kfiset_packs_nibbles_and_aborts_on_rejection() {
+        let (pci, mut remote, _) = setup().await;
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move {
+                pci.set_key_function_indicators(5, [1, 2, 3, 4, 5, 6, 7, 8])
+                    .await
+            }
+        });
+        for expected in [
+            b"\\460500A3FF00090A".as_slice(),
+            b"\\460500A5FF0084214329".as_slice(),
+            b"\\460500A5FF00846587A1".as_slice(),
+            b"\\460500A4FF006BACFB".as_slice(),
+        ] {
+            let request = line(&mut remote).await;
+            assert_eq!(&request[..request.len() - 2], expected);
+            let code = request[request.len() - 2];
+            remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+            reply(&mut remote, 5, &[0x32, 0xff, 0x00]).await;
+        }
+        running.await.unwrap().unwrap();
+
+        let (pci, mut remote, _) = setup().await;
+        let rejected = tokio::spawn(async move {
+            pci.set_key_function_indicators(5, [1, 2, 3, 4, 5, 6, 7, 8])
+                .await
+        });
+        let request = line(&mut remote).await;
+        assert_eq!(&request[..request.len() - 2], b"\\460500A3FF00090A");
+        let code = request[request.len() - 2];
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        reply(&mut remote, 5, &[0x32, 0xff, 0x00]).await;
+        let request = line(&mut remote).await;
+        assert_eq!(&request[..request.len() - 2], b"\\460500A5FF0084214329");
+        let code = request[request.len() - 2];
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        // NAK tails are operation-specific; every source-correlated `3B FF`
+        // rejects this write, not only a zero-valued tail.
+        reply(&mut remote, 5, &[0x3b, 0xff, 0x7e]).await;
+        assert!(rejected
+            .await
+            .unwrap()
+            .unwrap_err()
+            .to_string()
+            .contains("rejected"));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn kfiset_non_exact_ack_times_out_without_sending_the_next_write() {
+        let (pci, mut remote, _) = setup().await;
+        let running =
+            tokio::spawn(async move { pci.set_key_function_indicators(5, [0; kfi::COUNT]).await });
+        let request = line(&mut remote).await;
+        assert_eq!(&request[..request.len() - 2], b"\\460500A3FF00090A");
+        let code = request[request.len() - 2];
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        // Only native `32 FF 00` is success. An ACK for the same parameter
+        // with a longer payload must not advance the write sequence.
+        reply(&mut remote, 5, &[0x33, 0xff, 0x00, 0x01]).await;
+        tokio::select! {
+            unexpected = line(&mut remote) => {
+                panic!("non-exact KFI ACK advanced the sequence: {unexpected:?}")
+            }
+            _ = tokio::time::sleep(Duration::from_millis(1)) => {}
+        }
+        tokio::time::advance(REPLY_TIMEOUT).await;
+        tokio::task::yield_now().await;
+        assert_eq!(
+            running.await.unwrap().unwrap_err().kind(),
+            ErrorKind::TimedOut
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn kfi_ack_before_lost_confirmation_is_not_replayed_or_reused() {
+        let (pci, mut remote, _) = setup().await;
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.set_key_function_indicators(5, [0; kfi::COUNT]).await }
+        });
+        let request = line(&mut remote).await;
+        assert_eq!(&request[..request.len() - 2], b"\\460500A3FF00090A");
+        let code = request[request.len() - 2];
+        assert!(pci.state.lock().unwrap().pending.is_empty());
+
+        // The unit ACK can precede the PCI confirmation. Losing the latter
+        // leaves this exact-once stateful write uncertain; it must never be
+        // replayed merely to obtain another confirmation.
+        reply(&mut remote, 5, &[0x32, 0xff, 0x00]).await;
+        tokio::time::advance(REPLY_TIMEOUT - Duration::from_millis(1)).await;
+        tokio::task::yield_now().await;
+        tokio::select! {
+            unexpected = line(&mut remote) => {
+                panic!("KFI write was replayed after lost confirmation: {unexpected:?}")
+            }
+            _ = tokio::time::sleep(Duration::from_millis(1)) => {}
+        }
+        tokio::task::yield_now().await;
+        assert_eq!(
+            running.await.unwrap().unwrap_err().kind(),
+            ErrorKind::TimedOut
+        );
+        assert!(pci.programming_fault.load(Ordering::Acquire));
+        {
+            let state = pci.state.lock().unwrap();
+            assert!(state.pending.is_empty());
+            assert!(state.quarantined_codes.contains(&code));
+        }
+
+        // A late confirmation and duplicate untagged ACK cannot satisfy the
+        // next identical write. The uncertain transaction has faulted the
+        // programming lane until a reconnect establishes a clean boundary.
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        reply(&mut remote, 5, &[0x32, 0xff, 0x00]).await;
+        tokio::task::yield_now().await;
+        let error = pci
+            .set_key_function_indicators(5, [1; kfi::COUNT])
+            .await
+            .unwrap_err();
+        assert!(error.to_string().contains("reconnect"));
+        tokio::select! {
+            unexpected = line(&mut remote) => {
+                panic!("late KFI responses advanced a new sequence: {unexpected:?}")
+            }
+            _ = tokio::time::sleep(Duration::from_millis(1)) => {}
+        }
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn kfiget_reply_before_lost_confirmation_does_not_replay_identify() {
+        let (pci, mut remote, _) = setup().await;
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.get_key_function_indicators(5).await }
+        });
+        let _code = drive_kfi_get_preamble(&mut remote, 5).await;
+        kfi_reply(&mut remote, 5, [0x21, 0x43, 0x65, 0x87]).await;
+        assert!(pci.state.lock().unwrap().pending.is_empty());
+
+        tokio::time::advance(REPLY_TIMEOUT - Duration::from_millis(1)).await;
+        tokio::task::yield_now().await;
+        tokio::select! {
+            unexpected = line(&mut remote) => {
+                panic!("KFIGET IDENTIFY was replayed after lost confirmation: {unexpected:?}")
+            }
+            _ = tokio::time::sleep(Duration::from_millis(1)) => {}
+        }
+        tokio::task::yield_now().await;
+        assert_eq!(
+            running.await.unwrap().unwrap_err().kind(),
+            ErrorKind::TimedOut
+        );
+        assert!(pci.programming_fault.load(Ordering::Acquire));
     }
 
     #[tokio::test(start_paused = true)]

@@ -1,0 +1,6 @@
+{"frames":["\\460500A3FF00090A","\\460500A5FF0082001C73","\\460500A5FF008404FF8A","\\460500213D57"],"id":"kfi-get-unit-5","kind":"get","unit":5}
+{"frames":["\\460500A3FF00090A","\\460500A5FF0084214329","\\460500A5FF00846587A1","\\460500A4FF006BACFB"],"id":"kfi-set-unit-5-values-1-through-8","kind":"set","unit":5,"values":[1,2,3,4,5,6,7,8]}
+{"data_hex":"802143658700000000000000","id":"kfi-reply-values-1-through-8","kind":"reply","values":[1,2,3,4,5,6,7,8]}
+{"data_hex":"80214365","id":"kfi-reply-short","kind":"reply_error"}
+{"data_hex":"812143658700000000000000","id":"kfi-reply-wrong-selector","kind":"reply_error"}
+{"id":"kfi-set-value-out-of-range","kind":"set_error","values":[0,1,2,3,4,5,6,16]}

@@ -1150,7 +1150,9 @@ def build_parser():
     cgate.add_argument("--key", type=Path)
     cgops = cgate.add_subparsers(dest="action", required=True)
     p = cgops.add_parser("edlt-labels", help="Read live KEYGL5 labels through cmqttd, without Windows or a second CNI connection")
-    p.add_argument("address", help="Fully qualified physical unit, e.g. //PROJECT/254/p/5")
+    label_scope = p.add_mutually_exclusive_group(required=True)
+    label_scope.add_argument("address", nargs="?", help="Fully qualified physical unit, e.g. //PROJECT/254/p/5")
+    label_scope.add_argument("--network", help="Freshly discover and read every supported eDLT on //PROJECT/NETWORK")
     from .repositories_cli import register as repository_options
     repository_options(cgops)
     from .thermostat_schedule_cli import compose_options, options as schedule_options
@@ -2058,7 +2060,10 @@ def _cgate(args):
     with connection_guard(args), CGateClient(args.host, args.port or (20123 if args.tls else 20023),
                      timeout=args.timeout, ssl_context=context) as client:
         if args.action == "edlt-labels":
-            from .cmqtt import edlt_labels
+            from .cmqtt import edlt_label_inventory, edlt_labels
+            if args.network is not None:
+                result = edlt_label_inventory(client, args.network)
+                return result, int(not result["complete"])
             return edlt_labels(client, args.address), 0
         if args.action == "label":
             from .labels import NativeLabels

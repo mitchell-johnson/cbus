@@ -15,6 +15,29 @@ The Python `cbus-toolkit` application is installed separately; see [toolkit.md](
 | Emulate the C-Gate 3.4 command surface | `cgate-mock` | Opens a TCP listener and mutates in-memory state |
 | Recheck committed compatibility vectors | `cbus-vector-check` | Reads local JSONL vectors |
 
+### Live eDLT label inventory
+
+Against cmqttd's embedded C-Gate service, inventory the supported physical
+KEYGL5 5.5.00 devices on one network with:
+
+```sh
+cbus-toolkit cgate --host 127.0.0.1 --timeout 120 \
+  edlt-labels --network //PROJECT/254
+```
+
+The command runs one network serial refresh (`NET SYNC` and `NET CHECKUNIT`),
+selects supported devices in numeric address order, reads their static
+configurations sequentially, then queries `CMQTT LABELS` once for the network.
+Physical IDENTIFY4 reads bracket each selected memory snapshot; the fresh
+inventory identity is attached only if both physical serials match it. A
+mismatch remains a per-unit error without stale identity attachment. Its JSON
+preserves unsupported, unknown and ambiguous records plus successful reads and
+failures. `complete: false` produces a nonzero exit status without discarding
+the partial report. Dynamic-label observations are a transient,
+network-wide and recipient-unverified traffic ring, never a per-device result.
+Unit-shaped `CMQTT LABELS` requests are compatibility aliases for the same
+ring. Physical dynamic-label cache readback remains unavailable and false.
+
 ## cbus-tools
 
 ### Decode

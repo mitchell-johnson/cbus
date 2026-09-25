@@ -13,10 +13,11 @@ accepted test checkpoints and the remaining implementation plan.
 
 For supported physical operations without Windows, connect this CLI to the
 [C-Gate service embedded in cmqttd](../docs/cmqttd-cgate.md). MQTT and CLI
-requests share one CNI connection. Read a live KEYGL5 eDLT's stored strings and
-widget labels with `cbus-toolkit cgate --host 127.0.0.1 --timeout 30 edlt-labels
-//PROJECT/254/p/5`. The result distinguishes verified static text from unread
-dynamic caches. The embedded service is not yet a full C-Gate replacement.
+requests share one CNI connection. Inventory live KEYGL5 eDLT stored strings
+and widget labels with `cbus-toolkit cgate --host 127.0.0.1 --timeout 120
+edlt-labels --network //PROJECT/254`. The result distinguishes verified static
+text from transient network-wide label observations and unread device caches.
+The embedded service is not yet a full C-Gate replacement.
 
 ## Install and run
 
@@ -1408,6 +1409,65 @@ and ASCII clearing. The CLI reports `queued: true, device_verified: false` for
 native acceptance. The independent simulator verifies completed Unicode and
 bitmap payloads and reloads their stored state; it does not establish physical
 display behavior. See [label limits and acceptance evidence](docs/labels.md).
+
+### Live eDLT label inventory
+
+Use the physical service embedded in `cmqttd` to inventory the exact supported
+KEYGL5 5.5.00 profile on a direct network without opening a second CNI
+connection:
+
+```sh
+cbus-toolkit cgate --host 127.0.0.1 --timeout 120 \
+  edlt-labels --network //PROJECT/254
+```
+
+This form runs one whole-network serial refresh (`NET SYNC` followed by
+`NET CHECKUNIT`), classifies the fresh records and reads supported addresses in
+numeric order. The JSON retains the fresh inventory, unsupported firmware,
+unknown or ambiguous identities, other unit families, successful device
+snapshots, and read or observation errors. Every successful device snapshot
+contains the static strings and their references, with live identity, stable
+configuration-header and static-text CRC checks. Physical IDENTIFY4 reads
+bracket each selected memory snapshot. The fresh inventory identity is attached
+only when both physical serials match its serial; a mismatch remains a
+per-device read error and cannot attach stale identity evidence. The snapshots
+are read one at a time and therefore are not an atomic network image. If
+selection, a device read, or the final observation query is incomplete, the CLI
+still prints the partial report with `complete: false` and exits nonzero.
+
+The command issues `CMQTT LABELS` once after the device reads, at network scope.
+Those bounded records are traffic observed during the current `cmqttd`
+connection. They are transient, network-wide and recipient-unverified, and the
+CLI keeps them at the inventory's top level rather than attaching them to any
+device. A unit-shaped `CMQTT LABELS //PROJECT/NETWORK/p/UNIT` request remains a
+compatibility alias for the same network ring; it does not narrow the records
+to that unit. No physical operation reads an eDLT's existing dynamic-label
+cache, so `device_dynamic_label_cache_readback` and the observation document's
+`device_readback` remain false and the observations remain incomplete.
+
+The original single-device form remains available when the caller deliberately
+selects one address:
+
+```sh
+cbus-toolkit cgate --host 127.0.0.1 --timeout 30 \
+  edlt-labels //PROJECT/254/p/5
+```
+
+cmqttd also exposes the native physical KFI commands through raw C-Gate
+execution:
+
+```sh
+cbus-toolkit cgate exec 'LABEL KFIGET //PROJECT/254/56 5'
+cbus-toolkit cgate exec 'LABEL KFISET //PROJECT/254/56 5 1 2 3 4 5 6 7 8'
+```
+
+The application token is a native `LabelSupportingApplication` scope/class
+gate; it is not encoded into KFIGET's fixed selector `0x1c`. KFIGET sends three
+volatile parameter-`0xFF` writes before IDENTIFY, so do not treat it as a
+dynamic-label cache read or run it casually on live hardware. All KFI writes
+and the GET IDENTIFY request are generation-safe exact-once sends with no
+transport replay. A lost confirmation faults the programming lane until the
+PCI connection is re-established.
 
 Trigger events and cached native state are also typed commands:
 

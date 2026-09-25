@@ -574,9 +574,7 @@ impl Service {
             }
         }
         if verb == "CMQTT" && sub == "CAPABILITIES" && words.len() == 2 {
-            return ok(
-                tag,
-                vec![serde_json::json!({"service":"cmqttd", "physical_bus":true,
+            let mut capabilities = serde_json::json!({"service":"cmqttd", "physical_bus":true,
                 "full_cgate_compatibility":false, "memory_read":true, "memory_write":true,
                 "physical_pp_load":true, "physical_pp_save":true,
                 "physical_pp_save_cbus3_nvm":true,
@@ -607,10 +605,11 @@ impl Service {
                 "project":self.project,"network":self.network,"persistent_database":true,
                 // Opt-in command-layer LOGIN gate (see Service::set_auth_token_hash):
                 // false with the dormant default, true once armed.
-                "cgate_auth":self.auth_token_hash.get().is_some()})
-                .to_string()],
-                "200 OK",
-            );
+                "cgate_auth":self.auth_token_hash.get().is_some()});
+            // Keep the new flat flag out of the already recursion-deep json!
+            // invocation while retaining one static capability document.
+            capabilities["label_kfi"] = serde_json::Value::Bool(true);
+            return ok(tag, vec![capabilities.to_string()], "200 OK");
         }
         if verb == "CMQTT" && sub == "LABELS" && words.len() == 3 {
             let address = words[2];
@@ -634,9 +633,12 @@ impl Service {
                 vec![serde_json::json!({
                     "format":"cmqttd-observed-dynamic-labels-v1",
                     "address":address,
+                    "requested_address":address,
                     "project":self.project,
                     "network":self.network,
                     "source":"observed-sal-traffic",
+                    "observation_scope":"network",
+                    "recipient_verified":false,
                     "complete":false,
                     "device_readback":false,
                     "reset_on_reconnect":true,
@@ -708,6 +710,9 @@ impl Service {
             && matches!(sub, "LABEL" | "UNICODELABEL")
         {
             return self.label(client, line, tag, &words, &upper).await;
+        }
+        if verb == "LABEL" && matches!(sub, "KFIGET" | "KFISET") {
+            return self.label_kfi(tag, &words, &upper).await;
         }
         if verb == "LABEL" && sub == "CLEAREDLT" {
             return self.clear_edlt_labels(client, line, tag, &words).await;
@@ -2697,6 +2702,81 @@ impl Service {
         }
     }
 
+    async fn label_kfi(&self, tag: &str, words: &[&str], upper: &[String]) -> Response {
+        let _commands = self.commands.lock().await;
+        let set = upper.get(1).is_some_and(|sub| sub == "KFISET");
+        let expected_words = if set { 12 } else { 4 };
+        if words.len() != expected_words {
+            let syntax = if set {
+                "400 LABEL KFISET requires an application, unit-id and eight KFI values"
+            } else {
+                "400 LABEL KFIGET requires an application and unit-id"
+            };
+            return err(tag, 400, syntax);
+        }
+        let Some(application) = self.application_path(words[2]) else {
+            return err(tag, 404, "404 Label application is not on this network");
+        };
+        // Native kz uses the requested application only to resolve an object
+        // and require `LabelSupportingApplication`. It passes the transport,
+        // base network and unit to kv/kw; the application ID never enters the
+        // KFI transaction, whose selector write is deliberately fixed at
+        // `00 82 00 1C`. Mirror that class gate with the native label-capable
+        // application families rather than rewriting 0x1C from this path.
+        if !((48..=95).contains(&application) || matches!(application, 202 | 203)) {
+            return err(tag, 402, "402 Application does not support labels");
+        }
+        let Ok(unit) = words[3].parse::<u8>() else {
+            return err(tag, 400, "400 Invalid KFI unit-id");
+        };
+        let pci = self.pci.read().await.clone();
+        if set {
+            let mut values = [0u8; cbus_protocol::kfi::COUNT];
+            for (value, word) in values.iter_mut().zip(&words[4..]) {
+                let Ok(parsed) = word.parse::<u8>() else {
+                    return err(tag, 400, "400 KFI values must be in 0..15");
+                };
+                if parsed > 15 {
+                    return err(tag, 400, "400 KFI values must be in 0..15");
+                }
+                *value = parsed;
+            }
+            return match pci.set_key_function_indicators(unit, values).await {
+                Ok(()) => ok(tag, vec![], "200 OK"),
+                Err(error) => err(
+                    tag,
+                    408,
+                    &format!("408 {} (command failed: {error})", words[2]),
+                ),
+            };
+        }
+
+        match pci.get_key_function_indicators(unit).await {
+            Ok(replies) if replies.is_empty() => err(tag, 524, "524 No response."),
+            Ok(replies) if replies.len() > 1 => err(tag, 524, "524 Too many responses."),
+            Ok(replies) => {
+                let values = replies[0];
+                let mut rows = values
+                    .iter()
+                    .enumerate()
+                    .map(|(index, value)| format!("kfi{}={value}", index + 1))
+                    .collect::<Vec<_>>();
+                let final_row = rows.pop().expect("KFI reply always has eight values");
+                Response {
+                    tag: tag.to_string(),
+                    lines: rows.into_iter().map(|row| format!("300-{row}")).collect(),
+                    final_text: format!("300 {final_row}"),
+                    status: 300,
+                }
+            }
+            Err(error) => err(
+                tag,
+                408,
+                &format!("408 {} (command failed: {error})", words[2]),
+            ),
+        }
+    }
+
     async fn enable(
         &self,
         client: &ClientState,
@@ -4618,7 +4698,7 @@ async fn bounded_line<R: tokio::io::AsyncBufRead + Unpin>(
 /// when the (verb, sub) path mutates durable state, unit memory, or the
 /// session/lock tables, and therefore needs the per-connection LOGIN flag
 /// while the gate is armed. Read-only verbs (GET/INFO/LIST/QUICKGET/scans/
-/// serials/label reads), bus-control verbs (lighting/trigger/enable/clock/
+/// serials/observed-label reads), bus-control verbs (lighting/trigger/enable/clock/
 /// temperature/label writes, DO methods, NET scans) and session-local
 /// LOGIN/LOGOUT stay open.
 ///
@@ -4638,7 +4718,9 @@ async fn bounded_line<R: tokio::io::AsyncBufRead + Unpin>(
 ///   leaving them open would bypass the gate.
 /// - SET in all forms (unit readdress via the pre-gate Address branch and
 ///   scalar database sets via the model): every form mutates.
-/// - LABEL CLEAREDLT (clears unit labels). LIGHTING/TRIGGER/ENABLE label
+/// - LABEL CLEAREDLT (clears unit labels) and LABEL KFIGET/KFISET. KFIGET is
+///   operational rather than read-only: native C-Gate sends three parameter-
+///   `0xFF` writes before its IDENTIFY. LIGHTING/TRIGGER/ENABLE label
 ///   writes stay open: they are bus-control SAL traffic with MQTT
 ///   equivalents, like lighting ON/OFF — gating them without gating MQTT
 ///   would be theater, while programming verbs have no MQTT equivalent.
@@ -4683,7 +4765,7 @@ fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
         ),
         "SET" => true,
         "NET" => matches!(sub, "SET_PROJECT_IDENTIFY" | "UNRAVEL" | "UNRAVELUNIT"),
-        "LABEL" => sub == "CLEAREDLT",
+        "LABEL" => matches!(sub, "CLEAREDLT" | "KFIGET" | "KFISET"),
         "SCENE" => sub == "RECORD",
         "DO" => words
             .get(2)

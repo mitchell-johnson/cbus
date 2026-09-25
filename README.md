@@ -18,7 +18,7 @@ The Rust workspace also provides protocol tools, a PCI simulator, and a C-Gate c
 | Plan supported keypad, sensor, eDLT, scene, or unit-conversion settings offline | `cbus-toolkit keys`, `sensors`, `edlt`, `scene`, and `unit-conversion` |
 | Query a CNI directly or inspect routed PCI messages | `cbus-toolkit pci` and `pci-route` |
 | Connect C-Bus lights to MQTT and Home Assistant | `cmqttd` |
-| Read live eDLT labels without Windows, while MQTT keeps running | `cbus-toolkit cgate edlt-labels`, connected to `cmqttd` |
+| Inventory live eDLT labels without Windows, while MQTT keeps running | `cbus-toolkit cgate edlt-labels --network //PROJECT/NETWORK`, connected to `cmqttd` |
 | Decode a frame, export project labels, or interrogate a unit | `cbus-tools` |
 | Test a C-Gate client without a vendor server or hardware | `cgate-mock` |
 | Test PCI/CNI protocol traffic without hardware | `cbus-simulator` |
@@ -111,10 +111,31 @@ cbus-toolkit cgate --host 127.0.0.1 project list
 cbus-toolkit cgate --host 127.0.0.1 exec 'CMQTT CAPABILITIES'
 cbus-toolkit cgate --host 127.0.0.1 --timeout 120 network sync-new //PROJECT/254 --unit 6
 cbus-toolkit cgate --host 127.0.0.1 network set-project //PROJECT/254 PROJECT
+cbus-toolkit cgate --host 127.0.0.1 --timeout 120 edlt-labels --network //PROJECT/254
 cbus-toolkit cgate --host 127.0.0.1 edlt-labels //PROJECT/254/p/5
 ```
 
-Replace the project/network/unit with your actual address. Live eDLT label reads verify the device identity, stable configuration header, and static-text CRC; results include the 64 stored strings and widget/scene labels. The result also assembles dynamic-label SAL traffic observed since `cmqttd` connected. That volatile view is explicitly marked incomplete and is not a query of labels that were already cached by the device.
+Replace the example project, network and unit with your actual addresses. The
+network form performs one fresh `NET SYNC` plus `NET CHECKUNIT` serial refresh,
+then reads every exact supported KEYGL5 5.5.00 record in numeric address order.
+It brackets each selected memory snapshot with physical IDENTIFY4 reads and
+attaches the fresh inventory identity only when both physical serials match the
+fresh inventory serial. A mismatch remains a per-device read error; it never
+attaches a stale inventory identity to the snapshot.
+It reports unsupported, unknown or ambiguous identities and per-device read
+failures alongside any successful static configurations. An incomplete report
+is still emitted and the command exits nonzero.
+
+Each selected device read verifies its live identity, stable configuration
+header and static-text CRC, and includes the 64 stored strings plus widget,
+page and scene references. Those physical snapshots are sequential, so the
+inventory is not an atomic view of the network. After the device reads, the
+CLI requests `CMQTT LABELS` once for the network. The resulting dynamic-label
+observations are network-wide, transient, recipient-unverified and kept only at
+the report's top level; they are never assigned to a device. A unit-shaped
+`CMQTT LABELS` request is only a compatibility alias for that same network ring.
+Physical dynamic-label cache readback remains unavailable, so the observation
+view is always marked incomplete and `device_readback` remains false.
 
 The embedded service also runs physical `NET CLOCKS` inspection, target-count
 configuration, and gateway recovery after `NET SYNC`, using source-correlated
@@ -128,6 +149,15 @@ Programming sessions also implement specification-backed
 `PP RESET_TO_DEFAULTS`: declared defaults replace only the staged session
 values, with no database or PCI write until the caller explicitly saves.
 Missing or malformed unit specifications fail unchanged.
+
+The embedded service also supports native physical `LABEL KFIGET` and
+`LABEL KFISET`. The application token admits only a native
+`LabelSupportingApplication`; it is a scope/class gate and is not encoded into
+KFIGET's fixed selector `0x1c`. KFIGET first sends three volatile
+parameter-`0xFF` writes, so it is a programming operation rather than a
+dynamic-label cache read. Every KFI write and the GET IDENTIFY request is sent
+exactly once with generation-safe confirmation handling and no transport
+replay. A lost confirmation faults the programming lane until reconnect.
 
 **Full C-Gate replacement is the target, not the current completion claim.** Hardware-backed lighting, C-Gate `DO` object methods for lighting, direct-network synchronization and guarded KEYGL5 FactoryDefault, persistent named-scene record/playback, Trigger Control, Enable Control, clock, Temperature Broadcast, native text/icon/Unicode/dynamic-bitmap label commands, and the eDLT dynamic-label clear control, complete-coverage `NET PINGU`, identity-populating `NET SYNC`, five-pass `NET SYNCNEW` with native duplicate challenges, verified physical `NET SET_PROJECT_IDENTIFY` parameter-35 writes, duplicate-aware `NET CHECKUNIT`, guarded physical unit readdressing, the bounded two-unit `NET UNRAVELUNIT ... 255 MATCHDB` workflow, unit identity, schema-driven physical `PP LOAD`, verified physical `PP SAVE` for `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and `goc2` parameters, extended-memory access, live observations, and persistent database operations are implemented while MQTT continues on the same CNI connection. `NET SYNCNEW` and `NET SET_PROJECT_IDENTIFY` update the volatile physical cache and do not create persistent project units. The unravel backend requires exactly two known serials at address 255, two unique empty database destinations, and a direct network; broader unravel cases remain unavailable. FactoryDefault acceptance proves the one-shot unit ACK but does not yet prove post-reset readback, reboot, retained address or persistence. Scene recording captures observed lighting levels on the configured network; playback sends confirmed zero-time ramps and requests physical readback. Direct and page-aware lock-protected fields and unit readdressing use the native one-use challenge phase; GIU uses native halt/store/resume, GOC-family programming uses its address-prefixed parameter-`0xFF` transport, and changed C-Bus 3 saves complete the native Save-to-NVM EXECUTE/POLL sequence before reporting success. Physical programming requires privately installed decoded unit specifications. Unsupported protection modes return explicit errors instead of simulated success. See the [supported operations and remaining work](docs/cmqttd-cgate.md).
 

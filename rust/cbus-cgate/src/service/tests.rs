@@ -867,6 +867,7 @@ async fn capabilities_report_observation_without_device_readback() {
     let document: serde_json::Value = serde_json::from_str(&response.lines[0]).unwrap();
     assert_eq!(document["full_cgate_compatibility"], false);
     assert_eq!(document["dynamic_labels"], true);
+    assert_eq!(document["label_kfi"], true);
     assert_eq!(document["dynamic_label_observation"], true);
     assert_eq!(document["dynamic_label_device_readback"], false);
     assert_eq!(document["edlt_factory_default"], true);
@@ -921,19 +922,35 @@ async fn labels_empty_document_pins_observed_only_provenance() {
     assert_eq!(document["capacity"], MAX_LABEL_OBSERVATIONS);
     assert_eq!(document["observations"].as_array().unwrap().len(), 0);
     assert_eq!(document["address"], "//HARNESS/254");
+    assert_eq!(document["requested_address"], "//HARNESS/254");
+    assert_eq!(document["observation_scope"], "network");
+    assert_eq!(document["recipient_verified"], false);
     assert_eq!(document["project"], "HARNESS");
     assert_eq!(document["network"], 254);
-    // Unit-scoped address on the configured network is accepted too.
+    // A unit-shaped request still exposes the network-wide observations and
+    // does not imply that the requested unit received them.
     let unit = service
         .handle(&mut client, "[2] CMQTT LABELS //HARNESS/254/p/5")
         .await;
     assert_eq!(unit.status, 200);
+    assert_eq!(unit.lines.len(), 1);
+    let unit_document: serde_json::Value = serde_json::from_str(&unit.lines[0]).unwrap();
+    assert_eq!(unit_document["address"], "//HARNESS/254/p/5");
+    assert_eq!(unit_document["requested_address"], "//HARNESS/254/p/5");
+    assert_eq!(unit_document["observation_scope"], "network");
+    assert_eq!(unit_document["recipient_verified"], false);
+    assert_eq!(unit_document["device_readback"], false);
+    assert_eq!(unit_document["observations"], document["observations"]);
     // Bare canonical network forms accepted; trailing-slash forms rejected.
     for address in ["254", "HARNESS/254"] {
         let response = service
             .handle(&mut client, &format!("[3] CMQTT LABELS {address}"))
             .await;
         assert_eq!(response.status, 200, "{address}");
+        let document: serde_json::Value = serde_json::from_str(&response.lines[0]).unwrap();
+        assert_eq!(document["requested_address"], address);
+        assert_eq!(document["observation_scope"], "network");
+        assert_eq!(document["recipient_verified"], false);
     }
     for address in ["//HARNESS/254/", "//HARNESS/254/p/5/"] {
         let response = service
@@ -1179,6 +1196,199 @@ async fn do_edlt_factory_default_is_guarded_and_sent_once() {
             "{command}"
         );
     }
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test(start_paused = true)]
+async fn physical_label_kfi_commands_match_native_wire_and_responses() {
+    async fn pci_line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+    async fn pci_reply<W: tokio::io::AsyncWrite + Unpin>(writer: &mut W, source: u8, cal: &[u8]) {
+        let mut bytes = vec![0x86, source, 0x10, 0x00];
+        bytes.extend_from_slice(cal);
+        let sum = bytes.iter().fold(0u8, |sum, byte| sum.wrapping_add(*byte));
+        bytes.push(0u8.wrapping_sub(sum));
+        let mut wire = hex::encode_upper(bytes).into_bytes();
+        wire.extend_from_slice(b"\r\n");
+        writer.write_all(&wire).await.unwrap();
+    }
+    async fn kfi_get_preamble<R, W>(reader: &mut R, writer: &mut W) -> u8
+    where
+        R: tokio::io::AsyncBufRead + Unpin,
+        W: tokio::io::AsyncWrite + Unpin,
+    {
+        for expected in [
+            b"\\460500A3FF00090A".as_slice(),
+            b"\\460500A5FF0082001C73".as_slice(),
+            b"\\460500A5FF008404FF8A".as_slice(),
+        ] {
+            let request = pci_line(reader).await;
+            assert_eq!(&request[..request.len() - 2], expected);
+            let code = request[request.len() - 2];
+            writer.write_all(&[code, b'.']).await.unwrap();
+            pci_reply(writer, 5, &[0x32, 0xff, 0]).await;
+        }
+        let request = pci_line(reader).await;
+        assert_eq!(&request[..request.len() - 2], b"\\460500213D57");
+        request[request.len() - 2]
+    }
+    async fn kfi_reply<W: tokio::io::AsyncWrite + Unpin>(
+        writer: &mut W,
+        source: u8,
+        packed: [u8; 4],
+    ) {
+        let mut cal = vec![0x8d, cbus_protocol::kfi::ATTRIBUTE, 0x80];
+        cal.extend_from_slice(&packed);
+        cal.extend_from_slice(&[0; 7]);
+        pci_reply(writer, source, &cal).await;
+    }
+
+    let path = state_path();
+    let (pci, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        pci_line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut client = ClientState::default();
+    let get = service.handle(&mut client, "[1] LABEL KFIGET //HARNESS/254/56 5");
+    let peer = async {
+        let code = kfi_get_preamble(&mut remote_read, &mut remote_write).await;
+        // Wrong-source data is unrelated and must not complete the command.
+        kfi_reply(&mut remote_write, 4, [0xff; 4]).await;
+        kfi_reply(&mut remote_write, 5, [0x21, 0x43, 0x65, 0x87]).await;
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+        tokio::time::advance(Duration::from_secs(2)).await;
+        tokio::task::yield_now().await;
+    };
+    let (response, ()) = tokio::join!(get, peer);
+    assert_eq!(response.status, 300, "{response:?}");
+    assert_eq!(
+        response.lines,
+        vec![
+            "300-kfi1=1",
+            "300-kfi2=2",
+            "300-kfi3=3",
+            "300-kfi4=4",
+            "300-kfi5=5",
+            "300-kfi6=6",
+            "300-kfi7=7",
+        ]
+    );
+    assert_eq!(response.final_text, "300 kfi8=8");
+
+    let set = service.handle(
+        &mut client,
+        "[2] LABEL KFISET //HARNESS/254/56 5 1 2 3 4 5 6 7 8",
+    );
+    let peer = async {
+        for expected in [
+            b"\\460500A3FF00090A".as_slice(),
+            b"\\460500A5FF0084214329".as_slice(),
+            b"\\460500A5FF00846587A1".as_slice(),
+            b"\\460500A4FF006BACFB".as_slice(),
+        ] {
+            let request = pci_line(&mut remote_read).await;
+            assert_eq!(&request[..request.len() - 2], expected);
+            let code = request[request.len() - 2];
+            remote_write.write_all(&[code, b'.']).await.unwrap();
+            pci_reply(&mut remote_write, 5, &[0x32, 0xff, 0]).await;
+        }
+    };
+    let (response, ()) = tokio::join!(set, peer);
+    assert_eq!(response.status, 200, "{response:?}");
+
+    // Decompiled kz treats the application as a LabelSupportingApplication
+    // scope/class check. kv receives no application ID and intentionally uses
+    // the same fixed 0x1c selector for this non-Lighting application.
+    let no_response = service.handle(&mut client, "[3] LABEL KFIGET //HARNESS/254/202 5");
+    let peer = async {
+        let code = kfi_get_preamble(&mut remote_read, &mut remote_write).await;
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+        tokio::time::advance(Duration::from_secs(2)).await;
+        tokio::task::yield_now().await;
+    };
+    let (response, ()) = tokio::join!(no_response, peer);
+    assert_eq!(response.status, 524);
+    assert_eq!(response.final_text, "524 No response.");
+
+    let multiple = service.handle(&mut client, "[4] LABEL KFIGET //HARNESS/254/56 5");
+    let peer = async {
+        let code = kfi_get_preamble(&mut remote_read, &mut remote_write).await;
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+        kfi_reply(&mut remote_write, 5, [0x21, 0x43, 0x65, 0x87]).await;
+        kfi_reply(&mut remote_write, 5, [0x10, 0x32, 0x54, 0x76]).await;
+    };
+    let (response, ()) = tokio::join!(multiple, peer);
+    assert_eq!(response.status, 524);
+    assert_eq!(response.final_text, "524 Too many responses.");
+
+    // Decompiled command wrappers map setup/write failures through
+    // MethodException to the native 408 application-scoped envelope.
+    let rejected = service.handle(
+        &mut client,
+        "[5] LABEL KFISET //HARNESS/254/56 5 1 2 3 4 5 6 7 8",
+    );
+    let peer = async {
+        let request = pci_line(&mut remote_read).await;
+        assert_eq!(&request[..request.len() - 2], b"\\460500A3FF00090A");
+        let code = request[request.len() - 2];
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+        pci_reply(&mut remote_write, 5, &[0x32, 0xff, 0]).await;
+
+        let request = pci_line(&mut remote_read).await;
+        assert_eq!(&request[..request.len() - 2], b"\\460500A5FF0084214329");
+        let code = request[request.len() - 2];
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+        pci_reply(&mut remote_write, 5, &[0x3b, 0xff, 0]).await;
+    };
+    let (response, ()) = tokio::join!(rejected, peer);
+    assert_eq!(response.status, 408);
+    assert!(
+        response
+            .final_text
+            .starts_with("408 //HARNESS/254/56 (command failed:"),
+        "{response:?}"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn physical_label_kfi_parser_rejects_bad_arity_scope_and_values_without_io() {
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut client = ClientState::default();
+    for command in [
+        "[1] LABEL KFIGET //HARNESS/254/56",
+        "[2] LABEL KFIGET //HARNESS/254/56 5 extra",
+        "[3] LABEL KFIGET //OTHER/254/56 5",
+        "[4] LABEL KFIGET //HARNESS/254/25 5",
+        "[5] LABEL KFIGET //HARNESS/254/56 256",
+        "[6] LABEL KFISET //HARNESS/254/56 5 0 1 2 3 4 5 6",
+        "[7] LABEL KFISET //HARNESS/254/56 5 0 1 2 3 4 5 6 16",
+        "[8] LABEL KFISET //HARNESS/254/56 5 0 1 2 3 4 5 6 seven",
+        "[9] LABEL KFISET //HARNESS/254/56 5 0 1 2 3 4 5 6 7 extra",
+    ] {
+        let response = service.handle(&mut client, command).await;
+        assert!(response.status >= 400, "{command}: {response:?}");
+    }
+    let mut byte = [0u8; 1];
+    assert!(
+        tokio::time::timeout(Duration::from_millis(1), remote.read(&mut byte))
+            .await
+            .is_err()
+    );
     std::fs::remove_file(path).unwrap();
 }
 
@@ -3779,10 +3989,12 @@ async fn auth_wrong_secret_denied_and_gate_holds() {
         "[11] DBSETSAFE //HARNESS/254/p/5/TagName Changed",
         "[12] SET //HARNESS/254/p/5 Address 6",
         "[13] LABEL CLEAREDLT //HARNESS/254/p/5",
-        "[14] SCENE RECORD house evening",
-        "[15] DO //HARNESS/254/p/5 FactoryDefault",
-        "[16] NET UNRAVELUNIT //HARNESS/254 255 MATCHDB",
-        "[17] NET SET_PROJECT_IDENTIFY //HARNESS/254 TEST",
+        "[14] LABEL KFIGET //HARNESS/254/56 5",
+        "[15] LABEL KFISET //HARNESS/254/56 5 0 1 2 3 4 5 6 7",
+        "[16] SCENE RECORD house evening",
+        "[17] DO //HARNESS/254/p/5 FactoryDefault",
+        "[18] NET UNRAVELUNIT //HARNESS/254 255 MATCHDB",
+        "[19] NET SET_PROJECT_IDENTIFY //HARNESS/254 TEST",
     ] {
         let response = service.handle(&mut client, command).await;
         assert_eq!(response.status, 420, "{command}: {response:?}");

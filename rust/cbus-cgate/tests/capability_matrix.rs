@@ -92,9 +92,11 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // native-shaped per-connection operations in the real cmqttd endpoint.
     // PP RESET_TO_DEFAULTS is locally staged when an exact unit
     // specification is installed; it performs no bus I/O or database write.
-    assert_eq!(class_count(RoutingClass::Physical), 32);
+    // LABEL KFIGET and KFISET moved fail_closed_502 -> physical with their
+    // native confirmed CAL sequences and source-correlated responses.
+    assert_eq!(class_count(RoutingClass::Physical), 34);
     assert_eq!(class_count(RoutingClass::LocalDatabase), 42);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 356);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 354);
     assert_eq!(class_count(RoutingClass::Obsolete400), 1);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here
@@ -102,6 +104,23 @@ fn matrix_class_counts_pin_the_routing_gap() {
     assert_eq!(class_count(RoutingClass::Rejected4xx), 0);
     let total: usize = counts.values().sum();
     assert_eq!(total, 431);
+}
+
+#[test]
+fn label_kfi_paths_are_physical_and_evidence_the_operational_get() {
+    for path in ["LABEL KFIGET", "LABEL KFISET"] {
+        let row = CAPABILITY_MATRIX
+            .iter()
+            .find(|entry| entry.path == path)
+            .unwrap_or_else(|| panic!("missing capability row {path}"));
+        assert_eq!(row.class, RoutingClass::Physical, "{path}");
+        assert!(row.evidence.contains("parameter-0xFF"), "{path}");
+    }
+    let get = CAPABILITY_MATRIX
+        .iter()
+        .find(|entry| entry.path == "LABEL KFIGET")
+        .unwrap();
+    assert!(get.evidence.contains("GET as programming"));
 }
 
 #[test]

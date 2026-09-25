@@ -280,6 +280,17 @@ impl ConfirmationAllocation<'_> {
         }
         self.retained = true;
     }
+
+    // Keep this generation reserved without registering the frame for retry.
+    // Stateful programming writes cannot be replayed safely: once their bytes
+    // reached the PCI, a missing confirmation leaves the result uncertain.
+    fn retain_once(&mut self) {
+        let mut st = self.client.state.lock().unwrap();
+        if st.active_allocations.get(&self.code) == Some(&self.id) {
+            st.active_allocations.remove(&self.code);
+        }
+        self.retained = true;
+    }
 }
 
 impl Drop for ConfirmationAllocation<'_> {
@@ -443,7 +454,7 @@ impl PciClient {
         confirmation: bool,
         basic_mode: bool,
     ) -> std::io::Result<Option<u8>> {
-        self.send_with_allocation(cmd, confirmation, basic_mode)
+        self.send_with_allocation(cmd, confirmation, basic_mode, true)
             .await
             .map(|(code, _)| code)
     }
@@ -453,6 +464,7 @@ impl PciClient {
         cmd: &Packet,
         confirmation: bool,
         basic_mode: bool,
+        retry: bool,
     ) -> std::io::Result<(Option<u8>, Option<u64>)> {
         // SpecialClientPacket: always basic mode, never confirmed
         let special = matches!(cmd, Packet::Reset | Packet::SmartConnect);
@@ -521,7 +533,11 @@ impl PciClient {
         }
 
         if let Some(allocation) = allocation.as_mut() {
-            allocation.retain(bytes);
+            if retry {
+                allocation.retain(bytes);
+            } else {
+                allocation.retain_once();
+            }
         }
         Ok((conf, allocation.as_ref().map(|allocation| allocation.id)))
     }
@@ -540,7 +556,27 @@ impl PciClient {
     }
 
     async fn send_guarded(&self, packet: &Packet) -> std::io::Result<SentConfirmation<'_>> {
-        let (code, allocation_id) = self.send_with_allocation(packet, true, false).await?;
+        let (code, allocation_id) = self.send_with_allocation(packet, true, false, true).await?;
+        let code = code.ok_or_else(|| {
+            std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                "command cannot be confirmed",
+            )
+        })?;
+        Ok(SentConfirmation {
+            client: self,
+            code,
+            allocation_id: allocation_id.expect("confirmed send has allocation generation"),
+        })
+    }
+
+    // Generation-safe confirmed send with no retry registration. Dropping the
+    // returned guard quarantines an unconfirmed code, so a late confirmation
+    // cannot be attributed to a later command using the same code.
+    async fn send_guarded_once(&self, packet: &Packet) -> std::io::Result<SentConfirmation<'_>> {
+        let (code, allocation_id) = self
+            .send_with_allocation(packet, true, false, false)
+            .await?;
         let code = code.ok_or_else(|| {
             std::io::Error::new(
                 std::io::ErrorKind::InvalidInput,

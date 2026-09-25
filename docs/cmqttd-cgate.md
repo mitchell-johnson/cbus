@@ -77,8 +77,9 @@ not be committed or published.
 | CLOCK DATE/TIME/REQUEST_REFRESH | Actual Clock and Timekeeping SAL on application 223, including `SYSTEM` date/time resolution and observed-value queries |
 | TEMPERATURE BROADCAST | Actual Temperature Broadcast SAL on application 25 with decimal or `$19` addressing, native one-decimal input, range checks, quarter-degree wire conversion, incoming event delivery and disconnect-safe live caching |
 | LIGHTING/TRIGGER/ENABLE LABEL and UNICODELABEL | Actual checksummed dynamic-label SAL on the selected application. Supports raw/text payloads, built-in icon references, language selection, native segmented UTF-8, and start/header/chunk/commit dynamic bitmap uploads. Every fragment requires positive PCI delivery confirmation; Enable Unicode and invalid native bounds fail before transmission |
-| Observed dynamic-label cache | Retains up to 4,096 exact incoming and confirmed outgoing label SAL payloads since the current connection, including source/direction and order. `CMQTT LABELS` exposes the bounded observations; the Toolkit CLI assembles standard text/icons, Unicode, language selection and dynamic bitmaps while reporting incomplete transactions. This is explicitly not a complete eDLT device-cache readback |
+| Observed dynamic-label cache | Retains one network-wide ring of up to 4,096 exact incoming and confirmed outgoing label SAL payloads since the current connection, including source/direction and order. `CMQTT LABELS` exposes the bounded observations with network scope and an unverified recipient; a unit-shaped request is a compatibility alias for the same ring. The Toolkit CLI assembles standard text/icons, Unicode, language selection and dynamic bitmaps while reporting incomplete transactions. This is explicitly not eDLT device-cache readback |
 | LABEL CLEAREDLT | Sends the native KEYGL5 programming control through the shared PCI exactly once, requires both PCI confirmation and the source/tag-correlated unit ACK, and reports acceptance separately from physical erasure or persistence |
+| LABEL KFIGET / KFISET | Operates on configured-network application paths for native label-capable applications 48–95, 202 and 203. The application token is only the native `LabelSupportingApplication` class/scope gate; it is not encoded into KFIGET's fixed selector `0x1c`. KFIGET performs three source-acknowledged volatile parameter-`0xFF` writes before IDENTIFY attribute `0x3D`; exactly one source-correlated `8D 3D 80` reply produces eight ordered `300` rows, while zero or multiple replies produce native 524 outcomes. KFISET accepts exactly eight values from 0 through 15, packs them low-nibble then high-nibble, and sends four source-acknowledged parameter-`0xFF` writes, stopping at the first failure. Every write and the GET IDENTIFY request is a generation-safe exact-once send with no transport replay. Both commands use the programming lane and optional LOGIN gate |
 | `DO //PROJECT/NETWORK/p/UNIT FactoryDefault` | Sends native `A4 FF 43 B2 B2` exactly once for a database-classified KEYGL5 and reports the 202 receipt separately from post-reset defaults, reboot, address retention and persistence |
 | NET PINGU and GET network Units | Actual installation MMI request using cmqttd's negotiated PCI checksum mode; buffers blocks that a CNI forwards before its positive confirmation, accepts only confirmed contiguous coverage of all addresses 0–255, and reports the native sorted `302-Units=` form |
 | NET SYNC and cached unit getters | Configured interface routing hint (physically revalidated) or BASIC discovery, complete installation MMI, then confirmed IDENTIFY1/2 probes and bounded IDENTIFY4 collection for every present address; routed and local bare-CAL replies are correlated, silent legacy/error addresses remain present with unknown identity fields, the live cache is replaced atomically, and native getters expose it. An address with multiple distinct serials emits `#e# net {network} sync duplicate {address} {serial...}` (sorted); scalar `SerialNumber` stays `""` while the sorted set of distinct serials is retained in the volatile live snapshot. The event is the wire-visible evidence and neither form survives restart |
@@ -90,7 +91,7 @@ not be committed or published.
 | `NET UNRAVELUNIT //PROJECT/NETWORK 255 MATCHDB` | Bounded physical resolution of exactly two known serials colliding at address 255. The service requires two distinct matching database units at unique empty addresses, a direct network, and local PCI parameter 66=`05`; it sends one selected-serial broadcast per unit and accepts success only after per-destination identity checks and a complete final MMI/serial inventory. Other unravel shapes return 502 |
 | Unit identification | Source-correlated CAL replies from the physical unit |
 | OEM physical memory reads | Volatile 0x41 pointer selection plus segmented RECALL; no EEPROM writes |
-| KEYGL5 5.5.00 static strings and lighting/scene widget labels | Python reader uses the service; checks physical identity, stable header and static-text CRC |
+| KEYGL5 5.5.00 static strings and label references | Python reader checks physical identity, stable header and static-text CRC. Its network form runs one fresh serial refresh, selects supported records in numeric order, brackets each memory snapshot with physical IDENTIFY4, attaches the inventory identity only when both serials match, reads configurations sequentially and preserves mismatches as per-unit errors |
 
 Runtime levels and physical presence are not persisted. The persistent data is
 cmqttd's own database format, not a Schneider SQLite database. Database PP
@@ -207,24 +208,81 @@ loaded network fails closed with 502 rather than reporting a local success.
 ## Live label reads
 
 ```sh
+cbus-toolkit cgate --host 127.0.0.1 --timeout 120 \
+  edlt-labels --network //PROJECT/254
 cbus-toolkit cgate --host 127.0.0.1 --timeout 30 \
   edlt-labels //PROJECT/254/p/5
 ```
 
-The JSON includes the device identity, all 64 static strings, widget positions,
-scene names, verification flags, a memory SHA-256, and the dynamic-label SAL
-traffic observed by cmqttd during the current connection. Identity is read from
-the device; the display name comes from the imported database. Standard text
-and icons, segmented Unicode, language selections, and complete dynamic bitmap
-transactions are assembled from the retained traffic. The result always marks
-that cache incomplete and `device_readback=false`: C-Bus exposes no evidenced
-query that inventories a display's pre-existing dynamic-label cache. Other
-device families/configuration versions are rejected.
+The network form performs exactly one whole-network native serial refresh:
+`NET SYNC` followed by `NET CHECKUNIT`. It classifies the fresh records and
+selects exact supported KEYGL5 firmware 5.5.00 devices in numeric address order.
+Known other families remain visible as `other_units`. Unsupported KEYGL5
+firmware, unknown or ambiguous identities, successful device reads and
+per-device failures are all retained in the report. Failed reads do not discard
+earlier evidence. A selection, device-read or observation failure leaves
+`complete=false`; the CLI still writes the JSON report and exits nonzero.
+
+For each selected device, the JSON includes the live identity, all 64 static
+strings and their widget, page and scene references, verification flags and a
+memory SHA-256. Every configuration read checks the physical identity, a stable
+header and the static-text CRC. Physical IDENTIFY4 reads bracket each selected
+memory snapshot. The fresh inventory identity is
+attached only when both physical serials equal its serial. Any initial or
+before/after mismatch is retained as a per-unit read error, and no stale
+inventory identity or failed snapshot is attached. Device snapshots are
+necessarily sequential, so `network_snapshot_atomic=false` and none of the
+output describes an atomic network state. The selected-device form keeps its
+existing imported database name lookup and reads only that address.
+
+After the network device reads, the CLI issues one `CMQTT LABELS` request for
+the network. Standard text and icons, segmented Unicode, language selections,
+and complete dynamic bitmap transactions are assembled from that bounded ring
+at the inventory's top level. The records cover traffic observed during the
+current cmqttd connection across the configured network. Their recipient is
+not verified, they are never assigned to one of the selected devices, and they
+reset on reconnect. The report therefore keeps `observations_complete=false`
+and `device_dynamic_label_cache_readback=false`; C-Bus exposes no evidenced
+query that inventories a display's pre-existing dynamic-label cache.
 
 Physical string slots can retain old bytes after a shortened string's null
 terminator. The reader reports whether the stored CRC matches the physical
 bytes or Toolkit's zero-padded text projection; either must match before static
 labels are accepted. The full physical-memory hash still includes those bytes.
+
+The native physical KFI command shapes are:
+
+```text
+LABEL KFIGET //PROJECT/NETWORK/APPLICATION UNIT
+LABEL KFISET //PROJECT/NETWORK/APPLICATION UNIT KFI1 KFI2 KFI3 KFI4 KFI5 KFI6 KFI7 KFI8
+```
+
+The application must be on the configured direct network and must be in the
+native label-capable ranges 48–95, 202 or 203. The unit must fit in one byte;
+each KFISET value must be 0–15. KFIGET returns `300-kfi1=...` through final
+`300 kfi8=...`; KFISET returns `200 OK` only after all four writes are acknowledged.
+Zero or multiple valid KFIGET replies return `524 No response.` or
+`524 Too many responses.`; setup, write and transport failures use the native
+application-scoped 408 envelope. `CMQTT CAPABILITIES` reports `label_kfi: true`.
+
+The application token implements native `LabelSupportingApplication`
+admission and command-address scoping only. It is not placed in the physical KFI
+sequence: KFIGET uses the same fixed `0x1c` selector for every admitted
+application.
+
+Despite its name, KFIGET is a programming operation: its three volatile
+parameter-`0xFF` selector writes happen before the physical read. Do not run it
+casually on live hardware. Neither KFI command reads the dynamic-label cache,
+and `dynamic_label_device_readback: false` remains authoritative. The parser
+does not prove a modeled KEYGL5 unit type, and this path has no live-hardware
+acceptance evidence yet.
+
+All KFI parameter-`0xFF` writes and the GET IDENTIFY request are
+generation-safe exact-once sends and never enter the automatic retry table. A
+lost confirmation makes the transaction uncertain and faults the programming
+lane until reconnect. Late confirmations or identical untagged unit ACKs
+therefore cannot advance a later selector, and replaying GET cannot manufacture
+response multiplicity.
 
 These additional commands are **cmqttd extensions**, not claims about native
 C-Gate syntax:
@@ -232,6 +290,7 @@ C-Gate syntax:
 ```text
 CMQTT CAPABILITIES
 CMQTT UNIT //PROJECT/254/p/5
+CMQTT LABELS //PROJECT/254
 CMQTT LABELS //PROJECT/254/p/5
 UNIT IDENTIFY //PROJECT/254/p/5 1
 UNIT READMEM //PROJECT/254/p/5 4096 256
@@ -242,9 +301,13 @@ UNIT READMEM //PROJECT/254/p/5 4096 256
 path parts, no more). Attribute-suffixed paths, foreign projects, and other
 networks are rejected with 400 rather than answered or invented. Its network-wide
 observation ring is volatile, resets on reconnect, and is cleared after an
-accepted eDLT clear request so stale entries cannot be presented for that unit.
-It does not infer what a display received before cmqttd connected or whether a
-display rendered or persisted a confirmed broadcast.
+accepted eDLT clear request so pre-clear observations are not carried across
+the action.
+The unit-shaped request is only a compatibility alias: it returns the same
+network ring and records the requested address, `observation_scope="network"`
+and `recipient_verified=false`. It does not filter by, or attribute traffic to,
+the addressed unit. Neither form infers what a display received before cmqttd
+connected or whether a display rendered or persisted a confirmed broadcast.
 
 `READMEM` uses decimal **physical** offsets and accepts 1–4096 bytes per command.
 For the evidenced OEM mapping, a unit-spec logical offset of 256 or greater maps
@@ -267,8 +330,8 @@ The existing mock dispatches 431 command paths. That is **not** evidence that
 all 431 have physical implementations in this service. `CMQTT CAPABILITIES`
 returns `full_cgate_compatibility: false`; unimplemented physical operations
 return 502. The enumerable gap tracker is the executable capability matrix in
-`cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 32
-physical, 42 local/session, 356 fail-closed 502, and 1 obsolete 400 over the
+`cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 34
+physical, 42 local/session, 354 fail-closed 502, and 1 obsolete 400 over the
 431 inventoried paths, plus a separately asserted 6-row supplement for
 non-inventoried service commands. Full replacement still requires:
 
@@ -338,6 +401,21 @@ shared PCI connection.
 Transport tests pin the eDLT clear control bytes, positive PCI and unit replies,
 source filtering, MQTT fanout and definitive NAK recovery. The real-daemon case
 verifies exact-once delivery through the same PCI connection.
+`rust/testdata/vectors/kfi.jsonl` pins the three-selector-write plus IDENTIFY
+sequence, the four-write SET sequence, exact native bytes and low/high nibble
+ordering. `rust/cbus-vector-check/src/main.rs` checks that corpus directly;
+`rust/cbus-golden-tests/build.rs` generates the corresponding cases consumed by
+`rust/cbus-golden-tests/tests/golden_vectors.rs` and validated by
+`rust/cbus-golden-tests/src/lib.rs`. `cbus-transport` and
+`rust/cbus-cgate/src/service/tests.rs` cover source-correlated confirmations
+and unit ACKs, NAK and timeout handling, first-failure abort, exact reply
+validation, zero/multiple-reply 524 outcomes, application/value bounds and the
+eight-row GET envelope. Transport tests also pin the generation-safe exact-once
+path: lost confirmations cause no write or IDENTIFY replay, fault the
+programming lane and cannot reuse a late confirmation or ACK for another
+selector. `rust/cmqttd/tests/system_cgate.rs` exercises both
+commands through the shared PCI connection. This is scripted acceptance, not
+live KFI hardware acceptance.
 Selected-serial transport tests pin the exact SRCHK request, positive
 confirmation plus source/route/serial-correlated receipt, the quiet interval,
 zero replay, interleaved lighting fanout, definite rejection recovery, and
@@ -376,7 +454,14 @@ IDENTIFY16 clock summaries and their native `120` response fields while MQTT
 shares the PCI. A separate real-daemon test verifies guarded physical
 readdressing, exact-once STORE transmission, database/physical layer separation,
 and MQTT event delivery on that same PCI during the move.
-`toolkit-cli/tests/test_cmqtt.py` tests synthetic eDLT decoding and read contracts.
+`toolkit-cli/tests/test_cmqtt.py` tests synthetic eDLT decoding, static-reference
+coverage and selected-device read contracts.
+`toolkit-cli/tests/test_cmqtt_inventory.py` pins one fresh network refresh,
+numeric device ordering, exact supported-profile selection, one network
+observation query, partial-evidence retention and CLI scope parsing.
+`rust/cbus-cgate/src/service/tests.rs` and the real-daemon system test pin the
+network provenance fields and prove that unit-shaped `CMQTT LABELS` requests
+return the same network ring without claiming a verified recipient.
 None of these fixtures contains a user's project or labels.
 
 On 24 September 2026, the Docker deployment was also checked against a real

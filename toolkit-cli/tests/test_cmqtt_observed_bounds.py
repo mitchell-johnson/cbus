@@ -48,6 +48,41 @@ def test_provenance_variants_reject_unsafe_claims():
             decode_observed_labels(bad)
 
 
+def test_network_provenance_trio_is_carried_and_old_v1_is_compatible():
+    legacy = decode_observed_labels(doc([]))
+    assert legacy['observation_scope'] == 'network'
+    assert legacy['recipient_verified'] is False
+    assert legacy['requested_address'] is None
+    assert legacy['provenance_explicit'] is False
+
+    current = decode_observed_labels(doc([], observation_scope='network',
+                                         recipient_verified=False,
+                                         requested_address='//TEST/254'))
+    assert current['observation_scope'] == 'network'
+    assert current['recipient_verified'] is False
+    assert current['requested_address'] == '//TEST/254'
+    assert current['provenance_explicit'] is True
+
+
+@pytest.mark.parametrize('overrides', [
+    {'observation_scope': 'network'},
+    {'recipient_verified': False},
+    {'requested_address': '//TEST/254'},
+    {'observation_scope': 'network', 'recipient_verified': False},
+    {'observation_scope': 'network', 'requested_address': '//TEST/254'},
+    {'recipient_verified': False, 'requested_address': '//TEST/254'},
+    {'observation_scope': 'unit', 'recipient_verified': False,
+     'requested_address': '//TEST/254'},
+    {'observation_scope': 'network', 'recipient_verified': True,
+     'requested_address': '//TEST/254'},
+    {'observation_scope': 'network', 'recipient_verified': False,
+     'requested_address': 254},
+])
+def test_partial_or_unsafe_network_provenance_rejects(overrides):
+    with pytest.raises(ValueError):
+        decode_observed_labels(doc([], **overrides))
+
+
 def test_reset_on_reconnect_missing_defaults_false_but_accepted():
     result = doc([])
     del result["reset_on_reconnect"]
