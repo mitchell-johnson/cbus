@@ -181,7 +181,7 @@ impl Packet {
                 }
                 let count = 2 + states.len() / 4;
                 let mut packet = vec![0xc0 | count as u8, *application, *block_start];
-                for chunk in states.chunks_exact(4) {
+                for chunk in states.as_slice().as_chunks::<4>().0 {
                     packet.push(chunk[0] | (chunk[1] << 2) | (chunk[2] << 4) | (chunk[3] << 6));
                 }
                 Ok(add_cbus_checksum(&packet))
