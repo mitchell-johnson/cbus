@@ -5,10 +5,12 @@ Ledger/census + fresh-wheel + differential harness scaffolding only.
 This module does NOT claim Toolkit parity. It loads the authoritative
 38-area ledger in ``capabilities.json`` (``census_complete: false``) and
 exposes the differential matrix: every ledger area maps to workflow and
-negative-path slots that start ``unassessed``, except the two attempted
-rows ``edlt-reset-controls`` and ``edlt-retained-scene-editing`` whose
-``nominal_workflow`` slots are each ``accepted`` per the executable
-SLOT_RUBRIC below (1/6 slots each; areas still pending,
+negative-path slots that start ``unassessed``, except the four attempted
+rows ``edlt-reset-controls``, ``edlt-retained-scene-editing``,
+``edlt-global-category-programming`` (whose ``nominal_workflow`` slots are
+each ``accepted`` per the executable SLOT_RUBRIC below, 1/6 slots each)
+and ``thermostat-configuration`` (audited 0/6: its evidence does not meet
+the rubric, so all six slots stay ``unassessed``); areas still pending,
 ``accepted_areas`` still 0, ``complete`` still false).
 
 No endpoints, credentials, or vendor specifications are invented or read
@@ -132,9 +134,14 @@ RESET_CONTROLS_EVIDENCE_PATHS = [
     "docs/edlt-reset.md",
 ]
 
-# The two attempted differential rows. Every other ledger area keeps the
+# The four attempted differential rows. Every other ledger area keeps the
 # scaffolding default (all slots ``unassessed``, no evidence paths).
-DIFFERENTIAL_ROWS = ("edlt-reset-controls", "edlt-retained-scene-editing")
+DIFFERENTIAL_ROWS = (
+    "edlt-reset-controls",
+    "edlt-retained-scene-editing",
+    "edlt-global-category-programming",
+    "thermostat-configuration",
+)
 
 # Measured evidence facts for the second attempted row,
 # ``edlt-retained-scene-editing`` (bounded KEYGL5/5055EDL 5.5.00 retained
@@ -191,6 +198,198 @@ SCENE_MANAGER_EVIDENCE_PATHS = [
     "research/fixtures/edlt-scene-manager-acceptance.json",
     "docs/edlt-scene-manager.md",
     "docs/edlt-scenes.md",
+]
+
+# Measured evidence facts for the third attempted row,
+# ``edlt-global-category-programming`` (bounded KEYGL5/5055EDL 5.5.00
+# prepared-model category-payload scope for existing closed database units
+# only). Values are read off the committed artifacts listed in
+# GLOBAL_PROGRAMMING_EVIDENCE_PATHS below:
+# - 32 committed matrix vectors (16 category masks x 2 full-874 source
+#   contexts: defaults-loaded-fixture + retained-lighting-scene-mra) plus 2
+#   reversed-input-order vectors (masks 0/15) plus 2 retained sequential
+#   payloads, in research/fixtures/edlt-global-programming-vectors.json
+#   (format cbus-edlt-global-original-vectors-v1, scope
+#   original_model_category_path=true / original_full_form=false /
+#   source_project_setter_executed=false / physical_device_verified=false);
+#   the committed offline tests replay all 32 masks per execution (full
+#   source phases, ordered payload, zero GlobalParameterCRC) plus the
+#   reversed-order and sequential supplements with no vendor provisioning;
+# - 36 native-module save/close/load targets plus 2 native CLI targets per
+#   implementation run (35 module cases; full 874 parameters, 39 shared
+#   raw bytes, 10 CRC raw bytes per target), recorded in the acceptance
+#   record's per-version test entries (28 tests, 0 skips, both Pythons);
+# - the acceptance record bounds the claim (KEYGL5/5055EDL 5.5.00 scope,
+#   export_is_review_only=true, physical_device_verified=false,
+#   destination_full_crc_validity_verified=false, global exclusivity and
+#   batch atomicity disclaimed). Note: like the SceneManager row it carries
+#   NO ``toolkit_parity_complete`` key at all, so the self-limit is
+#   expressed through those other flags, not through an explicit
+#   parity-false declaration.
+# - error_path stays unassessed by design: the 7 ``negative_results``
+#   entries (with original per-phase counts) are preserved observations,
+#   not replayed original error-identity vectors -- the single committed
+#   test that reads one entry (pp-set-rejected) asserts only fixture
+#   fields (self-referential), so ``original_error_cases``
+#   is recorded as 0 exactly as the Reset row records its preserved
+#   malformed-default observation as 0. The trim-prose rubric enforces only
+#   the count here; the count is kept at 0 because exact-identity replay
+#   was verified absent, and no enforcement language is re-added.
+GLOBAL_PROGRAMMING_EVIDENCE = {
+    "original_executions": 32,
+    "matrix_vectors": 32,
+    "reverse_vectors": 2,
+    "sequential_payloads": 2,
+    "native_module_targets": 36,
+    "native_cli_targets": 2,
+    "has_replay_test": True,
+    "has_native_persistence": True,
+    "has_acceptance_record": True,
+    "has_bounded_scope_note": True,
+    "original_error_cases": 0,
+    "distinct_profiles": 1,
+    "has_original_rejection_basis": False,
+    "has_physical_device_evidence": False,
+}
+
+# Committed artifacts only. Oracle vs self-referential split: the two
+# research fixtures plus tests/test_edlt_global_programming.py (offline
+# committed-vector replay incl. all 16 masks x 2 contexts, reversed order,
+# sequential payloads; its guard tests are self-referential) and the gated
+# tests/test_native_global_programming.py native acceptance test plus
+# tests/test_cli_edlt_global.py native CLI test (provisioning-gated
+# save/close/load oracles whose prior runs are recorded in the acceptance
+# fixture) are the audit trail; docs/edlt-global-programming.md is the
+# bounded-scope narrative and docs/edlt-global-factory-cli.md records the
+# separate 77-test factory checkpoint this row does not claim.
+GLOBAL_PROGRAMMING_EVIDENCE_PATHS = [
+    "tests/test_edlt_global_programming.py",
+    "tests/test_native_global_programming.py",
+    "tests/test_cli_edlt_global.py",
+    "research/fixtures/edlt-global-programming-vectors.json",
+    "research/fixtures/edlt-global-programming-acceptance.json",
+    "docs/edlt-global-programming.md",
+    "docs/edlt-global-factory-cli.md",
+]
+
+# Measured evidence facts for the fourth attempted row,
+# ``thermostat-configuration`` (row id verified present in
+# ``capabilities.json``). Verdict: 0/6 -- every slot stays ``unassessed``.
+# A 0/6 verdict with documented gaps is a legitimate success; the rubric
+# below is applied unchanged and this broad row (temperature conversions +
+# inner/outer scheduling models + unit-load composition + native CLI) does
+# not meet it. Values are read off the committed artifacts listed in
+# THERMOSTAT_CONFIGURATION_EVIDENCE_PATHS below:
+# - temperature conversions: 14 original scalar methods, 28,840 fresh
+#   original-instruction cases per Python run (vectors
+#   ``extended_original_emulator`` = 28840; acceptance
+#   ``fresh_original_cases_per_python`` = 28840), plus a separate native
+#   Windows pilot (28 cases) / full run (1,176 cases) with standard PE
+#   HIGHLOW relocation only. The temperature scope note explicitly claims
+#   NO scheduling, database save/load, or physical device -- the
+#   temperature workflow performs no native persistence by design, so the
+#   row-level ``has_native_persistence`` is False even though committed
+#   offline replay tests exist (``has_replay_test`` True);
+# - inner CreateLevels: 14 captured original outcomes replayed offline
+#   (acceptance records ``captured_original_cases_compared`` = 14,
+#   ``fresh_original_executions`` = 0, ``native_storage_or_vm_called`` =
+#   false) -- captured replay only, no native storage;
+# - outer scheduling: 12 predicate captures + 12 fresh original
+#   outer-workflow captures replayed offline (46 Python 3.13 tests:
+#   20 outer + 9 CLI + 17 shared inner); the supplied-state CLI performs
+#   no native writes;
+# - unit load: 12 AfterLoad outcomes (71,832 original instruction entries)
+#   replayed by an offline planner/CLI; no native read/save;
+# - combined 67-test checkpoint: retained core + 5 native integration
+#   methods / 8 project-group scenarios + CLI + backup/save/reload, but
+#   with no fresh original execution in that checkpoint;
+# - native composition: 14-test host layer (8 manager + 6 CLI) with
+#   exactly one target save per case plus 2 fresh owned C-Gate 3.4.0.2001
+#   integrations (manager: application 203 + 3 groups + 93 levels; CLI:
+#   31 levels in one shared group + read-only no-op). The composition
+#   review records ``new_original_instruction_execution`` = false, and the
+#   composition acceptance ``not_claimed`` list (inherited loader/service
+#   factories, collection-order equivalence, remaining settings,
+#   physical) matches the ledger limits.
+# No single committed acceptance record bounds the FULL row scope
+# (conversions + levels + outer + load + composition + native CLI): each
+# record explicitly disclaims the other sub-areas, so the row-level
+# ``has_acceptance_record`` / ``has_bounded_scope_note`` are False. The
+# >=10 fresh-original leg (temperature) and the native-persistence legs
+# (67-checkpoint, composition) belong to different bounded scopes, so they
+# cannot be stitched into a nominal pass -- nominal stays ``unassessed``.
+# ``distinct_profiles`` is 1 (single Toolkit/C-Gate profile throughout);
+# ``original_error_cases`` is 0 (denied-callback stops, injected partial
+# failures, and the preserved trace-only harness collision are process
+# observations, not replayed original error-identity vectors); no
+# original-observed rejection basis and no physical-device evidence.
+THERMOSTAT_CONFIGURATION_EVIDENCE = {
+    "original_executions": 28840,
+    "original_methods": 14,
+    "native_windows_pilot_cases": 28,
+    "native_windows_full_cases": 1176,
+    "captured_inner_outcomes": 14,
+    "predicate_captures": 12,
+    "outer_workflow_captures": 12,
+    "afterload_outcomes": 12,
+    "afterload_instruction_entries": 71832,
+    "combined_native_methods": 5,
+    "combined_native_scenarios": 8,
+    "host_layer_tests": 14,
+    "composition_native_tests": 2,
+    "composition_target_saves_per_case": 1,
+    "has_replay_test": True,
+    "has_native_persistence": False,
+    "has_acceptance_record": False,
+    "has_bounded_scope_note": False,
+    "original_error_cases": 0,
+    "distinct_profiles": 1,
+    "has_original_rejection_basis": False,
+    "has_physical_device_evidence": False,
+}
+
+# Committed artifacts only (all paths below are git-tracked; no
+# /Volumes/external report paths, vendor executables, or credentials).
+# Oracle vs self-referential split: the committed vector/acceptance
+# fixtures plus the offline replay tests (test_thermostat_temperature,
+# test_thermostat_schedule_levels, test_thermostat_scheduling,
+# test_thermostat_unit_load) and the gated fresh-oracle tests
+# (test_thermostat_temperature_original, native/integration suites whose
+# prior runs are recorded in the acceptance fixtures) are the audit
+# trail; guard/CLI-shape tests are self-referential (never flip a slot
+# alone) and the thermostat docs are scope narrative.
+THERMOSTAT_CONFIGURATION_EVIDENCE_PATHS = [
+    "tests/test_thermostat_temperature.py",
+    "tests/test_thermostat_temperature_original.py",
+    "tests/test_cli_thermostat_temperature.py",
+    "tests/test_thermostat_schedule_levels.py",
+    "tests/test_native_thermostat_schedule.py",
+    "tests/test_cli_thermostat_schedule.py",
+    "tests/test_cli_thermostat_schedule_dispatch.py",
+    "tests/test_native_thermostat_schedule_integration.py",
+    "tests/test_thermostat_scheduling.py",
+    "tests/test_cli_thermostat_scheduling.py",
+    "tests/test_thermostat_unit_load.py",
+    "tests/test_native_thermostat_scheduling.py",
+    "tests/test_cli_native_thermostat_scheduling.py",
+    "tests/test_native_thermostat_scheduling_integration.py",
+    "research/fixtures/thermostat-temperature-vectors.json",
+    "research/fixtures/thermostat-temperature-acceptance.json",
+    "research/fixtures/thermostat-temperature-native-acceptance.json",
+    "research/fixtures/thermostat-schedule-levels-vectors.json",
+    "research/fixtures/thermostat-schedule-levels-acceptance.json",
+    "research/fixtures/thermostat-schedule-native-acceptance.json",
+    "research/fixtures/thermostat-scheduling-selection-vectors.json",
+    "research/fixtures/thermostat-scheduling-outer-vectors.json",
+    "research/fixtures/thermostat-unit-load-original-vectors.json",
+    "research/experiments/2026-09-24/thermostat-unit-load-original.json",
+    "research/experiments/2026-09-24/thermostat-native-composition-acceptance.json",
+    "research/experiments/2026-09-24/thermostat-native-composition-review.json",
+    "research/experiments/2026-09-24/thermostat-outer/capture-summary.json",
+    "docs/thermostat-temperature.md",
+    "docs/thermostat-schedule-levels.md",
+    "docs/thermostat-scheduling.md",
+    "docs/native-thermostat-schedule.md",
 ]
 
 
@@ -370,7 +569,7 @@ def is_area_accepted(entry: dict) -> bool:
 
 
 def _apply_rubric_rows(matrix: dict) -> None:
-    """Fill the two attempted rows through the rubric (fail-safe).
+    """Fill the four attempted rows through the rubric (fail-safe).
 
     A slot is set to ``accepted`` only when ``slot_meets_rubric`` passes;
     otherwise it stays ``unassessed``. Unknown row IDs raise KeyError so a
@@ -386,7 +585,13 @@ def _apply_rubric_rows(matrix: dict) -> None:
         elif area_id == "edlt-retained-scene-editing":
             evidence = SCENE_MANAGER_EVIDENCE
             evidence_paths = list(SCENE_MANAGER_EVIDENCE_PATHS)
-        else:  # pragma: no cover - two-row phase; kept explicit
+        elif area_id == "edlt-global-category-programming":
+            evidence = GLOBAL_PROGRAMMING_EVIDENCE
+            evidence_paths = list(GLOBAL_PROGRAMMING_EVIDENCE_PATHS)
+        elif area_id == "thermostat-configuration":
+            evidence = THERMOSTAT_CONFIGURATION_EVIDENCE
+            evidence_paths = list(THERMOSTAT_CONFIGURATION_EVIDENCE_PATHS)
+        else:  # pragma: no cover - four-row phase; kept explicit
             continue
         for slot in WORKFLOW_SLOTS:
             accepted, _ = slot_meets_rubric(slot, evidence)
@@ -402,8 +607,9 @@ def _apply_rubric_rows(matrix: dict) -> None:
     matrix["accepted_areas"] = sum(
         1 for entry in matrix["areas"].values() if is_area_accepted(entry)
     )
-    # ``complete`` stays false: the census is incomplete and only two
-    # partially filled rows exist. Never derive completion from intent.
+    # ``complete`` stays false: the census is incomplete and only four
+    # partially filled rows exist (three 1/6, one 0/6). Never derive
+    # completion from intent.
     matrix["complete"] = bool(
         matrix["census_complete"]
         and matrix["accepted_areas"] == matrix["ledger_areas"]

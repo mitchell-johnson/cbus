@@ -1,11 +1,12 @@
-# Differential acceptance plan (Phase 4 scaffolding + two attempted rows)
+# Differential acceptance plan (Phase 4 scaffolding + four attempted rows)
 
 Phase 4 only: ledger/census inventory plus a differential harness with an
 executable slot-flip rubric. No Toolkit parity is claimed. The harness
-holds exactly two partially filled rows (`edlt-reset-controls` and
-`edlt-retained-scene-editing`, `nominal_workflow` only, 1/6 slots each);
-every other slot stays `unassessed`, `accepted_areas` stays 0, and
-`complete` stays false.
+holds exactly four partially filled rows (`edlt-reset-controls`,
+`edlt-retained-scene-editing`, and `edlt-global-category-programming`,
+`nominal_workflow` only, 1/6 slots each, plus `thermostat-configuration`
+audited 0/6 with all slots `unassessed`); every other slot stays
+`unassessed`, `accepted_areas` stays 0, and `complete` stays false.
 
 ## Authoritative inputs
 
@@ -32,11 +33,15 @@ Implemented in `../src/cbus_toolkit/differential.py`:
 - Per row, three workflow slots (`nominal_workflow`, `error_path`,
   `device_firmware_variation`) and three negative-path slots
   (`invalid_input`, `unsupported_profile`, `hardware_divergence`),
-  starting at `unassessed` except the two rubric-passed nominal slots
-  (`edlt-reset-controls` and `edlt-retained-scene-editing`).
+  starting at `unassessed` except the three rubric-passed nominal slots
+  (`edlt-reset-controls`, `edlt-retained-scene-editing`, and
+  `edlt-global-category-programming`). The fourth attempted row
+  (`thermostat-configuration`) is audited 0/6: all six slots stay
+  `unassessed` because its evidence does not meet the rubric.
 - Per-row `differential_status: pending` (no area meets the all-six-slot
-  area rule) and `evidence_paths: []` except the Reset row's seven and
-  the SceneManager row's six committed paths.
+  area rule) and `evidence_paths: []` except the Reset row's seven, the
+  SceneManager row's six, the GlobalProgramming row's seven, and the
+  Thermostat row's thirty-one committed paths.
 - Matrix summary: `ledger_areas: 38`, `accepted_areas: 0`,
   `complete: false`, `census_complete: false`.
 
@@ -44,13 +49,20 @@ Implemented in `../src/cbus_toolkit/differential.py`:
 
 - `tests/test_differential_matrix.py` enumerates all 38 areas x
   workflow/negative slots and asserts the exact state: only
-  `edlt-reset-controls` / `nominal_workflow` and
-  `edlt-retained-scene-editing` / `nominal_workflow` are `accepted`; all
-  other slots are `unassessed`, `accepted_areas` is 0, `complete` is
+  `edlt-reset-controls` / `nominal_workflow`,
+  `edlt-retained-scene-editing` / `nominal_workflow`, and
+  `edlt-global-category-programming` / `nominal_workflow` are `accepted`;
+  `thermostat-configuration` is 0/6 (all `unassessed`); all other slots
+  are `unassessed`, `accepted_areas` is 0, `complete` is
   false. A dedicated offline test pins each row's hardcoded evidence
   constants against its committed fixtures (Reset: 44 / 520 / 454,480;
   SceneManager: 34 vector cases / 17 original executions / 8 native
-  cases).
+  cases; GlobalProgramming: 32 matrix vectors / 2 reversed / 2 sequential
+  / 36 module + 2 CLI native targets per run; Thermostat: 14 methods /
+  28,840 fresh-original cases / 28 pilot + 1,176 full Windows cases /
+  14 inner outcomes / 12 + 12 outer captures / 12 AfterLoad outcomes with
+  71,832 instruction entries / 2 composition native tests with one target
+  save each).
 - `tests/test_coverage_require_complete.py` asserts `coverage
   --require-complete` still exits 1 with `complete: false`.
 - The pre-existing `test_cli.py::test_coverage_cannot_claim_completion`
@@ -227,6 +239,221 @@ runs × 11 tests and two CLI runs × 5 tests, per-run `original_cases` /
 `native_cases` / report/log sha256 records, `source_sha256` /
 `documentation_sha256` / `vendor_files` pins) — not on live vendor
 re-execution.
+
+## The third attempted row: `edlt-global-category-programming` (1/6)
+
+Bounded KEYGL5 / 5055EDL / 5.5.00 prepared-model category-payload scope
+for existing closed database units only: selected Toolkit categories are
+copied with source OverallCRC plus zero GlobalParameterCRC while
+destination WidgetsCRC / StaticTextCRC / ScenesCheckSum are retained. It
+fills the `edlt-global-category-programming` ledger row 1:1 (row id
+verified present in `capabilities.json`) and does not claim the factory
+Reset/Project preparation checkpoint, the full-form Project preamble,
+missing-target creation, label transfer, destination full-image CRC
+validity, or physical behavior.
+
+Numbers verification (every claimed number verified against committed
+artifacts; nothing assumed):
+
+- "All 16 masks match original vectors": verified. The committed vectors
+  file holds 16 masks (0-15) in each of 2 full-874 source contexts
+  (`defaults-loaded-fixture`, `retained-lighting-scene-mra`) = 32 matrix
+  vectors, plus 2 reversed-input-order vectors (masks 0/15) plus 2
+  retained sequential payloads; the committed offline test replays all 32
+  masks per execution (full source phases, ordered payload, zero
+  GlobalParameterCRC) plus both supplements with no provisioning.
+- "Final 28 tests pass both Python with 38 saved/closed/loaded targets
+  per version": verified. Both per-version entries in the acceptance
+  record show 28 tests / 0 skips with 36 native-module targets plus 2
+  native CLI targets (36 + 2 = 38), 874 parameters, 39 shared raw bytes,
+  and 10 CRC raw bytes per target. (The ledger's "five CRC raw bytes"
+  shorthand reconciles as five CRC parameters x 2 bytes = 10 raw bytes.)
+- "Historical 40-case original matrix, reversed-order + peer supplements,
+  74 prior native transactions": verified. The acceptance record's
+  historical section shows a 40-case original matrix (39 save calls: 36
+  true incl. 1 true-with-rejected-PP-SET, 3 false), a 2-case reversed
+  supplement, a 2-case peer supplement (`original_model_executed:
+  false`), and 74 prior native transactions (per-version split recorded
+  in gitignored run reports, unverifiable offline). A small set of
+  original-only failure/creation cases remain unreplayed and explicitly
+  separated.
+- "77-test checkpoint" and "six captured factory source patterns":
+  verified but NOT claimed by this row. The separate factory acceptance
+  record shows 77 tests on both Pythons and exactly six accepted whole
+  source patterns (`default-like`, `rich-scene`, `first-mra`, `enable`,
+  `mixed-controls`, `fallback127`), with factory-worker masks 0/15
+  directly verified. Those belong to the factory preparation checkpoint;
+  this row claims only the category-programming nominal slot.
+- Self-limit disclosure: like the SceneManager row, this acceptance
+  record carries NO `toolkit_parity_complete` key at all (verified
+  absent, not false). The self-limit is expressed instead through
+  `physical_device_verified: false`,
+  `destination_full_crc_validity_verified: false`,
+  `export_is_review_only: true`, the `limits` non-claim list (no full-form
+  preamble, no destination full-image CRC validity, no proven global
+  session exclusivity, non-atomic batches), and the unreplayed-case
+  separation. The rubric does not require a parity key, so nominal still
+  passes; the absence is disclosed here rather than patched into the
+  fixture.
+
+Per-slot verdicts (evidence paths are committed artifacts only; the
+existing rubric is applied unchanged):
+
+- `nominal_workflow` = `accepted`: 32 original matrix executions (>=10)
+  replayed by committed offline tests (all-masks payload test over both
+  source contexts, plus reversed-order and sequential supplements), plus
+  36 native-module + 2 CLI save/close/load targets per run and the
+  bounded acceptance record
+  (`research/fixtures/edlt-global-programming-acceptance.json`, scope:
+  KEYGL5/5055EDL 5.5.00 prepared-model category payloads, exports
+  review-only; single profile).
+- `error_path` = `unassessed`: the 7 `negative_results` entries (with
+  original per-phase counts) are preserved observations, not replayed
+  original error-identity vectors -- the one committed test reading a
+  negative entry (`pp-set-rejected`) asserts only fixture fields and is
+  self-referential. The trim-prose rubric enforces only
+  the error count, so the count is recorded as 0 (as the Reset row does
+  for its preserved observation); the identity keys the trim removed are
+  not re-added, and the slot is left unassessed with this note.
+- `device_firmware_variation` = `unassessed`: single profile only
+  (KEYGL5 5.5.00); the scope note bounds nominal but does not flip this
+  slot.
+- `invalid_input` / `unsupported_profile` = `unassessed`: our rejections
+  (duplicate keys, non-finite numbers, category/metadata guards, exact
+  raw-source spelling) are scoping guards without original-observed
+  rejection identity.
+- `hardware_divergence` = `unassessed`: `physical_device_verified` is
+  false in both fixtures; native runs are closed-loopback databases with
+  no physical commands.
+
+34 rows plus the full census mapping remain outstanding after the fourth
+row below; all four rows' twenty-one open slots require fresh
+original/firmware/negative/hardware evidence (final tally at the end of
+the thermostat row).
+
+### Offline gate posture (this env, GlobalProgramming row)
+
+`NativeGlobalAcceptanceTests::
+test_all_masks_source_contexts_order_full_pp_metadata_backup_and_native_reload`
+(requires `CBUS_CGATE_TEST_HOST` + `CBUS_UNITSPEC_DIR`) and the CLI native
+test `test_native_cli_two_targets_preview_backup_full_reload_and_source_preservation`
+(requires `CBUS_CGATE_TEST_HOST`; the CLI suite itself requires
+`CBUS_UNITSPEC_DIR` at class setup) all SKIP offline in this env. The
+offline-runnable suites -- all 8 `GlobalProgrammingTests` (committed
+hash-pinned vector replay incl. guards) and the offline
+`NativeGlobalFailureTests` (mocked clients, self-referential) -- run here
+with no provisioning. Gate runs here therefore rest on committed
+  artifacts plus the prior vendor runs recorded in
+  `research/fixtures/edlt-global-programming-acceptance.json` (two
+  per-version entries x 28 tests, per-run report/log/native-report sha256
+  records, `source_sha256` pins) -- not on live vendor re-execution.
+
+  ## The fourth attempted row: `thermostat-configuration` (0/6)
+
+  Broad row: fourteen scalar temperature conversions plus the retained
+  inner CreateLevels model, the outer scheduling API/CLI, the offline
+  unit-load planner/CLI, and the native unit-to-level composition
+  manager/CLI. Row id verified present in `capabilities.json`. The
+  rubric is applied UNCHANGED and decides against a flip: a 0/6 verdict
+  with documented gaps is the honest success here, not a failure. No
+  bounded-scope acceptance record spans the full claimed scope, and the
+  >=10-original leg and the native-persistence legs belong to different
+  sub-scopes that cannot be stitched into a nominal pass.
+
+  Numbers verification (every claimed number verified against committed
+  artifacts; nothing assumed):
+
+  - "28,840 fresh original comparisons per run": verified. The committed
+    temperature vectors hold 14 methods, 28,840 extended-emulator rows
+    and 1,176 native-Windows rows (`source_reports`: emulator cases
+    28,840; Windows pilot 28 / full 1,176); the acceptance record shows
+    `original_methods` 14, `fresh_original_cases_per_python` 28,840, 17
+    tests per Python. The scope note explicitly claims NO scheduling,
+    database save/load, or physical device -- the conversion workflow
+    performs no native persistence by design. FRESH original runs (not
+    replayed vectors): the gated `OriginalThermostatTests::
+    test_all_28840_fresh_original_instruction_cases` (requires
+    `CBUS_TOOLKIT_EXE`) executes them fresh; the offline
+    `test_thermostat_temperature.py` replays the committed vectors.
+  - "14 captured inner outcomes, no fresh original or native execution":
+    verified. The levels acceptance fixture records
+    `captured_original_cases_compared` 14, `fresh_original_executions` 0,
+    `native_storage_or_vm_called` false on both Pythons; the vectors file
+    holds 14 cases. Scope: retained model with supplied save-callback
+    boundaries only.
+  - "12 predicate + 12 outer workflows; 12 AfterLoad outcomes (71,832
+    instruction entries)": verified. The selection vectors hold 12 cases
+    (`original_cases` 12), the outer vectors hold 12 cases, the
+    unit-load vectors hold 12 cases (L01-L12), and the committed
+    unit-load analysis records `cases` 12 with
+    `original_instruction_entries` 71,832. The supplied-state CLI
+    performs no native writes; the load planner performs no native
+    read/save.
+  - "67-combined checkpoint (retained core + 5 integration methods / 8
+    scenarios + CLI + backup/save/reload)": verified per the native
+    acceptance fixture's two runs (67 tests each, 5 native methods, 8
+    scenarios, owned C-Gate, zero CNI). That checkpoint replays captured
+    cases with no fresh original execution, and its scope is the
+    scheduling core/adapter/CLI -- not temperature, outer, load, or the
+    full dialog.
+  - "14-test host layer, exactly one target save, 2 fresh owned C-Gate
+    3.4.0.2001 integrations": verified. The composition review records
+    14 composition tests (8 manager + 6 CLI) and
+    `new_original_instruction_execution` false; the composition
+    acceptance records `tests_run` 2 with `target_project_save_count` 1
+    per case (manager: application 203 + 3 groups + 93 levels; CLI: 31
+    levels + read-only no-op). Its `not_claimed` list (inherited
+    loader/service factories, collection-order equivalence, remaining
+    settings, physical) matches the ledger limits.
+  - Self-limit reconciliation: "no native writes/physical" applies to
+    the outer/levels/load sub-areas; "exactly one target save" applies
+    only to the narrow composition scope (one project/unit XML snapshot,
+    PC_TSA 4.6). Inherited loading, original service factories,
+    collection-order equivalence, complete settings, and physical
+    behavior remain open everywhere per the ledger limits.
+
+  Per-slot verdicts (evidence paths are committed artifacts only; the
+  existing rubric is applied unchanged):
+
+  - `nominal_workflow` = `unassessed`: the only >=10 fresh-original leg
+    (temperature, 28,840) has no native persistence by design, and no
+    single bounded-scope acceptance record spans the row's full
+    conversions + levels + outer + load + composition + native-CLI
+    scope -- each record explicitly disclaims the other sub-areas. The
+    rubric's nominal gate therefore reports `missing rubric requirement:
+    has_native_persistence` (row-level flags recorded False).
+  - `error_path` = `unassessed`: no original-observed error vectors with
+    exact error identity. The levels denial stops, outer injected
+    partial failures, and the preserved trace-only AfterLoad harness
+    collision are process observations, not replayable original error
+    vectors; guard tests are self-referential.
+  - `device_firmware_variation` = `unassessed`: single profile only
+    (Toolkit 1.18.0 / C-Gate 3.4.0.2001 / one snapshot family).
+  - `invalid_input` / `unsupported_profile` = `unassessed`: input guards
+    (Int32/boolean/unit checks, address/tag bounds, plan-tampering
+    checks) are scoping guards without original-observed rejection
+    identity.
+  - `hardware_divergence` = `unassessed`: no physical-device evidence;
+    native runs are owned loopback C-Gate processes with CNI sentinels,
+    and the emulator/Windows runs execute arithmetic only.
+
+  34 rows plus the full census mapping remain outstanding; these four
+  rows' twenty-one open slots require fresh original/firmware/negative/
+  hardware evidence.
+
+  ### Offline gate posture (this env, Thermostat row)
+
+  `OriginalThermostatTests::
+  test_all_28840_fresh_original_instruction_cases` (requires
+  `CBUS_TOOLKIT_EXE`), the five `NativeScheduleIntegrationTests` methods
+  and both `NativeThermostatSchedulingIntegrationTests` methods (require
+  Java 11 + vendor C-Gate provisioning) all SKIP offline in this env (8
+  skips observed across the thermostat area suites). The offline-runnable
+  suites -- temperature replay (6), temperature CLI (4), levels replay
+  (17), scheduling model (20), scheduling CLI (12), unit-load (5) -- run
+  here with no provisioning. Gate runs here therefore rest on committed
+  artifacts plus the prior runs recorded in the acceptance fixtures --
+  not on live vendor re-execution.
 
 ## Fresh-wheel relationship (scaffolding only)
 

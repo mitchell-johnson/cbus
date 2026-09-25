@@ -1,13 +1,16 @@
-"""Phase 4+: differential matrix with rubric + two attempted rows (TDD).
+"""Phase 4+: differential matrix with rubric + four attempted rows (TDD).
 
 Enumerates all 38 ledger areas x workflow/negative-path slots and proves
 the exact differential state: only ``edlt-reset-controls`` /
-``nominal_workflow`` and ``edlt-retained-scene-editing`` /
+``nominal_workflow``, ``edlt-retained-scene-editing`` /
+``nominal_workflow``, and ``edlt-global-category-programming`` /
 ``nominal_workflow`` are accepted (per the executable rubric in
-``cbus_toolkit.differential``); every other slot stays ``unassessed``,
-``accepted_areas`` stays 0 (area rule requires all six slots), and
-``complete`` stays false. Flipping any further slot requires independent
-original-Toolkit evidence satisfying the rubric.
+``cbus_toolkit.differential``); the fourth attempted row
+``thermostat-configuration`` stays 0/6 (all slots ``unassessed``); every
+other slot stays ``unassessed``, ``accepted_areas`` stays 0 (area rule
+requires all six slots), and ``complete`` stays false. Flipping any
+further slot requires independent original-Toolkit evidence satisfying
+the rubric.
 """
 from __future__ import annotations
 
@@ -32,7 +35,7 @@ class DifferentialMatrixTests(unittest.TestCase):
         self.assertEqual(matrix["ledger_areas"], 38)
         self.assertEqual(set(matrix["areas"]), set(differential.ledger_area_ids(ledger)))
 
-    def test_matrix_holds_exact_two_row_state(self):
+    def test_matrix_holds_exact_four_row_state(self):
         matrix = differential.build_matrix()
         self.assertFalse(matrix["complete"])
         self.assertEqual(matrix["accepted_areas"], 0)
@@ -81,6 +84,43 @@ class DifferentialMatrixTests(unittest.TestCase):
                         entry["evidence_paths"],
                         list(differential.SCENE_MANAGER_EVIDENCE_PATHS),
                     )
+                elif area_id == "edlt-global-category-programming":
+                    self.assertEqual(entry["differential_status"], "pending")
+                    self.assertEqual(
+                        entry["workflows"]["nominal_workflow"],
+                        differential.ACCEPTED,
+                    )
+                    self.assertEqual(
+                        entry["workflows"]["error_path"], "unassessed"
+                    )
+                    self.assertEqual(
+                        entry["workflows"]["device_firmware_variation"],
+                        "unassessed",
+                    )
+                    for slot in differential.NEGATIVE_SLOTS:
+                        self.assertEqual(
+                            entry["negative_paths"][slot], "unassessed"
+                        )
+                    self.assertEqual(
+                        entry["evidence_paths"],
+                        list(differential.GLOBAL_PROGRAMMING_EVIDENCE_PATHS),
+                    )
+                elif area_id == "thermostat-configuration":
+                    # Fourth attempted row: audited 0/6. All six slots stay
+                    # unassessed; the evidence paths record the audit trail.
+                    self.assertEqual(entry["differential_status"], "pending")
+                    for slot in differential.WORKFLOW_SLOTS:
+                        self.assertEqual(entry["workflows"][slot], "unassessed")
+                    for slot in differential.NEGATIVE_SLOTS:
+                        self.assertEqual(
+                            entry["negative_paths"][slot], "unassessed"
+                        )
+                    self.assertEqual(
+                        entry["evidence_paths"],
+                        list(
+                            differential.THERMOSTAT_CONFIGURATION_EVIDENCE_PATHS
+                        ),
+                    )
                 else:
                     self.assertEqual(entry["differential_status"], "pending")
                     self.assertEqual(entry["evidence_paths"], [])
@@ -91,7 +131,7 @@ class DifferentialMatrixTests(unittest.TestCase):
                             entry["negative_paths"][slot], "unassessed"
                         )
 
-    def test_rubric_accepts_only_reset_and_scene_manager_nominal(self):
+    def test_rubric_accepts_only_three_nominal_slots(self):
         for slot in differential.ALL_SLOTS:
             with self.subTest(slot=slot):
                 accepted, reason = differential.slot_meets_rubric(
@@ -112,6 +152,24 @@ class DifferentialMatrixTests(unittest.TestCase):
                     self.assertTrue(accepted, reason)
                 else:
                     self.assertFalse(accepted, reason)
+        for slot in differential.ALL_SLOTS:
+            with self.subTest(slot=slot):
+                accepted, reason = differential.slot_meets_rubric(
+                    slot, dict(differential.GLOBAL_PROGRAMMING_EVIDENCE)
+                )
+                self.assertTrue(reason)
+                if slot == "nominal_workflow":
+                    self.assertTrue(accepted, reason)
+                else:
+                    self.assertFalse(accepted, reason)
+        # Fourth attempted row: the rubric rejects every slot (0/6).
+        for slot in differential.ALL_SLOTS:
+            with self.subTest(slot=slot):
+                accepted, reason = differential.slot_meets_rubric(
+                    slot, dict(differential.THERMOSTAT_CONFIGURATION_EVIDENCE)
+                )
+                self.assertTrue(reason)
+                self.assertFalse(accepted, reason)
         with self.assertRaises(KeyError):
             differential.slot_meets_rubric("no-such-slot", {})
 
@@ -131,6 +189,16 @@ class DifferentialMatrixTests(unittest.TestCase):
         self.assertFalse(
             differential.is_area_accepted(
                 matrix["areas"]["edlt-retained-scene-editing"]
+            )
+        )
+        self.assertFalse(
+            differential.is_area_accepted(
+                matrix["areas"]["edlt-global-category-programming"]
+            )
+        )
+        self.assertFalse(
+            differential.is_area_accepted(
+                matrix["areas"]["thermostat-configuration"]
             )
         )
         accepted_entry = {
@@ -162,6 +230,18 @@ class DifferentialMatrixTests(unittest.TestCase):
                 matrix, "edlt-retained-scene-editing"
             ),
             list(differential.SCENE_MANAGER_EVIDENCE_PATHS),
+        )
+        self.assertEqual(
+            differential.evidence_paths_for(
+                matrix, "edlt-global-category-programming"
+            ),
+            list(differential.GLOBAL_PROGRAMMING_EVIDENCE_PATHS),
+        )
+        self.assertEqual(
+            differential.evidence_paths_for(
+                matrix, "thermostat-configuration"
+            ),
+            list(differential.THERMOSTAT_CONFIGURATION_EVIDENCE_PATHS),
         )
         with self.assertRaises(KeyError):
             differential.area_status(matrix, "no-such-area")
@@ -255,6 +335,224 @@ class DifferentialMatrixTests(unittest.TestCase):
         self.assertEqual(evidence["original_executions"], 17)
         self.assertEqual(evidence["vector_cases"], 34)
         self.assertEqual(evidence["native_cases"], 8)
+
+    def test_global_programming_evidence_constants_match_committed_fixtures_offline(self):
+        # Row 3 (OFFLINE, no vendor spec/bridge): the hardcoded evidence
+        # constants must match the committed fixtures.
+        vectors = json.loads(
+            (
+                ROOT / "research/fixtures/edlt-global-programming-vectors.json"
+            ).read_text(encoding="utf-8")
+        )
+        acceptance = json.loads(
+            (
+                ROOT
+                / "research/fixtures/edlt-global-programming-acceptance.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(vectors["format"], "cbus-edlt-global-original-vectors-v1")
+        self.assertEqual(len(vectors["parameters"]), 874)
+        self.assertEqual(len(vectors["sources"]), 2)
+        for row in vectors["sources"]:
+            self.assertEqual(len(row["masks"]), 16)
+            self.assertEqual(
+                [case["mask"] for case in row["masks"]], list(range(16))
+            )
+        self.assertEqual(len(vectors["reversed_order"]), 2)
+        self.assertEqual(len(vectors["sequential"]), 2)
+        self.assertEqual(len(vectors["negative_results"]), 7)
+        scope = vectors["scope"]
+        self.assertIs(scope["original_model_category_path"], True)
+        self.assertIs(scope["original_full_form"], False)
+        self.assertIs(scope["source_project_setter_executed"], False)
+        self.assertIs(scope["physical_device_verified"], False)
+        fixed = acceptance["fixed_original_vectors"]
+        self.assertEqual(fixed["parameters_per_source_snapshot"], 874)
+        self.assertEqual(fixed["masks"], 16)
+        self.assertEqual(fixed["source_contexts"], 2)
+        self.assertEqual(fixed["matrix_vectors"], 32)
+        self.assertEqual(fixed["reverse_input_order_vectors"], 2)
+        self.assertEqual(fixed["retained_same_model_sequential_payloads"], 2)
+        self.assertIs(fixed["original_negative_results_preserved"], True)
+        historical = acceptance["historical_research"]
+        self.assertEqual(historical["original_matrix"]["cases"], 40)
+        self.assertEqual(
+            historical["prior_native_total_verified_transactions"], 74
+        )
+        for run in acceptance["tests"]:
+            self.assertEqual(run["tests"], 28)
+            self.assertEqual(run["skips"], 0)
+            self.assertEqual(run["native_module_cases"], 35)
+            self.assertEqual(run["native_module_targets_saved_closed_loaded"], 36)
+            self.assertEqual(run["native_cli_targets_saved_closed_loaded"], 2)
+            self.assertEqual(run["full_parameters_verified_per_target"], 874)
+            self.assertEqual(
+                run["logical_shared_bitfield_raw_bytes_verified_per_target"],
+                39,
+            )
+            self.assertEqual(run["crc_raw_bytes_verified_per_target"], 10)
+        self.assertIs(acceptance["physical_device_verified"], False)
+        self.assertIs(acceptance["destination_full_crc_validity_verified"], False)
+        self.assertIs(acceptance["export_is_review_only"], True)
+        evidence = differential.GLOBAL_PROGRAMMING_EVIDENCE
+        self.assertEqual(evidence["original_executions"], 32)
+        self.assertEqual(evidence["matrix_vectors"], 32)
+        self.assertEqual(evidence["reverse_vectors"], 2)
+        self.assertEqual(evidence["sequential_payloads"], 2)
+        self.assertEqual(evidence["native_module_targets"], 36)
+        self.assertEqual(evidence["native_cli_targets"], 2)
+
+
+    def test_thermostat_evidence_constants_match_committed_fixtures_offline(self):
+        # Row 4 (OFFLINE, no vendor spec/bridge): the hardcoded evidence
+        # constants must match the committed fixtures. Verdict is 0/6, so
+        # this pins the audit numbers, not a flip.
+        temp_vectors = json.loads(
+            (
+                ROOT / "research/fixtures/thermostat-temperature-vectors.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(len(temp_vectors["methods"]), 14)
+        self.assertEqual(len(temp_vectors["extended_original_emulator"]), 28840)
+        self.assertEqual(len(temp_vectors["native_windows_original"]), 1176)
+        self.assertEqual(
+            temp_vectors["source_reports"]["emulator"]["cases"], 28840
+        )
+        self.assertEqual(
+            temp_vectors["source_reports"]["Windows"]["pilot_cases"], 28
+        )
+        self.assertEqual(
+            temp_vectors["source_reports"]["Windows"]["full_cases"], 1176
+        )
+        temp_acceptance = json.loads(
+            (
+                ROOT
+                / "research/fixtures/thermostat-temperature-acceptance.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(temp_acceptance["original_methods"], 14)
+        self.assertEqual(
+            temp_acceptance["fresh_original_cases_per_python"], 28840
+        )
+        temp_native = json.loads(
+            (
+                ROOT
+                / "research/fixtures/thermostat-temperature-native-acceptance.json"
+            ).read_text(encoding="utf-8")
+        )
+        phases = {phase["phase"]: phase for phase in temp_native["phases"]}
+        self.assertEqual(phases["pilot"]["cases"], 28)
+        self.assertEqual(phases["full"]["cases"], 1176)
+        self.assertIn("No full thermostat form", temp_acceptance["scope"])
+        self.assertIn("database save/load", temp_acceptance["scope"])
+        levels_vectors = json.loads(
+            (
+                ROOT
+                / "research/fixtures/thermostat-schedule-levels-vectors.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(len(levels_vectors["cases"]), 14)
+        levels_acceptance = json.loads(
+            (
+                ROOT
+                / "research/fixtures/thermostat-schedule-levels-acceptance.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(
+            levels_acceptance["tests"]["313"][
+                "captured_original_cases_compared"
+            ],
+            14,
+        )
+        self.assertEqual(
+            levels_acceptance["tests"]["313"]["fresh_original_executions"],
+            0,
+        )
+        self.assertIs(
+            levels_acceptance["tests"]["313"][
+                "native_storage_or_vm_called"
+            ],
+            False,
+        )
+        selection_vectors = json.loads(
+            (
+                ROOT
+                / "research/fixtures/thermostat-scheduling-selection-vectors.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(selection_vectors["original_cases"], 12)
+        self.assertEqual(len(selection_vectors["cases"]), 12)
+        outer_vectors = json.loads(
+            (
+                ROOT
+                / "research/fixtures/thermostat-scheduling-outer-vectors.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(len(outer_vectors["cases"]), 12)
+        unit_load_vectors = json.loads(
+            (
+                ROOT
+                / "research/fixtures/thermostat-unit-load-original-vectors.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(len(unit_load_vectors), 12)
+        self.assertEqual(
+            [case["id"] for case in unit_load_vectors],
+            [f"L{i:02}" for i in range(1, 13)],
+        )
+        unit_load_original = json.loads(
+            (
+                ROOT
+                / "research/experiments/2026-09-24/thermostat-unit-load-original.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(unit_load_original["cases"], 12)
+        self.assertEqual(
+            unit_load_original["original_instruction_entries"], 71832
+        )
+        composition_acceptance = json.loads(
+            (
+                ROOT
+                / "research/experiments/2026-09-24/thermostat-native-composition-acceptance.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(composition_acceptance["tests_run"], 2)
+        for case in composition_acceptance["cases"]:
+            self.assertEqual(case["target_project_save_count"], 1)
+        self.assertIn(
+            "native collection-order equivalence",
+            " ".join(composition_acceptance["not_claimed"]),
+        )
+        composition_review = json.loads(
+            (
+                ROOT
+                / "research/experiments/2026-09-24/thermostat-native-composition-review.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(composition_review["composition_tests"]["tests"], 14)
+        self.assertIs(
+            composition_review["evidence_boundaries"][
+                "new_original_instruction_execution"
+            ],
+            False,
+        )
+        evidence = differential.THERMOSTAT_CONFIGURATION_EVIDENCE
+        self.assertEqual(evidence["original_executions"], 28840)
+        self.assertEqual(evidence["original_methods"], 14)
+        self.assertEqual(evidence["native_windows_pilot_cases"], 28)
+        self.assertEqual(evidence["native_windows_full_cases"], 1176)
+        self.assertEqual(evidence["captured_inner_outcomes"], 14)
+        self.assertEqual(evidence["predicate_captures"], 12)
+        self.assertEqual(evidence["outer_workflow_captures"], 12)
+        self.assertEqual(evidence["afterload_outcomes"], 12)
+        self.assertEqual(evidence["afterload_instruction_entries"], 71832)
+        self.assertEqual(evidence["composition_native_tests"], 2)
+        self.assertEqual(evidence["composition_target_saves_per_case"], 1)
+        # Row-level rubric flags stay False: no single bounded scope has
+        # both the >=10-original leg and the native-persistence leg.
+        self.assertIs(evidence["has_native_persistence"], False)
+        self.assertIs(evidence["has_acceptance_record"], False)
+        self.assertIs(evidence["has_bounded_scope_note"], False)
 
 
 if __name__ == "__main__":
