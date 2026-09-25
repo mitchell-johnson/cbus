@@ -4,6 +4,7 @@ use crate::cal::Cal;
 use crate::packet::{Meta, Packet};
 use crate::report::StatusReport;
 use crate::sal::aircon::{AirconCommand, AirconStatus};
+use crate::sal::security::{SecurityArmMode, SecurityCommand, SecurityEvent};
 use crate::sal::Sal;
 use serde_json::{json, Map, Value};
 
@@ -14,6 +15,8 @@ pub fn sal_to_json(s: &Sal) -> Value {
     match s {
         Sal::Aircon(command) => aircon_to_json(command),
         Sal::AirconStatus(status) => aircon_status_to_json(status),
+        Sal::SecurityCommand(command) => security_command_to_json(command),
+        Sal::SecurityEvent(event) => security_event_to_json(event),
         Sal::LightingRamp {
             application,
             group_address,
@@ -88,6 +91,95 @@ pub fn sal_to_json(s: &Sal) -> Value {
         } => json!({"sal": "dynamic_label", "application": application,
                     "payload_hex": hex::encode(payload)}),
     }
+}
+
+fn security_command_to_json(command: &SecurityCommand) -> Value {
+    match command {
+        SecurityCommand::StatusRequest { report } => {
+            json!({"sal":"security", "command":"status_request", "report":report})
+        }
+        SecurityCommand::Arm { mode } => {
+            json!({"sal":"security", "command":"arm", "mode":mode.name()})
+        }
+        SecurityCommand::Tamper { raised } => {
+            json!({"sal":"security", "command":"tamper", "raised":raised})
+        }
+        SecurityCommand::RaiseAlarm => json!({"sal":"security", "command":"raise_alarm"}),
+        SecurityCommand::EmulateKeypad { key } => {
+            json!({"sal":"security", "command":"emulate_keypad", "key":key})
+        }
+        SecurityCommand::DisplayMessage { message } => {
+            json!({"sal":"security", "command":"display_message", "message_hex":hex::encode(message)})
+        }
+        SecurityCommand::RequestZoneName { zone } => {
+            json!({"sal":"security", "command":"request_zone_name", "zone":zone})
+        }
+    }
+}
+
+fn security_event_to_json(event: &SecurityEvent) -> Value {
+    let mut value = json!({"sal":"security_event", "event":event.event_name()});
+    let object = value.as_object_mut().expect("object");
+    match event {
+        SecurityEvent::SystemArm { state } => {
+            object.insert("state".into(), json!(state));
+        }
+        SecurityEvent::Alarm { active }
+        | SecurityEvent::Tamper { active }
+        | SecurityEvent::Panic { active }
+        | SecurityEvent::BatteryCharging { active } => {
+            object.insert("active".into(), json!(active));
+        }
+        SecurityEvent::LowBattery { detected } => {
+            object.insert("detected".into(), json!(detected));
+        }
+        SecurityEvent::ZoneUnsealed { zone }
+        | SecurityEvent::ZoneSealed { zone }
+        | SecurityEvent::ZoneOpen { zone }
+        | SecurityEvent::ZoneShort { zone }
+        | SecurityEvent::ZoneIsolated { zone }
+        | SecurityEvent::ArmNotReady { zone } => {
+            object.insert("zone".into(), json!(zone));
+        }
+        SecurityEvent::ZoneName { zone, name } => {
+            object.insert("zone".into(), json!(zone));
+            object.insert("name_hex".into(), json!(hex::encode(name)));
+        }
+        SecurityEvent::StatusReport1 {
+            arm_state,
+            tamper,
+            panic,
+            zones,
+        } => {
+            object.insert("arm_state".into(), json!(arm_state));
+            object.insert("tamper".into(), json!(tamper));
+            object.insert("panic".into(), json!(panic));
+            object.insert("zones".into(), json!(zones));
+        }
+        SecurityEvent::StatusReport2 { zones } => {
+            object.insert("zones".into(), json!(zones));
+        }
+        SecurityEvent::PasswordEntryStatus { status } => {
+            object.insert("status".into(), json!(status));
+        }
+        SecurityEvent::Mains { restored } => {
+            object.insert("restored".into(), json!(restored));
+        }
+        SecurityEvent::CurrentAlarmType { alarm_type } => {
+            object.insert("alarm_type".into(), json!(alarm_type));
+        }
+        SecurityEvent::LineCutAlarm { raised }
+        | SecurityEvent::ArmFailed { raised }
+        | SecurityEvent::FireAlarm { raised }
+        | SecurityEvent::GasAlarm { raised }
+        | SecurityEvent::OtherAlarm { raised } => {
+            object.insert("raised".into(), json!(raised));
+        }
+        SecurityEvent::ExitDelayStarted
+        | SecurityEvent::EntryDelayStarted
+        | SecurityEvent::ArmReady => {}
+    }
+    value
 }
 
 fn aircon_status_to_json(status: &AirconStatus) -> Value {
@@ -587,6 +679,8 @@ pub fn sal_from_json(d: &Value) -> Result<Sal, JErr> {
     match get_str(d, "sal")? {
         "aircon" => aircon_from_json(d).map(Sal::Aircon),
         "aircon_status" => aircon_status_from_json(d).map(Sal::AirconStatus),
+        "security" => security_command_from_json(d).map(Sal::SecurityCommand),
+        "security_event" => security_event_from_json(d).map(Sal::SecurityEvent),
         "lighting_on" => Ok(Sal::LightingOn {
             application: get_u8(d, "application")?,
             group_address: get_u8(d, "group_address")?,
@@ -657,6 +751,155 @@ pub fn sal_from_json(d: &Value) -> Result<Sal, JErr> {
             payload: hex::decode(get_str(d, "payload_hex")?).map_err(|e| e.to_string())?,
         }),
         other => Err(format!("unhandled SAL json: {other}")),
+    }
+}
+
+fn security_command_from_json(d: &Value) -> Result<SecurityCommand, JErr> {
+    Ok(match get_str(d, "command")? {
+        "status_request" => SecurityCommand::StatusRequest {
+            report: get_u8(d, "report")?,
+        },
+        "arm" => SecurityCommand::Arm {
+            mode: match get_str(d, "mode")? {
+                "away" => SecurityArmMode::Away,
+                "night" => SecurityArmMode::Night,
+                "day" => SecurityArmMode::Day,
+                "vacation" => SecurityArmMode::Vacation,
+                "highest" => SecurityArmMode::Highest,
+                mode => return Err(format!("unhandled Security arm mode: {mode}")),
+            },
+        },
+        "tamper" => SecurityCommand::Tamper {
+            raised: get_bool(d, "raised")?,
+        },
+        "raise_alarm" => SecurityCommand::RaiseAlarm,
+        "emulate_keypad" => SecurityCommand::EmulateKeypad {
+            key: get_u8(d, "key")?,
+        },
+        "display_message" => SecurityCommand::DisplayMessage {
+            message: hex::decode(get_str(d, "message_hex")?).map_err(|e| e.to_string())?,
+        },
+        "request_zone_name" => SecurityCommand::RequestZoneName {
+            zone: get_u8(d, "zone")?,
+        },
+        command => return Err(format!("unhandled Security command: {command}")),
+    })
+}
+
+fn security_event_from_json(d: &Value) -> Result<SecurityEvent, JErr> {
+    let zones = || -> Result<Vec<u8>, JErr> {
+        d.get("zones")
+            .and_then(Value::as_array)
+            .ok_or_else(|| "missing/invalid field zones".to_owned())?
+            .iter()
+            .map(|value| {
+                value
+                    .as_u64()
+                    .and_then(|v| u8::try_from(v).ok())
+                    .ok_or_else(|| "invalid zone state".to_owned())
+            })
+            .collect()
+    };
+    Ok(match get_str(d, "event")? {
+        "system_arm" => SecurityEvent::SystemArm {
+            state: get_u8(d, "state")?,
+        },
+        "exit_delay_started" => SecurityEvent::ExitDelayStarted,
+        "entry_delay_started" => SecurityEvent::EntryDelayStarted,
+        "alarm_on" => SecurityEvent::Alarm {
+            active: security_named_bool(d, "active", true)?,
+        },
+        "alarm_off" => SecurityEvent::Alarm {
+            active: security_named_bool(d, "active", false)?,
+        },
+        "tamper_on" => SecurityEvent::Tamper {
+            active: security_named_bool(d, "active", true)?,
+        },
+        "tamper_off" => SecurityEvent::Tamper {
+            active: security_named_bool(d, "active", false)?,
+        },
+        "panic_activated" => SecurityEvent::Panic {
+            active: security_named_bool(d, "active", true)?,
+        },
+        "panic_cleared" => SecurityEvent::Panic {
+            active: security_named_bool(d, "active", false)?,
+        },
+        "zone_unsealed" => SecurityEvent::ZoneUnsealed {
+            zone: get_u8(d, "zone")?,
+        },
+        "zone_sealed" => SecurityEvent::ZoneSealed {
+            zone: get_u8(d, "zone")?,
+        },
+        "zone_open" => SecurityEvent::ZoneOpen {
+            zone: get_u8(d, "zone")?,
+        },
+        "zone_short" => SecurityEvent::ZoneShort {
+            zone: get_u8(d, "zone")?,
+        },
+        "zone_isolated" => SecurityEvent::ZoneIsolated {
+            zone: get_u8(d, "zone")?,
+        },
+        "low_battery_detected" => SecurityEvent::LowBattery {
+            detected: security_named_bool(d, "detected", true)?,
+        },
+        "low_battery_corrected" => SecurityEvent::LowBattery {
+            detected: security_named_bool(d, "detected", false)?,
+        },
+        "battery_charging" => SecurityEvent::BatteryCharging {
+            active: get_bool(d, "active")?,
+        },
+        "zone_name" => SecurityEvent::ZoneName {
+            zone: get_u8(d, "zone")?,
+            name: hex::decode(get_str(d, "name_hex")?).map_err(|e| e.to_string())?,
+        },
+        "status_report_1" => SecurityEvent::StatusReport1 {
+            arm_state: get_u8(d, "arm_state")?,
+            tamper: get_bool(d, "tamper")?,
+            panic: get_bool(d, "panic")?,
+            zones: zones()?,
+        },
+        "status_report_2" => SecurityEvent::StatusReport2 { zones: zones()? },
+        "password_entry_status" => SecurityEvent::PasswordEntryStatus {
+            status: get_u8(d, "status")?,
+        },
+        "mains_failure" => SecurityEvent::Mains {
+            restored: security_named_bool(d, "restored", false)?,
+        },
+        "mains_restored" => SecurityEvent::Mains {
+            restored: security_named_bool(d, "restored", true)?,
+        },
+        "arm_ready" => SecurityEvent::ArmReady,
+        "arm_not_ready" => SecurityEvent::ArmNotReady {
+            zone: get_u8(d, "zone")?,
+        },
+        "current_alarm_type" => SecurityEvent::CurrentAlarmType {
+            alarm_type: get_u8(d, "alarm_type")?,
+        },
+        "line_cut_alarm" => SecurityEvent::LineCutAlarm {
+            raised: get_bool(d, "raised")?,
+        },
+        "arm_failed" => SecurityEvent::ArmFailed {
+            raised: get_bool(d, "raised")?,
+        },
+        "fire_alarm" => SecurityEvent::FireAlarm {
+            raised: get_bool(d, "raised")?,
+        },
+        "gas_alarm" => SecurityEvent::GasAlarm {
+            raised: get_bool(d, "raised")?,
+        },
+        "other_alarm" => SecurityEvent::OtherAlarm {
+            raised: get_bool(d, "raised")?,
+        },
+        event => return Err(format!("unhandled Security event: {event}")),
+    })
+}
+
+fn security_named_bool(d: &Value, field: &str, expected: bool) -> Result<bool, JErr> {
+    let actual = get_bool(d, field)?;
+    if actual == expected {
+        Ok(actual)
+    } else {
+        Err(format!("Security event name conflicts with field {field}"))
     }
 }
 
@@ -1202,5 +1445,20 @@ mod tests {
         let mut out_of_range = v;
         out_of_range["plant_type"] = json!(256);
         assert!(sal_from_json(&out_of_range).is_err());
+    }
+
+    #[test]
+    fn security_event_names_and_boolean_fields_must_agree() {
+        let alarm = json!({
+            "sal": "security_event",
+            "event": "alarm_on",
+            "active": true
+        });
+        let sal = sal_from_json(&alarm).unwrap();
+        assert_eq!(sal_to_json(&sal), alarm);
+
+        let mut contradictory = alarm;
+        contradictory["active"] = json!(false);
+        assert!(sal_from_json(&contradictory).is_err());
     }
 }

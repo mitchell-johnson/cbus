@@ -2,7 +2,7 @@
 
 ## C-Bus packets
 
-`cbus-protocol` models point-to-multipoint, point-to-point, routed point-to-point-to-multipoint, device-management, reset, confirmation, error, and special packet forms. It includes CAL identify, recall, reply, and extended messages; lighting, Air-Conditioning, clock, enable, temperature, and status-request SALs; binary and Manchester status reports; checksum helpers; ramp-rate conversion; and stable packet JSON.
+`cbus-protocol` models point-to-multipoint, point-to-point, routed point-to-point-to-multipoint, device-management, reset, confirmation, error, and special packet forms. It includes CAL identify, recall, reply, and extended messages; lighting, Air-Conditioning, Security, clock, enable, temperature, and status-request SALs; binary and Manchester status reports; checksum helpers; ramp-rate conversion; and stable packet JSON.
 
 Air-Conditioning application `0xAC` has typed encode/decode coverage for the
 eleven commands registered by C-Gate 3.4: refresh, ward off/on, zone HVAC and
@@ -17,6 +17,17 @@ plant output levels. They have canonical `aircon_status` JSON and remain typed
 transport events while a command confirmation is pending. Application dispatch
 handles extended humidity schedule opcode `0xA9` before the generic dynamic
 label prefix. Unknown opcodes, reserved bits and malformed ranges fail closed.
+
+Security application `0xD0` has typed encode/decode coverage for all seven
+C-Gate 3.4 commands and every native event opcode from `0x80` through `0x98`.
+It preserves the compact `01`/`79` boolean forms, `09`/`0A` command forms,
+variable `E1`–`F3` observed display messages, fixed 11-byte zone names and both packed
+two-bit zone-status reports. Canonical JSON uses `security` for commands and
+`security_event` for observations. Unknown prefix/opcode combinations,
+malformed lengths, invalid boolean values and zones outside 1–127 fail closed.
+The 52 exact command/report cases are in
+`rust/testdata/vectors/security.jsonl`; the retained native capture and class
+hashes are in `rust/testdata/fixtures/native_cgate_security.json`.
 
 Strict decoding rejects malformed input. Lenient decoding retains compatibility behavior for imperfect frames. The golden-vector suite fixes the expected byte consumption, decoded JSON, and re-encoded bytes for representative and edge-case traffic.
 

@@ -59,7 +59,7 @@ pub fn run_vector(fname: &str, index: usize, id: &str) {
     );
     let result = match fname {
         "decode_from_pci.jsonl" | "decode_to_pci.jsonl" => check_decode(v),
-        "encode.jsonl" => check_encode(v),
+        "encode.jsonl" | "security.jsonl" => check_encode(v),
         "checksum.jsonl" => check_checksum(v),
         "ramp_rates.jsonl" => check_ramp(v),
         "mqtt_topics.jsonl" => cbus_mqtt::vector_check::check_topic(v),

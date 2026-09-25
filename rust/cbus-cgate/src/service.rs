@@ -5,7 +5,12 @@ use super::*;
 use crate::auth;
 use cbus_protocol::{
     packet::{Meta, Packet},
-    sal::{aircon::AirconCommand, label, Sal},
+    sal::{
+        aircon::AirconCommand,
+        label,
+        security::{SecurityArmMode, SecurityCommand},
+        Sal,
+    },
     serial_address::parse_native_serial,
 };
 use cbus_transport::pci::{CBusEvent, GocProgramming, PciClient};
@@ -46,6 +51,18 @@ const AIRCON_HELP: &[&str] = &[
     "Help:  AIRCON SET_WARD_ON - Returns the ward to its previous operational state.",
     "Help:  AIRCON SET_ZONE_HUMIDITY_MODE - Broadcast of Humidity mode and level required for a Zone or Zones.",
     "Help:  AIRCON SET_ZONE_HVAC_MODE - Broadcast of HVAC mode and level required for a Zone or Zones.",
+];
+
+const SECURITY_HELP: &[&str] = &[
+    "Help: SECURITY commands:",
+    "Help:  SECURITY ? Help for these commands",
+    "Help:  SECURITY ARM - Send an arm system request to the security device",
+    "Help:  SECURITY DISPLAY_MESSAGE - Send a message to display security device",
+    "Help:  SECURITY EMULATE_KEYPAD - Send a keypad press to the security device",
+    "Help:  SECURITY RAISE_ALARM - Raise an alarm for the security device",
+    "Help:  SECURITY REQUEST_ZONE_NAME - Request a zone name from the security device",
+    "Help:  SECURITY STATUS_REQUEST - Send a status request to the security device",
+    "Help:  SECURITY TAMPER - Raise or drop tamper status for the security device",
 ];
 
 /// Default bound for the TLS pre-handshake accept (matches the existing
@@ -479,6 +496,22 @@ impl Service {
                     status.event_arguments()
                 ));
             }
+            CBusEvent::SecurityCommand { source, command } => {
+                self.send_security_event(
+                    command.event_name(),
+                    command.zone(),
+                    &command.event_arguments(),
+                    source.unwrap_or(0),
+                );
+            }
+            CBusEvent::SecurityEvent { source, event } => {
+                self.send_security_event(
+                    event.event_name(),
+                    event.zone(),
+                    &event.event_arguments(),
+                    source.unwrap_or(0),
+                );
+            }
             CBusEvent::LightingOn {
                 source: Some(_),
                 app,
@@ -614,6 +647,19 @@ impl Service {
         if let Some((key, value)) = application_update {
             model.application_state.insert(key, value);
         }
+    }
+
+    fn send_security_event(&self, name: &str, zone: Option<u8>, arguments: &str, source: u8) {
+        let zone = zone.map_or_else(String::new, |zone| format!("/{zone}"));
+        let arguments = if arguments.is_empty() {
+            String::new()
+        } else {
+            format!(" {arguments}")
+        };
+        let _ = self.events.send(format!(
+            "#e# security {name} //{}/{}/208{zone}{arguments} sourceUnit={source}",
+            self.project, self.network
+        ));
     }
 
     async fn record_label(
@@ -820,6 +866,54 @@ impl Service {
             ]);
             capabilities["aircon_event_fanout"] = serde_json::Value::Bool(true);
             capabilities["aircon_mqtt_state"] = serde_json::Value::Bool(false);
+            capabilities["security_control"] = serde_json::Value::Bool(true);
+            capabilities["security_application"] = serde_json::Value::from(208);
+            capabilities["security_delivery_semantics"] =
+                serde_json::Value::String("pci-confirmed-broadcast".to_string());
+            capabilities["security_commands"] = serde_json::json!([
+                "status_request",
+                "arm",
+                "tamper",
+                "raise_alarm",
+                "emulate_keypad",
+                "display_message",
+                "request_zone_name"
+            ]);
+            capabilities["security_reports"] = serde_json::json!([
+                "system_arm",
+                "exit_delay_started",
+                "entry_delay_started",
+                "alarm_on",
+                "alarm_off",
+                "tamper_on",
+                "tamper_off",
+                "panic_activated",
+                "panic_cleared",
+                "zone_unsealed",
+                "zone_sealed",
+                "zone_open",
+                "zone_short",
+                "zone_isolated",
+                "low_battery_detected",
+                "low_battery_corrected",
+                "battery_charging",
+                "zone_name",
+                "status_report_1",
+                "status_report_2",
+                "password_entry_status",
+                "mains_failure",
+                "mains_restored",
+                "arm_ready",
+                "arm_not_ready",
+                "current_alarm_type",
+                "line_cut_alarm",
+                "arm_failed",
+                "fire_alarm",
+                "gas_alarm",
+                "other_alarm"
+            ]);
+            capabilities["security_event_fanout"] = serde_json::Value::Bool(true);
+            capabilities["security_mqtt_state"] = serde_json::Value::Bool(false);
             return ok(tag, vec![capabilities.to_string()], "200 OK");
         }
         if verb == "AIRCON" {
@@ -830,6 +924,15 @@ impl Service {
                 return err(tag, 400, "400 Syntax Error.");
             }
             return self.aircon(tag, &words, sub).await;
+        }
+        if verb == "SECURITY" {
+            if words.len() == 1 || (words.len() == 2 && words[1] == "?") {
+                return security_help(tag);
+            }
+            if !is_security_subcommand(sub) {
+                return err(tag, 400, "400 Syntax Error.");
+            }
+            return self.security(tag, &words, sub).await;
         }
         if verb == "REPOSITORY" && sub == "LIST" {
             return self.repository_list(tag, &words);
@@ -3341,6 +3444,150 @@ impl Service {
         .await
     }
 
+    async fn security(&self, tag: &str, words: &[&str], sub: &str) -> Response {
+        let parameters: &[&str] = match sub {
+            "RAISE_ALARM" => &["application"],
+            "DISPLAY_MESSAGE" => &["application"],
+            "ARM" => &["application", "arm-mode"],
+            "TAMPER" => &["application", "tamper-mode"],
+            "EMULATE_KEYPAD" => &["application", "key"],
+            "STATUS_REQUEST" => &["application", "status-number"],
+            "REQUEST_ZONE_NAME" => &["application", "zone"],
+            _ => return err(tag, 400, "400 Syntax Error."),
+        };
+        let supplied = words.len().saturating_sub(2);
+        let display_message = sub == "DISPLAY_MESSAGE";
+        let maximum = parameters.len() + usize::from(display_message);
+        if supplied < parameters.len() {
+            return err(
+                tag,
+                400,
+                &format!(
+                    "400 Syntax Error: Missing parameter : <{}>",
+                    parameters[supplied]
+                ),
+            );
+        }
+        if supplied > maximum {
+            return err(tag, 400, "400 Syntax Error: Too many parameters");
+        }
+        let target = words[2];
+        let Some(application) = self.application_path(target) else {
+            return err(tag, 404, "404 Network is not connected to this service");
+        };
+        if application != 208 {
+            return err(
+                tag,
+                402,
+                &format!("402 Operation not supported by: {target}"),
+            );
+        }
+        let command = match sub {
+            "STATUS_REQUEST" => {
+                let report = match parse_security_integer(tag, words[3], "status-number") {
+                    Ok(1) => 1,
+                    Ok(2) => 2,
+                    Ok(_) => {
+                        return err(
+                            tag,
+                            408,
+                            &format!("408 Operation failed: {target} (bad status number)"),
+                        )
+                    }
+                    Err(response) => return response,
+                };
+                SecurityCommand::StatusRequest { report }
+            }
+            "ARM" => {
+                let mode = match words[3].to_ascii_lowercase().as_str() {
+                    "away" => SecurityArmMode::Away,
+                    "night" => SecurityArmMode::Night,
+                    "day" => SecurityArmMode::Day,
+                    "vacation" => SecurityArmMode::Vacation,
+                    "highest" => SecurityArmMode::Highest,
+                    _ => {
+                        return err(
+                            tag,
+                            405,
+                            &format!("405 Parameter out of range: {target} (bad arm mode)"),
+                        )
+                    }
+                };
+                SecurityCommand::Arm { mode }
+            }
+            "TAMPER" => {
+                let raised = match words[3].to_ascii_lowercase().as_str() {
+                    "raise" => true,
+                    "drop" => false,
+                    _ => {
+                        return err(
+                            tag,
+                            405,
+                            &format!("405 Parameter out of range: {target} (bad tamper mode)"),
+                        )
+                    }
+                };
+                SecurityCommand::Tamper { raised }
+            }
+            "RAISE_ALARM" => SecurityCommand::RaiseAlarm,
+            "EMULATE_KEYPAD" => {
+                let key = match parse_security_integer(tag, words[3], "key") {
+                    Ok(value) if (0..=255).contains(&value) => value as u8,
+                    Ok(_) => u8::MAX,
+                    Err(response) => return response,
+                };
+                SecurityCommand::EmulateKeypad { key }
+            }
+            "DISPLAY_MESSAGE" => {
+                let message = if words.len() == 3 {
+                    Vec::new()
+                } else {
+                    match parse_security_message(words[3]) {
+                        Ok(message) => message,
+                        Err(message) => {
+                            return err(
+                                tag,
+                                405,
+                                &format!("405 Parameter out of range: {target} ({message})"),
+                            )
+                        }
+                    }
+                };
+                if message.len() > 17 {
+                    return err(
+                        tag,
+                        405,
+                        &format!("405 Parameter out of range: {target} (Message too long)"),
+                    );
+                }
+                SecurityCommand::DisplayMessage { message }
+            }
+            "REQUEST_ZONE_NAME" => {
+                let zone = match parse_security_integer(tag, words[3], "zone") {
+                    Ok(value) if (1..=127).contains(&value) => value as u8,
+                    Ok(_) => {
+                        return err(
+                            tag,
+                            405,
+                            &format!("405 Parameter out of range: {target} (Invalid Zone)"),
+                        )
+                    }
+                    Err(response) => return response,
+                };
+                SecurityCommand::RequestZoneName { zone }
+            }
+            _ => unreachable!(),
+        };
+        let _commands = self.commands.lock().await;
+        self.send_application(
+            tag,
+            Sal::SecurityCommand(command),
+            ok(tag, vec![], "200 OK."),
+            "Security delivery",
+        )
+        .await
+    }
+
     async fn trigger(
         &self,
         client: &ClientState,
@@ -4076,9 +4323,22 @@ impl Service {
         response: Response,
         operation: &str,
     ) -> Response {
-        let (_, pci) = self.current_pci_epoch().await;
-        self.send_application_on_pci(tag, sal, response, operation, &pci)
-            .await
+        let (generation, pci) = self.current_pci_epoch().await;
+        let result = self
+            .send_application_on_pci(tag, sal, response, operation, &pci)
+            .await;
+        // A confirmation from a retired shared interface cannot establish
+        // delivery on the active connection. Callers that also commit live
+        // state use send_application_on_pci directly and keep their own epoch
+        // guard through the cache mutation and success event.
+        let Some(_commit_guard) = self.pci_commit_guard(generation, &pci).await else {
+            return err(
+                tag,
+                502,
+                &format!("502 {operation} failed: PCI connection generation changed"),
+            );
+        };
+        result
     }
 
     async fn send_application_on_pci(
@@ -5990,6 +6250,81 @@ fn aircon_help(tag: &str) -> Response {
     }
 }
 
+fn is_security_subcommand(sub: &str) -> bool {
+    matches!(
+        sub,
+        "STATUS_REQUEST"
+            | "ARM"
+            | "TAMPER"
+            | "RAISE_ALARM"
+            | "EMULATE_KEYPAD"
+            | "DISPLAY_MESSAGE"
+            | "REQUEST_ZONE_NAME"
+    )
+}
+
+fn security_help(tag: &str) -> Response {
+    let mut rows = SECURITY_HELP
+        .iter()
+        .map(|row| (*row).to_string())
+        .collect::<Vec<_>>();
+    let final_text = format!("101 {}", rows.pop().expect("SECURITY help is nonempty"));
+    Response {
+        tag: tag.to_string(),
+        lines: rows,
+        final_text,
+        status: 101,
+    }
+}
+
+fn parse_security_integer(tag: &str, value: &str, parameter: &str) -> Result<i32, Response> {
+    let parsed = value
+        .strip_prefix('$')
+        .map_or_else(|| value.parse::<i32>(), |hex| i32::from_str_radix(hex, 16));
+    parsed.map_err(|_| {
+        err(
+            tag,
+            400,
+            &format!("400 Syntax Error: Invalid integer parameter : <{parameter}>"),
+        )
+    })
+}
+
+fn parse_security_message(value: &str) -> Result<Vec<u8>, String> {
+    let mut output = Vec::with_capacity(value.len());
+    let mut chars = value.chars();
+    while let Some(ch) = chars.next() {
+        if ch != '\\' {
+            if !ch.is_ascii() {
+                return Err("Message must contain ASCII or escaped byte values".to_string());
+            }
+            output.push(ch as u8);
+            continue;
+        }
+        match chars.next() {
+            Some('\\') => output.push(b'\\'),
+            Some('n') => output.push(b'\n'),
+            Some('r') => output.push(b'\r'),
+            Some('t') => output.push(b'\t'),
+            Some('x') => {
+                let Some(high) = chars.next() else {
+                    return Err("Bad escaped character".to_string());
+                };
+                let Some(low) = chars.next() else {
+                    return Err("Bad escaped character".to_string());
+                };
+                let pair = format!("{high}{low}");
+                output.push(
+                    u8::from_str_radix(&pair, 16)
+                        .map_err(|_| format!("For input string: \"{pair}\""))?,
+                );
+            }
+            _ => return Err("Bad escaped character".to_string()),
+        }
+    }
+    Ok(output)
+}
+
 fn parse_aircon_ward(tag: &str, target: &str, value: &str) -> Result<u8, Response> {
     match value.parse::<i32>() {
         Ok(value) => u8::try_from(value).map_err(|_| {
@@ -6100,6 +6435,9 @@ fn parse_aircon_boolean(tag: &str, value: &str, parameter: &str) -> Result<bool,
 /// - The ten state-changing AIRCON subcommands. HVAC control has no MQTT
 ///   equivalent in cmqttd. REFRESH is a read/state request and remains open,
 ///   as do the parent help endpoint and unknown syntax.
+/// - Security ARM/TAMPER/RAISE_ALARM/EMULATE_KEYPAD/DISPLAY_MESSAGE. These
+///   controls have no MQTT equivalent. STATUS_REQUEST, REQUEST_ZONE_NAME,
+///   parent help and unknown syntax remain open.
 /// - SCENE RECORD (persists snapshots to the state file). SCENE PLAY stays
 ///   open (snapshot read plus bus control).
 /// - DO ... FactoryDefault (destructive KEYGL5 OEM programming control).
@@ -6110,6 +6448,9 @@ fn parse_aircon_boolean(tag: &str, value: &str, parameter: &str) -> Result<bool,
 fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
     match verb {
         "AIRCON" => is_aircon_subcommand(sub) && sub != "REFRESH",
+        "SECURITY" => {
+            is_security_subcommand(sub) && !matches!(sub, "STATUS_REQUEST" | "REQUEST_ZONE_NAME")
+        }
         "PP" => matches!(
             sub,
             "LOCK"

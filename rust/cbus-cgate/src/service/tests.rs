@@ -741,6 +741,160 @@ async fn observed_aircon_status_and_command_are_fanned_to_event_clients() {
 }
 
 #[tokio::test]
+async fn security_invalid_forms_fail_before_io_and_mutations_require_auth() {
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    service
+        .set_auth_token_hash(crate::auth::sha256(b"security-test-token"))
+        .unwrap();
+    let mut client = ClientState::default();
+    assert_eq!(
+        service.handle(&mut client, "[h] SECURITY ?").await.status,
+        101
+    );
+    assert!(!super::requires_programming_auth(
+        "SECURITY",
+        "STATUS_REQUEST",
+        &["SECURITY".into(), "STATUS_REQUEST".into()]
+    ));
+    assert!(!super::requires_programming_auth(
+        "SECURITY",
+        "REQUEST_ZONE_NAME",
+        &["SECURITY".into(), "REQUEST_ZONE_NAME".into()]
+    ));
+    let response = service
+        .handle(&mut client, "[locked] SECURITY ARM 254/208 away")
+        .await;
+    assert_eq!(response.final_text, "420 LOGIN required");
+
+    for (index, (command, status, final_text)) in [
+        (
+            "SECURITY STATUS_REQUEST 254/208 0",
+            408,
+            "408 Operation failed: 254/208 (bad status number)",
+        ),
+        ("SECURITY ARM 254/208 bogus", 420, "420 LOGIN required"),
+        (
+            "SECURITY REQUEST_ZONE_NAME 254/208 0",
+            405,
+            "405 Parameter out of range: 254/208 (Invalid Zone)",
+        ),
+        (
+            "SECURITY REQUEST_ZONE_NAME 254/208 128",
+            405,
+            "405 Parameter out of range: 254/208 (Invalid Zone)",
+        ),
+        (
+            "SECURITY REQUEST_ZONE_NAME 254/208 x",
+            400,
+            "400 Syntax Error: Invalid integer parameter : <zone>",
+        ),
+        (
+            "SECURITY STATUS_REQUEST 254/207 1",
+            402,
+            "402 Operation not supported by: 254/207",
+        ),
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        let response = service
+            .handle(&mut client, &format!("[{index}] {command}"))
+            .await;
+        assert_eq!(response.status, status, "{command}: {response:?}");
+        assert_eq!(response.final_text, final_text, "{command}");
+    }
+    assert!(
+        tokio::time::timeout(std::time::Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err(),
+        "rejected SECURITY commands must not reach PCI"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn observed_security_events_use_native_names_addresses_and_byte_escaping() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut events = service.events.subscribe();
+    service
+        .observe(&CBusEvent::SecurityEvent {
+            source: Some(4),
+            event: cbus_protocol::sal::security::SecurityEvent::ZoneName {
+                zone: 7,
+                name: b"A B\\C\0\x7f1234".to_vec(),
+            },
+        })
+        .await;
+    assert_eq!(
+        events.try_recv().unwrap(),
+        "#e# security zone_name //HARNESS/254/208/7 A\\x20B\\\\C\\x00\\x7F1234 sourceUnit=4"
+    );
+    service
+        .observe(&CBusEvent::SecurityCommand {
+            source: None,
+            command: SecurityCommand::RequestZoneName { zone: 127 },
+        })
+        .await;
+    assert_eq!(
+        events.try_recv().unwrap(),
+        "#e# security request_zone_name //HARNESS/254/208/127 sourceUnit=0"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn confirmed_application_on_retired_pci_generation_fails_closed() {
+    let path = state_path();
+    let (old_pci, old_remote) = pci();
+    let (old_read, mut old_write) = tokio::io::split(old_remote);
+    let mut old_read = BufReader::new(old_read);
+    let reset = tokio::spawn({
+        let pci = old_pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        let mut line = Vec::new();
+        old_read.read_until(b'\r', &mut line).await.unwrap();
+    }
+    reset.await.unwrap().unwrap();
+    let service = Service::new(&fixture(), None, path.clone(), old_pci, None).unwrap();
+    let command = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[g] SECURITY STATUS_REQUEST 254/208 1",
+                )
+                .await
+        }
+    });
+    let mut frame = Vec::new();
+    old_read.read_until(b'\r', &mut frame).await.unwrap();
+    assert!(frame.starts_with(b"\\05D00009A0"), "{frame:?}");
+    let confirmation = frame[frame.len() - 2];
+    let (replacement, _replacement_remote) = pci();
+    tokio::time::timeout(Duration::from_secs(2), service.set_pci(replacement))
+        .await
+        .expect("set_pci must complete");
+    old_write.write_all(&[confirmation, b'.']).await.unwrap();
+    let response = tokio::time::timeout(Duration::from_secs(2), command)
+        .await
+        .expect("retired generation command must complete")
+        .unwrap();
+    assert_eq!(response.status, 502, "{response:?}");
+    assert_eq!(
+        response.final_text,
+        "502 Security delivery failed: PCI connection generation changed"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn database_survives_restart_but_live_state_and_sessions_do_not() {
     let path = state_path();
     let (pci, _remote) = pci();

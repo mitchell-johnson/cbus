@@ -103,6 +103,46 @@ authentication, pre-I/O rejection, and MQTT continuity. A transport regression
 pins that a report does not consume the pending command confirmation. No live
 HVAC acceptance has been performed.
 
+### Security commands
+
+cmqttd implements the complete maintained C-Gate 3.4 SECURITY family for
+application 208 (`$D0`) on its configured direct network. Inspect native help
+with `SECURITY ?`:
+
+```text
+SECURITY STATUS_REQUEST APP 1|2
+SECURITY ARM APP away|night|day|vacation|highest
+SECURITY TAMPER APP raise|drop
+SECURITY RAISE_ALARM APP
+SECURITY EMULATE_KEYPAD APP KEY
+SECURITY DISPLAY_MESSAGE APP [MESSAGE]
+SECURITY REQUEST_ZONE_NAME APP ZONE
+```
+
+`APP` accepts `NETWORK/APPLICATION` or `//PROJECT/NETWORK/APPLICATION` and
+must resolve to 208. `KEY` uses C-Gate's signed-32-bit parser, including `$`
+hex; values outside 0–255 encode as `FF`, matching native behavior. The
+display command accepts zero or one whitespace token, decodes `\\`, `\xHH`,
+`\n`, `\r`, and `\t`, and permits at most 17 encoded bytes. Encode spaces as
+`\x20`. `ZONE` is 1–127. Native 3.4 crashes internally for some out-of-range
+zone indices; cmqttd rejects them before I/O.
+
+Every admitted command is one application-`0xD0` broadcast and completes only
+after a positive correlated confirmation from the active shared PCI
+generation. A 200 is interface-delivery evidence, not alarm-panel acceptance,
+state change or persistence. With LOGIN armed, `STATUS_REQUEST` and
+`REQUEST_ZONE_NAME` remain open; the five control forms require authentication.
+Incoming commands and native events `0x80`–`0x98`, including fixed zone names
+and the 32-/48-zone packed reports, fan out to `EVENT ON` clients. cmqttd has
+no MQTT Security entity/state schema. Bridged Security routing remains
+unsupported.
+
+Ground exact behavior in `rust/testdata/fixtures/native_cgate_security.json`,
+`rust/testdata/vectors/security.jsonl`, and
+`rust/cmqttd/tests/system_cgate_security.rs`. A `cbus-transport` regression
+also pins that an incoming Security event cannot satisfy a pending request
+confirmation.
+
 The physical service also implements lighting commands, C-Gate `DO` object
 methods for lighting and direct/bridged read-only `SYNC`, Trigger Control,
 Enable Control, clock date/time/refresh, Temperature Broadcast, `NET PINGU`, `NET SYNC`,
@@ -316,7 +356,8 @@ Application/Application2 readback,
 by NET SYNC,
 `cgate_auth: true` denotes the armed opt-in LOGIN gate (`false` dormant
 default): with `--cgate-auth-file` configured, each connection needs
-`LOGIN <token>` before programming verbs and AIRCON mutations while reads and
+`LOGIN <token>` before programming verbs, AIRCON mutations and Security
+control forms while reads and
 other bus control stay open; failures answer `420 LOGIN required` / `420 LOGIN failed` (malformed
 `LOGIN` with no token is 400 and also clears the flag), never `401`.
 Not native `access.txt` parity; loopback-only first slice;

@@ -24,6 +24,17 @@ does not publish an invented MQTT HVAC state model. A successful command proves
 PCI-confirmed broadcast delivery only; controller acceptance, resulting state,
 physical persistence and bridged routing remain outside the retained evidence.
 
+The same endpoint implements all seven maintained C-Gate 3.4 SECURITY
+commands for application 208 on the configured direct network. They use the
+shared PCI confirmation lane and reject malformed modes, escapes, message
+lengths and zones before I/O. A post-confirmation generation check prevents a
+retired CNI connection from returning success after replacement. Incoming
+Security commands, events, fixed zone names and both packed zone-status reports
+remain typed on the C-Gate event fanout. cmqttd publishes no MQTT Security
+entity/state schema. A successful command proves PCI-confirmed broadcast
+delivery only; alarm-panel acceptance, resulting state, persistence and
+bridged routing remain outside the retained evidence.
+
 Physical `NET CLOCKS` uses the synchronized unit inventory, IDENTIFY16 status,
 and decoded direct `ClockGenEnable` fields for target counts and gateway
 recovery. It retains native per-unit failure lines and requires write readback.
@@ -50,7 +61,7 @@ Toolkit modules live under `toolkit-cli/src/cbus_toolkit/`; its tests are under 
 
 | Crate | Responsibility |
 | --- | --- |
-| `cbus-protocol` | Typed C-Bus packets, CAL, SAL, reports, checksums, encoding, decoding, and stable JSON |
+| `cbus-protocol` | Typed C-Bus packets, CAL, SAL (including Air-Conditioning and Security), reports, checksums, encoding, decoding, and stable JSON |
 | `cbus-transport` | TCP/serial framing, PCI initialization, confirmations, retries, reconnection, and flow control |
 | `cbus-mqtt` | MQTT topics and payloads, Home Assistant discovery, and CBZ/XML project metadata |
 | `cmqttd` | Runtime orchestration between transport and MQTT |
@@ -109,10 +120,10 @@ Supported project inputs are a one-file `.cbz` zip archive or bare project XML. 
 
 ## Test data and evidence
 
-- `rust/testdata/vectors/` contains JSONL cases for checksums, frame encode/decode, native AIRCON commands/reports, native label-cache clear, ramp rates, MQTT topics, Home Assistant discovery, and strict selected-serial plan interchange.
-- `rust/testdata/fixtures/` contains small non-production project and behavior fixtures, including sanitized disposable-native evidence for AIRCON behavior and project copy/delete.
+- `rust/testdata/vectors/` contains JSONL cases for checksums, frame encode/decode, native AIRCON and SECURITY commands/reports, native label-cache clear, ramp rates, MQTT topics, Home Assistant discovery, and strict selected-serial plan interchange.
+- `rust/testdata/fixtures/` contains small non-production project and behavior fixtures, including sanitized disposable-native evidence for AIRCON, SECURITY and project copy/delete behavior.
 - `cbus-golden-tests` generates a named test per committed vector.
-- `cmqttd` system tests run the real daemon against an in-process MQTT broker and scripted PCI, including AIRCON command/report, correlation, authentication and MQTT-continuity coverage plus dedicated continuity checks after project administration.
+- `cmqttd` system tests run the real daemon against an in-process MQTT broker and scripted PCI, including AIRCON and SECURITY command/report, correlation, authentication and MQTT-continuity coverage plus dedicated continuity checks after project administration.
 - `cgate-mock` integration tests cover framing, state, sessions, event fanout, here-documents, inventory reachability, and programming access.
 - `toolkit-cli/tests/test_rust_cgate_interop.py` drives the Rust mock using the production Python C-Gate client and typed workflows.
 

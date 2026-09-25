@@ -739,7 +739,7 @@ pub const APPLICATION_COMMANDS: &[ApplicationSpec] = &[
     ApplicationSpec {
         name: "SECURITY DISPLAY_MESSAGE",
         min_args: 1,
-        max_args: None,
+        max_args: Some(2),
     },
     ApplicationSpec {
         name: "SECURITY EMULATE_KEYPAD",
@@ -753,8 +753,8 @@ pub const APPLICATION_COMMANDS: &[ApplicationSpec] = &[
     },
     ApplicationSpec {
         name: "SECURITY REQUEST_ZONE_NAME",
-        min_args: 1,
-        max_args: Some(1),
+        min_args: 2,
+        max_args: Some(2),
     },
     ApplicationSpec {
         name: "SECURITY STATUS_REQUEST",

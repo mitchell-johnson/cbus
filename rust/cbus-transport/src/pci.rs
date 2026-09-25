@@ -12,6 +12,7 @@ use cbus_protocol::packet::{Meta, Packet};
 use cbus_protocol::report::StatusReport;
 use cbus_protocol::sal::{
     aircon::{AirconCommand, AirconStatus},
+    security::{SecurityCommand, SecurityEvent},
     Sal,
 };
 use chrono::{Datelike, Timelike};
@@ -103,6 +104,20 @@ pub enum CBusEvent {
         source: Option<u8>,
         /// Fully decoded status/report payload.
         status: AirconStatus,
+    },
+    /// One Security command observed on the shared PCI receive stream.
+    SecurityCommand {
+        /// Source unit address (`None` when the source byte was 0).
+        source: Option<u8>,
+        /// Fully decoded command payload.
+        command: SecurityCommand,
+    },
+    /// One Security device event/report observed on the shared PCI stream.
+    SecurityEvent {
+        /// Source unit address (`None` when the source byte was 0).
+        source: Option<u8>,
+        /// Fully decoded event or status report.
+        event: SecurityEvent,
     },
     /// A lighting group was switched on.
     LightingOn {
@@ -1005,6 +1020,13 @@ impl PciClient {
                             source: src,
                             status,
                         }),
+                        Sal::SecurityCommand(command) => Some(CBusEvent::SecurityCommand {
+                            source: src,
+                            command,
+                        }),
+                        Sal::SecurityEvent(event) => {
+                            Some(CBusEvent::SecurityEvent { source: src, event })
+                        }
                         Sal::LightingRamp {
                             application,
                             group_address,
@@ -1345,6 +1367,7 @@ fn classify(cmd: &Packet, conf: Option<u8>) -> (Priority, ResponseKind) {
         matches!(
             s,
             Sal::Aircon(_)
+                | Sal::SecurityCommand(_)
                 | Sal::LightingOn { .. }
                 | Sal::LightingOff { .. }
                 | Sal::LightingRamp { .. }

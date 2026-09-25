@@ -5,16 +5,17 @@ pub mod clock;
 pub mod enable;
 pub mod label;
 pub mod lighting;
+pub mod security;
 pub mod status_request;
 pub mod temperature;
 pub mod trigger;
 
 use crate::common::{
     duration_to_ramp_rate, APP_AIRCON, APP_CLOCK, APP_ENABLE, APP_LIGHTING_FIRST,
-    APP_LIGHTING_LAST, APP_STATUS_REQUEST, APP_TEMPERATURE, APP_TRIGGER, CLOCK_ATTR_DATE,
-    CLOCK_ATTR_TIME, CLOCK_REQUEST_REFRESH, ENABLE_SET_NETWORK_VARIABLE, LIGHT_OFF, LIGHT_ON,
-    LIGHT_TERMINATE_RAMP, TEMPERATURE_BROADCAST, TRIGGER_EVENT, TRIGGER_INDICATOR_KILL,
-    TRIGGER_MAX, TRIGGER_MIN,
+    APP_LIGHTING_LAST, APP_SECURITY, APP_STATUS_REQUEST, APP_TEMPERATURE, APP_TRIGGER,
+    CLOCK_ATTR_DATE, CLOCK_ATTR_TIME, CLOCK_REQUEST_REFRESH, ENABLE_SET_NETWORK_VARIABLE,
+    LIGHT_OFF, LIGHT_ON, LIGHT_TERMINATE_RAMP, TEMPERATURE_BROADCAST, TRIGGER_EVENT,
+    TRIGGER_INDICATOR_KILL, TRIGGER_MAX, TRIGGER_MIN,
 };
 use crate::{DecodeError, EncodeError};
 use chrono::Datelike;
@@ -26,6 +27,10 @@ pub enum Sal {
     Aircon(aircon::AirconCommand),
     /// An Air-Conditioning device status/report.
     AirconStatus(aircon::AirconStatus),
+    /// A Security application command.
+    SecurityCommand(security::SecurityCommand),
+    /// A Security application device event or report.
+    SecurityEvent(security::SecurityEvent),
     /// Switch a lighting group on.
     LightingOn {
         /// Lighting application address (0x30..=0x5F).
@@ -141,6 +146,7 @@ impl Sal {
     pub fn application(&self) -> u8 {
         match self {
             Sal::Aircon(_) | Sal::AirconStatus(_) => APP_AIRCON,
+            Sal::SecurityCommand(_) | Sal::SecurityEvent(_) => APP_SECURITY,
             Sal::LightingOn { application, .. }
             | Sal::LightingOff { application, .. }
             | Sal::LightingTerminateRamp { application, .. }
@@ -164,6 +170,8 @@ impl Sal {
         match self {
             Sal::Aircon(command) => command.encode(),
             Sal::AirconStatus(status) => status.encode(),
+            Sal::SecurityCommand(command) => command.encode(),
+            Sal::SecurityEvent(event) => event.encode(),
             Sal::LightingOn { group_address, .. } => Ok(vec![LIGHT_ON, *group_address]),
             Sal::LightingOff { group_address, .. } => Ok(vec![LIGHT_OFF, *group_address]),
             Sal::LightingTerminateRamp { group_address, .. } => {
@@ -271,6 +279,17 @@ pub fn decode_sals(app: u8, data: &[u8]) -> Result<Vec<Sal>, DecodeError> {
                 .map(|message| match message {
                     aircon::AirconSal::Command(command) => Sal::Aircon(command),
                     aircon::AirconSal::Status(status) => Sal::AirconStatus(status),
+                })
+                .collect()
+        });
+    }
+    if app == APP_SECURITY {
+        return security::decode_sals(data).map(|messages| {
+            messages
+                .into_iter()
+                .map(|message| match message {
+                    security::SecuritySal::Command(command) => Sal::SecurityCommand(command),
+                    security::SecuritySal::Event(event) => Sal::SecurityEvent(event),
                 })
                 .collect()
         });

@@ -1,0 +1,76 @@
+{
+  "format": "native-cgate-security-evidence-v1",
+  "oracle": {
+    "product": "C-Gate",
+    "version": "3.4.0.2001",
+    "build": "20241023-0011",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "security_decoder_class_sha256": "f36644080d88f63bc71fd4255c1b71c1ae0083443d023fa4bd7e67fc9c63e923",
+    "security_registry_class_sha256": "bbad57a7bb2f4a5290111c36dd807a9ba74bf6f928ce219c615dd9b345ceb4a0",
+    "command_class_sha256": {
+      "arm": "51f05582797a78687b7bdaff35381643cd4855aa0901d0358a496f0f09b3a4a4",
+      "display_message": "97da387f485ccab28eaf509d0072f63f382dde0082ef6203b95c05d4162e4e59",
+      "emulate_keypad": "e7f10a17be7d7dbcc23082a549e12a640e147be8102a16d7558d44c7ae4ea2cf",
+      "raise_alarm": "e10b988fe76359ea3b0813d287e3db91c2295d04073750ae830eb52a76ea33dd",
+      "request_zone_name": "2de2836f4e60fd6a54ac11fa8ec772896ba7ad8ced39d45cb2b27a188d4c9cd8",
+      "status_request": "019151eb874303bee96c2e540d1491b03873e9d793eac0fff975b1cd181c8e5d",
+      "tamper": "a1ce7e89a0929a26360fcd6048273af535d849602543ae725d6c914f5940860c"
+    }
+  },
+  "scope": "Captured from an isolated owned C-Gate 3.4 daemon and fake PCI. No house, alarm panel, Docker, or live C-Bus network was used. Payloads exclude the optional checksum and confirmation code.",
+  "commands": [
+    {"command":"SECURITY STATUS_REQUEST 254/208 1","response":"200 OK.","payload_hex":"05D00009A0"},
+    {"command":"SECURITY STATUS_REQUEST 254/$D0 2","response":"200 OK.","payload_hex":"05D00009A1"},
+    {"command":"SECURITY ARM 254/208 away","response":"200 OK.","payload_hex":"05D0000AA201"},
+    {"command":"SECURITY ARM 254/208 night","response":"200 OK.","payload_hex":"05D0000AA202"},
+    {"command":"SECURITY ARM 254/208 day","response":"200 OK.","payload_hex":"05D0000AA203"},
+    {"command":"SECURITY ARM 254/208 vacation","response":"200 OK.","payload_hex":"05D0000AA204"},
+    {"command":"SECURITY ARM 254/208 highest","response":"200 OK.","payload_hex":"05D0000AA2FF"},
+    {"command":"SECURITY TAMPER 254/208 raise","response":"200 OK.","payload_hex":"05D00079A3"},
+    {"command":"SECURITY TAMPER 254/208 drop","response":"200 OK.","payload_hex":"05D00001A3"},
+    {"command":"SECURITY RAISE_ALARM 254/208","response":"200 OK.","payload_hex":"05D00079A4"},
+    {"command":"SECURITY EMULATE_KEYPAD 254/208 0","response":"200 OK.","payload_hex":"05D0000AA500"},
+    {"command":"SECURITY EMULATE_KEYPAD 254/208 65","response":"200 OK.","payload_hex":"05D0000AA541"},
+    {"command":"SECURITY EMULATE_KEYPAD 254/208 255","response":"200 OK.","payload_hex":"05D0000AA5FF"},
+    {"command":"SECURITY DISPLAY_MESSAGE 254/208","response":"200 OK.","payload_hex":"05D000E1A6"},
+    {"command":"SECURITY DISPLAY_MESSAGE 254/208 HELLO","response":"200 OK.","payload_hex":"05D000E6A648454C4C4F"},
+    {"command":"SECURITY DISPLAY_MESSAGE 254/208 12345678901234567","response":"200 OK.","payload_hex":"05D000F2A63132333435363738393031323334353637"},
+    {"command":"SECURITY DISPLAY_MESSAGE 254/208 \\x41\\x42","response":"200 OK.","payload_hex":"05D000E3A64142"},
+    {"command":"SECURITY REQUEST_ZONE_NAME 254/208 1","response":"200 OK.","payload_hex":"05D0000AA701"},
+    {"command":"SECURITY REQUEST_ZONE_NAME 254/208 127","response":"200 OK.","payload_hex":"05D0000AA77F"}
+  ],
+  "validated_boundaries": {
+    "application": "Security application 208 (0xD0); decimal, $D0, and selected-project paths",
+    "status_number": "only 1 and 2",
+    "arm_mode": "case-insensitive away, night, day, vacation, highest",
+    "tamper_mode": "case-insensitive raise or drop",
+    "key": "signed 32-bit integer; native encoder maps values outside 0..255 to FF; $ hex is accepted",
+    "display_message": "zero or one token; C-Gate escape decoding; at most 17 encoded bytes despite stale help claiming 18",
+    "zone": "published/decompiled range 1..127; native's out-of-range array failure is not emulated"
+  },
+  "negative_examples": [
+    {"command":"SECURITY BOGUS","response":"400 Syntax Error."},
+    {"command":"SECURITY STATUS_REQUEST 254/208","response":"400 Syntax Error: Missing parameter : <status-number>"},
+    {"command":"SECURITY STATUS_REQUEST 254/208 0","response":"408 Operation failed: 254/208 (bad status number)"},
+    {"command":"SECURITY STATUS_REQUEST 254/207 1","response":"402 Operation not supported by: 254/207"},
+    {"command":"SECURITY STATUS_REQUEST 254/208 1 EXTRA","response":"400 Syntax Error: Too many parameters"},
+    {"command":"SECURITY ARM 254/208 bogus","response":"405 Parameter out of range: 254/208 (bad arm mode)"},
+    {"command":"SECURITY TAMPER 254/208 bogus","response":"405 Parameter out of range: 254/208 (bad tamper mode)"},
+    {"command":"SECURITY EMULATE_KEYPAD 254/208 x","response":"400 Syntax Error: Invalid integer parameter : <key>"},
+    {"command":"SECURITY DISPLAY_MESSAGE 254/208 123456789012345678","response":"405 Parameter out of range: 254/208 (Message too long)"},
+    {"command":"SECURITY DISPLAY_MESSAGE 254/208 HELLO WORLD","response":"400 Syntax Error: Too many parameters"},
+    {"command":"SECURITY DISPLAY_MESSAGE 254/208 \\q","response":"405 Parameter out of range: 254/208 (Bad escaped character)"},
+    {"command":"SECURITY DISPLAY_MESSAGE 254/208 \\xGG","response":"405 Parameter out of range: 254/208 (For input string: \"GG\")"},
+    {"command":"SECURITY REQUEST_ZONE_NAME 254/208 x","response":"400 Syntax Error: Invalid integer parameter : <zone>"}
+  ],
+  "native_bug_closed": "C-Gate returned 500 for REQUEST_ZONE_NAME -1 and 128 because its decoder indexes a fixed zone array. cmqttd validates 1..127 before PCI I/O and returns a parameter error.",
+  "inbound_decoder": {
+    "evidence": "Retained CBusSecurityApplication.class plus C-Gate Manual 3.4 section 4.7.2.3; no physical alarm-panel traffic",
+    "event_opcodes": "0x80..0x98",
+    "command_opcodes": "0xA0..0xA7; the decoder accepts display-message prefix E1..F3 (0..18 data bytes), while the command parser emits only E1..F2 because it caps encoded input at 17 bytes",
+    "status_report_1": "0xAC 0x8E, arm/tamper/panic, then 32 two-bit zone states packed four per byte, high pair first",
+    "status_report_2": "0xAD 0x8F, then 48 two-bit zone states packed four per byte, high pair first",
+    "zone_name": "0xAD 0x8D, zone 1..127, exactly 11 raw name bytes"
+  },
+  "acceptance_boundary": "A 200 response establishes PCI-confirmed broadcast delivery only. Alarm-panel acceptance, durable state, and MQTT security entities are not claimed. Bridged Security routing was not evidenced and remains unsupported."
+}

@@ -635,6 +635,8 @@ impl Gateway {
             }
             CBusEvent::AirconCommand { .. }
             | CBusEvent::AirconStatus { .. }
+            | CBusEvent::SecurityCommand { .. }
+            | CBusEvent::SecurityEvent { .. }
             | CBusEvent::TriggerEvent { .. }
             | CBusEvent::TriggerIndicatorKill { .. }
             | CBusEvent::EnableSet { .. }
