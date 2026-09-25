@@ -1,13 +1,13 @@
-"""Phase 4+: differential matrix with rubric + seven attempted rows (TDD).
+"""Phase 4+: differential matrix with rubric + eight attempted rows (TDD).
 
 Enumerates all 38 ledger areas x workflow/negative-path slots and proves
 the exact differential state: only ``edlt-reset-controls`` /
 ``nominal_workflow``, ``edlt-retained-scene-editing`` /
-``nominal_workflow``, and ``edlt-global-category-programming`` /
-``nominal_workflow`` are accepted (per the executable rubric in
-``cbus_toolkit.differential``); the fourth attempted row
-``thermostat-configuration``, the fifth attempted row
-``all-unit-parameter-encoding``, the sixth attempted row
+``nominal_workflow``, ``edlt-global-category-programming`` /
+``nominal_workflow``, and ``edlt-scene-live`` / ``nominal_workflow`` are
+accepted (per the executable rubric in ``cbus_toolkit.differential``);
+the fourth attempted row ``thermostat-configuration``, the fifth
+attempted row ``all-unit-parameter-encoding``, the sixth attempted row
 ``preferences-and-update-workflow``, and the seventh attempted row
 ``toolkit-database-report-export`` stay 0/6 (all slots ``unassessed``);
 every other slot stays ``unassessed``, ``accepted_areas`` stays 0 (area
@@ -17,6 +17,7 @@ the rubric.
 """
 from __future__ import annotations
 
+import ast
 import json
 import unittest
 from pathlib import Path
@@ -38,7 +39,7 @@ class DifferentialMatrixTests(unittest.TestCase):
         self.assertEqual(matrix["ledger_areas"], 38)
         self.assertEqual(set(matrix["areas"]), set(differential.ledger_area_ids(ledger)))
 
-    def test_matrix_holds_exact_seven_row_state(self):
+    def test_matrix_holds_exact_eight_row_state(self):
         matrix = differential.build_matrix()
         self.assertFalse(matrix["complete"])
         self.assertEqual(matrix["accepted_areas"], 0)
@@ -180,6 +181,31 @@ class DifferentialMatrixTests(unittest.TestCase):
                             differential.DATABASE_REPORT_EXPORT_EVIDENCE_PATHS
                         ),
                     )
+                elif area_id == "edlt-scene-live":
+                    # Eighth attempted row: 1/6 (nominal accepted; the
+                    # other five slots stay unassessed; negatives are
+                    # oracle-vs-vector provenance plus synthetic guards,
+                    # not exact-error-identity replay).
+                    self.assertEqual(entry["differential_status"], "pending")
+                    self.assertEqual(
+                        entry["workflows"]["nominal_workflow"],
+                        differential.ACCEPTED,
+                    )
+                    self.assertEqual(
+                        entry["workflows"]["error_path"], "unassessed"
+                    )
+                    self.assertEqual(
+                        entry["workflows"]["device_firmware_variation"],
+                        "unassessed",
+                    )
+                    for slot in differential.NEGATIVE_SLOTS:
+                        self.assertEqual(
+                            entry["negative_paths"][slot], "unassessed"
+                        )
+                    self.assertEqual(
+                        entry["evidence_paths"],
+                        list(differential.SCENE_LIVE_EVIDENCE_PATHS),
+                    )
                 else:
                     self.assertEqual(entry["differential_status"], "pending")
                     self.assertEqual(entry["evidence_paths"], [])
@@ -190,7 +216,7 @@ class DifferentialMatrixTests(unittest.TestCase):
                             entry["negative_paths"][slot], "unassessed"
                         )
 
-    def test_rubric_accepts_only_three_nominal_slots(self):
+    def test_rubric_accepts_only_four_nominal_slots(self):
         for slot in differential.ALL_SLOTS:
             with self.subTest(slot=slot):
                 accepted, reason = differential.slot_meets_rubric(
@@ -263,6 +289,19 @@ class DifferentialMatrixTests(unittest.TestCase):
                 )
                 self.assertTrue(reason)
                 self.assertFalse(accepted, reason)
+        # Eighth attempted row: nominal passes (14 fresh originals with
+        # replay + persistence + bounded record); the other five fail.
+        for slot in differential.ALL_SLOTS:
+            with self.subTest(slot=slot):
+                accepted, reason = differential.slot_meets_rubric(
+                    slot,
+                    dict(differential.SCENE_LIVE_EVIDENCE),
+                )
+                self.assertTrue(reason)
+                if slot == "nominal_workflow":
+                    self.assertTrue(accepted, reason)
+                else:
+                    self.assertFalse(accepted, reason)
         with self.assertRaises(KeyError):
             differential.slot_meets_rubric("no-such-slot", {})
 
@@ -308,6 +347,9 @@ class DifferentialMatrixTests(unittest.TestCase):
             differential.is_area_accepted(
                 matrix["areas"]["toolkit-database-report-export"]
             )
+        )
+        self.assertFalse(
+            differential.is_area_accepted(matrix["areas"]["edlt-scene-live"])
         )
         accepted_entry = {
             "workflows": dict.fromkeys(
@@ -368,6 +410,10 @@ class DifferentialMatrixTests(unittest.TestCase):
                 matrix, "toolkit-database-report-export"
             ),
             list(differential.DATABASE_REPORT_EXPORT_EVIDENCE_PATHS),
+        )
+        self.assertEqual(
+            differential.evidence_paths_for(matrix, "edlt-scene-live"),
+            list(differential.SCENE_LIVE_EVIDENCE_PATHS),
         )
         with self.assertRaises(KeyError):
             differential.area_status(matrix, "no-such-area")
@@ -1091,6 +1137,172 @@ class DifferentialMatrixTests(unittest.TestCase):
         self.assertIs(evidence["has_native_persistence"], False)
         self.assertIs(evidence["has_acceptance_record"], False)
         self.assertIs(evidence["has_bounded_scope_note"], False)
+
+    def test_scene_live_evidence_constants_match_committed_fixtures_offline(self):
+        # Row 8 (OFFLINE, no vendor spec/bridge): the hardcoded evidence
+        # constants must match the committed fixtures. Verdict is 1/6
+        # (nominal accepted; negatives stay unassessed because they are
+        # oracle-vs-vector provenance plus synthetic guards, not
+        # exact-error-identity replay of our implementation).
+        for path in differential.SCENE_LIVE_EVIDENCE_PATHS:
+            with self.subTest(evidence_path=path):
+                self.assertTrue((ROOT / path).is_file(), path)
+
+        vectors = json.loads(
+            (
+                ROOT / "research/fixtures/edlt-scene-live-vectors.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(vectors["format"], "cbus-original-scene-live-vectors-v1")
+        self.assertIs(vectors["physical_device_verified"], False)
+        self.assertEqual(len(vectors["cases"]), 14)
+        self.assertEqual(len(vectors["input"]), 874)
+        self.assertEqual(
+            sorted(vectors["cases"]),
+            [
+                "broadcast-all",
+                "broadcast-all-rejected",
+                "broadcast-cross",
+                "broadcast-one",
+                "broadcast-rejected",
+                "capture",
+                "capture-bad",
+                "capture-high",
+                "capture-low",
+                "capture-missing-key",
+                "capture-overflow",
+                "capture-rejected",
+                "capture-signed",
+                "empty",
+            ],
+        )
+        for name, case in vectors["cases"].items():
+            with self.subTest(case=name):
+                self.assertEqual(len(case["final"]), 874)
+                self.assertTrue(case["wire"])
+                self.assertTrue(case["stdout_sha256"])
+                self.assertTrue(case["source_probe_sha256"])
+        self.assertEqual(
+            vectors["source_probe_sha256"],
+            "dc7ff71271ac9fad784cdb35c8678ed5c3ecff0d4e8c6ed7892f9d8f17a467ac",
+        )
+
+        acceptance = json.loads(
+            (
+                ROOT / "research/fixtures/edlt-scene-live-acceptance.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(
+            acceptance["format"], "cbus-edlt-scene-live-acceptance-v1"
+        )
+        self.assertEqual(
+            acceptance["original_case_names"],
+            [
+                "capture",
+                "capture-bad",
+                "capture-rejected",
+                "capture-missing-key",
+                "empty",
+                "broadcast-one",
+                "broadcast-all",
+                "broadcast-rejected",
+                "broadcast-cross",
+                "broadcast-all-rejected",
+                "capture-low",
+                "capture-high",
+                "capture-overflow",
+                "capture-signed",
+            ],
+        )
+        self.assertEqual(acceptance["profile"]["unit_type"], "KEYGL5")
+        self.assertEqual(acceptance["profile"]["catalog"], "5055EDL")
+        self.assertEqual(acceptance["profile"]["firmware"], "5.5.00")
+        self.assertEqual(len(acceptance["runs"]), 2)
+        for run in acceptance["runs"]:
+            self.assertEqual(run["tests"], 17)
+            self.assertEqual(run["skips"], 0)
+            self.assertEqual(run["original_executions"], 14)
+            self.assertEqual(run["original_parameters_each"], 874)
+            self.assertIs(run["save_close_reload_verified"], True)
+            self.assertIs(run["metadata_unchanged"], True)
+            self.assertIs(run["independent_receiver_persisted"], True)
+        self.assertEqual(
+            acceptance["additional_manager_regressions"]["tests_each"], 9
+        )
+        self.assertIs(acceptance["physical_device_verified"], False)
+        self.assertIs(
+            acceptance["operation_limits"]["physical_device_verified"], False
+        )
+
+        regression = json.loads(
+            (
+                ROOT / "research/fixtures/edlt-reset-scene-live-cli-regression.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(
+            regression["format"], "cbus-reset-scene-live-cli-regression-v1"
+        )
+        self.assertEqual(len(regression["modules"]), 10)
+        self.assertIn("tests.test_cli_edlt_scene_live", regression["modules"])
+        self.assertEqual(len(regression["runs"]), 2)
+        for run in regression["runs"]:
+            self.assertEqual(run["tests"], 75)
+            self.assertEqual(run["skips"], 0)
+        self.assertIs(regression["toolkit_parity_complete"], False)
+
+        def source_test_count(path: Path) -> int:
+            tree = ast.parse(path.read_text(encoding="utf-8"))
+            return sum(
+                isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+                and node.name.startswith("test_")
+                for node in ast.walk(tree)
+            )
+
+        module_tests = source_test_count(ROOT / "tests/test_edlt_scene_live.py")
+        cli_tests = source_test_count(ROOT / "tests/test_cli_edlt_scene_live.py")
+
+        evidence = differential.SCENE_LIVE_EVIDENCE
+        self.assertEqual(evidence["original_executions"], len(vectors["cases"]))
+        self.assertEqual(evidence["vector_cases"], len(vectors["cases"]))
+        self.assertEqual(
+            evidence["original_parameters_each"], len(vectors["input"])
+        )
+        self.assertEqual(evidence["input_parameters"], len(vectors["input"]))
+        self.assertEqual(evidence["module_tests_per_run"], module_tests)
+        self.assertEqual(evidence["cli_tests_per_run"], cli_tests)
+        self.assertEqual(
+            evidence["acceptance_tests_per_run"],
+            acceptance["runs"][0]["tests"],
+        )
+        self.assertEqual(
+            evidence["acceptance_tests_per_run"], module_tests + cli_tests
+        )
+        self.assertEqual(
+            evidence["acceptance_skips_per_run"],
+            acceptance["runs"][0]["skips"],
+        )
+        self.assertEqual(
+            evidence["additional_manager_regressions_each"],
+            acceptance["additional_manager_regressions"]["tests_each"],
+        )
+        self.assertEqual(
+            evidence["combined_cli_regression_tests"],
+            regression["runs"][0]["tests"],
+        )
+        self.assertEqual(
+            evidence["combined_cli_regression_modules"],
+            len(regression["modules"]),
+        )
+        # Row-level rubric flags: nominal legs present; negatives carry
+        # no exact-error-identity replay, single profile, no physical.
+        self.assertIs(evidence["has_replay_test"], True)
+        self.assertIs(evidence["has_native_persistence"], True)
+        self.assertIs(evidence["has_acceptance_record"], True)
+        self.assertIs(evidence["has_bounded_scope_note"], True)
+        self.assertEqual(evidence["original_error_cases"], 0)
+        self.assertEqual(evidence["distinct_profiles"], 1)
+        self.assertIs(evidence["has_original_rejection_basis"], False)
+        self.assertIs(evidence["has_physical_device_evidence"], False)
 
 
 if __name__ == "__main__":

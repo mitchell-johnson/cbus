@@ -5,10 +5,11 @@ Ledger/census + fresh-wheel + differential harness scaffolding only.
 This module does NOT claim Toolkit parity. It loads the authoritative
 38-area ledger in ``capabilities.json`` (``census_complete: false``) and
 exposes the differential matrix: every ledger area maps to workflow and
-negative-path slots that start ``unassessed``, except the seven attempted
+negative-path slots that start ``unassessed``, except the eight attempted
 rows ``edlt-reset-controls``, ``edlt-retained-scene-editing``,
-``edlt-global-category-programming`` (whose ``nominal_workflow`` slots are
-each ``accepted`` per the executable SLOT_RUBRIC below, 1/6 slots each),
+``edlt-global-category-programming``, and ``edlt-scene-live`` (whose
+``nominal_workflow`` slots are each ``accepted`` per the executable
+SLOT_RUBRIC below, 1/6 slots each),
 ``thermostat-configuration`` (audited 0/6: its evidence does not meet
 the rubric, so all six slots stay ``unassessed``),
 ``all-unit-parameter-encoding`` (audited 0/6: massive native-oracle
@@ -147,7 +148,7 @@ RESET_CONTROLS_EVIDENCE_PATHS = [
     "docs/edlt-reset.md",
 ]
 
-# The seven attempted differential rows. Every other ledger area keeps the
+# The eight attempted differential rows. Every other ledger area keeps the
 # scaffolding default (all slots ``unassessed``, no evidence paths).
 DIFFERENTIAL_ROWS = (
     "edlt-reset-controls",
@@ -157,6 +158,7 @@ DIFFERENTIAL_ROWS = (
     "all-unit-parameter-encoding",
     "preferences-and-update-workflow",
     "toolkit-database-report-export",
+    "edlt-scene-live",
 )
 
 # Measured evidence facts for the second attempted row,
@@ -843,6 +845,97 @@ DATABASE_REPORT_EXPORT_EVIDENCE_PATHS = [
 ]
 
 
+# Measured evidence facts for the eighth attempted row, ``edlt-scene-live``
+# (row id verified present in ``capabilities.json``). Verdict: 1/6 --
+# ``nominal_workflow`` is ``accepted``; the other five slots stay
+# ``unassessed``. A partial fill is a success, not a failure; the rubric
+# below is applied unchanged. Bounded KEYGL5 / 5055EDL / 5.5.00 one-shot
+# serial capture/broadcast scope on issued retained scene references, with
+# verified capture PP staging/save/reload and an independent synthetic
+# receiver. Values are read off the committed artifacts listed in
+# SCENE_LIVE_EVIDENCE_PATHS below:
+# - 14 committed vector cases in
+#   research/fixtures/edlt-scene-live-vectors.json (format
+#   cbus-original-scene-live-vectors-v1, physical_device_verified=false;
+#   874 input parameters; per-case 874-field final PP + ordered wire +
+#   stdout/probe pins): capture, capture-bad, capture-rejected,
+#   capture-missing-key, empty, broadcast-one, broadcast-all,
+#   broadcast-rejected, broadcast-cross, broadcast-all-rejected,
+#   capture-low, capture-high, capture-overflow, capture-signed;
+# - 14 fresh original-DLL executions per acceptance run (874 parameters
+#   each), recorded as ``original_executions: 14`` in both acceptance
+#   runs (17 tests, 0 skips each); the committed oracle test replays all
+#   14 fresh per provisioned execution (full-874 after-original-crc phase
+#   + ordered wire identity per case, async-callback Succ/Failed presence
+#   for broadcast cases), and the offline module test replays the
+#   committed capture final (874-field SceneBucket readback);
+# - native save/close/load per acceptance run (full-874 verified capture
+#   staging, 232 raw SceneBucket bytes, five CRC fields, SAVE + project
+#   save/close/load + full readback with metadata unchanged, independent
+#   synthetic PCI receiver persistence reloaded and compared), recorded
+#   as ``save_close_reload_verified`` / ``metadata_unchanged`` /
+#   ``independent_receiver_persisted`` true in both runs (owned macOS
+#   loopback C-Gate 3.4.0 build 2001; ``state=new`` closed-loopback
+#   databases);
+# - the acceptance record bounds the claim (serial terminal-response
+#   capture/broadcast scope, KEYGL5/5055EDL 5.5.00 profile, operation
+#   limits: 0 retries, no background timer, no async-dispatch parity, no
+#   metadata creation, 0 broadcast PP writes, unverified capture
+#   nonpersistable, exports not resumable, physical_device_verified=false;
+#   GUI timer/async timing, full form binding, and physical units remain
+#   open per the ledger limits and docs/edlt-scene-live.md).
+# - error_path stays unassessed by design: the negative vector cases
+#   (capture-bad/rejected/missing-key/overflow, broadcast-rejected/cross/
+#   all-rejected, capture-low/high/signed edges) are replayed fresh by the
+#   gated oracle as oracle-vs-vector provenance (exact final+wire per
+#   case), but no committed test replays OUR implementation against those
+#   committed negative vectors with exact-error-identity asserts -- the
+#   offline negative tests use synthetic clients/guards (own guard tests
+#   do not count), so ``original_error_cases`` is recorded as 0 exactly
+#   as prior rows record preserved observations as 0. The trim-prose
+#   rubric enforces only the count here; no enforcement language is
+#   re-added.
+SCENE_LIVE_EVIDENCE = {
+    "original_executions": 14,
+    "vector_cases": 14,
+    "original_parameters_each": 874,
+    "input_parameters": 874,
+    "module_tests_per_run": 11,
+    "cli_tests_per_run": 6,
+    "acceptance_tests_per_run": 17,
+    "acceptance_skips_per_run": 0,
+    "additional_manager_regressions_each": 9,
+    "combined_cli_regression_tests": 75,
+    "combined_cli_regression_modules": 10,
+    "has_replay_test": True,
+    "has_native_persistence": True,
+    "has_acceptance_record": True,
+    "has_bounded_scope_note": True,
+    "original_error_cases": 0,
+    "distinct_profiles": 1,
+    "has_original_rejection_basis": False,
+    "has_physical_device_evidence": False,
+}
+
+# Committed artifacts only. Oracle vs self-referential split: the two
+# research fixtures plus tests/test_edlt_scene_live.py (offline committed
+# capture-final replay + synthetic guard/transport/evidence tests, gated
+# fresh-oracle replay of all 14, gated native save/close/load + synthetic
+# receiver oracle whose prior runs are recorded in the acceptance fixture)
+# and tests/test_cli_edlt_scene_live.py (offline CLI selection/failure
+# tests plus one gated native CLI test) plus the combined CLI regression
+# fixture are the audit trail; docs/edlt-scene-live.md is the
+# bounded-scope narrative.
+SCENE_LIVE_EVIDENCE_PATHS = [
+    "tests/test_edlt_scene_live.py",
+    "tests/test_cli_edlt_scene_live.py",
+    "research/fixtures/edlt-scene-live-vectors.json",
+    "research/fixtures/edlt-scene-live-acceptance.json",
+    "research/fixtures/edlt-reset-scene-live-cli-regression.json",
+    "docs/edlt-scene-live.md",
+]
+
+
 def ledger_path_text() -> str:
     return files("cbus_toolkit").joinpath("capabilities.json").read_text(
         encoding="utf-8"
@@ -1019,7 +1112,7 @@ def is_area_accepted(entry: dict) -> bool:
 
 
 def _apply_rubric_rows(matrix: dict) -> None:
-    """Fill the seven attempted rows through the rubric (fail-safe).
+    """Fill the eight attempted rows through the rubric (fail-safe).
 
     A slot is set to ``accepted`` only when ``slot_meets_rubric`` passes;
     otherwise it stays ``unassessed``. Unknown row IDs raise KeyError so a
@@ -1050,7 +1143,10 @@ def _apply_rubric_rows(matrix: dict) -> None:
         elif area_id == "toolkit-database-report-export":
             evidence = DATABASE_REPORT_EXPORT_EVIDENCE
             evidence_paths = list(DATABASE_REPORT_EXPORT_EVIDENCE_PATHS)
-        else:  # pragma: no cover - seven-row phase; kept explicit
+        elif area_id == "edlt-scene-live":
+            evidence = SCENE_LIVE_EVIDENCE
+            evidence_paths = list(SCENE_LIVE_EVIDENCE_PATHS)
+        else:  # pragma: no cover - eight-row phase; kept explicit
             continue
         for slot in WORKFLOW_SLOTS:
             accepted, _ = slot_meets_rubric(slot, evidence)
@@ -1066,8 +1162,8 @@ def _apply_rubric_rows(matrix: dict) -> None:
     matrix["accepted_areas"] = sum(
         1 for entry in matrix["areas"].values() if is_area_accepted(entry)
     )
-    # ``complete`` stays false: the census is incomplete and only seven
-    # partially filled rows exist (three 1/6, four 0/6). Never derive
+    # ``complete`` stays false: the census is incomplete and only eight
+    # partially filled rows exist (four 1/6, four 0/6). Never derive
     # completion from intent.
     matrix["complete"] = bool(
         matrix["census_complete"]

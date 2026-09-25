@@ -1,14 +1,14 @@
-# Differential acceptance plan (Phase 4 scaffolding + seven attempted rows)
+# Differential acceptance plan (Phase 4 scaffolding + eight attempted rows)
 
 Phase 4 only: ledger/census inventory plus a differential harness with an
 executable slot-flip rubric. No Toolkit parity is claimed. The harness
-holds exactly seven partially filled rows (`edlt-reset-controls`,
-`edlt-retained-scene-editing`, and `edlt-global-category-programming`,
-`nominal_workflow` only, 1/6 slots each, plus `thermostat-configuration`,
-`all-unit-parameter-encoding`, `preferences-and-update-workflow`, and
-`toolkit-database-report-export` audited 0/6 with all slots
-`unassessed`); every other slot stays `unassessed`, `accepted_areas`
-stays 0, and `complete` stays false.
+holds exactly eight partially filled rows (`edlt-reset-controls`,
+`edlt-retained-scene-editing`, `edlt-global-category-programming`, and
+`edlt-scene-live`, `nominal_workflow` only, 1/6 slots each, plus
+`thermostat-configuration`, `all-unit-parameter-encoding`,
+`preferences-and-update-workflow`, and `toolkit-database-report-export`
+audited 0/6 with all slots `unassessed`); every other slot stays
+`unassessed`, `accepted_areas` stays 0, and `complete` stays false.
 
 ## Authoritative inputs
 
@@ -35,10 +35,11 @@ Implemented in `../src/cbus_toolkit/differential.py`:
 - Per row, three workflow slots (`nominal_workflow`, `error_path`,
   `device_firmware_variation`) and three negative-path slots
   (`invalid_input`, `unsupported_profile`, `hardware_divergence`),
-  starting at `unassessed` except the three rubric-passed nominal slots
-  (`edlt-reset-controls`, `edlt-retained-scene-editing`, and
-  `edlt-global-category-programming`). The fourth attempted row
-  (`thermostat-configuration`), the fifth attempted row
+  starting at `unassessed` except the four rubric-passed nominal slots
+  (`edlt-reset-controls`, `edlt-retained-scene-editing`,
+  `edlt-global-category-programming`, and `edlt-scene-live`). The
+  fourth attempted row (`thermostat-configuration`), the fifth attempted
+  row
   (`all-unit-parameter-encoding`), the sixth attempted row
   (`preferences-and-update-workflow`), and the seventh attempted row
   (`toolkit-database-report-export`) are each audited 0/6: all six slots
@@ -47,8 +48,8 @@ Implemented in `../src/cbus_toolkit/differential.py`:
   area rule) and `evidence_paths: []` except the Reset row's seven, the
   SceneManager row's six, the GlobalProgramming row's seven, the
   Thermostat row's thirty-one, the AllUnitParameterEncoding row's six,
-  the PreferencesUpdate row's sixteen, and the DatabaseReportExport
-  row's twenty-two committed paths.
+  the PreferencesUpdate row's sixteen, the DatabaseReportExport row's
+  twenty-two, and the SceneLive row's six committed paths.
 - Matrix summary: `ledger_areas: 38`, `accepted_areas: 0`,
   `complete: false`, `census_complete: false`.
 
@@ -57,14 +58,17 @@ Implemented in `../src/cbus_toolkit/differential.py`:
 - `tests/test_differential_matrix.py` enumerates all 38 areas x
   workflow/negative slots and asserts the exact state: only
   `edlt-reset-controls` / `nominal_workflow`,
-  `edlt-retained-scene-editing` / `nominal_workflow`, and
-  `edlt-global-category-programming` / `nominal_workflow` are `accepted`;
+  `edlt-retained-scene-editing` / `nominal_workflow`,
+  `edlt-global-category-programming` / `nominal_workflow`, and
+  `edlt-scene-live` / `nominal_workflow` are `accepted`;
   `thermostat-configuration`, `all-unit-parameter-encoding`,
   `preferences-and-update-workflow`, and `toolkit-database-report-export`
   are each 0/6 (all `unassessed`); all other slots
   are `unassessed`, `accepted_areas` is 0, `complete` is
   false. A dedicated offline test pins each row's hardcoded evidence
-  constants against its committed fixtures (Reset: 44 / 520 / 454,480;
+  constants against its committed fixtures (SceneLive: 14 vector cases
+  / 14 original executions x 874 parameters / 17 tests per run with 0
+  skips / 9 + 75-test regressions; Reset: 44 / 520 / 454,480;
   SceneManager: 34 vector cases / 17 original executions / 8 native
   cases; GlobalProgramming: 32 matrix vectors / 2 reversed / 2 sequential
   / 36 module + 2 CLI native targets per run; Thermostat: 14 methods /
@@ -1020,6 +1024,96 @@ with no provisioning. Gate runs here therefore rest on committed
   tests) -- run here with no provisioning. Gate runs here therefore
   rest on committed artifacts plus the prior runs recorded in the
   acceptance/review fixtures -- not on live vendor re-execution.
+
+## The eighth attempted row: `edlt-scene-live` (1/6)
+
+The `edlt-scene-live` ledger entry already cites the six committed tests,
+fixtures, and bounded narrative used by this audit. The existing rubric is
+applied unchanged: `nominal_workflow` passes; the other five slots stay
+`unassessed`. A partial fill is progress, not area acceptance.
+
+The accepted slot is limited to KEYGL5 / 5055EDL / firmware 5.5.00 one-shot
+serial capture and broadcast on issued retained scene references. Capture has
+verified PP staging and save/close/load readback, and broadcast has an
+independent synthetic receiver. This does not claim GUI timer or asynchronous
+dispatch parity, complete form binding, or physical-device behavior.
+
+Evidence classification:
+
+- Replayed original executions (gated, with prior runs recorded): the
+  committed `OriginalSceneLiveTests` oracle test executes all 14 named vector
+  cases through the original DLL for each provisioned run. It compares the
+  874-field `after-original-crc` result and ordered wire output for every case,
+  including callback completion markers for broadcast cases. Both acceptance
+  runs record 14 original executions with 874 parameters each, within a
+  17-test run with no skips. The offline module tests separately replay the
+  committed complete-capture result.
+- Native persistence (gated, with prior runs recorded):
+  `NativeSceneLiveTests` captures known levels through an owned loopback C-Gate
+  3.4.0 build 2001 service, verifies the complete 874-parameter plan, 232 raw
+  SceneBucket bytes and five CRC fields, saves, closes and reloads the project,
+  then compares full readback and unchanged metadata. It also sends the three
+  retained items to an independent synthetic PCI receiver and reloads that
+  receiver's persisted state. The CLI native test covers preview, save/reload,
+  and receiver behavior through the command surface.
+- Self-referential evidence: offline guard, transport, failure-attachment,
+  interruption, and CLI-shape tests use synthetic clients or peers. They test
+  this implementation and therefore do not independently flip a slot.
+- Site boundary: all cited evidence paths are committed. The combined CLI
+  regression fixture records 10 modules and 75 passing tests with no skips on
+  both Python versions, but it is source regression corroboration rather than
+  installed-wheel or physical-device acceptance.
+
+The hardcoded evidence values are pinned by an offline test to the committed
+artifacts:
+
+- `edlt-scene-live-vectors.json` has format
+  `cbus-original-scene-live-vectors-v1`, 14 cases, 874 input parameters, and an
+  874-field final state plus ordered wire and hash pins for every case. It sets
+  `physical_device_verified: false`.
+- `edlt-scene-live-acceptance.json` has two runs. Each records 17 tests, zero
+  skips, 14 original executions with 874 parameters each, and true
+  `save_close_reload_verified`, `metadata_unchanged`, and
+  `independent_receiver_persisted` values. Its profile is
+  KEYGL5/5055EDL/5.5.00, and it records nine additional SceneManager regression
+  tests per run.
+- The focused source collection has 11 module tests and six CLI tests. The
+  combined regression fixture has 10 modules and 75 tests per run. The offline
+  integrity test derives these counts from the committed test sources and
+  fixtures rather than trusting prose alone.
+
+Per-slot verdicts:
+
+- `nominal_workflow` = `accepted`: 14 original executions meet the minimum of
+  10 and are replayed by a committed oracle test; the owned native run supplies
+  save/close/load readback; and the acceptance record bounds the claim to one
+  profile and explicitly excludes physical-device verification.
+- `error_path` = `unassessed`: negative vector cases are original-oracle
+  provenance, but no committed test replays this implementation against those
+  vectors with exact error-identity assertions. Its offline negative tests use
+  synthetic clients and guards, so `original_error_cases` remains 0.
+- `device_firmware_variation` = `unassessed`: the evidence covers one profile,
+  KEYGL5 5.5.00.
+- `invalid_input` and `unsupported_profile` = `unassessed`: local argument,
+  cache, and source guards have no original-observed rejection basis.
+- `hardware_divergence` = `unassessed`: both retained fixtures explicitly set
+  physical-device verification false; loopback C-Gate and the synthetic
+  receiver do not count as hardware evidence.
+
+Thirty other ledger rows plus the full census mapping remain outstanding.
+Across the eight attempted rows, 44 of 48 slots remain open: five for each of
+the four 1/6 rows and six for each of the four 0/6 rows. `accepted_areas`
+therefore remains 0 and `complete` remains false.
+
+### Offline gate posture (this environment, SceneLive row)
+
+The original-DLL test requires `CBUS_TOOLKIT_EXE` and `CBUS_UNITSPEC_DIR`.
+The native module and CLI tests require `CBUS_CGATE_TEST_HOST` and
+`CBUS_UNITSPEC_DIR`. Without that provisioning they skip. The nine remaining
+module tests and five remaining CLI tests run offline against committed data
+and synthetic transports. The slot therefore rests on committed artifacts and
+the prior gated runs recorded in `edlt-scene-live-acceptance.json`, not a new
+vendor or physical-device execution in this environment.
 
 ## Fresh-wheel relationship (scaffolding only)
 
