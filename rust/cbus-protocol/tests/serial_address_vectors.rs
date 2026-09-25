@@ -157,6 +157,13 @@ fn serial_address_vectors() {
                     !receipt.movement_verified(),
                     "{id}: movement must never verify in the pure codec"
                 );
+                // The vector file states the same contract per row so the
+                // JSONL is self-describing without reading this harness.
+                assert_eq!(
+                    item.get("movement_verified"),
+                    Some(&Value::Bool(false)),
+                    "{id}: receipt row must pin movement_verified:false"
+                );
                 // Classification details pinned per vector (oracle-derived;
                 // invalid-frame rows pin Rust framing semantics).
                 assert_eq!(
