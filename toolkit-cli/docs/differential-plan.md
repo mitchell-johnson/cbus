@@ -1,12 +1,13 @@
-# Differential acceptance plan (Phase 4 scaffolding + four attempted rows)
+# Differential acceptance plan (Phase 4 scaffolding + five attempted rows)
 
 Phase 4 only: ledger/census inventory plus a differential harness with an
 executable slot-flip rubric. No Toolkit parity is claimed. The harness
-holds exactly four partially filled rows (`edlt-reset-controls`,
+holds exactly five partially filled rows (`edlt-reset-controls`,
 `edlt-retained-scene-editing`, and `edlt-global-category-programming`,
 `nominal_workflow` only, 1/6 slots each, plus `thermostat-configuration`
-audited 0/6 with all slots `unassessed`); every other slot stays
-`unassessed`, `accepted_areas` stays 0, and `complete` stays false.
+and `all-unit-parameter-encoding` audited 0/6 with all slots
+`unassessed`); every other slot stays `unassessed`, `accepted_areas`
+stays 0, and `complete` stays false.
 
 ## Authoritative inputs
 
@@ -36,12 +37,14 @@ Implemented in `../src/cbus_toolkit/differential.py`:
   starting at `unassessed` except the three rubric-passed nominal slots
   (`edlt-reset-controls`, `edlt-retained-scene-editing`, and
   `edlt-global-category-programming`). The fourth attempted row
-  (`thermostat-configuration`) is audited 0/6: all six slots stay
-  `unassessed` because its evidence does not meet the rubric.
+  (`thermostat-configuration`) and the fifth attempted row
+  (`all-unit-parameter-encoding`) are each audited 0/6: all six slots
+  stay `unassessed` because their evidence does not meet the rubric.
 - Per-row `differential_status: pending` (no area meets the all-six-slot
   area rule) and `evidence_paths: []` except the Reset row's seven, the
-  SceneManager row's six, the GlobalProgramming row's seven, and the
-  Thermostat row's thirty-one committed paths.
+  SceneManager row's six, the GlobalProgramming row's seven, the
+  Thermostat row's thirty-one, and the AllUnitParameterEncoding row's six
+  committed paths.
 - Matrix summary: `ledger_areas: 38`, `accepted_areas: 0`,
   `complete: false`, `census_complete: false`.
 
@@ -52,7 +55,8 @@ Implemented in `../src/cbus_toolkit/differential.py`:
   `edlt-reset-controls` / `nominal_workflow`,
   `edlt-retained-scene-editing` / `nominal_workflow`, and
   `edlt-global-category-programming` / `nominal_workflow` are `accepted`;
-  `thermostat-configuration` is 0/6 (all `unassessed`); all other slots
+  `thermostat-configuration` and `all-unit-parameter-encoding` are each
+  0/6 (all `unassessed`); all other slots
   are `unassessed`, `accepted_areas` is 0, `complete` is
   false. A dedicated offline test pins each row's hardcoded evidence
   constants against its committed fixtures (Reset: 44 / 520 / 454,480;
@@ -62,7 +66,11 @@ Implemented in `../src/cbus_toolkit/differential.py`:
   28,840 fresh-original cases / 28 pilot + 1,176 full Windows cases /
   14 inner outcomes / 12 + 12 outer captures / 12 AfterLoad outcomes with
   71,832 instruction entries / 2 composition native tests with one target
-  save each).
+  save each; AllUnitParameterEncoding: 6,497 selected / 6,487 verified
+  (6,382 pass + 105 vendor-catalogue-rejected = 6,487; 10 command-limited
+  excluded, 6,487 + 10 = 6,497 selected) /
+  616,722 comparisons (552,391 + 64,331) / 163 layouts with 161 pass + 2
+  unexercised / 322 change trials, and 0 original-Toolkit executions).
 - `tests/test_coverage_require_complete.py` asserts `coverage
   --require-complete` still exits 1 with `complete: false`.
 - The pre-existing `test_cli.py::test_coverage_cannot_claim_completion`
@@ -437,9 +445,10 @@ with no provisioning. Gate runs here therefore rest on committed
     native runs are owned loopback C-Gate processes with CNI sentinels,
     and the emulator/Windows runs execute arithmetic only.
 
-  34 rows plus the full census mapping remain outstanding; these four
-  rows' twenty-one open slots require fresh original/firmware/negative/
-  hardware evidence.
+  34 rows plus the full census mapping remain outstanding after the fifth
+  row below; all five rows' twenty-seven open slots require fresh
+  original/firmware/negative/hardware evidence (final tally at the end of
+  the all-unit-parameter-encoding row).
 
   ### Offline gate posture (this env, Thermostat row)
 
@@ -454,6 +463,193 @@ with no provisioning. Gate runs here therefore rest on committed
   here with no provisioning. Gate runs here therefore rest on committed
   artifacts plus the prior runs recorded in the acceptance fixtures --
   not on live vendor re-execution.
+
+  ## The fifth attempted row: `all-unit-parameter-encoding` (0/6)
+
+  Row id verified present in `capabilities.json`. The rubric is applied
+  UNCHANGED and decides against a flip: a 0/6 verdict with documented
+  gaps is the honest success here, not a failure. This audit adds new
+  documented understanding the thermostat 0/6 did not cover: the
+  native-oracle evidence-kind finding (see the rubric-gap note below).
+  Scale does not convert evidence kinds -- 616,722 successful native
+  comparisons still contribute zero original-Toolkit executions.
+
+  ### Row-5 candidate survey (rubric applied unchanged; all fail nominal)
+
+  For each candidate the counts below were verified against committed
+  artifacts; nothing assumed. Strict rule throughout: documentation
+  tables, executable constants, and native-only comparisons are NOT
+  original executions.
+
+  - `classic-key-presets` (18 presets; `docs/macros.md`;
+    `tests/test_macros.py`): FAILS nominal. 18 presets verified
+    (`PRESETS` holds all 18 names; `VECTORS` in `test_macros.py` holds
+    the matching 18 stage tuples). The "original Toolkit help tables"
+    leg is documentation: `VendorHelpTests` parses help HTML files
+    (gated on `CBUS_TOOLKIT_HELP_DIR`) -- tables, not executions. The
+    "executable registration constants" leg is static bytes:
+    `VendorBinaryTests` compares PE slices at fixed virtual addresses
+    (gated on `CBUS_TOOLKIT_EXE`) -- constants, not executions. The
+    native leg (`NativeMacroTests`: all 18 presets on KEY4 1.2.67 plus
+    KEY1/KEY2 spot checks with database save/reload, gated on
+    `CBUS_CGATE_TEST_HOST` + `CBUS_UNITSPEC_DIR`) is native-only with no
+    original-Toolkit oracle. Original executions: 0. Native persistence
+    exists but the >=10-original leg is absent, so nominal stays
+    `unassessed`.
+  - `firmware-update` DFU: FAILS nominal. `docs/dfu-protocol.md` records
+    44 scripted original-control cases + 12 image-reader vectors + 1
+    original suffix-writer vector + 4 `dfuprog` wrapper vectors + 2
+    independent program/verify/erase/check workflows + 1 deliberately
+    corrupted readback (`docs/dfu-acceptance-summary.json`: 21 focused
+    tests pass, gated on `CBUS_DFU_DLL`), all executed by the ORIGINAL
+    x86 DLL against a synthetic memory peer. Which counts:
+    `dfu-protocol.md` contributes the original-DLL executions above;
+    `dfu-transport.md` adds 12 original `DeviceOpen` executions against
+    fake USB descriptors plus 15 retained Python-client outcomes (29
+    focused tests, fake peer only); `usb-dfu.md` contributes ZERO
+    original executions (25 focused tests use real PyUSB 1.3.1 with an
+    independent fake backend -- claimed-lease mechanics, no vendor
+    binary). Native persistence = synthetic/fake only: the peer is
+    `DFUSimulator` flash memory, there is no database save/close/load
+    readback anywhere in the DFU path, and no physical device or vendor
+    firmware payload was ever accessed (all three acceptance summaries
+    state this). The workflow that "saves" here programs emulator RAM,
+    not a native database, so the rubric's native-persistence leg is
+    unsatisfied and nominal stays `unassessed`.
+  - `sensors-wizard-semantics` (40 native event cases): FAILS nominal.
+    40 cases verified (5 events x 8 virtual keys in
+    `SensorNativeTest::test_all_events_raw_masks_timer_threshold_and_save_reload`,
+    gated on `CBUS_CGATE_TEST_HOST` + `CBUS_UNITSPEC_DIR`) with 210
+    raw-byte assertions and an explicit database save/reload
+    (`docs/sensor-acceptance-summary.json`: `event_key_cases` 40,
+    `raw_byte_assertions` 210, `save_reload_passed` true, scope bounded
+    to "Toolkit source-grounded sensor setup through native PP and a
+    closed database; no physical PIR/lux behavior",
+    `physical_hardware_verified` false). The original-evidence leg
+    (`SensorSourceTest`, gated on `CBUS_TOOLKIT_HELP_DIR` +
+    `CBUS_TOOLKIT_EXE`) reads help topics 307/305/1000/11177 plus
+    event-function tables 10114/10115/17328/10116 and checks EXE bytes
+    at fixed virtual addresses -- documentation tables and executable
+    constants, not executions. Original executions: 0. The acceptance
+    record, bounded scope note, and native persistence legs are all
+    present, but the >=10-original leg is absent, so nominal stays
+    `unassessed`.
+  - `all-unit-parameter-encoding` (6,487/6,497 vs C-Gate, 616,722
+    comparisons): FAILS nominal under the unchanged rubric -- and is
+    therefore chosen as the fifth audit row for the rubric-gap finding
+    below. 6,497 selected / 6,487 verified / 616,722 comparisons
+    verified (`docs/catalog-acceptance-summary.json`:
+    `combined_boundary_workflows` selected 6497, verified_cases 6487,
+    successful_parameter_comparisons 616722 = 552391 boundary_workflow +
+    64331 boundary_alternative; per-run split pass 6382 +
+    vendor_catalog_rejected 105 + vendor_command_limitation 10, with
+    6382 + 105 = 6487). 161 of 163 layouts verified
+    (`docs/native-memory-acceptance.json`: distinct_layouts 163,
+    summary pass 161 / unexercised 2 / passing_change_trials 322; the 2
+    unexercised layouts are single-bit little-endian DLT
+    LabelFlavourLSB/MSB with no native token-addressable parameter
+    name). But every comparison is OUR codec vs NATIVE C-Gate -- a
+    native oracle, not replayed original-Toolkit executions. Original
+    executions: 0. The 105 + 10 native rejection classes are preserved
+    native-oracle observations, not replayed original error-identity
+    vectors.
+
+  Numbers verification (every claimed number verified against committed
+  artifacts; nothing assumed):
+
+  - "6,497 selected / 6,487 verified / 616,722 comparisons": verified.
+    `combined_boundary_workflows` shows selected 6497, verified_cases
+    6487, excluded_cases 10, successful_parameter_comparisons 616722;
+    the per-run `boundary_workflow` shows selected/completed 6497 with
+    pass 6382 + vendor_catalog_rejected 105 + vendor_command_limitation
+    10 (6382 + 105 = 6487; 6382 + 105 + 10 = 6497) and 552391
+    comparisons; `boundary_alternative_database_load` adds 64331
+    (552391 + 64331 = 616722). The record's `does_not_establish` list
+    (physical device programming, all firmware values between
+    endpoints, all possible parameter values, all Toolkit workflows,
+    100 percent Toolkit parity) bounds the claim.
+  - "161 of 163 layouts, 322 change trials": verified.
+    `docs/native-memory-acceptance.json` (format
+    cbus-native-memory-acceptance-v1) shows distinct_layouts 163 with
+    163 cases, summary pass 161 / unexercised 2 / passing_change_trials
+    322. Scope: "Changing-value differential acceptance of distinct
+    logical memory layouts; not per-device, firmware or Toolkit
+    workflow parity."
+  - Self-limit reconciliation: the catalogue scope ("Offline native
+    unit schema and Python session acceptance at selected catalogue
+    firmware points") plus the memory scope above plus the catalogue
+    `does_not_establish` list jointly bound the area claim to
+    native-oracle encoding -- never to Toolkit-workflow parity. The two
+    records belong to the SAME ledger-area scope (unlike the
+    thermostat row's disjoint sub-scopes), so the row-level
+    `has_acceptance_record` / `has_bounded_scope_note` are True; the
+    failure is isolated to the original-executions leg, which is the
+    point of the audit.
+
+  Per-slot verdicts (evidence paths are committed artifacts only; the
+  existing rubric is applied unchanged):
+
+  - `nominal_workflow` = `unassessed`: 0 original-Toolkit executions
+    (need >=10). The rubric's nominal gate therefore reports `only 0
+    original executions, need >=10`. No committed test replays
+    original-Toolkit executions (`research/verify_catalog.py` is a
+    gated native-oracle runner; the offline unit/memory tests replay
+    committed native-oracle vectors or check our own codec), and there
+    is no database save/close/load readback in this path (native PP
+    sessions are transient programming contexts, not persistence), so
+    the row-level `has_replay_test` / `has_native_persistence` are
+    False.
+  - `error_path` = `unassessed`: no original-observed error vectors with
+    exact error identity. The 105 vendor-catalogue-rejected and 10
+    vendor-command-limited classes are preserved native-oracle
+    observations, not replayable original error vectors; guard tests
+    are self-referential.
+  - `device_firmware_variation` = `unassessed`: hundreds of catalogue
+    profiles were exercised against native C-Gate, but zero profiles
+    carry original-Toolkit comparisons, so `distinct_profiles` is
+    recorded as 0 (need >=2 with original comparisons per profile).
+  - `invalid_input` / `unsupported_profile` = `unassessed`: codec
+    guards are scoping checks without original-observed rejection
+    identity.
+  - `hardware_divergence` = `unassessed`: no physical-device evidence;
+    native runs are loopback C-Gate processes and the memory trials are
+    host-side codec comparisons.
+
+  ### Rubric-gap finding (proposed, NOT implemented)
+
+  The rubric as encoded (`SLOT_RUBRIC` + `slot_meets_rubric()`) can only
+  express ORIGINAL-Toolkit-oracle evidence: its nominal gate counts
+  `original_executions` and nothing else satisfies that leg. It has no
+  vocabulary for NATIVE-oracle differential evidence -- large-scale
+  agreement between our implementation and live native C-Gate behavior
+  with no original Toolkit in the loop. The 616,722-comparison corpus
+  is the strongest evidence in the repo by volume and still scores
+  exactly 0/6, indistinguishable from "no evidence at all". That
+  indistinguishability is the gap: a future rubric revision could add a
+  SEPARATE native-oracle slot family (e.g. `native_oracle_agreement`
+  with minimum-comparison, layout-coverage, and bounded-scope gates)
+  that records this evidence kind WITHOUT weakening the existing
+  original-Toolkit gates -- no current `accepted` may flip as a side
+  effect. This proposal is documented here for the Checker; no rubric
+  key, gate, or verdict was changed to fit the candidate.
+
+  33 rows plus the full census mapping remain outstanding; these five
+  rows' twenty-seven open slots require fresh original/firmware/
+  negative/hardware evidence.
+
+  ### Offline gate posture (this env, AllUnitParameterEncoding row)
+
+  `NativeMemoryTests` (requires `CBUS_CGATE_TEST_HOST` +
+  `CBUS_UNITSPEC_DIR`) and `VendorLayoutTests` (requires
+  `CBUS_UNITSPEC_DIR`) plus the `research/verify_catalog.py` runner
+  (requires a live native C-Gate) all SKIP offline in this env. The
+  offline-runnable suites -- `MemoryImageTests`, `MemoryCodecTests`,
+  and `UnitSpecTest` -- run here with no provisioning. Gate runs here
+  therefore rest on committed artifacts plus the prior native runs
+  recorded in `docs/catalog-acceptance-summary.json` (boundary_workflow
+  selected/completed 6497, status complete) and
+  `docs/native-memory-acceptance.json` (163 cases, 161 pass) -- not on
+  live native re-execution.
 
 ## Fresh-wheel relationship (scaffolding only)
 

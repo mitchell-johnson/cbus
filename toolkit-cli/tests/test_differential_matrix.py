@@ -1,4 +1,4 @@
-"""Phase 4+: differential matrix with rubric + four attempted rows (TDD).
+"""Phase 4+: differential matrix with rubric + five attempted rows (TDD).
 
 Enumerates all 38 ledger areas x workflow/negative-path slots and proves
 the exact differential state: only ``edlt-reset-controls`` /
@@ -6,7 +6,8 @@ the exact differential state: only ``edlt-reset-controls`` /
 ``nominal_workflow``, and ``edlt-global-category-programming`` /
 ``nominal_workflow`` are accepted (per the executable rubric in
 ``cbus_toolkit.differential``); the fourth attempted row
-``thermostat-configuration`` stays 0/6 (all slots ``unassessed``); every
+``thermostat-configuration`` and the fifth attempted row
+``all-unit-parameter-encoding`` stay 0/6 (all slots ``unassessed``); every
 other slot stays ``unassessed``, ``accepted_areas`` stays 0 (area rule
 requires all six slots), and ``complete`` stays false. Flipping any
 further slot requires independent original-Toolkit evidence satisfying
@@ -35,7 +36,7 @@ class DifferentialMatrixTests(unittest.TestCase):
         self.assertEqual(matrix["ledger_areas"], 38)
         self.assertEqual(set(matrix["areas"]), set(differential.ledger_area_ids(ledger)))
 
-    def test_matrix_holds_exact_four_row_state(self):
+    def test_matrix_holds_exact_five_row_state(self):
         matrix = differential.build_matrix()
         self.assertFalse(matrix["complete"])
         self.assertEqual(matrix["accepted_areas"], 0)
@@ -121,6 +122,23 @@ class DifferentialMatrixTests(unittest.TestCase):
                             differential.THERMOSTAT_CONFIGURATION_EVIDENCE_PATHS
                         ),
                     )
+                elif area_id == "all-unit-parameter-encoding":
+                    # Fifth attempted row: audited 0/6 (native-oracle
+                    # evidence-kind finding). All six slots stay
+                    # unassessed; the evidence paths record the audit trail.
+                    self.assertEqual(entry["differential_status"], "pending")
+                    for slot in differential.WORKFLOW_SLOTS:
+                        self.assertEqual(entry["workflows"][slot], "unassessed")
+                    for slot in differential.NEGATIVE_SLOTS:
+                        self.assertEqual(
+                            entry["negative_paths"][slot], "unassessed"
+                        )
+                    self.assertEqual(
+                        entry["evidence_paths"],
+                        list(
+                            differential.ALL_UNIT_PARAMETER_ENCODING_EVIDENCE_PATHS
+                        ),
+                    )
                 else:
                     self.assertEqual(entry["differential_status"], "pending")
                     self.assertEqual(entry["evidence_paths"], [])
@@ -170,6 +188,16 @@ class DifferentialMatrixTests(unittest.TestCase):
                 )
                 self.assertTrue(reason)
                 self.assertFalse(accepted, reason)
+        # Fifth attempted row: the rubric rejects every slot (0/6) --
+        # zero original-Toolkit executions despite native-oracle scale.
+        for slot in differential.ALL_SLOTS:
+            with self.subTest(slot=slot):
+                accepted, reason = differential.slot_meets_rubric(
+                    slot,
+                    dict(differential.ALL_UNIT_PARAMETER_ENCODING_EVIDENCE),
+                )
+                self.assertTrue(reason)
+                self.assertFalse(accepted, reason)
         with self.assertRaises(KeyError):
             differential.slot_meets_rubric("no-such-slot", {})
 
@@ -199,6 +227,11 @@ class DifferentialMatrixTests(unittest.TestCase):
         self.assertFalse(
             differential.is_area_accepted(
                 matrix["areas"]["thermostat-configuration"]
+            )
+        )
+        self.assertFalse(
+            differential.is_area_accepted(
+                matrix["areas"]["all-unit-parameter-encoding"]
             )
         )
         accepted_entry = {
@@ -242,6 +275,12 @@ class DifferentialMatrixTests(unittest.TestCase):
                 matrix, "thermostat-configuration"
             ),
             list(differential.THERMOSTAT_CONFIGURATION_EVIDENCE_PATHS),
+        )
+        self.assertEqual(
+            differential.evidence_paths_for(
+                matrix, "all-unit-parameter-encoding"
+            ),
+            list(differential.ALL_UNIT_PARAMETER_ENCODING_EVIDENCE_PATHS),
         )
         with self.assertRaises(KeyError):
             differential.area_status(matrix, "no-such-area")
@@ -553,6 +592,90 @@ class DifferentialMatrixTests(unittest.TestCase):
         self.assertIs(evidence["has_native_persistence"], False)
         self.assertIs(evidence["has_acceptance_record"], False)
         self.assertIs(evidence["has_bounded_scope_note"], False)
+
+    def test_all_unit_parameter_encoding_evidence_constants_match_committed_fixtures_offline(self):
+        # Row 5 (OFFLINE, no vendor spec/bridge): the hardcoded evidence
+        # constants must match the committed fixtures. Verdict is 0/6, so
+        # this pins the audit numbers, not a flip. The numbers below are
+        # native-oracle comparisons (our codec vs native C-Gate), NOT
+        # original-Toolkit executions -- hence original_executions 0.
+        catalog = json.loads(
+            (ROOT / "docs/catalog-acceptance-summary.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        combined = catalog["combined_boundary_workflows"]
+        self.assertEqual(combined["selected"], 6497)
+        self.assertEqual(combined["verified_cases"], 6487)
+        self.assertEqual(combined["excluded_cases"], 10)
+        self.assertEqual(combined["successful_parameter_comparisons"], 616722)
+        workflow = catalog["boundary_workflow"]
+        self.assertEqual(workflow["selected"], 6497)
+        self.assertEqual(workflow["completed"], 6497)
+        self.assertEqual(workflow["not_run"], 0)
+        self.assertEqual(workflow["status_counts"]["pass"], 6382)
+        self.assertEqual(
+            workflow["status_counts"]["vendor_catalog_rejected"], 105
+        )
+        self.assertEqual(
+            workflow["status_counts"]["vendor_command_limitation"], 10
+        )
+        self.assertEqual(
+            workflow["status_counts"]["pass"]
+            + workflow["status_counts"]["vendor_catalog_rejected"],
+            6487,
+        )
+        self.assertEqual(
+            workflow["status_counts"]["pass"]
+            + workflow["status_counts"]["vendor_catalog_rejected"]
+            + workflow["status_counts"]["vendor_command_limitation"],
+            6497,
+        )
+        self.assertEqual(workflow["successful_parameter_comparisons"], 552391)
+        alternative = catalog["boundary_alternative_database_load"]
+        self.assertEqual(
+            alternative["successful_alternative_parameter_comparisons"], 64331
+        )
+        self.assertEqual(
+            workflow["successful_parameter_comparisons"]
+            + alternative["successful_alternative_parameter_comparisons"],
+            616722,
+        )
+        self.assertIn("all Toolkit workflows", catalog["does_not_establish"])
+        memory = json.loads(
+            (ROOT / "docs/native-memory-acceptance.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(memory["format"], "cbus-native-memory-acceptance-v1")
+        self.assertEqual(memory["distinct_layouts"], 163)
+        self.assertEqual(len(memory["cases"]), 163)
+        self.assertEqual(memory["summary"]["pass"], 161)
+        self.assertEqual(memory["summary"]["unexercised"], 2)
+        self.assertEqual(memory["summary"]["passing_change_trials"], 322)
+        self.assertIn("Toolkit workflow parity", memory["scope"])
+        evidence = differential.ALL_UNIT_PARAMETER_ENCODING_EVIDENCE
+        self.assertEqual(evidence["original_executions"], 0)
+        self.assertEqual(evidence["boundary_selected"], 6497)
+        self.assertEqual(evidence["boundary_verified"], 6487)
+        self.assertEqual(evidence["boundary_pass"], 6382)
+        self.assertEqual(evidence["vendor_catalog_rejected"], 105)
+        self.assertEqual(evidence["vendor_command_limitation"], 10)
+        self.assertEqual(evidence["successful_parameter_comparisons"], 616722)
+        self.assertEqual(evidence["boundary_workflow_comparisons"], 552391)
+        self.assertEqual(evidence["boundary_alternative_comparisons"], 64331)
+        self.assertEqual(evidence["distinct_layouts"], 163)
+        self.assertEqual(evidence["layouts_pass"], 161)
+        self.assertEqual(evidence["layouts_unexercised"], 2)
+        self.assertEqual(evidence["passing_change_trials"], 322)
+        # Native-oracle scale with zero original-Toolkit executions: the
+        # rubric's nominal gate reports the executions leg missing first.
+        self.assertIs(evidence["has_replay_test"], False)
+        self.assertIs(evidence["has_native_persistence"], False)
+        self.assertIs(evidence["has_acceptance_record"], True)
+        self.assertIs(evidence["has_bounded_scope_note"], True)
+        self.assertEqual(evidence["original_error_cases"], 0)
+        self.assertEqual(evidence["distinct_profiles"], 0)
 
 
 if __name__ == "__main__":

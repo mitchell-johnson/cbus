@@ -5,12 +5,15 @@ Ledger/census + fresh-wheel + differential harness scaffolding only.
 This module does NOT claim Toolkit parity. It loads the authoritative
 38-area ledger in ``capabilities.json`` (``census_complete: false``) and
 exposes the differential matrix: every ledger area maps to workflow and
-negative-path slots that start ``unassessed``, except the four attempted
+negative-path slots that start ``unassessed``, except the five attempted
 rows ``edlt-reset-controls``, ``edlt-retained-scene-editing``,
 ``edlt-global-category-programming`` (whose ``nominal_workflow`` slots are
-each ``accepted`` per the executable SLOT_RUBRIC below, 1/6 slots each)
-and ``thermostat-configuration`` (audited 0/6: its evidence does not meet
-the rubric, so all six slots stay ``unassessed``); areas still pending,
+each ``accepted`` per the executable SLOT_RUBRIC below, 1/6 slots each),
+``thermostat-configuration`` (audited 0/6: its evidence does not meet
+the rubric, so all six slots stay ``unassessed``), and
+``all-unit-parameter-encoding`` (audited 0/6: massive native-oracle
+comparison scale, but zero original-Toolkit executions, so all six slots
+stay ``unassessed``); areas still pending,
 ``accepted_areas`` still 0, ``complete`` still false).
 
 No endpoints, credentials, or vendor specifications are invented or read
@@ -134,13 +137,14 @@ RESET_CONTROLS_EVIDENCE_PATHS = [
     "docs/edlt-reset.md",
 ]
 
-# The four attempted differential rows. Every other ledger area keeps the
+# The five attempted differential rows. Every other ledger area keeps the
 # scaffolding default (all slots ``unassessed``, no evidence paths).
 DIFFERENTIAL_ROWS = (
     "edlt-reset-controls",
     "edlt-retained-scene-editing",
     "edlt-global-category-programming",
     "thermostat-configuration",
+    "all-unit-parameter-encoding",
 )
 
 # Measured evidence facts for the second attempted row,
@@ -318,6 +322,8 @@ GLOBAL_PROGRAMMING_EVIDENCE_PATHS = [
 # >=10 fresh-original leg (temperature) and the native-persistence legs
 # (67-checkpoint, composition) belong to different bounded scopes, so they
 # cannot be stitched into a nominal pass -- nominal stays ``unassessed``.
+# (Narrower hypos fail too: temperature-only lacks native persistence by
+# design; composition-only has no fresh original executions.)
 # ``distinct_profiles`` is 1 (single Toolkit/C-Gate profile throughout);
 # ``original_error_cases`` is 0 (denied-callback stops, injected partial
 # failures, and the preserved trace-only harness collision are process
@@ -390,6 +396,109 @@ THERMOSTAT_CONFIGURATION_EVIDENCE_PATHS = [
     "docs/thermostat-schedule-levels.md",
     "docs/thermostat-scheduling.md",
     "docs/native-thermostat-schedule.md",
+]
+
+
+# Measured evidence facts for the fifth attempted row,
+# ``all-unit-parameter-encoding`` (row id verified present in
+# ``capabilities.json``). Verdict: 0/6 -- every slot stays ``unassessed``.
+# A 0/6 verdict with documented gaps is a legitimate success; the rubric
+# below is applied unchanged. This row is the native-oracle evidence-kind
+# finding: 6,487 of 6,497 declared catalogue boundary configurations
+# compared with native C-Gate (616,722 successful parameter comparisons)
+# plus 161 of 163 distinct logical memory layouts exercised with changing
+# native values (322 passing change trials) -- large-scale differential
+# evidence against a NATIVE oracle, not replayed ORIGINAL-Toolkit
+# executions. Values are read off the committed artifacts listed in
+# ALL_UNIT_PARAMETER_ENCODING_EVIDENCE_PATHS below:
+# - catalogue boundary workflow (docs/catalog-acceptance-summary.json,
+#   ``combined_boundary_workflows``): selected 6497, verified_cases 6487,
+#   successful_parameter_comparisons 616722; the per-run
+#   ``boundary_workflow`` splits selected/completed 6497 as pass 6382 +
+#   vendor_catalog_rejected 105 + vendor_command_limitation 10
+#   (6382 + 105 = 6487 verified; 6382 + 105 + 10 = 6497 selected), with
+#   successful_parameter_comparisons 552391; the
+#   ``boundary_alternative_database_load`` adds 64331
+#   (552391 + 64331 = 616722), with alternative_roundtrip_pass 105 /
+#   alternative_failed 10. The 105 vendor-catalogue rejections and 10
+#   command limitations are native-oracle rejection observations, not
+#   replayed original error-identity vectors;
+# - memory layout corpus (docs/native-memory-acceptance.json): format
+#   cbus-native-memory-acceptance-v1, distinct_layouts 163, summary pass
+#   161 / unexercised 2 / passing_change_trials 322; the 2 unexercised
+#   layouts are single-bit little-endian DLT LabelFlavourLSB/MSB with no
+#   native token-addressable parameter name. Scope: "Changing-value
+#   differential acceptance of distinct logical memory layouts; not
+#   per-device, firmware or Toolkit workflow parity";
+# - catalogue scope (docs/catalog-acceptance-summary.json): "Offline
+#   native unit schema and Python session acceptance at selected
+#   catalogue firmware points", with a ``does_not_establish`` list
+#   (physical device programming, all firmware values between endpoints,
+#   all possible parameter values, all Toolkit workflows, 100 percent
+#   Toolkit parity).
+# Row-level rubric flags: ``original_executions`` is recorded as 0 --
+# native-oracle comparisons are a different evidence KIND than
+# fresh-or-captured original-Toolkit executions, and the rubric as encoded
+# counts only the latter (documentation tables, executable constants, and
+# native-only comparisons are NOT original executions). Hundreds of
+# catalogue profiles were exercised against native C-Gate, but zero
+# profiles carry original-Toolkit comparisons, so ``distinct_profiles``
+# is recorded as 0. ``has_replay_test`` is False (no committed test
+# replays original-Toolkit executions; ``research/verify_catalog.py`` is a
+# native-oracle runner and the offline unit/memory tests replay committed
+# native-oracle vectors or check our own codec -- the latter
+# self-referential alone). ``has_native_persistence`` is False (no
+# database save/close/load readback; native PP sessions are transient
+# programming contexts, not persistence). ``has_acceptance_record`` and
+# ``has_bounded_scope_note`` are True (two committed records bound the
+# native-oracle claim and explicitly disclaim Toolkit-workflow parity) --
+# nominal still fails on the ``original_executions`` leg alone, which is
+# exactly the evidence-kind gap this audit documents (see the rubric-gap
+# note in docs/differential-plan.md; the rubric is NOT weakened to fit).
+# ``original_error_cases`` is 0 (the 105 + 10 native rejection classes
+# are preserved observations, not replayed original error-identity
+# vectors); no original-observed rejection basis and no
+# physical-device evidence.
+ALL_UNIT_PARAMETER_ENCODING_EVIDENCE = {
+    "original_executions": 0,
+    "boundary_selected": 6497,
+    "boundary_verified": 6487,
+    "boundary_pass": 6382,
+    "vendor_catalog_rejected": 105,
+    "vendor_command_limitation": 10,
+    "successful_parameter_comparisons": 616722,
+    "boundary_workflow_comparisons": 552391,
+    "boundary_alternative_comparisons": 64331,
+    "distinct_layouts": 163,
+    "layouts_pass": 161,
+    "layouts_unexercised": 2,
+    "passing_change_trials": 322,
+    "has_replay_test": False,
+    "has_native_persistence": False,
+    "has_acceptance_record": True,
+    "has_bounded_scope_note": True,
+    "original_error_cases": 0,
+    "distinct_profiles": 0,
+    "has_original_rejection_basis": False,
+    "has_physical_device_evidence": False,
+}
+
+# Committed artifacts only (all paths below are git-tracked; no vendor
+# executables, credentials, or runtime reports). Oracle vs
+# self-referential split: research/verify_catalog.py (gated native-oracle
+# runner) plus the offline tests/test_unitspec.py and
+# tests/test_memory.py (offline codec checks, self-referential alone) and
+# the two committed acceptance records (docs/catalog-acceptance-summary.json
+# for the 6,497-case boundary workflow, docs/native-memory-acceptance.json
+# for the 163-layout corpus) are the audit trail;
+# docs/catalog-acceptance.md is the bounded-scope narrative.
+ALL_UNIT_PARAMETER_ENCODING_EVIDENCE_PATHS = [
+    "tests/test_unitspec.py",
+    "tests/test_memory.py",
+    "research/verify_catalog.py",
+    "docs/native-memory-acceptance.json",
+    "docs/catalog-acceptance-summary.json",
+    "docs/catalog-acceptance.md",
 ]
 
 
@@ -569,7 +678,7 @@ def is_area_accepted(entry: dict) -> bool:
 
 
 def _apply_rubric_rows(matrix: dict) -> None:
-    """Fill the four attempted rows through the rubric (fail-safe).
+    """Fill the five attempted rows through the rubric (fail-safe).
 
     A slot is set to ``accepted`` only when ``slot_meets_rubric`` passes;
     otherwise it stays ``unassessed``. Unknown row IDs raise KeyError so a
@@ -591,7 +700,10 @@ def _apply_rubric_rows(matrix: dict) -> None:
         elif area_id == "thermostat-configuration":
             evidence = THERMOSTAT_CONFIGURATION_EVIDENCE
             evidence_paths = list(THERMOSTAT_CONFIGURATION_EVIDENCE_PATHS)
-        else:  # pragma: no cover - four-row phase; kept explicit
+        elif area_id == "all-unit-parameter-encoding":
+            evidence = ALL_UNIT_PARAMETER_ENCODING_EVIDENCE
+            evidence_paths = list(ALL_UNIT_PARAMETER_ENCODING_EVIDENCE_PATHS)
+        else:  # pragma: no cover - five-row phase; kept explicit
             continue
         for slot in WORKFLOW_SLOTS:
             accepted, _ = slot_meets_rubric(slot, evidence)
@@ -607,8 +719,8 @@ def _apply_rubric_rows(matrix: dict) -> None:
     matrix["accepted_areas"] = sum(
         1 for entry in matrix["areas"].values() if is_area_accepted(entry)
     )
-    # ``complete`` stays false: the census is incomplete and only four
-    # partially filled rows exist (three 1/6, one 0/6). Never derive
+    # ``complete`` stays false: the census is incomplete and only five
+    # partially filled rows exist (three 1/6, two 0/6). Never derive
     # completion from intent.
     matrix["complete"] = bool(
         matrix["census_complete"]
