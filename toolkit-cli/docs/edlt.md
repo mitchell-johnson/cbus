@@ -249,6 +249,13 @@ Lighting planner as a validated bound-control projection, rejects overlapping
 widget bytes and enters every control before one retained terminal save/CRC
 projection.
 
+For a closed native project, the bounded
+[automatic parent metadata workflow](edlt-parent-metadata.md) replaces the
+manual lifecycle-cache file with facts derived from one exact `DBGETXML`
+snapshot. It can create missing applications and groups before the same parent
+transaction while preserving unrelated metadata. Image-dependent dynamic
+label facts remain outside the project XML and are rejected when consumed.
+
 The native acceptance creates a unique marked project with an unopened CNI at
 `127.0.0.1:1`, loads a database-backed 5055EDL PP session and resets defaults.
 It configures an Off/On widget and a page-4 Dimmer, allocates the UTF-8 label

@@ -69,6 +69,26 @@ reverse-order rollback while the connection remains usable. An interrupt
 returns `edlt_parent_transaction_evidence`, including attempted parameters and
 whether PP state is uncertain; it never issues the database save.
 
+The caller-cache form above remains useful when dynamic image facts came from
+a separately controlled observation. For one exact native project snapshot,
+the [automatic parent metadata workflow](edlt-parent-metadata.md) can derive
+the required application/group/level/static-label facts and deterministically
+plan missing applications or groups:
+
+```sh
+cbus-toolkit edlt parent-transaction-plan snapshot.json \
+  --project-xml project.xml --unit //PROJECT/254/p/20 \
+  --operations operations.json
+cbus-toolkit cgate unit --lock-address //PROJECT/254 \
+  --source /db//PROJECT/254/p/20 --dry-run edlt-parent-transaction \
+  --auto-metadata --exclusive-project --operations operations.json
+```
+
+That native path creates a backup before mutation. It composes metadata and PP
+staging before one PP SAVE and one target PROJECT SAVE, but C-Gate provides no
+atomic commit across those operations. It rolls back only before PP SAVE is
+attempted and reports later failures as potentially partial without retry.
+
 ## Operation contract
 
 The JSON document must be an array with two through 22 entries, contain no

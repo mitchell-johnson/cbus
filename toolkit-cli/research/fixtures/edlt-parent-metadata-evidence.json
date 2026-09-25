@@ -1,0 +1,88 @@
+{
+  "format": "cbus-edlt-parent-metadata-evidence-v1",
+  "profile": {
+    "unit_type": "KEYGL5",
+    "catalog_number": "5055EDL",
+    "firmware": "5.5.00",
+    "toolkit": "1.18.0.2754"
+  },
+  "scope": "Application, group, level-address and static-label facts consumed by one ordered eDLT parent transaction",
+  "original_sources": [
+    {
+      "path": "CBusLogicModel/CBusLogicModel/CBusNetwork.cs",
+      "sha256": "ddd65e5d34d94f3b0468f0db5a8468c0b6b5cdc50b8a49ca27b9f7331000d39c"
+    },
+    {
+      "path": "CBusLogicModel/CBusLogicModel/CBusApplication.cs",
+      "sha256": "669554fea6b53c01a2d0d0c1d7cf8c89cd76d68af0b7d2b11f3bb73a6bfe5933"
+    },
+    {
+      "path": "CBusLogicModel/CBusLogicModel.CBusObjects/CBusGroup.cs",
+      "sha256": "882ef659aa8114ee8d5a9f51c7d7d14cde7322f7da83a33853c9c6f49a3e7aa2"
+    },
+    {
+      "path": "CBusLogicModel/CBusLogicModel.CBusObjects/CBusLevel.cs",
+      "sha256": "4578b91fd17a688e99cdba16d7c9c1dcc983a88f156caca88e8b55a9ad8194e1"
+    },
+    {
+      "path": "CBusLogicModel/CBusLogicModel/TagDLT.cs",
+      "sha256": "ce6461d96e5017e91f4dc394a27796ff806da3bee12518113b8c2770a1132aa6"
+    },
+    {
+      "path": "CBusLogicModel/CBusLogicModel.Utilities/DataStore.cs",
+      "sha256": "d60cd2371e221a54774e6b8c35ce631975d0c2491e6b9e053d700810831f4f2b"
+    },
+    {
+      "path": "CBusLogicModel/CBusLogicModel.Units.EDLT/EDLTUnit.cs",
+      "sha256": "641f5abc1c3762cd86a0c4b18bc125424a39017a3d78d6edfa4e1e2964af62b2"
+    }
+  ],
+  "original_methods": [
+    {
+      "method": "CBusNetwork.GetApplicationByAddress",
+      "establishes": "Missing non-255 applications call AddApplicationRequest and refresh before lookup returns."
+    },
+    {
+      "method": "CBusApplication.GetGroupByAddress",
+      "establishes": "Missing groups call AddGroupRequest when automatic group population remains enabled."
+    },
+    {
+      "method": "CBusApplication.ReadXmlData",
+      "establishes": "Stored groups are refreshed and one virtual address-255 <Unused> group is recreated in memory."
+    },
+    {
+      "method": "CBusGroup.ReadXmlData",
+      "establishes": "Default-language TagDLT variants and complete Level children populate group caches."
+    },
+    {
+      "method": "TagDLT.PopulateImage",
+      "establishes": "DYNAMIC/FONT image presence depends on downloaded project images and ICON presence depends on Toolkit's local DLTP index."
+    },
+    {
+      "method": "EDLTUnit.AfterLoadPPData",
+      "establishes": "Primary application lookup precedes the 64 StaticTextString loads, scenes, widgets, dependent controls and final group checks."
+    }
+  ],
+  "implemented_boundary": {
+    "one_exact_dbgetxml_project_snapshot": true,
+    "profile_and_object_identity_guards": true,
+    "deterministic_missing_application_and_group_plan": true,
+    "virtual_group_255_never_created": true,
+    "complete_scene_level_address_facts": true,
+    "all_64_static_labels_from_selected_unit_pp": true,
+    "project_or_dltp_image_dependency_rejected_when_consumed": true,
+    "one_retained_parent_normalization_and_crc_projection": true,
+    "one_pp_save_and_one_target_project_save": true,
+    "pre_pp_save_reverse_delete_save_reload_rollback": true,
+    "no_automatic_retry_or_rollback_after_pp_save_attempt": true
+  },
+  "evidence_boundaries": {
+    "original_source_inspected": true,
+    "portable_python_project_and_failure_simulation": true,
+    "native_combined_transaction_executed": false,
+    "original_parent_form_executed": false,
+    "original_add_dialog_executed": false,
+    "project_image_download_executed": false,
+    "physical_device_verified": false
+  }
+}

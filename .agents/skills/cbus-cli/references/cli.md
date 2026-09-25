@@ -102,6 +102,31 @@ Use `lifecycle.crc_fields_calculated` to confirm the single five-field CRC
 pass. `phases.crc` is a changed-only delta and may omit a field whose stored
 value was already correct.
 
+To derive the lifecycle facts from one exact native project snapshot instead
+of a hand-authored cache:
+
+```sh
+cbus-toolkit edlt parent-transaction-plan snapshot.json \
+  --project-xml project.xml --unit //PROJECT/254/p/20 \
+  --operations operations.json
+cbus-toolkit cgate unit --lock-address //PROJECT/254 \
+  --source /db//PROJECT/254/p/20 --dry-run edlt-parent-transaction \
+  --auto-metadata --exclusive-project --operations operations.json
+```
+
+The first command requires the PP file to match the selected XML unit exactly.
+The second requires an exact selected-network lock address, a closed project
+and exclusive caller ownership. Review
+`planned_creations`, `metadata_cache`, `static_labels` and the nested parent
+plan. Applying creates a backup, adds missing applications/groups in address
+order, stages PP once, performs one PP SAVE and one target PROJECT SAVE, then
+reloads and verifies. These native operations have no shared atomic commit.
+Only a failure before PP SAVE is rolled back automatically. After either save
+starts, inspect `edlt_parent_metadata_evidence`; never retry an uncertain
+operation. Consumed DYNAMIC/FONT/ICON image facts fail closed because
+DBGETXML does not include project images or Toolkit's DLTP image index. See
+`toolkit-cli/docs/edlt-parent-metadata.md`.
+
 ### Native dynamic-label cache clear
 
 Use the typed native command to request all cached labels or one key be cleared

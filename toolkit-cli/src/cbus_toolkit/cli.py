@@ -477,9 +477,9 @@ def _edlt_parent_form(args):
     return EdltParentForm(UnitSpecStore(args.spec_dir).load("KEYGL5.xml"))
 
 
-def _edlt_parent_transaction_options(parser):
+def _edlt_parent_transaction_options(parser, *, surface="manual"):
     from .edlt_parent_transaction_cli import options
-    options(parser)
+    options(parser, surface=surface)
 
 
 def _edlt_parent_transaction_settings(args):
@@ -1515,7 +1515,7 @@ def build_parser():
     _edlt_parent_form_options(p)
     p = unops.add_parser("edlt-parent-transaction", help="Apply ordered distinct eDLT controls through one retained parent save transaction")
     p.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
-    _edlt_parent_transaction_options(p)
+    _edlt_parent_transaction_options(p, surface="native")
     p = unops.add_parser("edlt-time-date", help="Configure KEYGL5 5.5.00 Time/Date widgets and unit-wide display formats")
     p.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
     _edlt_time_date_options(p)
@@ -1894,7 +1894,7 @@ def build_parser():
     _edlt_parent_form_options(p)
     p = eops.add_parser("parent-transaction-plan", help="Plan ordered distinct eDLT controls through one retained parent save transaction")
     p.add_argument("file", type=Path, help="KEYGL5 5.5.00 / 5055EDL PP export or complete parameter mapping")
-    _edlt_parent_transaction_options(p)
+    _edlt_parent_transaction_options(p, surface="offline")
     p = eops.add_parser("time-date-plan")
     p.add_argument("file", type=Path, help="KEYGL5 5.5.00 / 5055EDL PP export or complete parameter mapping")
     _edlt_time_date_options(p)
@@ -2743,6 +2743,37 @@ def _programming(args, client):
         raise ValueError("The eDLT widget workflows support database destinations only")
     if args.remote_action == "template-import" and destination and not destination.lower().startswith("/db//"):
         raise ValueError("The tested unit template workflow supports database destinations only")
+    if (args.remote_action == "edlt-parent-transaction"
+            and getattr(args, "auto_metadata", False)):
+        if args.unit_type is not None or args.source is None:
+            raise ValueError("Automatic eDLT metadata requires an existing --source database unit")
+        if args.destination is not None:
+            raise ValueError("Automatic eDLT metadata saves only to its selected --source unit")
+        if not args.source.lower().startswith("/db//"):
+            raise ValueError("Automatic eDLT metadata requires /db//PROJECT/network/p/unit")
+        if not args.exclusive_project:
+            raise ValueError("Automatic eDLT metadata requires --exclusive-project")
+        if args.dry_run and args.backup_project is not None:
+            raise ValueError("--backup-project requires an apply, without --dry-run")
+        from .edlt_parent_metadata import NativeEdltParentTransaction, _unit_path
+        from .edlt_parent_transaction_cli import operations
+        _unit, source_project, source_network, _address = _unit_path(args.source)
+        expected_lock = f"//{source_project}/{source_network}"
+        if args.lock_address != expected_lock:
+            raise ValueError(
+                "Automatic eDLT metadata requires --lock-address "
+                + expected_lock + " for the selected source network")
+        editor = _edlt_parent_transaction(args)
+        manager = NativeEdltParentTransaction(client, editor)
+        plan = manager.plan(args.source, operations=operations(args),
+                            exclusive_project=True)
+        if args.dry_run:
+            return {**plan.as_dict(), "applied": False, "saved": False}
+        return manager.apply(plan, backup_project=args.backup_project).as_dict()
+    if (args.remote_action == "edlt-parent-transaction"
+            and (getattr(args, "exclusive_project", False)
+                 or getattr(args, "backup_project", None) is not None)):
+        raise ValueError("--exclusive-project and --backup-project require --auto-metadata")
     if args.unit_type:
         if not args.firmware:
             raise ValueError("--unit-type requires --firmware")
@@ -3172,7 +3203,18 @@ def run(args):
         if args.action == "parent-form-plan":
             return _edlt_parent_form(args).plan(values, **_edlt_parent_form_settings(args)).as_dict(), 0
         if args.action == "parent-transaction-plan":
-            return _edlt_parent_transaction(args).plan(
+            editor = _edlt_parent_transaction(args)
+            if args.project_xml is not None:
+                if not args.unit:
+                    raise ValueError("--unit is required with --project-xml")
+                from .edlt_parent_metadata import plan_native_parent_metadata
+                from .edlt_parent_transaction_cli import operations, read_project_xml
+                return plan_native_parent_metadata(
+                    read_project_xml(args.project_xml), args.unit, values,
+                    editor, operations(args)).as_dict(), 0
+            if args.unit is not None:
+                raise ValueError("--unit requires --project-xml")
+            return editor.plan(
                 values, **_edlt_parent_transaction_settings(args)).as_dict(), 0
         if args.action == "time-date-plan":
             return _edlt_time_date(args).plan(values, **_edlt_time_date_settings(args)).as_dict(), 0
@@ -3367,7 +3409,7 @@ def main(argv=None):
         result.update(routed_recall_error_payload(exc, args))
         result.update(routed_identify_error_payload(exc, args))
         result.update(project_repair_error_payload(exc, args))
-        for name in ("pci_mmi_observation", "pci_serial_observation", "pci_inventory_observation", "usb_dfu_evidence", "edlt_display_evidence", "edlt_mra_evidence", "edlt_general_evidence", "edlt_standby_evidence", "edlt_colours_evidence", "edlt_navigation_evidence", "edlt_quick_status_evidence", "edlt_activation_evidence", "edlt_page_control_evidence", "edlt_lifecycle_evidence", "edlt_parent_form_evidence", "edlt_parent_transaction_evidence", "edlt_restore_levels_evidence", "edlt_applications_evidence", "edlt_corridor_evidence", "edlt_blank_evidence", "edlt_reset_evidence", "edlt_scene_manager_evidence", "edlt_scene_live_evidence"):
+        for name in ("pci_mmi_observation", "pci_serial_observation", "pci_inventory_observation", "usb_dfu_evidence", "edlt_display_evidence", "edlt_mra_evidence", "edlt_general_evidence", "edlt_standby_evidence", "edlt_colours_evidence", "edlt_navigation_evidence", "edlt_quick_status_evidence", "edlt_activation_evidence", "edlt_page_control_evidence", "edlt_lifecycle_evidence", "edlt_parent_form_evidence", "edlt_parent_transaction_evidence", "edlt_parent_metadata_evidence", "edlt_restore_levels_evidence", "edlt_applications_evidence", "edlt_corridor_evidence", "edlt_blank_evidence", "edlt_reset_evidence", "edlt_scene_manager_evidence", "edlt_scene_live_evidence"):
             evidence = getattr(exc, name, None)
             if isinstance(evidence, dict):
                 result[name] = evidence

@@ -65,10 +65,35 @@ def record_save_failure(error, result, destination):
     return wrapped
 
 
-def options(parser):
-    parser.add_argument(
-        '--metadata', type=Path, required=True,
-        help='Caller-supplied retained lifecycle cache JSON')
+def options(parser, *, surface='manual'):
+    if surface == 'offline':
+        source = parser.add_mutually_exclusive_group(required=True)
+        source.add_argument(
+            '--metadata', type=Path,
+            help='Caller-supplied retained lifecycle cache JSON')
+        source.add_argument(
+            '--project-xml', type=Path,
+            help='Exact native DBGETXML project snapshot used to derive metadata')
+        parser.add_argument(
+            '--unit', help='Selected //PROJECT/network/p/unit; required with --project-xml')
+    elif surface == 'native':
+        source = parser.add_mutually_exclusive_group(required=True)
+        source.add_argument(
+            '--metadata', type=Path,
+            help='Caller-supplied retained lifecycle cache JSON')
+        source.add_argument(
+            '--auto-metadata', action='store_true',
+            help='Derive and create guarded metadata from the live project snapshot')
+        parser.add_argument(
+            '--exclusive-project', action='store_true',
+            help='Declare exclusive closed-project editing; required with --auto-metadata')
+        parser.add_argument(
+            '--backup-project',
+            help='New backup project name for an automatic metadata apply')
+    else:
+        parser.add_argument(
+            '--metadata', type=Path, required=True,
+            help='Caller-supplied retained lifecycle cache JSON')
     parser.add_argument(
         '--operations', type=Path, required=True,
         help='JSON array of 2..22 ordered measurement, lighting or activation operations')
@@ -101,3 +126,17 @@ def settings(args):
         'metadata': _edlt_lifecycle_metadata(args.metadata),
         'operations': normalize_operations(_read_operations(args.operations)),
     }
+
+
+def operations(args):
+    """Read the one strict operation document shared by all surfaces."""
+    from .edlt_parent_transaction import normalize_operations
+    return normalize_operations(_read_operations(args.operations))
+
+
+def read_project_xml(path, *, limit=16 * 1024 * 1024):
+    with path.open('rb') as source:
+        raw = source.read(limit + 1)
+    if not raw or len(raw) > limit:
+        raise ValueError('Native project XML must be nonempty and at most 16 MiB')
+    return raw.decode('utf-8', 'strict')

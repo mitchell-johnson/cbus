@@ -755,6 +755,28 @@ and reports `edlt_parent_transaction_evidence`. `saved=false` means the save
 was not confirmed; `save_outcome_uncertain=true` and the separate PP/database
 state fields prevent that result from being mistaken for a known rollback.
 
+When one native project snapshot is authoritative, the parent transaction can
+derive its metadata instead of accepting a hand-authored lifecycle cache:
+
+```sh
+cbus-toolkit edlt parent-transaction-plan snapshot.json \
+  --project-xml project.xml --unit //TEST/254/p/20 \
+  --operations operations.json
+cbus-toolkit cgate unit --lock-address //TEST/254 \
+  --source /db//TEST/254/p/20 --dry-run edlt-parent-transaction \
+  --auto-metadata --exclusive-project --operations operations.json
+```
+
+The offline PP snapshot must exactly match the selected unit in the project
+XML. The plan inventories all 64 static-label slots and lists each missing
+application/group creation. Applying requires a closed, exclusively owned
+project and creates a separate backup first. C-Gate exposes database object
+creation, PP SAVE and PROJECT SAVE as separate operations, so this path reports
+`batch_atomic=false`. It rolls back only before PP SAVE starts and never
+retries an uncertain save. DYNAMIC/FONT/ICON image facts that depend on project
+files or Toolkit's DLTP index fail closed. See
+[edlt-parent-metadata.md](docs/edlt-parent-metadata.md).
+
 Time/Date widgets support standby and functional positions, with unit-wide
 date formats, time formats and leading zeroes:
 
@@ -1806,7 +1828,7 @@ Later changes have separate passing acceptance on both Python versions and are
 outside that frozen wheel:
 
 - [Configuration CRC](docs/edlt-crc.md): 21 tests, including 65,588 fresh original CRC results per run.
-- [Percentage conversion](docs/edlt-percentage.md), [bounded parent composition](docs/edlt-parent-form.md) and [ordered parent transaction](docs/edlt-parent-transaction.md): pure conversion and CLI acceptance, standalone original Windows 12- and 528-case captures, 14 portable Measurement/Percentage lifecycle composition tests, and a separate multi-edit suite for Measurement, Lighting and activation with one terminal save projection. The complete original parent dialog and optional native database composition gates remain outstanding.
+- [Percentage conversion](docs/edlt-percentage.md), [bounded parent composition](docs/edlt-parent-form.md), [ordered parent transaction](docs/edlt-parent-transaction.md) and [automatic parent metadata](docs/edlt-parent-metadata.md): pure conversion and CLI acceptance, standalone original Windows 12- and 528-case captures, 14 portable Measurement/Percentage lifecycle composition tests, a separate multi-edit suite for Measurement, Lighting and activation with one terminal save projection, and 17 portable metadata/CLI cases plus one optional native gate. The complete original parent dialog and combined Schneider C-Gate/physical acceptance remain outstanding.
 - [About information](docs/toolkit-about.md): 16 tests, including 51 original instruction cases per run.
 - [Signed update metadata](docs/toolkit-update-metadata.md), [revocation stages](docs/toolkit-update-revocation.md) and [supplied-context registry conditions](docs/toolkit-update-registry-conditions.md): separate 56-, 53- and 78-test checkpoints with explicit trust and availability limits.
 - [PCI routing](docs/pci-routing.md), [incoming routing](docs/pci-incoming-routing.md), [routed RECALL](docs/pci-routed-recall.md) and [routed IDENTIFY](docs/pci-routed-identify.md): separate codec and transport checkpoints; IDENTIFY passes 104 tests with fresh original matcher comparisons and owned loopback exchanges.

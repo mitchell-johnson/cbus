@@ -81,6 +81,12 @@ contract](toolkit-cli/docs/cni-discovery.md).
 
 The CLI targets **C-Bus Toolkit 1.18.0.2754 and C-Gate 3.4.0.2001**, with full Toolkit functionality as the goal. Implemented workflows include offline project editing, native project management, supported unit programming and addressing, keypad presets, scenes, CGL exchange, and substantial eDLT configuration. Device and firmware support is documented per workflow.
 
+For the bounded KEYGL5 parent transaction, the CLI can derive required
+application/group/scene-level/static-label facts from one exact native project
+snapshot and plan missing database metadata before the retained multi-edit.
+See the [automatic parent metadata contract](toolkit-cli/docs/edlt-parent-metadata.md)
+for the closed-project guards and the non-atomic PP/project save boundary.
+
 **Full Toolkit parity is not complete.** The feature ledger currently records 38 areas: 17 implemented, 19 in progress, and 2 pending. These categories are not a percentage of Toolkit functionality. Check the current machine-readable status with:
 
 ```sh

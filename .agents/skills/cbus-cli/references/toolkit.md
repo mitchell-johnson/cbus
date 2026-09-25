@@ -110,6 +110,19 @@ lifecycle/CRC projection. Review `operation_results`, `ownership`,
 not establish an executed original multi-selection form; see
 `toolkit-cli/docs/edlt-parent-transaction.md`.
 
+When a current native project snapshot is the source of truth, replace the
+manual cache with the bounded automatic resolver. Offline, pass
+`--project-xml` and the selected `--unit`; for the database command pass
+`--auto-metadata --exclusive-project`. It derives required applications,
+groups, complete consumed scene-level addresses and all 64 static-label slots,
+then deterministically plans missing application/group records. Review the
+plan before applying and use the selected source network as the exact PP lock
+address. The apply creates a project backup but DBADDSAFE, PP SAVE
+and PROJECT SAVE are separate C-Gate operations. Automatic rollback stops once
+PP SAVE is attempted, and an uncertain reply must not be retried. Project/DLTP
+image-dependent dynamic facts fail closed. See
+`toolkit-cli/docs/edlt-parent-metadata.md`.
+
 The lifecycle receipt names all five calculated CRC fields. Do not infer a
 missing calculation from `phases.crc`, because that changed-only view omits an
 already-correct stored CRC.
