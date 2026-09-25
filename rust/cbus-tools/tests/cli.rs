@@ -264,17 +264,17 @@ fn interrogate_unit_reports_attributes() {
 }
 
 #[test]
-fn interrogate_connection_refused_exits_nonzero() {
-    let dead = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
-    let port = dead.local_addr().unwrap().port();
-    drop(dead);
-    let addr = format!("127.0.0.1:{port}");
+fn interrogate_unavailable_endpoint_exits_nonzero() {
+    // TCP port zero cannot have a listening peer.  Keeping the kernel-selected
+    // port from a dropped `127.0.0.1:0` listener is racy: another parallel test
+    // can claim that port before this subprocess connects.
+    let addr = "127.0.0.1:0";
     let (status, _out, err) = run(
         BIN,
         &[
             "interrogate",
             "--tcp",
-            &addr,
+            addr,
             "--unit",
             "0",
             "--timeout",
