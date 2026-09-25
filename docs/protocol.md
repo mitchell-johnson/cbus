@@ -2,7 +2,7 @@
 
 ## C-Bus packets
 
-`cbus-protocol` models point-to-multipoint, point-to-point, device-management, reset, confirmation, error, and special packet forms. It includes CAL identify, recall, reply, and extended messages; lighting, clock, enable, temperature, and status-request SALs; binary and Manchester status reports; checksum helpers; ramp-rate conversion; and stable packet JSON.
+`cbus-protocol` models point-to-multipoint, point-to-point, routed point-to-point-to-multipoint, device-management, reset, confirmation, error, and special packet forms. It includes CAL identify, recall, reply, and extended messages; lighting, clock, enable, temperature, and status-request SALs; binary and Manchester status reports; checksum helpers; ramp-rate conversion; and stable packet JSON.
 
 Strict decoding rejects malformed input. Lenient decoding retains compatibility behavior for imperfect frames. The golden-vector suite fixes the expected byte consumption, decoded JSON, and re-encoded bytes for representative and edge-case traffic.
 
@@ -16,6 +16,15 @@ cni-discover` and `cbus-toolkit interface discover-cni` send the exact retained
 a bounded deadline. See the [discovery contract](../toolkit-cli/docs/cni-discovery.md).
 
 The transport emits typed events to consumers and retains raw consumed bytes where tests or diagnostics need them.
+
+Source-routed requests support one through six bridges. Outbound PTP and PPM
+frames encode Network PCI stack headers `09`, `12`, …, `36`; smart-mode
+responses decode the native Reply Network count `01` through `06`. Routed MMI
+and IDENTIFY transactions require the expected first bridge, remaining route,
+and terminal unit where applicable, so traffic from a direct or neighbouring
+network cannot populate the requested network's cache. Exact native C-Gate and
+CBUS-SIUG forms are pinned in `testdata/vectors/encode.jsonl` and
+`decode_from_pci.jsonl`.
 
 ## MQTT convention
 

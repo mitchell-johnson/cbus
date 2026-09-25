@@ -1,0 +1,141 @@
+{
+  "format": "cbus-cgate-bridged-topology-native-acceptance-v2",
+  "date": "2026-09-26",
+  "passed": true,
+  "scope": "Owned C-Gate 3.4.0_2001 database-path oracle on disposable loopback endpoints, plus a separately version-scoped C-Gate 2.11.11 outbound-wire oracle; no live C-Bus network or site project was used",
+  "selected_native_runtime": {
+    "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+    "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "network_source": "temporary in-memory database",
+    "tag_autosave": false
+  },
+  "selected_topology": [
+    {
+      "network": 254,
+      "interface_type": "CNI",
+      "interface_address": "disposable-loopback-fake-cni",
+      "initial_bridge_units": [42, 253],
+      "later_added_bridge_unit": 200,
+      "subsequently_deleted_interface_unit": 42
+    },
+    {
+      "network": 253,
+      "interface_type": "Bridge",
+      "interface_address": "254/p/253",
+      "bridge_units": [254]
+    },
+    {
+      "network": 200,
+      "interface_type": "Bridge",
+      "interface_address": "254/p/42",
+      "bridge_units": [254],
+      "note": "The non-equal /p/42 suffix is accepted as the Bridge interface unit. It does not replace the standard-convention far-side route address 200."
+    }
+  ],
+  "selected_command_cases": [
+    {
+      "command": "DBNETWORKPATH 254 253 COMPACT",
+      "reply": ["136 FD"]
+    },
+    {
+      "command": "DBNETWORKPATH 253 254 COMPACT",
+      "reply": ["136 FE"]
+    },
+    {
+      "precondition": "Network 254 contains bridge unit 42 but not bridge unit 200",
+      "command": "DBNETWORKPATH 254 200 COMPACT",
+      "reply": ["408 Operation failed: Network path discovery failed: No path found"],
+      "note": "C-Gate accepts InterfaceAddress 254/p/42 but requires a source-side bridge unit whose address equals the far-side network address 200."
+    },
+    {
+      "precondition": "Network 200 contains bridge unit 254",
+      "command": "DBNETWORKPATH 200 254 COMPACT",
+      "reply": ["136 FE"],
+      "note": "The reverse direction is independently valid because its source-side conventional bridge unit exists."
+    },
+    {
+      "precondition": "Bridge unit 200 has now been added to network 254",
+      "command": "DBNETWORKPATH 254 200 COMPACT",
+      "reply": ["136 C8"]
+    },
+    {
+      "precondition": "Bridge unit 200 has now been added to network 254",
+      "command": "DBNETWORKPATH 254 200 OID",
+      "reply": ["137 9a10e6b0-9b4c-103f-8280-c43efb49aae5"],
+      "note": "The OID was generated in the disposable database. The result identifies the crossed destination network, excluding the source."
+    },
+    {
+      "precondition": "Bridge unit 200 exists in network 254",
+      "command": "DBDELETE //TOPO34/254/p/42",
+      "reply": ["200 OK."]
+    },
+    {
+      "precondition": "Bridge unit 200 exists but the distinct /p/42 interface unit has been deleted from network 254",
+      "command": "DBNETWORKPATH 254 200 COMPACT",
+      "reply": ["136 C8"],
+      "note": "DBNETWORKPATH parses the interface suffix but does not require a database unit at that suffix address."
+    },
+    {
+      "precondition": "Bridge unit 254 exists in network 200 and the /p/42 interface unit has been deleted from network 254",
+      "command": "DBNETWORKPATH 200 254 COMPACT",
+      "reply": ["136 FE"]
+    },
+    {
+      "precondition": "Project TOPO34 is selected; the OID is the network-200 result returned above",
+      "command": "DBGET !9a10e6b0-9b4c-103f-8280-c43efb49aae5/OID",
+      "reply": ["342 !9a10e6b0-9b4c-103f-8280-c43efb49aae5/OID=9a10e6b0-9b4c-103f-8280-c43efb49aae5"],
+      "note": "The OID form is a resolvable network database identity, not an opaque display token."
+    }
+  ],
+  "legacy_wire_runtime": {
+    "greeting": "201 Service ready: Clipsal C-Gate Version: v2.11.11 (build 3344) #cmd-syntax=1.0",
+    "vendor_jar_sha256": "53c110316ddfb92dbcc5f0edc2ed6daea845c57649a2846aad832d168c03107c",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4"
+  },
+  "legacy_wire_cases": [
+    {
+      "command": "NET PINGU //TOPOX/253",
+      "pci_mode": "smart, SRCHK off",
+      "observed_outbound_hex": "03FD09FFFAFF00",
+      "classification": "point-to-point-to-multipoint installation-MMI request through bridge unit FD",
+      "operation_completed": false,
+      "note": "This exact raw request was captured only from the separately identified C-Gate 2.11.11 oracle. It is not presented as C-Gate 3.4 wire acceptance. With no routed C-Bus hardware, it proves request encoding only and supplies no reply or cache-success evidence."
+    }
+  ],
+  "selected_runtime_wire_attempt": {
+    "commands": [
+      "NET OPEN //TOPO34/254",
+      "NET OPEN //TOPO34/253",
+      "NET PINGU //TOPO34/253"
+    ],
+    "open_replies": [
+      "200 OK: //TOPO34/254",
+      "200 OK: //TOPO34/253"
+    ],
+    "pingu_reply": "408 Operation failed: net pingu failed: MMI Send failed: unable to connect to network",
+    "note": "The scripted PCI did not complete C-Gate 3.4's bridge initialization, so no selected-version routed PINGU request is retained as wire evidence."
+  },
+  "published_protocol_evidence": {
+    "cgate_manual": {
+      "title": "C-Gate Manual",
+      "design_version": "3.4.0",
+      "document_version": "1.2.0",
+      "relevant_contract": "DBNETWORKPATH returns 136 COMPACT or 137 OID paths; paths exclude the source, include the destination and allow at most six bridges. Standard bridge path discovery uses the far-side network address for its bridge unit."
+    },
+    "serial_interface_guide": {
+      "title": "C-Bus Serial Interface User Guide",
+      "document_number": "CBUS-SIUG",
+      "issue": "1.17",
+      "pdf_sha256": "b578dd11553aab2bb297e76c648d764ca10d7778ce363a7de9e234d2e913ec41",
+      "relevant_contract": "Outbound Network-PCI stack headers are 09, 12, 1B, 24, 2D and 36; incoming smart-mode Reply Network counts are 01 through 06; at most six bridges are permitted"
+    }
+  },
+  "evidence_boundaries": [
+    "C-Gate 3.4.0_2001 is the selected-version oracle for all retained DBNETWORKPATH command replies and Bridge InterfaceAddress behavior.",
+    "The exact outbound routed PINGU byte sequence is retained only as C-Gate 2.11.11 evidence and is independently supported by CBUS-SIUG 1.17.",
+    "No native routed reply was produced by physical bridge hardware in this acceptance run.",
+    "Reply Network decoding and route reversal are grounded in CBUS-SIUG 1.17 and scripted-PCI tests, not claimed as live hardware acceptance.",
+    "No routed write, commissioning mutation, OEM eDLT metadata request or physical persistence claim is supported by this evidence."
+  ]
+}

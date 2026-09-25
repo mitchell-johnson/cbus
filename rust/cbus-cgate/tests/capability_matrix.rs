@@ -99,9 +99,11 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // PROJECT ARCHIVE/RESTORE/RENAME/COPY/DELETE and REPOSITORY LIST moved
     // fail_closed_502 -> local_database with durable internal snapshots,
     // guarded secondary-project lifecycle, and a read-only cmqttd-json row.
+    // DBNETWORKPATH moved fail_closed_502 -> local_database with native 136
+    // COMPACT and 137 OID topology resolution and no PCI traffic.
     assert_eq!(class_count(RoutingClass::Physical), 35);
-    assert_eq!(class_count(RoutingClass::LocalDatabase), 48);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 347);
+    assert_eq!(class_count(RoutingClass::LocalDatabase), 49);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 346);
     assert_eq!(class_count(RoutingClass::Obsolete400), 1);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here

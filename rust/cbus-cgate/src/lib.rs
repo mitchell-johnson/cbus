@@ -621,6 +621,9 @@ pub struct PpSession {
 /// One project network.
 #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct Network {
+    /// Stable database object identity used by `DBNETWORKPATH` OID output.
+    #[serde(default)]
+    pub oid: String,
     /// Network address.
     pub address: u8,
     /// Display name.
@@ -662,6 +665,111 @@ pub struct Project {
     pub name: String,
     /// Networks keyed by address.
     pub networks: HashMap<u8, Network>,
+}
+
+/// Resolve the native bridge-network path from `start` to `end`.
+///
+/// Each Bridge network declares its near-side parent as
+/// `<parent>/p/<interface-unit>`. C-Gate's path resolver applies the standard
+/// bridge convention independently of that final interface component: each
+/// route byte is the network address on the far side of the bridge. The
+/// compact result therefore contains the network addresses crossed after
+/// `start`, including `end`. Every transition also requires a unit at that
+/// far-side network address in the source network database; native C-Gate
+/// refuses a direction whose conventional bridge unit is absent. The C-Bus
+/// source-route limit is six bridges.
+pub fn network_path(project: &Project, start: u8, end: u8) -> Result<Vec<u8>, String> {
+    if !project.networks.contains_key(&start) || !project.networks.contains_key(&end) {
+        return Err("network not found".to_string());
+    }
+    if start == end {
+        return Ok(Vec::new());
+    }
+
+    fn chain(project: &Project, start: u8) -> Result<Vec<u8>, String> {
+        let mut result = Vec::new();
+        let mut seen = HashSet::new();
+        let mut current = start;
+        loop {
+            if !seen.insert(current) {
+                return Err("bridge topology contains a cycle".to_string());
+            }
+            result.push(current);
+            let network = project
+                .networks
+                .get(&current)
+                .ok_or_else(|| "bridge parent network not found".to_string())?;
+            if !network.iface_type.eq_ignore_ascii_case("Bridge") {
+                break;
+            }
+            let parts = network
+                .iface_addr
+                .trim_matches('/')
+                .split('/')
+                .collect::<Vec<_>>();
+            let [parent, marker, child] = parts.as_slice() else {
+                return Err(format!(
+                    "network {current} has malformed Bridge interface address"
+                ));
+            };
+            let parent = parent
+                .parse::<u8>()
+                .map_err(|_| format!("network {current} has invalid Bridge parent"))?;
+            let _interface_unit = child
+                .parse::<u8>()
+                .map_err(|_| format!("network {current} has invalid Bridge interface unit"))?;
+            if !marker.eq_ignore_ascii_case("p") || parent == current {
+                return Err(format!(
+                    "network {current} has inconsistent Bridge interface address"
+                ));
+            }
+            if !project.networks.contains_key(&parent) {
+                return Err(format!(
+                    "network {current} references missing parent {parent}"
+                ));
+            }
+            current = parent;
+        }
+        Ok(result)
+    }
+
+    let from_start = chain(project, start)?;
+    let from_end = chain(project, end)?;
+    let end_positions = from_end
+        .iter()
+        .enumerate()
+        .map(|(index, address)| (*address, index))
+        .collect::<HashMap<_, _>>();
+    let Some((start_lca, end_lca)) =
+        from_start
+            .iter()
+            .enumerate()
+            .find_map(|(start_index, address)| {
+                end_positions
+                    .get(address)
+                    .copied()
+                    .map(|end_index| (start_index, end_index))
+            })
+    else {
+        return Err("networks do not share a bridge root".to_string());
+    };
+
+    let mut path = from_start[1..=start_lca].to_vec();
+    path.extend(from_end[..end_lca].iter().rev().copied());
+    if path.len() > 6 {
+        return Err("network path exceeds six bridges".to_string());
+    }
+
+    let mut source = start;
+    for destination in &path {
+        if !project.networks[&source].units.contains_key(destination) {
+            return Err(format!(
+                "network {source} has no bridge unit at address {destination}"
+            ));
+        }
+        source = *destination;
+    }
+    Ok(path)
 }
 
 /// One database level (or NetVar) created via `DBADDSAFE`.
@@ -1120,12 +1228,15 @@ impl Server {
                 "408 Operation failed: Unable to delete file",
             );
         };
-        let unit_oids: HashSet<String> = project
+        let project_oids: HashSet<String> = project
             .networks
             .values()
-            .flat_map(|network| network.units.values().map(|unit| unit.oid.clone()))
+            .flat_map(|network| {
+                std::iter::once(network.oid.clone())
+                    .chain(network.units.values().map(|unit| unit.oid.clone()))
+            })
             .collect();
-        self.delete_project_prefix(name, unit_oids);
+        self.delete_project_prefix(name, project_oids);
         if self.current.as_deref() == Some(name) {
             self.current = None;
         }
@@ -1242,7 +1353,7 @@ impl Server {
 
     /// Remove all durable database records owned by one project while
     /// retaining shared OIDs that still belong to a native-style copy.
-    fn delete_project_prefix(&mut self, project: &str, unit_oids: HashSet<String>) {
+    fn delete_project_prefix(&mut self, project: &str, project_oids: HashSet<String>) {
         let exact = format!("//{project}");
         let prefix = format!("{exact}/");
         self.db_fields
@@ -1259,16 +1370,15 @@ impl Server {
         self.db_levels
             .retain(|_, level| level.parent != exact && !level.parent.starts_with(&prefix));
 
-        let removed_oids: HashSet<String> = unit_oids.union(&level_oids).cloned().collect();
+        let removed_oids: HashSet<String> = project_oids.union(&level_oids).cloned().collect();
         for oid in removed_oids {
-            let unit_in_use = self.projects.values().any(|project| {
-                project
-                    .networks
-                    .values()
-                    .any(|network| network.units.values().any(|unit| unit.oid == oid))
+            let object_in_use = self.projects.values().any(|project| {
+                project.networks.values().any(|network| {
+                    network.oid == oid || network.units.values().any(|unit| unit.oid == oid)
+                })
             });
             let level_in_use = self.db_levels.values().any(|level| level.oid == oid);
-            if !unit_in_use && !level_in_use {
+            if !object_in_use && !level_in_use {
                 self.known_oids.remove(&oid);
                 self.objects.remove(&format!("!{oid}"));
                 let oid_prefix = format!("!{oid}/");
@@ -1468,9 +1578,11 @@ impl Server {
         if proj.networks.contains_key(&net) {
             return err(tag, status::CONFLICT_EXISTS, "409 Network already exists");
         }
+        let oid = fresh_oid();
         proj.networks.insert(
             net,
             Network {
+                oid: oid.clone(),
                 address: net,
                 name: words[2].to_string(),
                 iface_type: words[3].to_string(),
@@ -1481,6 +1593,7 @@ impl Server {
                 levels: HashMap::new(),
             },
         );
+        self.known_oids.insert(oid);
         self.push_event(format!("#e# net {net} created"));
         ok(tag, vec![], "200 OK")
     }
@@ -4444,10 +4557,9 @@ impl Server {
             return false;
         };
         self.projects.get(current).is_some_and(|project| {
-            project
-                .networks
-                .values()
-                .any(|network| network.units.values().any(|unit| unit.oid == oid))
+            project.networks.values().any(|network| {
+                network.oid == oid || network.units.values().any(|unit| unit.oid == oid)
+            })
         }) || self.level_key(oid).is_some()
     }
 
@@ -4463,7 +4575,7 @@ impl Server {
 }
 
 /// Process-global OID source shared by units and levels.
-fn fresh_oid() -> String {
+pub(crate) fn fresh_oid() -> String {
     static NEXT_OID: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(1);
     let n = NEXT_OID.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
     format!("00000000-0000-0000-0000-{n:012x}")
@@ -4538,6 +4650,150 @@ pub fn valid_lighting_level(level: i64) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn topology_network(
+        address: u8,
+        iface_type: &str,
+        iface_addr: &str,
+        bridge_units: &[u8],
+    ) -> Network {
+        Network {
+            oid: format!("oid-{address}"),
+            address,
+            name: format!("Network {address}"),
+            iface_type: iface_type.to_string(),
+            iface_addr: iface_addr.to_string(),
+            state: NetworkState::Open,
+            units: bridge_units
+                .iter()
+                .map(|unit| (*unit, Unit::blank(*unit, "BRIDGE2N")))
+                .collect(),
+            physical: HashMap::new(),
+            levels: HashMap::new(),
+        }
+    }
+
+    #[test]
+    fn bridge_topology_resolves_native_forward_reverse_and_database_forms() {
+        let project = Project {
+            name: "TOPO".into(),
+            networks: HashMap::from([
+                (254, topology_network(254, "CNI", "127.0.0.1:10001", &[253])),
+                (
+                    253,
+                    topology_network(253, "Bridge", "254/p/253", &[252, 254]),
+                ),
+                (252, topology_network(252, "Bridge", "253/p/252", &[253])),
+            ]),
+        };
+        assert_eq!(network_path(&project, 254, 253).unwrap(), [253]);
+        assert_eq!(network_path(&project, 254, 252).unwrap(), [253, 252]);
+        assert_eq!(network_path(&project, 252, 254).unwrap(), [253, 254]);
+
+        let mut server = Server::new(AccessLevel::Admin).with_programming(true);
+        server.current = Some("TOPO".into());
+        server.projects.insert("TOPO".into(), project);
+        server.known_oids.extend([
+            "oid-254".to_string(),
+            "oid-253".to_string(),
+            "oid-252".to_string(),
+        ]);
+        let compact = server.handle("[1] DBNETWORKPATH 254 252 COMPACT");
+        assert_eq!(compact.status, 136);
+        assert_eq!(compact.final_text, "136 FDFC");
+        let oid = server.handle("[2] DBNETWORKPATH 254 252 OID");
+        assert_eq!(oid.status, 137);
+        assert_eq!(oid.lines, ["oid-253"]);
+        assert_eq!(oid.final_text, "137 oid-252");
+        let resolved = server.handle("[3] DBGET !oid-252/OID");
+        assert_eq!(resolved.status, 342);
+        assert_eq!(resolved.final_text, "342 !oid-252/OID=oid-252");
+    }
+
+    #[test]
+    fn bridge_topology_fails_closed_for_missing_units_cycles_and_long_paths() {
+        let mut project = Project {
+            name: "BAD".into(),
+            networks: HashMap::from([
+                (254, topology_network(254, "CNI", "", &[])),
+                (253, topology_network(253, "Bridge", "254/p/253", &[254])),
+            ]),
+        };
+        assert!(network_path(&project, 254, 253)
+            .unwrap_err()
+            .contains("no bridge unit"));
+        project.networks.get_mut(&254).unwrap().iface_type = "Bridge".into();
+        project.networks.get_mut(&254).unwrap().iface_addr = "253/p/254".into();
+        assert!(network_path(&project, 254, 253)
+            .unwrap_err()
+            .contains("cycle"));
+
+        let mut networks = HashMap::new();
+        networks.insert(254, topology_network(254, "CNI", "", &[253]));
+        for child in (247_u8..=253).rev() {
+            let parent = child + 1;
+            let next = child.checked_sub(1).into_iter().collect::<Vec<_>>();
+            networks.insert(
+                child,
+                topology_network(child, "Bridge", &format!("{parent}/p/{child}"), &next),
+            );
+        }
+        let long = Project {
+            name: "LONG".into(),
+            networks,
+        };
+        assert!(network_path(&long, 254, 247)
+            .unwrap_err()
+            .contains("six bridges"));
+    }
+
+    #[test]
+    fn bridge_interface_unit_does_not_replace_the_conventional_route_address() {
+        let mut project = Project {
+            name: "MISMATCH".into(),
+            networks: HashMap::from([
+                (254, topology_network(254, "CNI", "", &[42])),
+                (200, topology_network(200, "Bridge", "254/p/42", &[254])),
+            ]),
+        };
+
+        // Native 3.4 resolves the reverse direction through the parent
+        // network address, but refuses the forward direction until the
+        // conventional unit at the far-side network address exists. The
+        // interface's final /p/42 component is not emitted as the route.
+        assert_eq!(network_path(&project, 200, 254).unwrap(), [254]);
+        assert!(network_path(&project, 254, 200)
+            .unwrap_err()
+            .contains("unit at address 200"));
+
+        let mut server = Server::new(AccessLevel::Admin).with_programming(true);
+        server.current = Some("MISMATCH".into());
+        server.projects.insert("MISMATCH".into(), project.clone());
+        let missing = server.handle("[1] DBNETWORKPATH 254 200 COMPACT");
+        assert_eq!(missing.status, 408);
+        assert_eq!(
+            missing.final_text,
+            "408 Operation failed: Network path discovery failed: No path found"
+        );
+
+        project
+            .networks
+            .get_mut(&254)
+            .unwrap()
+            .units
+            .insert(200, Unit::blank(200, "BRIDGE2N"));
+        assert_eq!(network_path(&project, 254, 200).unwrap(), [200]);
+        // Native 3.4 continues to resolve this path after DBDELETE removes
+        // interface unit 42. DBNETWORKPATH parses the suffix but does not
+        // require that interface unit; only conventional route unit 200 is
+        // required in this direction.
+        project.networks.get_mut(&254).unwrap().units.remove(&42);
+        assert_eq!(network_path(&project, 254, 200).unwrap(), [200]);
+        server.projects.insert("MISMATCH".into(), project);
+        let routed = server.handle("[2] DBNETWORKPATH 254 200 COMPACT");
+        assert_eq!(routed.status, 136);
+        assert_eq!(routed.final_text, "136 C8");
+    }
 
     #[test]
     fn live_serial_alternates_do_not_change_database_json() {
@@ -5152,6 +5408,8 @@ mod tests {
             200
         );
         let source_unit_oid = s.projects["SOURCE"].networks[&254].units[&20].oid.clone();
+        let source_network_oid = s.projects["SOURCE"].networks[&254].oid.clone();
+        assert!(s.known_oids.contains(&source_network_oid));
 
         let copied = s.handle("[7] PROJECT COPY SOURCE COPY");
         assert_eq!(copied.final_text, "200 OK.");
@@ -5160,6 +5418,7 @@ mod tests {
             s.projects["COPY"].networks[&254].units[&20].oid,
             source_unit_oid
         );
+        assert_eq!(s.projects["COPY"].networks[&254].oid, source_network_oid);
         assert_eq!(
             s.db_levels
                 .values()
@@ -5211,6 +5470,11 @@ mod tests {
         );
         assert_eq!(s.handle("[11] PROJECT USE SOURCE").status, 200);
         assert_eq!(
+            s.handle(&format!("[11a] DBGET !{source_network_oid}/OID"))
+                .final_text,
+            format!("342 !{source_network_oid}/OID={source_network_oid}")
+        );
+        assert_eq!(
             s.handle(&format!("[12] DBGET !{oid}/Value")).final_text,
             format!("342 !{oid}/Value=77")
         );
@@ -5240,6 +5504,7 @@ mod tests {
             s.handle("[2] DBCREATENET 254 Local Cni loopback").status,
             200
         );
+        let source_network_oid = s.projects["SOURCE"].networks[&254].oid.clone();
         let level = s.handle("[3] DBADDSAFE //SOURCE/254/56/1 Level 7 Seven");
         let oid = level
             .final_text
@@ -5266,6 +5531,7 @@ mod tests {
             format!("[13] DBSETSAFE !{oid}/TagName Foreign"),
             format!("[14] DBCOPYSAFE !{oid} //OTHER/254/56/2 8 Foreign"),
             format!("[15] DBDELETE !{oid}"),
+            format!("[15a] DBGET !{source_network_oid}/OID"),
         ] {
             assert_eq!(s.handle(&command).status, 401, "{command}");
         }
@@ -5282,6 +5548,11 @@ mod tests {
         assert_eq!(s.handle("[16] PROJECT CLOSE").status, 200);
         assert_eq!(s.handle(&format!("[17] DBGET !{oid}/Value")).status, 401);
         assert_eq!(s.handle("[18] PROJECT USE COPY").status, 200);
+        assert_eq!(
+            s.handle(&format!("[18a] DBGET !{source_network_oid}/OID"))
+                .final_text,
+            format!("342 !{source_network_oid}/OID={source_network_oid}")
+        );
         assert_eq!(
             s.handle(&format!("[19] DBSETSAFE !{oid}/Value 88")).status,
             200

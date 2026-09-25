@@ -131,12 +131,29 @@ and repeats the complete MMI and serial inventory before returning 200. Query
 `CMQTT CAPABILITIES`; `net_unravelunit_matchdb_duplicate_255: true` denotes
 this exact scope. Whole-network UNRAVEL, other source/subset forms, occupied
 destinations, cycles, larger duplicate sets, and bridged networks remain 502.
-PINGU and whole-network checks send the install-MMI request
-with the active PCI checksum setting. They buffer blocks that arrive before the
-request confirmation but accept only positively confirmed, contiguous coverage
-of addresses 0–255. SYNC uses the configured interface-unit
-address as a routing hint, or BASIC discovery when that hint is unavailable;
-fresh MMI and IDENTIFY replies physically validate the result. It probes
+`DBNETWORKPATH START END [OID|COMPACT]` resolves the imported Bridge
+`InterfaceAddress` graph with the standard far-side address convention. It
+requires a database bridge unit for every transition, returns each crossed
+network excluding START and including END, and refuses paths longer than six.
+OID results are network identities and resolve with `DBGET !oid/OID` in the
+selected project, including native-style project copies that share the OID.
+The final `/p/<interface-unit>` component may differ from the child network;
+native 3.4 accepts that address but still requires and emits the far-side
+network address under its standard bridge convention. Native 3.4 continues to
+resolve the path after the distinct suffix unit is deleted, so do not require
+that unit for `DBNETWORKPATH`.
+The retained [native topology acceptance](../../../../toolkit-cli/research/experiments/2026-09-26/cgate-bridged-topology-native-acceptance.json)
+contains the disposable C-Gate 3.4 path results and exact missing-unit 408. Its
+one-hop outbound PINGU frame is explicitly a separate C-Gate 2.11.11 capture,
+consistent with the published serial interface guide; no selected-version or
+physical bridge reply acceptance is inferred from it.
+PINGU and whole-network checks send either the direct install-MMI request or a
+native PPM source route through one to six bridge unit addresses. They buffer
+blocks that arrive before confirmation but accept only positively confirmed,
+contiguous coverage of addresses 0–255 from the exact Reply Network. SYNC uses
+the configured direct interface-unit address as a routing hint, or BASIC
+discovery when that hint is unavailable; fresh MMI and route-correlated
+IDENTIFY replies physically validate the result. It probes
 IDENTIFY1/2 and collects all IDENTIFY4 replies for every present address, then
 atomically replaces the live identity cache. Silent legacy/error addresses stay
 present with unknown identity fields. Native eDLT metadata requires non-error
@@ -162,8 +179,11 @@ State three and addresses with zero or multiple raw IDENTIFY4 replies receive no
 source-address-only metadata traffic and expose no stale metadata. Multiple raw
 replies include repeated identical known replies and mixed known/unknown
 replies. Reconnect or transport loss invalidates an in-flight snapshot before
-commit and returns 408 without a sync-ok event.
-CHECKUNIT actively collects IDENTIFY4
+commit and returns 408 without a sync-ok event. Routed synchronization updates
+only the addressed network's volatile cache and emits that network in sync and
+duplicate events. Direct-network OEM KEYGL5 metadata reads have no proven
+Reply Network form and are skipped on bridged networks.
+CHECKUNIT actively collects direct or route-correlated IDENTIFY4
 replies through the native two-second quiet interval; it does not infer duplicate count from the
 two-bit MMI state. Use `GET //PROJECT/NETWORK Units` and unit `Type`, `Version`,
 `SerialNumber`, `Address`, and `State` getters for the resulting live snapshot.
@@ -219,6 +239,9 @@ and `do_methods: ["factorydefault", "lighting", "sync"]` denotes the physical ob
 `network_clocks: true` denotes IDENTIFY16 inspection plus schema-backed target
 count and gateway recovery,
 `network_syncnew: true` denotes the direct-network five-pass discovery backend,
+`bridged_read_only_discovery: true` denotes `DBNETWORKPATH` plus routed
+`NET PINGU`, `NET SYNC`, `DO ... SYNC`, and `NET CHECKUNIT`,
+`bridged_network_max_hops: 6` is the proven source-route bound,
 `network_set_project_identify: true` denotes the verified parameter-35 write,
 `pp_reset_to_defaults: true` denotes specification-backed staged
 `PP RESET_TO_DEFAULTS` behavior,
@@ -310,8 +333,9 @@ per-unit failure before final status 200.
 
 `DO //PROJECT/NETWORK/APPLICATION/GROUP ON|OFF|RAMP|TERMINATERAMP` uses the
 same confirmed SAL path as the corresponding lighting command. `DO
-//PROJECT/NETWORK SYNC` runs the same physical identity-populating direct-network
-synchronization as `NET SYNC` and returns native `202 Done: object` framing.
+//PROJECT/NETWORK SYNC` runs the same physical identity-populating direct or
+bridged read-only synchronization as `NET SYNC` and returns native `202 Done:
+object` framing.
 `DO ... UNRAVEL` returns 502; never describe the mock's in-memory result as
 physical success or treat the bounded NET workflow as general unravel support.
 

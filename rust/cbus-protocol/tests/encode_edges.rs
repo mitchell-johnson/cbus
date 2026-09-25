@@ -36,15 +36,51 @@ fn bare_cal_has_no_encode_packet() {
 }
 
 #[test]
-fn bridged_pp_cannot_encode() {
-    let p = Packet::PointToPoint {
+fn bridged_pp_encodes_native_route_and_rejects_bad_depths() {
+    let routed = Packet::PointToPoint {
         meta: Meta::new(true, 0),
         unit_address: 0x10,
         bridged: true,
         hops: vec![0x0b],
         cals: vec![Cal::Identify { attribute: 1 }],
     };
-    assert!(p.encode().is_err());
+    assert_eq!(
+        routed.encode().unwrap(),
+        [0x06, 0x0b, 0x09, 0x10, 0x21, 0x01, 0xb4]
+    );
+
+    for hops in [vec![], vec![1, 2, 3, 4, 5, 6, 7]] {
+        let invalid = Packet::PointToPoint {
+            meta: Meta::new(true, 0),
+            unit_address: 0x10,
+            bridged: true,
+            hops,
+            cals: vec![Cal::Identify { attribute: 1 }],
+        };
+        assert!(invalid.encode().is_err());
+    }
+}
+
+#[test]
+fn routed_ppm_enforces_the_six_bridge_limit() {
+    for depth in 1..=6 {
+        let routed = Packet::PointToPointToMultipoint {
+            meta: Meta::new(false, 0),
+            bridges: (1..=depth).collect(),
+            application: 0xff,
+            sals: vec![Sal::InstallMmiRequest],
+        };
+        assert_eq!(routed.encode().unwrap()[2], depth * 9);
+    }
+    for bridges in [vec![], vec![1, 2, 3, 4, 5, 6, 7]] {
+        let invalid = Packet::PointToPointToMultipoint {
+            meta: Meta::new(true, 0),
+            bridges,
+            application: 0xff,
+            sals: vec![Sal::InstallMmiRequest],
+        };
+        assert!(invalid.encode().is_err());
+    }
 }
 
 #[test]

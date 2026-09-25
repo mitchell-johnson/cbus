@@ -87,20 +87,50 @@ impl Database {
         }
     }
 
-    fn restore(self, s: &mut Server) -> io::Result<()> {
+    fn restore(mut self, s: &mut Server) -> io::Result<bool> {
         if self.version != 1 {
             return Err(io::Error::other("unsupported C-Gate database version"));
+        }
+        let mut used_oids = self.known_oids.clone();
+        for project in self.projects.values().chain(self.database_files.values()) {
+            for network in project.networks.values() {
+                if !network.oid.is_empty() {
+                    used_oids.insert(network.oid.clone());
+                }
+            }
+        }
+        let mut migrated_network_oids = false;
+        for project in self
+            .projects
+            .values_mut()
+            .chain(self.database_files.values_mut())
+        {
+            for network in project.networks.values_mut() {
+                if network.oid.is_empty() {
+                    loop {
+                        let oid = fresh_oid();
+                        if used_oids.insert(oid.clone()) {
+                            network.oid = oid;
+                            migrated_network_oids = true;
+                            break;
+                        }
+                    }
+                }
+            }
         }
         s.projects = self.projects;
         s.db_fields = self.db_fields;
         s.objects = self.objects;
-        s.known_oids = self.known_oids;
+        // Network OIDs are first-class database identities. Legacy state did
+        // not list them in known_oids, so use the union assembled above for
+        // both migrated and already-populated network records.
+        s.known_oids = used_oids;
         s.db_levels = self.db_levels;
         s.config_values = self.config_values;
         s.scene_snapshots = self.scene_snapshots;
         s.database_files = self.database_files;
         s.file_store = self.file_store;
-        Ok(())
+        Ok(migrated_network_oids)
     }
 
     fn save(&self, path: &Path) -> io::Result<()> {
@@ -271,7 +301,10 @@ impl Service {
                 if data.len() > MAX_STATE {
                     return Err(io::Error::other("C-Gate database exceeds 32 MiB"));
                 }
-                serde_json::from_slice::<Database>(&data)?.restore(&mut model)?;
+                let migrated = serde_json::from_slice::<Database>(&data)?.restore(&mut model)?;
+                if migrated {
+                    Database::from_server(&model).save(&state_path)?;
+                }
             }
             Err(e) if e.kind() == io::ErrorKind::NotFound => {
                 Database::from_server(&model).save(&state_path)?
@@ -286,6 +319,7 @@ impl Service {
                 io::Error::other("configured network is absent from persisted C-Gate database")
             })?;
         selected.state = NetworkState::Open;
+        open_reachable_networks(&mut model, &project, network);
         Ok(Arc::new(Self {
             model: Mutex::new(model),
             pci: RwLock::new(pci),
@@ -316,16 +350,8 @@ impl Service {
         self.pci_generation.fetch_add(1, Ordering::AcqRel);
         self.observe(&CBusEvent::ConnectionLost).await;
         *self.pci.write().await = pci;
-        if let Some(net) = self
-            .model
-            .lock()
-            .await
-            .projects
-            .get_mut(&self.project)
-            .and_then(|p| p.networks.get_mut(&self.network))
-        {
-            net.state = NetworkState::Open;
-        }
+        let mut model = self.model.lock().await;
+        open_reachable_networks(&mut model, &self.project, self.network);
     }
 
     /// Feed genuine bus observations to C-Gate clients as well as MQTT.
@@ -343,6 +369,17 @@ impl Service {
             _ => {}
         }
         let mut model = self.model.lock().await;
+        if matches!(event, CBusEvent::ConnectionLost) {
+            if let Some(project) = model.projects.get_mut(&self.project) {
+                for network in project.networks.values_mut() {
+                    network.levels.clear();
+                    network.physical.clear();
+                    network.state = NetworkState::Closed;
+                }
+            }
+            model.application_state.clear();
+            return;
+        }
         let Some(net) = model
             .projects
             .get_mut(&self.project)
@@ -352,7 +389,6 @@ impl Service {
         };
         let mut updates = Vec::new();
         let mut application_update = None;
-        let mut clear_application_state = false;
         match event {
             CBusEvent::LightingOn {
                 source: Some(_),
@@ -477,12 +513,6 @@ impl Service {
                     "#e# temperature broadcast {address} {value} sourceUnit={source}"
                 ));
             }
-            CBusEvent::ConnectionLost => {
-                net.levels.clear();
-                net.physical.clear();
-                net.state = NetworkState::Closed;
-                clear_application_state = true;
-            }
             _ => {}
         }
         for (app, group, value) in updates {
@@ -492,9 +522,7 @@ impl Service {
                 self.project, self.network
             ));
         }
-        if clear_application_state {
-            model.application_state.clear();
-        } else if let Some((key, value)) = application_update {
+        if let Some((key, value)) = application_update {
             model.application_state.insert(key, value);
         }
     }
@@ -544,6 +572,30 @@ impl Service {
             }
             _ => false,
         }
+    }
+
+    fn addressed_network(&self, address: &str) -> Option<u8> {
+        if address.starts_with('!') {
+            return None;
+        }
+        let parts = address
+            .trim_start_matches('/')
+            .split('/')
+            .collect::<Vec<_>>();
+        match parts.as_slice() {
+            [network] => network.parse::<u8>().ok(),
+            [project, network] if *project == self.project => network.parse::<u8>().ok(),
+            _ => None,
+        }
+    }
+
+    async fn route_to_network(&self, target: u8) -> Result<Vec<u8>, String> {
+        let model = self.model.lock().await;
+        let project = model
+            .projects
+            .get(&self.project)
+            .ok_or_else(|| "configured project is absent".to_string())?;
+        network_path(project, self.network, target)
     }
 
     /// Execute a tagged command. Hardware work releases the database mutex.
@@ -638,6 +690,15 @@ impl Service {
             capabilities["repository_type"] = serde_json::Value::String("cmqttd-json".to_string());
             capabilities["cgl_import"] = serde_json::Value::Bool(false);
             capabilities["cgl_export"] = serde_json::Value::Bool(false);
+            capabilities["bridged_read_only_discovery"] = serde_json::Value::Bool(true);
+            capabilities["bridged_read_only_commands"] = serde_json::json!([
+                "DBNETWORKPATH",
+                "NET PINGU",
+                "NET SYNC",
+                "NET CHECKUNIT",
+                "DO SYNC"
+            ]);
+            capabilities["bridged_network_max_hops"] = serde_json::Value::from(6);
             return ok(tag, vec![capabilities.to_string()], "200 OK");
         }
         if verb == "REPOSITORY" && sub == "LIST" {
@@ -1303,7 +1364,7 @@ impl Service {
         words: &[&str],
     ) -> Response {
         let _commands = self.commands.lock().await;
-        if words.len() != 3 || !self.bound_network(words[2]) {
+        if words.len() != 3 || self.addressed_network(words[2]).is_none() {
             let mut staged = self.model.lock().await.clone();
             staged.current = client
                 .current
@@ -1322,8 +1383,26 @@ impl Service {
         if validation.status >= 400 {
             return validation;
         }
+        let target = self
+            .addressed_network(words[2])
+            .expect("validated network address");
+        let route = match self.route_to_network(target).await {
+            Ok(route) => route,
+            Err(error) => {
+                return err(
+                    tag,
+                    408,
+                    &format!("408 Physical network route unavailable: {error}"),
+                )
+            }
+        };
+        let pci_generation = self.pci_generation.load(Ordering::Acquire);
         let pci = self.pci.read().await.clone();
-        let states = match pci.install_mmi().await {
+        let states = match if route.is_empty() {
+            pci.install_mmi().await
+        } else {
+            pci.install_mmi_routed(&route).await
+        } {
             Ok(states) => states,
             Err(error) => {
                 return err(
@@ -1338,13 +1417,26 @@ impl Service {
             .enumerate()
             .filter_map(|(address, state)| (*state != 0).then_some(address as u8))
             .collect();
+        let _generation_gate = self.pci_generation_gate.lock().await;
+        let current_pci = self.pci.read().await;
+        if self.pci_generation.load(Ordering::Acquire) != pci_generation
+            || !Arc::ptr_eq(&current_pci, &pci)
+            || !pci.is_connected()
+        {
+            return err(
+                tag,
+                408,
+                "408 Physical installation MMI invalidated by PCI reconnect",
+            );
+        }
+        drop(current_pci);
         if let Some(network) = self
             .model
             .lock()
             .await
             .projects
             .get_mut(&self.project)
-            .and_then(|project| project.networks.get_mut(&self.network))
+            .and_then(|project| project.networks.get_mut(&target))
         {
             let previous = std::mem::take(&mut network.physical);
             network.physical = addresses
@@ -1374,7 +1466,7 @@ impl Service {
         words: &[&str],
     ) -> Response {
         let _commands = self.commands.lock().await;
-        if words.len() < 3 || !self.bound_network(words[2]) {
+        if words.len() < 3 || self.addressed_network(words[2]).is_none() {
             let mut staged = self.model.lock().await.clone();
             staged.current = client
                 .current
@@ -1393,13 +1485,26 @@ impl Service {
         if validation.status >= 400 {
             return validation;
         }
-        self.set_network_state(NetworkState::Syncing).await;
+        let target = self
+            .addressed_network(words[2])
+            .expect("validated network address");
+        let route = match self.route_to_network(target).await {
+            Ok(route) => route,
+            Err(error) => {
+                return err(
+                    tag,
+                    408,
+                    &format!("408 Physical network route unavailable: {error}"),
+                )
+            }
+        };
+        self.set_network_state(target, NetworkState::Syncing).await;
         let pci_generation = self.pci_generation.load(Ordering::Acquire);
         let pci = self.pci.read().await.clone();
         let (interface_units, configured_keygl5) = {
             let model = self.model.lock().await;
-            let network = &model.projects[&self.project].networks[&self.network];
-            let interface_units = network
+            let project = &model.projects[&self.project];
+            let interface_units = project.networks[&self.network]
                 .units
                 .values()
                 .filter(|unit| {
@@ -1408,7 +1513,7 @@ impl Service {
                 })
                 .map(|unit| unit.address)
                 .collect::<Vec<_>>();
-            let configured_keygl5 = network
+            let configured_keygl5 = project.networks[&target]
                 .units
                 .values()
                 .filter(|unit| unit.unit_type.eq_ignore_ascii_case("KEYGL5"))
@@ -1425,17 +1530,21 @@ impl Service {
             )),
         };
         if let Err(error) = local {
-            self.set_network_state(NetworkState::Open).await;
+            self.set_network_state(target, NetworkState::Open).await;
             return err(
                 tag,
                 408,
                 &format!("408 Physical interface discovery failed: {error}"),
             );
         }
-        let states = match pci.install_mmi().await {
+        let states = match if route.is_empty() {
+            pci.install_mmi().await
+        } else {
+            pci.install_mmi_routed(&route).await
+        } {
             Ok(states) => states,
             Err(error) => {
-                self.set_network_state(NetworkState::Open).await;
+                self.set_network_state(target, NetworkState::Open).await;
                 return err(
                     tag,
                     408,
@@ -1462,12 +1571,17 @@ impl Service {
         }
 
         let mut identities = Vec::with_capacity(addresses.len());
+        let mut duplicate_events = Vec::new();
         for address in addresses {
-            let unit_type = match pci.identify_first(address, 1).await {
+            let unit_type = match if route.is_empty() {
+                pci.identify_first(address, 1).await
+            } else {
+                pci.identify_first_routed(&route, address, 1).await
+            } {
                 Ok(Some(data)) => match identity_text(&data, "unit type") {
                     Ok(value) => value,
                     Err(error) => {
-                        self.set_network_state(NetworkState::Open).await;
+                        self.set_network_state(target, NetworkState::Open).await;
                         return err(
                             tag,
                             408,
@@ -1479,7 +1593,7 @@ impl Service {
                 },
                 Ok(None) => String::new(),
                 Err(error) => {
-                    self.set_network_state(NetworkState::Open).await;
+                    self.set_network_state(target, NetworkState::Open).await;
                     return err(
                         tag,
                         408,
@@ -1489,11 +1603,15 @@ impl Service {
                     );
                 }
             };
-            let firmware = match pci.identify_first(address, 2).await {
+            let firmware = match if route.is_empty() {
+                pci.identify_first(address, 2).await
+            } else {
+                pci.identify_first_routed(&route, address, 2).await
+            } {
                 Ok(Some(data)) => match identity_text(&data, "firmware version") {
                     Ok(value) => value,
                     Err(error) => {
-                        self.set_network_state(NetworkState::Open).await;
+                        self.set_network_state(target, NetworkState::Open).await;
                         return err(
                             tag,
                             408,
@@ -1505,7 +1623,7 @@ impl Service {
                 },
                 Ok(None) => String::new(),
                 Err(error) => {
-                    self.set_network_state(NetworkState::Open).await;
+                    self.set_network_state(target, NetworkState::Open).await;
                     return err(
                         tag,
                         408,
@@ -1515,10 +1633,14 @@ impl Service {
                     );
                 }
             };
-            let serial_replies = match pci.identify_all(address, 4).await {
+            let serial_replies = match if route.is_empty() {
+                pci.identify_all(address, 4).await
+            } else {
+                pci.identify_all_routed(&route, address, 4).await
+            } {
                 Ok(replies) => replies,
                 Err(error) => {
-                    self.set_network_state(NetworkState::Open).await;
+                    self.set_network_state(target, NetworkState::Open).await;
                     return err(
                         tag,
                         408,
@@ -1531,7 +1653,7 @@ impl Service {
             let serials = match known_serials(&serial_replies) {
                 Ok(serials) => serials,
                 Err(error) => {
-                    self.set_network_state(NetworkState::Open).await;
+                    self.set_network_state(target, NetworkState::Open).await;
                     return err(
                         tag,
                         408,
@@ -1557,9 +1679,9 @@ impl Service {
             } else if serials.len() > 1 {
                 let mut duplicates: Vec<_> = serials.into_iter().collect();
                 duplicates.sort();
-                let _ = self.events.send(format!(
+                duplicate_events.push(format!(
                     "#e# net {} sync duplicate {address} {}",
-                    self.network,
+                    target,
                     duplicates.join(" ")
                 ));
                 (String::new(), duplicates)
@@ -1598,7 +1720,8 @@ impl Service {
         // known/unknown replies) remain ambiguous and must not be queried or
         // exposed as one device's metadata.
         for identity in &mut identities {
-            if identity.unit_type.eq_ignore_ascii_case("KEYGL5")
+            if route.is_empty()
+                && identity.unit_type.eq_ignore_ascii_case("KEYGL5")
                 && configured_keygl5.contains(&identity.address)
                 && mmi_state_is_present_non_error(identity.mmi_state)
                 && identity.has_exactly_one_known_serial_reply
@@ -1633,7 +1756,7 @@ impl Service {
                 .await
                 .projects
                 .get_mut(&self.project)
-                .and_then(|project| project.networks.get_mut(&self.network))
+                .and_then(|project| project.networks.get_mut(&target))
             {
                 network.physical.clear();
                 network.state = NetworkState::Closed;
@@ -1648,7 +1771,7 @@ impl Service {
         if let Some(network) = model
             .projects
             .get_mut(&self.project)
-            .and_then(|project| project.networks.get_mut(&self.network))
+            .and_then(|project| project.networks.get_mut(&target))
         {
             let previous = std::mem::take(&mut network.physical);
             network.physical = identities
@@ -1692,9 +1815,10 @@ impl Service {
             network.state = NetworkState::Ok;
         }
         drop(model);
-        let _ = self
-            .events
-            .send(format!("#e# net {} sync ok", self.network));
+        for event in duplicate_events {
+            let _ = self.events.send(event);
+        }
+        let _ = self.events.send(format!("#e# net {target} sync ok"));
         validation
     }
 
@@ -2118,7 +2242,7 @@ impl Service {
         words: &[&str],
     ) -> Response {
         let _commands = self.commands.lock().await;
-        if words.len() != 4 || !self.bound_network(words[2]) {
+        if words.len() != 4 || self.addressed_network(words[2]).is_none() {
             let mut staged = self.model.lock().await.clone();
             staged.current = client
                 .current
@@ -2137,9 +2261,27 @@ impl Service {
         if validation.status >= 400 {
             return validation;
         }
+        let target = self
+            .addressed_network(words[2])
+            .expect("validated network address");
+        let route = match self.route_to_network(target).await {
+            Ok(route) => route,
+            Err(error) => {
+                return err(
+                    tag,
+                    408,
+                    &format!("408 Physical network route unavailable: {error}"),
+                )
+            }
+        };
+        let pci_generation = self.pci_generation.load(Ordering::Acquire);
         let pci = self.pci.read().await.clone();
         let selected = if words[3] == "*" {
-            let states = match pci.install_mmi().await {
+            let states = match if route.is_empty() {
+                pci.install_mmi().await
+            } else {
+                pci.install_mmi_routed(&route).await
+            } {
                 Ok(states) => states,
                 Err(error) => {
                     return err(
@@ -2162,7 +2304,11 @@ impl Service {
         };
         let mut lines = Vec::with_capacity(selected.len());
         for address in selected {
-            let replies = match pci.identify_all(address, 4).await {
+            let replies = match if route.is_empty() {
+                pci.identify_all(address, 4).await
+            } else {
+                pci.identify_all_routed(&route, address, 4).await
+            } {
                 Ok(replies) => replies,
                 Err(error) => {
                     return err(
@@ -2196,9 +2342,22 @@ impl Service {
             };
             lines.push(format!("120-{status} at address: {address}"));
         }
+        let _generation_gate = self.pci_generation_gate.lock().await;
+        let current_pci = self.pci.read().await;
+        if self.pci_generation.load(Ordering::Acquire) != pci_generation
+            || !Arc::ptr_eq(&current_pci, &pci)
+            || !pci.is_connected()
+        {
+            return err(
+                tag,
+                408,
+                "408 Physical unit check invalidated by PCI reconnect",
+            );
+        }
+        drop(current_pci);
         let _ = self
             .events
-            .send(format!("#e# net {} checkunit {}", self.network, words[3]));
+            .send(format!("#e# net {target} checkunit {}", words[3]));
         ok(tag, lines, "200 OK.")
     }
 
@@ -2595,14 +2754,14 @@ impl Service {
         ok(tag, vec![], &format!("200 OK: {destination_path}"))
     }
 
-    async fn set_network_state(&self, state: NetworkState) {
+    async fn set_network_state(&self, network_address: u8, state: NetworkState) {
         if let Some(network) = self
             .model
             .lock()
             .await
             .projects
             .get_mut(&self.project)
-            .and_then(|project| project.networks.get_mut(&self.network))
+            .and_then(|project| project.networks.get_mut(&network_address))
         {
             network.state = state;
         }
@@ -5227,10 +5386,10 @@ fn local_command(words: &[&str], upper: &[String], model: &Server) -> bool {
     let verb = upper.first().map(String::as_str).unwrap_or("");
     let sub = upper.get(1).map(String::as_str).unwrap_or("");
     match verb {
-        "NOOP" | "APIVER" | "HELP" | "COMMANDS" | "DBGET" | "DBGETXML" | "DBSETSAFE"
-        | "DBSETXML" | "DBADDSAFE" | "DBCOPYSAFE" | "DBDELETE" | "DBVALIDATE" | "DBSAVE"
-        | "DBLOAD" | "DBGETNET" | "DBGETAPP" | "DBGETGROUP" | "DBGETUNIT" | "DBCREATENET"
-        | "DBCREATEAPP" | "DBCREATEGROUP" | "DBCREATEUNIT" => true,
+        "NOOP" | "APIVER" | "HELP" | "COMMANDS" | "DBGET" | "DBGETXML" | "DBNETWORKPATH"
+        | "DBSETSAFE" | "DBSETXML" | "DBADDSAFE" | "DBCOPYSAFE" | "DBDELETE" | "DBVALIDATE"
+        | "DBSAVE" | "DBLOAD" | "DBGETNET" | "DBGETAPP" | "DBGETGROUP" | "DBGETUNIT"
+        | "DBCREATENET" | "DBCREATEAPP" | "DBCREATEGROUP" | "DBCREATEUNIT" => true,
         "PROJECT" => matches!(
             sub,
             "LIST"
@@ -5270,6 +5429,25 @@ fn parse_application(value: &str) -> Option<u8> {
         || value.parse().ok(),
         |hex| u8::from_str_radix(hex, 16).ok(),
     )
+}
+
+fn open_reachable_networks(model: &mut Server, project_name: &str, root: u8) {
+    let Some(project) = model.projects.get(project_name) else {
+        return;
+    };
+    let reachable = project
+        .networks
+        .keys()
+        .copied()
+        .filter(|target| network_path(project, root, *target).is_ok())
+        .collect::<Vec<_>>();
+    if let Some(project) = model.projects.get_mut(project_name) {
+        for address in reachable {
+            if let Some(network) = project.networks.get_mut(&address) {
+                network.state = NetworkState::Open;
+            }
+        }
+    }
 }
 
 fn parse_temperature(value: &str) -> Option<f64> {
@@ -5542,9 +5720,15 @@ fn import_project(xml: &str, network_name: Option<&str>) -> io::Result<(Server, 
             }
         }
         let interface = node.children().find(|n| n.has_tag_name("Interface"));
+        let network_oid = node
+            .attribute("oid")
+            .map(str::to_string)
+            .unwrap_or_else(fresh_oid);
+        model.known_oids.insert(network_oid.clone());
         networks.insert(
             net,
             Network {
+                oid: network_oid,
                 address: net,
                 name: field(node, "TagName"),
                 iface_type: interface

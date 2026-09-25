@@ -6,6 +6,78 @@ fn fixture() -> String {
         "<Unit><Address>5</Address><TagName>Fixture eDLT</TagName><UnitType>KEYGL5</UnitType><FirmwareVersion>5.5.00</FirmwareVersion><PP Name=\"StaticTextString0\" Value=\"Fixture\"/></Unit></Network>")
 }
 
+fn topology_fixture() -> String {
+    r#"<Installation><Project oid="project-topology">
+      <TagName>TOPO</TagName>
+      <Network oid="network-254">
+        <TagName>Local</TagName><Address>254</Address>
+        <Interface><InterfaceType>CNI</InterfaceType><InterfaceAddress>127.0.0.1:10001</InterfaceAddress></Interface>
+        <Unit oid="pci-16"><Address>16</Address><UnitType>PC_CNI2</UnitType></Unit>
+        <Unit oid="bridge-253-near"><Address>253</Address><UnitType>BRIDGE2N</UnitType></Unit>
+      </Network>
+      <Network oid="network-253">
+        <TagName>Remote</TagName><Address>253</Address>
+        <Interface><InterfaceType>Bridge</InterfaceType><InterfaceAddress>254/p/253</InterfaceAddress></Interface>
+        <Unit oid="remote-4"><Address>4</Address><UnitType>KEYE1</UnitType></Unit>
+        <Unit oid="bridge-254-far"><Address>254</Address><UnitType>BRIDGE2N</UnitType></Unit>
+      </Network>
+    </Project></Installation>"#
+        .to_string()
+}
+
+async fn routed_pci_reply<W: tokio::io::AsyncWrite + Unpin>(
+    writer: &mut W,
+    bridges: &[u8],
+    unit: u8,
+    cal: &[u8],
+) {
+    let mut bytes = vec![0x86, bridges[0], 0x10, bridges.len() as u8];
+    bytes.extend_from_slice(&bridges[1..]);
+    bytes.push(unit);
+    bytes.extend_from_slice(cal);
+    let sum = bytes.iter().fold(0u8, |sum, byte| sum.wrapping_add(*byte));
+    bytes.push(0u8.wrapping_sub(sum));
+    let mut wire = hex::encode_upper(bytes).into_bytes();
+    wire.extend_from_slice(b"\r\n");
+    writer.write_all(&wire).await.unwrap();
+}
+
+fn routed_mmi_block(bridges: &[u8], start: u8, count: usize, present: &[(usize, u8)]) -> Vec<u8> {
+    let mut states = vec![0u8; count];
+    for (address, state) in present {
+        if (usize::from(start)..usize::from(start) + count).contains(address) {
+            states[*address - usize::from(start)] = *state;
+        }
+    }
+    let direct = Packet::PointToPoint {
+        meta: Meta {
+            checksum: true,
+            priority_class: 2,
+            source_address: Some(4),
+            confirmation: None,
+        },
+        unit_address: 16,
+        bridged: false,
+        hops: vec![],
+        cals: vec![cbus_protocol::cal::Cal::ExtendedStatus {
+            externally_initiated: false,
+            child_application: 0xff,
+            block_start: start,
+            report: cbus_protocol::report::StatusReport::Binary(states),
+        }],
+    }
+    .encode()
+    .unwrap();
+    let mut routed = vec![direct[0], bridges[0], 0x10, bridges.len() as u8];
+    routed.extend_from_slice(&bridges[1..]);
+    routed.push(4);
+    routed.extend_from_slice(&direct[4..direct.len() - 1]);
+    let mut wire =
+        hex::encode_upper(cbus_protocol::common::add_cbus_checksum(&routed)).into_bytes();
+    wire.extend_from_slice(b"\r\n");
+    wire
+}
+
 fn state_path() -> PathBuf {
     static ID: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
     std::env::temp_dir().join(format!(
@@ -62,6 +134,233 @@ async fn command_lines(
             return lines;
         }
     }
+}
+
+#[tokio::test]
+async fn bridged_pingu_discovers_only_the_target_network_cache() {
+    let path = state_path();
+    let (pci_client, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci_client.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        let mut line = Vec::new();
+        remote_read.read_until(b'\r', &mut line).await.unwrap();
+    }
+    reset.await.unwrap().unwrap();
+    let service = Service::new(&topology_fixture(), None, path.clone(), pci_client, None).unwrap();
+    let command = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(&mut ClientState::default(), "[1] NET PINGU //TOPO/253")
+                .await
+        }
+    });
+    let mut request = Vec::new();
+    remote_read.read_until(b'\r', &mut request).await.unwrap();
+    assert!(request.starts_with(b"\\03FD09FFFAFF00FF"), "{request:?}");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    for (start, count) in [(0, 88), (88, 88), (176, 80)] {
+        remote_write
+            .write_all(&routed_mmi_block(&[253], start, count, &[(4, 1)]))
+            .await
+            .unwrap();
+    }
+    let response = command.await.unwrap();
+    assert_eq!(response.status, 200, "{response:?}");
+    assert_eq!(response.lines, ["302-Units=4"]);
+    let model = service.model.lock().await;
+    assert_eq!(
+        model.projects["TOPO"].networks[&253]
+            .physical
+            .keys()
+            .copied()
+            .collect::<Vec<_>>(),
+        [4]
+    );
+    assert!(model.projects["TOPO"].networks[&254].physical.is_empty());
+    drop(model);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test(start_paused = true)]
+async fn bridged_sync_populates_identity_rejects_cross_route_and_clears_on_reconnect() {
+    async fn line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+
+    let path = state_path();
+    let (pci_client, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci_client.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+    let service = Service::new(&topology_fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut events = service.events.subscribe();
+    let command = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[2] NET SYNC //TOPO/253 fast 0",
+                )
+                .await
+        }
+    });
+
+    let request = line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\03FD09FFFAFF00FF"), "{request:?}");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    for (start, count) in [(0, 88), (88, 88), (176, 80)] {
+        remote_write
+            .write_all(&routed_mmi_block(&[253], start, count, &[(4, 1)]))
+            .await
+            .unwrap();
+    }
+
+    for (attribute, value) in [(1u8, b"KEYE1".as_slice()), (2u8, b"1.2.30".as_slice())] {
+        let request = line(&mut remote_read).await;
+        assert!(
+            request.starts_with(format!("\\46FD090421{attribute:02X}").as_bytes()),
+            "{request:?}"
+        );
+        let code = request[request.len() - 2];
+        let mut cal = vec![0x80 | (value.len() as u8 + 1), attribute];
+        cal.extend_from_slice(value);
+        routed_pci_reply(&mut remote_write, &[253], 4, &cal).await;
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+    }
+
+    let request = line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\46FD09042104"), "{request:?}");
+    let code = request[request.len() - 2];
+    // Same unit on a different route cannot seed the remote cache.
+    let serial = [
+        0x38, 0xff, 0xff, 0xff, 0xff, 0x18, 0xb1, 0x06, 0x16, 0xa2, 0x00, 0x05,
+    ];
+    let mut cal = vec![0x8d, 4];
+    cal.extend_from_slice(&serial);
+    routed_pci_reply(&mut remote_write, &[252], 4, &cal).await;
+    routed_pci_reply(&mut remote_write, &[253], 4, &cal).await;
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    tokio::time::advance(Duration::from_secs(2)).await;
+    tokio::task::yield_now().await;
+
+    let response = command.await.unwrap();
+    assert_eq!(response.status, 200, "{response:?}");
+    {
+        let model = service.model.lock().await;
+        let unit = &model.projects["TOPO"].networks[&253].physical[&4];
+        assert_eq!(unit.unit_type, "KEYE1");
+        assert_eq!(unit.firmware, "1.2.30");
+        assert_eq!(unit.serial, "101136.1558");
+        assert!(model.projects["TOPO"].networks[&254].physical.is_empty());
+    }
+    assert_eq!(events.recv().await.unwrap(), "#e# net 253 sync ok");
+
+    {
+        let mut model = service.model.lock().await;
+        let project = model.projects.get_mut("TOPO").unwrap();
+        project
+            .networks
+            .get_mut(&254)
+            .unwrap()
+            .physical
+            .insert(7, Unit::blank(7, "KEYE1"));
+        project
+            .networks
+            .get_mut(&254)
+            .unwrap()
+            .levels
+            .insert((56, 1), 255);
+        project
+            .networks
+            .get_mut(&253)
+            .unwrap()
+            .levels
+            .insert((56, 2), 128);
+    }
+    let (replacement, _remote) = pci();
+    service.set_pci(replacement).await;
+    let model = service.model.lock().await;
+    for address in [254, 253] {
+        let network = &model.projects["TOPO"].networks[&address];
+        assert!(network.physical.is_empty());
+        assert!(network.levels.is_empty());
+        assert_eq!(network.state, NetworkState::Open);
+    }
+    drop(model);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test(start_paused = true)]
+async fn bridged_checkunit_reconnect_returns_408_without_a_stale_event() {
+    let path = state_path();
+    let (pci_client, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci_client.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        let mut line = Vec::new();
+        remote_read.read_until(b'\r', &mut line).await.unwrap();
+    }
+    reset.await.unwrap().unwrap();
+    let service = Service::new(&topology_fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut events = service.events.subscribe();
+    let command = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[3] NET CHECKUNIT //TOPO/253 4",
+                )
+                .await
+        }
+    });
+
+    let mut request = Vec::new();
+    remote_read.read_until(b'\r', &mut request).await.unwrap();
+    assert!(request.starts_with(b"\\46FD09042104"), "{request:?}");
+    let code = request[request.len() - 2];
+    let serial = [
+        0x38, 0xff, 0xff, 0xff, 0xff, 0x18, 0xb1, 0x06, 0x16, 0xa2, 0x00, 0x05,
+    ];
+    let mut cal = vec![0x8d, 4];
+    cal.extend_from_slice(&serial);
+    routed_pci_reply(&mut remote_write, &[253], 4, &cal).await;
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+
+    let (replacement, _replacement_remote) = pci();
+    service.set_pci(replacement).await;
+    tokio::time::advance(Duration::from_secs(2)).await;
+    tokio::task::yield_now().await;
+    let response = command.await.unwrap();
+    assert_eq!(response.status, 408, "{response:?}");
+    assert!(response.final_text.contains("invalidated by PCI reconnect"));
+    assert!(matches!(
+        events.try_recv(),
+        Err(tokio::sync::broadcast::error::TryRecvError::Empty)
+    ));
+    std::fs::remove_file(path).unwrap();
 }
 
 #[tokio::test]
@@ -127,6 +426,33 @@ async fn database_survives_restart_but_live_state_and_sessions_do_not() {
             .status,
         408
     );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn legacy_database_network_oid_is_migrated_once_and_persisted() {
+    let path = state_path();
+    let (first_pci, _remote) = pci();
+    drop(Service::new(&fixture(), None, path.clone(), first_pci, None).unwrap());
+
+    let mut document: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+    document["projects"]["HARNESS"]["networks"]["254"]
+        .as_object_mut()
+        .unwrap()
+        .remove("oid");
+    std::fs::write(&path, serde_json::to_vec(&document).unwrap()).unwrap();
+
+    let (pci, _remote) = pci();
+    let migrated = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let oid = migrated.model.lock().await.projects["HARNESS"].networks[&254]
+        .oid
+        .clone();
+    assert!(!oid.is_empty());
+    drop(migrated);
+
+    let saved: serde_json::Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+    assert_eq!(saved["projects"]["HARNESS"]["networks"]["254"]["oid"], oid);
     std::fs::remove_file(path).unwrap();
 }
 
@@ -931,6 +1257,18 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["edlt_applications"], true);
     assert_eq!(document["network_syncnew"], true);
     assert_eq!(document["network_set_project_identify"], true);
+    assert_eq!(document["bridged_read_only_discovery"], true);
+    assert_eq!(document["bridged_network_max_hops"], 6);
+    assert_eq!(
+        document["bridged_read_only_commands"],
+        serde_json::json!([
+            "DBNETWORKPATH",
+            "NET PINGU",
+            "NET SYNC",
+            "NET CHECKUNIT",
+            "DO SYNC"
+        ])
+    );
     assert_eq!(document["net_unravelunit_matchdb_duplicate_255"], true);
     assert_eq!(document["pp_reset_to_defaults"], true);
     assert_eq!(document["event_subscriptions"], true);

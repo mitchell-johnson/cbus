@@ -125,6 +125,31 @@ fn level_report_with_nulls_roundtrips() {
 }
 
 #[test]
+fn routed_packets_roundtrip_without_losing_the_source_route() {
+    let values = [
+        json!({
+            "type": "point_to_point_to_multipoint", "checksum": true,
+            "priority_class": 0, "source_address": null,
+            "confirmation": null, "bridges": [253, 252],
+            "application": 255, "sals": [{"sal": "install_mmi_request"}]
+        }),
+        json!({
+            "type": "point_to_point", "checksum": true,
+            "priority_class": 1, "source_address": null,
+            "confirmation": null, "unit_address": 4,
+            "bridged": true, "hops": [253, 252],
+            "cals": [{"cal": "identify", "attribute": 1}]
+        }),
+    ];
+    for value in values {
+        let JsonObject::Packet(packet) = packet_from_json(&value).unwrap() else {
+            panic!("expected packet");
+        };
+        assert_eq!(packet_to_json(Some(&packet)), value);
+    }
+}
+
+#[test]
 fn confirmation_packet_roundtrips() {
     let v = json!({"type": "confirmation", "code": "z", "success": false});
     let obj = packet_from_json(&v).unwrap();

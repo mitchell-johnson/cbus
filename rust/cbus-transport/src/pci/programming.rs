@@ -16,6 +16,35 @@ const SERIAL_ADDRESS_QUIET: Duration = Duration::from_secs(2);
 const NVM_POLL_INTERVAL: Duration = Duration::from_millis(500);
 const NVM_POLL_TIMEOUT: Duration = Duration::from_secs(15);
 
+fn validate_bridge_route(bridges: &[u8]) -> Result<()> {
+    if (1..=6).contains(&bridges.len()) {
+        Ok(())
+    } else {
+        Err(Error::new(
+            ErrorKind::InvalidInput,
+            "routed CAL requires one to six bridges",
+        ))
+    }
+}
+
+fn identify_reply_matches(
+    meta: &Meta,
+    unit_address: u8,
+    bridged: bool,
+    hops: &[u8],
+    bridges: &[u8],
+    unit: u8,
+) -> bool {
+    if bridges.is_empty() {
+        !bridged && meta.source_address == Some(unit)
+    } else {
+        bridged
+            && meta.source_address == bridges.first().copied()
+            && hops == &bridges[1..]
+            && unit_address == unit
+    }
+}
+
 // After a cancelled/failed transaction, late untagged CAL fragments cannot be
 // distinguished from a future read. Require a fresh connection instead of
 // ever returning a potentially misattributed memory image.
@@ -2749,7 +2778,7 @@ impl PciClient {
     /// programming lane until reconnect so a late untagged reply cannot be
     /// attributed to another request.
     pub async fn identify_all(&self, unit: u8, attribute: u8) -> Result<Vec<Vec<u8>>> {
-        self.identify_collect(unit, attribute, false).await
+        self.identify_collect(unit, attribute, false, &[]).await
     }
 
     /// Return the first confirmed matching IDENTIFY reply, or `None` when the
@@ -2757,7 +2786,36 @@ impl PciClient {
     /// ordinary identity fields without claiming duplicate absence.
     pub async fn identify_first(&self, unit: u8, attribute: u8) -> Result<Option<Vec<u8>>> {
         Ok(self
-            .identify_collect(unit, attribute, true)
+            .identify_collect(unit, attribute, true, &[])
+            .await?
+            .into_iter()
+            .next())
+    }
+
+    /// Collect every matching IDENTIFY reply through an evidenced bridge
+    /// source route. Replies from the direct network or another route are
+    /// ignored and cannot populate the target network's cache.
+    pub async fn identify_all_routed(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+        attribute: u8,
+    ) -> Result<Vec<Vec<u8>>> {
+        validate_bridge_route(bridges)?;
+        self.identify_collect(unit, attribute, false, bridges).await
+    }
+
+    /// Return the first confirmed IDENTIFY reply on an evidenced bridge
+    /// route, or `None` after the bounded quiet interval.
+    pub async fn identify_first_routed(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+        attribute: u8,
+    ) -> Result<Option<Vec<u8>>> {
+        validate_bridge_route(bridges)?;
+        Ok(self
+            .identify_collect(unit, attribute, true, bridges)
             .await?
             .into_iter()
             .next())
@@ -2920,9 +2978,10 @@ impl PciClient {
         unit: u8,
         attribute: u8,
         stop_after_first: bool,
+        bridges: &[u8],
     ) -> Result<Vec<Vec<u8>>> {
         let _lane = self.programming_lane.lock().await;
-        self.identify_collect_inner(unit, attribute, stop_after_first)
+        self.identify_collect_inner_for_route(unit, attribute, stop_after_first, bridges)
             .await
     }
 
@@ -2932,6 +2991,17 @@ impl PciClient {
         unit: u8,
         attribute: u8,
         stop_after_first: bool,
+    ) -> Result<Vec<Vec<u8>>> {
+        self.identify_collect_inner_for_route(unit, attribute, stop_after_first, &[])
+            .await
+    }
+
+    async fn identify_collect_inner_for_route(
+        &self,
+        unit: u8,
+        attribute: u8,
+        stop_after_first: bool,
+        bridges: &[u8],
     ) -> Result<Vec<Vec<u8>>> {
         if self.programming_fault.load(Ordering::Acquire) {
             return Err(Error::other(
@@ -2949,8 +3019,8 @@ impl PciClient {
         let packet = Packet::PointToPoint {
             meta: Meta::new(true, 1),
             unit_address: unit,
-            bridged: false,
-            hops: vec![],
+            bridged: !bridges.is_empty(),
+            hops: bridges.to_vec(),
             cals: vec![Cal::Identify { attribute }],
         };
         let confirmation = self.send_guarded(&packet).await?;
@@ -3002,20 +3072,35 @@ impl PciClient {
                     }
                     Ok(Some(packet)) => {
                         let cals = match packet {
-                            Packet::PointToPoint { meta, cals, .. }
-                                if meta.source_address == Some(unit) =>
+                            Packet::PointToPoint {
+                                meta,
+                                unit_address,
+                                bridged,
+                                hops,
+                                cals,
+                            } if identify_reply_matches(
+                                &meta,
+                                unit_address,
+                                bridged,
+                                &hops,
+                                bridges,
+                                unit,
+                            ) =>
                             {
                                 cals
                             }
                             Packet::PointToPoint { meta, cals, .. }
-                                if meta.source_address.is_none()
+                                if bridges.is_empty()
+                                    && meta.source_address.is_none()
                                     && self.local_unit.load(Ordering::Acquire)
                                         == u16::from(unit) =>
                             {
                                 cals
                             }
                             Packet::BareCal(cal)
-                                if self.local_unit.load(Ordering::Acquire) == u16::from(unit) =>
+                                if bridges.is_empty()
+                                    && self.local_unit.load(Ordering::Acquire)
+                                        == u16::from(unit) =>
                             {
                                 vec![cal]
                             }
@@ -3169,6 +3254,28 @@ mod tests {
         let wire = format!(
             "{}\r\n",
             bytes.iter().map(|b| format!("{b:02X}")).collect::<String>()
+        );
+        remote.get_mut().write_all(wire.as_bytes()).await.unwrap();
+    }
+
+    async fn routed_reply(
+        remote: &mut BufReader<tokio::io::DuplexStream>,
+        bridges: &[u8],
+        unit: u8,
+        cal: &[u8],
+    ) {
+        let mut bytes = vec![0x86, bridges[0], 0x10, bridges.len() as u8];
+        bytes.extend_from_slice(&bridges[1..]);
+        bytes.push(unit);
+        bytes.extend_from_slice(cal);
+        let sum = bytes.iter().fold(0u8, |acc, byte| acc.wrapping_add(*byte));
+        bytes.push(0u8.wrapping_sub(sum));
+        let wire = format!(
+            "{}\r\n",
+            bytes
+                .iter()
+                .map(|byte| format!("{byte:02X}"))
+                .collect::<String>()
         );
         remote.get_mut().write_all(wire.as_bytes()).await.unwrap();
     }
@@ -4866,6 +4973,59 @@ mod tests {
         tokio::time::advance(IDENTIFY_QUIET).await;
         tokio::task::yield_now().await;
         assert_eq!(running.await.unwrap().unwrap(), vec![first, second]);
+        assert!(matches!(
+            events.recv().await,
+            Some(CBusEvent::LightingOn {
+                source: Some(4),
+                app: 56,
+                group: 1
+            })
+        ));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_identify_uses_native_path_and_preserves_mqtt_events() {
+        let (pci, mut remote, mut events) = setup().await;
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.identify_first_routed(&[0xfd, 0xfc], 5, 1).await }
+        });
+        let request = line(&mut remote).await;
+        assert_eq!(&request[..request.len() - 2], b"\\46FD12FC05210188");
+        let code = request[request.len() - 2];
+
+        // A direct reply and a reply from another first bridge must not be
+        // attributed to the remote network. Ordinary monitored SAL continues
+        // through the same reader while the CAL transaction is in flight.
+        reply(
+            &mut remote,
+            5,
+            &[0x87, 1, b'D', b'I', b'R', b'E', b'C', b'T'],
+        )
+        .await;
+        routed_reply(
+            &mut remote,
+            &[0xfe, 0xfc],
+            5,
+            &[0x86, 1, b'W', b'R', b'O', b'N', b'G'],
+        )
+        .await;
+        remote
+            .get_mut()
+            .write_all(b"05043800790145\r\n")
+            .await
+            .unwrap();
+        routed_reply(
+            &mut remote,
+            &[0xfd, 0xfc],
+            5,
+            &[0x87, 1, b'K', b'E', b'Y', b'G', b'L', b'5'],
+        )
+        .await;
+        tokio::task::yield_now().await;
+        assert!(!running.is_finished());
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        assert_eq!(running.await.unwrap().unwrap(), Some(b"KEYGL5".to_vec()));
         assert!(matches!(
             events.recv().await,
             Some(CBusEvent::LightingOn {

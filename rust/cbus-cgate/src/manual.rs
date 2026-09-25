@@ -951,7 +951,8 @@ pub fn help_lines(root: &str) -> Vec<String> {
 }
 
 use super::{
-    err, ok, status, valid_name, valid_target, AccessLevel, Network, NetworkState, Response, Server,
+    err, network_path, ok, status, valid_name, valid_target, AccessLevel, Network, NetworkState,
+    Response, Server,
 };
 
 impl Server {
@@ -1928,9 +1929,11 @@ impl Server {
                 "409 No network address available",
             );
         };
+        let oid = super::fresh_oid();
         project.networks.insert(
             address,
             Network {
+                oid: oid.clone(),
                 address,
                 name: words[2].to_string(),
                 iface_type: words[3].to_string(),
@@ -1941,6 +1944,7 @@ impl Server {
                 levels: Default::default(),
             },
         );
+        self.known_oids.insert(oid);
         envelope(tag, 301, [format!("network={address}")])
     }
 
@@ -1956,11 +1960,23 @@ impl Server {
             Ok(value) => value,
             Err(response) => return response,
         };
-        self.projects
+        let removed = self
+            .projects
             .get_mut(&project_name)
             .expect("network resolved")
             .networks
             .remove(&net);
+        if let Some(network) = removed {
+            let in_use = self.projects.values().any(|project| {
+                project
+                    .networks
+                    .values()
+                    .any(|candidate| candidate.oid == network.oid)
+            });
+            if !in_use {
+                self.known_oids.remove(&network.oid);
+            }
+        }
         ok(tag, vec![], "200 OK")
     }
 
@@ -2159,19 +2175,42 @@ impl Server {
         if !project.networks.contains_key(&start) || !project.networks.contains_key(&end) {
             return err(tag, status::NOT_FOUND, "401 Network not found");
         }
-        if words
-            .get(3)
-            .is_some_and(|mode| mode.eq_ignore_ascii_case("COMPACT"))
-        {
-            envelope(tag, 136, [format!("{end:02X}")])
+        let mode = words.get(3).copied().unwrap_or("OID");
+        if !mode.eq_ignore_ascii_case("OID") && !mode.eq_ignore_ascii_case("COMPACT") {
+            return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
+        }
+        let path = match network_path(project, start, end) {
+            Ok(path) => path,
+            Err(_) => {
+                return err(
+                    tag,
+                    408,
+                    "408 Operation failed: Network path discovery failed: No path found",
+                )
+            }
+        };
+        if mode.eq_ignore_ascii_case("COMPACT") {
+            envelope(
+                tag,
+                136,
+                [path
+                    .iter()
+                    .map(|address| format!("{address:02X}"))
+                    .collect::<String>()],
+            )
         } else {
-            let oid = project.networks[&end]
-                .units
-                .values()
-                .next()
-                .map(|unit| unit.oid.clone())
-                .unwrap_or_else(|| format!("network-{end}"));
-            envelope(tag, 137, [oid])
+            envelope(
+                tag,
+                137,
+                path.into_iter().map(|address| {
+                    let oid = &project.networks[&address].oid;
+                    if oid.is_empty() {
+                        format!("network-{address}")
+                    } else {
+                        oid.clone()
+                    }
+                }),
+            )
         }
     }
 

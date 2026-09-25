@@ -271,6 +271,41 @@ fn bridged_pp_one_hop_decodes() {
 }
 
 #[test]
+fn native_reply_network_counts_one_through_six_decode() {
+    for bridge_count in 1_u8..=6 {
+        let first_bridge = 0x40;
+        let mut body = vec![0x86, first_bridge, 0x10, bridge_count];
+        let remaining_bridges: Vec<u8> = (1..bridge_count)
+            .map(|offset| first_bridge + offset)
+            .collect();
+        body.extend_from_slice(&remaining_bridges);
+        body.extend_from_slice(&[0x04, 0x82, 0x01, b'A']);
+
+        let wire = pci_wire(&body);
+        let (packet, consumed) = decode_pci(&wire);
+        assert_eq!(consumed, wire.len());
+        assert_eq!(
+            packet,
+            Some(Packet::PointToPoint {
+                meta: Meta {
+                    checksum: true,
+                    priority_class: 2,
+                    source_address: Some(first_bridge),
+                    confirmation: None,
+                },
+                unit_address: 0x04,
+                bridged: true,
+                hops: remaining_bridges,
+                cals: vec![Cal::Reply {
+                    parameter: 1,
+                    data: vec![b'A'],
+                }],
+            })
+        );
+    }
+}
+
+#[test]
 fn bad_bridge_length_code_is_invalid() {
     // 0x0A is not one of the 6 bridge length codes
     let wire = pci_wire(&[0x06, 0x05, 0x0a, 0x0a, 0x10, 0x21, 0x02]);

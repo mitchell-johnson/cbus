@@ -212,6 +212,23 @@ pub fn packet_to_json(p: Option<&Packet>) -> Value {
             );
             Value::Object(m)
         }
+        Packet::PointToPointToMultipoint {
+            meta,
+            bridges,
+            application,
+            sals,
+        } => {
+            let mut m = Map::new();
+            m.insert("type".into(), json!("point_to_point_to_multipoint"));
+            envelope(&mut m, meta);
+            m.insert("bridges".into(), json!(bridges));
+            m.insert("application".into(), json!(application));
+            m.insert(
+                "sals".into(),
+                Value::Array(sals.iter().map(sal_to_json).collect()),
+            );
+            Value::Object(m)
+        }
         Packet::StandardStatus {
             application,
             block_start,
@@ -553,6 +570,37 @@ pub fn packet_from_json(d: &Value) -> Result<JsonObject, JErr> {
                 sals,
             }))
         }
+        "point_to_point_to_multipoint" => {
+            let sals = d
+                .get("sals")
+                .and_then(Value::as_array)
+                .ok_or("missing sals")?
+                .iter()
+                .map(sal_from_json)
+                .collect::<Result<Vec<Sal>, _>>()?;
+            let application = sals
+                .first()
+                .map(|s| s.application())
+                .ok_or("PPM packet with no SALs cannot be encoded")?;
+            let bridges = d
+                .get("bridges")
+                .and_then(Value::as_array)
+                .ok_or("missing bridges")?
+                .iter()
+                .map(|value| {
+                    value
+                        .as_u64()
+                        .and_then(|value| u8::try_from(value).ok())
+                        .ok_or_else(|| "bad bridge address".to_string())
+                })
+                .collect::<Result<Vec<_>, _>>()?;
+            Ok(JsonObject::Packet(Packet::PointToPointToMultipoint {
+                meta: meta_from_json(d)?,
+                bridges,
+                application,
+                sals,
+            }))
+        }
         "standard_status" => {
             let states = d
                 .get("states")
@@ -583,8 +631,23 @@ pub fn packet_from_json(d: &Value) -> Result<JsonObject, JErr> {
             Ok(JsonObject::Packet(Packet::PointToPoint {
                 meta: meta_from_json(d)?,
                 unit_address: get_u8(d, "unit_address")?,
-                bridged: false,
-                hops: vec![],
+                bridged: d.get("bridged").and_then(Value::as_bool).unwrap_or(false),
+                hops: d
+                    .get("hops")
+                    .and_then(Value::as_array)
+                    .map(|values| {
+                        values
+                            .iter()
+                            .map(|value| {
+                                value
+                                    .as_u64()
+                                    .and_then(|value| u8::try_from(value).ok())
+                                    .ok_or_else(|| "bad bridge hop".to_string())
+                            })
+                            .collect::<Result<Vec<_>, _>>()
+                    })
+                    .transpose()?
+                    .unwrap_or_default(),
                 cals,
             }))
         }

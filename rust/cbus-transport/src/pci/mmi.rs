@@ -57,8 +57,29 @@ impl PciClient {
         self.install_mmi_inner().await
     }
 
+    /// Request installation MMI from a network reached through `bridges`.
+    ///
+    /// The route is the ordered list of bridge unit addresses starting on
+    /// the PCI's local network. Only complete replies carrying the matching
+    /// native Reply Network are accepted. A route has at most six bridges,
+    /// as required by CBUS-SIUG section 8.
+    pub async fn install_mmi_routed(&self, bridges: &[u8]) -> Result<Vec<u8>> {
+        if !(1..=6).contains(&bridges.len()) {
+            return Err(Error::new(
+                ErrorKind::InvalidInput,
+                "routed MMI requires one to six bridges",
+            ));
+        }
+        let _lane = self.mmi_lane.lock().await;
+        self.install_mmi_for_route(bridges).await
+    }
+
     // Caller holds mmi_lane, either for this request or a whole observation.
     pub(super) async fn install_mmi_inner(&self) -> Result<Vec<u8>> {
+        self.install_mmi_for_route(&[]).await
+    }
+
+    async fn install_mmi_for_route(&self, bridges: &[u8]) -> Result<Vec<u8>> {
         if self.mmi_fault.load(Ordering::Acquire) {
             return Err(Error::other(
                 "MMI stream needs reconnect after an incomplete observation",
@@ -73,15 +94,32 @@ impl PciClient {
             client: self,
             complete: false,
         };
-        let packet = Packet::PointToMultipoint {
-            // cmqttd enables SRCHK during PCI initialization, so this shared
-            // session must include the command checksum. Native C-Gate's
-            // checksumless capture comes from a session where SRCHK is off.
-            meta: Meta::new(true, 0),
-            application: 0xff,
-            sals: vec![Sal::InstallMmiRequest],
+        let meta = Meta::new(true, 0);
+        let packet = if bridges.is_empty() {
+            Packet::PointToMultipoint {
+                // cmqttd enables SRCHK during PCI initialization, so this shared
+                // session must include the command checksum. Native C-Gate's
+                // checksumless capture comes from a session where SRCHK is off.
+                meta,
+                application: 0xff,
+                sals: vec![Sal::InstallMmiRequest],
+            }
+        } else {
+            Packet::PointToPointToMultipoint {
+                meta,
+                bridges: bridges.to_vec(),
+                application: 0xff,
+                sals: vec![Sal::InstallMmiRequest],
+            }
         };
-        let confirmation = self.send_guarded(&packet).await?;
+        // Native NET PINGU emits one routed MMI request. Keep it exact-once:
+        // a missing confirmation makes the observation incomplete and forces
+        // reconnect rather than replaying an untagged response stream.
+        let confirmation = if bridges.is_empty() {
+            self.send_guarded(&packet).await?
+        } else {
+            self.send_guarded_once(&packet).await?
+        };
         let code = confirmation.code;
         let result = tokio::time::timeout(MMI_TIMEOUT, async {
             let mut confirmed = false;
@@ -101,12 +139,18 @@ impl PciClient {
                         application: 0xff,
                         block_start,
                         states: block,
-                    })) => {
+                    })) if bridges.is_empty() => {
                         if append_block(&mut states, block_start, block)? && confirmed {
                             return Ok(states);
                         }
                     }
-                    Ok(Some(Packet::PointToPoint { cals, .. })) => {
+                    Ok(Some(Packet::PointToPoint {
+                        meta,
+                        bridged,
+                        hops,
+                        cals,
+                        ..
+                    })) if reply_route_matches(&meta, bridged, &hops, bridges) => {
                         for cal in cals {
                             let Cal::ExtendedStatus {
                                 child_application: 0xff,
@@ -143,6 +187,14 @@ impl PciClient {
             transaction.complete = true;
         }
         result
+    }
+}
+
+fn reply_route_matches(meta: &Meta, bridged: bool, hops: &[u8], bridges: &[u8]) -> bool {
+    if bridges.is_empty() {
+        !bridged
+    } else {
+        bridged && meta.source_address == bridges.first().copied() && hops == &bridges[1..]
     }
 }
 
@@ -207,6 +259,29 @@ mod tests {
         .encode_packet()
         .unwrap();
         let mut line = wire;
+        line.extend_from_slice(b"\r\n");
+        line
+    }
+
+    fn routed_addressed_block(
+        bridges: &[u8],
+        start: u8,
+        count: usize,
+        present: &[usize],
+    ) -> Vec<u8> {
+        use cbus_protocol::common::add_cbus_checksum;
+
+        let direct = addressed_block(start, count, present);
+        let binary = hex::decode(&direct[..direct.len() - 2]).unwrap();
+        let mut routed = Vec::with_capacity(binary.len() + bridges.len() + 1);
+        routed.push(binary[0]);
+        routed.push(bridges[0]);
+        routed.push(0x10); // attached PCI unit address
+        routed.push(bridges.len() as u8); // native Reply Network count
+        routed.extend_from_slice(&bridges[1..]);
+        routed.push(0x10); // remote replying unit
+        routed.extend_from_slice(&binary[4..binary.len() - 1]);
+        let mut line = hex::encode_upper(add_cbus_checksum(&routed)).into_bytes();
         line.extend_from_slice(b"\r\n");
         line
     }
@@ -354,44 +429,30 @@ mod tests {
         assert_eq!(states.iter().filter(|state| **state != 0).count(), 3);
     }
 
-    /// Issue #10 Phase 3: bridged routed replies carry the same 0xff status
-    /// blocks and correlate like local ones. The encoder never emits
-    /// bridged PTP, so the frame is re-addressed on the decoded wire with a
-    /// fresh checksum instead.
+    /// Native one-bridge PINGU uses PPM source routing and accepts only the
+    /// matching Reply Network blocks.
     #[tokio::test]
-    async fn bridged_addressed_blocks_accepted() {
-        use cbus_protocol::common::add_cbus_checksum;
-
+    async fn routed_mmi_one_bridge_uses_native_wire_and_reply_route() {
         let (pci, mut remote) = setup().await;
         let running = tokio::spawn({
             let pci = pci.clone();
-            async move { pci.install_mmi().await }
+            async move { pci.install_mmi_routed(&[0x20]).await }
         });
         let mut request = Vec::new();
         remote.read_until(b'\r', &mut request).await.unwrap();
+        assert!(request.starts_with(b"\\032009FFFAFF00"));
         let code = request[request.len() - 2];
         remote.write_all(&[code, b'.']).await.unwrap();
-        // Wire form is uppercase hex ASCII: [flags, source, unit, 0x00,
-        // CAL..., checksum]. Route the unit block through bridge 0x20 with
-        // a zero-hop length code and recompute the checksum.
-        let plain = addressed_block(0, 88, &[16]);
-        let binary = hex::decode(&plain[..plain.len() - 2]).unwrap();
-        assert_eq!(binary[1], 0x10, "source address");
-        assert_eq!(binary[2], 0x10, "unit address");
-        assert_eq!(binary[3], 0x00, "local route marker");
-        let mut routed = Vec::with_capacity(binary.len() + 1);
-        routed.extend_from_slice(&binary[..2]);
-        routed.extend_from_slice(&[0x20, 0x09, 0x10]);
-        routed.extend_from_slice(&binary[4..binary.len() - 1]);
-        let mut line = hex::encode_upper(add_cbus_checksum(&routed)).into_bytes();
-        line.extend_from_slice(b"\r\n");
-        remote.write_all(&line).await.unwrap();
         remote
-            .write_all(&addressed_block(88, 88, &[]))
+            .write_all(&routed_addressed_block(&[0x20], 0, 88, &[16]))
             .await
             .unwrap();
         remote
-            .write_all(&addressed_block(176, 80, &[255]))
+            .write_all(&routed_addressed_block(&[0x20], 88, 88, &[]))
+            .await
+            .unwrap();
+        remote
+            .write_all(&routed_addressed_block(&[0x20], 176, 80, &[255]))
             .await
             .unwrap();
         let states = running.await.unwrap().unwrap();
@@ -479,38 +540,41 @@ mod tests {
         assert_eq!(states.iter().filter(|state| **state != 0).count(), 2);
     }
 
-    /// Single-hop bridged replies route through the hop byte to the unit.
+    /// A two-bridge source route is encoded with header 0x12; direct and
+    /// wrong-route reports cannot contribute to its MMI snapshot.
     #[tokio::test]
-    async fn single_hop_bridged_block_accepted() {
-        use cbus_protocol::common::add_cbus_checksum;
-
+    async fn routed_mmi_two_bridges_rejects_other_routes() {
         let (pci, mut remote) = setup().await;
         let running = tokio::spawn({
             let pci = pci.clone();
-            async move { pci.install_mmi().await }
+            async move { pci.install_mmi_routed(&[0xfd, 0xfc]).await }
         });
         let mut request = Vec::new();
         remote.read_until(b'\r', &mut request).await.unwrap();
+        assert!(request.starts_with(b"\\03FD12FCFFFAFF00FA"));
         let code = request[request.len() - 2];
         remote.write_all(&[code, b'.']).await.unwrap();
-        let plain = addressed_block(0, 88, &[16]);
-        let binary = hex::decode(&plain[..plain.len() - 2]).unwrap();
-        assert_eq!(binary[1], 0x10, "source address");
-        assert_eq!(binary[2], 0x10, "unit address");
-        assert_eq!(binary[3], 0x00, "local route marker");
-        let mut routed = Vec::with_capacity(binary.len() + 2);
-        routed.extend_from_slice(&binary[..2]);
-        routed.extend_from_slice(&[0x20, 0x12, 0x05, 0x10]);
-        routed.extend_from_slice(&binary[4..binary.len() - 1]);
-        let mut line = hex::encode_upper(add_cbus_checksum(&routed)).into_bytes();
-        line.extend_from_slice(b"\r\n");
-        remote.write_all(&line).await.unwrap();
+        // Neither a direct block nor a different first bridge belongs to the
+        // requested network. If either were accepted, the following block at
+        // zero would fail as repeated coverage.
         remote
-            .write_all(&addressed_block(88, 88, &[]))
+            .write_all(&addressed_block(0, 88, &[7]))
             .await
             .unwrap();
         remote
-            .write_all(&addressed_block(176, 80, &[255]))
+            .write_all(&routed_addressed_block(&[0xfe, 0xfc], 0, 88, &[8]))
+            .await
+            .unwrap();
+        remote
+            .write_all(&routed_addressed_block(&[0xfd, 0xfc], 0, 88, &[16]))
+            .await
+            .unwrap();
+        remote
+            .write_all(&routed_addressed_block(&[0xfd, 0xfc], 88, 88, &[]))
+            .await
+            .unwrap();
+        remote
+            .write_all(&routed_addressed_block(&[0xfd, 0xfc], 176, 80, &[255]))
             .await
             .unwrap();
         let states = running.await.unwrap().unwrap();

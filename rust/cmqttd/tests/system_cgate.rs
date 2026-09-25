@@ -42,6 +42,181 @@ fn installation_mmi_block_with_state(
     wire
 }
 
+fn routed_installation_mmi_block(
+    bridges: &[u8],
+    start: u8,
+    count: usize,
+    present: &[usize],
+) -> Vec<u8> {
+    let mut states = vec![0u8; count];
+    for address in present {
+        if (usize::from(start)..usize::from(start) + count).contains(address) {
+            states[*address - usize::from(start)] = 1;
+        }
+    }
+    let direct = cbus_protocol::Packet::PointToPoint {
+        meta: cbus_protocol::Meta {
+            checksum: true,
+            priority_class: 2,
+            source_address: Some(4),
+            confirmation: None,
+        },
+        unit_address: 16,
+        bridged: false,
+        hops: vec![],
+        cals: vec![cbus_protocol::Cal::ExtendedStatus {
+            externally_initiated: false,
+            child_application: 0xff,
+            block_start: start,
+            report: cbus_protocol::report::StatusReport::Binary(states),
+        }],
+    }
+    .encode()
+    .unwrap();
+    let mut routed = vec![direct[0], bridges[0], 0x10, bridges.len() as u8];
+    routed.extend_from_slice(&bridges[1..]);
+    routed.push(4);
+    routed.extend_from_slice(&direct[4..direct.len() - 1]);
+    pci_wire(&routed)
+}
+
+#[tokio::test]
+async fn bridged_pingu_keeps_mqtt_live_and_plain_tcp_fault_is_clean() {
+    let project = cbus_test_support::proc::temp_path("bridged-project.xml");
+    let state = cbus_test_support::proc::temp_path("bridged-cgate.json");
+    std::fs::write(
+        &project,
+        r#"<Installation><Project oid="project-topology"><TagName>TOPO</TagName>
+        <Network oid="network-254"><TagName>Local</TagName><Address>254</Address>
+          <Interface><InterfaceType>CNI</InterfaceType><InterfaceAddress>127.0.0.1:10001</InterfaceAddress></Interface>
+          <Unit oid="pci"><Address>16</Address><UnitType>PC_CNI2</UnitType></Unit>
+          <Unit oid="bridge-near"><Address>253</Address><UnitType>BRIDGE2N</UnitType></Unit>
+          <Application oid="app"><TagName>Lighting</TagName><Address>56</Address>
+            <Group oid="group"><TagName>Local Light</TagName><Address>1</Address></Group>
+          </Application>
+        </Network>
+        <Network oid="network-253"><TagName>Remote</TagName><Address>253</Address>
+          <Interface><InterfaceType>Bridge</InterfaceType><InterfaceAddress>254/p/253</InterfaceAddress></Interface>
+          <Unit oid="remote"><Address>4</Address><UnitType>KEYE1</UnitType></Unit>
+          <Unit oid="bridge-far"><Address>254</Address><UnitType>BRIDGE2N</UnitType></Unit>
+          <Application oid="remote-app"><TagName>Remote Lighting</TagName><Address>56</Address>
+            <Group oid="remote-group"><TagName>Remote Light</TagName><Address>1</Address></Group>
+          </Application>
+        </Network></Project></Installation>"#,
+    )
+    .unwrap();
+    let mut sys = start_with(Options {
+        project: false,
+        extra: vec![
+            "-P".into(),
+            project.to_string_lossy().into_owned(),
+            "--cgate-bind".into(),
+            "127.0.0.1:0".into(),
+            "--cgate-state".into(),
+            state.to_string_lossy().into_owned(),
+        ],
+        ..Default::default()
+    })
+    .await;
+    require(STARTUP, "bridged C-Gate listener", || {
+        sys.daemon.stderr().contains("C-Gate service listening on ")
+    })
+    .await;
+    let address = sys
+        .daemon
+        .stderr()
+        .lines()
+        .find_map(|line| {
+            line.split_once("C-Gate service listening on ")
+                .map(|(_, address)| address.trim().to_string())
+        })
+        .unwrap();
+    let stream = TcpStream::connect(address).await.unwrap();
+    let (reader, mut writer) = stream.into_split();
+    let mut reader = BufReader::new(reader);
+    let mut greeting = String::new();
+    reader.read_line(&mut greeting).await.unwrap();
+
+    async fn command(
+        reader: &mut BufReader<tokio::net::tcp::OwnedReadHalf>,
+        writer: &mut tokio::net::tcp::OwnedWriteHalf,
+        text: &str,
+    ) -> String {
+        writer
+            .write_all(format!("[9] {text}\r\n").as_bytes())
+            .await
+            .unwrap();
+        let mut result = String::new();
+        loop {
+            let mut line = String::new();
+            reader.read_line(&mut line).await.unwrap();
+            result.push_str(&line);
+            if line.starts_with("[9]") && line.as_bytes().get(7) == Some(&b' ') {
+                return result;
+            }
+        }
+    }
+
+    let path = command(&mut reader, &mut writer, "DBNETWORKPATH 254 253 COMPACT").await;
+    assert!(path.contains("136 FD"), "{path:?}");
+    let capabilities = command(&mut reader, &mut writer, "CMQTT CAPABILITIES").await;
+    assert!(capabilities.contains("\"bridged_read_only_discovery\":true"));
+    assert!(capabilities.contains("\"bridged_network_max_hops\":6"));
+
+    let pingu = command(&mut reader, &mut writer, "NET PINGU //TOPO/253");
+    let peer = async {
+        require(STARTUP, "native routed installation MMI", || {
+            sys.pci.count_payload("03FD09FFFAFF00FF") == 1
+        })
+        .await;
+        // Direct-network MQTT traffic remains live during the untagged remote
+        // MMI observation on the same physical connection.
+        sys.pci.inject(&pci_wire(&[5, 4, 56, 0, 121, 1]));
+        require(STARTUP, "MQTT state during routed MMI", || {
+            sys.broker
+                .publishes()
+                .iter()
+                .any(|publish| publish.topic == "homeassistant/light/cbus_1/state")
+        })
+        .await;
+        // A complete-looking first block from another route must be ignored.
+        sys.pci
+            .inject(&routed_installation_mmi_block(&[252], 0, 88, &[7]));
+        for (start, count) in [(0, 88), (88, 88), (176, 80)] {
+            sys.pci
+                .inject(&routed_installation_mmi_block(&[253], start, count, &[4]));
+        }
+    };
+    let (pingu, ()) = tokio::join!(pingu, peer);
+    assert!(pingu.contains("302-Units=4"), "{pingu:?}");
+    assert_eq!(sys.pci.connections(), 1);
+
+    let before = sys.pci.frames().len();
+    let mutation = command(&mut reader, &mut writer, "ON //TOPO/253/56/1").await;
+    assert!(
+        mutation.contains("404 Network is not connected"),
+        "{mutation:?}"
+    );
+    let after = sys.pci.frames().len();
+    assert_eq!(after, before, "remote mutation must fail before PCI I/O");
+
+    sys.pci.kick();
+    let status = sys
+        .daemon
+        .wait_exit(STARTUP)
+        .await
+        .expect("plain TCP cmqttd must terminate after losing its one PCI");
+    assert!(
+        status.success(),
+        "clean transport-loss shutdown: {status:?}"
+    );
+    assert_eq!(sys.pci.connections(), 1);
+
+    drop(sys);
+    std::fs::remove_file(project).unwrap();
+    std::fs::remove_file(state).unwrap();
+}
+
 #[tokio::test]
 async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     let path = cbus_test_support::proc::temp_path("cgate.json");

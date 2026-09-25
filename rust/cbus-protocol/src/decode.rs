@@ -403,8 +403,21 @@ fn decode_pp(
         bridged = false;
     } else {
         let bridge_address = data[0];
-        let bl = bridge_length(b1)
-            .ok_or_else(|| DecodeError::new(format!("bad bridge length code {:#x}", b1)))?;
+        // Commands sent to a PCI use the Network-PCI stack header (09, 12,
+        // ...). Replies emitted by a PCI use the Reply Network count from
+        // CBUS-SIUG 4.3.3.1 (01..06). Both carry the number of route bytes
+        // before the terminal replying-unit address.
+        let bl = if from_pci {
+            usize::from(b1)
+                .checked_sub(1)
+                .filter(|count| *count <= 5)
+                // Retain decoding of earlier Network-PCI-shaped captures;
+                // native smart-mode Reply Network frames use 01..06.
+                .or_else(|| bridge_length(b1))
+        } else {
+            bridge_length(b1)
+        }
+        .ok_or_else(|| DecodeError::new(format!("bad bridge length code {:#x}", b1)))?;
         rest = &data[2..];
         for _ in 0..bl {
             let h = *rest

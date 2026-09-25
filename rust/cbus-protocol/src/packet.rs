@@ -73,6 +73,21 @@ pub enum Packet {
         /// The SAL messages.
         sals: Vec<Sal>,
     },
+    /// Point-to-point-to-multipoint packet routed through one to six bridges.
+    ///
+    /// `bridges` is the source route in transmission order. The first entry
+    /// is the bridge on the local network and the last entry is the bridge on
+    /// the network immediately before the destination network.
+    PointToPointToMultipoint {
+        /// Envelope fields.
+        meta: Meta,
+        /// Bridge unit addresses in transmission order (1..=6 entries).
+        bridges: Vec<u8>,
+        /// Application address byte on the destination network.
+        application: u8,
+        /// The SAL messages.
+        sals: Vec<Sal>,
+    },
     /// A standard-status MMI block returned directly by the PCI.
     StandardStatus {
         /// Application whose unit-presence states are reported.
@@ -88,9 +103,11 @@ pub enum Packet {
         meta: Meta,
         /// Destination/replying unit address.
         unit_address: u8,
-        /// Arrived via a network bridge (decode-only).
+        /// Uses or arrived through a network bridge.
         bridged: bool,
-        /// Bridge hop addresses (decode-only).
+        /// Outbound packets carry the complete source route. For an inbound
+        /// Reply Network packet this contains the remaining route after the
+        /// first bridge, whose address is in `meta.source_address`.
         hops: Vec<u8>,
         /// The CAL messages.
         cals: Vec<Cal>,
@@ -117,6 +134,7 @@ impl Packet {
         match self {
             Packet::DeviceManagement { meta, .. }
             | Packet::PointToMultipoint { meta, .. }
+            | Packet::PointToPointToMultipoint { meta, .. }
             | Packet::PointToPoint { meta, .. } => Some(meta),
             _ => None,
         }
@@ -127,6 +145,7 @@ impl Packet {
         match self {
             Packet::DeviceManagement { meta, .. }
             | Packet::PointToMultipoint { meta, .. }
+            | Packet::PointToPointToMultipoint { meta, .. }
             | Packet::PointToPoint { meta, .. } => Some(meta),
             _ => None,
         }
@@ -166,6 +185,27 @@ impl Packet {
                 }
                 Ok(finish(p, meta))
             }
+            Packet::PointToPointToMultipoint {
+                meta,
+                bridges,
+                application,
+                sals,
+            } => {
+                if !(1..=6).contains(&bridges.len()) {
+                    return Err(EncodeError::new(
+                        "routed PPM packets require one to six bridges",
+                    ));
+                }
+                let mut p = header(meta, DAT_POINT_TO_POINT_TO_MULTIPOINT, false);
+                p.push(bridges[0]);
+                p.push((bridges.len() as u8) * 9);
+                p.extend_from_slice(&bridges[1..]);
+                p.push(*application);
+                for sal in sals {
+                    p.extend_from_slice(&sal.encode()?);
+                }
+                Ok(finish(p, meta))
+            }
             Packet::StandardStatus {
                 application,
                 block_start,
@@ -190,14 +230,26 @@ impl Packet {
                 meta,
                 unit_address,
                 bridged,
+                hops,
                 cals,
-                ..
             } => {
-                if *bridged {
-                    return Err(EncodeError::new("bridged ptp packets"));
-                }
                 let mut p = header(meta, DAT_POINT_TO_POINT, false);
-                p.extend_from_slice(&[*unit_address, 0]);
+                if *bridged {
+                    if !(1..=6).contains(&hops.len()) {
+                        return Err(EncodeError::new(
+                            "routed PTP packets require one to six bridges",
+                        ));
+                    }
+                    p.push(hops[0]);
+                    p.push((hops.len() as u8) * 9);
+                    p.extend_from_slice(&hops[1..]);
+                    p.push(*unit_address);
+                } else {
+                    if !hops.is_empty() {
+                        return Err(EncodeError::new("direct PTP packets cannot carry hops"));
+                    }
+                    p.extend_from_slice(&[*unit_address, 0]);
+                }
                 for cal in cals {
                     p.extend_from_slice(&cal.encode());
                 }

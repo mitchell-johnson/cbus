@@ -39,7 +39,7 @@ flowchart LR
 
 `cbus-mqtt` owns pure MQTT behavior: topic naming, inbound command parsing, Home Assistant discovery payloads, and project-label extraction. `cmqttd` combines it with `rumqttc` and `cbus-transport`.
 
-`cbus-cgate` contains a synchronous command model and the physical service embedded in cmqttd. That service adds persistent database storage, bounded TCP connections, per-client sessions, and source-correlated device reads using the bridge's existing PCI client. Only implemented physical operations reach the bus; unsupported operations return errors. The separate `cgate-mock` binary retains deterministic in-memory behavior for client tests. See [service status](cmqttd-cgate.md).
+`cbus-cgate` contains a synchronous command model and the physical service embedded in cmqttd. That service adds persistent database storage, bounded TCP connections, per-client sessions, and source-correlated device reads using the bridge's existing PCI client. Imported Bridge interfaces form a bounded topology graph; read-only discovery can route across one to six bridges while direct and remote caches remain separate on the one shared CNI connection. Only implemented physical operations reach the bus; unsupported operations return errors. The separate `cgate-mock` binary retains deterministic in-memory behavior for client tests. See [service status](cmqttd-cgate.md).
 
 ## Test layers
 
