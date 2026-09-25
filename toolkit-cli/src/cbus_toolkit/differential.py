@@ -5,7 +5,7 @@ Ledger/census + fresh-wheel + differential harness scaffolding only.
 This module does NOT claim Toolkit parity. It loads the authoritative
 38-area ledger in ``capabilities.json`` (``census_complete: false``) and
 exposes the differential matrix: every ledger area maps to workflow and
-negative-path slots that start ``unassessed``, except the six attempted
+negative-path slots that start ``unassessed``, except the seven attempted
 rows ``edlt-reset-controls``, ``edlt-retained-scene-editing``,
 ``edlt-global-category-programming`` (whose ``nominal_workflow`` slots are
 each ``accepted`` per the executable SLOT_RUBRIC below, 1/6 slots each),
@@ -13,12 +13,17 @@ each ``accepted`` per the executable SLOT_RUBRIC below, 1/6 slots each),
 the rubric, so all six slots stay ``unassessed``),
 ``all-unit-parameter-encoding`` (audited 0/6: massive native-oracle
 comparison scale, but zero original-Toolkit executions, so all six slots
-stay ``unassessed``), and ``preferences-and-update-workflow`` (audited
+stay ``unassessed``), ``preferences-and-update-workflow`` (audited
 0/6: broad multi-scope row whose registry/conditions core records zero
 replayed original calls, whose sub-scope legs cannot be stitched into a
 single bounded nominal pass, and whose HKCU registry persistence is a
 different evidence kind than the rubric's database leg, so all six slots
-stay ``unassessed``); areas still pending,
+stay ``unassessed``), and ``toolkit-database-report-export`` (audited
+0/6: broad multi-scope row whose >=10-original serializer leg, B03
+Area13 native-persistence leg, and fragment acceptance records belong to
+different bounded scopes with no single spanning record, and whose
+GRENACHE snapshot sweeps are site-dependent and excluded, so all six
+slots stay ``unassessed``); areas still pending,
 ``accepted_areas`` still 0, ``complete`` still false).
 
 No endpoints, credentials, or vendor specifications are invented or read
@@ -142,7 +147,7 @@ RESET_CONTROLS_EVIDENCE_PATHS = [
     "docs/edlt-reset.md",
 ]
 
-# The six attempted differential rows. Every other ledger area keeps the
+# The seven attempted differential rows. Every other ledger area keeps the
 # scaffolding default (all slots ``unassessed``, no evidence paths).
 DIFFERENTIAL_ROWS = (
     "edlt-reset-controls",
@@ -151,6 +156,7 @@ DIFFERENTIAL_ROWS = (
     "thermostat-configuration",
     "all-unit-parameter-encoding",
     "preferences-and-update-workflow",
+    "toolkit-database-report-export",
 )
 
 # Measured evidence facts for the second attempted row,
@@ -651,6 +657,189 @@ PREFERENCES_UPDATE_EVIDENCE_PATHS = [
 ]
 
 
+# Measured evidence facts for the seventh attempted row,
+# ``toolkit-database-report-export`` (row id verified present in
+# ``capabilities.json``). Verdict: 0/6 -- every slot stays ``unassessed``.
+# A 0/6 verdict with documented gaps is a legitimate success; the rubric
+# below is applied unchanged. This is a broad multi-scope row (explicit
+# captured-value serializer + strict cached-object projector + admitted
+# native XML adapter + live C-Gate acquisition + guarded B03 Area13
+# apply + 26-column selection persistence + Toolkit-native ACP encoding +
+# KEYE/DIN/SENPIROA profiles), and it fails nominal because no single
+# bounded scope carries the >=10-original leg together with the
+# database-persistence leg and a spanning acceptance record
+# (thermostat row-4 precedent: distinct bounded scopes cannot be
+# combined into a nominal pass). Values are read off the committed
+# artifacts listed in DATABASE_REPORT_EXPORT_EVIDENCE_PATHS below:
+# - serializer leg (site-independent, committed vectors): the literal
+#   fixture research/fixtures/toolkit-database-csv-original-vectors.json
+#   holds 88 vectors (case_count 88, row_case_count 73: 73 row + 15
+#   quote); the historical acceptance
+#   research/fixtures/toolkit-database-csv-acceptance.json records
+#   original_cases 88 (portable_row_cases 70 + portable_quote_cases 13 =
+#   83 within the public API domain) over 23 tests per Python with the
+#   scope database_projection_verified=false. The committed offline tests
+#   replay 70 row + 13 quote vectors per execution
+#   (tests/test_toolkit_database_csv.py); the fresh 88-case original
+#   probe (tests/test_toolkit_database_csv_original.py, gated on
+#   CBUS_TOOLKIT_EXE) SKIPS offline -- its prior runs are recorded in
+#   the acceptance fixture, not re-executed here;
+# - projector leg (site-independent, committed per-execution replay):
+#   research/experiments/2026-09-24/csv-cached-projection-review.json
+#   records captured_original_cases_replayed 12 (10 completed + 2
+#   declared provider stops) replayed per execution by
+#   tests/test_toolkit_database_csv_projection.py::
+#   test_all_twelve_original_cases (offline, no provisioning; the review
+#   records original_binary_executed_in_this_test=false). The projector
+#   scope is the retained cached unit/group domain only;
+# - backend legs (prior original/native runs, NOT committed per-execution
+#   replay): research/experiments/2026-09-24/csv-original8-analysis.json
+#   records 8 completed original backend cases (original_invocations 16,
+#   original_instruction_entries 37933) with supplied providers;
+#   research/experiments/2026-09-24/csv-native4-analysis.json records 4
+#   isolated native captures B01/B02/B03/B04 (archived_inputs_verified
+#   473, inputs unchanged); research/experiments/2026-09-24/
+#   csv-replay-complete.json records the successor original replay of
+#   all four fixtures through 8 invocations / 27661 approved original
+#   instruction entries (B01 Area12 + B02 existing-Area255 + B04 nil
+#   completed; B03 allocated exactly one group at address 13 with tag
+#   "Group 13" and stopped at the explicitly refused GroupSave -- not a
+#   persisted save) with historical_native_archive_inputs_verified 473.
+#   No committed offline test re-executes those original instructions;
+# - native-persistence leg (fragment scope, gated): the owned C-Gate B03
+#   test tests/test_toolkit_database_csv_area_native.py (requires
+#   CBUS_CGATE_JAVA) SKIPS offline; its prior run recorded in
+#   research/experiments/2026-09-24/csv-missing-area-review.json shows
+#   focused_tests 42 + owned_cgate_tests 1 passing with
+#   backup_created_before_mutation true, created address 13 tag
+#   "Group 13", target_save_confirmed true, reload_verified true,
+#   sentinel_cni_connections 0, physical_device_accessed false. Live
+#   acquisition (research/experiments/2026-09-24/csv-live-cgate-review.json)
+#   is 2 protocol cases (existing-Area12 complete, missing-Area13 stop)
+#   with DBGETXML only and native_database_mutated false;
+# - selection/encoding legs (Windows-gated corroboration, not original
+#   executions): 26 columns / 15 selection methods with owned Windows
+#   HKCU acceptance (research/experiments/2026-09-24/
+#   csv-selection-review.json: host 53, owned Windows 2) and ACP
+#   conversion with owned Windows CP1252 acceptance
+#   (research/experiments/2026-09-24/csv-native-encoding-review.json:
+#   core 56, owned Windows 3). Static method bytes pin the original
+#   writer path; they are documentation, not executions;
+# - SITE-INDEPENDENCE carve-out (explicit): the KEYE (22 units),
+#   DIN (4 units), and SENPIROA (1 unit) read-only sweeps recorded in
+#   csv-keye-profile-review.json, csv-din-profile-review.json, and
+#   csv-senpiroa-profile-review.json each ran against "unchanged
+#   GRENACHE.xml copied read-only from the user-owned Windows VM" with
+#   raw_snapshot_committed false. csv-keye-secondary-application-
+#   review.json is a static-only analysis (SecondApplicationBlocks
+#   mask/resolution, no snapshot reference) and is likewise excluded.
+#   The three sweeps REQUIRE the site snapshot and all four reviews
+#   are EXCLUDED from the flip basis entirely -- the
+#   profile coverage counted here rests only on the committed offline
+#   synthetic tests (tests/test_toolkit_database_csv_native.py KEYE /
+#   DIN / SENPIROA cases) and the static analyses, which carry zero
+#   original-Toolkit executions. The site reviews are therefore NOT
+#   listed in the evidence paths below.
+# Row-level rubric flags: ``original_executions`` 88 (serializer fresh
+# leg) with ``has_replay_test`` True (committed offline vector replay
+# exists), but ``has_native_persistence`` / ``has_acceptance_record`` /
+# ``has_bounded_scope_note`` are False -- the >=10-original leg
+# (serializer/projector scope, whose acceptance record declares
+# database_projection_verified=false) and the save/close/load leg (exact
+# archived B03 apply scope) belong to different bounded scopes, and no
+# single committed record bounds the full serializer + projector +
+# native + live + apply + selection + encoding + profiles scope (each of
+# the ~7 acceptance/review fixtures disclaims the other fragments).
+# ``distinct_profiles`` is 1 (single Toolkit 1.18.0.2754 profile family;
+# KEYE/DIN/SENPIROA static/synthetic coverage carries no original
+# comparisons per profile); ``original_error_cases`` is 0 (preserved
+# preparation observations, injected faults, and guard tests are process
+# observations, not replayed original error-identity vectors); no
+# original-observed rejection basis and no physical-device evidence
+# (owned runs record sentinel 0 CNI and physical_device_accessed false).
+DATABASE_REPORT_EXPORT_EVIDENCE = {
+    "original_executions": 88,
+    "vector_cases": 88,
+    "vector_row_cases": 73,
+    "vector_quote_cases": 15,
+    "portable_row_cases": 70,
+    "portable_quote_cases": 13,
+    "offline_replayed_rows": 70,
+    "offline_replayed_quotes": 13,
+    "acceptance_tests_per_python": 23,
+    "projector_cases": 12,
+    "projector_completed": 10,
+    "projector_provider_stops": 2,
+    "backend_original_cases": 8,
+    "backend_original_invocations": 16,
+    "backend_original_instruction_entries": 37933,
+    "native_capture_fixtures": 4,
+    "native_archived_inputs": 473,
+    "replay_invocations_attempted": 8,
+    "replay_instruction_entries": 27661,
+    "replay_fixtures": 4,
+    "replay_created_address": 13,
+    "replay_created_tag": "Group 13",
+    "area_focused_tests": 42,
+    "area_owned_cgate_tests": 1,
+    "live_protocol_cases": 2,
+    "selection_columns": 26,
+    "selection_methods": 15,
+    "selection_host_tests": 53,
+    "selection_owned_windows_tests": 2,
+    "encoding_core_tests": 56,
+    "encoding_owned_windows_tests": 3,
+    "has_replay_test": True,
+    "has_native_persistence": False,
+    "has_acceptance_record": False,
+    "has_bounded_scope_note": False,
+    "original_error_cases": 0,
+    "distinct_profiles": 1,
+    "has_original_rejection_basis": False,
+    "has_physical_device_evidence": False,
+}
+
+# Committed artifacts only (all paths below are git-tracked; no
+# /Volumes/external report paths, vendor executables, credentials, or the
+# site GRENACHE snapshot). Oracle vs self-referential split: the two
+# research fixtures plus the offline committed-vector replay tests
+# (test_toolkit_database_csv.py 70+13 vectors,
+# test_toolkit_database_csv_projection.py 12 per-execution outcomes,
+# test_toolkit_database_csv_native.py synthetic native-XML cases) and the
+# gated fresh-original / owned-C-Gate / Windows probes (whose prior runs
+# are recorded in the acceptance/review fixtures) are the audit trail;
+# guard/CLI-shape/adapter-guard tests are self-referential (never flip a
+# slot alone) and docs/toolkit-database-csv.md is the bounded-scope
+# narrative. The three GRENACHE-sweep reviews (keye, din,
+# senpiroa) plus the static-only keye-secondary review are DELIBERATELY
+# excluded: the sweeps require the
+# non-committed site snapshot (raw_snapshot_committed false).
+DATABASE_REPORT_EXPORT_EVIDENCE_PATHS = [
+    "tests/test_toolkit_database_csv.py",
+    "tests/test_toolkit_database_csv_projection.py",
+    "tests/test_cli_toolkit_database_csv.py",
+    "tests/test_toolkit_database_csv_native.py",
+    "tests/test_toolkit_database_csv_area.py",
+    "tests/test_toolkit_database_csv_original.py",
+    "tests/test_toolkit_database_csv_area_native.py",
+    "tests/test_toolkit_database_csv_selection.py",
+    "tests/test_windows_csv_selection.py",
+    "tests/test_windows_csv_encoding.py",
+    "research/fixtures/toolkit-database-csv-original-vectors.json",
+    "research/fixtures/toolkit-database-csv-acceptance.json",
+    "research/experiments/2026-09-24/csv-original8-analysis.json",
+    "research/experiments/2026-09-24/csv-native4-analysis.json",
+    "research/experiments/2026-09-24/csv-replay-complete.json",
+    "research/experiments/2026-09-24/csv-cached-projection-review.json",
+    "research/experiments/2026-09-24/csv-native-xml-projection-review.json",
+    "research/experiments/2026-09-24/csv-live-cgate-review.json",
+    "research/experiments/2026-09-24/csv-missing-area-review.json",
+    "research/experiments/2026-09-24/csv-selection-review.json",
+    "research/experiments/2026-09-24/csv-native-encoding-review.json",
+    "docs/toolkit-database-csv.md",
+]
+
+
 def ledger_path_text() -> str:
     return files("cbus_toolkit").joinpath("capabilities.json").read_text(
         encoding="utf-8"
@@ -827,7 +1016,7 @@ def is_area_accepted(entry: dict) -> bool:
 
 
 def _apply_rubric_rows(matrix: dict) -> None:
-    """Fill the six attempted rows through the rubric (fail-safe).
+    """Fill the seven attempted rows through the rubric (fail-safe).
 
     A slot is set to ``accepted`` only when ``slot_meets_rubric`` passes;
     otherwise it stays ``unassessed``. Unknown row IDs raise KeyError so a
@@ -855,7 +1044,10 @@ def _apply_rubric_rows(matrix: dict) -> None:
         elif area_id == "preferences-and-update-workflow":
             evidence = PREFERENCES_UPDATE_EVIDENCE
             evidence_paths = list(PREFERENCES_UPDATE_EVIDENCE_PATHS)
-        else:  # pragma: no cover - six-row phase; kept explicit
+        elif area_id == "toolkit-database-report-export":
+            evidence = DATABASE_REPORT_EXPORT_EVIDENCE
+            evidence_paths = list(DATABASE_REPORT_EXPORT_EVIDENCE_PATHS)
+        else:  # pragma: no cover - seven-row phase; kept explicit
             continue
         for slot in WORKFLOW_SLOTS:
             accepted, _ = slot_meets_rubric(slot, evidence)
@@ -871,8 +1063,8 @@ def _apply_rubric_rows(matrix: dict) -> None:
     matrix["accepted_areas"] = sum(
         1 for entry in matrix["areas"].values() if is_area_accepted(entry)
     )
-    # ``complete`` stays false: the census is incomplete and only six
-    # partially filled rows exist (three 1/6, three 0/6). Never derive
+    # ``complete`` stays false: the census is incomplete and only seven
+    # partially filled rows exist (three 1/6, four 0/6). Never derive
     # completion from intent.
     matrix["complete"] = bool(
         matrix["census_complete"]

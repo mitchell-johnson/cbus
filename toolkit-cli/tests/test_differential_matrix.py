@@ -1,4 +1,4 @@
-"""Phase 4+: differential matrix with rubric + six attempted rows (TDD).
+"""Phase 4+: differential matrix with rubric + seven attempted rows (TDD).
 
 Enumerates all 38 ledger areas x workflow/negative-path slots and proves
 the exact differential state: only ``edlt-reset-controls`` /
@@ -7,8 +7,9 @@ the exact differential state: only ``edlt-reset-controls`` /
 ``nominal_workflow`` are accepted (per the executable rubric in
 ``cbus_toolkit.differential``); the fourth attempted row
 ``thermostat-configuration``, the fifth attempted row
-``all-unit-parameter-encoding``, and the sixth attempted row
-``preferences-and-update-workflow`` stay 0/6 (all slots ``unassessed``);
+``all-unit-parameter-encoding``, the sixth attempted row
+``preferences-and-update-workflow``, and the seventh attempted row
+``toolkit-database-report-export`` stay 0/6 (all slots ``unassessed``);
 every other slot stays ``unassessed``, ``accepted_areas`` stays 0 (area
 rule requires all six slots), and ``complete`` stays false. Flipping any
 further slot requires independent original-Toolkit evidence satisfying
@@ -37,7 +38,7 @@ class DifferentialMatrixTests(unittest.TestCase):
         self.assertEqual(matrix["ledger_areas"], 38)
         self.assertEqual(set(matrix["areas"]), set(differential.ledger_area_ids(ledger)))
 
-    def test_matrix_holds_exact_six_row_state(self):
+    def test_matrix_holds_exact_seven_row_state(self):
         matrix = differential.build_matrix()
         self.assertFalse(matrix["complete"])
         self.assertEqual(matrix["accepted_areas"], 0)
@@ -158,6 +159,27 @@ class DifferentialMatrixTests(unittest.TestCase):
                             differential.PREFERENCES_UPDATE_EVIDENCE_PATHS
                         ),
                     )
+                elif area_id == "toolkit-database-report-export":
+                    # Seventh attempted row: audited 0/6 (broad
+                    # multi-scope row; serializer/projector/native/live/
+                    # apply/selection/encoding legs in different bounded
+                    # scopes with no spanning record; GRENACHE sweeps
+                    # excluded as site-dependent). All six slots stay
+                    # unassessed; the evidence paths record the audit
+                    # trail.
+                    self.assertEqual(entry["differential_status"], "pending")
+                    for slot in differential.WORKFLOW_SLOTS:
+                        self.assertEqual(entry["workflows"][slot], "unassessed")
+                    for slot in differential.NEGATIVE_SLOTS:
+                        self.assertEqual(
+                            entry["negative_paths"][slot], "unassessed"
+                        )
+                    self.assertEqual(
+                        entry["evidence_paths"],
+                        list(
+                            differential.DATABASE_REPORT_EXPORT_EVIDENCE_PATHS
+                        ),
+                    )
                 else:
                     self.assertEqual(entry["differential_status"], "pending")
                     self.assertEqual(entry["evidence_paths"], [])
@@ -228,6 +250,19 @@ class DifferentialMatrixTests(unittest.TestCase):
                 )
                 self.assertTrue(reason)
                 self.assertFalse(accepted, reason)
+        # Seventh attempted row: the rubric rejects every slot (0/6) --
+        # the >=10-original serializer/projector legs and the B03
+        # native-persistence leg live in different bounded scopes with
+        # no spanning acceptance record, and the GRENACHE sweeps are
+        # excluded as site-dependent.
+        for slot in differential.ALL_SLOTS:
+            with self.subTest(slot=slot):
+                accepted, reason = differential.slot_meets_rubric(
+                    slot,
+                    dict(differential.DATABASE_REPORT_EXPORT_EVIDENCE),
+                )
+                self.assertTrue(reason)
+                self.assertFalse(accepted, reason)
         with self.assertRaises(KeyError):
             differential.slot_meets_rubric("no-such-slot", {})
 
@@ -267,6 +302,11 @@ class DifferentialMatrixTests(unittest.TestCase):
         self.assertFalse(
             differential.is_area_accepted(
                 matrix["areas"]["preferences-and-update-workflow"]
+            )
+        )
+        self.assertFalse(
+            differential.is_area_accepted(
+                matrix["areas"]["toolkit-database-report-export"]
             )
         )
         accepted_entry = {
@@ -322,6 +362,12 @@ class DifferentialMatrixTests(unittest.TestCase):
                 matrix, "preferences-and-update-workflow"
             ),
             list(differential.PREFERENCES_UPDATE_EVIDENCE_PATHS),
+        )
+        self.assertEqual(
+            differential.evidence_paths_for(
+                matrix, "toolkit-database-report-export"
+            ),
+            list(differential.DATABASE_REPORT_EXPORT_EVIDENCE_PATHS),
         )
         with self.assertRaises(KeyError):
             differential.area_status(matrix, "no-such-area")
@@ -861,6 +907,187 @@ class DifferentialMatrixTests(unittest.TestCase):
         # HKCU registry is not the rubric's database leg, and no single
         # record bounds the full multi-scope row.
         self.assertIs(evidence["has_replay_test"], False)
+        self.assertIs(evidence["has_native_persistence"], False)
+        self.assertIs(evidence["has_acceptance_record"], False)
+        self.assertIs(evidence["has_bounded_scope_note"], False)
+
+
+    def test_database_report_export_evidence_constants_match_committed_fixtures_offline(self):
+        # Row 7 (OFFLINE, no vendor spec/bridge/site snapshot): the
+        # hardcoded evidence constants must match the committed fixtures.
+        # Verdict is 0/6, so this pins the audit numbers, not a flip.
+        # The crux the test pins is scope-fragmentation plus
+        # site-independence: the 88-serializer leg and the B03
+        # persistence leg live in different bounded scopes, and the
+        # GRENACHE sweeps (22 KEYE / 4 DIN / 1 sensor) are excluded
+        # because their raw snapshot is not committed.
+        vectors = json.loads(
+            (
+                ROOT / "research/fixtures/toolkit-database-csv-original-vectors.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(vectors["case_count"], 88)
+        self.assertEqual(vectors["row_case_count"], 73)
+        self.assertEqual(len(vectors["vectors"]), 88)
+        acceptance = json.loads(
+            (
+                ROOT / "research/fixtures/toolkit-database-csv-acceptance.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(acceptance["original_cases"], 88)
+        self.assertEqual(acceptance["portable_row_cases"], 70)
+        self.assertEqual(acceptance["portable_quote_cases"], 13)
+        self.assertEqual(acceptance["tests_per_python"], 23)
+        self.assertIs(acceptance["scope"]["database_projection_verified"], False)
+        original8 = json.loads(
+            (
+                ROOT
+                / "research/experiments/2026-09-24/csv-original8-analysis.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(original8["complete_cases"], 8)
+        self.assertEqual(original8["original_invocations"], 16)
+        self.assertEqual(original8["original_instruction_entries"], 37933)
+        native4 = json.loads(
+            (
+                ROOT
+                / "research/experiments/2026-09-24/csv-native4-analysis.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(len(native4["fixture_results"]), 4)
+        self.assertEqual(native4["archived_inputs_verified"], 473)
+        replay = json.loads(
+            (
+                ROOT
+                / "research/experiments/2026-09-24/csv-replay-complete.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(replay["original_invocations_attempted"], 8)
+        self.assertEqual(replay["original_instruction_entries"], 27661)
+        self.assertEqual(len(replay["fixture_results"]), 4)
+        self.assertEqual(
+            replay["historical_native_archive_inputs_verified"], 473
+        )
+        b03 = next(
+            case for case in replay["fixture_results"] if case["id"] == "B03"
+        )
+        self.assertEqual(b03["created_address"], 13)
+        self.assertEqual(b03["created_tag"], "Group 13")
+        projector = json.loads(
+            (
+                ROOT
+                / "research/experiments/2026-09-24/csv-cached-projection-review.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(projector["captured_original_cases_replayed"], 12)
+        self.assertEqual(projector["captured_original_completed"], 10)
+        self.assertEqual(projector["captured_provider_stop_partials"], 2)
+        self.assertIs(projector["original_binary_executed_in_this_test"], False)
+        missing = json.loads(
+            (
+                ROOT
+                / "research/experiments/2026-09-24/csv-missing-area-review.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(missing["focused_tests"], 42)
+        self.assertEqual(missing["owned_cgate_tests"], 1)
+        self.assertIs(
+            missing["owned_cgate_result"]["backup_created_before_mutation"],
+            True,
+        )
+        self.assertEqual(
+            missing["owned_cgate_result"]["created_address"], 13
+        )
+        self.assertEqual(
+            missing["owned_cgate_result"]["created_tag"], "Group 13"
+        )
+        self.assertIs(
+            missing["owned_cgate_result"]["target_save_confirmed"], True
+        )
+        self.assertIs(missing["owned_cgate_result"]["reload_verified"], True)
+        self.assertEqual(
+            missing["owned_cgate_result"]["sentinel_cni_connections"], 0
+        )
+        self.assertIs(
+            missing["owned_cgate_result"]["physical_device_accessed"], False
+        )
+        live = json.loads(
+            (
+                ROOT
+                / "research/experiments/2026-09-24/csv-live-cgate-review.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(len(live["live_protocol_cases"]), 2)
+        self.assertIs(live["native_database_mutated"], False)
+        selection = json.loads(
+            (
+                ROOT
+                / "research/experiments/2026-09-24/csv-selection-review.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(selection["static_facts"]["column_count"], 26)
+        self.assertEqual(selection["static_facts"]["selection_methods"], 15)
+        self.assertEqual(selection["host_acceptance"]["tests_run"], 53)
+        self.assertEqual(
+            selection["owned_windows_acceptance"]["tests_run"], 2
+        )
+        encoding = json.loads(
+            (
+                ROOT
+                / "research/experiments/2026-09-24/csv-native-encoding-review.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(encoding["host_acceptance"]["core_tests_run"], 56)
+        self.assertEqual(
+            encoding["owned_windows_acceptance"]["tests_run"], 3
+        )
+        # Site-independence: the GRENACHE sweeps require the
+        # non-committed site snapshot, so they stay out of the flip
+        # basis and out of the evidence paths.
+        for name in (
+            "csv-keye-profile-review.json",
+            "csv-din-profile-review.json",
+            "csv-senpiroa-profile-review.json",
+        ):
+            with self.subTest(sweep=name):
+                sweep = json.loads(
+                    (
+                        ROOT
+                        / f"research/experiments/2026-09-24/{name}"
+                    ).read_text(encoding="utf-8")
+                )
+                self.assertIs(
+                    sweep["read_only_snapshot_sweep"]["raw_snapshot_committed"],
+                    False,
+                )
+                for path in differential.DATABASE_REPORT_EXPORT_EVIDENCE_PATHS:
+                    self.assertNotIn(name.replace(".json", ""), path)
+        evidence = differential.DATABASE_REPORT_EXPORT_EVIDENCE
+        self.assertEqual(evidence["original_executions"], 88)
+        self.assertEqual(evidence["vector_cases"], 88)
+        self.assertEqual(evidence["vector_row_cases"], 73)
+        self.assertEqual(evidence["portable_row_cases"], 70)
+        self.assertEqual(evidence["portable_quote_cases"], 13)
+        self.assertEqual(evidence["projector_cases"], 12)
+        self.assertEqual(evidence["projector_completed"], 10)
+        self.assertEqual(evidence["projector_provider_stops"], 2)
+        self.assertEqual(evidence["backend_original_cases"], 8)
+        self.assertEqual(evidence["backend_original_invocations"], 16)
+        self.assertEqual(
+            evidence["backend_original_instruction_entries"], 37933
+        )
+        self.assertEqual(evidence["native_capture_fixtures"], 4)
+        self.assertEqual(evidence["native_archived_inputs"], 473)
+        self.assertEqual(evidence["replay_invocations_attempted"], 8)
+        self.assertEqual(evidence["replay_instruction_entries"], 27661)
+        self.assertEqual(evidence["selection_columns"], 26)
+        self.assertEqual(evidence["selection_methods"], 15)
+        self.assertEqual(evidence["area_focused_tests"], 42)
+        self.assertEqual(evidence["area_owned_cgate_tests"], 1)
+        # Row-level rubric flags: offline replay exists, but the
+        # >=10-original legs and the B03 persistence leg belong to
+        # different bounded scopes with no spanning record.
+        self.assertIs(evidence["has_replay_test"], True)
         self.assertIs(evidence["has_native_persistence"], False)
         self.assertIs(evidence["has_acceptance_record"], False)
         self.assertIs(evidence["has_bounded_scope_note"], False)

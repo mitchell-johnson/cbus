@@ -1,13 +1,14 @@
-# Differential acceptance plan (Phase 4 scaffolding + six attempted rows)
+# Differential acceptance plan (Phase 4 scaffolding + seven attempted rows)
 
 Phase 4 only: ledger/census inventory plus a differential harness with an
 executable slot-flip rubric. No Toolkit parity is claimed. The harness
-holds exactly six partially filled rows (`edlt-reset-controls`,
+holds exactly seven partially filled rows (`edlt-reset-controls`,
 `edlt-retained-scene-editing`, and `edlt-global-category-programming`,
 `nominal_workflow` only, 1/6 slots each, plus `thermostat-configuration`,
-`all-unit-parameter-encoding`, and `preferences-and-update-workflow`
-audited 0/6 with all slots `unassessed`); every other slot stays
-`unassessed`, `accepted_areas` stays 0, and `complete` stays false.
+`all-unit-parameter-encoding`, `preferences-and-update-workflow`, and
+`toolkit-database-report-export` audited 0/6 with all slots
+`unassessed`); every other slot stays `unassessed`, `accepted_areas`
+stays 0, and `complete` stays false.
 
 ## Authoritative inputs
 
@@ -38,14 +39,16 @@ Implemented in `../src/cbus_toolkit/differential.py`:
   (`edlt-reset-controls`, `edlt-retained-scene-editing`, and
   `edlt-global-category-programming`). The fourth attempted row
   (`thermostat-configuration`), the fifth attempted row
-  (`all-unit-parameter-encoding`), and the sixth attempted row
-  (`preferences-and-update-workflow`) are each audited 0/6: all six slots
+  (`all-unit-parameter-encoding`), the sixth attempted row
+  (`preferences-and-update-workflow`), and the seventh attempted row
+  (`toolkit-database-report-export`) are each audited 0/6: all six slots
   stay `unassessed` because their evidence does not meet the rubric.
 - Per-row `differential_status: pending` (no area meets the all-six-slot
   area rule) and `evidence_paths: []` except the Reset row's seven, the
   SceneManager row's six, the GlobalProgramming row's seven, the
   Thermostat row's thirty-one, the AllUnitParameterEncoding row's six,
-  and the PreferencesUpdate row's sixteen committed paths.
+  the PreferencesUpdate row's sixteen, and the DatabaseReportExport
+  row's twenty-two committed paths.
 - Matrix summary: `ledger_areas: 38`, `accepted_areas: 0`,
   `complete: false`, `census_complete: false`.
 
@@ -56,9 +59,9 @@ Implemented in `../src/cbus_toolkit/differential.py`:
   `edlt-reset-controls` / `nominal_workflow`,
   `edlt-retained-scene-editing` / `nominal_workflow`, and
   `edlt-global-category-programming` / `nominal_workflow` are `accepted`;
-  `thermostat-configuration`, `all-unit-parameter-encoding`, and
-  `preferences-and-update-workflow` are each
-  0/6 (all `unassessed`); all other slots
+  `thermostat-configuration`, `all-unit-parameter-encoding`,
+  `preferences-and-update-workflow`, and `toolkit-database-report-export`
+  are each 0/6 (all `unassessed`); all other slots
   are `unassessed`, `accepted_areas` is 0, `complete` is
   false. A dedicated offline test pins each row's hardcoded evidence
   constants against its committed fixtures (Reset: 44 / 520 / 454,480;
@@ -79,7 +82,18 @@ Implemented in `../src/cbus_toolkit/differential.py`:
   conditions rows vs 279 arms / 94 expanded tests with 21 Windows cases /
   36 updates menu + 20 captured + 2 TLS / 51 About instruction cases /
   7 live observations with 108 host + 113 CLI tests, and 0 row-level
-  original-Toolkit executions).
+  original-Toolkit executions; DatabaseReportExport: 88 serializer
+  vectors (73 row + 15 quote; 70 + 13 replayed offline per execution) /
+  12 projector outcomes per execution (10 completed + 2 provider stops)
+  / 8 backend original cases (16 invocations, 37,933 entries) + 4
+  native captures (473 inputs unchanged) + successor replay of all
+  four through 8 invocations / 27,661 entries (B03 created exactly one
+  group at address 13, "Group 13") / B03 owned C-Gate apply (42
+  focused + 1 owned test: backup, Group 13 create, save, reload, 0 CNI,
+  no physical) / 2 live protocol cases without mutation / 26 columns
+  with 15 selection methods (53 host + 2 owned Windows) + ACP encoding
+  (56 core + 3 owned Windows), and GRENACHE sweeps (22 KEYE / 4 DIN /
+  1 sensor) excluded as site-dependent with raw snapshots uncommitted).
 - `tests/test_coverage_require_complete.py` asserts `coverage
   --require-complete` still exits 1 with `complete: false`.
 - The pre-existing `test_cli.py::test_coverage_cannot_claim_completion`
@@ -810,9 +824,10 @@ with no provisioning. Gate runs here therefore rest on committed
     Windows runs use owned scratch namespaces / LocalSystem HKCU with no
     C-Bus network, C-Gate programming, or device commands.
 
-  32 rows plus the full census mapping remain outstanding; these six
-  rows' thirty-three open slots require fresh original/firmware/
-  negative/hardware evidence.
+  32 rows plus the full census mapping remain outstanding after the
+  seventh row below; all seven rows' thirty-nine open slots require
+  fresh original/firmware/negative/hardware evidence (final tally at
+  the end of the toolkit-database-report-export row).
 
   ### Offline gate posture (this env, PreferencesUpdate row)
 
@@ -839,6 +854,163 @@ with no provisioning. Gate runs here therefore rest on committed
   selected/completed 6497, status complete) and
   `docs/native-memory-acceptance.json` (163 cases, 161 pass) -- not on
   live native re-execution.
+
+  ## The seventh attempted row: `toolkit-database-report-export` (0/6)
+
+  Row id verified present in `capabilities.json` (line 724). The rubric
+  is applied UNCHANGED and decides against a flip: a 0/6 verdict with
+  documented gaps is the honest success here, not a failure. This is a
+  broad multi-scope row (explicit captured-value serializer, strict
+  cached-object projector, admitted native XML adapter, live C-Gate
+  acquisition, guarded B03 Area13 apply, 26-column selection
+  persistence, Toolkit-native ACP encoding, KEYE/DIN/SENPIROA
+  profiles), and it fails nominal because no single bounded scope
+  carries the >=10-original leg together with the database-persistence
+  leg and a spanning acceptance record. CAUTION observed: the
+  sub-scope legs below must NOT be stitched into a row-level pass
+  (thermostat row-4 precedent: distinct bounded scopes cannot be
+  combined).
+
+  Replay-vs-native-vs-self-referential classification (read before
+  claiming anything):
+
+  - REPLAYED per-execution (committed offline tests, no provisioning):
+    `tests/test_toolkit_database_csv.py` replays 70 row + 13 quote
+    committed original vectors per execution (83 of the 88 committed
+    vectors; empty/high masks and NUL behavior remain research-only);
+    `tests/test_toolkit_database_csv_projection.py::
+    test_all_twelve_original_cases` reproduces all 12 captured original
+    class/Area/group outcomes per execution (10 completed + 2 declared
+    provider stops; the review records
+    `original_binary_executed_in_this_test: false`, so this is captured
+    replay, not fresh execution);
+    `tests/test_toolkit_database_csv_native.py` projects synthetic
+    native-XML shapes (RELAY4/KEYE/DIN/SENPIROA) offline -- committed
+    adapter checks, self-referential alone for rubric purposes.
+  - NATIVE prior runs (not re-executed here): the owned C-Gate B03
+    apply test (`tests/test_toolkit_database_csv_area_native.py`,
+    requires `CBUS_CGATE_JAVA`) backs up, creates application-56 group
+    13 as `Group 13`, saves, closes, reloads and verifies persistence
+    with 0 CNI and no physical access (prior run: 42 focused + 1 owned
+    test, recorded in `csv-missing-area-review.json`); live acquisition
+    (`csv-live-cgate-review.json`) is 2 DBGETXML-only protocol cases
+    (existing-Area12 complete, missing-Area13 stop) with
+    `native_database_mutated: false`.
+  - FRESH ORIGINAL prior runs (not re-executed here): the 88-case
+    serializer probe (`tests/test_toolkit_database_csv_original.py`,
+    gated on `CBUS_TOOLKIT_EXE`) and the backend original8 (8 cases,
+    16 invocations, 37,933 entries) plus the successor replay of all
+    four native fixtures (8 invocations, 27,661 entries; B03 stopped at
+    the refused GroupSave, not a persisted save) -- all SKIP offline;
+    their prior runs are recorded in the committed acceptance/review
+    fixtures.
+  - SELF-REFERENTIAL (never flip a slot alone): guard/CLI-shape tests,
+    adapter-guard tests, static method-byte pins (selection 15 methods,
+    encoding writer path), and the Windows scratch-registry / CP1252
+    runs (owned namespaces, system ANSI code page only).
+  - SITE-DEPENDENT, EXCLUDED from the flip basis: the KEYE read-only
+    sweep (all 22 matching KEYE records), the DIN sweep (4 records),
+    and the SENPIROA sweep (1 record) in `csv-keye-profile-review.json`,
+    `csv-din-profile-review.json`, and
+    `csv-senpiroa-profile-review.json` each ran against "unchanged
+    GRENACHE.xml copied read-only from the user-owned Windows VM" with
+    `raw_snapshot_committed: false`. `csv-keye-secondary-application-review.json`
+    is a static-only SecondApplicationBlocks mask/resolution analysis
+    (no snapshot reference) and is likewise excluded. The site snapshot is not committed
+    and is never read by the committed tests; those four reviews are
+    deliberately absent from the row's evidence paths. Profile coverage
+    in the flip basis rests only on committed offline synthetic tests
+    and static analyses (zero original executions per profile).
+
+  Numbers verification (every claimed number verified against committed
+  artifacts; nothing assumed):
+
+  - "88 vectors (73 row + 15 quote), 70 + 13 replayed offline":
+    verified. The vectors fixture shows `case_count` 88,
+    `row_case_count` 73, 88 entries; the acceptance fixture shows
+    `original_cases` 88 with `portable_row_cases` 70 +
+    `portable_quote_cases` 13 over 23 tests per Python, and its scope
+    declares `database_projection_verified: false`. The offline tests
+    assert counts 70 and 13.
+  - "12 projector outcomes (10 + 2)": verified. The cached-projection
+    review shows `captured_original_cases_replayed` 12,
+    `captured_original_completed` 10, `captured_provider_stop_partials`
+    2, with `original_binary_executed_in_this_test` false; the offline
+    test asserts `len(cases) == 12`.
+  - "8 backend cases / 4 native captures / 27,661 replay entries / 473
+    inputs unchanged": verified. The original8 analysis shows
+    `complete_cases` 8, `original_invocations` 16,
+    `original_instruction_entries` 37933; the native4 analysis shows 4
+    fixtures with `archived_inputs_verified` 473; the successor replay
+    shows `original_invocations_attempted` 8,
+    `original_instruction_entries` 27661, 4 fixtures, and
+    `historical_native_archive_inputs_verified` 473. B03 created exactly
+    address 13 / `Group 13` and declared stop "Explicit owned storage
+    save denied".
+  - "Guarded B03 backup/save/reload + live acquisition": verified. The
+    missing-area review shows focused 42 + owned C-Gate 1 passing with
+    backup true, created 56/13/`Group 13`, target save + reload true, 0
+    sentinel CNI, physical false. The live review shows 2 protocol
+    cases with no database mutation.
+  - "Windows corroboration (26-column selection, ACP output)":
+    verified. The selection review pins 26 labels / 15 methods (host
+    53, owned Windows 2: SelectAll default, 32-bit REG_SZ roundtrip,
+    cleanup); the encoding review pins the CP_ACP path (core 56,
+    owned Windows 3 on CP1252 incl. surrogate-pair replacement).
+    Static bytes only -- not original executions.
+  - Self-limit reconciliation: the implementation-status
+    `toolkit-database-report-export` limits (line 84) leave
+    secondary-application associations for other families and remaining
+    unit profiles open; the CSV research row (line 122) leaves
+    secondary-application associations for other families, remaining
+    unit profiles, and physical behavior open. The audit's per-slot
+    verdicts match those limits exactly.
+
+  Per-slot verdicts (evidence paths are committed artifacts only; the
+  existing rubric is applied unchanged):
+
+  - `nominal_workflow` = `unassessed`: 88 serializer fresh-original
+    cases (>=10) with committed offline replay exist, but the only
+    database save/close/load leg (exact archived B03 apply scope) and
+    the only spanning-claim records live in different bounded scopes
+    than the serializer/projector scopes -- the serializer acceptance
+    explicitly declares `database_projection_verified: false`, and each
+    of the ~7 acceptance/review fixtures disclaims the other fragments.
+    The rubric's nominal gate therefore reports `missing rubric
+    requirement: has_native_persistence` (row-level persistence /
+    record / scope flags recorded False).
+  - `error_path` = `unassessed`: no original-observed error vectors with
+    exact error identity. Preserved preparation observations, injected
+    faults, and guard tests are process observations, not replayable
+    original error vectors.
+  - `device_firmware_variation` = `unassessed`: single Toolkit-profile
+    family for all original comparisons (1.18.0.2754); KEYE/DIN/SENPIROA
+    static/synthetic coverage carries zero original comparisons per
+    profile (need >=2 with original comparisons per profile).
+  - `invalid_input` / `unsupported_profile` = `unassessed`: strict input
+    guards and profile rejections are scoping guards without
+    original-observed rejection identity.
+  - `hardware_divergence` = `unassessed`: no physical-device evidence;
+    owned runs record 0 CNI connections and `physical_device_accessed:
+    false`, and native runs are loopback C-Gate processes.
+
+  31 rows plus the full census mapping remain outstanding; these seven
+  rows' thirty-nine open slots require fresh original/firmware/
+  negative/hardware evidence.
+
+  ### Offline gate posture (this env, DatabaseReportExport row)
+
+  The fresh-original serializer probe (`OriginalCSVTests`, requires
+  `CBUS_TOOLKIT_EXE`), the owned C-Gate B03 apply test (requires
+  `CBUS_CGATE_JAVA` + vendor C-Gate), and the Windows selection/encoding
+  suites (require Windows + `CBUS_WINDOWS_CSV_SELECTION` /
+  `CBUS_WINDOWS_CSV_ENCODING`) all SKIP offline in this env (5 skips
+  observed across the row's gated suites). The offline-runnable suites
+  -- serializer vectors (70 + 13), 12-outcome projector, synthetic
+  native-XML adapter, Area guards, selection logic, and CLI shape (65
+  tests) -- run here with no provisioning. Gate runs here therefore
+  rest on committed artifacts plus the prior runs recorded in the
+  acceptance/review fixtures -- not on live vendor re-execution.
 
 ## Fresh-wheel relationship (scaffolding only)
 
