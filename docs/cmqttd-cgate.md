@@ -68,8 +68,10 @@ are grounded in the retained native
 [`PROJECT ARCHIVE`/`RESTORE`/`RENAME` acceptance](../toolkit-cli/docs/native-project-acceptance.json).
 The repository row grammar is grounded in the retained
 [repository inventory evidence](../toolkit-cli/docs/repositories.md). These
-captures do not establish Schneider archive bytes, CGL bytes, repository
-selection scope, or arbitrary server-file behavior, so those paths remain
+captures and the disposable native
+[`PROJECT COPY`/`DELETE` evidence](../rust/testdata/fixtures/native_cgate_project_copy_delete.json)
+do not establish Schneider archive bytes, CGL bytes, arbitrary server-file
+behavior, or a safe repository switch for cmqttd, so those paths remain
 explicitly unavailable.
 
 | Operation | Backend and verification |
@@ -78,7 +80,8 @@ explicitly unavailable.
 | `SESSION_ID`, `SESSION_ID ALL`, `SESSION_ID TAG`, `QUIT`/`EXIT` | Volatile command-session registry with odd `cmdN` identifiers, peer origin, local connection time, one-shot application tags and native 300 envelopes. A successful 204 shutdown reply is flushed before the connection closes; no project, database or PCI state is changed |
 | Project list/use/load/save/new/close; database CRUD and database snapshots | Persistent JSON database; atomic replacement, restrictive permissions, failed-write rollback |
 | `PROJECT ARCHIVE`, `PROJECT RESTORE`, secondary-project `PROJECT RENAME` | Exact retained native success envelope (`200 OK.`), optional LOGIN gating, and atomic durable commit/rollback. Archive tokens must use the explicit `cmqttd:KEY` namespace and address snapshots inside cmqttd's JSON state repository; other tokens return 408 and are never opened as filesystem paths. These are not Schneider ZIP/GZ/DB files. Snapshots retain modeled project/network/unit records and their unit fields; opaque auxiliary database maps are outside this bounded snapshot contract. Runtime physical presence, levels, and network state are excluded. The configured hardware project cannot be renamed while the service is running and returns 408 because the PCI/MQTT binding is immutable |
-| `REPOSITORY LIST` | One read-only native `123 index=1 type=cmqttd-json path=... current=yes` record for `--cgate-state`. `REPOSITORY USE` remains unavailable because native server-wide selection and concurrency behavior are not retained |
+| `PROJECT COPY SOURCE DESTINATION`, `PROJECT DELETE NAME` | Exact native success envelope (`200 OK.`), strict named grammar, optional LOGIN gating, and atomic durable commit/rollback. COPY preserves durable project/network/unit/level data and database OIDs while excluding physical presence, observed levels, and open network state; the source remains selected. DELETE is limited to secondary projects, clears the deleting connection's selection, and removes only the target's durable records. The configured hardware project returns 408. Native C-Gate separates on-disk repository projects from loaded projects; cmqttd has one loaded atomic JSON model, so copies are immediately selectable and deletes take effect immediately. This is an explicit lifecycle difference, not vendor repository-file parity |
+| `REPOSITORY LIST` | One read-only native `123 index=1 type=cmqttd-json path=... current=yes` record for `--cgate-state`. `REPOSITORY USE` remains unavailable because native selection is server-global and rejects switching while any project is open. `PROJECT REPAIR` remains unavailable because native SQLite repositories report that they do not support it and cmqttd-json has no evidenced repair transaction |
 | Here-document framing | TCP and TLS recognize native `COMMAND << DELIMITER` framing and apply the optional LOGIN gate. Lines are limited to 1 MiB and bodies to 16 MiB; an oversized body is drained to its delimiter and returns tagged 400 so the connection remains synchronized, while EOF before the delimiter returns tagged 400 and closes the connection. Completed `DBSETXML` and `CGL IMPORT` documents return explicit 502 without changing state: native DBSETXML typed-object replacement and its 301 OID receipt, and the vendor CGL format, are not implemented merely by accepting their framing |
 | Database PP locks, sessions, get/set/info/new/load/save | Existing programming model with connection ownership; staged sessions and locks are discarded on disconnect/restart |
 | `PP RESET_TO_DEFAULTS` | Replaces one owned loaded session with exactly the `DefaultValue` fields in its parsed unit specification. The result remains staged until an explicit save; missing or malformed specifications return 408 unchanged, with no PCI access |
@@ -406,7 +409,7 @@ all 431 have physical implementations in this service. `CMQTT CAPABILITIES`
 returns `full_cgate_compatibility: false`; unimplemented physical operations
 return 502. The enumerable gap tracker is the executable capability matrix in
 `cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 35
-physical, 46 local/session, 349 fail-closed 502, and 1 obsolete 400 over the
+physical, 48 local/session, 347 fail-closed 502, and 1 obsolete 400 over the
 431 inventoried paths, plus a separately asserted 6-row supplement for
 non-inventoried service commands. Full replacement still requires:
 
@@ -445,10 +448,11 @@ non-inventoried service commands. Full replacement still requires:
   eDLT operation that can query pre-existing dynamic-label cache contents, and
   specialist application families such as HVAC, audio and security.
 - Schneider repository/archive and CGL import/export file formats, repository
-  selection, the remaining document commands, complete server
+  selection, repository repair, the remaining document commands, complete server
   configuration/access/TLS, firmware and deployment workflows. cmqttd's
-  internal project snapshots and read-only `cmqttd-json` repository descriptor
-  are implemented. Here-document transport is bounded and synchronized, but
+  internal project snapshots, OID-preserving secondary-project copy/delete and
+  read-only `cmqttd-json` repository descriptor are implemented. Here-document
+  transport is bounded and synchronized, but
   native DBSETXML/CGL document semantics remain explicit 502; none is
   presented as vendor-file interoperability.
   C-Gate TLS is transport-only: no TLS client authentication is performed,

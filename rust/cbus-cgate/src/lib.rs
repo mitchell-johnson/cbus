@@ -705,7 +705,10 @@ pub struct Server {
     objects: std::collections::HashSet<String>,
     /// OIDs issued for `Level`/`NetVar` creation, resolvable via `!oid/OID`.
     known_oids: std::collections::HashSet<String>,
-    /// Database levels by OID (`DBADDSAFE ... Level/NetVar ...` records).
+    /// Database levels by internal record key (`DBADDSAFE ... Level/NetVar
+    /// ...` records). A native-style project copy can retain the same OID in
+    /// more than one project, so duplicate identities use composite keys and
+    /// are resolved through selected-project context.
     db_levels: HashMap<String, DbLevel>,
     /// Programming locks (`PP LOCK name address`).
     locks: HashMap<String, String>,
@@ -1103,82 +1106,69 @@ impl Server {
     }
 
     fn project_delete(&mut self, tag: &str, words: &[&str]) -> Response {
-        if !(2..=3).contains(&words.len()) {
+        if words.len() != 3 {
+            return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
+        }
+        if self.deny_new() {
+            return err(tag, status::ACCESS_DENIED, "420 Access denied");
+        }
+        let name = words[2];
+        let Some(project) = self.projects.remove(name) else {
             return err(
                 tag,
-                status::BAD_REQUEST,
-                "400 PROJECT DELETE takes one optional name",
+                status::CONFLICT_STATE,
+                "408 Operation failed: Unable to delete file",
             );
-        }
-        let name = words
-            .get(2)
-            .map(|name| (*name).to_string())
-            .or_else(|| self.current.clone());
-        let Some(name) = name else {
-            return err(tag, status::NOT_FOUND, "404 No project selected");
         };
-        if self.projects.remove(&name).is_none() {
-            return err(tag, status::NOT_FOUND, "404 Project not found");
-        }
-        if self.current.as_deref() == Some(&name) {
+        let unit_oids: HashSet<String> = project
+            .networks
+            .values()
+            .flat_map(|network| network.units.values().map(|unit| unit.oid.clone()))
+            .collect();
+        self.delete_project_prefix(name, unit_oids);
+        if self.current.as_deref() == Some(name) {
             self.current = None;
         }
-        ok(tag, vec![], "200 OK")
+        self.push_event(format!("#e# project {name} deleted"));
+        ok(tag, vec![], "200 OK.")
     }
 
     fn project_copy(&mut self, tag: &str, words: &[&str]) -> Response {
         if words.len() != 4 {
-            return err(
-                tag,
-                status::BAD_REQUEST,
-                "400 PROJECT COPY requires source and destination",
-            );
+            return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
+        }
+        if self.deny_new() {
+            return err(tag, status::ACCESS_DENIED, "420 Access denied");
         }
         let (src, dst) = (words[2], words[3]);
         let Some(project) = self.projects.get(src) else {
-            return err(tag, status::NOT_FOUND, "404 Project not found");
+            return err(
+                tag,
+                status::CONFLICT_STATE,
+                "408 Operation failed: Copy failed: Source project not found",
+            );
         };
-        if !valid_name(dst) {
-            return err(tag, status::BAD_REQUEST, "400 Invalid project name");
+        if !valid_project_copy_name(dst) {
+            return err(
+                tag,
+                status::CONFLICT_STATE,
+                "408 Operation failed: Invalid new project name",
+            );
         }
         if self.projects.contains_key(dst) {
-            return err(tag, status::CONFLICT_EXISTS, "409 Project already exists");
+            return err(
+                tag,
+                status::CONFLICT_STATE,
+                "408 Operation failed: Copy failed: Destination project already exists",
+            );
         }
         let mut copy = project.clone();
         copy.name = dst.to_string();
-        // Copied units are new database objects: mint one fresh OID per
-        // address, shared across both layers like DBADDSAFE twins, so no
-        // two live units share one identity.
-        for network in copy.networks.values_mut() {
-            let mut addrs: Vec<u8> = network.units.keys().copied().collect();
-            addrs.extend(network.physical.keys().copied());
-            addrs.sort();
-            addrs.dedup();
-            for addr in addrs {
-                let oid = fresh_oid();
-                if let Some(unit) = network.units.get_mut(&addr) {
-                    unit.oid = oid.clone();
-                }
-                if let Some(unit) = network.physical.get_mut(&addr) {
-                    unit.oid = oid;
-                }
-            }
-        }
-        let oids: Vec<String> = copy
-            .networks
-            .values()
-            .flat_map(|n| {
-                n.units
-                    .values()
-                    .chain(n.physical.values())
-                    .map(|u| u.oid.clone())
-            })
-            .collect();
         self.projects.insert(dst.to_string(), copy);
-        self.known_oids.extend(oids);
         // A copy duplicates database state, not just the project record.
         self.duplicate_prefix(&format!("//{src}"), &format!("//{dst}"));
-        ok(tag, vec![], "200 OK")
+        self.push_event(format!("#e# project {src} copied to {dst}"));
+        ok(tag, vec![], "200 OK.")
     }
 
     /// Duplicate `db_fields`/`objects` keys under a new project prefix
@@ -1210,8 +1200,9 @@ impl Server {
             })
             .collect();
         self.objects.extend(extra_objects);
-        // Copied levels are new database objects: fresh OIDs with the
-        // parent rewritten under the destination prefix.
+        // Native repository copies retain database OIDs. Store a duplicate
+        // level under an internal composite key so both loaded projects can
+        // resolve the shared OID through their own selected-project context.
         let extra_levels: Vec<DbLevel> = self
             .db_levels
             .values()
@@ -1227,7 +1218,7 @@ impl Server {
                     format!("{to}/{rest}")
                 };
                 Some(DbLevel {
-                    oid: String::new(),
+                    oid: level.oid.clone(),
                     parent,
                     address: level.address,
                     tag: level.tag.clone(),
@@ -1236,12 +1227,59 @@ impl Server {
                 })
             })
             .collect();
-        for mut level in extra_levels {
-            let oid = self.issue_oid();
-            self.objects.insert(format!("!{oid}"));
-            level.oid = oid.clone();
-            self.db_levels.insert(oid, level);
+        for level in extra_levels {
+            let base = format!("{}@{}", level.oid, level.parent);
+            let mut key = base.clone();
+            let mut suffix = 1_u64;
+            while self.db_levels.contains_key(&key) {
+                key = format!("{base}#{suffix}");
+                suffix += 1;
+            }
+            self.objects.insert(format!("!{}", level.oid));
+            self.db_levels.insert(key, level);
         }
+    }
+
+    /// Remove all durable database records owned by one project while
+    /// retaining shared OIDs that still belong to a native-style copy.
+    fn delete_project_prefix(&mut self, project: &str, unit_oids: HashSet<String>) {
+        let exact = format!("//{project}");
+        let prefix = format!("{exact}/");
+        self.db_fields
+            .retain(|key, _| key != &exact && !key.starts_with(&prefix));
+        self.objects
+            .retain(|key| key != &exact && !key.starts_with(&prefix));
+
+        let level_oids: HashSet<String> = self
+            .db_levels
+            .values()
+            .filter(|level| level.parent == exact || level.parent.starts_with(&prefix))
+            .map(|level| level.oid.clone())
+            .collect();
+        self.db_levels
+            .retain(|_, level| level.parent != exact && !level.parent.starts_with(&prefix));
+
+        let removed_oids: HashSet<String> = unit_oids.union(&level_oids).cloned().collect();
+        for oid in removed_oids {
+            let unit_in_use = self.projects.values().any(|project| {
+                project
+                    .networks
+                    .values()
+                    .any(|network| network.units.values().any(|unit| unit.oid == oid))
+            });
+            let level_in_use = self.db_levels.values().any(|level| level.oid == oid);
+            if !unit_in_use && !level_in_use {
+                self.known_oids.remove(&oid);
+                self.objects.remove(&format!("!{oid}"));
+                let oid_prefix = format!("!{oid}/");
+                self.db_fields
+                    .retain(|key, _| key != &format!("!{oid}") && !key.starts_with(&oid_prefix));
+            }
+        }
+        for values in self.scene_snapshots.values_mut() {
+            values.retain(|(address, _)| address != &exact && !address.starts_with(&prefix));
+        }
+        self.scene_snapshots.retain(|_, values| !values.is_empty());
     }
 
     /// Native `PROJECT RENAME source destination`.
@@ -1655,7 +1693,7 @@ impl Server {
                 let mut segments = rest.splitn(2, '/');
                 let oid = segments.next().unwrap_or("");
                 if segments.next() == Some("Value") {
-                    if let Some(level) = self.db_levels.get(oid) {
+                    if let Some(level) = self.level(oid) {
                         let value = level
                             .value
                             .map(|v| v.to_string())
@@ -1674,7 +1712,7 @@ impl Server {
                 }
             }
             if xml && !rest.contains('/') {
-                if let Some(level) = self.db_levels.get(rest) {
+                if let Some(level) = self.level(rest) {
                     return Self::level_xml(tag, level);
                 }
                 return err(tag, status::ABSENT, "401 Object not found");
@@ -3288,7 +3326,7 @@ impl Server {
         // 301 OID flow; anything else stays opaque.
         if let Some(src_oid) = words[1].strip_prefix('!') {
             if !src_oid.contains('/') {
-                if let Some(source) = self.db_levels.get(src_oid).cloned() {
+                if let Some(source) = self.level(src_oid).cloned() {
                     let oid = self.issue_oid();
                     self.objects.insert(format!("!{oid}"));
                     self.db_levels.insert(
@@ -3421,22 +3459,44 @@ impl Server {
                 .retain(|k, _| *k != words[1] && !k.starts_with(&prefix));
             self.objects.remove(words[1]);
             if let Some(unit) = removed {
-                // Retire the identity: a deleted unit's OID must no
-                // longer resolve, without lowering the OID high-water mark.
-                self.known_oids.remove(&unit.oid);
+                // Repository copies retain OIDs, so retire the identity only
+                // after the last project record using it is deleted.
+                let in_use = self.projects.values().any(|project| {
+                    project.networks.values().any(|network| {
+                        network
+                            .units
+                            .values()
+                            .any(|candidate| candidate.oid == unit.oid)
+                    })
+                });
+                if !in_use {
+                    self.known_oids.remove(&unit.oid);
+                }
                 self.push_event(format!("#e# db unit {addr} deleted"));
                 return ok(tag, vec![], "200 OK");
             }
             return err(tag, status::NOT_FOUND, "404 Object not found");
         }
-        if self.objects.remove(words[1]) || self.db_fields.remove(words[1]).is_some() {
-            // Retire level identities too so `!oid/OID` stops resolving
-            // and the group document drops the row.
-            if let Some(rest) = words[1].strip_prefix('!') {
-                let oid = rest.split('/').next().unwrap_or("").to_string();
-                self.known_oids.remove(&oid);
-                self.db_levels.remove(&oid);
+        // An OID may occur in multiple loaded native-style project copies.
+        // Remove the selected project's record and keep the identity alive
+        // until its last occurrence is gone.
+        if let Some(rest) = words[1].strip_prefix('!') {
+            let oid = rest.split('/').next().unwrap_or("").to_string();
+            if let Some(key) = self.level_key(&oid) {
+                self.db_levels.remove(&key);
+                if self.db_levels.values().any(|level| level.oid == oid) {
+                    self.objects.insert(format!("!{oid}"));
+                } else {
+                    self.known_oids.remove(&oid);
+                    self.objects.remove(&format!("!{oid}"));
+                    let prefix = format!("!{oid}/");
+                    self.db_fields
+                        .retain(|key, _| key != &format!("!{oid}") && !key.starts_with(&prefix));
+                }
+                return ok(tag, vec![], "200 OK");
             }
+        }
+        if self.objects.remove(words[1]) || self.db_fields.remove(words[1]).is_some() {
             return ok(tag, vec![], "200 OK");
         }
         err(tag, status::NOT_FOUND, "404 Object not found")
@@ -3485,7 +3545,7 @@ impl Server {
             let mut segments = rest.splitn(2, '/');
             let oid = segments.next().unwrap_or("");
             if segments.next() == Some("Value") {
-                if let Some(level) = self.db_levels.get_mut(oid) {
+                if let Some(level) = self.level_mut(oid) {
                     let byte: i64 = value.parse().unwrap_or(-1);
                     if !(0..=255).contains(&byte) {
                         return err(tag, status::BAD_REQUEST, "400 Invalid level value");
@@ -4331,6 +4391,42 @@ impl Server {
             .map(|_| (project, net, addr))
     }
 
+    /// Resolve a native OID in the selected project. Repository project
+    /// copies retain OIDs, so more than one loaded project can contain the
+    /// same identity. The selected project disambiguates those records.
+    fn level_key(&self, oid: &str) -> Option<String> {
+        let current = self.current.as_deref();
+        let mut fallback = None;
+        for (key, level) in &self.db_levels {
+            if level.oid != oid {
+                continue;
+            }
+            if fallback.as_ref().is_none_or(|known: &String| key < known) {
+                fallback = Some(key.clone());
+            }
+            let project = level
+                .parent
+                .trim_start_matches('/')
+                .split('/')
+                .next()
+                .unwrap_or("");
+            if current == Some(project) {
+                return Some(key.clone());
+            }
+        }
+        fallback
+    }
+
+    fn level(&self, oid: &str) -> Option<&DbLevel> {
+        let key = self.level_key(oid)?;
+        self.db_levels.get(&key)
+    }
+
+    fn level_mut(&mut self, oid: &str) -> Option<&mut DbLevel> {
+        let key = self.level_key(oid)?;
+        self.db_levels.get_mut(&key)
+    }
+
     /// Issue a deterministic OID for `Level`/`NetVar` creation and units.
     ///
     /// The counter is process-global so parallel connections (each with
@@ -4388,6 +4484,13 @@ fn valid_name(name: &str) -> bool {
         && name
             .bytes()
             .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'-')
+}
+
+/// Native C-Gate 3.4 rejects a PROJECT COPY destination longer than eight
+/// ASCII project-name characters with `408 ... Invalid new project name`.
+/// Keep this narrower than cmqttd's existing internal project namespace.
+fn valid_project_copy_name(name: &str) -> bool {
+    name.len() <= 8 && valid_name(name)
 }
 
 fn split_network(target: &str) -> (String, String) {
@@ -4886,14 +4989,26 @@ mod tests {
         let moved = s.handle("[7b] GET //TEST2/254/p/20 UnitName");
         assert_eq!(moved.status, 300);
         assert!(moved.final_text.contains("UnitName=LOUNGE"));
+        let level = s.handle("[7b1] DBADDSAFE //TEST2/254/56/1 Level 7 Seven");
+        let level_oid = level
+            .final_text
+            .strip_prefix("301 OID=")
+            .expect("level OID")
+            .to_string();
+        assert_eq!(
+            s.handle(&format!("[7b2] DBSETSAFE !{level_oid}/Value 77"))
+                .status,
+            200
+        );
         // ... and a copy duplicates them while the source keeps working.
-        assert_eq!(s.handle("[7c] PROJECT COPY TEST2 TEST3").status, 200);
+        let copied = s.handle("[7c] PROJECT COPY TEST2 TEST3");
+        assert_eq!(copied.final_text, "200 OK.");
         assert_eq!(s.handle("[7d] PROJECT USE TEST3").status, 200);
         let cloned = s.handle("[7e] GET //TEST3/254/p/20 UnitName");
         assert_eq!(cloned.status, 300);
         assert!(cloned.final_text.contains("UnitName=LOUNGE"));
-        // Copies mint fresh identities: no OID is shared across projects.
-        // (Current selection is TEST3 here; TEST2 is read after USE.)
+        // Fresh native C-Gate 3.4 evidence shows repository copies retain
+        // OIDs. Selected-project context disambiguates duplicate level OIDs.
         let xml_new = s.handle("[7e1] DBGETXML //TEST3/254");
         assert_eq!(s.handle("[7e2] PROJECT USE TEST2").status, 200);
         let xml_old = s.handle("[7e3] DBGETXML //TEST2/254");
@@ -4909,7 +5024,24 @@ mod tests {
         let (old_ids, new_ids) = (oids_of(&xml_old), oids_of(&xml_new));
         assert_eq!(old_ids.len(), 1);
         assert_eq!(new_ids.len(), 1);
-        assert_ne!(old_ids, new_ids);
+        assert_eq!(old_ids, new_ids);
+        let copied_levels: Vec<_> = s
+            .db_levels
+            .values()
+            .filter(|level| level.oid == level_oid)
+            .collect();
+        assert_eq!(copied_levels.len(), 2);
+        assert!(copied_levels
+            .iter()
+            .any(|level| level.parent.starts_with("//TEST2/")));
+        assert!(copied_levels
+            .iter()
+            .any(|level| level.parent.starts_with("//TEST3/")));
+        let selected_level = s.handle(&format!("[7e4] DBGET !{level_oid}/Value"));
+        assert_eq!(
+            selected_level.final_text,
+            format!("342 !{level_oid}/Value=77")
+        );
         assert_eq!(s.handle("[7f] PROJECT USE TEST2").status, 200);
         // The old project name is gone entirely (selection error, not a
         // stale hit); the copy below proves duplication while the source
@@ -4964,6 +5096,116 @@ mod tests {
             assert!(rows.iter().any(|l| l.contains(expected)), "{expected}");
         }
         assert_eq!(runtime.lines.len() + 1, 21);
+    }
+
+    #[test]
+    fn project_copy_delete_preserve_native_identities_and_clean_only_the_target() {
+        let mut s = Server::new(AccessLevel::Program);
+        assert_eq!(s.handle("[1] PROJECT NEW SOURCE").status, 200);
+        assert_eq!(
+            s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
+                .status,
+            200
+        );
+        assert_eq!(
+            s.handle("[3] DBADDSAFE //SOURCE/254 Unit 20 Original")
+                .status,
+            200
+        );
+        assert_eq!(
+            s.handle("[4] DBSETSAFE //SOURCE/254/p/20/UnitName Unrelated")
+                .status,
+            200
+        );
+        let level = s.handle("[5] DBADDSAFE //SOURCE/254/56/1 Level 7 Seven");
+        let oid = level
+            .final_text
+            .strip_prefix("301 OID=")
+            .expect("level OID")
+            .to_string();
+        assert_eq!(
+            s.handle(&format!("[6] DBSETSAFE !{oid}/Value 77")).status,
+            200
+        );
+        let source_unit_oid = s.projects["SOURCE"].networks[&254].units[&20].oid.clone();
+
+        let copied = s.handle("[7] PROJECT COPY SOURCE COPY");
+        assert_eq!(copied.final_text, "200 OK.");
+        assert_eq!(s.current.as_deref(), Some("SOURCE"));
+        assert_eq!(
+            s.projects["COPY"].networks[&254].units[&20].oid,
+            source_unit_oid
+        );
+        assert_eq!(
+            s.db_levels
+                .values()
+                .filter(|level| level.oid == oid)
+                .count(),
+            2
+        );
+        assert_eq!(s.handle("[8] PROJECT USE COPY").status, 200);
+        assert_eq!(
+            s.handle("[9] DBSETSAFE //COPY/254/p/20/UnitName Changed")
+                .status,
+            200
+        );
+        assert_eq!(
+            s.projects["SOURCE"].networks[&254].units[&20].fields["UnitName"],
+            "Unrelated"
+        );
+
+        // Renaming one copy and then reusing its old destination must not
+        // collide with the first copy's internally disambiguated level key.
+        assert_eq!(s.handle("[9a] PROJECT RENAME COPY MOVED").status, 200);
+        assert_eq!(s.handle("[9b] PROJECT COPY SOURCE COPY").status, 200);
+        assert_eq!(
+            s.db_levels
+                .values()
+                .filter(|level| level.oid == oid)
+                .count(),
+            3
+        );
+        assert_eq!(s.handle("[9c] PROJECT USE COPY").status, 200);
+
+        let deleted = s.handle("[10] PROJECT DELETE COPY");
+        assert_eq!(deleted.final_text, "200 OK.");
+        assert_eq!(s.current, None);
+        assert!(!s.projects.contains_key("COPY"));
+        assert!(s.projects.contains_key("MOVED"));
+        assert!(s.db_fields.keys().all(|key| !key.starts_with("//COPY/")));
+        assert!(s
+            .db_levels
+            .values()
+            .all(|level| !level.parent.starts_with("//COPY/")));
+        assert!(s.known_oids.contains(&oid));
+        assert_eq!(
+            s.db_levels
+                .values()
+                .filter(|level| level.oid == oid)
+                .count(),
+            2
+        );
+        assert_eq!(s.handle("[11] PROJECT USE SOURCE").status, 200);
+        assert_eq!(
+            s.handle(&format!("[12] DBGET !{oid}/Value")).final_text,
+            format!("342 !{oid}/Value=77")
+        );
+
+        for command in ["[13] PROJECT COPY", "[14] PROJECT DELETE"] {
+            assert_eq!(s.handle(command).final_text, "400 Syntax Error.");
+        }
+        for command in [
+            "[15] PROJECT COPY MISSING OTHER",
+            "[16] PROJECT COPY SOURCE SOURCE",
+            "[17] PROJECT COPY SOURCE bad/name",
+            "[18] PROJECT COPY SOURCE NINECHARS",
+        ] {
+            assert_eq!(s.handle(command).status, 408, "{command}");
+        }
+        assert_eq!(
+            s.handle("[19] PROJECT DELETE MISSING").final_text,
+            "408 Operation failed: Unable to delete file"
+        );
     }
 
     #[test]

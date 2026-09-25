@@ -533,6 +533,28 @@ async fn failed_persistence_rolls_back_database_changes() {
         500
     );
     assert!(service.model.lock().await.database_files.is_empty());
+    {
+        let mut model = service.model.lock().await;
+        let mut auxiliary = model.projects["HARNESS"].clone();
+        auxiliary.name = "AUX".to_string();
+        model.projects.insert("AUX".to_string(), auxiliary);
+    }
+    assert_eq!(
+        service
+            .handle(&mut ClientState::default(), "[1b] PROJECT COPY AUX COPY",)
+            .await
+            .status,
+        500
+    );
+    assert!(!service.model.lock().await.projects.contains_key("COPY"));
+    assert_eq!(
+        service
+            .handle(&mut ClientState::default(), "[1c] PROJECT DELETE AUX",)
+            .await
+            .status,
+        500
+    );
+    assert!(service.model.lock().await.projects.contains_key("AUX"));
     service
         .observe(&CBusEvent::LightingOn {
             source: Some(4),
@@ -918,6 +940,8 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["database_documents"], false);
     assert_eq!(document["project_archive_restore"], "cmqttd-internal");
     assert_eq!(document["project_rename_secondary"], true);
+    assert_eq!(document["project_copy"], "cmqttd-internal");
+    assert_eq!(document["project_delete_secondary"], "cmqttd-internal");
     assert_eq!(document["repository_list"], true);
     assert_eq!(document["repository_type"], "cmqttd-json");
     assert_eq!(document["cgl_import"], false);
@@ -4814,6 +4838,8 @@ async fn auth_wrong_secret_denied_and_gate_holds() {
         "[22] PROJECT RESTORE RESTORED slot",
         "[23] PROJECT RENAME OTHER RENAMED",
         "[24] REPOSITORY USE 1",
+        "[25] PROJECT COPY HARNESS COPY",
+        "[26] PROJECT DELETE OTHER",
     ] {
         let response = service.handle(&mut client, command).await;
         assert_eq!(response.status, 420, "{command}: {response:?}");
@@ -5121,6 +5147,20 @@ async fn auth_db_project_and_scene_mutations_gate_together() {
             .status,
         200
     );
+    assert_eq!(
+        service
+            .handle(&mut client, "[8] PROJECT COPY AUTHRENAMED COPYAUTH")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[9] PROJECT DELETE COPYAUTH")
+            .await
+            .status,
+        200
+    );
     std::fs::remove_file(path).ok();
 }
 
@@ -5203,6 +5243,136 @@ async fn project_archive_restore_and_secondary_rename_are_durable_database_only(
 }
 
 #[tokio::test]
+async fn project_copy_and_secondary_delete_are_durable_database_only() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci.clone(), None).unwrap();
+    let mut client = ClientState::default();
+    for command in [
+        "[1] PROJECT NEW AUX",
+        "[2] DBCREATENET 1 Auxiliary Cni loopback",
+        "[3] DBADDSAFE //AUX/1 Unit 20 Original",
+        "[4] DBSETSAFE //AUX/1/p/20/TagName Copied",
+        "[5] DBSETSAFE //AUX/1/p/20/UnitName Unrelated",
+    ] {
+        let response = service.handle(&mut client, command).await;
+        assert_eq!(response.status, 200, "{command}: {response:?}");
+    }
+    let level = service
+        .handle(&mut client, "[6] DBADDSAFE //AUX/1/56/1 Level 7 Seven")
+        .await;
+    let level_oid = level
+        .final_text
+        .strip_prefix("301 OID=")
+        .expect("level OID")
+        .to_string();
+    assert_eq!(
+        service
+            .handle(&mut client, &format!("[7] DBSETSAFE !{level_oid}/Value 77"),)
+            .await
+            .status,
+        200
+    );
+    let source_unit_oid = {
+        let mut model = service.model.lock().await;
+        let network = model
+            .projects
+            .get_mut("AUX")
+            .unwrap()
+            .networks
+            .get_mut(&1)
+            .unwrap();
+        let unit = network.units[&20].clone();
+        let source_unit_oid = unit.oid.clone();
+        network.physical.insert(20, unit);
+        network.levels.insert((56, 1), 99);
+        network.state = NetworkState::Open;
+        source_unit_oid
+    };
+
+    let copied = service
+        .handle(&mut client, "[8] PROJECT COPY AUX COPY")
+        .await;
+    assert_eq!(copied.final_text, "200 OK.");
+    assert_eq!(client.current.as_deref(), Some("AUX"));
+    {
+        let model = service.model.lock().await;
+        let source = &model.projects["AUX"].networks[&1];
+        let copy = &model.projects["COPY"].networks[&1];
+        assert_eq!(copy.units[&20].fields["TagName"], "Copied");
+        assert_eq!(copy.units[&20].fields["UnitName"], "Unrelated");
+        assert_eq!(copy.units[&20].oid, source_unit_oid);
+        assert!(copy.physical.is_empty());
+        assert!(copy.levels.is_empty());
+        assert_eq!(copy.state, NetworkState::Closed);
+        assert_eq!(source.physical[&20].oid, source_unit_oid);
+        assert_eq!(source.levels[&(56, 1)], 99);
+        assert_eq!(source.state, NetworkState::Open);
+        assert_eq!(
+            model
+                .db_levels
+                .values()
+                .filter(|level| level.oid == level_oid)
+                .count(),
+            2
+        );
+        assert!(model.projects.contains_key("HARNESS"));
+    }
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[9] DBSETSAFE //COPY/1/p/20/TagName ChangedCopy",
+            )
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service.model.lock().await.projects["AUX"].networks[&1].units[&20].fields["TagName"],
+        "Copied"
+    );
+
+    drop(service);
+    let restarted = Service::new(&fixture(), None, path.clone(), pci.clone(), None).unwrap();
+    assert_eq!(
+        restarted.model.lock().await.projects["COPY"].networks[&1].units[&20].fields["TagName"],
+        "ChangedCopy"
+    );
+    let mut restarted_client = ClientState::default();
+    assert_eq!(
+        restarted
+            .handle(&mut restarted_client, "[10] PROJECT USE COPY")
+            .await
+            .status,
+        200
+    );
+    let deleted = restarted
+        .handle(&mut restarted_client, "[11] PROJECT DELETE COPY")
+        .await;
+    assert_eq!(deleted.final_text, "200 OK.");
+    assert_eq!(restarted_client.current, None);
+    assert!(!restarted.model.lock().await.projects.contains_key("COPY"));
+    drop(restarted);
+
+    let second_restart = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let model = second_restart.model.lock().await;
+    assert!(!model.projects.contains_key("COPY"));
+    assert!(model.projects.contains_key("AUX"));
+    assert!(model.projects.contains_key("HARNESS"));
+    assert_eq!(
+        model
+            .db_levels
+            .values()
+            .filter(|level| level.oid == level_oid)
+            .count(),
+        1
+    );
+    drop(model);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn administrative_guards_keep_configured_binding_and_unsupported_formats_closed() {
     let path = state_path();
     let before = std::fs::read(&path).ok();
@@ -5236,9 +5406,15 @@ async fn administrative_guards_keep_configured_binding_and_unsupported_formats_c
         assert!(response.final_text.contains("cmqttd: archive key"));
     }
     assert!(!vendor_path.exists());
+    let configured_delete = service
+        .handle(&mut client, "[3] PROJECT DELETE HARNESS")
+        .await;
+    assert_eq!(configured_delete.status, 408);
+    assert!(configured_delete
+        .final_text
+        .contains("configured hardware project"));
+    assert!(service.model.lock().await.projects.contains_key("HARNESS"));
     for command in [
-        "[3] PROJECT COPY HARNESS COPY",
-        "[4] PROJECT DELETE HARNESS",
         "[5] PROJECT REPAIR HARNESS",
         "[6] REPOSITORY USE 1",
         "[7] CGL EXPORT HARNESS * *",

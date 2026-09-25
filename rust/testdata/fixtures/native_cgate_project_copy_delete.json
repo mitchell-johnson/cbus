@@ -1,0 +1,88 @@
+{
+  "schema": "native-cgate-project-copy-delete-evidence-v1",
+  "captured_at": "2026-09-26",
+  "software": {
+    "cgate_version": "3.4.0 build 2001",
+    "cgate_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "cgate_help_sha256": "8e2ee745875de77b1aef24bfeefc669761500ff493ec3d7e7b7c57318af492d3",
+    "java_version": "Temurin 11.0.32.1+1",
+    "java_distribution_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4"
+  },
+  "isolation": {
+    "root": "<owned-disposable-root>",
+    "command_binding": "127.0.0.1:<ephemeral-owned-port>",
+    "project_start": "",
+    "project_default": "",
+    "network_opened": false,
+    "cni_or_bus_used": false,
+    "live_site_project_used": false,
+    "roots_removed_after_capture": 7
+  },
+  "copy": {
+    "syntax": "PROJECT COPY SOURCE DESTINATION",
+    "success": {
+      "command": "PROJECT COPY SRC CPY",
+      "final": "200 OK."
+    },
+    "missing_arguments": {
+      "command": "PROJECT COPY",
+      "final": "400 Syntax Error."
+    },
+    "invalid_destination": {
+      "command": "PROJECT COPY SRC NINECHARS",
+      "final": "408 Operation failed: Invalid new project name"
+    },
+    "runtime_errors": {
+      "missing_source_status": 408,
+      "existing_destination_status": 408
+    },
+    "repository_lifecycle": {
+      "listed_by_project_dir_after_copy": true,
+      "listed_by_project_list_before_load": false,
+      "load_required_before_query": true,
+      "survives_restart": true
+    },
+    "identity": {
+      "source_group_oid": "f5eaa430-6415-104a-8c49-0800200c9a66",
+      "copy_group_oid_before_restart": "f5eaa430-6415-104a-8c49-0800200c9a66",
+      "copy_group_oid_after_restart": "f5eaa430-6415-104a-8c49-0800200c9a66",
+      "database_document_equal_after_load": true
+    }
+  },
+  "delete": {
+    "syntax": "PROJECT DELETE NAME",
+    "success": {
+      "command": "PROJECT DELETE CPY",
+      "final": "200 OK."
+    },
+    "missing_arguments": {
+      "command": "PROJECT DELETE",
+      "final": "400 Syntax Error."
+    },
+    "missing_project": {
+      "status": 408,
+      "final": "408 Operation failed: Unable to delete file"
+    },
+    "repository_lifecycle": {
+      "removed_from_project_dir": true,
+      "already_loaded_copy_remains_queryable": true,
+      "close_then_load_status": 408,
+      "absent_after_restart": true
+    }
+  },
+  "investigated_but_not_implemented": {
+    "project_repair": {
+      "sqlite_repository_final": "408 Operation failed: The current repository does not support this command.",
+      "reason": "Behavior depends on the selected native repository implementation; cmqttd-json has no native repair operation."
+    },
+    "repository_use": {
+      "syntax": "REPOSITORY USE NUMERIC_INDEX",
+      "when_any_project_open_final": "400 Syntax Error: Cannot change repository while projects are open.",
+      "invalid_index_status": 400,
+      "invalid_type_status": 400,
+      "scope": "server-global",
+      "reason": "cmqttd exposes one configured atomic JSON repository and has no safe server-global repository switch."
+    }
+  },
+  "cmqttd_model_boundary": "Native C-Gate separates repository files from loaded projects. cmqttd has one atomic loaded JSON model, so a successful copy is immediately selectable and deleting a secondary project removes it immediately. This fixture does not claim vendor repository-file parity."
+}

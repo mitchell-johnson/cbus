@@ -631,6 +631,9 @@ impl Service {
             capabilities["project_archive_restore"] =
                 serde_json::Value::String("cmqttd-internal".to_string());
             capabilities["project_rename_secondary"] = serde_json::Value::Bool(true);
+            capabilities["project_copy"] = serde_json::Value::String("cmqttd-internal".to_string());
+            capabilities["project_delete_secondary"] =
+                serde_json::Value::String("cmqttd-internal".to_string());
             capabilities["repository_list"] = serde_json::Value::Bool(true);
             capabilities["repository_type"] = serde_json::Value::String("cmqttd-json".to_string());
             capabilities["cgl_import"] = serde_json::Value::Bool(false);
@@ -830,6 +833,13 @@ impl Service {
                 "408 The configured hardware project cannot be renamed while the service is running",
             );
         }
+        if verb == "PROJECT" && sub == "DELETE" && words.len() == 3 && words[2] == self.project {
+            return err(
+                tag,
+                408,
+                "408 The configured hardware project cannot be deleted while the service is running",
+            );
+        }
         let mut model = self.model.lock().await;
         model.current = client
             .current
@@ -926,6 +936,14 @@ impl Service {
                 .and_then(|archive_key| model.database_files.get_mut(*archive_key))
             {
                 clear_project_runtime(snapshot);
+            }
+        }
+        if verb == "PROJECT" && sub == "COPY" {
+            if let Some(copy) = words
+                .get(3)
+                .and_then(|project_name| model.projects.get_mut(*project_name))
+            {
+                clear_project_runtime(copy);
             }
         }
         // The in-memory compatibility model makes some database verbs affect
@@ -5222,6 +5240,8 @@ fn local_command(words: &[&str], upper: &[String], model: &Server) -> bool {
                 | "DIR"
                 | "NEW"
                 | "CLOSE"
+                | "COPY"
+                | "DELETE"
                 | "RENAME"
                 | "ARCHIVE"
                 | "RESTORE"

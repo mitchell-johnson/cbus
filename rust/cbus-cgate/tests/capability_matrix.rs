@@ -96,12 +96,12 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // native confirmed CAL sequences and source-correlated responses. LABEL
     // CLEAR moved fail_closed_502 -> physical with its native exact-once,
     // confirmation-only all-key and one-key CAL forms.
-    // PROJECT ARCHIVE/RESTORE/RENAME and REPOSITORY LIST moved
+    // PROJECT ARCHIVE/RESTORE/RENAME/COPY/DELETE and REPOSITORY LIST moved
     // fail_closed_502 -> local_database with durable internal snapshots,
-    // guarded secondary-project rename, and a read-only cmqttd-json row.
+    // guarded secondary-project lifecycle, and a read-only cmqttd-json row.
     assert_eq!(class_count(RoutingClass::Physical), 35);
-    assert_eq!(class_count(RoutingClass::LocalDatabase), 46);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 349);
+    assert_eq!(class_count(RoutingClass::LocalDatabase), 48);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 347);
     assert_eq!(class_count(RoutingClass::Obsolete400), 1);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here
@@ -124,6 +124,8 @@ fn administrative_subset_is_local_while_vendor_formats_stay_fail_closed() {
         "PROJECT ARCHIVE",
         "PROJECT RESTORE",
         "PROJECT RENAME",
+        "PROJECT COPY",
+        "PROJECT DELETE",
         "REPOSITORY LIST",
         "DBSETXML",
     ] {
@@ -133,11 +135,35 @@ fn administrative_subset_is_local_while_vendor_formats_stay_fail_closed() {
         "CGL IMPORT",
         "CGL EXPORT",
         "REPOSITORY USE",
-        "PROJECT COPY",
-        "PROJECT DELETE",
         "PROJECT REPAIR",
     ] {
         assert_eq!(class(path), RoutingClass::FailClosed502, "{path}");
+    }
+}
+
+#[test]
+fn project_copy_delete_rows_point_to_retained_native_evidence() {
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_project_copy_delete.json"
+    ))
+    .expect("native project-administration evidence must remain valid JSON");
+    assert_eq!(fixture["software"]["cgate_version"], "3.4.0 build 2001");
+    assert_eq!(fixture["copy"]["success"]["final"], "200 OK.");
+    assert_eq!(fixture["delete"]["success"]["final"], "200 OK.");
+    assert_eq!(
+        fixture["copy"]["identity"]["source_group_oid"],
+        fixture["copy"]["identity"]["copy_group_oid_after_restart"]
+    );
+    for path in ["PROJECT COPY", "PROJECT DELETE"] {
+        let row = CAPABILITY_MATRIX
+            .iter()
+            .find(|entry| entry.path == path)
+            .unwrap_or_else(|| panic!("missing capability row {path}"));
+        assert!(
+            row.evidence
+                .contains("native_cgate_project_copy_delete.json"),
+            "{path}"
+        );
     }
 }
 

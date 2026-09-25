@@ -229,6 +229,10 @@ and its 301 OID receipt remain unavailable,
 the cmqttd JSON repository (never vendor archive files),
 `project_rename_secondary: true` denotes rename support except for the running
 hardware-bound project,
+`project_copy: "cmqttd-internal"` denotes an OID-preserving durable copy inside
+the loaded cmqttd JSON model, and
+`project_delete_secondary: "cmqttd-internal"` denotes durable deletion of a
+secondary project while protecting the configured hardware project,
 `repository_list: true` and `repository_type: "cmqttd-json"` denote the one
 read-only repository descriptor, and explicit `cgl_import: false` /
 `cgl_export: false` preserve the vendor-format boundary,
@@ -249,10 +253,27 @@ roll memory back if the state-file commit fails.
 Archive tokens outside the explicit `cmqttd:` namespace return 408, preserving
 the unsupported Schneider ZIP/GZ/DB file-format boundary.
 
+`PROJECT COPY SOURCE DESTINATION` preserves durable database OIDs, project
+records, fields and level definitions, but clears copied physical presence,
+observed levels and network runtime state. The source remains selected. The
+destination must use the native evidenced maximum of eight ASCII project-name
+characters. `PROJECT DELETE NAME` is limited to secondary projects, removes
+only that project's durable records and clears the deleting connection's
+selection. Deleting the configured PCI/MQTT project returns 408. Both commands
+use `200 OK.`, optional LOGIN gating, atomic persistence and failed-write
+rollback. Native C-Gate keeps repository files separate from already loaded
+projects; cmqttd has one loaded atomic model, so a copy is immediately
+selectable and a delete is immediate. Do not infer Schneider file-repository
+parity from these commands. Retained disposable-native evidence is in
+`rust/testdata/fixtures/native_cgate_project_copy_delete.json`.
+
 `REPOSITORY LIST` returns exactly one native-grammar 123 row for the configured
 state file with type `cmqttd-json` and `current=yes`. Treat the type literally:
 it is not Schneider SQLite, XML `file`, or `db` storage. Do not issue
 `REPOSITORY USE`; its server-global selection semantics remain unimplemented.
+`PROJECT REPAIR` also remains 502: the captured native SQLite repository says
+it does not support the operation, and no repair transaction is established
+for `cmqttd-json`.
 
 cmqttd recognizes `[tag] COMMAND << DELIMITER`, followed by a body and the exact
 delimiter on its own line. It limits individual lines to 1 MiB and the document
