@@ -917,7 +917,8 @@ requires `--source-database` matching the context source. Post-Reset user edits
 and complete form initialization remain outside this factory option.
 
 The retained Scene Manager accepts an ordered operation array, for example
-`[{"op":"copy","scene":1},{"op":"paste","scene":2}]` in `scene-operations.json`:
+`[{"op":"copy","scene":1},{"op":"paste","scene":2},{"op":"set-name-text","scene":2,"text":"Evening"}]`
+in `scene-operations.json`:
 
 ```sh
 cbus-toolkit edlt scene-manager-state snapshot.json --metadata scene-cache.json \
@@ -929,9 +930,14 @@ cbus-toolkit cgate unit --lock-address //TEST/254 --source /db//TEST/254/p/20 \
 ```
 
 [Scene Manager](docs/edlt-scene-manager.md) retains scene and group identities
-through copy/paste, level/ramp edits, validation and serialization. An incomplete
-capacity edit remains inspectable and cannot be saved. Its 16 tests pass on
-both Python versions, including eight native save/reload cases per version.
+through copy/paste, level/ramp edits, validation and serialization. `set-name-text`
+uses exact text reuse or the highest free whole-unit static slot in operation
+order; `set-name-index` with index 255 clears a scene's reference. Plans report
+the string overlay, allocation history, evidence fingerprint and final pointers.
+An incomplete scene-capacity edit remains inspectable and cannot be saved. The
+frozen acceptance records eight native save/reload cases per Python version;
+the additive name-allocation suite also has an environment-gated full-capacity
+preview/save/reload case.
 At 64 items, it reproduces Toolkit's extra temporary CRC byte while C-Gate
 stores 232 tokens. The declarative [scene-table editor](docs/edlt-scenes.md)
 uses the normalized stored representation. Full form binding and physical-device

@@ -6,7 +6,8 @@ from pathlib import Path
 
 def options(parser, *, state_only=False):
     parser.add_argument('--metadata', type=Path, required=True, help='Scene Manager application and DynamicAll cache facts')
-    parser.add_argument('--operations', type=Path, required=True, help='JSON array of up to 256 ordered scene operations')
+    parser.add_argument('--operations', type=Path, required=True,
+                        help='JSON array of up to 256 ordered scene operations; set-name-text allocates a static scene name')
     parser.add_argument('--validate', action='store_true', help='Run the original scene validation getters before preparing the save')
     if state_only:
         parser.add_argument('--list-groups', type=int, choices=range(1, 9), action='append', default=[], metavar='SCENE',

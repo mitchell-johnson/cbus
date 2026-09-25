@@ -145,6 +145,64 @@ class SceneManagerTests(unittest.TestCase):
         cleared = self.editor.edit(self.state, operations=[op('clear-scene')]).state
         self.assertIs(cleared.scenes[0].dynamic_labels, self.state.scenes[0].dynamic_labels)
 
+    def test_static_scene_names_follow_order_reuse_and_whole_unit_reservations(self):
+        reserved_source = dict(self.source)
+        reserved_source.update(NavWidgetVariant=(6,), PageNameIndex1=(63,))
+        reserved = self.editor.load(reserved_source, metadata=cache())
+        first = self.editor.edit(reserved, operations=[op('set-name-text', text='Reserved name')])
+        allocation = json.loads(first.operation_results[0])['static_text_allocation']
+        self.assertEqual((first.state.scenes[0].name_index, allocation['index']), (62, 62))
+        self.assertIn(63, allocation['used_indices'])
+        self.assertEqual(first.state.loaded.after_load['PageNameIndex1'], (63,))
+
+        ordered = self.editor.edit(self.state, operations=[
+            op('set-name-text', text='First custom'),
+            op('set-name-text', 2, text='Second custom'),
+            op('set-name-text', 3, text='First custom'),
+            op('set-name-index', index=255),
+            op('set-name-text', 4, text='Third custom'),
+        ])
+        evidence = ordered.state.static_text_evidence()
+        self.assertEqual([scene.name_index for scene in ordered.state.scenes[:4]], [255, 62, 63, 61])
+        self.assertEqual([(row['index'], row['reused']) for row in evidence['allocations']],
+                         [(63, False), (62, False), (63, True), (61, False)])
+        self.assertEqual([row['operation_number'] for row in evidence['allocations']], [1, 2, 3, 5])
+        self.assertEqual(set(evidence['overlay_changes']),
+                         {'StaticTextString61', 'StaticTextString62', 'StaticTextString63'})
+        self.assertEqual(evidence['fingerprint'], ordered.state.static_text_evidence()['fingerprint'])
+        reused = self.editor.edit(self.state, operations=[op('set-name-text', text='Lounge')]).state
+        self.assertEqual(reused.scenes[0].name_index, 27)
+        self.assertTrue(reused.static_text_evidence()['allocations'][0]['reused'])
+        self.assertEqual(reused.static_text_evidence()['overlay_changes'], {})
+        detached = self.editor.edit(self.state, operations=[
+            op('set-name-text', text='Detached but stored'), op('set-name-index', index=255)]).state
+        self.assertEqual(detached.scenes[0].name_index, 255)
+        self.assertIn('StaticTextString63', detached.static_text_overlay)
+        detached_plan = self.editor.prepare_save(detached)
+        self.assertEqual(bytes(detached_plan.before_save['StaticTextString63']).rstrip(b'\0'), b'Detached but stored')
+
+    def test_static_name_capacity_and_text_guards_fail_before_mutating_io(self):
+        source = dict(self.source)
+        for widget in range(1, 14):
+            source[f'Widget{widget}WidgetType'] = (4,)
+            source[f'Widget{widget}WidgetByteValue1'] = (53,)
+            for slot, offset in enumerate((9, 10, 11, 12, 13)):
+                source[f'Widget{widget}WidgetByteValue{offset}'] = (min(63, (widget - 1) * 5 + slot),)
+        source['Widget14WidgetType'] = (255,)
+        for widget in range(15, 22): source[f'Widget{widget}WidgetType'] = (0,)
+        full = self.editor.load(source, metadata=cache())
+        self.assertEqual(len(self.editor.common.static_references(full.loaded.after_load)), 65)
+        with self.assertRaisesRegex(EdltError, 'full'):
+            self.editor.edit(full, operations=[op('set-name-text', text='No free slot')])
+        reused = self.editor.edit(full, operations=[op('set-name-text', text='Lamp')]).state
+        self.assertEqual(reused.scenes[0].name_index, 1)
+        self.assertTrue(reused.static_text_evidence()['allocations'][0]['reused'])
+        self.assertEqual(reused.static_text_evidence()['overlay_changes'], {})
+        self.assertFalse(self.session.calls)
+        for text in ('', '  ', 'A\0B', 'A' * 64, 'ā' * 32, '\ud800', 5):
+            with self.subTest(text=repr(text)), self.assertRaises(EdltError):
+                self.editor.edit(self.state, operations=[op('set-name-text', text=text)])
+
     def test_capacity_partial_prefix_is_reviewable_and_never_persistable(self):
         for name, counts in (('capacity-add', (63, 1, 0)), ('capacity-paste', (4, 59, 1))):
             with self.subTest(name=name):
@@ -176,6 +234,31 @@ class SceneManagerTests(unittest.TestCase):
         with self.assertRaisesRegex(EdltError, 'group list'): self.editor.available_groups(state, scene=1)
         with self.assertRaises(EdltError): self.editor.load(self.source, metadata={**cache(), 'extra': 1})
         self.assertFalse(self.session.calls)
+
+    def test_static_name_plan_verifies_overlay_pointers_crcs_readback_and_rollback(self):
+        baseline = self.editor.prepare_save(self.state)
+        edited = self.editor.edit(self.state, operations=[op('set-name-text', text='Evening scene')]).state
+        plan = self.editor.prepare_save(edited); document = plan.as_dict()
+        self.assertTrue(document['static_text_allocated'])
+        self.assertEqual(document['static_text']['allocations'][0]['index'], 63)
+        self.assertEqual(document['static_text']['overlay_changes']['StaticTextString63'],
+                         list(b'Evening scene'.ljust(64, b'\0')))
+        self.assertEqual(document['scene_pointers'],
+                         [plan.before_save[f'Scene{slot}StartAddress'][0] for slot in range(1, 9)])
+        pointer = document['scene_pointers'][0]
+        self.assertEqual(plan.before_save['SceneBucket'][pointer + 4], 63)
+        self.assertEqual(document['scene_pointers'], baseline.as_dict()['scene_pointers'])
+        for crc in ('StaticTextCRC', 'ScenesCheckSum', 'OverallCRC'):
+            self.assertNotEqual(plan.changes[crc], baseline.changes[crc])
+        original = self.editor.snapshot(self.session.values())
+        self.session.failure = 'StaticTextString63'
+        with self.assertRaises(EdltApplyError) as caught: self.editor.apply(self.session, plan)
+        self.assertTrue(caught.exception.details['rollback_verified'])
+        self.assertEqual(self.editor.snapshot(self.session.values()), original)
+        applied = self.editor.apply(self.session, plan)
+        self.assertTrue(applied['verified'])
+        self.assertEqual(applied['static_text']['fingerprint'], document['static_text']['fingerprint'])
+        self.assertEqual(self.editor.snapshot(self.session.values()), {**plan.expected, **plan.changes})
 
     def test_apply_guards_rollback_interrupt_and_disconnection(self):
         plan = self.editor.prepare_save(self.editor.edit(self.state, operations=[op('set-level', item_id=1, level=77)]).state)

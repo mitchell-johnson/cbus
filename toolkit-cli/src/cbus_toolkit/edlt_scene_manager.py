@@ -1,8 +1,9 @@
 """Retained, database-only eDLT scene edits using declared cache objects.
 
 Model scope is deliberate: no WinForms binding, group creation, network I/O,
-label allocation, or physical invocation is performed here. Supplied capture
-observations use a separate immutable, verification-aware transition.
+or physical invocation is performed here. Static scene names use the shared
+Toolkit-compatible allocator. Supplied capture observations use a separate
+immutable, verification-aware transition.
 """
 from __future__ import annotations
 from dataclasses import dataclass, field, replace
@@ -162,7 +163,21 @@ class SceneManagerState:
     complete: bool
     history: tuple[str, ...]
     validation: str | None
+    static_text_overlay: Mapping
+    name_allocations: tuple[str, ...]
     _origin: _Origin = field(repr=False, compare=False)
+
+    def __post_init__(self):
+        object.__setattr__(self, 'static_text_overlay', MappingProxyType(dict(self.static_text_overlay)))
+        object.__setattr__(self, 'name_allocations', tuple(self.name_allocations))
+
+    def static_text_evidence(self):
+        overlay = {name: list(value) for name, value in self.static_text_overlay.items()}
+        allocations = [json.loads(value) for value in self.name_allocations]
+        document = {'overlay_changes': overlay, 'allocations': allocations}
+        return {**document, 'fingerprint': hashlib.sha256(_json(document).encode()).hexdigest(),
+                'allocation_order': 'scene operation order',
+                'allocator': 'EdltLighting.allocate_static_text'}
 
     def as_dict(self):
         total = sum(len(s.items) for s in self.scenes)
@@ -170,6 +185,7 @@ class SceneManagerState:
             scenes=[s.as_dict() for s in self.scenes], clipboard=None if self.clipboard is None else self.clipboard.as_dict(),
             item_count=total, storage_used_percent=100 * total * 3 // 191,
             operations=[json.loads(v) for v in self.history], validation=None if self.validation is None else json.loads(self.validation),
+            static_text=self.static_text_evidence(), static_text_allocated=bool(self.name_allocations),
             retained_group_references=True, metadata_created=False, cache_freshness_verified=False,
             full_form_validation_verified=False, physical_device_verified=False, model_state_resumption_supported=False, saved=False)
 
@@ -213,6 +229,7 @@ class SceneManagerPlan:
             object.__setattr__(self, key, MappingProxyType(dict(getattr(self, key))))
 
     def as_dict(self):
+        static_text = self.terminal.static_text_evidence()
         return dict(format='cbus-edlt-scene-manager-plan-v1', scope='model', unit_type='KEYGL5', catalog_number='5055EDL', firmware='5.5.00',
             source=self.source.as_dict(), terminal=self.terminal.as_dict(), validation=json.loads(self.validation),
             phases={'after_load': _delta(self.expected, self.after_load), 'before_save': _delta(self.after_load, self.before_save),
@@ -222,7 +239,8 @@ class SceneManagerPlan:
                 'native_scene_bucket_bytes': 232, 'original_trailing_ff_in_crc_image': sum(len(s.items) for s in self.terminal.scenes) == 64,
                 'temporary_crc_tail_logical_address': 0x21fa if sum(len(s.items) for s in self.terminal.scenes) == 64 else None,
                 'native_pp_only_crc_matches_original': sum(len(s.items) for s in self.terminal.scenes) != 64},
-            metadata_created=False, static_text_allocated=False, physical_device_verified=False,
+            scene_pointers=[self.before_save[f'Scene{slot}StartAddress'][0] for slot in range(1, 9)],
+            static_text=static_text, metadata_created=False, static_text_allocated=bool(static_text['allocations']), physical_device_verified=False,
             full_form_validation_verified=False, incomplete_edit_persisted=False, saved=False)
 
 
@@ -262,8 +280,26 @@ class EdltSceneManager:
             items = tuple(SceneManagerItem(next_id + i, v.group, v.ramp_rate, v.can_edit, v.level) for i, v in enumerate(s.items))
             next_id += len(items)
             scenes.append(SceneManagerScene(s.slot, s.primary_secondary, s.can_edit, s.trigger.group, s.action_selector, s.name_index, items, 0, labels))
-        state = SceneManagerState(loaded, cache, tuple(scenes), None, next_id, True, (), None, _Origin(self._owner))
+        state = SceneManagerState(loaded, cache, tuple(scenes), None, next_id, True, (), None, {}, (), _Origin(self._owner))
         return self._seal(state)
+
+    @staticmethod
+    def _scene_static_view(state, scenes, overlay):
+        """Place current scene names into a full after-load snapshot for allocation."""
+        values = dict(state.loaded.after_load); values.update(overlay)
+        bucket, pointers = bytearray(), []
+        for scene in scenes:
+            pointers.append(len(bucket))
+            action = 255 if scene.raw_action < 0 else scene.raw_action
+            bucket.extend((scene.primary_secondary + 2 * int(scene.can_edit), len(scene.items),
+                           scene.raw_trigger, action, scene.name_index))
+            for item in scene.items:
+                bucket.extend((16 * int(item.can_edit) + item.ramp_rate, item.group.group, item.level))
+        if len(bucket) > 232:
+            raise EdltError('Retained scene data exceeds the 232-byte native PP layout')
+        values['SceneCount'] = (8,); values['SceneBucket'] = tuple(bucket.ljust(232, b'\xff'))
+        for slot, pointer in enumerate(pointers, 1): values[f'Scene{slot}StartAddress'] = (pointer,)
+        return values
 
     @staticmethod
     def _group(state, application, group):
@@ -349,12 +385,20 @@ class EdltSceneManager:
         fields = {'set-application': ('selector',), 'add-groups': ('groups',), 'remove-items': ('item_ids',),
             'clear-items': (), 'copy': (), 'paste': (), 'clear-scene': (), 'set-level': ('item_id', 'level'),
             'set-percent': ('item_id', 'percent'), 'set-ramp': ('item_id', 'ramp_rate'), 'sync-levels': ('item_id',),
-            'set-trigger': ('group',), 'set-action': ('action',), 'set-name-index': ('index',), 'get-trigger': (), 'get-action': ()}
+            'set-trigger': ('group',), 'set-action': ('action',), 'set-name-index': ('index',),
+            'set-name-text': ('text',), 'get-trigger': (), 'get-action': ()}
         if kind not in fields or set(op) != {'op', 'scene', *fields[kind]}: raise EdltError('Invalid scene operation or fields')
         _int(op['scene'], 'Scene', 1, 8)
         for key, maximum in (('selector', 1), ('level', 255), ('percent', 100), ('ramp_rate', 15), ('group', 255), ('action', 255), ('index', 255)):
             if key in op: _int(op[key], key, 0, maximum)
         if 'index' in op and 64 <= op['index'] < 255: raise EdltError('Scene name index must be 0..63 or 255')
+        if 'text' in op:
+            text = op['text']
+            if not isinstance(text, str) or not text.strip() or '\0' in text:
+                raise EdltError('Static label text must be nonblank and contain no NUL; use set-name-index 255 to detach')
+            try: encoded = text.encode('utf-8')
+            except UnicodeEncodeError as error: raise EdltError('Static label text must be valid Unicode') from error
+            if len(encoded) > 63: raise EdltError('Static label text exceeds63UTF-8 bytes; truncation is not permitted')
         if 'item_id' in op: _int(op['item_id'], 'Item identity', 1, 65536)
         for key, maximum in (('groups', 254), ('item_ids', 65536)):
             if key in op:
@@ -371,6 +415,7 @@ class EdltSceneManager:
         ops = tuple(self._operation(v) for v in _array(operations, MAX_OPERATIONS, 'Scene operations'))
         if len(state.history) + len(ops) > MAX_OPERATIONS: raise EdltError('Scene history exceeds 256 operations')
         scenes, clipboard, next_id, results, complete = list(state.scenes), state.clipboard, state.next_item_id, [], True
+        overlay, allocations = dict(state.static_text_overlay), list(state.name_allocations)
         for op in ops:
             kind, slot = op['op'], op['scene']; s = scenes[slot - 1]; result = {'operation': op, 'complete': True}
             if kind == 'set-application':
@@ -421,12 +466,26 @@ class EdltSceneManager:
             elif kind == 'set-trigger': s = replace(s, raw_trigger=op['group'])
             elif kind == 'set-action': s = self._set_action(state, s, op['action'])
             elif kind == 'set-name-index': s = replace(s, name_index=op['index'])
+            elif kind == 'set-name-text':
+                # Match ordered model-property edits. Detach this scene's old
+                # reference before allocation; unrelated and earlier operation
+                # references remain reserved in the staged current view.
+                scenes[slot - 1] = replace(s, name_index=255)
+                allocation = self.common.allocate_static_text(
+                    self._scene_static_view(state, scenes, overlay), op['text'])
+                overlay.update(allocation.changes)
+                s = replace(scenes[slot - 1], name_index=allocation.index)
+                evidence = {'sequence': len(allocations) + 1,
+                            'operation_number': len(state.history) + len(results) + 1,
+                            'scene': slot, **allocation.as_dict()}
+                allocations.append(_json(evidence)); result['static_text_allocation'] = evidence
             elif kind == 'get-trigger': s, result['value'] = self._trigger(state, s)
             elif kind == 'get-action': s, result['value'] = self._action(state, s)
             scenes[slot - 1] = s; result['complete'] = complete; results.append(_json(result))
             if not complete: result['reason'] = 'original scene capacity reached'; results[-1] = _json(result); break
         issued = self._next(state, scenes=tuple(scenes), clipboard=clipboard, next_item_id=next_id, complete=complete,
-            history=(*state.history, *(_json(op) for op in ops[:len(results)])), validation=None)
+            history=(*state.history, *(_json(op) for op in ops[:len(results)])), validation=None,
+            static_text_overlay=overlay, name_allocations=tuple(allocations))
         return SceneEditOutcome(issued, complete, tuple(results))
 
     def validate(self, state):
@@ -456,6 +515,7 @@ class EdltSceneManager:
         # Run the already loaded baseline's non-scene BeforeSave rules exactly
         # once; then serialize edited retained scene objects, without reloading.
         baseline = self.lifecycle.prepare_save(state.loaded); values = dict(baseline.before_save)
+        values.update(state.static_text_overlay)
         scenes = list(state.scenes); bucket = bytearray(); pointers = []
         for i, scene in enumerate(scenes):
             scene, trigger = self._trigger(state, scene); scene, action = self._action(state, scene)

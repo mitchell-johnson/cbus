@@ -55,6 +55,43 @@ network-wide and recipient-unverified traffic ring, never a per-device result.
 Unit-shaped `CMQTT LABELS` requests are compatibility aliases for the same
 ring. Physical dynamic-label cache readback remains unavailable and false.
 
+### Retained eDLT scene names
+
+For a KEYGL5 / 5055EDL 5.5.00 database unit, put ordered SceneManager
+operations in a JSON array. Use `set-name-text` to allocate and bind a name,
+or `set-name-index` with index 255 to clear only the scene's reference:
+
+```json
+[
+  {"op": "set-name-text", "scene": 1, "text": "Evening"},
+  {"op": "set-name-text", "scene": 2, "text": "Evening"},
+  {"op": "set-name-index", "scene": 3, "index": 255}
+]
+```
+
+Preview the retained state or final PP plan before using the native database
+workflow:
+
+```sh
+cbus-toolkit edlt scene-manager-state snapshot.json \
+  --metadata scene-cache.json --operations scene-operations.json
+cbus-toolkit edlt scene-manager-plan snapshot.json \
+  --metadata scene-cache.json --operations scene-operations.json
+cbus-toolkit cgate unit --lock-address //PROJECT/254 \
+  --source /db//PROJECT/254/p/20 --dry-run edlt-scene-manager \
+  --metadata scene-cache.json --operations scene-operations.json
+```
+
+Allocation is case-sensitive and ordered. It reuses the first exact text slot,
+otherwise chooses the highest whole-unit unreferenced slot. The selected
+scene's old reference is released before its new allocation; earlier
+operations and unrelated scene, page and widget references remain reserved.
+Text is nonblank, contains no NUL and is at most 63 UTF-8 bytes. Inspect
+`static_text.overlay_changes`, `static_text.allocations`,
+`static_text.fingerprint`, and `scene_pointers` in the result. Exhaustion
+fails before any PP write or SAVE. This workflow edits database PP only; it
+does not verify a physical display or complete SceneManager form behavior.
+
 ## cbus-tools
 
 ### Decode

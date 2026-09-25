@@ -450,13 +450,15 @@
       "evidence": [
         "tests/test_edlt_scene_manager.py",
         "tests/test_cli_edlt_scene_manager.py",
+        "tests/test_edlt_static.py",
         "docs/edlt-scene-manager.md",
+        "docs/edlt.md",
         "docs/edlt-scenes.md",
         "research/fixtures/edlt-scene-manager-vectors.json",
         "research/fixtures/edlt-scene-manager-acceptance.json",
         "research/fixtures/edlt-retained-editor-cli-regression.json"
       ],
-      "limits": "KEYGL5 / 5055EDL / firmware5.5.00 retained SceneManager model scope with explicit existing cache facts. Copy/paste/clear/add/remove, applications, trigger/action getters, level/percent/ramp/synchronization and existing name indices reproduce original retained state. Original validation flags and shortcut effects are exposed separately. Partial64-capacity outcomes are inspectable but not persistable. Complete64 matches original SaveScenes233-token temporary CRC while nativePPstores232, including fiveCRC bytes/full874/save-close-load. Final11module+5CLI tests pass bothPython, with17fresh original executions and8native persistence cases eachversion. Network metadata excludingPP remains unchanged and no groups are created. A separate65-test combinedCLI/helper regression also passesboth. Full control binding, new label allocation and physical-device behavior remain incomplete. One-shot capture/broadcast is covered separately by edlt-scene-live."
+      "limits": "KEYGL5 / 5055EDL / firmware5.5.00 retained SceneManager database-PP model scope with explicit existing cache facts. Copy/paste/clear/add/remove, applications, trigger/action getters, level/percent/ramp/synchronization and existing name indices reproduce original retained state. Ordered set-name-text operations reuse exact strings or bind the highest whole-unit unreferenced static slot, preserving unrelated references and exposing an immutable overlay/allocation fingerprint; index255 still clears only the reference. Exhaustion causes zero PP writes. Plans and apply verify scene pointers/name bytes, all five CRCs, full readback and connected rollback. Original validation flags and shortcut effects are exposed separately. Partial64-capacity outcomes are inspectable but not persistable. Complete64 matches original SaveScenes233-token temporary CRC while nativePPstores232, including fiveCRC bytes/full874/save-close-load. The frozen acceptance records17 original executions and8 native persistence cases perversion; its historical existing-index-only boundary predates this additive allocator. New focused tests reuse the separately original-DLL-tested shared allocator, and the gated CLI path adds full-capacity name preview/save/reload, but no new SceneManager WinForms name-control or physical-display acceptance is claimed. Network metadata excludingPP remains unchanged and no groups are created. Full control binding and physical-device behavior remain incomplete. One-shot capture/broadcast is covered separately by edlt-scene-live."
     },
     {
       "id": "edlt-scene-live",

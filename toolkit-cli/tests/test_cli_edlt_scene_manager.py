@@ -6,6 +6,8 @@ from types import SimpleNamespace
 from unittest.mock import Mock,patch
 from uuid import uuid4
 from cbus_toolkit import cli
+from cbus_toolkit.edlt import EdltError
+from cbus_toolkit.edlt_scene_manager import SceneManagerCache
 from cbus_toolkit.edlt_scene_manager_cli import SceneCLIEditor
 from tests.test_edlt import Session
 from tests.test_edlt_lifecycle import fixture
@@ -46,6 +48,23 @@ class SceneManagerCLITests(unittest.TestCase):
             self.assertFalse(plan['saved']);self.assertFalse(plan['physical_device_verified'])
             self.assertIn('crc_projection',plan)
 
+    def test_offline_static_name_allocation_evidence_and_order(self):
+        self.ops.write_text(json.dumps([
+            {'op':'set-name-text','scene':1,'text':'CLI scene'},
+            {'op':'set-name-text','scene':2,'text':'CLI scene'},
+            {'op':'set-name-index','scene':1,'index':255},
+        ]))
+        with patch('cbus_toolkit.edlt_scene_manager_cli.editor',return_value=self.editor), \
+                patch('cbus_toolkit.cgate.CGateClient',side_effect=AssertionError('Offline cannot connect')):
+            state=self.invoke(self.offline(True));plan=self.invoke(self.offline())
+        static=state['state']['static_text']
+        self.assertEqual([(row['index'],row['reused']) for row in static['allocations']],[(63,False),(63,True)])
+        self.assertEqual(state['state']['scenes'][0]['name_index'],255)
+        self.assertEqual(state['state']['scenes'][1]['name_index'],63)
+        self.assertEqual(plan['static_text']['fingerprint'],static['fingerprint'])
+        self.assertEqual(plan['static_text']['overlay_changes'],static['overlay_changes'])
+        self.assertTrue(plan['static_text_allocated']);self.assertEqual(plan['scene_pointers'],[0,11,19,24,29,34,39,44])
+
     def test_strict_inputs_and_unavailable_operations_reject_without_writes(self):
         with patch('cbus_toolkit.edlt_scene_manager_cli.editor',return_value=self.editor):
             self.source.write_text('{"x":1,"x":2}');self.assertIn('Duplicate JSON key',self.invoke(self.offline(),1)['error'])
@@ -55,11 +74,25 @@ class SceneManagerCLITests(unittest.TestCase):
             for document,message in (('[{"op":"clear-scene","op":"copy","scene":1}]','Duplicate JSON key'),
                 ('[NaN]','Non-finite JSON'),('{"op":"copy"}','array'),
                 ('[{"op":"broadcast","scene":1}]','Invalid scene operation'),
+                ('[{"op":"set-name-text","scene":1,"text":""}]','nonblank'),
                 (json.dumps([{'op':'clear-scene','scene':1}]*257),'256')):
                 self.ops.write_text(document);self.assertIn(message,self.invoke(self.offline(),1)['error'])
             self.ops.write_text('[]');self.assertIn('at most once',self.invoke((*self.offline(True),'--list-groups',1,'--list-groups',1),1)['error'])
             self.source.write_text(json.dumps({'format':'cbus-cli-parameters-v1','unit_type':'KEYGL5','firmware':'1','catalog_number':'5055EDL','parameters':self.session.values()}))
             self.assertIn('source profile',self.invoke(self.offline(),1)['error'])
+
+    def test_static_name_exhaustion_does_not_stage_pp(self):
+        session=Session(self.spec);session.current.update(self.session.current)
+        for widget in range(1,14):
+            session.current[f'Widget{widget}WidgetType']=(4,);session.current[f'Widget{widget}WidgetByteValue1']=(53,)
+            for slot,offset in enumerate((9,10,11,12,13)):
+                session.current[f'Widget{widget}WidgetByteValue{offset}']=(min(63,(widget-1)*5+slot),)
+        session.current['Widget14WidgetType']=(255,)
+        for widget in range(15,22):session.current[f'Widget{widget}WidgetType']=(0,)
+        with self.assertRaisesRegex(EdltError,'full'):
+            self.editor.configure(session,metadata=SceneManagerCache.from_dict(cache()),
+                                  operations=({'op':'set-name-text','scene':1,'text':'No free slot'},),validate=False)
+        self.assertEqual(session.calls,[])
 
     def test_capacity_partial_state_is_reviewable_and_never_staged_or_saved(self):
         self.ops.write_text(json.dumps(operations('capacity-add')))
@@ -127,7 +160,9 @@ class SceneManagerCLITests(unittest.TestCase):
             r=subprocess.run([sys.executable,'-m','cbus_toolkit',*map(str,args)],capture_output=True,text=True,timeout=60)
             self.assertEqual(r.returncode,status,r.stdout+r.stderr);return json.loads(r.stdout or r.stderr)
         args=('cgate','--host',host,'--port',port,'--timeout',30,'unit','--lock-address',network,'--source',source)
-        self.ops.write_text(json.dumps([{'op':'clear-items','scene':s} for s in range(1,9)]+[{'op':'add-groups','scene':1,'groups':list(range(64))}]))
+        self.ops.write_text(json.dumps([{'op':'clear-items','scene':s} for s in range(1,9)]+[
+            {'op':'add-groups','scene':1,'groups':list(range(64))},
+            {'op':'set-name-text','scene':1,'text':'Native full scene'}]))
         with CGateClient(host,port,timeout=30) as client:
             projects,database=NativeProjects(client),NativeDatabase(client);projects.operation('new',project)
             try:
@@ -142,6 +177,7 @@ class SceneManagerCLITests(unittest.TestCase):
                 for action in ('save','close','load'):projects.operation(action,project)
                 self.source.unlink();call(*args,'export',self.source);original=call(*args,'show')
                 plan=call(*self.offline());self.assertEqual(plan['crc_projection']['original_scene_bucket_tokens'],233)
+                self.assertTrue(plan['static_text_allocated']);self.assertEqual(plan['static_text']['allocations'][0]['index'],63)
                 preview=call(*args,'--dry-run','edlt-scene-manager',*self.flags())
                 self.assertEqual(preview['changes'],plan['changes']);self.assertFalse(preview['saved'])
                 self.assertEqual(original,call(*args,'show'))

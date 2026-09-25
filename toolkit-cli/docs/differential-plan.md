@@ -192,6 +192,14 @@ with the original SaveScenes 233-token temporary-CRC behavior at exactly
 `dlt-edlt-widgets-and-labels` mega-row, full SceneManager panel/form
 initialization, new label allocation, or physical behavior.
 
+That sentence records the boundary of the frozen acceptance run summarized
+below. A later additive implementation now supports ordered static scene-name
+allocation by reusing the separately original-tested whole-unit allocator.
+Its focused and environment-gated native tests are documented in
+`docs/edlt-scene-manager.md`; the historical execution counts and fixture
+hashes below are unchanged, and there is still no new SceneManager WinForms
+label-control or physical-display acceptance.
+
 Numbers verification (both claimed numbers verify against committed
 artifacts; nothing assumed):
 
@@ -261,10 +269,11 @@ evidence.
 `CBUS_TOOLKIT_EXE` + `CBUS_UNITSPEC_DIR`), and the CLI native test
 `test_native_cli_preview_complete64_original_crc_save_close_load_and_guard`
 (requires `CBUS_CGATE_TEST_HOST` + `CBUS_UNITSPEC_DIR`) all SKIP offline
-in this env. The offline-runnable suites — `SceneManagerTests` (9 tests
-replaying the committed original vectors) and `SceneManagerCLITests`
-offline tests (4 tests) — run here with no provisioning. Gate runs here
-therefore rest on committed artifacts plus the prior vendor runs recorded
+in this env. The current offline-runnable suites — `SceneManagerTests` (12
+tests, including three additive name-allocation cases),
+`SceneManagerCLITests` offline tests (6 tests) and the 12-test shared static
+allocator suite — run here with no provisioning. Gate runs here therefore
+rest on committed artifacts plus the prior vendor runs recorded
 in `research/fixtures/edlt-scene-manager-acceptance.json` (two module
 runs × 11 tests and two CLI runs × 5 tests, per-run `original_cases` /
 `native_cases` / report/log sha256 records, `source_sha256` /
