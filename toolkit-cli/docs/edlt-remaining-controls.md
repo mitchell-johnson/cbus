@@ -8,11 +8,12 @@ Measurement Gain/Offset decimal editing is no longer a broad outstanding eDLT
 control. The [Measurement contract](edlt-measurement.md) now covers the actual
 widget's invariant, en-NZ, de-DE and fr-FR parsing, final blank/zero/error
 validation, invariant fixed-place formatting, tested tiny-value underflow and
-signed-byte exponent serialization. Its remaining boundaries are narrow:
-non-finite input is rejected instead of reproducing Toolkit's `NaN` hang,
-per-keystroke focus/caret/message-box state is not a CLI concept, cultures
-outside the four source-pinned profiles are not inferred, and physical display
-behavior is unverified.
+signed-byte exponent serialization. Complete parent-form initialization,
+binding, event ordering and save integration remain open. Non-finite input is
+rejected instead of reproducing Toolkit's `NaN` hang, per-keystroke
+focus/caret/message-box state is not a CLI concept, cultures outside the four
+source-pinned profiles are not inferred, and physical display behavior is
+unverified.
 
 | Area | Current coverage / remaining work | Original evidence and important boundary |
 |---|---|---|

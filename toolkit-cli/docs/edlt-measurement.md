@@ -181,9 +181,10 @@ assemblies. Its committed compact evidence is
 four explicit cultures, separators and loose grouping, blank/zero/invalid final
 validation, fixed-format underflow, actual model bytes for wrapped exponents,
 and post-storage composite getters. `tests/test_edlt_measurement_culture.py`
-pins those behaviors. A preservation case changes only Gain bytes 4..6 while
-retaining Offset, text/icon, and opaque bytes 7..31; ordinary plan effects such
-as CRCs remain documented separately. The probe uses no physical device.
+pins those native observations. A separate Python planner preservation case
+changes only Gain bytes 4..6 while retaining Offset, text/icon, and opaque bytes
+7..31; ordinary plan effects such as CRCs remain documented separately. The
+probe uses no physical device.
 
 `tests/test_cli_edlt_measurement.py` covers offline planning, native preview and save/reload, original native text reuse, scaling options, bounds and database destination guards. Run both suites from `toolkit-cli`:
 
