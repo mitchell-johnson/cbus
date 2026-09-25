@@ -26,7 +26,9 @@ def load_vectors():
 
 def test_vector_file_pins_observed_cache_contract():
     rows = load_vectors()
-    assert len(rows) == 15, f"expected 15 compatibility cases, got {len(rows)}"
+    # Exact count (Decider P1 #2): silent deletion/rename of a vector must
+    # fail loudly. Bump the literal when legitimately ADDING a row.
+    assert len(rows) == 16, f"expected 16 compatibility cases, got {len(rows)}"
     seen_ids: set[str] = set()
     for item in rows:
         assert isinstance(item.get("id"), str) and item["id"]
