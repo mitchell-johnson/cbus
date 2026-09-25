@@ -22,6 +22,7 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::path::PathBuf;
 
+pub mod capability_matrix;
 pub mod manual;
 pub mod service;
 pub mod unitspec;
