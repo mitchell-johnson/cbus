@@ -82,6 +82,7 @@ not be committed or published.
 | NET CHECKUNIT | Active confirmed IDENTIFY4 collection through the native two-second quiet interval, with the native no-unit, single-unit, duplicate-unit and identity-error result forms; `*` expands from a fresh complete MMI |
 | NET CLOCKS | Reads physical IDENTIFY16 summaries for the synchronized inventory. Target counts and gateway recovery use decoded `ClockGenEnable` layouts, read-modify-write CAL stores and mandatory readback; native-style per-unit failures remain visible in `120` lines even with final status 200 |
 | `SET //PROJECT/NETWORK/p/UNIT Address DESTINATION` | Physical unit readdressing through native C-Gate's protected parameter-`0x20` exchange. The service proves one source identity and an empty destination, obtains the one-use challenge, sends exactly one special address STORE, requires both PCI confirmation and the unit ACK from the destination, moves only the observed physical cache, and leaves the database address unchanged |
+| `NET UNRAVELUNIT //PROJECT/NETWORK 255 MATCHDB` | Bounded physical resolution of exactly two known serials colliding at address 255. The service requires two distinct matching database units at unique empty addresses, a direct network, and local PCI parameter 66=`05`; it sends one selected-serial broadcast per unit and accepts success only after per-destination identity checks and a complete final MMI/serial inventory. Other unravel shapes return 502 |
 | Unit identification | Source-correlated CAL replies from the physical unit |
 | OEM physical memory reads | Volatile 0x41 pointer selection plus segmented RECALL; no EEPROM writes |
 | KEYGL5 5.5.00 static strings and lighting/scene widget labels | Python reader uses the service; checks physical identity, stable header and static-text CRC |
@@ -162,6 +163,23 @@ ring is cleared because its entries may be stale after reset. Use the guarded
 [`cbus-toolkit` workflow](../toolkit-cli/docs/edlt-factory-default.md) to bind the
 request to a fresh complete inventory and expected serial.
 
+`NET UNRAVELUNIT //PROJECT/NETWORK 255 MATCHDB` has a deliberately narrower
+meaning than the native generic command. It runs only when address 255 contains
+exactly two distinct known serials, every other present address contains one
+known serial, each serial has one database destination in 2..254, both targets
+are independently empty and unique, and the local PCI is outside the move with
+parameter 66 equal to `05`. It inventories all present addresses before the
+first write, sends each selected-serial broadcast exactly once, verifies the
+serial at its destination after each move, then repeats the complete MMI and
+serial inventory and checks the PCI option again. The receipt for a broadcast
+is treated only as acceptance; the later observations prove the movement.
+Timeout, transport loss, conflicting replies, or an incomplete final inventory
+produce an uncertain 408 with the number of independently verified moves. The
+service does not retry or roll back a selected-serial write. Whole-network
+`NET UNRAVEL`, non-255 sources, subsets, operation without `MATCHDB`, occupied
+destinations, larger duplicate sets, address cycles, and bridged networks remain
+explicit 502 cases.
+
 ## Live label reads
 
 ```sh
@@ -218,8 +236,8 @@ The existing mock dispatches 431 command paths. That is **not** evidence that
 all 431 have physical implementations in this service. `CMQTT CAPABILITIES`
 returns `full_cgate_compatibility: false`; unimplemented physical operations
 return 502. The enumerable gap tracker is the executable capability matrix in
-`cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 29
-physical, 36 local-database, 365 fail-closed 502, and 1 obsolete 400 over the
+`cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 30
+physical, 36 local-database, 364 fail-closed 502, and 1 obsolete 400 over the
 431 inventoried paths, plus a separately asserted 6-row supplement for
 non-inventoried service commands. Full replacement still requires:
 
@@ -232,12 +250,13 @@ non-inventoried service commands. Full replacement still requires:
   carry the same confirmed-count evidence. Factory/special parameters clear
   silently without a write while tag-filtered parameters stay dirty for a later
   matching-tags SAVE; a bare 200 covers the tag-selected subset only.
-- Bridged-network synchronization, serial-address commissioning, unravel,
+- Bridged-network synchronization, general serial-address commissioning,
   project identification and the remaining commissioning state transitions.
-  The pure selected-serial codec (`cbus-protocol::serial_address`) and the
-  tokio one-shot transport (`cbus-transport::serial_address`) exist with
-  committed vectors, but perform no inventory, commissioning, retry, or
-  persistence; `DO ... UNRAVEL` and `NET UNRAVEL[UNIT]` still return 502.
+  The bounded direct-network two-serial collision at address 255 is implemented
+  by `NET UNRAVELUNIT ... 255 MATCHDB`, including full inventory and independent
+  verification. Whole-network `NET UNRAVEL`, other UNRAVELUNIT shapes,
+  occupied-address displacement, larger duplicate sets, cycles, and bridges
+  remain 502. `DO ... UNRAVEL` also remains 502.
   Direct-network `NET PINGU`, `NET SYNC` identity population, `DO ... SYNC`,
   duplicate-aware `NET CHECKUNIT`, and guarded single-unit physical
   readdressing are implemented. `DO` lighting methods also use the physical
@@ -281,6 +300,12 @@ shared PCI connection.
 Transport tests pin the eDLT clear control bytes, positive PCI and unit replies,
 source filtering, MQTT fanout and definitive NAK recovery. The real-daemon case
 verifies exact-once delivery through the same PCI connection.
+Selected-serial transport tests pin the exact SRCHK request, positive
+confirmation plus source/route/serial-correlated receipt, the quiet interval,
+zero replay, interleaved lighting fanout, definite rejection recovery, and
+ambiguous-reply lane faulting. A paused-time service test exercises the complete
+two-unit MATCHDB inventory, move and final verification sequence through a real
+`PciClient` over a duplex fake PCI.
 The real-daemon scene case records an observed level, verifies durable storage,
 plays it as the exact confirmed zero-time ramp, and verifies that acknowledgement
 does not fabricate a level observation.

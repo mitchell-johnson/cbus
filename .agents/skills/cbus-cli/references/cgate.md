@@ -57,6 +57,14 @@ against the physical bus. That command proves one source and an empty
 destination, uses the native parameter-`0x20` one-use challenge, sends the
 special address STORE once, requires the destination ACK, and deliberately
 leaves the database unit address unchanged for the Toolkit workflow to verify.
+The bounded `NET UNRAVELUNIT //PROJECT/NETWORK 255 MATCHDB` path resolves
+exactly two known serials colliding at 255 to two unique, independently empty
+database destinations on a direct network. It requires local PCI parameter
+66=`05`, sends each selected-serial broadcast once, verifies each destination,
+and repeats the complete MMI and serial inventory before returning 200. Query
+`CMQTT CAPABILITIES`; `net_unravelunit_matchdb_duplicate_255: true` denotes
+this exact scope. Whole-network UNRAVEL, other source/subset forms, occupied
+destinations, cycles, larger duplicate sets, and bridged networks remain 502.
 PINGU and whole-network checks send the install-MMI request
 with the active PCI checksum setting. They buffer blocks that arrive before the
 request confirmation but accept only positively confirmed, contiguous coverage
@@ -99,9 +107,8 @@ per-unit failure before final status 200.
 same confirmed SAL path as the corresponding lighting command. `DO
 //PROJECT/NETWORK SYNC` runs the same physical identity-populating direct-network
 synchronization as `NET SYNC` and returns native `202 Done: object` framing.
-`DO ... UNRAVEL` returns 502 until the serial-address and bridged-network unravel
-backend is implemented; never describe the mock's in-memory result as physical
-success.
+`DO ... UNRAVEL` returns 502; never describe the mock's in-memory result as
+physical success or treat the bounded NET workflow as general unravel support.
 
 ## Mock service
 

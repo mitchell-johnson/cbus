@@ -23,6 +23,16 @@ The helper matches the database serial in Python and issues one `SET <source-uni
 
 The raw `NET UNRAVELUNIT <network> 255 MATCHDB` operation has broader semantics. It can choose another free destination if its own internal serial scan fails, even after successful caller preflight and with Retries=0. A regression test injects one all-ones serial reply during that scan: native UNRAVEL moves the unit to 2 despite a database target at 6. This is why the typed helper uses a fixed-destination scalar operation. The source evidence and fault results are in [native-unravel-fallback.md](native-unravel-fallback.md).
 
+cmqttd implements a separate bounded backend for the CLI command
+`cgate network unravel //PROJECT/NETWORK --unit 255 --match-database`. It
+accepts only an exact two-serial collision at 255 with two unique empty database
+destinations on a direct network, checks local PCI parameter 66=`05`, sends one
+selected-serial broadcast per identity without replay, and performs complete
+before/after MMI plus serial inventories with an independent destination check
+after each move. Other raw unravel shapes return 502. This avoids native
+C-Gate's free-address fallback but does not replace the scalar single-unit
+workflow above or establish general duplicate/cycle/bridge support.
+
 Raw `MATCHDB` also leaves a healthy singleton at a normal address in place: an isolated probe with physical KEYE1 at 4 and its database serial at 6 returned 200 with no move. Native `CBusNetworkUnraveller` selects duplicate/problem addresses or addresses marked for clearing, including 255. Single KEYE1 moves use `dc/dd/cu` unlock/STORE; native uses `co` broadcasts for other branches. The typed helper rejects normal source addresses; use the separately tested [physical Address workflow](physical-addressing.md) for those.
 
 Planning uses a direct wired CNI/Serial network, running interface/target, idle synchronization, AutoUnravel and AutoUpdate disabled, and explicit **Retries=0**. It preserves these settings. It performs a whole-network fast refresh, physically checks source 255 and the requested target, requires complete healthy unique identities, and checks that exactly one database unit matches the expected serial at the target with the same type/firmware. Known bridges/gateways, duplicate serials, occupied targets, missing database counterparts and stale metadata are rejected.
@@ -64,7 +74,10 @@ CBUS_SERIAL_COMMISSION_REPORT=research/runtime/serial-commission-acceptance.json
 .venv/bin/python -m unittest discover -s tests -p 'test_simulator*.py' -v
 ```
 
-Occupied-unit displacement, address cycles, duplicate physical addresses, general serial broadcasts against native PCI/bridge units and hardware-wide commissioning parity remain unverified.
+Occupied-unit displacement, address cycles, duplicate sets beyond the bounded
+two-unit address-255 cmqttd case, general serial broadcasts against native
+PCI/bridge units, hardware persistence and hardware-wide commissioning parity
+remain unverified.
 
 Recorded evidence includes [raw MATCHDB fallback](native-matchdb-internal-scan-fallback.json) and [healthy singleton no-op](native-unravel-healthy-singleton-noop.json). Earlier MATCHDB acceptance records are preserved as [pre-mitigation commissioning](native-matchdb-commissioning-before-mitigation.json) and [pre-mitigation lost reply](native-matchdb-lost-reply-before-mitigation.json); they do not verify the scalar mitigation.
 

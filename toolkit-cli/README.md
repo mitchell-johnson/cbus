@@ -444,13 +444,20 @@ cbus-toolkit cgate network list --project TEST
 cbus-toolkit cgate network state //TEST/254
 cbus-toolkit cgate network open //TEST/254
 cbus-toolkit cgate --timeout 60 network sync //TEST/254 --fast
+cbus-toolkit cgate --timeout 120 network unravel //TEST/254 --unit 255 --match-database
 cbus-toolkit cgate network tree //TEST/254 --details
 cbus-toolkit cgate network close //TEST/254
 ```
 
-`wait-ready` observes native state without restarting operations. Discovery,
-duplicate checks, clock management and unraveling have explicit commands;
-their full physical-network acceptance is still in progress.
+`wait-ready` observes native state without restarting operations. Against
+cmqttd, the shown unravel command has a bounded physical backend for exactly
+two known serials colliding at address 255 with two unique empty database
+destinations on a direct network. It sends each selected-serial move once and
+accepts success only after complete before/after inventories and independent
+destination checks. Other unravel forms return 502. Native C-Gate retains its
+broader and potentially unsafe fallback semantics described below. Discovery,
+duplicate checks and clock management have their own explicit commands; broader
+physical-network acceptance is still in progress.
 Reopening an existing model can defer its next scan. Use `network sync --fast`
 with the network address to request a fresh scan; waiting alone does not start it.
 

@@ -6,12 +6,13 @@ use crate::auth;
 use cbus_protocol::{
     packet::{Meta, Packet},
     sal::{label, Sal},
+    serial_address::parse_native_serial,
 };
 use cbus_transport::pci::{CBusEvent, GocProgramming, PciClient};
 use chrono::{Datelike, Local, NaiveDate, NaiveTime, Timelike};
 use serde::{Deserialize, Serialize};
 use std::{
-    collections::{HashMap, HashSet, VecDeque},
+    collections::{BTreeMap, HashMap, HashSet, VecDeque},
     io::{self, Write},
     path::Path,
     sync::{Arc, OnceLock},
@@ -533,6 +534,7 @@ impl Service {
                 "install_mmi":true, "network_pingu":true,
                 "network_sync":true, "network_checkunit":true,
                 "unit_readdress":true,
+                "net_unravelunit_matchdb_duplicate_255":true,
                 "project":self.project,"network":self.network,"persistent_database":true,
                 // Opt-in command-layer LOGIN gate (see Service::set_auth_token_hash):
                 // false with the dormant default, true once armed.
@@ -661,6 +663,9 @@ impl Service {
         }
         if verb == "NET" && sub == "CHECKUNIT" {
             return self.net_checkunit(client, line, tag, &words).await;
+        }
+        if verb == "NET" && matches!(sub, "UNRAVEL" | "UNRAVELUNIT") {
+            return self.net_unravel(client, line, tag, &words).await;
         }
         // Native C-Gate declares CHECK_UNRAVEL obsolete and returns 400
         // without running it. Answer likewise: no physical I/O exists.
@@ -1354,6 +1359,319 @@ impl Service {
             .events
             .send(format!("#e# net {} checkunit {}", self.network, words[3]));
         ok(tag, lines, "200 OK.")
+    }
+
+    async fn net_unravel(
+        &self,
+        client: &ClientState,
+        line: &str,
+        tag: &str,
+        words: &[&str],
+    ) -> Response {
+        let _commands = self.commands.lock().await;
+        let validation = {
+            let mut staged = self.model.lock().await.clone();
+            staged.current = client
+                .current
+                .clone()
+                .or_else(|| Some(self.project.clone()));
+            staged.handle(line)
+        };
+        if validation.status >= 400 {
+            return validation;
+        }
+        if words.len() != 5
+            || !words[1].eq_ignore_ascii_case("UNRAVELUNIT")
+            || !self.bound_network(words[2])
+            || words[3] != "255"
+            || !words[4].eq_ignore_ascii_case("MATCHDB")
+        {
+            return err(
+                tag,
+                502,
+                "502 Physical unravel currently requires NET UNRAVELUNIT on address 255 with MATCHDB",
+            );
+        }
+
+        let pci = self.pci.read().await.clone();
+        let (database_units, interface_units) = {
+            let model = self.model.lock().await;
+            let network = &model.projects[&self.project].networks[&self.network];
+            let units = network.units.values().cloned().collect::<Vec<_>>();
+            let interfaces = units
+                .iter()
+                .filter(|unit| {
+                    let unit_type = unit.unit_type.to_ascii_uppercase();
+                    unit_type.starts_with("PC_CNI") || unit_type.starts_with("PC_PCI")
+                })
+                .map(|unit| unit.address)
+                .collect::<Vec<_>>();
+            (units, interfaces)
+        };
+        let local = match interface_units.as_slice() {
+            [address] => pci.set_local_unit_hint(*address).map(|()| *address),
+            [] => pci.discover_local_unit().await,
+            _ => Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "configured network has multiple local-interface units",
+            )),
+        };
+        let local = match local {
+            Ok(local) if local != 255 => local,
+            Ok(_) => return err(tag, 409, "409 Local PCI cannot be part of address 255"),
+            Err(error) => {
+                return err(
+                    tag,
+                    408,
+                    &format!("408 Physical interface discovery failed: {error}"),
+                )
+            }
+        };
+
+        let before_states = match pci.install_mmi().await {
+            Ok(states) => states,
+            Err(error) => {
+                return err(
+                    tag,
+                    408,
+                    &format!("408 Initial unravel inventory failed: {error}"),
+                )
+            }
+        };
+        let before = match physical_serial_inventory(&pci, &before_states).await {
+            Ok(inventory) => inventory,
+            Err(error) => {
+                return err(
+                    tag,
+                    408,
+                    &format!("408 Initial unravel identity inventory failed: {error}"),
+                )
+            }
+        };
+        let Some(source_serials) = before.get(&255) else {
+            return err(tag, 401, "401 No units detected at address 255");
+        };
+        if source_serials.len() != 2
+            || before
+                .iter()
+                .any(|(address, serials)| *address != 255 && serials.len() != 1)
+        {
+            return err(
+                tag,
+                409,
+                "409 Bounded unravel requires exactly two known serials at address 255 and no other duplicates",
+            );
+        }
+
+        let mut plan = Vec::with_capacity(2);
+        for serial in source_serials {
+            let matching = database_units
+                .iter()
+                .filter(|unit| {
+                    parse_native_serial(&unit.serial)
+                        .ok()
+                        .is_some_and(|value| value.known && value.canonical == *serial)
+                })
+                .collect::<Vec<_>>();
+            let [unit] = matching.as_slice() else {
+                return err(
+                    tag,
+                    409,
+                    &format!("409 Serial {serial} must have exactly one database destination"),
+                );
+            };
+            if !(2..=254).contains(&unit.address)
+                || unit.address == local
+                || before_states[usize::from(unit.address)] != 0
+            {
+                return err(
+                    tag,
+                    409,
+                    &format!(
+                        "409 Database destination {} for serial {serial} is not independently empty",
+                        unit.address
+                    ),
+                );
+            }
+            plan.push((serial.clone(), unit.address));
+        }
+        plan.sort_by_key(|(_, destination)| *destination);
+        if plan[0].1 == plan[1].1 {
+            return err(tag, 409, "409 Database destinations are not unique");
+        }
+
+        let local_options = match pci.recall_parameter(local, 66, 1).await {
+            Ok(value) => value,
+            Err(error) => {
+                return err(
+                    tag,
+                    408,
+                    &format!("408 Local PCI option check failed: {error}"),
+                )
+            }
+        };
+        if local_options != [5] {
+            return err(
+                tag,
+                409,
+                "409 Bounded unravel requires local PCI parameter 66 to equal 05",
+            );
+        }
+
+        // MMI absence is necessary but not sufficient for an irreversible
+        // address broadcast. Actively probe every target before the first
+        // mutation so a hidden responder aborts the whole plan with zero
+        // selected-serial sends.
+        for (serial, destination) in &plan {
+            match pci.identify_all(*destination, 4).await {
+                Ok(replies) if replies.is_empty() => {}
+                Ok(_) => {
+                    return err(
+                        tag,
+                        409,
+                        &format!(
+                            "409 Database destination {destination} for serial {serial} answered the independent emptiness check"
+                        ),
+                    )
+                }
+                Err(error) => {
+                    return err(
+                        tag,
+                        408,
+                        &format!(
+                            "408 Database destination {destination} emptiness check failed: {error}"
+                        ),
+                    )
+                }
+            }
+        }
+
+        let source_state = before_states[255];
+        let mut expected_states = before_states.clone();
+        expected_states[255] = 0;
+        let mut expected = before.clone();
+        expected.remove(&255);
+        let total = plan.len();
+        let mut completed = 0usize;
+        for (serial, destination) in &plan {
+            if let Err(error) = pci.address_selected_serial(serial, *destination).await {
+                return err(
+                    tag,
+                    408,
+                    &format!(
+                        "408 Unravel outcome uncertain after {completed} of {total} verified movement(s): {error}"
+                    ),
+                );
+            }
+            let replies = match pci.identify_all(*destination, 4).await {
+                Ok(replies) => replies,
+                Err(error) => {
+                    return err(
+                        tag,
+                        408,
+                        &format!(
+                            "408 Unravel verification failed after {completed} of {total} verified movement(s): {error}"
+                        ),
+                    )
+                }
+            };
+            let verified = replies.len() == 1
+                && serial_number(&replies[0])
+                    .ok()
+                    .flatten()
+                    .is_some_and(|observed| observed == *serial);
+            if !verified {
+                return err(
+                    tag,
+                    408,
+                    &format!(
+                        "408 Unravel verification failed after {completed} of {total} verified movement(s)"
+                    ),
+                );
+            }
+            completed += 1;
+            expected_states[usize::from(*destination)] = source_state;
+            expected.insert(*destination, vec![serial.clone()]);
+            let _ = self
+                .events
+                .send(format!("#e# unit moved serial={serial} 255 {destination}"));
+        }
+
+        let after_states = match pci.install_mmi().await {
+            Ok(states) => states,
+            Err(error) => {
+                return err(
+                    tag,
+                    408,
+                    &format!(
+                        "408 Final unravel inventory failed after {completed} move(s): {error}"
+                    ),
+                )
+            }
+        };
+        let after = match physical_serial_inventory(&pci, &after_states).await {
+            Ok(inventory) => inventory,
+            Err(error) => {
+                return err(
+                    tag,
+                    408,
+                    &format!(
+                        "408 Final unravel identity inventory failed after {completed} move(s): {error}"
+                    ),
+                )
+            }
+        };
+        let final_options = match pci.recall_parameter(local, 66, 1).await {
+            Ok(value) => value,
+            Err(error) => {
+                return err(
+                    tag,
+                    408,
+                    &format!("408 Final local PCI option check failed: {error}"),
+                )
+            }
+        };
+        if after_states != expected_states || after != expected || final_options != [5] {
+            return err(
+                tag,
+                408,
+                "408 Final unravel inventory differs from the exact planned change",
+            );
+        }
+
+        let mut model = self.model.lock().await;
+        if let Some(network) = model
+            .projects
+            .get_mut(&self.project)
+            .and_then(|project| project.networks.get_mut(&self.network))
+        {
+            let previous = std::mem::take(&mut network.physical);
+            network.physical = after
+                .iter()
+                .map(|(address, serials)| {
+                    let serial = &serials[0];
+                    let mut unit = database_units
+                        .iter()
+                        .find(|unit| {
+                            parse_native_serial(&unit.serial)
+                                .ok()
+                                .is_some_and(|value| value.known && value.canonical == *serial)
+                        })
+                        .cloned()
+                        .or_else(|| previous.get(address).cloned())
+                        .unwrap_or_else(|| Unit::blank(*address, ""));
+                    unit.address = *address;
+                    unit.serial = serial.clone();
+                    (*address, unit)
+                })
+                .collect();
+            network.state = NetworkState::Ok;
+        }
+        drop(model);
+        let _ = self
+            .events
+            .send(format!("#e# net {} unravel ok", self.network));
+        validation
     }
 
     async fn readdress_unit(&self, tag: &str, words: &[&str]) -> Response {
@@ -3733,6 +4051,7 @@ fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
                 | "REPAIR"
         ),
         "SET" => true,
+        "NET" => matches!(sub, "UNRAVEL" | "UNRAVELUNIT"),
         "LABEL" => sub == "CLEAREDLT",
         "SCENE" => sub == "RECORD",
         "DO" => words
@@ -3844,6 +4163,52 @@ fn known_serials(replies: &[Vec<u8>]) -> io::Result<HashSet<String>> {
         .iter()
         .filter_map(|reply| serial_number(reply).transpose())
         .collect()
+}
+
+async fn physical_serial_inventory(
+    pci: &Arc<PciClient>,
+    states: &[u8],
+) -> io::Result<BTreeMap<u8, Vec<String>>> {
+    if states.len() != 256 {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "installation MMI must cover all 256 addresses",
+        ));
+    }
+    let mut inventory = BTreeMap::new();
+    for (address, state) in states.iter().enumerate() {
+        if *state == 0 {
+            continue;
+        }
+        let address = address as u8;
+        let replies = pci.identify_all(address, 4).await?;
+        let mut serials = replies
+            .iter()
+            .map(|reply| {
+                serial_number(reply)?.ok_or_else(|| {
+                    io::Error::new(
+                        io::ErrorKind::InvalidData,
+                        format!("address {address} returned an unknown serial"),
+                    )
+                })
+            })
+            .collect::<io::Result<Vec<_>>>()?;
+        serials.sort();
+        if serials.is_empty() {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                format!("address {address} did not return a serial"),
+            ));
+        }
+        if serials.windows(2).any(|pair| pair[0] == pair[1]) {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                format!("address {address} returned a duplicate serial response"),
+            ));
+        }
+        inventory.insert(address, serials);
+    }
+    Ok(inventory)
 }
 
 fn import_project(xml: &str, network_name: Option<&str>) -> io::Result<(Server, String, u8)> {

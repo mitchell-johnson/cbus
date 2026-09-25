@@ -79,9 +79,12 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // by the model with no PCI I/O); ENABLE REMOVE moved physical ->
     // local_database (model response, no PCI I/O); GETSTATE moved physical
     // -> local_database (observed-cache read, no per-read PCI I/O).
-    assert_eq!(class_count(RoutingClass::Physical), 29);
+    // NET UNRAVELUNIT moved fail_closed_502 -> physical after the bounded
+    // duplicate-address-255 MATCHDB backend was added; unsupported shapes
+    // remain an explicit 502 within that service branch.
+    assert_eq!(class_count(RoutingClass::Physical), 30);
     assert_eq!(class_count(RoutingClass::LocalDatabase), 36);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 365);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 364);
     assert_eq!(class_count(RoutingClass::Obsolete400), 1);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here
@@ -92,7 +95,7 @@ fn matrix_class_counts_pin_the_routing_gap() {
 }
 
 #[test]
-fn fail_closed_pins_do_unravel_and_net_unravel() {
+fn fail_closed_pins_do_unravel_and_whole_network_unravel() {
     let fail_closed: BTreeSet<&str> = CAPABILITY_MATRIX
         .iter()
         .filter(|entry| entry.class == RoutingClass::FailClosed502)
@@ -101,7 +104,7 @@ fn fail_closed_pins_do_unravel_and_net_unravel() {
     // "DO UNRAVEL" is a method specialization of the inventoried "DO" path
     // (not a separate inventoried path): the DO row carries the explicit
     // 502 evidence for the UNRAVEL method.
-    for pinned in ["DO", "NET UNRAVEL", "NET UNRAVELUNIT"] {
+    for pinned in ["DO", "NET UNRAVEL"] {
         assert!(
             fail_closed.contains(pinned),
             "fail_closed must contain {pinned}"
@@ -115,6 +118,12 @@ fn fail_closed_pins_do_unravel_and_net_unravel() {
         do_row.evidence.contains("DO UNRAVEL"),
         "DO row must pin the UNRAVEL 502 evidence"
     );
+    let unit_row = CAPABILITY_MATRIX
+        .iter()
+        .find(|entry| entry.path == "NET UNRAVELUNIT")
+        .expect("NET UNRAVELUNIT row exists");
+    assert_eq!(unit_row.class, RoutingClass::Physical);
+    assert!(unit_row.evidence.contains("255 MATCHDB"));
 }
 
 #[test]

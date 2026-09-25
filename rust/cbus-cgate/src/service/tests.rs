@@ -535,6 +535,7 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["dynamic_label_observation"], true);
     assert_eq!(document["dynamic_label_device_readback"], false);
     assert_eq!(document["edlt_factory_default"], true);
+    assert_eq!(document["net_unravelunit_matchdb_duplicate_255"], true);
     assert_eq!(
         document["do_methods"],
         serde_json::json!(["factorydefault", "lighting", "sync"])
@@ -840,11 +841,10 @@ async fn do_edlt_factory_default_is_guarded_and_sent_once() {
     std::fs::remove_file(path).unwrap();
 }
 
-/// Issue #10 Phase 5 entry: native NET UNRAVEL[UNIT] likewise has no
-/// physical backend yet and fails closed with the generic 502 — never a
-/// simulator-only success standing in for physical I/O.
+/// Broader native UNRAVEL shapes remain fail-closed until cycles, occupied
+/// displacement, bridges and native fallback have equivalent evidence.
 #[tokio::test]
-async fn net_unravel_fails_closed_until_physical_backend_exists() {
+async fn broader_net_unravel_shapes_fail_closed() {
     let path = state_path();
     let (pci, _remote) = pci();
     let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
@@ -852,17 +852,215 @@ async fn net_unravel_fails_closed_until_physical_backend_exists() {
     for line in [
         "[1] NET UNRAVEL //HARNESS/254",
         "[2] NET UNRAVELUNIT //HARNESS/254 20",
-        // The fail-closed gate precedes argument validation: even a bare
-        // verb reports 502, never a mock 400.
-        "[3] NET UNRAVEL",
     ] {
         let response = service.handle(&mut client, line).await;
         assert_eq!(response.status, 502, "{line}");
-        assert_eq!(
-            response.final_text, "502 Command requires a physical backend that is not implemented",
-            "{line}"
-        );
+        assert!(response.final_text.contains("requires NET UNRAVELUNIT"));
     }
+    assert_eq!(
+        service.handle(&mut client, "[3] NET UNRAVEL").await.status,
+        400
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test(start_paused = true)]
+async fn bounded_matchdb_unravel_uses_selected_serial_and_verifies_full_inventory() {
+    async fn pci_line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+    async fn direct_reply<W: tokio::io::AsyncWrite + Unpin>(
+        writer: &mut W,
+        source: u8,
+        cal: &[u8],
+    ) {
+        let mut bytes = vec![0x86, source, 0x10, 0x00];
+        bytes.extend_from_slice(cal);
+        let sum = bytes.iter().fold(0u8, |sum, byte| sum.wrapping_add(*byte));
+        bytes.push(0u8.wrapping_sub(sum));
+        let mut wire = hex::encode_upper(bytes).into_bytes();
+        wire.extend_from_slice(b"\r\n");
+        writer.write_all(&wire).await.unwrap();
+    }
+    fn packed(serial: &str) -> [u8; 4] {
+        cbus_protocol::serial_address::parse_native_serial(serial)
+            .unwrap()
+            .packed
+    }
+    fn identity(serial: &str, address: u8) -> Vec<u8> {
+        let mut data = vec![0x38, 0xff, 0xff, 0xff, 0xff];
+        data.extend_from_slice(&packed(serial));
+        data.extend_from_slice(&[0xa2, 0, address]);
+        data
+    }
+    fn mmi_block(start: u8, count: usize, present: &[usize]) -> Vec<u8> {
+        let mut states = vec![0u8; count];
+        for address in present {
+            states[*address - usize::from(start)] = 1;
+        }
+        let mut wire = cbus_protocol::packet::Packet::StandardStatus {
+            application: 0xff,
+            block_start: start,
+            states,
+        }
+        .encode_packet()
+        .unwrap();
+        wire.extend_from_slice(b"\r\n");
+        wire
+    }
+    async fn mmi<R, W>(reader: &mut R, writer: &mut W, present: &[usize])
+    where
+        R: tokio::io::AsyncBufRead + Unpin,
+        W: tokio::io::AsyncWrite + Unpin,
+    {
+        let request = pci_line(reader).await;
+        assert!(request.starts_with(b"\\05FF00FAFF"), "{request:?}");
+        let code = request[request.len() - 2];
+        writer.write_all(&[code, b'.']).await.unwrap();
+        for (start, count) in [(0, 88), (88, 88), (176, 80)] {
+            let block_present = present
+                .iter()
+                .copied()
+                .filter(|address| (start..start + count).contains(address))
+                .collect::<Vec<_>>();
+            writer
+                .write_all(&mmi_block(start as u8, count, &block_present))
+                .await
+                .unwrap();
+        }
+        tokio::task::yield_now().await;
+    }
+    async fn identify<R, W>(reader: &mut R, writer: &mut W, address: u8, serials: &[&str])
+    where
+        R: tokio::io::AsyncBufRead + Unpin,
+        W: tokio::io::AsyncWrite + Unpin,
+    {
+        let request = pci_line(reader).await;
+        assert!(request.starts_with(format!("\\46{address:02X}002104").as_bytes()));
+        let code = request[request.len() - 2];
+        writer.write_all(&[code, b'.']).await.unwrap();
+        for serial in serials {
+            let mut cal = vec![0x8d, 4];
+            cal.extend_from_slice(&identity(serial, address));
+            direct_reply(writer, address, &cal).await;
+        }
+        tokio::time::advance(Duration::from_secs(2)).await;
+        tokio::task::yield_now().await;
+    }
+    async fn local_options<R, W>(reader: &mut R, writer: &mut W)
+    where
+        R: tokio::io::AsyncBufRead + Unpin,
+        W: tokio::io::AsyncWrite + Unpin,
+    {
+        let request = pci_line(reader).await;
+        assert!(request.starts_with(b"\\4610001A4201"), "{request:?}");
+        direct_reply(writer, 16, &[0x82, 0x42, 5]).await;
+    }
+    async fn selected<R, W>(reader: &mut R, writer: &mut W, serial: &str, destination: u8)
+    where
+        R: tokio::io::AsyncBufRead + Unpin,
+        W: tokio::io::AsyncWrite + Unpin,
+    {
+        let request = pci_line(reader).await;
+        assert!(request.starts_with(b"\\05FF000F00"), "{request:?}");
+        let encoded_serial = hex::encode_upper(packed(serial));
+        assert!(request
+            .windows(encoded_serial.len())
+            .any(|window| window == encoded_serial.as_bytes()));
+        let code = request[request.len() - 2];
+        writer.write_all(&[code, b'.']).await.unwrap();
+        let mut cal = vec![0x87, 0];
+        cal.extend_from_slice(&packed(serial));
+        cal.extend_from_slice(&[0, 0]);
+        direct_reply(writer, destination, &cal).await;
+        tokio::time::advance(Duration::from_secs(2)).await;
+        tokio::task::yield_now().await;
+    }
+
+    let path = state_path();
+    let (pci, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        pci_line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    {
+        let mut model = service.model.lock().await;
+        let network = model
+            .projects
+            .get_mut("HARNESS")
+            .unwrap()
+            .networks
+            .get_mut(&254)
+            .unwrap();
+        for (address, serial, unit_type) in [
+            (6, "101136.1558", "KEYE1"),
+            (7, "101136.1559", "KEYE1"),
+            (16, "100966.1187", "PC_CNI"),
+        ] {
+            let mut unit = Unit::blank(address, "");
+            unit.serial = serial.to_string();
+            unit.unit_type = unit_type.to_string();
+            unit.firmware = "2.5.00".to_string();
+            network.units.insert(address, unit);
+        }
+    }
+    let unravel = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[1] NET UNRAVELUNIT //HARNESS/254 255 MATCHDB",
+                )
+                .await
+        }
+    });
+
+    mmi(&mut remote_read, &mut remote_write, &[16, 255]).await;
+    identify(&mut remote_read, &mut remote_write, 16, &["100966.1187"]).await;
+    identify(
+        &mut remote_read,
+        &mut remote_write,
+        255,
+        &["101136.1558", "101136.1559"],
+    )
+    .await;
+    local_options(&mut remote_read, &mut remote_write).await;
+    identify(&mut remote_read, &mut remote_write, 6, &[]).await;
+    identify(&mut remote_read, &mut remote_write, 7, &[]).await;
+
+    selected(&mut remote_read, &mut remote_write, "101136.1558", 6).await;
+    identify(&mut remote_read, &mut remote_write, 6, &["101136.1558"]).await;
+    selected(&mut remote_read, &mut remote_write, "101136.1559", 7).await;
+    identify(&mut remote_read, &mut remote_write, 7, &["101136.1559"]).await;
+
+    mmi(&mut remote_read, &mut remote_write, &[6, 7, 16]).await;
+    identify(&mut remote_read, &mut remote_write, 6, &["101136.1558"]).await;
+    identify(&mut remote_read, &mut remote_write, 7, &["101136.1559"]).await;
+    identify(&mut remote_read, &mut remote_write, 16, &["100966.1187"]).await;
+    local_options(&mut remote_read, &mut remote_write).await;
+
+    let response = unravel.await.unwrap();
+    assert_eq!(response.status, 200, "{}", response.final_text);
+    let model = service.model.lock().await;
+    let network = &model.projects["HARNESS"].networks[&254];
+    assert!(!network.physical.contains_key(&255));
+    assert_eq!(network.physical[&6].serial, "101136.1558");
+    assert_eq!(network.physical[&7].serial, "101136.1559");
+    assert_eq!(network.physical[&16].serial, "100966.1187");
+    assert_eq!(network.units[&6].address, 6);
+    assert_eq!(network.units[&7].address, 7);
+    drop(model);
     std::fs::remove_file(path).unwrap();
 }
 
@@ -2476,6 +2674,7 @@ async fn auth_wrong_secret_denied_and_gate_holds() {
         "[13] LABEL CLEAREDLT //HARNESS/254/p/5",
         "[14] SCENE RECORD house evening",
         "[15] DO //HARNESS/254/p/5 FactoryDefault",
+        "[16] NET UNRAVELUNIT //HARNESS/254 255 MATCHDB",
     ] {
         let response = service.handle(&mut client, command).await;
         assert_eq!(response.status, 420, "{command}: {response:?}");

@@ -2,12 +2,14 @@
 //! Pointer selection is volatile; memory reads never issue a memory write.
 
 use super::*;
+use cbus_protocol::serial_address::{encode_serial_address, parse_native_serial};
 use std::io::{Error, ErrorKind, Result};
 use std::sync::atomic::{AtomicBool, Ordering};
 
 const REPLY_TIMEOUT: Duration = Duration::from_secs(10);
 const IDENTIFY_QUIET: Duration = Duration::from_secs(2);
 const IDENTIFY_MAX_REPLIES: usize = 7;
+const SERIAL_ADDRESS_QUIET: Duration = Duration::from_secs(2);
 const NVM_POLL_INTERVAL: Duration = Duration::from_millis(500);
 const NVM_POLL_TIMEOUT: Duration = Duration::from_secs(15);
 
@@ -32,6 +34,22 @@ enum ExtendedOutcome {
     Nak,
 }
 
+/// Correlated acceptance of one selected-serial address broadcast.
+///
+/// This records the exact addressed receipt only. It never proves movement,
+/// persistence, or uniqueness; callers must perform independent inventory.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SelectedSerialAcceptance {
+    /// Canonical serial selected by the broadcast.
+    pub serial: String,
+    /// Requested address and source of the correlated receipt.
+    pub destination: u8,
+    /// Attached PCI unit that received the correlated reply.
+    pub local_unit: u8,
+    /// Two native reply bytes whose meaning is not established.
+    pub opaque_tail: [u8; 2],
+}
+
 impl Drop for Transaction<'_> {
     fn drop(&mut self) {
         if !self.complete {
@@ -41,6 +59,223 @@ impl Drop for Transaction<'_> {
 }
 
 impl PciClient {
+    /// Send one selected-serial address broadcast on this shared PCI.
+    ///
+    /// cmqttd enables SRCHK, so the exact request includes both the native
+    /// inner serial-address checksum and the outer command checksum. The
+    /// operation is never placed in the retry table. Success requires one
+    /// positive PCI confirmation followed by one exact direct `87 00`
+    /// receipt and a two-second quiet interval. It remains receipt evidence,
+    /// not movement or persistence evidence.
+    pub async fn address_selected_serial(
+        &self,
+        serial: &str,
+        destination: u8,
+    ) -> Result<SelectedSerialAcceptance> {
+        let selected = parse_native_serial(serial)
+            .map_err(|error| Error::new(ErrorKind::InvalidInput, error.0))?;
+        if !selected.known || !(2..=254).contains(&destination) {
+            return Err(Error::new(
+                ErrorKind::InvalidInput,
+                "selected-serial address requires a known serial and destination in 2..254",
+            ));
+        }
+        let local = self.local_unit.load(Ordering::Acquire);
+        if local > u8::MAX.into() {
+            return Err(Error::new(
+                ErrorKind::InvalidInput,
+                "selected-serial address requires a known local PCI unit",
+            ));
+        }
+        let local = local as u8;
+        if local == destination {
+            return Err(Error::new(
+                ErrorKind::InvalidInput,
+                "selected-serial destination cannot be the local PCI unit",
+            ));
+        }
+
+        let _lane = self.programming_lane.lock().await;
+        if self.programming_fault.load(Ordering::Acquire) {
+            return Err(Error::other(
+                "programming stream needs reconnect after an incomplete transaction",
+            ));
+        }
+        let mut transaction = Transaction {
+            fault: &self.programming_fault,
+            complete: false,
+        };
+        let mut replies = self.packets.subscribe();
+        let code = self.get_confirmation_code();
+        let request = encode_serial_address(&selected.canonical, destination, true, code)
+            .map_err(|error| Error::new(ErrorKind::InvalidInput, error.0))?;
+
+        let result = tokio::time::timeout(REPLY_TIMEOUT, async {
+            self.init_done
+                .subscribe()
+                .wait_for(|&done| done)
+                .await
+                .map_err(|_| Error::new(ErrorKind::BrokenPipe, "PCI initialization ended"))?;
+            if !self.is_connected() {
+                return Err(Error::new(ErrorKind::BrokenPipe, "PCI disconnected"));
+            }
+            self.flow
+                .submit(request, Priority::Command, ResponseKind::Confirmation(code))
+                .await
+                .map_err(|_| Error::new(ErrorKind::BrokenPipe, "PCI writer ended"))??;
+
+            let mut confirmed = false;
+            let mut acceptance = None;
+            let mut quiet_deadline = None;
+            loop {
+                let next = async {
+                    match quiet_deadline {
+                        Some(deadline) => tokio::time::timeout_at(deadline, replies.recv())
+                            .await
+                            .map_err(|_| {
+                            Error::new(ErrorKind::TimedOut, "selected-serial quiet interval")
+                        })?,
+                        None => replies.recv().await,
+                    }
+                    .map_err(|_| Error::new(ErrorKind::BrokenPipe, "PCI response stream lost"))
+                };
+                match next.await {
+                    Err(error)
+                        if error.kind() == ErrorKind::TimedOut
+                            && quiet_deadline.is_some()
+                            && confirmed
+                            && acceptance.is_some() =>
+                    {
+                        return Ok(acceptance.unwrap())
+                    }
+                    Err(error)
+                        if error.kind() == ErrorKind::TimedOut && quiet_deadline.is_some() =>
+                    {
+                        return Err(Error::new(
+                            ErrorKind::TimedOut,
+                            "selected-serial address receipt timed out",
+                        ))
+                    }
+                    Err(error) => return Err(error),
+                    Ok(None) => {
+                        return Err(Error::new(
+                            ErrorKind::BrokenPipe,
+                            "PCI response stream lost",
+                        ))
+                    }
+                    Ok(Some(Packet::Confirmation { code: got, success })) if got == code => {
+                        if confirmed {
+                            return Err(Error::new(
+                                ErrorKind::InvalidData,
+                                "duplicate selected-serial confirmation",
+                            ));
+                        }
+                        if !success {
+                            if acceptance.is_some() {
+                                return Err(Error::new(
+                                    ErrorKind::InvalidData,
+                                    "selected-serial receipt followed by rejection",
+                                ));
+                            }
+                            return Err(Error::other(
+                                "PCI rejected selected-serial address command",
+                            ));
+                        }
+                        confirmed = true;
+                        quiet_deadline = Some(Instant::now() + SERIAL_ADDRESS_QUIET);
+                    }
+                    Ok(Some(Packet::PointToPoint {
+                        meta,
+                        unit_address,
+                        bridged,
+                        hops,
+                        cals,
+                    })) if cals.iter().any(
+                        |cal| matches!(cal, Cal::Reply { parameter: 0, data } if data.len() == 6),
+                    ) =>
+                    {
+                        if !confirmed {
+                            return Err(Error::new(
+                                ErrorKind::InvalidData,
+                                "selected-serial receipt preceded its confirmation",
+                            ));
+                        }
+                        if acceptance.is_some() {
+                            return Err(Error::new(
+                                ErrorKind::InvalidData,
+                                "multiple selected-serial receipts are ambiguous",
+                            ));
+                        }
+                        if meta.source_address != Some(destination)
+                            || unit_address != local
+                            || bridged
+                            || !hops.is_empty()
+                            || cals.len() != 1
+                        {
+                            return Err(Error::new(
+                                ErrorKind::InvalidData,
+                                "selected-serial receipt route is ambiguous",
+                            ));
+                        }
+                        let Cal::Reply { data, .. } = &cals[0] else {
+                            unreachable!("matching selected-serial reply checked above")
+                        };
+                        if data[..4] != selected.packed {
+                            return Err(Error::new(
+                                ErrorKind::InvalidData,
+                                "selected-serial receipt contains another serial",
+                            ));
+                        }
+                        acceptance = Some(SelectedSerialAcceptance {
+                            serial: selected.canonical.clone(),
+                            destination,
+                            local_unit: local,
+                            opaque_tail: [data[4], data[5]],
+                        });
+                        quiet_deadline = Some(Instant::now() + SERIAL_ADDRESS_QUIET);
+                    }
+                    Ok(Some(Packet::PciError)) => {
+                        if acceptance.is_some() {
+                            return Err(Error::new(
+                                ErrorKind::InvalidData,
+                                "selected-serial receipt followed by PCI error",
+                            ));
+                        }
+                        return Err(Error::other("PCI rejected selected-serial address command"));
+                    }
+                    Ok(Some(Packet::Invalid)) => {
+                        return Err(Error::new(
+                            ErrorKind::InvalidData,
+                            "invalid PCI input during selected-serial transaction",
+                        ))
+                    }
+                    Ok(Some(_)) => {}
+                }
+            }
+        })
+        .await
+        .unwrap_or_else(|_| {
+            Err(Error::new(
+                ErrorKind::TimedOut,
+                "selected-serial address transaction timed out",
+            ))
+        });
+
+        {
+            let mut state = self.state.lock().unwrap();
+            state.pending.remove(&code);
+            state.codes_in_use.remove(&code);
+        }
+        if result.is_ok()
+            || result.as_ref().is_err_and(|error| {
+                error.to_string() == "PCI rejected selected-serial address command"
+            })
+        {
+            transaction.complete = true;
+        }
+        result
+    }
+
     /// Send the native eDLT dynamic-label clear control exactly once.
     ///
     /// The unit ACK proves only that the programming control was accepted;
@@ -1868,6 +2103,137 @@ mod tests {
             pci.factory_default_edlt(255).await.unwrap_err().kind(),
             ErrorKind::InvalidInput
         );
+    }
+
+    async fn selected_serial_reply(
+        remote: &mut BufReader<tokio::io::DuplexStream>,
+        source: u8,
+        local: u8,
+        serial: [u8; 4],
+        tail: [u8; 2],
+    ) {
+        let mut bytes = vec![0x86, source, local, 0x00, 0x87, 0x00];
+        bytes.extend_from_slice(&serial);
+        bytes.extend_from_slice(&tail);
+        let sum = bytes.iter().fold(0u8, |acc, byte| acc.wrapping_add(*byte));
+        bytes.push(0u8.wrapping_sub(sum));
+        let mut wire = hex::encode_upper(bytes).into_bytes();
+        wire.extend_from_slice(b"\r\n");
+        remote.get_mut().write_all(&wire).await.unwrap();
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn selected_serial_address_is_exact_once_correlated_and_quiet_bounded() {
+        let (pci, mut remote, mut events) = setup().await;
+        pci.set_local_unit_hint(16).unwrap();
+        let worker = pci.clone();
+        let selected =
+            tokio::spawn(async move { worker.address_selected_serial("101136.1558", 6).await });
+        let request = line(&mut remote).await;
+        assert_eq!(&request[..request.len() - 2], b"\\05FF000F0018B106160615ED");
+        let code = request[request.len() - 2];
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        remote
+            .get_mut()
+            .write_all(b"05043800790145\r\n")
+            .await
+            .unwrap();
+        selected_serial_reply(&mut remote, 6, 16, [0x18, 0xb1, 0x06, 0x16], [0xfa, 0xce]).await;
+        let accepted = selected.await.unwrap().unwrap();
+        assert_eq!(accepted.serial, "101136.1558");
+        assert_eq!(accepted.destination, 6);
+        assert_eq!(accepted.local_unit, 16);
+        assert_eq!(accepted.opaque_tail, [0xfa, 0xce]);
+        assert!(matches!(
+            events.recv().await,
+            Some(CBusEvent::LightingOn {
+                source: Some(4),
+                app: 56,
+                group: 1
+            })
+        ));
+        assert_eq!(
+            pci.address_selected_serial("0.0", 6)
+                .await
+                .unwrap_err()
+                .kind(),
+            ErrorKind::InvalidInput
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn selected_serial_ambiguous_receipt_faults_lane_without_replay() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_local_unit_hint(16).unwrap();
+        let worker = pci.clone();
+        let selected =
+            tokio::spawn(async move { worker.address_selected_serial("101136.1558", 6).await });
+        let request = line(&mut remote).await;
+        let code = request[request.len() - 2];
+        selected_serial_reply(&mut remote, 6, 16, [0x18, 0xb1, 0x06, 0x16], [0, 0]).await;
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        assert!(selected
+            .await
+            .unwrap()
+            .unwrap_err()
+            .to_string()
+            .contains("preceded"));
+        assert!(pci
+            .recall_parameter(5, 1, 1)
+            .await
+            .unwrap_err()
+            .to_string()
+            .contains("needs reconnect"));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn selected_serial_definite_pci_rejection_keeps_lane_usable() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_local_unit_hint(16).unwrap();
+        let worker = pci.clone();
+        let selected =
+            tokio::spawn(async move { worker.address_selected_serial("101136.1558", 6).await });
+        let request = line(&mut remote).await;
+        let code = request[request.len() - 2];
+        remote.get_mut().write_all(&[code, b'#']).await.unwrap();
+        assert!(selected
+            .await
+            .unwrap()
+            .unwrap_err()
+            .to_string()
+            .contains("PCI rejected"));
+
+        let worker = pci.clone();
+        let recall = tokio::spawn(async move { worker.recall_parameter(5, 1, 1).await });
+        assert_eq!(line(&mut remote).await, b"\\4605001A010199\r");
+        reply(&mut remote, 5, &[0x82, 1, 9]).await;
+        assert_eq!(recall.await.unwrap().unwrap(), vec![9]);
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn selected_serial_receipt_then_pci_error_faults_lane_without_replay() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_local_unit_hint(16).unwrap();
+        let worker = pci.clone();
+        let selected =
+            tokio::spawn(async move { worker.address_selected_serial("101136.1558", 6).await });
+        let request = line(&mut remote).await;
+        let code = request[request.len() - 2];
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        selected_serial_reply(&mut remote, 6, 16, [0x18, 0xb1, 0x06, 0x16], [0, 0]).await;
+        remote.get_mut().write_all(b"!").await.unwrap();
+        assert!(selected
+            .await
+            .unwrap()
+            .unwrap_err()
+            .to_string()
+            .contains("receipt followed by PCI error"));
+        assert!(pci
+            .recall_parameter(5, 1, 1)
+            .await
+            .unwrap_err()
+            .to_string()
+            .contains("needs reconnect"));
     }
 
     #[tokio::test(start_paused = true)]
