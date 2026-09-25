@@ -1,16 +1,15 @@
-"""Invariant-culture input contract and magnitude limits for Measurement composites.
-
-Issue #12 Phase 2: decimal Gain/Offset parsing, culture behavior, formatting.
-The CLI parses invariant decimals only (dot separator, no locale grouping):
-comma, hexadecimal, infinity, and underscore inputs are rejected, never
-silently reinterpreted. Huge magnitudes follow the original lossy reduction
-and fail closed with EdltError when the stored exponent leaves the
-signed-byte range; a raw ``decimal`` error must never escape.
-"""
+"""Canonical and source-pinned Toolkit culture contracts for Measurement."""
+import hashlib
+import json
+from pathlib import Path
 import unittest
 
 from cbus_toolkit.edlt import EdltError
-from cbus_toolkit.edlt_measurement import measurement_composite
+from cbus_toolkit.edlt_measurement import MEASUREMENT_CULTURES, measurement_composite
+
+
+ROOT = Path(__file__).resolve().parents[1]
+EVIDENCE = ROOT / 'research/fixtures/edlt-measurement-culture-acceptance.json'
 
 
 def converts(value, **kwargs):
@@ -50,6 +49,11 @@ class InvariantCultureTests(unittest.TestCase):
         self.assertEqual(converts('1E5')['stored_value'], '100000')
         self.assertEqual(converts('00.5')['stored_value'], '0.5')
 
+    def test_unicode_digits_reject(self):
+        for value in ('١.٥', '１.５'):
+            with self.subTest(value=value), self.assertRaises(EdltError):
+                converts(value)
+
     def test_gain_zero_becomes_one_but_offset_zero_stays_zero(self):
         for value in ('0', '0.0', '-0.0'):
             with self.subTest(value=value):
@@ -74,17 +78,84 @@ class MagnitudeLimitTests(unittest.TestCase):
                 with self.assertRaises(EdltError):
                     converts(value)
 
-    def test_tiny_underflow_collapses_to_zero_current_code_only(self):
-        # CURRENT-CODE-ONLY pin (no native citation yet): magnitudes far below
-        # the fixed 50-decimal display collapse to stored zero and report the
-        # established first-pass `exact` definition. TODO: confirm against
-        # Toolkit 1.18 whether the original editor clamps, rounds, or rejects
-        # these inputs; see issue #12 decimal Measurement behavior.
-        for value in ('1e-130', '1e-300'):
+    def test_source_pinned_tiny_values_collapse_to_zero(self):
+        for value in ('1e-51', '1e-130', '1e-300'):
             with self.subTest(value=value):
                 conversion = converts(value)
                 self.assertEqual((conversion['mantissa'], conversion['exponent']), (0, 0))
                 self.assertEqual(conversion['stored_value'], '0')
+
+
+class ToolkitCultureTests(unittest.TestCase):
+    def test_source_pinned_evidence_matches_probe(self):
+        evidence = json.loads(EVIDENCE.read_text())
+        source = ROOT / evidence['probe']['source']
+        self.assertEqual(hashlib.sha256(source.read_bytes()).hexdigest(), evidence['probe']['source_sha256'])
+        self.assertEqual(evidence['profile'], {
+            'toolkit_version': '1.18.0.2754',
+            'logic_model_sha256': '34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823',
+            'edlt_sha256': '75bc741234b52a168a4838fee305c309d3909571d2711f7580216b46b028e8d3',
+        })
+        self.assertEqual(tuple(evidence['cultures']), MEASUREMENT_CULTURES[1:])
+
+    def test_culture_decimal_and_group_separators_match_original(self):
+        cases = (
+            ('invariant', '1.5', '1.5'), ('invariant', '1,5', '15'),
+            ('en-NZ', '1,234.5', '1234.5'), ('en-NZ', '1,,2', '12'),
+            ('en-NZ', '1,.2', '1.2'),
+            ('de-DE', '1,5', '1.5'), ('de-DE', '1.5', '15'),
+            ('de-DE', '1.2,3', '12.3'),
+            ('fr-FR', '1\u202f234,5', '1234.5'),
+        )
+        for culture, value, stored in cases:
+            with self.subTest(culture=culture, value=value):
+                conversion = converts(value, culture=culture)
+                self.assertEqual(conversion['stored_value'], stored)
+                self.assertEqual(conversion['culture'], culture)
+
+    def test_culture_specific_invalid_forms_reject(self):
+        cases = (
+            ('invariant', ',1'), ('invariant', '1.2,3'),
+            ('de-DE', '.5'), ('de-DE', '1,,2'),
+            ('fr-FR', '1.5'), ('fr-FR', '1 234,5'), ('fr-FR', '1\u00a0234,5'),
+        )
+        for culture, value in cases:
+            with self.subTest(culture=culture, value=value), self.assertRaises(EdltError):
+                converts(value, culture=culture)
+
+    def test_final_editor_blank_and_zero_rules(self):
+        for culture in MEASUREMENT_CULTURES[1:]:
+            with self.subTest(culture=culture):
+                self.assertEqual(converts('', culture=culture, gain=True)['stored_value'], '1')
+                self.assertEqual(converts('', culture=culture)['stored_value'], '1')
+                self.assertEqual(converts('0', culture=culture, gain=True)['stored_value'], '1')
+                self.assertEqual(converts('0', culture=culture)['stored_value'], '0')
+        with self.assertRaises(EdltError):
+            converts('', culture='canonical')
+
+    def test_original_signed_byte_serialization_wraps_large_exponents(self):
+        cases = {
+            '1e128': (1, 128, -128, True, '0'),
+            '1e300': (1, 300, 44, True, '1' + '0' * 44),
+        }
+        for value, expected in cases.items():
+            with self.subTest(value=value):
+                conversion = converts(value, culture='invariant')
+                actual = (conversion['mantissa'], conversion['editor_exponent'], conversion['exponent'],
+                          conversion['exponent_wrapped'], conversion['display_value'])
+                self.assertEqual(actual, expected)
+        with self.assertRaises(EdltError):
+            converts('1e128')
+
+    def test_nonfinite_and_transitional_values_fail_safely(self):
+        for culture in MEASUREMENT_CULTURES[1:]:
+            for value in ('NaN', 'Infinity', '-Infinity', '-', '.', ','):
+                with self.subTest(culture=culture, value=value), self.assertRaises(EdltError):
+                    converts(value, culture=culture)
+
+    def test_unknown_culture_rejects(self):
+        with self.assertRaisesRegex(EdltError, 'culture'):
+            converts('1', culture='en-US')
 
 
 if __name__ == '__main__':

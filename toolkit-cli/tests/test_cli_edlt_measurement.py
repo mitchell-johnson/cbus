@@ -30,6 +30,16 @@ class EdltMeasurementCLITests(unittest.TestCase):
                               '--device-id', 0, '--channel', 0, status=1)
             self.assertIn('identity differs', result['error'])
 
+    def test_measurement_culture_option_reaches_both_command_paths(self):
+        from cbus_toolkit.cli import _edlt_measurement_settings, build_parser
+        settings = ('--page', '1', '--position', '1', '--device-id', '42', '--channel', '3',
+                    '--gain-value', '1,5', '--measurement-culture', 'de-DE')
+        offline = build_parser().parse_args(('edlt', 'measurement-plan', 'snapshot.json', *settings))
+        native = build_parser().parse_args(('cgate', 'unit', '--lock-address', '//TEST/254',
+                                            '--source', '/db//TEST/254/p/20', 'edlt-measurement', *settings))
+        self.assertEqual(_edlt_measurement_settings(offline)['measurement_culture'], 'de-DE')
+        self.assertEqual(_edlt_measurement_settings(native)['measurement_culture'], 'de-DE')
+
     @unittest.skipUnless(os.environ.get('CBUS_CGATE_TEST_HOST') and os.environ.get('CBUS_UNITSPEC_DIR'),
                          'Set native C-Gate and unit specifications for Measurement icon CLI acceptance')
     def test_original_icon_option_preview_hidden_guards_and_opaque_retention(self):

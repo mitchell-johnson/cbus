@@ -1,6 +1,6 @@
 # eDLT Measurement widgets
 
-`EdltMeasurementWidget` configures **5055EDL / KEYGL5 firmware 5.5.00** Measurement widgets in database PP sessions. It supports source device/channel, decimal places, explicit gain and offset mantissa/exponent pairs, shared prefix/suffix/label text, standby and functional placement, and built-in icons. It verifies the full staged PP snapshot and five Toolkit configuration CRCs. Incoming measurements, physical display behavior and custom image uploads are outside this workflow.
+`EdltMeasurementWidget` configures **5055EDL / KEYGL5 firmware 5.5.00** Measurement widgets in database PP sessions. It supports source device/channel, decimal places, explicit gain and offset mantissa/exponent pairs, source-pinned Toolkit decimal editor cultures, shared prefix/suffix/label text, standby and functional placement, and built-in icons. It verifies the full staged PP snapshot and five Toolkit configuration CRCs. Incoming measurements, physical display behavior and custom image uploads are outside this workflow.
 
 ```python
 from cbus_toolkit.edlt_measurement import EdltMeasurementWidget
@@ -26,7 +26,8 @@ The CLI provides `edlt measurement-plan SNAPSHOT ...` and `cgate ... unit ... ed
 | `decimal_places` | Integer 0..5; fresh default 2 |
 | `gain_mantissa` / `gain_exponent` | Exact signed integer pair: mantissa -32768..32767 excluding zero, exponent -128..127; fresh default 1×10⁰ |
 | `offset_mantissa` / `offset_exponent` | Exact signed integer pair: mantissa -32768..32767, exponent -128..127; fresh default 0×10⁰ |
-| `gain_value`, `offset_value` | Alternative invariant decimal text up to 20 characters, converted with Toolkit's original lossy Measurement editor algorithm; cannot accompany the corresponding explicit pair |
+| `gain_value`, `offset_value` | Alternative decimal editor text up to 20 characters, converted with Toolkit's original lossy algorithm; cannot accompany the corresponding explicit pair |
+| `measurement_culture` | `canonical` (default), `invariant`, `en-NZ`, `de-DE`, or `fr-FR`; the four explicit Toolkit profiles reproduce their current-culture parsing and signed-byte serialization |
 | `page_mode` | `single` or `multiple`; omitted retains the current interpretation |
 | `page`, `position` | Standby: page 0, positions 1..5 in either page mode. Functional single: page 1, positions 1..5. Functional multiple: pages 1..4, positions 1..4 |
 | `prefix_index`, `suffix_index` | Exact static slot 0..63, or detached value 255 |
@@ -47,18 +48,49 @@ The effective gain is `gain_mantissa × 10**gain_exponent`; offset uses the corr
 The CLI accepts `--gain-value` and `--offset-value` as alternatives to the
 explicit pairs. These options reproduce `MeasurementData.GainComposite`,
 `OffsetComposite`, `PPHelper.FormatDoubleWithoutE`, and
-`BreakNumberIntoIntegerAndExponent` under the invariant culture used by the
-original acceptance probe. The original 20-character form limit is enforced.
-Invalid, non-finite, culture-specific, or out-of-storage-range values fail
-before mutation rather than silently retaining an earlier interactive value.
+`BreakNumberIntoIntegerAndExponent`. The default `canonical` profile retains
+the CLI's established portable contract: dot decimal separator, no grouping,
+blank rejected, and an exponent outside -128..127 rejected. Select an observed
+Toolkit profile explicitly when reproducing the Windows editor:
+
+| Profile | Decimal separator | Group separator | Native examples |
+|---|---:|---:|---|
+| `invariant`, `en-NZ` | `.` | `,` | `1.5` → 1.5; `1,5` → 15 |
+| `de-DE` | `,` | `.` | `1,5` → 1.5; `1.5` → 15 |
+| `fr-FR` | `,` | U+202F narrow no-break space | `1 234,5` → 1234.5 |
+
+Toolkit calls `Double.Parse(string)` with the process current culture. Its
+thousands grammar does not enforce groups of three: for example, `en-NZ`
+accepts `1,,2` as 12 and `1,.2` as 1.2. Groups are allowed only before the
+decimal separator; the mantissa and exponent use ASCII digits. Leading and
+trailing Framework number whitespace is accepted. The original 20-character
+field limit is applied before trimming.
+
+On final validation, an empty Gain or Offset box becomes 1. Numeric Gain zero
+also becomes 1; Offset zero remains zero. Invalid text and the transitional
+interactive values `-`, `.` or `,` restore the panel's previous text. A CLI
+invocation has no prior focus state, so it rejects those values before any PP
+mutation. Toolkit's parser accepts `NaN`, but its following number-break loop
+does not terminate; every CLI profile rejects non-finite input safely.
 
 The conversion intentionally reproduces the original losses: `0.29` becomes
 `0.28`, `1.15` becomes `1.14`, `32768` becomes `32760`, and `1.23456` becomes
 `1.2346`. The first two are accepted on the original converter's first pass
 even though the stored binary-double multiplication truncates them. Plans set
-`ui_composite_conversion=true` and retain the input, normalized value, stored
-mantissa/exponent, resulting decimal value, and original first-pass result in
-`composite_conversions`.
+`ui_composite_conversion=true` and retain the input, culture, blank/zero
+normalization flags, invariant normalized value, editor exponent, serialized
+signed exponent, wrap flag, exact stored decimal, post-storage editor display,
+and original first-pass result in `composite_conversions`.
+
+The editor formatter is always invariant `F50`, then trims trailing zeroes and
+the decimal point. Values from 10⁻⁵¹ through the tested 10⁻³⁰⁰ therefore
+format and break to mantissa/exponent 0/0. The Gain setter changes that zero
+mantissa to 1; Offset retains 0. The model writes an exponent with byte-cast
+semantics rather than a range guard. In explicit Toolkit profiles, exponent
+128 becomes stored byte `80` and reads back as -128, while exponent 300 becomes
+byte `2C` and reads back as 44. `canonical` keeps the prior fail-closed range
+check. This wrap can radically change the represented value, so plans expose
+both `editor_exponent` and `exponent` plus `display_value`.
 
 Explicit pairs remain available when exact storage is required. For example,
 mantissa 29 and exponent -2 stores exactly 0.29, while `--gain-value 0.29`
@@ -68,6 +100,16 @@ at both mantissa and exponent boundaries; physical display range or behavior
 at those extremes is unverified.
 
 The original `Gain` setter replaces zero with one, and its getter also mutates an existing stored zero to one. Explicit zero gain is rejected because it would not be retained. A source zero normalizes to one when planning, with its exponent preserved and `gain_normalized=True` reported. This is a getter-side model behavior, distinct from `SetForcedValues`, which is a no-op for Measurement.
+
+The original panel initializes its shared previous-text value to `1`, installs
+the base/common and Measurement bindings, populates the measurement-unit list,
+then applies large-icon visibility. Gain and Offset text bindings update their
+model properties on WinForms validation. Each composite setter parses, breaks,
+writes the mantissa, then writes the exponent; the enclosing unit workflow
+later calculates and saves PP/CRC state. The CLI resolves Gain then Offset
+during pure planning, before any session write, and only then stages the
+verified PP plan. This deterministic order avoids partially committing one
+field when the other is invalid.
 
 ## The label value 64 and shared text capacity
 
@@ -107,7 +149,8 @@ Only blank, unused or existing Measurement slots can be configured, including on
 | `MeasurementData.SetToDefault`, `.GetUsedStaticText` | Label sentinel 64 remains a counted reference |
 | `EDLTUnit.GetStaticTextIndex` | Empty text →255, exact-string reuse, counted-reference capacity and highest unused allocation |
 | `PPHelper.FormatDoubleWithoutE`, `.TryBreakNumber`, `.BreakNumberIntoIntegerAndExponent` | Legacy fixed-decimal formatting, truncation, progressive rounding, signed 16-bit mantissa fit and the reported first-pass result |
-| `MeasurementWidget` validation and `MeasurementData.GainComposite` / `.OffsetComposite` | 20-character fields, gain zero→one, invariant accepted CLI syntax and final pair assignment |
+| `MeasurementWidget` validation and `MeasurementData.GainComposite` / `.OffsetComposite` | 20-character fields, current-culture parse, blank→one, gain zero→one, previous-text restoration and OnValidation assignment |
+| `PPAttribute.SetSignedIntToByte` and signed getter | Exponent byte wrapping, including 128→-128 and 300→44 |
 
 Literal records:
 
@@ -130,6 +173,17 @@ widget/restore/text bytes, checks all five CRCs against the original DLL, and
 verifies complete PP equality after save/close/load with label 64 retained. It
 also checks that an existing Room Courtesy allocator safely handles a
 Measurement neighbor containing 64.
+
+`research/NativeEdltMeasurementCultureProbe.cs` runs the unchanged model and
+actual `MeasurementWidget` handlers on Windows against the pinned Toolkit
+assemblies. Its committed compact evidence is
+`research/fixtures/edlt-measurement-culture-acceptance.json`. The probe covers
+four explicit cultures, separators and loose grouping, blank/zero/invalid final
+validation, fixed-format underflow, actual model bytes for wrapped exponents,
+and post-storage composite getters. `tests/test_edlt_measurement_culture.py`
+pins those behaviors. A preservation case changes only Gain bytes 4..6 while
+retaining Offset, text/icon, and opaque bytes 7..31; ordinary plan effects such
+as CRCs remain documented separately. The probe uses no physical device.
 
 `tests/test_cli_edlt_measurement.py` covers offline planning, native preview and save/reload, original native text reuse, scaling options, bounds and database destination guards. Run both suites from `toolkit-cli`:
 

@@ -138,9 +138,9 @@ scope). Rejected candidates, one line each:
 - `edlt-restore-levels` (64 captured Windows cases): evidence belongs to
   the `dlt-edlt-widgets-and-labels` mega-row, which one widget subset
   cannot accept; kept for a later per-function mapping.
-- Measurement/culture converter (invariant-culture pins): same mega-row
-  problem, and culture-specific parsing remains open per
-  implementation-status.
+- Measurement/culture converter (now source-pinned for invariant, en-NZ,
+  de-DE and fr-FR parsing/validation/storage): same mega-row problem; the
+  bounded widget evidence cannot fill the whole DLT/eDLT ledger row.
 - `edlt-corridor` / `edlt-applications` (original vectors): same
   mega-row problem with fewer native reload cases than Reset.
 - Thermostat / database-CSV / PCI streams: broad ledger rows with

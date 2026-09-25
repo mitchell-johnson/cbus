@@ -58,6 +58,33 @@ Native connections support TLS and client certificates. A live address such as `
 
 Successful operations emit JSON on stdout, operation errors emit JSON on stderr, and failures return nonzero. Argument usage errors can be plain argparse text. `--compact` is a global option before the command; event monitoring emits JSON lines. Preserve partial-operation evidence and do not replay uncertain writes automatically.
 
+## eDLT Measurement decimal values
+
+For a KEYGL5 / 5055EDL 5.5.00 database unit, configure exact scaling with
+`--gain-mantissa/--gain-exponent` and
+`--offset-mantissa/--offset-exponent`. To reproduce the Toolkit Measurement
+text editor, use `--gain-value` or `--offset-value` plus an explicit
+`--measurement-culture`:
+
+```sh
+cbus-toolkit edlt measurement-plan snapshot.json \
+  --page 1 --position 1 --device-id 42 --channel 3 \
+  --gain-value '1,5' --measurement-culture de-DE
+```
+
+The default culture is `canonical`: dot decimal, no grouping, blank rejected,
+and stored exponent limited to -128..127. Source-pinned Toolkit profiles are
+`invariant`, `en-NZ`, `de-DE`, and `fr-FR`. They reproduce each observed
+decimal/group separator, final blank→1 and Gain zero→1 behavior, invariant
+fixed-50-place formatting, and signed-byte exponent wrapping. Read
+`composite_conversions`: `editor_exponent` is the pre-write value, `exponent`
+is the stored signed byte, and `display_value` is the original getter's
+post-storage rendering. Never substitute the process locale or normalize
+commas on your own. The CLI rejects non-finite text because Toolkit accepts
+`NaN` and then hangs in its number-break loop. See
+`toolkit-cli/docs/edlt-measurement.md` for exact grouping and preservation
+rules.
+
 ## Compatibility and tests
 
 Target: Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001. Full Toolkit parity is unfinished. `coverage --require-complete` deliberately exits 1 until both implementation and acceptance requirements are complete. Command forwarding, the Rust mock's 431 paths, and simulator results do not establish physical-device or full Toolkit equivalence.

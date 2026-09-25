@@ -390,6 +390,7 @@ def _edlt_fan(args):
 
 
 def _edlt_measurement_options(parser):
+    from .edlt_measurement import MEASUREMENT_CULTURES
     parser.add_argument("--page", type=_number, required=True)
     parser.add_argument("--position", type=_number, required=True)
     parser.add_argument("--device-id", type=_byte, required=True, help="Measurement device ID in 0..254")
@@ -401,6 +402,8 @@ def _edlt_measurement_options(parser):
         parser.add_argument("--" + prefix + "-exponent", type=_number, help="Signed 8-bit power of ten")
         parser.add_argument("--" + prefix + "-value",
                             help="Decimal value using Toolkit's lossy Measurement editor conversion")
+    parser.add_argument("--measurement-culture", choices=MEASUREMENT_CULTURES, default="canonical",
+                        help="Decimal editor grammar; explicit Toolkit cultures include native grouping and byte wrapping")
     parser.add_argument("--page-mode", choices=("single", "multiple"))
     for prefix in ("prefix", "suffix", "label"):
         parser.add_argument("--" + prefix + "-text", help="Shared static text; empty text detaches the reference")
@@ -411,7 +414,8 @@ def _edlt_measurement_options(parser):
 def _edlt_measurement_settings(args):
     return {name: getattr(args, name) for name in (
         "page", "position", "device_id", "channel", "icon_index", "decimal_places", "gain_mantissa", "gain_exponent",
-        "offset_mantissa", "offset_exponent", "gain_value", "offset_value", "page_mode", "prefix_text", "prefix_index", "suffix_text",
+        "offset_mantissa", "offset_exponent", "gain_value", "offset_value", "measurement_culture",
+        "page_mode", "prefix_text", "prefix_index", "suffix_text",
         "suffix_index", "label_text", "label_index")}
 
 

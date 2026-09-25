@@ -17,6 +17,19 @@ The Python `cbus-toolkit` application is installed separately; see [toolkit.md](
 | Emulate the C-Gate 3.4 command surface | `cgate-mock` | Opens a TCP listener and mutates in-memory state |
 | Recheck committed compatibility vectors | `cbus-vector-check` | Reads local JSONL vectors |
 
+### eDLT Measurement scaling
+
+Use exact signed mantissa/exponent pairs when the stored value is already
+known. Use `--gain-value` or `--offset-value` with
+`--measurement-culture invariant|en-NZ|de-DE|fr-FR` when matching the original
+Toolkit text editor. Omission selects the stricter `canonical` grammar. Toolkit
+culture profiles can wrap an editor exponent into a signed byte, so inspect
+`composite_conversions.*.editor_exponent`, `.exponent`, `.exponent_wrapped`,
+and `.display_value` before applying a plan. The same options exist on offline
+`edlt measurement-plan` and native database-unit `edlt-measurement` commands.
+See `toolkit-cli/docs/edlt-measurement.md` for the pinned decimal/group
+separators, blank/zero rules, and the non-finite safety boundary.
+
 ### Native dynamic-label cache clear
 
 Use the typed native command to request all cached labels or one key be cleared

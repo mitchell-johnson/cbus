@@ -1,0 +1,61 @@
+{
+  "format": "cbus-edlt-measurement-culture-acceptance-v1",
+  "profile": {
+    "toolkit_version": "1.18.0.2754",
+    "logic_model_sha256": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+    "edlt_sha256": "75bc741234b52a168a4838fee305c309d3909571d2711f7580216b46b028e8d3"
+  },
+  "probe": {
+    "source": "research/NativeEdltMeasurementCultureProbe.cs",
+    "source_sha256": "1e94329c46fe5df3aa397c140b1dc7415dcd83bb2bafdd74543a7f78508e2251",
+    "compiler": "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\csc.exe",
+    "platform": "x86",
+    "exit_code": 0,
+    "stderr": ""
+  },
+  "cultures": [
+    "invariant",
+    "en-NZ",
+    "de-DE",
+    "fr-FR"
+  ],
+  "separators": {
+    "invariant": {"decimal": ".", "group": ","},
+    "en-NZ": {"decimal": ".", "group": ","},
+    "de-DE": {"decimal": ",", "group": "."},
+    "fr-FR": {"decimal": ",", "group": "\u202f"}
+  },
+  "parse_observations": [
+    {"culture": "invariant", "input": "1.5", "number": "1.5", "mantissa": 15, "exponent": -1},
+    {"culture": "invariant", "input": "1,5", "number": "15", "mantissa": 15, "exponent": 0},
+    {"culture": "en-NZ", "input": "1,,2", "number": "12", "mantissa": 12, "exponent": 0},
+    {"culture": "en-NZ", "input": "1,.2", "number": "1.2", "mantissa": 12, "exponent": -1},
+    {"culture": "de-DE", "input": "1.5", "number": "15", "mantissa": 15, "exponent": 0},
+    {"culture": "de-DE", "input": "1,5", "number": "1.5", "mantissa": 15, "exponent": -1},
+    {"culture": "de-DE", "input": "1.2,3", "number": "12.3", "mantissa": 123, "exponent": -1},
+    {"culture": "fr-FR", "input": "1\u202f234,5", "number": "1234.5", "mantissa": 12345, "exponent": -1}
+  ],
+  "underflow": [
+    {"input": "1e-50", "mantissa": 1, "exponent": -50},
+    {"input": "1e-51", "mantissa": 0, "exponent": 0},
+    {"input": "1e-130", "mantissa": 0, "exponent": 0},
+    {"input": "1e-300", "mantissa": 0, "exponent": 0}
+  ],
+  "storage": [
+    {"field": "gain", "input": "1e-51", "record_0_9": "0C000002010000000000", "mantissa": 1, "signed_exponent": 0, "composite": "1"},
+    {"field": "offset", "input": "1e-51", "record_0_9": "0C000002010000000000", "mantissa": 0, "signed_exponent": 0, "composite": "0"},
+    {"field": "gain", "input": "1e128", "record_0_9": "0C000002010080000000", "mantissa": 1, "signed_exponent": -128, "composite": "0"},
+    {"field": "offset", "input": "1e128", "record_0_9": "0C000002010000800100", "mantissa": 1, "signed_exponent": -128, "composite": "0"},
+    {"field": "gain", "input": "1e300", "record_0_9": "0C00000201002C000000", "mantissa": 1, "signed_exponent": 44, "composite": "100000000000000000000000000000000000000000000"},
+    {"field": "offset", "input": "1e300", "record_0_9": "0C0000020100002C0100", "mantissa": 1, "signed_exponent": 44, "composite": "100000000000000000000000000000000000000000000"}
+  ],
+  "final_validation": {
+    "blank_gain": "1",
+    "blank_offset": "1",
+    "zero_gain": "1",
+    "zero_offset": "0",
+    "invalid_or_transitional": "restore_previous_text"
+  },
+  "safety_boundary": "Double.Parse accepts NaN, but Toolkit 1.18 PPHelper.BreakNumberIntoIntegerAndExponent does not terminate for NaN. The CLI rejects every non-finite value before conversion.",
+  "physical_device_verified": false
+}

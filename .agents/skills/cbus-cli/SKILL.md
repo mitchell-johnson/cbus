@@ -26,6 +26,7 @@ Use the Python Toolkit CLI for project and commissioning workflows, and the Rust
 7. Never invent endpoint addresses, project names, credentials, certificate paths, unit addresses, or network names. Read them from the user's command, existing configuration, or project data.
 8. Preserve ignored site files and secrets. Do not print authentication files, private keys, or project contents unless the task requires that exact output.
 9. Report the command used, its exit result, and the relevant output. When the command can affect hardware, state which endpoint was targeted.
+10. For eDLT Measurement decimal Gain/Offset values, never infer a locale from the host. Keep the default `canonical` grammar or choose one of the source-pinned Toolkit profiles explicitly, then inspect exponent-wrap metadata before applying the plan.
 
 ## Compatibility language
 

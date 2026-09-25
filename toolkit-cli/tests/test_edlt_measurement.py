@@ -114,6 +114,24 @@ class MeasurementTests(unittest.TestCase):
             with self.subTest(options=options), self.assertRaises(EdltError):
                 self.plan(**options)
 
+    def test_original_culture_composite_wrap_and_unrelated_field_preservation(self):
+        current = after(self.plan())
+        original = bytes.fromhex('0C2A03017D00FEFFE7FF123FC8400E0F101112131415161718191A1B1C1D1E1F')
+        for offset, value in enumerate(original):
+            name = 'Widget6WidgetType' if offset == 0 else f'Widget6WidgetByteValue{offset}'
+            current[name] = (value,)
+        plan = self.plan(current, device_id=42, channel=3, gain_value='1e128',
+                         measurement_culture='invariant')
+        self.assertEqual(plan.record[4:7], bytes((1, 0, 128)))
+        self.assertEqual(plan.record[7:], original[7:])
+        result = plan.as_dict()
+        self.assertEqual(result['measurement_culture'], 'invariant')
+        self.assertEqual(result['gain_value'], '0.' + '0' * 127 + '1')
+        self.assertEqual(result['offset_value'], '-2.5')
+        self.assertEqual(result['composite_conversions']['gain']['editor_exponent'], 128)
+        self.assertTrue(result['composite_conversions']['gain']['exponent_wrapped'])
+        self.assertEqual(result['composite_conversions']['gain']['display_value'], '0')
+
     def test_original_static_allocations_sharing_exact_indexes_and_clear(self):
         plan = self.scaled()
         for options, literal in ((dict(prefix_text='Temperature'), PREFIX_ALLOCATION), (dict(suffix_text='C'), SUFFIX_ALLOCATION),

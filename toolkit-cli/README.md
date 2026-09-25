@@ -632,7 +632,8 @@ supported. See [edlt-room-courtesy.md](docs/edlt-room-courtesy.md) for the origi
 byte comparisons, shared text and dynamic display requirements.
 
 Measurement widgets expose device/channel selection, decimal precision,
-signed scaling pairs and shared prefix, suffix and label text:
+signed scaling pairs, the original decimal editor conversion, and shared
+prefix, suffix and label text:
 
 ```sh
 cbus-toolkit cgate unit --lock-address //TEST/254 --source /db//TEST/254/p/20 \
@@ -640,6 +641,8 @@ cbus-toolkit cgate unit --lock-address //TEST/254 --source /db//TEST/254/p/20 \
   --decimal-places 1 --gain-mantissa 125 --gain-exponent -2 \
   --offset-mantissa -25 --offset-exponent -1 --prefix-text Temperature --suffix-text C
 cbus-toolkit edlt measurement-plan snapshot.json --page 1 --position 1 --device-id 42 --channel 3
+cbus-toolkit edlt measurement-plan snapshot.json --page 1 --position 1 \
+  --device-id 42 --channel 3 --gain-value '1,5' --measurement-culture de-DE
 ```
 
 The example uses exact gain 1.25 and offset -2.5. Empty text detaches a
@@ -647,8 +650,14 @@ reference; the original label-only empty sentinel 64 is retained when present.
 Page 0 supports all five standby positions. `--icon-index` selects an original
 built-in icon on functional pages when icon display is enabled; omitted icon
 bytes are preserved on existing Measurement widgets.
-The original UI's lossy decimal-to-scaling conversion remains separate from
-these explicit pairs. See [edlt-measurement.md](docs/edlt-measurement.md).
+`--gain-value` and `--offset-value` use the original lossy conversion as an
+alternative to explicit pairs. The default `canonical` grammar is dot-only and
+fail-closed. Explicit `invariant`, `en-NZ`, `de-DE`, and `fr-FR` profiles
+reproduce source-pinned Toolkit current-culture parsing, blank/zero validation,
+fixed-50-place underflow, and exponent-byte wrapping. Plans report both the
+editor and stored exponent when wrapping changes the value. Non-finite input is
+rejected because the original Toolkit number-break loop does not terminate for
+`NaN`. See [edlt-measurement.md](docs/edlt-measurement.md).
 
 Time/Date widgets support standby and functional positions, with unit-wide
 date formats, time formats and leading zeroes:

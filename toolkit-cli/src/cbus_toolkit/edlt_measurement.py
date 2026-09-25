@@ -17,7 +17,16 @@ from .edlt import EdltLighting, EdltError, EdltApplyError, _field, _int, _render
 _STANDBY_TYPES = frozenset((0, 10, 11, 12, 13, 255))
 _FUNCTION_TYPES = frozenset((0, *range(2, 11), *range(12, 17), 255))
 BUILTIN_ICON_INDICES = frozenset((*range(39), *range(128, 142), 252, 253, 254))
-_COMPOSITE_RE = re.compile(r'[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?\Z')
+MEASUREMENT_CULTURES = ('canonical', 'invariant', 'en-NZ', 'de-DE', 'fr-FR')
+_CULTURE_SEPARATORS = MappingProxyType({
+    'canonical': ('.', None),
+    'invariant': ('.', ','),
+    'en-NZ': ('.', ','),
+    'de-DE': (',', '.'),
+    'fr-FR': (',', '\u202f'),
+})
+_COMPOSITE_RE = re.compile(r'[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?\Z')
+_DOTNET_WHITE = ' \t\r\n\v\f'
 
 
 def _signed(value):
@@ -76,27 +85,58 @@ def _try_break_number(number):
     return integer, exponent
 
 
-def measurement_composite(value, *, gain=False):
-    """Convert one invariant decimal exactly as Toolkit's Measurement editor.
+def _measurement_profile(culture):
+    if not isinstance(culture, str) or culture not in _CULTURE_SEPARATORS:
+        raise EdltError('Measurement culture must be one of ' + ', '.join(MEASUREMENT_CULTURES))
+    return _CULTURE_SEPARATORS[culture]
+
+
+def _parse_composite(value, culture):
+    decimal_separator, group_separator = _measurement_profile(culture)
+    if culture == 'canonical':
+        source = value.strip()
+        if not source or not _COMPOSITE_RE.fullmatch(source):
+            raise EdltError('Measurement composite value must be a canonical decimal number')
+        return source, False
+    source = value.strip(_DOTNET_WHITE)
+    if not source:
+        return '1', True
+    group = '' if group_separator is None else re.escape(group_separator)
+    integer = r'[0-9]+' if not group else rf'[0-9](?:[0-9]|{group})*'
+    decimal = re.escape(decimal_separator)
+    pattern = rf'[+-]?(?:{integer}(?:{decimal}[0-9]*)?|{decimal}[0-9]+)(?:[eE][+-]?[0-9]+)?\Z'
+    if not re.fullmatch(pattern, source):
+        raise EdltError(f'Measurement composite value is not valid for Toolkit culture {culture}')
+    normalized = source
+    if group_separator:
+        normalized = normalized.replace(group_separator, '')
+    if decimal_separator != '.':
+        normalized = normalized.replace(decimal_separator, '.')
+    return normalized, False
+
+
+def measurement_composite(value, *, gain=False, culture='canonical'):
+    """Convert decimal editor text using a deterministic Toolkit profile.
 
     The returned dictionary retains whether the value was representable on the
-    first pass. ``gain=True`` applies the original zero-to-one Gain rule.
-    Invalid input is rejected rather than silently retaining an earlier GUI
-    value, which is the only sensible contract for a non-interactive CLI.
+    first pass. ``canonical`` retains the CLI's dot-only, no-grouping and
+    signed-exponent guard. The other profiles reproduce the source-pinned
+    Toolkit current-culture parse, blank-finalization and signed-byte write.
+    ``gain=True`` also applies the original zero-to-one Gain rule. Invalid or
+    non-finite input is rejected rather than retaining prior interactive text.
     """
     if not isinstance(value, str):
         raise EdltError('Measurement composite value must be text')
     if len(value) > 20:
         raise EdltError('Measurement composite value exceeds the original 20-character field')
-    source = value.strip()
-    if not source or not _COMPOSITE_RE.fullmatch(source):
-        raise EdltError('Measurement composite value must be an invariant decimal number')
+    source, blank_defaulted = _parse_composite(value, culture)
     try:
         number = float(source)
     except ValueError as error:
-        raise EdltError('Measurement composite value must be an invariant decimal number') from error
+        raise EdltError(f'Measurement composite value is not valid for culture {culture}') from error
     if not math.isfinite(number):
         raise EdltError('Measurement composite value must be finite')
+    zero_normalized = gain and number == 0.0
     if gain and number == 0.0:
         number = 1.0
     adjusted = number
@@ -121,16 +161,28 @@ def measurement_composite(value, *, gain=False):
         iterations += 1
         if iterations > 128:
             raise EdltError('Measurement composite value could not be represented')
-    if not -128 <= exponent <= 127:
+    editor_exponent = exponent
+    if culture == 'canonical' and not -128 <= exponent <= 127:
         raise EdltError('Measurement composite exponent is outside the stored signed-byte range')
+    exponent = _signed(exponent & 255)
     if gain and integer == 0:
         integer, exponent = 1, 0
+    try:
+        display_value = _format_double_without_e(integer * math.pow(10.0, exponent))
+    except (InvalidOperation, OverflowError, ValueError) as error:
+        raise EdltError('Measurement composite stored value could not be displayed') from error
     return {
         'input': value,
+        'culture': culture,
+        'blank_defaulted': blank_defaulted,
+        'gain_zero_normalized': zero_normalized,
         'normalized_value': _format_double_without_e(adjusted),
         'mantissa': integer,
         'exponent': exponent,
+        'editor_exponent': editor_exponent,
+        'exponent_wrapped': editor_exponent != exponent,
         'stored_value': _decimal_value(integer, exponent),
+        'display_value': display_value,
         'exact': exact,
     }
 
@@ -141,6 +193,7 @@ class MeasurementWidgetPlan:
     position: int
     widget: int
     page_mode: str
+    measurement_culture: str
     device_id: int
     channel: int
     decimal_places: int
@@ -167,7 +220,8 @@ class MeasurementWidgetPlan:
         return {'format': 'cbus-edlt-measurement-plan-v1', 'unit_type': 'KEYGL5',
                 'catalog_number': '5055EDL', 'firmware': '5.5.00',
                 'page': self.page, 'position': self.position, 'widget': self.widget,
-                'page_mode': self.page_mode, 'device_id': self.device_id, 'channel': self.channel,
+                'page_mode': self.page_mode, 'measurement_culture': self.measurement_culture,
+                'device_id': self.device_id, 'channel': self.channel,
                 'decimal_places': self.decimal_places, 'gain_mantissa': self.gain_mantissa,
                 'gain_exponent': self.gain_exponent, 'offset_mantissa': self.offset_mantissa,
                 'offset_exponent': self.offset_exponent,
@@ -204,16 +258,18 @@ class EdltMeasurementWidget:
 
     def plan(self, current, *, page, position, device_id, channel, decimal_places=None,
              gain_mantissa=None, gain_exponent=None, offset_mantissa=None, offset_exponent=None,
-             gain_value=None, offset_value=None,
+             gain_value=None, offset_value=None, measurement_culture='canonical',
              page_mode=None, prefix_text=None, prefix_index=None, suffix_text=None, suffix_index=None,
              label_text=None, label_index=None, icon_index=None):
         options = dict(page=page, position=position, device_id=device_id, channel=channel,
                        decimal_places=decimal_places, gain_mantissa=gain_mantissa, gain_exponent=gain_exponent,
                        offset_mantissa=offset_mantissa, offset_exponent=offset_exponent,
-                       gain_value=gain_value, offset_value=offset_value, page_mode=page_mode,
+                       gain_value=gain_value, offset_value=offset_value,
+                       measurement_culture=measurement_culture, page_mode=page_mode,
                        prefix_text=prefix_text, prefix_index=prefix_index, suffix_text=suffix_text,
                        suffix_index=suffix_index, label_text=label_text, label_index=label_index,
                        icon_index=icon_index)
+        _measurement_profile(measurement_culture)
         conversions = {}
         for name, value, mantissa, exponent, is_gain in (
                 ('gain', gain_value, gain_mantissa, gain_exponent, True),
@@ -222,7 +278,7 @@ class EdltMeasurementWidget:
                 continue
             if mantissa is not None or exponent is not None:
                 raise EdltError(f'{name}_value cannot accompany an explicit mantissa or exponent')
-            conversions[name] = measurement_composite(value, gain=is_gain)
+            conversions[name] = measurement_composite(value, gain=is_gain, culture=measurement_culture)
         if 'gain' in conversions:
             gain_mantissa = conversions['gain']['mantissa']
             gain_exponent = conversions['gain']['exponent']
@@ -329,7 +385,8 @@ class EdltMeasurementWidget:
         self.common.static_references(updates)
         updates.update(self.crcs(updates))
         changes = {name: value for name, value in updates.items() if value != original[name]}
-        return MeasurementWidgetPlan(page, position, widget, page_mode, device_id, channel, record[3],
+        return MeasurementWidgetPlan(page, position, widget, page_mode, measurement_culture,
+                                     device_id, channel, record[3],
                                      _word(record, 4), _signed(record[6]), _word(record, 8), _signed(record[7]),
                                      gain_normalized, record[12], icon_editable, restore,
                                      original, changes, bytes(record), allocations, conversions, options)
@@ -342,6 +399,7 @@ class EdltMeasurementWidget:
         _int(plan.position, 'Plan position', 1, 5)
         _int(plan.device_id, 'Plan device ID', 0, 254)
         _int(plan.channel, 'Plan channel', 0, 254)
+        _measurement_profile(plan.measurement_culture)
         _int(plan.decimal_places, 'Plan decimal places', 0, 5)
         for value in (plan.gain_mantissa, plan.offset_mantissa):
             _int(value, 'Plan mantissa', -32768, 32767)
