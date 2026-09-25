@@ -536,6 +536,7 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["dynamic_label_device_readback"], false);
     assert_eq!(document["edlt_factory_default"], true);
     assert_eq!(document["network_syncnew"], true);
+    assert_eq!(document["network_set_project_identify"], true);
     assert_eq!(document["net_unravelunit_matchdb_duplicate_255"], true);
     assert_eq!(
         document["do_methods"],
@@ -2249,9 +2250,9 @@ async fn physical_pp_save_tag_filter_retains_untagged_dirty() {
 
 /// P3d: physical NET SYNC that observes MULTIPLE distinct serials at one
 /// address must surface the conflict on the event channel instead of
-/// silently collapsing the stored serial to "". The response stays 200
-/// and the stored snapshot keeps "" (stored-multiplicity modelling is
-/// explicitly follow-up work, not this slice).
+/// silently collapsing the stored serial to "". The response stays 200;
+/// the scalar snapshot keeps "" while the sorted duplicate set is retained
+/// on `serial_alternates`.
 #[tokio::test(start_paused = true)]
 async fn physical_net_sync_surfaces_duplicate_serial_conflict_on_events() {
     async fn pci_line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
@@ -2393,8 +2394,8 @@ async fn physical_net_sync_surfaces_duplicate_serial_conflict_on_events() {
         "conflict must not fail SYNC: {response:?}"
     );
 
-    // Stored snapshot still collapses to "" (pinned; multiplicity model is
-    // follow-up work).
+    // The scalar stays collapsed (SerialNumber getter/SET semantics
+    // unchanged) while the duplicate set is retained in memory, sorted.
     let model = service.model.lock().await;
     let snapshot = model.projects["HARNESS"].networks[&254]
         .physical
@@ -2403,6 +2404,11 @@ async fn physical_net_sync_surfaces_duplicate_serial_conflict_on_events() {
     assert_eq!(
         snapshot.serial, "",
         "stored serial stays collapsed: {snapshot:?}"
+    );
+    assert_eq!(
+        snapshot.serial_alternates,
+        vec!["101136.1558".to_string(), "101136.1559".to_string()],
+        "duplicate set must be retained sorted: {snapshot:?}"
     );
     assert_eq!(snapshot.unit_type, "KEYGL5");
     assert_eq!(snapshot.firmware, "5.5.00");
@@ -2572,6 +2578,10 @@ async fn physical_net_sync_single_serial_emits_no_duplicate_event() {
         .get(&5)
         .expect("address 5 was present in the scripted MMI");
     assert_eq!(snapshot.serial, "101136.1558", "{snapshot:?}");
+    assert!(
+        snapshot.serial_alternates.is_empty(),
+        "single serial stores empty alternates: {snapshot:?}"
+    );
     drop(model);
 
     let mut seen = Vec::new();
@@ -2863,6 +2873,490 @@ async fn physical_syncnew_all_reports_mmi_duplicate_and_drops_live_identity() {
     std::fs::remove_file(path).unwrap();
 }
 
+#[tokio::test(start_paused = true)]
+async fn physical_project_identify_writes_native_sixbit_parameter_and_verifies_readback() {
+    async fn pci_line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+    async fn pci_reply<W: tokio::io::AsyncWrite + Unpin>(writer: &mut W, source: u8, cal: &[u8]) {
+        let mut bytes = vec![0x86, source, 0x10, 0x00];
+        bytes.extend_from_slice(cal);
+        let sum = bytes.iter().fold(0u8, |sum, byte| sum.wrapping_add(*byte));
+        bytes.push(0u8.wrapping_sub(sum));
+        let mut wire = hex::encode_upper(bytes).into_bytes();
+        wire.extend_from_slice(b"\r\n");
+        writer.write_all(&wire).await.unwrap();
+    }
+    fn mmi_block(start: u8, count: usize, addresses: &[(usize, u8)]) -> Vec<u8> {
+        let mut states = vec![0u8; count];
+        for &(address, state) in addresses {
+            if (usize::from(start)..usize::from(start) + count).contains(&address) {
+                states[address - usize::from(start)] = state;
+            }
+        }
+        let mut wire = cbus_protocol::packet::Packet::StandardStatus {
+            application: 0xff,
+            block_start: start,
+            states,
+        }
+        .encode_packet()
+        .unwrap();
+        wire.extend_from_slice(b"\r\n");
+        wire
+    }
+
+    let path = state_path();
+    let (pci, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        pci_line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut events = service.events.subscribe();
+    let setting = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[43] NET SET_PROJECT_IDENTIFY //HARNESS/254 \"?\\ ?\"",
+                )
+                .await
+        }
+    });
+
+    // Establish the local PCI address before source-correlating IDENTIFY.
+    assert_eq!(pci_line(&mut remote_read).await, b"@1A2001\r");
+    remote_write.write_all(b"8220104E\r\n").await.unwrap();
+    tokio::task::yield_now().await;
+
+    // One complete, positively confirmed MMI identifies two unambiguous
+    // candidates. Address 5 returns an unusable identity, so selection must
+    // continue to address 6 before any STORE.
+    let request = pci_line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\05FF00FAFF"), "{request:?}");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    for block in [
+        mmi_block(0, 88, &[(5, 1), (6, 1)]),
+        mmi_block(88, 88, &[(5, 1), (6, 1)]),
+        mmi_block(176, 80, &[(5, 1), (6, 1)]),
+    ] {
+        remote_write.write_all(&block).await.unwrap();
+    }
+    tokio::task::yield_now().await;
+
+    let identify = pci_line(&mut remote_read).await;
+    assert!(identify.starts_with(b"\\4605002101"), "{identify:?}");
+    let code = identify[identify.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    pci_reply(&mut remote_write, 5, &[0x82, 1, b' ']).await;
+    tokio::task::yield_now().await;
+
+    let identify = pci_line(&mut remote_read).await;
+    assert!(identify.starts_with(b"\\4606002101"), "{identify:?}");
+    let code = identify[identify.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    pci_reply(
+        &mut remote_write,
+        6,
+        &[0x86, 1, b'K', b'E', b'Y', b'E', b'1'],
+    )
+    .await;
+    tokio::task::yield_now().await;
+
+    // MMI state one is not sufficient evidence of a unique physical unit.
+    // The service completes an IDENTIFY4 quiet window and admits the STORE
+    // only when exactly one valid known serial replied.
+    let identify = pci_line(&mut remote_read).await;
+    assert!(identify.starts_with(b"\\4606002104"), "{identify:?}");
+    let code = identify[identify.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    pci_reply(
+        &mut remote_write,
+        6,
+        &[
+            0x8d, 4, 0x38, 0xff, 0xff, 0xff, 0xff, 0x18, 0xb1, 0x06, 0x16, 0xa2, 0x00, 0x05,
+        ],
+    )
+    .await;
+    tokio::time::advance(Duration::from_secs(2)).await;
+    tokio::task::yield_now().await;
+
+    // Native parameter 35 canonicalizes both '?' and space to six-bit value
+    // 30. The service accepts success only after direct RECALL returns the
+    // same bytes, and its cache must reflect those verified bytes rather than
+    // the non-canonical input spelling.
+    assert_eq!(
+        pci_line(&mut remote_read).await,
+        b"\\460600A8234679E79E79E79EA7\r"
+    );
+    pci_reply(&mut remote_write, 6, &[0x32, 0x23, 0x46]).await;
+    assert_eq!(pci_line(&mut remote_read).await, b"\\4606001A230671\r");
+    pci_reply(
+        &mut remote_write,
+        6,
+        &[0x87, 0x23, 0x79, 0xe7, 0x9e, 0x79, 0xe7, 0x9e],
+    )
+    .await;
+
+    let response = setting.await.unwrap();
+    assert_eq!(response.status, 200, "{response:?}");
+    assert_eq!(response.final_text, "200 OK.");
+    let model = service.model.lock().await;
+    let network = &model.projects["HARNESS"].networks[&254];
+    assert!(
+        !network.units.contains_key(&6),
+        "the commissioning write must not invent a database unit"
+    );
+    assert_eq!(network.physical[&6].unit_type, "KEYE1");
+    assert_eq!(network.physical[&6].fields["ProjectName"], "        ");
+    drop(model);
+    let property = service
+        .handle(
+            &mut ClientState::default(),
+            "[46] GET //HARNESS/254/p/6 ProjectName",
+        )
+        .await;
+    assert_eq!(property.status, 300, "{property:?}");
+    assert_eq!(
+        property.final_text,
+        "300 //HARNESS/254/p/6: ProjectName=        "
+    );
+    assert!(
+        events.try_recv().is_err(),
+        "native project-identify does not emit a synthetic event"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test(start_paused = true)]
+async fn physical_project_identify_fails_closed_before_store_and_on_bad_readback() {
+    async fn pci_line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+    async fn pci_reply<W: tokio::io::AsyncWrite + Unpin>(writer: &mut W, source: u8, cal: &[u8]) {
+        let mut bytes = vec![0x86, source, 0x10, 0x00];
+        bytes.extend_from_slice(cal);
+        let sum = bytes.iter().fold(0u8, |sum, byte| sum.wrapping_add(*byte));
+        bytes.push(0u8.wrapping_sub(sum));
+        let mut wire = hex::encode_upper(bytes).into_bytes();
+        wire.extend_from_slice(b"\r\n");
+        writer.write_all(&wire).await.unwrap();
+    }
+    fn mmi_block(start: u8, count: usize, address: usize, state: u8) -> Vec<u8> {
+        let mut states = vec![0u8; count];
+        if (usize::from(start)..usize::from(start) + count).contains(&address) {
+            states[address - usize::from(start)] = state;
+        }
+        let mut wire = cbus_protocol::packet::Packet::StandardStatus {
+            application: 0xff,
+            block_start: start,
+            states,
+        }
+        .encode_packet()
+        .unwrap();
+        wire.extend_from_slice(b"\r\n");
+        wire
+    }
+
+    let path = state_path();
+    let (pci, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        pci_line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+
+    // A loaded network that is not the service's bound physical endpoint is
+    // valid in the database model, but must fail closed without returning a
+    // synthetic success or issuing PCI traffic.
+    let other_network = service
+        .handle(
+            &mut ClientState::default(),
+            "[43] DBCREATENET 253 Other Cni 127.0.0.1:10002",
+        )
+        .await;
+    assert_eq!(other_network.status, 200, "{other_network:?}");
+    let unbound = service
+        .handle(
+            &mut ClientState::default(),
+            "[43a] NET SET_PROJECT_IDENTIFY //HARNESS/253 TEST",
+        )
+        .await;
+    assert_eq!(unbound.status, 502, "{unbound:?}");
+    assert_eq!(
+        unbound.final_text,
+        "502 Command requires a physical backend that is not implemented"
+    );
+    assert!(
+        tokio::time::timeout(Duration::from_millis(25), remote_read.read_u8())
+            .await
+            .is_err(),
+        "a valid but unbound network must not issue physical I/O"
+    );
+
+    let invalid = service
+        .handle(
+            &mut ClientState::default(),
+            "[44] NET SET_PROJECT_IDENTIFY //HARNESS/254 TOOLONG99",
+        )
+        .await;
+    assert_eq!(invalid.status, 400, "{invalid:?}");
+    assert!(
+        tokio::time::timeout(Duration::from_millis(25), remote_read.read_u8())
+            .await
+            .is_err(),
+        "invalid text must fail before physical I/O"
+    );
+    let bad_character = service
+        .handle(
+            &mut ClientState::default(),
+            "[44b] NET SET_PROJECT_IDENTIFY //HARNESS/254 {",
+        )
+        .await;
+    assert_eq!(bad_character.status, 408, "{bad_character:?}");
+    assert_eq!(
+        bad_character.final_text,
+        "408 Operation failed: Character out of sixbit range"
+    );
+    assert!(
+        tokio::time::timeout(Duration::from_millis(25), remote_read.read_u8())
+            .await
+            .is_err(),
+        "six-bit encoding failure must occur before physical I/O"
+    );
+
+    let setting = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[45] NET SET_PROJECT_IDENTIFY //HARNESS/254 TEST",
+                )
+                .await
+        }
+    });
+    assert_eq!(pci_line(&mut remote_read).await, b"@1A2001\r");
+    remote_write.write_all(b"8220104E\r\n").await.unwrap();
+    tokio::task::yield_now().await;
+    let request = pci_line(&mut remote_read).await;
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    for block in [
+        mmi_block(0, 88, 6, 3),
+        mmi_block(88, 88, 6, 3),
+        mmi_block(176, 80, 6, 3),
+    ] {
+        remote_write.write_all(&block).await.unwrap();
+    }
+    tokio::task::yield_now().await;
+
+    let response = setting.await.unwrap();
+    assert_eq!(response.status, 408, "{response:?}");
+    assert_eq!(
+        response.final_text,
+        "408 Operation failed: Can't find unit to set project name in"
+    );
+    assert!(
+        tokio::time::timeout(Duration::from_millis(25), remote_read.read_u8())
+            .await
+            .is_err(),
+        "duplicate MMI state must not issue IDENTIFY or STORE"
+    );
+    assert!(
+        service.model.lock().await.projects["HARNESS"].networks[&254]
+            .physical
+            .is_empty()
+    );
+
+    // A state-one MMI address can still hide multiple physical units. Two
+    // distinct serial replies must therefore abort before parameter 35 is
+    // written, even though IDENTIFY1 returned a usable type.
+    let duplicate_serials = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[45b] NET SET_PROJECT_IDENTIFY //HARNESS/254 TEST",
+                )
+                .await
+        }
+    });
+    let request = pci_line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\05FF00FAFF"), "{request:?}");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    for block in [
+        mmi_block(0, 88, 6, 1),
+        mmi_block(88, 88, 6, 1),
+        mmi_block(176, 80, 6, 1),
+    ] {
+        remote_write.write_all(&block).await.unwrap();
+    }
+    tokio::task::yield_now().await;
+    let identify = pci_line(&mut remote_read).await;
+    assert!(identify.starts_with(b"\\4606002101"), "{identify:?}");
+    let code = identify[identify.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    pci_reply(
+        &mut remote_write,
+        6,
+        &[0x86, 1, b'K', b'E', b'Y', b'E', b'1'],
+    )
+    .await;
+    tokio::task::yield_now().await;
+    let identify = pci_line(&mut remote_read).await;
+    assert!(identify.starts_with(b"\\4606002104"), "{identify:?}");
+    let code = identify[identify.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    for serial_tail in [0x16, 0x17] {
+        pci_reply(
+            &mut remote_write,
+            6,
+            &[
+                0x8d,
+                4,
+                0x38,
+                0xff,
+                0xff,
+                0xff,
+                0xff,
+                0x18,
+                0xb1,
+                0x06,
+                serial_tail,
+                0xa2,
+                0x00,
+                0x05,
+            ],
+        )
+        .await;
+    }
+    tokio::time::advance(Duration::from_secs(2)).await;
+    tokio::task::yield_now().await;
+    let response = duplicate_serials.await.unwrap();
+    assert_eq!(response.status, 408, "{response:?}");
+    assert_eq!(
+        response.final_text,
+        "408 Operation failed: Can't find unit to set project name in"
+    );
+    assert!(
+        tokio::time::timeout(Duration::from_millis(25), remote_read.read_u8())
+            .await
+            .is_err(),
+        "multiple serial replies must not issue STORE"
+    );
+
+    // Seed an older volatile value so the failed readback below proves it is
+    // invalidated rather than continuing to serve stale physical state.
+    {
+        let mut model = service.model.lock().await;
+        let network = model
+            .projects
+            .get_mut("HARNESS")
+            .unwrap()
+            .networks
+            .get_mut(&254)
+            .unwrap();
+        let mut unit = Unit::blank(6, "");
+        unit.fields
+            .insert("ProjectName".to_string(), "OLD     ".to_string());
+        network.physical.insert(6, unit);
+    }
+
+    // A STORE ACK is not enough: a mismatching parameter-35 RECALL fails the
+    // operation and must invalidate an older ProjectName in the physical cache.
+    let mismatch = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[46] NET SET_PROJECT_IDENTIFY //HARNESS/254 TEST",
+                )
+                .await
+        }
+    });
+    let request = pci_line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\05FF00FAFF"), "{request:?}");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    for block in [
+        mmi_block(0, 88, 6, 1),
+        mmi_block(88, 88, 6, 1),
+        mmi_block(176, 80, 6, 1),
+    ] {
+        remote_write.write_all(&block).await.unwrap();
+    }
+    tokio::task::yield_now().await;
+    let identify = pci_line(&mut remote_read).await;
+    assert!(identify.starts_with(b"\\4606002101"), "{identify:?}");
+    let code = identify[identify.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    pci_reply(
+        &mut remote_write,
+        6,
+        &[0x86, 1, b'K', b'E', b'Y', b'E', b'1'],
+    )
+    .await;
+    tokio::task::yield_now().await;
+    let identify = pci_line(&mut remote_read).await;
+    assert!(identify.starts_with(b"\\4606002104"), "{identify:?}");
+    let code = identify[identify.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    pci_reply(
+        &mut remote_write,
+        6,
+        &[
+            0x8d, 4, 0x38, 0xff, 0xff, 0xff, 0xff, 0x18, 0xb1, 0x06, 0x16, 0xa2, 0x00, 0x05,
+        ],
+    )
+    .await;
+    tokio::time::advance(Duration::from_secs(2)).await;
+    tokio::task::yield_now().await;
+    assert_eq!(
+        pci_line(&mut remote_read).await,
+        b"\\460600A82346CE4CB379E79ED8\r"
+    );
+    pci_reply(&mut remote_write, 6, &[0x32, 0x23, 0x46]).await;
+    assert_eq!(pci_line(&mut remote_read).await, b"\\4606001A230671\r");
+    pci_reply(&mut remote_write, 6, &[0x87, 0x23, 0, 0, 0, 0, 0, 0]).await;
+    let response = mismatch.await.unwrap();
+    assert_eq!(response.status, 408, "{response:?}");
+    assert_eq!(
+        response.final_text,
+        "408 Operation failed: project name save failed - store to unit failed"
+    );
+    let model = service.model.lock().await;
+    let cached = &model.projects["HARNESS"].networks[&254].physical[&6];
+    assert!(
+        !cached.fields.contains_key("ProjectName"),
+        "failed readback must invalidate a stale cached project identity"
+    );
+    drop(model);
+    std::fs::remove_file(path).unwrap();
+}
+
 // Auth first-slice loopback tests (cmqttd-local shared-secret gate).
 //
 // Explicitly NOT native access.txt parity: no native LOGIN captures exist,
@@ -2949,6 +3443,7 @@ async fn auth_wrong_secret_denied_and_gate_holds() {
         "[14] SCENE RECORD house evening",
         "[15] DO //HARNESS/254/p/5 FactoryDefault",
         "[16] NET UNRAVELUNIT //HARNESS/254 255 MATCHDB",
+        "[17] NET SET_PROJECT_IDENTIFY //HARNESS/254 TEST",
     ] {
         let response = service.handle(&mut client, command).await;
         assert_eq!(response.status, 420, "{command}: {response:?}");

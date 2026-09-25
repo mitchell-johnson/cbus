@@ -146,10 +146,11 @@ Identical MMI bookends cannot prove that serials did not swap addresses while th
 set of occupied addresses remained unchanged. They also cannot detect a device
 leaving and returning between observations. This first coordinator performs one
 serial pass, explicitly reports a non-atomic observation, and provides no
-identity-stability or persistent absence guarantee. A future selected-serial
-move must have its own stronger, independently tested guards. A second serial
-pass could add repeated identity evidence, but would still not create an atomic
-snapshot and is outside this first bounded implementation.
+identity-stability or persistent absence guarantee. The later
+[selected-serial workflow](pci-selected-serial.md) has its own stronger,
+independently tested guards. A second serial pass could add repeated identity
+evidence, but would still not create an atomic snapshot and is outside this
+first bounded implementation.
 
 The original protocol carries no scan identifier in bare MMI blocks. Closing a
 TCP session does not prove that the bus has no delayed responses. Fresh exclusive

@@ -532,7 +532,8 @@ impl Service {
                 "do_methods":["factorydefault","lighting","sync"],
                 "network_clocks":true,
                 "install_mmi":true, "network_pingu":true,
-                "network_sync":true, "network_syncnew":true, "network_checkunit":true,
+                "network_sync":true, "network_syncnew":true,
+                "network_set_project_identify":true, "network_checkunit":true,
                 "unit_readdress":true,
                 "net_unravelunit_matchdb_duplicate_255":true,
                 "project":self.project,"network":self.network,"persistent_database":true,
@@ -657,6 +658,11 @@ impl Service {
         }
         if verb == "NET" && sub == "PINGU" {
             return self.net_pingu(client, line, tag, &words).await;
+        }
+        if verb == "NET" && sub == "SET_PROJECT_IDENTIFY" {
+            return self
+                .net_set_project_identify(client, line, tag, &words)
+                .await;
         }
         if verb == "NET" && sub == "SYNCNEW" {
             return self.net_syncnew(client, line, tag, &words).await;
@@ -1220,27 +1226,30 @@ impl Service {
                     );
                 }
             };
-            // P3d: surface duplicate-address conflicts on the event channel.
-            // The stored snapshot keeps "" on conflict (stored-multiplicity
-            // modelling is follow-up work). The event names the address and
-            // every observed serial, sorted for deterministic output:
+            // P3d: surface duplicate-address conflicts on the event channel
+            // and retain the observed set in the volatile snapshot. The scalar
+            // `serial` keeps "" on conflict (SerialNumber getter/SET
+            // semantics unchanged); the sorted `serial_alternates` carry
+            // the evidence. The event names the address and every observed
+            // serial, sorted for deterministic output:
             // `#e# net {network} sync duplicate {address} {serial...}`.
-            // Single/zero observations stay silent and store "" as before.
-            let serial = if serials.len() == 1 {
-                serials.into_iter().next().unwrap()
+            // Single observations store the serial with empty alternates;
+            // zero observations store "" with empty alternates as before.
+            let (serial, serial_alternates) = if serials.len() == 1 {
+                (serials.into_iter().next().unwrap(), Vec::new())
+            } else if serials.len() > 1 {
+                let mut duplicates: Vec<_> = serials.into_iter().collect();
+                duplicates.sort();
+                let _ = self.events.send(format!(
+                    "#e# net {} sync duplicate {address} {}",
+                    self.network,
+                    duplicates.join(" ")
+                ));
+                (String::new(), duplicates)
             } else {
-                if serials.len() > 1 {
-                    let mut duplicates: Vec<_> = serials.into_iter().collect();
-                    duplicates.sort();
-                    let _ = self.events.send(format!(
-                        "#e# net {} sync duplicate {address} {}",
-                        self.network,
-                        duplicates.join(" ")
-                    ));
-                }
-                String::new()
+                (String::new(), Vec::new())
             };
-            identities.push((address, unit_type, firmware, serial));
+            identities.push((address, unit_type, firmware, serial, serial_alternates));
         }
 
         let mut model = self.model.lock().await;
@@ -1252,16 +1261,19 @@ impl Service {
             let previous = std::mem::take(&mut network.physical);
             network.physical = identities
                 .into_iter()
-                .map(|(address, unit_type, firmware, serial)| {
-                    let mut unit = previous
-                        .get(&address)
-                        .cloned()
-                        .unwrap_or_else(|| Unit::blank(address, ""));
-                    unit.unit_type = unit_type;
-                    unit.firmware = firmware;
-                    unit.serial = serial;
-                    (address, unit)
-                })
+                .map(
+                    |(address, unit_type, firmware, serial, serial_alternates)| {
+                        let mut unit = previous
+                            .get(&address)
+                            .cloned()
+                            .unwrap_or_else(|| Unit::blank(address, ""));
+                        unit.unit_type = unit_type;
+                        unit.firmware = firmware;
+                        unit.serial = serial;
+                        unit.serial_alternates = serial_alternates;
+                        (address, unit)
+                    },
+                )
                 .collect();
             network.state = NetworkState::Ok;
         }
@@ -1462,6 +1474,201 @@ impl Service {
             statuses.push((408, "No new units found".to_string()));
         }
         syncnew_response(tag, statuses)
+    }
+
+    async fn net_set_project_identify(
+        &self,
+        client: &ClientState,
+        line: &str,
+        tag: &str,
+        words: &[&str],
+    ) -> Response {
+        let _commands = self.commands.lock().await;
+        let validation = {
+            let mut staged = self.model.lock().await.clone();
+            staged.current = client
+                .current
+                .clone()
+                .or_else(|| Some(self.project.clone()));
+            staged.handle(line)
+        };
+        if validation.status >= 400 {
+            return validation;
+        }
+        let Some(address) = words.get(2) else {
+            return err(tag, 400, "400 NET SET_PROJECT_IDENTIFY requires a network");
+        };
+        if !self.bound_network(address) {
+            return err(
+                tag,
+                502,
+                "502 Command requires a physical backend that is not implemented",
+            );
+        }
+        let identity = match parse_command(line)
+            .ok()
+            .and_then(|command| project_identity_argument(&command.body).ok())
+        {
+            Some(identity) => identity,
+            None => {
+                return err(
+                    tag,
+                    400,
+                    "400 NET SET_PROJECT_IDENTIFY requires a project identity",
+                );
+            }
+        };
+        let encoded = match cbus_protocol::project_identity::encode_project_identity(&identity) {
+            Ok(encoded) => encoded,
+            Err(error) => {
+                return err(tag, 408, &format!("408 Operation failed: {error}"));
+            }
+        };
+
+        let pci = self.pci.read().await.clone();
+        let interface_units = {
+            let model = self.model.lock().await;
+            model.projects[&self.project].networks[&self.network]
+                .units
+                .values()
+                .filter(|unit| {
+                    let unit_type = unit.unit_type.to_ascii_uppercase();
+                    unit_type.starts_with("PC_CNI") || unit_type.starts_with("PC_PCI")
+                })
+                .map(|unit| unit.address)
+                .collect::<Vec<_>>()
+        };
+        let local = match interface_units.as_slice() {
+            [address] => pci.set_local_unit_hint(*address).map(|()| *address),
+            [] => pci.discover_local_unit().await,
+            _ => Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "configured network has multiple local-interface units",
+            )),
+        };
+        if let Err(error) = local {
+            return err(
+                tag,
+                408,
+                &format!("408 Physical interface discovery failed: {error}"),
+            );
+        }
+        let states = match pci.install_mmi().await {
+            Ok(states) => states,
+            Err(error) => {
+                return err(
+                    tag,
+                    408,
+                    &format!("408 Physical installation MMI failed: {error}"),
+                );
+            }
+        };
+
+        let mut selected = None;
+        for (address, state) in states.iter().enumerate().skip(1) {
+            // Native C-Gate chooses the first present nonzero unit. Refuse an
+            // MMI duplicate/error state, then require exactly one valid serial
+            // reply in a complete quiet-bounded IDENTIFY4 observation. An MMI
+            // state of one alone is not a uniqueness proof: colliding units
+            // can still appear as state one on a real CNI.
+            if *state != 1 {
+                continue;
+            }
+            let address = address as u8;
+            match pci.identify_first(address, 1).await {
+                Ok(Some(unit_type)) => match identity_text(&unit_type, "unit type") {
+                    Ok(unit_type) => {
+                        let serial_replies = match pci.identify_all(address, 4).await {
+                            Ok(replies) => replies,
+                            Err(error) => {
+                                return err(
+                                    tag,
+                                    408,
+                                    &format!(
+                                        "408 Project identify serial selection failed: {error}"
+                                    ),
+                                );
+                            }
+                        };
+                        if let [reply] = serial_replies.as_slice() {
+                            if serial_number(reply).is_ok_and(|serial| serial.is_some()) {
+                                selected = Some((address, unit_type));
+                                break;
+                            }
+                        }
+                    }
+                    Err(_) => continue,
+                },
+                Ok(None) => continue,
+                Err(error) => {
+                    return err(
+                        tag,
+                        408,
+                        &format!("408 Project identify unit selection failed: {error}"),
+                    );
+                }
+            }
+        }
+        let Some((address, unit_type)) = selected else {
+            return err(
+                tag,
+                408,
+                "408 Operation failed: Can't find unit to set project name in",
+            );
+        };
+        if let Err(error) = pci.set_project_identity_verified(address, &encoded).await {
+            // Once STORE has been admitted, a transport failure or mismatched
+            // readback makes any previous cached value unsafe to serve. A
+            // definitive NAK is also cleared conservatively; a later SYNC or
+            // successful write may repopulate the volatile field.
+            self.clear_physical_project_name(address).await;
+            let detail = if error
+                .to_string()
+                .contains("unit rejected programming selector")
+            {
+                "project name save failed - Negative Acknowledge response from unit"
+            } else if error.kind() == io::ErrorKind::TimedOut {
+                "project name save failed - no response from unit"
+            } else {
+                "project name save failed - store to unit failed"
+            };
+            return err(tag, 408, &format!("408 Operation failed: {detail}"));
+        }
+
+        if let Some(network) = self
+            .model
+            .lock()
+            .await
+            .projects
+            .get_mut(&self.project)
+            .and_then(|project| project.networks.get_mut(&self.network))
+        {
+            let unit = network
+                .physical
+                .entry(address)
+                .or_insert_with(|| Unit::blank(address, ""));
+            unit.unit_type = unit_type;
+            unit.fields.insert(
+                "ProjectName".to_string(),
+                cbus_protocol::project_identity::decode_project_identity(&encoded)
+                    .expect("a six-byte project identity always decodes"),
+            );
+        }
+        validation
+    }
+
+    async fn clear_physical_project_name(&self, address: u8) {
+        if let Some(unit) = self
+            .model
+            .lock()
+            .await
+            .projects
+            .get_mut(&self.project)
+            .and_then(|project| project.networks.get_mut(&self.network))
+            .and_then(|network| network.physical.get_mut(&address))
+        {
+            unit.fields.remove("ProjectName");
+        }
     }
 
     async fn remove_physical_unit(&self, address: u8) {
@@ -4272,7 +4479,7 @@ fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
                 | "REPAIR"
         ),
         "SET" => true,
-        "NET" => matches!(sub, "UNRAVEL" | "UNRAVELUNIT"),
+        "NET" => matches!(sub, "SET_PROJECT_IDENTIFY" | "UNRAVEL" | "UNRAVELUNIT"),
         "LABEL" => sub == "CLEAREDLT",
         "SCENE" => sub == "RECORD",
         "DO" => words
@@ -4564,6 +4771,7 @@ fn import_project(xml: &str, network_name: Option<&str>) -> io::Result<(Server, 
                     address: addr,
                     unit_type: field(u, "UnitType"),
                     serial: field(u, "SerialNumber"),
+                    serial_alternates: Vec::new(),
                     firmware: field(u, "FirmwareVersion"),
                     fields,
                     oid,

@@ -10,9 +10,10 @@ tokio = { workspace = true }
 tokio-serial = { workspace = true }
 tracing = { workspace = true }
 chrono = { workspace = true }
+serde_json = { workspace = true, features = ["float_roundtrip"] }
+hex = { workspace = true }
 
 [dev-dependencies]
-hex = { workspace = true }
 proptest = { workspace = true }
 # test-util: paused-clock tests for the flow controller
 tokio = { workspace = true, features = ["test-util"] }

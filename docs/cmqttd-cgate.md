@@ -43,7 +43,8 @@ state file is created. `CMQTT CAPABILITIES` reports `cgate_auth: false`
 dormant by default and `true` once armed. Armed, each connection needs
 `LOGIN <token>` (200) before PP mutating verbs (`PP LOCK/LOAD/SAVE/...`;
 `PP GET/INFO/LIST` stay open), `PROJECT` lifecycle, `DB...` writes, `SET`,
-`LABEL CLEAREDLT`, `DO ... FactoryDefault`, and `SCENE RECORD`; `GET`/`INFO`/`DBGET`-style reads,
+`LABEL CLEAREDLT`, `DO ... FactoryDefault`, `NET SET_PROJECT_IDENTIFY`, and
+`SCENE RECORD`; `GET`/`INFO`/`DBGET`-style reads,
 bus-control SAL traffic, and `SCENE PLAY` stay open. Gated verbs attempted
 without the flag answer `420 LOGIN required`; a wrong token answers
 `420 LOGIN failed`; a malformed `LOGIN` with no token answers 400 and also
@@ -78,7 +79,9 @@ not be committed or published.
 | LABEL CLEAREDLT | Sends the native KEYGL5 programming control through the shared PCI exactly once, requires both PCI confirmation and the source/tag-correlated unit ACK, and reports acceptance separately from physical erasure or persistence |
 | `DO //PROJECT/NETWORK/p/UNIT FactoryDefault` | Sends native `A4 FF 43 B2 B2` exactly once for a database-classified KEYGL5 and reports the 202 receipt separately from post-reset defaults, reboot, address retention and persistence |
 | NET PINGU and GET network Units | Actual installation MMI request using cmqttd's negotiated PCI checksum mode; buffers blocks that a CNI forwards before its positive confirmation, accepts only confirmed contiguous coverage of all addresses 0–255, and reports the native sorted `302-Units=` form |
-| NET SYNC and cached unit getters | Configured interface routing hint (physically revalidated) or BASIC discovery, complete installation MMI, then confirmed IDENTIFY1/2 probes and bounded IDENTIFY4 collection for every present address; routed and local bare-CAL replies are correlated, silent legacy/error addresses remain present with unknown identity fields, the live cache is replaced atomically, and native getters expose it. An address with multiple distinct serials emits `#e# net {network} sync duplicate {address} {serial...}` (sorted) while the stored snapshot keeps `""` (stored-multiplicity modelling is follow-up work) |
+| NET SYNC and cached unit getters | Configured interface routing hint (physically revalidated) or BASIC discovery, complete installation MMI, then confirmed IDENTIFY1/2 probes and bounded IDENTIFY4 collection for every present address; routed and local bare-CAL replies are correlated, silent legacy/error addresses remain present with unknown identity fields, the live cache is replaced atomically, and native getters expose it. An address with multiple distinct serials emits `#e# net {network} sync duplicate {address} {serial...}` (sorted); scalar `SerialNumber` stays `""` while the sorted set of distinct serials is retained in the volatile live snapshot. The event is the wire-visible evidence and neither form survives restart |
+| NET SYNCNEW | Five complete MMI passes for direct networks. Targeted mode rejects an address already in the model, runs the native three duplicate challenges, and reads IDENTIFY1/2/4; general mode reports new identities and MMI state-3 duplicates. Results update the volatile physical cache and retain native progress/result codes without creating database units |
+| NET SET_PROJECT_IDENTIFY | Uppercases and packs the 1–8 character native six-bit value, obtains a fresh complete MMI, and selects the first state-one unit that supplies valid IDENTIFY1 data plus exactly one valid known IDENTIFY4 serial in a complete quiet window. It stores the six bytes at parameter 35 and requires an exact RECALL before returning 200. Duplicate/error MMI states, multiple serial replies, unknown serials, and malformed identities are skipped; a failed or uncertain STORE/readback invalidates any older cached `ProjectName`. The database is not changed |
 | NET CHECKUNIT | Active confirmed IDENTIFY4 collection through the native two-second quiet interval, with the native no-unit, single-unit, duplicate-unit and identity-error result forms; `*` expands from a fresh complete MMI |
 | NET CLOCKS | Reads physical IDENTIFY16 summaries for the synchronized inventory. Target counts and gateway recovery use decoded `ClockGenEnable` layouts, read-modify-write CAL stores and mandatory readback; native-style per-unit failures remain visible in `120` lines even with final status 200 |
 | `SET //PROJECT/NETWORK/p/UNIT Address DESTINATION` | Physical unit readdressing through native C-Gate's protected parameter-`0x20` exchange. The service proves one source identity and an empty destination, obtains the one-use challenge, sends exactly one special address STORE, requires both PCI confirmation and the unit ACK from the destination, moves only the observed physical cache, and leaves the database address unchanged |
@@ -180,6 +183,25 @@ service does not retry or roll back a selected-serial write. Whole-network
 destinations, larger duplicate sets, address cycles, and bridged networks remain
 explicit 502 cases.
 
+`NET SET_PROJECT_IDENTIFY //PROJECT/NETWORK NAME` applies the native Java-style
+one-to-eight UTF-16-unit check, uppercase fold, and six-bit range validation.
+The Toolkit typed wrapper applies the same checks, including Unicode folds
+whose uppercase result enters the six-bit repertoire, and emits mK quoting for
+spaces, quotes, and backslashes. cmqttd pads the decoded value to eight
+characters and stores the resulting six bytes in unit parameter 35 using
+C-Gate's fixed transaction tag `0x46`. Native C-Gate accepts the
+matching unit ACK; cmqttd then adds a direct RECALL as a deliberate verification
+step. Native C-Gate selects the first present unit it can identify; cmqttd also
+requires MMI state one and exactly one valid known IDENTIFY4 reply over the
+complete bounded quiet window before STORE. Success updates only the volatile
+physical snapshot's `ProjectName` field by decoding the verified bytes,
+including the native `?`/space alias, with eight-character padding. A failed
+or uncertain STORE/readback removes an older cached `ProjectName` so GET cannot
+serve stale physical state. It does not rename, select, create, or persist a
+project. The separate `NET PROJECT_IDENTIFY`
+topology-discovery workflow remains unimplemented. A valid target for another
+loaded network fails closed with 502 rather than reporting a local success.
+
 ## Live label reads
 
 ```sh
@@ -236,8 +258,8 @@ The existing mock dispatches 431 command paths. That is **not** evidence that
 all 431 have physical implementations in this service. `CMQTT CAPABILITIES`
 returns `full_cgate_compatibility: false`; unimplemented physical operations
 return 502. The enumerable gap tracker is the executable capability matrix in
-`cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 31
-physical, 36 local-database, 363 fail-closed 502, and 1 obsolete 400 over the
+`cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 32
+physical, 36 local-database, 362 fail-closed 502, and 1 obsolete 400 over the
 431 inventoried paths, plus a separately asserted 6-row supplement for
 non-inventoried service commands. Full replacement still requires:
 
@@ -251,7 +273,9 @@ non-inventoried service commands. Full replacement still requires:
   silently without a write while tag-filtered parameters stay dirty for a later
   matching-tags SAVE; a bare 200 covers the tag-selected subset only.
 - Bridged-network synchronization, general serial-address commissioning,
-  project identification and the remaining commissioning state transitions.
+  topology-wide `NET PROJECT_IDENTIFY` discovery, and the remaining
+  commissioning state transitions. The distinct physical
+  `NET SET_PROJECT_IDENTIFY` parameter-35 write is implemented with readback.
   Direct-network `NET SYNCNEW` is implemented in both native forms: five
   merged installation MMI passes, the targeted unit form's three exact CAL
   Unlock duplicate challenges, IDENTIFY1/2/4 population of the volatile live

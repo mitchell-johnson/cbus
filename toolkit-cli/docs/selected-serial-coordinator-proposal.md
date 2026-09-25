@@ -1,9 +1,11 @@
-# Proposed direct selected-serial movement coordinator
+# Historical proposal: direct selected-serial movement coordinator
 
-This is a design contract, not an implemented mutation API. Existing offline
-encoding/receipt parsing and read-only inventory APIs remain separate. The
-[serial-keyed fixture](serial-address-fixture.md) provides independent topology
-and persistence/fault checks before a transport coordinator is considered.
+This document records the design contract that preceded the implemented bounded
+coordinator. The current API, CLI, guards, journal, and acceptance limits are in
+[Selected-serial commissioning with independent observations](pci-selected-serial.md).
+The [serial-keyed fixture](serial-address-fixture.md) still provides independent
+topology and persistence/fault checks. Future-tense statements below describe
+the proposal at the time it was written and are retained as design history.
 
 ## First supported scope and preconditions
 

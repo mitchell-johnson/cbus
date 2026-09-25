@@ -19,6 +19,8 @@
 //! receipt input versus `ValueError` otherwise
 //! (`pci_serial_address.py:126-127`).
 
+use crate::cal::Cal;
+use crate::pci_observation::{parse_frame_line, PciFrame};
 use crate::{DecodeError, EncodeError};
 
 /// Maximum captured exchange the receipt classifier accepts, in bytes.
@@ -346,7 +348,7 @@ pub fn classify_receipt(
         .collect();
     enum Event {
         Confirmation(u8, char),
-        Frame(ParsedFrame),
+        Frame(PciFrame),
         Notification(char),
     }
     let mut events: Vec<Event> = Vec::new();
@@ -398,7 +400,7 @@ pub fn classify_receipt(
     let pending = stream[pos..].to_vec();
 
     let mut confirmations: Vec<(u8, char)> = Vec::new();
-    let mut frames: Vec<ParsedFrame> = Vec::new();
+    let mut frames: Vec<PciFrame> = Vec::new();
     let mut notifications: Vec<char> = Vec::new();
     for event in &events {
         match event {
@@ -422,7 +424,10 @@ pub fn classify_receipt(
             continue;
         }
         let (parameter, reply_data) = match &frame.cals[0] {
-            ReceiptCal::Reply(parameter, reply_data) => (*parameter, reply_data.clone()),
+            Cal::Reply {
+                parameter,
+                data: reply_data,
+            } => (*parameter, reply_data.clone()),
             _ => {
                 push_issue(&mut issues, "unsupported_receipt_cal");
                 continue;
@@ -553,169 +558,15 @@ pub fn classify_receipt(
     })
 }
 
-/// One CAL of a from-PCI receipt frame.
-#[derive(Debug, Clone, PartialEq, Eq)]
-enum ReceiptCal {
-    /// `0x21` identify request (unsupported as a receipt).
-    Identify(u8),
-    /// `0x1A` recall request (unsupported as a receipt).
-    Recall(u8, u8),
-    /// `0x32` acknowledgement; bare-allowed but never a serial receipt.
-    Ack(u8, u8),
-    /// `0x8x` reply: parameter plus payload.
-    Reply(u8, Vec<u8>),
-    /// `0xAx` write (unsupported as a receipt).
-    Write(u8, Vec<u8>),
-}
-
-fn decode_cal(data: &[u8]) -> Result<(ReceiptCal, usize), String> {
-    let opcode = *data
-        .first()
-        .ok_or_else(|| "Missing CAL opcode".to_string())?;
-    let family = opcode & 0xE0;
-    let length = if opcode == 0x21 || opcode == 0x1A || opcode == 0x32 {
-        if opcode == 0x21 {
-            2
-        } else {
-            3
-        }
-    } else if family == 0x80 || family == 0xA0 {
-        if opcode & 0x1F == 0 {
-            return Err("CAL count must include a parameter byte".to_string());
-        }
-        1 + usize::from(opcode & 0x1F)
-    } else {
-        return Err(format!("Unsupported CAL opcode 0x{opcode:02X}"));
-    };
-    if data.len() < length {
-        return Err(format!(
-            "Truncated CAL: expected {length} bytes, received {}",
-            data.len()
-        ));
-    }
-    match opcode {
-        0x21 => Ok((ReceiptCal::Identify(data[1]), length)),
-        0x1A => {
-            if data[2] == 0 {
-                return Err("Recall count must be positive".to_string());
-            }
-            Ok((ReceiptCal::Recall(data[1], data[2]), length))
-        }
-        0x32 => Ok((ReceiptCal::Ack(data[1], data[2]), length)),
-        _ if family == 0x80 => Ok((ReceiptCal::Reply(data[1], data[2..length].to_vec()), length)),
-        _ => Ok((ReceiptCal::Write(data[1], data[2..length].to_vec()), length)),
-    }
-}
-
-fn decode_cals(mut data: &[u8]) -> Result<Vec<ReceiptCal>, String> {
-    let mut cals = Vec::new();
-    while !data.is_empty() {
-        let (cal, consumed) = decode_cal(data)?;
-        cals.push(cal);
-        data = &data[consumed..];
-    }
-    if cals.is_empty() {
-        return Err("Empty CAL message".to_string());
-    }
-    Ok(cals)
-}
-
-/// One parsed from-PCI frame line with its original bytes.
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct ParsedFrame {
-    header: Option<u8>,
-    source: Option<u8>,
-    destination: Option<u8>,
-    route: Vec<u8>,
-    cals: Vec<ReceiptCal>,
-    payload: Vec<u8>,
-    raw: Vec<u8>,
-}
-
-/// Parse one `\r`-terminated from-PCI frame line (checksum enforced).
-///
-/// Mirrors `decode_frame` on the from-PCI path: an addressed header of `06`,
-/// `46`, `86`, or `C6` with `00` or `01 00` routing takes precedence, and a
-/// CAL-only reply is otherwise decoded bare without a fabricated source.
-fn parse_frame_line(line: &[u8]) -> Result<ParsedFrame, String> {
-    if line.is_empty()
-        || !line.len().is_multiple_of(2)
-        || !line.iter().all(|b| b.is_ascii_hexdigit())
-    {
-        return Err("Frame must contain an even number of hexadecimal characters".to_string());
-    }
-    let payload = hex::decode(line)
-        .map_err(|_| "Frame must contain an even number of hexadecimal characters".to_string())?;
-    let sum: u32 = payload.iter().map(|&b| u32::from(b)).sum();
-    if payload.len() < 2 || !sum.is_multiple_of(256) {
-        return Err("Invalid C-Bus checksum".to_string());
-    }
-    let body = &payload[..payload.len() - 1];
-    let mut addressed_error: Option<String> = None;
-    if [0x06, 0x46, 0x86, 0xC6].contains(&body[0]) {
-        if body.len() >= 5 {
-            let (route, offset) = if body[3] == 0 {
-                (vec![0x00], 4)
-            } else if body[3..5] == [0x01, 0x00] {
-                (vec![0x01, 0x00], 5)
-            } else {
-                addressed_error = Some("Unsupported response routing".to_string());
-                (Vec::new(), 0)
-            };
-            if addressed_error.is_none() {
-                match decode_cals(&body[offset..]) {
-                    Ok(cals) => {
-                        return Ok(ParsedFrame {
-                            header: Some(body[0]),
-                            source: Some(body[1]),
-                            destination: Some(body[2]),
-                            route,
-                            cals,
-                            payload: body.to_vec(),
-                            raw: line.to_vec(),
-                        });
-                    }
-                    Err(error) => addressed_error = Some(error),
-                }
-            }
-        } else {
-            addressed_error = Some("Truncated point-to-point header".to_string());
-        }
-    }
-    match decode_cals(body) {
-        Ok(cals) => {
-            if !cals
-                .iter()
-                .all(|cal| matches!(cal, ReceiptCal::Reply(..) | ReceiptCal::Ack(..)))
-            {
-                return Err(format!(
-                    "Unsupported PCI frame: {}; Unsupported bare PCI response",
-                    addressed_error.unwrap_or_else(|| "no addressed header".to_string())
-                ));
-            }
-            Ok(ParsedFrame {
-                header: None,
-                source: None,
-                destination: None,
-                route: Vec::new(),
-                cals,
-                payload: body.to_vec(),
-                raw: line.to_vec(),
-            })
-        }
-        Err(bare_error) => Err(format!(
-            "Unsupported PCI frame: {}; {bare_error}",
-            addressed_error.unwrap_or_else(|| "no addressed header".to_string())
-        )),
-    }
-}
-
-fn receipt_frame(frame: ParsedFrame) -> Result<ReceiptFrame, DecodeError> {
+fn receipt_frame(frame: PciFrame) -> Result<ReceiptFrame, DecodeError> {
     if frame.cals.len() != 1 {
         return Err(DecodeError::new("Receipt frame must contain one reply CAL"));
     }
     let (parameter, reply_data) = match &frame.cals[0] {
-        ReceiptCal::Reply(parameter, reply_data) => (*parameter, reply_data.clone()),
+        Cal::Reply {
+            parameter,
+            data: reply_data,
+        } => (*parameter, reply_data.clone()),
         _ => return Err(DecodeError::new("Unsupported receipt CAL")),
     };
     if parameter != 0 || reply_data.len() != 6 {

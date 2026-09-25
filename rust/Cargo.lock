@@ -225,6 +225,7 @@ dependencies = [
  "chrono",
  "hex",
  "proptest",
+ "serde_json",
  "tokio",
  "tokio-serial",
  "tracing",

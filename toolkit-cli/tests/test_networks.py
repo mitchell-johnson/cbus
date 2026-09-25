@@ -40,13 +40,18 @@ class NetworksTests(unittest.TestCase):
         n.tree("//TEST/254", details=True, sync=["withpsync"])
         n.rename("//TEST/254", 253)
         n.set_project_identity("//TEST/254", "TEST")
+        n.set_project_identity("//TEST/254", "a-b_")
+        n.set_project_identity("//TEST/254", 'A B"\\C')
+        n.set_project_identity("//TEST/254", "ſest")
         self.assertEqual(client.commands, [
             "NET LIST_ALL", "NET LIST TEST", "NET OPEN //TEST/254", "NET CLOSE //TEST/254",
             "NET SYNC //TEST/254 fast 2", "NET SYNCNEW //TEST/254 4", "NET PINGU //TEST/254",
             "NET CHECKUNIT //TEST/254 4,16", "NET UNRAVEL //TEST/254", "NET UNRAVELUNIT //TEST/254 4,5 matchdb",
             "NET CLOCKS //TEST/254", "NET CLOCKS //TEST/254 3", "NET CLOCKS //TEST/254 R",
             "TREE //TEST/254", "TREEXMLDETAIL //TEST/254 withpsync", "NET RENAME //TEST/254 253",
-            "NET SET_PROJECT_IDENTIFY //TEST/254 TEST"])
+            "NET SET_PROJECT_IDENTIFY //TEST/254 TEST", "NET SET_PROJECT_IDENTIFY //TEST/254 a-b_",
+            r'NET SET_PROJECT_IDENTIFY //TEST/254 "A\ B\"\\C"',
+            "NET SET_PROJECT_IDENTIFY //TEST/254 ſest"])
 
     def test_invalid_arguments_rejected_before_io(self):
         client = Capture()
@@ -56,6 +61,10 @@ class NetworksTests(unittest.TestCase):
                  lambda: n.clocks("//TEST/254", 0), lambda: n.clocks("//TEST/254", 11),
                  lambda: n.clocks("//TEST/254", True), lambda: n.clocks("//TEST/254", recover="true"),
                  lambda: n.synchronize("//TEST/254", retries=-1), lambda: n.rename("//TEST/254", True),
+                 lambda: n.set_project_identity("//TEST/254", "TOOLONG99"),
+                 lambda: n.set_project_identity("//TEST/254", "{"),
+                 lambda: n.set_project_identity("//TEST/254", "café"),
+                 lambda: n.set_project_identity("//TEST/254", "ßßßßß"),
                  lambda: n.tree("//TEST/254", sync=["withsync"]),
                  lambda: n.tree("//TEST/254", xml=True, sync=["anything"]),
                  lambda: n.wait_ready("//TEST/254", timeout=float("inf"))]

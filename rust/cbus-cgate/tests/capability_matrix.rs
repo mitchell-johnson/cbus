@@ -84,10 +84,13 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // duplicate-address-255 MATCHDB backend was added; unsupported shapes
     // remain an explicit 502 within that service branch. NET SYNCNEW moved
     // fail_closed_502 -> physical with five-pass MMI and native duplicate
-    // challenges for its targeted and general forms.
-    assert_eq!(class_count(RoutingClass::Physical), 31);
+    // challenges for its targeted and general forms. NET
+    // SET_PROJECT_IDENTIFY moved fail_closed_502 -> physical with a verified
+    // parameter-35 write to the first state-one unit that yields exactly one
+    // valid known serial during the bounded observation window.
+    assert_eq!(class_count(RoutingClass::Physical), 32);
     assert_eq!(class_count(RoutingClass::LocalDatabase), 36);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 363);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 362);
     assert_eq!(class_count(RoutingClass::Obsolete400), 1);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here

@@ -121,6 +121,20 @@ class SelectedSerialTests(unittest.TestCase):
                 path.write_text(text)
                 with self.assertRaises(ValueError):SelectedSerialPlan.load(path)
 
+    def test_plan_json_has_shared_depth_utf8_and_unicode_bounds(self):
+        value = 0
+        for _ in range(implementation.MAX_JSON_DEPTH): value = [value]
+        self.assertTrue(implementation._json(value).startswith('['))
+        with self.assertRaisesRegex(ValueError, 'nesting'):
+            implementation._json([value])
+        with self.assertRaisesRegex(ValueError, 'Unicode'):
+            implementation._json({'value': '\ud800'})
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'utf16.json'
+            path.write_bytes('{"format":1}'.encode('utf-16'))
+            with self.assertRaisesRegex(ValueError, 'UTF-8'):
+                SelectedSerialPlan.load(path)
+
     def test_options07_and_late_changed_local_identity_reject_before_co(self):
         sim=fixture(pci_options=b'\x07')
         with sim.running() as endpoint:
@@ -369,6 +383,17 @@ class SelectedSerialTests(unittest.TestCase):
             path.unlink();target=Path(tmp)/'target';target.write_text('KEEP');path.symlink_to(target)
             with self.assertRaises(OSError):journal.write({'value':3})
             self.assertEqual(target.read_text(),'KEEP')
+
+    def test_journal_size_bound_includes_the_trailing_newline(self):
+        with tempfile.TemporaryDirectory() as tmp, \
+                patch('cbus_toolkit.pci_selected_serial.MAX_JOURNAL_BYTES',16):
+            accepted=Path(tmp)/'accepted.json'
+            _Journal(accepted).write('x'*13)  # quotes + 13 bytes + newline
+            self.assertEqual(len(accepted.read_bytes()),16)
+            rejected=Path(tmp)/'rejected.json'
+            with self.assertRaisesRegex(ValueError,'size bound'):
+                _Journal(rejected).write('x'*14)
+            self.assertFalse(rejected.exists())
 
     def test_late_final_journal_sync_is_uncertain_without_losing_after_inventory(self):
         sim=fixture()

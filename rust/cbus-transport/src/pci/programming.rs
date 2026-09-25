@@ -666,6 +666,11 @@ impl PciClient {
                             }
                             return Err(Error::other("unit rejected programming selector"));
                         }
+                        Cal::Nak { parameter: p, data }
+                            if p == parameter && ack.is_some() && data.first().copied() == ack =>
+                        {
+                            return Err(Error::other("unit rejected programming selector"));
+                        }
                         Cal::Reply { parameter: p, data } if p == parameter && ack.is_none() => {
                             if count == 0 {
                                 return Ok(data);
@@ -1474,6 +1479,73 @@ impl PciClient {
     ) -> Result<()> {
         self.store_parameter_verified_inner(unit, parameter, data, false)
             .await
+    }
+
+    /// Store the native C-Gate project identity at parameter 35 and verify it.
+    ///
+    /// Unlike ordinary tagged STORE operations, C-Gate fixes the transaction
+    /// tag/operation byte to `0x46` for `NET SET_PROJECT_IDENTIFY`. Preserve
+    /// that exact wire contract and require the matching unit ACK before a
+    /// direct six-byte RECALL proves the value that remains on the unit.
+    pub async fn set_project_identity_verified(&self, unit: u8, encoded: &[u8; 6]) -> Result<()> {
+        const PARAMETER: u8 = 35;
+        const TAG: u8 = 0x46;
+
+        let _lane = self.programming_lane.lock().await;
+        if self.programming_fault.load(Ordering::Acquire) {
+            return Err(Error::other(
+                "programming stream needs reconnect after an incomplete transaction",
+            ));
+        }
+        let mut transaction = Transaction {
+            fault: &self.programming_fault,
+            complete: false,
+        };
+        let mut tagged = Vec::with_capacity(encoded.len() + 1);
+        tagged.push(TAG);
+        tagged.extend_from_slice(encoded);
+        if let Err(error) = self
+            .programming_exchange(
+                unit,
+                Cal::Write {
+                    parameter: PARAMETER,
+                    data: tagged,
+                },
+                PARAMETER,
+                0,
+                Some(TAG),
+                ProgrammingRoute::DirectChecksummed,
+            )
+            .await
+        {
+            if error
+                .to_string()
+                .contains("unit rejected programming selector")
+            {
+                transaction.complete = true;
+            }
+            return Err(error);
+        }
+        let actual = self
+            .programming_exchange(
+                unit,
+                Cal::Recall {
+                    param: PARAMETER,
+                    count: encoded.len() as u8,
+                },
+                PARAMETER,
+                encoded.len(),
+                None,
+                ProgrammingRoute::DirectChecksummed,
+            )
+            .await?;
+        if actual != encoded {
+            return Err(Error::other(
+                "project identity readback did not match STORE",
+            ));
+        }
+        transaction.complete = true;
+        Ok(())
     }
 
     /// Unlock, store and verify one lock-protected standard CAL parameter.
@@ -2606,6 +2678,52 @@ mod tests {
                 .unwrap_err()
                 .kind(),
             ErrorKind::InvalidInput
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn project_identity_store_uses_native_fixed_tag_and_verifies_readback() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let encoded = [0xce, 0x4c, 0xb3, 0x79, 0xe7, 0x9e];
+        let write =
+            tokio::spawn(async move { worker.set_project_identity_verified(6, &encoded).await });
+        assert_eq!(line(&mut remote).await, b"\\460600A82346CE4CB379E79ED8\r");
+        reply(&mut remote, 6, &[0x32, 0x23, 0x46]).await;
+        assert_eq!(line(&mut remote).await, b"\\4606001A230671\r");
+        reply(
+            &mut remote,
+            6,
+            &[0x87, 0x23, 0xce, 0x4c, 0xb3, 0x79, 0xe7, 0x9e],
+        )
+        .await;
+        write.await.unwrap().unwrap();
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn project_identity_store_matching_nak_fails_immediately_without_recall() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let encoded = [0xce, 0x4c, 0xb3, 0x79, 0xe7, 0x9e];
+        let write =
+            tokio::spawn(async move { worker.set_project_identity_verified(6, &encoded).await });
+        assert_eq!(line(&mut remote).await, b"\\460600A82346CE4CB379E79ED8\r");
+        reply(&mut remote, 6, &[0x3b, 0x23, 0x46]).await;
+        assert!(write
+            .await
+            .unwrap()
+            .unwrap_err()
+            .to_string()
+            .contains("unit rejected programming selector"));
+        assert!(
+            tokio::time::timeout(Duration::from_millis(25), line(&mut remote))
+                .await
+                .is_err(),
+            "a definitive NAK must not start RECALL"
+        );
+        assert!(
+            !pci.programming_fault.load(Ordering::Acquire),
+            "a definitive NAK must leave the programming lane usable"
         );
     }
 

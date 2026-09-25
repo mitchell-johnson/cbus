@@ -207,6 +207,18 @@ derived expectations, then reparse complete MMI/serial/options raw evidence.
 Files are not authenticated history. Apply always repeats live observations;
 recovery only compares a newly observed map with the supplied validated plan.
 
+The Rust `cbus-transport` crate contains two interoperability primitives for
+this workflow. `plan::validate_plan_document` validates the same version-one
+plan envelope, raw captures, derived expectations, strict UTF-8/duplicate-key
+rules and size/depth limits without performing I/O. `journal::RecoveryJournal`
+provides exclusive creation, checked atomic replacement, bounded guarded reads
+and durable-write evidence using the Python journal's canonical JSON form.
+Atomic replacement and no-follow race protection are currently verified on
+macOS and Linux; other hosts do not have the same `O_NOFOLLOW` guarantee.
+These are reusable validation and storage components only: they do not
+authorize a bus mutation, run apply/verify, establish endpoint ownership or
+replace the coordinator's fresh physical observations.
+
 Matching bookends are non-atomic: a concurrent identity swap, identical physical
 serials, delayed traffic and analogue bus collisions cannot be excluded. An
 unchanged observation does not guarantee against delayed movement. Fixture

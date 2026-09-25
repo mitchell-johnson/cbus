@@ -90,6 +90,16 @@ already-modeled address before bus I/O, runs native duplicate challenges
 new identities and MMI state-3 duplicate addresses. Results update the volatile
 physical cache only and retain native progress/result codes (`120`, `303`,
 `408`); they do not create persistent database units.
+`NET SET_PROJECT_IDENTIFY //PROJECT/NETWORK NAME` is also hardware-backed.
+It packs the uppercased 1–8 character native six-bit identity, selects the
+first MMI-state-one unit with valid IDENTIFY1 data and exactly one valid known
+IDENTIFY4 serial reply over the complete quiet window, stores parameter 35,
+and requires exact RECALL readback. A failed or uncertain write invalidates an
+older cached `ProjectName`. The typed CLI mK-quotes spaces, quotes and
+backslashes; the cached `ProjectName` is decoded from verified bytes so the
+native `?`/space alias stays canonical. It updates only the volatile physical
+snapshot and does not rename or persist a project. This is distinct from the
+unsupported topology-discovery command `NET PROJECT_IDENTIFY`.
 Query `CMQTT CAPABILITIES`; `unit_readdress: true` denotes the readdress path and
 `physical_pp_save_cbus3_nvm: true` denotes the NVM commit path,
 `dynamic_labels: true` denotes the label sender,
@@ -107,6 +117,7 @@ and `do_methods: ["factorydefault", "lighting", "sync"]` denotes the physical ob
 `network_clocks: true` denotes IDENTIFY16 inspection plus schema-backed target
 count and gateway recovery,
 `network_syncnew: true` denotes the direct-network five-pass discovery backend,
+`network_set_project_identify: true` denotes the verified parameter-35 write,
 while `full_cgate_compatibility` remains false until every remaining backend and
 acceptance requirement is complete.
 

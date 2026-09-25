@@ -6,6 +6,7 @@ import re
 import time
 
 from .native import _address, _project, _token
+from .programming import quote_value
 
 
 def _units(addresses):
@@ -15,6 +16,26 @@ def _units(addresses):
     if not addresses:
         raise ValueError("Unit selection cannot be empty")
     return ",".join(_address(address) for address in addresses)
+
+
+def _project_identity(value):
+    """Validate the native eight-character project-identify repertoire."""
+    if value is None or isinstance(value, bool):
+        raise ValueError("project identity is required")
+    value = str(value)
+    try:
+        input_units = len(value.encode("utf-16-le")) // 2
+    except UnicodeEncodeError as error:
+        raise ValueError("Project identity must be valid Unicode text") from error
+    upper = value.upper()
+    upper_units = len(upper.encode("utf-16-le")) // 2
+    if (not value or input_units > 8 or upper_units > 8
+            or any(character != " " and not 33 <= ord(character) <= 96
+                   for character in upper)):
+        raise ValueError("Project identity must be 1..8 characters in the native six-bit range")
+    if any(character in ' "\\' for character in value):
+        return quote_value(value)
+    return value
 
 
 class NativeNetworks:
@@ -114,7 +135,9 @@ class NativeNetworks:
                                    ("" if fix_references else " nofixrefs"))
 
     def set_project_identity(self, address, project):
-        return self.client.command(f"NET SET_PROJECT_IDENTIFY {_token(address)} {_project(project)}")
+        return self.client.command(
+            f"NET SET_PROJECT_IDENTIFY {_token(address)} {_project_identity(project)}"
+        )
 
     def calculate(self, address):
         address = _token(address)

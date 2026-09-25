@@ -6,7 +6,9 @@ pub mod conn;
 pub mod flow;
 pub mod framing;
 pub mod inventory;
+pub mod journal;
 pub mod pci;
+pub mod plan;
 pub mod serial_address;
 
 pub use conn::Endpoint;

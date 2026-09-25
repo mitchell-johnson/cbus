@@ -152,9 +152,10 @@ native fallback and Local SAL investigation.
 
 No selected-serial transport, retry policy, transaction, Local SAL change,
 physical inventory guard, rollback, or reboot persistence is implemented by
-this module. Native MATCHDB fallback is not invoked. Any future physical
-workflow must establish independent before/after identity and address evidence
-and explicitly handle uncertain outcomes.
+this module. Native MATCHDB fallback is not invoked. Any physical workflow using
+this codec must establish independent before/after identity and address evidence
+and explicitly handle uncertain outcomes. The bounded implementation is
+documented in [Selected-serial commissioning](pci-selected-serial.md).
 
 ```sh
 PYTHONPATH=src .venv/bin/python -m unittest tests.test_pci_serial_address

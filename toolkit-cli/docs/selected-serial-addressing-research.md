@@ -1,10 +1,16 @@
-# Selected-serial addressing: protocol research and proposed API
+# Selected-serial addressing: protocol research and historical API proposal
+
+The protocol findings remain current. The proposed coordinator sections are
+historical: the bounded implementation is now documented in
+[Selected-serial commissioning with independent observations](pci-selected-serial.md).
+Future-tense statements below record the design before that implementation and
+do not describe current availability.
 
 The CAL serial-address broadcast can select one serial and an explicit target.
 The native `NET UNRAVELUNIT` command cannot constrain an operation to that pair:
 it selects and processes serials itself, and can fall back to a different free
-address. No production selected-serial mutation API is enabled by this research.
-The production duplicate simulator remains read-only.
+address. This research did not itself enable a production selected-serial
+mutation API. The production duplicate simulator remains read-only.
 
 ## Exact native paths
 
@@ -93,7 +99,7 @@ persistence**: real firmware could persist the address inside `co`. No
 power-cycle, persistent duplicate-node loader, or firmware-level persistence
 behavior has been verified.
 
-## Proposed separate collector and transport API
+## Historical proposal for a separate collector and transport API
 
 The first implementation should add read-only collection before enabling the
 write transaction. Existing `PCIClient.identify()` stops at its first matching
@@ -150,22 +156,23 @@ confirmation, pre-confirmation/late frames, repeated-frame saturation,
 checksum failures, partial CALs and disconnects. Late traffic must not be
 silently attributed to the next request.
 
-The future write plan must bind the exact selected known serial at255, all
+The proposed write plan required the exact selected known serial at255, all
 other discovered serials/addresses, a separately observed empty destination,
 the supported homogeneous source profile, the local interface identity and
-settings, and explicit transport ownership. C-Gate and other software must
-not share that PCI stream. An advisory process lock alone cannot establish
+settings, and explicit transport ownership. C-Gate and other software could
+not share that PCI stream. An advisory process lock alone could not establish
 exclusive physical interface ownership.
 
-A later `apply` should refresh and compare that full plan, preserve or
-explicitly manage native-required Local SAL settings, send exactly one `co`
-for the selected serial/target, and record the acknowledgement as evidence
-only. Independent discovery must then show the selected serial solely at the
-target, the unselected duplicate still at255, unchanged identities elsewhere,
-and the original local interface settings. Any lost/contradictory reply,
-incomplete discovery or settings-restoration failure produces an uncertain
-result and a recoverable evidence document, without replay or automatic
-fallback. `verify` only observes through a newly valid exclusive transport.
+The proposed `apply` operation was intended to refresh and compare that full
+plan, preserve or explicitly manage native-required Local SAL settings, send
+exactly one `co` for the selected serial/target, and record the acknowledgement
+as evidence only. Independent discovery then had to show the selected serial
+solely at the target, the unselected duplicate still at255, unchanged
+identities elsewhere, and the original local interface settings. Any
+lost/contradictory reply, incomplete discovery or settings-restoration failure
+was to produce an uncertain result and a recoverable evidence document, without
+replay or automatic fallback. `verify` was read-only through a newly valid
+exclusive transport.
 
 The collector timing model, interface-ownership lifecycle, Local SAL recovery,
 complete before/after comparison, and durable per-serial simulator topology

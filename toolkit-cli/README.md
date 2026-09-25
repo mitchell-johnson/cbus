@@ -446,6 +446,7 @@ cbus-toolkit cgate network open //TEST/254
 cbus-toolkit cgate --timeout 60 network sync //TEST/254 --fast
 cbus-toolkit cgate --timeout 120 network sync-new //TEST/254
 cbus-toolkit cgate --timeout 120 network sync-new //TEST/254 --unit 6
+cbus-toolkit cgate network set-project //TEST/254 TEST
 cbus-toolkit cgate --timeout 120 network unravel //TEST/254 --unit 255 --match-database
 cbus-toolkit cgate network tree //TEST/254 --details
 cbus-toolkit cgate network close //TEST/254
@@ -465,6 +466,15 @@ form rejects an address already in the model, runs the native three duplicate
 challenges, and reads the new unit identity. The general form reports every new
 or MMI-duplicate address. Results populate cmqttd's volatile physical cache;
 add or update project database units separately.
+Against cmqttd, `network set-project` performs the native physical
+`NET SET_PROJECT_IDENTIFY` operation. The identity is uppercased, packed into
+the six-byte native value, written to parameter 35 on the first MMI-state-one
+unit with valid type data and exactly one valid known serial reply, and read
+back before success. It updates cmqttd's volatile physical
+snapshot only; it does not select, rename, create, or save a project. The name
+must contain 1–8 UTF-16 code units whose uppercase form fits the native
+six-bit repertoire and eight-unit field. Spaces, quotes, and backslashes are
+mK-quoted automatically.
 Reopening an existing model can defer its next scan. Use `network sync --fast`
 with the network address to request a fresh scan; waiting alone does not start it.
 

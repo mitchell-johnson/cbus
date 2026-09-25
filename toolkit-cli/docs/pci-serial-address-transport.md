@@ -124,7 +124,8 @@ after and after loading a new fixture instance. These inventories are test
 orchestration, not calls made by the transport. Short explicit synthetic timing
 is recorded. This proves fixture behavior only, not real firmware persistence.
 
-The full movement coordinator remains
-[proposed](selected-serial-coordinator-proposal.md). Its independent full
-preconditions, recovery format, exact after-inventory checks and broader device
-evidence are still separate work.
+The bounded movement coordinator is implemented with independent preconditions,
+a durable recovery format, and exact after-inventory checks; see
+[Selected-serial commissioning with independent observations](pci-selected-serial.md).
+The earlier [proposal](selected-serial-coordinator-proposal.md) is retained as
+design history. Broader device and firmware evidence remains separate work.

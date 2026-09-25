@@ -44,19 +44,23 @@ physical clock traffic and network learning—produce deterministic modeled
 state and native-shaped responses without claiming a bus-side effect. Server
 files, access entries, database snapshots and shutdown confirmation are also
 process-local; `SHUTDOWN` confirms the modeled operation but deliberately does
-not kill the test server. Use the vendor service or a future Rust physical
-backend when physical effects are the acceptance criterion.
+not kill the test server. The separate Rust service embedded in `cmqttd`
+implements the physical subset in the
+[cmqttd replacement ledger](../../docs/cmqttd-cgate.md); commands outside that
+ledger still require native C-Gate or further implementation when physical
+effects are the acceptance criterion.
 
 Current verification is:
 
-- **58 Rust tests**: 42 library, 9 server integration and 7 TCP integration;
+- Rust unit, server-integration, TCP, and system tests for the modeled and
+  hardware-backed paths;
 - exhaustive dispatch checks for all 224 manual headings and all 268
   bytecode registrations;
 - stateful tests for application/config/clock/lock commands, legacy lighting,
   named scenes, database snapshots, hidden files/SHA-256, deploy queues and
   DALI registration families;
-- **13 Python interoperability tests** using the production `CGateClient` and
-  typed Toolkit wrappers against a freshly built `cgate-mock`; and
+- Python interoperability tests using the production `CGateClient` and typed
+  Toolkit wrappers against freshly built Rust services; and
 - warning-free `cargo clippy -p cbus-cgate --all-targets -- -D warnings` plus
   `rustfmt --check`.
 

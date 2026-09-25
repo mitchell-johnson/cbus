@@ -106,8 +106,10 @@ The protocol carries no per-scan identity in bare MMI blocks. A fresh connection
 does not prove the physical bus contains no late traffic from another actor.
 The supplied local address is checked for presence, not independently bound to
 a hardware serial. Complete coverage is evidence from this response, not an
-atomic inventory of every physical device. A full multi-address serial scan and
-selected-serial commissioning remain separate work.
+atomic inventory of every physical device. The
+[full multi-address serial inventory](pci-full-inventory-proposal.md) and
+[selected-serial commissioning](pci-selected-serial.md) are separate workflows
+with their own stronger guards.
 
 ## Independent evidence
 

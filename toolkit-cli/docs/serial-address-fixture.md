@@ -96,5 +96,7 @@ CBUS_NATIVE_DUPLICATE_ADDRESS_FIXTURE_REPORT=docs/native-duplicate-address-fixtu
 
 The native test uses a unique disposable project and the loopback-owned
 synthetic fixture. It never opens a user network or sends C-Gate an address
-mutation command. A production selected-serial movement coordinator is still
-only [proposed](selected-serial-coordinator-proposal.md).
+mutation command. The bounded production coordinator is documented in
+[Selected-serial commissioning with independent observations](pci-selected-serial.md);
+the earlier [coordinator proposal](selected-serial-coordinator-proposal.md) is
+retained as historical design rationale.

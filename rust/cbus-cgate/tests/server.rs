@@ -793,10 +793,10 @@ fn network_rename_chain_moves_units_and_guards() {
     assert!(events.iter().any(|e| e == "#e# net renamed 253 251"));
 }
 
-/// Mock determinism for NET SET_PROJECT_IDENTIFY: network checked before
-/// project, malformed shapes fail closed, unknown projects 404.
+/// Native NET SET_PROJECT_IDENTIFY grammar: one network and one encodable
+/// 1..8-character value. The identify text is not a repository lookup.
 #[test]
-fn net_set_project_identify_order_and_guards() {
+fn net_set_project_identify_native_grammar_and_guards() {
     let mut s = Server::new(AccessLevel::Program);
     assert_eq!(s.handle("[1] PROJECT NEW TEST").status, 200);
     assert_eq!(
@@ -807,42 +807,86 @@ fn net_set_project_identify_order_and_guards() {
     assert_eq!(s.handle("[3] PROJECT USE TEST").status, 200);
     let ok = s.handle("[4] NET SET_PROJECT_IDENTIFY //TEST/254 TEST");
     assert_eq!(ok.status, 200);
-    assert_eq!(ok.final_text, "200 OK");
-    // Unknown project fails after the network resolves; unknown network
-    // fails first — the both-bad case proves the order via the message.
-    let noproject = s.handle("[5] NET SET_PROJECT_IDENTIFY //TEST/254 NOPE");
-    assert_eq!(noproject.status, 404);
-    assert!(noproject.final_text.contains("Project not found"));
-    // Unknown network fails before any project lookup.
+    assert_eq!(ok.final_text, "200 OK.");
+    assert_eq!(
+        s.handle("[4a] NET SET_PROJECT_IDENTIFY //TEST/254 TEST   \t")
+            .status,
+        200,
+        "native tokenization ignores trailing delimiter whitespace"
+    );
+    assert_eq!(
+        s.handle("[4b] NET SET_PROJECT_IDENTIFY //TEST/254 \"A B\" \t")
+            .status,
+        200,
+        "trailing whitespace must not change a quoted identity"
+    );
+    // The value is an eight-character unit field, not a loaded-project
+    // reference. A different valid value is accepted.
+    assert_eq!(
+        s.handle("[5] NET SET_PROJECT_IDENTIFY //TEST/254 NOPE")
+            .status,
+        200
+    );
+    assert_eq!(
+        s.handle(r#"[5a] NET SET_PROJECT_IDENTIFY //TEST/254 "A\ B\"\\""#)
+            .status,
+        200,
+        "mK quoting must retain spaces, quotes and backslashes"
+    );
+    // The network must still resolve in the selected project.
     let nonet = s.handle("[6] NET SET_PROJECT_IDENTIFY //TEST/250 TEST");
-    assert_eq!(nonet.status, 404);
+    assert_eq!(nonet.status, 401);
     assert!(nonet.final_text.contains("Network not found"));
     let bothbad = s.handle("[6b] NET SET_PROJECT_IDENTIFY //TEST/250 NOPE");
-    assert_eq!(bothbad.status, 404);
+    assert_eq!(bothbad.status, 401);
     assert!(bothbad.final_text.contains("Network not found"));
+    let bad_network_and_text = s.handle("[6bb] NET SET_PROJECT_IDENTIFY //TEST/250 {");
+    assert_eq!(bad_network_and_text.status, 401);
+    assert!(bad_network_and_text
+        .final_text
+        .contains("Network not found"));
     // Selected-away projects are refused.
     assert_eq!(s.handle("[6c] PROJECT NEW T2").status, 200);
     assert_eq!(s.handle("[6d] PROJECT USE T2").status, 200);
     let away = s.handle("[6e] NET SET_PROJECT_IDENTIFY //TEST/254 TEST");
-    assert_eq!(away.status, 404);
-    assert!(away.final_text.contains("Project not selected"));
+    assert_eq!(away.status, 401);
+    assert!(away.final_text.contains("Network not found"));
     assert_eq!(s.handle("[6f] PROJECT USE TEST").status, 200);
-    // Malformed shapes and names fail closed.
+    // Malformed shapes and out-of-range lengths are parser errors.
     for (line, fragment) in [
         ("[7] NET SET_PROJECT_IDENTIFY", "address and project"),
         (
-            "[8] NET SET_PROJECT_IDENTIFY //TEST/254 TEST extra",
-            "address and project",
+            "[7b] NET SET_PROJECT_IDENTIFY //TEST/254",
+            "Missing parameter",
         ),
         (
-            "[9] NET SET_PROJECT_IDENTIFY //TEST/254 #",
-            "address and project",
+            "[8] NET SET_PROJECT_IDENTIFY //TEST/254 TEST extra",
+            "Too many parameters",
+        ),
+        (
+            "[9b] NET SET_PROJECT_IDENTIFY //TEST/254 TOOLONG99",
+            "too long",
         ),
     ] {
         let response = s.handle(line);
         assert_eq!(response.status, 400, "{line}");
         assert!(response.final_text.contains(fragment), "{line}");
     }
+    // Native kS reports a six-bit encoding failure as operation status 408.
+    let bad_character = s.handle("[9] NET SET_PROJECT_IDENTIFY //TEST/254 {");
+    assert_eq!(bad_character.status, 408);
+    assert_eq!(
+        bad_character.final_text,
+        "408 Operation failed: Character out of sixbit range"
+    );
+    // Native checks Java character length rather than UTF-8 byte length, so
+    // five non-ASCII characters reach the six-bit range check (408, not 400).
+    let unicode_character = s.handle("[9c] NET SET_PROJECT_IDENTIFY //TEST/254 ééééé");
+    assert_eq!(unicode_character.status, 408);
+    assert_eq!(
+        unicode_character.final_text,
+        "408 Operation failed: Character out of sixbit range"
+    );
     // The command is a guard-only ack: setup lifecycle events aside, it
     // emits no identify-related events of its own.
     assert!(s

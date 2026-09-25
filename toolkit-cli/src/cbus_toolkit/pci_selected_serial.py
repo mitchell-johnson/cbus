@@ -28,12 +28,38 @@ from .pci_serials import PCISerialCollector
 
 MAX_PLAN_BYTES = 4 * 1024 * 1024
 MAX_JOURNAL_BYTES = 16 * 1024 * 1024
+MAX_JSON_DEPTH = 127
+
+
+def _validate_json_tree(value):
+    """Bound canonical evidence nesting and reject unrepresentable text."""
+    stack = [(value, 0)]
+    while stack:
+        current, depth = stack.pop()
+        if isinstance(current, str):
+            if any(0xD800 <= ord(character) <= 0xDFFF for character in current):
+                raise ValueError('Recovery evidence contains invalid Unicode text')
+        elif type(current) is dict:
+            depth += 1
+            if depth > MAX_JSON_DEPTH:
+                raise ValueError('Recovery evidence exceeds its nesting bound')
+            for key, child in current.items():
+                if isinstance(key, str) and any(0xD800 <= ord(character) <= 0xDFFF
+                                                for character in key):
+                    raise ValueError('Recovery evidence contains invalid Unicode text')
+                stack.append((child, depth))
+        elif isinstance(current, (list, tuple)):
+            depth += 1
+            if depth > MAX_JSON_DEPTH:
+                raise ValueError('Recovery evidence exceeds its nesting bound')
+            stack.extend((child, depth) for child in current)
 
 
 def _json(value, limit=MAX_PLAN_BYTES):
     try: encoded = json.dumps(value, sort_keys=True, separators=(',', ':'), allow_nan=False)
     except (ValueError, TypeError, RecursionError) as error:
         raise ValueError('Recovery evidence must be finite JSON data') from error
+    _validate_json_tree(value)
     if len(encoded.encode('utf-8')) > limit: raise ValueError('Recovery evidence exceeds its size bound')
     return encoded
 
@@ -49,7 +75,9 @@ def _unique_pairs(pairs):
 def _load(path, limit):
     with Path(path).open('rb') as handle: raw = handle.read(limit + 1)
     if len(raw) > limit: raise ValueError('Recovery file exceeds its size bound')
-    return json.loads(raw, object_pairs_hook=_unique_pairs,
+    try: text = raw.decode('utf-8')
+    except UnicodeDecodeError as error: raise ValueError('Recovery evidence must be UTF-8 JSON') from error
+    return json.loads(text, object_pairs_hook=_unique_pairs,
                       parse_constant=lambda value: (_ for _ in ()).throw(ValueError('Nonfinite JSON value')))
 
 
@@ -338,7 +366,9 @@ class _Journal:
         else: handle.close()
 
     def write(self, value):
-        raw = (_json(value,MAX_JOURNAL_BYTES)+'\n').encode('utf-8')
+        # Bound the complete on-disk record, including its trailing newline,
+        # so every successful write can be read by this journal's own limit.
+        raw = (_json(value,MAX_JOURNAL_BYTES-1)+'\n').encode('utf-8')
         initial = self.expected is None
         state = {'initial_creation':initial,'file_synced':False,'replacement_attempted':False,
                  'replacement_completed':False,'directory_synced':False,'disk_matches_proposed':None}

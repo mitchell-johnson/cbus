@@ -425,6 +425,76 @@ fn dequote_value(raw: &str) -> String {
     }
     out
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ProjectIdentityArgumentError {
+    Missing,
+    TooMany,
+    Malformed,
+}
+
+/// Parse the one mK string argument following `NET SET_PROJECT_IDENTIFY`.
+///
+/// C-Gate's quoted form escapes spaces, quotes and backslashes. The generic
+/// command dispatcher intentionally keeps its simple whitespace view, so this
+/// command reads the raw tail to retain the full native six-bit repertoire.
+fn project_identity_argument(body: &str) -> Result<String, ProjectIdentityArgumentError> {
+    let bytes = body.as_bytes();
+    let mut offset = 0;
+    for _ in 0..3 {
+        while offset < bytes.len() && bytes[offset].is_ascii_whitespace() {
+            offset += 1;
+        }
+        if offset == bytes.len() {
+            return Err(ProjectIdentityArgumentError::Missing);
+        }
+        while offset < bytes.len() && !bytes[offset].is_ascii_whitespace() {
+            offset += 1;
+        }
+    }
+    while offset < bytes.len() && bytes[offset].is_ascii_whitespace() {
+        offset += 1;
+    }
+    if offset == bytes.len() {
+        return Err(ProjectIdentityArgumentError::Missing);
+    }
+    // Native tokenization ignores trailing delimiter whitespace after the
+    // single string argument. Trim only the tail; spaces inside a quoted
+    // identity remain part of the value.
+    let raw = body[offset..].trim_end();
+    if !raw.starts_with('"') {
+        return if raw.chars().any(char::is_whitespace) {
+            Err(ProjectIdentityArgumentError::TooMany)
+        } else {
+            Ok(raw.to_string())
+        };
+    }
+
+    let mut escaped = false;
+    let mut closing = None;
+    for (index, character) in raw.char_indices().skip(1) {
+        if escaped {
+            escaped = false;
+        } else if character == '\\' {
+            escaped = true;
+        } else if character == '"' {
+            closing = Some(index);
+            break;
+        }
+    }
+    let Some(closing) = closing else {
+        return Err(ProjectIdentityArgumentError::Malformed);
+    };
+    if !raw[closing + 1..].trim().is_empty() {
+        return Err(ProjectIdentityArgumentError::TooMany);
+    }
+    let value = dequote_value(&raw[..=closing]);
+    if value.is_empty() {
+        Err(ProjectIdentityArgumentError::Missing)
+    } else {
+        Ok(value)
+    }
+}
 /// Status codes that may prefix intermediate reply lines in native
 /// multi-status envelopes (calculator `134`, cached-property `300`,
 /// parameter `315`, database `342`/`233`, snippet/JSON `343`/`345`/`346`/`347`,
@@ -467,6 +537,13 @@ pub struct Unit {
     pub unit_type: String,
     /// Decimal-dot serial, e.g. `101136.1558`.
     pub serial: String,
+    /// Every distinct serial observed at this address during the current
+    /// process's last `NET SYNC`, sorted for determinism. Empty unless the
+    /// sync saw a genuine multiplicity conflict (scalar `serial` stays `""`
+    /// there, preserving `SerialNumber` getter/`SET` semantics). This is live
+    /// physical evidence and is deliberately excluded from database state.
+    #[serde(skip)]
+    pub serial_alternates: Vec<String>,
     /// Firmware text, e.g. `2.5.00`.
     pub firmware: String,
     /// Database field overrides via `DBSETSAFE` (e.g. `UnitName`).
@@ -483,6 +560,7 @@ impl Unit {
             address,
             unit_type: String::new(),
             serial: String::new(),
+            serial_alternates: Vec::new(),
             firmware: String::new(),
             fields,
             oid: fresh_oid(),
@@ -834,7 +912,7 @@ impl Server {
             _ if starts_with(&upper, "NET LIST") => self.net_list(&cmd.tag, &words),
             _ if starts_with(&upper, "NET RENAME") => self.net_rename(&cmd.tag, &words),
             _ if starts_with(&upper, "NET SET_PROJECT_IDENTIFY") => {
-                self.net_set_identity(&cmd.tag, &words)
+                self.net_set_identity(&cmd.tag, &words, &cmd.body)
             }
             _ if starts_with(&upper, "NET STATE") => self.net_state(&cmd.tag, &words),
             _ if starts_with(&upper, "TREEXMLDETAIL")
@@ -2397,7 +2475,12 @@ impl Server {
             match key.as_str() {
                 "UnitType" | "Type" => unit.unit_type = value.clone(),
                 "FirmwareVersion" | "Version" => unit.firmware = value.clone(),
-                "SerialNumber" => unit.serial = value.clone(),
+                // Same SYNC-ownership rule as DBSETSAFE: an explicit persist
+                // supersedes any stored multiplicity evidence.
+                "SerialNumber" => {
+                    unit.serial = value.clone();
+                    unit.serial_alternates.clear();
+                }
                 _ => {}
             }
             self.db_fields
@@ -3426,7 +3509,14 @@ impl Server {
                         match field.as_str() {
                             "UnitType" | "Type" => unit.unit_type = value.to_string(),
                             "FirmwareVersion" | "Version" => unit.firmware = value.to_string(),
-                            "SerialNumber" => unit.serial = value.to_string(),
+                            // Explicit scalar writes own the record: a manual
+                            // SerialNumber supersedes any SYNC-observed
+                            // multiplicity at this address, so the stale SET
+                            // is dropped (next SYNC repopulates if still live).
+                            "SerialNumber" => {
+                                unit.serial = value.to_string();
+                                unit.serial_alternates.clear();
+                            }
                             _ => {}
                         }
                     }
@@ -4022,8 +4112,8 @@ impl Server {
     }
 
     /// Native `NET SET_PROJECT_IDENTIFY address project`.
-    fn net_set_identity(&mut self, tag: &str, words: &[&str]) -> Response {
-        if words.len() != 4 || !valid_name(words[3]) {
+    fn net_set_identity(&mut self, tag: &str, words: &[&str], body: &str) -> Response {
+        if words.len() < 3 {
             return err(
                 tag,
                 status::BAD_REQUEST,
@@ -4032,12 +4122,47 @@ impl Server {
         }
         match self.require_network(tag, words[2]) {
             Ok(_) => {}
-            Err(r) => return r,
+            Err(_) => return err(tag, status::ABSENT, "401 Network not found"),
         }
-        if !self.projects.contains_key(words[3]) {
-            return err(tag, status::NOT_FOUND, "404 Project not found");
+        let identity = match project_identity_argument(body) {
+            Ok(identity) => identity,
+            Err(ProjectIdentityArgumentError::Missing) => {
+                return err(
+                    tag,
+                    status::BAD_REQUEST,
+                    "400 Syntax Error: Missing parameter : <project-name>",
+                );
+            }
+            Err(ProjectIdentityArgumentError::TooMany) => {
+                return err(
+                    tag,
+                    status::BAD_REQUEST,
+                    "400 Syntax Error: Too many parameters",
+                );
+            }
+            Err(ProjectIdentityArgumentError::Malformed) => {
+                return err(
+                    tag,
+                    status::BAD_REQUEST,
+                    "400 Syntax Error: Invalid string parameter : <project-name>",
+                );
+            }
+        };
+        if identity.encode_utf16().count() > 8 {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 Syntax Error: String parameter is too long : <project-name>",
+            );
         }
-        ok(tag, vec![], "200 OK")
+        if let Err(error) = cbus_protocol::project_identity::encode_project_identity(&identity) {
+            return err(
+                tag,
+                status::CONFLICT_STATE,
+                &format!("408 Operation failed: {error}"),
+            );
+        }
+        ok(tag, vec![], "200 OK.")
     }
 
     /// Native `CALCULATOR TEST //PROJECT/NET`.
@@ -4226,6 +4351,16 @@ pub fn valid_lighting_level(level: i64) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn live_serial_alternates_do_not_change_database_json() {
+        let mut unit = Unit::blank(5, "Unit");
+        unit.serial_alternates = vec!["101136.1558".to_string(), "101136.1559".to_string()];
+        let json = serde_json::to_value(&unit).unwrap();
+        assert!(json.get("serial_alternates").is_none());
+        let restored: Unit = serde_json::from_value(json).unwrap();
+        assert!(restored.serial_alternates.is_empty());
+    }
 
     #[test]
     fn greeting_prefix() {

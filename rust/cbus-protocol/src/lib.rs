@@ -9,6 +9,8 @@ pub mod consts;
 pub mod decode;
 pub mod json;
 pub mod packet;
+pub mod pci_observation;
+pub mod project_identity;
 pub mod report;
 pub mod sal;
 pub mod serial_address;
