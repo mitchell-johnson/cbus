@@ -9,6 +9,7 @@ from unittest.mock import patch
 from uuid import uuid4
 
 from cbus_toolkit.pci_inventory import PCIMMICollector
+from tests.test_pci_serial_address_transport import Clock, FakeSocket
 from tests.test_pci_serials import OTHER_UNIT, peer
 from tests.test_simulator_duplicates import fixture
 
@@ -146,15 +147,22 @@ class PCIMMICollectorTests(unittest.TestCase):
         self.assertEqual(result.termination,"unrelated_limit");self.assertFalse(result.complete)
 
     def test_overall_deadline_bounds_late_final_segment(self):
-        def send(connection):
-            connection.sendall(b"g."+FIRST);time.sleep(.07)
-            connection.sendall(MIDDLE);time.sleep(.07);connection.sendall(LAST)
-        with peer(send) as (endpoint,state):
-            result=collector(endpoint,overall_timeout=.12,confirmation_timeout=.1,response_timeout=.1).collect_mmi()
-        # A receive can wake just after the deadline rather than timing out;
-        # both outcomes retain the same bounded incomplete observation.
-        self.assertIn(result.termination,("overall_timeout","late_data"));self.assertFalse(result.complete)
-        self.assertEqual(result.missing_ranges,((176,256),));self.assertEqual(state["extra"],b"")
+        clock=Clock()
+        def arriving(at,payload):
+            def receive():clock.value=at;return payload
+            return receive
+        stream=FakeSocket(clock,chunks=(arriving(100.01,b"g."+FIRST),arriving(100.08,MIDDLE),
+                                        arriving(100.13,LAST)))
+        subject=collector(("127.0.0.1",10001),overall_timeout=.12,
+                          confirmation_timeout=.1,response_timeout=.1)
+        with patch.object(subject,"_make_socket",return_value=stream), \
+                patch("cbus_toolkit.pci_inventory.time.monotonic",side_effect=clock):
+            result=subject.collect_mmi()
+        self.assertEqual(result.termination,"late_data");self.assertFalse(result.complete)
+        self.assertEqual(result.missing_ranges,((176,256),));self.assertEqual(len(result.blocks),2)
+        self.assertEqual(result.received,b"g."+FULL);self.assertTrue(result.connection_closed)
+        timeouts=[call[1] for call in stream.calls if call[0]=="settimeout"]
+        self.assertAlmostEqual(timeouts[-1],.04)
 
     def test_unrelated_traffic_does_not_extend_response_deadline(self):
         def send(connection):
