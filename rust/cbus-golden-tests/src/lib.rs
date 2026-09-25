@@ -13,7 +13,7 @@
 
 use cbus_protocol::common::{cbus_checksum, duration_to_ramp_rate, ramp_rate_to_duration};
 use cbus_protocol::decode::decode_packet;
-use cbus_protocol::json::{packet_from_json, packet_to_json};
+use cbus_protocol::json::{packet_from_json, packet_to_json, JsonObject};
 use cbus_protocol::{Meta, Packet};
 use serde_json::Value;
 use std::collections::HashMap;
@@ -174,10 +174,46 @@ fn check_decode(v: &Value) -> Result<(), String> {
 }
 
 /// encode.jsonl (README §4): build the object from canonical JSON, compare
-/// `encode()` bytes and (for packets) `encode_packet()` ASCII.
+/// `encode()` bytes and (for packets) `encode_packet()` ASCII. Vectors whose
+/// `encoding` is `programming_request` instead exercise the complete captured
+/// OEM programming route, including its checksum and PCI framing.
 fn check_encode(v: &Value) -> Result<(), String> {
     let obj = packet_from_json(v.get("packet").ok_or("vector missing packet")?)
         .map_err(|e| format!("from_json: {e}"))?;
+    if let Some(encoding) = v.get("encoding").and_then(Value::as_str) {
+        if encoding != "programming_request" {
+            return Err(format!("unknown encode vector encoding {encoding}"));
+        }
+        let JsonObject::Cal(cal) = &obj else {
+            return Err("programming_request requires a bare CAL object".to_string());
+        };
+        let got = cbus_protocol::packet::programming_request(need_u8(v, "unit")?, cal)
+            .map_err(|e| format!("programming_request raised {e}"))?;
+        let raw = hex::decode(need_str(v, "expect_encode_hex")?)
+            .map_err(|e| format!("bad expect_encode_hex: {e}"))?;
+        let mut expected = vec![b'\\'];
+        expected.extend(hex::encode_upper(raw).bytes());
+        expected.push(b'\r');
+        if got != expected {
+            return Err(format!(
+                "programming_request {:?} != {:?}",
+                String::from_utf8_lossy(&got),
+                String::from_utf8_lossy(&expected)
+            ));
+        }
+        if let Some(exp) = v.get("expect_encode_packet") {
+            let exp = exp.as_str().ok_or("bad expect_encode_packet")?;
+            let expected: Vec<u8> = exp.chars().map(|c| c as u32 as u8).collect();
+            if got != expected {
+                return Err(format!(
+                    "programming_request {:?} != {:?}",
+                    String::from_utf8_lossy(&got),
+                    exp
+                ));
+            }
+        }
+        return Ok(());
+    }
     let got = hex::encode(obj.encode().map_err(|e| format!("encode raised {e}"))?);
     let expect = need_str(v, "expect_encode_hex")?;
     if got != expect {
