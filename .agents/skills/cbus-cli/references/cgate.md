@@ -13,6 +13,16 @@ cbus-toolkit cgate --host 127.0.0.1 --timeout 120 edlt-labels --network //PROJEC
 cbus-toolkit cgate --host 127.0.0.1 --timeout 30 edlt-labels //PROJECT/254/p/UNIT
 ```
 
+Treat the shared PCI generation as the ownership boundary for volatile C-Gate
+results. Guarded physical commands capture the generation and client before
+I/O, then hold the generation commit guard through their cache mutation,
+invalidation, or success event. If reconnect wins after confirmation but before
+that commit, the command returns 408 and leaves replacement-generation physical,
+level, application, and dynamic-label observations unchanged. This applies to
+lighting and scene invalidation, Trigger/Enable/clock/temperature echoes,
+dynamic-label append and clear, FactoryDefault label invalidation,
+project-identity changes, discovery, and the final UNRAVELUNIT snapshot/events.
+
 Use the configured endpoint and project address. The network form runs one
 whole-network serial refresh (`NET SYNC` plus `NET CHECKUNIT`), reports every
 fresh record and reads exact KEYGL5 5.5.00 devices in numeric address order.

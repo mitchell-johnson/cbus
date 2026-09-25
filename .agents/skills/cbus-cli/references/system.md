@@ -8,6 +8,14 @@
 
 `cbus-tools` calls the same protocol and project readers for one-shot work. `cbus-simulator` supplies a development PCI/CNI endpoint. `cbus-cgate` is an independent in-memory C-Gate protocol model exposed over TCP by `cgate-mock`.
 
+The embedded C-Gate service uses the shared PCI generation and client pointer
+as the ownership token for guarded volatile results. Those physical paths hold
+one generation commit guard across their cache mutation, cache invalidation, or
+success event. When reconnect wins after old physical confirmation but before
+commit, the command returns 408; it cannot mutate the replacement generation's
+physical, level, application, or observed-label caches or publish that success
+event. See the C-Gate reference for the covered command families.
+
 The embedded C-Gate endpoint implements the eleven C-Gate 3.4 AIRCON commands
 for application 172 on the configured direct network. Commands use the shared
 PCI confirmation lane; incoming schedule, plant and zone report SALs stay on

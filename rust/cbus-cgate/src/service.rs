@@ -360,6 +360,59 @@ impl Service {
         self.auth_token_hash.set(hash)
     }
 
+    /// Capture the current shared PCI and its replacement epoch atomically
+    /// with respect to [`Self::set_pci`]. Physical work may run without the
+    /// generation gate, but any resulting volatile-cache mutation or success
+    /// event must reacquire [`Self::pci_commit_guard`] first.
+    async fn current_pci_epoch(&self) -> (u64, Arc<PciClient>) {
+        let _generation_gate = self.pci_generation_gate.lock().await;
+        (
+            self.pci_generation.load(Ordering::Acquire),
+            self.pci.read().await.clone(),
+        )
+    }
+
+    /// Admit a cache mutation or success event only while it still belongs to
+    /// the captured connected PCI. The returned guard must remain held through
+    /// the mutation and event publication so reconnect invalidation cannot be
+    /// followed by an old operation's commit.
+    async fn pci_commit_guard(
+        &self,
+        generation: u64,
+        pci: &Arc<PciClient>,
+    ) -> Option<tokio::sync::MutexGuard<'_, ()>> {
+        let generation_gate = self.pci_generation_gate.lock().await;
+        let current_pci = self.pci.read().await;
+        let current = self.pci_generation.load(Ordering::Acquire) == generation
+            && Arc::ptr_eq(&current_pci, pci)
+            && pci.is_connected();
+        drop(current_pci);
+        current.then_some(generation_gate)
+    }
+
+    async fn invalidate_level_for_epoch(
+        &self,
+        generation: u64,
+        pci: &Arc<PciClient>,
+        application: u8,
+        group: u8,
+    ) -> Result<(), ()> {
+        let Some(_commit_guard) = self.pci_commit_guard(generation, pci).await else {
+            return Err(());
+        };
+        if let Some(network) = self
+            .model
+            .lock()
+            .await
+            .projects
+            .get_mut(&self.project)
+            .and_then(|project| project.networks.get_mut(&self.network))
+        {
+            network.levels.remove(&(application, group));
+        }
+        Ok(())
+    }
+
     /// Replace the shared PCI after cmqttd reconnects; invalidate all live data.
     pub async fn set_pci(&self, pci: Arc<PciClient>) {
         let _generation_gate = self.pci_generation_gate.lock().await;
@@ -1476,8 +1529,7 @@ impl Service {
                 )
             }
         };
-        let pci_generation = self.pci_generation.load(Ordering::Acquire);
-        let pci = self.pci.read().await.clone();
+        let (pci_generation, pci) = self.current_pci_epoch().await;
         let states = match if route.is_empty() {
             pci.install_mmi().await
         } else {
@@ -1497,19 +1549,13 @@ impl Service {
             .enumerate()
             .filter_map(|(address, state)| (*state != 0).then_some(address as u8))
             .collect();
-        let _generation_gate = self.pci_generation_gate.lock().await;
-        let current_pci = self.pci.read().await;
-        if self.pci_generation.load(Ordering::Acquire) != pci_generation
-            || !Arc::ptr_eq(&current_pci, &pci)
-            || !pci.is_connected()
-        {
+        let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
             return err(
                 tag,
                 408,
                 "408 Physical installation MMI invalidated by PCI reconnect",
             );
-        }
-        drop(current_pci);
+        };
         if let Some(network) = self
             .model
             .lock()
@@ -1579,8 +1625,7 @@ impl Service {
             }
         };
         self.set_network_state(target, NetworkState::Syncing).await;
-        let pci_generation = self.pci_generation.load(Ordering::Acquire);
-        let pci = self.pci.read().await.clone();
+        let (pci_generation, pci) = self.current_pci_epoch().await;
         let (interface_units, configured_keygl5) = {
             let model = self.model.lock().await;
             let project = &model.projects[&self.project];
@@ -1963,8 +2008,7 @@ impl Service {
             }
         }
 
-        let pci_generation = self.pci_generation.load(Ordering::Acquire);
-        let pci = self.pci.read().await.clone();
+        let (pci_generation, pci) = self.current_pci_epoch().await;
         let interface_units = {
             let model = self.model.lock().await;
             model.projects[&self.project].networks[&self.network]
@@ -2174,17 +2218,9 @@ impl Service {
         units: Vec<Unit>,
         events: Vec<String>,
     ) -> Result<(), String> {
-        let _generation_gate = self.pci_generation_gate.lock().await;
-        let current_pci = self.pci.read().await;
-        if self.pci_generation.load(Ordering::Acquire) != generation
-            || !Arc::ptr_eq(&current_pci, pci)
-        {
+        let Some(_commit_guard) = self.pci_commit_guard(generation, pci).await else {
             return Err("Discovery invalidated by PCI reconnect".to_string());
-        }
-        if !pci.is_connected() {
-            return Err("Discovery lost the PCI connection".to_string());
-        }
-        drop(current_pci);
+        };
 
         if let Some(network) = self
             .model
@@ -2255,8 +2291,7 @@ impl Service {
             );
         }
 
-        let generation = self.pci_generation.load(Ordering::Acquire);
-        let pci = self.pci.read().await.clone();
+        let (generation, pci) = self.current_pci_epoch().await;
         let states = match pci.install_mmi().await {
             Ok(states) if states.len() == 256 => states,
             Ok(_) => {
@@ -2299,14 +2334,13 @@ impl Service {
             break;
         }
 
-        let _generation_gate = self.pci_generation_gate.lock().await;
-        if self.pci_generation.load(Ordering::Acquire) != generation {
+        let Some(_commit_guard) = self.pci_commit_guard(generation, &pci).await else {
             return err(
                 tag,
                 408,
                 "408 Operation failed: PCI reconnected during project discovery",
             );
-        }
+        };
         Response {
             tag: tag.to_string(),
             lines: Vec::new(),
@@ -2367,13 +2401,7 @@ impl Service {
             }
         };
 
-        let (pci_generation, pci) = {
-            let _generation_gate = self.pci_generation_gate.lock().await;
-            (
-                self.pci_generation.load(Ordering::Acquire),
-                self.pci.read().await.clone(),
-            )
-        };
+        let (pci_generation, pci) = self.current_pci_epoch().await;
         let interface_units = {
             let model = self.model.lock().await;
             model.projects[&self.project].networks[&self.network]
@@ -2468,19 +2496,13 @@ impl Service {
             // readback makes any previous cached value unsafe to serve. A
             // definitive NAK is also cleared conservatively; a later SYNC or
             // successful write may repopulate the volatile field.
-            let _generation_gate = self.pci_generation_gate.lock().await;
-            let current_pci = self.pci.read().await;
-            if self.pci_generation.load(Ordering::Acquire) != pci_generation
-                || !Arc::ptr_eq(&current_pci, &pci)
-                || !pci.is_connected()
-            {
+            let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
                 return err(
                     tag,
                     408,
                     "408 Operation failed: PCI reconnected during project identity update",
                 );
-            }
-            drop(current_pci);
+            };
             self.clear_physical_project_name(address).await;
             let detail = if error
                 .to_string()
@@ -2498,19 +2520,13 @@ impl Service {
         // Bind the verified readback and volatile-cache update to one shared
         // PCI generation. Holding this gate through the model mutation keeps
         // reconnect invalidation from being followed by an old result.
-        let _generation_gate = self.pci_generation_gate.lock().await;
-        let current_pci = self.pci.read().await;
-        if self.pci_generation.load(Ordering::Acquire) != pci_generation
-            || !Arc::ptr_eq(&current_pci, &pci)
-            || !pci.is_connected()
-        {
+        let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
             return err(
                 tag,
                 408,
                 "408 Operation failed: PCI reconnected during project identity update",
             );
-        }
-        drop(current_pci);
+        };
         if let Some(network) = self
             .model
             .lock()
@@ -2587,8 +2603,7 @@ impl Service {
                 )
             }
         };
-        let pci_generation = self.pci_generation.load(Ordering::Acquire);
-        let pci = self.pci.read().await.clone();
+        let (pci_generation, pci) = self.current_pci_epoch().await;
         let selected = if words[3] == "*" {
             let states = match if route.is_empty() {
                 pci.install_mmi().await
@@ -2655,19 +2670,13 @@ impl Service {
             };
             lines.push(format!("120-{status} at address: {address}"));
         }
-        let _generation_gate = self.pci_generation_gate.lock().await;
-        let current_pci = self.pci.read().await;
-        if self.pci_generation.load(Ordering::Acquire) != pci_generation
-            || !Arc::ptr_eq(&current_pci, &pci)
-            || !pci.is_connected()
-        {
+        let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
             return err(
                 tag,
                 408,
                 "408 Physical unit check invalidated by PCI reconnect",
             );
-        }
-        drop(current_pci);
+        };
         let _ = self
             .events
             .send(format!("#e# net {target} checkunit {}", words[3]));
@@ -2706,7 +2715,7 @@ impl Service {
             );
         }
 
-        let pci = self.pci.read().await.clone();
+        let (pci_generation, pci) = self.current_pci_epoch().await;
         let (database_units, interface_units) = {
             let model = self.model.lock().await;
             let network = &model.projects[&self.project].networks[&self.network];
@@ -2866,6 +2875,7 @@ impl Service {
         expected.remove(&255);
         let total = plan.len();
         let mut completed = 0usize;
+        let mut move_events = Vec::with_capacity(total);
         for (serial, destination) in &plan {
             if let Err(error) = pci.address_selected_serial(serial, *destination).await {
                 return err(
@@ -2905,9 +2915,7 @@ impl Service {
             completed += 1;
             expected_states[usize::from(*destination)] = source_state;
             expected.insert(*destination, vec![serial.clone()]);
-            let _ = self
-                .events
-                .send(format!("#e# unit moved serial={serial} 255 {destination}"));
+            move_events.push(format!("#e# unit moved serial={serial} 255 {destination}"));
         }
 
         let after_states = match pci.install_mmi().await {
@@ -2952,6 +2960,15 @@ impl Service {
             );
         }
 
+        let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
+            return err(
+                tag,
+                408,
+                &format!(
+                    "408 Unravel outcome invalidated by PCI reconnect after {completed} of {total} verified movement(s)"
+                ),
+            );
+        };
         let mut model = self.model.lock().await;
         if let Some(network) = model
             .projects
@@ -2981,6 +2998,9 @@ impl Service {
             network.state = NetworkState::Ok;
         }
         drop(model);
+        for event in move_events {
+            let _ = self.events.send(event);
+        }
         let _ = self
             .events
             .send(format!("#e# net {} unravel ok", self.network));
@@ -3371,9 +3391,16 @@ impl Service {
             application,
             sals: vec![sal],
         };
-        let pci = self.pci.read().await.clone();
+        let (pci_generation, pci) = self.current_pci_epoch().await;
         match pci.send_confirmed(&packet).await {
             Ok(()) => {
+                let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
+                    return err(
+                        tag,
+                        408,
+                        "408 Trigger delivery invalidated by PCI reconnect",
+                    );
+                };
                 if let Some(selector) = selector {
                     if let Some(network) = self
                         .model
@@ -3585,7 +3612,7 @@ impl Service {
             }
         };
 
-        let pci = self.pci.read().await.clone();
+        let (pci_generation, pci) = self.current_pci_epoch().await;
         for payload in encoded {
             let packet = Packet::PointToMultipoint {
                 meta: Meta::new(true, 0),
@@ -3598,6 +3625,9 @@ impl Service {
             if let Err(error) = pci.send_confirmed(&packet).await {
                 return err(tag, 502, &format!("502 Label delivery failed: {error}"));
             }
+            let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
+                return err(tag, 408, "408 Label delivery invalidated by PCI reconnect");
+            };
             self.record_label("sent-confirmed", None, application, &payload)
                 .await;
         }
@@ -3649,9 +3679,16 @@ impl Service {
             Some(_) => {}
         }
 
-        let pci = self.pci.read().await.clone();
+        let (pci_generation, pci) = self.current_pci_epoch().await;
         match pci.clear_edlt_dynamic_labels(unit).await {
             Ok(()) => {
+                let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
+                    return err(
+                        tag,
+                        408,
+                        "408 eDLT label clear invalidated by PCI reconnect",
+                    );
+                };
                 // The clear operation is unit-specific while observed SAL is
                 // network-wide. Discard the cache rather than return entries
                 // that may now be stale for the requested display.
@@ -3697,9 +3734,16 @@ impl Service {
             None => None,
         };
 
-        let pci = self.pci.read().await.clone();
+        let (pci_generation, pci) = self.current_pci_epoch().await;
         match pci.clear_dynamic_label_cache(unit, key).await {
             Ok(()) => {
+                let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
+                    return err(
+                        tag,
+                        408,
+                        "408 Label cache clear invalidated by PCI reconnect",
+                    );
+                };
                 // Observed dynamic-label traffic is network-wide and cannot
                 // be attributed to a recipient. Any accepted cache clear can
                 // therefore make every retained observation stale.
@@ -3828,9 +3872,12 @@ impl Service {
             application,
             sals: vec![Sal::EnableSetNetworkVariable { variable, value }],
         };
-        let pci = self.pci.read().await.clone();
+        let (pci_generation, pci) = self.current_pci_epoch().await;
         match pci.send_confirmed(&packet).await {
             Ok(()) => {
+                let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
+                    return err(tag, 408, "408 Enable delivery invalidated by PCI reconnect");
+                };
                 if let Some(network) = self
                     .model
                     .lock()
@@ -3929,10 +3976,14 @@ impl Service {
                 },
             )
         };
+        let (pci_generation, pci) = self.current_pci_epoch().await;
         let result = self
-            .send_application(tag, sal, response, "Clock update")
+            .send_application_on_pci(tag, sal, response, "Clock update", &pci)
             .await;
         if result.status < 400 {
+            let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
+                return err(tag, 408, "408 Clock update invalidated by PCI reconnect");
+            };
             self.model
                 .lock()
                 .await
@@ -3984,8 +4035,9 @@ impl Service {
             return err(tag, 405, "405 Temperature is out of range");
         };
         let temperature = f64::from((temperature * 4.0) as u8) / 4.0;
+        let (pci_generation, pci) = self.current_pci_epoch().await;
         let result = self
-            .send_application(
+            .send_application_on_pci(
                 tag,
                 Sal::TemperatureBroadcast {
                     group_address: group,
@@ -3993,9 +4045,17 @@ impl Service {
                 },
                 response,
                 "Temperature broadcast",
+                &pci,
             )
             .await;
         if result.status < 400 {
+            let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
+                return err(
+                    tag,
+                    408,
+                    "408 Temperature broadcast invalidated by PCI reconnect",
+                );
+            };
             let address = format!("//{}/{}/25/{group}", self.project, self.network);
             let value = format_temperature(temperature);
             self.model.lock().await.application_state.insert(
@@ -4016,12 +4076,24 @@ impl Service {
         response: Response,
         operation: &str,
     ) -> Response {
+        let (_, pci) = self.current_pci_epoch().await;
+        self.send_application_on_pci(tag, sal, response, operation, &pci)
+            .await
+    }
+
+    async fn send_application_on_pci(
+        &self,
+        tag: &str,
+        sal: Sal,
+        response: Response,
+        operation: &str,
+        pci: &Arc<PciClient>,
+    ) -> Response {
         let packet = Packet::PointToMultipoint {
             meta: Meta::new(true, 0),
             application: sal.application(),
             sals: vec![sal],
         };
-        let pci = self.pci.read().await.clone();
         match pci.send_confirmed(&packet).await {
             Ok(()) => response,
             Err(error) => err(tag, 502, &format!("502 {operation} failed: {error}")),
@@ -5002,21 +5074,29 @@ impl Service {
             application: app,
             sals: vec![sal],
         };
-        let pci = self.pci.read().await.clone();
+        let (pci_generation, pci) = self.current_pci_epoch().await;
         // The previous observation predates this command. Invalidate it before
         // sending so a report arriving ahead of the confirmation is retained.
-        if let Some(net) = self
-            .model
-            .lock()
+        if self
+            .invalidate_level_for_epoch(pci_generation, &pci, app, group)
             .await
-            .projects
-            .get_mut(&self.project)
-            .and_then(|p| p.networks.get_mut(&self.network))
+            .is_err()
         {
-            net.levels.remove(&(app, group));
+            return err(
+                tag,
+                408,
+                "408 Lighting delivery invalidated by PCI reconnect",
+            );
         }
         match pci.send_confirmed(&packet).await {
             Ok(()) => {
+                let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
+                    return err(
+                        tag,
+                        408,
+                        "408 Lighting delivery invalidated by PCI reconnect",
+                    );
+                };
                 let _ = self.events.send(event);
                 // Queue physical readback through the existing background lane.
                 tokio::spawn(async move {
@@ -5121,19 +5201,22 @@ impl Service {
             actions.push((address, application, group, level));
         }
 
-        let pci = self.pci.read().await.clone();
+        let (pci_generation, pci) = self.current_pci_epoch().await;
         let total = actions.len();
         let mut status_blocks = HashSet::new();
         for (delivered, (address, application, group, level)) in actions.into_iter().enumerate() {
-            if let Some(network) = self
-                .model
-                .lock()
+            if self
+                .invalidate_level_for_epoch(pci_generation, &pci, application, group)
                 .await
-                .projects
-                .get_mut(&self.project)
-                .and_then(|project| project.networks.get_mut(&self.network))
+                .is_err()
             {
-                network.levels.remove(&(application, group));
+                return err(
+                    tag,
+                    408,
+                    &format!(
+                        "408 Scene delivery invalidated by PCI reconnect after {delivered} of {total} actions"
+                    ),
+                );
             }
             let packet = Packet::PointToMultipoint {
                 meta: Meta::new(true, 0),
@@ -5154,11 +5237,30 @@ impl Service {
                     ),
                 );
             }
+            let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
+                return err(
+                    tag,
+                    408,
+                    &format!(
+                        "408 Scene delivery invalidated by PCI reconnect after {} of {total} actions",
+                        delivered + 1
+                    ),
+                );
+            };
             status_blocks.insert((application, group & 0xe0));
             let _ = self
                 .events
                 .send(format!("#e# lighting {address} RAMP {level} 0"));
         }
+        let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
+            return err(
+                tag,
+                408,
+                &format!(
+                    "408 Scene delivery invalidated by PCI reconnect after {total} of {total} actions"
+                ),
+            );
+        };
         for (application, block) in status_blocks {
             let pci = pci.clone();
             tokio::spawn(async move {
@@ -5249,9 +5351,16 @@ impl Service {
             Some(_) => {}
         }
 
-        let pci = self.pci.read().await.clone();
+        let (pci_generation, pci) = self.current_pci_epoch().await;
         match pci.factory_default_edlt(unit).await {
             Ok(()) => {
+                let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
+                    return err(
+                        tag,
+                        408,
+                        "408 eDLT factory default invalidated by PCI reconnect",
+                    );
+                };
                 // FactoryDefault can invalidate every cached display label.
                 // It does not change the saved database representation here.
                 self.observed_labels.lock().await.observations.clear();

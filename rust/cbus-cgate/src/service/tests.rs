@@ -1311,6 +1311,197 @@ async fn reconnect_opens_network_and_discards_observed_levels() {
 }
 
 #[tokio::test]
+async fn stale_lighting_epoch_cannot_invalidate_a_replacement_observation() {
+    let path = state_path();
+    let (old, _old_remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), old, None).unwrap();
+    let (generation, old_pci) = service.current_pci_epoch().await;
+
+    let (replacement, _replacement_remote) = pci();
+    service.set_pci(replacement).await;
+    service
+        .observe(&CBusEvent::LightingOn {
+            source: Some(4),
+            app: 56,
+            group: 1,
+        })
+        .await;
+
+    assert!(service
+        .invalidate_level_for_epoch(generation, &old_pci, 56, 1)
+        .await
+        .is_err());
+    assert_eq!(
+        service.model.lock().await.projects["HARNESS"].networks[&254]
+            .levels
+            .get(&(56, 1)),
+        Some(&255)
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn reconnect_after_lighting_confirmation_suppresses_old_success_event() {
+    let path = state_path();
+    let (original_pci, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = original_pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        let mut wire = Vec::new();
+        remote_read.read_until(b'\r', &mut wire).await.unwrap();
+    }
+    reset.await.unwrap().unwrap();
+
+    let service = Service::new(&fixture(), None, path.clone(), original_pci, None).unwrap();
+    let mut events = service.events.subscribe();
+    let command = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[1] LIGHTING ON //HARNESS/254/56/1",
+                )
+                .await
+        }
+    });
+    let mut wire = Vec::new();
+    remote_read.read_until(b'\r', &mut wire).await.unwrap();
+    let confirmation = wire[wire.len() - 2];
+
+    let model_guard = service.model.lock().await;
+    let (replacement, _replacement_remote) = pci();
+    let replacing = tokio::spawn({
+        let service = service.clone();
+        async move { service.set_pci(replacement).await }
+    });
+    for _ in 0..100 {
+        if service.pci_generation.load(Ordering::Acquire) == 1 {
+            break;
+        }
+        tokio::task::yield_now().await;
+    }
+    assert_eq!(service.pci_generation.load(Ordering::Acquire), 1);
+    remote_write.write_all(&[confirmation, b'.']).await.unwrap();
+    tokio::task::yield_now().await;
+    drop(model_guard);
+    replacing.await.unwrap();
+
+    let response = command.await.unwrap();
+    assert_eq!(response.status, 408, "{response:?}");
+    assert_eq!(
+        response.final_text,
+        "408 Lighting delivery invalidated by PCI reconnect"
+    );
+    assert!(events.try_recv().is_err());
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn reconnect_between_confirmation_and_state_commit_rejects_all_live_control_echoes() {
+    #[derive(Clone, Copy)]
+    enum CachedValue {
+        Level(u8, u8),
+        Application(&'static str),
+    }
+
+    let cases = [
+        (
+            "[1] TRIGGER EVENT //HARNESS/254/202/4 88",
+            CachedValue::Level(202, 4),
+            "Trigger delivery invalidated",
+        ),
+        (
+            "[2] ENABLE SET //HARNESS/254/203/5 66",
+            CachedValue::Level(203, 5),
+            "Enable delivery invalidated",
+        ),
+        (
+            "[3] CLOCK DATE 254/223 2026-09-26",
+            CachedValue::Application("CLOCK DATE"),
+            "Clock update invalidated",
+        ),
+        (
+            "[4] TEMPERATURE BROADCAST //HARNESS/254/25/3 21.0",
+            CachedValue::Application("TEMPERATURE BROADCAST"),
+            "Temperature broadcast invalidated",
+        ),
+    ];
+
+    for (line, cached, error) in cases {
+        let path = state_path();
+        let (original_pci, remote) = pci();
+        let (remote_read, mut remote_write) = tokio::io::split(remote);
+        let mut remote_read = BufReader::new(remote_read);
+        let reset = tokio::spawn({
+            let pci = original_pci.clone();
+            async move { pci.pci_reset().await }
+        });
+        for _ in 0..8 {
+            let mut wire = Vec::new();
+            remote_read.read_until(b'\r', &mut wire).await.unwrap();
+        }
+        reset.await.unwrap().unwrap();
+
+        let service = Service::new(&fixture(), None, path.clone(), original_pci, None).unwrap();
+        let mut events = service.events.subscribe();
+        let command = tokio::spawn({
+            let service = service.clone();
+            async move { service.handle(&mut ClientState::default(), line).await }
+        });
+        let mut wire = Vec::new();
+        remote_read.read_until(b'\r', &mut wire).await.unwrap();
+        assert!(!wire.is_empty(), "{line}");
+        let confirmation = wire[wire.len() - 2];
+
+        // set_pci owns the generation gate and waits on this model lock.
+        // Deliver the old confirmation only after its generation changed, so
+        // the command deterministically reaches its guarded commit second.
+        let model_guard = service.model.lock().await;
+        let (replacement, _replacement_remote) = pci();
+        let replacing = tokio::spawn({
+            let service = service.clone();
+            async move { service.set_pci(replacement).await }
+        });
+        for _ in 0..100 {
+            if service.pci_generation.load(Ordering::Acquire) == 1 {
+                break;
+            }
+            tokio::task::yield_now().await;
+        }
+        assert_eq!(service.pci_generation.load(Ordering::Acquire), 1);
+        remote_write.write_all(&[confirmation, b'.']).await.unwrap();
+        tokio::task::yield_now().await;
+        drop(model_guard);
+        replacing.await.unwrap();
+
+        let response = command.await.unwrap();
+        assert_eq!(response.status, 408, "{line}: {response:?}");
+        assert!(response.final_text.contains(error), "{line}: {response:?}");
+        let model = service.model.lock().await;
+        match cached {
+            CachedValue::Level(application, group) => assert!(!model.projects["HARNESS"].networks
+                [&254]
+                .levels
+                .contains_key(&(application, group))),
+            CachedValue::Application(key) => {
+                assert!(!model.application_state.contains_key(key))
+            }
+        }
+        drop(model);
+        assert!(
+            events.try_recv().is_err(),
+            "{line}: an old-generation success event escaped"
+        );
+        std::fs::remove_file(path).unwrap();
+    }
+}
+
+#[tokio::test]
 async fn observed_trigger_enable_and_clock_state_is_live_and_cleared_on_disconnect() {
     let path = state_path();
     let (pci, _remote) = pci();
@@ -1894,6 +2085,141 @@ async fn sent_confirmed_observation_row_matches_decoder_contract() {
     std::fs::remove_file(path).unwrap();
 }
 
+#[tokio::test]
+async fn reconnect_between_label_confirmation_and_record_discards_old_observation() {
+    let path = state_path();
+    let (original_pci, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = original_pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        let mut wire = Vec::new();
+        remote_read.read_until(b'\r', &mut wire).await.unwrap();
+    }
+    reset.await.unwrap().unwrap();
+
+    let service = Service::new(&fixture(), None, path.clone(), original_pci, None).unwrap();
+    let command = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[1] LIGHTING LABEL //HARNESS/254/56 0 1 - F0 0 41",
+                )
+                .await
+        }
+    });
+    let mut wire = Vec::new();
+    remote_read.read_until(b'\r', &mut wire).await.unwrap();
+    assert!(!wire.is_empty());
+    let confirmation = wire[wire.len() - 2];
+
+    let labels_guard = service.observed_labels.lock().await;
+    let (replacement, _replacement_remote) = pci();
+    let replacing = tokio::spawn({
+        let service = service.clone();
+        async move { service.set_pci(replacement).await }
+    });
+    for _ in 0..100 {
+        if service.pci_generation.load(Ordering::Acquire) == 1 {
+            break;
+        }
+        tokio::task::yield_now().await;
+    }
+    assert_eq!(service.pci_generation.load(Ordering::Acquire), 1);
+    remote_write.write_all(&[confirmation, b'.']).await.unwrap();
+    tokio::task::yield_now().await;
+    drop(labels_guard);
+    replacing.await.unwrap();
+
+    let response = command.await.unwrap();
+    assert_eq!(response.status, 408, "{response:?}");
+    assert_eq!(
+        response.final_text,
+        "408 Label delivery invalidated by PCI reconnect"
+    );
+    assert!(service.observed_labels.lock().await.observations.is_empty());
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn reconnect_between_label_clear_confirmation_and_invalidation_preserves_new_observation() {
+    let path = state_path();
+    let (original_pci, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = original_pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        let mut wire = Vec::new();
+        remote_read.read_until(b'\r', &mut wire).await.unwrap();
+    }
+    reset.await.unwrap().unwrap();
+
+    let service = Service::new(&fixture(), None, path.clone(), original_pci, None).unwrap();
+    let command = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[1] LABEL CLEAR //HARNESS/254/56 5",
+                )
+                .await
+        }
+    });
+    let mut wire = Vec::new();
+    remote_read.read_until(b'\r', &mut wire).await.unwrap();
+    let confirmation = wire[wire.len() - 2];
+
+    let labels_guard = service.observed_labels.lock().await;
+    let model_guard = service.model.lock().await;
+    let (replacement, _replacement_remote) = pci();
+    let replacing = tokio::spawn({
+        let service = service.clone();
+        async move { service.set_pci(replacement).await }
+    });
+    for _ in 0..100 {
+        if service.pci_generation.load(Ordering::Acquire) == 1 {
+            break;
+        }
+        tokio::task::yield_now().await;
+    }
+    assert_eq!(service.pci_generation.load(Ordering::Acquire), 1);
+    tokio::task::yield_now().await;
+    remote_write.write_all(&[confirmation, b'.']).await.unwrap();
+    let recording = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .record_label("received", Some(5), 56, &[0xa4, 1, 0, 0, b'N'])
+                .await
+        }
+    });
+    drop(labels_guard);
+    recording.await.unwrap();
+    drop(model_guard);
+    replacing.await.unwrap();
+
+    let response = command.await.unwrap();
+    assert_eq!(response.status, 408, "{response:?}");
+    assert_eq!(
+        response.final_text,
+        "408 Label cache clear invalidated by PCI reconnect"
+    );
+    let labels = service.observed_labels.lock().await;
+    assert_eq!(labels.observations.len(), 1);
+    assert_eq!(labels.observations[0].payload_hex, "a40100004e");
+    drop(labels);
+    std::fs::remove_file(path).unwrap();
+}
+
 /// Issue #10 Phase 5 entry: UNRAVEL has no physical backend yet and must
 /// fail closed with 502 — never simulated success. Unknown methods stay 402.
 #[tokio::test]
@@ -2438,11 +2764,11 @@ async fn bounded_matchdb_unravel_uses_selected_serial_and_verifies_full_inventor
     }
 
     let path = state_path();
-    let (pci, remote) = pci();
+    let (original_pci, remote) = pci();
     let (remote_read, mut remote_write) = tokio::io::split(remote);
     let mut remote_read = BufReader::new(remote_read);
     let reset = tokio::spawn({
-        let pci = pci.clone();
+        let pci = original_pci.clone();
         async move { pci.pci_reset().await }
     });
     for _ in 0..8 {
@@ -2450,7 +2776,7 @@ async fn bounded_matchdb_unravel_uses_selected_serial_and_verifies_full_inventor
     }
     reset.await.unwrap().unwrap();
 
-    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let service = Service::new(&fixture(), None, path.clone(), original_pci, None).unwrap();
     {
         let mut model = service.model.lock().await;
         let network = model
@@ -2519,6 +2845,79 @@ async fn bounded_matchdb_unravel_uses_selected_serial_and_verifies_full_inventor
     assert_eq!(network.units[&6].address, 6);
     assert_eq!(network.units[&7].address, 7);
     drop(model);
+
+    let mut events = service.events.subscribe();
+    let reconnecting = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[2] NET UNRAVELUNIT //HARNESS/254 255 MATCHDB",
+                )
+                .await
+        }
+    });
+    mmi(&mut remote_read, &mut remote_write, &[16, 255]).await;
+    identify(&mut remote_read, &mut remote_write, 16, &["100966.1187"]).await;
+    identify(
+        &mut remote_read,
+        &mut remote_write,
+        255,
+        &["101136.1558", "101136.1559"],
+    )
+    .await;
+    local_options(&mut remote_read, &mut remote_write).await;
+    identify(&mut remote_read, &mut remote_write, 6, &[]).await;
+    identify(&mut remote_read, &mut remote_write, 7, &[]).await;
+    selected(&mut remote_read, &mut remote_write, "101136.1558", 6).await;
+    identify(&mut remote_read, &mut remote_write, 6, &["101136.1558"]).await;
+    selected(&mut remote_read, &mut remote_write, "101136.1559", 7).await;
+    identify(&mut remote_read, &mut remote_write, 7, &["101136.1559"]).await;
+    mmi(&mut remote_read, &mut remote_write, &[6, 7, 16]).await;
+    identify(&mut remote_read, &mut remote_write, 6, &["101136.1558"]).await;
+    identify(&mut remote_read, &mut remote_write, 7, &["101136.1559"]).await;
+    identify(&mut remote_read, &mut remote_write, 16, &["100966.1187"]).await;
+
+    let options_request = pci_line(&mut remote_read).await;
+    assert!(
+        options_request.starts_with(b"\\4610001A4201"),
+        "{options_request:?}"
+    );
+    let model_guard = service.model.lock().await;
+    let (replacement, _replacement_remote) = pci();
+    let replacing = tokio::spawn({
+        let service = service.clone();
+        async move { service.set_pci(replacement).await }
+    });
+    for _ in 0..100 {
+        if service.pci_generation.load(Ordering::Acquire) == 1 {
+            break;
+        }
+        tokio::task::yield_now().await;
+    }
+    assert_eq!(service.pci_generation.load(Ordering::Acquire), 1);
+    direct_reply(&mut remote_write, 16, &[0x82, 0x42, 5]).await;
+    tokio::task::yield_now().await;
+    drop(model_guard);
+    replacing.await.unwrap();
+
+    let response = reconnecting.await.unwrap();
+    assert_eq!(response.status, 408, "{response:?}");
+    assert_eq!(
+        response.final_text,
+        "408 Unravel outcome invalidated by PCI reconnect after 2 of 2 verified movement(s)"
+    );
+    assert!(
+        service.model.lock().await.projects["HARNESS"].networks[&254]
+            .physical
+            .is_empty(),
+        "the old final inventory must not repopulate the replacement cache"
+    );
+    assert!(
+        events.try_recv().is_err(),
+        "no staged old-generation move or success event may escape"
+    );
     std::fs::remove_file(path).unwrap();
 }
 
