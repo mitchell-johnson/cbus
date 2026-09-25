@@ -29,6 +29,13 @@ network-wide physical `NET SYNC` populated cmqttd's volatile cache and the GET
 read consumed that cache. `widget_groups_device_readback: true` refers to that
 physical synchronization; GET is not a second direct device read.
 
+cmqttd only populates this property when the synchronized address has MMI state
+one, exactly one known IDENTIFY4 serial, and matching configured and fresh
+KEYGL5 types. State two, state three, zero-serial, and multi-serial addresses
+receive no source-address-only metadata read; their property getter returns 404
+and this command emits no success document. A reconnect or transport loss
+during synchronization returns 408 rather than committing the old snapshot.
+
 Network synchronization does not change persistent device configuration, but
 the KEYGL5 metadata sequence writes a volatile OEM address-16 selector before
 reading `Application` and `Application2`. The JSON records both facts as

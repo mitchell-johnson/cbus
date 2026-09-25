@@ -1488,6 +1488,10 @@ display rendering, or persistence. `NET SYNC` leaves persistent device
 configuration unchanged, but its KEYGL5 metadata sequence does write a
 volatile OEM selector before reading the two application bytes; the JSON
 reports both facts. It shares cmqttd's CNI and never opens a direct connection.
+cmqttd only creates the property for an MMI-state-one address with exactly one
+known serial and matching configured/fresh KEYGL5 types. Ambiguous addresses
+fail with no metadata read or stale property, and reconnect invalidates an
+in-flight snapshot.
 See [the strict response contract](docs/edlt-widget-groups.md).
 
 cmqttd also exposes the native physical KFI commands through raw C-Gate

@@ -139,8 +139,10 @@ address as a routing hint, or BASIC discovery when that hint is unavailable;
 fresh MMI and IDENTIFY replies physically validate the result. It probes
 IDENTIFY1/2 and collects all IDENTIFY4 replies for every present address, then
 atomically replaces the live identity cache. Silent legacy/error addresses stay
-present with unknown identity fields. When both the configured database type
-and fresh IDENTIFY1 are KEYGL5, SYNC follows retained CBusEdlt classfile order:
+present with unknown identity fields. Native eDLT metadata requires MMI state
+one, exactly one known IDENTIFY4 serial, and both the configured database type
+and fresh IDENTIFY1 to be KEYGL5. Eligible units follow retained CBusEdlt
+classfile order:
 parameter `0xFB` length 9 becomes the NUL-terminated volatile
 `FirmwareVersion`; an OEM address-16 selector plus parameter-1 length-2 recall
 becomes decimal `Application` and `Application2`; parameter `0xFA` length 44
@@ -153,6 +155,10 @@ read leaves earlier values from the same sequence fresh, invalidates the failed
 and all later unrefreshed values, and does not fail an otherwise valid identity
 SYNC. The programming lane remains faulted until reconnect and no request is
 replayed. `WidgetGroups` is static mapping, not dynamic-label cache readback.
+State two, state three, zero-serial, and multi-serial addresses receive no
+source-address-only metadata traffic and expose no stale metadata. Reconnect or
+transport loss invalidates an in-flight snapshot before commit and returns 408
+without a sync-ok event.
 CHECKUNIT actively collects IDENTIFY4
 replies through the native two-second quiet interval; it does not infer duplicate count from the
 two-bit MMI state. Use `GET //PROJECT/NETWORK Units` and unit `Type`, `Version`,

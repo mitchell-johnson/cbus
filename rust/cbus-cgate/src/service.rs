@@ -15,7 +15,10 @@ use std::{
     collections::{BTreeMap, HashMap, HashSet, VecDeque},
     io::{self, Write},
     path::Path,
-    sync::{Arc, OnceLock},
+    sync::{
+        atomic::{AtomicU64, Ordering},
+        Arc, OnceLock,
+    },
     time::Duration,
 };
 use tokio::{
@@ -161,6 +164,11 @@ pub struct ClientState {
 pub struct Service {
     model: Mutex<Server>,
     pci: RwLock<Arc<PciClient>>,
+    /// Replacement epoch for operations that build a live snapshot outside
+    /// the model lock. A reconnect invalidates every in-flight snapshot.
+    pci_generation: AtomicU64,
+    /// Serializes PCI replacement with the final generation check and commit.
+    pci_generation_gate: Mutex<()>,
     project: String,
     network: u8,
     state_path: PathBuf,
@@ -280,6 +288,8 @@ impl Service {
         Ok(Arc::new(Self {
             model: Mutex::new(model),
             pci: RwLock::new(pci),
+            pci_generation: AtomicU64::new(0),
+            pci_generation_gate: Mutex::new(()),
             project,
             network,
             state_path,
@@ -301,6 +311,8 @@ impl Service {
 
     /// Replace the shared PCI after cmqttd reconnects; invalidate all live data.
     pub async fn set_pci(&self, pci: Arc<PciClient>) {
+        let _generation_gate = self.pci_generation_gate.lock().await;
+        self.pci_generation.fetch_add(1, Ordering::AcqRel);
         self.observe(&CBusEvent::ConnectionLost).await;
         *self.pci.write().await = pci;
         if let Some(net) = self
@@ -1273,6 +1285,7 @@ impl Service {
             return validation;
         }
         self.set_network_state(NetworkState::Syncing).await;
+        let pci_generation = self.pci_generation.load(Ordering::Acquire);
         let pci = self.pci.read().await.clone();
         let (interface_units, configured_keygl5) = {
             let model = self.model.lock().await;
@@ -1328,6 +1341,7 @@ impl Service {
             .collect();
         struct SyncedIdentity {
             address: u8,
+            mmi_state: u8,
             unit_type: String,
             identify_version: String,
             serial: String,
@@ -1442,6 +1456,7 @@ impl Service {
             };
             identities.push(SyncedIdentity {
                 address,
+                mmi_state: states[usize::from(address)],
                 unit_type,
                 identify_version: firmware,
                 serial,
@@ -1459,10 +1474,18 @@ impl Service {
         // 0xFA/44 WidgetGroups helper. The reads remain optional for overall
         // identity SYNC. An incomplete read faults the programming lane, so
         // later optional calls fail closed without replay; every unavailable
-        // value remains None and is invalidated at commit.
+        // value remains None and is invalidated at commit. These addressed
+        // replies carry no serial identity, so only healthy MMI state one
+        // with exactly one known IDENTIFY4 serial is eligible. State three,
+        // state two's unverified meaning, and zero or multiple known serials
+        // are ambiguous and must not be queried or exposed as one device's
+        // metadata.
         for identity in &mut identities {
             if identity.unit_type.eq_ignore_ascii_case("KEYGL5")
                 && configured_keygl5.contains(&identity.address)
+                && identity.mmi_state == 1
+                && !identity.serial.is_empty()
+                && identity.serial_alternates.is_empty()
             {
                 identity.extended_firmware =
                     pci.read_edlt_extended_firmware(identity.address).await.ok();
@@ -1471,6 +1494,40 @@ impl Service {
             }
         }
 
+        // A reconnect or transport loss invalidates everything collected by
+        // this command. Serialize the check with set_pci so a stale task can
+        // neither repopulate the cleared cache nor emit a false sync-ok after
+        // replacement starts.
+        let _generation_gate = self.pci_generation_gate.lock().await;
+        let current_pci = self.pci.read().await;
+        if self.pci_generation.load(Ordering::Acquire) != pci_generation
+            || !Arc::ptr_eq(&current_pci, &pci)
+        {
+            return err(
+                tag,
+                408,
+                "408 Physical network synchronization invalidated by PCI reconnect",
+            );
+        }
+        if !pci.is_connected() {
+            drop(current_pci);
+            if let Some(network) = self
+                .model
+                .lock()
+                .await
+                .projects
+                .get_mut(&self.project)
+                .and_then(|project| project.networks.get_mut(&self.network))
+            {
+                network.physical.clear();
+                network.state = NetworkState::Closed;
+            }
+            return err(
+                tag,
+                408,
+                "408 Physical network synchronization lost the PCI connection",
+            );
+        }
         let mut model = self.model.lock().await;
         if let Some(network) = model
             .projects

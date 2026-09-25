@@ -2926,7 +2926,8 @@ async fn physical_pp_save_tag_filter_retains_untagged_dirty() {
 /// address must surface the conflict on the event channel instead of
 /// silently collapsing the stored serial to "". The response stays 200;
 /// the scalar snapshot keeps "" while the sorted duplicate set is retained
-/// on `serial_alternates`.
+/// on `serial_alternates`. Source-address-only eDLT metadata reads are
+/// forbidden because their replies cannot be attributed to either unit.
 #[tokio::test(start_paused = true)]
 async fn physical_net_sync_surfaces_duplicate_serial_conflict_on_events() {
     async fn pci_line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
@@ -2973,6 +2974,30 @@ async fn physical_net_sync_surfaces_duplicate_serial_conflict_on_events() {
     reset.await.unwrap().unwrap();
 
     let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    // Prove an ambiguous refresh clears older metadata rather than serving it
+    // as though the duplicate address represented one physical unit.
+    let mut stale = Unit::blank(5, "");
+    stale.unit_type = "KEYGL5".into();
+    for (field, value) in [
+        ("FirmwareVersion", "old-extended"),
+        ("Application", "1"),
+        ("Application2", "2"),
+        ("WidgetGroups", "old-widget-groups"),
+    ] {
+        stale.fields.insert(field.into(), value.into());
+    }
+    service
+        .model
+        .lock()
+        .await
+        .projects
+        .get_mut("HARNESS")
+        .unwrap()
+        .networks
+        .get_mut(&254)
+        .unwrap()
+        .physical
+        .insert(5, stale);
     let mut events = service.events.subscribe();
     let syncing = tokio::spawn({
         let service = service.clone();
@@ -3062,36 +3087,6 @@ async fn physical_net_sync_surfaces_duplicate_serial_conflict_on_events() {
     tokio::time::advance(Duration::from_secs(2)).await;
     tokio::task::yield_now().await;
 
-    // Retained classfile order is exact: extended FirmwareVersion from
-    // parameter 0xFB/9, Application/Application2 from OEM address 16/2,
-    // then WidgetGroups from parameter 0xFA/44.
-    assert_eq!(pci_line(&mut remote_read).await, b"\\4605001AFB0997\r");
-    let firmware = cbus_protocol::Cal::Reply {
-        parameter: 0xfb,
-        data: b"01.05.00\0".to_vec(),
-    }
-    .encode();
-    pci_reply(&mut remote_write, 5, &firmware).await;
-
-    assert_eq!(
-        pci_line(&mut remote_read).await,
-        b"\\46050900A400411000B7\r"
-    );
-    pci_reply(&mut remote_write, 5, &[0x32, 0, 0x41]).await;
-    assert_eq!(pci_line(&mut remote_read).await, b"\\460509001A01028F\r");
-    pci_reply(&mut remote_write, 5, &[0x83, 1, 56, 255]).await;
-
-    assert_eq!(pci_line(&mut remote_read).await, b"\\4605001AFA2C75\r");
-    let widget_bytes = (0..44u8).collect::<Vec<_>>();
-    for fragment in widget_bytes.chunks(22) {
-        let cal = cbus_protocol::Cal::Reply {
-            parameter: 0xfa,
-            data: fragment.to_vec(),
-        }
-        .encode();
-        pci_reply(&mut remote_write, 5, &cal).await;
-    }
-
     let response = syncing.await.unwrap();
     assert_eq!(
         response.status, 200,
@@ -3117,43 +3112,27 @@ async fn physical_net_sync_surfaces_duplicate_serial_conflict_on_events() {
     assert_eq!(snapshot.unit_type, "KEYGL5");
     assert_eq!(snapshot.firmware, "5.5.00");
     assert_eq!(snapshot.field("Version"), "5.5.00");
-    assert_eq!(snapshot.field("FirmwareVersion"), "01.05.00");
-    assert_eq!(snapshot.field("Application"), "56");
-    assert_eq!(snapshot.field("Application2"), "255");
-    assert_eq!(
-        snapshot.field("WidgetGroups"),
-        (0..44)
-            .map(|value| value.to_string())
-            .collect::<Vec<_>>()
-            .join(",")
-    );
+    for field in [
+        "FirmwareVersion",
+        "Application",
+        "Application2",
+        "WidgetGroups",
+    ] {
+        assert!(
+            !snapshot.fields.contains_key(field),
+            "ambiguous or stale {field}: {snapshot:?}"
+        );
+    }
     let configured = &model.projects["HARNESS"].networks[&254].units[&5];
     assert_eq!(configured.unit_type, "KEYGL5");
     assert_eq!(configured.field("FirmwareVersion"), "5.5.00");
     drop(model);
 
-    let get = service
-        .handle(
-            &mut ClientState::default(),
-            "[1g] GET //HARNESS/254/p/5 WidgetGroups",
-        )
-        .await;
-    assert_eq!(get.status, 300);
-    assert_eq!(
-        get.final_text,
-        format!(
-            "300 //HARNESS/254/p/5: WidgetGroups={}",
-            (0..44)
-                .map(|value| value.to_string())
-                .collect::<Vec<_>>()
-                .join(",")
-        )
-    );
-    for (sequence, field, value) in [
-        ("1f", "FirmwareVersion", "01.05.00"),
-        ("1v", "Version", "5.5.00"),
-        ("1a", "Application", "56"),
-        ("1a2", "Application2", "255"),
+    for (sequence, field) in [
+        ("1f", "FirmwareVersion"),
+        ("1a", "Application"),
+        ("1a2", "Application2"),
+        ("1g", "WidgetGroups"),
     ] {
         let get = service
             .handle(
@@ -3161,12 +3140,23 @@ async fn physical_net_sync_surfaces_duplicate_serial_conflict_on_events() {
                 &format!("[{sequence}] GET //HARNESS/254/p/5 {field}"),
             )
             .await;
-        assert_eq!(get.status, 300, "{field}: {get:?}");
-        assert_eq!(
-            get.final_text,
-            format!("300 //HARNESS/254/p/5: {field}={value}")
-        );
+        assert_eq!(get.status, 404, "ambiguous {field}: {get:?}");
     }
+    let version = service
+        .handle(
+            &mut ClientState::default(),
+            "[1v] GET //HARNESS/254/p/5 Version",
+        )
+        .await;
+    assert_eq!(version.status, 300);
+    assert!(version.final_text.ends_with("Version=5.5.00"));
+
+    assert!(
+        tokio::time::timeout(Duration::from_secs(1), pci_line(&mut remote_read))
+            .await
+            .is_err(),
+        "duplicate-address SYNC must not issue source-only eDLT metadata requests"
+    );
 
     let mut seen = Vec::new();
     while let Ok(event) = events.try_recv() {
@@ -3193,121 +3183,6 @@ async fn physical_net_sync_surfaces_duplicate_serial_conflict_on_events() {
         duplicate_pos < ok_pos,
         "duplicate event must precede sync ok: {seen:?}"
     );
-
-    // A later optional 0xFB timeout keeps a valid identity SYNC successful.
-    // It faults the programming lane before the remaining optional reads, and
-    // commit invalidates every older eDLT-only volatile property rather than
-    // serving stale values or substituting IDENTIFY2 for FirmwareVersion.
-    let syncing_again = tokio::spawn({
-        let service = service.clone();
-        async move {
-            service
-                .handle(&mut ClientState::default(), "[2] NET SYNC //HARNESS/254")
-                .await
-        }
-    });
-    let request = pci_line(&mut remote_read).await;
-    assert!(request.starts_with(b"\\05FF00FAFF"), "{request:?}");
-    let code = request[request.len() - 2];
-    remote_write.write_all(&[code, b'.']).await.unwrap();
-    remote_write
-        .write_all(&mmi_block(0, 88, &[5]))
-        .await
-        .unwrap();
-    remote_write
-        .write_all(&mmi_block(88, 88, &[]))
-        .await
-        .unwrap();
-    remote_write
-        .write_all(&mmi_block(176, 80, &[]))
-        .await
-        .unwrap();
-
-    let request = pci_line(&mut remote_read).await;
-    assert!(request.windows(4).any(|window| window == b"2101"));
-    let code = request[request.len() - 2];
-    remote_write.write_all(&[code, b'.']).await.unwrap();
-    pci_reply(
-        &mut remote_write,
-        5,
-        &[0x87, 0x01, b'K', b'E', b'Y', b'G', b'L', b'5'],
-    )
-    .await;
-    let request = pci_line(&mut remote_read).await;
-    assert!(request.windows(4).any(|window| window == b"2102"));
-    let code = request[request.len() - 2];
-    remote_write.write_all(&[code, b'.']).await.unwrap();
-    pci_reply(
-        &mut remote_write,
-        5,
-        &[0x87, 0x02, b'5', b'.', b'5', b'.', b'0', b'0'],
-    )
-    .await;
-    let request = pci_line(&mut remote_read).await;
-    assert!(request.starts_with(b"\\4605002104"), "{request:?}");
-    let code = request[request.len() - 2];
-    remote_write.write_all(&[code, b'.']).await.unwrap();
-    tokio::time::advance(Duration::from_secs(2)).await;
-    tokio::task::yield_now().await;
-    assert_eq!(pci_line(&mut remote_read).await, b"\\4605001AFB0997\r");
-    tokio::time::advance(Duration::from_secs(10)).await;
-    tokio::task::yield_now().await;
-    let response = syncing_again.await.unwrap();
-    assert_eq!(
-        response.status, 200,
-        "optional eDLT metadata failure: {response:?}"
-    );
-    let model = service.model.lock().await;
-    let snapshot = &model.projects["HARNESS"].networks[&254].physical[&5];
-    assert_eq!(snapshot.unit_type, "KEYGL5");
-    assert_eq!(snapshot.field("Version"), "5.5.00");
-    for field in [
-        "FirmwareVersion",
-        "Application",
-        "Application2",
-        "WidgetGroups",
-    ] {
-        assert!(
-            !snapshot.fields.contains_key(field),
-            "stale {field}: {snapshot:?}"
-        );
-    }
-    drop(model);
-    for (sequence, field) in [
-        ("2f", "FirmwareVersion"),
-        ("2a", "Application"),
-        ("2a2", "Application2"),
-        ("2g", "WidgetGroups"),
-    ] {
-        assert_eq!(
-            service
-                .handle(
-                    &mut ClientState::default(),
-                    &format!("[{sequence}] GET //HARNESS/254/p/5 {field}"),
-                )
-                .await
-                .status,
-            404,
-            "stale {field} must be unavailable"
-        );
-    }
-    let version = service
-        .handle(
-            &mut ClientState::default(),
-            "[2v] GET //HARNESS/254/p/5 Version",
-        )
-        .await;
-    assert_eq!(version.status, 300);
-    assert!(version.final_text.ends_with("Version=5.5.00"));
-    assert!(service
-        .pci
-        .read()
-        .await
-        .read_edlt_extended_firmware(5)
-        .await
-        .unwrap_err()
-        .to_string()
-        .contains("needs reconnect"));
 
     std::fs::remove_file(path).unwrap();
 }
@@ -3505,10 +3380,136 @@ async fn physical_net_sync_retains_only_metadata_fresh_before_each_optional_fail
     );
 }
 
-/// Single-serial negative pin: one IDENTIFY4 reply stores that serial and
-/// emits no `sync duplicate` event.
 #[tokio::test(start_paused = true)]
-async fn physical_net_sync_single_serial_emits_no_duplicate_event() {
+async fn physical_net_sync_reconnect_during_optional_metadata_does_not_commit_stale_snapshot() {
+    async fn line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+    async fn reply<W: tokio::io::AsyncWrite + Unpin>(writer: &mut W, source: u8, cal: &[u8]) {
+        let mut bytes = vec![0x86, source, 0x10, 0x00];
+        bytes.extend_from_slice(cal);
+        let sum = bytes.iter().fold(0u8, |sum, byte| sum.wrapping_add(*byte));
+        bytes.push(0u8.wrapping_sub(sum));
+        let mut wire = hex::encode_upper(bytes).into_bytes();
+        wire.extend_from_slice(b"\r\n");
+        writer.write_all(&wire).await.unwrap();
+    }
+    fn mmi(start: u8, count: usize, present: &[usize]) -> Vec<u8> {
+        let mut states = vec![0u8; count];
+        for address in present {
+            states[*address - usize::from(start)] = 1;
+        }
+        let mut wire = cbus_protocol::Packet::StandardStatus {
+            application: 0xff,
+            block_start: start,
+            states,
+        }
+        .encode_packet()
+        .unwrap();
+        wire.extend_from_slice(b"\r\n");
+        wire
+    }
+
+    let path = state_path();
+    let (old_pci, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let old_pci = old_pci.clone();
+        async move { old_pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+
+    let service = Service::new(&fixture(), None, path.clone(), old_pci, None).unwrap();
+    let mut events = service.events.subscribe();
+    let syncing = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(&mut ClientState::default(), "[r] NET SYNC //HARNESS/254")
+                .await
+        }
+    });
+
+    assert_eq!(line(&mut remote_read).await, b"@1A2001\r");
+    remote_write.write_all(b"8220104E\r\n").await.unwrap();
+    let request = line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\05FF00FAFF"), "{request:?}");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    for block in [mmi(0, 88, &[5]), mmi(88, 88, &[]), mmi(176, 80, &[])] {
+        remote_write.write_all(&block).await.unwrap();
+    }
+
+    for (attribute, value) in [(1, &b"KEYGL5"[..]), (2, &b"5.5.00"[..])] {
+        let request = line(&mut remote_read).await;
+        assert!(
+            request
+                .windows(4)
+                .any(|window| window == [0x32, 0x31, 0x30, b'0' + attribute]),
+            "{request:?}"
+        );
+        let code = request[request.len() - 2];
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+        let mut cal = vec![0x80 | (value.len() as u8 + 1), attribute];
+        cal.extend_from_slice(value);
+        reply(&mut remote_write, 5, &cal).await;
+    }
+
+    let request = line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\4605002104"), "{request:?}");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    let identity = [
+        0x38, 0xff, 0xff, 0xff, 0xff, 0x18, 0xb1, 0x06, 0x16, 0xa2, 0x00, 0x05,
+    ];
+    let mut cal = vec![0x8d, 4];
+    cal.extend_from_slice(&identity);
+    reply(&mut remote_write, 5, &cal).await;
+    tokio::time::advance(Duration::from_secs(2)).await;
+    tokio::task::yield_now().await;
+
+    // Replace the service PCI while the old generation waits for the first
+    // optional metadata response. The old task must never repopulate the
+    // cache cleared by set_pci or report sync success.
+    assert_eq!(line(&mut remote_read).await, b"\\4605001AFB0997\r");
+    let (replacement, _replacement_remote) = pci();
+    service.set_pci(replacement).await;
+    tokio::time::advance(Duration::from_secs(10)).await;
+    tokio::task::yield_now().await;
+
+    let response = syncing.await.unwrap();
+    assert_eq!(response.status, 408, "stale sync must fail: {response:?}");
+    assert_eq!(
+        response.final_text,
+        "408 Physical network synchronization invalidated by PCI reconnect"
+    );
+    let model = service.model.lock().await;
+    let network = &model.projects["HARNESS"].networks[&254];
+    assert!(network.physical.is_empty(), "stale cache: {network:?}");
+    assert_eq!(network.state, NetworkState::Open);
+    drop(model);
+
+    let mut seen = Vec::new();
+    while let Ok(event) = events.try_recv() {
+        seen.push(event);
+    }
+    assert!(
+        !seen.iter().any(|event| event.contains("sync ok")),
+        "reconnected stale sync emitted success: {seen:?}"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+/// MMI state three is a native error flag. Even one valid IDENTIFY4 reply
+/// cannot make source-address-only eDLT metadata attributable to one unit.
+#[tokio::test(start_paused = true)]
+async fn physical_net_sync_state_three_skips_edlt_metadata() {
     async fn pci_line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
         let mut line = Vec::new();
         reader.read_until(b'\r', &mut line).await.unwrap();
@@ -3526,7 +3527,7 @@ async fn physical_net_sync_single_serial_emits_no_duplicate_event() {
     fn mmi_block(start: u8, count: usize, present: &[usize]) -> Vec<u8> {
         let mut states = vec![0u8; count];
         for address in present {
-            states[*address - usize::from(start)] = 1;
+            states[*address - usize::from(start)] = 3;
         }
         let mut wire = cbus_protocol::packet::Packet::StandardStatus {
             application: 0xff,
@@ -3553,22 +3554,6 @@ async fn physical_net_sync_single_serial_emits_no_duplicate_event() {
     reset.await.unwrap().unwrap();
 
     let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
-    // Native subtype selection comes from the configured database. A fresh
-    // IDENTIFY1 that says KEYGL5 is not sufficient to probe parameter 0xFA.
-    service
-        .model
-        .lock()
-        .await
-        .projects
-        .get_mut("HARNESS")
-        .unwrap()
-        .networks
-        .get_mut(&254)
-        .unwrap()
-        .units
-        .get_mut(&5)
-        .unwrap()
-        .unit_type = "KEYE1".into();
     let mut events = service.events.subscribe();
     let syncing = tokio::spawn({
         let service = service.clone();
@@ -3648,7 +3633,7 @@ async fn physical_net_sync_single_serial_emits_no_duplicate_event() {
     tokio::task::yield_now().await;
 
     let response = syncing.await.unwrap();
-    assert_eq!(response.status, 200, "single-serial SYNC: {response:?}");
+    assert_eq!(response.status, 200, "state-three SYNC: {response:?}");
 
     let model = service.model.lock().await;
     let snapshot = model.projects["HARNESS"].networks[&254]
@@ -3664,15 +3649,40 @@ async fn physical_net_sync_single_serial_emits_no_duplicate_event() {
         snapshot.unit_type, "KEYGL5",
         "fresh physical identity is retained"
     );
-    assert!(!snapshot.fields.contains_key("WidgetGroups"));
+    for field in [
+        "FirmwareVersion",
+        "Application",
+        "Application2",
+        "WidgetGroups",
+    ] {
+        assert!(
+            !snapshot.fields.contains_key(field),
+            "state-three {field} must be unavailable: {snapshot:?}"
+        );
+    }
     drop(model);
 
     assert!(
         tokio::time::timeout(Duration::from_secs(1), pci_line(&mut remote_read))
             .await
             .is_err(),
-        "a DB-mismatched physical KEYGL5 must not receive a WidgetGroups recall"
+        "MMI state three must not receive any source-only eDLT metadata request"
     );
+
+    for (sequence, field) in [
+        ("s3f", "FirmwareVersion"),
+        ("s3a", "Application"),
+        ("s3a2", "Application2"),
+        ("s3g", "WidgetGroups"),
+    ] {
+        let get = service
+            .handle(
+                &mut ClientState::default(),
+                &format!("[{sequence}] GET //HARNESS/254/p/5 {field}"),
+            )
+            .await;
+        assert_eq!(get.status, 404, "state-three {field}: {get:?}");
+    }
 
     let mut seen = Vec::new();
     while let Ok(event) = events.try_recv() {
