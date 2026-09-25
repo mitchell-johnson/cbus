@@ -96,21 +96,25 @@ does not verify a physical display or complete SceneManager form behavior.
 
 ### Invoke a retained eDLT scene binding
 
-Use the same exact-profile parameter export and SceneManager cache to resolve a
-stored Trigger Control group/action pair and submit one event:
+Use the exact identity-bearing `cbus-cli-parameters-v1` export and SceneManager
+cache to resolve a stored Trigger Control group/action pair and submit one
+event. A bare parameter mapping is rejected before client construction:
 
 ```sh
 cbus-toolkit cgate --host 127.0.0.1 edlt-scene-trigger snapshot.json \
   --metadata scene-cache.json --network //PROJECT/254 --scene 1 --force
 ```
 
-Preflight rejects missing, disabled or stale bindings before connecting. The
-command sends exactly one `TRIGGER EVENT //PROJECT/NETWORK/202/GROUP ACTION`
-request, optionally with `FORCE`, and never retries or changes PP data. A
-terminal `200` is native acceptance only. The event is group-scoped rather
-than point-to-point. The caller-supplied source/cache are not compared with a
-physical unit; binding freshness, physical scene execution and persistence
-remain unverified. See `toolkit-cli/docs/edlt-scene-trigger.md`.
+Preflight rejects missing or disabled bindings and bindings absent from the
+supplied cache before connecting. The command sends exactly one
+`TRIGGER EVENT //PROJECT/NETWORK/202/GROUP ACTION` request, optionally with
+`FORCE`, and never retries or changes PP data. A terminal `200` is native
+acceptance only. A complete non-408 4xx is a protocol rejection; `408`, all
+5xx, transport loss and unsupported replies remain outcome-uncertain. Every
+submitted result says that a device side effect is possible. The event is
+group-scoped rather than point-to-point. The caller-supplied source/cache are
+not compared with a physical unit; binding freshness, physical scene execution
+and persistence remain unverified. See `toolkit-cli/docs/edlt-scene-trigger.md`.
 
 ### Live eDLT WidgetGroups mapping
 

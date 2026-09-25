@@ -49,6 +49,7 @@ class SceneTriggerPlan:
             'source_snapshot_freshness_verified': False,
             'metadata_cache_freshness_verified': False,
             'physical_binding_readback': False,
+            'source_profile_identity_verified': True,
             'network_io_performed': False,
             'saved': False,
             'pp_writes': 0,
@@ -85,8 +86,10 @@ class SceneTriggerOutcome:
             'error': (None if self.error_type is None else
                       {'type': self.error_type, 'message': self.error}),
             'native_command_accepted': self.complete,
+            'protocol_rejection_confirmed': self.status == 'native-rejected',
             'outcome_uncertain': self.outcome_uncertain,
             'network_io_performed': self.submitted,
+            'device_side_effect_possible': self.submitted,
             'target_scope': 'all C-Bus listeners for the trigger group and action selector',
             'physical_scene_execution_verified': False,
             'device_verified': False,
@@ -171,11 +174,17 @@ class NativeEdltSceneTrigger:
                 raise
             return outcome
 
-        if 400 <= response.code < 600:
+        if 400 <= response.code < 500 and response.code != 408:
             return self._remember(SceneTriggerOutcome(
-                plan, 'rejected', True, reply_code=response.code,
+                plan, 'native-rejected', True, reply_code=response.code,
                 reply_lines=response.lines, error_type='NativeRejected',
                 error=response.final))
+        if response.code == 408 or 500 <= response.code < 600:
+            return self._remember(SceneTriggerOutcome(
+                plan, 'native-outcome-uncertain', True,
+                reply_code=response.code, reply_lines=response.lines,
+                error_type='NativeOutcomeUncertain', error=response.final,
+                outcome_uncertain=True))
         if response.code != 200 or len(response.lines) != 1:
             error = EdltError('Scene trigger requires a single terminal200 reply')
             kind, text = _error(error)

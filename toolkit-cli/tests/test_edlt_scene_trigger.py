@@ -15,10 +15,17 @@ class SceneTriggerTests(unittest.TestCase):
         self.spec = fixture()
         self.manager = EdltSceneManager(self.spec)
         session = Session(self.spec)
-        source = {**session.current,
-                  **{key: value for key, value in vectors()['input'].items()
-                     if key in self.spec.parameters}}
-        self.state = self.manager.load(source, metadata=cache())
+        self.source = {**session.current,
+                       **{key: value for key, value in vectors()['input'].items()
+                          if key in self.spec.parameters}}
+        self.document = {
+            'format': 'cbus-cli-parameters-v1',
+            'unit_type': 'KEYGL5',
+            'firmware': '5.5.00',
+            'catalog_number': '5055EDL',
+            'parameters': self.source,
+        }
+        self.state = self.manager.load_export(self.document, metadata=cache())
 
     def trigger(self, client):
         return NativeEdltSceneTrigger(
@@ -50,9 +57,15 @@ class SceneTriggerTests(unittest.TestCase):
             'source_snapshot_freshness_verified': False,
             'metadata_cache_freshness_verified': False,
             'physical_binding_readback': False,
+            'source_profile_identity_verified': True,
             'network_io_performed': False,
             'saved': False, 'pp_writes': 0,
         })
+
+        raw_state = self.manager.load(self.source, metadata=cache())
+        with self.assertRaisesRegex(EdltError, 'identity-bearing parameter export'):
+            sender.plan(raw_state, scene=1)
+        self.assertEqual(client.commands, [])
 
     def test_one_accepted_command_has_bounded_evidence_and_no_retry(self):
         client = Client(reply('200 OK'))
@@ -68,6 +81,8 @@ class SceneTriggerTests(unittest.TestCase):
         self.assertFalse(evidence['device_verified'])
         self.assertFalse(evidence['source_snapshot_freshness_verified'])
         self.assertFalse(evidence['physical_binding_readback'])
+        self.assertTrue(evidence['source_profile_identity_verified'])
+        self.assertTrue(evidence['device_side_effect_possible'])
         self.assertEqual(evidence['attempted_count'], 1)
         self.assertEqual(evidence['automatic_retries'], 0)
         self.assertEqual(evidence['pp_writes'], 0)
@@ -97,7 +112,9 @@ class SceneTriggerTests(unittest.TestCase):
 
     def test_rejection_malformed_reply_transport_and_disconnect_are_distinct(self):
         cases = (
-            (CGateError(reply('401 Owned rejection')), 'rejected', False, False),
+            (CGateError(reply('401 Owned rejection')), 'native-rejected', False, False),
+            (CGateError(reply('408 Operation failed')), 'native-outcome-uncertain', False, True),
+            (CGateError(reply('502 Trigger delivery failed')), 'native-outcome-uncertain', False, True),
             (reply('202 Done'), 'response-error', False, True),
             (OSError('lost acknowledgement'), 'transport-error', False, True),
         )
@@ -111,6 +128,7 @@ class SceneTriggerTests(unittest.TestCase):
                 self.assertEqual(result.outcome_uncertain, uncertain)
                 self.assertEqual(len(client.commands), 1)
                 self.assertEqual(sender.last_evidence, result.as_dict())
+                self.assertTrue(result.as_dict()['device_side_effect_possible'])
                 self.assertEqual(result.as_dict()['automatic_retries'], 0)
 
         client = Client(reply('200 OK'))
@@ -118,6 +136,7 @@ class SceneTriggerTests(unittest.TestCase):
         result = self.trigger(client).trigger(self.state, scene=1)
         self.assertEqual(result.status, 'not-connected')
         self.assertFalse(result.outcome_uncertain)
+        self.assertFalse(result.as_dict()['device_side_effect_possible'])
         self.assertEqual(client.commands, [])
 
     def test_preflight_bounds_are_strict(self):

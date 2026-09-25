@@ -165,6 +165,7 @@ class SceneManagerState:
     validation: str | None
     static_text_overlay: Mapping
     name_allocations: tuple[str, ...]
+    _source_profile_identity_verified: bool = field(repr=False, compare=False)
     _origin: _Origin = field(repr=False, compare=False)
 
     def __post_init__(self):
@@ -254,7 +255,9 @@ class EdltSceneManager:
     def snapshot(self, values): return self.lifecycle.snapshot(values)
 
     def _fingerprint(self, value):
-        extra = {'expected': dict(value.loaded.expected), 'cache': value.cache.as_dict(), 'next_item_id': value.next_item_id} if type(value) is SceneManagerState else {}
+        extra = {'expected': dict(value.loaded.expected), 'cache': value.cache.as_dict(),
+                 'next_item_id': value.next_item_id,
+                 'source_profile_identity_verified': value._source_profile_identity_verified} if type(value) is SceneManagerState else {}
         return hashlib.sha256(_json({'value': value.as_dict(), **extra}).encode()).hexdigest()
 
     def _check(self, value, expected_type=SceneManagerState):
@@ -280,8 +283,28 @@ class EdltSceneManager:
             items = tuple(SceneManagerItem(next_id + i, v.group, v.ramp_rate, v.can_edit, v.level) for i, v in enumerate(s.items))
             next_id += len(items)
             scenes.append(SceneManagerScene(s.slot, s.primary_secondary, s.can_edit, s.trigger.group, s.action_selector, s.name_index, items, 0, labels))
-        state = SceneManagerState(loaded, cache, tuple(scenes), None, next_id, True, (), None, {}, (), _Origin(self._owner))
+        state = SceneManagerState(loaded, cache, tuple(scenes), None, next_id, True,
+                                  (), None, {}, (), False, _Origin(self._owner))
         return self._seal(state)
+
+    def load_export(self, document, *, metadata, scope='model'):
+        """Load an exact identity-bearing KEYGL5 parameter export.
+
+        The ordinary model loader accepts raw mappings for offline editing. A
+        live retained-scene trigger requires the export envelope so its profile
+        evidence comes from supplied identity fields rather than the selected
+        decoder alone.
+        """
+        fields = {'format', 'unit_type', 'firmware', 'catalog_number', 'parameters'}
+        profile = tuple(document.get(name) for name in
+                        ('format', 'unit_type', 'firmware', 'catalog_number')) \
+            if isinstance(document, Mapping) else ()
+        if (not isinstance(document, Mapping) or set(document) != fields or
+                profile != ('cbus-cli-parameters-v1', 'KEYGL5', '5.5.00', '5055EDL') or
+                not isinstance(document.get('parameters'), Mapping)):
+            raise EdltError('Live scene trigger requires an exact identity-bearing parameter export for KEYGL5 / 5055EDL / 5.5.00')
+        state = self.load(document['parameters'], metadata=metadata, scope=scope)
+        return self._next(state, _source_profile_identity_verified=True)
 
     @staticmethod
     def _scene_static_view(state, scenes, overlay):
@@ -356,6 +379,8 @@ class EdltSceneManager:
         network I/O.
         """
         self._check(state); _int(scene, 'Scene', 1, 8)
+        if state._source_profile_identity_verified is not True:
+            raise EdltError('Live scene trigger requires an exact identity-bearing parameter export')
         if not state.complete:
             raise EdltError('An incomplete scene state is review-only')
         selected, trigger = self._trigger(state, state.scenes[scene - 1])

@@ -967,9 +967,13 @@ device behavior remain unverified.
 
 The [retained scene trigger](docs/edlt-scene-trigger.md) resolves the stored
 application-202 group/action pair before connecting, then submits one native
-Trigger event without retry. A terminal `200` proves C-Gate acceptance only;
-the event is group-scoped and can reach every configured listener. It performs
-no PP write or save and does not claim that a physical eDLT executed the scene.
+Trigger event without retry. It requires the exact identity-bearing
+`cbus-cli-parameters-v1` envelope; raw PP mappings and wrong profiles fail
+before client construction. A terminal `200` proves C-Gate acceptance only;
+`408`, 5xx and transport failures remain outcome-uncertain, and all submitted
+requests report that device side effects are possible. The event is group-scoped
+and can reach every configured listener. It performs no PP write or save and
+does not claim that a physical eDLT executed the scene.
 
 The reusable load/save lifecycle also passes a separate 45-test checkpoint on
 both versions, retaining the earlier 76-case original matrix, 2,048 Enable

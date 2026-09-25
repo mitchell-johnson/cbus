@@ -71,12 +71,17 @@ The original pending-timer cancellation behavior was researched separately. Unch
 cbus-toolkit cgate unit --lock-address //OWNED/253 --source /db//OWNED/253/p/20 --dry-run edlt-scene-capture --metadata cache.json --network //OWNED/254 --scene 1
 cbus-toolkit cgate edlt-scene-broadcast source.json --metadata cache.json --network //OWNED/254 --scene 1 --scope current --item 1
 cbus-toolkit cgate edlt-scene-broadcast source.json --metadata cache.json --network //OWNED/254 --scene 1 --scope all
-cbus-toolkit cgate edlt-scene-trigger source.json --metadata cache.json --network //OWNED/254 --scene 1 --force
+cbus-toolkit cgate edlt-scene-trigger wrapped-export.json --metadata cache.json --network //OWNED/254 --scene 1 --force
 ```
 
 Capture requires a database destination. Its dry run performs live GET reads, stages and verifies temporary PP changes, and discards them without persistent SAVE. It does not issue RAMP. Without `--dry-run`, a complete verified capture is staged, checked and explicitly saved through the established programming finalization path. Failed/partial capture makes no PP SET or SAVE attempt. Evidence survives later plan, staging, save and cleanup failures.
 
 Broadcast reads an exact-profile source export and cache, validates the entire request before connecting, and only sends the selected RAMP commands. It does not save the source or invoke the programming-session workflow. CLI exit status reflects incomplete capture/broadcast and cleanup failure.
+
+Trigger invocation has a stricter source boundary than broadcast: it requires
+the exact identity-bearing `cbus-cli-parameters-v1` envelope. See the dedicated
+[scene trigger](edlt-scene-trigger.md) outcome taxonomy; in particular, a `408`
+or 5xx reply does not prove that no device side effect occurred.
 
 ## Evidence and limits
 

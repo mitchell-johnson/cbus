@@ -17,7 +17,8 @@ def options(parser, *, broadcast=False):
 
 
 def trigger_options(parser):
-    parser.add_argument('file', type=Path, help='Complete exact-profile eDLT PP source export')
+    parser.add_argument('file', type=Path,
+                        help='Identity-bearing KEYGL5 5.5.00 / 5055EDL PP export')
     parser.add_argument('--metadata', type=Path, required=True, help='Scene Manager application and group cache facts')
     parser.add_argument('--network', required=True, help='Explicit live target network, such as //PROJECT/254')
     parser.add_argument('--scene', type=int, choices=range(1, 9), required=True)
@@ -148,13 +149,13 @@ def broadcast(args, client_factory, ssl_context):
 
 def trigger(args, client_factory, ssl_context):
     """Resolve a retained scene binding, then submit exactly one Trigger event."""
-    from .edlt_global_cli import spec, read_parameters
+    from .edlt_global_cli import spec, read_json
     from .edlt_scene_manager import EdltSceneManager
     from .edlt_scene_trigger import NativeEdltSceneTrigger
     args._scene_live_evidence = None
     manager = EdltSceneManager(spec(args))
     configured = settings(args)
-    state = manager.load(read_parameters(args.file), metadata=configured['metadata'])
+    state = manager.load_export(read_json(args.file), metadata=configured['metadata'])
     client = client_factory(args.host, args.port or (20123 if args.tls else 20023),
                             timeout=args.timeout, ssl_context=ssl_context)
     sender = NativeEdltSceneTrigger(manager, client, network=args.network)

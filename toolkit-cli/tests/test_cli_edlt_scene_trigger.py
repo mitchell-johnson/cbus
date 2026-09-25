@@ -20,12 +20,15 @@ class SceneTriggerCLITests(unittest.TestCase):
         source = {**session.current,
                   **{key: value for key, value in vectors()['input'].items()
                      if key in self.spec.parameters}}
+        self.document = {'format': 'cbus-cli-parameters-v1',
+                         'unit_type': 'KEYGL5', 'firmware': '5.5.00',
+                         'catalog_number': '5055EDL', 'parameters': source}
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
         folder = Path(temporary.name)
         self.source = folder / 'source.json'
         self.metadata = folder / 'metadata.json'
-        self.source.write_text(json.dumps(source))
+        self.source.write_text(json.dumps(self.document))
         self.metadata.write_text(json.dumps(cache()))
 
     def args(self, *extra):
@@ -53,6 +56,8 @@ class SceneTriggerCLITests(unittest.TestCase):
         self.assertTrue(result['complete'])
         self.assertTrue(result['native_command_accepted'])
         self.assertFalse(result['physical_scene_execution_verified'])
+        self.assertTrue(result['source_profile_identity_verified'])
+        self.assertTrue(result['device_side_effect_possible'])
         self.assertEqual(result['automatic_retries'], 0)
 
     def test_rejection_is_structured_nonzero_and_invalid_input_never_connects(self):
@@ -62,7 +67,7 @@ class SceneTriggerCLITests(unittest.TestCase):
                 patch('cbus_toolkit.cgate.CGateClient',
                       return_value=client):
             result = self.invoke(self.args(), status=1)
-        self.assertEqual(result['status'], 'rejected')
+        self.assertEqual(result['status'], 'native-rejected')
         self.assertFalse(result['complete'])
         self.assertEqual(len(client.commands), 1)
 
@@ -77,3 +82,15 @@ class SceneTriggerCLITests(unittest.TestCase):
             result = self.invoke(
                 self.args('--network', '//OWNED/0254'), status=1)
         self.assertIn('explicit live network', result['error'])
+
+    def test_raw_or_wrong_profile_source_fails_before_client_creation(self):
+        for document in (self.document['parameters'],
+                         {**self.document, 'firmware': '5.4.00'}):
+            with self.subTest(document_type='raw' if 'format' not in document else 'wrong-profile'):
+                self.source.write_text(json.dumps(document))
+                with patch('cbus_toolkit.edlt_global_cli.spec',
+                           return_value=self.spec), \
+                        patch('cbus_toolkit.cgate.CGateClient') as client_factory:
+                    result = self.invoke(self.args(), status=1)
+                client_factory.assert_not_called()
+                self.assertIn('identity-bearing parameter export', result['error'])

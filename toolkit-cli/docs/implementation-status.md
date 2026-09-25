@@ -16,7 +16,7 @@ Later focused checkpoints below also passed both Python versions, except where e
 | --- | ---: | --- |
 | eDLT configuration CRC | 21 | [CRC](edlt-crc.md); 65,588 fresh original results per run. |
 | eDLT percentage arithmetic and CLI input | 10 arithmetic; 9 CLI/helper | [Percentage](edlt-percentage.md); 6,504 original arithmetic rows per run; original lossy roundtrips retained. Full form integration remains open. |
-| Retained eDLT scene Trigger invocation | 8 focused | [Scene trigger](edlt-scene-trigger.md); exact retained group/action resolution, one tagged native Trigger request, rejection/uncertainty boundaries and no retries. Physical execution remains unverified. |
+| Retained eDLT scene Trigger invocation | 9 focused | [Scene trigger](edlt-scene-trigger.md); exact identity-bearing source, retained group/action resolution, one tagged native Trigger request, protocol rejection versus post-submit uncertainty and no retries. Physical execution remains unverified. |
 | Toolkit About information | 16 | [About](toolkit-about.md); 51 fresh original instruction cases per run; explicit executable and supplied context. |
 | Signed update metadata diagnostics | 56 combined | [Metadata](toolkit-update-metadata.md); supplied key remains untrusted. |
 | Signed revocation metadata diagnostics | 53 | [Revocation](toolkit-update-revocation.md); historical signer identity, no current-trust or update-availability decision. |
