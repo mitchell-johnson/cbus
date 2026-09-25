@@ -343,8 +343,14 @@ class SelectedSerialTests(unittest.TestCase):
 
     def test_parent_deadline_after_durable_marking_does_not_send_and_late_read_is_retained(self):
         sim=fixture()
-        with sim.running() as endpoint:plan=manager(endpoint).plan(A,6)
-        value=plan.as_dict();subject=manager(endpoint);clock=Clock()
+        # This case exercises parent-deadline bookkeeping after planning, not
+        # the simulator's response latency.  The suite-wide 20 ms fixture
+        # window is too small to bound a separately scheduled simulator thread
+        # under a loaded test runner, so give this setup read a realistic
+        # margin before switching to the deterministic clock below.
+        with sim.running() as endpoint:
+            plan=manager(endpoint,options_response_timeout=.2).plan(A,6)
+        value=plan.as_dict();subject=manager(endpoint,options_response_timeout=.2);clock=Clock()
         def before(evidence,deadline):
             for key in ('before','local_identity','local_options'):evidence[key]=deepcopy(value[key])
             return implementation._inventory_proof(value['before'],value['endpoint'],16,False)
@@ -367,7 +373,7 @@ class SelectedSerialTests(unittest.TestCase):
         saved=types.SimpleNamespace(as_dict=lambda:deepcopy(value['before']))
         def late():child.last_observation=saved;clock.value+=5;return saved
         child.collect_inventory=late
-        subject=manager(endpoint)
+        subject=manager(endpoint,options_response_timeout=.2)
         with patch.object(subject,'_inventory',return_value=child),patch('cbus_toolkit.pci_selected_serial.time.monotonic',side_effect=clock):
             with self.assertRaises(TimeoutError) as caught:subject.verify(plan)
         self.assertEqual(caught.exception.selected_serial_evidence['after'],value['before'])
