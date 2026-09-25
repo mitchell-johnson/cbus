@@ -1469,11 +1469,12 @@ impl Service {
 
         // Complete every required identity transaction before the optional
         // KEYGL5 reads. Retained C-Gate classfile bytecode proves this order:
-        // CBusOEMUnit.o() dispatches CBusEdlt.t() (0xFB/9), then CBusEdlt.n()
-        // reads OEM memory address 16/2 before invoking the ignored-result
-        // 0xFA/44 WidgetGroups helper. The reads remain optional for overall
-        // identity SYNC. An incomplete read faults the programming lane, so
-        // later optional calls fail closed without replay; every unavailable
+        // CBusOEMUnit.o() dispatches CBusEdlt.t() (OEM-routed 0xFB/9), then
+        // CBusEdlt.n() reads OEM memory address 16/2 before invoking the
+        // ignored-result OEM-routed 0xFA/44 WidgetGroups helper. The reads
+        // remain optional for overall identity SYNC. An incomplete read
+        // faults the programming lane, so later optional calls fail closed
+        // without replay; every unavailable
         // value remains None and is invalidated at commit. These addressed
         // replies carry no serial identity, so only healthy MMI state one
         // with exactly one known IDENTIFY4 serial is eligible. State three,

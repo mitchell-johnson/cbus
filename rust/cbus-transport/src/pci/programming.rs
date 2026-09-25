@@ -1806,6 +1806,22 @@ impl PciClient {
         parameter: u8,
         length: usize,
     ) -> Result<Vec<u8>> {
+        self.recall_parameter_with_route(
+            unit,
+            parameter,
+            length,
+            ProgrammingRoute::DirectChecksummed,
+        )
+        .await
+    }
+
+    async fn recall_parameter_with_route(
+        &self,
+        unit: u8,
+        parameter: u8,
+        length: usize,
+        route: ProgrammingRoute,
+    ) -> Result<Vec<u8>> {
         let count = u8::try_from(length).map_err(|_| {
             Error::new(
                 ErrorKind::InvalidInput,
@@ -1838,7 +1854,7 @@ impl PciClient {
                 parameter,
                 length,
                 None,
-                ProgrammingRoute::DirectChecksummed,
+                route,
             )
             .await?;
         transaction.complete = true;
@@ -1847,17 +1863,19 @@ impl PciClient {
 
     /// Read the native KEYGL5 static widget-group mapping.
     ///
-    /// C-Gate reads parameter `0xFA` with an exact length of 44 and exposes
-    /// all returned bytes as unsigned decimal values separated by commas.
+    /// C-Gate reads parameter `0xFA` with an exact length of 44 over the
+    /// captured OEM route and exposes all returned bytes as unsigned decimal
+    /// values separated by commas.
     /// The underlying programming transaction correlates source, parameter,
     /// and total length; an incomplete exchange faults the programming lane
     /// until reconnect.
     pub async fn read_edlt_widget_groups(&self, unit: u8) -> Result<String> {
         let data = self
-            .recall_parameter(
+            .recall_parameter_with_route(
                 unit,
                 cbus_protocol::edlt_widget_groups::PARAMETER,
                 cbus_protocol::edlt_widget_groups::LENGTH,
+                ProgrammingRoute::Oem,
             )
             .await?;
         cbus_protocol::edlt_widget_groups::decode_reply(&data)
@@ -1866,16 +1884,17 @@ impl PciClient {
 
     /// Read the native KEYGL5 extended-firmware string.
     ///
-    /// This is parameter `0xFB`, exactly nine bytes, decoded up to the first
-    /// NUL. It is distinct from the ordinary IDENTIFY2 version string. The
-    /// request is exact-once and an incomplete exchange faults the programming
-    /// lane until reconnect.
+    /// This is parameter `0xFB` over the captured OEM route, exactly nine
+    /// bytes, decoded up to the first NUL. It is distinct from the ordinary
+    /// IDENTIFY2 version string. The request is exact-once and an incomplete
+    /// exchange faults the programming lane until reconnect.
     pub async fn read_edlt_extended_firmware(&self, unit: u8) -> Result<String> {
         let data = self
-            .recall_parameter(
+            .recall_parameter_with_route(
                 unit,
                 cbus_protocol::edlt_sync_metadata::FIRMWARE_PARAMETER,
                 cbus_protocol::edlt_sync_metadata::FIRMWARE_LENGTH,
+                ProgrammingRoute::Oem,
             )
             .await?;
         cbus_protocol::edlt_sync_metadata::decode_firmware(&data)
@@ -4136,22 +4155,28 @@ mod tests {
     }
 
     #[tokio::test(start_paused = true)]
-    async fn edlt_widget_groups_uses_fa_44_and_correlates_source_parameter_and_length() {
+    async fn edlt_widget_groups_uses_captured_oem_route_and_fragmentation() {
         let (pci, mut remote, _) = setup().await;
         let worker = pci.clone();
         let read = tokio::spawn(async move { worker.read_edlt_widget_groups(5).await });
-        assert_eq!(line(&mut remote).await, b"\\4605001AFA2C75\r");
+        assert_eq!(line(&mut remote).await, b"\\460509001AFA2C6C\r");
 
-        let values = (0..cbus_protocol::edlt_widget_groups::LENGTH as u8).collect::<Vec<_>>();
+        // Retained physical capture: the KEYGL5 repeats parameter FA across
+        // three replies carrying 16, 16, and 12 bytes respectively.
+        let values = hex::decode(
+            "FFFFFFFFFFFFFFFFFFFFFFFF381B381938213818FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+        )
+        .unwrap();
+        assert_eq!(values.len(), cbus_protocol::edlt_widget_groups::LENGTH);
         let wrong_source = Cal::Reply {
             parameter: cbus_protocol::edlt_widget_groups::PARAMETER,
-            data: values[..22].to_vec(),
+            data: values[..16].to_vec(),
         }
         .encode();
         reply(&mut remote, 4, &wrong_source).await;
         let wrong_parameter = Cal::Reply {
             parameter: 0xfb,
-            data: values[..22].to_vec(),
+            data: values[..16].to_vec(),
         }
         .encode();
         reply(&mut remote, 5, &wrong_parameter).await;
@@ -4160,34 +4185,53 @@ mod tests {
 
         let first = Cal::Reply {
             parameter: cbus_protocol::edlt_widget_groups::PARAMETER,
-            data: values[..22].to_vec(),
+            data: values[..16].to_vec(),
         }
         .encode();
+        assert_eq!(
+            hex::encode_upper(&first),
+            "91FAFFFFFFFFFFFFFFFFFFFFFFFF381B3819"
+        );
         reply(&mut remote, 5, &first).await;
         tokio::task::yield_now().await;
         assert!(!read.is_finished(), "a short matching reply is incomplete");
 
         let second = Cal::Reply {
             parameter: cbus_protocol::edlt_widget_groups::PARAMETER,
-            data: values[22..].to_vec(),
+            data: values[16..32].to_vec(),
         }
         .encode();
+        assert_eq!(
+            hex::encode_upper(&second),
+            "91FA38213818FFFFFFFFFFFFFFFFFFFFFFFF"
+        );
         reply(&mut remote, 5, &second).await;
+        tokio::task::yield_now().await;
+        assert!(!read.is_finished(), "32 matching bytes are incomplete");
+
+        let third = Cal::Reply {
+            parameter: cbus_protocol::edlt_widget_groups::PARAMETER,
+            data: values[32..].to_vec(),
+        }
+        .encode();
+        assert_eq!(hex::encode_upper(&third), "8DFAFFFFFFFFFFFFFFFFFFFFFFFF");
+        reply(&mut remote, 5, &third).await;
         assert_eq!(
             read.await.unwrap().unwrap(),
-            (0..cbus_protocol::edlt_widget_groups::LENGTH)
-                .map(|value| value.to_string())
+            values
+                .iter()
+                .map(u8::to_string)
                 .collect::<Vec<_>>()
                 .join(",")
         );
     }
 
     #[tokio::test(start_paused = true)]
-    async fn edlt_extended_firmware_uses_fb_9_and_native_nul_projection() {
+    async fn edlt_extended_firmware_uses_oem_fb_9_and_native_nul_projection() {
         let (pci, mut remote, _) = setup().await;
         let worker = pci.clone();
         let read = tokio::spawn(async move { worker.read_edlt_extended_firmware(5).await });
-        assert_eq!(line(&mut remote).await, b"\\4605001AFB0997\r");
+        assert_eq!(line(&mut remote).await, b"\\460509001AFB098E\r");
 
         reply(&mut remote, 4, &[0x85, 0xfb, b'w', b'r', b'o', b'n']).await;
         reply(&mut remote, 5, &[0x84, 0xfa, b'w', b'r', b'o']).await;
@@ -4255,7 +4299,7 @@ mod tests {
         let (pci, mut remote, _) = setup().await;
         let worker = pci.clone();
         let read = tokio::spawn(async move { worker.read_edlt_widget_groups(5).await });
-        assert_eq!(line(&mut remote).await, b"\\4605001AFA2C75\r");
+        assert_eq!(line(&mut remote).await, b"\\460509001AFA2C6C\r");
         tokio::time::advance(REPLY_TIMEOUT).await;
         tokio::task::yield_now().await;
         assert_eq!(read.await.unwrap().unwrap_err().kind(), ErrorKind::TimedOut);

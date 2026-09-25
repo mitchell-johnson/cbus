@@ -823,7 +823,7 @@ async fn keygl5_sync_populates_native_metadata_properties_in_classfile_order() {
         answer_identify(&sys, 5, 4, &serial_identity("101136.1558", 5)).await;
 
         require(COMMAND_DRAIN, "KEYGL5 extended-firmware recall", || {
-            sys.pci.count_payload("4605001AFB0997") == 1
+            sys.pci.count_payload("460509001AFB098E") == 1
         })
         .await;
         let firmware = cbus_protocol::Cal::Reply {
@@ -849,11 +849,12 @@ async fn keygl5_sync_populates_native_metadata_properties_in_classfile_order() {
             .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x83, 1, 56, 255]));
 
         require(COMMAND_DRAIN, "KEYGL5 WidgetGroups recall", || {
-            sys.pci.count_payload("4605001AFA2C75") == 1
+            sys.pci.count_payload("460509001AFA2C6C") == 1
         })
         .await;
-        let values = (0..44u8).collect::<Vec<_>>();
-        for fragment in values.chunks(22) {
+        let mut values = [0xff; 44];
+        values[12..20].copy_from_slice(&[0x38, 0x1b, 0x38, 0x19, 0x38, 0x21, 0x38, 0x18]);
+        for fragment in values.chunks(16) {
             let cal = cbus_protocol::Cal::Reply {
                 parameter: 0xfa,
                 data: fragment.to_vec(),
@@ -866,10 +867,10 @@ async fn keygl5_sync_populates_native_metadata_properties_in_classfile_order() {
     };
     let (sync, ()) = tokio::join!(sync, peer);
     assert!(sync.contains("200 OK"), "{sync:?}");
-    assert_eq!(sys.pci.count_payload("4605001AFB0997"), 1);
+    assert_eq!(sys.pci.count_payload("460509001AFB098E"), 1);
     assert_eq!(sys.pci.count_payload("46050900A400411000B7"), 1);
     assert_eq!(sys.pci.count_payload("460509001A01028F"), 1);
-    assert_eq!(sys.pci.count_payload("4605001AFA2C75"), 1);
+    assert_eq!(sys.pci.count_payload("460509001AFA2C6C"), 1);
     let frames = sys.pci.frames();
     let position = |payload: &str| {
         frames
@@ -878,14 +879,17 @@ async fn keygl5_sync_populates_native_metadata_properties_in_classfile_order() {
             .unwrap_or_else(|| panic!("missing {payload}"))
     };
     assert!(
-        position("4605001AFB0997") < position("46050900A400411000B7")
+        position("460509001AFB098E") < position("46050900A400411000B7")
             && position("46050900A400411000B7") < position("460509001A01028F")
-            && position("460509001A01028F") < position("4605001AFA2C75"),
+            && position("460509001A01028F") < position("460509001AFA2C6C"),
         "retained CBusEdlt classfile order: {frames:?}"
     );
 
-    let expected = (0..44)
-        .map(|value| value.to_string())
+    let mut expected_values = [0xff; 44];
+    expected_values[12..20].copy_from_slice(&[0x38, 0x1b, 0x38, 0x19, 0x38, 0x21, 0x38, 0x18]);
+    let expected = expected_values
+        .iter()
+        .map(u8::to_string)
         .collect::<Vec<_>>()
         .join(",");
     let property = command(

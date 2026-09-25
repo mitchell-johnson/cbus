@@ -108,6 +108,7 @@ The command validates the exact unit path, requires a successful network-wide
 `GET //PROJECT/NETWORK/p/UNIT WidgetGroups` response. The payload is exactly 44
 canonical unsigned decimal bytes joined by commas. It is an opaque static
 mapping from the physical synchronized cache, not dynamic-label cache readback.
+The native request is one OEM `09 00` parameter-`0xFA` recall of 44 bytes.
 The JSON keeps rendering, persistence, and network atomicity false. It records
 that persistent device configuration stays unchanged while the metadata read
 writes a volatile OEM selector. It uses cmqttd's shared CNI connection and

@@ -1,10 +1,10 @@
 //! Native KEYGL5 static widget-group mapping.
 //!
-//! C-Gate 3.4.0.2001 reads the mapping from parameter `0xFA` as exactly
-//! 44 bytes. Its `WidgetGroups` getter exposes every byte as an unsigned
-//! decimal value separated by commas. Parameter `0xFB` is a separate
-//! NUL-terminated extended-firmware string and is deliberately not handled
-//! here.
+//! C-Gate 3.4.0.2001 reads the mapping from parameter `0xFA` over the OEM
+//! `09 00` route as exactly 44 bytes. Its `WidgetGroups` getter exposes every
+//! byte as an unsigned decimal value separated by commas. Parameter `0xFB` is
+//! a separate NUL-terminated extended-firmware string and is deliberately not
+//! handled here.
 
 use crate::{Cal, DecodeError};
 

@@ -15,8 +15,9 @@ no retry:
 1. `NET SYNC //PROJECT/NETWORK`
 2. `GET //PROJECT/NETWORK/p/UNIT WidgetGroups`
 
-The first operation must finish with status 200. The getter must be exactly one
-final status-300 line with the requested canonical path and exact
+The first operation performs the native OEM `09 00` parameter-`0xFA` recall
+and must finish with status 200. The getter must be exactly one final
+status-300 line with the requested canonical path and exact
 `WidgetGroups` attribute. Its value must contain exactly 44 canonical unsigned
 decimal bytes, separated by commas without whitespace. Missing, extra,
 negative, signed, non-decimal, or values outside 0..255 fail the command before

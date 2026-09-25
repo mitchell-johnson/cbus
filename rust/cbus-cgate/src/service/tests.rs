@@ -3309,7 +3309,7 @@ async fn run_partial_edlt_sync_failure(failure: OptionalEdltFailure) -> Unit {
     tokio::time::advance(Duration::from_secs(2)).await;
     tokio::task::yield_now().await;
 
-    assert_eq!(line(&mut remote_read).await, b"\\4605001AFB0997\r");
+    assert_eq!(line(&mut remote_read).await, b"\\460509001AFB098E\r");
     let firmware = cbus_protocol::Cal::Reply {
         parameter: 0xfb,
         data: b"02.00.00\0".to_vec(),
@@ -3322,7 +3322,7 @@ async fn run_partial_edlt_sync_failure(failure: OptionalEdltFailure) -> Unit {
 
     if matches!(failure, OptionalEdltFailure::WidgetGroups) {
         reply(&mut remote_write, 5, &[0x83, 1, 57, 202]).await;
-        assert_eq!(line(&mut remote_read).await, b"\\4605001AFA2C75\r");
+        assert_eq!(line(&mut remote_read).await, b"\\460509001AFA2C6C\r");
     }
     tokio::time::advance(Duration::from_secs(10)).await;
     tokio::task::yield_now().await;
@@ -3477,7 +3477,7 @@ async fn physical_net_sync_reconnect_during_optional_metadata_does_not_commit_st
     // Replace the service PCI while the old generation waits for the first
     // optional metadata response. The old task must never repopulate the
     // cache cleared by set_pci or report sync success.
-    assert_eq!(line(&mut remote_read).await, b"\\4605001AFB0997\r");
+    assert_eq!(line(&mut remote_read).await, b"\\460509001AFB098E\r");
     let (replacement, _replacement_remote) = pci();
     service.set_pci(replacement).await;
     tokio::time::advance(Duration::from_secs(10)).await;

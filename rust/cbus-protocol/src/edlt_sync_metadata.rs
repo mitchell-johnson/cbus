@@ -1,10 +1,10 @@
 //! Native KEYGL5 synchronization metadata.
 //!
 //! C-Gate 3.4.0.2001 reads the eDLT's extended firmware string from
-//! parameter `0xFB` as exactly nine bytes. It separately selects OEM memory
-//! address 16 and recalls two bytes for the primary and secondary C-Bus
-//! applications. These values are distinct from the ordinary IDENTIFY2
-//! version string.
+//! parameter `0xFB` over the OEM `09 00` route as exactly nine bytes. It
+//! separately selects OEM memory address 16 and recalls two bytes for the
+//! primary and secondary C-Bus applications. These values are distinct from
+//! the ordinary IDENTIFY2 version string.
 
 use crate::{Cal, DecodeError};
 

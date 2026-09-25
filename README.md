@@ -175,9 +175,9 @@ not prove erasure, rendering or persistence.
 `NET SYNC` also populates the native KEYGL5 synchronization properties. A unit
 must have MMI state one, exactly one known IDENTIFY4 serial, and KEYGL5 types
 in both the configured database and fresh physical IDENTIFY1. Eligible units
-follow retained C-Gate classfile order: parameter `0xFB`
-length 9 supplies the NUL-terminated `FirmwareVersion`, OEM memory address 16
-length 2 supplies decimal `Application` and `Application2`, and parameter
+follow retained C-Gate classfile order over the OEM `09 00` route: parameter
+`0xFB` length 9 supplies the NUL-terminated `FirmwareVersion`, memory address
+16 length 2 supplies decimal `Application` and `Application2`, and parameter
 `0xFA` length 44 supplies `WidgetGroups` as opaque comma-separated decimal
 bytes. `Version` remains the separate IDENTIFY2 value. Read the cached values
 with `GET //PROJECT/NETWORK/p/UNIT PROPERTY`; these GETs issue no new bus I/O.

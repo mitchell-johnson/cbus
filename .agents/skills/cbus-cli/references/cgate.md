@@ -143,10 +143,10 @@ present with unknown identity fields. Native eDLT metadata requires MMI state
 one, exactly one known IDENTIFY4 serial, and both the configured database type
 and fresh IDENTIFY1 to be KEYGL5. Eligible units follow retained CBusEdlt
 classfile order:
-parameter `0xFB` length 9 becomes the NUL-terminated volatile
+OEM-routed parameter `0xFB` length 9 becomes the NUL-terminated volatile
 `FirmwareVersion`; an OEM address-16 selector plus parameter-1 length-2 recall
-becomes decimal `Application` and `Application2`; parameter `0xFA` length 44
-becomes opaque decimal-CSV `WidgetGroups`. `Version` remains the separate
+becomes decimal `Application` and `Application2`; OEM-routed parameter `0xFA`
+length 44 becomes opaque decimal-CSV `WidgetGroups`. `Version` remains the separate
 IDENTIFY2 value and the persistent database `FirmwareVersion` is unchanged.
 Read the properties with `GET //PROJECT/NETWORK/p/UNIT PROPERTY`; these cached
 `300` getters issue no bus I/O. Every request is exact-once and responses must
@@ -197,8 +197,8 @@ recipient), while
 `label_clear: true` denotes the standard physical all-key/one-key cache-clear
 command above,
 `label_kfi: true` denotes the native physical KFIGET/KFISET sequences above,
-`edlt_extended_firmware: true` denotes parameter-`0xFB` physical firmware
-readback during KEYGL5 NET SYNC,
+`edlt_extended_firmware: true` denotes OEM-routed parameter-`0xFB` physical
+firmware readback during KEYGL5 NET SYNC,
 `edlt_applications: true` denotes the native OEM address-16
 Application/Application2 readback,
 `edlt_widget_groups: true` denotes the bounded KEYGL5 static mapping populated
