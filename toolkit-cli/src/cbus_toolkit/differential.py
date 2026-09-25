@@ -5,14 +5,19 @@ Ledger/census + fresh-wheel + differential harness scaffolding only.
 This module does NOT claim Toolkit parity. It loads the authoritative
 38-area ledger in ``capabilities.json`` (``census_complete: false``) and
 exposes the differential matrix: every ledger area maps to workflow and
-negative-path slots that start ``unassessed``, except the five attempted
+negative-path slots that start ``unassessed``, except the six attempted
 rows ``edlt-reset-controls``, ``edlt-retained-scene-editing``,
 ``edlt-global-category-programming`` (whose ``nominal_workflow`` slots are
 each ``accepted`` per the executable SLOT_RUBRIC below, 1/6 slots each),
 ``thermostat-configuration`` (audited 0/6: its evidence does not meet
-the rubric, so all six slots stay ``unassessed``), and
+the rubric, so all six slots stay ``unassessed``),
 ``all-unit-parameter-encoding`` (audited 0/6: massive native-oracle
 comparison scale, but zero original-Toolkit executions, so all six slots
+stay ``unassessed``), and ``preferences-and-update-workflow`` (audited
+0/6: broad multi-scope row whose registry/conditions core records zero
+replayed original calls, whose sub-scope legs cannot be stitched into a
+single bounded nominal pass, and whose HKCU registry persistence is a
+different evidence kind than the rubric's database leg, so all six slots
 stay ``unassessed``); areas still pending,
 ``accepted_areas`` still 0, ``complete`` still false).
 
@@ -137,7 +142,7 @@ RESET_CONTROLS_EVIDENCE_PATHS = [
     "docs/edlt-reset.md",
 ]
 
-# The five attempted differential rows. Every other ledger area keeps the
+# The six attempted differential rows. Every other ledger area keeps the
 # scaffolding default (all slots ``unassessed``, no evidence paths).
 DIFFERENTIAL_ROWS = (
     "edlt-reset-controls",
@@ -145,6 +150,7 @@ DIFFERENTIAL_ROWS = (
     "edlt-global-category-programming",
     "thermostat-configuration",
     "all-unit-parameter-encoding",
+    "preferences-and-update-workflow",
 )
 
 # Measured evidence facts for the second attempted row,
@@ -502,6 +508,149 @@ ALL_UNIT_PARAMETER_ENCODING_EVIDENCE_PATHS = [
 ]
 
 
+# Measured evidence facts for the sixth attempted row,
+# ``preferences-and-update-workflow`` (row id verified present in
+# ``capabilities.json``). Verdict: 0/6 -- every slot stays ``unassessed``.
+# A 0/6 verdict with documented gaps is a legitimate success; the rubric
+# below is applied unchanged. This is the broadest attempted row (40
+# preference definitions + 5 displays + 19 OK-handler edits + numeric +
+# preview/reset + updates + metadata/revocation + conditions + registry +
+# live observation + About), and it fails nominal on three independent
+# legs, so no scope-stitching can rescue it (thermostat row-4 precedent:
+# distinct bounded scopes cannot be combined into a nominal pass). Values
+# are read off the committed artifacts listed in
+# PREFERENCES_UPDATE_EVIDENCE_PATHS below:
+# - replayed-vs-observed reconciliation (the crux): the registry-conditions
+#   acceptance ``original_registry`` records 12 original leaf calls + 12
+#   same-provider witness calls + 47 raw ordered records + 11 supported
+#   observations + 1 excluded collation observation, BUT
+#   ``replayed_original_calls`` is explicitly 0 -- the 12 leaves were
+#   OBSERVED once by original research (Windows pilot, external paths only)
+#   and their outcomes committed to
+#   research/fixtures/toolkit-update-registry-conditions-vectors.json; no
+#   committed test re-executes original-Toolkit calls. The conditions
+#   acceptance likewise records ``replayed_original_rows`` 0 against 279
+#   production stage arms (386 retained / 364 unique / 106 processes).
+#   ``original_int32`` records 107 compared each Python (76 booleans + 31
+#   errors) as observational comparisons, not replayed executions. The two
+#   ``runs`` (313 + 310, 78 tests each, 0 skips) execute OUR suite against
+#   supplied facts/vectors -- self-referential + committed-vector replay,
+#   never fresh original-Toolkit executions. Gating: the registry/conditions
+#   suites carry no vendor gate because they never touch the original;
+#   the fresh-original probes (updates 36 menu cases, about 51 instruction
+#   cases, numeric/reset probes) are gated on CBUS_TOOLKIT_EXE / vendor
+#   paths and SKIP offline, while the Windows scratch-registry and
+#   LocalSystem worker runs are Windows-gated. Which tests replay vs
+#   observe: offline suites replay COMMITTED vectors (captured) or check
+#   our own code; NOTHING committed replays original-Toolkit executions,
+#   so row-level ``original_executions`` is 0 and ``has_replay_test`` is
+#   False. Sub-scope legs that must NOT be stitched: store 40 matrix + 38
+#   display + 2 key captured cases replayed offline (separate "no OS
+#   registry" scope), updates 36 fresh menu + 20 captured + 2 owned TLS
+#   (vendor-gated fresh leg, separate SESU-candidate scope), about 51
+#   formula vectors replayed offline + fresh probe gated (no-persistence
+#   text scope), metadata 52 canonical + 28 lifetime + 7 captured
+#   signatures (offline diagnostics scope), live 7 typed LocalSystem
+#   observations + 108 host / 113 CLI focused tests (system-context scope
+#   with user-context parity explicitly false), revocation 53 tests
+#   (offline signed-metadata scope), expanded preferences 94 tests with 21
+#   actual Windows scratch cases per run (13 preference + 8 reset, owned
+#   namespaces removed).
+# - persistence-leg judgment (explicit, no silent stretch): the rubric's
+#   native-persistence leg requires DATABASE save/close/load readback.
+#   This row's workflow persistence is Windows-HKCU registry load/save
+#   (scratch namespaces, independent reload) -- a different persistence
+#   KIND than a C-Bus project database, exactly as native PP sessions were
+#   judged transient (not persistence) in row 5. Counting HKCU as the
+#   database leg would stretch the rubric silently, so row-level
+#   ``has_native_persistence`` is False. (The verdict is over-determined:
+#   even a generous reading still fails on the 0-replayed leg and the
+#   no-single-record leg below.)
+# - no single bounded record: ~12 separate acceptance fixtures each bound
+#   only their fragment and disclaim the rest (registry ``not_claimed``:
+#   live reads, other hives, rollout, trust, availability; live doc:
+#   user-context parity outstanding; About: live provider/modal/C-Gate
+#   unverified), so row-level ``has_acceptance_record`` /
+#   ``has_bounded_scope_note`` are False. ``distinct_profiles`` is 1
+#   (single Toolkit 1.18.00 x86 profile family); ``original_error_cases``
+#   is 0 (preserved preparation failures, injected faults, and guard
+#   tests are process observations, not replayed original error-identity
+#   vectors); no original-observed rejection basis and no
+#   physical-device evidence.
+PREFERENCES_UPDATE_EVIDENCE = {
+    "original_executions": 0,
+    "original_registry_leaf_calls": 12,
+    "original_registry_witness_calls": 12,
+    "original_registry_raw_records": 47,
+    "original_registry_supported_observations": 11,
+    "original_registry_excluded_observations": 1,
+    "replayed_original_calls": 0,
+    "original_int32_compared": 107,
+    "original_int32_booleans": 76,
+    "original_int32_errors": 31,
+    "registry_runs": 2,
+    "registry_tests_per_run": 78,
+    "conditions_replayed_original_rows": 0,
+    "conditions_production_stage_arms": 279,
+    "preference_definitions": 40,
+    "display_settings": 5,
+    "ok_handler_edits": 19,
+    "expanded_tests_per_run": 94,
+    "expanded_windows_cases_per_run": 21,
+    "store_matrix_cases": 40,
+    "store_display_cases": 38,
+    "store_key_cases": 2,
+    "updates_original_menu_cases": 36,
+    "updates_captured_cases": 20,
+    "updates_tls_cases": 2,
+    "about_original_instruction_cases": 51,
+    "metadata_canonical_cases": 52,
+    "metadata_lifetime_cases": 28,
+    "metadata_signatures": 7,
+    "live_windows_observations": 7,
+    "live_host_tests": 108,
+    "live_cli_tests": 113,
+    "revocation_tests_per_run": 53,
+    "has_replay_test": False,
+    "has_native_persistence": False,
+    "has_acceptance_record": False,
+    "has_bounded_scope_note": False,
+    "original_error_cases": 0,
+    "distinct_profiles": 1,
+    "has_original_rejection_basis": False,
+    "has_physical_device_evidence": False,
+}
+
+# Committed artifacts only (all paths below are git-tracked; no
+# /Volumes/external report paths, vendor executables, or credentials).
+# Oracle vs self-referential split: the committed vector/acceptance
+# fixtures plus the offline committed-vector replay tests (store,
+# conditions, metadata, revocation, about, updates shape tests) and the
+# gated fresh-original probes (updates menu, about/numeric/reset, Windows
+# scratch-registry and LocalSystem worker runs whose prior results are
+# recorded in the acceptance fixtures) are the audit trail; guard/CLI-shape
+# tests are self-referential (never flip a slot alone) and the
+# preferences/updates/conditions/observation docs are scope narrative.
+PREFERENCES_UPDATE_EVIDENCE_PATHS = [
+    "tests/test_toolkit_preferences_store.py",
+    "tests/test_toolkit_update_registry_conditions.py",
+    "tests/test_cli_toolkit_update_registry_conditions.py",
+    "tests/test_toolkit_live_update_conditions.py",
+    "tests/test_windows_condition_registry.py",
+    "research/fixtures/toolkit-update-registry-conditions-acceptance.json",
+    "research/fixtures/toolkit-update-registry-conditions-vectors.json",
+    "research/fixtures/toolkit-update-conditions-acceptance.json",
+    "research/fixtures/toolkit-preferences-expanded-acceptance.json",
+    "research/fixtures/toolkit-updates-acceptance.json",
+    "research/fixtures/toolkit-about-acceptance.json",
+    "research/experiments/2026-09-24/registry-windows-system-acceptance.json",
+    "research/experiments/2026-09-24/registry-host-review.json",
+    "research/experiments/2026-09-24/registry-cli-review.json",
+    "docs/toolkit-live-registry-observation.md",
+    "docs/toolkit-update-registry-conditions.md",
+]
+
+
 def ledger_path_text() -> str:
     return files("cbus_toolkit").joinpath("capabilities.json").read_text(
         encoding="utf-8"
@@ -678,7 +827,7 @@ def is_area_accepted(entry: dict) -> bool:
 
 
 def _apply_rubric_rows(matrix: dict) -> None:
-    """Fill the five attempted rows through the rubric (fail-safe).
+    """Fill the six attempted rows through the rubric (fail-safe).
 
     A slot is set to ``accepted`` only when ``slot_meets_rubric`` passes;
     otherwise it stays ``unassessed``. Unknown row IDs raise KeyError so a
@@ -703,7 +852,10 @@ def _apply_rubric_rows(matrix: dict) -> None:
         elif area_id == "all-unit-parameter-encoding":
             evidence = ALL_UNIT_PARAMETER_ENCODING_EVIDENCE
             evidence_paths = list(ALL_UNIT_PARAMETER_ENCODING_EVIDENCE_PATHS)
-        else:  # pragma: no cover - five-row phase; kept explicit
+        elif area_id == "preferences-and-update-workflow":
+            evidence = PREFERENCES_UPDATE_EVIDENCE
+            evidence_paths = list(PREFERENCES_UPDATE_EVIDENCE_PATHS)
+        else:  # pragma: no cover - six-row phase; kept explicit
             continue
         for slot in WORKFLOW_SLOTS:
             accepted, _ = slot_meets_rubric(slot, evidence)
@@ -719,8 +871,8 @@ def _apply_rubric_rows(matrix: dict) -> None:
     matrix["accepted_areas"] = sum(
         1 for entry in matrix["areas"].values() if is_area_accepted(entry)
     )
-    # ``complete`` stays false: the census is incomplete and only five
-    # partially filled rows exist (three 1/6, two 0/6). Never derive
+    # ``complete`` stays false: the census is incomplete and only six
+    # partially filled rows exist (three 1/6, three 0/6). Never derive
     # completion from intent.
     matrix["complete"] = bool(
         matrix["census_complete"]

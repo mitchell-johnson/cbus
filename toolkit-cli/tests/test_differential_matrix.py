@@ -1,4 +1,4 @@
-"""Phase 4+: differential matrix with rubric + five attempted rows (TDD).
+"""Phase 4+: differential matrix with rubric + six attempted rows (TDD).
 
 Enumerates all 38 ledger areas x workflow/negative-path slots and proves
 the exact differential state: only ``edlt-reset-controls`` /
@@ -6,10 +6,11 @@ the exact differential state: only ``edlt-reset-controls`` /
 ``nominal_workflow``, and ``edlt-global-category-programming`` /
 ``nominal_workflow`` are accepted (per the executable rubric in
 ``cbus_toolkit.differential``); the fourth attempted row
-``thermostat-configuration`` and the fifth attempted row
-``all-unit-parameter-encoding`` stay 0/6 (all slots ``unassessed``); every
-other slot stays ``unassessed``, ``accepted_areas`` stays 0 (area rule
-requires all six slots), and ``complete`` stays false. Flipping any
+``thermostat-configuration``, the fifth attempted row
+``all-unit-parameter-encoding``, and the sixth attempted row
+``preferences-and-update-workflow`` stay 0/6 (all slots ``unassessed``);
+every other slot stays ``unassessed``, ``accepted_areas`` stays 0 (area
+rule requires all six slots), and ``complete`` stays false. Flipping any
 further slot requires independent original-Toolkit evidence satisfying
 the rubric.
 """
@@ -36,7 +37,7 @@ class DifferentialMatrixTests(unittest.TestCase):
         self.assertEqual(matrix["ledger_areas"], 38)
         self.assertEqual(set(matrix["areas"]), set(differential.ledger_area_ids(ledger)))
 
-    def test_matrix_holds_exact_five_row_state(self):
+    def test_matrix_holds_exact_six_row_state(self):
         matrix = differential.build_matrix()
         self.assertFalse(matrix["complete"])
         self.assertEqual(matrix["accepted_areas"], 0)
@@ -139,6 +140,24 @@ class DifferentialMatrixTests(unittest.TestCase):
                             differential.ALL_UNIT_PARAMETER_ENCODING_EVIDENCE_PATHS
                         ),
                     )
+                elif area_id == "preferences-and-update-workflow":
+                    # Sixth attempted row: audited 0/6 (broad multi-scope
+                    # row; zero replayed original calls at row scope).
+                    # All six slots stay unassessed; the evidence paths
+                    # record the audit trail.
+                    self.assertEqual(entry["differential_status"], "pending")
+                    for slot in differential.WORKFLOW_SLOTS:
+                        self.assertEqual(entry["workflows"][slot], "unassessed")
+                    for slot in differential.NEGATIVE_SLOTS:
+                        self.assertEqual(
+                            entry["negative_paths"][slot], "unassessed"
+                        )
+                    self.assertEqual(
+                        entry["evidence_paths"],
+                        list(
+                            differential.PREFERENCES_UPDATE_EVIDENCE_PATHS
+                        ),
+                    )
                 else:
                     self.assertEqual(entry["differential_status"], "pending")
                     self.assertEqual(entry["evidence_paths"], [])
@@ -198,6 +217,17 @@ class DifferentialMatrixTests(unittest.TestCase):
                 )
                 self.assertTrue(reason)
                 self.assertFalse(accepted, reason)
+        # Sixth attempted row: the rubric rejects every slot (0/6) --
+        # zero replayed original calls at row scope despite sub-scope
+        # observation volume.
+        for slot in differential.ALL_SLOTS:
+            with self.subTest(slot=slot):
+                accepted, reason = differential.slot_meets_rubric(
+                    slot,
+                    dict(differential.PREFERENCES_UPDATE_EVIDENCE),
+                )
+                self.assertTrue(reason)
+                self.assertFalse(accepted, reason)
         with self.assertRaises(KeyError):
             differential.slot_meets_rubric("no-such-slot", {})
 
@@ -232,6 +262,11 @@ class DifferentialMatrixTests(unittest.TestCase):
         self.assertFalse(
             differential.is_area_accepted(
                 matrix["areas"]["all-unit-parameter-encoding"]
+            )
+        )
+        self.assertFalse(
+            differential.is_area_accepted(
+                matrix["areas"]["preferences-and-update-workflow"]
             )
         )
         accepted_entry = {
@@ -281,6 +316,12 @@ class DifferentialMatrixTests(unittest.TestCase):
                 matrix, "all-unit-parameter-encoding"
             ),
             list(differential.ALL_UNIT_PARAMETER_ENCODING_EVIDENCE_PATHS),
+        )
+        self.assertEqual(
+            differential.evidence_paths_for(
+                matrix, "preferences-and-update-workflow"
+            ),
+            list(differential.PREFERENCES_UPDATE_EVIDENCE_PATHS),
         )
         with self.assertRaises(KeyError):
             differential.area_status(matrix, "no-such-area")
@@ -676,6 +717,153 @@ class DifferentialMatrixTests(unittest.TestCase):
         self.assertIs(evidence["has_bounded_scope_note"], True)
         self.assertEqual(evidence["original_error_cases"], 0)
         self.assertEqual(evidence["distinct_profiles"], 0)
+
+
+    def test_preferences_update_evidence_constants_match_committed_fixtures_offline(self):
+        # Row 6 (OFFLINE, no vendor spec/bridge): the hardcoded evidence
+        # constants must match the committed fixtures. Verdict is 0/6, so
+        # this pins the audit numbers, not a flip. The crux the test pins
+        # is observed-vs-replayed: 12 original leaves observed but 0
+        # replayed, 107 Int32 observations but 0 replayed rows.
+        registry = json.loads(
+            (
+                ROOT
+                / "research/fixtures/toolkit-update-registry-conditions-acceptance.json"
+            ).read_text(encoding="utf-8")
+        )
+        original_registry = registry["original_registry"]
+        self.assertEqual(original_registry["original_leaf_calls"], 12)
+        self.assertEqual(
+            original_registry["separate_same_provider_witness_calls"], 12
+        )
+        self.assertEqual(original_registry["raw_ordered_records"], 47)
+        self.assertEqual(
+            original_registry["supported_leaf_observations_each_python"], 11
+        )
+        self.assertEqual(
+            original_registry["excluded_original_collation_observations"], 1
+        )
+        self.assertEqual(original_registry["replayed_original_calls"], 0)
+        original_int32 = registry["original_int32"]
+        self.assertEqual(
+            original_int32["separate_direct_calls_compared_each_python"], 107
+        )
+        self.assertEqual(original_int32["booleans"], 76)
+        self.assertEqual(original_int32["errors"], 31)
+        self.assertEqual(
+            original_int32["booleans"] + original_int32["errors"], 107
+        )
+        self.assertEqual(len(registry["runs"]), 2)
+        for run in registry["runs"].values():
+            self.assertEqual(run["tests"], 78)
+            self.assertEqual(run["failures"], 0)
+            self.assertEqual(run["errors"], 0)
+            self.assertEqual(run["skips"], 0)
+        conditions = json.loads(
+            (
+                ROOT
+                / "research/fixtures/toolkit-update-conditions-acceptance.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(
+            conditions["original_comparisons"]["replayed_original_rows"], 0
+        )
+        self.assertEqual(
+            conditions["original_comparisons"][
+                "production_stage_arms_each_python"
+            ],
+            279,
+        )
+        expanded = json.loads(
+            (
+                ROOT
+                / "research/fixtures/toolkit-preferences-expanded-acceptance.json"
+            ).read_text(encoding="utf-8")
+        )
+        for run in expanded["tests"]:
+            self.assertEqual(run["tests"], 94)
+            self.assertEqual(run["actual_windows_cases"], 21)
+            self.assertEqual(
+                run["preference_windows_cases"]
+                + run["reset_windows_cases"],
+                21,
+            )
+            self.assertTrue(run["all_namespaces_removed"])
+        updates = json.loads(
+            (ROOT / "research/fixtures/toolkit-updates-acceptance.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            updates["vectors"]["original_menu_cases_per_run"], 36
+        )
+        self.assertEqual(
+            updates["vectors"]["captured_original_collection_cases"], 20
+        )
+        self.assertEqual(updates["vectors"]["owned_tls_cases_per_run"], 2)
+        about = json.loads(
+            (ROOT / "research/fixtures/toolkit-about-acceptance.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            about["counts"]["original_instruction_cases_per_python"], 51
+        )
+        system = json.loads(
+            (
+                ROOT
+                / "research/experiments/2026-09-24/registry-windows-system-acceptance.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(len(system["typed_cases"]), 7)
+        self.assertIs(
+            system["environment"]["user_context_parity_verified"], False
+        )
+        host = json.loads(
+            (
+                ROOT
+                / "research/experiments/2026-09-24/registry-host-review.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(host["tests"], 108)
+        cli = json.loads(
+            (
+                ROOT
+                / "research/experiments/2026-09-24/registry-cli-review.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(cli["tests"], 113)
+        evidence = differential.PREFERENCES_UPDATE_EVIDENCE
+        self.assertEqual(evidence["original_executions"], 0)
+        self.assertEqual(evidence["original_registry_leaf_calls"], 12)
+        self.assertEqual(evidence["original_registry_witness_calls"], 12)
+        self.assertEqual(evidence["original_registry_raw_records"], 47)
+        self.assertEqual(evidence["original_registry_supported_observations"], 11)
+        self.assertEqual(evidence["original_registry_excluded_observations"], 1)
+        self.assertEqual(evidence["replayed_original_calls"], 0)
+        self.assertEqual(evidence["original_int32_compared"], 107)
+        self.assertEqual(evidence["original_int32_booleans"], 76)
+        self.assertEqual(evidence["original_int32_errors"], 31)
+        self.assertEqual(evidence["registry_runs"], 2)
+        self.assertEqual(evidence["registry_tests_per_run"], 78)
+        self.assertEqual(evidence["conditions_replayed_original_rows"], 0)
+        self.assertEqual(evidence["conditions_production_stage_arms"], 279)
+        self.assertEqual(evidence["preference_definitions"], 40)
+        self.assertEqual(evidence["display_settings"], 5)
+        self.assertEqual(evidence["expanded_tests_per_run"], 94)
+        self.assertEqual(evidence["expanded_windows_cases_per_run"], 21)
+        self.assertEqual(evidence["updates_original_menu_cases"], 36)
+        self.assertEqual(evidence["about_original_instruction_cases"], 51)
+        self.assertEqual(evidence["live_windows_observations"], 7)
+        self.assertEqual(evidence["live_host_tests"], 108)
+        self.assertEqual(evidence["live_cli_tests"], 113)
+        # Row-level rubric flags stay False: zero replayed original calls,
+        # HKCU registry is not the rubric's database leg, and no single
+        # record bounds the full multi-scope row.
+        self.assertIs(evidence["has_replay_test"], False)
+        self.assertIs(evidence["has_native_persistence"], False)
+        self.assertIs(evidence["has_acceptance_record"], False)
+        self.assertIs(evidence["has_bounded_scope_note"], False)
 
 
 if __name__ == "__main__":

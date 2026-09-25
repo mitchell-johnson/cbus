@@ -1,13 +1,13 @@
-# Differential acceptance plan (Phase 4 scaffolding + five attempted rows)
+# Differential acceptance plan (Phase 4 scaffolding + six attempted rows)
 
 Phase 4 only: ledger/census inventory plus a differential harness with an
 executable slot-flip rubric. No Toolkit parity is claimed. The harness
-holds exactly five partially filled rows (`edlt-reset-controls`,
+holds exactly six partially filled rows (`edlt-reset-controls`,
 `edlt-retained-scene-editing`, and `edlt-global-category-programming`,
-`nominal_workflow` only, 1/6 slots each, plus `thermostat-configuration`
-and `all-unit-parameter-encoding` audited 0/6 with all slots
-`unassessed`); every other slot stays `unassessed`, `accepted_areas`
-stays 0, and `complete` stays false.
+`nominal_workflow` only, 1/6 slots each, plus `thermostat-configuration`,
+`all-unit-parameter-encoding`, and `preferences-and-update-workflow`
+audited 0/6 with all slots `unassessed`); every other slot stays
+`unassessed`, `accepted_areas` stays 0, and `complete` stays false.
 
 ## Authoritative inputs
 
@@ -37,14 +37,15 @@ Implemented in `../src/cbus_toolkit/differential.py`:
   starting at `unassessed` except the three rubric-passed nominal slots
   (`edlt-reset-controls`, `edlt-retained-scene-editing`, and
   `edlt-global-category-programming`). The fourth attempted row
-  (`thermostat-configuration`) and the fifth attempted row
-  (`all-unit-parameter-encoding`) are each audited 0/6: all six slots
+  (`thermostat-configuration`), the fifth attempted row
+  (`all-unit-parameter-encoding`), and the sixth attempted row
+  (`preferences-and-update-workflow`) are each audited 0/6: all six slots
   stay `unassessed` because their evidence does not meet the rubric.
 - Per-row `differential_status: pending` (no area meets the all-six-slot
   area rule) and `evidence_paths: []` except the Reset row's seven, the
   SceneManager row's six, the GlobalProgramming row's seven, the
-  Thermostat row's thirty-one, and the AllUnitParameterEncoding row's six
-  committed paths.
+  Thermostat row's thirty-one, the AllUnitParameterEncoding row's six,
+  and the PreferencesUpdate row's sixteen committed paths.
 - Matrix summary: `ledger_areas: 38`, `accepted_areas: 0`,
   `complete: false`, `census_complete: false`.
 
@@ -55,7 +56,8 @@ Implemented in `../src/cbus_toolkit/differential.py`:
   `edlt-reset-controls` / `nominal_workflow`,
   `edlt-retained-scene-editing` / `nominal_workflow`, and
   `edlt-global-category-programming` / `nominal_workflow` are `accepted`;
-  `thermostat-configuration` and `all-unit-parameter-encoding` are each
+  `thermostat-configuration`, `all-unit-parameter-encoding`, and
+  `preferences-and-update-workflow` are each
   0/6 (all `unassessed`); all other slots
   are `unassessed`, `accepted_areas` is 0, `complete` is
   false. A dedicated offline test pins each row's hardcoded evidence
@@ -70,7 +72,14 @@ Implemented in `../src/cbus_toolkit/differential.py`:
   (6,382 pass + 105 vendor-catalogue-rejected = 6,487; 10 command-limited
   excluded, 6,487 + 10 = 6,497 selected) /
   616,722 comparisons (552,391 + 64,331) / 163 layouts with 161 pass + 2
-  unexercised / 322 change trials, and 0 original-Toolkit executions).
+  unexercised / 322 change trials, and 0 original-Toolkit executions;
+  PreferencesUpdate: 12 original leaves + 12 witnesses / 47 records /
+  11 supported + 1 excluded observations with 0 replayed calls / 107
+  Int32 observations (76 + 31) / 2 runs x 78 tests / 0 replayed
+  conditions rows vs 279 arms / 94 expanded tests with 21 Windows cases /
+  36 updates menu + 20 captured + 2 TLS / 51 About instruction cases /
+  7 live observations with 108 host + 113 CLI tests, and 0 row-level
+  original-Toolkit executions).
 - `tests/test_coverage_require_complete.py` asserts `coverage
   --require-complete` still exits 1 with `complete: false`.
 - The pre-existing `test_cli.py::test_coverage_cannot_claim_completion`
@@ -633,11 +642,191 @@ with no provisioning. Gate runs here therefore rest on committed
   effect. This proposal is documented here for the Checker; no rubric
   key, gate, or verdict was changed to fit the candidate.
 
-  33 rows plus the full census mapping remain outstanding; these five
-  rows' twenty-seven open slots require fresh original/firmware/
-  negative/hardware evidence.
+  33 rows plus the full census mapping remain outstanding after the sixth
+  row below; all six rows' thirty-three open slots require fresh
+  original/firmware/negative/hardware evidence (final tally at the end of
+  the preferences-and-update-workflow row).
 
   ### Offline gate posture (this env, AllUnitParameterEncoding row)
+
+  `NativeMemoryTests` (requires `CBUS_CGATE_TEST_HOST` +
+  `CBUS_UNITSPEC_DIR`) and `VendorLayoutTests` (requires
+  `CBUS_UNITSPEC_DIR`) plus the `research/verify_catalog.py` runner
+  (requires a live native C-Gate) all SKIP offline in this env. The
+  offline-runnable suites -- `MemoryImageTests`, `MemoryCodecTests`,
+  and `UnitSpecTest` -- run here with no provisioning. Gate runs here
+  therefore rest on committed artifacts plus the prior native runs
+  recorded in `docs/catalog-acceptance-summary.json` (boundary_workflow
+  selected/completed 6497, status complete) and
+  `docs/native-memory-acceptance.json` (163 cases, 161 pass) -- not on
+  live native re-execution.
+
+  ## The sixth attempted row: `preferences-and-update-workflow` (0/6)
+
+  Row id verified present in `capabilities.json` (line 528). The rubric
+  is applied UNCHANGED and decides against a flip: a 0/6 verdict with
+  documented gaps is the honest success here, not a failure. This is the
+  broadest attempted row (40 preference definitions + 5 displays + 19
+  OK-handler edits + numeric + preview/reset + updates + metadata +
+  revocation + conditions + registry + live observation + About), and it
+  fails nominal on three independent legs at once -- zero replayed
+  original calls, a persistence-kind mismatch, and no single bounded
+  record. CAUTION observed: the sub-scope legs below must NOT be stitched
+  into a row-level pass (thermostat row-4 precedent: distinct bounded
+  scopes cannot be combined).
+
+  Replayed-vs-observed reconciliation (read before claiming anything):
+
+  - `original_registry` (in
+    `research/fixtures/toolkit-update-registry-conditions-acceptance.json`):
+    12 original leaf calls + 12 same-provider witness calls + 47 raw
+    ordered records + 11 supported observations + 1 excluded collation
+    observation, BUT `replayed_original_calls: 0`. "Replayed 0" means the
+    12 leaves were OBSERVED once by original Windows-pilot research
+    (external `/Volumes/external` paths only, never committed) and their
+    outcomes committed to
+    `research/fixtures/toolkit-update-registry-conditions-vectors.json`;
+    no committed test re-executes original-Toolkit registry calls. The
+    `runs` (2: Python 313 + 310, 78 tests each, 0 failures/errors/skips)
+    execute OUR suite against supplied facts and committed vectors --
+    self-referential checks plus committed-vector replay, never fresh
+    original-Toolkit executions. Which tests replay vs observe: the
+    registry/conditions suites carry NO vendor gate precisely because
+    they never touch the original (all offline); the fresh-original
+    probes (updates 36 menu cases via `OriginalUpdateMenuTests`, About 51
+    instruction cases, numeric/reset probes) are gated on
+    `CBUS_TOOLKIT_EXE`/vendor paths and SKIP offline; the Windows
+    scratch-registry runs (21 cases per expanded run: 13 preference + 8
+    reset, owned namespaces removed) and the 7 LocalSystem worker
+    observations are Windows-gated. Nothing committed replays
+    original-Toolkit executions, so the rubric's >=10-REPLAYED leg
+    records 0.
+  - `original_int32` (107 compared each Python: 76 booleans + 31 errors):
+    observational comparisons recorded in the acceptance fixture (matching
+    the conditions record's 107 research-only Int32 arms), not replayed
+    executions. The conditions acceptance likewise records
+    `replayed_original_rows: 0` against 279 production stage arms (386
+    retained / 364 unique / 106 processes).
+  - Sub-scope legs that must NOT be stitched: store 40 matrix + 38
+    display + 2 key captured cases replayed offline by
+    `PreferenceStoreTests` (but the store scope is explicitly "no OS
+    registry or GUI effects"); updates 36 fresh menu + 20 captured + 2
+    owned loopback TLS per run (vendor-gated fresh leg in a separate
+    SESU-candidate scope that disclaims availability); About 51 formula
+    vectors replayed offline plus a gated fresh probe (text-formula scope
+    with no persistence by design); metadata 52 canonical + 28 lifetime
+    + 7 captured signatures (offline diagnostics scope, key untrusted);
+    revocation 53 tests (offline signed-metadata scope, no trust
+    decision); live 7 typed LocalSystem HKCU observations with 108 host
+    + 113 CLI focused tests (system-context scope with
+    `user_context_parity_verified: false`). Each leg lives in a different
+    bounded scope than the others.
+
+  Persistence-leg judgment (explicit, no silent stretch): the rubric's
+  native-persistence leg requires DATABASE save/close/load readback. This
+  row's workflow persistence is Windows-HKCU registry load/save (scratch
+  namespaces with independent reload) -- a different persistence KIND
+  than a C-Bus project database, exactly as native PP sessions were
+  judged transient rather than persistence in row 5. Counting HKCU as the
+  database leg would stretch the rubric silently to fit the candidate, so
+  row-level `has_native_persistence` is False. The verdict is
+  over-determined: even a generous reading still fails on the 0-replayed
+  leg and the no-single-record leg.
+
+  Classification of the remaining evidence: preference
+  store/controls/numeric/preview/reset suites = committed-vector replay
+  (offline, no vendor) + Windows-gated scratch-registry runs (native
+  HKCU, not C-Bus DB) + vendor-gated fresh probes (skip offline);
+  `toolkit-preferences-acceptance.json` family = bounded fragment scopes,
+  none spanning the row; live observation (7 Windows observations,
+  `toolkit-live-registry-observation.md`) = native-run in system context,
+  explicitly not user-context parity and not an original comparison;
+  About/metadata/revocation/conditions suites = offline diagnostics +
+  captured-vector replay (self-referential alone for rubric purposes) with
+  vendor-gated fresh probes.
+
+  Numbers verification (every claimed number verified against committed
+  artifacts; nothing assumed):
+
+  - "12 + 12 / 47 / 11 + 1 / replayed 0": verified. `original_registry`
+    shows `original_leaf_calls` 12,
+    `separate_same_provider_witness_calls` 12, `raw_ordered_records` 47,
+    `observed_booleans` 10 + `observed_expected_errors` 2 (12 outcomes),
+    `supported_leaf_observations_each_python` 11,
+    `excluded_original_collation_observations` 1,
+    `replayed_original_calls` 0.
+  - "107 Int32 (76 + 31)": verified. `original_int32` shows
+    `separate_direct_calls_compared_each_python` 107, `booleans` 76,
+    `errors` 31 (76 + 31 = 107).
+  - "2 runs x 78 tests": verified. Both `runs` entries (313, 310) show
+    78 tests / 0 failures / 0 errors / 0 skips.
+  - "conditions 0 replayed rows vs 279 arms": verified.
+    `original_comparisons` shows `replayed_original_rows` 0 with
+    `production_stage_arms_each_python` 279.
+  - "94 expanded tests with 21 Windows cases": verified. Each `tests`
+    entry shows 94 tests with `actual_windows_cases` 21 (13 preference +
+    8 reset) and `all_namespaces_removed` true.
+  - "36 + 20 + 2 updates": verified. `vectors` shows
+    `original_menu_cases_per_run` 36,
+    `captured_original_collection_cases` 20, `owned_tls_cases_per_run` 2.
+  - "51 About": verified. `counts` shows
+    `original_instruction_cases_per_python` 51.
+  - "7 live observations, 108 host + 113 CLI": verified. The system
+    acceptance shows 7 `typed_cases` with `user_context_parity_verified`
+    false; the host review shows 108 tests and the CLI review 113.
+  - Self-limit reconciliation: the implementation-status
+    `preferences-and-update-workflow` limits (line 80) claim the 40
+    definitions / 19 OK-handler edits / registry load-save-preview /
+    diagnostics / 7-case worker acceptance while leaving actual VCL
+    behavior, interactive user-context acceptance, original lazy-wrapper
+    comparison, broader condition types, culture-sensitive comparisons,
+    rollout, publisher-chain/current trust, and complete
+    applicability/update availability open; the "Update registry
+    conditions" research row (line 123) leaves interactive user-context
+    repetition, lazy-wrapper comparison, and rollout/trust open. The
+    audit's per-slot verdicts match those limits exactly.
+
+  Per-slot verdicts (evidence paths are committed artifacts only; the
+  existing rubric is applied unchanged):
+
+  - `nominal_workflow` = `unassessed`: 0 row-level replayed
+    original-Toolkit executions (need >=10). The rubric's nominal gate
+    therefore reports `only 0 original executions, need >=10`. No single
+    committed replay test covers the row scope, HKCU registry is not the
+    rubric's database leg, and no single acceptance record bounds the
+    full 40-preference + updates + conditions + registry + live + About
+    scope -- each of the ~12 fixtures disclaims the other fragments.
+  - `error_path` = `unassessed`: no original-observed error vectors with
+    exact error identity. The preserved failed-preparation record,
+    injected fault/interruption tests, and guard tests are process
+    observations, not replayable original error vectors.
+  - `device_firmware_variation` = `unassessed`: single profile only
+    (Toolkit 1.18.00 x86 family); the fragment scope notes bound their
+    nominal fragments but do not flip this slot.
+  - `invalid_input` / `unsupported_profile` = `unassessed`: input guards
+    (JSON bounds, hive/view limits, culture/tagged-default rules) are
+    scoping guards without original-observed rejection identity.
+  - `hardware_divergence` = `unassessed`: no physical-device evidence;
+    Windows runs use owned scratch namespaces / LocalSystem HKCU with no
+    C-Bus network, C-Gate programming, or device commands.
+
+  32 rows plus the full census mapping remain outstanding; these six
+  rows' thirty-three open slots require fresh original/firmware/
+  negative/hardware evidence.
+
+  ### Offline gate posture (this env, PreferencesUpdate row)
+
+  The fresh-original probes (`OriginalUpdateMenuTests`, the About /
+  numeric / reset original probes requiring `CBUS_TOOLKIT_EXE`), the
+  Windows scratch-registry suites (requiring Windows +
+  `CBUS_WINDOWS_PROVENANCE_ROOT`), and the LocalSystem worker execution
+  all SKIP offline in this env. The offline-runnable suites -- store /
+  conditions / metadata / revocation / about vector replays, live
+  wrapper/transport tests with deterministic providers (108 host + 113
+  CLI focused tests), and CLI-shape tests -- run here with no
+  provisioning. Gate runs here therefore rest on committed artifacts
+  plus the prior runs recorded in the acceptance fixtures -- not on live
+  vendor re-execution.
 
   `NativeMemoryTests` (requires `CBUS_CGATE_TEST_HOST` +
   `CBUS_UNITSPEC_DIR`) and `VendorLayoutTests` (requires
