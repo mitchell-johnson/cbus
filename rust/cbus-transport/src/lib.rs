@@ -2,6 +2,7 @@
 
 #![deny(missing_docs)]
 
+pub mod apply;
 pub mod conn;
 pub mod flow;
 pub mod framing;

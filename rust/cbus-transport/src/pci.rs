@@ -13,7 +13,7 @@ use cbus_protocol::report::StatusReport;
 use cbus_protocol::sal::Sal;
 use chrono::{Datelike, Timelike};
 use std::collections::{HashMap, HashSet};
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, Weak};
 use std::time::Duration;
 use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
 use tokio::sync::{broadcast, mpsc, watch};
@@ -379,6 +379,9 @@ pub struct PciClient {
     mmi_fault: std::sync::atomic::AtomicBool,
     mmi_collecting: std::sync::atomic::AtomicBool,
     disconnected: std::sync::atomic::AtomicBool,
+    shutdown: watch::Sender<bool>,
+    background_tasks: Mutex<Vec<tokio::task::JoinHandle<()>>>,
+    shutdown_lane: tokio::sync::Mutex<()>,
 }
 
 impl PciClient {
@@ -415,6 +418,7 @@ impl PciClient {
         events: mpsc::UnboundedSender<CBusEvent>,
     ) -> Arc<Self> {
         let writer = Arc::new(tokio::sync::Mutex::new(writer));
+        let (shutdown, _) = watch::channel(false);
         let client = Arc::new(PciClient {
             flow: Flow::start(writer.clone(), FlowConfig::default()),
             writer,
@@ -430,10 +434,49 @@ impl PciClient {
             mmi_fault: std::sync::atomic::AtomicBool::new(false),
             mmi_collecting: std::sync::atomic::AtomicBool::new(false),
             disconnected: std::sync::atomic::AtomicBool::new(false),
+            shutdown,
+            background_tasks: Mutex::new(Vec::with_capacity(2)),
+            shutdown_lane: tokio::sync::Mutex::new(()),
         });
-        tokio::spawn(Self::reader_loop(client.clone(), reader));
-        tokio::spawn(Self::retry_task(client.clone()));
+        let weak = Arc::downgrade(&client);
+        let reader_task = tokio::spawn(Self::reader_loop(
+            weak.clone(),
+            reader,
+            client.shutdown.subscribe(),
+        ));
+        let retry_task = tokio::spawn(Self::retry_task(weak, client.shutdown.subscribe()));
         client
+            .background_tasks
+            .lock()
+            .unwrap()
+            .extend([reader_task, retry_task]);
+        client
+    }
+
+    /// Close the transport and wait for the reader, flow controller, and
+    /// retry worker to stop. The operation is idempotent. Use this before
+    /// replacing a client after any transaction whose write may have started.
+    pub async fn shutdown(&self) {
+        let _lane = self.shutdown_lane.lock().await;
+        self.request_shutdown();
+        self.flow.shutdown().await;
+        let tasks = std::mem::take(&mut *self.background_tasks.lock().unwrap());
+        for task in tasks {
+            let _ = task.await;
+        }
+    }
+
+    /// Synchronously signal every owned transport task to stop.
+    fn request_shutdown(&self) {
+        self.shutdown.send_replace(true);
+        self.flow.request_shutdown();
+        if !self
+            .disconnected
+            .swap(true, std::sync::atomic::Ordering::AcqRel)
+        {
+            let _ = self.packets.send(None);
+            let _ = self.events.send(CBusEvent::ConnectionLost);
+        }
     }
 
     // ------------------------------------------------------------ sending
@@ -611,6 +654,33 @@ impl PciClient {
         Ok(code)
     }
 
+    // Reserve one caller-selected confirmation code without recycling an
+    // active or quarantined allocation. Strict selected-serial plans encode
+    // `g` into their signed-off request bytes, so substituting the allocator's
+    // next code would change the command the operator reviewed.
+    fn allocate_exact_confirmation(&self, code: u8) -> std::io::Result<(u8, u64)> {
+        if !CONFIRMATION_CODES.contains(&code) {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                "confirmation code must be in g..=z",
+            ));
+        }
+        let mut state = self.state.lock().unwrap();
+        Self::check_and_release_timed_out(&mut state);
+        if state.codes_in_use.contains_key(&code) {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::WouldBlock,
+                "requested confirmation code is already reserved",
+            ));
+        }
+        state.codes_in_use.insert(code, Instant::now());
+        let id = state.next_allocation_id;
+        state.next_allocation_id = state.next_allocation_id.wrapping_add(1);
+        state.allocation_ids.insert(code, id);
+        state.active_allocations.insert(code, id);
+        Ok((code, id))
+    }
+
     fn allocate_confirmation(&self) -> std::io::Result<(u8, u64)> {
         let mut st = self.state.lock().unwrap();
         let code = Self::confirmation_code_inner(&mut st)?;
@@ -756,13 +826,23 @@ impl PciClient {
     /// reserved after give-up, through the late-ACK timeout. Retransmits use the flow
     /// controller's unwindowed lane: no window slot, but the inter-frame
     /// floor and any `!` pause still apply.
-    async fn retry_task(self: Arc<Self>) {
+    async fn retry_task(client: Weak<Self>, mut shutdown: watch::Receiver<bool>) {
         loop {
-            tokio::time::sleep(RETRY_SWEEP_INTERVAL).await;
+            tokio::select! {
+                biased;
+                changed = shutdown.changed() => {
+                    let _ = changed;
+                    return;
+                }
+                _ = tokio::time::sleep(RETRY_SWEEP_INTERVAL) => {}
+            }
             let now = Instant::now();
             let mut to_retry = Vec::new();
             {
-                let mut st = self.state.lock().unwrap();
+                let Some(client) = client.upgrade() else {
+                    return;
+                };
+                let mut st = client.state.lock().unwrap();
                 Self::check_and_release_timed_out(&mut st);
 
                 let due: Vec<u8> = st
@@ -803,7 +883,21 @@ impl PciClient {
                 }
             }
             for (data, progress) in to_retry {
-                match self.flow.submit_unwindowed_tracked(data, progress).await {
+                let response = {
+                    let Some(client) = client.upgrade() else {
+                        return;
+                    };
+                    client.flow.submit_unwindowed_tracked(data, progress)
+                };
+                let result = tokio::select! {
+                    biased;
+                    changed = shutdown.changed() => {
+                        let _ = changed;
+                        return;
+                    }
+                    result = response => result,
+                };
+                match result {
                     Ok(Ok(())) => {}
                     // A cancelled queued retry drops its sender without a
                     // write. Other commands still need their retry service.
@@ -816,23 +910,39 @@ impl PciClient {
 
     // -------------------------------------------------------- reader loop
 
-    async fn reader_loop(self: Arc<Self>, mut reader: BoxedRead) {
+    async fn reader_loop(
+        client: Weak<Self>,
+        mut reader: BoxedRead,
+        mut shutdown: watch::Receiver<bool>,
+    ) {
         let mut fb = FrameBuffer::new_client();
         let mut buf = [0u8; 4096];
         loop {
-            match reader.read(&mut buf).await {
+            let read = tokio::select! {
+                biased;
+                changed = shutdown.changed() => {
+                    let _ = changed;
+                    break;
+                }
+                read = reader.read(&mut buf) => read,
+            };
+            match read {
                 Ok(0) | Err(_) => break,
                 Ok(n) => {
+                    let Some(client) = client.upgrade() else {
+                        break;
+                    };
                     // The bound applies to an incomplete frame, not a TCP
                     // read containing many complete programming replies.
                     for chunk in buf[..n].chunks(64) {
                         fb.set_install_mmi(
-                            self.mmi_collecting
+                            client
+                                .mmi_collecting
                                 .load(std::sync::atomic::Ordering::Acquire),
                         );
                         for ev in fb.feed(chunk) {
                             if let Some(p) = ev.packet {
-                                self.handle_cbus_packet(p);
+                                client.handle_cbus_packet(p);
                             }
                         }
                     }
@@ -840,10 +950,9 @@ impl PciClient {
             }
         }
         tracing::warn!("connection to PCI lost");
-        self.disconnected
-            .store(true, std::sync::atomic::Ordering::Release);
-        let _ = self.packets.send(None);
-        let _ = self.events.send(CBusEvent::ConnectionLost);
+        if let Some(client) = client.upgrade() {
+            client.request_shutdown();
+        }
     }
 
     /// `PCIProtocol.handle_cbus_packet` event dispatch.
@@ -1208,6 +1317,30 @@ mod tests {
             }
         }
         out
+    }
+
+    #[tokio::test]
+    async fn dropping_last_client_closes_transport_tasks_and_socket() {
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let address = listener.local_addr().unwrap();
+        let peer = tokio::spawn(async move {
+            let (mut stream, _) = listener.accept().await.unwrap();
+            let mut bytes = Vec::new();
+            stream.read_to_end(&mut bytes).await.unwrap();
+            bytes
+        });
+        let stream = tokio::net::TcpStream::connect(address).await.unwrap();
+        let (reader, writer) = stream.into_split();
+        let (events, _events_rx) = mpsc::unbounded_channel();
+        let pci = PciClient::new(Box::new(reader), Box::new(writer), events);
+
+        drop(pci);
+
+        let bytes = tokio::time::timeout(Duration::from_secs(1), peer)
+            .await
+            .expect("client drop must close the TCP session")
+            .unwrap();
+        assert!(bytes.is_empty());
     }
 
     #[tokio::test]

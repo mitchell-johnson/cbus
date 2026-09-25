@@ -65,6 +65,19 @@ cbus-tools interrogate --tcp 192.168.1.10:10001 --unit 5
 cbus-tools interrogate --tcp 192.168.1.10:10001 --discover --max-address 80
 ```
 
+Verify a strict selected-serial plan, apply it once with a durable recovery journal, or resume read-only verification from that journal:
+
+```sh
+cbus-tools serial-verify --pci 192.0.2.10:10001 --plan selected-plan.json
+cbus-tools serial-apply --pci 192.0.2.10:10001 \
+  --plan selected-plan.json \
+  --journal /operator/recovery/selected-plan-attempt.json
+cbus-tools serial-verify --pci 192.0.2.10:10001 \
+  --journal /operator/recovery/selected-plan-attempt.json
+```
+
+Both commands open a direct TCP socket for `--pci` and require exclusive ownership of that CNI; stop `cmqttd` or any other current owner before running them. Apply requires a bookended fresh inventory equal to the plan's `before`, immediately recalls local option 66 and requires `05`, records conservative send intent before invoking the write, sends the exact address command once on the same PCI connection, and independently verifies. Preserve the stable journal path after every outcome. Recovery is read-only and never authorizes replay. Scripted acceptance does not prove device compatibility or persistence.
+
 ## cbus-simulator
 
 The simulator accepts an optional bind address and port as positional arguments:

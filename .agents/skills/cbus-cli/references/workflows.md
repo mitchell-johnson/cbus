@@ -51,6 +51,26 @@ rust/target/release/cbus-tools interrogate \
   --tcp CNI_HOST:10001 --unit UNIT --timeout 5
 ```
 
+## Verify or apply a selected-serial plan
+
+1. Generate and inspect a strict version-one plan with the Toolkit CLI. Confirm the numeric endpoint, local unit and serial, selected serial, empty destination, and embedded fresh-before evidence.
+2. Give `--journal` one stable, protected path that does not exist. Preserve it after every outcome.
+3. Run read-only `serial-verify --plan` first when you only need classification.
+4. Run `serial-apply` only while the process owns the endpoint and commissioning activity exclusively. It completes the exact bookended fresh-before inventory, then immediately rechecks option 66=`05` before journaling or sending on that same connection.
+5. Treat every existing apply journal as a possible send, even when it has no receipt. Continue only with `serial-verify --journal`; never rerun apply from recovery evidence.
+
+```sh
+rust/target/release/cbus-tools serial-apply \
+  --pci CNI_IP:10001 --plan selected-plan.json \
+  --journal /operator/recovery/selected-plan-attempt.json --timeout 300
+
+rust/target/release/cbus-tools serial-verify \
+  --pci CNI_IP:10001 \
+  --journal /operator/recovery/selected-plan-attempt.json --timeout 300
+```
+
+The process-local canonical fingerprint only blocks equivalent plan encodings during that process. After restart, even an equivalent reserialization at a different journal path is not globally deduplicated; semantically different validated plans are distinct as well. Simulator and scripted-peer tests do not establish physical movement or persistence.
+
 ## Exercise a C-Gate client
 
 1. Start `cgate-mock --bind 127.0.0.1:0` and capture its printed port.

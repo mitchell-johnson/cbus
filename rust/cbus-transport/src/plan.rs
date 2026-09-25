@@ -39,6 +39,8 @@ pub struct ValidatedPlan {
     pub request_hex: String,
     /// Re-encoded address request wire bytes.
     pub request_bytes: Vec<u8>,
+    /// Whether the validated plan requires the outer SRCHK checksum.
+    pub command_checksum: bool,
     /// Always 255: only source 255 is supported.
     pub source: u8,
     /// Known local PCI unit address.
@@ -137,6 +139,16 @@ fn scan_raw(text: &[u8]) -> Result<RawScan, PlanError> {
         sanitized: parser.sanitized,
         python_canonical_size,
     })
+}
+
+/// Parse arbitrary JSON with the plan scanner's duplicate-key, number, and
+/// nesting checks. This is also used before reading an embedded plan from a
+/// recovery journal so ordinary `serde_json` parsing cannot erase ambiguity.
+pub(crate) fn parse_strict_json_value(raw: &[u8]) -> Result<(Value, usize), PlanError> {
+    let scan = scan_raw(raw)?;
+    let value: Value = serde_json::from_slice(&scan.sanitized)
+        .map_err(|e| PlanError::new("invalid_json", format!("Invalid JSON: {e}")))?;
+    Ok((value, scan.python_canonical_size))
 }
 
 struct Scanner<'a> {
@@ -1683,6 +1695,7 @@ fn validate_plan(doc: &Map<String, Value>) -> Result<ValidatedPlan, PlanError> {
         destination,
         request_hex: hex::encode(&request_bytes),
         request_bytes,
+        command_checksum,
         source: 255,
         local_unit,
         expected_local_serial,
@@ -1704,19 +1717,15 @@ pub fn validate_plan_document(raw: &[u8]) -> Result<ValidatedPlan, PlanError> {
 /// Consumers must use this value rather than reparsing the raw input: the
 /// scanner enforces raw/canonical size bounds and duplicate-key rejection,
 /// and normalizes Python numbers outside serde_json's supported range.
-pub(crate) fn validate_plan_document_with_value(
-    raw: &[u8],
-) -> Result<(ValidatedPlan, Value), PlanError> {
+pub fn validate_plan_document_with_value(raw: &[u8]) -> Result<(ValidatedPlan, Value), PlanError> {
     if raw.len() > MAX_PLAN_BYTES {
         return Err(PlanError::new(
             "oversize",
             "Recovery file exceeds its size bound",
         ));
     }
-    let scan = scan_raw(raw)?;
-    let value: Value = serde_json::from_slice(&scan.sanitized)
-        .map_err(|e| PlanError::new("invalid_json", format!("Invalid JSON: {e}")))?;
-    if scan.python_canonical_size > MAX_PLAN_BYTES {
+    let (value, python_canonical_size) = parse_strict_json_value(raw)?;
+    if python_canonical_size > MAX_PLAN_BYTES {
         return Err(PlanError::new(
             "canonical_oversize",
             "Recovery evidence exceeds its size bound",

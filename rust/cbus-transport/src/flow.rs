@@ -31,7 +31,7 @@
 use std::collections::VecDeque;
 use std::time::Duration;
 use tokio::io::{AsyncWrite, AsyncWriteExt};
-use tokio::sync::{mpsc, oneshot};
+use tokio::sync::{mpsc, oneshot, watch};
 use tokio::time::Instant;
 
 /// Tuning knobs for the flow controller. The defaults encode the live
@@ -412,6 +412,11 @@ impl WriteProgress {
         *self.finished_at.lock().unwrap()
     }
 
+    /// True once the queued writer has irrevocably taken this job.
+    pub(crate) fn has_started(&self) -> bool {
+        self.phase.load(std::sync::atomic::Ordering::Acquire) == 1
+    }
+
     /// True proves the write never started, and prevents it from starting.
     pub(crate) fn cancel_before_start(&self) -> bool {
         match self.phase.compare_exchange(
@@ -446,6 +451,8 @@ enum FlowEvent {
 pub struct Flow {
     jobs: mpsc::UnboundedSender<Job>,
     events: mpsc::UnboundedSender<FlowEvent>,
+    shutdown: watch::Sender<bool>,
+    task: std::sync::Mutex<Option<tokio::task::JoinHandle<()>>>,
 }
 
 impl Flow {
@@ -456,10 +463,34 @@ impl Flow {
     {
         let (jobs_tx, jobs_rx) = mpsc::unbounded_channel();
         let (events_tx, events_rx) = mpsc::unbounded_channel();
-        tokio::spawn(run(FlowState::new(cfg), writer, jobs_rx, events_rx));
+        let (shutdown, shutdown_rx) = watch::channel(false);
+        let task = tokio::spawn(run(
+            FlowState::new(cfg),
+            writer,
+            jobs_rx,
+            events_rx,
+            shutdown_rx,
+        ));
         Flow {
             jobs: jobs_tx,
             events: events_tx,
+            shutdown,
+            task: std::sync::Mutex::new(Some(task)),
+        }
+    }
+
+    /// Signal the driver synchronously; an in-progress write is cancelled and
+    /// the transport write half is shut down before the driver exits.
+    pub(crate) fn request_shutdown(&self) {
+        self.shutdown.send_replace(true);
+    }
+
+    /// Signal shutdown and wait until the driver has closed its write half.
+    pub(crate) async fn shutdown(&self) {
+        self.request_shutdown();
+        let task = self.task.lock().unwrap().take();
+        if let Some(task) = task {
+            let _ = task.await;
         }
     }
 
@@ -551,13 +582,17 @@ async fn run<W>(
     writer: std::sync::Arc<tokio::sync::Mutex<W>>,
     mut jobs_rx: mpsc::UnboundedReceiver<Job>,
     mut events_rx: mpsc::UnboundedReceiver<FlowEvent>,
+    mut shutdown: watch::Receiver<bool>,
 ) where
     W: AsyncWrite + Send + Unpin + 'static,
 {
     let mut unwindowed: VecDeque<Job> = VecDeque::new();
     let mut commands: VecDeque<Job> = VecDeque::new();
     let mut background: VecDeque<Job> = VecDeque::new();
-    loop {
+    'driver: loop {
+        if *shutdown.borrow() {
+            break;
+        }
         // Drain pending feedback and submissions before deciding what to
         // transmit, so acks release slots first and a command arriving
         // together with background frames still outranks them.
@@ -595,7 +630,18 @@ async fn run<W>(
                 Gate::Ready => {
                     let job = queue.pop_front().expect("non-empty lane");
                     let res = {
-                        let mut w = writer.lock().await;
+                        let mut w = tokio::select! {
+                            biased;
+                            changed = shutdown.changed() => {
+                                let _ = changed;
+                                let _ = job.done.send(Err(std::io::Error::new(
+                                    std::io::ErrorKind::BrokenPipe,
+                                    "flow controller shut down before write",
+                                )));
+                                break 'driver;
+                            }
+                            writer = writer.lock() => writer,
+                        };
                         // Cancellation can happen while this job is queued or
                         // waiting for the writer. Do not start an abandoned
                         // write; an already-started write cannot be retracted.
@@ -606,9 +652,22 @@ async fn run<W>(
                         if !job.progress.start() {
                             continue;
                         }
-                        match w.write_all(&job.data).await {
-                            Ok(()) => w.flush().await,
-                            Err(e) => Err(e),
+                        tokio::select! {
+                            biased;
+                            changed = shutdown.changed() => {
+                                let _ = changed;
+                                let _ = job.done.send(Err(std::io::Error::new(
+                                    std::io::ErrorKind::BrokenPipe,
+                                    "flow controller shut down during write",
+                                )));
+                                break 'driver;
+                            }
+                            result = async {
+                                match w.write_all(&job.data).await {
+                                    Ok(()) => w.flush().await,
+                                    Err(error) => Err(error),
+                                }
+                            } => result,
                         }
                     };
                     job.progress.finish();
@@ -637,21 +696,32 @@ async fn run<W>(
 
         let sleep_to = wake.unwrap_or(now + IDLE_WAKE);
         tokio::select! {
+            biased;
+            changed = shutdown.changed() => {
+                let _ = changed;
+                break;
+            }
             job = jobs_rx.recv() => match job {
                 Some(job) => enqueue(job, &mut unwindowed, &mut commands, &mut background),
                 // Flow handle dropped: the client is gone.
-                None => return,
+                None => break,
             },
             evt = events_rx.recv() => match evt {
                 Some(FlowEvent::Ack(sig)) => {
                     st.on_ack(&sig, Instant::now());
                 }
                 Some(FlowEvent::PciError) => st.on_pci_error(Instant::now()),
-                None => return,
+                None => break,
             },
             _ = tokio::time::sleep_until(sleep_to) => {}
         }
     }
+
+    // Cancelled writes have released the mutex by this point. Explicitly
+    // close the write half so a single-client CNI observes EOF even while a
+    // caller still holds the PciClient allocation.
+    let mut writer = writer.lock().await;
+    let _ = writer.shutdown().await;
 }
 
 #[cfg(test)]

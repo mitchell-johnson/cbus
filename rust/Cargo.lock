@@ -209,6 +209,7 @@ dependencies = [
  "cbus-mqtt",
  "cbus-protocol",
  "cbus-test-support",
+ "cbus-transport",
  "clap",
  "hex",
  "roxmltree",

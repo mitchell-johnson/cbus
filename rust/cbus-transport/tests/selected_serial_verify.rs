@@ -435,12 +435,12 @@ async fn verify_reports_uncertain_on_serial_at_two_addresses() {
 
 async fn assert_no_request(remote: &mut BufReader<tokio::io::DuplexStream>) {
     let mut byte = [0u8; 1];
-    assert!(
-        tokio::time::timeout(Duration::from_millis(1), remote.read_exact(&mut byte))
-            .await
-            .is_err(),
-        "unexpected request after verification/preflight"
-    );
+    match tokio::time::timeout(Duration::from_millis(1), remote.read_exact(&mut byte)).await {
+        Err(_) => {}
+        Ok(Err(error)) if error.kind() == std::io::ErrorKind::UnexpectedEof => {}
+        Ok(Ok(_)) => panic!("unexpected request byte after verification/preflight: {byte:02X?}"),
+        Ok(Err(error)) => panic!("unexpected read error after verification/preflight: {error}"),
+    }
 }
 
 fn expected_probes(serials: Vec<Vec<u8>>) -> Vec<(u8, u8, Vec<Vec<u8>>)> {

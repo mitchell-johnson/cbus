@@ -41,16 +41,27 @@ For selected-serial commissioning, `cbus-transport::inventory` preserves every
 IDENTIFY4 reply and the opening MMI vector. `cbus-transport::verify` validates a
 version-one plan from its original bytes, performs a read-only serial-only
 identity observation between complete MMI bookends, and classifies the full
-identity/state snapshot. It holds both local commissioning lanes. Cancelled
+identity/state snapshot. `cbus-transport::apply` requires a complete fresh
+inventory equal to the plan's embedded `before`, immediately recalls live
+local option 66 and requires `05`, durably records conservative send intent in
+an exclusively created journal, submits the exact request once on the same
+shared PCI connection, and runs a separate verify on that connection.
+Recovery performs one bounded guarded journal read and only authorizes that
+read-only verify. The in-process canonical plan guard covers equivalent JSON
+encodings during one process lifetime; it is not persistent or global, so the
+stable preserved journal path is the cross-process replay boundary. After a
+restart, an equivalent reserialization at another path is not deduplicated.
+The verify observation path holds both local commissioning lanes. Cancelled
 writes that have not started are discarded and release their confirmation
 allocations; started writes and retries retain their codes through a bounded
 late-ack window. Caller timing replaces plan timing; ordinary SAL, raw sends
 and external traffic remain outside the guard. An already-started socket write cannot be recalled, so a
 deadline or external cancellation requires closing the old transport and
 reconnecting before further I/O. The caller must exclusively own and bind the
-supplied `PciClient`; this Rust layer does not prove endpoint or local-serial
-identity, raw transport equivalence, movement cause, persistence or physical
-compatibility and sends no address change.
+supplied `PciClient`; the library layer does not prove endpoint binding,
+movement cause, persistence or physical compatibility. The `cbus-tools` CLI
+binds its numeric endpoint to the plan and exposes apply/verify, but its
+scripted-loopback acceptance is not hardware parity evidence.
 
 ## MQTT behavior
 

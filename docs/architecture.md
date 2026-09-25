@@ -23,6 +23,7 @@ flowchart LR
     Project[CBZ or XML project] --> MQTTLogic[cbus-mqtt]
     MQTTLogic --> Bridge
     Protocol --> Tools[cbus-tools]
+    Transport --> Tools
     Protocol --> Simulator[cbus-simulator]
     Transport <--> CGate[cbus-cgate physical service]
     CGate <--> CLI[Python Toolkit CLI]
@@ -34,7 +35,7 @@ flowchart LR
 
 `cbus-protocol` owns C-Bus values and byte-level encoding. It has no sockets or asynchronous runtime. Packet decoding produces typed packet, CAL, SAL, and report values; the JSON module provides a stable representation for tools and test vectors.
 
-`cbus-transport` owns byte-stream framing and PCI/CNI lifecycle. It opens TCP or serial endpoints, performs PCI initialization, tracks confirmation codes, retries unconfirmed frames, reconnects when configured, and schedules command and status traffic through the flow controller.
+`cbus-transport` owns byte-stream framing and PCI/CNI lifecycle. It opens TCP or serial endpoints, performs PCI initialization, tracks confirmation codes, retries unconfirmed frames, reconnects when configured, and schedules command and status traffic through the flow controller. Its selected-serial layer validates strict plans, performs bounded read-only verification, and gates a one-shot apply behind fresh preconditions and a durable exclusive recovery journal.
 
 `cbus-mqtt` owns pure MQTT behavior: topic naming, inbound command parsing, Home Assistant discovery payloads, and project-label extraction. `cmqttd` combines it with `rumqttc` and `cbus-transport`.
 

@@ -24,6 +24,21 @@ struct Transaction<'a> {
     complete: bool,
 }
 
+// Cancellation can definitively stop a queued write, but it cannot retract a
+// write that started. Fault the programming lane only in the latter case.
+struct OneShotWriteTransaction<'a> {
+    client: &'a PciClient,
+    progress: Arc<flow::WriteProgress>,
+    complete: bool,
+}
+
+// Once the exact write completes, cancellation or malformed/lost capture
+// input still leaves the connection unsafe for another correlated command.
+struct SelectedSerialCaptureTransaction<'a> {
+    client: &'a PciClient,
+    complete: bool,
+}
+
 #[derive(Clone, Copy)]
 enum ProgrammingRoute {
     DirectChecksummed,
@@ -53,10 +68,108 @@ pub struct SelectedSerialAcceptance {
     pub opaque_tail: [u8; 2],
 }
 
+/// Bounded evidence from one strict-plan selected-serial send.
+///
+/// `send_completed` means the exact request finished writing to the shared
+/// PCI transport. `receipt_matched` is only correlation evidence; a complete
+/// capture can return `false` for a missing, rejected, reordered, duplicate,
+/// or nonmatching receipt so that the caller can perform independent
+/// inventory. This type never claims movement or persistence.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SelectedSerialApplyEvidence {
+    /// Exact plan bytes submitted once outside the retry table.
+    pub request: Vec<u8>,
+    /// True after the exact request finished writing to the shared transport.
+    pub send_completed: bool,
+    /// True only for one positive fixed-code confirmation followed by one
+    /// exact direct receipt with no contradictory address evidence.
+    pub receipt_matched: bool,
+    /// Whether any confirmation using the selected code was captured.
+    pub confirmation_observed: bool,
+    /// Whether any selected-serial-shaped receipt was captured.
+    pub receipt_observed: bool,
+}
+
+/// Failure evidence from one strict-plan selected-serial send.
+///
+/// The progress fields distinguish a definite pre-write refusal from an
+/// uncertain started write and from a completed write followed by malformed
+/// or lost response input. Any failure with `send_attempted=true` requires
+/// discarding the [`PciClient`].
+#[derive(Debug)]
+pub struct SelectedSerialApplyError {
+    /// Exact plan bytes associated with the failed transaction.
+    pub request: Vec<u8>,
+    /// Whether the queued writer irrevocably started processing the request.
+    pub send_attempted: bool,
+    /// Whether the exact request finished writing to the shared transport.
+    pub send_completed: bool,
+    /// Whether any confirmation using the selected code was captured.
+    pub confirmation_observed: bool,
+    /// Whether any selected-serial-shaped receipt was captured.
+    pub receipt_observed: bool,
+    error: Error,
+}
+
+impl SelectedSerialApplyError {
+    fn new(
+        error: Error,
+        request: &[u8],
+        send_attempted: bool,
+        send_completed: bool,
+        confirmation_observed: bool,
+        receipt_observed: bool,
+    ) -> Self {
+        Self {
+            request: request.to_vec(),
+            send_attempted,
+            send_completed,
+            confirmation_observed,
+            receipt_observed,
+            error,
+        }
+    }
+
+    /// Underlying I/O error category.
+    pub fn kind(&self) -> ErrorKind {
+        self.error.kind()
+    }
+}
+
+impl std::fmt::Display for SelectedSerialApplyError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        self.error.fmt(f)
+    }
+}
+
+impl std::error::Error for SelectedSerialApplyError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        Some(&self.error)
+    }
+}
+
 impl Drop for Transaction<'_> {
     fn drop(&mut self) {
         if !self.complete {
             self.fault.store(true, Ordering::Release);
+        }
+    }
+}
+
+impl Drop for OneShotWriteTransaction<'_> {
+    fn drop(&mut self) {
+        if !self.complete && !self.progress.cancel_before_start() {
+            self.client.programming_fault.store(true, Ordering::Release);
+            self.client.request_shutdown();
+        }
+    }
+}
+
+impl Drop for SelectedSerialCaptureTransaction<'_> {
+    fn drop(&mut self) {
+        if !self.complete {
+            self.client.programming_fault.store(true, Ordering::Release);
+            self.client.request_shutdown();
         }
     }
 }
@@ -351,6 +464,15 @@ impl PciClient {
         serial: &str,
         destination: u8,
     ) -> Result<SelectedSerialAcceptance> {
+        self.address_selected_serial_inner(serial, destination)
+            .await
+    }
+
+    async fn address_selected_serial_inner(
+        &self,
+        serial: &str,
+        destination: u8,
+    ) -> Result<SelectedSerialAcceptance> {
         let selected = parse_native_serial(serial)
             .map_err(|error| Error::new(ErrorKind::InvalidInput, error.0))?;
         if !selected.known || !(2..=254).contains(&destination) {
@@ -551,6 +673,329 @@ impl PciClient {
             transaction.complete = true;
         }
         result
+    }
+
+    /// Send one validated selected-serial plan request exactly once on this
+    /// shared PCI and retain bounded correlation evidence.
+    ///
+    /// The supplied serial, destination, checksum setting, and fixed
+    /// confirmation code are re-encoded and must equal `expected_request`
+    /// before a lane is taken or any I/O is attempted. The fixed code is
+    /// reserved only when free and the exact supplied bytes are submitted
+    /// once outside the retry table. After the write completes, a fixed
+    /// two-second capture returns `receipt_matched=false` for missing,
+    /// rejected, reordered, duplicate, or nonmatching address evidence;
+    /// callers must decide movement through an independent inventory.
+    ///
+    /// A malformed or lost response stream is an error. Cancellation before
+    /// the queued write starts prevents the write and releases the code. If a
+    /// write started, cancellation or write uncertainty faults this client's
+    /// programming lane and quarantines the code; discard the client. A
+    /// completed capture with no confirmation also quarantines the code so a
+    /// late acknowledgement cannot satisfy a later command.
+    pub async fn send_selected_serial_plan_once(
+        &self,
+        serial: &str,
+        destination: u8,
+        command_checksum: bool,
+        confirmation: u8,
+        expected_request: &[u8],
+    ) -> std::result::Result<SelectedSerialApplyEvidence, SelectedSerialApplyError> {
+        let selected = parse_native_serial(serial)
+            .map_err(|error| Error::new(ErrorKind::InvalidInput, error.0))
+            .map_err(|error| {
+                SelectedSerialApplyError::new(error, expected_request, false, false, false, false)
+            })?;
+        if !selected.known || !(2..=254).contains(&destination) {
+            return Err(SelectedSerialApplyError::new(
+                Error::new(
+                    ErrorKind::InvalidInput,
+                    "selected-serial address requires a known serial and destination in 2..254",
+                ),
+                expected_request,
+                false,
+                false,
+                false,
+                false,
+            ));
+        }
+        let encoded = encode_serial_address(
+            &selected.canonical,
+            destination,
+            command_checksum,
+            confirmation,
+        )
+        .map_err(|error| Error::new(ErrorKind::InvalidInput, error.0))
+        .map_err(|error| {
+            SelectedSerialApplyError::new(error, expected_request, false, false, false, false)
+        })?;
+        if encoded != expected_request {
+            return Err(SelectedSerialApplyError::new(
+                Error::new(
+                    ErrorKind::InvalidInput,
+                    "selected-serial request differs from the validated plan",
+                ),
+                expected_request,
+                false,
+                false,
+                false,
+                false,
+            ));
+        }
+        let local = self.local_unit.load(Ordering::Acquire);
+        if local > u8::MAX.into() {
+            return Err(SelectedSerialApplyError::new(
+                Error::new(
+                    ErrorKind::InvalidInput,
+                    "selected-serial address requires a known local PCI unit",
+                ),
+                expected_request,
+                false,
+                false,
+                false,
+                false,
+            ));
+        }
+        let local = local as u8;
+        if local == destination {
+            return Err(SelectedSerialApplyError::new(
+                Error::new(
+                    ErrorKind::InvalidInput,
+                    "selected-serial destination cannot be the local PCI unit",
+                ),
+                expected_request,
+                false,
+                false,
+                false,
+                false,
+            ));
+        }
+
+        let _lane = self.programming_lane.lock().await;
+        if self.programming_fault.load(Ordering::Acquire) {
+            return Err(SelectedSerialApplyError::new(
+                Error::other("programming stream needs reconnect after an incomplete transaction"),
+                expected_request,
+                false,
+                false,
+                false,
+                false,
+            ));
+        }
+        let mut replies = self.packets.subscribe();
+        let progress = Arc::new(flow::WriteProgress::default());
+        let mut write_transaction = OneShotWriteTransaction {
+            client: self,
+            progress: progress.clone(),
+            complete: false,
+        };
+        let (code, allocation_id) =
+            self.allocate_exact_confirmation(confirmation)
+                .map_err(|error| {
+                    SelectedSerialApplyError::new(
+                        error,
+                        expected_request,
+                        false,
+                        false,
+                        false,
+                        false,
+                    )
+                })?;
+        let mut allocation = ConfirmationAllocation {
+            client: self,
+            code,
+            id: allocation_id,
+            retained: false,
+            progress: progress.clone(),
+        };
+
+        self.init_done
+            .subscribe()
+            .wait_for(|&done| done)
+            .await
+            .map_err(|_| Error::new(ErrorKind::BrokenPipe, "PCI initialization ended"))
+            .map_err(|error| {
+                SelectedSerialApplyError::new(error, expected_request, false, false, false, false)
+            })?;
+        if !self.is_connected() {
+            return Err(SelectedSerialApplyError::new(
+                Error::new(ErrorKind::BrokenPipe, "PCI disconnected"),
+                expected_request,
+                false,
+                false,
+                false,
+                false,
+            ));
+        }
+        let mut write = self.flow.submit_tracked(
+            expected_request.to_vec(),
+            Priority::Command,
+            ResponseKind::Confirmation(code),
+            progress.clone(),
+        );
+        match tokio::time::timeout(REPLY_TIMEOUT, &mut write).await {
+            Ok(Ok(Ok(()))) => {
+                allocation.retain_once();
+                write_transaction.complete = true;
+            }
+            Ok(Ok(Err(error))) => {
+                return Err(SelectedSerialApplyError::new(
+                    error,
+                    expected_request,
+                    progress.has_started(),
+                    false,
+                    false,
+                    false,
+                ));
+            }
+            Ok(Err(_)) => {
+                return Err(SelectedSerialApplyError::new(
+                    Error::new(ErrorKind::BrokenPipe, "PCI writer ended"),
+                    expected_request,
+                    progress.has_started(),
+                    false,
+                    false,
+                    false,
+                ));
+            }
+            Err(_) if progress.cancel_before_start() => {
+                return Err(SelectedSerialApplyError::new(
+                    Error::new(
+                        ErrorKind::TimedOut,
+                        "selected-serial write timed out before starting",
+                    ),
+                    expected_request,
+                    false,
+                    false,
+                    false,
+                    false,
+                ));
+            }
+            Err(_) => {
+                return Err(SelectedSerialApplyError::new(
+                    Error::new(
+                        ErrorKind::TimedOut,
+                        "selected-serial write completion is uncertain; discard PCI client",
+                    ),
+                    expected_request,
+                    true,
+                    false,
+                    false,
+                    false,
+                ));
+            }
+        }
+        drop(allocation);
+        let _sent = SentConfirmation {
+            client: self,
+            code,
+            allocation_id,
+        };
+        let mut transaction = SelectedSerialCaptureTransaction {
+            client: self,
+            complete: false,
+        };
+
+        let mut event_index = 0usize;
+        let mut confirmation_count = 0usize;
+        let mut confirmation_positive = false;
+        let mut confirmation_at = None;
+        let mut receipt_count = 0usize;
+        let mut exact_receipt_count = 0usize;
+        let mut exact_receipt_at = None;
+        let mut contradictory = false;
+        let capture: std::result::Result<
+            std::result::Result<(), Error>,
+            tokio::time::error::Elapsed,
+        > = tokio::time::timeout(SERIAL_ADDRESS_QUIET, async {
+            loop {
+                match replies.recv().await {
+                    Ok(Some(Packet::Confirmation { code: got, success })) if got == code => {
+                        confirmation_count += 1;
+                        confirmation_positive |= success;
+                        confirmation_at.get_or_insert(event_index);
+                    }
+                    Ok(Some(Packet::PointToPoint {
+                        meta,
+                        unit_address,
+                        bridged,
+                        hops,
+                        cals,
+                    })) if cals.iter().any(
+                        |cal| matches!(cal, Cal::Reply { parameter: 0, data } if data.len() == 6),
+                    ) =>
+                    {
+                        receipt_count += 1;
+                        let exact_route = meta.source_address == Some(destination)
+                            && unit_address == local
+                            && !bridged
+                            && hops.is_empty()
+                            && cals.len() == 1;
+                        let exact_serial = matches!(
+                            cals.first(),
+                            Some(Cal::Reply { parameter: 0, data })
+                                if data.len() == 6 && data[..4] == selected.packed
+                        );
+                        if exact_route && exact_serial {
+                            exact_receipt_count += 1;
+                            exact_receipt_at.get_or_insert(event_index);
+                        } else {
+                            contradictory = true;
+                        }
+                    }
+                    Ok(Some(Packet::BareCal(Cal::Reply { parameter: 0, data })))
+                        if data.len() == 6 =>
+                    {
+                        receipt_count += 1;
+                        contradictory = true;
+                    }
+                    Ok(Some(Packet::PciError)) => contradictory = true,
+                    Ok(Some(Packet::Invalid)) => {
+                        return Err(Error::new(
+                            ErrorKind::InvalidData,
+                            "invalid PCI input during selected-serial capture",
+                        ));
+                    }
+                    Ok(Some(_)) => {}
+                    Ok(None) | Err(_) => {
+                        return Err(Error::new(
+                            ErrorKind::BrokenPipe,
+                            "PCI response stream lost during selected-serial capture",
+                        ));
+                    }
+                }
+                event_index = event_index.saturating_add(1);
+            }
+        })
+        .await;
+        if let Ok(Err(error)) = capture {
+            return Err(SelectedSerialApplyError::new(
+                error,
+                expected_request,
+                true,
+                true,
+                confirmation_count != 0,
+                receipt_count != 0,
+            ));
+        }
+        let receipt_after_confirmation = matches!(
+            (confirmation_at, exact_receipt_at),
+            (Some(confirmation), Some(receipt)) if confirmation < receipt
+        );
+        let receipt_matched = confirmation_count == 1
+            && confirmation_positive
+            && receipt_count == 1
+            && exact_receipt_count == 1
+            && receipt_after_confirmation
+            && !contradictory;
+        transaction.complete = true;
+        Ok(SelectedSerialApplyEvidence {
+            request: expected_request.to_vec(),
+            send_completed: true,
+            receipt_matched,
+            confirmation_observed: confirmation_count != 0,
+            receipt_observed: receipt_count != 0,
+        })
     }
 
     /// Send one native standard dynamic-label cache clear exactly once.
@@ -2606,7 +3051,48 @@ impl PciClient {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use tokio::io::{AsyncBufReadExt, BufReader};
+    use tokio::io::{AsyncBufReadExt, AsyncReadExt, BufReader};
+
+    #[derive(Default)]
+    struct SelectedSerialWriteGate {
+        blocked: std::sync::atomic::AtomicBool,
+        started: tokio::sync::Notify,
+        waker: Mutex<Option<std::task::Waker>>,
+    }
+
+    struct SelectedSerialBlockingWriter {
+        inner: BoxedWrite,
+        gate: Arc<SelectedSerialWriteGate>,
+    }
+
+    impl tokio::io::AsyncWrite for SelectedSerialBlockingWriter {
+        fn poll_write(
+            mut self: std::pin::Pin<&mut Self>,
+            cx: &mut std::task::Context<'_>,
+            bytes: &[u8],
+        ) -> std::task::Poll<std::io::Result<usize>> {
+            if self.gate.blocked.load(std::sync::atomic::Ordering::Acquire) {
+                *self.gate.waker.lock().unwrap() = Some(cx.waker().clone());
+                self.gate.started.notify_one();
+                return std::task::Poll::Pending;
+            }
+            std::pin::Pin::new(&mut self.inner).poll_write(cx, bytes)
+        }
+
+        fn poll_flush(
+            mut self: std::pin::Pin<&mut Self>,
+            cx: &mut std::task::Context<'_>,
+        ) -> std::task::Poll<std::io::Result<()>> {
+            std::pin::Pin::new(&mut self.inner).poll_flush(cx)
+        }
+
+        fn poll_shutdown(
+            mut self: std::pin::Pin<&mut Self>,
+            cx: &mut std::task::Context<'_>,
+        ) -> std::task::Poll<std::io::Result<()>> {
+            std::pin::Pin::new(&mut self.inner).poll_shutdown(cx)
+        }
+    }
 
     async fn setup() -> (
         Arc<PciClient>,
@@ -2624,6 +3110,29 @@ mod tests {
             remote.read_until(b'\r', &mut bytes).await.unwrap();
         }
         (pci, remote, rx)
+    }
+
+    async fn setup_with_blocking_writer() -> (
+        Arc<PciClient>,
+        BufReader<tokio::io::DuplexStream>,
+        Arc<SelectedSerialWriteGate>,
+    ) {
+        let (client, remote) = tokio::io::duplex(8192);
+        let (rd, wr) = tokio::io::split(client);
+        let gate = Arc::new(SelectedSerialWriteGate::default());
+        let writer = SelectedSerialBlockingWriter {
+            inner: Box::new(wr),
+            gate: gate.clone(),
+        };
+        let (tx, _rx) = mpsc::unbounded_channel();
+        let pci = PciClient::new(Box::new(rd), Box::new(writer), tx);
+        pci.pci_reset().await.unwrap();
+        let mut remote = BufReader::new(remote);
+        for _ in 0..8 {
+            let mut bytes = Vec::new();
+            remote.read_until(b'\r', &mut bytes).await.unwrap();
+        }
+        (pci, remote, gate)
     }
 
     async fn line(remote: &mut BufReader<tokio::io::DuplexStream>) -> Vec<u8> {
@@ -3165,6 +3674,265 @@ mod tests {
                 .unwrap_err()
                 .kind(),
             ErrorKind::InvalidInput
+        );
+    }
+
+    async fn assert_exact_selected_serial_plan_request(
+        command_checksum: bool,
+        expected_request: &[u8],
+    ) {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_local_unit_hint(16).unwrap();
+        let encoded = encode_serial_address("101136.1558", 6, command_checksum, b'g').unwrap();
+        assert_eq!(encoded, expected_request);
+
+        let worker = pci.clone();
+        let supplied = encoded.clone();
+        let selected = tokio::spawn(async move {
+            worker
+                .send_selected_serial_plan_once("101136.1558", 6, command_checksum, b'g', &supplied)
+                .await
+        });
+        assert_eq!(line(&mut remote).await, encoded);
+        remote.get_mut().write_all(b"g.").await.unwrap();
+        selected_serial_reply(&mut remote, 6, 16, [0x18, 0xb1, 0x06, 0x16], [0xfa, 0xce]).await;
+
+        let evidence = selected.await.unwrap().unwrap();
+        assert_eq!(evidence.request, encoded);
+        assert!(evidence.send_completed);
+        assert!(evidence.receipt_matched);
+        assert!(evidence.confirmation_observed);
+        assert!(evidence.receipt_observed);
+        assert!(
+            tokio::time::timeout(Duration::from_millis(25), line(&mut remote))
+                .await
+                .is_err(),
+            "an exact selected-serial request must never be replayed"
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn exact_selected_serial_plan_request_without_command_checksum_is_sent_once() {
+        assert_exact_selected_serial_plan_request(false, b"\\05FF000F0018B106160615g\r").await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn exact_selected_serial_plan_request_with_command_checksum_is_sent_once() {
+        assert_exact_selected_serial_plan_request(true, b"\\05FF000F0018B106160615EDg\r").await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn exact_selected_serial_plan_request_refuses_busy_confirmation_before_write() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_local_unit_hint(16).unwrap();
+        assert_eq!(pci.allocate_exact_confirmation(b'g').unwrap().0, b'g');
+        let expected = encode_serial_address("101136.1558", 6, true, b'g').unwrap();
+
+        let error = pci
+            .send_selected_serial_plan_once("101136.1558", 6, true, b'g', &expected)
+            .await
+            .unwrap_err();
+        assert_eq!(error.kind(), ErrorKind::WouldBlock);
+        assert!(error
+            .to_string()
+            .contains("requested confirmation code is already reserved"));
+        assert!(
+            tokio::time::timeout(Duration::from_millis(25), line(&mut remote))
+                .await
+                .is_err(),
+            "a busy fixed confirmation code must refuse before writing"
+        );
+        assert!(!pci.programming_fault.load(Ordering::Acquire));
+        PciClient::release_confirmation(&mut pci.state.lock().unwrap(), b'g');
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn selected_serial_plan_cancelled_queued_write_releases_code_without_sending() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_local_unit_hint(16).unwrap();
+        let expected = encode_serial_address("101136.1558", 6, true, b'g').unwrap();
+        let held_writer = pci.writer.lock().await;
+        let worker = pci.clone();
+        let supplied = expected.clone();
+        let sending = tokio::spawn(async move {
+            worker
+                .send_selected_serial_plan_once("101136.1558", 6, true, b'g', &supplied)
+                .await
+        });
+        for _ in 0..16 {
+            if pci
+                .state
+                .lock()
+                .unwrap()
+                .active_allocations
+                .contains_key(&b'g')
+            {
+                break;
+            }
+            tokio::task::yield_now().await;
+        }
+        assert!(pci
+            .state
+            .lock()
+            .unwrap()
+            .active_allocations
+            .contains_key(&b'g'));
+
+        sending.abort();
+        assert!(sending.await.unwrap_err().is_cancelled());
+        {
+            let state = pci.state.lock().unwrap();
+            assert!(!state.codes_in_use.contains_key(&b'g'));
+            assert!(!state.active_allocations.contains_key(&b'g'));
+            assert!(!state.allocation_ids.contains_key(&b'g'));
+            assert!(!state.quarantined_codes.contains(&b'g'));
+        }
+        assert!(!pci.programming_fault.load(Ordering::Acquire));
+        assert!(pci.programming_lane.try_lock().is_ok());
+        let (code, _) = pci.allocate_exact_confirmation(b'g').unwrap();
+        assert_eq!(code, b'g');
+        PciClient::release_confirmation(&mut pci.state.lock().unwrap(), b'g');
+
+        drop(held_writer);
+        tokio::time::advance(Duration::from_secs(15)).await;
+        tokio::task::yield_now().await;
+        assert!(
+            tokio::time::timeout(Duration::from_millis(25), line(&mut remote))
+                .await
+                .is_err(),
+            "a cancelled queued selected-serial write must never reach the transport"
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn selected_serial_plan_cancelled_started_write_faults_and_disconnects() {
+        let (pci, mut remote, gate) = setup_with_blocking_writer().await;
+        pci.set_local_unit_hint(16).unwrap();
+        let expected = encode_serial_address("101136.1558", 6, true, b'g').unwrap();
+        gate.blocked
+            .store(true, std::sync::atomic::Ordering::Release);
+        let worker = pci.clone();
+        let supplied = expected.clone();
+        let sending = tokio::spawn(async move {
+            worker
+                .send_selected_serial_plan_once("101136.1558", 6, true, b'g', &supplied)
+                .await
+        });
+        gate.started.notified().await;
+
+        sending.abort();
+        assert!(sending.await.unwrap_err().is_cancelled());
+        assert!(pci.programming_fault.load(Ordering::Acquire));
+        {
+            let state = pci.state.lock().unwrap();
+            assert!(state.codes_in_use.contains_key(&b'g'));
+            assert!(state.quarantined_codes.contains(&b'g'));
+            assert!(!state.active_allocations.contains_key(&b'g'));
+        }
+        assert_eq!(
+            pci.allocate_exact_confirmation(b'g').unwrap_err().kind(),
+            ErrorKind::WouldBlock
+        );
+
+        gate.blocked
+            .store(false, std::sync::atomic::Ordering::Release);
+        if let Some(waker) = gate.waker.lock().unwrap().take() {
+            waker.wake();
+        }
+        pci.shutdown().await;
+        assert!(line(&mut remote).await.is_empty());
+        tokio::time::advance(Duration::from_secs(15)).await;
+        tokio::task::yield_now().await;
+        assert!(line(&mut remote).await.is_empty());
+    }
+
+    #[tokio::test]
+    async fn selected_serial_started_cancellation_closes_cni_before_reconnect() {
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let address = listener.local_addr().unwrap();
+        let (initialized_tx, initialized_rx) = tokio::sync::oneshot::channel();
+        let (eof_tx, eof_rx) = tokio::sync::oneshot::channel();
+        let server = tokio::spawn(async move {
+            let (first, _) = listener.accept().await.unwrap();
+            let mut first = BufReader::new(first);
+            for _ in 0..8 {
+                let mut request = Vec::new();
+                assert_ne!(first.read_until(b'\r', &mut request).await.unwrap(), 0);
+            }
+            initialized_tx.send(()).unwrap();
+            let mut trailing = Vec::new();
+            first.read_to_end(&mut trailing).await.unwrap();
+            assert!(
+                trailing.is_empty(),
+                "started cancellation must cancel the blocked address write"
+            );
+            eof_tx.send(()).unwrap();
+            listener.accept().await.unwrap()
+        });
+
+        let first = tokio::net::TcpStream::connect(address).await.unwrap();
+        let (reader, writer) = first.into_split();
+        let gate = Arc::new(SelectedSerialWriteGate::default());
+        let writer = SelectedSerialBlockingWriter {
+            inner: Box::new(writer),
+            gate: gate.clone(),
+        };
+        let (events, _events_rx) = mpsc::unbounded_channel();
+        let pci = PciClient::new(Box::new(reader), Box::new(writer), events);
+        pci.pci_reset().await.unwrap();
+        initialized_rx.await.unwrap();
+        pci.set_local_unit_hint(16).unwrap();
+
+        gate.blocked
+            .store(true, std::sync::atomic::Ordering::Release);
+        let expected = encode_serial_address("101136.1558", 6, true, b'g').unwrap();
+        let worker = pci.clone();
+        let sending = tokio::spawn(async move {
+            worker
+                .send_selected_serial_plan_once("101136.1558", 6, true, b'g', &expected)
+                .await
+        });
+        gate.started.notified().await;
+        sending.abort();
+        assert!(sending.await.unwrap_err().is_cancelled());
+
+        // The cancellation guard signals shutdown automatically; awaiting it
+        // makes the close deterministic before another single-client session.
+        pci.shutdown().await;
+        pci.shutdown().await;
+        eof_rx.await.unwrap();
+        let second = tokio::net::TcpStream::connect(address).await.unwrap();
+        let (_accepted, _) = server.await.unwrap();
+        drop(second);
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn exact_selected_serial_plan_missing_confirmation_is_unmatched_and_quarantined() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_local_unit_hint(16).unwrap();
+        let expected = encode_serial_address("101136.1558", 6, false, b'g').unwrap();
+        let worker = pci.clone();
+        let supplied = expected.clone();
+        let selected = tokio::spawn(async move {
+            worker
+                .send_selected_serial_plan_once("101136.1558", 6, false, b'g', &supplied)
+                .await
+        });
+        assert_eq!(line(&mut remote).await, expected);
+        let evidence = selected.await.unwrap().unwrap();
+        assert!(evidence.send_completed);
+        assert!(!evidence.receipt_matched);
+        assert!(!evidence.confirmation_observed);
+        assert!(!evidence.receipt_observed);
+        assert!(!pci.disconnected.load(Ordering::Acquire));
+        {
+            let state = pci.state.lock().unwrap();
+            assert!(state.codes_in_use.contains_key(&b'g'));
+            assert!(state.quarantined_codes.contains(&b'g'));
+        }
+        assert_eq!(
+            pci.allocate_exact_confirmation(b'g').unwrap_err().kind(),
+            ErrorKind::WouldBlock
         );
     }
 

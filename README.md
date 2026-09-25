@@ -202,7 +202,14 @@ label-cache query.
 ```sh
 rust/target/release/cbus-tools decode 05013800790148
 rust/target/release/cbus-tools dump-labels --pretty 2 rust/testdata/fixtures/project.xml
+rust/target/release/cbus-tools serial-verify \
+  --pci 192.0.2.10:10001 --plan selected-plan.json
+rust/target/release/cbus-tools serial-apply \
+  --pci 192.0.2.10:10001 --plan selected-plan.json \
+  --journal /operator/recovery/selected-plan-attempt.json
 ```
+
+The selected-serial commands consume a strict plan produced by the Toolkit workflow. Each `--pci` invocation opens a direct TCP socket and requires exclusive ownership of the CNI; stop `cmqttd` or any other current owner before running it. Verify performs bounded read-only classification. Apply completes the exact bookended fresh-before inventory, immediately rechecks local option 66=`05`, durably records send intent in a new journal, sends once on that same PCI connection, and independently verifies afterward. Preserve one stable journal path and use `serial-verify --journal` after any interruption or uncertain result; recovery never authorizes replay. These guarantees are covered with scripted loopback peers and do not claim physical-unit compatibility or persistence.
 
 To exercise the Toolkit CLI against the Rust C-Gate model, start the server in one terminal:
 

@@ -10,6 +10,8 @@ The Python `cbus-toolkit` application is installed separately; see [toolkit.md](
 | Decode one serial frame | `cbus-tools decode` | None |
 | Read a Toolkit backup or project XML | `cbus-tools dump-labels` | Reads locally; optionally writes JSON |
 | Query one unit or discover units | `cbus-tools interrogate` | Sends requests through a TCP CNI |
+| Verify a selected-serial plan | `cbus-tools serial-verify` | Sends bounded read-only MMI and IDENTIFY traffic |
+| Apply a selected-serial plan | `cbus-tools serial-apply` | Writes a durable local journal, sends one address broadcast, then reads state |
 | Bridge C-Bus and MQTT/Home Assistant | `cmqttd` | Long-running network and MQTT traffic; accepts control messages |
 | Emulate a PCI/CNI endpoint | `cbus-simulator` | Opens a local TCP listener |
 | Emulate the C-Gate 3.4 command surface | `cgate-mock` | Opens a TCP listener and mutates in-memory state |
@@ -141,6 +143,23 @@ rust/target/release/cbus-tools interrogate --tcp 192.168.1.10:10001 --discover -
 ```
 
 Choose either a single `--unit` or `--discover`. Discovery scans addresses from zero through `--max-address`, inclusive. This command opens the given TCP CNI, initializes it, and sends CAL identify and recall requests. It is active bus traffic even though it is intended to read attributes.
+
+### Selected-serial verify and apply
+
+```sh
+rust/target/release/cbus-tools serial-verify \
+  --pci 192.0.2.10:10001 --plan selected-plan.json --timeout 300
+rust/target/release/cbus-tools serial-apply \
+  --pci 192.0.2.10:10001 --plan selected-plan.json \
+  --journal /operator/recovery/selected-plan-attempt.json --timeout 300
+rust/target/release/cbus-tools serial-verify \
+  --pci 192.0.2.10:10001 \
+  --journal /operator/recovery/selected-plan-attempt.json --timeout 300
+```
+
+Both commands require the numeric IP and port to match the validated plan before connecting. Each `--pci` invocation opens a direct TCP socket and requires exclusive ownership of that CNI; stop `cmqttd` or any other current owner before running it. Verify is read-only and exits zero only when a fresh, bookended observation equals `expected_after`. Apply first requires that exact fresh-before inventory, then immediately recalls local option 66 and requires `05`. It exclusively creates and fsyncs the journal with conservative send intent before invoking the one-shot write on the same PCI connection. It sends no automatic retry or rollback and independently observes the result. Preserve the journal at one stable path: same-process canonical plan fingerprints are only an additional guard; a new process using a different path is not globally deduplicated. A journal without a complete post-send observation is uncertain regardless of receipt status, so use `serial-verify --journal` and never infer that a send did not occur.
+
+The committed tests use scripted loopback peers. They prove ordering, wire count, evidence, and failure behavior, not physical-unit compatibility, movement cause, or persistence.
 
 ## cmqttd
 

@@ -7,6 +7,7 @@ license.workspace = true
 [dependencies]
 cbus-protocol = { path = "../cbus-protocol" }
 cbus-mqtt = { path = "../cbus-mqtt" }
+cbus-transport = { path = "../cbus-transport" }
 clap = { workspace = true }
 serde_json = { workspace = true }
 hex = { workspace = true }

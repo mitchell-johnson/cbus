@@ -4,9 +4,20 @@ use cbus_protocol::cal::Cal;
 use cbus_protocol::decode::decode_packet;
 use cbus_protocol::json::packet_to_json;
 use cbus_protocol::packet::Packet;
+use cbus_transport::apply::{load_recovery, ApplyError, ApplyOnce, ApplyOptions};
+use cbus_transport::conn::Endpoint;
+use cbus_transport::inventory::InventoryOptions;
+use cbus_transport::plan::{validate_plan_document_with_value, ValidatedPlan, MAX_PLAN_BYTES};
+use cbus_transport::verify::{
+    extract_snapshots, verify_plan, VerifyEvidence, VerifyOptions, VerifyOutcome,
+};
+use cbus_transport::{conn, PciClient};
 use clap::{Parser, Subcommand};
 use serde_json::{json, Map, Value};
-use std::path::PathBuf;
+use std::io::Read;
+use std::path::{Path, PathBuf};
+use std::sync::Arc;
+use std::time::Duration;
 
 #[derive(Parser)]
 #[command(name = "cbus-tools", about = "C-Bus debugging tools")]
@@ -60,6 +71,66 @@ enum Command {
         #[arg(long, default_value_t = 5.0)]
         timeout: f64,
     },
+    /// Verify live bus state against a selected-serial plan (read-only: no
+    /// address command is sent and no journal is written)
+    ///
+    /// The plan is authoritative: `--pci HOST:PORT` must equal the plan's
+    /// embedded endpoint (host and port), verified before any I/O. `--pci`
+    /// opens a direct TCP socket and requires exclusive ownership of
+    /// the CNI; stop `cmqttd` or any other current owner before running it.
+    /// Caller timing replaces plan timing: `--timeout` bounds the whole
+    /// observation while plan transport settings are validated but never
+    /// enforced. The plan comes from a file (`--plan`) or from the embedded
+    /// plan in a recovery journal (`--journal`, resuming verification from
+    /// a crashed/interrupted apply without the plan file); exactly one of
+    /// the two is required. Journal endpoint binding is identical: `--pci`
+    /// must equal the journal's embedded endpoint.
+    SerialVerify {
+        /// Direct PCI endpoint as numeric IP:PORT (bracket IPv6); must equal
+        /// the embedded endpoint and be exclusively available to this command
+        #[arg(long)]
+        pci: String,
+        /// Selected-serial plan file (validated before connecting);
+        /// mutually exclusive with --journal
+        #[arg(long, conflicts_with = "journal", required_unless_present = "journal")]
+        plan: Option<PathBuf>,
+        /// Recovery journal from `serial-apply` (embedded plan validated
+        /// before connecting); mutually exclusive with --plan
+        #[arg(long, conflicts_with = "plan", required_unless_present = "plan")]
+        journal: Option<PathBuf>,
+        /// Overall observation deadline in seconds, in (0, 3600]
+        #[arg(long, default_value_t = 300.0)]
+        timeout: f64,
+    },
+    /// Send exactly one guarded selected-serial address move with a durable
+    /// recovery journal (no automatic replay or rollback)
+    ///
+    /// Same endpoint rule as `serial-verify`: `--pci HOST:PORT` must equal
+    /// the plan's embedded endpoint, verified before any I/O. `--pci` opens a
+    /// direct TCP socket and requires exclusive ownership of
+    /// the CNI; stop `cmqttd` or any other current owner before running it.
+    /// The journal must not exist (exclusive creation, checked before connecting);
+    /// `--timeout` separately bounds the fresh-before and post-send
+    /// observations. The exact one-shot send and its bounded receipt capture
+    /// use the same PCI connection as those observations. The journal is
+    /// recovery evidence that
+    /// also carries the embedded plan, so `serial-verify --journal` can
+    /// re-verify from it without the plan file.
+    SerialApply {
+        /// Direct PCI endpoint as numeric IP:PORT (bracket IPv6); must equal
+        /// the plan endpoint and be exclusively available to this command
+        #[arg(long)]
+        pci: String,
+        /// Selected-serial plan file (validated before connecting)
+        #[arg(long)]
+        plan: PathBuf,
+        /// New recovery journal file; must not exist (checked before connecting)
+        #[arg(long)]
+        journal: PathBuf,
+        /// Per-observation deadline in seconds, in (0, 3600]
+        #[arg(long, default_value_t = 300.0)]
+        timeout: f64,
+    },
 }
 
 fn main() {
@@ -93,6 +164,41 @@ fn main() {
             {
                 eprintln!("error: {e}");
                 std::process::exit(1);
+            }
+        }
+        Command::SerialVerify {
+            pci,
+            plan,
+            journal,
+            timeout,
+        } => {
+            let rt = tokio::runtime::Runtime::new().unwrap();
+            match rt.block_on(serial_verify_cmd(
+                &pci,
+                plan.as_deref(),
+                journal.as_deref(),
+                timeout,
+            )) {
+                Ok(code) => std::process::exit(code),
+                Err(e) => {
+                    eprintln!("error: {e}");
+                    std::process::exit(1);
+                }
+            }
+        }
+        Command::SerialApply {
+            pci,
+            plan,
+            journal,
+            timeout,
+        } => {
+            let rt = tokio::runtime::Runtime::new().unwrap();
+            match rt.block_on(serial_apply_cmd(&pci, &plan, &journal, timeout)) {
+                Ok(code) => std::process::exit(code),
+                Err(e) => {
+                    eprintln!("error: {e}");
+                    std::process::exit(1);
+                }
             }
         }
     }
@@ -422,4 +528,442 @@ async fn interrogate_cmd(
         hex::encode(&serial),
     );
     Ok(())
+}
+
+// ------------------------------------------- serial commissioning (P3e-P3h)
+
+// Exit-code contract (mirrors the oracle `serial-address apply/verify`):
+// exit 0 ONLY for `observed_expected_change`, exit 1 for every other
+// classified outcome (unchanged / unexpected / uncertain) and for errors.
+// Full evidence JSON goes to stdout on every classified observation:
+// every verify outcome plus the classified apply failures (preconditions
+// and post-send observation, which the journal also records). Hard errors
+// (corrupt plan, endpoint mismatch, journal-exists, journal/transport
+// failures) go to stderr with exit 1 and empty stdout. Evidence echoes
+// the effective (used) timeouts alongside the plan's planned settings so
+// caller/plan divergence is auditable; caller timing still replaces plan
+// timing exactly as before (no semantic change).
+// Clap usage errors keep their exit code 2. Ctrl-C kills the process with
+// the shell's usual 130-ish status; no cleanup beyond socket close.
+
+/// Per-address IDENTIFY4 probe budget for the fresh observation.
+const SERIAL_PROBE_TIMEOUT: Duration = Duration::from_secs(30);
+
+/// Strict numeric-IP endpoint parse for the caller-owned PCI.
+fn parse_pci(spec: &str) -> Result<std::net::SocketAddr, String> {
+    spec.parse::<std::net::SocketAddr>()
+        .map_err(|_| format!("pci: expected numeric IP:PORT (bracket IPv6), got {spec:?}"))
+}
+
+/// Endpoint binding: the CLI `--pci` endpoint must equal the plan's
+/// embedded endpoint (host and port). The plan is authoritative; a mismatch
+/// is refused before any I/O, mirroring the oracle coordinator/plan match.
+fn check_endpoint(endpoint: std::net::SocketAddr, plan: &ValidatedPlan) -> Result<(), String> {
+    let plan_ip = plan
+        .host
+        .parse::<std::net::IpAddr>()
+        .map_err(|_| "plan endpoint is not a numeric IP address".to_string())?;
+    if endpoint.ip() != plan_ip || endpoint.port() != plan.port {
+        return Err(format!(
+            "endpoint mismatch: --pci {endpoint} does not match plan endpoint {}:{}; the plan is authoritative",
+            plan.host, plan.port
+        ));
+    }
+    Ok(())
+}
+
+fn check_timeout(timeout: f64) -> Result<Duration, String> {
+    if timeout.is_finite() && timeout > 0.0 && timeout <= 3600.0 {
+        Ok(Duration::from_secs_f64(timeout))
+    } else {
+        Err(format!(
+            "timeout must be finite and in (0, 3600] seconds, got {timeout}"
+        ))
+    }
+}
+
+/// Read, validate, and snapshot-check the plan document with no I/O, then
+/// bind the CLI endpoint to the plan's embedded endpoint. Every corruption
+/// class (bad JSON, failed validation, missing snapshots) is rejected here,
+/// before any connection is attempted.
+fn load_plan_for_cli(
+    plan_path: &Path,
+    pci_spec: &str,
+    timeout: f64,
+) -> Result<(Vec<u8>, ValidatedPlan, Duration), String> {
+    let total_deadline = check_timeout(timeout)?;
+    let file = std::fs::File::open(plan_path)
+        .map_err(|e| format!("plan: cannot read {}: {e}", plan_path.display()))?;
+    let mut raw = Vec::new();
+    file.take(MAX_PLAN_BYTES as u64 + 1)
+        .read_to_end(&mut raw)
+        .map_err(|e| format!("plan: cannot read {}: {e}", plan_path.display()))?;
+    if raw.len() > MAX_PLAN_BYTES {
+        return Err(format!(
+            "plan: {} exceeds the {}-byte plan bound",
+            plan_path.display(),
+            MAX_PLAN_BYTES
+        ));
+    }
+    let (plan, document) = validate_plan_document_with_value(&raw)
+        .map_err(|e| format!("plan: invalid plan document: {e}"))?;
+    // Snapshot extraction is part of "corrupt plan" rejection: a plan whose
+    // embedded before/expected snapshots cannot be read must fail before
+    // connecting, not after a wasted observation.
+    extract_snapshots(&document)
+        .map_err(|e| format!("plan: invalid plan document: snapshot: {}", e.message()))?;
+    check_endpoint(parse_pci(pci_spec)?, &plan)?;
+    let sanitized = serde_json::to_vec(&document)
+        .map_err(|e| format!("plan: cannot encode validated plan document: {e}"))?;
+    Ok((sanitized, plan, total_deadline))
+}
+
+/// Read, strictly revalidate, and snapshot-check the embedded plan in a
+/// recovery journal with no I/O, then bind the CLI endpoint to the
+/// journal's embedded endpoint. The library `load_recovery` is the bounded
+/// guarded gate (symlink/non-regular refusal, size bound, strict
+/// embedded-plan validation); the embedded plan bytes are then pinned from
+/// the journal for `verify_plan` (which revalidates them) and re-checked
+/// here, so the exact bytes used are the bytes bound to `--pci`. Every
+/// corruption class (unreadable journal, corrupt envelope, wrong format,
+/// missing/unvalidatable embedded plan, missing snapshots, endpoint
+/// mismatch) is rejected here, before any connection is attempted.
+fn load_journal_for_cli(
+    journal_path: &Path,
+    pci_spec: &str,
+    timeout: f64,
+) -> Result<(Vec<u8>, ValidatedPlan, Duration), String> {
+    let total_deadline = check_timeout(timeout)?;
+    // One bounded guarded read returns both the strictly revalidated plan and
+    // the same journal evidence; do not reopen the path and introduce a
+    // substitution or unbounded-read window.
+    let recovery = load_recovery(journal_path).map_err(|e| e.to_string())?;
+    let plan_value: Value = serde_json::from_slice(&recovery.plan_document)
+        .map_err(|e| format!("journal: invalid embedded plan: {e}"))?;
+    extract_snapshots(&plan_value)
+        .map_err(|e| format!("journal: invalid embedded plan: snapshot: {}", e.message()))?;
+    check_endpoint(parse_pci(pci_spec)?, &recovery.plan)?;
+    Ok((recovery.plan_document, recovery.plan, total_deadline))
+}
+
+/// Connect the caller-owned PCI endpoint and run the fixed init sequence,
+/// mirroring the deployed `connection_made` -> `pci_reset` order.
+async fn connect_pci(host: String, port: u16) -> Result<Arc<PciClient>, String> {
+    let endpoint = Endpoint::Tcp { host, port };
+    let (rd, wr) = conn::connect(&endpoint)
+        .await
+        .map_err(|e| format!("connect: {e}"))?;
+    let (ev_tx, _ev_rx) = tokio::sync::mpsc::unbounded_channel();
+    let pci = PciClient::new(rd, wr, ev_tx);
+    pci.pci_reset()
+        .await
+        .map_err(|e| format!("pci_reset: {e}"))?;
+    Ok(pci)
+}
+
+fn verify_options(total_deadline: Duration) -> VerifyOptions {
+    VerifyOptions {
+        inventory: InventoryOptions {
+            per_address_timeout: SERIAL_PROBE_TIMEOUT,
+            total_deadline,
+        },
+    }
+}
+
+/// Effective-vs-planned timeouts for the evidence JSON.
+///
+/// `used` carries the caller-owned values actually enforced for each
+/// inventory observation (the fixed per-address probe budget plus the
+/// `--timeout` total); `planned` echoes the plan's own `settings` verbatim so
+/// any divergence is auditable. Caller observation timing replaces plan
+/// timing.
+fn timeouts_json(raw: &[u8], total_deadline: Duration) -> Value {
+    let planned: Value = serde_json::from_slice(raw)
+        .ok()
+        .and_then(|doc: Value| doc.get("settings").cloned())
+        .unwrap_or(Value::Null);
+    let used = json!({
+        "verify_per_address_secs": SERIAL_PROBE_TIMEOUT.as_secs_f64(),
+        "verify_total_secs": total_deadline.as_secs_f64(),
+    });
+    json!({ "used": used, "planned": planned })
+}
+
+/// Read-only evidence JSON mirroring the library [`VerifyEvidence`] shape:
+/// outcome plus per-address diffs against the embedded expectation.
+fn verify_json(
+    plan: &ValidatedPlan,
+    evidence: &VerifyEvidence,
+    raw: &[u8],
+    total_deadline: Duration,
+) -> Value {
+    let mut value = json!({
+        "format": "cbus-selected-serial-verify-v1",
+        "operation": "verify",
+        "outcome": evidence.outcome.as_str(),
+        "expected_identity_change": evidence.expected_identity_change,
+        "unexpected_changes": evidence.unexpected_changes.iter().map(|diff| json!({
+            "address": diff.address,
+            "expected_serials": diff.expected_serials,
+            "observed_serials": diff.observed_serials,
+            "expected_state": diff.expected_state,
+            "observed_state": diff.observed_state,
+        })).collect::<Vec<_>>(),
+        "after_collection_complete": evidence.after_collection_complete,
+        "errors": evidence.errors,
+        "atomic_observation": evidence.atomic_observation,
+        "firmware_persistence_verified": evidence.firmware_persistence_verified,
+        "physical_compatibility_verified": evidence.physical_compatibility_verified,
+        "exclusive_ownership_required": evidence.exclusive_ownership_required,
+        "movement_verified": evidence.movement_verified,
+        "persistence_verified": evidence.persistence_verified,
+        "plan_transport_settings_enforced": evidence.plan_transport_settings_enforced,
+        "endpoint_binding_verified": evidence.endpoint_binding_verified,
+        "local_serial_binding_verified": evidence.local_serial_binding_verified,
+        "raw_transport_evidence_verified": evidence.raw_transport_evidence_verified,
+        "underlying_read_retries_possible": evidence.underlying_read_retries_possible,
+        "whole_operation_replays": evidence.whole_operation_replays,
+        "non_commissioning_traffic_may_interleave": evidence.non_commissioning_traffic_may_interleave,
+        "wire_quiescence_after_return_verified": evidence.wire_quiescence_after_return_verified,
+        "discard_client_after_deadline_or_cancellation": evidence.discard_client_after_deadline_or_cancellation,
+        "endpoint_binding_cli_verified": true,
+        "plan": {
+            "serial": plan.serial,
+            "destination": plan.destination,
+            "local_unit": plan.local_unit,
+            "endpoint": {"host": plan.host, "port": plan.port},
+        },
+        "endpoint": {"host": plan.host, "port": plan.port},
+    });
+    value["timeouts"] = timeouts_json(raw, total_deadline);
+    value
+}
+
+/// Classified apply-failure evidence mirroring the verify shape.
+///
+/// `Preconditions` (no journal, no send) and `PostSendObservation` (the
+/// journal holds the after-observation) are classified outcomes, not hard
+/// errors, so they print to stdout exactly like verify evidence while the
+/// process still exits 1. Post-send per-address diffs are recovered from the
+/// journal when an observation completed.
+#[allow(clippy::too_many_arguments)]
+fn apply_failure_json(
+    plan: &ValidatedPlan,
+    raw: &[u8],
+    total_deadline: Duration,
+    outcome: &str,
+    after_collection_complete: Option<bool>,
+    errors: Vec<String>,
+    unexpected_changes: Value,
+    journal_path: Option<&Path>,
+    receipt_matched: Value,
+) -> Value {
+    let mut value = json!({
+        "format": "cbus-selected-serial-apply-v1",
+        "operation": "apply",
+        "outcome": outcome,
+        "expected_identity_change": outcome == VerifyOutcome::ObservedExpectedChange.as_str(),
+        "unexpected_changes": unexpected_changes,
+        "after_collection_complete": after_collection_complete,
+        "errors": errors,
+        "atomic_observation": false,
+        "firmware_persistence_verified": false,
+        "physical_compatibility_verified": false,
+        "exclusive_ownership_required": true,
+        "movement_verified": false,
+        "persistence_verified": false,
+        "plan_transport_settings_enforced": false,
+        "endpoint_binding_verified": false,
+        "local_serial_binding_verified": false,
+        "raw_transport_evidence_verified": false,
+        "underlying_read_retries_possible": true,
+        "whole_operation_replays": 0,
+        "non_commissioning_traffic_may_interleave": true,
+        "wire_quiescence_after_return_verified": false,
+        "discard_client_after_deadline_or_cancellation": true,
+        "endpoint_binding_cli_verified": true,
+        "plan": {
+            "serial": plan.serial,
+            "destination": plan.destination,
+            "local_unit": plan.local_unit,
+            "endpoint": {"host": plan.host, "port": plan.port},
+        },
+        "endpoint": {"host": plan.host, "port": plan.port},
+        "serial": plan.serial,
+        "destination": plan.destination,
+        "receipt_matched": receipt_matched,
+        "journal": journal_path.map(|path| path.to_string_lossy().into_owned()),
+    });
+    value["timeouts"] = timeouts_json(raw, total_deadline);
+    value
+}
+
+async fn serial_verify_cmd(
+    pci: &str,
+    plan_path: Option<&Path>,
+    journal_path: Option<&Path>,
+    timeout: f64,
+) -> Result<i32, String> {
+    let (raw, plan, total_deadline, journal) = match (plan_path, journal_path) {
+        (Some(plan_path), None) => {
+            let (raw, plan, total_deadline) = load_plan_for_cli(plan_path, pci, timeout)?;
+            (raw, plan, total_deadline, None)
+        }
+        (None, Some(journal_path)) => {
+            let (raw, plan, total_deadline) = load_journal_for_cli(journal_path, pci, timeout)?;
+            (raw, plan, total_deadline, Some(journal_path))
+        }
+        // Unreachable via the CLI (clap enforces exactly one of --plan /
+        // --journal); defense-in-depth for direct callers.
+        _ => {
+            return Err("either --plan or --journal is required (mutually exclusive)".to_string());
+        }
+    };
+    let pci_client = connect_pci(plan.host.clone(), plan.port).await?;
+    // Local PCI IDENTIFY replies are bare CAL frames, so correlation needs the
+    // validated plan address even though this hint does not establish physical
+    // identity by itself. Apply installs the same hint before its observations.
+    pci_client
+        .set_local_unit_hint(plan.local_unit)
+        .map_err(|e| format!("local PCI unit: {e}"))?;
+    let evidence = verify_plan(&raw, &pci_client, verify_options(total_deadline))
+        .await
+        .map_err(|e| format!("verify: {e}"))?;
+    let expected = evidence.outcome == VerifyOutcome::ObservedExpectedChange;
+    let mut value = verify_json(&plan, &evidence, &raw, total_deadline);
+    if let Some(journal_path) = journal {
+        value["journal"] = Value::from(journal_path.to_string_lossy().into_owned());
+    }
+    println!("{value}");
+    Ok(i32::from(!expected))
+}
+
+async fn serial_apply_cmd(
+    pci: &str,
+    plan_path: &Path,
+    journal_path: &Path,
+    timeout: f64,
+) -> Result<i32, String> {
+    let (raw, plan, total_deadline) = load_plan_for_cli(plan_path, pci, timeout)?;
+    // Exclusive journal creation is checked before connecting (the library's
+    // `O_CREAT | O_EXCL` remains as defense-in-depth for races and restarts).
+    if journal_path.exists() || journal_path.is_symlink() {
+        return Err(format!(
+            "journal: output already exists: {}",
+            journal_path.display()
+        ));
+    }
+    if let Some(parent) = journal_path.parent().filter(|p| !p.as_os_str().is_empty()) {
+        if !parent.is_dir() {
+            return Err(format!(
+                "journal: output directory does not exist: {}",
+                parent.display()
+            ));
+        }
+    }
+    let pci_client = connect_pci(plan.host.clone(), plan.port).await?;
+    // Bind the plan's local address hint for correlated receipt parsing. The
+    // inventory still checks the pinned serial independently; this hint alone
+    // does not establish physical identity.
+    pci_client
+        .set_local_unit_hint(plan.local_unit)
+        .map_err(|e| format!("local PCI unit: {e}"))?;
+    let once_ = ApplyOnce::new(&raw);
+    match once_
+        .apply(
+            &pci_client,
+            journal_path,
+            ApplyOptions {
+                verify: verify_options(total_deadline),
+            },
+        )
+        .await
+    {
+        Ok(success) => {
+            let mut evidence = verify_json(&plan, &success.verify, &raw, total_deadline);
+            evidence["format"] = Value::from("cbus-selected-serial-apply-v1");
+            evidence["operation"] = Value::from("apply");
+            evidence["serial"] = Value::from(success.serial);
+            evidence["destination"] = Value::from(success.destination);
+            evidence["receipt_matched"] = Value::from(success.receipt_matched);
+            evidence["journal"] = Value::from(success.journal_path.to_string_lossy().into_owned());
+            println!("{evidence}");
+            // Exit 0 ONLY on the expected change, exactly like verify:
+            // even on `Ok`, a non-expected outcome (should the library ever
+            // return one) must exit 1.
+            Ok(i32::from(
+                success.verify.outcome != VerifyOutcome::ObservedExpectedChange,
+            ))
+        }
+        Err(ApplyError::Preconditions(detail)) => {
+            let evidence = apply_failure_json(
+                &plan,
+                &raw,
+                total_deadline,
+                "preconditions_failed",
+                Some(false),
+                vec![format!("apply: preconditions: {detail}")],
+                Value::Array(Vec::new()),
+                None,
+                Value::Null,
+            );
+            println!("{evidence}");
+            Ok(1)
+        }
+        Err(ApplyError::PostSendObservation(detail)) => {
+            // The library journaled the after-observation before failing;
+            // surface its classification on stdout in the verify shape.
+            let journal = load_recovery(journal_path)
+                .ok()
+                .map(|record| record.evidence);
+            let outcome = journal
+                .as_ref()
+                .and_then(|j| j.get("after_outcome"))
+                .and_then(Value::as_str)
+                .unwrap_or(VerifyOutcome::Uncertain.as_str())
+                .to_string();
+            let after_collection_complete = journal
+                .as_ref()
+                .and_then(|j| j.get("after_collection_complete"))
+                .and_then(Value::as_bool);
+            let mut errors = vec![format!("apply: post_send_observation: {detail}")];
+            if let Some(after_errors) = journal
+                .as_ref()
+                .and_then(|j| j.get("after_errors"))
+                .and_then(Value::as_array)
+            {
+                errors.extend(
+                    after_errors
+                        .iter()
+                        .filter_map(Value::as_str)
+                        .map(str::to_string),
+                );
+            }
+            let receipt_matched = journal
+                .as_ref()
+                .and_then(|j| j.get("receipt_matched"))
+                .cloned()
+                .unwrap_or(Value::Null);
+            let unexpected_changes = journal
+                .as_ref()
+                .and_then(|j| j.get("after_unexpected_changes"))
+                .filter(|value| value.is_array())
+                .cloned()
+                .unwrap_or_else(|| Value::Array(Vec::new()));
+            let evidence = apply_failure_json(
+                &plan,
+                &raw,
+                total_deadline,
+                &outcome,
+                after_collection_complete,
+                errors,
+                unexpected_changes,
+                Some(journal_path),
+                receipt_matched,
+            );
+            println!("{evidence}");
+            Ok(1)
+        }
+        Err(e) => Err(format!("apply: {e}")),
+    }
 }
