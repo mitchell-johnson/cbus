@@ -1161,6 +1161,16 @@ def build_parser():
     label_scope = p.add_mutually_exclusive_group(required=True)
     label_scope.add_argument("address", nargs="?", help="Fully qualified physical unit, e.g. //PROJECT/254/p/5")
     label_scope.add_argument("--network", help="Freshly discover and read every supported eDLT on //PROJECT/NETWORK")
+    from .edlt_widget_groups import unit_path as edlt_widget_groups_path
+    p = cgops.add_parser(
+        "edlt-widget-groups",
+        help="Synchronize and read one physical KEYGL5 WidgetGroups mapping through cmqttd",
+    )
+    p.add_argument(
+        "address",
+        type=edlt_widget_groups_path,
+        help="Fully qualified physical unit, e.g. //PROJECT/254/p/5",
+    )
     from .repositories_cli import register as repository_options
     repository_options(cgops)
     from .thermostat_schedule_cli import compose_options, options as schedule_options
@@ -2058,7 +2068,7 @@ def _cgate(args):
                     if line.strip() and not line.lstrip().startswith(("#", "//"))]
         if not commands:
             raise ValueError("Command file is empty")
-    elif args.action not in ("project", "database", "unit", "cgl", "network", "label", "conversion", "events", "trigger", "enable", "scene", "address", "serials", "edlt-labels"):
+    elif args.action not in ("project", "database", "unit", "cgl", "network", "label", "conversion", "events", "trigger", "enable", "scene", "address", "serials", "edlt-labels", "edlt-widget-groups"):
         tokens = ["TERMINATERAMP" if args.action == "stop" else args.action.upper(), args.address]
         if args.action == "get":
             tokens.append(args.attribute)
@@ -2080,6 +2090,9 @@ def _cgate(args):
                 result = edlt_label_inventory(client, args.network)
                 return result, int(not result["complete"])
             return edlt_labels(client, args.address), 0
+        if args.action == "edlt-widget-groups":
+            from .edlt_widget_groups import read_edlt_widget_groups
+            return read_edlt_widget_groups(client, args.address).as_dict(), 0
         if args.action == "label":
             if args.remote_action == "cache-clear":
                 from .labels import NativeLabelCache

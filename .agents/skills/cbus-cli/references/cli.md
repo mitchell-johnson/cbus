@@ -92,6 +92,24 @@ Text is nonblank, contains no NUL and is at most 63 UTF-8 bytes. Inspect
 fails before any PP write or SAVE. This workflow edits database PP only; it
 does not verify a physical display or complete SceneManager form behavior.
 
+### Live eDLT WidgetGroups mapping
+
+Consume cmqttd's physical synchronized KEYGL5 mapping with:
+
+```sh
+cbus-toolkit cgate --host 127.0.0.1 --timeout 120 \
+  edlt-widget-groups //PROJECT/254/p/5
+```
+
+The command validates the exact unit path, requires a successful network-wide
+`NET SYNC`, then accepts one exact final status-300
+`GET //PROJECT/NETWORK/p/UNIT WidgetGroups` response. The payload is exactly 44
+canonical unsigned decimal bytes joined by commas. It is an opaque static
+mapping from the physical synchronized cache, not dynamic-label cache readback.
+The JSON keeps rendering, persistence, and network atomicity false. It uses
+cmqttd's shared CNI connection and never opens a direct one. Query `CMQTT
+CAPABILITIES`; this extension is advertised as `edlt_widget_groups: true`.
+
 ## cbus-tools
 
 ### Decode

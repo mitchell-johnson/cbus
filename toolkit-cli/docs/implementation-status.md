@@ -179,6 +179,18 @@ for that same network ring; they do not prove which display received traffic.
 Physical dynamic-label cache readback remains unimplemented and false. See
 [service implementation and remaining work](../../docs/cmqttd-cgate.md).
 
+The typed `cgate edlt-widget-groups //PROJECT/NETWORK/p/UNIT` command consumes
+the service's separate KEYGL5 static mapping. It requires a successful
+whole-network `NET SYNC`, then accepts exactly one matching status-300
+`WidgetGroups` getter containing 44 unsigned decimal bytes. The result records
+physical synchronized-cache provenance, the exact native CSV, read-only
+network-wide sequential observation, and a non-atomic snapshot. It treats the
+bytes as opaque and makes no dynamic-label cache, rendering, persistence,
+database-update, or direct-CNI claim. Focused module and real CLI transport
+tests cover exact ordering, path/envelope matching, every malformed value
+class, non-success replies, and no retry. See
+[the command contract](edlt-widget-groups.md).
+
 The service separately implements physical `LABEL KFIGET` and `LABEL KFISET`.
 Their application token is a native `LabelSupportingApplication` class/scope
 gate and is not encoded into KFIGET's fixed selector `0x1c`. The GET operation
