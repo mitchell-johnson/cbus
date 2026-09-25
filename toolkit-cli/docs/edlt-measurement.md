@@ -111,6 +111,15 @@ during pure planning, before any session write, and only then stages the
 verified PP plan. This deterministic order avoids partially committing one
 field when the other is invalid.
 
+The bounded [Measurement/Percentage parent composition](edlt-parent-form.md)
+now connects one Measurement panel and the parent proximity percentage control
+to the retained `AfterLoadPPData`/`BeforeSavePPData` lifecycle. It pins the
+form-construction, worker-load, selection-binding and save sequences, validates
+both controls before mutation, and proves unrelated-field preservation against
+an unedited lifecycle save. The full original parent form was not executed for
+that composition; per-keystroke focus/caret/dialog behavior and all other form
+controls remain outside its scope.
+
 ## The label value 64 and shared text capacity
 
 The original default label is **64**, while prefix and suffix default to 255. Its label getter returns empty for 64, and explicitly assigning empty text writes 255. Both values survive native PP storage, but this workflow does not claim their physical display meanings are identical.

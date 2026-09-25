@@ -659,6 +659,31 @@ editor and stored exponent when wrapping changes the value. Non-finite input is
 rejected because the original Toolkit number-break loop does not terminate for
 `NaN`. See [edlt-measurement.md](docs/edlt-measurement.md).
 
+For a single retained parent-form transaction, compose a Measurement edit with
+the proximity percentage control and the original load/save lifecycle:
+
+```sh
+cbus-toolkit edlt parent-form-plan snapshot.json \
+  --metadata lifecycle-cache.json \
+  --page 1 --position 1 --device-id 42 --channel 3 \
+  --gain-value '1.5' --measurement-culture en-NZ \
+  --wake-mode primary-event --group 42 --level-percent 50
+cbus-toolkit cgate unit --lock-address //TEST/254 \
+  --source /db//TEST/254/p/20 --dry-run edlt-parent-form \
+  --metadata lifecycle-cache.json \
+  --page 1 --position 1 --device-id 42 --channel 3 \
+  --wake-mode primary-event --group 42 --level-percent 50
+```
+
+The plan separates load, control, save and CRC phases. It reports the original
+form-construction and worker-load branches, binding update modes, percentage
+byte/meaning changes, save order and every field changed relative to an
+unedited lifecycle save. Both controls are validated before the first PP write.
+This is a bounded source-pinned parent composition; the complete original
+WinForms dialog, focus/caret/message-box behavior and physical display/wake
+behavior remain unverified. See
+[edlt-parent-form.md](docs/edlt-parent-form.md).
+
 Time/Date widgets support standby and functional positions, with unit-wide
 date formats, time formats and leading zeroes:
 
@@ -1710,7 +1735,7 @@ Later changes have separate passing acceptance on both Python versions and are
 outside that frozen wheel:
 
 - [Configuration CRC](docs/edlt-crc.md): 21 tests, including 65,588 fresh original CRC results per run.
-- [Percentage conversion](docs/edlt-percentage.md): pure conversion and CLI acceptance; the standalone original Windows control has also completed separate 12- and 528-case research captures; full editor integration remains pending.
+- [Percentage conversion](docs/edlt-percentage.md) and [bounded parent composition](docs/edlt-parent-form.md): pure conversion and CLI acceptance, standalone original Windows 12- and 528-case captures, plus 14 portable Measurement/Percentage lifecycle composition tests. The complete original parent dialog and optional native database composition gate remain outstanding.
 - [About information](docs/toolkit-about.md): 16 tests, including 51 original instruction cases per run.
 - [Signed update metadata](docs/toolkit-update-metadata.md), [revocation stages](docs/toolkit-update-revocation.md) and [supplied-context registry conditions](docs/toolkit-update-registry-conditions.md): separate 56-, 53- and 78-test checkpoints with explicit trust and availability limits.
 - [PCI routing](docs/pci-routing.md), [incoming routing](docs/pci-incoming-routing.md), [routed RECALL](docs/pci-routed-recall.md) and [routed IDENTIFY](docs/pci-routed-identify.md): separate codec and transport checkpoints; IDENTIFY passes 104 tests with fresh original matcher comparisons and owned loopback exchanges.

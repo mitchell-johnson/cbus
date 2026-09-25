@@ -85,6 +85,19 @@ commas on your own. The CLI rejects non-finite text because Toolkit accepts
 `toolkit-cli/docs/edlt-measurement.md` for exact grouping and preservation
 rules.
 
+To combine one Measurement edit with the parent proximity percentage control,
+use `edlt parent-form-plan` offline or database-unit `edlt-parent-form`. Both
+require `--metadata` with a complete lifecycle cache. Use `--level-percent`
+only when the resulting `--wake-mode` is `primary-event`; mode changes can
+reinterpret the shared byte as a Trigger action. Inspect `phases`,
+`cross_control`, `preservation`, `initialization_concurrency` and
+`original_save_order` before applying. This bounded composition validates all
+supplied controls before mutation and preserves the retained scene/MRA models.
+Its original order is source-pinned and its individual controls have retained
+native probes, but `native_parent_form_executed=false`: do not describe it as
+an end-to-end execution of the original WinForms dialog. See
+`toolkit-cli/docs/edlt-parent-form.md`.
+
 ## Compatibility and tests
 
 Target: Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001. Full Toolkit parity is unfinished. `coverage --require-complete` deliberately exits 1 until both implementation and acceptance requirements are complete. Command forwarding, the Rust mock's 431 paths, and simulator results do not establish physical-device or full Toolkit equivalence.

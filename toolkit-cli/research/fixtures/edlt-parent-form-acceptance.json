@@ -1,0 +1,52 @@
+{
+  "format": "cbus-edlt-parent-form-acceptance-v1",
+  "date": "2026-09-26",
+  "profile": {
+    "unit_type": "KEYGL5",
+    "catalog_number": "5055EDL",
+    "firmware": "5.5.00"
+  },
+  "focused": {
+    "command": "PYTHONPATH=src:tests .venv/bin/python -m pytest tests/test_edlt_parent_form.py tests/test_cli_edlt_parent_form.py -q -p no:cacheprovider",
+    "passed": 14,
+    "skipped": 1,
+    "subtests_passed": 15,
+    "result": "passed",
+    "skip_reason": "native C-Gate/spec environment was not configured"
+  },
+  "related_regression": {
+    "command": "PYTHONPATH=src:tests .venv/bin/python -m pytest tests/test_edlt_measurement.py tests/test_edlt_measurement_culture.py tests/test_edlt_percentage.py tests/test_edlt_activation.py tests/test_edlt_lifecycle.py tests/test_cli_edlt_measurement.py tests/test_cli_edlt_percentage.py tests/test_cli_edlt_activation.py tests/test_cli_edlt_lifecycle.py tests/test_edlt_parent_form.py tests/test_cli_edlt_parent_form.py -q -p no:cacheprovider",
+    "passed": 81,
+    "skipped": 11,
+    "subtests_passed": 6751,
+    "result": "passed"
+  },
+  "full_offline_gate": {
+    "command": "make check",
+    "passed": 2268,
+    "skipped": 271,
+    "subtests_passed": 18490,
+    "seconds": 666.19,
+    "result": "passed"
+  },
+  "rust_interop_gate": {
+    "command": "make check-interop",
+    "passed": 14,
+    "skipped": 1,
+    "result": "passed"
+  },
+  "evidence": {
+    "source_fixture": "research/fixtures/edlt-parent-form-evidence.json",
+    "retained_original_measurement_probe": true,
+    "retained_original_percentage_control_probe": true,
+    "fresh_python_composition": true,
+    "fresh_native_database_composition": false,
+    "fresh_original_parent_form": false,
+    "physical_device_verified": false
+  },
+  "boundaries": [
+    "The native database test was collected as an environment-gated skip, not a pass.",
+    "Original control evidence was hash-verified and reused; no fresh original parent-form execution occurred.",
+    "Offline and loopback interop passes do not establish physical-device behavior."
+  ]
+}

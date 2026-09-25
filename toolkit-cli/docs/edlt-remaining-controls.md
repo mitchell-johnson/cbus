@@ -9,11 +9,15 @@ control. The [Measurement contract](edlt-measurement.md) now covers the actual
 widget's invariant, en-NZ, de-DE and fr-FR parsing, final blank/zero/error
 validation, invariant fixed-place formatting, tested tiny-value underflow and
 signed-byte exponent serialization. Complete parent-form initialization,
-binding, event ordering and save integration remain open. Non-finite input is
-rejected instead of reproducing Toolkit's `NaN` hang, per-keystroke
-focus/caret/message-box state is not a CLI concept, cultures outside the four
-source-pinned profiles are not inferred, and physical display behavior is
-unverified.
+binding and save integration is now implemented for the bounded Measurement
+plus proximity Percentage slice in the [parent composition](edlt-parent-form.md).
+That workflow models the source-pinned asynchronous construction/load branches,
+selection bindings, mode visibility, retained save and unrelated-field
+preservation. Complete original-form execution and the other controls remain
+open. Non-finite input is rejected instead of reproducing Toolkit's `NaN`
+hang, per-keystroke focus/caret/message-box state is not modelled, cultures
+outside the four source-pinned profiles are not inferred, and physical display
+behavior is unverified.
 
 | Area | Current coverage / remaining work | Original evidence and important boundary |
 |---|---|---|
@@ -25,6 +29,7 @@ unverified.
 | Quick Status | Existing Quick Status helper | QuickStatusMode, Group, Colour1..3 and Level1..2; see its separate acceptance. |
 | Time/Date global formats and MRA shared settings | Existing Time/Date and MRA helpers | TimeFormat,DateFormat,TimeDateLeadingZero; MRA multiplexer/zone. Their widget-specific placement/active-control limits remain as documented. |
 | **Unit Activation** | Activation helper; see [activation contract](edlt-activation.md) | 5 PP fields plus 6 human options. Guards depend on existing standby state; conditional primary/trigger group list. |
+| **Measurement + proximity Percentage parent slice** | Bounded retained parent composition implemented; [contract](edlt-parent-form.md) | Joins lifecycle load, one Measurement panel, proximity mode/percentage or action, save normalization and five CRCs. Source pins the form and worker branches plus binding/save order; retained original probes cover each control independently. Full original `FrmBaseUnit`, interactive focus/dialog state, optional native database gate and physical behavior remain separate. |
 | **Primary/Secondary Applications** | Bounded original model/two-control workflow implemented; [contract](edlt-applications.md), original/native and CLI acceptance on both Python versions | CBusBaseUnit.PopulateAllLists: cached app ranges 48..127 plus 136; secondary `<Unused>` 255; each excludes the other current value. Changing either triggers PopulatePrimarySecondaryApplication and CheckIfGroupsExist, which traverses widget GetGroup and scene group/trigger checks. Secondary-disable effects and retained scene references are covered for the bounded composition. Dependent control panels, metadata creation and the complete form remain open. |
 | **Page Control** | Implemented numeric group workflow; [contract and dual-Python acceptance](edlt-page-control.md) | FrmBaseUnit “Control Page Shown By Group Level”; KeySetsEnableGroup byte 0x131, fixed Enable application203, `<Disabled>` 255. Despite the parameter name, the visible feature is page control, not an established generic unit-disable command. Physical level→page mapping needs separate source/protocol evidence. |
 | **Corridor Linking** | Bounded ordered control workflow accepted on both Python versions; [contract](edlt-corridor.md); offline and native CLI accepted on both versions | Link/Office/Corridor groups at 0x132/133/136, primary app. Link 255 disables Office/Corridor controls; lists mutually exclude the other roles. Timer 0x134 int16, UI 60..64800 seconds; changed model values expose the original byte-clamping quirk. Actual widget GetGroup enumeration and complete ordered primary-group cache drive validation. Ten accepted native cases each have full save/close/load verification; full-form and physical behavior remain separate. |

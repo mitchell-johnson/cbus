@@ -1,0 +1,118 @@
+{
+  "format": "cbus-edlt-parent-form-evidence-v1",
+  "profile": {
+    "unit_type": "KEYGL5",
+    "catalog_number": "5055EDL",
+    "firmware": "5.5.00",
+    "toolkit": "1.18.0.2754"
+  },
+  "scope": "Measurement panel and proximity NumUpDownPercentage composition inside FrmBaseUnit",
+  "original_sources": [
+    {
+      "path": "eDLT/eDLT/FrmBaseUnit.cs",
+      "sha256": "060323b11494c7a697656d048f97351526a143e339db767731675a87ba1b1b16"
+    },
+    {
+      "path": "eDLT/eDLT.WidgetPanels/MeasurementWidget.cs",
+      "sha256": "ad042de0f8db88e3dabf750f0cc51243a38944afaa26d626c5c4738d39626891"
+    },
+    {
+      "path": "eDLT/eDLT.WidgetPanels.baseWidgePanels/BaseWidget.cs",
+      "sha256": "e2ecee24752731238d7901b8e2a20e7482e2e8225e76ad0afa660cc602b407d8"
+    },
+    {
+      "path": "eDLT/eDLT.Controls/NumUpDownPercentage.cs",
+      "sha256": "8af1e7a0096314fbd393c28f9d0989f813c91a0a26adc946ea7ceee0a3c1af70"
+    },
+    {
+      "path": "CBusLogicModel/CBusLogicModel.Units.EDLT/EDLTUnit.cs",
+      "sha256": "641f5abc1c3762cd86a0c4b18bc125424a39017a3d78d6edfa4e1e2964af62b2"
+    },
+    {
+      "path": "CBusLogicModel/CBusLogicModel.Units/CBusBaseUnit.cs",
+      "sha256": "4f0468941222c6696db5836a32fc0b70d18fcf704ea8fe6dd0c2d709a3842487"
+    }
+  ],
+  "initialization_order": [
+    "schedule BackgroundWorker.LoadUnitThreadMain",
+    "InitializeComponent",
+    "bind base unit and network sources",
+    "PopulateWidgetPanels",
+    "SetUpControls",
+    "SetupForm"
+  ],
+  "load_worker_order": [
+    "ReadPPData",
+    "AfterLoadPPData",
+    "CreateUnitLogic",
+    "LoadSucceeded assignment",
+    "OnLoadCompleted"
+  ],
+  "selection_binding_order": [
+    "BaseWidget.SetWidgetData",
+    "BaseWidget.SetUpDataSource",
+    "MeasurementWidget.SetUpDataSource"
+  ],
+  "percentage_initialization_order": [
+    "construct NumUpDownPercentage and wire internal SelectAll handlers",
+    "BeginInit",
+    "bind PercentageValueAsByte to ProximityLevel",
+    "assign PercentageValueAsByte=2",
+    "assign NumericUpDown.Value=1",
+    "EndInit",
+    "assign bsMainUnit.DataSource to EDLTUnit",
+    "binding reads loaded/current ProximityLevel"
+  ],
+  "initialization_concurrency": "LoadUnit schedules its worker before calling SetEDLTFrm; source does not impose a total order between worker completion and synchronous form construction",
+  "bindings": {
+    "Measurement.BigIconIndex": "OnPropertyChanged",
+    "Measurement.Precision": "OnPropertyChanged",
+    "Measurement.Channel": "OnValidation",
+    "Measurement.DeviceID": "OnValidation",
+    "Measurement.Prefix": "OnValidation",
+    "Measurement.Suffix": "OnValidation",
+    "Measurement.FunctionStatus": "OnValidation",
+    "Measurement.GainComposite": "OnValidation; TextChanged, Enter, Validating handlers",
+    "Measurement.OffsetComposite": "OnValidation; TextChanged, Enter, Validating handlers",
+    "ProximityMode": "OnPropertyChanged",
+    "ProximityActionSelector.SelectedValue -> ProximityLevel": "OnValidation",
+    "ProximityLevel.PercentageValueAsByte": "OnValidation"
+  },
+  "save_order": [
+    "active control validation and default OnValidation binding write",
+    "FrmBaseUnit.ValidateSerialNumber",
+    "FrmBaseUnit.ValidateSceneWidgetConfig",
+    "EDLTUnit.IsValid",
+    "FrmBaseUnit.saveUnitDialogRequest",
+    "FrmBaseUnit.SaveUnitThreadMain",
+    "CBusBaseUnit.SaveUnit",
+    "EDLTUnit.BeforeSavePPData",
+    "configuration CRC calculation",
+    "database persistence"
+  ],
+  "retained_native_evidence": [
+    {
+      "path": "research/fixtures/edlt-measurement-culture-acceptance.json",
+      "sha256": "0a784c21d59a7ed49b4558e27d7a198297d60c1aca76ec3ed132e974cc946591",
+      "establishes": "original Measurement model and actual panel validation handlers"
+    },
+    {
+      "path": "research/fixtures/edlt-percentage-control-observations.json",
+      "sha256": "9abcfde6a37f490341442eb86d01b9f96ae7835a546c22708001299b81f71031",
+      "establishes": "actual standalone original NumUpDownPercentage behavior"
+    },
+    {
+      "path": "research/fixtures/edlt-percentage-vectors.json",
+      "sha256": "b29e2754378450320d431313ac5a96ac549209f4875dda65b6c1b851e7940454",
+      "establishes": "original percentage arithmetic differential vectors"
+    }
+  ],
+  "evidence_boundaries": {
+    "original_source_inspected": true,
+    "retained_original_control_probes": true,
+    "python_composition_tests": true,
+    "original_full_parent_form_executed": false,
+    "winforms_focus_caret_dialogs_verified": false,
+    "physical_device_verified": false
+  }
+}

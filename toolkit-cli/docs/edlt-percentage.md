@@ -35,7 +35,16 @@ This is arithmetic parity for the declared domain. The field fixture does not ex
 
 [The control observation fixture](../research/fixtures/edlt-percentage-control-observations.json) records a 12-case pilot and 528 cases using the actual original standalone control on Windows x86 .NET Framework. It pins the source, inputs, raw reports, compiled probes and actual loaded assemblies. All cases were captured and disposed; the 528-case matrix includes thirteen original `ArgumentOutOfRangeException` operations, recorded separately from capture failures. All 256 default byte outcomes match the arithmetic helper, including the 37 roundtrip losses. The observer preserved all 14,148 compared numeric/Boolean state pairs in the matrix.
 
-Displayed text and editing behavior remain separate from the arithmetic API. For byte 3, the control retains the exact internal percentage above, returns byte 2 and displays `1` at its default zero decimal places. Text entry varies by culture and input surface; direct out-of-range `Value` assignments raise while numeric text can clamp. The six targeted click/mouse-up cases recorded no corresponding action event, so they do not establish execution of the constructor-wired click handlers. These are standalone control observations, without whole-form bindings or a new public control API.
+Displayed text and editing behavior remain separate from the arithmetic API. For byte 3, the control retains the exact internal percentage above, returns byte 2 and displays `1` at its default zero decimal places. Text entry varies by culture and input surface; direct out-of-range `Value` assignments raise while numeric text can clamp. The six targeted click/mouse-up cases recorded no corresponding action event, so they do not establish execution of the constructor-wired click handlers.
+
+The bounded [Measurement/Percentage parent composition](edlt-parent-form.md)
+adds a public parent workflow for the actual `ProximityLevel` binding. It
+models resulting-mode visibility, the mode-dependent level/action meaning,
+`OnValidation` byte conversion, retained lifecycle save order, CRCs and
+unrelated-field preservation. Its parent order is pinned from original source
+and reuses these actual-control observations; the original complete
+`FrmBaseUnit` was not executed end to end. Displayed text entry, focus/caret
+selection, click handlers and dialog timing therefore remain unverified.
 
 ## Focused checks
 

@@ -427,6 +427,56 @@ def _edlt_measurement(args):
     return EdltMeasurementWidget(UnitSpecStore(args.spec_dir).load("KEYGL5.xml"))
 
 
+def _edlt_percentage_text(value):
+    from .edlt_percentage import percentage_to_byte
+    try:
+        percentage_to_byte(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError(str(error)) from error
+    return value
+
+
+def _edlt_parent_form_options(parser):
+    """Measurement plus the parent proximity Percentage control."""
+    from .edlt_activation import WAKE_MODES, ACTIVATION_PAGES
+    parser.add_argument("--metadata", type=Path, required=True,
+                        help="Caller-supplied lifecycle cache JSON")
+    _edlt_measurement_options(parser)
+    parser.add_argument("--wake-mode", choices=tuple(WAKE_MODES))
+    parser.add_argument("--group", dest="proximity_group", type=_byte,
+                        help="Proximity event group; 255 is unused")
+    parser.add_argument("--level-percent", type=_edlt_percentage_text,
+                        help="Primary-event percentage in 0..100 using the original control conversion")
+    parser.add_argument("--action-selector", type=_byte,
+                        help="Trigger-event action byte; mutually exclusive with --level-percent")
+    parser.add_argument("--activation-page", choices=tuple(ACTIVATION_PAGES))
+    parser.add_argument("--ignore-first-key-press", action=argparse.BooleanOptionalAction,
+                        default=None)
+
+
+def _edlt_parent_form_settings(args):
+    return {
+        "metadata": _edlt_lifecycle_metadata(args.metadata),
+        "measurement": _edlt_measurement_settings(args),
+        "activation": {
+            "wake_mode": args.wake_mode,
+            "group": args.proximity_group,
+            "level_percent": args.level_percent,
+            "action": args.action_selector,
+            "activation_page": args.activation_page,
+            "ignore_first_key_press": args.ignore_first_key_press,
+        },
+    }
+
+
+def _edlt_parent_form(args):
+    from .edlt_parent_form import EdltParentForm
+    from .unitspec import UnitSpecStore
+    if args.spec_dir is None:
+        raise ValueError("Use --spec-dir or CBUS_UNITSPEC_DIR for decoded vendor specifications")
+    return EdltParentForm(UnitSpecStore(args.spec_dir).load("KEYGL5.xml"))
+
+
 def _edlt_time_date_options(parser):
     from .edlt_time_date import DISPLAY_TYPES, DATE_FORMATS, TIME_FORMATS
     parser.add_argument("--page", type=_number, required=True, help="0 selects standby; 1..4 select functional pages")
@@ -1422,6 +1472,9 @@ def build_parser():
     p = unops.add_parser("edlt-measurement", help="Configure KEYGL5 5.5.00 Measurement widgets with exact scaling pairs")
     p.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
     _edlt_measurement_options(p)
+    p = unops.add_parser("edlt-parent-form", help="Compose Measurement and proximity Percentage controls through the retained parent lifecycle")
+    p.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
+    _edlt_parent_form_options(p)
     p = unops.add_parser("edlt-time-date", help="Configure KEYGL5 5.5.00 Time/Date widgets and unit-wide display formats")
     p.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
     _edlt_time_date_options(p)
@@ -1795,6 +1848,9 @@ def build_parser():
     p = eops.add_parser("measurement-plan")
     p.add_argument("file", type=Path, help="KEYGL5 5.5.00 / 5055EDL PP export or complete parameter mapping")
     _edlt_measurement_options(p)
+    p = eops.add_parser("parent-form-plan", help="Compose Measurement and proximity Percentage controls through the retained parent lifecycle")
+    p.add_argument("file", type=Path, help="KEYGL5 5.5.00 / 5055EDL PP export or complete parameter mapping")
+    _edlt_parent_form_options(p)
     p = eops.add_parser("time-date-plan")
     p.add_argument("file", type=Path, help="KEYGL5 5.5.00 / 5055EDL PP export or complete parameter mapping")
     _edlt_time_date_options(p)
@@ -2626,11 +2682,11 @@ def _network(args, client):
 def _programming(args, client):
     from .programming import Programmer
     programmer = Programmer(client)
-    mutable = args.remote_action in ("set", "reset-defaults", "import", "key-macro", "neo-key-macro", "sensor-occupancy", "edlt-lighting", "edlt-enable", "edlt-shutter", "edlt-timer", "edlt-fan", "edlt-multilevel", "edlt-room-courtesy", "edlt-measurement", "edlt-time-date", "edlt-hvac", "edlt-display", "edlt-mra", "edlt-mra-globals", "edlt-general", "edlt-standby", "edlt-colours", "edlt-navigation", "edlt-quick-status", "edlt-activation", "edlt-page-control", "edlt-lifecycle", "edlt-restore-levels", "edlt-applications", "edlt-corridor", "edlt-blank", "edlt-reset-controls", "edlt-scene-manager", "edlt-scene-capture", "edlt-scene", "edlt-scenes", "device-scene", "template-import")
+    mutable = args.remote_action in ("set", "reset-defaults", "import", "key-macro", "neo-key-macro", "sensor-occupancy", "edlt-lighting", "edlt-enable", "edlt-shutter", "edlt-timer", "edlt-fan", "edlt-multilevel", "edlt-room-courtesy", "edlt-measurement", "edlt-parent-form", "edlt-time-date", "edlt-hvac", "edlt-display", "edlt-mra", "edlt-mra-globals", "edlt-general", "edlt-standby", "edlt-colours", "edlt-navigation", "edlt-quick-status", "edlt-activation", "edlt-page-control", "edlt-lifecycle", "edlt-restore-levels", "edlt-applications", "edlt-corridor", "edlt-blank", "edlt-reset-controls", "edlt-scene-manager", "edlt-scene-capture", "edlt-scene", "edlt-scenes", "device-scene", "template-import")
     destination = args.destination or args.source
     if mutable and not args.dry_run and not destination:
         raise ValueError("Edits need --source or --destination, or --dry-run")
-    if args.remote_action in ("edlt-lighting", "edlt-enable", "edlt-shutter", "edlt-timer", "edlt-fan", "edlt-multilevel", "edlt-room-courtesy", "edlt-measurement", "edlt-time-date", "edlt-hvac", "edlt-display", "edlt-mra", "edlt-mra-globals", "edlt-general", "edlt-standby", "edlt-colours", "edlt-navigation", "edlt-quick-status", "edlt-activation", "edlt-page-control", "edlt-lifecycle", "edlt-restore-levels", "edlt-applications", "edlt-corridor", "edlt-blank", "edlt-reset-controls", "edlt-scene-manager", "edlt-scene-capture", "edlt-scene", "edlt-scenes") and destination and not destination.lower().startswith("/db//"):
+    if args.remote_action in ("edlt-lighting", "edlt-enable", "edlt-shutter", "edlt-timer", "edlt-fan", "edlt-multilevel", "edlt-room-courtesy", "edlt-measurement", "edlt-parent-form", "edlt-time-date", "edlt-hvac", "edlt-display", "edlt-mra", "edlt-mra-globals", "edlt-general", "edlt-standby", "edlt-colours", "edlt-navigation", "edlt-quick-status", "edlt-activation", "edlt-page-control", "edlt-lifecycle", "edlt-restore-levels", "edlt-applications", "edlt-corridor", "edlt-blank", "edlt-reset-controls", "edlt-scene-manager", "edlt-scene-capture", "edlt-scene", "edlt-scenes") and destination and not destination.lower().startswith("/db//"):
         raise ValueError("The eDLT widget workflows support database destinations only")
     if args.remote_action == "template-import" and destination and not destination.lower().startswith("/db//"):
         raise ValueError("The tested unit template workflow supports database destinations only")
@@ -2657,6 +2713,8 @@ def _programming(args, client):
     edlt_multilevel = _edlt_multilevel(args) if args.remote_action == "edlt-multilevel" else None
     edlt_room_courtesy = _edlt_room_courtesy(args) if args.remote_action == "edlt-room-courtesy" else None
     edlt_measurement = _edlt_measurement(args) if args.remote_action == "edlt-measurement" else None
+    edlt_parent_form = _edlt_parent_form(args) if args.remote_action == "edlt-parent-form" else None
+    parent_form_settings = _edlt_parent_form_settings(args) if edlt_parent_form is not None else None
     edlt_time_date = _edlt_time_date(args) if args.remote_action == "edlt-time-date" else None
     edlt_hvac = _edlt_hvac(args) if args.remote_action == "edlt-hvac" else None
     edlt_display = _edlt_display(args) if args.remote_action == "edlt-display" else None
@@ -2751,6 +2809,9 @@ def _programming(args, client):
             values = session.values()
         elif args.remote_action == "edlt-measurement":
             result = edlt_measurement.configure(session, **_edlt_measurement_settings(args))
+            values = session.values()
+        elif args.remote_action == "edlt-parent-form":
+            result = edlt_parent_form.configure(session, **parent_form_settings)
             values = session.values()
         elif args.remote_action == "edlt-time-date":
             result = edlt_time_date.configure(session, **_edlt_time_date_settings(args))
@@ -3030,6 +3091,8 @@ def run(args):
             return _edlt_room_courtesy(args).plan(values, **_edlt_room_courtesy_settings(args)).as_dict(), 0
         if args.action == "measurement-plan":
             return _edlt_measurement(args).plan(values, **_edlt_measurement_settings(args)).as_dict(), 0
+        if args.action == "parent-form-plan":
+            return _edlt_parent_form(args).plan(values, **_edlt_parent_form_settings(args)).as_dict(), 0
         if args.action == "time-date-plan":
             return _edlt_time_date(args).plan(values, **_edlt_time_date_settings(args)).as_dict(), 0
         if args.action == "hvac-plan":
@@ -3223,7 +3286,7 @@ def main(argv=None):
         result.update(routed_recall_error_payload(exc, args))
         result.update(routed_identify_error_payload(exc, args))
         result.update(project_repair_error_payload(exc, args))
-        for name in ("pci_mmi_observation", "pci_serial_observation", "pci_inventory_observation", "usb_dfu_evidence", "edlt_display_evidence", "edlt_mra_evidence", "edlt_general_evidence", "edlt_standby_evidence", "edlt_colours_evidence", "edlt_navigation_evidence", "edlt_quick_status_evidence", "edlt_activation_evidence", "edlt_page_control_evidence", "edlt_lifecycle_evidence", "edlt_restore_levels_evidence", "edlt_applications_evidence", "edlt_corridor_evidence", "edlt_blank_evidence", "edlt_reset_evidence", "edlt_scene_manager_evidence", "edlt_scene_live_evidence"):
+        for name in ("pci_mmi_observation", "pci_serial_observation", "pci_inventory_observation", "usb_dfu_evidence", "edlt_display_evidence", "edlt_mra_evidence", "edlt_general_evidence", "edlt_standby_evidence", "edlt_colours_evidence", "edlt_navigation_evidence", "edlt_quick_status_evidence", "edlt_activation_evidence", "edlt_page_control_evidence", "edlt_lifecycle_evidence", "edlt_parent_form_evidence", "edlt_restore_levels_evidence", "edlt_applications_evidence", "edlt_corridor_evidence", "edlt_blank_evidence", "edlt_reset_evidence", "edlt_scene_manager_evidence", "edlt_scene_live_evidence"):
             evidence = getattr(exc, name, None)
             if isinstance(evidence, dict):
                 result[name] = evidence

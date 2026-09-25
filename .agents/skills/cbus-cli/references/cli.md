@@ -30,6 +30,33 @@ and `.display_value` before applying a plan. The same options exist on offline
 See `toolkit-cli/docs/edlt-measurement.md` for the pinned decimal/group
 separators, blank/zero rules, and the non-finite safety boundary.
 
+### eDLT Measurement/Percentage parent composition
+
+Use a caller-supplied lifecycle cache to compose both controls through one
+retained load/save plan:
+
+```sh
+cbus-toolkit edlt parent-form-plan snapshot.json \
+  --metadata lifecycle-cache.json \
+  --page 1 --position 1 --device-id 42 --channel 3 \
+  --gain-value '1.5' --measurement-culture en-NZ \
+  --wake-mode primary-event --group 42 --level-percent 50
+```
+
+The native equivalent is `cgate unit ... edlt-parent-form` and accepts database
+destinations only. Add the unit-level `--dry-run` before the subcommand to
+stage and verify without `SAVE`. `--level-percent` uses the original Decimal
+conversion and is valid only when the resulting wake mode exposes the level
+panel. `--action-selector` uses the same stored byte under trigger mode and is
+mutually exclusive with the percentage.
+
+Read `phases.controls`, `cross_control`, `preservation` and `write_order` in
+the JSON. The plan pins the original construction, asynchronous worker,
+selection-binding and save sequences, but reports
+`native_parent_form_executed=false`. The complete original GUI and physical
+behavior are outside this bounded workflow. See
+`toolkit-cli/docs/edlt-parent-form.md`.
+
 ### Native dynamic-label cache clear
 
 Use the typed native command to request all cached labels or one key be cleared
