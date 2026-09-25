@@ -1675,9 +1675,15 @@ impl Server {
         // copy flow probes. Anything else is accepted opaquely without
         // claiming resolution.
         if let Some(rest) = path.strip_prefix('!') {
+            let addressed_oid = rest.split('/').next().unwrap_or("");
+            if self.known_oids.contains(addressed_oid)
+                && !self.oid_in_current_project(addressed_oid)
+            {
+                return err(tag, status::ABSENT, "401 Object not found");
+            }
             if rest.contains("/OID") {
                 let oid = rest.split('/').next().unwrap_or("");
-                if !self.known_oids.contains(oid) {
+                if !self.known_oids.contains(oid) || !self.oid_in_current_project(oid) {
                     return err(tag, status::ABSENT, "401 Object not found");
                 }
                 // Single 342 line in the exact native shape: collectors
@@ -3326,6 +3332,9 @@ impl Server {
         // 301 OID flow; anything else stays opaque.
         if let Some(src_oid) = words[1].strip_prefix('!') {
             if !src_oid.contains('/') {
+                if self.known_oids.contains(src_oid) && !self.oid_in_current_project(src_oid) {
+                    return err(tag, status::ABSENT, "401 Object not found");
+                }
                 if let Some(source) = self.level(src_oid).cloned() {
                     let oid = self.issue_oid();
                     self.objects.insert(format!("!{oid}"));
@@ -3482,6 +3491,9 @@ impl Server {
         // until its last occurrence is gone.
         if let Some(rest) = words[1].strip_prefix('!') {
             let oid = rest.split('/').next().unwrap_or("").to_string();
+            if self.known_oids.contains(&oid) && !self.oid_in_current_project(&oid) {
+                return err(tag, status::ABSENT, "401 Object not found");
+            }
             if let Some(key) = self.level_key(&oid) {
                 self.db_levels.remove(&key);
                 if self.db_levels.values().any(|level| level.oid == oid) {
@@ -3544,7 +3556,11 @@ impl Server {
         if let Some(rest) = words[1].strip_prefix('!') {
             let mut segments = rest.splitn(2, '/');
             let oid = segments.next().unwrap_or("");
-            if segments.next() == Some("Value") {
+            let field = segments.next();
+            if self.known_oids.contains(oid) && !self.oid_in_current_project(oid) {
+                return err(tag, status::ABSENT, "401 Object not found");
+            }
+            if field == Some("Value") {
                 if let Some(level) = self.level_mut(oid) {
                     let byte: i64 = value.parse().unwrap_or(-1);
                     if !(0..=255).contains(&byte) {
@@ -3702,7 +3718,7 @@ impl Server {
         // `!oid/...` identity reads resolve issued OIDs only.
         if let Some(rest) = address.strip_prefix('!') {
             let oid = rest.split('/').next().unwrap_or("");
-            if !self.known_oids.contains(oid) {
+            if !self.known_oids.contains(oid) || !self.oid_in_current_project(oid) {
                 return err(tag, status::ABSENT, "401 Object not found");
             }
             if attribute.eq_ignore_ascii_case("OID") {
@@ -4395,14 +4411,10 @@ impl Server {
     /// copies retain OIDs, so more than one loaded project can contain the
     /// same identity. The selected project disambiguates those records.
     fn level_key(&self, oid: &str) -> Option<String> {
-        let current = self.current.as_deref();
-        let mut fallback = None;
-        for (key, level) in &self.db_levels {
+        let current = self.current.as_deref()?;
+        self.db_levels.iter().find_map(|(key, level)| {
             if level.oid != oid {
-                continue;
-            }
-            if fallback.as_ref().is_none_or(|known: &String| key < known) {
-                fallback = Some(key.clone());
+                return None;
             }
             let project = level
                 .parent
@@ -4410,11 +4422,8 @@ impl Server {
                 .split('/')
                 .next()
                 .unwrap_or("");
-            if current == Some(project) {
-                return Some(key.clone());
-            }
-        }
-        fallback
+            (current == project).then(|| key.clone())
+        })
     }
 
     fn level(&self, oid: &str) -> Option<&DbLevel> {
@@ -4425,6 +4434,21 @@ impl Server {
     fn level_mut(&mut self, oid: &str) -> Option<&mut DbLevel> {
         let key = self.level_key(oid)?;
         self.db_levels.get_mut(&key)
+    }
+
+    /// True when an issued OID belongs to the currently selected project's
+    /// durable database. OIDs are not global capabilities: repository copies
+    /// may share one identity, and an unrelated selection must not expose it.
+    fn oid_in_current_project(&self, oid: &str) -> bool {
+        let Some(current) = self.current.as_deref() else {
+            return false;
+        };
+        self.projects.get(current).is_some_and(|project| {
+            project
+                .networks
+                .values()
+                .any(|network| network.units.values().any(|unit| unit.oid == oid))
+        }) || self.level_key(oid).is_some()
     }
 
     /// Issue a deterministic OID for `Level`/`NetVar` creation and units.
@@ -5205,6 +5229,72 @@ mod tests {
         assert_eq!(
             s.handle("[19] PROJECT DELETE MISSING").final_text,
             "408 Operation failed: Unable to delete file"
+        );
+    }
+
+    #[test]
+    fn copied_oids_require_a_matching_project_selection() {
+        let mut s = Server::new(AccessLevel::Program);
+        assert_eq!(s.handle("[1] PROJECT NEW SOURCE").status, 200);
+        assert_eq!(
+            s.handle("[2] DBCREATENET 254 Local Cni loopback").status,
+            200
+        );
+        let level = s.handle("[3] DBADDSAFE //SOURCE/254/56/1 Level 7 Seven");
+        let oid = level
+            .final_text
+            .strip_prefix("301 OID=")
+            .expect("level OID")
+            .to_string();
+        assert_eq!(
+            s.handle(&format!("[4] DBSETSAFE !{oid}/Value 77")).status,
+            200
+        );
+        assert_eq!(s.handle("[5] PROJECT COPY SOURCE COPY").status, 200);
+        assert_eq!(s.handle("[6] PROJECT NEW OTHER").status, 200);
+        assert_eq!(
+            s.handle("[7] DBCREATENET 254 Local Cni loopback").status,
+            200
+        );
+
+        for command in [
+            format!("[8] DBGET !{oid}/OID"),
+            format!("[9] DBGET !{oid}/Value"),
+            format!("[10] DBGETXML !{oid}"),
+            format!("[11] GET !{oid} OID"),
+            format!("[12] DBSETSAFE !{oid}/Value 88"),
+            format!("[13] DBSETSAFE !{oid}/TagName Foreign"),
+            format!("[14] DBCOPYSAFE !{oid} //OTHER/254/56/2 8 Foreign"),
+            format!("[15] DBDELETE !{oid}"),
+        ] {
+            assert_eq!(s.handle(&command).status, 401, "{command}");
+        }
+        assert_eq!(
+            s.db_levels
+                .values()
+                .filter(|level| level.oid == oid && level.value == Some(77))
+                .count(),
+            2
+        );
+        assert!(s.known_oids.contains(&oid));
+        assert!(s.objects.contains(&format!("!{oid}")));
+
+        assert_eq!(s.handle("[16] PROJECT CLOSE").status, 200);
+        assert_eq!(s.handle(&format!("[17] DBGET !{oid}/Value")).status, 401);
+        assert_eq!(s.handle("[18] PROJECT USE COPY").status, 200);
+        assert_eq!(
+            s.handle(&format!("[19] DBSETSAFE !{oid}/Value 88")).status,
+            200
+        );
+        assert_eq!(s.handle("[20] PROJECT USE SOURCE").status, 200);
+        assert_eq!(
+            s.handle(&format!("[21] DBGET !{oid}/Value")).final_text,
+            format!("342 !{oid}/Value=77")
+        );
+        assert_eq!(s.handle("[22] PROJECT USE COPY").status, 200);
+        assert_eq!(
+            s.handle(&format!("[23] DBGET !{oid}/Value")).final_text,
+            format!("342 !{oid}/Value=88")
         );
     }
 

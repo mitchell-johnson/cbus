@@ -5342,10 +5342,40 @@ async fn project_copy_and_secondary_delete_are_durable_database_only() {
     let mut restarted_client = ClientState::default();
     assert_eq!(
         restarted
+            .handle(
+                &mut restarted_client,
+                &format!("[9a] DBGET !{level_oid}/Value"),
+            )
+            .await
+            .status,
+        401
+    );
+    assert_eq!(
+        restarted
+            .handle(
+                &mut restarted_client,
+                &format!("[9b] DBSETSAFE !{level_oid}/Value 88"),
+            )
+            .await
+            .status,
+        401
+    );
+    assert_eq!(
+        restarted
             .handle(&mut restarted_client, "[10] PROJECT USE COPY")
             .await
             .status,
         200
+    );
+    assert_eq!(
+        restarted
+            .handle(
+                &mut restarted_client,
+                &format!("[10a] DBGET !{level_oid}/Value"),
+            )
+            .await
+            .final_text,
+        format!("342 !{level_oid}/Value=77")
     );
     let deleted = restarted
         .handle(&mut restarted_client, "[11] PROJECT DELETE COPY")

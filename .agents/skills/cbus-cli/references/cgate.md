@@ -257,10 +257,14 @@ the unsupported Schneider ZIP/GZ/DB file-format boundary.
 records, fields and level definitions, but clears copied physical presence,
 observed levels and network runtime state. The source remains selected. The
 destination must use the native evidenced maximum of eight ASCII project-name
-characters. `PROJECT DELETE NAME` is limited to secondary projects, removes
-only that project's durable records and clears the deleting connection's
-selection. Deleting the configured PCI/MQTT project returns 408. Both commands
-use `200 OK.`, optional LOGIN gating, atomic persistence and failed-write
+characters. Copied OIDs resolve and mutate only when their source or destination
+is the effective selected project; an unrelated selection returns 401 rather
+than falling back to another loaded project. A cmqttd connection with no
+explicit selection uses its configured hardware project. The command
+`PROJECT DELETE NAME` is limited to secondary projects, removes only that
+project's durable records and clears the deleting connection's selection.
+Deleting the configured PCI/MQTT project returns 408. Both commands use the
+`200 OK.` envelope, optional LOGIN gating, atomic persistence and failed-write
 rollback. Native C-Gate keeps repository files separate from already loaded
 projects; cmqttd has one loaded atomic model, so a copy is immediately
 selectable and a delete is immediate. Do not infer Schneider file-repository
