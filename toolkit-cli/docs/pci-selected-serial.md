@@ -207,7 +207,7 @@ derived expectations, then reparse complete MMI/serial/options raw evidence.
 Files are not authenticated history. Apply always repeats live observations;
 recovery only compares a newly observed map with the supplied validated plan.
 
-The Rust `cbus-transport` crate contains two interoperability primitives for
+The Rust `cbus-transport` crate contains three interoperability primitives for
 this workflow. `plan::validate_plan_document` validates the same version-one
 plan envelope, raw captures, derived expectations, strict UTF-8/duplicate-key
 rules and size/depth limits without performing I/O. `journal::RecoveryJournal`
@@ -215,9 +215,32 @@ provides exclusive creation, checked atomic replacement, bounded guarded reads
 and durable-write evidence using the Python journal's canonical JSON form.
 Atomic replacement and no-follow race protection are currently verified on
 macOS and Linux; other hosts do not have the same `O_NOFOLLOW` guarantee.
-These are reusable validation and storage components only: they do not
-authorize a bus mutation, run apply/verify, establish endpoint ownership or
-replace the coordinator's fresh physical observations.
+`verify::verify_plan` adds the read-only classification phase over an already
+reset, exclusively owned shared `PciClient`. It validates the original plan
+bytes before I/O, collects a duplicate-preserving serial-only identity snapshot
+between complete MMI bookends, rejects partial, drifting, state-3,
+missing-local and cross-address-conflict observations, then reports expected,
+unchanged, unexpected or uncertain state. It constructs no selected-serial
+address request, writes no journal and never replays the whole observation. The
+shared client may retry confirmed read packets while the observation is active;
+caller bounds replace the plan timing and are reported explicitly. Both local
+commissioning lanes remain held for the snapshot, while ordinary SAL, raw
+sends and external bus traffic remain outside that guard. Cancelled writes that
+have not started are discarded and release their confirmation allocations.
+Started writes and retransmits cannot be retracted; their confirmation codes
+remain reserved through the bounded late-ack window. After a deadline or
+external cancellation, the caller must close the old transport and reconnect
+before any further I/O. Focused integration tests cover the three classifications, strict
+raw-plan admission, lane exclusion, deadline cleanup, and incomplete or
+inconsistent observations; lower-level unit tests cover the flow-queue and
+confirmation-allocation cancellation paths.
+
+The plan and journal components do not authorize a bus mutation. The Rust
+verifier also does not enforce the plan's endpoint, local PCI serial or
+transport settings and emits no Python-equivalent raw-frame proof: the caller
+supplies and exclusively owns the connected client. It cannot prove movement
+cause, firmware persistence, physical compatibility or an atomic observation,
+and it does not replace apply/recovery.
 
 Matching bookends are non-atomic: a concurrent identity swap, identical physical
 serials, delayed traffic and analogue bus collisions cannot be excluded. An

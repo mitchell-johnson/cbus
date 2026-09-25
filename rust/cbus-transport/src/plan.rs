@@ -1696,6 +1696,17 @@ fn validate_plan(doc: &Map<String, Value>) -> Result<ValidatedPlan, PlanError> {
 /// Pure: no I/O, no clock reads. Every failure carries a machine-stable
 /// [`PlanError::reason`] per failure class.
 pub fn validate_plan_document(raw: &[u8]) -> Result<ValidatedPlan, PlanError> {
+    validate_plan_document_with_value(raw).map(|(plan, _)| plan)
+}
+
+/// Return the validated plan and the same sanitized value used to validate it.
+///
+/// Consumers must use this value rather than reparsing the raw input: the
+/// scanner enforces raw/canonical size bounds and duplicate-key rejection,
+/// and normalizes Python numbers outside serde_json's supported range.
+pub(crate) fn validate_plan_document_with_value(
+    raw: &[u8],
+) -> Result<(ValidatedPlan, Value), PlanError> {
     if raw.len() > MAX_PLAN_BYTES {
         return Err(PlanError::new(
             "oversize",
@@ -1717,7 +1728,8 @@ pub fn validate_plan_document(raw: &[u8]) -> Result<ValidatedPlan, PlanError> {
             "Plan has unsupported or missing fields",
         )
     })?;
-    validate_plan(doc)
+    let plan = validate_plan(doc)?;
+    Ok((plan, value))
 }
 
 #[cfg(test)]
@@ -1744,6 +1756,64 @@ mod tests {
         let quoted = format!("\"{PLACEHOLDER}\"");
         assert_eq!(encoded.matches(&quoted).count(), 1);
         encoded.replacen(&quoted, raw_number, 1).into_bytes()
+    }
+
+    #[test]
+    fn validated_document_returns_the_scanned_value() {
+        let mut document = valid_plan_document_value();
+        document["before"]["timing"]["ignored_python_integer"] = Value::Null;
+        let raw = inject_raw_number(
+            document,
+            "/before/timing/ignored_python_integer",
+            &format!("1{}", "0".repeat(1_000)),
+        );
+        let (plan, value) = validate_plan_document_with_value(&raw).unwrap();
+
+        assert_eq!(plan, validate_plan_document(&raw).unwrap());
+        assert_eq!(value["serial"].as_str(), Some(plan.serial.as_str()));
+        assert_eq!(
+            value["before"]["timing"]["ignored_python_integer"],
+            serde_json::from_slice::<Value>(BIG_INTEGER_SENTINEL_JSON).unwrap()
+        );
+    }
+
+    #[test]
+    fn validated_document_requires_raw_and_semantic_validation() {
+        assert_eq!(
+            validate_plan_document_with_value(br#"{"a":{"b":1,"b":2}}"#)
+                .unwrap_err()
+                .reason(),
+            "duplicate_field"
+        );
+        assert_eq!(
+            validate_plan_document_with_value(&vec![b' '; MAX_PLAN_BYTES + 1])
+                .unwrap_err()
+                .reason(),
+            "oversize"
+        );
+
+        let mut document = valid_plan_document_value();
+        document["request_hex"] = Value::from("00");
+        assert_eq!(
+            validate_plan_document_with_value(&serde_json::to_vec(&document).unwrap())
+                .unwrap_err()
+                .reason(),
+            "request_mismatch"
+        );
+    }
+
+    #[test]
+    fn validated_document_requires_canonical_size_validation() {
+        let mut document = valid_plan_document_value();
+        document["before"]["timing"]["ignored_text"] = Value::from("é".repeat(MAX_PLAN_BYTES / 6));
+        let raw = serde_json::to_vec(&document).unwrap();
+        assert!(raw.len() < MAX_PLAN_BYTES);
+        assert_eq!(
+            validate_plan_document_with_value(&raw)
+                .unwrap_err()
+                .reason(),
+            "canonical_oversize"
+        );
     }
 
     #[test]

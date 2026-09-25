@@ -37,6 +37,21 @@ The protocol crate covers point-to-multipoint, point-to-point, device-management
 
 The transport reassembles bounded byte streams, initializes the PCI, assigns confirmation codes, retries unconfirmed frames, and gives interactive commands priority over background status sweeps. It supports TCP CNI and serial PCI connections.
 
+For selected-serial commissioning, `cbus-transport::inventory` preserves every
+IDENTIFY4 reply and the opening MMI vector. `cbus-transport::verify` validates a
+version-one plan from its original bytes, performs a read-only serial-only
+identity observation between complete MMI bookends, and classifies the full
+identity/state snapshot. It holds both local commissioning lanes. Cancelled
+writes that have not started are discarded and release their confirmation
+allocations; started writes and retries retain their codes through a bounded
+late-ack window. Caller timing replaces plan timing; ordinary SAL, raw sends
+and external traffic remain outside the guard. An already-started socket write cannot be recalled, so a
+deadline or external cancellation requires closing the old transport and
+reconnecting before further I/O. The caller must exclusively own and bind the
+supplied `PciClient`; this Rust layer does not prove endpoint or local-serial
+identity, raw transport equivalence, movement cause, persistence or physical
+compatibility and sends no address change.
+
 ## MQTT behavior
 
 Home Assistant discovery and state use `homeassistant/light/` and `homeassistant/binary_sensor/` topic families. Incoming light `/set` payloads are validated by `cbus-mqtt` before the bridge converts them to lighting commands. Project labels improve entity names; deterministic address-based names are used without a project file.

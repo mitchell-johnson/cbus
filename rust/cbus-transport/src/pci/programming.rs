@@ -108,7 +108,7 @@ impl PciClient {
             complete: false,
         };
         let mut replies = self.packets.subscribe();
-        let code = self.get_confirmation_code();
+        let code = self.get_confirmation_code()?;
         let request = encode_serial_address(&selected.canonical, destination, true, code)
             .map_err(|error| Error::new(ErrorKind::InvalidInput, error.0))?;
 
@@ -264,9 +264,7 @@ impl PciClient {
         });
 
         {
-            let mut state = self.state.lock().unwrap();
-            state.pending.remove(&code);
-            state.codes_in_use.remove(&code);
+            self.release_legacy_confirmation(code);
         }
         if result.is_ok()
             || result.as_ref().is_err_and(|error| {
@@ -328,7 +326,7 @@ impl PciClient {
             },
         )
         .map_err(|error| Error::new(ErrorKind::InvalidInput, error.0))?;
-        let code = self.get_confirmation_code();
+        let code = self.get_confirmation_code()?;
         bytes.insert(bytes.len() - 1, code);
 
         let result = tokio::time::timeout(REPLY_TIMEOUT, async {
@@ -399,9 +397,7 @@ impl PciClient {
         });
 
         {
-            let mut state = self.state.lock().unwrap();
-            state.pending.remove(&code);
-            state.codes_in_use.remove(&code);
+            self.release_legacy_confirmation(code);
         }
         let pci_rejected = format!("PCI rejected {operation}");
         let unit_rejected = format!("unit rejected {operation}");
@@ -549,10 +545,8 @@ impl PciClient {
         if !self.is_connected() {
             return Err(Error::new(ErrorKind::BrokenPipe, "PCI disconnected"));
         }
-        let code = self
-            .send(packet, true, false)
-            .await?
-            .ok_or_else(|| Error::new(ErrorKind::InvalidInput, "command cannot be confirmed"))?;
+        let confirmation = self.send_guarded(packet).await?;
+        let code = confirmation.code;
         let result = tokio::time::timeout(Duration::from_secs(12), async {
             loop {
                 match replies.recv().await {
@@ -580,11 +574,6 @@ impl PciClient {
                 "PCI delivery confirmation timed out",
             ))
         });
-        if result.is_err() {
-            let mut state = self.state.lock().unwrap();
-            state.pending.remove(&code);
-            state.codes_in_use.remove(&code);
-        }
         result
     }
 
@@ -1247,10 +1236,8 @@ impl PciClient {
             hops: vec![],
             cals: vec![Cal::Unlock { parameter }],
         };
-        let code = self
-            .send(&packet, true, false)
-            .await?
-            .ok_or_else(|| Error::new(ErrorKind::InvalidInput, "unlock cannot be confirmed"))?;
+        let confirmation = self.send_guarded(&packet).await?;
+        let code = confirmation.code;
         let result = tokio::time::timeout(REPLY_TIMEOUT, async {
             let mut confirmed = false;
             let mut challenge = None;
@@ -1326,11 +1313,6 @@ impl PciClient {
                 "parameter unlock timed out",
             ))
         });
-        if result.is_err() {
-            let mut state = self.state.lock().unwrap();
-            state.pending.remove(&code);
-            state.codes_in_use.remove(&code);
-        }
         result
     }
 
@@ -1348,7 +1330,7 @@ impl PciClient {
             .encode_packet()
             .map_err(|error| Error::new(ErrorKind::InvalidInput, error.0))?;
         bytes.insert(0, b'\\');
-        let code = self.get_confirmation_code();
+        let code = self.get_confirmation_code()?;
         bytes.push(code);
         bytes.push(b'\r');
         let written = self
@@ -1359,9 +1341,7 @@ impl PciClient {
             .await
             .map_err(|_| Error::new(ErrorKind::BrokenPipe, "flow controller ended"))?
         {
-            let mut state = self.state.lock().unwrap();
-            state.pending.remove(&code);
-            state.codes_in_use.remove(&code);
+            self.release_legacy_confirmation(code);
             return Err(error);
         }
         // Deliberately do not add this write to `pending`: the protected
@@ -1452,9 +1432,7 @@ impl PciClient {
         .await
         .unwrap_or_else(|_| Err(Error::new(ErrorKind::TimedOut, "readdress timed out")));
         if result.is_err() {
-            let mut state = self.state.lock().unwrap();
-            state.pending.remove(&code);
-            state.codes_in_use.remove(&code);
+            self.release_legacy_confirmation(code);
         }
         // A positive ACK or a definitive NAK closes the transaction. A
         // transport/timeout error remains uncertain and faults this lane.
@@ -1958,12 +1936,8 @@ impl PciClient {
             hops: vec![],
             cals: vec![Cal::Unlock { parameter }],
         };
-        let code = self.send(&packet, true, false).await?.ok_or_else(|| {
-            Error::new(
-                ErrorKind::InvalidInput,
-                "duplicate-address probe cannot be confirmed",
-            )
-        })?;
+        let confirmation = self.send_guarded(&packet).await?;
+        let code = confirmation.code;
 
         let result = tokio::time::timeout(REPLY_TIMEOUT, async {
             let mut confirmed = false;
@@ -2070,11 +2044,7 @@ impl PciClient {
             ))
         });
 
-        if result.is_err() {
-            let mut state = self.state.lock().unwrap();
-            state.pending.remove(&code);
-            state.codes_in_use.remove(&code);
-        } else {
+        if result.is_ok() {
             transaction.complete = true;
         }
         result
@@ -2087,6 +2057,17 @@ impl PciClient {
         stop_after_first: bool,
     ) -> Result<Vec<Vec<u8>>> {
         let _lane = self.programming_lane.lock().await;
+        self.identify_collect_inner(unit, attribute, stop_after_first)
+            .await
+    }
+
+    // Caller holds programming_lane for the entire reply window.
+    pub(super) async fn identify_collect_inner(
+        &self,
+        unit: u8,
+        attribute: u8,
+        stop_after_first: bool,
+    ) -> Result<Vec<Vec<u8>>> {
         if self.programming_fault.load(Ordering::Acquire) {
             return Err(Error::other(
                 "programming stream needs reconnect after an incomplete transaction",
@@ -2107,10 +2088,8 @@ impl PciClient {
             hops: vec![],
             cals: vec![Cal::Identify { attribute }],
         };
-        let code = self
-            .send(&packet, true, false)
-            .await?
-            .ok_or_else(|| Error::new(ErrorKind::InvalidInput, "IDENTIFY cannot be confirmed"))?;
+        let confirmation = self.send_guarded(&packet).await?;
+        let code = confirmation.code;
 
         let result = tokio::time::timeout(REPLY_TIMEOUT, async {
             let mut confirmed = false;
@@ -2216,11 +2195,7 @@ impl PciClient {
             ))
         });
 
-        if result.is_err() {
-            let mut state = self.state.lock().unwrap();
-            state.pending.remove(&code);
-            state.codes_in_use.remove(&code);
-        } else {
+        if result.is_ok() {
             transaction.complete = true;
         }
         result
@@ -3279,5 +3254,125 @@ mod tests {
             ErrorKind::InvalidInput
         );
         assert!(!pci.programming_fault.load(Ordering::Acquire));
+    }
+    #[tokio::test(start_paused = true)]
+    async fn identify_cancellation_does_not_clear_a_reused_confirmation_code() {
+        let (pci, _remote, _) = setup().await;
+        let code = b'h';
+        let replacement = b"same IDENTIFY request bytes".to_vec();
+        let guard = SentConfirmation {
+            client: &pci,
+            code,
+            allocation_id: 41,
+        };
+        {
+            let mut state = pci.state.lock().unwrap();
+            state.codes_in_use.insert(code, Instant::now());
+            state.allocation_ids.insert(code, 42);
+            state.pending.insert(
+                code,
+                Pending {
+                    data: replacement.clone(),
+                    attempts: 1,
+                    next_retry: Instant::now() + Duration::from_secs(1),
+                    queued_retry: None,
+                },
+            );
+        }
+        drop(guard);
+        {
+            let state = pci.state.lock().unwrap();
+            assert_eq!(state.pending[&code].data, replacement);
+            assert!(state.codes_in_use.contains_key(&code));
+        }
+        drop(SentConfirmation {
+            client: &pci,
+            code,
+            allocation_id: 42,
+        });
+        let state = pci.state.lock().unwrap();
+        assert!(!state.pending.contains_key(&code));
+        assert!(state.codes_in_use.contains_key(&code));
+        assert!(state.quarantined_codes.contains(&code));
+        assert_eq!(state.allocation_ids.get(&code), Some(&42));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn cancelling_identify_skips_a_retry_already_queued_for_the_writer() {
+        let (pci, mut remote, _) = setup().await;
+        let caller = pci.clone();
+        let operation = tokio::spawn(async move { caller.identify_all(5, 4).await });
+        let request = line(&mut remote).await;
+        let code = request[request.len() - 2];
+        let held = pci.writer.lock().await;
+        {
+            let mut state = pci.state.lock().unwrap();
+            state.pending.get_mut(&code).unwrap().next_retry = Instant::now();
+        }
+        tokio::time::advance(RETRY_SWEEP_INTERVAL).await;
+        tokio::task::yield_now().await;
+        {
+            let state = pci.state.lock().unwrap();
+            let pending = &state.pending[&code];
+            assert_eq!(pending.attempts, 2);
+            assert!(pending.queued_retry.is_some());
+        }
+        operation.abort();
+        assert!(operation.await.unwrap_err().is_cancelled());
+        {
+            let state = pci.state.lock().unwrap();
+            assert!(!state.pending.contains_key(&code));
+            assert!(state.quarantined_codes.contains(&code));
+        }
+        drop(held);
+        tokio::time::advance(Duration::from_secs(15)).await;
+        let mut byte = [0u8; 1];
+        assert!(tokio::time::timeout(
+            Duration::from_millis(100),
+            tokio::io::AsyncReadExt::read(&mut remote, &mut byte)
+        )
+        .await
+        .is_err());
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        tokio::task::yield_now().await;
+        let state = pci.state.lock().unwrap();
+        assert!(!state.codes_in_use.contains_key(&code));
+        assert!(!state.allocation_ids.contains_key(&code));
+        assert!(!state.quarantined_codes.contains(&code));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn legacy_selected_serial_completion_preserves_reused_send_quarantine() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_local_unit_hint(16).unwrap();
+        let caller = pci.clone();
+        let operation =
+            tokio::spawn(async move { caller.address_selected_serial("101136.1558", 6).await });
+        let request = line(&mut remote).await;
+        let code = request[request.len() - 2];
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        tokio::task::yield_now().await;
+        assert!(!pci.state.lock().unwrap().codes_in_use.contains_key(&code));
+        pci.state.lock().unwrap().next_confirmation_index = CONFIRMATION_CODES
+            .iter()
+            .position(|&value| value == code)
+            .unwrap();
+        let (replacement, generation) = pci.allocate_confirmation().unwrap();
+        assert_eq!(replacement, code);
+        let progress = Arc::new(flow::WriteProgress::default());
+        assert!(progress.start());
+        drop(ConfirmationAllocation {
+            client: &pci,
+            code,
+            id: generation,
+            retained: false,
+            progress,
+        });
+        selected_serial_reply(&mut remote, 6, 16, [0x18, 0xb1, 0x06, 0x16], [0, 0]).await;
+        operation.await.unwrap().unwrap();
+        let state = pci.state.lock().unwrap();
+        assert_eq!(state.allocation_ids.get(&code), Some(&generation));
+        assert!(state.codes_in_use.contains_key(&code));
+        assert!(state.quarantined_codes.contains(&code));
     }
 }

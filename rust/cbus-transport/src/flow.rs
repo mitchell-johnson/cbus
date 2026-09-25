@@ -385,12 +385,54 @@ fn cheap_unit_rand() -> f64 {
 
 // ------------------------------------------------------------ async side
 
+/// Atomic handoff between a queued writer and its cancelling caller.
+#[derive(Default)]
+pub(crate) struct WriteProgress {
+    phase: std::sync::atomic::AtomicU8,
+    finished_at: std::sync::Mutex<Option<Instant>>,
+}
+
+impl WriteProgress {
+    pub(crate) fn start(&self) -> bool {
+        self.phase
+            .compare_exchange(
+                0,
+                1,
+                std::sync::atomic::Ordering::AcqRel,
+                std::sync::atomic::Ordering::Acquire,
+            )
+            .is_ok()
+    }
+
+    fn finish(&self) {
+        *self.finished_at.lock().unwrap() = Some(Instant::now());
+    }
+
+    pub(crate) fn finished_at(&self) -> Option<Instant> {
+        *self.finished_at.lock().unwrap()
+    }
+
+    /// True proves the write never started, and prevents it from starting.
+    pub(crate) fn cancel_before_start(&self) -> bool {
+        match self.phase.compare_exchange(
+            0,
+            2,
+            std::sync::atomic::Ordering::AcqRel,
+            std::sync::atomic::Ordering::Acquire,
+        ) {
+            Ok(_) | Err(2) => true,
+            Err(_) => false,
+        }
+    }
+}
+
 struct Job {
     data: Vec<u8>,
     priority: Priority,
     kind: ResponseKind,
     windowed: bool,
     done: oneshot::Sender<std::io::Result<()>>,
+    progress: std::sync::Arc<WriteProgress>,
 }
 
 enum FlowEvent {
@@ -430,6 +472,16 @@ impl Flow {
         priority: Priority,
         kind: ResponseKind,
     ) -> oneshot::Receiver<std::io::Result<()>> {
+        self.submit_tracked(data, priority, kind, std::sync::Arc::default())
+    }
+
+    pub(crate) fn submit_tracked(
+        &self,
+        data: Vec<u8>,
+        priority: Priority,
+        kind: ResponseKind,
+        progress: std::sync::Arc<WriteProgress>,
+    ) -> oneshot::Receiver<std::io::Result<()>> {
         let (done, rx) = oneshot::channel();
         let _ = self.jobs.send(Job {
             data,
@@ -437,6 +489,7 @@ impl Flow {
             kind,
             windowed: true,
             done,
+            progress,
         });
         rx
     }
@@ -444,6 +497,14 @@ impl Flow {
     /// Queue a retransmit: bypasses the window (its slot was already
     /// released by timeout) but respects the floor and any `!` pause.
     pub fn submit_unwindowed(&self, data: Vec<u8>) -> oneshot::Receiver<std::io::Result<()>> {
+        self.submit_unwindowed_tracked(data, std::sync::Arc::default())
+    }
+
+    pub(crate) fn submit_unwindowed_tracked(
+        &self,
+        data: Vec<u8>,
+        progress: std::sync::Arc<WriteProgress>,
+    ) -> oneshot::Receiver<std::io::Result<()>> {
         let (done, rx) = oneshot::channel();
         let _ = self.jobs.send(Job {
             data,
@@ -451,6 +512,7 @@ impl Flow {
             kind: ResponseKind::Silent,
             windowed: false,
             done,
+            progress,
         });
         rx
     }
@@ -534,11 +596,22 @@ async fn run<W>(
                     let job = queue.pop_front().expect("non-empty lane");
                     let res = {
                         let mut w = writer.lock().await;
+                        // Cancellation can happen while this job is queued or
+                        // waiting for the writer. Do not start an abandoned
+                        // write; an already-started write cannot be retracted.
+                        if job.done.is_closed() {
+                            job.progress.cancel_before_start();
+                            continue;
+                        }
+                        if !job.progress.start() {
+                            continue;
+                        }
                         match w.write_all(&job.data).await {
                             Ok(()) => w.flush().await,
                             Err(e) => Err(e),
                         }
                     };
+                    job.progress.finish();
                     match res {
                         Ok(()) => {
                             let sent = Instant::now();
@@ -1068,5 +1141,33 @@ mod tests {
         let r = flow.submit(b"1".to_vec(), Priority::Command, conf(b'h'));
         let err = r.await.unwrap().unwrap_err();
         assert_eq!(err.kind(), std::io::ErrorKind::BrokenPipe);
+    }
+    #[tokio::test(start_paused = true)]
+    async fn driver_discards_cancelled_job_after_waiting_for_writer() {
+        let recording = RecordingWriter::default();
+        let writer = std::sync::Arc::new(tokio::sync::Mutex::new(recording.clone()));
+        let held = writer.lock().await;
+        let flow = Flow::start(writer.clone(), FlowConfig::default());
+        let cancelled = flow.submit(b"cancelled".to_vec(), Priority::Command, conf(b'h'));
+        tokio::task::yield_now().await;
+        drop(cancelled);
+        drop(held);
+        let live = flow.submit(b"live".to_vec(), Priority::Command, conf(b'i'));
+        live.await.unwrap().unwrap();
+        let writes = recording.0.lock().unwrap();
+        assert_eq!(writes.len(), 1);
+        assert_eq!(writes[0].1, b"live");
+    }
+
+    #[test]
+    fn write_handoff_cancellation_and_start_are_mutually_exclusive() {
+        let queued = WriteProgress::default();
+        assert!(queued.cancel_before_start());
+        assert!(!queued.start());
+        assert!(queued.cancel_before_start());
+        let started = WriteProgress::default();
+        assert!(started.start());
+        assert!(!started.cancel_before_start());
+        assert!(!started.start());
     }
 }

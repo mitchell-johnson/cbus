@@ -31,7 +31,6 @@ fn append_block(states: &mut Vec<u8>, block_start: u8, block: Vec<u8>) -> Result
 
 struct MmiTransaction<'a> {
     client: &'a PciClient,
-    code: Option<u8>,
     complete: bool,
 }
 
@@ -40,11 +39,6 @@ impl Drop for MmiTransaction<'_> {
         self.client.mmi_collecting.store(false, Ordering::Release);
         if !self.complete {
             self.client.mmi_fault.store(true, Ordering::Release);
-        }
-        if let Some(code) = self.code {
-            let mut state = self.client.state.lock().unwrap();
-            state.pending.remove(&code);
-            state.codes_in_use.remove(&code);
         }
     }
 }
@@ -60,6 +54,11 @@ impl PciClient {
     /// untagged blocks cannot be attributed to a later request.
     pub async fn install_mmi(&self) -> Result<Vec<u8>> {
         let _lane = self.mmi_lane.lock().await;
+        self.install_mmi_inner().await
+    }
+
+    // Caller holds mmi_lane, either for this request or a whole observation.
+    pub(super) async fn install_mmi_inner(&self) -> Result<Vec<u8>> {
         if self.mmi_fault.load(Ordering::Acquire) {
             return Err(Error::other(
                 "MMI stream needs reconnect after an incomplete observation",
@@ -72,7 +71,6 @@ impl PciClient {
         self.mmi_collecting.store(true, Ordering::Release);
         let mut transaction = MmiTransaction {
             client: self,
-            code: None,
             complete: false,
         };
         let packet = Packet::PointToMultipoint {
@@ -83,10 +81,8 @@ impl PciClient {
             application: 0xff,
             sals: vec![Sal::InstallMmiRequest],
         };
-        let code = self.send(&packet, true, false).await?.ok_or_else(|| {
-            Error::new(ErrorKind::InvalidInput, "MMI request cannot be confirmed")
-        })?;
-        transaction.code = Some(code);
+        let confirmation = self.send_guarded(&packet).await?;
+        let code = confirmation.code;
         let result = tokio::time::timeout(MMI_TIMEOUT, async {
             let mut confirmed = false;
             let mut states = Vec::with_capacity(256);

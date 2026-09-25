@@ -12,7 +12,7 @@ use cbus_protocol::packet::{Meta, Packet};
 use cbus_protocol::report::StatusReport;
 use cbus_protocol::sal::Sal;
 use chrono::{Datelike, Timelike};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
@@ -25,6 +25,24 @@ use crate::framing::FrameBuffer;
 
 mod mmi;
 mod programming;
+
+/// Holds both local commissioning lanes across a complete observation.
+/// Ordinary SAL traffic is deliberately outside this scope.
+pub(crate) struct CommissioningObservation<'a> {
+    client: &'a PciClient,
+    _mmi: tokio::sync::MutexGuard<'a, ()>,
+    _programming: tokio::sync::MutexGuard<'a, ()>,
+}
+
+impl CommissioningObservation<'_> {
+    pub(crate) async fn install_mmi(&self) -> std::io::Result<Vec<u8>> {
+        self.client.install_mmi_inner().await
+    }
+
+    pub(crate) async fn identify_serials(&self, unit: u8) -> std::io::Result<Vec<Vec<u8>>> {
+        self.client.identify_collect_inner(unit, 4, false).await
+    }
+}
 
 /// Native C-Gate GOC programming dialect and its wire-size limits.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -200,6 +218,22 @@ struct Pending {
     /// When the next retransmit (or the give-up after the final attempt)
     /// is due: jittered 1 s -> 2 s -> 4 s exponential backoff.
     next_retry: Instant,
+    queued_retry: Option<Arc<flow::WriteProgress>>,
+}
+
+impl Drop for Pending {
+    fn drop(&mut self) {
+        if let Some(progress) = &self.queued_retry {
+            progress.cancel_before_start();
+        }
+    }
+}
+
+// Retained after Pending is removed: every started retry can still produce
+// another ACK, including earlier retries whose writes already completed.
+struct RetryWrites {
+    allocation_id: u64,
+    writes: Vec<Arc<flow::WriteProgress>>,
 }
 
 #[derive(Default)]
@@ -207,6 +241,97 @@ struct PciState {
     next_confirmation_index: usize,
     codes_in_use: HashMap<u8, Instant>,
     pending: HashMap<u8, Pending>,
+    next_allocation_id: u64,
+    allocation_ids: HashMap<u8, u64>,
+    active_allocations: HashMap<u8, u64>,
+    quarantined_codes: HashSet<u8>,
+    retry_writes: HashMap<u8, RetryWrites>,
+}
+
+// Own allocation until send has returned successfully. A generation prevents
+// cancellation from clearing an unrelated command that reused the same code.
+struct ConfirmationAllocation<'a> {
+    client: &'a PciClient,
+    code: u8,
+    id: u64,
+    retained: bool,
+    progress: Arc<flow::WriteProgress>,
+}
+
+impl ConfirmationAllocation<'_> {
+    fn retain(&mut self, bytes: Vec<u8>) {
+        let code = self.code;
+        let mut st = self.client.state.lock().unwrap();
+        // A fast PCI can confirm before the write future resumes.
+        // Do not resurrect an already acknowledged command for retry.
+        if st.codes_in_use.contains_key(&code) && st.allocation_ids.get(&code) == Some(&self.id) {
+            st.pending.insert(
+                code,
+                Pending {
+                    data: bytes,
+                    attempts: 1,
+                    next_retry: Instant::now() + flow::jittered_backoff(1),
+                    queued_retry: None,
+                },
+            );
+        }
+        if st.active_allocations.get(&code) == Some(&self.id) {
+            st.active_allocations.remove(&code);
+        }
+        self.retained = true;
+    }
+}
+
+impl Drop for ConfirmationAllocation<'_> {
+    fn drop(&mut self) {
+        if self.retained {
+            return;
+        }
+        let never_started = self.progress.cancel_before_start();
+        let mut state = self.client.state.lock().unwrap();
+        if state.allocation_ids.get(&self.code) == Some(&self.id) {
+            PciClient::cancel_retries(&state, self.code);
+            state.pending.remove(&self.code);
+            if state.active_allocations.get(&self.code) == Some(&self.id) {
+                state.active_allocations.remove(&self.code);
+            }
+            if never_started {
+                PciClient::retire_confirmation(&mut state, self.code);
+            } else if let Some(timestamp) = state.codes_in_use.get_mut(&self.code) {
+                // It may still produce a late confirmation. Do not let forced
+                // allocation cleanup recycle this code before confirmation or
+                // a full reservation timeout measured from cancellation.
+                *timestamp = Instant::now();
+                state.quarantined_codes.insert(self.code);
+            }
+        }
+    }
+}
+
+// Own a completed send's confirmation until its transaction ends. Cancellation
+// removes retries but cannot retract bytes, so an unacknowledged code remains
+// reserved. Allocation identity survives an ACK/reuse race.
+struct SentConfirmation<'a> {
+    client: &'a PciClient,
+    code: u8,
+    allocation_id: u64,
+}
+
+impl Drop for SentConfirmation<'_> {
+    fn drop(&mut self) {
+        let mut state = self.client.state.lock().unwrap();
+        if state.allocation_ids.get(&self.code) == Some(&self.allocation_id) {
+            PciClient::cancel_retries(&state, self.code);
+            state.pending.remove(&self.code);
+            if state.active_allocations.get(&self.code) == Some(&self.allocation_id) {
+                state.active_allocations.remove(&self.code);
+            }
+            if let Some(timestamp) = state.codes_in_use.get_mut(&self.code) {
+                *timestamp = Instant::now();
+                state.quarantined_codes.insert(self.code);
+            }
+        }
+    }
 }
 
 /// Write half of a connected transport.
@@ -246,6 +371,29 @@ pub struct PciClient {
 }
 
 impl PciClient {
+    /// Acquire MMI before programming everywhere a combined guard is needed.
+    /// Nested operations use the guard's methods rather than reacquiring lanes.
+    pub(crate) async fn commissioning_observation(
+        &self,
+    ) -> std::io::Result<CommissioningObservation<'_>> {
+        let mmi = self.mmi_lane.lock().await;
+        let programming = self.programming_lane.lock().await;
+        if self.mmi_fault.load(std::sync::atomic::Ordering::Acquire)
+            || self
+                .programming_fault
+                .load(std::sync::atomic::Ordering::Acquire)
+        {
+            return Err(std::io::Error::other(
+                "commissioning observation needs reconnect after an incomplete transaction",
+            ));
+        }
+        Ok(CommissioningObservation {
+            client: self,
+            _mmi: mmi,
+            _programming: programming,
+        })
+    }
+
     /// Create a client over a connected transport. Spawns the reader
     /// loop, the flow-controller task and the retransmit task.
     /// `pci_reset()` must be invoked by the caller (mirrors
@@ -283,12 +431,29 @@ impl PciClient {
     /// wait for the init gate (unless this IS an init frame), transmit
     /// (fixed-paced for init frames, flow-controlled for everything
     /// else), and register for retry when a confirmation was requested.
+    /// Cancellation before writing frees the confirmation code. Once writing
+    /// starts, cancellation stops retry registration but reserves the code
+    /// until confirmation or a 30-second timeout. If any retry started, even
+    /// an ACK keeps the code reserved until 30 seconds after the latest retry
+    /// completion or ACK, with no retry still writing. It cannot retract bytes
+    /// already being written; close/reconnect after an in-flight cancellation.
     pub async fn send(
         &self,
         cmd: &Packet,
         confirmation: bool,
         basic_mode: bool,
     ) -> std::io::Result<Option<u8>> {
+        self.send_with_allocation(cmd, confirmation, basic_mode)
+            .await
+            .map(|(code, _)| code)
+    }
+
+    async fn send_with_allocation(
+        &self,
+        cmd: &Packet,
+        confirmation: bool,
+        basic_mode: bool,
+    ) -> std::io::Result<(Option<u8>, Option<u64>)> {
         // SpecialClientPacket: always basic mode, never confirmed
         let special = matches!(cmd, Packet::Reset | Packet::SmartConnect);
         let (confirmation, basic_mode) = if special {
@@ -321,20 +486,32 @@ impl PciClient {
         if !basic_mode {
             bytes.insert(0, b'\\');
         }
-        let conf = if confirmation {
-            let code = self.get_confirmation_code();
-            bytes.push(code);
-            Some(code)
+        let progress = Arc::new(flow::WriteProgress::default());
+        let mut allocation = if confirmation {
+            let (code, id) = self.allocate_confirmation()?;
+            Some(ConfirmationAllocation {
+                client: self,
+                code,
+                id,
+                retained: false,
+                progress: progress.clone(),
+            })
         } else {
             None
         };
+        let conf = allocation.as_ref().map(|allocation| allocation.code);
+        if let Some(code) = conf {
+            bytes.push(code);
+        }
         bytes.extend_from_slice(b"\r");
 
         if init_frame {
-            self.send_init(&bytes).await?;
+            self.send_init(&bytes, &progress).await?;
         } else {
             let (priority, kind) = classify(cmd, conf);
-            let rx = self.flow.submit(bytes.clone(), priority, kind);
+            let rx = self
+                .flow
+                .submit_tracked(bytes.clone(), priority, kind, progress);
             // Enqueued: this sender's place in line is fixed, so let the
             // next caller queue up while we wait for the wire.
             drop(lane);
@@ -343,99 +520,193 @@ impl PciClient {
             })??;
         }
 
-        if let Some(code) = conf {
-            let mut st = self.state.lock().unwrap();
-            // A fast PCI can confirm before the write future resumes.
-            // Do not resurrect an already acknowledged command for retry.
-            if st.codes_in_use.contains_key(&code) {
-                st.pending.insert(
-                    code,
-                    Pending {
-                        data: bytes,
-                        attempts: 1,
-                        next_retry: Instant::now() + flow::jittered_backoff(1),
-                    },
-                );
-            }
+        if let Some(allocation) = allocation.as_mut() {
+            allocation.retain(bytes);
         }
-        Ok(conf)
+        Ok((conf, allocation.as_ref().map(|allocation| allocation.id)))
     }
 
     /// `PCIProtocol._send_packet` for the init sequence only: fixed
     /// 0.1 s pre-write delay. Post-init traffic goes through the flow
     /// controller instead.
-    async fn send_init(&self, data: &[u8]) -> std::io::Result<()> {
+    async fn send_init(&self, data: &[u8], progress: &flow::WriteProgress) -> std::io::Result<()> {
         tokio::time::sleep(INIT_SEND_DELAY).await;
         let mut w = self.writer.lock().await;
+        if !progress.start() {
+            return Err(std::io::Error::other("send cancelled before write"));
+        }
         w.write_all(data).await?;
         w.flush().await
+    }
+
+    async fn send_guarded(&self, packet: &Packet) -> std::io::Result<SentConfirmation<'_>> {
+        let (code, allocation_id) = self.send_with_allocation(packet, true, false).await?;
+        let code = code.ok_or_else(|| {
+            std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                "command cannot be confirmed",
+            )
+        })?;
+        Ok(SentConfirmation {
+            client: self,
+            code,
+            allocation_id: allocation_id.expect("confirmed send has allocation generation"),
+        })
+    }
+
+    // Legacy one-shot programming has no send-generation receipt. Its old
+    // epilogue must never erase a later generated send's active/quarantined code.
+    fn release_legacy_confirmation(&self, code: u8) {
+        let mut state = self.state.lock().unwrap();
+        if !state.allocation_ids.contains_key(&code) {
+            Self::retire_confirmation(&mut state, code);
+        }
     }
 
     // --------------------------------------------- confirmation allocator
 
     /// `PCIProtocol._get_confirmation_code`
-    fn get_confirmation_code(&self) -> u8 {
-        let mut st = self.state.lock().unwrap();
-        Self::check_and_release_timed_out(&mut st);
+    fn get_confirmation_code(&self) -> std::io::Result<u8> {
+        let mut state = self.state.lock().unwrap();
+        let code = Self::confirmation_code_inner(&mut state)?;
+        // Manual programming paths have their own transaction cleanup; only
+        // send() needs an allocation generation for its cancellation guard.
+        state.allocation_ids.remove(&code);
+        Ok(code)
+    }
 
+    fn allocate_confirmation(&self) -> std::io::Result<(u8, u64)> {
+        let mut st = self.state.lock().unwrap();
+        let code = Self::confirmation_code_inner(&mut st)?;
+        let id = st.next_allocation_id;
+        st.next_allocation_id = st.next_allocation_id.wrapping_add(1);
+        st.allocation_ids.insert(code, id);
+        st.active_allocations.insert(code, id);
+        Ok((code, id))
+    }
+
+    fn confirmation_code_inner(st: &mut PciState) -> std::io::Result<u8> {
+        Self::check_and_release_timed_out(st);
         for _ in 0..CONFIRMATION_CODES.len() {
             let code = CONFIRMATION_CODES[st.next_confirmation_index];
             st.next_confirmation_index =
                 (st.next_confirmation_index + 1) % CONFIRMATION_CODES.len();
-            if let std::collections::hash_map::Entry::Vacant(e) = st.codes_in_use.entry(code) {
-                e.insert(Instant::now());
-                return code;
+            if let std::collections::hash_map::Entry::Vacant(entry) = st.codes_in_use.entry(code) {
+                entry.insert(Instant::now());
+                return Ok(code);
             }
         }
-
-        // all in use: force release the oldest, then take the next available
-        tracing::warn!("all confirmation codes in use, releasing oldest");
-        if let Some((&oldest, _)) = st.codes_in_use.iter().min_by_key(|(_, &t)| t) {
-            st.codes_in_use.remove(&oldest);
-            st.pending.remove(&oldest);
-            for _ in 0..CONFIRMATION_CODES.len() {
-                let code = CONFIRMATION_CODES[st.next_confirmation_index];
-                st.next_confirmation_index =
-                    (st.next_confirmation_index + 1) % CONFIRMATION_CODES.len();
-                if code != oldest && !st.codes_in_use.contains_key(&code) {
-                    st.codes_in_use.insert(code, Instant::now());
-                    return code;
-                }
+        // Only legacy/returned sends are eligible for forced release. Active
+        // writers and cancelled in-flight writers cannot safely share a code.
+        let mut candidates: Vec<_> = st
+            .codes_in_use
+            .iter()
+            .filter(|(code, _)| {
+                !st.active_allocations.contains_key(code) && !st.quarantined_codes.contains(code)
+            })
+            .map(|(&code, &at)| (code, at))
+            .collect();
+        candidates.sort_by_key(|&(_, at)| at);
+        for (code, _) in candidates {
+            if Self::retire_confirmation(st, code) {
+                st.codes_in_use.insert(code, Instant::now());
+                return Ok(code);
             }
-            st.codes_in_use.insert(oldest, Instant::now());
-            oldest
+        }
+        Err(std::io::Error::new(
+            std::io::ErrorKind::WouldBlock,
+            "all confirmation codes are reserved by active or cancelled writes",
+        ))
+    }
+
+    // Atomically prevent each queued retry from starting. False from any
+    // token means that copy started (or finished) and may still acknowledge.
+    fn cancel_retries(st: &PciState, code: u8) -> bool {
+        st.retry_writes.get(&code).is_some_and(|history| {
+            debug_assert_eq!(st.allocation_ids.get(&code), Some(&history.allocation_id));
+            let mut may_ack = false;
+            for progress in &history.writes {
+                may_ack |= !progress.cancel_before_start();
+            }
+            may_ack
+        })
+    }
+
+    fn release_confirmation(st: &mut PciState, code: u8) {
+        st.pending.remove(&code);
+        st.codes_in_use.remove(&code);
+        st.active_allocations.remove(&code);
+        st.quarantined_codes.remove(&code);
+        st.allocation_ids.remove(&code);
+        st.retry_writes.remove(&code);
+    }
+
+    // Used for ACK, pressure and give-up. A retransmitted generation is never
+    // immediately reusable: no ACK says which copy it acknowledges.
+    fn retire_confirmation(st: &mut PciState, code: u8) -> bool {
+        let may_ack = Self::cancel_retries(st, code);
+        st.pending.remove(&code);
+        if may_ack {
+            if let Some(timestamp) = st.codes_in_use.get_mut(&code) {
+                *timestamp = Instant::now();
+                st.quarantined_codes.insert(code);
+            }
+            false
         } else {
-            let code = CONFIRMATION_CODES[0];
-            st.codes_in_use.insert(code, Instant::now());
-            code
+            Self::release_confirmation(st, code);
+            true
         }
     }
 
     /// `PCIProtocol._check_and_release_timed_out_codes`
     fn check_and_release_timed_out(st: &mut PciState) {
-        let now = Instant::now();
+        Self::check_and_release_timed_out_at(st, Instant::now());
+    }
+
+    fn check_and_release_timed_out_at(st: &mut PciState, now: Instant) {
         let timed_out: Vec<u8> = st
             .codes_in_use
             .iter()
-            .filter(|(_, &t)| now.duration_since(t) > CONFIRMATION_TIMEOUT)
+            .filter(|(code, &t)| {
+                !st.active_allocations.contains_key(code)
+                    && now.saturating_duration_since(t) > CONFIRMATION_TIMEOUT
+            })
             .map(|(&c, _)| c)
             .collect();
         for code in timed_out {
+            Self::cancel_retries(st, code);
+            let retry_still_possible = st.retry_writes.get(&code).is_some_and(|history| {
+                history.writes.iter().any(|progress| {
+                    !progress.cancel_before_start()
+                        && progress.finished_at().is_none_or(|at| {
+                            now.saturating_duration_since(at) <= CONFIRMATION_TIMEOUT
+                        })
+                })
+            });
+            if retry_still_possible {
+                st.quarantined_codes.insert(code);
+                continue;
+            }
             tracing::warn!("confirmation code {:#04x} timed out", code);
-            st.codes_in_use.remove(&code);
-            st.pending.remove(&code);
+            Self::release_confirmation(st, code);
         }
         // force cleanup of the oldest 25% when >90% of codes in use
         let threshold = (CONFIRMATION_CODES.len() as f64 * FORCE_CLEANUP_THRESHOLD) as usize;
         if st.codes_in_use.len() > threshold {
-            let mut by_age: Vec<(u8, Instant)> =
-                st.codes_in_use.iter().map(|(&c, &t)| (c, t)).collect();
+            let mut by_age: Vec<(u8, Instant)> = st
+                .codes_in_use
+                .iter()
+                .filter(|(code, _)| {
+                    !st.active_allocations.contains_key(code)
+                        && !st.quarantined_codes.contains(code)
+                })
+                .map(|(&c, &t)| (c, t))
+                .collect();
             by_age.sort_by_key(|&(_, t)| t);
             let release_count = ((by_age.len() as f64 * FORCE_CLEANUP_PERCENTAGE) as usize).max(1);
             for &(code, _) in by_age.iter().take(release_count) {
                 tracing::warn!("force releasing confirmation code {:#04x}", code);
-                st.codes_in_use.remove(&code);
-                st.pending.remove(&code);
+                Self::retire_confirmation(st, code);
             }
         }
     }
@@ -445,14 +716,15 @@ impl PciClient {
     /// `PCIProtocol._check_pending_confirmations` on a backoff schedule:
     /// resend byte-identical frames at jittered 1 s -> 2 s -> 4 s
     /// intervals (attempts capped at 3, then abandon+release, same
-    /// give-up semantics as before). Retransmits go through the flow
+    /// retry schedule as before). Started retries keep their confirmation code
+    /// reserved after give-up, through the late-ACK timeout. Retransmits use the flow
     /// controller's unwindowed lane: no window slot, but the inter-frame
     /// floor and any `!` pause still apply.
     async fn retry_task(self: Arc<Self>) {
         loop {
             tokio::time::sleep(RETRY_SWEEP_INTERVAL).await;
             let now = Instant::now();
-            let mut to_retry: Vec<Vec<u8>> = Vec::new();
+            let mut to_retry = Vec::new();
             {
                 let mut st = self.state.lock().unwrap();
                 Self::check_and_release_timed_out(&mut st);
@@ -473,23 +745,34 @@ impl PciClient {
                             code,
                             p.attempts
                         );
-                        to_retry.push(p.data.clone());
+                        let progress = Arc::new(flow::WriteProgress::default());
+                        p.queued_retry = Some(progress.clone());
+                        let data = p.data.clone();
+                        let allocation_id = st.allocation_ids[&code];
+                        let history = st.retry_writes.entry(code).or_insert_with(|| RetryWrites {
+                            allocation_id,
+                            writes: Vec::with_capacity((MAX_PACKET_RETRIES - 1) as usize),
+                        });
+                        debug_assert_eq!(history.allocation_id, allocation_id);
+                        history.writes.push(progress.clone());
+                        to_retry.push((data, progress));
                     } else {
                         tracing::warn!(
                             "giving up on confirmation code {:#04x} after {} attempts",
                             code,
                             MAX_PACKET_RETRIES
                         );
-                        st.pending.remove(&code);
-                        st.codes_in_use.remove(&code);
+                        Self::retire_confirmation(&mut st, code);
                     }
                 }
             }
-            for data in to_retry {
-                match self.flow.submit_unwindowed(data).await {
+            for (data, progress) in to_retry {
+                match self.flow.submit_unwindowed_tracked(data, progress).await {
                     Ok(Ok(())) => {}
-                    // transport dead or controller gone: this client is done
-                    _ => return,
+                    // A cancelled queued retry drops its sender without a
+                    // write. Other commands still need their retry service.
+                    Err(_) => continue,
+                    Ok(Err(_)) => return,
                 }
             }
         }
@@ -535,8 +818,7 @@ impl PciClient {
                 tracing::debug!("confirmation: code {:#04x} success {}", code, success);
                 {
                     let mut st = self.state.lock().unwrap();
-                    st.pending.remove(&code);
-                    st.codes_in_use.remove(&code);
+                    Self::retire_confirmation(&mut st, code);
                 }
                 // any confirmation (even success=false) is a response:
                 // it releases the frame's flow-control slot
@@ -979,6 +1261,7 @@ mod tests {
         assert_eq!(code, b'h');
         let first = read_available(&mut pci_side, 300).await;
         assert!(!first.is_empty());
+        assert_eq!(pci.state.lock().unwrap().allocation_ids.len(), 1);
         // deliver the confirmation; the pending frame must not be resent
         // (first backoff fires no earlier than 0.8s after transmission)
         tokio::io::AsyncWriteExt::write_all(&mut pci_side, b"h.")
@@ -991,6 +1274,7 @@ mod tests {
             "unexpected retransmit after confirmation: {:?}",
             String::from_utf8_lossy(&got)
         );
+        assert!(pci.state.lock().unwrap().allocation_ids.is_empty());
     }
 
     #[tokio::test]
@@ -1004,7 +1288,7 @@ mod tests {
         // panicking or spinning.
         let mut codes = Vec::new();
         for _ in 0..64 {
-            codes.push(pci.get_confirmation_code());
+            codes.push(pci.get_confirmation_code().unwrap());
         }
         assert!(codes.iter().all(|c| CONFIRMATION_CODES.contains(c)));
         // the first 19 allocations are distinct (force cleanup starts
@@ -1013,6 +1297,7 @@ mod tests {
         first19.sort_unstable();
         first19.dedup();
         assert_eq!(first19.len(), 19);
+        assert!(pci.state.lock().unwrap().allocation_ids.is_empty());
     }
 
     #[tokio::test(start_paused = true)]
@@ -1048,9 +1333,34 @@ mod tests {
             "unexpected 4th attempt: {:?}",
             String::from_utf8_lossy(&got)
         );
-        // the give-up released the confirmation code
-        assert!(pci.state.lock().unwrap().codes_in_use.is_empty());
-        assert!(pci.state.lock().unwrap().pending.is_empty());
+        // Give-up removes pending retry state but quarantines the confirmation
+        // code because any completed retry can still acknowledge late.
+        {
+            let state = pci.state.lock().unwrap();
+            assert!(state.pending.is_empty());
+            assert!(state.codes_in_use.contains_key(&b'h'));
+            assert!(state.quarantined_codes.contains(&b'h'));
+            assert_eq!(state.retry_writes[&b'h'].writes.len(), 2);
+            assert!(state.retry_writes[&b'h']
+                .writes
+                .iter()
+                .all(|p| p.finished_at().is_some()));
+        }
+        // Give-up and either old ACK must not recycle a code after two
+        // completed retries. Every copy remains in the generation history.
+        pci.handle_cbus_packet(Packet::Confirmation {
+            code: b'h',
+            success: true,
+        });
+        for _ in 0..64 {
+            assert_ne!(pci.get_confirmation_code().unwrap(), b'h');
+        }
+        tokio::time::advance(CONFIRMATION_TIMEOUT + Duration::from_secs(1)).await;
+        let mut state = pci.state.lock().unwrap();
+        PciClient::check_and_release_timed_out(&mut state);
+        assert!(!state.codes_in_use.contains_key(&b'h'));
+        assert!(!state.allocation_ids.contains_key(&b'h'));
+        assert!(!state.retry_writes.contains_key(&b'h'));
     }
 
     #[tokio::test]
@@ -1189,5 +1499,379 @@ mod tests {
         );
         // a codeless frame with no observable response: short slot hold
         assert_eq!(classify(&clock, None).1, ResponseKind::Silent);
+    }
+    #[tokio::test(start_paused = true)]
+    async fn cancelled_confirmed_send_releases_allocation_and_never_starts_queued_write() {
+        let (client, mut remote) = tokio::io::duplex(4096);
+        let (rd, wr) = tokio::io::split(client);
+        let (tx, _) = mpsc::unbounded_channel();
+        let pci = PciClient::new(Box::new(rd), Box::new(wr), tx);
+        pci.pci_reset().await.unwrap();
+        read_available(&mut remote, 1).await;
+        let held = pci.writer.lock().await;
+        let send_client = pci.clone();
+        let sending = tokio::spawn(async move { send_client.lighting_group_on(&[1], 0x38).await });
+        tokio::task::yield_now().await;
+        assert_eq!(pci.state.lock().unwrap().codes_in_use.len(), 1);
+        sending.abort();
+        assert!(sending.await.unwrap_err().is_cancelled());
+        {
+            let state = pci.state.lock().unwrap();
+            assert!(state.codes_in_use.is_empty());
+            assert!(state.pending.is_empty());
+            assert!(state.allocation_ids.is_empty());
+        }
+        drop(held);
+        tokio::time::advance(Duration::from_secs(15)).await;
+        assert!(read_available(&mut remote, 1).await.is_empty());
+    }
+    #[tokio::test(start_paused = true)]
+    async fn send_allocation_generations_follow_confirmation_timeout_and_force_release() {
+        let (client, _remote) = tokio::io::duplex(4096);
+        let (rd, wr) = tokio::io::split(client);
+        let (tx, _) = mpsc::unbounded_channel();
+        let pci = PciClient::new(Box::new(rd), Box::new(wr), tx);
+        for success in [true, false] {
+            let (code, _) = pci.allocate_confirmation().unwrap();
+            pci.handle_cbus_packet(Packet::Confirmation { code, success });
+            assert!(pci.state.lock().unwrap().allocation_ids.is_empty());
+        }
+        for _ in 0..64 {
+            let (code, _) = pci.allocate_confirmation().unwrap();
+            pci.state.lock().unwrap().active_allocations.remove(&code);
+            let state = pci.state.lock().unwrap();
+            assert_eq!(state.allocation_ids.len(), state.codes_in_use.len());
+            assert!(state
+                .allocation_ids
+                .keys()
+                .all(|code| state.codes_in_use.contains_key(code)));
+        }
+        let mut state = pci.state.lock().unwrap();
+        for timestamp in state.codes_in_use.values_mut() {
+            *timestamp = Instant::now() - CONFIRMATION_TIMEOUT - Duration::from_secs(1);
+        }
+        PciClient::check_and_release_timed_out(&mut state);
+        assert!(state.codes_in_use.is_empty());
+        assert!(state.allocation_ids.is_empty());
+    }
+
+    #[derive(Default)]
+    struct WriteGate {
+        blocked: std::sync::atomic::AtomicBool,
+        started: tokio::sync::Notify,
+        waker: Mutex<Option<std::task::Waker>>,
+    }
+
+    struct BlockingWriter {
+        inner: BoxedWrite,
+        gate: Arc<WriteGate>,
+    }
+
+    impl AsyncWrite for BlockingWriter {
+        fn poll_write(
+            mut self: std::pin::Pin<&mut Self>,
+            cx: &mut std::task::Context<'_>,
+            bytes: &[u8],
+        ) -> std::task::Poll<std::io::Result<usize>> {
+            if self.gate.blocked.load(std::sync::atomic::Ordering::Acquire) {
+                *self.gate.waker.lock().unwrap() = Some(cx.waker().clone());
+                self.gate.started.notify_one();
+                return std::task::Poll::Pending;
+            }
+            std::pin::Pin::new(&mut self.inner).poll_write(cx, bytes)
+        }
+
+        fn poll_flush(
+            mut self: std::pin::Pin<&mut Self>,
+            cx: &mut std::task::Context<'_>,
+        ) -> std::task::Poll<std::io::Result<()>> {
+            std::pin::Pin::new(&mut self.inner).poll_flush(cx)
+        }
+
+        fn poll_shutdown(
+            mut self: std::pin::Pin<&mut Self>,
+            cx: &mut std::task::Context<'_>,
+        ) -> std::task::Poll<std::io::Result<()>> {
+            std::pin::Pin::new(&mut self.inner).poll_shutdown(cx)
+        }
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn cancelled_started_write_reserves_code_through_pressure_and_late_ack() {
+        let (client, mut remote) = tokio::io::duplex(4096);
+        let (rd, wr) = tokio::io::split(client);
+        let gate = Arc::new(WriteGate::default());
+        let writer = BlockingWriter {
+            inner: Box::new(wr),
+            gate: gate.clone(),
+        };
+        let (tx, _) = mpsc::unbounded_channel();
+        let pci = PciClient::new(Box::new(rd), Box::new(writer), tx);
+        pci.pci_reset().await.unwrap();
+        read_available(&mut remote, 1).await;
+        gate.blocked
+            .store(true, std::sync::atomic::Ordering::Release);
+        let sender = pci.clone();
+        let sending = tokio::spawn(async move { sender.lighting_group_on(&[1], 0x38).await });
+        gate.started.notified().await;
+        let old_code = *pci
+            .state
+            .lock()
+            .unwrap()
+            .codes_in_use
+            .keys()
+            .next()
+            .unwrap();
+        sending.abort();
+        assert!(sending.await.unwrap_err().is_cancelled());
+        {
+            let state = pci.state.lock().unwrap();
+            assert!(state.quarantined_codes.contains(&old_code));
+            assert!(state.codes_in_use.contains_key(&old_code));
+            assert!(state.active_allocations.is_empty());
+            assert!(state.pending.is_empty());
+        }
+        // Forced-release pressure must not make the cancelled writer's code
+        // available to another command while its write is still in progress.
+        for _ in 0..64 {
+            assert_ne!(pci.get_confirmation_code().unwrap(), old_code);
+        }
+        let sender = pci.clone();
+        let replacement = tokio::spawn(async move { sender.lighting_group_on(&[2], 0x38).await });
+        tokio::task::yield_now().await;
+        let new_code = *pci
+            .state
+            .lock()
+            .unwrap()
+            .active_allocations
+            .keys()
+            .next()
+            .unwrap();
+        assert_ne!(old_code, new_code);
+        gate.blocked
+            .store(false, std::sync::atomic::Ordering::Release);
+        gate.waker.lock().unwrap().take().unwrap().wake();
+        let first = read_available(&mut remote, 1).await;
+        assert_eq!(first[first.len() - 2], old_code);
+        // Old ACK cannot acknowledge the newer queued command. It only
+        // releases the old reservation and Flow slot.
+        remote.write_all(&[old_code, b'.']).await.unwrap();
+        let newer = read_available(&mut remote, 100).await;
+        assert_eq!(newer[newer.len() - 2], new_code);
+        assert_eq!(replacement.await.unwrap().unwrap(), Some(new_code));
+        {
+            let state = pci.state.lock().unwrap();
+            assert!(state.pending.contains_key(&new_code));
+            assert!(state.codes_in_use.contains_key(&new_code));
+            assert!(!state.codes_in_use.contains_key(&old_code));
+            assert!(!state.quarantined_codes.contains(&old_code));
+        }
+        remote.write_all(&[new_code, b'.']).await.unwrap();
+        tokio::task::yield_now().await;
+        assert!(pci.state.lock().unwrap().allocation_ids.is_empty());
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn fast_ack_reuse_keeps_new_generation_active_on_old_completion_and_drop() {
+        let (client, _remote) = tokio::io::duplex(4096);
+        let (rd, wr) = tokio::io::split(client);
+        let (tx, _) = mpsc::unbounded_channel();
+        let pci = PciClient::new(Box::new(rd), Box::new(wr), tx);
+        for completes in [false, true] {
+            let (code, id) = pci.allocate_confirmation().unwrap();
+            let progress = Arc::new(flow::WriteProgress::default());
+            assert!(progress.start());
+            let mut old = ConfirmationAllocation {
+                client: &pci,
+                code,
+                id,
+                retained: false,
+                progress,
+            };
+            pci.handle_cbus_packet(Packet::Confirmation {
+                code,
+                success: true,
+            });
+            pci.state.lock().unwrap().next_confirmation_index = CONFIRMATION_CODES
+                .iter()
+                .position(|&value| value == code)
+                .unwrap();
+            let (replacement, new_id) = pci.allocate_confirmation().unwrap();
+            assert_eq!(replacement, code);
+            if completes {
+                old.retain(b"old command".to_vec());
+            }
+            drop(old);
+            {
+                let state = pci.state.lock().unwrap();
+                assert_eq!(state.active_allocations.get(&code), Some(&new_id));
+                assert_eq!(state.allocation_ids.get(&code), Some(&new_id));
+                assert!(!state.pending.contains_key(&code));
+                assert!(!state.quarantined_codes.contains(&code));
+            }
+            pci.handle_cbus_packet(Packet::Confirmation {
+                code,
+                success: true,
+            });
+        }
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn reserved_codes_exhaust_without_reuse_then_quarantine_expires() {
+        let (client, _remote) = tokio::io::duplex(4096);
+        let (rd, wr) = tokio::io::split(client);
+        let (tx, _) = mpsc::unbounded_channel();
+        let pci = PciClient::new(Box::new(rd), Box::new(wr), tx);
+        for _ in CONFIRMATION_CODES {
+            let (code, id) = pci.allocate_confirmation().unwrap();
+            let progress = Arc::new(flow::WriteProgress::default());
+            assert!(progress.start());
+            drop(ConfirmationAllocation {
+                client: &pci,
+                code,
+                id,
+                retained: false,
+                progress,
+            });
+        }
+        assert_eq!(
+            pci.get_confirmation_code().unwrap_err().kind(),
+            std::io::ErrorKind::WouldBlock
+        );
+        assert_eq!(
+            pci.state.lock().unwrap().quarantined_codes.len(),
+            CONFIRMATION_CODES.len()
+        );
+        tokio::time::advance(CONFIRMATION_TIMEOUT + Duration::from_secs(1)).await;
+        let mut state = pci.state.lock().unwrap();
+        PciClient::check_and_release_timed_out(&mut state);
+        assert!(state.codes_in_use.is_empty());
+        assert!(state.allocation_ids.is_empty());
+        assert!(state.quarantined_codes.is_empty());
+        assert!(state.active_allocations.is_empty());
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn started_retry_keeps_generation_reserved_after_original_and_late_ack() {
+        let (client, mut remote) = tokio::io::duplex(4096);
+        let (rd, wr) = tokio::io::split(client);
+        let gate = Arc::new(WriteGate::default());
+        let writer = BlockingWriter {
+            inner: Box::new(wr),
+            gate: gate.clone(),
+        };
+        let (tx, _) = mpsc::unbounded_channel();
+        let pci = PciClient::new(Box::new(rd), Box::new(writer), tx);
+        pci.pci_reset().await.unwrap();
+        read_available(&mut remote, 1).await;
+        let old_code = pci.lighting_group_on(&[1], 0x38).await.unwrap().unwrap();
+        let original = read_available(&mut remote, 1).await;
+        assert_eq!(original[original.len() - 2], old_code);
+        gate.blocked
+            .store(true, std::sync::atomic::Ordering::Release);
+        pci.state
+            .lock()
+            .unwrap()
+            .pending
+            .get_mut(&old_code)
+            .unwrap()
+            .next_retry = Instant::now();
+        gate.started.notified().await;
+        remote.write_all(&[old_code, b'.']).await.unwrap();
+        tokio::task::yield_now().await;
+        {
+            let state = pci.state.lock().unwrap();
+            assert!(!state.pending.contains_key(&old_code));
+            assert!(state.quarantined_codes.contains(&old_code));
+            assert_eq!(state.retry_writes[&old_code].writes.len(), 1);
+            assert!(state.retry_writes[&old_code].writes[0]
+                .finished_at()
+                .is_none());
+        }
+        for _ in 0..64 {
+            assert_ne!(pci.get_confirmation_code().unwrap(), old_code);
+        }
+        // The timeout cannot expire while the started retry is still inside
+        // write_all, even 31 seconds after the original ACK.
+        tokio::time::advance(CONFIRMATION_TIMEOUT + Duration::from_secs(1)).await;
+        assert_ne!(pci.get_confirmation_code().unwrap(), old_code);
+        assert!(pci
+            .state
+            .lock()
+            .unwrap()
+            .codes_in_use
+            .contains_key(&old_code));
+        gate.blocked
+            .store(false, std::sync::atomic::Ordering::Release);
+        gate.waker.lock().unwrap().take().unwrap().wake();
+        let retry = read_available(&mut remote, 1).await;
+        assert_eq!(retry, original);
+        let new_code = pci.lighting_group_on(&[2], 0x38).await.unwrap().unwrap();
+        assert_ne!(old_code, new_code);
+        read_available(&mut remote, 1).await;
+        remote.write_all(&[old_code, b'.']).await.unwrap();
+        tokio::task::yield_now().await;
+        {
+            let state = pci.state.lock().unwrap();
+            assert!(state.pending.contains_key(&new_code));
+            assert!(state.codes_in_use.contains_key(&new_code));
+            assert!(state.quarantined_codes.contains(&old_code));
+            assert!(state.retry_writes[&old_code].writes[0]
+                .finished_at()
+                .is_some());
+        }
+        remote.write_all(&[new_code, b'.']).await.unwrap();
+        tokio::task::yield_now().await;
+        for _ in 0..64 {
+            assert_ne!(pci.get_confirmation_code().unwrap(), old_code);
+        }
+        tokio::time::advance(CONFIRMATION_TIMEOUT - Duration::from_secs(1)).await;
+        {
+            let mut state = pci.state.lock().unwrap();
+            PciClient::check_and_release_timed_out(&mut state);
+            assert!(state.codes_in_use.contains_key(&old_code));
+        }
+        tokio::time::advance(Duration::from_secs(2)).await;
+        let mut state = pci.state.lock().unwrap();
+        PciClient::check_and_release_timed_out(&mut state);
+        assert!(!state.codes_in_use.contains_key(&old_code));
+        assert!(!state.retry_writes.contains_key(&old_code));
+        assert!(!state.allocation_ids.contains_key(&old_code));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn expiry_snapshot_before_retry_completion_keeps_reservation() {
+        let (client, mut remote) = tokio::io::duplex(4096);
+        let (rd, wr) = tokio::io::split(client);
+        let (tx, _) = mpsc::unbounded_channel();
+        let pci = PciClient::new(Box::new(rd), Box::new(wr), tx);
+        pci.pci_reset().await.unwrap();
+        read_available(&mut remote, 1).await;
+        let code = pci.lighting_group_on(&[1], 0x38).await.unwrap().unwrap();
+        read_available(&mut remote, 1).await;
+        let snapshot = Instant::now();
+        pci.state
+            .lock()
+            .unwrap()
+            .pending
+            .get_mut(&code)
+            .unwrap()
+            .next_retry = snapshot;
+        tokio::time::sleep(Duration::from_millis(500)).await;
+        let retry = read_available(&mut remote, 1).await;
+        assert!(!retry.is_empty());
+        let mut state = pci.state.lock().unwrap();
+        let finished = state.retry_writes[&code].writes[0].finished_at().unwrap();
+        assert!(finished > snapshot);
+        // Model Flow publishing a completion after expiry captured `now`.
+        // The reservation itself is old enough to reach the retry-age check.
+        state.codes_in_use.insert(
+            code,
+            snapshot - CONFIRMATION_TIMEOUT - Duration::from_secs(1),
+        );
+        PciClient::check_and_release_timed_out_at(&mut state, snapshot);
+        assert!(state.codes_in_use.contains_key(&code));
+        assert!(state.quarantined_codes.contains(&code));
+        assert!(state.retry_writes.contains_key(&code));
     }
 }

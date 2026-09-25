@@ -10,6 +10,7 @@ pub mod journal;
 pub mod pci;
 pub mod plan;
 pub mod serial_address;
+pub mod verify;
 
 pub use conn::Endpoint;
 pub use framing::FrameBuffer;
