@@ -23,12 +23,13 @@ from tests.test_pci_serial_address_transport import Clock
 
 
 LOCAL='100966.1187'
+# This helper crosses real TCP sockets and a separately scheduled fixture
+# thread. Give every response/quiet phase enough scheduler headroom while
+# remaining far below the production native windows. Deterministic deadline
+# cases override individual values or the monotonic clock explicitly.
 SETTINGS=dict(local_unit=16,expected_local_serial=LOCAL,overall_timeout=5.,observation_timeout=.5,
-              confirmation_timeout=.1,mmi_response_timeout=.1,quiet_period=.02,
-              # The real-socket fixture persists successful moves before it
-              # replies. Leave scheduling and fsync headroom while remaining
-              # far below the production two-second native response window.
-              options_response_timeout=.02,address_response_timeout=.2)
+              confirmation_timeout=.2,mmi_response_timeout=.2,quiet_period=.2,
+              options_response_timeout=.2,address_response_timeout=.2)
 OPTIONS=b'g.82420537\r\n'
 LOCAL_REQUEST=b'\\4610002104g\r'
 OPTIONS_REQUEST=b'\\4610001A4201g\r'
