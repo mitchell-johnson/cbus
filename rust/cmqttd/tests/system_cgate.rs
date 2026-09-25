@@ -197,8 +197,17 @@ async fn bridged_pingu_keeps_mqtt_live_and_plain_tcp_fault_is_clean() {
         mutation.contains("404 Network is not connected"),
         "{mutation:?}"
     );
-    let after = sys.pci.frames().len();
-    assert_eq!(after, before, "remote mutation must fail before PCI I/O");
+    let unexpected = sys
+        .pci
+        .frames()
+        .into_iter()
+        .skip(before)
+        .filter(|frame| !is_status_request(&frame.payload))
+        .collect::<Vec<_>>();
+    assert!(
+        unexpected.is_empty(),
+        "remote mutation must emit no PCI command; background status probes are independent: {unexpected:?}"
+    );
 
     sys.pci.kick();
     let status = sys
