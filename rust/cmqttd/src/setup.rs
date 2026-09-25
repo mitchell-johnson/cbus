@@ -233,6 +233,20 @@ pub fn cgate_tls_config(opts: &Options) -> Result<Option<Arc<rustls::ServerConfi
     }
 }
 
+/// Optional cmqttd-local C-Gate LOGIN token gate (auth first-slice;
+/// loopback only, NOT native access.txt parity). `None` keeps the
+/// byte-identical dormant path. A configured file must hold a
+/// high-entropy token (see `cbus_cgate::auth`); any load failure is fatal
+/// at startup (no listener is opened, no state file is created).
+pub fn cgate_auth_token(opts: &Options) -> Result<Option<[u8; 32]>, String> {
+    match &opts.cgate_auth_file {
+        None => Ok(None),
+        Some(path) => cbus_cgate::auth::load_token_hash(path)
+            .map(Some)
+            .map_err(|e| format!("cannot load C-Gate auth file {}: {e}", path.display())),
+    }
+}
+
 /// Prepare the embedded C-Gate service with fail-closed TLS ordering.
 ///
 /// Loads [`cgate_tls_config`] FIRST, before [`Service::new`] creates the
@@ -252,6 +266,9 @@ pub fn prepare_cgate_service(
     // Fail closed before bind and state-file creation: unreadable/invalid
     // TLS files must never create the state file nor leave a listener behind.
     let tls = cgate_tls_config(opts)?;
+    // Same ordering for the auth gate: a bad auth file exits before
+    // Service::new creates the state file and before any listener binds.
+    let auth = cgate_auth_token(opts)?;
     let network_name = opts.cbus_network.join(" ");
     let service = cbus_cgate::service::Service::new(
         xml,
@@ -261,6 +278,11 @@ pub fn prepare_cgate_service(
         opts.cgate_unitspec.clone(),
     )
     .map_err(|e| e.to_string())?;
+    if let Some(hash) = auth {
+        service
+            .set_auth_token_hash(hash)
+            .map_err(|_| "C-Gate auth already configured".to_string())?;
+    }
     Ok((service, tls))
 }
 
@@ -349,6 +371,7 @@ mod tests {
             cgate_unitspec: None,
             cgate_tls_cert: cert,
             cgate_tls_key: key,
+            cgate_auth_file: None,
         }
     }
 
@@ -394,6 +417,123 @@ mod tests {
         assert!(cgate_tls_config(&opts).is_err());
         std::fs::remove_file(cert).ok();
         std::fs::remove_file(key).ok();
+    }
+
+    fn auth_opts(path: Option<std::path::PathBuf>) -> Options {
+        let mut opts = tls_opts(None, None);
+        opts.cgate_auth_file = path;
+        opts
+    }
+
+    #[cfg(unix)]
+    fn token_file(contents: &str, mode: u32) -> std::path::PathBuf {
+        use std::os::unix::fs::PermissionsExt;
+        static ID: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+        let path = std::env::temp_dir().join(format!(
+            "cmqttd-cgate-auth-{}-{}.token",
+            std::process::id(),
+            ID.fetch_add(1, std::sync::atomic::Ordering::Relaxed)
+        ));
+        std::fs::write(&path, contents).unwrap();
+        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(mode)).unwrap();
+        path
+    }
+
+    #[test]
+    fn cgate_auth_disabled_by_default() {
+        assert!(cgate_auth_token(&auth_opts(None)).unwrap().is_none());
+    }
+
+    #[test]
+    fn cgate_auth_missing_file_fails_closed() {
+        let opts = auth_opts(Some(std::path::PathBuf::from("/nonexistent/cgate.token")));
+        assert!(cgate_auth_token(&opts).is_err());
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn cgate_auth_loads_locked_down_token_file() {
+        let path = token_file("throwaway-setup-token-0123456789abcdef\n", 0o400);
+        let hash = cgate_auth_token(&auth_opts(Some(path.clone())))
+            .expect("0400 token file loads")
+            .expect("hash present");
+        assert_eq!(
+            hash,
+            cbus_cgate::auth::sha256(b"throwaway-setup-token-0123456789abcdef")
+        );
+        std::fs::remove_file(path).ok();
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn cgate_auth_group_readable_file_fails_closed() {
+        let path = token_file("throwaway-setup-token-0123456789abcdef\n", 0o640);
+        assert!(cgate_auth_token(&auth_opts(Some(path.clone()))).is_err());
+        std::fs::remove_file(path).ok();
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn cgate_auth_short_token_fails_closed() {
+        let path = token_file("tiny\n", 0o400);
+        assert!(cgate_auth_token(&auth_opts(Some(path.clone()))).is_err());
+        std::fs::remove_file(path).ok();
+    }
+
+    #[cfg(unix)]
+    #[tokio::test]
+    async fn cgate_startup_bad_auth_creates_no_state_file() {
+        // Auth config must load BEFORE Service::new creates the state file.
+        let state = unique_state_path("bad-auth");
+        assert!(!state.exists());
+        let mut opts = auth_opts(Some(std::path::PathBuf::from("/nonexistent/cgate.token")));
+        opts.cgate_state = state.clone();
+        let xml = std::fs::read_to_string(tls_fixture("project.xml")).expect("project fixture");
+        let err = match prepare_cgate_service(&opts, &xml, dummy_pci()) {
+            Ok(_) => panic!("bad auth file must fail"),
+            Err(e) => e,
+        };
+        assert!(!err.is_empty());
+        assert!(
+            !state.exists(),
+            "bad auth file must not create the C-Gate state file"
+        );
+    }
+
+    #[cfg(unix)]
+    #[tokio::test]
+    async fn cgate_startup_valid_auth_arms_login_gate() {
+        use cbus_cgate::service::ClientState;
+        let state = unique_state_path("good-auth");
+        assert!(!state.exists());
+        let token_path = token_file("throwaway-e2e-token-0123456789abcdef\n", 0o400);
+        let mut opts = auth_opts(Some(token_path.clone()));
+        opts.cgate_state = state.clone();
+        let xml = std::fs::read_to_string(tls_fixture("project.xml")).expect("project fixture");
+        let (service, _) = prepare_cgate_service(&opts, &xml, dummy_pci()).expect("valid auth");
+        let mut client = ClientState::default();
+        // Wrong secret is denied; the gate is armed end-to-end.
+        assert_eq!(
+            service
+                .handle(&mut client, "[1] LOGIN wrong-secret-value")
+                .await
+                .status,
+            420
+        );
+        assert_eq!(
+            service
+                .handle(
+                    &mut client,
+                    "[2] LOGIN throwaway-e2e-token-0123456789abcdef"
+                )
+                .await
+                .status,
+            200
+        );
+        drop(service);
+        assert!(state.exists(), "valid startup creates the state file");
+        std::fs::remove_file(state).ok();
+        std::fs::remove_file(token_path).ok();
     }
 
     fn dummy_pci() -> Arc<cbus_transport::pci::PciClient> {

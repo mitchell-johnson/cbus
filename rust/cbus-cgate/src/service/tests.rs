@@ -2309,3 +2309,366 @@ async fn physical_net_sync_single_serial_emits_no_duplicate_event() {
 
     std::fs::remove_file(path).unwrap();
 }
+
+// Auth first-slice loopback tests (cmqttd-local shared-secret gate).
+//
+// Explicitly NOT native access.txt parity: no native LOGIN captures exist,
+// so these tests pin the cmqttd-local contract only — `420 LOGIN failed`
+// for a wrong secret (native status TBD, never 401-as-native), `200 OK`
+// for LOGIN/LOGOUT session handling, and `420 LOGIN required` for gated
+// programming verbs. Test secrets are throwaway literals, never site data.
+const AUTH_TOKEN: &[u8] = b"throwaway-loopback-token-0123456789abcdef";
+
+fn authed_service() -> (Arc<Service>, PathBuf) {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    service
+        .set_auth_token_hash(crate::auth::sha256(AUTH_TOKEN))
+        .expect("fresh service has no auth hash yet");
+    (service, path)
+}
+
+fn response_text(response: &Response) -> String {
+    let mut text = response.lines.join("\n");
+    text.push('\n');
+    text.push_str(&response.final_text);
+    text
+}
+
+#[tokio::test]
+async fn auth_gate_dormant_without_auth_file_is_byte_identical() {
+    // No auth file configured: LOGIN/LOGOUT fall through to the generic
+    // 502 exactly as before, and programming verbs stay ungated.
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut client = ClientState::default();
+    assert_eq!(
+        service
+            .handle(&mut client, "[1] LOGIN anything")
+            .await
+            .status,
+        502
+    );
+    assert_eq!(service.handle(&mut client, "[2] LOGOUT").await.status, 502);
+    assert_eq!(
+        service
+            .handle(&mut client, "[3] PP LOCK L //HARNESS/254")
+            .await
+            .status,
+        200
+    );
+    std::fs::remove_file(path).ok();
+}
+
+#[tokio::test]
+async fn auth_wrong_secret_denied_and_gate_holds() {
+    let (service, path) = authed_service();
+    let mut client = ClientState::default();
+    // Wrong secret: contract status 420 (native TBD, never 401-as-native).
+    let denied = service
+        .handle(&mut client, "[1] LOGIN wrong-secret-value")
+        .await;
+    assert_eq!(denied.status, 420);
+    assert!(
+        denied.final_text.contains("LOGIN failed"),
+        "unexpected denial text: {denied:?}"
+    );
+    // Programming verbs stay denied while unauthenticated.
+    for command in [
+        "[2] PP LOCK L //HARNESS/254",
+        "[3] PP START S L",
+        "[4] PP NEW S //HARNESS/254/p/5",
+        "[5] PP SET S Field value",
+        "[6] PP SAVE S //HARNESS/254/p/5",
+        "[7] PP SAVE_TO_SOURCE S",
+        "[8] PP LOAD S //HARNESS/254/p/5",
+        "[9] PROJECT NEW AUTHTEST",
+        "[10] PROJECT SAVE",
+        "[11] DBSETSAFE //HARNESS/254/p/5/TagName Changed",
+        "[12] SET //HARNESS/254/p/5 Address 6",
+        "[13] LABEL CLEAREDLT //HARNESS/254/p/5",
+        "[14] SCENE RECORD house evening",
+    ] {
+        let response = service.handle(&mut client, command).await;
+        assert_eq!(response.status, 420, "{command}: {response:?}");
+        assert!(
+            response.final_text.contains("LOGIN required"),
+            "{command}: {response:?}"
+        );
+    }
+    std::fs::remove_file(path).ok();
+}
+
+#[tokio::test]
+async fn auth_login_unlocks_programming_and_logout_relocks() {
+    let (service, path) = authed_service();
+    let mut client = ClientState::default();
+    assert_eq!(
+        service
+            .handle(&mut client, "[1] PP LOCK L //HARNESS/254")
+            .await
+            .status,
+        420
+    );
+    let ok = service
+        .handle(
+            &mut client,
+            "[2] LOGIN throwaway-loopback-token-0123456789abcdef",
+        )
+        .await;
+    assert_eq!(ok.status, 200);
+    assert_eq!(
+        service
+            .handle(&mut client, "[3] PP LOCK L //HARNESS/254")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service.handle(&mut client, "[4] PP START S L").await.status,
+        200
+    );
+    assert_eq!(service.handle(&mut client, "[5] LOGOUT").await.status, 200);
+    // Session-local flag cleared: programming denied again.
+    assert_eq!(
+        service
+            .handle(&mut client, "[6] PP LOCK M //HARNESS/254")
+            .await
+            .status,
+        420
+    );
+    std::fs::remove_file(path).ok();
+}
+
+#[tokio::test]
+async fn auth_second_connection_unaffected_by_first() {
+    let (service, path) = authed_service();
+    let mut first = ClientState::default();
+    let mut second = ClientState::default();
+    assert_eq!(
+        service
+            .handle(
+                &mut first,
+                "[1] LOGIN throwaway-loopback-token-0123456789abcdef"
+            )
+            .await
+            .status,
+        200
+    );
+    // Second connection is still unauthenticated.
+    assert_eq!(
+        service
+            .handle(&mut second, "[2] PP LOCK L //HARNESS/254")
+            .await
+            .status,
+        420
+    );
+    // First connection logging out does not touch the second, and the
+    // second can still authenticate independently.
+    assert_eq!(service.handle(&mut first, "[3] LOGOUT").await.status, 200);
+    assert_eq!(
+        service
+            .handle(
+                &mut second,
+                "[4] LOGIN throwaway-loopback-token-0123456789abcdef"
+            )
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut second, "[5] PP LOCK L //HARNESS/254")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut first, "[6] PP LOCK M //HARNESS/254")
+            .await
+            .status,
+        420
+    );
+    std::fs::remove_file(path).ok();
+}
+
+#[tokio::test]
+async fn auth_failed_login_clears_flag_and_rejects_bad_arity() {
+    let (service, path) = authed_service();
+    let mut client = ClientState::default();
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[1] LOGIN throwaway-loopback-token-0123456789abcdef"
+            )
+            .await
+            .status,
+        200
+    );
+    // A failed LOGIN de-authenticates the connection.
+    assert_eq!(
+        service.handle(&mut client, "[2] LOGIN wrong").await.status,
+        420
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[3] PP LOCK L //HARNESS/254")
+            .await
+            .status,
+        420
+    );
+    // LOGIN arity is strict: bare and multi-token forms are 400.
+    assert_eq!(service.handle(&mut client, "[4] LOGIN").await.status, 400);
+    assert_eq!(
+        service.handle(&mut client, "[5] LOGIN a b").await.status,
+        400
+    );
+    // A malformed LOGIN also de-authenticates a live session: re-login,
+    // send bad arity, and the gate must hold again.
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[6] LOGIN throwaway-loopback-token-0123456789abcdef"
+            )
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service.handle(&mut client, "[7] LOGIN a b").await.status,
+        400
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[8] PP LOCK L //HARNESS/254")
+            .await
+            .status,
+        420
+    );
+    std::fs::remove_file(path).ok();
+}
+
+#[tokio::test]
+async fn auth_reads_and_bus_control_stay_open() {
+    // Read-only verbs and bus-control paths never require LOGIN: the gate
+    // covers durable/unit/session mutation only.
+    let (service, path) = authed_service();
+    let mut client = ClientState::default();
+    assert_eq!(
+        service
+            .handle(&mut client, "[1] CMQTT CAPABILITIES")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service.handle(&mut client, "[2] PROJECT LIST").await.status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[3] PROJECT USE HARNESS")
+            .await
+            .status,
+        200
+    );
+    // No live level observed: the read path itself answers 408, not 420.
+    assert_eq!(
+        service
+            .handle(&mut client, "[4] GET //HARNESS/254/56/1 level")
+            .await
+            .status,
+        408
+    );
+    // PP session reads are not gated (a missing session answers from the
+    // model, never 420).
+    let info = service.handle(&mut client, "[5] PP INFO nosuch").await;
+    assert_ne!(info.status, 420, "{info:?}");
+    let get = service.handle(&mut client, "[6] PP GET nosuch").await;
+    assert_ne!(get.status, 420, "{get:?}");
+    std::fs::remove_file(path).ok();
+}
+
+#[tokio::test]
+async fn auth_secret_never_in_responses_or_events() {
+    let (service, path) = authed_service();
+    let mut events = service.events.subscribe();
+    let mut client = ClientState::default();
+    let attempts = [
+        "[1] LOGIN wrong-secret-value",
+        "[2] PP LOCK L //HARNESS/254",
+        "[3] LOGIN throwaway-loopback-token-0123456789abcdef",
+        "[4] LOGOUT",
+    ];
+    for command in attempts {
+        let response = service.handle(&mut client, command).await;
+        let text = response_text(&response);
+        assert!(
+            !text.contains("throwaway-loopback-token-0123456789abcdef"),
+            "{command} echoed the secret: {text:?}"
+        );
+        assert!(
+            !text.contains("wrong-secret-value"),
+            "{command} echoed the candidate: {text:?}"
+        );
+    }
+    // Neither failed logins, denials, LOGIN success nor LOGOUT emit events
+    // (and therefore can never carry secret material on the event channel).
+    assert!(
+        events.try_recv().is_err(),
+        "auth traffic must not emit bus events"
+    );
+    std::fs::remove_file(path).ok();
+}
+
+#[tokio::test]
+async fn auth_db_project_and_scene_mutations_gate_together() {
+    // The gate covers every local path that mutates durable state: DB
+    // verbs, PROJECT lifecycle verbs and SCENE RECORD (persisted
+    // snapshots). Post-login they serve locally again.
+    let (service, path) = authed_service();
+    let mut client = ClientState::default();
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[1] DBSETSAFE //HARNESS/254/p/5/TagName Changed"
+            )
+            .await
+            .status,
+        420
+    );
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[2] LOGIN throwaway-loopback-token-0123456789abcdef"
+            )
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[3] DBSETSAFE //HARNESS/254/p/5/TagName Changed"
+            )
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[4] PROJECT NEW AUTHTEST")
+            .await
+            .status,
+        200
+    );
+    std::fs::remove_file(path).ok();
+}

@@ -129,6 +129,14 @@ pub struct Options {
     /// C-Gate listener; requires --cgate-tls-cert
     #[arg(long, requires = "cgate_bind", requires = "cgate_tls_cert")]
     pub cgate_tls_key: Option<std::path::PathBuf>,
+
+    /// Optional file holding a high-entropy C-Gate LOGIN token (first
+    /// line); arms the session-local LOGIN gate over programming verbs.
+    /// Loopback-only first slice: NOT native access.txt parity. Fails
+    /// closed at startup when missing/unreadable/too short, or (on unix)
+    /// accessible by group/other — expect 0400 or 0600 permissions.
+    #[arg(long, requires = "cgate_bind")]
+    pub cgate_auth_file: Option<std::path::PathBuf>,
 }
 
 #[cfg(test)]
@@ -155,6 +163,7 @@ mod tests {
         let opts = Options::try_parse_from(base_args()).expect("parse");
         assert!(opts.cgate_tls_cert.is_none());
         assert!(opts.cgate_tls_key.is_none());
+        assert!(opts.cgate_auth_file.is_none());
     }
 
     #[test]
@@ -220,6 +229,21 @@ mod tests {
         let mut args = base_args_without_bind();
         args.push("--cgate-tls-key");
         args.push("key.pem");
+        assert!(Options::try_parse_from(args).is_err());
+    }
+
+    #[test]
+    fn cgate_auth_file_defaults_to_none_and_requires_bind() {
+        let opts = Options::try_parse_from(base_args()).expect("parse");
+        assert!(opts.cgate_auth_file.is_none());
+        let mut args = base_args();
+        args.push("--cgate-auth-file");
+        args.push("cgate.token");
+        let opts = Options::try_parse_from(args).expect("parse with bind");
+        assert!(opts.cgate_auth_file.is_some());
+        let mut args = base_args_without_bind();
+        args.push("--cgate-auth-file");
+        args.push("cgate.token");
         assert!(Options::try_parse_from(args).is_err());
     }
 }

@@ -2,6 +2,7 @@
 //! deliberately not the fallback for unimplemented physical operations.
 
 use super::*;
+use crate::auth;
 use cbus_protocol::{
     packet::{Meta, Packet},
     sal::{label, Sal},
@@ -13,7 +14,7 @@ use std::{
     collections::{HashMap, HashSet, VecDeque},
     io::{self, Write},
     path::Path,
-    sync::Arc,
+    sync::{Arc, OnceLock},
     time::Duration,
 };
 use tokio::{
@@ -142,6 +143,14 @@ pub struct ClientState {
     current: Option<String>,
     locks: HashSet<String>,
     sessions: HashSet<String>,
+    /// Session-local LOGIN flag for the optional shared-secret gate (auth
+    /// first-slice). `false` until a correct `LOGIN` on this connection;
+    /// cleared by `LOGOUT` or a failed `LOGIN`. Dormant (`false` forever
+    /// and never consulted) when no auth file is configured.
+    authenticated: bool,
+    /// Consecutive failed LOGIN attempts on this connection (saturating).
+    /// Recorded for future rate-limiting; no cap is enforced in this slice.
+    login_attempts: u32,
 }
 
 /// One real, explicitly selected C-Bus network, shared with the MQTT gateway.
@@ -155,6 +164,11 @@ pub struct Service {
     observed_labels: Mutex<ObservedLabels>,
     // Serialize command intents without preventing readback/event processing.
     commands: Mutex<()>,
+    /// SHA-256 digest of the optional shared-secret LOGIN token. `None`
+    /// (unset) means the gate is dormant and `handle` is byte-identical to
+    /// the pre-auth behavior. Set once at startup from
+    /// `--cgate-auth-file` via [`Service::set_auth_token_hash`].
+    auth_token_hash: OnceLock<[u8; 32]>,
 }
 
 #[derive(Clone, Serialize)]
@@ -223,7 +237,16 @@ impl Service {
             events: broadcast::channel(512).0,
             observed_labels: Mutex::new(ObservedLabels::default()),
             commands: Mutex::new(()),
+            auth_token_hash: OnceLock::new(),
         }))
+    }
+
+    /// Arm the optional shared-secret LOGIN gate with the SHA-256 digest of
+    /// the configured token (see [`auth::load_token_hash`]). Called once at
+    /// startup after the auth file has loaded fail-closed and before the
+    /// listener binds. Fails if a hash was already installed.
+    pub fn set_auth_token_hash(&self, hash: [u8; 32]) -> Result<(), [u8; 32]> {
+        self.auth_token_hash.set(hash)
     }
 
     /// Replace the shared PCI after cmqttd reconnects; invalidate all live data.
@@ -471,6 +494,20 @@ impl Service {
         let tag = &cmd.tag;
         let verb = upper.first().map(String::as_str).unwrap_or("");
         let sub = upper.get(1).map(String::as_str).unwrap_or("");
+        // Optional cmqttd-local shared-secret gate (auth first-slice).
+        // Dormant when no --cgate-auth-file is configured: LOGIN/LOGOUT
+        // fall through to the generic 502 exactly as before, and no verb
+        // is gated. Armed: LOGIN/LOGOUT are session-local (no PCI I/O)
+        // and the mutating set in requires_programming_auth() needs the
+        // per-connection flag. NOT native access.txt parity.
+        if self.auth_token_hash.get().is_some() {
+            if verb == "LOGIN" || verb == "LOGOUT" {
+                return self.session_auth(client, tag, &words);
+            }
+            if !client.authenticated && requires_programming_auth(verb, sub) {
+                return err(tag, 420, "420 LOGIN required");
+            }
+        }
         if verb == "CMQTT" && sub == "CAPABILITIES" && words.len() == 2 {
             return ok(
                 tag,
@@ -763,6 +800,53 @@ impl Service {
             let _ = self.events.send(event);
         }
         response
+    }
+
+    /// Session-local LOGIN/LOGOUT for the optional shared-secret gate.
+    /// Only reached when an auth hash is configured; the dormant service
+    /// never routes here (LOGIN/LOGOUT stay generic-502).
+    ///
+    /// `LOGIN <token>` hashes the candidate with SHA-256 and compares
+    /// digests in constant time, setting the per-connection flag on a
+    /// match. Any failure (bad arity or mismatch) clears the flag, as does
+    /// `LOGOUT` (which always answers 200). Nothing here performs PCI I/O,
+    /// and neither the token nor the candidate ever enters logs, events,
+    /// or responses.
+    ///
+    /// Failure status TBD: native LOGIN behavior is uncaptured, so 420
+    /// mirrors this service's session-scoped denial family (PP ownership
+    /// conflicts already use 420). It must NOT be read as native parity,
+    /// and 401 is deliberately avoided: 401 already means
+    /// absent-object/model-denied readings in this codebase.
+    fn session_auth(&self, client: &mut ClientState, tag: &str, words: &[&str]) -> Response {
+        let Some(expected) = self.auth_token_hash.get() else {
+            // Unreachable: handle() routes here only when configured.
+            return err(
+                tag,
+                502,
+                "502 Command requires a physical backend that is not implemented",
+            );
+        };
+        if words[0].eq_ignore_ascii_case("LOGOUT") {
+            client.authenticated = false;
+            return ok(tag, vec![], "200 OK");
+        }
+        if words.len() != 2 {
+            // Fail-safe: a malformed LOGIN de-authenticates, matching the
+            // documented "any failure clears the flag" contract.
+            client.authenticated = false;
+            return err(tag, 400, "400 LOGIN requires a token");
+        }
+        let candidate = auth::sha256(words[1].as_bytes());
+        if auth::constant_time_eq(&candidate, expected) {
+            client.authenticated = true;
+            client.login_attempts = 0;
+            ok(tag, vec![], "200 OK")
+        } else {
+            client.authenticated = false;
+            client.login_attempts = client.login_attempts.saturating_add(1);
+            err(tag, 420, "420 LOGIN failed")
+        }
     }
 
     fn application_path(&self, address: &str) -> Option<u8> {
@@ -3356,7 +3440,9 @@ impl Service {
     /// completes a rustls server handshake before entering the shared
     /// per-connection handler. A failed handshake drops only that
     /// connection; the listener stays up. No client authentication or
-    /// access control is performed here (P4b is transport-only).
+    /// access control is performed here (P4b is transport-only); the
+    /// optional command-layer LOGIN gate (see [`Service::set_auth_token_hash`])
+    /// is independent of TLS.
     /// The caller owns binding and task supervision.
     ///
     /// The pre-handshake accept is bounded by
@@ -3507,6 +3593,81 @@ async fn bounded_line<R: tokio::io::AsyncBufRead + Unpin>(
                 .map(Some)
                 .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e));
         }
+    }
+}
+
+/// Session-gate predicate for the optional shared-secret LOGIN gate: true
+/// when the (verb, sub) path mutates durable state, unit memory, or the
+/// session/lock tables, and therefore needs the per-connection LOGIN flag
+/// while the gate is armed. Read-only verbs (GET/INFO/LIST/QUICKGET/scans/
+/// serials/label reads), bus-control verbs (lighting/trigger/enable/clock/
+/// temperature/label writes, DO methods, NET scans) and session-local
+/// LOGIN/LOGOUT stay open.
+///
+/// Gated set, chosen against Service::handle dispatch + local_command:
+/// - PP mutating verbs: LOCK/UNLOCK/CANCEL_LOCK/START/END/NEW/LOAD/
+///   LOAD_FROM_FILE/SAVE/SAVE_TO_SOURCE/SET/RESET(_TO_DEFAULTS)/COPY.
+///   Open: GET/INFO/LIST/LIST_LOCK/UNITS/QUICKGET/LIST_CATALOG_NUMBERS.
+///   The check runs before dispatch, so the physical PP LOAD/SAVE/
+///   SAVE_TO_SOURCE pre-gate branches are covered before any PCI I/O.
+/// - PROJECT lifecycle verbs: NEW/LOAD/SAVE/CLOSE/DELETE/COPY/RENAME/
+///   ARCHIVE/RESTORE/REPAIR. Open: LIST/USE/DIR. (Verbs outside the
+///   local_command PROJECT arm already 502 when dormant; gating them keeps
+///   the armed reading uniform.)
+/// - DB mutating verbs: DBSETSAFE/DBSETXML/DBADDSAFE/DBCOPYSAFE/DBDELETE/
+///   DBSAVE/DBLOAD/DBCREATE*/DBRENAMENETSAFE. Open: DBGET*/DBVALIDATE.
+///   DB verbs mutate the same durable database PP SAVE persists to, so
+///   leaving them open would bypass the gate.
+/// - SET in all forms (unit readdress via the pre-gate Address branch and
+///   scalar database sets via the model): every form mutates.
+/// - LABEL CLEAREDLT (clears unit labels). LIGHTING/TRIGGER/ENABLE label
+///   writes stay open: they are bus-control SAL traffic with MQTT
+///   equivalents, like lighting ON/OFF — gating them without gating MQTT
+///   would be theater, while programming verbs have no MQTT equivalent.
+/// - SCENE RECORD (persists snapshots to the state file). SCENE PLAY stays
+///   open (snapshot read plus bus control).
+///
+/// NET LOAD/SAVE need no entry: the local_command NET arm admits only
+/// LIST|LIST_ALL|STATE, so they already fail closed with 502.
+fn requires_programming_auth(verb: &str, sub: &str) -> bool {
+    match verb {
+        "PP" => matches!(
+            sub,
+            "LOCK"
+                | "UNLOCK"
+                | "CANCEL_LOCK"
+                | "START"
+                | "END"
+                | "NEW"
+                | "LOAD"
+                | "LOAD_FROM_FILE"
+                | "SAVE"
+                | "SAVE_TO_SOURCE"
+                | "SET"
+                | "RESET"
+                | "RESET_TO_DEFAULTS"
+                | "COPY"
+        ),
+        "PROJECT" => matches!(
+            sub,
+            "NEW"
+                | "LOAD"
+                | "SAVE"
+                | "CLOSE"
+                | "DELETE"
+                | "COPY"
+                | "RENAME"
+                | "ARCHIVE"
+                | "RESTORE"
+                | "REPAIR"
+        ),
+        "SET" => true,
+        "LABEL" => sub == "CLEAREDLT",
+        "SCENE" => sub == "RECORD",
+        "DBSETSAFE" | "DBSETXML" | "DBADDSAFE" | "DBCOPYSAFE" | "DBDELETE" | "DBSAVE"
+        | "DBLOAD" | "DBCREATENET" | "DBCREATEAPP" | "DBCREATEGROUP" | "DBCREATEUNIT"
+        | "DBRENAMENETSAFE" => true,
+        _ => false,
     }
 }
 
