@@ -5193,7 +5193,7 @@ async fn physical_syncnew_all_reports_mmi_duplicate_and_drops_live_identity() {
 }
 
 #[tokio::test(start_paused = true)]
-async fn physical_project_identify_writes_native_sixbit_parameter_and_verifies_readback() {
+async fn physical_project_identify_verifies_readback_and_reconnect_invalidates_cache_commit() {
     async fn pci_line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
         let mut line = Vec::new();
         reader.read_until(b'\r', &mut line).await.unwrap();
@@ -5227,11 +5227,11 @@ async fn physical_project_identify_writes_native_sixbit_parameter_and_verifies_r
     }
 
     let path = state_path();
-    let (pci, remote) = pci();
+    let (original_pci, remote) = pci();
     let (remote_read, mut remote_write) = tokio::io::split(remote);
     let mut remote_read = BufReader::new(remote_read);
     let reset = tokio::spawn({
-        let pci = pci.clone();
+        let pci = original_pci.clone();
         async move { pci.pci_reset().await }
     });
     for _ in 0..8 {
@@ -5239,7 +5239,7 @@ async fn physical_project_identify_writes_native_sixbit_parameter_and_verifies_r
     }
     reset.await.unwrap().unwrap();
 
-    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let service = Service::new(&fixture(), None, path.clone(), original_pci, None).unwrap();
     let mut events = service.events.subscribe();
     let setting = tokio::spawn({
         let service = service.clone();
@@ -5355,6 +5355,112 @@ async fn physical_project_identify_writes_native_sixbit_parameter_and_verifies_r
     assert!(
         events.try_recv().is_err(),
         "native project-identify does not emit a synthetic event"
+    );
+
+    // Repeat the verified physical transaction, but start a reconnect after
+    // the final RECALL is on the wire and before its result can update the
+    // volatile cache. The replacement must clear the old snapshot and the
+    // completed request must return 408 instead of repopulating it.
+    let reconnecting_write = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[47] NET SET_PROJECT_IDENTIFY //HARNESS/254 \"?\\ ?\"",
+                )
+                .await
+        }
+    });
+
+    let request = pci_line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\05FF00FAFF"), "{request:?}");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    for block in [
+        mmi_block(0, 88, &[(5, 1), (6, 2)]),
+        mmi_block(88, 88, &[(5, 1), (6, 2)]),
+        mmi_block(176, 80, &[(5, 1), (6, 2)]),
+    ] {
+        remote_write.write_all(&block).await.unwrap();
+    }
+    tokio::task::yield_now().await;
+
+    let identify = pci_line(&mut remote_read).await;
+    assert!(identify.starts_with(b"\\4605002101"), "{identify:?}");
+    let code = identify[identify.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    pci_reply(&mut remote_write, 5, &[0x82, 1, b' ']).await;
+    tokio::task::yield_now().await;
+
+    let identify = pci_line(&mut remote_read).await;
+    assert!(identify.starts_with(b"\\4606002101"), "{identify:?}");
+    let code = identify[identify.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    pci_reply(
+        &mut remote_write,
+        6,
+        &[0x86, 1, b'K', b'E', b'Y', b'E', b'1'],
+    )
+    .await;
+    tokio::task::yield_now().await;
+
+    let identify = pci_line(&mut remote_read).await;
+    assert!(identify.starts_with(b"\\4606002104"), "{identify:?}");
+    let code = identify[identify.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    pci_reply(
+        &mut remote_write,
+        6,
+        &[
+            0x8d, 4, 0x38, 0xff, 0xff, 0xff, 0xff, 0x18, 0xb1, 0x06, 0x16, 0xa2, 0x00, 0x05,
+        ],
+    )
+    .await;
+    tokio::time::advance(Duration::from_secs(2)).await;
+    tokio::task::yield_now().await;
+
+    assert_eq!(
+        pci_line(&mut remote_read).await,
+        b"\\460600A8234679E79E79E79EA7\r"
+    );
+    pci_reply(&mut remote_write, 6, &[0x32, 0x23, 0x46]).await;
+    assert_eq!(pci_line(&mut remote_read).await, b"\\4606001A230671\r");
+
+    let model_guard = service.model.lock().await;
+    let (replacement, _replacement_remote) = pci();
+    let replacing = tokio::spawn({
+        let service = service.clone();
+        async move { service.set_pci(replacement).await }
+    });
+    for _ in 0..100 {
+        if service.pci_generation.load(Ordering::Acquire) == 1 {
+            break;
+        }
+        tokio::task::yield_now().await;
+    }
+    assert_eq!(service.pci_generation.load(Ordering::Acquire), 1);
+    pci_reply(
+        &mut remote_write,
+        6,
+        &[0x87, 0x23, 0x79, 0xe7, 0x9e, 0x79, 0xe7, 0x9e],
+    )
+    .await;
+    tokio::task::yield_now().await;
+    drop(model_guard);
+    replacing.await.unwrap();
+
+    let response = reconnecting_write.await.unwrap();
+    assert_eq!(response.status, 408, "{response:?}");
+    assert_eq!(
+        response.final_text,
+        "408 Operation failed: PCI reconnected during project identity update"
+    );
+    assert!(
+        service.model.lock().await.projects["HARNESS"].networks[&254]
+            .physical
+            .is_empty(),
+        "the completed old-generation readback must not repopulate the replacement cache"
     );
     std::fs::remove_file(path).unwrap();
 }

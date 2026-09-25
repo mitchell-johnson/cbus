@@ -278,11 +278,15 @@ first unit in non-error present MMI state one or two with valid IDENTIFY1 data
 and exactly one valid known IDENTIFY4 serial reply over the complete quiet
 window, stores parameter 35,
 and requires exact RECALL readback. A failed or uncertain write invalidates an
-older cached `ProjectName`. The typed CLI mK-quotes spaces, quotes and
-backslashes; the cached `ProjectName` is decoded from verified bytes so the
-native `?`/space alias stays canonical. It updates only the volatile physical
-snapshot and does not rename or persist a project. This is distinct from the
-read-only interface discovery performed by `NET PROJECT_IDENTIFY`.
+older cached `ProjectName`. The verified update or same-generation invalidation
+commits only while the captured shared PCI generation and pointer remain
+current and connected. A reconnect returns 408, and the old operation cannot
+clear or repopulate the replacement generation's cache. The typed CLI
+mK-quotes spaces, quotes and backslashes; the cached `ProjectName` is decoded
+from verified bytes so the native `?`/space alias stays canonical. It updates
+only the volatile physical snapshot and does not rename or persist a project.
+This is distinct from the read-only interface discovery performed by
+`NET PROJECT_IDENTIFY`.
 Query `CMQTT CAPABILITIES`; `unit_readdress: true` denotes the readdress path and
 `physical_pp_save_cbus3_nvm: true` denotes the NVM commit path,
 `dynamic_labels: true` denotes the label sender,

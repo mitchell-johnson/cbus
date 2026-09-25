@@ -2367,7 +2367,13 @@ impl Service {
             }
         };
 
-        let pci = self.pci.read().await.clone();
+        let (pci_generation, pci) = {
+            let _generation_gate = self.pci_generation_gate.lock().await;
+            (
+                self.pci_generation.load(Ordering::Acquire),
+                self.pci.read().await.clone(),
+            )
+        };
         let interface_units = {
             let model = self.model.lock().await;
             model.projects[&self.project].networks[&self.network]
@@ -2462,6 +2468,19 @@ impl Service {
             // readback makes any previous cached value unsafe to serve. A
             // definitive NAK is also cleared conservatively; a later SYNC or
             // successful write may repopulate the volatile field.
+            let _generation_gate = self.pci_generation_gate.lock().await;
+            let current_pci = self.pci.read().await;
+            if self.pci_generation.load(Ordering::Acquire) != pci_generation
+                || !Arc::ptr_eq(&current_pci, &pci)
+                || !pci.is_connected()
+            {
+                return err(
+                    tag,
+                    408,
+                    "408 Operation failed: PCI reconnected during project identity update",
+                );
+            }
+            drop(current_pci);
             self.clear_physical_project_name(address).await;
             let detail = if error
                 .to_string()
@@ -2476,6 +2495,22 @@ impl Service {
             return err(tag, 408, &format!("408 Operation failed: {detail}"));
         }
 
+        // Bind the verified readback and volatile-cache update to one shared
+        // PCI generation. Holding this gate through the model mutation keeps
+        // reconnect invalidation from being followed by an old result.
+        let _generation_gate = self.pci_generation_gate.lock().await;
+        let current_pci = self.pci.read().await;
+        if self.pci_generation.load(Ordering::Acquire) != pci_generation
+            || !Arc::ptr_eq(&current_pci, &pci)
+            || !pci.is_connected()
+        {
+            return err(
+                tag,
+                408,
+                "408 Operation failed: PCI reconnected during project identity update",
+            );
+        }
+        drop(current_pci);
         if let Some(network) = self
             .model
             .lock()
