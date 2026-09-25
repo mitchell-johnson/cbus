@@ -37,9 +37,32 @@ fn valid_applications(app: u64) -> bool {
 #[test]
 fn observed_dynamic_label_vectors_pin_json_contract() {
     let rows = rows();
+    // Floor plus an explicit ID roster (mirrors the Python vector test):
+    // silent deletion/rename of a vector fails loudly on the missing or
+    // unexpected ID, while ADDING a row only requires extending the roster
+    // on both sides.
+    const EXPECTED_IDS: [&str; 16] = [
+        "odl-0001-valid-standard-text",
+        "odl-0002-valid-unicode-segmented",
+        "odl-0003-valid-built-in-icon",
+        "odl-0004-valid-dynamic-icon-8x7",
+        "odl-0005-valid-language-selection",
+        "odl-0006-incomplete-unicode-first-fragment",
+        "odl-0007-unmatched-fragment-error",
+        "odl-0008-invalid-utf8-error",
+        "odl-0009-invalid-icon-dimensions-error",
+        "odl-0010-complete-true-rejected",
+        "odl-0011-device-readback-true-rejected",
+        "odl-0012-wrong-format-rejected",
+        "odl-0013-wrong-source-rejected",
+        "odl-0014-capacity-exceeded-rejected",
+        "odl-0015-bad-sequence-rejected",
+        "odl-0016-mixed-app-interleaved-standard",
+    ];
     assert!(
-        rows.len() >= 10,
-        "expected ~10-15 compatibility cases, got {}",
+        rows.len() >= EXPECTED_IDS.len(),
+        "expected at least {} compatibility cases, got {}",
+        EXPECTED_IDS.len(),
         rows.len()
     );
     let mut ids = HashSet::new();
@@ -181,4 +204,9 @@ fn observed_dynamic_label_vectors_pin_json_contract() {
             assert!(!needle.is_empty(), "{id}: expect_error must not be empty");
         }
     }
+    let expected: HashSet<String> = EXPECTED_IDS.iter().map(|s| s.to_string()).collect();
+    assert_eq!(
+        ids, expected,
+        "vector id roster changed: add the new id (both sides) or restore the deleted/renamed row"
+    );
 }

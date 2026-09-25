@@ -24,11 +24,36 @@ def load_vectors():
     return rows
 
 
+# Mirrors the Rust vector test roster: deletion/rename fails loudly on the
+# missing/unexpected ID, while ADDING a row only extends this roster (both
+# sides) without touching the floor logic.
+EXPECTED_IDS = (
+    "odl-0001-valid-standard-text",
+    "odl-0002-valid-unicode-segmented",
+    "odl-0003-valid-built-in-icon",
+    "odl-0004-valid-dynamic-icon-8x7",
+    "odl-0005-valid-language-selection",
+    "odl-0006-incomplete-unicode-first-fragment",
+    "odl-0007-unmatched-fragment-error",
+    "odl-0008-invalid-utf8-error",
+    "odl-0009-invalid-icon-dimensions-error",
+    "odl-0010-complete-true-rejected",
+    "odl-0011-device-readback-true-rejected",
+    "odl-0012-wrong-format-rejected",
+    "odl-0013-wrong-source-rejected",
+    "odl-0014-capacity-exceeded-rejected",
+    "odl-0015-bad-sequence-rejected",
+    "odl-0016-mixed-app-interleaved-standard",
+)
+
+
 def test_vector_file_pins_observed_cache_contract():
     rows = load_vectors()
-    # Exact count (Decider P1 #2): silent deletion/rename of a vector must
-    # fail loudly. Bump the literal when legitimately ADDING a row.
-    assert len(rows) == 16, f"expected 16 compatibility cases, got {len(rows)}"
+    # Floor, not an exact count: additive compatibility cases must not break
+    # the contract pin. Per-row shape/expect pins below carry the weight.
+    assert len(rows) >= len(EXPECTED_IDS), (
+        f"expected at least {len(EXPECTED_IDS)} compatibility cases, got {len(rows)}"
+    )
     seen_ids: set[str] = set()
     for item in rows:
         assert isinstance(item.get("id"), str) and item["id"]
@@ -36,6 +61,11 @@ def test_vector_file_pins_observed_cache_contract():
         seen_ids.add(item["id"])
         assert isinstance(item.get("document"), dict)
         assert ("expect" in item) ^ ("expect_error" in item), item["id"]
+    assert seen_ids == set(EXPECTED_IDS), (
+        "vector id roster changed: add the new id (both sides) or restore "
+        f"the deleted/renamed row; missing={set(EXPECTED_IDS) - seen_ids}, "
+        f"unexpected={seen_ids - set(EXPECTED_IDS)}"
+    )
 
 
 def test_vectors_match_decode_observed_labels():
