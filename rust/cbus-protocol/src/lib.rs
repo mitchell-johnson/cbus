@@ -11,6 +11,7 @@ pub mod json;
 pub mod packet;
 pub mod report;
 pub mod sal;
+pub mod serial_address;
 
 pub use cal::Cal;
 pub use decode::decode_packet;

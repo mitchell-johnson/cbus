@@ -6,6 +6,7 @@ pub mod conn;
 pub mod flow;
 pub mod framing;
 pub mod pci;
+pub mod serial_address;
 
 pub use conn::Endpoint;
 pub use framing::FrameBuffer;
