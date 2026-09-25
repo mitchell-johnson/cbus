@@ -146,6 +146,7 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     assert!(capabilities.contains("\"dynamic_label_device_readback\":false"));
     assert!(capabilities.contains("\"label_clear\":true"));
     assert!(capabilities.contains("\"label_kfi\":true"));
+    assert!(capabilities.contains("\"edlt_widget_groups\":true"));
     assert!(
         command(&mut reader, &mut writer, "GET //HARNESS/254/56/1 level")
             .await
@@ -705,6 +706,171 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     assert_eq!(sys.pci.connections(), 1);
     drop(sys);
     std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn keygl5_sync_populates_native_widgetgroups_property() {
+    let state = cbus_test_support::proc::temp_path("widgetgroups-cgate.json");
+    let sys = start_with(Options {
+        extra: vec![
+            "--cgate-bind".into(),
+            "127.0.0.1:0".into(),
+            "--cgate-state".into(),
+            state.to_string_lossy().into_owned(),
+        ],
+        ..Default::default()
+    })
+    .await;
+    require(STARTUP, "C-Gate listener", || {
+        sys.daemon.stderr().contains("C-Gate service listening on ")
+    })
+    .await;
+    let addr = sys
+        .daemon
+        .stderr()
+        .lines()
+        .find_map(|line| {
+            line.split_once("C-Gate service listening on ")
+                .map(|(_, addr)| addr.trim().to_string())
+        })
+        .unwrap();
+    let stream = TcpStream::connect(&addr).await.unwrap();
+    let (reader, mut writer) = stream.into_split();
+    let mut reader = BufReader::new(reader);
+    let mut greeting = String::new();
+    reader.read_line(&mut greeting).await.unwrap();
+    assert!(greeting.starts_with("201 "));
+
+    async fn command(
+        reader: &mut BufReader<tokio::net::tcp::OwnedReadHalf>,
+        writer: &mut tokio::net::tcp::OwnedWriteHalf,
+        text: &str,
+    ) -> String {
+        writer
+            .write_all(format!("[1] {text}\r\n").as_bytes())
+            .await
+            .unwrap();
+        let mut result = String::new();
+        loop {
+            let mut line = String::new();
+            reader.read_line(&mut line).await.unwrap();
+            result.push_str(&line);
+            if line.starts_with("[1]") && line.as_bytes().get(7) == Some(&b' ') {
+                return result;
+            }
+        }
+    }
+
+    async fn answer_identify(sys: &System, unit: u8, attribute: u8, data: &[u8]) {
+        let prefix = format!("46{unit:02X}0021{attribute:02X}");
+        require(COMMAND_DRAIN, "KEYGL5 IDENTIFY request", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload.starts_with(&prefix))
+        })
+        .await;
+        let mut body = vec![
+            0x86,
+            unit,
+            0x10,
+            0x01,
+            0x00,
+            0x80 | (data.len() as u8 + 1),
+            attribute,
+        ];
+        body.extend_from_slice(data);
+        sys.pci.inject(&pci_wire(&body));
+    }
+
+    assert!(command(
+        &mut reader,
+        &mut writer,
+        "DBADDSAFE //HARNESS/254 Unit 5 Fixture_eDLT",
+    )
+    .await
+    .contains("200 OK"));
+    assert!(command(
+        &mut reader,
+        &mut writer,
+        "DBSETSAFE //HARNESS/254/p/5/UnitType KEYGL5",
+    )
+    .await
+    .contains("200 OK"));
+
+    let sync = command(&mut reader, &mut writer, "NET SYNC //HARNESS/254");
+    let peer = async {
+        require(STARTUP, "BASIC local-address request", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.basic && frame.payload == "1A2001")
+        })
+        .await;
+        sys.pci.inject(b"8220104E\r\n");
+        require(STARTUP, "WidgetGroups synchronization MMI", || {
+            sys.pci.count_payload("05FF00FAFF0003") == 1
+        })
+        .await;
+        sys.pci.inject(&installation_mmi_block(0, 88, &[5]));
+        sys.pci.inject(&installation_mmi_block(88, 88, &[]));
+        sys.pci.inject(&installation_mmi_block(176, 80, &[]));
+
+        answer_identify(&sys, 5, 1, b"KEYGL5").await;
+        answer_identify(&sys, 5, 2, b"5.5.00").await;
+        answer_identify(&sys, 5, 4, &serial_identity("101136.1558", 5)).await;
+
+        require(COMMAND_DRAIN, "KEYGL5 WidgetGroups recall", || {
+            sys.pci.count_payload("4605001AFA2C75") == 1
+        })
+        .await;
+        let values = (0..44u8).collect::<Vec<_>>();
+        for fragment in values.chunks(22) {
+            let cal = cbus_protocol::Cal::Reply {
+                parameter: 0xfa,
+                data: fragment.to_vec(),
+            }
+            .encode();
+            let mut body = vec![0x86, 5, 0x10, 0x01, 0x00];
+            body.extend(cal);
+            sys.pci.inject(&pci_wire(&body));
+        }
+    };
+    let (sync, ()) = tokio::join!(sync, peer);
+    assert!(sync.contains("200 OK"), "{sync:?}");
+    assert_eq!(sys.pci.count_payload("4605001AFA2C75"), 1);
+    assert!(
+        !sys.pci
+            .frames()
+            .iter()
+            .any(|frame| frame.payload.starts_with("4605001AFB09")),
+        "parameter 0xFB is extended firmware, not WidgetGroups"
+    );
+
+    let expected = (0..44)
+        .map(|value| value.to_string())
+        .collect::<Vec<_>>()
+        .join(",");
+    let property = command(
+        &mut reader,
+        &mut writer,
+        "GET //HARNESS/254/p/5 WidgetGroups",
+    )
+    .await;
+    assert!(
+        property.contains(&format!("300 //HARNESS/254/p/5: WidgetGroups={expected}")),
+        "{property:?}"
+    );
+    let firmware = command(
+        &mut reader,
+        &mut writer,
+        "GET //HARNESS/254/p/5 FirmwareVersion",
+    )
+    .await;
+    assert!(firmware.contains("FirmwareVersion=5.5.00"), "{firmware:?}");
+
+    drop(sys);
+    std::fs::remove_file(state).unwrap();
 }
 
 #[tokio::test]

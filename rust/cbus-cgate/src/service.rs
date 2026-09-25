@@ -610,6 +610,7 @@ impl Service {
             // invocation while retaining one static capability document.
             capabilities["label_kfi"] = serde_json::Value::Bool(true);
             capabilities["label_clear"] = serde_json::Value::Bool(true);
+            capabilities["edlt_widget_groups"] = serde_json::Value::Bool(true);
             return ok(tag, vec![capabilities.to_string()], "200 OK");
         }
         if verb == "CMQTT" && sub == "LABELS" && words.len() == 3 {
@@ -1271,9 +1272,10 @@ impl Service {
         }
         self.set_network_state(NetworkState::Syncing).await;
         let pci = self.pci.read().await.clone();
-        let interface_units = {
+        let (interface_units, configured_keygl5) = {
             let model = self.model.lock().await;
-            model.projects[&self.project].networks[&self.network]
+            let network = &model.projects[&self.project].networks[&self.network];
+            let interface_units = network
                 .units
                 .values()
                 .filter(|unit| {
@@ -1281,7 +1283,14 @@ impl Service {
                     unit_type.starts_with("PC_CNI") || unit_type.starts_with("PC_PCI")
                 })
                 .map(|unit| unit.address)
-                .collect::<Vec<_>>()
+                .collect::<Vec<_>>();
+            let configured_keygl5 = network
+                .units
+                .values()
+                .filter(|unit| unit.unit_type.eq_ignore_ascii_case("KEYGL5"))
+                .map(|unit| unit.address)
+                .collect::<HashSet<_>>();
+            (interface_units, configured_keygl5)
         };
         let local = match interface_units.as_slice() {
             [address] => pci.set_local_unit_hint(*address).map(|()| *address),
@@ -1418,7 +1427,29 @@ impl Service {
             } else {
                 (String::new(), Vec::new())
             };
-            identities.push((address, unit_type, firmware, serial, serial_alternates));
+            identities.push((
+                address,
+                unit_type,
+                firmware,
+                serial,
+                serial_alternates,
+                None,
+            ));
+        }
+
+        // Complete every required identity transaction before the optional
+        // KEYGL5 reads. A WidgetGroups timeout faults the programming lane to
+        // prevent late untagged CAL replies being misattributed, but native
+        // CBusEdlt.n() does not combine this helper's boolean with the unit's
+        // synchronization result. Required identity data already collected
+        // for other units can therefore still be committed successfully.
+        for (address, unit_type, _, _, _, widget_groups) in &mut identities {
+            if unit_type.eq_ignore_ascii_case("KEYGL5") && configured_keygl5.contains(address) {
+                // A failed read deliberately leaves this as None. Commit then
+                // invalidates an older volatile WidgetGroups value instead of
+                // serving stale mapping bytes.
+                *widget_groups = pci.read_edlt_widget_groups(*address).await.ok();
+            }
         }
 
         let mut model = self.model.lock().await;
@@ -1431,7 +1462,7 @@ impl Service {
             network.physical = identities
                 .into_iter()
                 .map(
-                    |(address, unit_type, firmware, serial, serial_alternates)| {
+                    |(address, unit_type, firmware, serial, serial_alternates, widget_groups)| {
                         let mut unit = previous
                             .get(&address)
                             .cloned()
@@ -1440,6 +1471,10 @@ impl Service {
                         unit.firmware = firmware;
                         unit.serial = serial;
                         unit.serial_alternates = serial_alternates;
+                        unit.fields.remove("WidgetGroups");
+                        if let Some(widget_groups) = widget_groups {
+                            unit.fields.insert("WidgetGroups".into(), widget_groups);
+                        }
                         (address, unit)
                     },
                 )

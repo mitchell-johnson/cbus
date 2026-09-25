@@ -139,7 +139,16 @@ address as a routing hint, or BASIC discovery when that hint is unavailable;
 fresh MMI and IDENTIFY replies physically validate the result. It probes
 IDENTIFY1/2 and collects all IDENTIFY4 replies for every present address, then
 atomically replaces the live identity cache. Silent legacy/error addresses stay
-present with unknown identity fields. CHECKUNIT actively collects IDENTIFY4
+present with unknown identity fields. When both the configured database type
+and fresh IDENTIFY1 are KEYGL5, SYNC also sends the exact parameter-`0xFA`,
+length-44 recall and stores the source/parameter/length-correlated reply as the
+opaque native decimal CSV `WidgetGroups` property. Read it with `GET
+//PROJECT/NETWORK/p/UNIT WidgetGroups`; the result is a cached `300` property
+and does not issue new bus I/O. A failed optional read invalidates an older
+mapping without failing the otherwise valid identity SYNC; the programming
+lane remains faulted until reconnect and the request is not replayed. Parameter
+`0xFB` length 9 is extended firmware, not WidgetGroups. This static mapping is
+not dynamic-label cache readback. CHECKUNIT actively collects IDENTIFY4
 replies through the native two-second quiet interval; it does not infer duplicate count from the
 two-bit MMI state. Use `GET //PROJECT/NETWORK Units` and unit `Type`, `Version`,
 `SerialNumber`, `Address`, and `State` getters for the resulting live snapshot.
@@ -177,6 +186,8 @@ recipient), while
 `label_clear: true` denotes the standard physical all-key/one-key cache-clear
 command above,
 `label_kfi: true` denotes the native physical KFIGET/KFISET sequences above,
+`edlt_widget_groups: true` denotes the bounded KEYGL5 static mapping populated
+by NET SYNC,
 `cgate_auth: true` denotes the armed opt-in LOGIN gate (`false` dormant
 default): with `--cgate-auth-file` configured, each connection needs
 `LOGIN <token>` before programming verbs while reads and bus control stay

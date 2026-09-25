@@ -872,6 +872,7 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["dynamic_label_observation"], true);
     assert_eq!(document["dynamic_label_device_readback"], false);
     assert_eq!(document["edlt_factory_default"], true);
+    assert_eq!(document["edlt_widget_groups"], true);
     assert_eq!(document["network_syncnew"], true);
     assert_eq!(document["network_set_project_identify"], true);
     assert_eq!(document["net_unravelunit_matchdb_duplicate_255"], true);
@@ -3059,6 +3060,20 @@ async fn physical_net_sync_surfaces_duplicate_serial_conflict_on_events() {
     tokio::time::advance(Duration::from_secs(2)).await;
     tokio::task::yield_now().await;
 
+    // Native KEYGL5 sync reads the static WidgetGroups mapping from
+    // parameter 0xFA as exactly 44 bytes. It is separate from parameter
+    // 0xFB's extended-firmware string.
+    assert_eq!(pci_line(&mut remote_read).await, b"\\4605001AFA2C75\r");
+    let widget_bytes = (0..44u8).collect::<Vec<_>>();
+    for fragment in widget_bytes.chunks(22) {
+        let cal = cbus_protocol::Cal::Reply {
+            parameter: 0xfa,
+            data: fragment.to_vec(),
+        }
+        .encode();
+        pci_reply(&mut remote_write, 5, &cal).await;
+    }
+
     let response = syncing.await.unwrap();
     assert_eq!(
         response.status, 200,
@@ -3083,7 +3098,32 @@ async fn physical_net_sync_surfaces_duplicate_serial_conflict_on_events() {
     );
     assert_eq!(snapshot.unit_type, "KEYGL5");
     assert_eq!(snapshot.firmware, "5.5.00");
+    assert_eq!(
+        snapshot.field("WidgetGroups"),
+        (0..44)
+            .map(|value| value.to_string())
+            .collect::<Vec<_>>()
+            .join(",")
+    );
     drop(model);
+
+    let get = service
+        .handle(
+            &mut ClientState::default(),
+            "[1g] GET //HARNESS/254/p/5 WidgetGroups",
+        )
+        .await;
+    assert_eq!(get.status, 300);
+    assert_eq!(
+        get.final_text,
+        format!(
+            "300 //HARNESS/254/p/5: WidgetGroups={}",
+            (0..44)
+                .map(|value| value.to_string())
+                .collect::<Vec<_>>()
+                .join(",")
+        )
+    );
 
     let mut seen = Vec::new();
     while let Ok(event) = events.try_recv() {
@@ -3110,6 +3150,95 @@ async fn physical_net_sync_surfaces_duplicate_serial_conflict_on_events() {
         duplicate_pos < ok_pos,
         "duplicate event must precede sync ok: {seen:?}"
     );
+
+    // Native CBusEdlt.n() ignores the WidgetGroups helper's boolean. A later
+    // optional 0xFA timeout therefore keeps a valid identity SYNC successful,
+    // but this service invalidates the older volatile property rather than
+    // serving stale mapping bytes. The transport lane remains faulted because
+    // late untagged CAL fragments cannot be safely attributed.
+    let syncing_again = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(&mut ClientState::default(), "[2] NET SYNC //HARNESS/254")
+                .await
+        }
+    });
+    let request = pci_line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\05FF00FAFF"), "{request:?}");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    remote_write
+        .write_all(&mmi_block(0, 88, &[5]))
+        .await
+        .unwrap();
+    remote_write
+        .write_all(&mmi_block(88, 88, &[]))
+        .await
+        .unwrap();
+    remote_write
+        .write_all(&mmi_block(176, 80, &[]))
+        .await
+        .unwrap();
+
+    let request = pci_line(&mut remote_read).await;
+    assert!(request.windows(4).any(|window| window == b"2101"));
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    pci_reply(
+        &mut remote_write,
+        5,
+        &[0x87, 0x01, b'K', b'E', b'Y', b'G', b'L', b'5'],
+    )
+    .await;
+    let request = pci_line(&mut remote_read).await;
+    assert!(request.windows(4).any(|window| window == b"2102"));
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    pci_reply(
+        &mut remote_write,
+        5,
+        &[0x87, 0x02, b'5', b'.', b'5', b'.', b'0', b'0'],
+    )
+    .await;
+    let request = pci_line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\4605002104"), "{request:?}");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    tokio::time::advance(Duration::from_secs(2)).await;
+    tokio::task::yield_now().await;
+    assert_eq!(pci_line(&mut remote_read).await, b"\\4605001AFA2C75\r");
+    tokio::time::advance(Duration::from_secs(10)).await;
+    tokio::task::yield_now().await;
+    let response = syncing_again.await.unwrap();
+    assert_eq!(
+        response.status, 200,
+        "optional WidgetGroups failure: {response:?}"
+    );
+    let model = service.model.lock().await;
+    let snapshot = &model.projects["HARNESS"].networks[&254].physical[&5];
+    assert_eq!(snapshot.unit_type, "KEYGL5");
+    assert!(!snapshot.fields.contains_key("WidgetGroups"));
+    drop(model);
+    assert_eq!(
+        service
+            .handle(
+                &mut ClientState::default(),
+                "[2g] GET //HARNESS/254/p/5 WidgetGroups",
+            )
+            .await
+            .status,
+        404
+    );
+    assert!(service
+        .pci
+        .read()
+        .await
+        .read_edlt_widget_groups(5)
+        .await
+        .unwrap_err()
+        .to_string()
+        .contains("needs reconnect"));
 
     std::fs::remove_file(path).unwrap();
 }
@@ -3162,6 +3291,22 @@ async fn physical_net_sync_single_serial_emits_no_duplicate_event() {
     reset.await.unwrap().unwrap();
 
     let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    // Native subtype selection comes from the configured database. A fresh
+    // IDENTIFY1 that says KEYGL5 is not sufficient to probe parameter 0xFA.
+    service
+        .model
+        .lock()
+        .await
+        .projects
+        .get_mut("HARNESS")
+        .unwrap()
+        .networks
+        .get_mut(&254)
+        .unwrap()
+        .units
+        .get_mut(&5)
+        .unwrap()
+        .unit_type = "KEYE1".into();
     let mut events = service.events.subscribe();
     let syncing = tokio::spawn({
         let service = service.clone();
@@ -3253,7 +3398,19 @@ async fn physical_net_sync_single_serial_emits_no_duplicate_event() {
         snapshot.serial_alternates.is_empty(),
         "single serial stores empty alternates: {snapshot:?}"
     );
+    assert_eq!(
+        snapshot.unit_type, "KEYGL5",
+        "fresh physical identity is retained"
+    );
+    assert!(!snapshot.fields.contains_key("WidgetGroups"));
     drop(model);
+
+    assert!(
+        tokio::time::timeout(Duration::from_secs(1), pci_line(&mut remote_read))
+            .await
+            .is_err(),
+        "a DB-mismatched physical KEYGL5 must not receive a WidgetGroups recall"
+    );
 
     let mut seen = Vec::new();
     while let Ok(event) = events.try_recv() {

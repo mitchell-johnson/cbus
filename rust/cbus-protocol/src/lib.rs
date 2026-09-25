@@ -7,6 +7,7 @@ pub mod cal;
 pub mod common;
 pub mod consts;
 pub mod decode;
+pub mod edlt_widget_groups;
 pub mod json;
 pub mod kfi;
 pub mod label_clear;

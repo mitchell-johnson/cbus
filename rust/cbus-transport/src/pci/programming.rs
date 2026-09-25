@@ -1397,6 +1397,25 @@ impl PciClient {
         Ok(result)
     }
 
+    /// Read the native KEYGL5 static widget-group mapping.
+    ///
+    /// C-Gate reads parameter `0xFA` with an exact length of 44 and exposes
+    /// all returned bytes as unsigned decimal values separated by commas.
+    /// The underlying programming transaction correlates source, parameter,
+    /// and total length; an incomplete exchange faults the programming lane
+    /// until reconnect.
+    pub async fn read_edlt_widget_groups(&self, unit: u8) -> Result<String> {
+        let data = self
+            .recall_parameter(
+                unit,
+                cbus_protocol::edlt_widget_groups::PARAMETER,
+                cbus_protocol::edlt_widget_groups::LENGTH,
+            )
+            .await?;
+        cbus_protocol::edlt_widget_groups::decode_reply(&data)
+            .map_err(|error| Error::new(ErrorKind::InvalidData, error.0))
+    }
+
     /// Recall a bounded logical range using C-Gate's page-aware `0x1B`
     /// command. Requests never cross a 256-byte page and preserve the exact
     /// unchecksummed direct route used by native `paged` and `ncc` PP loads.
@@ -3306,6 +3325,77 @@ mod tests {
         assert_eq!(
             pci.recall_parameter(5, 1, 256).await.unwrap_err().kind(),
             ErrorKind::InvalidInput
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn edlt_widget_groups_uses_fa_44_and_correlates_source_parameter_and_length() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let read = tokio::spawn(async move { worker.read_edlt_widget_groups(5).await });
+        assert_eq!(line(&mut remote).await, b"\\4605001AFA2C75\r");
+
+        let values = (0..cbus_protocol::edlt_widget_groups::LENGTH as u8).collect::<Vec<_>>();
+        let wrong_source = Cal::Reply {
+            parameter: cbus_protocol::edlt_widget_groups::PARAMETER,
+            data: values[..22].to_vec(),
+        }
+        .encode();
+        reply(&mut remote, 4, &wrong_source).await;
+        let wrong_parameter = Cal::Reply {
+            parameter: 0xfb,
+            data: values[..22].to_vec(),
+        }
+        .encode();
+        reply(&mut remote, 5, &wrong_parameter).await;
+        tokio::task::yield_now().await;
+        assert!(!read.is_finished());
+
+        let first = Cal::Reply {
+            parameter: cbus_protocol::edlt_widget_groups::PARAMETER,
+            data: values[..22].to_vec(),
+        }
+        .encode();
+        reply(&mut remote, 5, &first).await;
+        tokio::task::yield_now().await;
+        assert!(!read.is_finished(), "a short matching reply is incomplete");
+
+        let second = Cal::Reply {
+            parameter: cbus_protocol::edlt_widget_groups::PARAMETER,
+            data: values[22..].to_vec(),
+        }
+        .encode();
+        reply(&mut remote, 5, &second).await;
+        assert_eq!(
+            read.await.unwrap().unwrap(),
+            (0..cbus_protocol::edlt_widget_groups::LENGTH)
+                .map(|value| value.to_string())
+                .collect::<Vec<_>>()
+                .join(",")
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn edlt_widget_groups_timeout_does_not_replay_and_faults_programming_lane() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let read = tokio::spawn(async move { worker.read_edlt_widget_groups(5).await });
+        assert_eq!(line(&mut remote).await, b"\\4605001AFA2C75\r");
+        tokio::time::advance(REPLY_TIMEOUT).await;
+        tokio::task::yield_now().await;
+        assert_eq!(read.await.unwrap().unwrap_err().kind(), ErrorKind::TimedOut);
+        assert!(pci.programming_fault.load(Ordering::Acquire));
+        assert!(pci
+            .read_edlt_widget_groups(5)
+            .await
+            .unwrap_err()
+            .to_string()
+            .contains("needs reconnect"));
+        assert!(
+            tokio::time::timeout(Duration::from_secs(1), line(&mut remote))
+                .await
+                .is_err(),
+            "the incomplete read must not be replayed"
         );
     }
 
