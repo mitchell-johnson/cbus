@@ -1346,6 +1346,7 @@ impl Service {
             identify_version: String,
             serial: String,
             serial_alternates: Vec<String>,
+            has_exactly_one_known_serial_reply: bool,
             extended_firmware: Option<String>,
             applications: Option<[u8; 2]>,
             widget_groups: Option<String>,
@@ -1431,6 +1432,8 @@ impl Service {
                     );
                 }
             };
+            let has_exactly_one_known_serial_reply =
+                serial_replies.len() == 1 && serials.len() == 1;
             // P3d: surface duplicate-address conflicts on the event channel
             // and retain the observed set in the volatile snapshot. The scalar
             // `serial` keeps "" on conflict (SerialNumber getter/SET
@@ -1461,6 +1464,7 @@ impl Service {
                 identify_version: firmware,
                 serial,
                 serial_alternates,
+                has_exactly_one_known_serial_reply,
                 extended_firmware: None,
                 applications: None,
                 widget_groups: None,
@@ -1477,18 +1481,18 @@ impl Service {
         // without replay; every unavailable
         // value remains None and is invalidated at commit. These addressed
         // replies carry no serial identity, so only a non-error present MMI
-        // state (one or two) with exactly one known IDENTIFY4 serial is
-        // eligible. Live direct networks legitimately report unique units in
-        // both states, and the bounded IDENTIFY4 collection supplies the
-        // independent uniqueness guard. State three and zero or multiple
-        // known serials remain ambiguous and must not be queried or exposed as
-        // one device's metadata.
+        // state (one or two) with exactly one raw IDENTIFY4 reply carrying a
+        // known serial is eligible. Live direct networks legitimately report
+        // unique units in both states, and the bounded IDENTIFY4 collection
+        // supplies the independent uniqueness guard. State three and zero or
+        // multiple raw replies (including repeated known replies or mixed
+        // known/unknown replies) remain ambiguous and must not be queried or
+        // exposed as one device's metadata.
         for identity in &mut identities {
             if identity.unit_type.eq_ignore_ascii_case("KEYGL5")
                 && configured_keygl5.contains(&identity.address)
                 && mmi_state_is_present_non_error(identity.mmi_state)
-                && !identity.serial.is_empty()
-                && identity.serial_alternates.is_empty()
+                && identity.has_exactly_one_known_serial_reply
             {
                 identity.extended_firmware =
                     pci.read_edlt_extended_firmware(identity.address).await.ok();

@@ -140,8 +140,11 @@ fresh MMI and IDENTIFY replies physically validate the result. It probes
 IDENTIFY1/2 and collects all IDENTIFY4 replies for every present address, then
 atomically replaces the live identity cache. Silent legacy/error addresses stay
 present with unknown identity fields. Native eDLT metadata requires non-error
-present MMI state one or two, exactly one known IDENTIFY4 serial, and both the
-configured database type and fresh IDENTIFY1 to be KEYGL5. Eligible units follow retained CBusEdlt
+present MMI state one or two, exactly one raw IDENTIFY4 reply carrying a known
+serial, and both the configured database type and fresh IDENTIFY1 to be KEYGL5.
+Repeated identical known replies and mixed known/unknown replies are ineligible,
+while the live serial cache retains its distinct-known-serial representation.
+Eligible units follow retained CBusEdlt
 classfile order:
 OEM-routed parameter `0xFB` length 9 becomes the NUL-terminated volatile
 `FirmwareVersion`; an OEM address-16 selector plus parameter-1 length-2 recall
@@ -155,10 +158,11 @@ read leaves earlier values from the same sequence fresh, invalidates the failed
 and all later unrefreshed values, and does not fail an otherwise valid identity
 SYNC. The programming lane remains faulted until reconnect and no request is
 replayed. `WidgetGroups` is static mapping, not dynamic-label cache readback.
-State three, zero-serial, and multi-serial addresses receive no
-source-address-only metadata traffic and expose no stale metadata. Reconnect or
-transport loss invalidates an in-flight snapshot before commit and returns 408
-without a sync-ok event.
+State three and addresses with zero or multiple raw IDENTIFY4 replies receive no
+source-address-only metadata traffic and expose no stale metadata. Multiple raw
+replies include repeated identical known replies and mixed known/unknown
+replies. Reconnect or transport loss invalidates an in-flight snapshot before
+commit and returns 408 without a sync-ok event.
 CHECKUNIT actively collects IDENTIFY4
 replies through the native two-second quiet interval; it does not infer duplicate count from the
 two-bit MMI state. Use `GET //PROJECT/NETWORK Units` and unit `Type`, `Version`,

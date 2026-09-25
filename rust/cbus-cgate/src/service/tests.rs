@@ -3187,6 +3187,228 @@ async fn physical_net_sync_surfaces_duplicate_serial_conflict_on_events() {
     std::fs::remove_file(path).unwrap();
 }
 
+#[derive(Clone, Copy, Debug)]
+enum AmbiguousRawSerialReplies {
+    KnownAndUnknown,
+    RepeatedKnown,
+}
+
+async fn run_state_two_ambiguous_raw_serial_sync(case: AmbiguousRawSerialReplies) {
+    async fn pci_line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+    async fn pci_reply<W: tokio::io::AsyncWrite + Unpin>(writer: &mut W, source: u8, cal: &[u8]) {
+        let mut bytes = vec![0x86, source, 0x10, 0x00];
+        bytes.extend_from_slice(cal);
+        let sum = bytes.iter().fold(0u8, |sum, byte| sum.wrapping_add(*byte));
+        bytes.push(0u8.wrapping_sub(sum));
+        let mut wire = hex::encode_upper(bytes).into_bytes();
+        wire.extend_from_slice(b"\r\n");
+        writer.write_all(&wire).await.unwrap();
+    }
+    fn mmi_block(start: u8, count: usize, present: &[usize]) -> Vec<u8> {
+        let mut states = vec![0u8; count];
+        for address in present {
+            states[*address - usize::from(start)] = 2;
+        }
+        let mut wire = cbus_protocol::packet::Packet::StandardStatus {
+            application: 0xff,
+            block_start: start,
+            states,
+        }
+        .encode_packet()
+        .unwrap();
+        wire.extend_from_slice(b"\r\n");
+        wire
+    }
+
+    let path = state_path();
+    let (pci, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        pci_line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut stale = Unit::blank(5, "");
+    stale.unit_type = "KEYGL5".into();
+    stale.firmware = "old-identify".into();
+    for (field, value) in [
+        ("FirmwareVersion", "old-extended"),
+        ("Application", "1"),
+        ("Application2", "2"),
+        ("WidgetGroups", "old-widget-groups"),
+    ] {
+        stale.fields.insert(field.into(), value.into());
+    }
+    service
+        .model
+        .lock()
+        .await
+        .projects
+        .get_mut("HARNESS")
+        .unwrap()
+        .networks
+        .get_mut(&254)
+        .unwrap()
+        .physical
+        .insert(5, stale);
+    let mut events = service.events.subscribe();
+    let syncing = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(&mut ClientState::default(), "[raw] NET SYNC //HARNESS/254")
+                .await
+        }
+    });
+
+    assert_eq!(pci_line(&mut remote_read).await, b"@1A2001\r");
+    remote_write.write_all(b"8220104E\r\n").await.unwrap();
+
+    let request = pci_line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\05FF00FAFF"), "{request:?}");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    for block in [
+        mmi_block(0, 88, &[5]),
+        mmi_block(88, 88, &[]),
+        mmi_block(176, 80, &[]),
+    ] {
+        remote_write.write_all(&block).await.unwrap();
+    }
+
+    for (attribute, value) in [(1, &b"KEYGL5"[..]), (2, &b"5.5.00"[..])] {
+        let request = pci_line(&mut remote_read).await;
+        assert!(
+            request
+                .windows(4)
+                .any(|window| window == [0x32, 0x31, 0x30, b'0' + attribute]),
+            "{request:?}"
+        );
+        let code = request[request.len() - 2];
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+        let mut cal = vec![0x80 | (value.len() as u8 + 1), attribute];
+        cal.extend_from_slice(value);
+        pci_reply(&mut remote_write, 5, &cal).await;
+    }
+
+    let request = pci_line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\4605002104"), "{request:?}");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    let known = [
+        0x38, 0xff, 0xff, 0xff, 0xff, 0x18, 0xb1, 0x06, 0x16, 0xa2, 0x00, 0x05,
+    ];
+    let unknown = [
+        0x38, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0xa2, 0x00, 0x05,
+    ];
+    let replies = match case {
+        AmbiguousRawSerialReplies::KnownAndUnknown => [known, unknown],
+        AmbiguousRawSerialReplies::RepeatedKnown => [known, known],
+    };
+    for reply in replies {
+        let mut cal = vec![0x8d, 4];
+        cal.extend_from_slice(&reply);
+        pci_reply(&mut remote_write, 5, &cal).await;
+        tokio::time::advance(Duration::from_secs(1)).await;
+        tokio::task::yield_now().await;
+        assert!(
+            !syncing.is_finished(),
+            "{case:?}: the collection window closed before all raw replies"
+        );
+    }
+    tokio::time::advance(Duration::from_secs(2)).await;
+    tokio::task::yield_now().await;
+
+    let response = syncing.await.unwrap();
+    assert_eq!(response.status, 200, "{case:?}: {response:?}");
+    assert!(
+        tokio::time::timeout(Duration::from_secs(1), pci_line(&mut remote_read))
+            .await
+            .is_err(),
+        "{case:?}: ambiguous raw replies must not trigger OEM metadata traffic"
+    );
+
+    let model = service.model.lock().await;
+    let snapshot = model.projects["HARNESS"].networks[&254]
+        .physical
+        .get(&5)
+        .expect("address 5 was present in the scripted state-two MMI");
+    assert_eq!(
+        snapshot.serial, "101136.1558",
+        "{case:?}: the established scalar cache representation must remain unchanged"
+    );
+    assert!(
+        snapshot.serial_alternates.is_empty(),
+        "{case:?}: repeated or unknown serial replies do not create distinct alternates"
+    );
+    for field in [
+        "FirmwareVersion",
+        "Application",
+        "Application2",
+        "WidgetGroups",
+    ] {
+        assert!(
+            !snapshot.fields.contains_key(field),
+            "{case:?}: stale {field} must be removed: {snapshot:?}"
+        );
+    }
+    drop(model);
+
+    for (sequence, field) in [
+        ("raw-f", "FirmwareVersion"),
+        ("raw-a", "Application"),
+        ("raw-a2", "Application2"),
+        ("raw-g", "WidgetGroups"),
+    ] {
+        let get = service
+            .handle(
+                &mut ClientState::default(),
+                &format!("[{sequence}] GET //HARNESS/254/p/5 {field}"),
+            )
+            .await;
+        assert_eq!(get.status, 404, "{case:?}: stale {field}: {get:?}");
+    }
+
+    let mut seen = Vec::new();
+    while let Ok(event) = events.try_recv() {
+        seen.push(event);
+    }
+    assert!(
+        seen.iter().any(|event| event == "#e# net 254 sync ok"),
+        "{case:?}: sync-ok event must still be emitted: {seen:?}"
+    );
+    assert!(
+        !seen.iter().any(|event| event.contains("sync duplicate")),
+        "{case:?}: the existing distinct-known-serial event representation changed: {seen:?}"
+    );
+
+    std::fs::remove_file(path).unwrap();
+}
+
+/// Metadata attribution requires one raw known IDENTIFY4 reply. A state-two
+/// unit remains ineligible when the quiet window also contains an unknown
+/// reply or repeats the same known reply, even though the established cache
+/// representation still has one distinct known serial in both cases.
+#[tokio::test(start_paused = true)]
+async fn physical_net_sync_state_two_rejects_ambiguous_raw_serial_replies() {
+    for case in [
+        AmbiguousRawSerialReplies::KnownAndUnknown,
+        AmbiguousRawSerialReplies::RepeatedKnown,
+    ] {
+        run_state_two_ambiguous_raw_serial_sync(case).await;
+    }
+}
+
 #[derive(Clone, Copy)]
 enum OptionalEdltFailure {
     ApplicationRecall,

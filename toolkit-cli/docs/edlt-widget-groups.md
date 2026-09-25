@@ -31,10 +31,11 @@ read consumed that cache. `widget_groups_device_readback: true` refers to that
 physical synchronization; GET is not a second direct device read.
 
 cmqttd only populates this property when the synchronized address has non-error
-present MMI state one or two, exactly one known IDENTIFY4 serial, and matching
-configured and fresh KEYGL5 types. State three, zero-serial, and multi-serial
-addresses receive no source-address-only metadata read; their property getter
-returns 404
+present MMI state one or two, exactly one raw IDENTIFY4 reply carrying a known
+serial, and matching configured and fresh KEYGL5 types. State three and
+addresses with zero or multiple raw replies receive no source-address-only
+metadata read; repeated identical known replies and mixed known/unknown replies
+are both multiple-reply cases. Their property getter returns 404
 and this command emits no success document. A reconnect or transport loss
 during synchronization returns 408 rather than committing the old snapshot.
 

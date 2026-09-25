@@ -173,8 +173,8 @@ completion, and there is no unit ACK or cache readback, so a 200 response does
 not prove erasure, rendering or persistence.
 
 `NET SYNC` also populates the native KEYGL5 synchronization properties. A unit
-must have non-error present MMI state one or two, exactly one known IDENTIFY4
-serial, and KEYGL5 types
+must have non-error present MMI state one or two, exactly one raw IDENTIFY4
+reply carrying a known serial, and KEYGL5 types
 in both the configured database and fresh physical IDENTIFY1. Eligible units
 follow retained C-Gate classfile order over the OEM `09 00` route: parameter
 `0xFB` length 9 supplies the NUL-terminated `FirmwareVersion`, memory address
@@ -182,6 +182,9 @@ follow retained C-Gate classfile order over the OEM `09 00` route: parameter
 `0xFA` length 44 supplies `WidgetGroups` as opaque comma-separated decimal
 bytes. `Version` remains the separate IDENTIFY2 value. Read the cached values
 with `GET //PROJECT/NETWORK/p/UNIT PROPERTY`; these GETs issue no new bus I/O.
+Repeated identical known replies and mixed known/unknown replies do not qualify
+for metadata reads, even though the live serial cache keeps its established
+distinct-known-serial representation.
 The synchronization leaves persistent configuration unchanged, but the OEM
 application read writes a volatile address-16 selector on the unit before its
 recall. The typed `edlt-widget-groups` command reports that distinction in its

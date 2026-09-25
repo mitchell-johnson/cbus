@@ -1490,8 +1490,9 @@ configuration unchanged, but its KEYGL5 metadata sequence does write a
 volatile OEM selector before reading the two application bytes; the JSON
 reports both facts. It shares cmqttd's CNI and never opens a direct connection.
 cmqttd only creates the property for a non-error present MMI-state-one-or-two
-address with exactly one known serial and matching configured/fresh KEYGL5
-types. Ambiguous addresses
+address with exactly one raw IDENTIFY4 reply carrying a known serial and
+matching configured/fresh KEYGL5 types. Repeated identical known replies and
+mixed known/unknown replies are ambiguous addresses and
 fail with no metadata read or stale property, and reconnect invalidates an
 in-flight snapshot.
 See [the strict response contract](docs/edlt-widget-groups.md).
