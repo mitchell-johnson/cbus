@@ -96,6 +96,15 @@ async fn confirmed_mqtt_command_requests_physical_level_without_manufacturing_cg
         sys.pci.count_payload("05FF00730738004A") > readbacks_before
     })
     .await;
+    require(STARTUP, "requested-state compatibility echo", || {
+        sys.broker
+            .retained("homeassistant/light/cbus_1/state")
+            .is_some_and(|payload| {
+                let payload = parse_json(&payload);
+                payload["state"] == "ON" && payload["cbus_source_addr"].is_null()
+            })
+    })
+    .await;
     assert!(
         cgate_command(&mut reader, &mut writer, "GET //HARNESS/254/56/1 level")
             .await
@@ -119,6 +128,114 @@ async fn confirmed_mqtt_command_requests_physical_level_without_manufacturing_cg
         );
         tokio::time::sleep(std::time::Duration::from_millis(20)).await;
     }
+    require(
+        STARTUP,
+        "physical report replaces compatibility echo",
+        || {
+            sys.broker
+                .retained("homeassistant/light/cbus_1/state")
+                .is_some_and(|payload| {
+                    let payload = parse_json(&payload);
+                    payload["state"] == "ON"
+                        && payload["brightness"] == 255
+                        && payload["cbus_source_addr"] == 0
+                })
+        },
+    )
+    .await;
 
     std::fs::remove_file(state).ok();
+}
+
+#[tokio::test]
+async fn physical_event_before_confirmation_is_not_overwritten_by_command_echo() {
+    let sys = start_default().await;
+    wait_started(&sys).await;
+    sys.pci
+        .set_conf_delay(std::time::Duration::from_millis(500));
+
+    sys.broker
+        .inject("homeassistant/light/cbus_10/set", br#"{"state":"ON"}"#);
+    require(STARTUP, "outbound command", || {
+        sys.pci.count_payload("053800790A40") == 1
+    })
+    .await;
+
+    // A real source-bearing OFF arrives while the ON command is awaiting its
+    // PCI confirmation. It is newer physical evidence for this exact group.
+    sys.pci
+        .inject(&pci_wire(&[0x05, 0x05, 0x38, 0x00, 0x01, 0x0a]));
+    require(STARTUP, "physical event before confirmation", || {
+        sys.broker
+            .retained("homeassistant/light/cbus_10/state")
+            .is_some_and(|payload| {
+                let payload = parse_json(&payload);
+                payload["state"] == "OFF" && payload["cbus_source_addr"] == 5
+            })
+    })
+    .await;
+    require(STARTUP, "confirmed command receipt", || {
+        sys.broker
+            .find_publishes("cmqttd/cbus/command_result")
+            .iter()
+            .filter_map(|publish| {
+                serde_json::from_slice::<serde_json::Value>(&publish.payload).ok()
+            })
+            .any(|payload| payload["group"] == 10 && payload["delivery"] == "confirmed")
+    })
+    .await;
+
+    let retained = sys
+        .broker
+        .retained("homeassistant/light/cbus_10/state")
+        .expect("physical state must remain retained");
+    let retained = parse_json(&retained);
+    assert_eq!(retained["state"], "OFF");
+    assert_eq!(retained["cbus_source_addr"], 5);
+    assert!(
+        sys.broker
+            .find_publishes("homeassistant/light/cbus_10/state")
+            .iter()
+            .all(|publish| !parse_json(&publish.payload)["cbus_source_addr"].is_null()),
+        "the older requested-state echo must be suppressed"
+    );
+}
+
+#[tokio::test]
+async fn unrelated_physical_event_does_not_suppress_command_echo() {
+    let sys = start_default().await;
+    wait_started(&sys).await;
+    sys.pci
+        .set_conf_delay(std::time::Duration::from_millis(500));
+
+    sys.broker
+        .inject("homeassistant/light/cbus_10/set", br#"{"state":"ON"}"#);
+    require(STARTUP, "outbound command", || {
+        sys.pci.count_payload("053800790A40") == 1
+    })
+    .await;
+
+    // An observation for group 11 must not affect group 10's echo decision.
+    sys.pci
+        .inject(&pci_wire(&[0x05, 0x05, 0x38, 0x00, 0x01, 0x0b]));
+    require(STARTUP, "unrelated physical event", || {
+        sys.broker
+            .retained("homeassistant/light/cbus_11/state")
+            .is_some_and(|payload| parse_json(&payload)["cbus_source_addr"] == 5)
+    })
+    .await;
+    require(STARTUP, "same-group compatibility echo", || {
+        sys.broker
+            .retained("homeassistant/light/cbus_10/state")
+            .is_some_and(|payload| {
+                let payload = parse_json(&payload);
+                payload["state"] == "ON" && payload["cbus_source_addr"].is_null()
+            })
+    })
+    .await;
+    let unrelated = sys
+        .broker
+        .retained("homeassistant/light/cbus_11/state")
+        .expect("unrelated physical state must remain retained");
+    assert_eq!(parse_json(&unrelated)["cbus_source_addr"], 5);
 }

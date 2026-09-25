@@ -17,12 +17,20 @@ use serde_json::{json, Value};
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
-use tokio::sync::{mpsc, watch, RwLock};
+use tokio::sync::{mpsc, watch, Mutex as AsyncMutex, RwLock};
 
 /// One status request of a sweep batch: (app, block, level_request).
 type StatusProbe = (u8, u8, bool);
 /// One post-command physical level readback: (app, block, group-for-log).
 type CommandReadback = (u8, u8, u8);
+
+#[derive(Clone, Copy)]
+enum LightUpdate {
+    On,
+    Off,
+    Binary(bool),
+    Ramp { duration: u32, level: u8 },
+}
 
 /// State topic advertised by [`meta_discovery`]. `ON` means the current
 /// C-Bus transport is connected; `OFF` means its live caches were invalidated.
@@ -52,6 +60,11 @@ pub struct Gateway {
     no_clock: bool,
     /// groupDB: app -> group -> discovery-config-published
     group_db: Mutex<HashMap<i64, HashMap<u8, bool>>>,
+    /// Latest physical-observation sequence per application/group. The guard
+    /// stays held while a state publish is queued so a command echo and a bus
+    /// observation cannot pass each other between the freshness check and the
+    /// MQTT request channel.
+    observation_sequences: AsyncMutex<HashMap<(i64, u8), u64>>,
     /// `MqttClient._status_requests_queued`: the configured sweep runs
     /// once per process; only the periodic resync forces repeats.
     status_requests_queued: AtomicBool,
@@ -84,6 +97,7 @@ impl Gateway {
             labels,
             no_clock,
             group_db: Mutex::new(HashMap::new()),
+            observation_sequences: AsyncMutex::new(HashMap::new()),
             status_requests_queued: AtomicBool::new(false),
         });
         gw.clone().spawn_workers(cmd_rx, readback_rx, sweep_rx);
@@ -392,7 +406,7 @@ impl Gateway {
             .await;
     }
 
-    pub async fn mqtt_light_on(&self, source: Option<u8>, group_addr: u8, app_addr: i64) {
+    async fn mqtt_light_on(&self, source: Option<u8>, group_addr: u8, app_addr: i64) {
         self.check_published(group_addr, app_addr).await;
         self.publish_state(
             state_topic(group_addr, app_addr),
@@ -403,7 +417,7 @@ impl Gateway {
         self.publish_binary_sensor(group_addr, app_addr, true).await;
     }
 
-    pub async fn mqtt_light_off(&self, source: Option<u8>, group_addr: u8, app_addr: i64) {
+    async fn mqtt_light_off(&self, source: Option<u8>, group_addr: u8, app_addr: i64) {
         self.check_published(group_addr, app_addr).await;
         self.publish_state(
             state_topic(group_addr, app_addr),
@@ -418,7 +432,7 @@ impl Gateway {
     /// `MqttClient.lighting_group_binary_state`: state derived from a
     /// binary status report — no brightness on ON (a binary report has
     /// no level), brightness 0 on OFF, no transition either way.
-    pub async fn mqtt_light_binary_state(
+    async fn mqtt_light_binary_state(
         &self,
         source: Option<u8>,
         group_addr: u8,
@@ -437,7 +451,7 @@ impl Gateway {
             .await;
     }
 
-    pub async fn mqtt_light_ramp(
+    async fn mqtt_light_ramp(
         &self,
         source: Option<u8>,
         group_addr: u8,
@@ -456,16 +470,88 @@ impl Gateway {
             .await;
     }
 
+    async fn publish_light_update(
+        &self,
+        source: Option<u8>,
+        group_addr: u8,
+        app_addr: i64,
+        update: LightUpdate,
+    ) {
+        match update {
+            LightUpdate::On => self.mqtt_light_on(source, group_addr, app_addr).await,
+            LightUpdate::Off => self.mqtt_light_off(source, group_addr, app_addr).await,
+            LightUpdate::Binary(state) => {
+                self.mqtt_light_binary_state(source, group_addr, app_addr, state)
+                    .await
+            }
+            LightUpdate::Ramp { duration, level } => {
+                self.mqtt_light_ramp(source, group_addr, app_addr, duration, level)
+                    .await
+            }
+        }
+    }
+
+    /// Record and publish one genuine bus observation. Holding the sequence
+    /// guard until both retained state requests are queued gives a concurrent
+    /// requested-state echo a deterministic before/after relationship.
+    async fn publish_observed_light(
+        &self,
+        source: Option<u8>,
+        group_addr: u8,
+        app_addr: i64,
+        update: LightUpdate,
+    ) {
+        let mut sequences = self.observation_sequences.lock().await;
+        let sequence = sequences.entry((app_addr, group_addr)).or_default();
+        *sequence = sequence.wrapping_add(1);
+        self.publish_light_update(source, group_addr, app_addr, update)
+            .await;
+    }
+
+    async fn observation_sequence(&self, group_addr: u8, app_addr: i64) -> u64 {
+        self.observation_sequences
+            .lock()
+            .await
+            .get(&(app_addr, group_addr))
+            .copied()
+            .unwrap_or_default()
+    }
+
+    /// Publish the compatibility echo only if no same-group physical evidence
+    /// arrived after this command began delivery. Unrelated groups have their
+    /// own sequence and never suppress the echo.
+    async fn publish_command_echo_if_fresh(
+        &self,
+        observed_before_send: u64,
+        group_addr: u8,
+        app_addr: i64,
+        update: LightUpdate,
+    ) -> bool {
+        let sequences = self.observation_sequences.lock().await;
+        let observed_now = sequences
+            .get(&(app_addr, group_addr))
+            .copied()
+            .unwrap_or_default();
+        if observed_now != observed_before_send {
+            return false;
+        }
+        self.publish_light_update(None, group_addr, app_addr, update)
+            .await;
+        true
+    }
+
     // ------------------------------------------------------- C-Bus events
 
     /// `CBusHandler` event relays -> MQTT.
     pub async fn on_cbus_event(self: &Arc<Self>, event: CBusEvent) {
         match event {
             CBusEvent::LightingOn { source, app, group } => {
-                self.mqtt_light_on(source, group, app as i64).await;
+                self.publish_observed_light(source, group, app as i64, LightUpdate::On)
+                    .await;
             }
             CBusEvent::LightingOff { source, app, group } => {
-                self.mqtt_light_off(source, group, app as i64).await;
+                self.publish_observed_light(source, group, app as i64, LightUpdate::Off)
+                    .await;
             }
             CBusEvent::LightingRamp {
                 source,
@@ -474,8 +560,13 @@ impl Gateway {
                 duration,
                 level,
             } => {
-                self.mqtt_light_ramp(source, group, app as i64, duration, level)
-                    .await;
+                self.publish_observed_light(
+                    source,
+                    group,
+                    app as i64,
+                    LightUpdate::Ramp { duration, level },
+                )
+                .await;
             }
             CBusEvent::BinaryReport {
                 app,
@@ -489,12 +580,22 @@ impl Gateway {
                 for state in states {
                     match state {
                         1 => {
-                            self.mqtt_light_binary_state(Some(0), start, app as i64, true)
-                                .await
+                            self.publish_observed_light(
+                                Some(0),
+                                start,
+                                app as i64,
+                                LightUpdate::Binary(true),
+                            )
+                            .await
                         }
                         2 => {
-                            self.mqtt_light_binary_state(Some(0), start, app as i64, false)
-                                .await
+                            self.publish_observed_light(
+                                Some(0),
+                                start,
+                                app as i64,
+                                LightUpdate::Binary(false),
+                            )
+                            .await
                         }
                         _ => {}
                     }
@@ -511,14 +612,18 @@ impl Gateway {
                 let mut start = block_start;
                 for val in levels {
                     if let Some(v) = val {
-                        self.check_published(start, app as i64).await;
-                        if v == 0 {
-                            self.mqtt_light_off(Some(0), start, app as i64).await;
+                        let update = if v == 0 {
+                            LightUpdate::Off
                         } else if v == 255 {
-                            self.mqtt_light_on(Some(0), start, app as i64).await;
+                            LightUpdate::On
                         } else {
-                            self.mqtt_light_ramp(Some(0), start, app as i64, 0, v).await;
-                        }
+                            LightUpdate::Ramp {
+                                duration: 0,
+                                level: v,
+                            }
+                        };
+                        self.publish_observed_light(Some(0), start, app as i64, update)
+                            .await;
                     }
                     start = start.wrapping_add(1);
                 }
@@ -602,6 +707,10 @@ impl Gateway {
         }
         let app8 = app_addr as u8;
         let pci = self.connected_pci().await;
+        // Observations received while this command was merely waiting for a
+        // replacement transport precede its delivery and must not suppress
+        // the newer request. Start the comparison at actual submission.
+        let observed_before_send = self.observation_sequence(group_addr, app_addr).await;
         let delivery = if light_on {
             if brightness == 255 && transition == 0 {
                 pci.lighting_group_on_confirmed(&[group_addr], app8).await
@@ -634,15 +743,31 @@ impl Gateway {
         // Compatibility echo: this records the requested value only. It does
         // not populate C-Gate's physical cache; the following level request
         // supplies the authoritative observation when the network replies.
-        if light_on {
+        let requested_update = if light_on {
             if brightness == 255 && transition == 0 {
-                self.mqtt_light_on(None, group_addr, app_addr).await;
+                LightUpdate::On
             } else {
-                self.mqtt_light_ramp(None, group_addr, app_addr, transition, brightness)
-                    .await;
+                LightUpdate::Ramp {
+                    duration: transition,
+                    level: brightness,
+                }
             }
         } else {
-            self.mqtt_light_off(None, group_addr, app_addr).await;
+            LightUpdate::Off
+        };
+        if !self
+            .publish_command_echo_if_fresh(
+                observed_before_send,
+                group_addr,
+                app_addr,
+                requested_update,
+            )
+            .await
+        {
+            tracing::info!(
+                "suppressing requested-state echo for app={app_addr} group={group_addr}; \
+                 newer physical observation already published"
+            );
         }
 
         if self

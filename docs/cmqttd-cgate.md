@@ -66,11 +66,14 @@ MQTT lighting commands and C-Gate share the PCI but retain separate response
 contracts. The MQTT worker keeps commands FIFO through correlated positive or
 negative PCI confirmation, including bounded byte-identical retries. A positive
 confirmation publishes the existing `cbus_source_addr: null` requested-state
-echo and queues one level-status request for the affected block on an
-independent readback lane before advancing to the next MQTT command. The echo does not populate C-Gate's live cache; only an incoming
-lighting or status report does. Negative confirmation has no success echo, and
-timeout or transport loss is outcome-uncertain and is never replayed after a
-reconnect. Non-retained diagnostics are published on
+echo only if no newer physical observation for the same application/group
+arrived while delivery was pending. Per-group sequencing keeps unrelated
+observations from suppressing that echo. Every confirmed command still queues
+one level-status request for the affected block on an independent readback lane
+before advancing to the next MQTT command and still publishes its result. The
+echo does not populate C-Gate's live cache; only an incoming lighting or status
+report does. Negative confirmation has no success echo, and timeout or transport
+loss is outcome-uncertain and is never replayed after a reconnect. Non-retained diagnostics are published on
 `cmqttd/cbus/command_result`. The retained cmqttd binary sensor changes to
 `OFF` on C-Bus loss and `ON` when a fresh transport is installed; reconnect
 also forces a configured status sweep to replace invalidated observations.
