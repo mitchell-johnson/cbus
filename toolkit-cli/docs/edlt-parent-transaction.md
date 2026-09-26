@@ -1,11 +1,10 @@
 # eDLT ordered parent transaction
 
 `EdltParentTransaction` applies two through 22 ordered control operations to
-one **KEYGL5 / 5055EDL firmware 5.5.00** database snapshot. The implemented
-operation types are Measurement widgets, Lighting widgets and the unit-wide
-proximity activation binding, including its Percentage/action path. Every
-operation is validated by the corresponding accepted standalone editor. Their
-bound fields then enter one retained lifecycle state, one terminal
+one **KEYGL5 / 5055EDL firmware 5.5.00** database snapshot. It now composes
+all 11 admitted configurable non-MRA widget panels and eight direct parent
+settings panels. Every operation is validated by its accepted standalone
+editor. The owned fields then enter one retained lifecycle state, one terminal
 `BeforeSavePPData` projection and one five-CRC projection.
 
 Create an operation file such as `operations.json`:
@@ -98,9 +97,25 @@ fields are the public arguments of these existing editors:
 
 | `op` | Required fields | Optional fields |
 | --- | --- | --- |
-| `measurement` | `page`, `position`, `device_id`, `channel` | `decimal_places`; exact Gain/Offset mantissa and exponent pairs; `gain_value`, `offset_value`, `measurement_culture`; page mode; prefix, suffix and label text/indexes; icon index |
-| `lighting` | `page`, `position`, `group`, `mode` | primary/secondary application, page mode, label/status type/index/text, ramp seconds, restore level |
-| `activation` | None | wake mode, group, `level_percent` or `action`, activation page and first-key behavior |
+| `measurement` | `page`, `position`, `device_id`, `channel` | Decimal places; exact Gain/Offset pairs or culture-aware decimal text; page mode; prefix, suffix and label text/indexes; icon index |
+| `lighting` | `page`, `position`, `group`, `mode` | Application, page mode, label/status type/index/text, ramp and restore level |
+| `enable` | `page`, `position`, `variable`, `level` | Page mode and label/status type/index/text |
+| `fan` | `page`, `position`, `group` | Application, speed count and thresholds, page mode, widget label and four state texts/indexes |
+| `hvac` | `page`, `position`, `group` | Zone, precision, units, built-in icon, page mode and label |
+| `multilevel` | `page`, `position`, `group` | Application, level count and thresholds, page mode, widget label and four state texts/indexes |
+| `room-courtesy` | `page`, `position`, `group` | Application, mode, colours, page mode and label/status type/index/text |
+| `scene` | `page`, `position` | Scene/cycle selection, mode, ramp/offset, page mode and label/status type/index/text |
+| `shutter` | `page`, `position`, `group` | Application, mode, presets, page mode and label/status type/index/text |
+| `time-date` | `page`, `position` | One/two slices, display, page mode and unit-wide date/time/leading-zero settings |
+| `timer` | `page`, `position`, `group` | Application, duration/levels/ramp, page mode and label/status type/index/text |
+| `activation` | None | Wake mode, group, `level_percent` or `action`, activation page and first-key behavior |
+| `general` | None | Key timings, status interval, Tools lock and power restore mode |
+| `display` | None | Large-text owner, big icons, Timer flash and Fan wrap |
+| `standby` | None | Enabled/duration, destination and nightlight settings |
+| `colours` | None | All fixed colours/brightness values and six control groups |
+| `navigation` | None | Page mode/variant, temperature source, dynamic group and page names/indexes |
+| `quick-status` | None | Mode, group, thresholds and three colours |
+| `page-control` | None | Enable-application group or disabled value 255 |
 
 `level_percent` remains canonical fixed-point JSON text, not a JSON number. It
 uses the original `NumUpDownPercentage` arithmetic. The percentage is valid
@@ -114,6 +129,14 @@ text reuses the same index and different text receives a distinct safe slot.
 The order is an explicit CLI transaction contract. It is not evidence that an
 operator performed the same selection order in the original form.
 
+Order also controls dependencies between panels. A `display` operation can
+enable big icons before a later HVAC icon edit. A `standby` operation can
+enable idle brightness/group controls before a later `colours` edit. A
+`navigation` operation establishes the page mode that later widgets must use.
+Reversing these sequences fails when the earlier retained state does not make
+the dependent control editable. A two-slice Time/Date operation owns both
+adjacent 32-byte records, so another operation cannot target its second slot.
+
 The source-pinned Lighting selection branch is `ShowWidget` →
 `BaseWidget.SetWidgetData` → base data-source setup → assign the selected
 `LightingData` source → `ResetBindings(false)`. Ramp rate, Offset and Target
@@ -124,11 +147,24 @@ prove a particular operator's multi-selection order or pending-focus state.
 ## Ownership and preservation
 
 Each widget operation owns its selected 32-byte record and, for functional
-widgets, its restore byte. The transaction rejects two operations that target
-the same slot. It also rejects a second activation operation because both
-would own the same parent fields. All widget operations must resolve to one
-page mode; an explicit conflicting mode is rejected. `NavWidgetType` is
-written once as that reconciled parent constraint.
+widgets, its restore byte. Time/Date owns a second complete record when two
+slices are selected. The transaction rejects overlapping slots. Each direct
+settings panel and activation may appear once because a second instance would
+own the same fields. All widget/navigation operations must resolve to one page
+mode; an explicit conflict is rejected. `NavWidgetType` is written once as
+that reconciled parent constraint.
+
+Every operation-introduced application/group reference must have explicit
+positive evidence in the caller cache before any write. This includes Enable
+application 203, HVAC application 172, selected primary/secondary widget
+groups, activation, colour groups, navigation, Quick Status and Page Control.
+Every effective dynamic text/icon binding, including a retained type omitted
+from a later edit, additionally requires known image facts and must match the
+selected variant's text/icon state. Navigation Logo consumes variant 0;
+Dynamic Labels consumes the unique effective page indexes. The automatic
+metadata workflow derives safe empty/TEXT facts, rejects DYNAMIC/FONT/ICON dependencies
+that require project or DLTP files, and adds missing application/group objects
+in deterministic order.
 
 New static text fields are claimed by the operation that allocated them.
 Duplicate or conflicting ownership of any claimed PP parameter is rejected
@@ -179,11 +215,15 @@ that the database remained unchanged.
 ## Evidence boundary
 
 [`edlt-parent-transaction-evidence.json`](../research/fixtures/edlt-parent-transaction-evidence.json)
-pins the original parent, Measurement, Lighting, percentage and save-model
-source hashes. It also pins retained independent evidence for:
+pins the original parent sequence, percentage and retained save model.
+[`edlt-parent-panels-evidence.json`](../research/fixtures/edlt-parent-panels-evidence.json)
+pins all selected original panel sources and the independently accepted
+standalone fixtures reused by this extension. Together they retain evidence
+for:
 
 - actual Measurement panel validation and model conversion;
-- original Lighting records, static allocation and CRCs;
+- original records, event/control bindings, static allocation and CRCs for
+  every admitted widget/settings panel;
 - original terminator normalization plus standalone native database
   persistence; and
 - the standalone original percentage control and arithmetic.
@@ -197,10 +237,14 @@ write and database-save interruption evidence. An optional native test creates a
 unit, performs the multi-edit, saves once, closes, reloads and compares the
 complete PP state when `CBUS_CGATE_TEST_HOST` and `CBUS_UNITSPEC_DIR` are set.
 
-The original full `FrmBaseUnit` and an original interactive multi-selection
-sequence have not been executed for this feature. Focus, caret, validation
-dialogs, rendering, operator timing, physical transfer and physical display or
-control behavior remain unverified. Output therefore keeps
+The parent transaction still excludes the three MRA widget panels, the
+Applications and Corridor cache-driven dialogs, Blank/Reset transitions and
+SceneManager editing. Those remain separate accepted workflows rather than
+operations in this transaction. The original full `FrmBaseUnit` and an
+original interactive multi-panel sequence have not been executed for this
+feature. Focus, caret, validation dialogs, rendering, operator timing,
+physical transfer and physical display/control behavior remain unverified.
+Output therefore keeps
 `native_parent_form_executed=false`,
 `native_multi_edit_parent_form_executed=false` and
 `physical_device_verified=false`.
@@ -209,6 +253,7 @@ Run the portable focused checks from `toolkit-cli/`:
 
 ```sh
 PYTHONPATH=src:. python3.13 -m unittest \
+  tests.test_edlt_parent_panels \
   tests.test_edlt_parent_transaction \
   tests.test_cli_edlt_parent_transaction -v
 ```

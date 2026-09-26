@@ -11,9 +11,14 @@ from unittest.mock import Mock, patch
 from cbus_toolkit import cli
 from cbus_toolkit.edlt_parent_transaction import EdltParentTransaction
 from tests.test_edlt import Session
-from tests.test_edlt_lifecycle import cache
 from tests.test_edlt_parent_form import fixture
-from tests.test_edlt_parent_transaction import activation, lighting, measurement
+from tests.test_edlt_parent_transaction import (
+    activation, lighting, measurement, transaction_cache,
+)
+from tests.test_edlt_parent_panels import (
+    all_panel_operations, extended_fixture, panel_cache,
+)
+from tests.test_edlt_scene import prepared
 
 
 class ParentTransactionCLITests(unittest.TestCase):
@@ -33,7 +38,7 @@ class ParentTransactionCLITests(unittest.TestCase):
         metadata = Path(root) / 'metadata.json'
         operation_file = Path(root) / 'operations.json'
         source.write_text(json.dumps(values))
-        metadata.write_text(json.dumps(cache(editor.lifecycle, values)))
+        metadata.write_text(json.dumps(transaction_cache(editor, values)))
         operation_file.write_text(json.dumps(
             operations or [measurement(), lighting(), activation()]))
         return spec, editor, session, source, metadata, operation_file
@@ -72,6 +77,32 @@ class ParentTransactionCLITests(unittest.TestCase):
                              127)
             self.assertEqual(result['execution_counts'][
                 'terminal_normalization_passes'], 1)
+            self.assertEqual((source.read_bytes(), metadata.read_bytes(),
+                              operations.read_bytes()), before)
+
+    def test_offline_cli_accepts_every_extended_parent_panel(self):
+        with tempfile.TemporaryDirectory() as root:
+            spec = extended_fixture()
+            editor = EdltParentTransaction(spec)
+            session = Session(spec)
+            values = editor.snapshot(prepared(session.values()))
+            source = Path(root) / 'values.json'
+            metadata = Path(root) / 'metadata.json'
+            operations = Path(root) / 'operations.json'
+            source.write_text(json.dumps(values))
+            metadata.write_text(json.dumps(panel_cache(editor, values)))
+            operations.write_text(json.dumps(all_panel_operations()))
+            before = (source.read_bytes(), metadata.read_bytes(),
+                      operations.read_bytes())
+            with patch.object(cli, '_edlt_parent_transaction',
+                              return_value=editor), patch(
+                    'cbus_toolkit.cgate.CGateClient',
+                    side_effect=AssertionError('Offline plan must not connect')):
+                result = self.invoke(self.offline(source, metadata, operations))
+            self.assertEqual(len(result['operation_results']), 19)
+            self.assertEqual(result['transaction_guards']['settings_panels'], [
+                'colours', 'display', 'general', 'navigation', 'page-control',
+                'quick-status', 'standby'])
             self.assertEqual((source.read_bytes(), metadata.read_bytes(),
                               operations.read_bytes()), before)
 

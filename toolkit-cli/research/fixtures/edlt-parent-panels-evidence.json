@@ -1,0 +1,226 @@
+{
+  "format": "cbus-edlt-parent-panels-evidence-v1",
+  "profile": {
+    "unit_type": "KEYGL5",
+    "catalog_number": "5055EDL",
+    "firmware": "5.5.00",
+    "toolkit": "1.18.0.2754"
+  },
+  "scope": "Ordered composition of 11 admitted configurable non-MRA widget panels and eight direct parent settings panels through one retained parent transaction; Blank and Reset remain separate lifecycle actions",
+  "original_sources": [
+    {
+      "path": "eDLT/eDLT/FrmBaseUnit.cs",
+      "sha256": "060323b11494c7a697656d048f97351526a143e339db767731675a87ba1b1b16"
+    },
+    {
+      "path": "eDLT/eDLT/FanControlWidget.cs",
+      "sha256": "03be2124a6e2ea48074e167bd76a32b3943c71f65fda51743aa76dccdafe9148"
+    },
+    {
+      "path": "eDLT/eDLT.WidgetPanels/EnableWidget.cs",
+      "sha256": "865f44b341e8e550ac165be00278166f53f46c318d7b817af70f8f8579fb1fc4"
+    },
+    {
+      "path": "eDLT/eDLT.WidgetPanels/HVACTempWidget.cs",
+      "sha256": "4cd1500fc73b264102ab14cc626dba3690c8293938a8544f4ce6aacf998c9642"
+    },
+    {
+      "path": "eDLT/eDLT.WidgetPanels/LightingWidget.cs",
+      "sha256": "8ae8dd93d3b11e1d2b8b6bea9dba55336bb15d28902dc5a91d3562bd49731b72"
+    },
+    {
+      "path": "eDLT/eDLT.WidgetPanels/MeasurementWidget.cs",
+      "sha256": "ad042de0f8db88e3dabf750f0cc51243a38944afaa26d626c5c4738d39626891"
+    },
+    {
+      "path": "eDLT/eDLT.WidgetPanels/MultiLevelWidget2.cs",
+      "sha256": "a44dfc636c500d102b1dc54d55d3e2e6e9cbf413b10dc8569ba9bedc483de73c"
+    },
+    {
+      "path": "eDLT/eDLT.WidgetPanels/PageWidget.cs",
+      "sha256": "23f242a462a770670617921f0731974af720933dd4feba483d5976e67252b231"
+    },
+    {
+      "path": "eDLT/eDLT.WidgetPanels/RCAWidget.cs",
+      "sha256": "40b99765bb4b3a94683b370d9d62b22e88a0eb3da5382b289c1f75ea877e44a3"
+    },
+    {
+      "path": "eDLT/eDLT.WidgetPanels/SceneWidget.cs",
+      "sha256": "ec8c3d138e2ad4afb5a9d45d15316d3037eb5fb64f8ff7a197ad63aa9cd83abb"
+    },
+    {
+      "path": "eDLT/eDLT.WidgetPanels/ShutterRelayWidget.cs",
+      "sha256": "0a95a9fea56509be71bb3ae2201bfd6442cb328768a936dee017b3e246d3f2f9"
+    },
+    {
+      "path": "eDLT/eDLT.WidgetPanels/TimeDateWidget2.cs",
+      "sha256": "3de70bb1c91adb26c039fec0b917cfb4d7397ccf1e0d129639298efca4434cd4"
+    },
+    {
+      "path": "eDLT/eDLT.WidgetPanels/TimeDate2Slice.cs",
+      "sha256": "a955c447893c08792e4e0f0f8a911f2643ac5ffb33a2ab115082c2f98058e4cb"
+    },
+    {
+      "path": "eDLT/eDLT.WidgetPanels/TimerWidget.cs",
+      "sha256": "63789f46c488a6b7114813cebc8e914859de6131b1e9b21ec8c6c95d97ee1697"
+    }
+  ],
+  "accepted_panel_fixtures": [
+    {
+      "path": "research/fixtures/edlt-measurement-culture-acceptance.json",
+      "sha256": "0a784c21d59a7ed49b4558e27d7a198297d60c1aca76ec3ed132e974cc946591",
+      "establishes": "Measurement panel/model"
+    },
+    {
+      "path": "research/fixtures/edlt-acceptance.json",
+      "sha256": "d41cd9fb23a980b8ddc06c31f876bc5fcd9745d0c7728a41a5fc100a740cac59",
+      "establishes": "Lighting panel/model"
+    },
+    {
+      "path": "research/fixtures/edlt-enable-acceptance.json",
+      "sha256": "d87e80eb5a461c7de61a4298f437754c2cfb59c75b2f8f94ecb1c505975831fa",
+      "establishes": "Enable panel/model"
+    },
+    {
+      "path": "research/fixtures/edlt-fan-acceptance.json",
+      "sha256": "39538a34dd82ad869ac721c16dd45f38bf15848bf79d9d8246d17c26fa4ffe1b",
+      "establishes": "Fan panel/model"
+    },
+    {
+      "path": "research/fixtures/edlt-hvac-acceptance.json",
+      "sha256": "9fed967ce4d0a9983f173ca5819910284fb96e69ffe6d0e9c0e761fbe9b2abb8",
+      "establishes": "HVAC panel/model"
+    },
+    {
+      "path": "research/fixtures/edlt-multilevel-acceptance.json",
+      "sha256": "ca4bc0f8b6f4f143ab3b8a935a2a7ca4650f945963899d53e59d21d4802762bd",
+      "establishes": "Multi Level panel/model"
+    },
+    {
+      "path": "research/fixtures/edlt-room-courtesy-acceptance.json",
+      "sha256": "421e509ef7010f7aa0945494ca9f48496ba9b29da9d30e73ab2b13efb3a8cba2",
+      "establishes": "Room Courtesy panel/model"
+    },
+    {
+      "path": "research/fixtures/edlt-scene-acceptance.json",
+      "sha256": "f7ec8e5c515a6f12a8738d6c185eeecedc19d9cf820ce0dee8e056c1273a2d78",
+      "establishes": "Scene panel/model"
+    },
+    {
+      "path": "research/fixtures/edlt-shutter-acceptance.json",
+      "sha256": "a3faab2f1778f58083b69c802ac08ddc7c7c0214c62ee6add3e97bc341ff383d",
+      "establishes": "Shutter panel/model"
+    },
+    {
+      "path": "research/fixtures/edlt-time-date-acceptance.json",
+      "sha256": "c25871bbe9480ac09d3d9969c82098ab5384841720a202c08b805485f7b75019",
+      "establishes": "Time/Date one- and two-slice panels/models"
+    },
+    {
+      "path": "research/fixtures/edlt-timer-acceptance.json",
+      "sha256": "49ca69c30dc6806282ac43429e8d9b4264d75403467c7fab93379825e1765a07",
+      "establishes": "Timer panel/model"
+    },
+    {
+      "path": "research/fixtures/edlt-activation-acceptance.json",
+      "sha256": "8068efb4b81215e6e584636f26eb298e7349df9b8fa57ae96a4cce8fe9396b53",
+      "establishes": "activation controls"
+    },
+    {
+      "path": "research/fixtures/edlt-general-acceptance.json",
+      "sha256": "7219245cdb230b5933fd670a673da62a75056eb90a534267cb8bfa38e8cc0440",
+      "establishes": "General settings"
+    },
+    {
+      "path": "research/fixtures/edlt-display-acceptance.json",
+      "sha256": "09fb9e5d150f9b131435fbc47f6bd3f8681ea609cdad6e881205ef40bcd2739c",
+      "establishes": "Display settings"
+    },
+    {
+      "path": "research/fixtures/edlt-standby-acceptance.json",
+      "sha256": "fac4a254af0164f9b8e215e37843b283c2ad00a11be0dc8e331484d0fe9e7d65",
+      "establishes": "Standby settings"
+    },
+    {
+      "path": "research/fixtures/edlt-colours-acceptance.json",
+      "sha256": "3aace4ba57194e167b4b4a504d3258d3eb0bdce58557622abcb900b6f14594de",
+      "establishes": "Colours settings"
+    },
+    {
+      "path": "research/fixtures/edlt-navigation-acceptance.json",
+      "sha256": "903b620d29a9ca683727d8d2fce8057638ff8f71f1fb63c97643c5ab8bcb652b",
+      "establishes": "Navigation settings"
+    },
+    {
+      "path": "research/fixtures/edlt-quick-status-acceptance.json",
+      "sha256": "cd1e52824e2a7369b622343df8db0c778242f0c9cd33979fd692fee13f45fd52",
+      "establishes": "Quick Status settings"
+    },
+    {
+      "path": "research/fixtures/edlt-page-control-acceptance.json",
+      "sha256": "9b77a90371f816b2c4cd92ef61471565b08224d6bf31aa9839923480e97e6a76",
+      "establishes": "Page Control settings"
+    },
+    {
+      "path": "research/fixtures/edlt-parent-form-acceptance.json",
+      "sha256": "b70f603ab7ffcf1f2170a632bbe6b29285a9ea2bd609f892b5f91c143cd3efab",
+      "establishes": "parent initialization and binding order"
+    },
+    {
+      "path": "research/fixtures/edlt-parent-transaction-acceptance.json",
+      "sha256": "08d04160e7d57f461bb0606a4baa0d4175eca71edb4bcaf5851703ac4007c33c",
+      "establishes": "single retained save and uncertain-write behavior"
+    },
+    {
+      "path": "research/fixtures/edlt-parent-metadata-acceptance.json",
+      "sha256": "e269d5bbc0f37901c4519350ad75432629917d88182abcc3331b0f73c115be80",
+      "establishes": "automatic project metadata transaction"
+    }
+  ],
+  "implemented_boundary": {
+    "widget_operations": [
+      "measurement",
+      "lighting",
+      "enable",
+      "fan",
+      "hvac",
+      "multilevel",
+      "room-courtesy",
+      "scene",
+      "shutter",
+      "time-date",
+      "timer"
+    ],
+    "settings_operations": [
+      "activation",
+      "general",
+      "display",
+      "standby",
+      "colours",
+      "navigation",
+      "quick-status",
+      "page-control"
+    ],
+    "ordered_dependency_validation": true,
+    "distinct_full_record_ownership": true,
+    "time_date_two_slice_adjacent_ownership": true,
+    "operation_group_cache_validation": true,
+    "automatic_missing_application_and_group_plan": true,
+    "one_terminal_retained_lifecycle_projection": true,
+    "one_terminal_five_crc_projection": true,
+    "one_verified_parameter_write_pass": true,
+    "one_database_save_after_verified_apply": true,
+    "unrelated_project_unit_and_pp_state_preserved": true
+  },
+  "remaining_boundary": {
+    "mra_panel_composition": false,
+    "applications_and_corridor_cache_dialog_composition": false,
+    "blank_and_reset_dialog_composition": false,
+    "scene_manager_dialog_binding": false,
+    "original_full_parent_form_executed": false,
+    "original_multi_panel_sequence_executed": false,
+    "native_database_extended_multi_panel_sequence_executed": false,
+    "winforms_focus_caret_and_modal_dialog_behavior_verified": false,
+    "physical_device_verified": false
+  }
+}

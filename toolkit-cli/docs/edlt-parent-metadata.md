@@ -3,8 +3,9 @@
 The automatic metadata path extends the ordered
 [eDLT parent transaction](edlt-parent-transaction.md) for one **KEYGL5 / 5055EDL
 firmware 5.5.00** database unit. It reads one exact native `DBGETXML` project
-snapshot and derives the applications, groups, complete scene-action address
-sets and 64 static-label records that the retained parent load consumes.
+snapshot and derives the applications, groups, dynamic-variant facts, complete
+scene-action address sets and 64 static-label records that the retained parent
+load and admitted operations consume.
 Missing applications and groups are planned in deterministic address order.
 The same parent transaction then performs its one load, ordered control phase,
 terminal normalization and five-CRC projection.
@@ -71,8 +72,8 @@ The original `CBusNetwork.GetApplicationByAddress` and
 referenced object is absent. This path implements the database-only,
 deterministic subset of those callbacks:
 
-- missing applications use `Lighting`, `Trigger Control` and `Enable Control`
-  for addresses 56, 202 and 203; another admitted address uses
+- missing applications use `Lighting`, `Air Conditioning`, `Trigger Control`
+  and `Enable Control` for addresses 56, 172, 202 and 203; another admitted address uses
   `Application N`;
 - missing ordinary groups use `Group N`;
 - application 203 groups are created as native `NetVar` records;
@@ -90,14 +91,23 @@ The 64 static labels are PP arrays in the selected unit, not application/group
 objects. The parent transaction's existing allocator remains their only
 writer.
 
+The operation resolver adds the exact groups introduced by Lighting, Enable,
+Fan, HVAC, Multi Level, Room Courtesy, Shutter, Timer, activation, Colours,
+Navigation, Quick Status and Page Control operations before the nested parent
+plan runs. This includes application 172 HVAC groups and application 203
+`NetVar` records. Scene widget operations select retained scenes, so their
+trigger/output dependencies remain owned by the retained scene load.
+
 `CBusGroup.PopulateDynamicAll` always constructs four default-language
 variants. Empty and `TEXT` variants have no image, so their four false image
 facts are derivable from project XML. `DYNAMIC` and `FONT` variants depend on
 downloaded project image files; `ICON` depends on Toolkit's local DLTP image
-index. Those files are not part of `DBGETXML`. If the retained parent load
-would consume one of those image states, automatic resolution fails closed
-instead of guessing. The caller-cache path remains available when separately
-obtained image facts are required.
+index. Those files are not part of `DBGETXML`. If the retained parent load or
+an effective dynamic widget/navigation binding would consume one of those
+image states, automatic resolution fails closed instead of guessing. Known
+text/icon facts must agree with the effective dynamic display type. The
+caller-cache path remains available when separately obtained image facts are
+required.
 
 ## Save and rollback boundary
 

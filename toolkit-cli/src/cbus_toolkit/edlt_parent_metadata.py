@@ -22,10 +22,13 @@ from uuid import uuid4
 from xml.dom import Node
 
 from .addressing import NetworkAddressing, _container
-from .edlt import EdltError
+from .edlt import EdltError, _field as _pp_field
 from .edlt_activation import WAKE_MODES
 from .edlt_lifecycle import FORMAT, LifecycleCache, LifecycleGroup
-from .edlt_parent_transaction import EdltParentTransaction, normalize_operations
+from .edlt_parent_transaction import (
+    EdltParentTransaction, _DYNAMIC_FIELD_OFFSETS, _candidate_widget,
+    normalize_operations,
+)
 from .native import NativeDatabase, NativeProjects, _project
 from .native_thermostat_schedule import _shape
 from .programming import Programmer, database_address, xml_text
@@ -36,7 +39,8 @@ PROFILE = 'cbus-native-edlt-parent-metadata-v1'
 RESULT_FORMAT = 'cbus-native-edlt-parent-transaction-result-v1'
 MAX_OBJECTS = 4096
 APPLICATION_NAMES = MappingProxyType({
-    56: 'Lighting', 202: 'Trigger Control', 203: 'Enable Control',
+    56: 'Lighting', 172: 'Air Conditioning', 202: 'Trigger Control',
+    203: 'Enable Control',
 })
 
 
@@ -335,23 +339,139 @@ def _operation_groups(values, operations):
     secondary = values['SecondaryApplication'][0]
     facts = []
     mode, proximity_group = values['ProximityMode'][0], values['ProximityGroup'][0]
+    colour_groups = {
+        'active_screen_group': 'BacklightActiveBrightnessControlGroup',
+        'idle_screen_group': 'BacklightIdleBrightnessControlGroup',
+        'active_indicator_group': 'IndicatorActiveBrightnessControlGroup',
+        'idle_indicator_group': 'IndicatorIdleBrightnessControlGroup',
+        'indicator_on_group': 'IndicatorOnColourControlGroup',
+        'indicator_off_group': 'IndicatorOffColourControlGroup',
+    }
+    dynamic_widget_types = {
+        'lighting': 2, 'enable': 14, 'fan': 4, 'multilevel': 16,
+        'room-courtesy': 15, 'scene': 6, 'shutter': 3, 'timer': 5,
+    }
+
+    navigation = values['NavWidgetType'][0]
+
+    def effective(operation, name, default):
+        value = operation.get(name)
+        return default if value is None else value
+
+    def needs_images(operation):
+        explicit = any(operation.get(name) in ('dynamic-text', 'dynamic-icon')
+                       for name in ('label_type', 'status_type'))
+        widget = _candidate_widget(
+            operation, {**values, 'NavWidgetType': (navigation,)})
+        if (widget is None or values[_pp_field(widget)][0] !=
+                dynamic_widget_types.get(operation['op'])):
+            return explicit
+        control = values[_pp_field(widget, 1)][0]
+        displays = _DYNAMIC_FIELD_OFFSETS.get(operation['op'], {})
+        label = operation.get('label_type')
+        if operation.get('label_text') is not None:
+            label = 'static'
+        label_dynamic = ('label' in displays and (
+            ((control >> 4) & 7) in (1, 2) if label is None else
+            label in ('dynamic-text', 'dynamic-icon')))
+        status = operation.get('status_type')
+        if operation.get('status_text') is not None:
+            status = 'static'
+        status_dynamic = ('status' in displays and (
+            (control & 15) in (6, 7) if status is None else
+            status in ('dynamic-text', 'dynamic-icon')))
+        return explicit or label_dynamic or status_dynamic
+
+    def add(application, group, reason, *, images=False):
+        facts.append((application, group, reason, images))
+
     for index, operation in enumerate(operations, 1):
-        if operation['op'] == 'lighting':
+        kind = operation['op']
+        page_mode = operation.get('page_mode')
+        if page_mode is not None:
+            navigation = 1 if page_mode == 'multiple' else 0
+        if kind in ('lighting', 'fan', 'multilevel', 'room-courtesy',
+                    'shutter', 'timer'):
             application = primary
             if operation.get('application', 'primary') == 'secondary':
                 if secondary == 255:
-                    raise EdltError('Secondary Lighting operation requires a configured secondary application')
+                    raise EdltError(
+                        'Secondary ' + kind + ' operation requires a configured '
+                        'secondary application')
                 application = secondary
-            facts.append((application, operation['group'],
-                          f'operation {index} Lighting selected group'))
-        elif operation['op'] == 'activation':
+            add(application, operation['group'],
+                f'operation {index} {kind} selected group',
+                images=needs_images(operation))
+        elif kind == 'enable':
+            add(203, operation['variable'],
+                f'operation {index} Enable selected variable',
+                images=needs_images(operation))
+        elif kind == 'hvac':
+            add(172, operation['group'],
+                f'operation {index} HVAC communication group')
+        elif kind == 'scene':
+            if needs_images(operation):
+                bucket = values['SceneBucket']
+                slots = (operation.get('scenes', ())
+                         if operation.get('mode') == 'cycle'
+                         else (operation.get('scene'),))
+                for slot in slots:
+                    if type(slot) is not int or not 1 <= slot <= 8:
+                        continue
+                    pointer = values[f'Scene{slot}StartAddress'][0]
+                    if pointer >= len(bucket) or bucket[pointer] == 255:
+                        continue
+                    trigger = bucket[pointer + 2]
+                    if trigger != 255:
+                        add(202, trigger,
+                            f'operation {index} Scene{slot} dynamic binding',
+                            images=True)
+        elif kind == 'activation':
             if operation.get('wake_mode') is not None:
                 mode = WAKE_MODES[operation['wake_mode']]
             if operation.get('group') is not None:
                 proximity_group = operation['group']
             if mode in (2, 3) and proximity_group != 255:
-                facts.append((202 if mode == 3 else primary, proximity_group,
-                              f'operation {index} activation event group'))
+                add(202 if mode == 3 else primary, proximity_group,
+                    f'operation {index} activation event group')
+        elif kind == 'colours':
+            for option, parameter in colour_groups.items():
+                group = effective(operation, option, values[parameter][0])
+                if group != 255:
+                    add(primary, group,
+                        f'operation {index} colours {option}')
+        elif kind == 'navigation':
+            variant_names = {
+                'time': 0, 'date': 1, 'time-date': 2,
+                'time-temperature': 3, 'date-temperature': 4,
+                'logo': 5, 'page-names': 6, 'dynamic-labels': 7,
+                'blank': 15,
+            }
+            source_names = {'measurement': 0, 'hvac': 1}
+            variant = variant_names.get(operation.get('variant'),
+                                        values['NavWidgetVariant'][0])
+            source = source_names.get(operation.get('temperature_source'),
+                                      values['TemperatureApplication'][0])
+            device_or_group = effective(
+                operation, 'device_or_group', values['NavDevIDZoneGroup'][0])
+            dynamic_group = effective(
+                operation, 'dynamic_group', values['DynamicGroup'][0])
+            if variant in (3, 4) and source == 1 and device_or_group != 255:
+                add(172, device_or_group,
+                    f'operation {index} navigation HVAC group')
+            if variant in (5, 7) and dynamic_group != 255:
+                add(primary, dynamic_group,
+                    f'operation {index} navigation dynamic group', images=True)
+        elif kind == 'quick-status':
+            group = effective(operation, 'group', values['QuickStatusGroup'][0])
+            if group != 255:
+                add(primary, group,
+                    f'operation {index} Quick Status group')
+        elif kind == 'page-control':
+            group = effective(operation, 'group', values['KeySetsEnableGroup'][0])
+            if group != 255:
+                add(203, group,
+                    f'operation {index} Page Control group')
     return tuple(facts)
 
 
@@ -459,9 +579,13 @@ def plan_native_parent_metadata(text, unit_path, values, editor, operations,
         key = (row['application'], row['group'])
         requirement_rows[key] = row
         group_reasons.setdefault(key, []).extend(row['facts']['exists'])
-    for application, group, reason in _operation_groups(supplied, operations):
+    operation_images = {}
+    for application, group, reason, needs_images in _operation_groups(
+            supplied, operations):
         required_apps.add(application)
         group_reasons.setdefault((application, group), []).append(reason)
+        if needs_images:
+            operation_images.setdefault((application, group), []).append(reason)
 
     applications = {row.address: row for row in snapshot.applications}
     creations = []
@@ -498,7 +622,8 @@ def plan_native_parent_metadata(text, unit_path, values, editor, operations,
             continue
         requirement = requirement_rows.get((application, group), {})
         facts = requirement.get('facts', {})
-        needs_images = bool(facts.get('dynamic_images_if_present'))
+        needs_images = bool(facts.get('dynamic_images_if_present')
+                            or (application, group) in operation_images)
         if needs_images and not record.dynamic_images_known:
             raise ValueError(
                 'Consumed dynamic image metadata is not derivable from DBGETXML; '

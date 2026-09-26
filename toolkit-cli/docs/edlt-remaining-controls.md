@@ -11,18 +11,23 @@ validation, invariant fixed-place formatting, tested tiny-value underflow and
 signed-byte exponent serialization. Complete parent-form initialization,
 binding and save integration is now implemented for the bounded Measurement
 plus proximity Percentage slice in the [parent composition](edlt-parent-form.md).
-The [ordered parent transaction](edlt-parent-transaction.md) now composes
-distinct Measurement and Lighting widgets plus that activation binding against
-one retained loaded model with fail-closed byte ownership and one terminal
-save/CRC projection. Its bounded [automatic metadata path](edlt-parent-metadata.md)
-can now derive required application/group records, consumed scene-level
-addresses and all 64 static-label slots from one exact native project snapshot,
-then plan missing applications/groups before the same retained transaction.
+The [ordered parent transaction](edlt-parent-transaction.md) now composes all
+11 admitted configurable non-MRA widget panels—Measurement, Lighting, Enable, Fan,
+HVAC, Multi Level, Room Courtesy, Scene, Shutter, Time/Date and Timer—plus
+activation and the General, Display, Standby, Colours, Navigation, Quick Status
+and Page Control settings panels. It enforces ordered editability, complete
+record ownership, application/group and dynamic-variant dependencies, one
+retained loaded model and one terminal save/CRC projection. Its bounded
+[automatic metadata path](edlt-parent-metadata.md) derives operation-introduced
+applications/groups, consumed scene-level addresses, safe dynamic-variant
+facts and all 64 static-label slots from one exact native project snapshot,
+then plans missing applications/groups before the same retained transaction.
 Image-dependent DYNAMIC/FONT/ICON facts still require evidence outside
 `DBGETXML` and fail closed when consumed. These workflows model the source-pinned asynchronous construction/load branches,
 selection bindings, mode visibility, retained save and unrelated-field
-preservation. Complete original-form execution and the other controls remain
-open. Non-finite input is rejected instead of reproducing Toolkit's `NaN`
+preservation. MRA panels, Applications/Corridor cache dialogs, Blank/Reset,
+SceneManager binding, complete original-form execution and physical acceptance
+remain outside this composed path. Non-finite input is rejected instead of reproducing Toolkit's `NaN`
 hang, per-keystroke focus/caret/message-box state is not modelled, cultures
 outside the four source-pinned profiles are not inferred, and physical display
 behavior is unverified.
@@ -38,17 +43,17 @@ dialogs or establish the remaining SceneManager control binding.
 
 | Area | Current coverage / remaining work | Original evidence and important boundary |
 |---|---|---|
-| General timings, status report, Tools lock, previous/preset restore selection | Existing General helper | LongPressTime,DebounceTime,StatusRequestInterval,ToolsPageLocked,EnableLevelStore. Actual power-cycle/physical restore behavior remains separate. |
-| Display text sizing, big icons, Timer flash, Fan wrap | Existing Display helper | FontStyle,UseBigIcon,EnableTimerFlash,EnableFanControlLevelWrap. |
-| Standby timing/destination and nightlight | Existing Standby helper | ActivityDuration,TimeoutPage,EnableNightlightUserKey/PageKey,NightlightColour. |
-| Screen/indicator/page colours and brightness | Existing Colours helper | 9 fixed fields and 6 group controls. Numeric group references explicitly do not perform metadata auto-add. |
-| Page mode/navigation variants, names and navigation temperature source | Existing Navigation helper | NavWidgetType/Variant, shared static page names, temperature/dynamic source metadata. |
-| Quick Status | Existing Quick Status helper | QuickStatusMode, Group, Colour1..3 and Level1..2; see its separate acceptance. |
-| Time/Date global formats and MRA shared settings | Existing Time/Date and MRA helpers | TimeFormat,DateFormat,TimeDateLeadingZero; MRA multiplexer/zone. Their widget-specific placement/active-control limits remain as documented. |
-| **Unit Activation** | Activation helper; see [activation contract](edlt-activation.md) | 5 PP fields plus 6 human options. Guards depend on existing standby state; conditional primary/trigger group list. |
+| General timings, status report, Tools lock, previous/preset restore selection | General helper and ordered parent operation | LongPressTime,DebounceTime,StatusRequestInterval,ToolsPageLocked,EnableLevelStore. Actual power-cycle/physical restore behavior remains separate. |
+| Display text sizing, big icons, Timer flash, Fan wrap | Display helper and ordered parent operation | FontStyle,UseBigIcon,EnableTimerFlash,EnableFanControlLevelWrap. Display-before-HVAC ordering is enforced when enabling icon controls. |
+| Standby timing/destination and nightlight | Standby helper and ordered parent operation | ActivityDuration,TimeoutPage,EnableNightlightUserKey/PageKey,NightlightColour. Standby-before-Colours ordering is enforced for idle controls. |
+| Screen/indicator/page colours and brightness | Colours helper and ordered parent operation | 9 fixed fields and 6 group controls. Manual caches require positive group evidence; automatic parent metadata can plan missing groups. |
+| Page mode/navigation variants, names and navigation temperature source | Navigation helper and ordered parent operation | NavWidgetType/Variant, shared static page names, temperature/dynamic source metadata and one reconciled page-mode owner. |
+| Quick Status | Quick Status helper and ordered parent operation | QuickStatusMode, Group, Colour1..3 and Level1..2; group evidence is mandatory in the transaction. |
+| Time/Date global formats and MRA shared settings | Time/Date is an ordered one/two-slice parent operation; MRA remains a separate helper | TimeFormat,DateFormat,TimeDateLeadingZero are composed. The MRA multiplexer/zone panels are not yet parent operations. |
+| **Unit Activation** | Activation helper and ordered parent operation; see [activation contract](edlt-activation.md) | 5 PP fields plus 6 human options. Guards depend on ordered standby state and positive primary/trigger group evidence. |
 | **Measurement + proximity Percentage parent slice** | Bounded retained parent composition implemented; [contract](edlt-parent-form.md) | Joins lifecycle load, one Measurement panel, proximity mode/percentage or action, save normalization and five CRCs. Source pins the form and worker branches plus binding/save order; retained original probes cover each control independently. Full original `FrmBaseUnit`, interactive focus/dialog state, optional native database gate and physical behavior remain separate. |
-| **Ordered Measurement/Lighting/activation parent transaction** | Bounded multi-edit composition implemented; [contract](edlt-parent-transaction.md) | Two through 22 operations, distinct widget/parent byte ownership, reconciled navigation mode, sequential shared-static allocation and one retained terminal normalization/CRC/save path. Component behavior is independently source/probe backed. The original interactive multi-selection sequence, optional native database gate, remaining widget/global controls and physical behavior remain separate. |
-| **Automatic parent metadata for that transaction** | Bounded native project resolver/creator implemented; [contract](edlt-parent-metadata.md) | One exact DBGETXML project snapshot, strict object/profile identity, deterministic Application/Group/NetVar creation, virtual group255, complete consumed scene-level addresses and 64 PP static labels. Portable rollback and partial-failure tests pass. C-Gate has no atomic metadata+PP+project commit; project/DLTP image lookup, optional Schneider C-Gate acceptance, original dialogs/refresh timing and physical behavior remain separate. |
+| **Ordered non-MRA widget/settings parent transaction** | Bounded multi-edit composition implemented; [contract](edlt-parent-transaction.md) | Two through 22 operations across 11 widgets and 8 direct settings panels, distinct complete-record/parent ownership, two-slice reservation, ordered dependencies, reconciled navigation mode, sequential shared-static allocation and one retained terminal normalization/CRC/save path. Component behavior is independently source/probe backed. MRA, Applications/Corridor cache dialogs, Blank/Reset, SceneManager binding, original interactive multi-panel execution, optional extended native database gate and physical behavior remain separate. |
+| **Automatic parent metadata for that transaction** | Bounded native project resolver/creator implemented; [contract](edlt-parent-metadata.md) | One exact DBGETXML project snapshot, strict object/profile identity, deterministic Application/Group/NetVar creation for every admitted operation, virtual group255, complete consumed scene-level addresses, safe text/icon facts and 64 PP static labels. Portable rollback and partial-failure tests pass. C-Gate has no atomic metadata+PP+project commit; project/DLTP image lookup, optional Schneider C-Gate acceptance, original dialogs/refresh timing and physical behavior remain separate. |
 | **Automatic retained SceneManager metadata** | Existing native application/group lists, consumed trigger-action addresses and safe default-language text rows are resolved automatically; missing application 202, exact trigger groups and exact action levels are projected/created; [contract](edlt-scene-metadata.md) | `Trigger Control`, `Group N`, and `Action Selector N` with exact addresses, level Value and four blank variants are source-backed. Exact pre/post-backup stale checks, closed-project/exclusive-owner guards, reverse pre-save rollback, separate PP/PROJECT SAVE uncertainty and reload preservation are explicit. The interactive blank Add dialogs, project/DLTP images, full SceneManager control binding and physical behavior remain open. |
 | **Primary/Secondary Applications** | Bounded original model/two-control workflow implemented; [contract](edlt-applications.md), original/native and CLI acceptance on both Python versions | CBusBaseUnit.PopulateAllLists: cached app ranges 48..127 plus 136; secondary `<Unused>` 255; each excludes the other current value. Changing either triggers PopulatePrimarySecondaryApplication and CheckIfGroupsExist, which traverses widget GetGroup and scene group/trigger checks. Secondary-disable effects and retained scene references are covered for the bounded composition. The separate parent-metadata path creates only applications required by its admitted ordered transaction; arbitrary dependent panels and the complete form remain open. |
 | **Page Control** | Implemented numeric group workflow; [contract and dual-Python acceptance](edlt-page-control.md) | FrmBaseUnit “Control Page Shown By Group Level”; KeySetsEnableGroup byte 0x131, fixed Enable application203, `<Disabled>` 255. Despite the parameter name, the visible feature is page control, not an established generic unit-disable command. Physical level→page mapping needs separate source/protocol evidence. |

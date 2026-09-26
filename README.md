@@ -81,9 +81,15 @@ contract](toolkit-cli/docs/cni-discovery.md).
 
 The CLI targets **C-Bus Toolkit 1.18.0.2754 and C-Gate 3.4.0.2001**, with full Toolkit functionality as the goal. Implemented workflows include offline project editing, native project management, supported unit programming and addressing, keypad presets, scenes, CGL exchange, and substantial eDLT configuration. Device and firmware support is documented per workflow.
 
-For the bounded KEYGL5 parent transaction, the CLI can derive required
-application/group/scene-level/static-label facts from one exact native project
-snapshot and plan missing database metadata before the retained multi-edit.
+For the bounded KEYGL5 5.5.00 parent transaction, the CLI composes 11 admitted
+configurable non-MRA widget panels—Measurement, Lighting, Enable, Fan,
+HVAC, Multi Level, Room Courtesy, Scene, Shutter, Time/Date and Timer—and the
+activation, General, Display, Standby, Colours, Navigation, Quick Status and
+Page Control settings panels. It validates ordered editability, complete byte
+ownership and application/group/dynamic-label dependencies before one retained
+save. The CLI can derive those application/group/scene-level/dynamic-variant/
+static-label facts from one exact native project snapshot and plan missing
+database metadata before the retained multi-edit.
 See the [automatic parent metadata contract](toolkit-cli/docs/edlt-parent-metadata.md)
 for the closed-project guards and the non-atomic PP/project save boundary.
 The retained SceneManager can also derive complete existing application/group
@@ -93,7 +99,9 @@ it plans and can create a missing Trigger Control application, exact trigger
 groups, and exact action levels with a retained project backup, then records
 the separate PP and project-save boundaries. Interactive blank Add dialogs,
 image-dependent labels, and complete form binding remain outside that bounded
-workflow.
+workflow. MRA parent composition, Applications/Corridor cache dialogs,
+Blank/Reset, SceneManager parent binding, original full-form execution and
+physical acceptance remain outstanding.
 
 **Full Toolkit parity is not complete.** The feature ledger currently records 38 areas: 17 implemented, 19 in progress, and 2 pending. These categories are not a percentage of Toolkit functionality. Check the current machine-readable status with:
 

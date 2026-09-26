@@ -99,23 +99,29 @@ native probes, but `native_parent_form_executed=false`: do not describe it as
 an end-to-end execution of the original WinForms dialog. See
 `toolkit-cli/docs/edlt-parent-form.md`.
 
-For two or more distinct Measurement, Lighting or proximity activation edits,
-use `edlt parent-transaction-plan` offline or database-unit
-`edlt-parent-transaction`. Supply `--operations` as a strict ordered JSON
-array and the same explicit lifecycle cache. The transaction reconciles one
-page mode, rejects duplicate/conflicting byte ownership, composes shared text
-allocation in order and enters every validated control before one terminal
-lifecycle/CRC projection. Review `operation_results`, `ownership`,
-`preservation` and `execution_counts`. The original component evidence does
-not establish an executed original multi-selection form; see
+For two or more supported KEYGL5 5.5.00 panel edits, use `edlt
+parent-transaction-plan` offline or database-unit `edlt-parent-transaction`.
+The ordered operations cover Measurement, Lighting, Enable, Fan, HVAC, Multi
+Level, Room Courtesy, Scene, Shutter, Time/Date, Timer, activation, General,
+Display, Standby, Colours, Navigation, Quick Status and Page Control. The
+transaction reconciles one page mode, rejects overlapping complete records or
+settings fields, reserves both Time/Date slices, validates application/group
+and effective dynamic-variant dependencies, composes shared text allocation in
+order and enters every validated control before one terminal lifecycle/CRC projection.
+Place Display before a dependent HVAC icon edit and Standby before dependent
+idle Colours controls. Review `operation_results`,
+`operation_metadata_dependencies`, `ownership`, `preservation` and
+`execution_counts`. MRA/cache/dialog workflows remain separate. The original
+component evidence does not establish an executed original multi-panel form; see
 `toolkit-cli/docs/edlt-parent-transaction.md`.
 
 When a current native project snapshot is the source of truth, replace the
 manual cache with the bounded automatic resolver. Offline, pass
 `--project-xml` and the selected `--unit`; for the database command pass
-`--auto-metadata --exclusive-project`. It derives required applications,
-groups, complete consumed scene-level addresses and all 64 static-label slots,
-then deterministically plans missing application/group records. Review the
+`--auto-metadata --exclusive-project`. It derives required applications and
+groups for every admitted operation, complete consumed scene-level addresses,
+safe dynamic-variant facts and all 64 static-label slots, then deterministically
+plans missing application/group records. Review the
 plan before applying and use the selected source network as the exact PP lock
 address. The apply creates a project backup but DBADDSAFE, PP SAVE
 and PROJECT SAVE are separate C-Gate operations. Automatic rollback stops once

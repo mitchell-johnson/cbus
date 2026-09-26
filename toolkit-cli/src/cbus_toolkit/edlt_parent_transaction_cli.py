@@ -96,7 +96,8 @@ def options(parser, *, surface='manual'):
             help='Caller-supplied retained lifecycle cache JSON')
     parser.add_argument(
         '--operations', type=Path, required=True,
-        help='JSON array of 2..22 ordered measurement, lighting or activation operations')
+        help=('JSON array of 2..22 ordered supported widget/settings '
+              'operations; see edlt-parent-transaction.md'))
 
 
 def _read_operations(path, *, limit=256 * 1024):

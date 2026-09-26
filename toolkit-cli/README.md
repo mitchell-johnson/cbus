@@ -736,15 +736,20 @@ cbus-toolkit cgate unit --lock-address //TEST/254 \
 ```
 
 The JSON array contains two through 22 operations and must include a widget.
-Supported operations are Measurement, Lighting and the proximity
-percentage/action binding. The planner rejects duplicate widget slots, a
-second activation owner, conflicting page modes, duplicate JSON keys and
-unknown fields. It composes shared static allocation in order, preserves every
-unowned control byte, runs one terminal retained normalization and five-CRC
-projection, then uses one parameter-write/readback/rollback sequence and one
-database save on successful non-dry-run execution. The original component
-models have retained independent evidence; the complete original multi-edit
-WinForms sequence and physical behavior remain unverified. See
+It accepts Measurement, Lighting, Enable, Fan, HVAC, Multi Level, Room
+Courtesy, Scene, Shutter, Time/Date and Timer widgets, plus activation,
+General, Display, Standby, Colours, Navigation, Quick Status and Page Control.
+The planner rejects overlapping complete records, a duplicate settings owner,
+conflicting page modes, missing application/group evidence, mismatched dynamic
+text/icon metadata, duplicate JSON keys and unknown fields. Operation order is
+meaningful: Display can enable a later HVAC icon edit, Standby can enable later
+idle colour controls, and a two-slice Time/Date edit reserves both adjacent
+slots. It composes shared static allocation in order, preserves every unowned
+control byte, runs one terminal retained normalization and five-CRC projection,
+then uses one parameter-write/readback/rollback sequence and one database save
+on successful non-dry-run execution. The original component models have
+retained independent evidence. MRA and cache/dialog workflows, the complete
+original multi-panel WinForms sequence and physical behavior remain unverified. See
 [edlt-parent-transaction.md](docs/edlt-parent-transaction.md).
 
 `lifecycle.crc_fields_calculated` names all five fields. A field already holding
@@ -769,7 +774,8 @@ cbus-toolkit cgate unit --lock-address //TEST/254 \
 
 The offline PP snapshot must exactly match the selected unit in the project
 XML. The plan inventories all 64 static-label slots and lists each missing
-application/group creation. Applying requires a closed, exclusively owned
+application/group creation, including HVAC application 172 and Enable
+application 203 dependencies introduced by operations. Applying requires a closed, exclusively owned
 project and creates a separate backup first. C-Gate exposes database object
 creation, PP SAVE and PROJECT SAVE as separate operations, so this path reports
 `batch_atomic=false`. It rolls back only before PP SAVE starts and never
@@ -1859,7 +1865,7 @@ Later changes have separate passing acceptance on both Python versions and are
 outside that frozen wheel:
 
 - [Configuration CRC](docs/edlt-crc.md): 21 tests, including 65,588 fresh original CRC results per run.
-- [Percentage conversion](docs/edlt-percentage.md), [bounded parent composition](docs/edlt-parent-form.md), [ordered parent transaction](docs/edlt-parent-transaction.md), [automatic parent metadata](docs/edlt-parent-metadata.md) and [automatic SceneManager metadata](docs/edlt-scene-metadata.md): pure conversion and CLI acceptance, standalone original Windows 12- and 528-case captures, 14 portable Measurement/Percentage lifecycle composition tests, a separate multi-edit suite for Measurement, Lighting and activation with one terminal save projection, 17 portable parent-metadata/CLI cases plus one optional native gate, and 32 portable SceneManager-metadata/CLI cases plus one optional native gate. The complete original parent/SceneManager dialogs and combined Schneider C-Gate/physical acceptance remain outstanding.
+- [Percentage conversion](docs/edlt-percentage.md), [bounded parent composition](docs/edlt-parent-form.md), [ordered parent transaction](docs/edlt-parent-transaction.md), [automatic parent metadata](docs/edlt-parent-metadata.md) and [automatic SceneManager metadata](docs/edlt-scene-metadata.md): pure conversion and CLI acceptance, standalone original Windows 12- and 528-case captures, 14 portable Measurement/Percentage lifecycle composition tests, 29 portable parent-transaction tests across 11 admitted configurable non-MRA widget panels and eight direct-settings panels plus one optional native gate, 19 portable parent-metadata/CLI cases plus one optional native gate, and 32 portable SceneManager-metadata/CLI cases plus one optional native gate. MRA/cache/dialog composition, the complete original parent/SceneManager dialogs and combined Schneider C-Gate/physical acceptance remain outstanding.
 - [About information](docs/toolkit-about.md): 16 tests, including 51 original instruction cases per run.
 - [Signed update metadata](docs/toolkit-update-metadata.md), [revocation stages](docs/toolkit-update-revocation.md) and [supplied-context registry conditions](docs/toolkit-update-registry-conditions.md): separate 56-, 53- and 78-test checkpoints with explicit trust and availability limits.
 - [PCI routing](docs/pci-routing.md), [incoming routing](docs/pci-incoming-routing.md), [routed RECALL](docs/pci-routed-recall.md) and [routed IDENTIFY](docs/pci-routed-identify.md): separate codec and transport checkpoints; IDENTIFY passes 104 tests with fresh original matcher comparisons and owned loopback exchanges.

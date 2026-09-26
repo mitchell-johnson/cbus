@@ -71,8 +71,8 @@ behavior are outside this bounded workflow. See
 
 ### eDLT ordered parent transaction
 
-Use an ordered JSON array when one edit contains distinct Measurement,
-Lighting or proximity activation controls:
+Use an ordered JSON array when one KEYGL5 5.5.00 edit contains distinct
+supported widget or direct settings panels:
 
 ```sh
 cbus-toolkit edlt parent-transaction-plan snapshot.json \
@@ -82,13 +82,19 @@ cbus-toolkit cgate unit --lock-address //PROJECT/254 \
   --metadata lifecycle-cache.json --operations operations.json
 ```
 
-The array requires two through 22 operations and at least one widget. Widget
-operations use the standalone editor's exact option names; activation uses
+The array requires two through 22 operations and at least one widget. It
+accepts Measurement, Lighting, Enable, Fan, HVAC, Multi Level, Room Courtesy,
+Scene, Shutter, Time/Date and Timer widgets, plus activation, General, Display,
+Standby, Colours, Navigation, Quick Status and Page Control. Widget operations
+use each standalone editor's exact option names; activation uses
 `level_percent` or `action`. Percentages must be quoted canonical fixed-point
-text. Duplicate widget targets, a second activation owner, conflicting page
-modes, unknown fields and duplicate JSON keys fail before PP mutation.
+text. Overlapping complete records, a duplicate settings owner, conflicts with
+the second Time/Date slice, page-mode conflicts, missing group or effective
+dynamic-variant evidence, unknown fields and duplicate JSON keys fail before PP mutation.
+Order enabling dependencies before their consumers: Display before an HVAC
+icon edit and Standby before idle Colours controls.
 
-Inspect `operation_results`, `ownership`, `transaction_guards`,
+Inspect `operation_results`, `operation_metadata_dependencies`, `ownership`, `transaction_guards`,
 `preservation`, `execution_counts` and `write_order`. Successful non-dry-run
 native execution uses one parameter-write pass, complete readback and database
 save. A save exception or interruption is never retried: inspect
@@ -96,7 +102,9 @@ save. A save exception or interruption is never retried: inspect
 not confirmed and `save_outcome_uncertain=true` keeps the database outcome
 explicit. The plan has retained original evidence for each component, while
 `native_multi_edit_parent_form_executed=false` and physical behavior remains
-unverified. See `toolkit-cli/docs/edlt-parent-transaction.md`.
+unverified. MRA, Applications/Corridor cache dialogs, Blank/Reset and
+SceneManager binding remain separate workflows. See
+`toolkit-cli/docs/edlt-parent-transaction.md`.
 
 Use `lifecycle.crc_fields_calculated` to confirm the single five-field CRC
 pass. `phases.crc` is a changed-only delta and may omit a field whose stored
@@ -118,8 +126,8 @@ The first command requires the PP file to match the selected XML unit exactly.
 The second requires an exact selected-network lock address, a closed project
 and exclusive caller ownership. Review
 `planned_creations`, `metadata_cache`, `static_labels` and the nested parent
-plan. Applying creates a backup, adds missing applications/groups in address
-order, stages PP once, performs one PP SAVE and one target PROJECT SAVE, then
+plan. Applying creates a backup, adds missing applications/groups for all
+admitted operations in address order, stages PP once, performs one PP SAVE and one target PROJECT SAVE, then
 reloads and verifies. These native operations have no shared atomic commit.
 Only a failure before PP SAVE is rolled back automatically. After either save
 starts, inspect `edlt_parent_metadata_evidence`; never retry an uncertain

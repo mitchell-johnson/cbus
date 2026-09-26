@@ -55,13 +55,26 @@ def activation(**overrides):
     return operation
 
 
+def transaction_cache(editor, values, mode='complete'):
+    """Lifecycle facts plus dependencies introduced by the baseline edit."""
+    result = cache(editor.lifecycle, values, mode)
+    for application, group in ((56, 12), (56, 42), (202, 42)):
+        if not any((row['application'], row['group']) == (application, group)
+                   for row in result['groups']):
+            result['groups'].append({
+                'application': application, 'group': group, 'exists': True,
+                'dynamic_images': [False] * 4, 'levels': [],
+            })
+    return result
+
+
 class ParentTransactionTests(unittest.TestCase):
     def setUp(self):
         self.spec = fixture()
         self.editor = EdltParentTransaction(self.spec)
         self.session = Session(self.spec)
         self.source = self.editor.snapshot(self.session.values())
-        self.metadata = cache(self.editor.lifecycle, self.source)
+        self.metadata = transaction_cache(self.editor, self.source)
 
     def plan(self, operations=None, source=None):
         return self.editor.plan(
@@ -100,7 +113,7 @@ class ParentTransactionTests(unittest.TestCase):
         baseline = self.editor.lifecycle.plan(
             self.source, metadata=self.metadata)
         normalized = {**baseline.expected, **baseline.changes}
-        metadata = cache(self.editor.lifecycle, normalized)
+        metadata = transaction_cache(self.editor, normalized)
         operations = (
             measurement(label_text=None, prefix_text=None, suffix_text=None),
             lighting(label_text=None, status_text=None), activation(),
@@ -218,7 +231,7 @@ class ParentTransactionTests(unittest.TestCase):
             **{f'Widget7WidgetByteValue{index}': (index + 80,)
                for index in range(15, 32)},
         }
-        metadata = cache(self.editor.lifecycle, source)
+        metadata = transaction_cache(self.editor, source)
         plan = self.editor.plan(
             source, metadata=metadata,
             operations=(measurement(), lighting(), activation()))
@@ -355,6 +368,12 @@ class NativeParentTransactionTests(unittest.TestCase):
                         if 'complete_levels_if_present' in row['facts']:
                             record['levels'] = list(range(256))
                         groups.append(record)
+                    if not any(row['application'] == 56 and row['group'] == 12
+                               for row in groups):
+                        groups.append({
+                            'application': 56, 'group': 12, 'exists': True,
+                            'dynamic_images': [False] * 4, 'levels': [],
+                        })
                     metadata = {
                         'format': 'cbus-edlt-lifecycle-cache-v1',
                         'applications': applications, 'groups': groups,
