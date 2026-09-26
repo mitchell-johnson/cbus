@@ -135,6 +135,7 @@ class NativeLevelRecord:
     application: int
     group: int
     address: int
+    value: int
     oid: str
     tag: str
     dynamic_labels: tuple[tuple[str, str, bool], ...] | None
@@ -149,6 +150,7 @@ class NativeGroupRecord:
     kind: str
     oid: str
     tag: str
+    metadata: str
     levels: tuple[int, ...]
     level_records: tuple[NativeLevelRecord, ...]
     dynamic_images: tuple[bool, ...] | None
@@ -280,6 +282,13 @@ def _snapshot(text, unit_path, editor):
             level_records, level_ids = [], set()
             for level in _children(group, 'Level'):
                 level_address = _byte(_field(level, 'Address'), 'Level address')
+                if (not level.hasAttribute('Value')
+                        or re.fullmatch(r'0|[1-9][0-9]{0,2}',
+                                        level.getAttribute('Value')) is None
+                        or int(level.getAttribute('Value')) > 255):
+                    raise ValueError(
+                        'Native level Value must be a canonical decimal byte')
+                level_value = int(level.getAttribute('Value'))
                 level_identity = _oid(_field(level, 'OID'))
                 if (any(row.address == level_address for row in level_records)
                         or level_identity in identities or level_identity in level_ids):
@@ -287,7 +296,8 @@ def _snapshot(text, unit_path, editor):
                 identities.add(level_identity); level_ids.add(level_identity)
                 labels, labels_known = _dynamic_labels(level, default_language)
                 level_records.append(NativeLevelRecord(
-                    address, group_address, level_address, level_identity,
+                    address, group_address, level_address, level_value,
+                    level_identity,
                     _field(level, 'TagName'), labels, labels_known,
                     _json(_shape(level))))
             level_records = tuple(sorted(level_records,
@@ -296,6 +306,7 @@ def _snapshot(text, unit_path, editor):
             groups.append(NativeGroupRecord(
                 address, group_address, group.tagName, group_identity,
                 _field(group, 'TagName'),
+                _node_shape(group, exclude=frozenset(('Level',))),
                 tuple(row.address for row in level_records), level_records,
                 images, known, _json(_shape(group))))
         applications.append(NativeApplicationRecord(

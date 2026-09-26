@@ -1,13 +1,22 @@
 {
-  "format": "cbus-edlt-scene-metadata-evidence-v1",
+  "format": "cbus-edlt-scene-metadata-evidence-v2",
   "profile": {
     "unit_type": "KEYGL5",
     "catalog_number": "5055EDL",
     "firmware": "5.5.00",
-    "toolkit": "1.18.0.2754"
+    "toolkit": "1.18.0.2754",
+    "cgate": "3.4.0.2001"
   },
-  "scope": "Existing application/group lists, trigger levels and safe default-language action labels consumed by one retained SceneManager transaction",
+  "scope": "Existing SceneManager metadata plus exact-address Trigger Control Level creation reached by retained EDLTScene action getter/setter accesses",
   "original_sources": [
+    {
+      "path": "CBusToolkit.exe",
+      "sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab"
+    },
+    {
+      "path": "CBusToolkit.map",
+      "sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+    },
     {
       "path": "CBusLogicModel/CBusLogicModel/CBusNetwork.cs",
       "sha256": "ddd65e5d34d94f3b0468f0db5a8468c0b6b5cdc50b8a49ca27b9f7331000d39c"
@@ -43,28 +52,41 @@
   ],
   "original_methods": [
     {
-      "method": "CBusApplication.ReadXmlData",
-      "establishes": "Stored groups are refreshed and the virtual address-255 <Unused> group is recreated in memory."
+      "method": "EDLTScene.ActionSelector get/set",
+      "establishes": "For an editable trigger, both paths call CBusGroup.GetLevelByAddress without overriding create=true. A nonnegative missing action therefore enters native exact-address level creation before DynamicAll refresh."
     },
     {
-      "method": "CBusGroup.ReadXmlData",
-      "establishes": "Default-language TagDLT variants and complete Level children populate group caches."
+      "method": "CBusGroup.GetLevelByAddress",
+      "establishes": "A missing nonnegative address calls AddLevelRequest(application, group, requested decimal address) once under bContinue recursion protection, then refetches that exact address."
     },
     {
-      "method": "CBusLevel.PopulateDynamicAll",
-      "establishes": "Each action level exposes the default-language DynamicAll rows consumed by EDLTScene.ActionSelector."
+      "method": "TfrmKEYGL5.AddSharpLevel / TLevelManager.FindLevelByAddress",
+      "map_ranges": [
+        "TfrmKEYGL5.AddSharpLevel 0x011c62ec..0x011c648c",
+        "TLevelManager.FindLevelByAddress 0x00f2742c..0x00f2767c"
+      ],
+      "establishes": "The nonblank request parses the supplied decimal address and calls FindLevelByAddress(create=true, actionSelectorName=true). Creation sets Address and Value to that exact byte, assigns Action Selector %d, adds the object, saves it, and signals ProjectSave. The routine has no combined metadata/PP commit or inverse operation."
     },
     {
-      "method": "TagDLT.PopulateImage",
-      "establishes": "DYNAMIC/FONT image presence depends on downloaded project images and ICON presence depends on Toolkit's local DLTP index."
+      "method": "TLevelManager.GetNextAvailableAddress / GetMaximumPossibleAddress",
+      "map_ranges": [
+        "GetNextAvailableAddress 0x00f2767c..0x00f276c8",
+        "GetMaximumPossibleAddress 0x00f276c8..0x00f276fc"
+      ],
+      "establishes": "The separate blank add-dialog path scans upward from zero for the first free address. GetHasReservedLevelAddress255 returns true, so that dialog is limited to 0..254 and returns -1 when full. Exact-address ActionSelector creation bypasses this allocator."
     },
     {
-      "method": "EDLTScene.TriggerGroup and ActionSelector",
-      "establishes": "Missing trigger groups fall back to 255; missing actions normalize to -1; a valid action refreshes the selected level DynamicAll list."
+      "method": "TCBusApplicationGUIAgent.AddLevel / SceneManager.BtnAddActionSelectorClick",
+      "map_range": "AddLevel 0x00cd79ac..0x00cd7e40",
+      "establishes": "The user Add button passes a blank level, enters a dialog, seeds Level %d at the first free address, and adds only after acceptance. That interactive path is distinct from automatic exact-address creation."
     },
     {
-      "method": "SceneManager retained bindings",
-      "establishes": "The bounded original control probe covers initial binding, percent synchronization and copy/paste only."
+      "method": "CBusLevel.InitialiseLevel / PopulateDynamicAll",
+      "establishes": "A new managed level has four default-language blank TagDLT variants and no all-language records. The automatic projected cache therefore uses four blank, image-free DynamicAll rows and never invents an image fact."
+    },
+    {
+      "method": "Native C-Gate DBADDSAFE Level persistence",
+      "establishes": "DBADDSAFE supplies the OID but leaves Level/Value uninitialized. The admitted native path resolves that OID and DBSETSAFE-writes Value=Address before PP SAVE and the later PROJECT SAVE."
     }
   ],
   "implemented_boundary": {
@@ -76,18 +98,38 @@
     "safe_default_language_dynamic_labels": true,
     "project_image_dependent_labels_fail_closed": true,
     "missing_application_or_group_creation": false,
-    "missing_level_creation": false,
-    "connected_staging_rollback": true,
-    "one_pp_save_with_post_save_metadata_preservation": true,
+    "missing_exact_action_level_creation": true,
+    "interactive_blank_add_dialog": false,
+    "created_level_address_equals_requested_action": true,
+    "created_level_value_equals_address": true,
+    "created_level_name_action_selector_decimal": true,
+    "created_level_default_labels_are_four_blank_variants": true,
+    "backup_before_metadata_creation": true,
+    "pre_pp_save_delete_or_reload_rollback": true,
+    "separate_pp_and_project_save_evidence": true,
     "no_retry_after_save_attempt": true
   },
+  "failure_semantics": {
+    "exact_snapshot_rechecked_before_backup": true,
+    "semantic_snapshot_rechecked_after_backup": true,
+    "native_conflict_or_capacity_error_stops_before_pp_save": true,
+    "created_oid_must_be_unique_and_read_back": true,
+    "ambiguous_add_reply_reloads_the_saved_source_without_persisting_an_unknown_object": true,
+    "known_objects_are_deleted_in_reverse_order_before_pre_save_rollback_persistence": true,
+    "pp_save_and_project_save_are_non_atomic": true,
+    "no_automatic_rollback_after_pp_save_attempt": true,
+    "no_automatic_rollback_after_target_project_save_attempt": true,
+    "interruptions_export_the_same_partial_or_uncertain_evidence": true
+  },
   "evidence_boundaries": {
-    "original_source_inspected": true,
-    "retained_original_scene_component_probes": true,
+    "original_managed_source_inspected": true,
+    "original_native_map_guided_disassembly_inspected": true,
+    "retained_original_scene_component_probes_reused": true,
     "portable_native_project_simulation": true,
+    "optional_disposable_schneider_cgate_gate_added": true,
     "fresh_original_scene_form_executed_for_this_slice": false,
     "full_scene_manager_control_binding_verified": false,
-    "missing_metadata_add_dialog_executed": false,
+    "interactive_missing_metadata_add_dialog_executed": false,
     "fresh_schneider_cgate_transaction_executed": false,
     "physical_device_verified": false
   }

@@ -90,5 +90,7 @@ uncertainty for native `408` and `502` replies.
 Physical acceptance still needs a configured eDLT (and any other listeners),
 observed Trigger traffic, rendered/output behavior and power-cycle persistence.
 Scene learning, complete SceneManager control binding, automatic metadata
-creation, other eDLT firmware profiles and classic DLT profiles also remain
-outside this command.
+creation during this read/submit command, missing trigger-group creation, other
+eDLT firmware profiles and classic DLT profiles also remain outside this
+command. Exact missing action-level creation is available separately through
+the database-only [automatic SceneManager transaction](edlt-scene-metadata.md).

@@ -1,15 +1,17 @@
 """Automatic native-project metadata for retained eDLT scene editing.
 
-The resolver is intentionally read-only with respect to database metadata.  It
-turns one exact ``DBGETXML`` snapshot into the complete application, group,
-trigger-level and DynamicAll cache consumed by :mod:`edlt_scene_manager`.
-Missing objects remain explicit absence facts; this module does not invent the
-original add-dialog naming policy.
+One exact ``DBGETXML`` snapshot supplies the application, group, trigger-level
+and DynamicAll cache consumed by :mod:`edlt_scene_manager`.  The retained
+model's action getter and setter call ``GetLevelByAddress`` with creation
+enabled.  This module therefore projects, and on guarded apply creates, only
+the missing Trigger Control levels reached by those exact model accesses.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass
 import json
+import re
+from uuid import uuid4
 
 from .addressing import NetworkAddressing, _container
 from .edlt import EdltError
@@ -18,19 +20,41 @@ from .edlt_application_cache import (
 )
 from .edlt_lifecycle import LifecycleCache, LifecycleGroup
 from .edlt_parent_metadata import (
-    NativeEdltProjectSnapshot, _byte, _children, _digest, _error, _field,
-    _json, _snapshot, _unit_path,
+    MAX_OBJECTS, NativeEdltProjectSnapshot, _byte, _children, _digest,
+    _error, _field, _json, _oid, _snapshot, _unit_path,
 )
 from .edlt_scene_manager import (
     EdltSceneManager, SceneDynamicLabel, SceneLevelLabels, SceneManagerCache,
 )
-from .native import NativeDatabase
+from .native import NativeDatabase, NativeProjects, _project
 from .programming import Programmer, database_address, xml_text
 
 
-PROFILE = 'cbus-native-edlt-scene-metadata-v1'
-PLAN_FORMAT = 'cbus-native-edlt-scene-metadata-plan-v1'
-RESULT_FORMAT = 'cbus-native-edlt-scene-metadata-result-v1'
+PROFILE = 'cbus-native-edlt-scene-metadata-v2'
+PLAN_FORMAT = 'cbus-native-edlt-scene-metadata-plan-v2'
+RESULT_FORMAT = 'cbus-native-edlt-scene-metadata-result-v2'
+TRIGGER_APPLICATION = 202
+MAX_LEVELS = 256
+
+
+@dataclass(frozen=True)
+class SceneLevelCreation:
+    group: int
+    address: int
+    name: str
+    reasons: tuple[str, ...]
+
+    def as_dict(self):
+        return {
+            'kind': 'Level', 'application': TRIGGER_APPLICATION,
+            'group': self.group, 'address': self.address,
+            'value': self.address, 'name': self.name,
+            'default_dynamic_labels': [
+                {'value': str(variant), 'name': '', 'image_present': False}
+                for variant in range(4)
+            ],
+            'reasons': list(self.reasons),
+        }
 
 
 def _normal_operations(engine, operations):
@@ -48,13 +72,25 @@ def _record(snapshot, application, group):
 
 
 def _operation_facts(values, engine, snapshot, operations):
-    """Return extra group facts and every valid action label consumed in order."""
+    """Replay action accesses, including their original level side effect.
+
+    ``CBusGroup.GetLevelByAddress`` defaults ``create`` to true.  Its event
+    path passes the requested address to native ``FindLevelByAddress`` with
+    the action-selector naming flag, producing ``Action Selector N``.  The
+    projected inventory below lets the pure retained editor observe that same
+    newly issued object without performing I/O during planning.
+    """
     primary = engine.lifecycle._primary(values)
     secondary = values['SecondaryApplication'][0]
     scenes = []
     pairs = set()
     groups = {}
     level_groups = set()
+    levels = {
+        (row.address, group.address): set(group.levels)
+        for row in snapshot.applications for group in row.groups
+    }
+    creation_reasons = {}
 
     def group(application, address, reason, *, levels=False):
         groups.setdefault((application, address), []).append(reason)
@@ -65,10 +101,24 @@ def _operation_facts(values, engine, snapshot, operations):
         """Match TriggerGroup.get without invoking ActionSelector.get."""
         if trigger == 255:
             return 255
-        if _record(snapshot, 202, trigger) is None:
+        if _record(snapshot, TRIGGER_APPLICATION, trigger) is None:
             return 255
-        group(202, trigger, reason)
+        group(TRIGGER_APPLICATION, trigger, reason)
         return trigger
+
+    def ensure_level(trigger, address, reason):
+        if address < 0:
+            return False
+        key = (TRIGGER_APPLICATION, trigger)
+        present = levels[key]
+        if address not in present:
+            if len(present) >= MAX_LEVELS:
+                raise ValueError(
+                    f'Trigger group {trigger} has no level capacity')
+            creation_reasons.setdefault((trigger, address), []).append(reason)
+            present.add(address)
+        pairs.add((trigger, address))
+        return True
 
     def get_action(trigger, raw_action, reason):
         """Return updated raw state and the ActionSelector getter result."""
@@ -76,11 +126,9 @@ def _operation_facts(values, engine, snapshot, operations):
         if trigger == 255:
             # The retained getter reports -1 but leaves its raw field intact.
             return trigger, raw_action, -1
-        record = _record(snapshot, 202, trigger)
-        group(202, trigger, reason, levels=True)
-        if raw_action not in record.levels:
+        group(TRIGGER_APPLICATION, trigger, reason, levels=True)
+        if not ensure_level(trigger, raw_action, reason):
             return trigger, -1, -1
-        pairs.add((trigger, raw_action))
         return trigger, raw_action, raw_action
 
     def set_action(trigger, raw_action, requested, reason):
@@ -88,11 +136,9 @@ def _operation_facts(values, engine, snapshot, operations):
         trigger = retain_trigger(trigger, reason)
         if trigger == 255:
             return trigger, raw_action
-        record = _record(snapshot, 202, trigger)
-        group(202, trigger, reason, levels=True)
-        if requested not in record.levels:
+        group(TRIGGER_APPLICATION, trigger, reason, levels=True)
+        if not ensure_level(trigger, requested, reason):
             return trigger, -1
-        pairs.add((trigger, requested))
         return trigger, requested
 
     for slot, _pointer, header, _items in engine.lifecycle._scenes(values):
@@ -152,7 +198,16 @@ def _operation_facts(values, engine, snapshot, operations):
             scene[1], scene[2], _returned = get_action(
                 scene[1], scene[2],
                 f'Scene{slot} terminal fallback action')
-    return groups, level_groups, tuple(sorted(pairs))
+    creations = tuple(
+        SceneLevelCreation(
+            trigger, address, f'Action Selector {address}',
+            tuple(dict.fromkeys(creation_reasons[(trigger, address)])))
+        for trigger, address in sorted(creation_reasons)
+    )
+    projected = {
+        key: tuple(sorted(value)) for key, value in levels.items()
+    }
+    return groups, level_groups, tuple(sorted(pairs)), creations, projected
 
 
 @dataclass(frozen=True)
@@ -162,11 +217,12 @@ class ResolvedSceneMetadata:
     cache: SceneManagerCache
     requirements: str
     action_pairs: tuple[tuple[int, int], ...]
+    creations: tuple[SceneLevelCreation, ...]
     group_reasons: str
 
     def as_dict(self):
         return {
-            'format': 'cbus-native-edlt-scene-cache-v1',
+            'format': 'cbus-native-edlt-scene-cache-v2',
             'profile': PROFILE,
             'cache': self.cache.as_dict(),
             'requirements': json.loads(self.requirements),
@@ -174,10 +230,15 @@ class ResolvedSceneMetadata:
                 {'group': group, 'action': action}
                 for group, action in self.action_pairs
             ],
+            'planned_level_creations': [
+                row.as_dict() for row in self.creations
+            ],
             'group_reasons': json.loads(self.group_reasons),
             'metadata_provenance': 'one-admitted-native-project-xml-snapshot',
             'metadata_objects_created': False,
             'missing_objects_auto_created': False,
+            'missing_objects_projected_for_creation': bool(self.creations),
+            'projected_cache_includes_planned_creations': True,
             'project_images_loaded': False,
             'unresolved_image_metadata_rejected_when_consumed': True,
         }
@@ -211,8 +272,15 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations):
         group_reasons.setdefault(key, []).extend(row['facts']['exists'])
         if row['facts'].get('complete_levels_if_present'):
             level_groups.add(key)
-    extra_groups, extra_levels, action_pairs = _operation_facts(
+    (extra_groups, extra_levels, action_pairs,
+     creations, projected_levels) = _operation_facts(
         supplied, engine, snapshot, operations)
+    object_count = 1 + sum(
+        1 + sum(1 + len(group.level_records) for group in application.groups)
+        for application in snapshot.applications)
+    if object_count + len(creations) > MAX_OBJECTS:
+        raise ValueError(
+            'Native eDLT metadata creation would exceed 4096 objects')
     for key, reasons in extra_groups.items():
         group_reasons.setdefault(key, []).extend(reasons)
     level_groups.update(extra_levels)
@@ -237,11 +305,13 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations):
             raise ValueError(
                 'Consumed dynamic image metadata is not derivable from DBGETXML; '
                 f'application {application} group {group} requires project/DLTP images')
+        cached_levels = (projected_levels[(application, group)]
+                         if (application, group) in level_groups else None)
         cache_groups.append(LifecycleGroup(
             application, group, True,
             record.dynamic_images if needs_images else None,
             needs_images,
-            record.levels if (application, group) in level_groups else None))
+            cached_levels))
     if len(cache_groups) > 512:
         raise ValueError('Resolved eDLT scene cache exceeds 512 group facts')
 
@@ -266,16 +336,22 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations):
         group = _record(snapshot, 202, group_address)
         level = None if group is None else next(
             (row for row in group.level_records if row.address == action), None)
-        if level is None:
+        creation = next((row for row in creations
+                         if (row.group, row.address)
+                         == (group_address, action)), None)
+        if level is None and creation is None:
             raise ValueError(
                 f'Resolved trigger action disappeared: {group_address}/{action}')
-        if not level.dynamic_labels_known:
+        if level is not None and not level.dynamic_labels_known:
             raise ValueError(
                 'Consumed trigger action image metadata is not derivable from '
                 f'DBGETXML: group {group_address} action {action}')
         level_labels.append(SceneLevelLabels(
             group_address, action,
-            tuple(SceneDynamicLabel(*row) for row in level.dynamic_labels)))
+            tuple(SceneDynamicLabel(*row) for row in (
+                level.dynamic_labels if level is not None
+                else tuple((str(variant), '', False)
+                           for variant in range(4))))))
     cache = SceneManagerCache(application_cache, tuple(level_labels))
     reasons = _json([
         {'application': application, 'group': group,
@@ -283,7 +359,8 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations):
         for application, group in sorted(group_reasons)
     ])
     return ResolvedSceneMetadata(
-        snapshot, operations, cache, _json(requirements), action_pairs, reasons)
+        snapshot, operations, cache, _json(requirements), action_pairs,
+        creations, reasons)
 
 
 @dataclass(frozen=True)
@@ -298,7 +375,7 @@ class NativeSceneMetadataPlan:
     def semantic_source(self):
         return (
             self.resolved.snapshot, self.resolved.operations,
-            self.resolved.cache, self.validate,
+            self.resolved.cache, self.resolved.creations, self.validate,
             tuple(sorted(self.scene_plan.expected.items())),
             tuple(sorted(self.scene_plan.changes.items())),
         )
@@ -319,11 +396,27 @@ class NativeSceneMetadataPlan:
             'closed_networks': list(self.networks),
             'caller_exclusive_project_required': True,
             'database_only': True,
-            'metadata_mutation_planned': False,
-            'mutation_required': bool(self.scene_plan.changes),
+            'metadata_mutation_planned': bool(self.resolved.creations),
+            'planned_creations': [
+                row.as_dict() for row in self.resolved.creations
+            ],
+            'creation_order': 'Trigger group then exact requested action address',
+            'native_missing_level_name': 'Action Selector {address}',
+            'native_blank_add_dialog_allocation': (
+                'first free address 0..254; outside this automatic exact-address path'),
+            'mutation_required': bool(
+                self.resolved.creations or self.scene_plan.changes),
             'stale_project_and_pp_rechecked_before_apply': True,
             'connected_staging_rollback': True,
+            'backup_required_for_metadata_creation': bool(
+                self.resolved.creations),
+            'batch_atomic': False,
+            'atomic_boundary': (
+                'DBADDSAFE/DBSETSAFE, PP SAVE and PROJECT SAVE are separate'),
+            'rollback_before_first_persistence_save': True,
+            'rollback_before_pp_save': True,
             'rollback_after_pp_save_attempt': False,
+            'rollback_after_target_project_save_attempt': False,
             'automatic_retries': 0,
             'full_scene_manager_control_binding_verified': False,
             'physical_device_programmed': False,
@@ -363,13 +456,14 @@ class NativeSceneMetadataError(RuntimeError):
 
 
 class NativeSceneMetadataTransaction:
-    """Single-use automatic-cache SceneManager transaction."""
+    """Single-use missing-level plus retained SceneManager transaction."""
     def __init__(self, client, editor, *, programmer=None):
         from .edlt_scene_manager_cli import SceneCLIEditor
         if type(editor) is not SceneCLIEditor:
             raise ValueError('Expected a SceneCLIEditor')
         self.client, self.editor = client, editor
         self.database = NativeDatabase(client)
+        self.projects = NativeProjects(client)
         self.programmer = Programmer(client) if programmer is None else programmer
         self.network_guard = NetworkAddressing(client)
         self._plans, self._fingerprints, self._consumed = [], {}, set()
@@ -381,17 +475,31 @@ class NativeSceneMetadataTransaction:
         self._evidence = {
             'format': RESULT_FORMAT, 'profile': PROFILE,
             'operation': operation, 'state': 'preconditions',
-            'complete': False, 'saved': False,
+            'complete': False, 'saved': False, 'commands': [], 'objects': [],
+            'backup_created': False,
+            'backup_source_save_attempted': False,
+            'backup_source_save_confirmed': False,
+            'backup_source_save_outcome_uncertain': False,
+            'backup_copy_attempted': False,
+            'backup_copy_confirmed': False,
+            'backup_copy_outcome_uncertain': False,
             'metadata_mutation_attempted': False,
+            'metadata_objects_created': 0,
             'pp_mutation_attempted': False,
             'pp_readback_verified': False,
             'pp_save_attempted': False, 'pp_save_confirmed': False,
             'pp_save_outcome_uncertain': False,
+            'target_project_save_attempted': False,
+            'target_project_save_confirmed': False,
+            'target_project_save_outcome_uncertain': False,
             'persistence_verified': False,
             'rollback_attempted': False, 'rollback_verified': False,
             'rollback_errors': [], 'pp_state_uncertain': False,
             'database_state_uncertain': False,
+            'partial_failure_possible': False,
+            'unidentified_metadata_mutation': False,
             'database_persistence': 'not-attempted',
+            'batch_atomic': False,
             'automatic_retries': 0,
             'caller_exclusive_project_required': True,
             'server_project_edit_lock_acquired': False,
@@ -404,28 +512,60 @@ class NativeSceneMetadataTransaction:
         return self.last_result
 
     def _fail(self, error):
-        uncertain = (self._evidence['pp_save_attempted']
-                     and not self._evidence['pp_save_confirmed'])
+        backup_save_uncertain = (
+            self._evidence['backup_source_save_attempted']
+            and not self._evidence['backup_source_save_confirmed'])
+        backup_copy_uncertain = (
+            self._evidence['backup_copy_attempted']
+            and not self._evidence['backup_copy_confirmed'])
+        pp_save_uncertain = (self._evidence['pp_save_attempted']
+                             and not self._evidence['pp_save_confirmed'])
+        project_save_uncertain = (
+            self._evidence['target_project_save_attempted']
+            and not self._evidence['target_project_save_confirmed'])
         staging = self._evidence.get('staging_evidence') or {}
-        rollback_verified = bool(staging.get('rollback_verified'))
-        rollback_attempted = bool(staging.get('attempted_parameters'))
-        rollback_errors = list(staging.get('rollback_errors', ()))
+        rollback_verified = (self._evidence['rollback_verified']
+                             or bool(staging.get('rollback_verified')))
+        rollback_attempted = (self._evidence['rollback_attempted']
+                              or bool(staging.get('attempted_parameters')))
+        rollback_errors = [*self._evidence['rollback_errors'],
+                           *staging.get('rollback_errors', ())]
+        crossed_save_boundary = (self._evidence['pp_save_attempted']
+                                 or self._evidence[
+                                     'target_project_save_attempted'])
+        rollback_uncertain = rollback_attempted and not rollback_verified
+        uncertain = (backup_save_uncertain or backup_copy_uncertain
+                     or pp_save_uncertain or project_save_uncertain
+                     or rollback_uncertain
+                     or (crossed_save_boundary and not rollback_verified
+                         and not self._evidence['persistence_verified']))
+        if rollback_verified:
+            persistence = 'original-state-verified-after-rollback'
+        elif (self._evidence['target_project_save_confirmed']
+              and not self._evidence['persistence_verified']):
+            persistence = 'save-confirmed-verification-incomplete'
+        elif uncertain:
+            persistence = 'uncertain'
+        elif self._evidence['pp_save_confirmed']:
+            persistence = 'pp-save-confirmed-project-persistence-incomplete'
+        else:
+            persistence = 'not-saved'
         self._evidence.update(
             complete=False, saved=False, error=_error(error),
             state='uncertain' if uncertain else 'stopped',
             rollback_attempted=rollback_attempted,
             rollback_verified=rollback_verified,
             rollback_errors=rollback_errors,
-            pp_save_outcome_uncertain=uncertain,
-            pp_state_uncertain=uncertain or (rollback_attempted
-                                             and not rollback_verified),
+            backup_source_save_outcome_uncertain=backup_save_uncertain,
+            backup_copy_outcome_uncertain=backup_copy_uncertain,
+            pp_save_outcome_uncertain=pp_save_uncertain,
+            target_project_save_outcome_uncertain=project_save_uncertain,
+            pp_state_uncertain=(pp_save_uncertain or rollback_uncertain),
             database_state_uncertain=uncertain,
-            database_persistence=(
-                'uncertain' if uncertain else
-                'save-confirmed-verification-incomplete'
-                if self._evidence['pp_save_confirmed'] else
-                'original-state-verified-after-rollback'
-                if rollback_verified else 'not-saved'),
+            partial_failure_possible=(
+                self._evidence['backup_created']
+                or crossed_save_boundary or uncertain),
+            database_persistence=persistence,
         )
         result = self._finish()
         if not isinstance(error, Exception):
@@ -441,6 +581,17 @@ class NativeSceneMetadataTransaction:
         if response.code != 344:
             raise RuntimeError('Native project XML response did not complete')
         return xml_text(response)
+
+    def _operation(self, action, project, other=None):
+        row = {'command': 'PROJECT ' + action.upper(), 'attempted': True,
+               'completed': False}
+        self._evidence['commands'].append(row)
+        result = self.projects.operation(action, project, other)
+        row.update(completed=True, code=result.code)
+        if result.code != 200 or len(result.lines) != 1:
+            raise RuntimeError(
+                'Native project operation did not return one completion')
+        return result
 
     def _closed_networks(self, project, text):
         root = _container(text, 'Installation').documentElement
@@ -521,48 +672,250 @@ class NativeSceneMetadataTransaction:
             and before.applications == after.applications
         )
 
-    def apply(self, plan):
+    def _add(self, plan, creation, known):
+        parent = (f'//{plan.resolved.snapshot.project}/'
+                  f'{plan.resolved.snapshot.network}/'
+                  f'{TRIGGER_APPLICATION}/{creation.group}')
+        receipt = {**creation.as_dict(), 'attempted': True, 'created': False,
+                   'value_initialized': False}
+        try:
+            response = self.database.add(
+                parent, 'level', creation.address,
+                creation.name)
+        except BaseException:
+            self._evidence['unidentified_metadata_mutation'] = True
+            raise
+        identities = [match[1].lower() for line in response.lines
+                      if (match := re.fullmatch(
+                          r'301[- ]OID=([0-9a-fA-F-]{36})', line))]
+        if len(identities) != 1:
+            self._evidence['unidentified_metadata_mutation'] = True
+            raise RuntimeError(
+                'Created scene level did not return exactly one OID')
+        try:
+            identity = _oid(identities[0])
+        except ValueError:
+            self._evidence['unidentified_metadata_mutation'] = True
+            raise
+        if identity in known:
+            self._evidence['unidentified_metadata_mutation'] = True
+            raise RuntimeError('Created scene level returned an existing OID')
+        known.add(identity)
+        receipt.update(oid=identity, created=True, value_initialized=True)
+        self._evidence['objects'].append(receipt)
+        self._evidence['metadata_objects_created'] = len(
+            self._evidence['objects'])
+
+    def _verify_created(self, plan, text):
+        snapshot = _snapshot(text, plan.unit, self.editor.engine)
+        before_apps = {row.address: row
+                       for row in plan.resolved.snapshot.applications}
+        after_apps = {row.address: row for row in snapshot.applications}
+        if set(after_apps) != set(before_apps):
+            raise RuntimeError(
+                'Native application inventory changed during the transaction')
+        created_by_group = {}
+        for creation in plan.resolved.creations:
+            created_by_group.setdefault(creation.group, {})[
+                creation.address] = creation
+        receipts = {(row['group'], row['address']): row
+                    for row in self._evidence['objects']}
+
+        for app_address, before_app in before_apps.items():
+            after_app = after_apps[app_address]
+            if (after_app.oid, after_app.tag, after_app.metadata) != (
+                    before_app.oid, before_app.tag, before_app.metadata):
+                raise RuntimeError('Existing application metadata changed')
+            before_groups = {row.address: row for row in before_app.groups}
+            after_groups = {row.address: row for row in after_app.groups}
+            if set(after_groups) != set(before_groups):
+                raise RuntimeError(
+                    'Native group inventory changed during the transaction')
+            for group_address, before_group in before_groups.items():
+                after_group = after_groups[group_address]
+                if (after_group.kind, after_group.oid, after_group.tag,
+                    after_group.metadata,
+                    after_group.dynamic_images,
+                    after_group.dynamic_images_known) != (
+                        before_group.kind, before_group.oid,
+                        before_group.tag, before_group.metadata,
+                        before_group.dynamic_images,
+                        before_group.dynamic_images_known):
+                    raise RuntimeError('Existing group metadata changed')
+                expected_new = (created_by_group.get(group_address, {})
+                                if app_address == TRIGGER_APPLICATION else {})
+                before_levels = {row.address: row
+                                 for row in before_group.level_records}
+                after_levels = {row.address: row
+                                for row in after_group.level_records}
+                if set(after_levels) != set(before_levels) | set(expected_new):
+                    raise RuntimeError(
+                        'Native level inventory changed during the transaction')
+                for address, row in before_levels.items():
+                    if after_levels[address] != row:
+                        raise RuntimeError('Existing level metadata changed')
+                for address, creation in expected_new.items():
+                    row = after_levels[address]
+                    receipt = receipts.get((group_address, address))
+                    blanks = tuple((str(variant), '', False)
+                                   for variant in range(4))
+                    if (receipt is None or row.oid != receipt['oid']
+                            or row.address != address or row.value != address
+                            or row.tag != creation.name
+                            or not row.dynamic_labels_known
+                            or row.dynamic_labels != blanks):
+                        raise RuntimeError(
+                            'Created scene level differs after native readback')
+        before = plan.resolved.snapshot
+        if (snapshot.unit_oid != before.unit_oid
+                or snapshot.project_metadata != before.project_metadata
+                or snapshot.unit_metadata != before.unit_metadata
+                or snapshot.network_metadata != before.network_metadata
+                or snapshot.other_networks != before.other_networks
+                or snapshot.other_units != before.other_units):
+            raise RuntimeError(
+                'Unrelated native project/unit/network metadata changed')
+        return snapshot
+
+    def _rollback_pre_save(self, plan):
+        self._evidence['rollback_attempted'] = True
+        try:
+            if not self._evidence['unidentified_metadata_mutation']:
+                for row in reversed(self._evidence['objects']):
+                    row['rollback_delete_attempted'] = True
+                    self.database.delete('!' + row['oid'])
+                    row['rollback_delete_confirmed'] = True
+                self._operation('save', plan.resolved.snapshot.project)
+                self._evidence['rollback_project_save_confirmed'] = True
+            # When an add reply is ambiguous, do not persist an unidentified
+            # object.  Reload the source snapshot saved immediately before the
+            # backup and establish the actual result from DBGETXML.
+            for action in ('close', 'load'):
+                self._operation(action, plan.resolved.snapshot.project)
+            text = self._xml(plan.resolved.snapshot.project)
+            current = _snapshot(text, plan.unit, self.editor.engine)
+            if current != plan.resolved.snapshot:
+                raise RuntimeError(
+                    'Reload did not restore the admitted scene metadata source')
+            self._evidence['rollback_verified'] = True
+        except BaseException as error:
+            self._evidence['rollback_errors'].append(_error(error))
+
+    def apply(self, plan, *, backup_project=None):
         self._start('apply')
+        pp_save_attempted = False
         try:
             self._issued(plan)
             if id(plan) in self._consumed:
                 raise ValueError('This plan already had an apply attempt')
             self._consumed.add(id(plan))
+            backup = None
+            if plan.resolved.creations:
+                backup = (_project(backup_project)
+                          if backup_project is not None
+                          else 'B' + uuid4().hex[:7].upper())
+                if backup.upper() == plan.resolved.snapshot.project.upper():
+                    raise ValueError(
+                        'Backup project must differ from the edited project')
+            elif backup_project is not None:
+                raise ValueError(
+                    '--backup-project requires a planned metadata creation')
             self._evidence['plan'] = plan.as_dict()
+            if backup is not None:
+                self._evidence['backup_project'] = backup
             self._fresh(plan, exact=True)
             snapshot = plan.resolved.snapshot
-            lock = f'//{snapshot.project}/{snapshot.network}'
-            self._evidence.update(state='pp', pp_mutation_attempted=True)
-            with self.programmer.load(lock, database_address(plan.unit)) as session:
-                if self.editor.snapshot(session.values()) != snapshot.value_map():
+            if not plan.resolved.creations and not plan.scene_plan.changes:
+                self._evidence.update(
+                    state='verified_noop', complete=True, saved=False,
+                    database_persistence='unchanged-source-verified',
+                    persistence_verified=True,
+                    existing_metadata_preserved=True,
+                    unrelated_unit_and_network_metadata_preserved=True)
+                return self._finish()
+
+            if plan.resolved.creations:
+                self._evidence['state'] = 'backup'
+                self._evidence['backup_source_save_attempted'] = True
+                self._operation('save', snapshot.project)
+                self._evidence['backup_source_save_confirmed'] = True
+                self._evidence['backup_copy_attempted'] = True
+                self._operation('copy', snapshot.project, backup)
+                self._evidence['backup_copy_confirmed'] = True
+                self._evidence['backup_created'] = True
+                self._fresh(plan)
+                self._operation('use', snapshot.project)
+                self._evidence.update(
+                    state='metadata', metadata_mutation_attempted=True)
+                known = {snapshot.unit_oid}
+                for application in snapshot.applications:
+                    known.add(application.oid)
+                    for group in application.groups:
+                        known.add(group.oid)
+                        known.update(level.oid
+                                     for level in group.level_records)
+                for creation in plan.resolved.creations:
+                    self._add(plan, creation, known)
+                created = self._verify_created(
+                    plan, self._xml(snapshot.project))
+                if created.value_map() != snapshot.value_map():
                     raise ValueError(
-                        'PP source changed after automatic scene metadata planning')
-                try:
-                    staged = self.editor.engine.apply(session, plan.scene_plan)
-                except BaseException:
-                    if isinstance(self.editor.last_evidence, dict):
-                        self._evidence['staging_evidence'] = self.editor.last_evidence
-                    raise
-                self._evidence['staging_evidence'] = staged
-                self._evidence['pp_readback_verified'] = bool(
-                    staged.get('verified'))
-                self._evidence.update(state='pp_save', pp_save_attempted=True)
-                session.save_to_source()
-                self._evidence['pp_save_confirmed'] = True
+                        'PP source changed during native scene level creation')
+
+            if plan.scene_plan.changes:
+                lock = f'//{snapshot.project}/{snapshot.network}'
+                self._evidence.update(state='pp', pp_mutation_attempted=True)
+                with self.programmer.load(
+                        lock, database_address(plan.unit)) as session:
+                    if self.editor.snapshot(
+                            session.values()) != snapshot.value_map():
+                        raise ValueError(
+                            'PP source changed after automatic scene metadata planning')
+                    try:
+                        staged = self.editor.engine.apply(
+                            session, plan.scene_plan)
+                    except BaseException:
+                        if isinstance(self.editor.last_evidence, dict):
+                            self._evidence['staging_evidence'] = (
+                                self.editor.last_evidence)
+                        raise
+                    self._evidence['staging_evidence'] = staged
+                    self._evidence['pp_readback_verified'] = bool(
+                        staged.get('verified'))
+                    self._evidence.update(
+                        state='pp_save', pp_save_attempted=True)
+                    pp_save_attempted = True
+                    session.save_to_source()
+                    self._evidence['pp_save_confirmed'] = True
+
+            if plan.resolved.creations:
+                self._evidence.update(
+                    state='project_save',
+                    target_project_save_attempted=True)
+                self._operation('save', snapshot.project)
+                self._evidence['target_project_save_confirmed'] = True
+                for action in ('close', 'load'):
+                    self._operation(action, snapshot.project)
 
             self._evidence['state'] = 'verify'
             final_text = self._xml(snapshot.project)
-            final = _snapshot(final_text, plan.unit, self.editor.engine)
+            final = (self._verify_created(plan, final_text)
+                     if plan.resolved.creations else
+                     _snapshot(final_text, plan.unit, self.editor.engine))
             expected = {**plan.scene_plan.expected, **plan.scene_plan.changes}
             if final.value_map() != expected:
                 raise RuntimeError(
                     'Persisted native PP differs from the scene transaction')
-            if not self._metadata_equal(snapshot, final):
+            if (not plan.resolved.creations
+                    and not self._metadata_equal(snapshot, final)):
                 raise RuntimeError(
                     'Native project metadata changed during the scene transaction')
             self._evidence.update(
                 state='verified_saved', complete=True, saved=True,
-                database_persistence='verified-after-dbgetxml',
+                database_persistence=(
+                    'verified-after-project-reload'
+                    if plan.resolved.creations
+                    else 'verified-after-dbgetxml'),
                 persistence_verified=True,
                 existing_metadata_preserved=True,
                 unrelated_unit_and_network_metadata_preserved=True,
@@ -572,4 +925,9 @@ class NativeSceneMetadataTransaction:
             )
             return self._finish()
         except BaseException as error:
+            if (not pp_save_attempted
+                    and not self._evidence.get('target_project_save_attempted')
+                    and self._evidence.get('backup_created')
+                    and self._evidence.get('metadata_mutation_attempted')):
+                self._rollback_pre_save(plan)
             self._fail(error)

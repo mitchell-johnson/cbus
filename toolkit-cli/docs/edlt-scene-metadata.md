@@ -2,11 +2,12 @@
 
 The automatic metadata path extends the retained
 [eDLT SceneManager](edlt-scene-manager.md) editor for one **KEYGL5 / 5055EDL
-firmware 5.5.00** database unit. It derives the complete application and group
-lists, required lifecycle group facts, complete trigger-action address sets,
-and consumed action `DynamicAll` rows from one exact native `DBGETXML` project
-snapshot. A caller no longer needs to hand-author `scene-cache.json` when all
-consumed labels are representable in that snapshot.
+firmware 5.5.00** database unit. It derives complete application and group
+lists, required lifecycle group facts, Trigger Control level inventories, and
+consumed action `DynamicAll` rows from one exact native `DBGETXML` project
+snapshot. When the retained action getter or setter reaches a missing action,
+the plan also projects the exact Trigger Control `Level` that the original
+model requests and a guarded native apply creates it.
 
 Preview a saved PP/project pair without connecting:
 
@@ -21,9 +22,10 @@ cbus-toolkit edlt scene-manager-state snapshot.json \
 ```
 
 The PP file must exactly equal the selected unit's decoded PP records. The
-plan uses format `cbus-native-edlt-scene-metadata-plan-v1`; automatic state
-uses `cbus-native-edlt-scene-metadata-state-v1`. Both include the immutable
-derived cache and the ordinary retained SceneManager evidence.
+plan uses `cbus-native-edlt-scene-metadata-plan-v2`; automatic state uses
+`cbus-native-edlt-scene-metadata-state-v1`. The plan contains
+`planned_creations`, the projected cache, the retained SceneManager PP plan,
+and the separate persistence boundaries. Offline planning never writes.
 
 Preview the current closed database project through C-Gate:
 
@@ -36,85 +38,148 @@ cbus-toolkit cgate unit \
   --operations scene-operations.json --validate
 ```
 
-Remove `--dry-run` to stage, verify, and save the PP changes to that same
-database unit. Automatic mode rejects a physical source, a destination, or a
-lock address other than the selected source network. Every network in the
-project must remain closed with synchronization idle. The command does not
-acquire a server-wide project lock, so `--exclusive-project` declares an
-operational precondition the caller must enforce.
+Apply with a reviewed backup name:
 
-## Admitted metadata
+```sh
+cbus-toolkit cgate unit \
+  --lock-address //PROJECT/254 \
+  --source /db//PROJECT/254/p/20 \
+  edlt-scene-manager --auto-metadata --exclusive-project \
+  --backup-project SCBACKUP \
+  --operations scene-operations.json --validate
+```
 
-The selected project plus selected-network addresses must be unambiguous. The
-selected unit and every selected-network application, group and level used by
-the snapshot must also have a unique native object ID. The unit identity and
-all decoded PP values must match the supported profile. Application and group
-inventories are complete for the admitted selected-network snapshot; group 255
-is represented only as the original in-memory `<Unused>` object when a
-consumed lookup needs it.
+When creation is required and `--backup-project` is omitted, the command
+chooses a `Bxxxxxxx` name. A supplied backup name is valid only on apply.
+Automatic mode rejects a physical source, a destination, or a lock address
+other than the selected source network. Every project network must remain
+closed with synchronization idle. C-Gate has no server-wide project edit lock,
+so `--exclusive-project` records an operational precondition the caller must
+enforce.
 
-The resolver evaluates the initial eight retained scenes and the ordered edit
-sequence before constructing its cache. It supplies complete level addresses
-for every consumed Trigger Control group and four default-language
-`DynamicAll` rows for each consumed valid action. Empty and `TEXT` `TagDLT`
-variants produce their exact text with `image_present=false`.
-`DYNAMIC` and `FONT` variants depend on downloaded project images, while
-`ICON` depends on Toolkit's local DLTP index. Neither image source is present
-in `DBGETXML`, so consuming any such action fails closed. Use a separately
-obtained caller cache when those image facts are required.
+## Exact action-level creation
 
-This path is read-only for database metadata. It never issues `DBADDSAFE` or
-`DBDELETE`, and `metadata_mutation_planned` is always false. A missing trigger
-group follows the retained getter's `<Unused>` fallback. A missing action is
-normalized to `-1` by the original-style level lookup. The resolver does not
-create groups or levels because the original add-dialog naming and missing
-action creation policy have not been established. The separate
-[automatic parent metadata](edlt-parent-metadata.md) workflow can create its
-bounded required application/group set; it also deliberately does not invent
-missing scene levels.
+The original retained `EDLTScene.ActionSelector` getter and setter call
+`CBusGroup.GetLevelByAddress` with its default `create=true`. For a missing
+nonnegative action, that method sends the requested decimal address through
+`AddLevelRequest`. The KEYGL5 native handler calls
+`TLevelManager.FindLevelByAddress` with its action-selector naming flag. The
+resulting object has:
 
-Complete application/group lists can be much larger than the facts consumed
-by one scene edit. The existing cache limits still apply: 256 applications,
-4,096 listed groups, 512 lifecycle group facts, and 8,192 level addresses.
-Scene operations retain the existing eight-scene and 64-item boundary. A
-capacity-stopped state is available for offline review, but planning or native
-apply rejects it before a PP write or save.
+- application `202` and the already existing selected trigger group;
+- `Address` equal to the exact requested action byte;
+- `Value` equal to that address;
+- `TagName` equal to `Action Selector N`, using ordinary decimal `N`; and
+- four default-language blank, image-free variants in the managed model.
 
-## Stale checks, save, and rollback
+The same side effect can be reached by an explicit `set-action`, `get-action`,
+copy/validation getters, or the terminal save getter/fallback. Creations are
+deduplicated and ordered by trigger group then action address. Later operations
+in the same plan see the projected level and its four blank `DynamicAll` rows.
+The planner does not infer text, font, icon, or image content.
 
-Planning reads one project XML document and records its exact hash and semantic
-source. Apply accepts only an unchanged, single-use plan issued by the same
-transaction object. Before opening a PP session it re-reads `DBGETXML`, checks
-the exact XML bytes, re-resolves the cache and plan, and confirms all project
-networks are still closed and idle. The PP session then checks the complete
-source snapshot again before its first write.
+The SceneManager **Add** button is a different path. It passes a blank level,
+scans from address 0 for the first free address, limits that dialog allocation
+to 0..254 because address 255 is reserved, seeds `Level N`, and waits for the
+interactive dialog. This command does not emulate that dialog. Exact-address
+action creation can address 255 because the original `FindLevelByAddress`
+path bypasses the blank-dialog allocator.
 
-The retained SceneManager stages each changed PP value once and verifies the
-complete readback. An ordinary connected staging failure restores and verifies
-the original PP values. A disconnected rollback failure remains explicit.
-After successful staging, native mode issues exactly one `PP SAVE`; no project
-metadata is changed and no `PROJECT SAVE` is needed. A fresh `DBGETXML` must
-then contain the exact expected PP values while preserving all non-PP project,
-network, unit, application, group, level, tag, and object-identity data.
+Missing applications and trigger groups remain unsupported. A missing trigger
+continues to follow the bounded retained fallback instead of being created.
+A duplicate level/address/OID, a native conflict or capacity refusal, an
+ambiguous add receipt, or a readback mismatch stops the transaction. Existing
+levels and their labels are preserved byte-for-byte in the admitted XML model.
 
-Once `PP SAVE` is attempted, a lost or interrupted reply is outcome-uncertain.
-The command does not retry or claim rollback. Inspect
-`pp_save_attempted`, `pp_save_confirmed`, `pp_save_outcome_uncertain`,
-`pp_state_uncertain`, `database_state_uncertain`, and
-`database_persistence` in the result or error evidence. Only complete
-post-save `DBGETXML` verification returns `saved=true`.
+## Admitted metadata and image facts
+
+The project and selected-network addresses must be unambiguous. The unit and
+every selected-network application, group and level must have a unique native
+OID. Existing `Level` records require canonical byte `Address` and `Value`
+fields. The unit identity and all decoded PP values must match the supported
+profile. Group 255 exists only as the original in-memory `<Unused>` object when
+a consumed lookup needs it.
+
+Empty and `TEXT` `TagDLT` variants produce their exact text with
+`image_present=false`. Existing `DYNAMIC` and `FONT` variants depend on
+project images; `ICON` depends on Toolkit's local DLTP index. Neither source is
+present in `DBGETXML`, so consuming such an existing action fails closed. Use a
+separately established caller cache when those image facts are required.
+
+The cache limits remain 256 applications, 4,096 listed groups, 512 lifecycle
+group facts, and 8,192 level addresses. Scene operations retain the existing
+eight-scene and 64-item boundary. A scene-capacity-stopped edit is review-only
+and cannot reach metadata or PP mutation.
+
+## Backup, save ordering, and failure evidence
+
+Apply accepts one unchanged plan issued by the same transaction. It first
+rechecks the exact XML bytes, semantic metadata, PP snapshot, and closed/idle
+network inventory. When levels are planned, it then performs this order:
+
+1. `PROJECT SAVE` the unchanged source and `PROJECT COPY` it to the retained
+   backup;
+2. repeat the semantic stale check and select the source project;
+3. issue each `DBADDSAFE ... Level ... Action Selector N`, resolve its one new
+   OID, and `DBSETSAFE !OID/Value N`;
+4. read back every created OID, address, value, name, blank-label default and
+   all existing metadata;
+5. when PP edits exist, stage and verify them, then attempt one `PP SAVE`;
+6. attempt one target `PROJECT SAVE`, then close/load the project; and
+7. verify created objects, expected PP, unrelated units/networks, and all
+   pre-existing metadata after reload.
+
+`DBADDSAFE`/`DBSETSAFE`, `PP SAVE`, and `PROJECT SAVE` are separate native
+operations. There is no cross-operation commit. Before the first applicable
+persistence save starts (`PP SAVE` when PP changes exist, otherwise the target
+`PROJECT SAVE`), a staging or metadata failure reverses known created OIDs,
+persists the inverse, reloads, and requires the complete admitted source
+snapshot. If an add receipt is ambiguous, the command avoids saving an
+unidentified object and reloads the source saved before backup. A failed
+rollback is reported as uncertain.
+
+After either `PP SAVE` or the target `PROJECT SAVE` is attempted, the command
+performs no rollback or automatic retry. A lost save reply, an interruption,
+or a post-save verification failure can leave a partial result. Inspect
+`pp_save_attempted`, `pp_save_confirmed`,
+`target_project_save_attempted`, `target_project_save_confirmed`, both
+`*_outcome_uncertain` fields, `partial_failure_possible`, the per-object
+receipts, and `database_persistence`. Only complete readback after any required
+reload returns `saved=true`.
+
+If the plan changes PP only, the existing single `PP SAVE` path remains and no
+metadata backup or target `PROJECT SAVE` is needed. A true no-op performs no
+save.
 
 ## Evidence boundary
 
 [`edlt-scene-metadata-evidence.json`](../research/fixtures/edlt-scene-metadata-evidence.json)
-pins the original sources already used by the retained SceneManager and parent
-metadata research. Portable tests cover exact text-label derivation, missing
-object normalization, duplicate/stale/image-dependent rejection, capacity,
-CLI guards, metadata preservation, connected staging rollback, and the lost
-save-reply boundary.
+pins the managed sources plus the Toolkit executable/map used to establish the
+exact creation and allocator paths. Portable tests cover projected plans,
+exact names/addresses/values/default labels, native command ordering, initial
+and post-backup stale checks, conflicts, preservation, pre-save rollback, lost
+PP/project save replies, and interruption evidence. An optional disposable
+Schneider C-Gate gate requires all `CBUS_EDLT_SCENE_LEVEL_*` opt-in variables,
+the native host, and the exact unit-spec directory.
 
-No new original WinForms execution was performed for this additive resolver.
-The retained SceneManager's earlier model and three bounded control probes
-remain the original evidence. Complete control binding, the add-level dialog,
-project image download, Schneider C-Gate acceptance for this combined path,
-and physical device/display behavior remain unverified.
+```sh
+CBUS_EDLT_SCENE_LEVEL_ACCEPTANCE=1 \
+CBUS_EDLT_SCENE_LEVEL_UNIT=//PROJECT/254/p/20 \
+CBUS_EDLT_SCENE_LEVEL_BACKUP=SCENEBK \
+CBUS_EDLT_SCENE_LEVEL_GROUP=42 \
+CBUS_EDLT_SCENE_LEVEL_ACTION=13 \
+CBUS_CGATE_TEST_HOST=127.0.0.1 \
+CBUS_UNITSPEC_DIR=/path/to/specs \
+PYTHONPATH=src:tests python3.13 -m unittest \
+  tests.test_edlt_scene_metadata.SceneMetadataTests.test_optional_native_missing_action_level_transaction -v
+```
+
+The selected group must already exist and the selected action must be absent.
+The gate deliberately leaves the changed disposable source and retained backup
+for inspection.
+
+The optional native gate was not enabled for the recorded offline acceptance.
+No fresh complete WinForms SceneManager or interactive add dialog was run for
+this slice. Full control binding, missing trigger-group creation, project-image
+download, physical display behavior, scene learning, and physical trigger
+execution remain outside this boundary.

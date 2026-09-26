@@ -59,7 +59,7 @@ class SceneMetadataCLITests(unittest.TestCase):
                 'edlt', 'scene-manager-state', *common,
                 '--list-groups', 1))
         self.assertEqual(plan['format'],
-                         'cbus-native-edlt-scene-metadata-plan-v1')
+                         'cbus-native-edlt-scene-metadata-plan-v2')
         self.assertEqual(state['format'],
                          'cbus-native-edlt-scene-metadata-state-v1')
         self.assertIn('automatic_metadata', state)
@@ -100,6 +100,36 @@ class SceneMetadataCLITests(unittest.TestCase):
         self.assertTrue(saved['saved'])
         self.assertTrue(saved['persistence_verified'])
         self.assertTrue(saved['existing_metadata_preserved'])
+
+    def test_native_missing_action_uses_reviewed_backup_and_creation(self):
+        self.ops.write_text(json.dumps([
+            {'op': 'set-trigger', 'scene': 1, 'group': 43},
+            {'op': 'set-action', 'scene': 1, 'action': 2},
+        ]))
+        session = NativeSession(self.spec, self.client)
+        arguments = (
+            'cgate', 'unit', '--lock-address', '//TEST/254',
+            '--source', '/db//TEST/254/p/20', 'edlt-scene-manager',
+            '--auto-metadata', '--exclusive-project',
+            '--backup-project', 'SCBACKUP', '--operations', self.ops,
+        )
+        with patch('cbus_toolkit.cgate.CGateClient',
+                   return_value=nullcontext(self.client)), patch.object(
+                cli, '_edlt_scene_manager', return_value=self.editor), patch(
+                'cbus_toolkit.edlt_scene_metadata.Programmer',
+                return_value=FakeProgrammer(session)):
+            saved = self.invoke(arguments)
+        self.assertTrue(saved['backup_created'])
+        self.assertTrue(saved['target_project_save_confirmed'])
+        self.assertEqual(saved['objects'][0]['name'], 'Action Selector 2')
+
+        with patch('cbus_toolkit.cgate.CGateClient',
+                   return_value=nullcontext(self.client)), patch.object(
+                cli, '_edlt_scene_manager', return_value=SceneCLIEditor(
+                    self.spec)):
+            rejected = self.invoke((
+                *arguments[:6], '--dry-run', *arguments[6:]), status=1)
+        self.assertIn('--backup-project requires an apply', rejected['error'])
 
     def test_interrupted_native_save_keeps_uncertainty_evidence(self):
         session = NativeSession(self.spec, self.client)

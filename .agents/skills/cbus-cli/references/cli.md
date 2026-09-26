@@ -205,12 +205,25 @@ cbus-toolkit cgate unit --lock-address //PROJECT/254 \
   --auto-metadata --exclusive-project --operations scene-operations.json
 ```
 
-The automatic path requires all project networks closed and idle, creates no
-application/group/level, rejects consumed image-dependent labels, and performs
-only the existing PP edit. Removing `--dry-run` rechecks exact XML and PP,
-stages with connected rollback, issues one PP SAVE, and verifies non-PP
-metadata preservation. Never retry a lost or interrupted save reply. Use the
-manual cache path for facts obtained from project images or the DLTP index.
+The automatic path requires all project networks closed and idle. It creates no
+application or trigger group. Exact missing actions reached by retained
+getters/setters appear in `planned_creations` as `Action Selector N` with
+Address=Value=N and four blank variants. Apply with a reviewed backup:
+
+```sh
+cbus-toolkit cgate unit --lock-address //PROJECT/254 \
+  --source /db//PROJECT/254/p/20 edlt-scene-manager \
+  --auto-metadata --exclusive-project --backup-project SCBACKUP \
+  --operations scene-operations.json
+```
+
+Apply rechecks the exact source before backup and its semantics afterward,
+creates and reads back levels, stages PP with connected rollback, then records
+separate PP SAVE and PROJECT SAVE results and verifies after reload. Automatic
+rollback ends before the first applicable PP or target-project save. Never
+retry a lost or interrupted save reply.
+Consumed image-dependent existing labels fail closed; use the manual cache
+path only for independently established project-image or DLTP facts.
 
 Allocation is case-sensitive and ordered. It reuses the first exact text slot,
 otherwise chooses the highest whole-unit unreferenced slot. The selected

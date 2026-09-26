@@ -53,6 +53,7 @@ class NativeSession(Session):
         return False
 
     def save_to_source(self):
+        self.client.commands.append('PP SAVE')
         self.client.values = deepcopy(self.current)
         if self.save_error is not None:
             raise self.save_error
@@ -96,10 +97,24 @@ class MetadataClient:
             + '</FlavourID><TagType>' + row['type'] + '</TagType><TagValue>'
             + escape(row.get('value', '')) + '</TagValue></TagDLT>'
             for row in group.get('tags', ()))
-        levels = ''.join(
-            '<Level Value="' + str(level) + '"><OID>' + oid(20000 + application * 256 + address * 16 + level)
-            + '</OID><TagName>Level ' + str(level) + '</TagName><Address>'
-            + str(level) + '</Address></Level>' for level in group.get('levels', ()))
+        levels = ''
+        for level in group.get('levels', ()):
+            level_tags = ''.join(
+                '<TagDLT><LanguageID>' + str(row.get('language', 1))
+                + '</LanguageID><FlavourID>' + str(row['variant'] + 1)
+                + '</FlavourID><TagType>' + row['type']
+                + '</TagType><TagValue>' + escape(row.get('value', ''))
+                + '</TagValue></TagDLT>'
+                for row in group.get('level_tags', {}).get(level, ()))
+            identity = group.get('level_oids', {}).get(
+                level, oid(20000 + application * 256 + address * 16 + level))
+            name = group.get('level_names', {}).get(level, 'Level ' + str(level))
+            value = group.get('level_values', {}).get(level, level)
+            levels += ('<Level Value="' + str(value) + '"><OID>' + identity
+                       + '</OID><TagName>' + escape(name)
+                       + '</TagName><Address>' + str(level) + '</Address>'
+                       + ('<TagsDLT>' + level_tags + '</TagsDLT>'
+                          if level_tags else '') + '</Level>')
         kind = group.get('kind', 'NetVar' if application == 203 else 'Group')
         return ('<' + kind + '><OID>' + group['oid'] + '</OID><TagName>'
                 + escape(group['tag']) + '</TagName><Address>' + str(address)
@@ -157,6 +172,28 @@ class MetadataClient:
                           + '//TEST/254: ' + name + '=' + value
                           for index, (name, value) in enumerate(values.items()))
             return CGateResponse(lines, lines[-1], 300)
+        match = __import__('re').fullmatch(
+            r'DBGET !([0-9a-fA-F-]{36})/OID', command)
+        if match:
+            identity = match[1]
+            for application in self.applications.values():
+                for group in application['groups'].values():
+                    if identity in group.get('level_oids', {}).values():
+                        return response(342, command[6:] + '=' + identity)
+            return response(401, 'Unknown OID')
+        match = __import__('re').fullmatch(
+            r'DBSETSAFE !([0-9a-fA-F-]{36})/Value ([0-9]+)', command)
+        if match:
+            identity, value = match[1], int(match[2])
+            for application in self.applications.values():
+                for group in application['groups'].values():
+                    for address, candidate in group.get(
+                            'level_oids', {}).items():
+                        if candidate == identity:
+                            group.setdefault('level_values', {})[
+                                address] = value
+                            return response()
+            return response(401, 'Unknown OID')
         if command == 'PROJECT SAVE TEST':
             self.saved_values = deepcopy(self.values)
             self.saved_applications = deepcopy(self.applications)
@@ -190,6 +227,21 @@ class MetadataClient:
             self.applications[application]['groups'][address] = {
                 'oid': identity, 'tag': match[4], 'kind': kind, 'levels': ()}
             return response(301, 'OID=' + identity)
+        match = __import__('re').fullmatch(
+            r'DBADDSAFE //TEST/254/([0-9]+)/([0-9]+) Level ([0-9]+) (.+)',
+            command)
+        if match:
+            application, group_address, address = map(
+                int, match.group(1, 2, 3))
+            group = self.applications[application]['groups'][group_address]
+            if address in group.get('levels', ()):
+                return response(401, 'Level address already exists')
+            identity = self._new_oid()
+            group['levels'] = tuple(sorted((*group.get('levels', ()), address)))
+            group.setdefault('level_oids', {})[address] = identity
+            group.setdefault('level_names', {})[address] = match[4]
+            group.setdefault('level_values', {})[address] = 0
+            return response(301, 'OID=' + identity)
         if command.startswith('DBDELETE !'):
             identity = command[len('DBDELETE !'):]
             for application, row in list(self.applications.items()):
@@ -202,6 +254,16 @@ class MetadataClient:
                     if group['oid'] == identity:
                         del row['groups'][address]
                         return response()
+                    for level, candidate in list(
+                            group.get('level_oids', {}).items()):
+                        if candidate == identity:
+                            group['levels'] = tuple(
+                                value for value in group.get('levels', ())
+                                if value != level)
+                            for key in ('level_oids', 'level_names',
+                                        'level_values'):
+                                group.get(key, {}).pop(level, None)
+                            return response()
             return response(401, 'Unknown OID')
         raise AssertionError('Unexpected command: ' + command)
 

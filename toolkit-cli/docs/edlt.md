@@ -257,13 +257,15 @@ transaction while preserving unrelated metadata. Image-dependent dynamic
 label facts remain outside the project XML and are rejected when consumed.
 
 The retained [SceneManager](edlt-scene-manager.md) has its own
-[automatic metadata resolver](edlt-scene-metadata.md) for existing objects.
-It builds complete application/group lists, trigger level-address facts and
-safe default-language action labels from the same exact project snapshot. It never
-creates an application, group or level; missing actions retain the original
-normalization behavior. Native apply rechecks the exact XML and PP source,
-uses connected staging rollback, performs one PP SAVE and verifies that all
-non-PP metadata was preserved.
+[automatic metadata resolver](edlt-scene-metadata.md). It builds complete
+application/group lists, trigger level-address facts and safe default-language
+action labels from the same exact project snapshot. Missing exact action
+levels reached by the retained getter/setter are projected as source-backed
+`Action Selector N` records. Native apply creates a retained project backup,
+rechecks the source, creates and reads back those levels, uses connected PP
+staging rollback, then records separate PP SAVE and PROJECT SAVE outcomes and
+verifies after reload. It does not create missing applications or trigger
+groups.
 
 The native acceptance creates a unique marked project with an unopened CNI at
 `127.0.0.1:1`, loads a database-backed 5055EDL PP session and resets defaults.

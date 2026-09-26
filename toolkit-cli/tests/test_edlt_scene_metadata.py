@@ -1,6 +1,7 @@
 """Automatic project metadata for retained eDLT Scene Manager edits."""
 from copy import deepcopy
 import json
+import os
 from pathlib import Path
 import unittest
 
@@ -11,7 +12,7 @@ from cbus_toolkit.edlt_scene_metadata import (
     plan_native_scene_metadata, resolve_native_scene_metadata,
 )
 from tests.test_edlt_parent_metadata import (
-    FakeProgrammer, MetadataClient, NativeSession, oid,
+    FakeProgrammer, MetadataClient, NativeSession, oid, response,
 )
 from tests.test_edlt_scene_manager import cache as scene_cache, operations, vectors
 from tests.test_edlt_lifecycle import fixture
@@ -54,20 +55,6 @@ class SceneMetadataClient(MetadataClient):
     def __init__(self, spec):
         super().__init__(spec, applications=applications())
 
-    def _group_xml(self, application, address, group):
-        value = super()._group_xml(application, address, group)
-        for level, rows in group.get('level_tags', {}).items():
-            marker = '<Level Value="' + str(level) + '">'
-            label_xml = ''.join(
-                '<TagDLT><LanguageID>' + str(row.get('language', 1))
-                + '</LanguageID><FlavourID>' + str(row['variant'] + 1)
-                + '</FlavourID><TagType>' + row['type']
-                + '</TagType><TagValue>' + row['value']
-                + '</TagValue></TagDLT>' for row in rows)
-            value = value.replace(
-                marker, marker + '<TagsDLT>' + label_xml + '</TagsDLT>', 1)
-        return value
-
 
 class SceneMetadataTests(unittest.TestCase):
     def setUp(self):
@@ -91,7 +78,7 @@ class SceneMetadataTests(unittest.TestCase):
         plan = self.plan()
         document = plan.as_dict()
         self.assertEqual(document['format'],
-                         'cbus-native-edlt-scene-metadata-plan-v1')
+                         'cbus-native-edlt-scene-metadata-plan-v2')
         self.assertEqual(document['automatic_metadata']
                          ['metadata_provenance'],
                          'one-admitted-native-project-xml-snapshot')
@@ -119,12 +106,12 @@ class SceneMetadataTests(unittest.TestCase):
             'clear-items', 'clear-scene', 'level-percent', 'ramp', 'sync',
             'validate-valid', 'validate-trigger-duplicate',
             'validate-name-duplicate', 'validate-missing-trigger',
-            'validate-missing-action', 'validate-missing-name',
+            'validate-missing-name',
             'validate-all-four', 'validate-shortcut-first',
             'validate-shortcut-second', 'validate-empty-duplicates',
-            'validate-action255', 'validate-missing-action-duplicate',
+            'validate-action255',
             'validate-all-empty', 'get-new-missing-trigger',
-            'get-set-action-valid', 'get-set-action-missing',
+            'get-set-action-valid',
             'get-disabled-trigger',
         )
         for name in names:
@@ -209,7 +196,7 @@ class SceneMetadataTests(unittest.TestCase):
                 client.xml(), '//TEST/254/p/20', self.values,
                 self.editor.engine, operations('sync'))
 
-    def test_missing_requested_trigger_or_action_is_not_created(self):
+    def test_missing_requested_action_is_projected_with_native_defaults(self):
         rows = (
             {'op': 'set-trigger', 'scene': 1, 'group': 43},
             {'op': 'set-action', 'scene': 1, 'action': 2},
@@ -218,9 +205,28 @@ class SceneMetadataTests(unittest.TestCase):
         plan = self.plan(rows)
         result = plan.scene_plan.source.as_dict()
         self.assertEqual(result['scenes'][0]['raw_trigger'], 43)
-        self.assertEqual(result['scenes'][0]['raw_action'], -1)
-        self.assertFalse(plan.as_dict()['automatic_metadata']
+        self.assertEqual(result['scenes'][0]['raw_action'], 2)
+        document = plan.as_dict()
+        self.assertFalse(document['automatic_metadata']
                          ['missing_objects_auto_created'])
+        self.assertTrue(document['automatic_metadata']
+                        ['missing_objects_projected_for_creation'])
+        self.assertTrue(document['metadata_mutation_planned'])
+        self.assertEqual(document['planned_creations'], [{
+            'kind': 'Level', 'application': 202, 'group': 43,
+            'address': 2, 'value': 2, 'name': 'Action Selector 2',
+            'default_dynamic_labels': [
+                {'value': str(index), 'name': '', 'image_present': False}
+                for index in range(4)],
+            'reasons': ['operation 2 set-action'],
+        }])
+        self.assertEqual(
+            plan.resolved.cache.application_cache.lifecycle.find(
+                202, 43).levels, (2,))
+        self.assertEqual(
+            [row.as_dict() for row in plan.resolved.cache.labels(43, 2)],
+            [{'value': str(index), 'name': '', 'image_present': False}
+             for index in range(4)])
         self.assertFalse(any(command.startswith('DBADD')
                              for command in self.client.commands))
 
@@ -237,9 +243,279 @@ class SceneMetadataTests(unittest.TestCase):
         self.assertTrue(result['saved'])
         self.assertTrue(result['persistence_verified'])
         self.assertTrue(result['existing_metadata_preserved'])
+        self.assertFalse(result['backup_created'])
+        self.assertFalse(result['target_project_save_attempted'])
         self.assertEqual(self.client.applications, before)
         self.assertFalse(any(command.startswith(('DBADD', 'DBDELETE'))
                              for command in self.client.commands))
+        self.assertFalse(any(command.startswith('PROJECT ')
+                             for command in self.client.commands))
+
+    def test_native_missing_action_backup_create_save_reload_and_preserve(self):
+        rows = (
+            {'op': 'set-trigger', 'scene': 1, 'group': 43},
+            {'op': 'set-action', 'scene': 1, 'action': 2},
+        )
+        session = NativeSession(self.spec, self.client)
+        manager = NativeSceneMetadataTransaction(
+            self.client, self.editor,
+            programmer=FakeProgrammer(session))
+        plan = manager.plan(
+            '/db//TEST/254/p/20', operations=rows,
+            exclusive_project=True)
+        before = deepcopy(self.client.applications)
+        result = manager.apply(
+            plan, backup_project='SCBACKUP').as_dict()
+        self.assertTrue(result['saved'] and result['persistence_verified'])
+        self.assertTrue(result['backup_created'])
+        self.assertTrue(result['pp_save_confirmed'])
+        self.assertTrue(result['target_project_save_confirmed'])
+        self.assertEqual(result['database_persistence'],
+                         'verified-after-project-reload')
+        self.assertEqual(len(result['objects']), 1)
+        created = result['objects'][0]
+        self.assertEqual((created['group'], created['address'],
+                          created['value'], created['name']),
+                         (43, 2, 2, 'Action Selector 2'))
+        group = self.client.applications[202]['groups'][43]
+        self.assertIn(2, group['levels'])
+        self.assertEqual(group['level_names'][2], 'Action Selector 2')
+        self.assertEqual(group['level_values'][2], 2)
+        retained = deepcopy(self.client.applications)
+        for mapping in ('level_oids', 'level_names', 'level_values'):
+            retained[202]['groups'][43].pop(mapping, None)
+        retained[202]['groups'][43]['levels'] = ()
+        self.assertEqual(retained, before)
+        add = ('DBADDSAFE //TEST/254/202/43 Level 2 '
+               'Action Selector 2')
+        self.assertIn(add, self.client.commands)
+        self.assertLess(self.client.commands.index('PROJECT COPY TEST SCBACKUP'),
+                        self.client.commands.index(add))
+        self.assertLess(self.client.commands.index(add),
+                        self.client.commands.index('PP SAVE'))
+        self.assertEqual(sum(command == 'PROJECT SAVE TEST'
+                             for command in self.client.commands), 2)
+
+    def test_creation_conflict_and_pre_save_failure_restore_original(self):
+        rows = (
+            {'op': 'set-trigger', 'scene': 1, 'group': 43},
+            {'op': 'set-action', 'scene': 1, 'action': 2},
+        )
+        original = deepcopy(self.client.applications)
+        manager = NativeSceneMetadataTransaction(
+            self.client, self.editor,
+            programmer=FakeProgrammer(NativeSession(
+                self.spec, self.client)))
+        plan = manager.plan('/db//TEST/254/p/20', operations=rows,
+                            exclusive_project=True)
+        self.client.failure = lambda command: (
+            response(401, 'Level capacity or address conflict')
+            if command.startswith('DBADDSAFE ') else None)
+        with self.assertRaisesRegex(NativeSceneMetadataError,
+                                    'capacity or address conflict'):
+            manager.apply(plan, backup_project='SCBACKUP')
+        evidence = manager.last_result.as_dict()
+        self.assertTrue(evidence['rollback_attempted'])
+        self.assertTrue(evidence['rollback_verified'])
+        self.assertFalse(evidence['pp_save_attempted'])
+        self.assertFalse(evidence['database_state_uncertain'])
+        self.assertEqual(self.client.applications, original)
+
+        client = SceneMetadataClient(self.spec)
+        client.values = deepcopy(self.client.saved_values)
+        editor = SceneCLIEditor(self.spec)
+        session = NativeSession(self.spec, client)
+        manager = NativeSceneMetadataTransaction(
+            client, editor, programmer=FakeProgrammer(session))
+        plan = manager.plan('/db//TEST/254/p/20', operations=rows,
+                            exclusive_project=True)
+        session.failure = next(iter(plan.scene_plan.changes))
+        with self.assertRaises(NativeSceneMetadataError):
+            manager.apply(plan, backup_project='SCBACKUP')
+        evidence = manager.last_result.as_dict()
+        self.assertTrue(evidence['rollback_attempted'])
+        self.assertTrue(evidence['rollback_verified'])
+        self.assertFalse(evidence['pp_save_attempted'])
+        self.assertNotIn(2, client.applications[202]['groups'][43]['levels'])
+
+    def test_ambiguous_add_receipt_discards_unsaved_unknown_object(self):
+        rows = (
+            {'op': 'set-trigger', 'scene': 1, 'group': 43},
+            {'op': 'set-action', 'scene': 1, 'action': 2},
+        )
+        original = deepcopy(self.client.applications)
+        manager = NativeSceneMetadataTransaction(
+            self.client, self.editor,
+            programmer=FakeProgrammer(NativeSession(
+                self.spec, self.client)))
+        plan = manager.plan('/db//TEST/254/p/20', operations=rows,
+                            exclusive_project=True)
+
+        def ambiguous(command):
+            if not command.startswith('DBADDSAFE '):
+                return None
+            group = self.client.applications[202]['groups'][43]
+            identity = self.client._new_oid()
+            group['levels'] = (2,)
+            group['level_oids'] = {2: identity}
+            group['level_names'] = {2: 'Action Selector 2'}
+            group['level_values'] = {2: 0}
+            return response(301, 'created without an OID receipt')
+
+        self.client.failure = ambiguous
+        with self.assertRaisesRegex(NativeSceneMetadataError,
+                                    'did not return one OID'):
+            manager.apply(plan, backup_project='SCBACKUP')
+        evidence = manager.last_result.as_dict()
+        self.assertTrue(evidence['unidentified_metadata_mutation'])
+        self.assertTrue(evidence['rollback_verified'])
+        self.assertNotIn('rollback_project_save_confirmed', evidence)
+        self.assertFalse(evidence['database_state_uncertain'])
+        self.assertEqual(self.client.applications, original)
+
+    def test_lost_project_save_after_pp_save_is_partial_and_not_retried(self):
+        rows = (
+            {'op': 'set-trigger', 'scene': 1, 'group': 43},
+            {'op': 'set-action', 'scene': 1, 'action': 2},
+        )
+        session = NativeSession(self.spec, self.client)
+        manager = NativeSceneMetadataTransaction(
+            self.client, self.editor, programmer=FakeProgrammer(session))
+        plan = manager.plan('/db//TEST/254/p/20', operations=rows,
+                            exclusive_project=True)
+        saves = 0
+
+        def fail_second_save(command):
+            nonlocal saves
+            if command == 'PROJECT SAVE TEST':
+                saves += 1
+                if saves == 2:
+                    return ConnectionError('lost project save reply')
+            return None
+
+        self.client.failure = fail_second_save
+        with self.assertRaises(NativeSceneMetadataError):
+            manager.apply(plan, backup_project='SCBACKUP')
+        evidence = manager.last_result.as_dict()
+        self.assertTrue(evidence['pp_save_confirmed'])
+        self.assertTrue(evidence['target_project_save_attempted'])
+        self.assertFalse(evidence['target_project_save_confirmed'])
+        self.assertTrue(evidence['target_project_save_outcome_uncertain'])
+        self.assertTrue(evidence['partial_failure_possible'])
+        self.assertFalse(evidence['rollback_attempted'])
+        self.assertEqual(evidence['automatic_retries'], 0)
+
+    def test_lost_project_save_without_pp_changes_is_not_rolled_back(self):
+        rows = (
+            {'op': 'set-trigger', 'scene': 1, 'group': 43},
+            {'op': 'set-action', 'scene': 1, 'action': 2},
+        )
+        source = self.plan(rows)
+        for name, value in source.scene_plan.changes.items():
+            self.client.values[name] = _render(value)
+
+        session = NativeSession(self.spec, self.client)
+        manager = NativeSceneMetadataTransaction(
+            self.client, self.editor, programmer=FakeProgrammer(session))
+        plan = manager.plan(
+            '/db//TEST/254/p/20',
+            operations=({'op': 'get-action', 'scene': 1},),
+            exclusive_project=True)
+        self.assertTrue(plan.resolved.creations)
+        self.assertFalse(plan.scene_plan.changes)
+        saves = 0
+
+        def fail_second_save(command):
+            nonlocal saves
+            if command == 'PROJECT SAVE TEST':
+                saves += 1
+                if saves == 2:
+                    return ConnectionError('lost project save reply')
+            return None
+
+        self.client.failure = fail_second_save
+        with self.assertRaises(NativeSceneMetadataError):
+            manager.apply(plan, backup_project='SCBACKUP')
+        evidence = manager.last_result.as_dict()
+        self.assertFalse(evidence['pp_save_attempted'])
+        self.assertTrue(evidence['target_project_save_attempted'])
+        self.assertFalse(evidence['target_project_save_confirmed'])
+        self.assertTrue(evidence['target_project_save_outcome_uncertain'])
+        self.assertTrue(evidence['database_state_uncertain'])
+        self.assertFalse(evidence['rollback_attempted'])
+        self.assertEqual(evidence['automatic_retries'], 0)
+
+    def test_after_backup_stale_guard_and_interruption_evidence(self):
+        rows = (
+            {'op': 'set-trigger', 'scene': 1, 'group': 43},
+            {'op': 'set-action', 'scene': 1, 'action': 2},
+        )
+        manager = NativeSceneMetadataTransaction(
+            self.client, self.editor,
+            programmer=FakeProgrammer(NativeSession(
+                self.spec, self.client)))
+        plan = manager.plan('/db//TEST/254/p/20', operations=rows,
+                            exclusive_project=True)
+        reads = 0
+
+        def change_after_backup(command):
+            nonlocal reads
+            if command == 'DBGETXML //TEST':
+                reads += 1
+                if reads == 2:
+                    self.client.applications[56]['tag'] = 'Concurrent edit'
+            return None
+
+        self.client.failure = change_after_backup
+        with self.assertRaisesRegex(NativeSceneMetadataError,
+                                    'changed since planning'):
+            manager.apply(plan, backup_project='SCBACKUP')
+        evidence = manager.last_result.as_dict()
+        self.assertTrue(evidence['backup_created'])
+        self.assertFalse(evidence['metadata_mutation_attempted'])
+        self.assertFalse(evidence['pp_mutation_attempted'])
+
+        client = SceneMetadataClient(self.spec)
+        client.values = deepcopy(self.client.saved_values)
+        editor = SceneCLIEditor(self.spec)
+        manager = NativeSceneMetadataTransaction(
+            client, editor,
+            programmer=FakeProgrammer(NativeSession(self.spec, client)))
+        plan = manager.plan('/db//TEST/254/p/20', operations=rows,
+                            exclusive_project=True)
+        saves = 0
+
+        def interrupt_target_save(command):
+            nonlocal saves
+            if command == 'PROJECT SAVE TEST':
+                saves += 1
+                if saves == 2:
+                    return KeyboardInterrupt('interrupted project save')
+            return None
+
+        client.failure = interrupt_target_save
+        with self.assertRaises(KeyboardInterrupt) as caught:
+            manager.apply(plan, backup_project='SCBACKUP')
+        evidence = caught.exception.edlt_scene_metadata_evidence
+        self.assertTrue(evidence['pp_save_confirmed'])
+        self.assertTrue(evidence['target_project_save_attempted'])
+        self.assertTrue(evidence['target_project_save_outcome_uncertain'])
+        self.assertFalse(evidence['rollback_attempted'])
+        self.assertEqual(evidence['automatic_retries'], 0)
+
+    def test_exact_requested_255_bypasses_blank_dialog_254_capacity(self):
+        rows = (
+            {'op': 'set-trigger', 'scene': 1, 'group': 43},
+            {'op': 'set-action', 'scene': 1, 'action': 255},
+        )
+        plan = self.plan(rows)
+        self.assertEqual(
+            [(row.group, row.address, row.name)
+             for row in plan.resolved.creations],
+            [(43, 255, 'Action Selector 255')])
+        self.assertEqual(plan.as_dict()['native_blank_add_dialog_allocation'],
+                         ('first free address 0..254; outside this automatic '
+                          'exact-address path'))
 
     def test_native_stale_capacity_rollback_and_lost_save_boundaries(self):
         capacity_client = SceneMetadataClient(self.spec)
@@ -313,16 +589,59 @@ class SceneMetadataTests(unittest.TestCase):
         evidence = json.loads(EVIDENCE.read_text())
         acceptance = json.loads(ACCEPTANCE.read_text())
         self.assertEqual(evidence['format'],
-                         'cbus-edlt-scene-metadata-evidence-v1')
+                         'cbus-edlt-scene-metadata-evidence-v2')
         self.assertTrue(evidence['implemented_boundary']
                         ['automatic_existing_metadata_resolution'])
         self.assertFalse(evidence['evidence_boundaries']
                          ['full_scene_manager_control_binding_verified'])
-        self.assertFalse(evidence['implemented_boundary']
-                         ['missing_level_creation'])
+        self.assertTrue(evidence['implemented_boundary']
+                        ['missing_exact_action_level_creation'])
+        self.assertEqual(evidence['original_sources'][0]['sha256'],
+                         ('9d01721abab3beb4724511e7d65e39328c0518e0721caa53'
+                          'f4601cded20655ab'))
         self.assertEqual(acceptance['format'],
-                         'cbus-edlt-scene-metadata-acceptance-v1')
+                         'cbus-edlt-scene-metadata-acceptance-v2')
         self.assertTrue(acceptance['passed'])
+
+    @unittest.skipUnless(
+        os.environ.get('CBUS_EDLT_SCENE_LEVEL_ACCEPTANCE') == '1'
+        and os.environ.get('CBUS_EDLT_SCENE_LEVEL_UNIT')
+        and os.environ.get('CBUS_EDLT_SCENE_LEVEL_BACKUP')
+        and os.environ.get('CBUS_EDLT_SCENE_LEVEL_GROUP')
+        and os.environ.get('CBUS_EDLT_SCENE_LEVEL_ACTION')
+        and os.environ.get('CBUS_CGATE_TEST_HOST')
+        and os.environ.get('CBUS_UNITSPEC_DIR'),
+        'Set the explicit disposable closed-project scene-level acceptance environment')
+    def test_optional_native_missing_action_level_transaction(self):
+        from cbus_toolkit.cgate import CGateClient
+        from cbus_toolkit.unitspec import UnitSpecStore
+
+        group = int(os.environ['CBUS_EDLT_SCENE_LEVEL_GROUP'])
+        action = int(os.environ['CBUS_EDLT_SCENE_LEVEL_ACTION'])
+        rows = (
+            {'op': 'set-trigger', 'scene': 1, 'group': group},
+            {'op': 'set-action', 'scene': 1, 'action': action},
+        )
+        editor = SceneCLIEditor(
+            UnitSpecStore(os.environ['CBUS_UNITSPEC_DIR']).load('KEYGL5.xml'))
+        with CGateClient(
+                os.environ['CBUS_CGATE_TEST_HOST'],
+                int(os.environ.get('CBUS_CGATE_TEST_PORT', '20023')),
+                timeout=30) as client:
+            manager = NativeSceneMetadataTransaction(client, editor)
+            plan = manager.plan(
+                os.environ['CBUS_EDLT_SCENE_LEVEL_UNIT'], operations=rows,
+                exclusive_project=True)
+            self.assertEqual(
+                [(row.group, row.address) for row in plan.resolved.creations],
+                [(group, action)])
+            result = manager.apply(
+                plan, backup_project=os.environ[
+                    'CBUS_EDLT_SCENE_LEVEL_BACKUP']).as_dict()
+        self.assertTrue(result['persistence_verified'])
+        self.assertTrue(result['pp_save_confirmed'])
+        self.assertTrue(result['target_project_save_confirmed'])
+        self.assertFalse(result['physical_device_programmed'])
 
 
 if __name__ == '__main__':

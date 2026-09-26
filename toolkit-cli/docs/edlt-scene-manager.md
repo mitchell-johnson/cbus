@@ -2,7 +2,7 @@
 
 `EdltSceneManager` edits the retained scene objects for KEYGL5 / 5055EDL firmware 5.5.00. This is an additive workflow beside the declarative scene-table helper. It loads once, applies ordered operations to the same logical scene and group references, then serializes and calculates the five configuration CRCs. Exports are review-only; resuming arbitrary exported model identities is unsupported.
 
-The implemented scope is `model`. The original WinForms SceneManager was separately exercised for baseline binding, percent-cell synchronization and copy into an empty scene. Those three observations do not establish complete panel initialization or all UI interactions. This model editor itself performs no live I/O. One-shot capture and broadcast are provided by the separate [scene live coordinator](edlt-scene-live.md), and [retained scene trigger invocation](edlt-scene-trigger.md) composes the resolved group/action pair with native Trigger Control. Full control timing, confirmation dialogs, metadata creation and physical execution verification remain excluded. Static scene-name allocation is a database PP edit restricted to this exact KEYGL5 / 5055EDL / 5.5.00 profile.
+The implemented scope is `model`. The original WinForms SceneManager was separately exercised for baseline binding, percent-cell synchronization and copy into an empty scene. Those three observations do not establish complete panel initialization or all UI interactions. This model editor itself performs no live I/O. One-shot capture and broadcast are provided by the separate [scene live coordinator](edlt-scene-live.md), and [retained scene trigger invocation](edlt-scene-trigger.md) composes the resolved group/action pair with native Trigger Control. Full control timing, confirmation dialogs and physical execution verification remain excluded. Static scene-name allocation is a database PP edit restricted to this exact KEYGL5 / 5055EDL / 5.5.00 profile. [Automatic scene metadata](edlt-scene-metadata.md) is a separate outer transaction: it can create exact missing action levels before applying this pure model plan without turning the model API itself into an I/O operation.
 
 ```python
 from cbus_toolkit.edlt_scene_manager import EdltSceneManager, SceneManagerCache
@@ -36,7 +36,7 @@ Supported operation dictionaries all contain `op` and `scene`:
 | `set-ramp` | `item_id`, `ramp_rate` | Sets one raw ramp code. |
 | `sync-levels` | `item_id` | Copies the explicitly selected current item's level to every item in that scene. |
 | `set-trigger` | `group` | Sets the numeric trigger reference without implicitly resolving other fields. |
-| `set-action` | `action` | Invokes original-style action lookup and dynamic-label refresh; a known missing action becomes -1. Disabled trigger ignores the assignment. |
+| `set-action` | `action` | Invokes original-style action lookup and dynamic-label refresh. With a manual cache, an explicitly absent action becomes -1. The automatic outer transaction projects the original exact-address creation side effect before this model runs. A disabled trigger ignores the assignment. |
 | `set-name-index` | `index`: 0–63 or 255 | Selects an existing static slot or unused name. No allocation or reindexing occurs. |
 | `set-name-text` | `text`: nonblank, at most 63 UTF-8 bytes, no NUL | Releases this scene's old name reference, reuses an exact existing string or allocates the highest unreferenced static slot, then binds the scene to it. |
 | `get-trigger`, `get-action` | none | Explicitly observes the original potentially mutating getter. |
@@ -78,10 +78,13 @@ cbus-toolkit cgate unit --lock-address //OWNED/254 \
 
 It resolves complete application/group lists, consumed trigger-level addresses
 and safe default-language action labels from one exact `DBGETXML` snapshot.
-It creates no application, group or level. Image-dependent action labels fail
-closed. Native apply rechecks the exact project and PP snapshot, uses the
-existing connected staging rollback, issues one PP SAVE, and verifies that all
-non-PP project metadata was preserved. A lost save reply is never retried.
+It creates no application or trigger group. A missing exact action reached by
+the retained getter/setter is planned as `Action Selector N`, with matching
+Address/Value and four blank label variants. Image-dependent existing action
+labels fail closed. Native apply rechecks before and after its retained backup,
+creates and reads back planned levels, stages PP with connected rollback, then
+records separate PP SAVE and PROJECT SAVE outcomes and verifies after reload.
+A lost save reply is never retried.
 
 ## Declared cache
 

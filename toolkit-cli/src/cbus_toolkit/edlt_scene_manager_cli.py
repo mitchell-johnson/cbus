@@ -21,6 +21,10 @@ def options(parser, *, state_only=False, surface='manual'):
                             help='Derive guarded scene metadata from the live project snapshot')
         parser.add_argument('--exclusive-project', action='store_true',
                             help='Declare exclusive closed-project use; required with --auto-metadata')
+        parser.add_argument(
+            '--backup-project',
+            help=('Retained project backup name used before automatic level '
+                  'creation; defaults to a generated Bxxxxxxx name'))
     else:
         parser.add_argument('--metadata', type=Path, required=True,
                             help='Scene Manager application and DynamicAll cache facts')

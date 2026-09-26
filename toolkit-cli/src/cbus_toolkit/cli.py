@@ -2754,6 +2754,8 @@ def _programming(args, client):
             raise ValueError("Automatic eDLT scene metadata requires /db//PROJECT/network/p/unit")
         if not args.exclusive_project:
             raise ValueError("Automatic eDLT scene metadata requires --exclusive-project")
+        if args.dry_run and args.backup_project is not None:
+            raise ValueError("--backup-project requires an apply, without --dry-run")
         from .edlt_parent_metadata import _unit_path
         from .edlt_scene_manager_cli import operations as scene_operations
         from .edlt_scene_metadata import NativeSceneMetadataTransaction
@@ -2770,15 +2772,18 @@ def _programming(args, client):
             validate=args.validate, exclusive_project=True)
         if args.dry_run:
             return {**plan.as_dict(), "applied": False, "saved": False}
-        result = manager.apply(plan).as_dict()
+        result = manager.apply(
+            plan, backup_project=args.backup_project).as_dict()
         state = getattr(args, "_ordered_control_state", None)
         if state is not None:
             state.update(evidence={**result, "operation_completed": True},
                          kind="scene_metadata")
         return result
     if (args.remote_action == "edlt-scene-manager"
-            and getattr(args, "exclusive_project", False)):
-        raise ValueError("--exclusive-project requires --auto-metadata")
+            and (getattr(args, "exclusive_project", False)
+                 or getattr(args, "backup_project", None) is not None)):
+        raise ValueError(
+            "--exclusive-project and --backup-project require --auto-metadata")
     if (args.remote_action == "edlt-parent-transaction"
             and getattr(args, "auto_metadata", False)):
         if args.unit_type is not None or args.source is None:

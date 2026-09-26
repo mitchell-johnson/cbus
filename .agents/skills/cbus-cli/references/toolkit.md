@@ -125,13 +125,17 @@ image-dependent dynamic facts fail closed. See
 
 Retained SceneManager edits have a separate automatic resolver with the same
 offline/native option shapes. It derives complete existing application/group
-lists, consumed trigger level sets and safe default-language action text. It
-does not create metadata; missing action levels remain missing. Native apply
-requires the exact source-network lock, closed/idle project networks and
-exclusive caller ownership, rechecks the XML and PP source, then performs one
-PP SAVE and verifies non-PP metadata preservation. Treat a lost save reply as
-uncertain and never retry it. Use manual `--metadata` for consumed
-DYNAMIC/FONT/ICON labels. See
+lists, consumed trigger level sets and safe default-language action text. An
+exact missing action reached by the retained getter/setter is planned under
+the existing Trigger Control group as `Action Selector N`, Address=Value=N,
+with four blank variants. Review every creation. Native apply requires the
+exact source-network lock, closed/idle project networks and exclusive caller
+ownership. Use `--backup-project` when applying: it saves/copies the source,
+rechecks it, creates and reads back levels, then crosses separate PP SAVE and
+PROJECT SAVE boundaries. Rollback stops once either applicable save is
+attempted; treat a lost save reply as uncertain and never retry it. Missing applications/groups
+and image-dependent label facts remain unsupported; use manual `--metadata`
+for independently established DYNAMIC/FONT/ICON labels. See
 `toolkit-cli/docs/edlt-scene-metadata.md`.
 
 The lifecycle receipt names all five calculated CRC fields. Do not infer a
