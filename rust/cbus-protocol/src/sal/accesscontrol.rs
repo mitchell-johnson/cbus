@@ -80,7 +80,9 @@ pub fn decode_sals(data: &[u8]) -> Result<Vec<AccessControlMessage>, DecodeError
     if data.is_empty() || !data.len().is_multiple_of(3) {
         return Err(DecodeError::new("invalid Access Control SAL length"));
     }
-    data.chunks_exact(3)
+    data.as_chunks::<3>()
+        .0
+        .iter()
         .map(|chunk| {
             let zone = chunk[1];
             let point = chunk[2];
