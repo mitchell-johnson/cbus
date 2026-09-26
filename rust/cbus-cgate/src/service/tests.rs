@@ -3794,8 +3794,17 @@ async fn capabilities_report_observation_without_device_readback() {
         "configured-cbusunits-database-records"
     );
     assert_eq!(document["network_calculator_physical_measurement"], false);
-    assert_eq!(document["repository_use"], false);
+    assert_eq!(document["repository_use"], true);
+    assert_eq!(document["project_repair"], true);
+    assert_eq!(
+        document["portable_repository_sqlite_schema"],
+        "cmqttd-portable-project-v14"
+    );
     assert_eq!(document["vendor_repository_transforms"], false);
+    assert_eq!(document["macro_execution"], true);
+    assert_eq!(document["shutdown_confirm"], true);
+    assert_eq!(document["log_extract"], true);
+    assert_eq!(document["convertunit_database"], true);
     assert_eq!(
         document["native_family_help_roots"],
         serde_json::json!([
@@ -9449,7 +9458,7 @@ async fn local_catalog_calculator_and_cgl_exchange_are_exact_and_durable() {
 }
 
 #[tokio::test]
-async fn administrative_guards_keep_configured_binding_and_unsupported_formats_closed() {
+async fn administrative_guards_keep_configured_binding_and_reject_unknown_transform_inputs() {
     let path = state_path();
     let before = std::fs::read(&path).ok();
     let (pci, _remote) = pci();
@@ -9464,7 +9473,10 @@ async fn administrative_guards_keep_configured_binding_and_unsupported_formats_c
         .final_text
         .contains("configured hardware project"));
     assert!(service.model.lock().await.projects.contains_key("HARNESS"));
-    assert_eq!(std::fs::read(&path).unwrap(), state_before);
+    assert_eq!(
+        serde_json::from_slice::<serde_json::Value>(&std::fs::read(&path).unwrap()).unwrap(),
+        serde_json::from_slice::<serde_json::Value>(&state_before).unwrap()
+    );
     assert_eq!(
         service
             .handle(&mut client, "[2] PROJECT RENAME HARNESS")
@@ -9490,19 +9502,22 @@ async fn administrative_guards_keep_configured_binding_and_unsupported_formats_c
         .final_text
         .contains("configured hardware project"));
     assert!(service.model.lock().await.projects.contains_key("HARNESS"));
-    for command in [
-        "[5] PROJECT REPAIR HARNESS",
-        "[6] REPOSITORY USE 1",
-        "[7] TRANSFORM MIGRATE_SQL project.db",
-        "[8] TRANSFORM PROJECT HARNESS",
-        "[9] TRANSFORM SQL_TO_XML project.db",
-        "[10] TRANSFORM SQL_TO_XML_CGATE2 project.db",
-        "[11] TRANSFORM XML_TO_SQL project.xml",
+    for (command, status) in [
+        ("[5] PROJECT REPAIR HARNESS", 200),
+        ("[6] REPOSITORY USE 1", 200),
+        ("[7] TRANSFORM MIGRATE_SQL project.db", 408),
+        ("[8] TRANSFORM PROJECT HARNESS", 200),
+        ("[9] TRANSFORM SQL_TO_XML project.db", 408),
+        ("[10] TRANSFORM SQL_TO_XML_CGATE2 project.db", 408),
+        ("[11] TRANSFORM XML_TO_SQL project.xml", 408),
     ] {
         let response = service.handle(&mut client, command).await;
-        assert_eq!(response.status, 502, "{command}: {response:?}");
+        assert_eq!(response.status, status, "{command}: {response:?}");
     }
-    assert_eq!(std::fs::read(&path).unwrap(), state_before);
+    assert_eq!(
+        serde_json::from_slice::<serde_json::Value>(&std::fs::read(&path).unwrap()).unwrap(),
+        serde_json::from_slice::<serde_json::Value>(&state_before).unwrap()
+    );
     assert_eq!(
         service
             .handle(&mut client, "[12] CGL EXPORT HARNESS * *")

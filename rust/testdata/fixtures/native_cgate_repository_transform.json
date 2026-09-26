@@ -96,7 +96,7 @@
     "current_index_success_without_projects": "200 OK.",
     "when_any_project_open": "400 Syntax Error: Cannot change repository while projects are open.",
     "scope": "server-global",
-    "cmqttd_boundary": "Remain 502: cmqttd has one always-loaded atomic cmqttd-json repository and no safe server-global switch."
+    "cmqttd_boundary": "cmqttd exposes exactly one always-loaded atomic JSON repository. USE 1 is an idempotent selection; any other numeric index returns 408 and no hidden repository or host path is selected."
   },
   "transform": {
     "MIGRATE_SQL": {
@@ -119,6 +119,16 @@
       "syntax": "TRANSFORM XML_TO_SQL <source-name> [dest-name]",
       "destination": "Schneider SQLite .db"
     },
-    "cmqttd_boundary": "Remain 502: cmqttd-json is neither Schneider SQLite nor vendor project XML, and no format-faithful migration/XSLT transaction is available."
+    "cmqttd_implementation": {
+      "sqlite_schema": "cmqttd-portable-project-v14",
+      "sqlite_is_real": true,
+      "xml_round_trip_byte_preserving": true,
+      "custom_xslt": true,
+      "xslt_network_access": false,
+      "host_filesystem": false,
+      "controlled_namespace": "durable FILE store",
+      "vendor_private_sqlite_accepted": false
+    },
+    "cmqttd_boundary": "All five commands execute against cmqttd's versioned portable SQLite/XML representation in the controlled FILE namespace. Unrelated or private Schneider SQLite schemas are rejected explicitly instead of being misidentified as cmqttd data."
   }
 }

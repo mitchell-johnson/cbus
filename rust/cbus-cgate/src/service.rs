@@ -2284,8 +2284,27 @@ impl Service {
                 serde_json::Value::String("configured-cbusunits-database-records".to_string());
             capabilities["network_calculator_physical_measurement"] =
                 serde_json::Value::Bool(false);
-            capabilities["repository_use"] = serde_json::Value::Bool(false);
+            capabilities["repository_use"] = serde_json::Value::Bool(true);
+            capabilities["project_repair"] = serde_json::Value::Bool(true);
+            capabilities["portable_repository_transforms"] = serde_json::json!([
+                "migrate_sql",
+                "project",
+                "sql_to_xml",
+                "sql_to_xml_cgate2",
+                "xml_to_sql"
+            ]);
+            capabilities["portable_repository_sqlite_schema"] =
+                serde_json::Value::String("cmqttd-portable-project-v14".to_string());
             capabilities["vendor_repository_transforms"] = serde_json::Value::Bool(false);
+            capabilities["macro_execution"] = serde_json::Value::Bool(true);
+            capabilities["macro_storage"] =
+                serde_json::Value::String("controlled-file-namespace".to_string());
+            capabilities["shutdown_confirm"] = serde_json::Value::Bool(true);
+            capabilities["log_extract"] = serde_json::Value::Bool(true);
+            capabilities["convertunit_database"] = serde_json::Value::Bool(true);
+            capabilities["test_spam_commands"] =
+                serde_json::json!(["ereport", "lighting", "list", "stop"]);
+            capabilities["access_control_commands"] = serde_json::json!(["close", "lock"]);
             capabilities["native_family_help_roots"] = serde_json::json!([
                 "applications",
                 "calculator",

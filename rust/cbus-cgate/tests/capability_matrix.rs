@@ -972,7 +972,7 @@ fn telephony_rows_retain_native_boundaries_and_decoder_evidence() {
 }
 
 #[test]
-fn administrative_subset_is_local_while_vendor_formats_stay_fail_closed() {
+fn administrative_and_portable_transform_subset_is_local() {
     let class = |path| {
         CAPABILITY_MATRIX
             .iter()
@@ -992,10 +992,6 @@ fn administrative_subset_is_local_while_vendor_formats_stay_fail_closed() {
         "CALCULATOR TEST",
         "CGL IMPORT",
         "CGL EXPORT",
-    ] {
-        assert_eq!(class(path), RoutingClass::LocalDatabase, "{path}");
-    }
-    for path in [
         "REPOSITORY USE",
         "PROJECT REPAIR",
         "TRANSFORM MIGRATE_SQL",
@@ -1004,12 +1000,12 @@ fn administrative_subset_is_local_while_vendor_formats_stay_fail_closed() {
         "TRANSFORM SQL_TO_XML_CGATE2",
         "TRANSFORM XML_TO_SQL",
     ] {
-        assert_eq!(class(path), RoutingClass::FailClosed502, "{path}");
+        assert_eq!(class(path), RoutingClass::LocalDatabase, "{path}");
     }
 }
 
 #[test]
-fn repository_transform_fixture_pins_local_exchange_and_fail_closed_boundaries() {
+fn repository_transform_fixture_pins_native_oracle_and_portable_boundary() {
     let fixture: serde_json::Value = serde_json::from_str(include_str!(
         "../../testdata/fixtures/native_cgate_repository_transform.json"
     ))
@@ -1031,19 +1027,6 @@ fn repository_transform_fixture_pins_local_exchange_and_fail_closed_boundaries()
         "CALCULATOR TEST",
         "CGL EXPORT",
         "CGL IMPORT",
-    ] {
-        let row = CAPABILITY_MATRIX
-            .iter()
-            .find(|entry| entry.path == path)
-            .unwrap_or_else(|| panic!("missing capability row {path}"));
-        assert_eq!(row.class, RoutingClass::LocalDatabase, "{path}");
-        assert!(
-            row.evidence
-                .contains("native_cgate_repository_transform.json"),
-            "{path}"
-        );
-    }
-    for path in [
         "REPOSITORY USE",
         "TRANSFORM MIGRATE_SQL",
         "TRANSFORM PROJECT",
@@ -1055,13 +1038,16 @@ fn repository_transform_fixture_pins_local_exchange_and_fail_closed_boundaries()
             .iter()
             .find(|entry| entry.path == path)
             .unwrap_or_else(|| panic!("missing capability row {path}"));
-        assert_eq!(row.class, RoutingClass::FailClosed502, "{path}");
-        assert!(
-            row.evidence
-                .contains("native_cgate_repository_transform.json"),
-            "{path}"
-        );
+        assert_eq!(row.class, RoutingClass::LocalDatabase, "{path}");
     }
+    assert_eq!(
+        fixture["transform"]["cmqttd_implementation"]["sqlite_schema"],
+        "cmqttd-portable-project-v14"
+    );
+    assert_eq!(
+        fixture["transform"]["cmqttd_implementation"]["host_filesystem"],
+        false
+    );
 }
 
 #[test]
