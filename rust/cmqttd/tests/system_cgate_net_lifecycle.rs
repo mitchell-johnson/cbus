@@ -1,5 +1,5 @@
-//! Real cmqttd process: the native-evidenced NET catalogue stays local while
-//! NET LEARN and NETWORK LOCATE share the MQTT PCI with exactly-once delivery.
+//! Real cmqttd process: the native-evidenced NET catalogue and runtime
+//! lifecycle coexist with MQTT while physical management shares its PCI.
 
 mod util;
 
@@ -123,10 +123,11 @@ async fn net_lifecycle_is_durable_confirmed_authenticated_and_keeps_mqtt_live() 
         capabilities["network_management_delivery_semantics"],
         "pci-confirmed-exactly-once-no-replay"
     );
-    assert_eq!(
-        capabilities["net_lifecycle_fail_closed"],
-        json!(["close", "open", "unravel", "topology_explore"])
-    );
+    assert_eq!(capabilities["net_lifecycle_fail_closed"], json!([]));
+    assert_eq!(capabilities["net_open_close_preserves_mqtt"], true);
+    assert_eq!(capabilities["project_runtime_start_stop"], true);
+    assert_eq!(capabilities["net_unravel_direct_safe_planner"], true);
+    assert_eq!(capabilities["topology_explore_physical"], true);
 
     let learn = checksummed("053800030101FE");
     let before = sys.pci.count_payload(&learn);
@@ -224,25 +225,31 @@ async fn net_lifecycle_is_durable_confirmed_authenticated_and_keeps_mqtt_live() 
     );
     assert_eq!(sys.pci.count_payload(&group_locate), before + 1);
 
-    // These paths could take ownership of interfaces or run a whole-network
-    // destructive algorithm and therefore stay closed before bus I/O.
+    // Runtime close/stop clears volatile C-Gate observations while retaining
+    // ownership of cmqttd's shared PCI; open/start restores the bound runtime
+    // network without making another CNI connection.
     let before_frames = sys.pci.frames().len();
     for (tag, text) in [
-        ("open", "NET OPEN //HARNESS/254"),
         ("close", "NET CLOSE //HARNESS/254"),
-        ("unravel", "NET UNRAVEL //HARNESS/254"),
-        ("explore", "TOPOLOGY EXPLORE cni@127.0.0.1:1"),
+        ("open", "NET OPEN //HARNESS/254"),
+        ("stop", "PROJECT STOP HARNESS"),
+        ("start", "PROJECT START HARNESS"),
     ] {
+        let response = command(&mut reader, &mut writer, tag, text).await;
         assert!(
-            command(&mut reader, &mut writer, tag, text)
-                .await
-                .last()
-                .unwrap()
-                .starts_with("502"),
-            "{text}"
+            response.last().unwrap().starts_with("200 OK"),
+            "{text}: {response:?}"
         );
     }
     assert_eq!(sys.pci.frames().len(), before_frames);
+    assert_eq!(sys.pci.connections(), 1);
+    assert_eq!(
+        command(&mut reader, &mut writer, "bad-topo", "TOPOLOGY EXPLORE bad").await,
+        [
+            "470-Bad interface specification for NET0 bad",
+            "408 Operation failed: bad interface specification"
+        ]
+    );
 
     // NET management has no MQTT state schema. Ordinary lighting still
     // flows both ways over the same broker and shared fake PCI.

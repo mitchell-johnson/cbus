@@ -611,9 +611,9 @@ fn project_identity_argument(body: &str) -> Result<String, ProjectIdentityArgume
 /// CGL import progress `380`,
 /// PINGU/digest `302`, SYNCNEW discovery/failure `303`/`408`, multiplicity
 /// `120`), and retained DALI command/response diagnostics (`100`, `320`).
-const ENVELOPE_CODES: [u16; 20] = [
-    100, 120, 130, 134, 233, 300, 302, 303, 304, 305, 315, 320, 342, 343, 345, 346, 347, 380, 408,
-    451,
+const ENVELOPE_CODES: [u16; 30] = [
+    100, 120, 130, 134, 233, 300, 302, 303, 304, 305, 315, 320, 321, 322, 323, 324, 325, 326, 342,
+    343, 345, 346, 347, 380, 408, 451, 470, 471, 472, 473,
 ];
 
 /// True when a reply line already carries a native multi-status envelope.

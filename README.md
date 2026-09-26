@@ -498,8 +498,10 @@ Enable Control, clock, Temperature Broadcast, native text/icon/Unicode/dynamic-b
 label commands, standard label-cache clear, eDLT dynamic-label clear, complete-coverage
 `NET PINGU`, identity-populating `NET SYNC`, five-pass general `NET SYNCNEW`,
 shared-interface read-only `NET PROJECT_IDENTIFY`, verified physical `NET SET_PROJECT_IDENTIFY` parameter-35 writes,
-duplicate-aware `NET CHECKUNIT`, guarded physical unit readdressing, the bounded two-unit
-`NET UNRAVELUNIT ... 255 MATCHDB` workflow, unit identity, schema-driven physical `PP LOAD`, verified physical
+duplicate-aware `NET CHECKUNIT`, guarded physical unit readdressing, safe direct-network
+`NET UNRAVEL`/`NET UNRAVELUNIT` planning, `DO ... UNRAVEL`, runtime `NET OPEN`/`NET CLOSE`
+and `PROJECT START`/`PROJECT STOP`, physical `TOPOLOGY EXPLORE`, unit identity,
+schema-driven physical `PP LOAD`, verified physical
 `PP SAVE` for `direct`, `edlt`, `paged`, `ncc`, `giu`,
 `sgiu`, `dali`, `goc`, `gocbyt`, and `goc2` parameters,
 extended-memory access, live observations, and persistent database operations while MQTT
@@ -539,10 +541,15 @@ C-Gate's lifecycle boundary. Its active definitions and `DB`/`FILE` snapshots
 are atomic `cmqttd-json` state; `FILE` is an internal snapshot and never opens a
 caller-selected host path. `NET LEARN` and `NETWORK LOCATE` support only the
 configured direct shared PCI, send exact SAL once, wait for its correlated
-confirmation, and never replay an uncertain write. `NET OPEN`, `NET CLOSE`,
-whole-network `NET UNRAVEL`, and `TOPOLOGY EXPLORE` remain explicit 502 paths:
-they would take ownership of interfaces or run an incompletely evidenced
-destructive topology algorithm.
+confirmation, and never replay an uncertain write. `NET OPEN`/`NET CLOSE` and
+`PROJECT START`/`PROJECT STOP` change runtime state and clear volatile caches
+without disconnecting cmqttd's shared PCI or MQTT. Direct `NET UNRAVEL`,
+`NET UNRAVELUNIT`, and `DO ... UNRAVEL` use a complete known-serial inventory,
+preflight every unique empty destination, send selected-serial writes once, and
+verify the final inventory; routed or uncertain plans fail before mutation.
+`TOPOLOGY EXPLORE` reuses the active endpoint (including socket/CNI aliases) or
+opens each other supported descriptor transiently, reports physical MMI/project
+identity results, and closes temporary transports before returning.
 
 ## Development tools and simulation
 

@@ -105,6 +105,17 @@ Seven maintained Identify, Short Message, and Error Reporting leaves are now
 physical: `IDENTIFY` ON/OFF/RAMP/TERMINATERAMP, `SHORTMESSAGE` REFRESH/SEND,
 and `EREPORT MESSAGE`. Their retained family roots remain local help endpoints.
 
+The embedded runtime also implements `NET OPEN`/`NET CLOSE` and `PROJECT
+START`/`PROJECT STOP` without surrendering cmqttd's shared PCI/MQTT transport.
+Direct `NET UNRAVEL`, selected-address `NET UNRAVELUNIT`, and `DO ... UNRAVEL`
+use a complete known-serial inventory, independently empty destinations,
+exact-once selected-serial writes, per-move checks, and a generation-guarded
+final inventory. `TOPOLOGY EXPLORE` performs physical MMI discovery while
+reusing the active endpoint or closing each temporary supported interface.
+The retained help/runtime/class evidence is in
+`native_cgate_net_lifecycle.json`; service and real-daemon tests pin transport
+ownership, MQTT continuity, parser boundaries, and reconnect-safe commits.
+
 The embedded service also implements four formerly fail-closed local paths:
 `APPLICATIONS GET_CATALOG` streams a bounded, XML-validated operator catalogue
 from `--cgate-unitspec`; `CALCULATOR TEST` evaluates durable database units
@@ -125,7 +136,7 @@ parent roots are pinned in the separate supplement. These local help endpoints
 do not change any child command's capability class. Together with the NET
 lifecycle, deploy-queue, remaining-application, legacy-database, catalogue,
 calculator, bounded CGL, and general-object tranches, the matrix now contains
-**215 physical, 177 local/session, 37 fail-closed, and 2 obsolete paths**. The
+**218 physical, 181 local/session, 30 fail-closed, and 2 obsolete paths**. The
 separate non-inventoried supplement contains 11 rows. Help evidence is in
 `rust/testdata/fixtures/native_cgate_family_help.json`.
 

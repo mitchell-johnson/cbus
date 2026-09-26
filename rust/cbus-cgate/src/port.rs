@@ -330,7 +330,7 @@ fn serial_name(path: &str) -> &str {
     path.strip_prefix("/dev/").unwrap_or(path)
 }
 
-async fn endpoints_equal(left: &Endpoint, right: &Endpoint) -> bool {
+pub(crate) async fn endpoints_equal(left: &Endpoint, right: &Endpoint) -> bool {
     match (left, right) {
         (Endpoint::Tcp { host: lh, port: lp }, Endpoint::Tcp { host: rh, port: rp }) => {
             if lp != rp {

@@ -67,7 +67,7 @@ use cbus_protocol::{
     serial_address::parse_native_serial,
 };
 use cbus_transport::{
-    conn::Endpoint,
+    conn::{self, Endpoint},
     pci::{CBusEvent, GocProgramming, PciClient},
 };
 use chrono::{Datelike, Local, NaiveDate, NaiveTime, Timelike};
@@ -85,7 +85,7 @@ use std::{
 use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
     net::{lookup_host, TcpListener, TcpStream},
-    sync::{broadcast, Mutex, RwLock, Semaphore},
+    sync::{broadcast, mpsc, Mutex, RwLock, Semaphore},
 };
 
 const MAX_LINE: usize = 1024 * 1024;
@@ -2106,7 +2106,7 @@ impl Service {
                 "edlt_label_clear":true,
                 "edlt_factory_default":true,
                 "named_scenes":true,
-                "do_methods":["factorydefault","lighting","sync"],
+                "do_methods":["factorydefault","lighting","sync","unravel"],
                 "network_clocks":true,
                 "install_mmi":true, "network_pingu":true,
                 "network_sync":true, "network_syncnew":true,
@@ -2123,6 +2123,8 @@ impl Service {
             // Keep the new flat flag out of the already recursion-deep json!
             // invocation while retaining one static capability document.
             capabilities["label_kfi"] = serde_json::Value::Bool(true);
+            capabilities["net_unravel"] = serde_json::Value::Bool(true);
+            capabilities["net_unravel_direct_safe_planner"] = serde_json::Value::Bool(true);
             capabilities["network_project_identify"] = serde_json::Value::Bool(true);
             capabilities["label_clear"] = serde_json::Value::Bool(true);
             capabilities["edlt_widget_groups"] = serde_json::Value::Bool(true);
@@ -2321,8 +2323,15 @@ impl Service {
             capabilities["network_locate"] = serde_json::Value::Bool(true);
             capabilities["network_management_delivery_semantics"] =
                 serde_json::Value::String("pci-confirmed-exactly-once-no-replay".to_string());
-            capabilities["net_lifecycle_fail_closed"] =
+            capabilities["net_lifecycle_commands"] =
                 serde_json::json!(["close", "open", "unravel", "topology_explore"]);
+            capabilities["net_lifecycle_fail_closed"] = serde_json::json!([]);
+            capabilities["net_open_close_preserves_mqtt"] = serde_json::Value::Bool(true);
+            capabilities["project_runtime_start_stop"] = serde_json::Value::Bool(true);
+            capabilities["topology_explore"] = serde_json::Value::Bool(true);
+            capabilities["topology_explore_physical"] = serde_json::Value::Bool(true);
+            capabilities["topology_explore_transient_interfaces"] =
+                serde_json::json!(["cni", "serial", "socket", "wiser"]);
             capabilities["aircon_control"] = serde_json::Value::Bool(true);
             capabilities["aircon_application"] = serde_json::Value::from(172);
             capabilities["aircon_delivery_semantics"] =
@@ -2813,10 +2822,25 @@ impl Service {
         if verb == "NET"
             && matches!(
                 sub,
-                "CREATE" | "DELETE" | "FLUSH" | "LEARN" | "LIST" | "LOAD" | "RENAME" | "SAVE"
+                "CREATE"
+                    | "DELETE"
+                    | "FLUSH"
+                    | "LEARN"
+                    | "LIST"
+                    | "LOAD"
+                    | "OPEN"
+                    | "CLOSE"
+                    | "RENAME"
+                    | "SAVE"
             )
         {
             return self.net_lifecycle(client, tag, &words, &upper).await;
+        }
+        if verb == "PROJECT" && matches!(sub, "START" | "STOP") {
+            return self.project_start_stop(client, tag, &words).await;
+        }
+        if verb == "TOPOLOGY" && sub == "EXPLORE" {
+            return self.topology_explore(tag, &words).await;
         }
         if verb == "NETWORK" && sub == "LOCATE" {
             return self.network_locate(client, tag, &words).await;
@@ -5722,20 +5746,48 @@ impl Service {
         if validation.status >= 400 {
             return validation;
         }
-        if words.len() != 5
-            || !words[1].eq_ignore_ascii_case("UNRAVELUNIT")
-            || !self.bound_network(words[2])
-            || words[3] != "255"
-            || !words[4].eq_ignore_ascii_case("MATCHDB")
-        {
+        self.net_unravel_general(tag, words).await
+    }
+
+    /// Safe general direct-network unravelling. The complete physical
+    /// inventory and every destination are proved before the first write.
+    /// Healthy singletons stay put; every unit at 255 and every duplicate
+    /// beyond one deterministic keeper receives a unique empty destination.
+    /// MATCHDB prefers a unique serial-matched database address, then uses the
+    /// lowest free address. Selected-serial writes are exact-once and every
+    /// move plus the final whole-network inventory is verified.
+    async fn net_unravel_general(&self, tag: &str, words: &[&str]) -> Response {
+        if !self.bound_network(words[2]) {
             return err(
                 tag,
-                502,
-                "502 Physical unravel currently requires NET UNRAVELUNIT on address 255 with MATCHDB",
+                408,
+                "408 Physical unravel requires the directly bound shared PCI network",
             );
         }
+        let unit_form = words[1].eq_ignore_ascii_case("UNRAVELUNIT");
+        let (selection, match_database) = if unit_form {
+            let Some(units) = words.get(3) else {
+                return err(tag, 400, "400 NET UNRAVELUNIT requires units");
+            };
+            let selection = units
+                .split(',')
+                .map(str::parse::<u8>)
+                .collect::<Result<HashSet<_>, _>>();
+            let Ok(selection) = selection else {
+                return err(tag, 400, "400 Invalid unit selection");
+            };
+            let match_database = words
+                .get(4)
+                .is_some_and(|flag| flag.eq_ignore_ascii_case("MATCHDB"));
+            (Some(selection), match_database)
+        } else {
+            let match_database = words
+                .get(3)
+                .is_some_and(|flag| flag.eq_ignore_ascii_case("MATCHDB"));
+            (None, match_database)
+        };
 
-        let (pci_generation, pci) = self.current_pci_epoch().await;
+        let (generation, pci) = self.current_pci_epoch().await;
         let (database_units, interface_units) = {
             let model = self.model.lock().await;
             let network = &model.projects[&self.project].networks[&self.network];
@@ -5743,15 +5795,15 @@ impl Service {
             let interfaces = units
                 .iter()
                 .filter(|unit| {
-                    let unit_type = unit.unit_type.to_ascii_uppercase();
-                    unit_type.starts_with("PC_CNI") || unit_type.starts_with("PC_PCI")
+                    let kind = unit.unit_type.to_ascii_uppercase();
+                    kind.starts_with("PC_CNI") || kind.starts_with("PC_PCI")
                 })
-                .map(|unit| unit.address)
+                .cloned()
                 .collect::<Vec<_>>();
             (units, interfaces)
         };
         let local = match interface_units.as_slice() {
-            [address] => pci.set_local_unit_hint(*address).map(|()| *address),
+            [unit] => pci.set_local_unit_hint(unit.address).map(|()| unit.address),
             [] => pci.discover_local_unit().await,
             _ => Err(io::Error::new(
                 io::ErrorKind::InvalidData,
@@ -5759,8 +5811,8 @@ impl Service {
             )),
         };
         let local = match local {
-            Ok(local) if local != 255 => local,
-            Ok(_) => return err(tag, 409, "409 Local PCI cannot be part of address 255"),
+            Ok(address @ 0..=254) => address,
+            Ok(_) => return err(tag, 409, "409 Local PCI cannot use address 255"),
             Err(error) => {
                 return err(
                     tag,
@@ -5769,8 +5821,7 @@ impl Service {
                 )
             }
         };
-
-        let before_states = match pci.install_mmi().await {
+        let states = match pci.install_mmi().await {
             Ok(states) => states,
             Err(error) => {
                 return err(
@@ -5780,7 +5831,7 @@ impl Service {
                 )
             }
         };
-        let before = match physical_serial_inventory(&pci, &before_states).await {
+        let before = match physical_serial_inventory(&pci, &states).await {
             Ok(inventory) => inventory,
             Err(error) => {
                 return err(
@@ -5790,155 +5841,235 @@ impl Service {
                 )
             }
         };
-        let Some(source_serials) = before.get(&255) else {
-            return err(tag, 401, "401 No units detected at address 255");
-        };
-        if source_serials.len() != 2
-            || before
-                .iter()
-                .any(|(address, serials)| *address != 255 && serials.len() != 1)
+
+        let mut selected = before
+            .keys()
+            .copied()
+            .filter(|address| {
+                selection
+                    .as_ref()
+                    .is_none_or(|selection| selection.contains(address))
+            })
+            .collect::<Vec<_>>();
+        selected.sort_unstable();
+        let local_serial = interface_units
+            .iter()
+            .find(|unit| unit.address == local)
+            .and_then(|unit| parse_native_serial(&unit.serial).ok())
+            .filter(|serial| serial.known)
+            .map(|serial| serial.canonical);
+        if before.get(&local).is_some_and(|serials| serials.len() > 1)
+            && local_serial
+                .as_ref()
+                .is_none_or(|serial| !before[&local].contains(serial))
         {
             return err(
                 tag,
                 409,
-                "409 Bounded unravel requires exactly two known serials at address 255 and no other duplicates",
+                "409 Duplicate local PCI address has no independently known local serial",
             );
         }
 
-        let mut plan = Vec::with_capacity(2);
-        for serial in source_serials {
-            let matching = database_units
+        let mut occupied = before.keys().copied().collect::<HashSet<_>>();
+        let mut reserved = HashSet::new();
+        let mut plan = Vec::<(u8, String, u8)>::new();
+        for source in &selected {
+            let serials = &before[source];
+            let keeper =
+                if *source == 255 {
+                    None
+                } else if serials.len() == 1 {
+                    serials.first().cloned()
+                } else if *source == local {
+                    local_serial.clone()
+                } else if match_database {
+                    serials
+                        .iter()
+                        .find(|serial| {
+                            database_units.iter().any(|unit| {
+                                unit.address == *source
+                                    && parse_native_serial(&unit.serial).ok().is_some_and(
+                                        |parsed| parsed.known && parsed.canonical == **serial,
+                                    )
+                            })
+                        })
+                        .cloned()
+                        .or_else(|| serials.first().cloned())
+                } else {
+                    serials.first().cloned()
+                };
+            let moving = serials
                 .iter()
-                .filter(|unit| {
-                    parse_native_serial(&unit.serial)
-                        .ok()
-                        .is_some_and(|value| value.known && value.canonical == *serial)
-                })
+                .filter(|serial| keeper.as_ref() != Some(*serial))
+                .cloned()
                 .collect::<Vec<_>>();
-            let [unit] = matching.as_slice() else {
-                return err(
-                    tag,
-                    409,
-                    &format!("409 Serial {serial} must have exactly one database destination"),
-                );
-            };
-            if !(2..=254).contains(&unit.address)
-                || unit.address == local
-                || before_states[usize::from(unit.address)] != 0
-            {
-                return err(
-                    tag,
-                    409,
-                    &format!(
-                        "409 Database destination {} for serial {serial} is not independently empty",
-                        unit.address
-                    ),
-                );
+            for serial in moving {
+                let database_matches = database_units
+                    .iter()
+                    .filter(|unit| {
+                        parse_native_serial(&unit.serial)
+                            .ok()
+                            .is_some_and(|parsed| parsed.known && parsed.canonical == serial)
+                    })
+                    .collect::<Vec<_>>();
+                let preferred = if match_database {
+                    match database_matches.as_slice() {
+                        [unit]
+                            if (2..=254).contains(&unit.address)
+                                && unit.address != local
+                                && !occupied.contains(&unit.address)
+                                && !reserved.contains(&unit.address) =>
+                        {
+                            Some(unit.address)
+                        }
+                        _ => None,
+                    }
+                } else {
+                    None
+                };
+                let destination = preferred.or_else(|| {
+                    (2u8..=254).find(|candidate| {
+                        *candidate != local
+                            && !occupied.contains(candidate)
+                            && !reserved.contains(candidate)
+                    })
+                });
+                let Some(destination) = destination else {
+                    return err(
+                        tag,
+                        409,
+                        "409 No free unit address is available for unravel",
+                    );
+                };
+                reserved.insert(destination);
+                plan.push((*source, serial, destination));
             }
-            plan.push((serial.clone(), unit.address));
-        }
-        plan.sort_by_key(|(_, destination)| *destination);
-        if plan[0].1 == plan[1].1 {
-            return err(tag, 409, "409 Database destinations are not unique");
-        }
-
-        let local_options = match pci.recall_parameter(local, 66, 1).await {
-            Ok(value) => value,
-            Err(error) => {
-                return err(
-                    tag,
-                    408,
-                    &format!("408 Local PCI option check failed: {error}"),
-                )
+            if keeper.is_none() {
+                occupied.remove(source);
             }
-        };
-        if local_options != [5] {
-            return err(
-                tag,
-                409,
-                "409 Bounded unravel requires local PCI parameter 66 to equal 05",
-            );
         }
+        plan.sort_by_key(|(source, _, destination)| (*source, *destination));
 
-        // MMI absence is necessary but not sufficient for an irreversible
-        // address broadcast. Actively probe every target before the first
-        // mutation so a hidden responder aborts the whole plan with zero
-        // selected-serial sends.
-        for (serial, destination) in &plan {
+        if !plan.is_empty() {
+            match pci.recall_parameter(local, 66, 1).await {
+                Ok(options) if options == [5] => {}
+                Ok(_) => {
+                    return err(
+                        tag,
+                        409,
+                        "409 Physical unravel requires local PCI parameter 66 to equal 05",
+                    )
+                }
+                Err(error) => {
+                    return err(
+                        tag,
+                        408,
+                        &format!("408 Local PCI option check failed: {error}"),
+                    )
+                }
+            }
+        }
+        for (_, serial, destination) in &plan {
             match pci.identify_all(*destination, 4).await {
                 Ok(replies) if replies.is_empty() => {}
                 Ok(_) => {
                     return err(
                         tag,
                         409,
-                        &format!(
-                            "409 Database destination {destination} for serial {serial} answered the independent emptiness check"
-                        ),
+                        &format!("409 Destination {destination} for serial {serial} is occupied"),
                     )
                 }
                 Err(error) => {
                     return err(
                         tag,
                         408,
-                        &format!(
-                            "408 Database destination {destination} emptiness check failed: {error}"
-                        ),
+                        &format!("408 Destination {destination} check failed: {error}"),
                     )
                 }
             }
         }
 
-        let source_state = before_states[255];
-        let mut expected_states = before_states.clone();
-        expected_states[255] = 0;
+        let mut expected_states = states.clone();
         let mut expected = before.clone();
-        expected.remove(&255);
-        let total = plan.len();
         let mut completed = 0usize;
-        let mut move_events = Vec::with_capacity(total);
-        for (serial, destination) in &plan {
+        let mut move_events = Vec::new();
+        let mut progress = vec![
+            "120-completed MMI 1 of 1.".to_string(),
+            format!(
+                "120-Unravel: Unit count: {}",
+                before.values().map(Vec::len).sum::<usize>()
+            ),
+            format!(
+                "120-Unravel: Units at: {}",
+                before
+                    .keys()
+                    .map(u8::to_string)
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            ),
+        ];
+        for (index, source) in selected.iter().enumerate() {
+            progress.push(format!(
+                "120-Unravel: Scanning unit {} of {} at address {} (0x{:02X}).",
+                index + 1,
+                selected.len(),
+                source,
+                source
+            ));
+        }
+        for (source, serial, destination) in &plan {
+            let source_state = expected_states[usize::from(*source)];
             if let Err(error) = pci.address_selected_serial(serial, *destination).await {
                 return err(
                     tag,
                     408,
                     &format!(
-                        "408 Unravel outcome uncertain after {completed} of {total} verified movement(s): {error}"
+                        "408 Unravel outcome uncertain after {completed} of {} verified movement(s): {error}",
+                        plan.len()
                     ),
                 );
             }
-            let replies = match pci.identify_all(*destination, 4).await {
-                Ok(replies) => replies,
-                Err(error) => {
-                    return err(
-                        tag,
-                        408,
-                        &format!(
-                            "408 Unravel verification failed after {completed} of {total} verified movement(s): {error}"
-                        ),
-                    )
-                }
-            };
-            let verified = replies.len() == 1
-                && serial_number(&replies[0])
-                    .ok()
-                    .flatten()
-                    .is_some_and(|observed| observed == *serial);
+            let verified = pci
+                .identify_all(*destination, 4)
+                .await
+                .ok()
+                .is_some_and(|replies| {
+                    replies.len() == 1
+                        && serial_number(&replies[0])
+                            .ok()
+                            .flatten()
+                            .is_some_and(|observed| observed == *serial)
+                });
             if !verified {
                 return err(
                     tag,
                     408,
                     &format!(
-                        "408 Unravel verification failed after {completed} of {total} verified movement(s)"
+                        "408 Unravel verification failed after {completed} of {} verified movement(s)",
+                        plan.len()
                     ),
                 );
             }
             completed += 1;
-            expected_states[usize::from(*destination)] = source_state;
+            let remaining = expected
+                .get_mut(source)
+                .expect("planned source is inventoried");
+            remaining.retain(|candidate| candidate != serial);
+            if remaining.is_empty() {
+                expected.remove(source);
+                expected_states[usize::from(*source)] = 0;
+            }
             expected.insert(*destination, vec![serial.clone()]);
-            move_events.push(format!("#e# unit moved serial={serial} 255 {destination}"));
+            expected_states[usize::from(*destination)] = source_state;
+            progress.push(format!(
+                "120-Unravel: Readdressed unit with serial number {serial} from address {source} (0x{source:02X}) to address {destination} (0x{destination:02X})."
+            ));
+            move_events.push(format!(
+                "#e# unit moved serial={serial} {source} {destination}"
+            ));
         }
 
-        let after_states = match pci.install_mmi().await {
+        let final_states = match pci.install_mmi().await {
             Ok(states) => states,
             Err(error) => {
                 return err(
@@ -5950,7 +6081,7 @@ impl Service {
                 )
             }
         };
-        let after = match physical_serial_inventory(&pci, &after_states).await {
+        let final_inventory = match physical_serial_inventory(&pci, &final_states).await {
             Ok(inventory) => inventory,
             Err(error) => {
                 return err(
@@ -5962,69 +6093,75 @@ impl Service {
                 )
             }
         };
-        let final_options = match pci.recall_parameter(local, 66, 1).await {
-            Ok(value) => value,
-            Err(error) => {
-                return err(
-                    tag,
-                    408,
-                    &format!("408 Final local PCI option check failed: {error}"),
-                )
-            }
-        };
-        if after_states != expected_states || after != expected || final_options != [5] {
+        if final_states != expected_states || final_inventory != expected {
             return err(
                 tag,
                 408,
                 "408 Final unravel inventory differs from the exact planned change",
             );
         }
+        if !plan.is_empty() {
+            match pci.recall_parameter(local, 66, 1).await {
+                Ok(options) if options == [5] => {}
+                _ => return err(tag, 408, "408 Final local PCI option check failed"),
+            }
+        }
 
-        let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
+        let Some(_guard) = self.pci_commit_guard(generation, &pci).await else {
             return err(
                 tag,
                 408,
-                &format!(
-                    "408 Unravel outcome invalidated by PCI reconnect after {completed} of {total} verified movement(s)"
-                ),
+                &format!("408 Unravel invalidated by PCI reconnect after {completed} move(s)"),
             );
         };
-        let mut model = self.model.lock().await;
-        if let Some(network) = model
+        if let Some(network) = self
+            .model
+            .lock()
+            .await
             .projects
             .get_mut(&self.project)
             .and_then(|project| project.networks.get_mut(&self.network))
         {
             let previous = std::mem::take(&mut network.physical);
-            network.physical = after
+            network.physical = final_inventory
                 .iter()
                 .map(|(address, serials)| {
-                    let serial = &serials[0];
-                    let mut unit = database_units
+                    let mut unit = serials
                         .iter()
-                        .find(|unit| {
-                            parse_native_serial(&unit.serial)
-                                .ok()
-                                .is_some_and(|value| value.known && value.canonical == *serial)
+                        .find_map(|serial| {
+                            database_units.iter().find(|unit| {
+                                parse_native_serial(&unit.serial)
+                                    .ok()
+                                    .is_some_and(|parsed| {
+                                        parsed.known && parsed.canonical == *serial
+                                    })
+                            })
                         })
                         .cloned()
                         .or_else(|| previous.get(address).cloned())
                         .unwrap_or_else(|| Unit::blank(*address, ""));
                     unit.address = *address;
-                    unit.serial = serial.clone();
+                    if serials.len() == 1 {
+                        unit.serial = serials[0].clone();
+                        unit.serial_alternates.clear();
+                    } else {
+                        unit.serial.clear();
+                        unit.serial_alternates = serials.clone();
+                    }
                     (*address, unit)
                 })
                 .collect();
             network.state = NetworkState::Ok;
         }
-        drop(model);
         for event in move_events {
             let _ = self.events.send(event);
         }
         let _ = self
             .events
             .send(format!("#e# net {} unravel ok", self.network));
-        validation
+        progress.push("120-completed MMI 1 of 1.".to_string());
+        progress.push("120-Unravel: Complete.".to_string());
+        ok(tag, progress, "200 OK.")
     }
 
     async fn readdress_unit(&self, tag: &str, words: &[&str]) -> Response {
@@ -9650,11 +9787,12 @@ impl Service {
             let line = format!("[{tag}] NET SYNC {}", words[1]);
             self.net_sync(client, &line, tag, &command).await
         } else if method == "UNRAVEL" {
-            return err(
-                tag,
-                502,
-                "502 DO UNRAVEL requires a physical backend that is not implemented",
-            );
+            if words.len() != 3 {
+                return err(tag, 400, "400 Syntax Error: Too many parameters");
+            }
+            let command = ["NET", "UNRAVEL", words[1]];
+            let line = format!("[{tag}] NET UNRAVEL {}", words[1]);
+            self.net_unravel(client, &line, tag, &command).await
         } else if method == "FACTORYDEFAULT" {
             self.factory_default_edlt(client, tag, words).await
         } else {
@@ -11547,6 +11685,8 @@ fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
             "NEW"
                 | "LOAD"
                 | "SAVE"
+                | "START"
+                | "STOP"
                 | "CLOSE"
                 | "DELETE"
                 | "COPY"
@@ -11567,6 +11707,8 @@ fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
                 | "FLUSH"
                 | "LEARN"
                 | "LOAD"
+                | "OPEN"
+                | "CLOSE"
                 | "RENAME"
                 | "SAVE"
                 | "SET_PROJECT_IDENTIFY"
@@ -11578,7 +11720,7 @@ fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
         "SCENE" => sub == "RECORD",
         "DO" => words
             .get(2)
-            .is_some_and(|method| method == "FACTORYDEFAULT"),
+            .is_some_and(|method| matches!(method.as_str(), "FACTORYDEFAULT" | "UNRAVEL")),
         "DBADD" | "DBCOPY" | "DBCREATE" | "DBNEW" | "DBRENAMENET" | "DBRENAMENETSAFE" | "DBSET"
         | "DBSETSAFE" | "DBSETXML" | "DBUPDATE" | "DBADDSAFE" | "DBCOPYSAFE" | "DBDELETE"
         | "DBSAVE" | "DBLOAD" | "DBCREATENET" | "DBCREATEAPP" | "DBCREATEGROUP"

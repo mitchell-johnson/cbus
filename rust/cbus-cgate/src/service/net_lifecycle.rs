@@ -343,10 +343,167 @@ impl Service {
             "LIST" => self.net_catalog_list(client, tag, words).await,
             "LEARN" => self.net_learn(client, tag, words).await,
             "FLUSH" => self.net_catalog_flush(client, tag, words).await,
+            "OPEN" | "CLOSE" => self.net_open_close(client, tag, words).await,
             sub @ ("CREATE" | "DELETE" | "LOAD" | "RENAME" | "SAVE") => {
                 self.net_catalog_mutation(client, tag, words, sub).await
             }
             _ => err(tag, 400, "400 Syntax Error."),
+        }
+    }
+
+    /// Start or stop one catalogue network without stealing cmqttd's shared
+    /// PCI transport from MQTT.  Imported/bound definitions own a concrete
+    /// runtime network; CREATE-only definitions remain closed until a future
+    /// multi-interface daemon instance binds them.
+    async fn net_open_close(&self, client: &ClientState, tag: &str, words: &[&str]) -> Response {
+        let opening = words
+            .get(1)
+            .is_some_and(|word| word.eq_ignore_ascii_case("OPEN"));
+        if words.len() != 3 {
+            return if words.len() < 3 {
+                err(tag, 400, "400 Syntax Error: Missing parameter : <network>")
+            } else {
+                err(tag, 400, "400 Syntax Error: Too many parameters")
+            };
+        }
+        if opening && words[2] == "*" {
+            return err(
+                tag,
+                401,
+                "401 Bad object or device ID: * (Object not found)",
+            );
+        }
+
+        let _commands = self.commands.lock().await;
+        // Read transport liveness before taking the model lock. Reconnect
+        // replaces the PCI and then clears model caches, so holding these in
+        // the opposite order could deadlock the lifecycle command with it.
+        let configured_pci_connected = if opening {
+            self.pci.read().await.is_connected()
+        } else {
+            true
+        };
+        let current = current_project(self, client);
+        let mut model = self.model.lock().await;
+        let targets = if words[2] == "*" {
+            let mut targets = Vec::new();
+            let mut projects = model.projects.keys().cloned().collect::<Vec<_>>();
+            projects.sort();
+            for project in projects {
+                let Ok(definitions) = catalog(&model, &project) else {
+                    continue;
+                };
+                for definition in definitions {
+                    targets.push((project.clone(), definition));
+                }
+            }
+            targets
+        } else {
+            match network_definition(&model, words[2], &current) {
+                Ok((project, definition)) => vec![(project, definition)],
+                Err(_) => {
+                    return err(
+                        tag,
+                        401,
+                        &format!(
+                            "401 Bad object or device ID: {} (Object not found)",
+                            words[2]
+                        ),
+                    )
+                }
+            }
+        };
+        if targets.is_empty() {
+            return err(tag, 132, "132 no networks found");
+        }
+
+        if opening {
+            for (project, definition) in &targets {
+                if definition.bound_network.is_none() {
+                    return err(
+                        tag,
+                        408,
+                        &format!(
+                            "408 //{project}/{}: network definition has no runtime binding",
+                            definition.name
+                        ),
+                    );
+                }
+                if project == &self.project
+                    && definition.bound_network == Some(self.network)
+                    && !configured_pci_connected
+                {
+                    return err(
+                        tag,
+                        408,
+                        &format!(
+                            "408 //{project}/{}: configured shared PCI is not connected",
+                            definition.name
+                        ),
+                    );
+                }
+            }
+        }
+
+        let mut paths = Vec::with_capacity(targets.len());
+        for (project, definition) in &targets {
+            if let Some(address) = definition.bound_network {
+                if let Some(network) = model
+                    .projects
+                    .get_mut(project)
+                    .and_then(|project| project.networks.get_mut(&address))
+                {
+                    if opening {
+                        network.state = NetworkState::Open;
+                    } else {
+                        network.state = NetworkState::Closed;
+                        network.physical.clear();
+                        network.levels.clear();
+                    }
+                }
+            }
+            paths.push(format!("//{project}/{}", definition.name));
+        }
+        if opening {
+            // Imported bridge children reachable from the shared interface
+            // participate in the same runtime, just as they do after daemon
+            // startup and reconnect.  No new transport is opened here.
+            if targets.iter().any(|(project, definition)| {
+                project == &self.project && definition.bound_network == Some(self.network)
+            }) {
+                open_reachable_networks(&mut model, &self.project, self.network);
+            }
+        }
+        drop(model);
+
+        for path in &paths {
+            let _ = self.events.send(format!(
+                "#e# net {} {}",
+                path,
+                if opening { "open" } else { "closed" }
+            ));
+        }
+        let final_path = paths.pop().expect("nonempty lifecycle target");
+        let mut lines = paths
+            .into_iter()
+            .map(|path| format!("OK: {path}"))
+            .collect::<Vec<_>>();
+        if opening {
+            lines.extend([
+                "120-initializing".to_string(),
+                "120-opening port".to_string(),
+                "120-starting network threads".to_string(),
+                "120-pci reset".to_string(),
+                "120-checking connection".to_string(),
+                "120-relinking to bridged networks".to_string(),
+                "120-open complete".to_string(),
+            ]);
+        }
+        Response {
+            tag: tag.to_string(),
+            lines,
+            final_text: format!("200 OK: {final_path}"),
+            status: 200,
         }
     }
 
@@ -864,6 +1021,279 @@ impl Service {
         )
         .await
     }
+
+    /// Native PROJECT START/STOP are runtime operations.  They do not rewrite
+    /// the project repository.  For the configured project STOP releases the
+    /// C-Gate runtime caches while cmqttd deliberately keeps its already-owned
+    /// PCI and MQTT bridge alive; START reattaches that runtime to the same
+    /// connected PCI and restores reachable bridge-network state.
+    pub(super) async fn project_start_stop(
+        &self,
+        client: &ClientState,
+        tag: &str,
+        words: &[&str],
+    ) -> Response {
+        let starting = words
+            .get(1)
+            .is_some_and(|word| word.eq_ignore_ascii_case("START"));
+        let current = current_project(self, client);
+        let requested = words.get(2).copied().unwrap_or(&current);
+        let project = if requested.starts_with('@') || requested.starts_with("//@") {
+            current
+        } else {
+            requested.to_string()
+        };
+        if project.is_empty() {
+            return err(
+                tag,
+                408,
+                &format!(
+                    "408 Project {} failed: No project specified",
+                    if starting { "start" } else { "stop" }
+                ),
+            );
+        }
+
+        let _commands = self.commands.lock().await;
+        if starting && project == self.project && !self.pci.read().await.is_connected() {
+            return err(
+                tag,
+                408,
+                "408 Project start failed: configured shared PCI is not connected",
+            );
+        }
+        let mut model = self.model.lock().await;
+        let Some(selected) = model.projects.get_mut(&project) else {
+            return err(
+                tag,
+                408,
+                &format!(
+                    "408 Project {} failed: Project not found: {project}",
+                    if starting { "start" } else { "stop" }
+                ),
+            );
+        };
+        for network in selected.networks.values_mut() {
+            if starting {
+                network.state = NetworkState::Open;
+            } else {
+                network.state = NetworkState::Closed;
+                network.physical.clear();
+                network.levels.clear();
+            }
+        }
+        if starting && project == self.project {
+            open_reachable_networks(&mut model, &self.project, self.network);
+        }
+        drop(model);
+        let _ = self.events.send(format!(
+            "#e# project {project} {}",
+            if starting { "started" } else { "stopped" }
+        ));
+        ok(tag, vec![], "200 OK.")
+    }
+
+    /// Explore one or more explicit interfaces. The configured interface is
+    /// inspected through cmqttd's shared PCI so MQTT never loses ownership;
+    /// other CNI/socket/serial descriptors are opened transiently, reset,
+    /// inventoried, and closed before this command returns.
+    pub(super) async fn topology_explore(&self, tag: &str, words: &[&str]) -> Response {
+        if words.len() < 3 {
+            return err(tag, 408, "408 Operation failed: No interfaces to explore");
+        }
+        let _commands = self.commands.lock().await;
+        let configured = {
+            let model = self.model.lock().await;
+            let network = &model.projects[&self.project].networks[&self.network];
+            (
+                network.iface_type.clone(),
+                network.iface_addr.clone(),
+                network
+                    .units
+                    .values()
+                    .filter(|unit| looks_like_bridge(&unit.unit_type))
+                    .count(),
+            )
+        };
+        let mut rows = Vec::new();
+        for (index, specification) in words[2..].iter().enumerate() {
+            let name = format!("NET{index}");
+            let descriptor = match parse_topology_interface(specification) {
+                Ok(descriptor) => descriptor,
+                Err(()) => {
+                    return Response {
+                        tag: tag.to_string(),
+                        lines: vec![format!(
+                            "470-Bad interface specification for {name} {specification}"
+                        )],
+                        final_text: "408 Operation failed: bad interface specification".to_string(),
+                        status: 408,
+                    }
+                }
+            };
+            let configured_descriptor_match = configured
+                .0
+                .eq_ignore_ascii_case(&descriptor.interface_type)
+                && configured.1 == descriptor.address;
+            let configured_endpoint_match =
+                match (descriptor.endpoint.as_ref(), self.port_endpoint.get()) {
+                    (Some(requested), Some(active)) => {
+                        crate::port::endpoints_equal(requested, active).await
+                    }
+                    _ => false,
+                };
+            let uses_shared = configured_descriptor_match || configured_endpoint_match;
+            let (states, project_identity, bridge_count) = if uses_shared {
+                let (generation, pci) = self.current_pci_epoch().await;
+                let explored = explore_pci(&pci).await;
+                let Some(_guard) = self.pci_commit_guard(generation, &pci).await else {
+                    return err(
+                        tag,
+                        408,
+                        "408 Operation failed: PCI reconnected during topology exploration",
+                    );
+                };
+                match explored {
+                    Ok((states, identity)) => (states, identity, configured.2),
+                    Err(error) => {
+                        return err(tag, 473, &format!("473 MMI failed: {name} ({error})"))
+                    }
+                }
+            } else {
+                let endpoint = match descriptor.endpoint {
+                    Some(endpoint) => endpoint,
+                    None => {
+                        return err(
+                            tag,
+                            472,
+                            &format!(
+                                "472 Can not open network: {name} {} (unsupported interface type)",
+                                descriptor.address
+                            ),
+                        )
+                    }
+                };
+                let (reader, writer) = match conn::connect(&endpoint).await {
+                    Ok(streams) => streams,
+                    Err(error) => {
+                        return err(
+                            tag,
+                            472,
+                            &format!(
+                                "472 Can not open network: {name} {} ({error})",
+                                descriptor.address
+                            ),
+                        )
+                    }
+                };
+                let (events, mut event_rx) = mpsc::unbounded_channel();
+                let pci = PciClient::new(reader, writer, events);
+                let drain = tokio::spawn(async move { while event_rx.recv().await.is_some() {} });
+                let explored = async {
+                    pci.pci_reset().await?;
+                    explore_pci(&pci).await
+                }
+                .await;
+                pci.shutdown().await;
+                drain.abort();
+                let _ = drain.await;
+                match explored {
+                    Ok((states, identity)) => (states, identity, 0),
+                    Err(error) => {
+                        return err(tag, 473, &format!("473 MMI failed: {name} ({error})"))
+                    }
+                }
+            };
+            debug_assert_eq!(states.len(), 256);
+            rows.push(format!("323-Network Found {name} {}", descriptor.address));
+            rows.push(format!(
+                "321-Network Serial {name} {}",
+                project_identity.unwrap_or_else(|| "[unknown]".to_string())
+            ));
+            rows.push(format!("324-Bridges Found {name} {bridge_count}"));
+        }
+        let final_text = rows
+            .pop()
+            .expect("TOPOLOGY EXPLORE has at least one interface")
+            .replacen("324-", "324 ", 1);
+        Response {
+            tag: tag.to_string(),
+            lines: rows,
+            final_text,
+            status: 324,
+        }
+    }
+}
+
+struct TopologyInterface {
+    interface_type: String,
+    address: String,
+    endpoint: Option<Endpoint>,
+}
+
+fn parse_topology_interface(specification: &str) -> Result<TopologyInterface, ()> {
+    let (interface_type, tail) = specification.split_once('@').ok_or(())?;
+    if interface_type.is_empty() || tail.is_empty() || tail.contains('@') {
+        return Err(());
+    }
+    let mut pieces = tail.split(';');
+    let address = pieces.next().filter(|value| !value.is_empty()).ok_or(())?;
+    let mut baud = 9_600u32;
+    for option in pieces {
+        let (name, value) = option.split_once('=').ok_or(())?;
+        if name.is_empty() || value.is_empty() || value.contains('=') {
+            return Err(());
+        }
+        if name.eq_ignore_ascii_case("baud") {
+            baud = value.parse().map_err(|_| ())?;
+        }
+    }
+    let kind = interface_type.to_ascii_lowercase();
+    let endpoint = match kind.as_str() {
+        "cni" | "socket" | "wiser" => Some(Endpoint::parse_tcp(address).map_err(|_| ())?),
+        "serial" => Some(Endpoint::serial(address, baud)),
+        _ => None,
+    };
+    Ok(TopologyInterface {
+        interface_type: interface_type.to_string(),
+        address: address.to_string(),
+        endpoint,
+    })
+}
+
+fn looks_like_bridge(unit_type: &str) -> bool {
+    let unit_type = unit_type.to_ascii_uppercase();
+    unit_type.contains("BRIDGE")
+        || unit_type.starts_with("5500NB")
+        || unit_type.starts_with("CNI_BR")
+}
+
+async fn explore_pci(pci: &Arc<PciClient>) -> io::Result<(Vec<u8>, Option<String>)> {
+    let states = pci.install_mmi().await?;
+    if states.len() != 256 {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "installation MMI returned incomplete address coverage",
+        ));
+    }
+    let mut identity = None;
+    for address in 1u16..=255 {
+        let address = address as u8;
+        if states[usize::from(address)] == 0
+            || project_identify_candidate(pci, address).await.is_err()
+        {
+            continue;
+        }
+        let Ok(encoded) = pci.recall_parameter(address, 35, 6).await else {
+            continue;
+        };
+        let Ok(decoded) = cbus_protocol::project_identity::decode_project_identity(&encoded) else {
+            continue;
+        };
+        identity = Some(decoded.trim().to_string());
+        break;
+    }
+    Ok((states, identity))
 }
 
 fn split_application_address(value: &str, current: &str) -> Option<(String, String, u8)> {

@@ -396,7 +396,7 @@
       "NET RENAME changes the runtime definition name; it does not rename the tag-database instance.",
       "NET LOAD FILE merges definitions and returns 408 before mutation when a name already exists.",
       "The optional SAVE/LOAD project argument resolves the named project even when another project is selected.",
-      "TOPOLOGY EXPLORE owns arbitrary interfaces; cmqttd keeps it fail closed."
+      "cmqttd reuses its shared interface for TOPOLOGY EXPLORE and opens other supported interface descriptors transiently, then closes them before returning."
     ],
     "cross_project_and_errors": [
       {
@@ -520,10 +520,12 @@
   "implemented_classification": {
     "local": [
       "NET",
+      "NET CLOSE",
       "NET CREATE",
       "NET DELETE",
       "NET FLUSH",
       "NET LOAD",
+      "NET OPEN",
       "NET RENAME",
       "NET SAVE",
       "NETWORK",
@@ -531,16 +533,13 @@
     ],
     "physical": [
       "NET LEARN",
-      "NETWORK LOCATE"
+      "NET UNRAVEL",
+      "NETWORK LOCATE",
+      "TOPOLOGY EXPLORE"
     ],
     "obsolete_400": [
       "NET STATE_INTERVAL"
     ],
-    "fail_closed": [
-      "NET CLOSE",
-      "NET OPEN",
-      "NET UNRAVEL",
-      "TOPOLOGY EXPLORE"
-    ]
+    "fail_closed": []
   }
 }

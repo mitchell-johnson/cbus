@@ -355,6 +355,96 @@ async fn net_lifecycle_help_catalog_persistence_and_obsolete_boundary_are_native
 }
 
 #[tokio::test]
+async fn network_and_project_runtime_lifecycle_preserves_shared_mqtt_transport() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client.clone(), None).unwrap();
+    let mut client = ClientState::default();
+
+    let close = service
+        .handle(&mut client, "[1] NET CLOSE //HARNESS/254")
+        .await;
+    assert_eq!(close.status, 200, "{close:?}");
+    assert_eq!(close.final_text, "200 OK: //HARNESS/254");
+    assert_eq!(
+        service.model.lock().await.projects["HARNESS"].networks[&254].state,
+        NetworkState::Closed
+    );
+    assert!(
+        pci_client.is_connected(),
+        "logical close must retain MQTT PCI"
+    );
+
+    let open = service
+        .handle(&mut client, "[2] NET OPEN //HARNESS/254")
+        .await;
+    assert_eq!(open.status, 200, "{open:?}");
+    assert_eq!(open.lines.first().unwrap(), "120-initializing");
+    assert_eq!(open.lines.last().unwrap(), "120-open complete");
+    assert_eq!(
+        service.model.lock().await.projects["HARNESS"].networks[&254].state,
+        NetworkState::Open
+    );
+
+    assert_eq!(
+        service
+            .handle(&mut client, "[3] PROJECT STOP HARNESS")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service.model.lock().await.projects["HARNESS"].networks[&254].state,
+        NetworkState::Closed
+    );
+    assert!(pci_client.is_connected());
+    assert_eq!(
+        service
+            .handle(&mut client, "[4] PROJECT START HARNESS ignored-like-native")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service.model.lock().await.projects["HARNESS"].networks[&254].state,
+        NetworkState::Open
+    );
+
+    assert_eq!(
+        service
+            .handle(&mut client, "[5] NET CREATE AUX cni 127.0.0.1:1")
+            .await
+            .status,
+        200
+    );
+    let unbound = service.handle(&mut client, "[6] NET OPEN AUX").await;
+    assert_eq!(unbound.status, 408, "{unbound:?}");
+    assert!(unbound.final_text.contains("no runtime binding"));
+    assert_eq!(
+        service
+            .handle(&mut client, "[7] TOPOLOGY EXPLORE")
+            .await
+            .final_text,
+        "408 Operation failed: No interfaces to explore"
+    );
+    let malformed = service
+        .handle(&mut client, "[8] TOPOLOGY EXPLORE not-an-interface")
+        .await;
+    assert_eq!(malformed.status, 408);
+    assert_eq!(
+        malformed.lines,
+        ["470-Bad interface specification for NET0 not-an-interface"]
+    );
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err(),
+        "logical lifecycle and rejected topology commands must not touch PCI"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn net_lifecycle_mutations_and_network_locate_require_login_before_io() {
     let path = state_path();
     let (pci_client, mut remote) = pci();
@@ -374,8 +464,13 @@ async fn net_lifecycle_mutations_and_network_locate_require_login_before_io() {
         "NET FLUSH 254",
         "NET LEARN 254 56 1 1",
         "NET LOAD DB",
+        "NET OPEN 254",
+        "NET CLOSE 254",
         "NET RENAME 254 LOCAL",
         "NET SAVE DB",
+        "PROJECT START HARNESS",
+        "PROJECT STOP HARNESS",
+        "DO //HARNESS/254 UNRAVEL",
         "NETWORK LOCATE 254/208 UNIT 1 ON",
     ] {
         let response = service
@@ -3621,6 +3716,12 @@ async fn capabilities_report_observation_without_device_readback() {
         ])
     );
     assert_eq!(document["net_unravelunit_matchdb_duplicate_255"], true);
+    assert_eq!(document["net_unravel"], true);
+    assert_eq!(document["net_unravel_direct_safe_planner"], true);
+    assert_eq!(document["net_open_close_preserves_mqtt"], true);
+    assert_eq!(document["project_runtime_start_stop"], true);
+    assert_eq!(document["topology_explore"], true);
+    assert_eq!(document["net_lifecycle_fail_closed"], serde_json::json!([]));
     assert_eq!(document["pp_reset_to_defaults"], true);
     assert_eq!(document["pp_raw_session_memory"], true);
     assert_eq!(
@@ -3716,7 +3817,7 @@ async fn capabilities_report_observation_without_device_readback() {
     );
     assert_eq!(
         document["do_methods"],
-        serde_json::json!(["factorydefault", "lighting", "sync"])
+        serde_json::json!(["factorydefault", "lighting", "sync", "unravel"])
     );
     // Dormant default: no --cgate-auth-file, so the LOGIN gate is off.
     assert_eq!(document["cgate_auth"], false);
@@ -4079,23 +4180,19 @@ async fn reconnect_between_label_clear_confirmation_and_invalidation_preserves_n
     std::fs::remove_file(path).unwrap();
 }
 
-/// Issue #10 Phase 5 entry: UNRAVEL has no physical backend yet and must
-/// fail closed with 502 — never simulated success. Unknown methods stay 402.
+/// DO UNRAVEL is now a physical alias. Resolution and method grammar still
+/// fail before I/O, while the transport behavior is covered by the general
+/// unravel transaction test below.
 #[tokio::test]
-async fn do_unravel_fails_closed_until_physical_backend_exists() {
+async fn do_unravel_resolves_before_physical_io() {
     let path = state_path();
     let (pci, _remote) = pci();
     let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
     let mut client = ClientState::default();
     let response = service
-        .handle(&mut client, "[1] DO //HARNESS/254 UNRAVEL")
+        .handle(&mut client, "[1] DO //OTHER/254 UNRAVEL")
         .await;
-    assert_eq!(response.status, 502);
-    assert!(
-        response.final_text.contains("physical backend"),
-        "{}",
-        response.final_text
-    );
+    assert_eq!(response.status, 404);
     let unknown = service
         .handle(&mut client, "[2] DO //HARNESS/254/56/1 FROBNICATE")
         .await;
@@ -4484,22 +4581,22 @@ async fn physical_label_kfi_parser_rejects_bad_arity_scope_and_values_without_io
     std::fs::remove_file(path).unwrap();
 }
 
-/// Broader native UNRAVEL shapes remain fail-closed until cycles, occupied
-/// displacement, bridges and native fallback have equivalent evidence.
+/// General UNRAVEL forms are physical; malformed and foreign forms still
+/// reject before the shared PCI sees traffic.
 #[tokio::test]
-async fn broader_net_unravel_shapes_fail_closed() {
+async fn general_net_unravel_rejects_invalid_scope_before_io() {
     let path = state_path();
     let (pci, _remote) = pci();
     let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
     let mut client = ClientState::default();
-    for line in [
-        "[1] NET UNRAVEL //HARNESS/254",
-        "[2] NET UNRAVELUNIT //HARNESS/254 20",
-    ] {
-        let response = service.handle(&mut client, line).await;
-        assert_eq!(response.status, 502, "{line}");
-        assert!(response.final_text.contains("requires NET UNRAVELUNIT"));
-    }
+    let response = service
+        .handle(&mut client, "[1] NET UNRAVEL //OTHER/254")
+        .await;
+    assert_eq!(response.status, 404);
+    let response = service
+        .handle(&mut client, "[2] NET UNRAVELUNIT //HARNESS/254 nope")
+        .await;
+    assert_eq!(response.status, 400);
     assert_eq!(
         service.handle(&mut client, "[3] NET UNRAVEL").await.status,
         400
@@ -4705,6 +4802,31 @@ async fn bounded_matchdb_unravel_uses_selected_serial_and_verifies_full_inventor
     assert_eq!(network.units[&7].address, 7);
     drop(model);
 
+    // The general whole-network backend is also the DO UNRAVEL backend.
+    // With a healthy unique inventory it performs the two native inventory
+    // passes, sends no address write, and returns the method envelope.
+    let healthy = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(&mut ClientState::default(), "[1b] DO //HARNESS/254 UNRAVEL")
+                .await
+        }
+    });
+    for _ in 0..2 {
+        mmi(&mut remote_read, &mut remote_write, &[6, 7, 16]).await;
+        identify(&mut remote_read, &mut remote_write, 6, &["101136.1558"]).await;
+        identify(&mut remote_read, &mut remote_write, 7, &["101136.1559"]).await;
+        identify(&mut remote_read, &mut remote_write, 16, &["100966.1187"]).await;
+    }
+    let healthy = healthy.await.unwrap();
+    assert_eq!(healthy.status, 202, "{healthy:?}");
+    assert_eq!(healthy.final_text, "202 Done: //HARNESS/254");
+    assert!(healthy
+        .lines
+        .iter()
+        .any(|line| line == "120-Unravel: Complete."));
+
     let mut events = service.events.subscribe();
     let reconnecting = tokio::spawn({
         let service = service.clone();
@@ -4765,7 +4887,7 @@ async fn bounded_matchdb_unravel_uses_selected_serial_and_verifies_full_inventor
     assert_eq!(response.status, 408, "{response:?}");
     assert_eq!(
         response.final_text,
-        "408 Unravel outcome invalidated by PCI reconnect after 2 of 2 verified movement(s)"
+        "408 Unravel invalidated by PCI reconnect after 2 move(s)"
     );
     assert!(
         service.model.lock().await.projects["HARNESS"].networks[&254]
@@ -7087,6 +7209,120 @@ async fn project_identify_uses_shared_interface_and_native_parameter_35() {
             .physical
             .is_empty(),
         "PROJECT_IDENTIFY must not populate the project cache"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test(start_paused = true)]
+async fn topology_explore_reuses_shared_interface_and_reports_physical_identity() {
+    async fn line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+    async fn reply<W: tokio::io::AsyncWrite + Unpin>(writer: &mut W, source: u8, cal: &[u8]) {
+        let mut bytes = vec![0x86, source, 0x10, 0x00];
+        bytes.extend_from_slice(cal);
+        let sum = bytes.iter().fold(0u8, |sum, byte| sum.wrapping_add(*byte));
+        bytes.push(0u8.wrapping_sub(sum));
+        let mut wire = hex::encode_upper(bytes).into_bytes();
+        wire.extend_from_slice(b"\r\n");
+        writer.write_all(&wire).await.unwrap();
+    }
+    fn mmi(start: u8, count: usize) -> Vec<u8> {
+        let mut states = vec![0; count];
+        if (usize::from(start)..usize::from(start) + count).contains(&4) {
+            states[4 - usize::from(start)] = 1;
+        }
+        let mut wire = Packet::StandardStatus {
+            application: 0xff,
+            block_start: start,
+            states,
+        }
+        .encode_packet()
+        .unwrap();
+        wire.extend_from_slice(b"\r\n");
+        wire
+    }
+
+    let path = state_path();
+    let (pci, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        let _ = line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+    let service = Service::new(&topology_fixture(), None, path.clone(), pci, None).unwrap();
+    service
+        .set_port_endpoint(Endpoint::parse_tcp("127.0.0.1:10001").unwrap())
+        .unwrap();
+    let exploring = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[topo] TOPOLOGY EXPLORE socket@127.0.0.1:10001",
+                )
+                .await
+        }
+    });
+
+    let request = line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\05FF00FAFF00"), "{request:?}");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    for (start, count) in [(0, 88), (88, 88), (176, 80)] {
+        remote_write.write_all(&mmi(start, count)).await.unwrap();
+    }
+    tokio::task::yield_now().await;
+
+    for (attribute, payload) in [(1, b"RELAY4  ".as_slice()), (2, b"1.0.00  ".as_slice())] {
+        let request = line(&mut remote_read).await;
+        assert!(
+            request
+                .windows(4)
+                .any(|window| window == format!("21{attribute:02X}").as_bytes()),
+            "{request:?}"
+        );
+        let code = request[request.len() - 2];
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+        let mut cal = vec![0x81 + payload.len() as u8, attribute];
+        cal.extend_from_slice(payload);
+        reply(&mut remote_write, 4, &cal).await;
+        tokio::task::yield_now().await;
+    }
+
+    let request = line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\4604001A2102"), "{request:?}");
+    reply(&mut remote_write, 4, &[0x83, 33, 0, 0]).await;
+
+    let request = line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\4604001A2306"), "{request:?}");
+    let mut cal = vec![0x87, 35];
+    cal.extend_from_slice(&[0xce, 0x4c, 0xb3, 0x79, 0xe7, 0x9e]);
+    reply(&mut remote_write, 4, &cal).await;
+
+    let response = exploring.await.unwrap();
+    assert_eq!(response.status, 324, "{response:?}");
+    assert_eq!(
+        response.lines,
+        [
+            "323-Network Found NET0 127.0.0.1:10001",
+            "321-Network Serial NET0 TEST"
+        ]
+    );
+    assert_eq!(response.final_text, "324 Bridges Found NET0 1");
+    assert!(
+        service.model.lock().await.projects["TOPO"].networks[&254]
+            .physical
+            .is_empty(),
+        "topology exploration must not mutate the runtime unit cache"
     );
     std::fs::remove_file(path).unwrap();
 }

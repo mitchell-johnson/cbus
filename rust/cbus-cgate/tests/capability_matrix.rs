@@ -169,9 +169,9 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // Ten general/object paths move fail_closed_502 -> local_database: both
     // native comment spellings, OID, BROADCAST_EVENT, SHOW, REPORT, all three
     // TREE renderings and durable NEW object creation.
-    assert_eq!(class_count(RoutingClass::Physical), 215);
-    assert_eq!(class_count(RoutingClass::LocalDatabase), 177);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 37);
+    assert_eq!(class_count(RoutingClass::Physical), 218);
+    assert_eq!(class_count(RoutingClass::LocalDatabase), 181);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 30);
     assert_eq!(class_count(RoutingClass::Obsolete400), 2);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here
@@ -1121,35 +1121,25 @@ fn label_clear_is_physical_and_evidences_confirmation_only_exact_once_delivery()
 }
 
 #[test]
-fn fail_closed_pins_do_unravel_and_whole_network_unravel() {
-    let fail_closed: BTreeSet<&str> = CAPABILITY_MATRIX
-        .iter()
-        .filter(|entry| entry.class == RoutingClass::FailClosed502)
-        .map(|entry| entry.path)
-        .collect();
-    // "DO UNRAVEL" is a method specialization of the inventoried "DO" path
-    // (not a separate inventoried path): the DO row carries the explicit
-    // 502 evidence for the UNRAVEL method.
-    for pinned in ["DO", "NET UNRAVEL"] {
-        assert!(
-            fail_closed.contains(pinned),
-            "fail_closed must contain {pinned}"
-        );
-    }
+fn physical_unravel_paths_pin_preflight_and_exact_once_evidence() {
     let do_row = CAPABILITY_MATRIX
         .iter()
         .find(|entry| entry.path == "DO")
         .expect("DO row exists");
-    assert!(
-        do_row.evidence.contains("DO UNRAVEL"),
-        "DO row must pin the UNRAVEL 502 evidence"
-    );
+    assert_eq!(do_row.class, RoutingClass::Physical);
+    assert!(do_row.evidence.contains("UNRAVEL"));
+    let whole_row = CAPABILITY_MATRIX
+        .iter()
+        .find(|entry| entry.path == "NET UNRAVEL")
+        .expect("NET UNRAVEL row exists");
+    assert_eq!(whole_row.class, RoutingClass::Physical);
+    assert!(whole_row.evidence.contains("exact-once"));
     let unit_row = CAPABILITY_MATRIX
         .iter()
         .find(|entry| entry.path == "NET UNRAVELUNIT")
         .expect("NET UNRAVELUNIT row exists");
     assert_eq!(unit_row.class, RoutingClass::Physical);
-    assert!(unit_row.evidence.contains("255 MATCHDB"));
+    assert!(unit_row.evidence.contains("one preflighted planner"));
 }
 
 #[test]

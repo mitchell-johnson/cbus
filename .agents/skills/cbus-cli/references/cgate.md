@@ -724,17 +724,21 @@ proves delivery to the interface, not unit action. Foreign, unbound, or routed
 definitions fail before I/O. Neither family has an MQTT state schema; incoming
 frames are C-Gate events and ordinary MQTT lighting remains independent.
 
-`NET STATE_INTERVAL` always returns the retained obsolete 400. `NET OPEN`,
-`NET CLOSE`, whole-network `NET UNRAVEL`, and `TOPOLOGY EXPLORE` remain 502.
-Do not work around those boundaries: OPEN/CLOSE and EXPLORE would compete for
-interface ownership, and the general destructive unravel algorithm is not
-fully evidenced. Ground assertions in
+`NET STATE_INTERVAL` always returns the retained obsolete 400. `NET OPEN` and
+`NET CLOSE` update bound runtime state without releasing cmqttd's shared PCI;
+`PROJECT START` and `PROJECT STOP` apply the same lifecycle across that project.
+Direct `NET UNRAVEL`, `NET UNRAVELUNIT`, and `DO ... UNRAVEL` use a complete
+known-serial safe planner. `TOPOLOGY EXPLORE` reuses the active endpoint or
+opens supported additional descriptors only for the duration of the scan.
+Ground assertions in
 `rust/testdata/fixtures/native_cgate_net_lifecycle.json`, packets in
 `rust/testdata/vectors/network_management.jsonl`, and the daemon regression in
 `rust/cmqttd/tests/system_cgate_net_lifecycle.rs`. `CMQTT CAPABILITIES` exposes
 `net_catalog_commands`, `net_catalog_storage`, `net_catalog_file_storage`,
-`net_learn`, `network_locate`, `network_management_delivery_semantics`, and
-`net_lifecycle_fail_closed`.
+`net_learn`, `network_locate`, `network_management_delivery_semantics`,
+`net_open_close_preserves_mqtt`, `project_runtime_start_stop`,
+`net_unravel_direct_safe_planner`, `topology_explore_physical`, and the now-empty
+`net_lifecycle_fail_closed` list.
 `LIGHTING`, `TRIGGER`, and `ENABLE` label commands also use the physical bus.
 They support the Toolkit CLI's raw/text, icon, language, segmented Unicode, and
 dynamic bitmap forms. Enable Unicode is a native-invalid form. A 200 response
@@ -807,14 +811,21 @@ against the physical bus. That command proves one source and an empty
 destination, uses the native parameter-`0x20` one-use challenge, sends the
 special address STORE once, requires the destination ACK, and deliberately
 leaves the database unit address unchanged for the Toolkit workflow to verify.
-The bounded `NET UNRAVELUNIT //PROJECT/NETWORK 255 MATCHDB` path resolves
-exactly two known serials colliding at 255 to two unique, independently empty
-database destinations on a direct network. It requires local PCI parameter
-66=`05`, sends each selected-serial broadcast once, verifies each destination,
-and repeats the complete MMI and serial inventory before returning 200. Query
-`CMQTT CAPABILITIES`; `net_unravelunit_matchdb_duplicate_255: true` denotes
-this exact scope. Whole-network UNRAVEL, other source/subset forms, occupied
-destinations, cycles, larger duplicate sets, and bridged networks remain 502.
+`NET UNRAVEL //PROJECT/NETWORK [MATCHDB]` and `NET UNRAVELUNIT
+//PROJECT/NETWORK UNITS [MATCHDB]` use one direct-network planner. It takes a
+complete MMI and known-serial identity inventory, keeps healthy singletons,
+splits every unit at 255, and moves all but one deterministic keeper at other
+duplicate addresses. `MATCHDB` prefers unique empty serial-matched database
+addresses before the lowest free targets. Local PCI parameter 66 must be `05`.
+Every target is independently proved empty before the first mutation; every
+selected-serial write is sent once and verified at its destination; a final
+complete inventory and option check must equal the exact plan before cache and
+events commit. Routed networks, unknown identities, insufficient targets,
+transport uncertainty, and reconnects fail safely without write replay or
+rollback. `DO //PROJECT/NETWORK UNRAVEL` uses the same backend and returns 202.
+Query `CMQTT CAPABILITIES`; `net_unravel_direct_safe_planner: true` denotes
+this scope.
+
 `DBNETWORKPATH START END [OID|COMPACT]` resolves the imported Bridge
 `InterfaceAddress` graph with the standard far-side address convention. It
 requires a database bridge unit for every transition, returns each crossed
@@ -1283,8 +1294,10 @@ same confirmed SAL path as the corresponding lighting command. `DO
 //PROJECT/NETWORK SYNC` runs the same physical identity-populating direct or
 bridged read-only synchronization as `NET SYNC` and returns native `202 Done:
 object` framing.
-`DO ... UNRAVEL` returns 502; never describe the mock's in-memory result as
-physical success or treat the bounded NET workflow as general unravel support.
+`DO //PROJECT/NETWORK UNRAVEL` runs the generation-bound physical planner used
+by whole-network NET UNRAVEL and returns `202 Done: object` only after its final
+inventory proof. Treat that as verified address inventory for the current PCI
+generation; persistence and later power-cycle state still require observation.
 
 ## Mock service
 

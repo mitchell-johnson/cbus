@@ -57,9 +57,12 @@ of a particular physical DALI gateway or downstream DALI bus.
 
 `system_cgate_net_lifecycle.rs` starts the real daemon with the fake PCI and
 mini broker. It pins exact NET/NETWORK/TOPOLOGY help, LOGIN boundaries, local
-catalogue operations with zero PCI writes, exact `NET LEARN` and all-selector
-`NETWORK LOCATE` wire behavior, definitive-NAK no-replay, explicit residual
-502 paths, capabilities, and MQTT lighting continuity. The five independent
+catalogue operations with zero PCI writes, bound OPEN/CLOSE and project
+START/STOP while the one MQTT PCI remains connected, exact `NET LEARN` and
+all-selector `NETWORK LOCATE` wire behavior, definitive-NAK no-replay,
+capabilities, topology parser failures, and MQTT lighting continuity. Focused
+service tests additionally drive physical TOPOLOGY EXPLORE and the direct
+UNRAVEL planner through complete scripted before/after inventories. The five independent
 packet vectors live in `rust/testdata/vectors/network_management.jsonl`; the
 sanitized build-2001 help/runtime/class evidence lives in
 `rust/testdata/fixtures/native_cgate_net_lifecycle.json`.

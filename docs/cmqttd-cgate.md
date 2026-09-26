@@ -149,6 +149,9 @@ unavailable.
 | `NET`, `NETWORK`, `TOPOLOGY`; `NET CREATE/DELETE/FLUSH/LIST/LOAD/RENAME/SAVE` | Exact retained build-2001 root/subcommand help and a runtime network-definition catalogue in the atomic `cmqttd-json` repository. CREATE accepts a bounded definition but never opens another interface. RENAME changes the runtime definition while preserving its immutable optional shared-PCI binding and does not rename the tag-database object. DELETE refuses an operating bound definition with native 468. FLUSH clears only volatile observations. SAVE/LOAD use internal `DB` or `FILE` snapshots; `FILE` is not a host path, and LOAD rejects duplicate names with the observed 408 before mutation. Their retained optional project token resolves the named project even when another project is selected; cross-project tests pin isolation and a missing project returns native 401. Mutations require LOGIN when armed and send no PCI traffic |
 | `NET LEARN`, `NETWORK LOCATE` | Exact retained learn-mode and locate-yourself SAL on the configured direct network. LEARN validates application, grades 1/2/128–131 and group, including its inner checksum. LOCATE supports UNIT, APP, GROUP and manufacturer/native-serial selectors with OFF/ON/byte modes on application 208. Each command enters the shared command lane, transmits once, waits for its correlated PCI confirmation, checks the active PCI generation, and never replays an uncertain outcome. A 200 proves interface delivery only. Unbound, foreign and routed definitions fail before I/O. Incoming frames fan out to C-Gate event clients and do not create MQTT state. See `rust/testdata/fixtures/native_cgate_net_lifecycle.json`, `rust/testdata/vectors/network_management.jsonl`, and `system_cgate_net_lifecycle.rs` |
 | `NET STATE_INTERVAL` | Exact unconditional native obsolete 400 directing callers to `set projects NetStateInterval X`; no state or PCI I/O |
+| `NET OPEN/CLOSE`, `PROJECT START/STOP` | Runtime lifecycle over the durable NET catalogue and imported project model. OPEN/START admit the configured bound network and its reachable imported routes; CLOSE/STOP clear volatile physical and level observations and mark the affected runtime networks closed. cmqttd retains its shared PCI/CNI and MQTT ownership throughout, so these commands never manufacture a second connection. An unbound CREATE-only definition returns 408 because it has no cmqttd runtime binding |
+| `NET UNRAVEL`, `NET UNRAVELUNIT`, `DO ... UNRAVEL` | Physical direct-network planner over a complete MMI and known-serial inventory. Healthy singletons stay in place; address 255 is fully split and each other duplicate keeps one deterministic unit. `MATCHDB` prefers one unique empty database address for that serial, then the lowest independently verified empty address. The service proves all targets and local PCI option 66=`05` before the first selected-serial write, sends every move once, verifies each destination, and accepts success only after an exact final whole-network inventory under the same PCI generation. Routed networks, unknown serials, insufficient unique targets, reconnects, and uncertain replies fail safely; no write is replayed or rolled back. `DO` returns native 202 framing over the same backend |
+| `TOPOLOGY EXPLORE` | Parses CNI/socket/Wiser/serial descriptors, performs physical installation MMI plus parameter-35 project identity discovery, and returns native-shaped 321/323/324 progress. The active endpoint is recognized across socket/CNI aliases and reused through cmqttd's generation guard, preserving MQTT. Other supported endpoints are reset and explored through a temporary transport that is always shut down. Bad descriptors and open/MMI failures retain 470/472/473 evidence |
 | `CONFIG` and `CONFIG GET/INFO/SET/OBGET/OBSET/OBRESET/LOAD/SAVE` | Complete maintained C-Gate 3.4 CONFIG family with its exact parent help, case-sensitive parameter names, 148 registered parameters, 142 queryable INFO records, 122 wildcard GET records, six obsolete registrations, and retained 303/304/error/mixed-status envelopes. Legacy GET/SET use global/project inheritance; object forms model global, selected-project and network inheritance, including project resets that remove descendant network overrides. Values and named global/project snapshots commit atomically inside `cmqttd-json`; caller filenames are bounded snapshot identities and are never opened on the host. CONFIG data does not reconfigure the running listener, PCI, MQTT, logging, or other daemon settings. With LOGIN armed, all five mutating verbs require authentication. Native 3.4 sends no response for an unknown or wrong-scope OBGET; cmqttd deliberately returns deterministic 408 so the connection remains live. See `rust/testdata/fixtures/native_cgate_config.json` and `rust/cmqttd/tests/system_cgate_config.rs` |
 | `FILE DIR/LS/MKDIR/DELETE/SHA256/DOWNLOAD/UPLOAD` | Complete maintained C-Gate 3.4 FILE family over a sandboxed virtual filesystem in `cmqttd-json`: exact nine-line parent help, 304/305 listings, recursive MKDIR, empty-directory/file deletion, multi-file 302 SHA256 rows, native 345/347/346 download framing with 76-character base64 rows, base64 here-document upload, and `.0` replacement backups. Ordinary relative paths reject leading separators, `~`, `..`, and `:`; `%PROJECT%/path` accepts the namespace separator for a known project and stays in a separate virtual root. No FILE path opens an arbitrary host or vendor project file and no FILE command sends PCI traffic. With LOGIN armed, UPLOAD, DELETE and MKDIR require authentication. See `rust/testdata/fixtures/native_cgate_file.json` and `rust/cmqttd/tests/system_cgate_file.rs` |
 | `PORT` and `PORT LIST/IFLIST/CNISCAN/CNISCAN2/PROBE/REFRESH` | Complete maintained C-Gate 3.4 PORT family. Bare/`?` returns exact retained help. LIST reports local serial names without `/dev/` and marks cmqttd's selected serial `inuse`; IFLIST excludes loopback addresses. CNISCAN sends the exact four-byte legacy request from UDP 30718, accepts only 124-byte replies and optionally tests the little-endian advertised TCP port. CNISCAN2 runs that legacy scan and the retained variable CCP request from UDP 20050 with the native CRC, parameter set and five-second window, returning extended type/MAC/serial/unit 129 rows. PROBE accepts serial/socket/CNI/Wiser/EtherLite grammar, refuses the active cmqttd endpoint with 431, uses a separate temporary connection for the retained DC1/`@2104` echo-and-serial exchange, returns the filtered PCI serial text and closes it. Direct serial uses native software flow, modem control and six-rate PCI baud detection. EtherLite uses its native FAS heartbeat, unit inquiry, serial setup and framed byte stream. Native build 2001 makes REFRESH inapplicable because its port list is automatic; cmqttd returns the exact observed 408. LOGIN gates scans, probe and refresh. See `rust/testdata/fixtures/native_cgate_port.json`, `rust/testdata/vectors/cni_discovery.jsonl`, and `rust/cmqttd/tests/system_cgate_port.rs` |
@@ -163,7 +166,7 @@ unavailable.
 | Physical PP LOAD and subsequent GET/INFO | Identifies the live unit, selects its privately installed decoded schema, recalls standard CAL parameters, explicit pages for `paged`/`ncc`, OEM memory, and GOC parameter-`0xFF` memory through the shared PCI, decodes int/long/bit/string/sixbit arrays and `ArrayMap`, applies tag selection, and commits the session only after every read succeeds |
 | Physical PP SAVE/SAVE_TO_SOURCE | Writes only dirty, tag-selected `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and `goc2` parameters with `none`/`checksum`/supported `lock` protection. Page-aware writes split at 256-byte boundaries; OEM methods use the selector/data path; GIU halts and resumes the unit; DALI observes the native settling interval; GOC methods use parameter `0xFF`, a big-endian address prefix, and their native block limits. The service validates the complete plan and live type/firmware first, preserves shared bits through pre-read/encode, requires source/parameter-matched acknowledgements, and reads every stored range back before success. Specifications containing the vendor `ncc` method are classified as C-Bus 3; after a changed save, the service runs native group-0 operation-4 EXECUTE/POLL until the NVM commit succeeds |
 | ON/OFF/RAMP/TERMINATERAMP and lighting variants | Actual shared PCI, negative confirmations return errors; successful delivery is distinct from observed physical brightness |
-| `DO` lighting methods, direct/bridged read-only `SYNC`, and KEYGL5 `FactoryDefault` | Lighting and synchronization aliases use their physical backends. Routed SYNC uses the same strict Reply Network correlation as `NET SYNC`. FactoryDefault sends the captured OEM control once, requires PCI confirmation plus the source-correlated unit ACK, clears stale observed-label traffic, and returns `202 Done: object`; `DO ... UNRAVEL` remains an explicit 502 until its physical backend exists |
+| `DO` lighting methods, direct/bridged read-only `SYNC`, `UNRAVEL`, and KEYGL5 `FactoryDefault` | Lighting and synchronization aliases use their physical backends. Routed SYNC uses the same strict Reply Network correlation as `NET SYNC`. UNRAVEL uses the guarded direct-network planner described above and returns native `202 Done: object` framing. FactoryDefault sends the captured OEM control once, requires PCI confirmation plus the source-correlated unit ACK, clears stale observed-label traffic, and returns `202 Done: object` |
 | GET group level | Real observed bus levels; unobserved levels return 408, never invented zero |
 | SCENE RECORD/PLAY | RECORD atomically persists the configured network's observed lighting levels under the named set/scene. PLAY sends a confirmed zero-time ramp for every stored level, invalidates the old cache under the sending PCI generation, and schedules physical status readback. Unknown scenes retain the native 401 response |
 | TRIGGER EVENT/INDICATORKILL | Actual Trigger Control SAL on application 202; incoming events update the live service cache and event stream. A confirmed command commits its state/event only while its sending PCI generation remains current |
@@ -195,7 +198,6 @@ unavailable.
 | NET CLOCKS | Reads physical IDENTIFY16 summaries for the synchronized inventory. Target counts and gateway recovery use decoded `ClockGenEnable` layouts, read-modify-write CAL stores and mandatory readback; native-style per-unit failures remain visible in `120` lines even with final status 200 |
 | `SET //PROJECT/NETWORK Retries 0` | Matches the owned native Toolkit-preparation exchange exactly: a ready network starts with `Retries=2`, the exact fully qualified zero form returns `200 OK: //PROJECT/NETWORK`, and subsequent `GET`/`SHOW` reads report zero. This setting is volatile and local: it sends no PCI command, emits no event, does not rewrite cmqttd's database, and resets to two after daemon restart or runtime clearing. Other non-`Address` scalar SET forms remain closed |
 | `SET //PROJECT/NETWORK/p/UNIT Address DESTINATION` | Physical unit readdressing through native C-Gate's protected parameter-`0x20` exchange. The service proves one source identity and an empty destination, obtains the one-use challenge, sends exactly one special address STORE, requires both PCI confirmation and the unit ACK from the destination, moves only the observed physical cache, and leaves the database address unchanged |
-| `NET UNRAVELUNIT //PROJECT/NETWORK 255 MATCHDB` | Bounded physical resolution of exactly two known serials colliding at address 255. The service requires two distinct matching database units at unique empty addresses, a direct network, and local PCI parameter 66=`05`; it sends one selected-serial broadcast per unit and accepts success only after per-destination identity checks and a complete final MMI/serial inventory. The final cache replacement and all move/success events share one generation-bound commit; reconnect returns 408 without publishing the old snapshot or staged events. Other unravel shapes return 502 |
 | Unit identification | Source-correlated CAL replies from the physical unit |
 | OEM physical memory reads | Volatile 0x41 pointer selection plus segmented RECALL; no EEPROM writes |
 | KEYGL5 5.5.00 static strings and label references | Python reader checks physical identity, stable header and static-text CRC. Its network form runs one fresh serial refresh, selects supported records in numeric order, brackets each memory snapshot with physical IDENTIFY4, attaches the inventory identity only when both serials match, reads configurations sequentially and preserves mismatches as per-unit errors |
@@ -330,22 +332,26 @@ ring is cleared because its entries may be stale after reset. Use the guarded
 [`cbus-toolkit` workflow](../toolkit-cli/docs/edlt-factory-default.md) to bind the
 request to a fresh complete inventory and expected serial.
 
-`NET UNRAVELUNIT //PROJECT/NETWORK 255 MATCHDB` has a deliberately narrower
-meaning than the native generic command. It runs only when address 255 contains
-exactly two distinct known serials, every other present address contains one
-known serial, each serial has one database destination in 2..254, both targets
-are independently empty and unique, and the local PCI is outside the move with
-parameter 66 equal to `05`. It inventories all present addresses before the
-first write, sends each selected-serial broadcast exactly once, verifies the
-serial at its destination after each move, then repeats the complete MMI and
-serial inventory and checks the PCI option again. The receipt for a broadcast
-is treated only as acceptance; the later observations prove the movement.
-Timeout, transport loss, conflicting replies, or an incomplete final inventory
-produce an uncertain 408 with the number of independently verified moves. The
-service does not retry or roll back a selected-serial write. Whole-network
-`NET UNRAVEL`, non-255 sources, subsets, operation without `MATCHDB`, occupied
-destinations, larger duplicate sets, address cycles, and bridged networks remain
-explicit 502 cases.
+`NET UNRAVEL //PROJECT/NETWORK [MATCHDB]` and `NET UNRAVELUNIT
+//PROJECT/NETWORK UNITS [MATCHDB]` share one guarded direct-network planner.
+It first completes installation MMI and known-serial identity inventory for
+every present address. Healthy singletons stay put. All units at address 255
+move, while each ordinary duplicate keeps a deterministic unit; when possible
+the keeper is the serial already matching that database address, and the local
+PCI is never selected for movement. `MATCHDB` prefers a unique serial-matched
+database destination, then assigns the lowest free address.
+
+Before any mutation, the planner proves local PCI parameter 66 equals `05`,
+allocates a unique destination for every move, and independently identifies
+every target as empty. It sends each selected-serial address broadcast exactly
+once, verifies the serial at that destination, then repeats the complete MMI,
+serial inventory, and PCI option check. Cache replacement and move/success
+events commit only while the same PCI generation remains active. Timeout,
+transport loss, unknown identities, a responding target, inadequate free
+addresses, conflicting database destinations, or an incomplete final inventory
+returns a bounded 408/409 without replay or rollback. Routed networks fail
+before physical I/O. `DO //PROJECT/NETWORK UNRAVEL` invokes the whole-network
+form and returns native 202 framing after the same physical proof.
 
 `NET SET_PROJECT_IDENTIFY //PROJECT/NETWORK NAME` applies the native Java-style
 one-to-eight UTF-16-unit check, uppercase fold, and six-bit range validation.
@@ -518,8 +524,8 @@ The existing mock dispatches 431 command paths. That is **not** evidence that
 all 431 have physical implementations in this service. `CMQTT CAPABILITIES`
 returns `full_cgate_compatibility: false`; unimplemented physical operations
 return 502. The enumerable gap tracker is the executable capability matrix in
-`cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 215
-physical, 177 local/session, 37 fail-closed 502, and 2 obsolete 400 over the
+`cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 218
+physical, 181 local/session, 30 fail-closed 502, and 2 obsolete 400 over the
 431 inventoried paths, plus a separately asserted 11-row supplement for
 non-inventoried service commands. Full replacement still requires:
 
@@ -563,29 +569,30 @@ non-inventoried service commands. Full replacement still requires:
   remains 502 before I/O because that challenge exchange has no retained
   routed completion evidence. No admitted form adds a discovered unit to the
   persistent project database.
-  The bounded direct-network two-serial collision at address 255 is implemented
-  by `NET UNRAVELUNIT ... 255 MATCHDB`, including full inventory and independent
-  verification. Whole-network `NET UNRAVEL`, other UNRAVELUNIT shapes,
-  occupied-address displacement, larger duplicate sets, cycles, and bridges
-  remain 502. `DO ... UNRAVEL` also remains 502.
+  Direct-network `NET UNRAVEL`, arbitrary `NET UNRAVELUNIT` selections, and
+  `DO ... UNRAVEL` use the complete-inventory safe planner described above.
+  They split address 255 and larger duplicate sets into unique independently
+  empty destinations, prefer unique MATCHDB addresses, and fail before writes
+  when the inventory or target plan is uncertain. Routed unravel remains outside
+  this physical backend.
   Direct and one-to-six-bridge `NET PINGU`, `NET SYNC` identity population,
   general `NET SYNCNEW`, `DO ... SYNC`, and duplicate-aware `NET CHECKUNIT`
   are implemented with route-isolated caches. Bridged targeted SYNCNEW, OEM
   eDLT metadata, readdressing, PP programming, clocks, labels and bus-control
   mutations remain fail-closed.
   Guarded direct-network single-unit physical readdressing is implemented.
-  `DO` lighting methods also use the physical
-  lighting backend; `DO ... UNRAVEL` is rejected until unravel is implemented.
+  `DO` lighting methods use the physical lighting backend, and `DO ... UNRAVEL`
+  uses the same generation-bound direct-network planner as NET.
   Direct-network clock inspection, target-count changes and gateway recovery are
   implemented for units whose decoded schema exposes a supported direct
   `ClockGenEnable` field; electrical arbitration remains outside software
   verification.
   Runtime NET catalogue lifecycle is implemented locally, and direct
-  `NET LEARN`/`NETWORK LOCATE` use confirmed exact-once SAL. `NET OPEN` and
-  `NET CLOSE` remain unavailable because cmqttd already owns the one interface;
-  whole-network `NET UNRAVEL` remains unavailable beyond the bounded
-  UNRAVELUNIT case, and `TOPOLOGY EXPLORE` remains unavailable because native
-  behavior opens arbitrary supplied interfaces.
+  `NET LEARN`/`NETWORK LOCATE` use confirmed exact-once SAL. `NET OPEN`/`CLOSE`
+  and `PROJECT START`/`STOP` change runtime state while preserving cmqttd's
+  shared PCI and MQTT transport. `TOPOLOGY EXPLORE` reuses that active endpoint
+  or opens supported additional descriptors transiently for physical MMI and
+  project-identity discovery.
 - Device-resident scene triggering beyond PP table programming, a physical
   eDLT operation that can query pre-existing dynamic-label cache contents, and
   the remaining specialist application families. The maintained Audio,
@@ -847,8 +854,8 @@ PCI, checks standard and OEM values, dirty/tag selection, read-modify-write
 encoding, acknowledgements, readback, and the exact C-Bus 3 NVM commit sequence,
 and verifies that C-Gate and MQTT retain one PCI connection while lighting events
 continue through the same transport. The same test pins `DO` lighting methods to
-their physical SAL packets, exercises `DO ... SYNC`, and verifies that unsupported
-`DO ... UNRAVEL` cannot report simulated success. It also pins source-correlated
+their physical SAL packets, exercises `DO ... SYNC`, and verifies the guarded
+`DO ... UNRAVEL` physical planner. It also pins source-correlated
 IDENTIFY16 clock summaries and their native `120` response fields while MQTT
 shares the PCI. A separate real-daemon test verifies guarded physical
 readdressing, exact-once STORE transmission, database/physical layer separation,

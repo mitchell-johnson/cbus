@@ -981,11 +981,6 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
         "{check:?}"
     );
     assert!(check.contains("200 OK."), "{check:?}");
-    assert!(
-        command(&mut reader, &mut writer, "DO //HARNESS/254 UNRAVEL")
-            .await
-            .contains("502 DO UNRAVEL requires a physical backend")
-    );
     assert_eq!(sys.pci.connections(), 1);
     drop(sys);
     std::fs::remove_file(path).unwrap();
