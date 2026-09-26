@@ -257,6 +257,136 @@ async fn pp_admin_and_programmer_are_local_native_shaped_and_restart_safe() {
         .await,
         ["502 Command requires a physical backend that is not implemented"]
     );
+
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "deploy-work",
+            "DEPLOY_QUEUE ADD P",
+        )
+        .await,
+        ["502 Programmer execution backend is not implemented; deployment queue remains unchanged"]
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "deploy-empty",
+            "DEPLOY_QUEUE LIST",
+        )
+        .await,
+        ["450 no programmers registered."]
+    );
+
+    let (mut event_reader, mut event_writer) = connect(&system).await;
+    for (tag, channel) in [
+        ("sub-updated", "deploy-queue.updated-entries"),
+        ("sub-started", "deploy-queue.started"),
+        ("sub-ended", "deploy-queue.ended"),
+    ] {
+        assert_eq!(
+            command(
+                &mut event_reader,
+                &mut event_writer,
+                tag,
+                &format!("EVENT_CHANNEL SUB {channel}"),
+            )
+            .await,
+            ["200 OK: added"]
+        );
+    }
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "noop-create",
+            "PROGRAMMER CREATE EMPTY \"No work\" \"Local\"",
+        )
+        .await,
+        ["200 OK: created"]
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "noop-add",
+            "DEPLOY_QUEUE ADD EMPTY",
+        )
+        .await,
+        ["200 OK: added"]
+    );
+    let mut events = Vec::new();
+    for _ in 0..3 {
+        let mut event = String::new();
+        tokio::time::timeout(STARTUP, event_reader.read_line(&mut event))
+            .await
+            .unwrap()
+            .unwrap();
+        events.push(event.trim_end_matches(['\r', '\n']).to_string());
+    }
+    assert_eq!(
+        events,
+        [
+            "#event {\"name\":\"deploy-queue.updated-entries\",\"msg\":\"addTaskGroup: EMPTY\"}",
+            "#event {\"name\":\"deploy-queue.started\",\"msg\":{\"name\":\"EMPTY\",\"task\":\"No work\"}}",
+            "#event {\"name\":\"deploy-queue.ended\",\"msg\":{\"name\":\"EMPTY\",\"task\":\"No work\",\"status\":\"STOPPED\"}}",
+        ]
+    );
+    let deployed = command(&mut reader, &mut writer, "deploy-list", "DEPLOY_QUEUE LIST").await;
+    assert_eq!(deployed.last().unwrap(), "200 OK.");
+    assert!(deployed[0].starts_with(
+        "130-{\"progName\":\"EMPTY\",\"progState\":\"STOPPED\",\"taskName\":\"No work\",\"taskRoute\":\"Local\",\"createdTime\":"
+    ));
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "deploy-retry",
+            "DEPLOY_QUEUE RETRY EMPTY",
+        )
+        .await,
+        ["502 Programmer retry backend is not implemented; deployment queue remains unchanged"]
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "deploy-delete-all",
+            "DEPLOY_QUEUE DELETE_ALL completed",
+        )
+        .await,
+        ["120-deleted: EMPTY", "200 OK: done"]
+    );
+    let mut delete_event = String::new();
+    tokio::time::timeout(STARTUP, event_reader.read_line(&mut delete_event))
+        .await
+        .unwrap()
+        .unwrap();
+    assert_eq!(
+        delete_event.trim_end_matches(['\r', '\n']),
+        "#event {\"name\":\"deploy-queue.updated-entries\",\"msg\":\"removeAllCompletedTaskGroups: 1\"}"
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "volatile-create",
+            "PROGRAMMER CREATE VOLATILE \"Restart boundary\" \"Local\"",
+        )
+        .await,
+        ["200 OK: created"]
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "volatile-add",
+            "DEPLOY_QUEUE ADD VOLATILE",
+        )
+        .await,
+        ["200 OK: added"]
+    );
     assert_eq!(
         system
             .pci
@@ -280,6 +410,8 @@ async fn pp_admin_and_programmer_are_local_native_shaped_and_restart_safe() {
 
     drop(reader);
     drop(writer);
+    drop(event_reader);
+    drop(event_writer);
     drop(system);
 
     let mut restarted = start_with(options(&state, &unitspec)).await;
@@ -287,6 +419,16 @@ async fn pp_admin_and_programmer_are_local_native_shaped_and_restart_safe() {
     let (mut reader, mut writer) = connect(&restarted).await;
     assert_eq!(
         command(&mut reader, &mut writer, "runtime", "PROGRAMMER LIST").await,
+        ["450 no programmers registered."]
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "deploy-runtime",
+            "DEPLOY_QUEUE LIST",
+        )
+        .await,
         ["450 no programmers registered."]
     );
     assert_eq!(

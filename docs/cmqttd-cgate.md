@@ -47,6 +47,7 @@ before PP mutating verbs (`PP LOCK/LOAD/SAVE/CANCEL_LOCK/LOAD_FROM_FILE/
 SET_RAW_DATA/RELOAD_CATALOG/...`; `PP GET/INFO/LIST` stay open), PROGRAMMER
 queue creation/deletion/add/cancel/test/trigger, `PROJECT` lifecycle, `DB...`
 writes, `SET`, advisory `LOCK`/`UNLOCK`, `EVENT_CHANNEL SUB`/`UNSUB`,
+`DEPLOY_QUEUE ADD`/`DELETE`/`DELETE_ALL`/`RETRY`,
 `ACCESS ADD/DELETE/LOAD/SAVE` (ACCESS help and LIST stay open to a Clipsal or
 Max session), `CONFIG SET/LOAD/SAVE/OBSET/OBRESET` (CONFIG help, GET, INFO and OBGET stay
 open), `FILE UPLOAD/DELETE/MKDIR` (FILE help, DIR/LS, SHA256 and DOWNLOAD stay
@@ -121,7 +122,7 @@ explicitly unavailable.
 | --- | --- |
 | Tagged/untagged commands, per-client project selection, `EVENT`/`EVENTS` subscriptions | TCP/TLS service; native `e0s0c0` connection default, 64 clients, 1 MiB command limit, bounded event queues and writer deadlines |
 | `SESSION_ID`, `SESSION_ID ALL`, `SESSION_ID TAG`, `QUIT`/`EXIT` | Volatile command-session registry with odd `cmdN` identifiers, peer origin, local connection time, one-shot application tags and native 300 envelopes. A successful 204 shutdown reply is flushed before the connection closes; no project, database or PCI state is changed |
-| `EVENT_CHANNEL LIST/SUB/UNSUB` | Exact four-row C-Gate 3.4 deploy-queue channel catalogue and per-command-connection subscription state, including native 200/201/400/451 reply shapes. SUB and UNSUB require LOGIN when the optional gate is armed. Subscription bookkeeping is available now; only implemented deploy-queue operations may publish a channel, so cmqttd does not invent notifications for unsupported queue work |
+| `EVENT_CHANNEL LIST/SUB/UNSUB` | Exact four-row C-Gate 3.4 deploy-queue channel catalogue and per-command-connection subscription state, including native 200/201/400/451 reply shapes. SUB and UNSUB require LOGIN when the optional gate is armed. Implemented local queue transitions publish exact untagged `updated-entries`, `started`, and `ended` JSON envelopes only to sessions subscribed to that channel, independently of `EVENT` mode. `debug` stays silent because cmqttd has no deployment worker and never invents its diagnostics |
 | Advisory `LOCK OBJECT`, `UNLOCK OBJECT` | Resolves durable project/database objects and enforces command-session ownership with native 225/425/226/426 replies. Locks are volatile and released by successful credential-changing LOGIN, LOGOUT, disconnect, or owning UNLOCK. They are separate from PP locks, never persisted, and perform no PCI I/O |
 | Project list/use/load/save/new/close; database CRUD and database snapshots | Persistent JSON database; atomic replacement, restrictive permissions, failed-write rollback |
 | Bare `PROJECT`/`PROJECT ?`, `PROJECT DIRFULL` | Exact retained 18-line help and native 123 project/description rows. cmqttd's repository has no separate unloaded disk layer, so every modeled project is durable and appears in DIRFULL; an empty model returns native 124 |
@@ -139,6 +140,7 @@ explicitly unavailable.
 | `PP CANCEL_LOCK/LIST_LOCK/UNITS`, `GET_RAW_DATA/SET_RAW_DATA/DEBUG`, `LOAD_FROM_FILE` | Native 121/122 inventory, address cancellation, bounded session memory and nine-row memory diagnostics. Raw edits and file loads change only an owned staged session. `LOAD_FROM_FILE` accepts one bare `.xml` filename under `--cgate-unitspec`; it cannot open an arbitrary host path. Cancelling a lock leaves its session visible with `address=null`, matching retained native behavior |
 | `PP CATALOG_INFO/GET_UNIT_CATALOG/GET_UNIT_SPEC/LIST_CATALOG_NUMBERS/RELOAD_CATALOG/PATCH_VERSION` | Native catalogue, XML and status envelopes over optional private `cbusunits.xml` and decoded unit specs under `--cgate-unitspec`. Firmware matching is inclusive and numeric. Reload invalidates the bounded parsed caches. With no proprietary `patchset.zip`, PATCH_VERSION returns the retained native 408 missing-patchset response; it does not imply patch support |
 | `PROGRAMMER CREATE/DELETE/LIST/STATUS/TEST/ADD_INSTRUCTION/CANCEL_INSTRUCTION/TRIGGER` | Runtime-only native queue metadata, case-insensitive names in creation order, quoted task fields, eight retained instruction types, priorities, instruction IDs, duration/count JSON and local PAUSE/RESUME/STOP/ERROR transitions. `TRIGGER ... START` returns a specific 502 and leaves state and queue unchanged because queued PP/DALI execution has no evidenced backend. Queues are discarded on restart |
+| `DEPLOY_QUEUE ADD/DELETE/DELETE_ALL/LIST/RETRY` | Dedicated runtime queue over PROGRAMMER task groups with retained help, 450/451/501/502 errors, TaskGroupSummary JSON field order/timestamps, ALL/PENDING/FAILED/COMPLETED bulk deletion, per-entry 120/501 rows, and exact channel envelopes. LIST, terminal DELETE, and DELETE_ALL are local. ADD succeeds only for an empty or fully cancelled programmer and completes it immediately as a no-work STOPPED task; any executable instruction returns 502 before mutation/events. RETRY validates native registry/state rules then returns 502 unchanged because native retry reinitializes and executes the task. Queue state is never persisted and no path sends PCI traffic. See `rust/testdata/fixtures/native_cgate_deploy_queue.json` |
 | `PP WRITE_PATCH` | Explicit 502 before mutation or PCI I/O. The proprietary patch-set parser and physical executor are unavailable, so cmqttd never simulates a successful device patch |
 | `PP RESET_TO_DEFAULTS` | Replaces one owned loaded session with exactly the `DefaultValue` fields in its parsed unit specification. The result remains staged until an explicit save; missing or malformed specifications return 408 unchanged, with no PCI access |
 | Physical PP LOAD and subsequent GET/INFO | Identifies the live unit, selects its privately installed decoded schema, recalls standard CAL parameters, explicit pages for `paged`/`ncc`, OEM memory, and GOC parameter-`0xFF` memory through the shared PCI, decodes int/long/bit/string/sixbit arrays and `ArrayMap`, applies tag selection, and commits the session only after every read succeeds |
@@ -496,7 +498,7 @@ all 431 have physical implementations in this service. `CMQTT CAPABILITIES`
 returns `full_cgate_compatibility: false`; unimplemented physical operations
 return 502. The enumerable gap tracker is the executable capability matrix in
 `cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 206
-physical, 138 local/session, 86 fail-closed 502, and 1 obsolete 400 over the
+physical, 141 local/session, 83 fail-closed 502, and 1 obsolete 400 over the
 431 inventoried paths, plus a separately asserted 6-row supplement for
 non-inventoried service commands. Full replacement still requires:
 
@@ -510,9 +512,11 @@ non-inventoried service commands. Full replacement still requires:
   proves a correlated gateway/programming exchange, not downstream DALI-device
   state or persistence. See [the DALI guide](cgate-dali.md).
 
-- A physical `PP WRITE_PATCH` backend and PROGRAMMER scheduler. Local queue
-  construction, inspection, cancellation and non-executing state transitions
-  are implemented; `PROGRAMMER TRIGGER ... START` and `PP WRITE_PATCH` remain
+- A physical `PP WRITE_PATCH` backend and PROGRAMMER/DEPLOY_QUEUE scheduler.
+  Local queue construction, inspection, cancellation, non-executing state
+  transitions, deployment list/delete/bulk-delete, and empty/all-cancelled
+  no-op completion are implemented. `PROGRAMMER TRIGGER ... START`, executable
+  `DEPLOY_QUEUE ADD`, every `DEPLOY_QUEUE RETRY`, and `PP WRITE_PATCH` remain
   502 so no physical completion can be invented. PATCH_VERSION only reports
   the retained missing-`patchset.zip` 408 result.
 
@@ -590,6 +594,15 @@ lifecycle, verifies START and WRITE_PATCH stay fail-closed, observes no
 administrative PCI traffic, sends MQTT through the same fake PCI afterward,
 and verifies that runtime locks, sessions and queues do not survive restart.
 No vendor catalogue/spec XML is retained in the fixture.
+
+`native_cgate_deploy_queue.json` retains all five command help/grammar paths,
+TaskGroupSummary field order, delete-type behavior, exact event JSON, owned
+class hashes, and the native registry-orphan edge from the same pinned jar.
+The oracle was a disposable loopback-only daemon with no project and no C-Bus
+endpoint; only synthetic no-work and TEST-only programmers were used. The
+service and real-daemon regressions verify per-session event filtering,
+volatile restart behavior, zero queue PCI writes, pre-mutation refusal of
+executable ADD/RETRY, and MQTT continuity after queue administration.
 
 `native_cgate_config.json` retains the complete 148-entry catalogue and exact
 help, grammar, scope, reset, LOAD/SAVE and no-current-project behavior from the

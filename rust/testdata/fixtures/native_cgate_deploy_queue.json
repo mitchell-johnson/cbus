@@ -1,0 +1,147 @@
+{
+  "oracle": {
+    "product": "Schneider Electric C-Gate",
+    "version": "3.4.0.2001",
+    "manifest_build_time": "20241023",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "capture_date": "2026-09-26",
+    "environment": "Disposable loopback-only runtime on port 29423, empty project directory, no site project and no C-Bus endpoint. Synthetic PROGRAMMER names and no-work/TEST-only task groups were used."
+  },
+  "owned_bytecode": {
+    "command_set": "com.clipsal.cgate.cbus.deploy_queue.DeployQueueCommandSet",
+    "registered_handlers": {
+      "ADD": "kd",
+      "DELETE_ALL": "kf",
+      "DELETE": "kh",
+      "LIST": "ki",
+      "RETRY": "kj"
+    },
+    "class_sha256": {
+      "DeployQueueCommandSet": "242a68204a533c59fb7a3448cc2465ebb166830a585819872c5a82b00b0176db",
+      "DeleteType": "2f230e53e0a3afe5087f63abbeedaaa0dbc16146bfd734eceacb8d69908ae80b",
+      "TaskGroupSummary": "806097c60957759782d73343c67b1eddd22955804a23d88347c422581e143971",
+      "ADD_kd": "91c064bdc2a4ec3b7beb7b45d3e66c90b7b0be34df6fbcc9ccba0ace4f361641",
+      "DELETE_ALL_kf": "a61636666bb836b08786ff540f06d023a86ea852f7a9aab826a2994920daea35",
+      "DeleteType_map_kg": "47091a8d5bd18bd6ad33fff7d961be852baa58a94158b4f00b2309f554f4750c",
+      "DELETE_kh": "556165edb40ff2b4323379719d19e7a2d13bc27ca5510d2d4ad28b3655a78025",
+      "LIST_ki": "0b0003da3b8fa5e65dadcd291a4bee634dd5eac52eaabf8724b42b61f268d944",
+      "RETRY_kj": "e1c298f5a97441e988962d1d1a4f727a678d720445aa49157d54639da116822e",
+      "DeploymentQueue_kl": "3b6ada05140bdb28dda9df1c0bb383af6bbe0e92081f43625528d6e16cc63bae"
+    }
+  },
+  "parent_help": [
+    "101-Help: DEPLOY_QUEUE commands:",
+    "101-Help:  DEPLOY_QUEUE ? Help for these commands",
+    "101-Help:  DEPLOY_QUEUE ADD - Adds a programmer/task group into deployment queue",
+    "101-Help:  DEPLOY_QUEUE DELETE - Deletes programmer entry from queue.",
+    "101-Help:  DEPLOY_QUEUE DELETE_ALL - Deletes pending programmer entries from queue.",
+    "101-Help:  DEPLOY_QUEUE LIST - List of task groups in queue with short summary.",
+    "101 Help:  DEPLOY_QUEUE RETRY - Retry programmer entry from queue."
+  ],
+  "subcommand_help": {
+    "ADD": [
+      "deploy_queue add <programmer-name>",
+      "<programmer-name> name of target programmer",
+      "Adds existing programmer with specified name into deployment queue.",
+      "Starts immediately."
+    ],
+    "DELETE": [
+      "deploy_queue delete <programmer-name>",
+      "<programmer-name> name of target programmer",
+      "Deletes the programmer with specified name from queue and releases its resources."
+    ],
+    "DELETE_ALL": [
+      "deploy_queue delete_all [delete-type=all]",
+      "[delete-type] all, pending, failed, completed",
+      "Deletes all of specified task group type."
+    ],
+    "LIST": [
+      "deploy_queue list",
+      "Lists registered task groups with status summary."
+    ],
+    "RETRY": [
+      "deploy_queue retry <programmer-name>",
+      "<programmer-name> name of target programmer",
+      "Reinits the programmer with specified name from queue and re-adds it into the queue.",
+      "Only works for completed programmers."
+    ]
+  },
+  "native_shapes": {
+    "empty_list": "450 no programmers registered.",
+    "empty_delete_all": "200 OK: done",
+    "delete_all_default": "ALL",
+    "delete_types_case_insensitive": ["ALL", "PENDING", "FAILED", "COMPLETED"],
+    "invalid_delete_type": "400 Syntax Error: failed parse [delete-type]: invalid",
+    "delete_all_extra_parameter": "400 Syntax Error: Too many parameters",
+    "missing_or_extra_single_name": "400 Syntax Error: Invalid number of parameters",
+    "missing_programmer": [
+      "451-programmer does not exist.",
+      "400 Syntax Error: Invalid parameter for <programmer-name>: NAME"
+    ],
+    "duplicate_add": "501 can't add programmer into queue if it already exists.",
+    "delete_not_queued": "502 failed: could not remove programmer",
+    "retry_init": "502 illegal state: INIT",
+    "add_success": "200 OK: added",
+    "delete_success": "200 OK: deleted",
+    "retry_success_native": "200 OK: retry added",
+    "delete_all_rows": [
+      "120-deleted: DQA",
+      "120-deleted: DQB",
+      "200 OK: done"
+    ],
+    "task_group_summary_field_order": [
+      "progName",
+      "progState",
+      "taskName",
+      "taskRoute",
+      "createdTime",
+      "startedTime",
+      "endedTime",
+      "remainingSeconds"
+    ],
+    "timestamp_format": "RFC3339 UTC with fractional seconds",
+    "list_state_order": ["FAILED", "COMPLETED", "ACTIVE", "PENDING"],
+    "programmer_delete_can_orphan_queue_entry": true,
+    "queue_lifetime": "process-local; empty after daemon restart"
+  },
+  "event_envelopes": {
+    "subscription_independent_of_EVENT_mode": true,
+    "updated_add": "#event {\"name\":\"deploy-queue.updated-entries\",\"msg\":\"addTaskGroup: NAME\"}",
+    "updated_remove": "#event {\"name\":\"deploy-queue.updated-entries\",\"msg\":\"removeTaskGroup: NAME\"}",
+    "updated_delete_all": {
+      "ALL": "removeAllTaskGroups: COUNT",
+      "PENDING": "removeAllPendingTaskGroups: COUNT",
+      "FAILED": "removeAllFailedTaskGroups: COUNT",
+      "COMPLETED": "removeAllCompletedTaskGroups: COUNT"
+    },
+    "started": "#event {\"name\":\"deploy-queue.started\",\"msg\":{\"name\":\"NAME\",\"task\":\"TASK\"}}",
+    "ended": "#event {\"name\":\"deploy-queue.ended\",\"msg\":{\"name\":\"NAME\",\"task\":\"TASK\",\"status\":\"STOPPED\"}}",
+    "debug": "Native worker diagnostic strings only; cmqttd publishes none without an implemented worker.",
+    "json_object_member_order": "Both name-then-msg and msg-then-name were observed across clean native daemon starts; consumers compare JSON semantics, not map member order.",
+    "cross_channel_order": "asynchronous and not guaranteed by native scheduling"
+  },
+  "safe_runtime_observations": {
+    "empty_programmer": "ADD emitted updated/started/ended and reached STOPPED without a C-Bus endpoint.",
+    "fully_cancelled_programmer": "A PROGRAMMER TEST instruction cancelled before ADD emitted updated/started/ended, reached STOPPED with remainingSeconds 0, and contacted no C-Bus endpoint.",
+    "test_only_programmer": "A three-second PROGRAMMER TEST moved RUNNING to STOPPED and remainingSeconds 3,2,1,0 without a C-Bus endpoint.",
+    "completed_bulk_delete": "Two no-work entries produced two ordered 120-deleted rows and removeAllCompletedTaskGroups: 2.",
+    "direct_registry_delete": "PROGRAMMER DELETE returned 200 while DEPLOY_QUEUE LIST retained the completed task group; individual queue delete then failed programmer lookup."
+  },
+  "cmqttd_boundaries": {
+    "ADD": "Only empty or fully cancelled task groups complete as an immediate local no-op. Any executable instruction returns 502 before mutation or events.",
+    "DELETE": "Terminal local queue entries can be removed without PCI I/O.",
+    "DELETE_ALL": "Volatile queue entries can be selected and removed without PCI I/O.",
+    "LIST": "Returns the volatile queue only; PROGRAMMER registry entries outside the queue are not listed.",
+    "RETRY": "Always 502 after native identity/state validation because retry reinitializes and re-executes work; queue and events remain unchanged.",
+    "events": "updated-entries, started and ended are emitted only for implemented local queue transitions. debug is silent without a worker.",
+    "persistence": "PROGRAMMER and DEPLOY_QUEUE state is runtime-only and absent after restart.",
+    "mqtt": "Queue commands share cmqttd's command service and do not take over or open another PCI; MQTT bridging remains active."
+  },
+  "sanitization": {
+    "site_project_retained": false,
+    "network_identifiers_retained": false,
+    "credentials_retained": false,
+    "vendor_source_retained": false,
+    "retained_material": "Hashes, synthetic no-site command/reply shapes, decompiled semantic summaries and sanitized class names only."
+  }
+}

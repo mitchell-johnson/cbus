@@ -264,6 +264,16 @@ administrative operations send no PCI traffic. Queued execution and patching
 remain honest boundaries: `PROGRAMMER TRIGGER ... START` and `PP WRITE_PATCH`
 return 502 without changing state or claiming a device operation.
 
+The five-command `DEPLOY_QUEUE` family is also wired to that volatile
+PROGRAMMER model. LIST, DELETE and typed DELETE_ALL return the retained native
+JSON/status envelopes. Adding an empty or fully cancelled programmer completes
+as a local no-work task and publishes the native `updated-entries`, `started`
+and `ended` channel envelopes to subscribed command sessions. ADD with any
+executable instruction returns 502 before queue mutation, and RETRY always
+returns 502 after native identity/state validation, because either operation
+would run work on devices. Queue state and subscriptions disappear on restart;
+MQTT continues to own and use the same CNI throughout.
+
 The embedded service also supports native physical `LABEL KFIGET` and
 `LABEL KFISET`. The application token admits only a native
 `LabelSupportingApplication`; it is a scope/class gate and is not encoded into
@@ -393,7 +403,8 @@ implements C-Gate ACCESS ADD/DELETE/LIST/LOAD/SAVE with durable digest-only
 credentials and sandboxed snapshots, the complete CONFIG and FILE families
 over local durable compatibility state, local project/NAC JSON inventory,
 deploy-queue event-channel subscriptions and session-owned advisory locks,
-and C-Gate
+the bounded local `DEPLOY_QUEUE` list/delete/bulk-delete lifecycle and no-work
+ADD events, and C-Gate
 `DO` object methods for lighting, direct and bridged read-only synchronization,
 guarded KEYGL5 FactoryDefault, persistent named-scene record/playback, Trigger Control,
 Enable Control, clock, Temperature Broadcast, native text/icon/Unicode/dynamic-bitmap

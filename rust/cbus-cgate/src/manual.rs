@@ -3147,7 +3147,7 @@ mod tests {
 
     #[test]
     fn private_file_and_queue_families_round_trip() {
-        let mut server = Server::new(AccessLevel::Program);
+        let mut server = Server::new(AccessLevel::Program).with_programming(true);
         assert_eq!(server.handle("[0] FILE MKDIR macros").status, 200);
         assert_eq!(
             server
@@ -3165,9 +3165,12 @@ mod tests {
             .iter()
             .any(|line| line == "347-YWJj"));
         assert_eq!(
-            server.handle("[4] DEPLOY_QUEUE ADD job1 payload").status,
+            server
+                .handle("[4a] PROGRAMMER CREATE job1 \"Task\" \"Local\"")
+                .status,
             200
         );
+        assert_eq!(server.handle("[4] DEPLOY_QUEUE ADD job1").status, 200);
         assert!(server
             .handle("[5] DEPLOY_QUEUE LIST")
             .lines

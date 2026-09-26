@@ -22,6 +22,8 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::path::PathBuf;
 
+use chrono::{SecondsFormat, Utc};
+
 mod access;
 pub mod auth;
 pub mod capability_matrix;
@@ -582,6 +584,12 @@ fn has_status_prefix(line: &str) -> bool {
     if line == "400-Syntax Error: Integer parameter is out of range : <mode>" {
         return true;
     }
+    // DEPLOY_QUEUE DELETE_ALL may continue after a per-entry registry-delete
+    // failure. Admit only its fixed native prefix rather than arbitrary 501
+    // text, so a user-controlled data row cannot spoof another envelope.
+    if line.starts_with("501-failed: could not delete programmer: ") {
+        return true;
+    }
     let b = line.as_bytes();
     if b.len() <= 4 || (b[3] != b'-' && b[3] != b' ') {
         return false;
@@ -737,6 +745,7 @@ struct Programmer {
     state: ProgrammerState,
     instructions: Vec<ProgrammerInstruction>,
     next_id: u64,
+    created_time: String,
 }
 
 impl Programmer {
@@ -747,6 +756,18 @@ impl Programmer {
             .map(|instruction| instruction.seconds)
             .sum()
     }
+}
+
+/// Runtime-only deployment-queue entry. Native C-Gate retains the queued task
+/// group independently of its PROGRAMMER name registry (PROGRAMMER DELETE can
+/// therefore leave a still-listable entry), so this is deliberately a
+/// snapshot rather than a flag on `Programmer`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct DeploymentEntry {
+    key: String,
+    programmer: Programmer,
+    started_time: Option<String>,
+    ended_time: Option<String>,
 }
 
 /// One project network.
@@ -960,6 +981,9 @@ pub struct Server {
     /// for its case-insensitive name matching while each record retains the
     /// caller's spelling for JSON output.
     programmer_order: Vec<String>,
+    /// Volatile native-style deployment queue. This never enters cmqttd's
+    /// durable JSON database and is empty after daemon restart.
+    deploy_queue: Vec<DeploymentEntry>,
     /// Optional unit-specification directory for catalogue-backed
     /// sessions (native C-Gate serves its catalogue the same way).
     unitspec_dir: Option<PathBuf>,
@@ -1023,6 +1047,7 @@ impl Server {
             sessions: HashMap::new(),
             programmers: HashMap::new(),
             programmer_order: Vec::new(),
+            deploy_queue: Vec::new(),
             unitspec_dir: None,
             spec_cache: HashMap::new(),
             catalog_cache: None,
@@ -1213,6 +1238,9 @@ impl Server {
         }
         if starts_with(&upper, "PROGRAMMER") {
             return self.programmer(&cmd.tag, &words, &cmd.body);
+        }
+        if starts_with(&upper, "DEPLOY_QUEUE") {
+            return self.deploy_queue(&cmd.tag, &words);
         }
         if let Some(response) = self.handle_manual_command(&cmd.tag, &words, &cmd.body) {
             return response;
@@ -2964,6 +2992,7 @@ impl Server {
                 state: ProgrammerState::Init,
                 instructions: Vec::new(),
                 next_id: 1,
+                created_time: Self::deployment_timestamp(),
             },
         );
         self.programmer_order.push(key);
@@ -3287,6 +3316,305 @@ impl Server {
         };
         programmer.state = next;
         ok(tag, vec![], "200 OK: triggered")
+    }
+
+    fn deployment_timestamp() -> String {
+        Utc::now().to_rfc3339_opts(SecondsFormat::Micros, true)
+    }
+
+    fn deployment_event(channel: &str, message: &str) -> String {
+        format!(
+            "#event {{\"name\":{},\"msg\":{message}}}",
+            serde_json::to_string(channel).expect("static event channel serializes")
+        )
+    }
+
+    fn deployment_updated_event(&mut self, message: &str) {
+        self.push_event(Self::deployment_event(
+            "deploy-queue.updated-entries",
+            &serde_json::to_string(message).expect("deployment message serializes"),
+        ));
+    }
+
+    fn deployment_started_event(&mut self, programmer: &Programmer) {
+        let message = format!(
+            "{{\"name\":{},\"task\":{}}}",
+            serde_json::to_string(&programmer.name).expect("programmer name serializes"),
+            serde_json::to_string(&programmer.task_name).expect("task name serializes"),
+        );
+        self.push_event(Self::deployment_event("deploy-queue.started", &message));
+    }
+
+    fn deployment_ended_event(&mut self, programmer: &Programmer) {
+        let message = format!(
+            "{{\"name\":{},\"task\":{},\"status\":{}}}",
+            serde_json::to_string(&programmer.name).expect("programmer name serializes"),
+            serde_json::to_string(&programmer.task_name).expect("task name serializes"),
+            serde_json::to_string(programmer.state.as_str()).expect("programmer state serializes"),
+        );
+        self.push_event(Self::deployment_event("deploy-queue.ended", &message));
+    }
+
+    fn deploy_queue(&mut self, tag: &str, words: &[&str]) -> Response {
+        if !self.allow_programming
+            || matches!(self.access, AccessLevel::Admin | AccessLevel::Monitor)
+        {
+            return err(tag, status::ACCESS_DENIED, "420 Access denied");
+        }
+        let op = words.get(1).map(|word| word.to_ascii_uppercase());
+        match op.as_deref() {
+            None | Some("?") => Self::deploy_queue_help(tag),
+            Some("ADD") => self.deploy_queue_add(tag, words),
+            Some("DELETE") => self.deploy_queue_delete(tag, words),
+            Some("DELETE_ALL") => self.deploy_queue_delete_all(tag, words),
+            Some("LIST") => self.deploy_queue_list(tag, words),
+            Some("RETRY") => self.deploy_queue_retry(tag, words),
+            _ => err(
+                tag,
+                status::BAD_REQUEST,
+                "400 DEPLOY_QUEUE verb is not emulated by this model",
+            ),
+        }
+    }
+
+    fn deploy_queue_help(tag: &str) -> Response {
+        data_reply(
+            tag,
+            101,
+            vec![
+                "Help: DEPLOY_QUEUE commands:".to_string(),
+                "Help:  DEPLOY_QUEUE ? Help for these commands".to_string(),
+                "Help:  DEPLOY_QUEUE ADD - Adds a programmer/task group into deployment queue"
+                    .to_string(),
+                "Help:  DEPLOY_QUEUE DELETE - Deletes programmer entry from queue.".to_string(),
+                "Help:  DEPLOY_QUEUE DELETE_ALL - Deletes pending programmer entries from queue."
+                    .to_string(),
+                "Help:  DEPLOY_QUEUE LIST - List of task groups in queue with short summary."
+                    .to_string(),
+                "Help:  DEPLOY_QUEUE RETRY - Retry programmer entry from queue.".to_string(),
+            ],
+            "Help: DEPLOY_QUEUE commands:",
+        )
+    }
+
+    fn deploy_queue_add(&mut self, tag: &str, words: &[&str]) -> Response {
+        if words.len() != 3 {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 Syntax Error: Invalid number of parameters",
+            );
+        }
+        let key = Self::programmer_key(words[2]);
+        let Some(programmer) = self.programmers.get(&key) else {
+            return Self::programmer_not_found(tag, words[2]);
+        };
+        if self.deploy_queue.iter().any(|entry| entry.key == key) {
+            return err(
+                tag,
+                501,
+                "501 can't add programmer into queue if it already exists.",
+            );
+        }
+        // Adding any executable instruction starts native's physical
+        // deployment worker. cmqttd has no evidenced executor, so refuse
+        // before changing state or publishing an event. An empty/all-cancelled
+        // task group is a local no-op and can complete without bus I/O.
+        if programmer
+            .instructions
+            .iter()
+            .any(|instruction| !instruction.cancelled)
+        {
+            return err(
+                tag,
+                502,
+                "502 Programmer execution backend is not implemented; deployment queue remains unchanged",
+            );
+        }
+        let started_time = Self::deployment_timestamp();
+        let ended_time = Self::deployment_timestamp();
+        let programmer = self
+            .programmers
+            .get_mut(&key)
+            .expect("programmer presence was validated");
+        programmer.state = ProgrammerState::Stopped;
+        let snapshot = programmer.clone();
+        self.deploy_queue.push(DeploymentEntry {
+            key,
+            programmer: snapshot.clone(),
+            started_time: Some(started_time),
+            ended_time: Some(ended_time),
+        });
+        self.deployment_updated_event(&format!("addTaskGroup: {}", snapshot.name));
+        self.deployment_started_event(&snapshot);
+        self.deployment_ended_event(&snapshot);
+        ok(tag, vec![], "200 OK: added")
+    }
+
+    fn deploy_queue_delete(&mut self, tag: &str, words: &[&str]) -> Response {
+        if words.len() != 3 {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 Syntax Error: Invalid number of parameters",
+            );
+        }
+        let key = Self::programmer_key(words[2]);
+        let Some(programmer) = self.programmers.get(&key) else {
+            return Self::programmer_not_found(tag, words[2]);
+        };
+        let name = programmer.name.clone();
+        let Some(index) = self.deploy_queue.iter().position(|entry| entry.key == key) else {
+            return err(tag, 502, "502 failed: could not remove programmer");
+        };
+        if !matches!(
+            self.deploy_queue[index].programmer.state,
+            ProgrammerState::Stopped | ProgrammerState::Error
+        ) {
+            return err(tag, 502, "502 failed: could not remove programmer");
+        }
+        self.deploy_queue.remove(index);
+        self.programmers.remove(&key);
+        self.programmer_order.retain(|candidate| candidate != &key);
+        self.deployment_updated_event(&format!("removeTaskGroup: {name}"));
+        ok(tag, vec![], "200 OK: deleted")
+    }
+
+    fn deploy_queue_delete_all(&mut self, tag: &str, words: &[&str]) -> Response {
+        if words.len() > 3 {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 Syntax Error: Too many parameters",
+            );
+        }
+        let delete_type = words
+            .get(2)
+            .map(|value| value.to_ascii_uppercase())
+            .unwrap_or_else(|| "ALL".to_string());
+        if !matches!(
+            delete_type.as_str(),
+            "ALL" | "PENDING" | "FAILED" | "COMPLETED"
+        ) {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                &format!("400 Syntax Error: failed parse [delete-type]: {}", words[2]),
+            );
+        }
+        let matches_type = |entry: &DeploymentEntry| match delete_type.as_str() {
+            "ALL" => true,
+            "PENDING" => matches!(
+                entry.programmer.state,
+                ProgrammerState::Init | ProgrammerState::Running | ProgrammerState::Paused
+            ),
+            "FAILED" => entry.programmer.state == ProgrammerState::Error,
+            "COMPLETED" => entry.programmer.state == ProgrammerState::Stopped,
+            _ => unreachable!("delete type was validated"),
+        };
+        let mut removed = Vec::new();
+        self.deploy_queue.retain(|entry| {
+            if matches_type(entry) {
+                removed.push((entry.key.clone(), entry.programmer.name.clone()));
+                false
+            } else {
+                true
+            }
+        });
+        let event_verb = match delete_type.as_str() {
+            "ALL" => "removeAllTaskGroups",
+            "PENDING" => "removeAllPendingTaskGroups",
+            "FAILED" => "removeAllFailedTaskGroups",
+            "COMPLETED" => "removeAllCompletedTaskGroups",
+            _ => unreachable!("delete type was validated"),
+        };
+        self.deployment_updated_event(&format!("{event_verb}: {}", removed.len()));
+        let mut lines = Vec::new();
+        for (key, name) in removed {
+            if self.programmers.remove(&key).is_some() {
+                self.programmer_order.retain(|candidate| candidate != &key);
+                lines.push(format!("120-deleted: {name}"));
+            } else {
+                lines.push(format!("501-failed: could not delete programmer: {name}"));
+            }
+        }
+        Response {
+            tag: tag.to_string(),
+            lines,
+            final_text: "200 OK: done".to_string(),
+            status: status::OK,
+        }
+    }
+
+    fn deployment_summary(entry: &DeploymentEntry) -> String {
+        format!(
+            "{{\"progName\":{},\"progState\":{},\"taskName\":{},\"taskRoute\":{},\"createdTime\":{},\"startedTime\":{},\"endedTime\":{},\"remainingSeconds\":{}}}",
+            serde_json::to_string(&entry.programmer.name).expect("programmer name serializes"),
+            serde_json::to_string(entry.programmer.state.as_str()).expect("state serializes"),
+            serde_json::to_string(&entry.programmer.task_name).expect("task name serializes"),
+            serde_json::to_string(&entry.programmer.task_route).expect("task route serializes"),
+            serde_json::to_string(&entry.programmer.created_time).expect("timestamp serializes"),
+            serde_json::to_string(&entry.started_time).expect("timestamp serializes"),
+            serde_json::to_string(&entry.ended_time).expect("timestamp serializes"),
+            entry.programmer.remaining_seconds(),
+        )
+    }
+
+    fn deploy_queue_list(&self, tag: &str, words: &[&str]) -> Response {
+        if words.len() != 2 {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 Syntax Error: Too many parameters",
+            );
+        }
+        if self.deploy_queue.is_empty() {
+            return err(tag, 450, "450 no programmers registered.");
+        }
+        let mut rows = Vec::new();
+        for states in [
+            &[ProgrammerState::Error][..],
+            &[ProgrammerState::Stopped][..],
+            &[ProgrammerState::Running][..],
+            &[ProgrammerState::Init, ProgrammerState::Paused][..],
+        ] {
+            rows.extend(
+                self.deploy_queue
+                    .iter()
+                    .filter(|entry| states.contains(&entry.programmer.state))
+                    .map(Self::deployment_summary),
+            );
+        }
+        Self::programmer_json_reply(tag, rows)
+    }
+
+    fn deploy_queue_retry(&mut self, tag: &str, words: &[&str]) -> Response {
+        if words.len() != 3 {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 Syntax Error: Invalid number of parameters",
+            );
+        }
+        let key = Self::programmer_key(words[2]);
+        let Some(programmer) = self.programmers.get(&key) else {
+            return Self::programmer_not_found(tag, words[2]);
+        };
+        if !matches!(
+            programmer.state,
+            ProgrammerState::Stopped | ProgrammerState::Error
+        ) {
+            return err(
+                tag,
+                502,
+                &format!("502 illegal state: {}", programmer.state.as_str()),
+            );
+        }
+        err(
+            tag,
+            502,
+            "502 Programmer retry backend is not implemented; deployment queue remains unchanged",
+        )
     }
 
     /// Native `PP LOCK name address`.
@@ -6869,6 +7197,10 @@ mod tests {
         assert!(has_status_prefix(
             "400-Syntax Error: Integer parameter is out of range : <mode>"
         ));
+        assert!(has_status_prefix(
+            "501-failed: could not delete programmer: Orphan"
+        ));
+        assert!(!has_status_prefix("501-user-controlled"));
         assert!(!has_status_prefix("200-foo"));
         assert!(!has_status_prefix("301 OID=x"));
         let mut s = Server::new(AccessLevel::Program);
@@ -7220,6 +7552,181 @@ mod tests {
     }
 
     #[test]
+    fn deploy_queue_noop_lifecycle_matches_native_envelopes_and_events() {
+        let mut server = Server::new(AccessLevel::Program).with_programming(true);
+        assert_eq!(
+            server
+                .handle("[1] PROGRAMMER CREATE Empty \"Empty Task\" \"Local\"")
+                .status,
+            200
+        );
+        assert_eq!(
+            server.handle("[2] DEPLOY_QUEUE ADD Empty").final_text,
+            "200 OK: added"
+        );
+        assert_eq!(
+            server.drain_events(),
+            [
+                "#event {\"name\":\"deploy-queue.updated-entries\",\"msg\":\"addTaskGroup: Empty\"}",
+                "#event {\"name\":\"deploy-queue.started\",\"msg\":{\"name\":\"Empty\",\"task\":\"Empty Task\"}}",
+                "#event {\"name\":\"deploy-queue.ended\",\"msg\":{\"name\":\"Empty\",\"task\":\"Empty Task\",\"status\":\"STOPPED\"}}",
+            ]
+        );
+        let list = server.handle("[3] DEPLOY_QUEUE LIST");
+        assert_eq!(list.status, 200);
+        assert_eq!(list.lines.len(), 1);
+        let row = list.lines[0]
+            .strip_prefix("130-")
+            .expect("native queue summary envelope");
+        assert!(row.starts_with(
+            "{\"progName\":\"Empty\",\"progState\":\"STOPPED\",\"taskName\":\"Empty Task\",\"taskRoute\":\"Local\",\"createdTime\":"
+        ));
+        assert!(row.contains("\",\"startedTime\":\""));
+        assert!(row.contains("\",\"endedTime\":\""));
+        assert!(row.ends_with("\",\"remainingSeconds\":0}"));
+        let json: serde_json::Value = serde_json::from_str(row).unwrap();
+        for field in ["createdTime", "startedTime", "endedTime"] {
+            chrono::DateTime::parse_from_rfc3339(json[field].as_str().unwrap()).unwrap();
+        }
+        assert_eq!(
+            server.handle("[4] DEPLOY_QUEUE ADD empty").final_text,
+            "501 can't add programmer into queue if it already exists."
+        );
+        assert_eq!(
+            server.handle("[5] DEPLOY_QUEUE DELETE Empty").final_text,
+            "200 OK: deleted"
+        );
+        assert_eq!(
+            server.drain_events(),
+            ["#event {\"name\":\"deploy-queue.updated-entries\",\"msg\":\"removeTaskGroup: Empty\"}"]
+        );
+        assert_eq!(server.handle("[6] PROGRAMMER LIST").status, 450);
+        assert_eq!(server.handle("[7] DEPLOY_QUEUE LIST").status, 450);
+    }
+
+    #[test]
+    fn deploy_queue_execution_and_retry_fail_before_mutation() {
+        let mut server = Server::new(AccessLevel::Program).with_programming(true);
+        assert_eq!(
+            server
+                .handle("[1] PROGRAMMER CREATE Work \"Physical\" \"//TEST/254\"")
+                .status,
+            200
+        );
+        assert_eq!(
+            server.handle("[2] PROGRAMMER TEST Work payload").status,
+            200
+        );
+        let before = format_response(&server.handle("[3] PROGRAMMER STATUS Work"));
+        assert_eq!(
+            server.handle("[4] DEPLOY_QUEUE ADD Work").final_text,
+            "502 Programmer execution backend is not implemented; deployment queue remains unchanged"
+        );
+        assert!(server.drain_events().is_empty());
+        assert_eq!(server.handle("[5] DEPLOY_QUEUE LIST").status, 450);
+        let after = format_response(&server.handle("[6] PROGRAMMER STATUS Work"));
+        assert_eq!(before.replace("[3]", "[x]"), after.replace("[6]", "[x]"));
+        assert_eq!(
+            server.handle("[7] DEPLOY_QUEUE RETRY Work").final_text,
+            "502 illegal state: INIT"
+        );
+        assert!(server.drain_events().is_empty());
+        assert_eq!(
+            server
+                .handle("[7a] PROGRAMMER CANCEL_INSTRUCTION Work 1")
+                .status,
+            200
+        );
+        assert_eq!(server.handle("[7b] DEPLOY_QUEUE ADD Work").status, 200);
+        assert_eq!(server.drain_events().len(), 3);
+
+        assert_eq!(
+            server
+                .handle("[8] PROGRAMMER CREATE Done \"No work\" \"Local\"")
+                .status,
+            200
+        );
+        assert_eq!(server.handle("[9] DEPLOY_QUEUE ADD Done").status, 200);
+        server.drain_events();
+        let queue_before = format_response(&server.handle("[10] DEPLOY_QUEUE LIST"));
+        assert_eq!(
+            server.handle("[11] DEPLOY_QUEUE RETRY Done").final_text,
+            "502 Programmer retry backend is not implemented; deployment queue remains unchanged"
+        );
+        assert!(server.drain_events().is_empty());
+        let queue_after = format_response(&server.handle("[12] DEPLOY_QUEUE LIST"));
+        assert_eq!(
+            queue_before.replace("[10]", "[x]"),
+            queue_after.replace("[12]", "[x]")
+        );
+    }
+
+    #[test]
+    fn deploy_queue_delete_all_and_orphan_behavior_match_native() {
+        let mut server = Server::new(AccessLevel::Program).with_programming(true);
+        for (tag, name) in [("a", "First"), ("b", "Second")] {
+            assert_eq!(
+                server
+                    .handle(&format!(
+                        "[{tag}c] PROGRAMMER CREATE {name} \"{name}\" \"Local\""
+                    ))
+                    .status,
+                200
+            );
+            assert_eq!(
+                server
+                    .handle(&format!("[{tag}a] DEPLOY_QUEUE ADD {name}"))
+                    .status,
+                200
+            );
+        }
+        server.drain_events();
+        let deleted = format_response(&server.handle("[1] DEPLOY_QUEUE DELETE_ALL completed"));
+        assert_eq!(
+            deleted,
+            "[1] 120-deleted: First\n[1] 120-deleted: Second\n[1] 200 OK: done\n"
+        );
+        assert_eq!(
+            server.drain_events(),
+            ["#event {\"name\":\"deploy-queue.updated-entries\",\"msg\":\"removeAllCompletedTaskGroups: 2\"}"]
+        );
+        assert_eq!(server.handle("[2] PROGRAMMER LIST").status, 450);
+        assert_eq!(
+            server.handle("[3] DEPLOY_QUEUE DELETE_ALL bad").final_text,
+            "400 Syntax Error: failed parse [delete-type]: bad"
+        );
+        assert_eq!(
+            server
+                .handle("[4] DEPLOY_QUEUE DELETE_ALL ALL extra")
+                .final_text,
+            "400 Syntax Error: Too many parameters"
+        );
+
+        assert_eq!(
+            server
+                .handle("[5] PROGRAMMER CREATE Orphan \"Queued\" \"Local\"")
+                .status,
+            200
+        );
+        assert_eq!(server.handle("[6] DEPLOY_QUEUE ADD Orphan").status, 200);
+        server.drain_events();
+        assert_eq!(server.handle("[7] PROGRAMMER DELETE Orphan").status, 200);
+        assert_eq!(server.handle("[8] DEPLOY_QUEUE LIST").status, 200);
+        assert_eq!(
+            format_response(&server.handle("[9] DEPLOY_QUEUE DELETE Orphan")),
+            "[9] 451-programmer does not exist.\n[9] 400 Syntax Error: Invalid parameter for <programmer-name>: Orphan\n"
+        );
+        assert_eq!(
+            format_response(&server.handle("[10] DEPLOY_QUEUE DELETE_ALL")),
+            "[10] 501-failed: could not delete programmer: Orphan\n[10] 200 OK: done\n"
+        );
+        assert_eq!(
+            server.drain_events(),
+            ["#event {\"name\":\"deploy-queue.updated-entries\",\"msg\":\"removeAllTaskGroups: 1\"}"]
+        );
+    }
+
+    #[test]
     fn pp_and_programmer_parent_help_match_native_registration_order() {
         let mut server = Server::new(AccessLevel::Program).with_programming(true);
         let pp = format_response(&server.handle("[1] PP"));
@@ -7232,5 +7739,10 @@ mod tests {
         assert!(programmer.ends_with(
             "[2] 101 Help:  PROGRAMMER TRIGGER - Trigger state change for programmer.\n"
         ));
+        let deploy = format_response(&server.handle("[3] DEPLOY_QUEUE"));
+        assert_eq!(deploy.lines().count(), 7);
+        assert!(deploy.starts_with("[3] 101-Help: DEPLOY_QUEUE commands:\n"));
+        assert!(deploy
+            .ends_with("[3] 101 Help:  DEPLOY_QUEUE RETRY - Retry programmer entry from queue.\n"));
     }
 }

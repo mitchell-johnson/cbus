@@ -161,6 +161,17 @@ const EVENT_CHANNELS: &[(&str, &str)] = &[
     ),
 ];
 
+/// Return the fixed channel for a native deploy-queue `#event` envelope.
+/// These notifications are controlled by EVENT_CHANNEL subscriptions and
+/// intentionally bypass the unrelated EVENT/EVENTS category modes.
+fn deploy_queue_event_channel(line: &str) -> Option<&'static str> {
+    let json = line.strip_prefix("#event {")?;
+    EVENT_CHANNELS.iter().find_map(|(channel, _)| {
+        json.starts_with(&format!("\"name\":\"{channel}\",\"msg\":"))
+            .then_some(*channel)
+    })
+}
+
 const AIRCON_HELP: &[&str] = &[
     "Help: AIRCON commands:",
     "Help:  AIRCON ? Help for these commands",
@@ -1942,6 +1953,20 @@ impl Service {
             ]);
             capabilities["programmer_execution"] = serde_json::Value::Bool(false);
             capabilities["programmer_runtime_persistence"] = serde_json::Value::Bool(false);
+            capabilities["deploy_queue_commands"] =
+                serde_json::json!(["add", "delete", "delete_all", "list", "retry"]);
+            capabilities["deploy_queue_local_administration"] =
+                serde_json::json!(["delete", "delete_all", "list"]);
+            capabilities["deploy_queue_empty_programmer_add"] = serde_json::Value::Bool(true);
+            capabilities["deploy_queue_execution"] = serde_json::Value::Bool(false);
+            capabilities["deploy_queue_retry"] = serde_json::Value::Bool(false);
+            capabilities["deploy_queue_runtime_persistence"] = serde_json::Value::Bool(false);
+            capabilities["deploy_queue_event_delivery"] = serde_json::json!([
+                "deploy-queue.updated-entries",
+                "deploy-queue.started",
+                "deploy-queue.ended"
+            ]);
+            capabilities["deploy_queue_debug_events"] = serde_json::Value::Bool(false);
             capabilities["document_framing"] = serde_json::Value::Bool(true);
             capabilities["database_documents"] = serde_json::Value::Bool(false);
             capabilities["project_archive_restore"] =
@@ -8993,11 +9018,18 @@ impl Service {
                         }
                     }
                     event = events.recv() => match event {
-                        Ok(event) if mode.delivers(event_category(&event)) => {
-                            tokio::time::timeout(Duration::from_secs(10), writer.write_all(format!("{event}\r\n").as_bytes())).await
-                                .map_err(|_| io::Error::new(io::ErrorKind::TimedOut,"C-Gate event client is not reading"))??;
+                        Ok(event) => {
+                            let deploy_channel = deploy_queue_event_channel(&event);
+                            let deliver = deploy_channel.map_or_else(
+                                || mode.delivers(event_category(&event)),
+                                |channel| client.event_channels.contains(channel),
+                            );
+                            if deliver {
+                                tokio::time::timeout(Duration::from_secs(10), writer.write_all(format!("{event}\r\n").as_bytes())).await
+                                    .map_err(|_| io::Error::new(io::ErrorKind::TimedOut,"C-Gate event client is not reading"))??;
+                            }
                         }
-                        Err(broadcast::error::RecvError::Lagged(_)) if !mode.is_off() => return Err(io::Error::other("C-Gate event queue overflow")),
+                        Err(broadcast::error::RecvError::Lagged(_)) if !mode.is_off() || !client.event_channels.is_empty() => return Err(io::Error::other("C-Gate event queue overflow")),
                         _ => {},
                     }
                 }
@@ -10254,6 +10286,7 @@ fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
             sub,
             "CREATE" | "DELETE" | "ADD_INSTRUCTION" | "CANCEL_INSTRUCTION" | "TEST" | "TRIGGER"
         ),
+        "DEPLOY_QUEUE" => matches!(sub, "ADD" | "DELETE" | "DELETE_ALL" | "RETRY"),
         "PROJECT" => matches!(
             sub,
             "NEW"
@@ -10472,6 +10505,10 @@ fn local_command(words: &[&str], upper: &[String], model: &Server) -> bool {
                 | "STATUS"
                 | "TEST"
                 | "TRIGGER"
+        ),
+        "DEPLOY_QUEUE" => matches!(
+            sub,
+            "" | "?" | "ADD" | "DELETE" | "DELETE_ALL" | "LIST" | "RETRY"
         ),
         _ => false,
     }

@@ -1708,6 +1708,159 @@ async fn pp_admin_and_programmer_queue_are_local_owned_and_fail_closed_for_execu
     std::fs::remove_file(path).unwrap();
 }
 
+#[tokio::test]
+async fn deploy_queue_is_volatile_local_and_never_executes_programmer_work() {
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut client = ClientState::default();
+
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[1] PROGRAMMER CREATE Empty \"No work\" \"Local\"",
+            )
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[2] DEPLOY_QUEUE ADD Empty")
+            .await
+            .final_text,
+        "200 OK: added"
+    );
+    let list = service.handle(&mut client, "[3] DEPLOY_QUEUE LIST").await;
+    assert_eq!(list.status, 200);
+    assert!(list.lines[0].contains("\"progState\":\"STOPPED\""));
+
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[4] PROGRAMMER CREATE Work \"Physical\" \"//HARNESS/254\"",
+            )
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[5] PROGRAMMER TEST Work payload")
+            .await
+            .status,
+        200
+    );
+    let before = service
+        .handle(&mut client, "[6] PROGRAMMER STATUS Work")
+        .await;
+    assert_eq!(
+        service
+            .handle(&mut client, "[7] DEPLOY_QUEUE ADD Work")
+            .await
+            .final_text,
+        "502 Programmer execution backend is not implemented; deployment queue remains unchanged"
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[8] PROGRAMMER STATUS Work")
+            .await
+            .lines,
+        before.lines
+    );
+    assert!(
+        tokio::time::timeout(std::time::Duration::from_millis(25), remote.read_u8())
+            .await
+            .is_err(),
+        "deployment queue administration wrote to the PCI"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn deploy_queue_event_channels_deliver_only_to_subscribed_connections() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let address = listener.local_addr().unwrap();
+    let server = tokio::spawn(service.clone().serve(listener));
+    let (mut event_reader, mut event_writer) = connect_command_session(address).await;
+    let (mut producer_reader, mut producer_writer) = connect_command_session(address).await;
+
+    for (tag, channel) in [
+        ("sub1", "deploy-queue.updated-entries"),
+        ("sub2", "deploy-queue.started"),
+        ("sub3", "deploy-queue.ended"),
+    ] {
+        assert_eq!(
+            command_lines(
+                &mut event_reader,
+                &mut event_writer,
+                tag,
+                &format!("EVENT_CHANNEL SUB {channel}"),
+            )
+            .await,
+            [format!("[{tag}] 200 OK: added")]
+        );
+    }
+    assert_eq!(
+        command_lines(
+            &mut producer_reader,
+            &mut producer_writer,
+            "create",
+            "PROGRAMMER CREATE Empty \"No work\" \"Local\"",
+        )
+        .await,
+        ["[create] 200 OK: created"]
+    );
+    assert_eq!(
+        command_lines(
+            &mut producer_reader,
+            &mut producer_writer,
+            "add",
+            "DEPLOY_QUEUE ADD Empty",
+        )
+        .await,
+        ["[add] 200 OK: added"]
+    );
+    let mut events = Vec::new();
+    for _ in 0..3 {
+        let mut line = String::new();
+        tokio::time::timeout(Duration::from_secs(2), event_reader.read_line(&mut line))
+            .await
+            .unwrap()
+            .unwrap();
+        events.push(line.trim_end_matches(['\r', '\n']).to_string());
+    }
+    assert_eq!(
+        events,
+        [
+            "#event {\"name\":\"deploy-queue.updated-entries\",\"msg\":\"addTaskGroup: Empty\"}",
+            "#event {\"name\":\"deploy-queue.started\",\"msg\":{\"name\":\"Empty\",\"task\":\"No work\"}}",
+            "#event {\"name\":\"deploy-queue.ended\",\"msg\":{\"name\":\"Empty\",\"task\":\"No work\",\"status\":\"STOPPED\"}}",
+        ]
+    );
+    // The producer did not subscribe. Its next command must be framed
+    // directly, with no deploy event leaking through EVENT/EVENTS handling.
+    assert_eq!(
+        command_lines(
+            &mut producer_reader,
+            &mut producer_writer,
+            "list",
+            "DEPLOY_QUEUE LIST",
+        )
+        .await
+        .last()
+        .unwrap(),
+        "[list] 200 OK."
+    );
+    server.abort();
+    std::fs::remove_file(path).unwrap();
+}
+
 #[test]
 fn pp_admin_and_programmer_auth_classification_keeps_reads_open() {
     for subcommand in [
@@ -1759,6 +1912,18 @@ fn pp_admin_and_programmer_auth_classification_keeps_reads_open() {
             &["PROGRAMMER".into(), subcommand.into()]
         ));
     }
+    for subcommand in ["ADD", "DELETE", "DELETE_ALL", "RETRY"] {
+        assert!(super::requires_programming_auth(
+            "DEPLOY_QUEUE",
+            subcommand,
+            &["DEPLOY_QUEUE".into(), subcommand.into()]
+        ));
+    }
+    assert!(!super::requires_programming_auth(
+        "DEPLOY_QUEUE",
+        "LIST",
+        &["DEPLOY_QUEUE".into(), "LIST".into()]
+    ));
 }
 
 #[tokio::test]
@@ -2741,6 +2906,26 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["programmer_execution"], false);
     assert_eq!(document["programmer_runtime_persistence"], false);
     assert_eq!(document["programmer_commands"].as_array().unwrap().len(), 8);
+    assert_eq!(
+        document["deploy_queue_commands"].as_array().unwrap().len(),
+        5
+    );
+    assert_eq!(
+        document["deploy_queue_local_administration"],
+        serde_json::json!(["delete", "delete_all", "list"])
+    );
+    assert_eq!(document["deploy_queue_empty_programmer_add"], true);
+    assert_eq!(document["deploy_queue_execution"], false);
+    assert_eq!(document["deploy_queue_retry"], false);
+    assert_eq!(document["deploy_queue_runtime_persistence"], false);
+    assert_eq!(
+        document["deploy_queue_event_delivery"]
+            .as_array()
+            .unwrap()
+            .len(),
+        3
+    );
+    assert_eq!(document["deploy_queue_debug_events"], false);
     assert_eq!(document["event_subscriptions"], true);
     assert_eq!(document["session_id"], true);
     assert_eq!(document["quit"], true);
@@ -9120,6 +9305,10 @@ async fn armed_auth_gate_protects_event_mutations_and_advisory_locks() {
     );
     for command in [
         "EVENT_CHANNEL SUB deploy-queue.debug",
+        "DEPLOY_QUEUE ADD Missing",
+        "DEPLOY_QUEUE DELETE Missing",
+        "DEPLOY_QUEUE DELETE_ALL",
+        "DEPLOY_QUEUE RETRY Missing",
         "LOCK //HARNESS/254/p/5",
         "UNLOCK //HARNESS/254/p/5",
     ] {

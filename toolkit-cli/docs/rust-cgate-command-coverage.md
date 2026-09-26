@@ -70,10 +70,23 @@ is confined to `--cgate-unitspec`; raw memory belongs to an owned staged
 session; PROGRAMMER queues are runtime-only. `PROGRAMMER TRIGGER ... START`
 and `PP WRITE_PATCH` remain 502 because they require physical execution
 backends, while PATCH_VERSION reproduces the native missing-patchset 408. This
-moves the aggregate executable 431-path matrix from 118 to 138 local paths and
-from 106 to 86 fail-closed paths; physical remains 206 and obsolete remains 1. Retained
+substantially reduced the aggregate executable 431-path gap. Retained
 evidence is in `rust/testdata/fixtures/native_cgate_pp_programmer.json`, with
 real-daemon coverage in `system_cgate_pp_programmer.rs`.
+
+The embedded service now also has a dedicated implementation for all five
+`DEPLOY_QUEUE` paths. LIST, terminal DELETE and typed DELETE_ALL are local
+volatile administration. ADD completes only an empty or fully cancelled
+PROGRAMMER as a no-work STOPPED task; any executable instruction returns 502
+before mutation. RETRY remains an explicit 502 because native retry
+reinitializes and executes the task group. Implemented transitions publish the
+retained `updated-entries`, `started`, and `ended` envelopes only to sessions
+subscribed through EVENT_CHANNEL; `debug` is silent without a real worker.
+This moves three rows from fail-closed to local, for an aggregate **206
+physical, 141 local/session, 83 fail-closed, and 1 obsolete** across 431 paths.
+Exact sanitized evidence is in
+`rust/testdata/fixtures/native_cgate_deploy_queue.json`; the real-daemon test
+also verifies zero queue PCI traffic, restart volatility and MQTT continuity.
 
 Current verification is:
 

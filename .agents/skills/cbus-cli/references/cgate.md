@@ -875,8 +875,11 @@ supported applications, groups and levels. Check
 
 `EVENT_CHANNEL LIST` returns the four native deploy-queue channel types.
 SUB/UNSUB is per command connection, returns native added/already/removed
-status, and needs LOGIN when the optional gate is armed. Subscription state
-does not prove that an unsupported queue operation can emit an event.
+status, and needs LOGIN when the optional gate is armed. Implemented local
+queue transitions publish `deploy-queue.updated-entries`,
+`deploy-queue.started`, and `deploy-queue.ended` only to sessions subscribed to
+that exact channel, independently of ordinary EVENT mode. The debug channel is
+silent without a deployment worker; do not invent diagnostics.
 Advisory `LOCK OBJECT` and `UNLOCK OBJECT` are also connection-owned local
 state. They resolve durable objects, conflict across sessions, and are released
 on successful credential-changing LOGIN, LOGOUT, disconnect, or owning
@@ -999,8 +1002,35 @@ queued PP/DALI completion. With the optional LOGIN gate, PP mutations and
 PROGRAMMER create/delete/add/cancel/test/trigger require authentication;
 catalogue, inventory, LIST and STATUS reads remain open.
 
+The separate volatile deployment queue supports all retained command paths:
+
+```text
+DEPLOY_QUEUE ADD NAME
+DEPLOY_QUEUE DELETE NAME
+DEPLOY_QUEUE DELETE_ALL [ALL|PENDING|FAILED|COMPLETED]
+DEPLOY_QUEUE LIST
+DEPLOY_QUEUE RETRY NAME
+```
+
+LIST returns native status-130 TaskGroupSummary JSON with `progName`,
+`progState`, `taskName`, `taskRoute`, `createdTime`, `startedTime`, `endedTime`,
+and `remainingSeconds` in that order. DELETE removes a terminal queue entry and
+its PROGRAMMER registry entry. DELETE_ALL defaults to ALL and emits ordered
+120/501 per-entry rows followed by `200 OK: done`. These operations are local
+and never access PCI.
+
+ADD is safe only when the programmer has no executable instructions (empty or
+fully cancelled). cmqttd completes that task immediately as STOPPED and emits
+the exact updated/started/ended envelopes. Any executable instruction returns
+502 before state or event mutation. RETRY validates registry identity and the
+native terminal-state boundary, then returns 502 unchanged because native
+retry reinitializes and executes the task. ADD, DELETE, DELETE_ALL and RETRY
+require LOGIN when the optional gate is armed; LIST and help remain open.
+PROGRAMMER and DEPLOY_QUEUE state is process-local and empty after restart.
+
 Ground exact claims in
-`rust/testdata/fixtures/native_cgate_pp_programmer.json`; the real-daemon
+`rust/testdata/fixtures/native_cgate_pp_programmer.json` and
+`rust/testdata/fixtures/native_cgate_deploy_queue.json`; the real-daemon
 regression is `rust/cmqttd/tests/system_cgate_pp_programmer.rs`.
 
 `PP RESET_TO_DEFAULTS SESSION` replaces the loaded session values with exactly
@@ -1089,8 +1119,10 @@ Run with `--deny-programming` when testing access denial. Supply `--unitspec DIR
 With a synthetic `cbusunits.xml` and specs in that directory, the mock exposes
 the same bounded CATALOG_INFO/GET_UNIT_CATALOG/GET_UNIT_SPEC/catalog-number,
 LOAD_FROM_FILE and raw-memory operations as cmqttd. Its PROGRAMMER queues are
-also runtime-only and refuse START with 502. Use only synthetic or privately
-owned catalogue data; the repository intentionally contains no vendor specs.
+also runtime-only and refuse START with 502. Its DEPLOY_QUEUE uses the same
+no-work ADD and execution/retry boundaries as cmqttd. Use only synthetic or
+privately owned catalogue data; the repository intentionally contains no
+vendor specs.
 
 ## Sessions and events
 

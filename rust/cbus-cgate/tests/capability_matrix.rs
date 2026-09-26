@@ -147,9 +147,14 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // PROGRAMMER queue-metadata paths moved fail_closed_502 -> local_database.
     // PP WRITE_PATCH and PROGRAMMER TRIGGER START remain fail-closed physical
     // execution boundaries.
+    // DEPLOY_QUEUE DELETE, DELETE_ALL and LIST moved fail_closed_502 ->
+    // local_database over the volatile PROGRAMMER task-group queue. ADD stays
+    // conservatively fail-closed because only its empty/all-cancelled no-op
+    // form is local, while any executable instruction refuses before
+    // mutation. RETRY remains fail-closed because it would re-execute work.
     assert_eq!(class_count(RoutingClass::Physical), 206);
-    assert_eq!(class_count(RoutingClass::LocalDatabase), 138);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 86);
+    assert_eq!(class_count(RoutingClass::LocalDatabase), 141);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 83);
     assert_eq!(class_count(RoutingClass::Obsolete400), 1);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here
@@ -223,6 +228,44 @@ fn pp_administration_and_programmer_queue_retain_native_evidence_and_boundaries(
             "{path}"
         );
     }
+}
+
+#[test]
+fn deploy_queue_retains_native_evidence_and_execution_boundaries() {
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_deploy_queue.json"
+    ))
+    .expect("native DEPLOY_QUEUE evidence must remain valid JSON");
+    assert_eq!(fixture["oracle"]["version"], "3.4.0.2001");
+    assert_eq!(
+        fixture["oracle"]["jar_sha256"],
+        "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+    );
+    assert_eq!(
+        fixture["owned_bytecode"]["registered_handlers"]["ADD"],
+        "kd"
+    );
+    assert_eq!(
+        fixture["native_shapes"]["task_group_summary_field_order"],
+        serde_json::json!([
+            "progName",
+            "progState",
+            "taskName",
+            "taskRoute",
+            "createdTime",
+            "startedTime",
+            "endedTime",
+            "remainingSeconds"
+        ])
+    );
+    assert_eq!(
+        fixture["event_envelopes"]["subscription_independent_of_EVENT_mode"],
+        true
+    );
+    assert_eq!(
+        fixture["cmqttd_boundaries"]["RETRY"],
+        "Always 502 after native identity/state validation because retry reinitializes and re-executes work; queue and events remain unchanged."
+    );
 }
 
 #[test]
