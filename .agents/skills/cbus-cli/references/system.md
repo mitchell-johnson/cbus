@@ -35,6 +35,16 @@ here-document UPLOAD envelopes. Its relative-path guard and virtual
 FILE commands send no PCI traffic. The optional LOGIN gate protects UPLOAD,
 DELETE and MKDIR; help and reads stay open.
 
+The maintained PORT family is a separate host/network subsystem. LIST and
+IFLIST enumerate local serial ports and non-loopback interfaces. CNISCAN uses
+the retained legacy UDP-30718 query; CNISCAN2 follows it with the structured
+CNI2 CCP UDP-20050 query. PROBE rejects the endpoint already owned by cmqttd,
+then uses a separate temporary connection for the retained DC1/`@2104`
+echo-and-serial exchange and guaranteed shutdown. EtherLite addresses run that
+exchange over a configured FAS serial channel. These operations do not
+replace the shared `PciClient` or pause MQTT. With LOGIN enabled, scans, probe,
+and refresh are gated; local help and enumeration remain open.
+
 The embedded C-Gate endpoint implements the eleven C-Gate 3.4 AIRCON commands
 for application 172 on the configured direct network. Commands use the shared
 PCI confirmation lane; incoming schedule, plant and zone report SALs stay on

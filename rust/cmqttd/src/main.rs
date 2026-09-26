@@ -153,6 +153,11 @@ async fn main() {
             // listener bind and before state-file creation.
             let (service, tls) = setup::prepare_cgate_service(&opts, &xml, pci.clone())
                 .map_err(std::io::Error::other)?;
+            service
+                .set_port_endpoint(spec.endpoint.clone())
+                .map_err(|_| {
+                    std::io::Error::other("C-Gate PORT endpoint was already configured")
+                })?;
             let listener = tokio::net::TcpListener::bind(bind).await?;
             tracing::info!("C-Gate service listening on {}", listener.local_addr()?);
             let running = service.clone();

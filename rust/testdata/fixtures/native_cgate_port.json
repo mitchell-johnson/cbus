@@ -1,0 +1,108 @@
+{
+  "schema": "cmqttd.native-cgate-port.v1",
+  "oracle": {
+    "product": "Schneider Electric C-Gate",
+    "version": "3.4.0 build 2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "execution": "Disposable C-Gate process with command listener bound to loopback; discovery sent only to loopback or two addresses owned by the same test host; no C-Bus site endpoint was contacted",
+    "manual": "C-Gate Manual sections 4.5.150 through 4.5.155",
+    "decompiled_classes": ["la", "lb", "lc", "ld", "le", "lh", "li", "lj", "nT", "nV", "cS", "CBusBaseNetwork", "CBusEtherliteNetwork", "portio.EtherLiteDriver", "portio.EtherLitePortPrivate"]
+  },
+  "commands": ["PORT", "PORT CNISCAN", "PORT CNISCAN2", "PORT IFLIST", "PORT LIST", "PORT PROBE", "PORT REFRESH"],
+  "help": [
+    "101-Help: PORT commands:",
+    "101-Help:  PORT ? Help for these commands",
+    "101-Help:  PORT CNISCAN - Scan an IP address range for C-Bus Network Interfaces",
+    "101-Help:  PORT CNISCAN2 - Scan an IP address range for C-Bus Network Interfaces",
+    "101-Help:  PORT IFLIST - Return a list of IP interfaces on the C-Gate server",
+    "101-Help:  PORT LIST - Return a list of local serial ports",
+    "101-Help:  PORT PROBE - Probe a port for a C-Bus network connection",
+    "101 Help:  PORT REFRESH - Refresh the known local serial ports"
+  ],
+  "syntax_observations": {
+    "PORT?": "400 Syntax Error.",
+    "unknown_subcommand": "400 Syntax Error.",
+    "list_extra_argument": "400 Syntax Error.",
+    "iflist_extra_argument": "400 Syntax Error.",
+    "refresh_extra_argument": "400 Syntax Error.",
+    "probe_missing_type_or_address": "400 Syntax Error.",
+    "probe_trailing_tokens": "silently ignored by native C-Gate",
+    "etherlite_missing_port_token": "500 Internal error.",
+    "etherlite_malformed_or_negative_port": "408 Operation failed: Port not found: <address>",
+    "scan_optional_non_fast_token": "one optional token after the destination is accepted and ignored even when it is not FAST",
+    "scan_fast_trailing_token": "one token immediately after a matched FAST is consumed and ignored by native nextArg()"
+  },
+  "local_enumeration": {
+    "list_row": "125 port=<name> status=inuse|available|unknown|error",
+    "list_empty": "126 no ports found",
+    "iflist_row": "127 address=<address> interface=<display-name>",
+    "iflist_excludes_loopback": true,
+    "iflist_empty": "128 no interfaces found",
+    "refresh": "408 Operation failed: This command is not applicable.  The list of ports is automatically updated."
+  },
+  "legacy_discovery": {
+    "udp_source_and_destination_port": 30718,
+    "query_hex": "000000f8",
+    "receive_window_ms": 3000,
+    "poll_timeout_ms": 150,
+    "accepted_reply_length": 124,
+    "tcp_port_offsets": [24, 25],
+    "tcp_port_byte_order": "little-endian",
+    "fast_status": "unknown",
+    "normal_connect_timeout_ms": 3000,
+    "observed_invalid_destination_prefix": "408 Operation failed: scan failed: Can not send to network:",
+    "observed_invalid_interface": "408 Operation failed: scan failed: Can not send via interface: does-not-exist.invalid",
+    "row": "129 ip-address=<sender> status=available|unknown port=<little-endian-port> type=CNI",
+    "empty": "130 no CNIs found"
+  },
+  "cni2_discovery": {
+    "udp_source_and_destination_port": 20050,
+    "receive_window_ms": 5000,
+    "packet_header": "cb800000<sequence-u32-be>",
+    "read_parameters": [0, 1, 2, 3, 4, 5, 7, 9, 11, 12, 13, 14, 15, 16, 29, 30],
+    "checksum_instruction_hex": "800102",
+    "checksum": "CRC-CCITT polynomial 0x1021, initial 0xFA50, big-endian",
+    "captured_request_hex": "cb800000022dc79101000101010201030104010501070109010b010c010d010e010f0110011d011e8001022935",
+    "synthetic_native_accepted_response_hex": "cb8100000102030481000001008101000101810200030102038103000107810400060017dd010e33810500041895cdc681070004c000020a81090004c0000201810b00022711810c000125810d000105810e00095465737420434e4932810f00010981100008544553544d4f444c811d000100811e0003040506",
+    "synthetic_native_response": "129 ip-address=192.0.2.10 status=available port=10001 type=CNI2 mac=00:17:DD:01:0E:33 serial=00100700.3526 cbus-unit-address=37",
+    "type_mapping": {"1": "CNI2", "2": "IP_GATEWAY", "3": "WISER", "4": "MRA_STREAMER", "5": "EZI", "6": "WISER2", "7": "CNIAC"},
+    "status_mapping": {"0": "available", "1": "active"}
+  },
+  "probe": {
+    "types": ["serial", "socket", "cni", "wiser", "etherlite"],
+    "wire": "write 11 0d, wait 200 ms and drain, write 40 32 31 30 34 0d (@2104\\r), require six echoed bytes within 500 ms, wait 500 ms, return the bytes already available",
+    "success": "230 Probe succeeded: C-Bus network detected (PCIserial=<serial>)",
+    "observed_synthetic_success": "230 Probe succeeded: C-Bus network detected (PCIserial=12345678 1234 )",
+    "observed_echo_without_serial": "230 Probe succeeded: C-Bus network detected (PCIserial=)",
+    "port_in_use": 431,
+    "probe_failed_family": 432,
+    "connection_type_or_no_echo_failure": 408,
+    "observed_connected_without_echo": "408 Operation failed: No response/timeout",
+    "observed_refused_loopback": "408 Operation failed: Connection refused (Connection refused)",
+    "observed_missing_socket_port": "408 Operation failed: Can't assign requested address (connect failed)",
+    "observed_missing_serial_port": "408 Operation failed: Port not found: definitely-no-such-cbus-port",
+    "observed_unreachable_etherlite": "408 Operation failed: Can't open etherlite: 127.0.0.1:255",
+    "observed_unknown_type": "408 Operation failed: Unable to load class:com.clipsal.cgate.cbus.net.CBusBogusNetwork for network type:bogus (com.clipsal.cgate.cbus.net.CBusBogusNetwork)",
+    "serial_initialisation": {
+      "parameters": "9600 8N1 with output software flow control, DTR set and RTS clear",
+      "baud_attempts": [9600, 2400, 4800, 1200, 600, 300],
+      "detect_wire": "wait 500 ms; drain; write 0d7e7e7e7e7e7e7e7e0d; wait 500 ms and drain; write 2a2a2a2a2a2a0d; wait 500 ms and look for '*'",
+      "change_to_9600": "when detected below 9600, write A33DBDFF\\r, wait 2500 ms, select 9600, drain, write the reset wire, wait 500 ms and look for '~'"
+    }
+  },
+  "etherlite": {
+    "address": "<host>:<zero-based-serial-port-index>",
+    "tcp_port": 10001,
+    "fas_header_bytes": 8,
+    "initialisation": ["HEARTBEAT challenge", "UNIT_INQUIRY response", "UNIT_POLL", "RESET", "ENABLE", "WAIT_SEND", "9600 8N1 SET_PARAMS", "initial FLOW_CONTROL off", "RECEIVE", "RTS/DTR", "STATUS_CHANGE subscription", "PCI XON/XOFF FLOW_CONTROL", "PURGE_SEND", "PURGE_RECEIVE"],
+    "serial_payload_bytes_per_send": 96,
+    "keepalive_seconds": 90,
+    "close": "DISABLE selected serial port and wait for its response"
+  },
+  "implementation_bounds": {
+    "discovery_datagram_cap": 4096,
+    "configured_endpoint_is_never_reopened_by_probe": true,
+    "probe_connection_is_always_closed": true,
+    "optional_login_gate": "When configured, CNISCAN, CNISCAN2, PROBE and REFRESH require LOGIN; help, LIST and IFLIST remain readable"
+  }
+}

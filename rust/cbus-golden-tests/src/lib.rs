@@ -339,10 +339,14 @@ fn check_kfi(v: &Value) -> Result<(), String> {
     Ok(())
 }
 
-/// cni_discovery.jsonl: exact captured query and strict fixed-layout reply
-/// decoding, including the vendor-hidden product discriminator.
+/// cni_discovery.jsonl: captured Toolkit and native C-Gate PORT discovery
+/// query/reply codecs, including malformed datagrams.
 fn check_cni_discovery(v: &Value) -> Result<(), String> {
-    use cbus_protocol::cni_discovery::{decode_discovery_reply, DISCOVERY_QUERY};
+    use cbus_protocol::cni_discovery::{
+        build_cni2_discovery_query, decode_cni2_discovery_reply, decode_discovery_reply,
+        decode_legacy_discovery_reply, Cni2SerialNumber, DISCOVERY_QUERY, LEGACY_DISCOVERY_QUERY,
+    };
+    use std::net::Ipv4Addr;
 
     match need_str(v, "kind")? {
         "query" => {
@@ -374,6 +378,79 @@ fn check_cni_discovery(v: &Value) -> Result<(), String> {
             let wire = hex::decode(need_str(v, "wire_hex")?).map_err(|e| e.to_string())?;
             let error = decode_discovery_reply(&wire)
                 .expect_err("reply_error vector unexpectedly decoded")
+                .to_string();
+            let expect = need_str(v, "expect_error")?;
+            if !error.contains(expect) {
+                return Err(format!("error {error:?} does not contain {expect:?}"));
+            }
+        }
+        "legacy_query" => {
+            let got = hex::encode(LEGACY_DISCOVERY_QUERY);
+            let expect = need_str(v, "expect_hex")?;
+            if got != expect {
+                return Err(format!("legacy query {got} != {expect}"));
+            }
+        }
+        "legacy_reply" => {
+            let wire = hex::decode(need_str(v, "wire_hex")?).map_err(|e| e.to_string())?;
+            let reply = decode_legacy_discovery_reply(&wire)
+                .map_err(|e| format!("legacy reply decode raised {e}"))?;
+            let got = serde_json::json!({"service_port": reply.service_port});
+            let expect = v.get("expect").ok_or("vector missing expect")?;
+            if &got != expect {
+                return Err(format!("legacy reply {got} != {expect}"));
+            }
+        }
+        "legacy_reply_error" => {
+            let wire = hex::decode(need_str(v, "wire_hex")?).map_err(|e| e.to_string())?;
+            let error = decode_legacy_discovery_reply(&wire)
+                .expect_err("legacy_reply_error vector unexpectedly decoded")
+                .to_string();
+            let expect = need_str(v, "expect_error")?;
+            if !error.contains(expect) {
+                return Err(format!("error {error:?} does not contain {expect:?}"));
+            }
+        }
+        "cgate_cni2_query" => {
+            let sequence = u32::try_from(need_u64(v, "sequence")?)
+                .map_err(|_| "vector sequence is outside u32".to_owned())?;
+            let got = hex::encode(build_cni2_discovery_query(sequence));
+            let expect = need_str(v, "expect_hex")?;
+            if got != expect {
+                return Err(format!("C-Gate CNI2 query {got} != {expect}"));
+            }
+        }
+        "cgate_cni2_reply" => {
+            let wire = hex::decode(need_str(v, "wire_hex")?).map_err(|e| e.to_string())?;
+            let source_ip = need_str(v, "source_ip")?
+                .parse::<Ipv4Addr>()
+                .map_err(|e| format!("invalid source_ip: {e}"))?;
+            let reply = decode_cni2_discovery_reply(&wire, source_ip)
+                .map_err(|e| format!("C-Gate CNI2 reply decode raised {e}"))?;
+            let got = serde_json::json!({
+                "sequence": reply.sequence,
+                "product_id": reply.product_id,
+                "product": reply.product_name(),
+                "ip_address": reply.ip_address.to_string(),
+                "service_port": reply.service_port,
+                "status": reply.status,
+                "status_name": reply.status_name(),
+                "mac": reply.mac_string(),
+                "serial": reply.serial_number.map(Cni2SerialNumber::cgate_string),
+                "cbus_unit_address": reply.cbus_unit_address,
+            });
+            let expect = v.get("expect").ok_or("vector missing expect")?;
+            if &got != expect {
+                return Err(format!("C-Gate CNI2 reply {got} != {expect}"));
+            }
+        }
+        "cgate_cni2_reply_error" => {
+            let wire = hex::decode(need_str(v, "wire_hex")?).map_err(|e| e.to_string())?;
+            let source_ip = need_str(v, "source_ip")?
+                .parse::<Ipv4Addr>()
+                .map_err(|e| format!("invalid source_ip: {e}"))?;
+            let error = decode_cni2_discovery_reply(&wire, source_ip)
+                .expect_err("cgate_cni2_reply_error vector unexpectedly decoded")
                 .to_string();
             let expect = need_str(v, "expect_error")?;
             if !error.contains(expect) {

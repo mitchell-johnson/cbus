@@ -25,8 +25,10 @@ use std::path::PathBuf;
 pub mod auth;
 pub mod capability_matrix;
 mod config;
+mod etherlite;
 mod file;
 pub mod manual;
+mod port;
 pub mod service;
 pub mod unitspec;
 

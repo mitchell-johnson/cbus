@@ -23,6 +23,8 @@ tracing = { workspace = true }
 tokio = { workspace = true }
 rustls = { workspace = true }
 tokio-rustls = "0.25"
+tokio-serial = { workspace = true }
+if-addrs = { workspace = true }
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["test-util"] }

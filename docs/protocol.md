@@ -87,6 +87,17 @@ cni-discover` and `cbus-toolkit interface discover-cni` send the exact retained
 19-byte query once and strictly decode fixed 30-byte CNI2/Wiser replies through
 a bounded deadline. See the [discovery contract](../toolkit-cli/docs/cni-discovery.md).
 
+C-Gate `PORT CNISCAN` and `PORT CNISCAN2` use related but distinct retained
+protocols. The legacy scan binds UDP 30718, sends `00 00 00 F8`, accepts only
+124-byte replies and reads the service port little-endian at offsets 24–25.
+The CNI2 phase binds UDP 20050 and sends a CCP packet with a four-byte sequence,
+read instructions for parameters 0, 1, 2, 3, 4, 5, 7, 9, 11–16, 29 and 30,
+then `80 01 02` and a big-endian CRC-CCITT initialized to `0xFA50`. Its
+variable response instructions provide device type, connected status, IP,
+TCP port, MAC, packed serial and C-Bus unit address. Exact retained and
+malformed cases are in `rust/testdata/vectors/cni_discovery.jsonl`; the native
+command evidence is in `rust/testdata/fixtures/native_cgate_port.json`.
+
 The transport emits typed events to consumers and retains raw consumed bytes where tests or diagnostics need them.
 
 Source-routed requests support one through six bridges. Outbound PTP and PPM

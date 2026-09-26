@@ -7014,6 +7014,10 @@ async fn auth_wrong_secret_denied_and_gate_holds() {
         "[24] REPOSITORY USE 1",
         "[25] PROJECT COPY HARNESS COPY",
         "[26] PROJECT DELETE OTHER",
+        "[27] PORT CNISCAN 127.0.0.1 FAST",
+        "[28] PORT CNISCAN2 127.0.0.1 127.0.0.1 FAST",
+        "[29] PORT PROBE socket 127.0.0.1:1",
+        "[30] PORT REFRESH",
     ] {
         let response = service.handle(&mut client, command).await;
         assert_eq!(response.status, 420, "{command}: {response:?}");

@@ -145,6 +145,7 @@ dependencies = [
  "cbus-transport",
  "chrono",
  "hex",
+ "if-addrs",
  "roxmltree",
  "rustls",
  "rustls-pemfile",
@@ -153,6 +154,7 @@ dependencies = [
  "thiserror 1.0.69",
  "tokio",
  "tokio-rustls",
+ "tokio-serial",
  "tracing",
 ]
 

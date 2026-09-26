@@ -122,6 +122,7 @@ explicitly unavailable.
 | `DBNETWORKPATH` | Resolves Bridge `InterfaceAddress` topology using the standard far-side network-address convention, requires the corresponding source-network bridge unit, limits paths to six bridges, and returns native single-line `136` COMPACT or multi-line `137` network-OID results without PCI I/O. Returned OIDs resolve through `DBGET !oid/OID` in the selected project. The final `/p/<interface-unit>` component may differ from the child network; it validates as an interface address but does not replace the far-side route byte, and path discovery does not require that suffix unit to exist. Native zero-hop `START == END` requests return `408 ... No path found`; only a literal `COMPACT` selects compact output, while another mode token defaults to OID and later tokens are ignored |
 | `CONFIG` and `CONFIG GET/INFO/SET/OBGET/OBSET/OBRESET/LOAD/SAVE` | Complete maintained C-Gate 3.4 CONFIG family with its exact parent help, case-sensitive parameter names, 148 registered parameters, 142 queryable INFO records, 122 wildcard GET records, six obsolete registrations, and retained 303/304/error/mixed-status envelopes. Legacy GET/SET use global/project inheritance; object forms model global, selected-project and network inheritance, including project resets that remove descendant network overrides. Values and named global/project snapshots commit atomically inside `cmqttd-json`; caller filenames are bounded snapshot identities and are never opened on the host. CONFIG data does not reconfigure the running listener, PCI, MQTT, logging, or other daemon settings. With LOGIN armed, all five mutating verbs require authentication. Native 3.4 sends no response for an unknown or wrong-scope OBGET; cmqttd deliberately returns deterministic 408 so the connection remains live. See `rust/testdata/fixtures/native_cgate_config.json` and `rust/cmqttd/tests/system_cgate_config.rs` |
 | `FILE DIR/LS/MKDIR/DELETE/SHA256/DOWNLOAD/UPLOAD` | Complete maintained C-Gate 3.4 FILE family over a sandboxed virtual filesystem in `cmqttd-json`: exact nine-line parent help, 304/305 listings, recursive MKDIR, empty-directory/file deletion, multi-file 302 SHA256 rows, native 345/347/346 download framing with 76-character base64 rows, base64 here-document upload, and `.0` replacement backups. Ordinary relative paths reject leading separators, `~`, `..`, and `:`; `%PROJECT%/path` accepts the namespace separator for a known project and stays in a separate virtual root. No FILE path opens an arbitrary host or vendor project file and no FILE command sends PCI traffic. With LOGIN armed, UPLOAD, DELETE and MKDIR require authentication. See `rust/testdata/fixtures/native_cgate_file.json` and `rust/cmqttd/tests/system_cgate_file.rs` |
+| `PORT` and `PORT LIST/IFLIST/CNISCAN/CNISCAN2/PROBE/REFRESH` | Complete maintained C-Gate 3.4 PORT family. Bare/`?` returns exact retained help. LIST reports local serial names without `/dev/` and marks cmqttd's selected serial `inuse`; IFLIST excludes loopback addresses. CNISCAN sends the exact four-byte legacy request from UDP 30718, accepts only 124-byte replies and optionally tests the little-endian advertised TCP port. CNISCAN2 runs that legacy scan and the retained variable CCP request from UDP 20050 with the native CRC, parameter set and five-second window, returning extended type/MAC/serial/unit 129 rows. PROBE accepts serial/socket/CNI/Wiser/EtherLite grammar, refuses the active cmqttd endpoint with 431, uses a separate temporary connection for the retained DC1/`@2104` echo-and-serial exchange, returns the filtered PCI serial text and closes it. Direct serial uses native software flow, modem control and six-rate PCI baud detection. EtherLite uses its native FAS heartbeat, unit inquiry, serial setup and framed byte stream. Native build 2001 makes REFRESH inapplicable because its port list is automatic; cmqttd returns the exact observed 408. LOGIN gates scans, probe and refresh. See `rust/testdata/fixtures/native_cgate_port.json`, `rust/testdata/vectors/cni_discovery.jsonl`, and `rust/cmqttd/tests/system_cgate_port.rs` |
 | Database PP locks, sessions, get/set/info/new/load/save | Existing programming model with connection ownership; staged sessions and locks are discarded on disconnect/restart |
 | `PP RESET_TO_DEFAULTS` | Replaces one owned loaded session with exactly the `DefaultValue` fields in its parsed unit specification. The result remains staged until an explicit save; missing or malformed specifications return 408 unchanged, with no PCI access |
 | Physical PP LOAD and subsequent GET/INFO | Identifies the live unit, selects its privately installed decoded schema, recalls standard CAL parameters, explicit pages for `paged`/`ncc`, OEM memory, and GOC parameter-`0xFF` memory through the shared PCI, decodes int/long/bit/string/sixbit arrays and `ArrayMap`, applies tag selection, and commits the session only after every read succeeds |
@@ -466,8 +467,8 @@ The existing mock dispatches 431 command paths. That is **not** evidence that
 all 431 have physical implementations in this service. `CMQTT CAPABILITIES`
 returns `full_cgate_compatibility: false`; unimplemented physical operations
 return 502. The enumerable gap tracker is the executable capability matrix in
-`cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 100
-physical, 71 local/session, 259 fail-closed 502, and 1 obsolete 400 over the
+`cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 103
+physical, 75 local/session, 252 fail-closed 502, and 1 obsolete 400 over the
 431 inventoried paths, plus a separately asserted 6-row supplement for
 non-inventoried service commands. Full replacement still requires:
 
@@ -481,7 +482,7 @@ non-inventoried service commands. Full replacement still requires:
   silently without a write while tag-filtered parameters stay dirty for a later
   matching-tags SAVE; a bare 200 covers the tag-selected subset only.
 - Routed write/programming operations, general serial-address commissioning,
-  arbitrary second-interface discovery, and the remaining commissioning state
+  arbitrary second-interface commissioning, and the remaining commissioning state
   transitions. The read-only interface-rooted `NET PROJECT_IDENTIFY` workflow
   is implemented for cmqttd's configured shared interface. The distinct physical
   `NET SET_PROJECT_IDENTIFY` parameter-35 write is implemented with readback.
@@ -560,6 +561,17 @@ restart durability, and verifies zero FILE PCI frames plus MQTT continuity.
 The oracle ran as a disposable loopback-only process with no C-Bus endpoint.
 This evidence establishes the sandboxed cmqttd virtual-file contract, not
 arbitrary host filesystem or Schneider project/archive interoperability.
+
+`native_cgate_port.json` records the exact PORT help, syntax quirks, local
+enumeration rows, native automatic-refresh 408, both UDP discovery protocols,
+the synthetic CNI2 reply accepted by the pinned oracle, and PROBE response
+families. `cni_discovery.jsonl` pins the legacy query/reply layout and CNI2
+request CRC plus variable reply decoding. `system_cgate_port.rs` drives the
+real daemon over TCP, sends both scans only to loopback, proves LOGIN policy,
+host enumeration, active-endpoint refusal, refused transport handling, and a
+successful isolated native echo-and-serial probe, then confirms MQTT still
+uses the original shared PCI. This does not claim physical acceptance by every
+serial adapter, CNI firmware, Wiser, or EtherLite model.
 
 The sanitized `native_cgate_aircon.json` fixture records the owned C-Gate
 3.4.0.2001 version/hash, exact success payloads for all eleven maintained

@@ -21,7 +21,10 @@ use cbus_protocol::{
     },
     serial_address::parse_native_serial,
 };
-use cbus_transport::pci::{CBusEvent, GocProgramming, PciClient};
+use cbus_transport::{
+    conn::Endpoint,
+    pci::{CBusEvent, GocProgramming, PciClient},
+};
 use chrono::{Datelike, Local, NaiveDate, NaiveTime, Timelike};
 use serde::{Deserialize, Serialize};
 use std::{
@@ -326,6 +329,9 @@ pub struct Service {
     /// the pre-auth behavior. Set once at startup from
     /// `--cgate-auth-file` via [`Service::set_auth_token_hash`].
     auth_token_hash: OnceLock<[u8; 32]>,
+    /// Endpoint already owned by cmqttd. PORT PROBE must reject it instead
+    /// of disrupting the daemon's shared PCI connection.
+    port_endpoint: OnceLock<Endpoint>,
 }
 
 #[derive(Clone, Serialize)]
@@ -1148,6 +1154,7 @@ impl Service {
             command_sessions: Mutex::new(CommandSessions::default()),
             commands: Mutex::new(()),
             auth_token_hash: OnceLock::new(),
+            port_endpoint: OnceLock::new(),
         }))
     }
 
@@ -1157,6 +1164,12 @@ impl Service {
     /// listener binds. Fails if a hash was already installed.
     pub fn set_auth_token_hash(&self, hash: [u8; 32]) -> Result<(), [u8; 32]> {
         self.auth_token_hash.set(hash)
+    }
+
+    /// Record the endpoint already owned by cmqttd so `PORT LIST` can mark a
+    /// serial port in use and `PORT PROBE` cannot steal the active transport.
+    pub fn set_port_endpoint(&self, endpoint: Endpoint) -> Result<(), Endpoint> {
+        self.port_endpoint.set(endpoint)
     }
 
     /// Capture the current shared PCI and its replacement epoch atomically
@@ -1635,6 +1648,9 @@ impl Service {
                 return err(tag, 420, "420 LOGIN required");
             }
         }
+        if verb == "PORT" {
+            return crate::port::handle(tag, &words, self.port_endpoint.get()).await;
+        }
         if verb == "CMQTT" && sub == "CAPABILITIES" && words.len() == 2 {
             let mut capabilities = serde_json::json!({"service":"cmqttd", "physical_bus":true,
                 "full_cgate_compatibility":false, "memory_read":true, "memory_write":true,
@@ -1703,6 +1719,12 @@ impl Service {
                 "base64-here-document-and-345-347-346-envelope".to_string(),
             );
             capabilities["file_host_filesystem"] = serde_json::Value::Bool(false);
+            capabilities["port_commands"] =
+                serde_json::json!(["cniscan", "cniscan2", "iflist", "list", "probe", "refresh"]);
+            capabilities["port_discovery_protocols"] =
+                serde_json::json!(["legacy-cni-udp-30718", "cni2-ccp-udp-20050"]);
+            capabilities["port_probe_types"] =
+                serde_json::json!(["serial", "socket", "cni", "wiser", "etherlite"]);
             capabilities["cgl_import"] = serde_json::Value::Bool(false);
             capabilities["cgl_export"] = serde_json::Value::Bool(false);
             capabilities["bridged_read_only_discovery"] = serde_json::Value::Bool(true);
@@ -8925,6 +8947,7 @@ fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
     match verb {
         "CONFIG" => matches!(sub, "SET" | "LOAD" | "SAVE" | "OBSET" | "OBRESET"),
         "FILE" => matches!(sub, "UPLOAD" | "DELETE" | "MKDIR"),
+        "PORT" => matches!(sub, "CNISCAN" | "CNISCAN2" | "PROBE" | "REFRESH"),
         "MEASUREMENT" => sub == "DATA",
         "AIRCON" => is_aircon_subcommand(sub) && sub != "REFRESH",
         "AUDIO" => {

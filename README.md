@@ -136,6 +136,11 @@ cbus-toolkit cgate --host 127.0.0.1 exec 'CONFIG INFO sync-time'
 cbus-toolkit cgate --host 127.0.0.1 exec 'FILE'
 cbus-toolkit cgate --host 127.0.0.1 exec 'FILE DIR'
 cbus-toolkit cgate --host 127.0.0.1 exec 'FILE SHA256 exports/project.cgl'
+cbus-toolkit cgate --host 127.0.0.1 exec 'PORT ?'
+cbus-toolkit cgate --host 127.0.0.1 exec 'PORT LIST'
+cbus-toolkit cgate --host 127.0.0.1 exec 'PORT IFLIST'
+cbus-toolkit cgate --host 127.0.0.1 --timeout 15 exec 'PORT CNISCAN2 192.0.2.10 192.0.2.255 FAST'
+cbus-toolkit cgate --host 127.0.0.1 --timeout 30 exec 'PORT PROBE cni 192.0.2.20:10001'
 cbus-toolkit cgate --host 127.0.0.1 --timeout 120 network sync-new //PROJECT/254 --unit 6
 cbus-toolkit cgate --host 127.0.0.1 network set-project //PROJECT/254 PROJECT
 cbus-toolkit cgate --host 127.0.0.1 --timeout 120 edlt-labels --network //PROJECT/254
@@ -171,6 +176,17 @@ Mutating FILE commands require LOGIN when the optional command gate is armed.
 Query `CMQTT CAPABILITIES` for these explicit boundaries and see the
 [C-Gate replacement guide](docs/cmqttd-cgate.md) for wire examples,
 persistence, native evidence, and the remaining compatibility gaps.
+
+It also implements the complete maintained C-Gate 3.4 `PORT` command family.
+`PORT LIST` and `PORT IFLIST` enumerate the cmqttd host, `CNISCAN` uses the
+legacy UDP-30718 exchange, and `CNISCAN2` follows that with the native CNI2
+CCP query on UDP 20050. `PORT PROBE` opens a separate temporary connection,
+sends the retained DC1/`@2104` echo-and-serial exchange, reports the returned
+PCI serial text, and always closes it. It refuses cmqttd's active endpoint with
+431 so MQTT is not interrupted. C-Gate 3.4 automatically updates
+serial devices, so `PORT REFRESH` retains its observed deterministic 408 reply.
+When LOGIN is configured, scans, probe, and refresh require authentication;
+help and local enumeration stay readable.
 
 Replace the example project, network and unit with your actual addresses. The
 network form performs one fresh `NET SYNC` plus `NET CHECKUNIT` serial refresh,
@@ -312,7 +328,9 @@ not invent an MQTT Telephony state schema.
 Hardware-backed lighting, all eleven maintained AIRCON/HVAC commands, all 19 maintained
 AUDIO commands, all seven maintained SECURITY commands, the complete maintained
 MEASUREMENT and TELEPHONY families, and all 21 maintained MEDIATRANSPORT commands
-and reports on the configured direct network are implemented. The same endpoint implements C-Gate
+and reports on the configured direct network are implemented. The complete
+maintained `PORT` discovery, host enumeration, refresh, and probe family is
+implemented independently of the shared MQTT connection. The same endpoint implements C-Gate
 `DO` object methods for lighting, direct and bridged read-only synchronization,
 guarded KEYGL5 FactoryDefault, persistent named-scene record/playback, Trigger Control,
 Enable Control, clock, Temperature Broadcast, native text/icon/Unicode/dynamic-bitmap

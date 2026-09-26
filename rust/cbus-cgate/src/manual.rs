@@ -1191,7 +1191,10 @@ impl Server {
             });
         }
 
-        if first == "PORT" && words.len() >= 2 {
+        if first == "PORT" {
+            if words.len() == 1 || (words.len() == 2 && words[1] == "?") {
+                return Some(crate::port::help(tag));
+            }
             return Some(self.port_command(tag, words));
         }
         if first == "TOPOLOGY" && words.len() >= 2 {
@@ -1427,31 +1430,31 @@ impl Server {
 
     fn port_command(&self, tag: &str, words: &[&str]) -> Response {
         match words[1].to_ascii_uppercase().as_str() {
-            "LIST" | "IFLIST" if words.len() == 2 => {
-                envelope(tag, 121, ["interface=loopback address=127.0.0.1"])
+            "LIST" if words.len() == 2 => envelope(tag, 126, ["no ports found"]),
+            "IFLIST" if words.len() == 2 => envelope(tag, 128, ["no interfaces found"]),
+            "REFRESH" if words.len() == 2 => err(
+                tag,
+                status::CONFLICT_STATE,
+                "408 Operation failed: This command is not applicable.  The list of ports is automatically updated.",
+            ),
+            "CNISCAN" if crate::port::parse_scan_args(words, false).is_some() => {
+                envelope(tag, 130, ["no CNIs found"])
             }
-            "REFRESH" if words.len() == 2 => ok(tag, vec![], "200 OK"),
-            "CNISCAN" if (2..=4).contains(&words.len()) => ok(tag, vec![], "200 OK"),
-            "CNISCAN2" if (2..=5).contains(&words.len()) => ok(tag, vec![], "200 OK"),
-            "PROBE" if words.len() == 4 => {
-                let kind = words[2].to_ascii_uppercase();
-                if matches!(
-                    kind.as_str(),
-                    "SERIAL" | "SOCKET" | "CNI" | "WISER" | "ETHERLITE"
-                ) {
-                    envelope(
+            "CNISCAN2" if crate::port::parse_scan_args(words, true).is_some() => {
+                envelope(tag, 130, ["no CNIs found"])
+            }
+            // Native PROBE consumes type/address and ignores later tokens.
+            "PROBE" if words.len() >= 4 => {
+                match crate::port::validate_probe_target(words[2], words[3]) {
+                    Ok(()) => err(
                         tag,
-                        121,
-                        [format!(
-                            "type={} address={} reachable=false",
-                            words[2], words[3]
-                        )],
-                    )
-                } else {
-                    err(tag, status::BAD_REQUEST, "400 Unknown port type")
+                        status::CONFLICT_STATE,
+                        "408 Operation failed: No response/timeout",
+                    ),
+                    Err((status, response)) => err(tag, status, &response),
                 }
             }
-            _ => err(tag, status::BAD_REQUEST, "400 Invalid PORT command"),
+            _ => err(tag, status::BAD_REQUEST, "400 Syntax Error."),
         }
     }
 

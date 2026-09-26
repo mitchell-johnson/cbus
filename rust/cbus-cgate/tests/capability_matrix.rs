@@ -128,9 +128,13 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // The eleven maintained AIRCON commands and NET PROJECT_IDENTIFY moved
     // fail_closed_502 -> physical. PROJECT_IDENTIFY uses the selected shared
     // interface's native read-only MMI/parameter-35 workflow.
-    assert_eq!(class_count(RoutingClass::Physical), 100);
-    assert_eq!(class_count(RoutingClass::LocalDatabase), 71);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 259);
+    // The complete maintained PORT family moved seven paths out of the
+    // generic 502: root help, local serial/interface enumeration and native
+    // REFRESH behavior are local; both discovery protocols and PROBE use
+    // explicit physical network/port I/O.
+    assert_eq!(class_count(RoutingClass::Physical), 103);
+    assert_eq!(class_count(RoutingClass::LocalDatabase), 75);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 252);
     assert_eq!(class_count(RoutingClass::Obsolete400), 1);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here
@@ -199,6 +203,53 @@ fn config_rows_retain_native_catalog_scope_and_liveness_repair_evidence() {
         assert!(
             entry.evidence.contains("native_cgate_config.json")
                 || entry.evidence.contains("Service::config"),
+            "{}",
+            entry.path
+        );
+    }
+}
+
+#[test]
+fn port_rows_retain_native_discovery_and_probe_evidence() {
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_port.json"
+    ))
+    .expect("native PORT evidence must remain valid JSON");
+    assert_eq!(fixture["oracle"]["version"], "3.4.0 build 2001");
+    assert_eq!(
+        fixture["oracle"]["jar_sha256"],
+        "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+    );
+    assert_eq!(fixture["commands"].as_array().unwrap().len(), 7);
+    assert_eq!(fixture["legacy_discovery"]["query_hex"], "000000f8");
+    assert_eq!(
+        fixture["cni2_discovery"]["udp_source_and_destination_port"],
+        20050
+    );
+    assert!(fixture["cni2_discovery"]["synthetic_native_response"]
+        .as_str()
+        .unwrap()
+        .contains("serial=00100700.3526"));
+    assert!(fixture["probe"]["wire"].as_str().unwrap().contains("@2104"));
+    assert_eq!(fixture["etherlite"]["tcp_port"], 10001);
+
+    let root = CAPABILITY_MATRIX
+        .iter()
+        .find(|entry| entry.path == "PORT")
+        .unwrap();
+    assert_eq!(root.class, RoutingClass::LocalDatabase);
+    for entry in CAPABILITY_MATRIX
+        .iter()
+        .filter(|entry| entry.path.starts_with("PORT "))
+    {
+        let expected = if matches!(entry.path, "PORT CNISCAN" | "PORT CNISCAN2" | "PORT PROBE") {
+            RoutingClass::Physical
+        } else {
+            RoutingClass::LocalDatabase
+        };
+        assert_eq!(entry.class, expected, "{}", entry.path);
+        assert!(
+            entry.evidence.contains("native_cgate_port.json"),
             "{}",
             entry.path
         );

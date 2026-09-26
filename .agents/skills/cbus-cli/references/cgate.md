@@ -50,6 +50,49 @@ cmqttd extensions.
 A 502 response is a missing backend or failed device operation; never replace
 it with saved project data and describe that as a live result.
 
+### PORT discovery and probe commands
+
+cmqttd implements every maintained C-Gate 3.4 `PORT` path:
+
+```text
+PORT
+PORT LIST
+PORT IFLIST
+PORT CNISCAN [DESTINATION] [FAST]
+PORT CNISCAN2 [INTERFACE] [DESTINATION] [FAST]
+PORT PROBE serial|socket|cni|wiser|etherlite ADDRESS
+PORT REFRESH
+```
+
+Use `PORT LIST` for host serial devices and `PORT IFLIST` for non-loopback
+host addresses. `CNISCAN` sends native legacy discovery from UDP 30718 for
+three seconds. Without `FAST`, it also attempts a three-second connection to
+each advertised port. `CNISCAN2` first performs that legacy scan, then sends
+the C-Gate 3.4 CCP read query from UDP 20050 and listens for five seconds. It
+reports type, connected status, MAC, padded serial and C-Bus unit address.
+Allow at least 10 seconds in a CLI timeout. C-Gate consumes one optional token
+after the destination even when it is not `FAST`; a matched `FAST` also
+consumes and ignores one following token. cmqttd preserves those parser quirks.
+
+`PORT PROBE` never borrows the shared MQTT PCI. It refuses the configured
+cmqttd endpoint with 431, opens a temporary transport, sends DC1+CR, drains,
+then requires the six-byte `@2104` echo and returns the filtered serial reply
+available after 500 ms. A serial probe configures 9600 8N1, software flow
+control, DTR/RTS and performs the retained six-rate PCI baud-detection sequence.
+EtherLite first establishes and configures the FAS serial channel. A 230 proves
+the native exchange completed; 408 covers
+address, type, connection, no-echo, or local port-library failure. Native build
+2001 returns 408 for `PORT REFRESH` because serial enumeration is automatically
+updated; that is the implemented behavior, despite the older manual's 200
+success text.
+
+With `--cgate-auth-file`, `CNISCAN`, `CNISCAN2`, `PROBE`, and `REFRESH` require
+LOGIN. Help, LIST, and IFLIST remain open. Discovery can emit broadcast and
+probe opens the named endpoint, so use explicit destinations when operating in
+an environment where broadcast is inappropriate. Exact evidence is in
+`rust/testdata/fixtures/native_cgate_port.json` and
+`rust/testdata/vectors/cni_discovery.jsonl`.
+
 ### CONFIG commands
 
 cmqttd implements all nine maintained C-Gate 3.4 CONFIG paths. Use the exact
