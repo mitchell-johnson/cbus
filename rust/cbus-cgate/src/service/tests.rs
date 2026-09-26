@@ -2231,7 +2231,7 @@ async fn programming_ownership_and_unimplemented_hardware_are_enforced() {
     );
     assert_eq!(
         service
-            .handle(&mut first, "[5] PP WRITE_PATCH S anything")
+            .handle(&mut first, "[5] PP WRITE_PATCH //HARNESS/254/p/5 01",)
             .await
             .status,
         502
@@ -2254,7 +2254,7 @@ async fn programming_ownership_and_unimplemented_hardware_are_enforced() {
 }
 
 #[tokio::test]
-async fn pp_admin_and_programmer_queue_are_local_owned_and_fail_closed_for_execution() {
+async fn pp_admin_and_programmer_queue_execute_without_automatic_replay() {
     let path = state_path();
     let (pci, mut remote) = pci();
     let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
@@ -2337,11 +2337,61 @@ async fn pp_admin_and_programmer_queue_are_local_owned_and_fail_closed_for_execu
     let start = service
         .handle(&mut owner, "[12] PROGRAMMER TRIGGER P START")
         .await;
-    assert_eq!(start.status, 502);
+    assert_eq!(start.status, 200);
+    assert_eq!(start.final_text, "200 OK: triggered");
+    tokio::time::timeout(Duration::from_secs(5), async {
+        loop {
+            let status = service
+                .handle(&mut owner, "[wait] PROGRAMMER STATUS P")
+                .await;
+            if status.lines[0].contains("\"progState\":\"STOPPED\"") {
+                break;
+            }
+            tokio::time::sleep(Duration::from_millis(25)).await;
+        }
+    })
+    .await
+    .unwrap();
     let after = service.handle(&mut owner, "[13] PROGRAMMER STATUS P").await;
+    assert!(after.lines[0].contains("\"queueCount\":0"));
+    assert!(after.lines[0].contains("\"totalCount\":2"));
+    assert!(after.lines[0].contains("\"remainingSeconds\":0"));
     assert_eq!(
-        before.lines, after.lines,
-        "START must not consume the queue"
+        service
+            .handle(&mut other, "[13a] PP LOCK OTHER //HARNESS/254")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut other, "[13b] PP START S OTHER")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut other, "[13c] PP NEW S KEY1 1.2.67")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut owner, "[13d] PP SET S First stale-owner")
+            .await
+            .status,
+        420,
+        "queued PP_END must revoke the accepting connection's ownership"
+    );
+    assert_eq!(
+        service
+            .handle(&mut owner, "[14] PROGRAMMER TRIGGER P START")
+            .await
+            .status,
+        400,
+        "a second START never replays confirmed work"
     );
 
     assert!(
@@ -2354,7 +2404,142 @@ async fn pp_admin_and_programmer_queue_are_local_owned_and_fail_closed_for_execu
 }
 
 #[tokio::test]
-async fn deploy_queue_is_volatile_local_and_never_executes_programmer_work() {
+async fn programmer_worker_observes_pause_cancel_resume_and_stop() {
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut client = ClientState::default();
+
+    for line in [
+        "[1] PROGRAMMER CREATE Paused \"Pause and cancel\" local",
+        "[2] PROGRAMMER TEST Paused payload",
+        "[3] PROGRAMMER ADD_INSTRUCTION Paused PP_END Missing",
+    ] {
+        assert_eq!(
+            service.handle(&mut client, line).await.status,
+            200,
+            "{line}"
+        );
+    }
+    assert_eq!(
+        service
+            .handle(&mut client, "[4] PROGRAMMER TRIGGER Paused START")
+            .await
+            .final_text,
+        "200 OK: triggered"
+    );
+    tokio::time::timeout(Duration::from_secs(2), async {
+        loop {
+            let status = service
+                .handle(&mut client, "[wait-running] PROGRAMMER STATUS Paused")
+                .await;
+            if status.lines[0].contains("\"progState\":\"RUNNING\"") {
+                break;
+            }
+            tokio::task::yield_now().await;
+        }
+    })
+    .await
+    .unwrap();
+    assert_eq!(
+        service
+            .handle(&mut client, "[5] PROGRAMMER TRIGGER Paused PAUSE")
+            .await
+            .status,
+        200
+    );
+    let paused = service
+        .handle(&mut client, "[6] PROGRAMMER STATUS Paused")
+        .await;
+    assert!(paused.lines[0].contains("\"progState\":\"PAUSED\""));
+    tokio::time::sleep(Duration::from_millis(1_100)).await;
+    assert_eq!(
+        service
+            .handle(&mut client, "[7] PROGRAMMER STATUS Paused")
+            .await
+            .lines,
+        paused.lines,
+        "a paused TEST countdown must not advance"
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[8] PROGRAMMER CANCEL_INSTRUCTION Paused 2")
+            .await
+            .final_text,
+        "200 OK: cancelled"
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[9] PROGRAMMER TRIGGER Paused RESUME")
+            .await
+            .status,
+        200
+    );
+    tokio::time::timeout(Duration::from_secs(5), async {
+        loop {
+            let status = service
+                .handle(&mut client, "[wait-stopped] PROGRAMMER STATUS Paused")
+                .await;
+            if status.lines[0].contains("\"progState\":\"STOPPED\"") {
+                assert!(status.lines[0].contains("\"remainingSeconds\":0"));
+                break;
+            }
+            tokio::time::sleep(Duration::from_millis(25)).await;
+        }
+    })
+    .await
+    .unwrap();
+
+    for line in [
+        "[10] PROGRAMMER CREATE Halted \"Explicit stop\" local",
+        "[11] PROGRAMMER TEST Halted payload",
+    ] {
+        assert_eq!(
+            service.handle(&mut client, line).await.status,
+            200,
+            "{line}"
+        );
+    }
+    assert_eq!(
+        service
+            .handle(&mut client, "[12] PROGRAMMER TRIGGER Halted START")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[13] PROGRAMMER TRIGGER Halted STOP")
+            .await
+            .status,
+        200
+    );
+    tokio::time::sleep(Duration::from_millis(1_100)).await;
+    let halted = service
+        .handle(&mut client, "[14] PROGRAMMER STATUS Halted")
+        .await;
+    assert!(halted.lines[0].contains("\"progState\":\"STOPPED\""));
+    assert!(halted.lines[0].contains("\"remainingSeconds\":3"));
+    tokio::time::sleep(Duration::from_millis(1_100)).await;
+    assert_eq!(
+        service
+            .handle(&mut client, "[15] PROGRAMMER STATUS Halted")
+            .await
+            .lines,
+        halted.lines,
+        "STOP must prevent later consumption or replay"
+    );
+    assert!(
+        tokio::time::timeout(Duration::from_millis(25), remote.read_u8())
+            .await
+            .is_err(),
+        "TEST lifecycle control emitted PCI traffic"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn deploy_queue_executes_and_retries_only_when_explicitly_requested() {
     let path = state_path();
     let (pci, mut remote) = pci();
     let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
@@ -2377,6 +2562,19 @@ async fn deploy_queue_is_volatile_local_and_never_executes_programmer_work() {
             .final_text,
         "200 OK: added"
     );
+    tokio::time::timeout(Duration::from_secs(2), async {
+        loop {
+            let list = service
+                .handle(&mut client, "[wait] DEPLOY_QUEUE LIST")
+                .await;
+            if list.lines[0].contains("\"progState\":\"STOPPED\"") {
+                break;
+            }
+            tokio::task::yield_now().await;
+        }
+    })
+    .await
+    .unwrap();
     let list = service.handle(&mut client, "[3] DEPLOY_QUEUE LIST").await;
     assert_eq!(list.status, 200);
     assert!(list.lines[0].contains("\"progState\":\"STOPPED\""));
@@ -2398,28 +2596,135 @@ async fn deploy_queue_is_volatile_local_and_never_executes_programmer_work() {
             .status,
         200
     );
-    let before = service
-        .handle(&mut client, "[6] PROGRAMMER STATUS Work")
-        .await;
     assert_eq!(
         service
             .handle(&mut client, "[7] DEPLOY_QUEUE ADD Work")
             .await
             .final_text,
-        "502 Programmer execution backend is not implemented; deployment queue remains unchanged"
+        "200 OK: added"
     );
+    tokio::time::timeout(Duration::from_secs(5), async {
+        loop {
+            let status = service
+                .handle(&mut client, "[8] PROGRAMMER STATUS Work")
+                .await;
+            if status.lines[0].contains("\"progState\":\"STOPPED\"") {
+                break;
+            }
+            tokio::time::sleep(Duration::from_millis(25)).await;
+        }
+    })
+    .await
+    .unwrap();
     assert_eq!(
         service
-            .handle(&mut client, "[8] PROGRAMMER STATUS Work")
+            .handle(&mut client, "[9] DEPLOY_QUEUE RETRY Work")
             .await
-            .lines,
-        before.lines
+            .final_text,
+        "200 OK: retry added"
     );
+    tokio::time::timeout(Duration::from_secs(5), async {
+        loop {
+            let status = service
+                .handle(&mut client, "[10] PROGRAMMER STATUS Work")
+                .await;
+            if status.lines[0].contains("\"progState\":\"STOPPED\"") {
+                break;
+            }
+            tokio::time::sleep(Duration::from_millis(25)).await;
+        }
+    })
+    .await
+    .unwrap();
     assert!(
         tokio::time::timeout(std::time::Duration::from_millis(25), remote.read_u8())
             .await
             .is_err(),
         "deployment queue administration wrote to the PCI"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn programmer_dali_instruction_grammar_reuses_public_dispatch() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut client = ClientState::default();
+    for (id, kind, arguments) in [
+        (1, "DALI_READ", vec!["//HARNESS/254/p/5".to_string()]),
+        (2, "DALI_PROGRAM", vec!["//HARNESS/254/p/5".to_string()]),
+        (
+            3,
+            "DALI",
+            vec![
+                "RECALL_MAX".to_string(),
+                "//HARNESS/254/p/5".to_string(),
+                "A".to_string(),
+            ],
+        ),
+    ] {
+        let instruction = ProgrammerInstruction {
+            id,
+            kind: kind.to_string(),
+            arguments,
+            priority: 0,
+            seconds: 1,
+            cancelled: false,
+            completed: false,
+            active: false,
+            remaining_seconds: 1,
+        };
+        let response = service
+            .execute_programmer_instruction(&mut client, "grammar", &instruction)
+            .await;
+        assert_eq!(response.status, 401, "{kind}: {response:?}");
+        assert!(
+            response.final_text.contains("Bad object or device ID"),
+            "{kind}: {}",
+            response.final_text
+        );
+        assert!(
+            !response.final_text.contains("SubCommand not found"),
+            "{kind} must preserve the public DALI command/target order"
+        );
+    }
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn pp_write_patch_pins_selector_and_fails_before_pci_io() {
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut client = ClientState::default();
+    for (line, status, text) in [
+        (
+            "[1] PP WRITE_PATCH //HARNESS/254/p/5",
+            400,
+            "not enough arguments",
+        ),
+        ("[2] PP WRITE_PATCH invalid 01", 401, "Bad address"),
+        (
+            "[3] PP WRITE_PATCH //HARNESS/254/p/5 100",
+            400,
+            "bad patch version",
+        ),
+        (
+            "[4] PP WRITE_PATCH //HARNESS/254/p/5 01 SIMULATE ignored",
+            502,
+            "no bus command was sent",
+        ),
+    ] {
+        let response = service.handle(&mut client, line).await;
+        assert_eq!(response.status, status, "{line}: {response:?}");
+        assert!(response.final_text.contains(text), "{line}: {response:?}");
+    }
+    assert!(
+        tokio::time::timeout(Duration::from_millis(25), remote.read_u8())
+            .await
+            .is_err(),
+        "WRITE_PATCH boundary emitted PCI traffic"
     );
     std::fs::remove_file(path).unwrap();
 }
@@ -2513,6 +2818,7 @@ fn pp_admin_and_programmer_auth_classification_keeps_reads_open() {
         "LOAD_FROM_FILE",
         "SET_RAW_DATA",
         "RELOAD_CATALOG",
+        "WRITE_PATCH",
     ] {
         assert!(super::requires_programming_auth(
             "PP",
@@ -3737,7 +4043,18 @@ async fn capabilities_report_observation_without_device_readback() {
         13
     );
     assert_eq!(document["programmer_queue"], true);
-    assert_eq!(document["programmer_execution"], false);
+    assert_eq!(document["programmer_execution"], true);
+    assert_eq!(
+        document["programmer_instruction_types"]
+            .as_array()
+            .unwrap()
+            .len(),
+        9
+    );
+    assert_eq!(
+        document["programmer_delivery_semantics"],
+        "source-correlated-exactly-once-no-automatic-replay"
+    );
     assert_eq!(document["programmer_runtime_persistence"], false);
     assert_eq!(document["programmer_commands"].as_array().unwrap().len(), 8);
     assert_eq!(
@@ -3749,8 +4066,16 @@ async fn capabilities_report_observation_without_device_readback() {
         serde_json::json!(["delete", "delete_all", "list"])
     );
     assert_eq!(document["deploy_queue_empty_programmer_add"], true);
-    assert_eq!(document["deploy_queue_execution"], false);
-    assert_eq!(document["deploy_queue_retry"], false);
+    assert_eq!(document["deploy_queue_execution"], true);
+    assert_eq!(document["deploy_queue_retry"], true);
+    assert_eq!(
+        document["deploy_queue_receipt"],
+        "accepted-before-terminal-state"
+    );
+    assert_eq!(
+        document["deploy_queue_delivery_semantics"],
+        "first-fault-stop-no-automatic-replay-explicit-retry"
+    );
     assert_eq!(document["deploy_queue_runtime_persistence"], false);
     assert_eq!(
         document["deploy_queue_event_delivery"]
@@ -3759,7 +4084,7 @@ async fn capabilities_report_observation_without_device_readback() {
             .len(),
         3
     );
-    assert_eq!(document["deploy_queue_debug_events"], false);
+    assert_eq!(document["deploy_queue_debug_events"], true);
     assert_eq!(document["event_subscriptions"], true);
     assert_eq!(document["session_id"], true);
     assert_eq!(document["quit"], true);
@@ -8781,6 +9106,9 @@ async fn auth_wrong_secret_denied_and_gate_holds() {
         "[30] PORT REFRESH",
         "[31] NEW GROUP //HARNESS/254/56/44",
         "[32] BROADCAST_EVENT SP auth-test",
+        "[33] PP WRITE_PATCH //HARNESS/254/p/5 01",
+        "[34] PROGRAMMER TRIGGER Missing START",
+        "[35] DEPLOY_QUEUE ADD Missing",
     ] {
         let response = service.handle(&mut client, command).await;
         assert_eq!(response.status, 420, "{command}: {response:?}");

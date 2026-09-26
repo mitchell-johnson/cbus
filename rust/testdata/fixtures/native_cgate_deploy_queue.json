@@ -70,7 +70,12 @@
     "empty_list": "450 no programmers registered.",
     "empty_delete_all": "200 OK: done",
     "delete_all_default": "ALL",
-    "delete_types_case_insensitive": ["ALL", "PENDING", "FAILED", "COMPLETED"],
+    "delete_types_case_insensitive": [
+      "ALL",
+      "PENDING",
+      "FAILED",
+      "COMPLETED"
+    ],
     "invalid_delete_type": "400 Syntax Error: failed parse [delete-type]: invalid",
     "delete_all_extra_parameter": "400 Syntax Error: Too many parameters",
     "missing_or_extra_single_name": "400 Syntax Error: Invalid number of parameters",
@@ -100,9 +105,16 @@
       "remainingSeconds"
     ],
     "timestamp_format": "RFC3339 UTC with fractional seconds",
-    "list_state_order": ["FAILED", "COMPLETED", "ACTIVE", "PENDING"],
+    "list_state_order": [
+      "FAILED",
+      "COMPLETED",
+      "ACTIVE",
+      "PENDING"
+    ],
     "programmer_delete_can_orphan_queue_entry": true,
-    "queue_lifetime": "process-local; empty after daemon restart"
+    "queue_lifetime": "process-local; empty after daemon restart",
+    "start_and_add_receipts_are_asynchronous": true,
+    "retry_reinitializes_created_time": true
   },
   "event_envelopes": {
     "subscription_independent_of_EVENT_mode": true,
@@ -116,7 +128,7 @@
     },
     "started": "#event {\"name\":\"deploy-queue.started\",\"msg\":{\"name\":\"NAME\",\"task\":\"TASK\"}}",
     "ended": "#event {\"name\":\"deploy-queue.ended\",\"msg\":{\"name\":\"NAME\",\"task\":\"TASK\",\"status\":\"STOPPED\"}}",
-    "debug": "Native worker diagnostic strings only; cmqttd publishes none without an implemented worker.",
+    "debug": "cmqttd publishes a structured first-fault diagnostic containing instruction id/type, status, receipt text and explicit-retry identity; it never claims vendor diagnostic-string equivalence.",
     "json_object_member_order": "Both name-then-msg and msg-then-name were observed across clean native daemon starts; consumers compare JSON semantics, not map member order.",
     "cross_channel_order": "asynchronous and not guaranteed by native scheduling"
   },
@@ -125,15 +137,17 @@
     "fully_cancelled_programmer": "A PROGRAMMER TEST instruction cancelled before ADD emitted updated/started/ended, reached STOPPED with remainingSeconds 0, and contacted no C-Bus endpoint.",
     "test_only_programmer": "A three-second PROGRAMMER TEST moved RUNNING to STOPPED and remainingSeconds 3,2,1,0 without a C-Bus endpoint.",
     "completed_bulk_delete": "Two no-work entries produced two ordered 120-deleted rows and removeAllCompletedTaskGroups: 2.",
-    "direct_registry_delete": "PROGRAMMER DELETE returned 200 while DEPLOY_QUEUE LIST retained the completed task group; individual queue delete then failed programmer lookup."
+    "direct_registry_delete": "PROGRAMMER DELETE returned 200 while DEPLOY_QUEUE LIST retained the completed task group; individual queue delete then failed programmer lookup.",
+    "direct_start": "PROGRAMMER TRIGGER START returned 200 immediately; a TEST-only task remained RUNNING while remainingSeconds counted 3,2,1,0.",
+    "explicit_retry": "RETRY returned 200, refreshed createdTime/startedTime and re-ran the completed TEST-only task asynchronously."
   },
   "cmqttd_boundaries": {
-    "ADD": "Only empty or fully cancelled task groups complete as an immediate local no-op. Any executable instruction returns 502 before mutation or events.",
+    "ADD": "Validates and registers an INIT task group, acknowledges immediately, then runs TEST and retained PP/DALI instructions through the shared service backends; the first fault ends the task in ERROR and is never replayed automatically.",
     "DELETE": "Terminal local queue entries can be removed without PCI I/O.",
     "DELETE_ALL": "Volatile queue entries can be selected and removed without PCI I/O.",
     "LIST": "Returns the volatile queue only; PROGRAMMER registry entries outside the queue are not listed.",
-    "RETRY": "Always 502 after native identity/state validation because retry reinitializes and re-executes work; queue and events remain unchanged.",
-    "events": "updated-entries, started and ended are emitted only for implemented local queue transitions. debug is silent without a worker.",
+    "RETRY": "Validates queued terminal state, reinits the task group and re-executes only after the explicit RETRY request; no automatic retry occurs after a fault.",
+    "events": "updated-entries, started and ended are emitted for queue transitions; debug carries a structured cmqttd first-fault receipt without claiming native message text.",
     "persistence": "PROGRAMMER and DEPLOY_QUEUE state is runtime-only and absent after restart.",
     "mqtt": "Queue commands share cmqttd's command service and do not take over or open another PCI; MQTT bridging remains active."
   },

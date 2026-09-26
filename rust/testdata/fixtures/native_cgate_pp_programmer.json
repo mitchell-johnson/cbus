@@ -35,14 +35,28 @@
     "PROGRAMMER_TRIGGER_mD": "b89d202c63b4a1dd80068877a0bfffa42475fe7f9a51e271b8a4cc03c5e8ba7a"
   },
   "native_shapes": {
-    "empty_lists": ["122 no open locks", "122 no open sessions", "450 no programmers registered."],
+    "empty_lists": [
+      "122 no open locks",
+      "122 no open sessions",
+      "450 no programmers registered."
+    ],
     "lock_row": "121 name=L address=//PPRAW/254",
     "session_row": "121 name=S address=//PPRAW/254",
     "cancelled_session_row": "121 name=S address=null",
     "raw_initial": "316 RawData=0000000000000000",
     "raw_after_set": "316 RawData=0102030400000000",
-    "catalog_metadata": ["133-SpecVersion=1.0", "133-Author=Clipsal Integrated Systems", "133-Status=Released", "133 ApprovalDate=Wed Feb 25 11:11:11 CST 2009"],
-    "xml_envelope": ["343-Begin XML Snippet", "347-<?xml version=\"1.0\" encoding=\"utf-8\"?>", "347-<Parameters>...</Parameters>", "344 End XML Snippet"],
+    "catalog_metadata": [
+      "133-SpecVersion=1.0",
+      "133-Author=Clipsal Integrated Systems",
+      "133-Status=Released",
+      "133 ApprovalDate=Wed Feb 25 11:11:11 CST 2009"
+    ],
+    "xml_envelope": [
+      "343-Begin XML Snippet",
+      "347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+      "347-<Parameters>...</Parameters>",
+      "344 End XML Snippet"
+    ],
     "programmer_create": "200 OK: created",
     "programmer_empty_status": "{\"progState\":\"INIT\",\"queueCount\":0,\"totalCount\":0,\"remainingSeconds\":0}",
     "test_duration_seconds": 3,
@@ -51,8 +65,38 @@
     "cancel_preserves_queue_and_total_count": true,
     "programmer_names_case_insensitive": true,
     "programmer_list_order": "creation order",
-    "transitions_observed_without_execution": ["INIT->PAUSED", "PAUSED->RUNNING", "RUNNING->STOPPED"],
-    "instruction_types_from_owned_bytecode": ["PP_COPY", "PP_SAVE", "PP_SET", "PP_END", "PP_UNLOCK", "DALI_READ", "DALI_PROGRAM", "DALI"]
+    "transitions_observed_without_execution": [
+      "INIT->PAUSED",
+      "PAUSED->RUNNING",
+      "RUNNING->STOPPED"
+    ],
+    "instruction_types_from_owned_bytecode": [
+      "PP_COPY",
+      "PP_SAVE",
+      "PP_SET",
+      "PP_END",
+      "PP_UNLOCK",
+      "DALI_READ",
+      "DALI_PROGRAM",
+      "DALI"
+    ],
+    "programmer_start_receipt": "200 OK: triggered",
+    "programmer_start_dispatch": "asynchronous; TEST-only START returned in about 2 ms while STATUS reported RUNNING",
+    "running_queue_count": "active instruction is excluded from queueCount but retained in totalCount",
+    "dali_instruction_grammar": {
+      "DALI_READ": "<cdg/device/target>",
+      "DALI_PROGRAM": "<cdg/device/target>",
+      "DALI": "<sub-command-type> followed by the normal public DALI arguments"
+    },
+    "write_patch_selector": {
+      "arguments": "<unit-target> <patch-version-hex-byte> [simulate]",
+      "too_few": "400 not enough arguments to command",
+      "bad_address": "401 Bad address",
+      "bad_patch_version": "400 bad patch version",
+      "optional_simulate_case_insensitive": true,
+      "additional_tokens_ignored": true,
+      "executor": "patchset.zip-backed distinct unlock/write/version pipeline"
+    }
   },
   "sanitization": {
     "vendor_catalog_xml_retained": false,
@@ -63,8 +107,8 @@
   "cmqttd_boundaries": {
     "catalog_source": "Only cbusunits.xml and bare .xml files under the configured unitspec directory; traversal and arbitrary host files are rejected.",
     "queue_persistence": "Runtime only, matching the observed daemon lifecycle.",
-    "programmer_start": "502; executing queued PP/DALI instructions needs an evidenced physical scheduler and is never simulated.",
-    "write_patch": "502; patchset.zip and the proprietary physical patch executor were not present, so physical success is never simulated.",
+    "programmer_start": "Acknowledges after INIT registration, runs asynchronously through the shared PP/DALI service backends, stops on first fault, and never automatically replays a command.",
+    "write_patch": "502 after retained selector parsing; no verified patchset.zip or distinct patch protocol executor is present, no ordinary PP SAVE substitution is permitted, and no bus command is sent.",
     "patch_version_without_patchset": "408 native-shaped missing patchset response."
   }
 }

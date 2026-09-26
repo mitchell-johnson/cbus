@@ -145,13 +145,12 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // projections, EVENT_CHANNEL LIST/SUB/UNSUB, and advisory LOCK/UNLOCK.
     // Thirteen PP administrative/catalogue/session-memory paths and seven
     // PROGRAMMER queue-metadata paths moved fail_closed_502 -> local_database.
-    // PP WRITE_PATCH and PROGRAMMER TRIGGER START remain fail-closed physical
-    // execution boundaries.
-    // DEPLOY_QUEUE DELETE, DELETE_ALL and LIST moved fail_closed_502 ->
-    // local_database over the volatile PROGRAMMER task-group queue. ADD stays
-    // conservatively fail-closed because only its empty/all-cancelled no-op
-    // form is local, while any executable instruction refuses before
-    // mutation. RETRY remains fail-closed because it would re-execute work.
+    // PROGRAMMER START and DEPLOY_QUEUE ADD/RETRY now execute the retained
+    // TEST/PP/DALI catalogue through the real shared service backends with
+    // explicit retry and no automatic replay. PP WRITE_PATCH remains the one
+    // fail-closed patch boundary because no verified patchset/executor exists.
+    // DEPLOY_QUEUE DELETE, DELETE_ALL and LIST remain local over the volatile
+    // PROGRAMMER task-group queue; ADD and RETRY are physical execution paths.
     // NET lifecycle adds two exact physical paths, nine local catalogue/help
     // paths and one native-obsolete path, moving twelve rows out of 502.
     // Nine retained family-help roots move fail_closed_502 -> local_database.
@@ -169,9 +168,9 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // Ten general/object paths move fail_closed_502 -> local_database: both
     // native comment spellings, OID, BROADCAST_EVENT, SHOW, REPORT, all three
     // TREE renderings and durable NEW object creation.
-    assert_eq!(class_count(RoutingClass::Physical), 218);
-    assert_eq!(class_count(RoutingClass::LocalDatabase), 181);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 30);
+    assert_eq!(class_count(RoutingClass::Physical), 226);
+    assert_eq!(class_count(RoutingClass::LocalDatabase), 196);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 7);
     assert_eq!(class_count(RoutingClass::Obsolete400), 2);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here
@@ -355,8 +354,12 @@ fn pp_administration_and_programmer_queue_retain_native_evidence_and_boundaries(
     );
     assert_eq!(fixture["native_shapes"]["test_duration_seconds"], 3);
     assert_eq!(
+        fixture["native_shapes"]["write_patch_selector"]["additional_tokens_ignored"],
+        true
+    );
+    assert_eq!(
         fixture["cmqttd_boundaries"]["programmer_start"],
-        "502; executing queued PP/DALI instructions needs an evidenced physical scheduler and is never simulated."
+        "Acknowledges after INIT registration, runs asynchronously through the shared PP/DALI service backends, stops on first fault, and never automatically replays a command."
     );
 
     for path in [
@@ -391,17 +394,20 @@ fn pp_administration_and_programmer_queue_retain_native_evidence_and_boundaries(
             "{path}"
         );
     }
-    for path in ["PP WRITE_PATCH", "PROGRAMMER TRIGGER"] {
-        let entry = CAPABILITY_MATRIX
-            .iter()
-            .find(|entry| entry.path == path)
-            .unwrap_or_else(|| panic!("missing {path}"));
-        assert_eq!(entry.class, RoutingClass::FailClosed502, "{path}");
-        assert!(
-            entry.evidence.contains("never") || entry.evidence.contains("physical"),
-            "{path}"
-        );
-    }
+    let trigger = CAPABILITY_MATRIX
+        .iter()
+        .find(|entry| entry.path == "PROGRAMMER TRIGGER")
+        .expect("PROGRAMMER TRIGGER row");
+    assert_eq!(trigger.class, RoutingClass::Physical);
+    assert!(trigger
+        .evidence
+        .contains("no command is automatically replayed"));
+    let patch = CAPABILITY_MATRIX
+        .iter()
+        .find(|entry| entry.path == "PP WRITE_PATCH")
+        .expect("PP WRITE_PATCH row");
+    assert_eq!(patch.class, RoutingClass::FailClosed502);
+    assert!(patch.evidence.contains("patchset.zip"));
 }
 
 #[test]
@@ -438,8 +444,41 @@ fn deploy_queue_retains_native_evidence_and_execution_boundaries() {
     );
     assert_eq!(
         fixture["cmqttd_boundaries"]["RETRY"],
-        "Always 502 after native identity/state validation because retry reinitializes and re-executes work; queue and events remain unchanged."
+        "Validates queued terminal state, reinits the task group and re-executes only after the explicit RETRY request; no automatic retry occurs after a fault."
     );
+    for path in ["DEPLOY_QUEUE ADD", "DEPLOY_QUEUE RETRY"] {
+        let row = CAPABILITY_MATRIX
+            .iter()
+            .find(|entry| entry.path == path)
+            .unwrap_or_else(|| panic!("missing {path}"));
+        assert_eq!(row.class, RoutingClass::Physical, "{path}");
+        assert!(row.evidence.contains("no automatic") || row.evidence.contains("explicit"));
+    }
+}
+
+#[test]
+fn programmer_execution_vectors_pin_receipts_faults_and_replay_policy() {
+    let vectors = include_str!("../../testdata/vectors/programmer_execution.jsonl")
+        .lines()
+        .map(|line| serde_json::from_str::<serde_json::Value>(line).unwrap())
+        .collect::<Vec<_>>();
+    assert_eq!(vectors.len(), 5);
+    assert_eq!(vectors[0]["expect_receipts"][2], "200 OK: triggered");
+    assert_eq!(vectors[0]["expect_running"]["queueCount"], 0);
+    assert_eq!(vectors[0]["expect_running"]["remainingSeconds"], 3);
+    assert_eq!(vectors[0]["expect_terminal"]["remainingSeconds"], 0);
+    assert_eq!(vectors[1]["expect_receipts"][2], "200 OK: added");
+    assert_eq!(vectors[2]["expect_terminal"], "ERROR");
+    assert_eq!(vectors[2]["remainingSeconds"], 1);
+    assert!(vectors[..4]
+        .iter()
+        .all(|vector| vector["automatic_replay"] == false));
+    assert_eq!(vectors[3]["explicit_replay"], true);
+    assert_eq!(vectors[4]["bus_commands"], 0);
+    assert!(vectors[4]["expect_receipt"]
+        .as_str()
+        .unwrap()
+        .contains("no bus command was sent"));
 }
 
 #[test]

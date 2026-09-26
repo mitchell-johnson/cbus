@@ -268,19 +268,24 @@ Local C-Gate compatibility now includes PP catalogue/spec queries, lock and
 session inventory/cancellation, staged raw-memory get/set/debug,
 `LOAD_FROM_FILE`, and runtime PROGRAMMER queue creation, inspection and
 cancellation. Catalogue files are confined to `--cgate-unitspec`, and these
-administrative operations send no PCI traffic. Queued execution and patching
-remain honest boundaries: `PROGRAMMER TRIGGER ... START` and `PP WRITE_PATCH`
-return 502 without changing state or claiming a device operation.
+administrative operations send no PCI traffic. `PROGRAMMER TRIGGER ... START`
+acknowledges an INIT queue immediately, then runs TEST, PP_COPY, PP_SAVE,
+PP_SET, PP_END, PP_UNLOCK, DALI_READ, DALI_PROGRAM and public DALI commands in
+priority order through cmqttd's existing local or physical backends. STATUS
+reports the active queue count and TEST countdown. The worker stops on the
+first failed receipt and never automatically replays an uncertain bus command.
+`PP WRITE_PATCH` remains 502 before I/O because the vendor patchset and its
+distinct unlock/write/version executor are not available.
 
-The five-command `DEPLOY_QUEUE` family is also wired to that volatile
-PROGRAMMER model. LIST, DELETE and typed DELETE_ALL return the retained native
-JSON/status envelopes. Adding an empty or fully cancelled programmer completes
-as a local no-work task and publishes the native `updated-entries`, `started`
-and `ended` channel envelopes to subscribed command sessions. ADD with any
-executable instruction returns 502 before queue mutation, and RETRY always
-returns 502 after native identity/state validation, because either operation
-would run work on devices. Queue state and subscriptions disappear on restart;
-MQTT continues to own and use the same CNI throughout.
+The five-command `DEPLOY_QUEUE` family is wired to that volatile PROGRAMMER
+worker. LIST, DELETE and typed DELETE_ALL return the retained native JSON/status
+envelopes. ADD registers an INIT task, returns immediately, and publishes the
+native `updated-entries`, `started` and terminal `ended` channel envelopes.
+The first instruction failure leaves the entry in ERROR and publishes a
+structured `debug` receipt. RETRY is accepted only for a queued STOPPED or
+ERROR task and is the sole operation that deliberately reinitializes and
+re-executes it. Queue state and subscriptions disappear on restart; physical
+PP/DALI commands share cmqttd's CNI and MQTT continues to use it throughout.
 
 The embedded service also supports native physical `LABEL KFIGET` and
 `LABEL KFISET`. The application token admits only a native

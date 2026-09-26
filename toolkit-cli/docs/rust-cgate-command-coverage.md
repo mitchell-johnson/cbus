@@ -78,28 +78,30 @@ peers can still present a configured recovery token without gaining access to
 other commands first. These differences are pinned in
 `native_cgate_access.json` and the real-daemon `system_cgate_access.rs` test.
 
-The embedded cmqttd service also implements thirteen previously fail-closed PP
-administrative/catalogue/session-memory paths and seven PROGRAMMER queue
-metadata paths as bounded local operations. Catalogue and LOAD_FROM_FILE access
-is confined to `--cgate-unitspec`; raw memory belongs to an owned staged
-session; PROGRAMMER queues are runtime-only. `PROGRAMMER TRIGGER ... START`
-and `PP WRITE_PATCH` remain 502 because they require physical execution
-backends, while PATCH_VERSION reproduces the native missing-patchset 408. This
-substantially reduced the aggregate executable 431-path gap. Retained
-evidence is in `rust/testdata/fixtures/native_cgate_pp_programmer.json`, with
-real-daemon coverage in `system_cgate_pp_programmer.rs`.
+The embedded cmqttd service also implements thirteen PP
+administrative/catalogue/session-memory paths and the runtime PROGRAMMER queue.
+Catalogue and LOAD_FROM_FILE access is confined to `--cgate-unitspec`; raw
+memory belongs to an owned staged session. START now acknowledges
+asynchronously and executes TEST plus all eight retained PP/DALI instruction
+types through the existing service backends. STATUS exposes the active queue
+count and countdown; first failure is terminal and no physical command is
+automatically replayed. `PP WRITE_PATCH` remains 502 because the verified
+vendor patchset and distinct protocol executor are unavailable, while
+PATCH_VERSION reproduces the native missing-patchset 408. Retained evidence is
+in `rust/testdata/fixtures/native_cgate_pp_programmer.json`, with real-daemon
+coverage in `system_cgate_pp_programmer.rs`.
 
-The embedded service now also has a dedicated implementation for all five
+The embedded service has a dedicated implementation for all five
 `DEPLOY_QUEUE` paths. LIST, terminal DELETE and typed DELETE_ALL are local
-volatile administration. ADD completes only an empty or fully cancelled
-PROGRAMMER as a no-work STOPPED task; any executable instruction returns 502
-before mutation. RETRY remains an explicit 502 because native retry
-reinitializes and executes the task group. Implemented transitions publish the
-retained `updated-entries`, `started`, and `ended` envelopes only to sessions
-subscribed through EVENT_CHANNEL; `debug` is silent without a real worker.
+volatile administration. ADD validates and registers an INIT task, returns
+immediately and runs it through the PROGRAMMER worker. RETRY accepts only a
+queued terminal task and is the sole operation that deliberately reinitializes
+and re-executes it. Transitions publish `updated-entries`, `started` and
+`ended`; a first fault also publishes one structured cmqttd `debug` receipt.
 Exact sanitized evidence is in
 `rust/testdata/fixtures/native_cgate_deploy_queue.json`; the real-daemon test
-also verifies zero queue PCI traffic, restart volatility and MQTT continuity.
+verifies asynchronous execution, first-fault/no-automatic-replay behavior,
+restart volatility and MQTT continuity.
 
 Seven maintained Identify, Short Message, and Error Reporting leaves are now
 physical: `IDENTIFY` ON/OFF/RAMP/TERMINATERAMP, `SHORTMESSAGE` REFRESH/SEND,
@@ -136,7 +138,7 @@ parent roots are pinned in the separate supplement. These local help endpoints
 do not change any child command's capability class. Together with the NET
 lifecycle, deploy-queue, remaining-application, legacy-database, catalogue,
 calculator, bounded CGL, and general-object tranches, the matrix now contains
-**218 physical, 181 local/session, 30 fail-closed, and 2 obsolete paths**. The
+**226 physical, 196 local/session, 7 fail-closed, and 2 obsolete paths**. The
 separate non-inventoried supplement contains 11 rows. Help evidence is in
 `rust/testdata/fixtures/native_cgate_family_help.json`.
 

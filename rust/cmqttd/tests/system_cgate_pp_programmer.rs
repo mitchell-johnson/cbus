@@ -1,6 +1,7 @@
-//! Real cmqttd process: maintained PP administration and PROGRAMMER queue
-//! metadata use only bounded local state/catalogue data, while physical queue
-//! execution and patch writes remain fail-closed. MQTT stays live throughout.
+//! Real cmqttd process: PROGRAMMER and DEPLOY_QUEUE acknowledge asynchronous
+//! execution, expose the native TEST countdown, stop on first instruction
+//! fault, and retry only on an explicit request. PP patching stays fail-closed
+//! without a verified vendor patchset. MQTT remains live throughout.
 
 mod util;
 
@@ -64,6 +65,25 @@ async fn connect(
     reader.read_line(&mut greeting).await.unwrap();
     assert_eq!(greeting, "201 cmqttd C-Gate service ready\r\n");
     (reader, writer)
+}
+
+async fn wait_for(
+    reader: &mut BufReader<tokio::net::tcp::OwnedReadHalf>,
+    writer: &mut tokio::net::tcp::OwnedWriteHalf,
+    text: &str,
+    expected: &str,
+) -> Vec<String> {
+    let deadline = tokio::time::Instant::now() + STARTUP;
+    let mut sequence = 0u64;
+    loop {
+        let reply = command(reader, writer, &format!("wait-{sequence}"), text).await;
+        if reply.iter().any(|line| line.contains(expected)) {
+            return reply;
+        }
+        assert!(tokio::time::Instant::now() < deadline, "{text}: {reply:?}");
+        sequence += 1;
+        tokio::time::sleep(std::time::Duration::from_millis(25)).await;
+    }
 }
 
 fn options(state: &std::path::Path, unitspec: &std::path::Path) -> Options {
@@ -194,6 +214,16 @@ async fn pp_admin_and_programmer_are_local_native_shaped_and_restart_safe() {
         .await,
         ["316 RawData=010000000000000000ff000000000000"]
     );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "database-unit",
+            "DBADDSAFE //HARNESS/254 Unit 5 QueueUnit",
+        )
+        .await,
+        ["200 OK"]
+    );
 
     assert_eq!(
         command(
@@ -220,16 +250,36 @@ async fn pp_admin_and_programmer_are_local_native_shaped_and_restart_safe() {
             &mut reader,
             &mut writer,
             "add",
-            "PROGRAMMER ADD_INSTRUCTION P PP_END S",
+            "PROGRAMMER ADD_INSTRUCTION P PP_SET S First 7",
         )
         .await,
         ["200 OK: id: 2"]
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "save",
+            "PROGRAMMER ADD_INSTRUCTION P PP_SAVE S /db//HARNESS/254/p/5",
+        )
+        .await,
+        ["200 OK: id: 3"]
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "end",
+            "PROGRAMMER ADD_INSTRUCTION P PP_END S",
+        )
+        .await,
+        ["200 OK: id: 4"]
     );
     let status = command(&mut reader, &mut writer, "status", "PROGRAMMER STATUS P").await;
     assert_eq!(
         status,
         [
-            "130-{\"progState\":\"INIT\",\"queueCount\":2,\"totalCount\":2,\"remainingSeconds\":4}",
+            "130-{\"progState\":\"INIT\",\"queueCount\":4,\"totalCount\":4,\"remainingSeconds\":6}",
             "200 OK.",
         ]
     );
@@ -241,47 +291,67 @@ async fn pp_admin_and_programmer_are_local_native_shaped_and_restart_safe() {
             "PROGRAMMER TRIGGER P START",
         )
         .await,
-        ["502 Programmer execution backend is not implemented; queue remains unchanged"]
+        ["200 OK: triggered"]
+    );
+    let running = wait_for(
+        &mut reader,
+        &mut writer,
+        "PROGRAMMER STATUS P",
+        "\"progState\":\"RUNNING\"",
+    )
+    .await;
+    assert!(running[0].contains("\"progState\":\"RUNNING\""));
+    let running_status: serde_json::Value =
+        serde_json::from_str(running[0].strip_prefix("130-").unwrap()).unwrap();
+    assert_eq!(running_status["totalCount"], 4);
+    assert!(matches!(running_status["queueCount"].as_u64(), Some(3 | 4)));
+    assert!(matches!(
+        running_status["remainingSeconds"].as_u64(),
+        Some(3..=6)
+    ));
+    let stopped = wait_for(
+        &mut reader,
+        &mut writer,
+        "PROGRAMMER STATUS P",
+        "\"progState\":\"STOPPED\"",
+    )
+    .await;
+    assert!(stopped[0].contains("\"remainingSeconds\":0"));
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "saved-value",
+            "PP QUICKGET //HARNESS/254/p/5 First",
+        )
+        .await,
+        ["315 First=7"]
     );
     assert_eq!(
-        command(&mut reader, &mut writer, "status2", "PROGRAMMER STATUS P").await[0],
-        status[0]
+        command(
+            &mut reader,
+            &mut writer,
+            "execute-again",
+            "PROGRAMMER TRIGGER P START",
+        )
+        .await,
+        ["400 failed: unsupported programmer transition"]
     );
     assert_eq!(
         command(
             &mut reader,
             &mut writer,
             "patch",
-            "PP WRITE_PATCH S TEST anything",
+            "PP WRITE_PATCH //HARNESS/254/p/1 01",
         )
         .await,
-        ["502 Command requires a physical backend that is not implemented"]
-    );
-
-    assert_eq!(
-        command(
-            &mut reader,
-            &mut writer,
-            "deploy-work",
-            "DEPLOY_QUEUE ADD P",
-        )
-        .await,
-        ["502 Programmer execution backend is not implemented; deployment queue remains unchanged"]
-    );
-    assert_eq!(
-        command(
-            &mut reader,
-            &mut writer,
-            "deploy-empty",
-            "DEPLOY_QUEUE LIST",
-        )
-        .await,
-        ["450 no programmers registered."]
+        ["502 PP WRITE_PATCH requires a verified vendor patchset and patch protocol executor; no bus command was sent"]
     );
 
     let (mut event_reader, mut event_writer) = connect(&system).await;
     for (tag, channel) in [
         ("sub-updated", "deploy-queue.updated-entries"),
+        ("sub-debug", "deploy-queue.debug"),
         ("sub-started", "deploy-queue.started"),
         ("sub-ended", "deploy-queue.ended"),
     ] {
@@ -300,8 +370,8 @@ async fn pp_admin_and_programmer_are_local_native_shaped_and_restart_safe() {
         command(
             &mut reader,
             &mut writer,
-            "noop-create",
-            "PROGRAMMER CREATE EMPTY \"No work\" \"Local\"",
+            "queue-create",
+            "PROGRAMMER CREATE QUEUED \"Timed work\" \"Local\"",
         )
         .await,
         ["200 OK: created"]
@@ -310,8 +380,18 @@ async fn pp_admin_and_programmer_are_local_native_shaped_and_restart_safe() {
         command(
             &mut reader,
             &mut writer,
-            "noop-add",
-            "DEPLOY_QUEUE ADD EMPTY",
+            "queue-test",
+            "PROGRAMMER TEST QUEUED payload",
+        )
+        .await,
+        ["200 OK: id: 1"]
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "queue-add",
+            "DEPLOY_QUEUE ADD QUEUED",
         )
         .await,
         ["200 OK: added"]
@@ -328,35 +408,113 @@ async fn pp_admin_and_programmer_are_local_native_shaped_and_restart_safe() {
     assert_eq!(
         events,
         [
-            "#event {\"name\":\"deploy-queue.updated-entries\",\"msg\":\"addTaskGroup: EMPTY\"}",
-            "#event {\"name\":\"deploy-queue.started\",\"msg\":{\"name\":\"EMPTY\",\"task\":\"No work\"}}",
-            "#event {\"name\":\"deploy-queue.ended\",\"msg\":{\"name\":\"EMPTY\",\"task\":\"No work\",\"status\":\"STOPPED\"}}",
+            "#event {\"name\":\"deploy-queue.updated-entries\",\"msg\":\"addTaskGroup: QUEUED\"}",
+            "#event {\"name\":\"deploy-queue.started\",\"msg\":{\"name\":\"QUEUED\",\"task\":\"Timed work\"}}",
+            "#event {\"name\":\"deploy-queue.ended\",\"msg\":{\"name\":\"QUEUED\",\"task\":\"Timed work\",\"status\":\"STOPPED\"}}",
         ]
     );
     let deployed = command(&mut reader, &mut writer, "deploy-list", "DEPLOY_QUEUE LIST").await;
     assert_eq!(deployed.last().unwrap(), "200 OK.");
     assert!(deployed[0].starts_with(
-        "130-{\"progName\":\"EMPTY\",\"progState\":\"STOPPED\",\"taskName\":\"No work\",\"taskRoute\":\"Local\",\"createdTime\":"
+        "130-{\"progName\":\"QUEUED\",\"progState\":\"STOPPED\",\"taskName\":\"Timed work\",\"taskRoute\":\"Local\",\"createdTime\":"
     ));
     assert_eq!(
         command(
             &mut reader,
             &mut writer,
             "deploy-retry",
-            "DEPLOY_QUEUE RETRY EMPTY",
+            "DEPLOY_QUEUE RETRY QUEUED",
         )
         .await,
-        ["502 Programmer retry backend is not implemented; deployment queue remains unchanged"]
+        ["200 OK: retry added"]
+    );
+    let mut retry_events = Vec::new();
+    for _ in 0..2 {
+        let mut event = String::new();
+        tokio::time::timeout(STARTUP, event_reader.read_line(&mut event))
+            .await
+            .unwrap()
+            .unwrap();
+        retry_events.push(event.trim_end_matches(['\r', '\n']).to_string());
+    }
+    assert_eq!(
+        retry_events,
+        [
+            "#event {\"name\":\"deploy-queue.started\",\"msg\":{\"name\":\"QUEUED\",\"task\":\"Timed work\"}}",
+            "#event {\"name\":\"deploy-queue.ended\",\"msg\":{\"name\":\"QUEUED\",\"task\":\"Timed work\",\"status\":\"STOPPED\"}}",
+        ]
+    );
+
+    for (tag, text, expected) in [
+        (
+            "fail-create",
+            "PROGRAMMER CREATE FAIL \"First fault\" \"Local\"",
+            "200 OK: created",
+        ),
+        (
+            "fail-add-instruction",
+            "PROGRAMMER ADD_INSTRUCTION FAIL PP_SAVE Missing /db//HARNESS/254/p/1",
+            "200 OK: id: 1",
+        ),
+        ("fail-add", "DEPLOY_QUEUE ADD FAIL", "200 OK: added"),
+    ] {
+        assert_eq!(
+            command(&mut reader, &mut writer, tag, text).await,
+            [expected],
+            "{text}"
+        );
+    }
+    let mut failure_events = Vec::new();
+    for _ in 0..4 {
+        let mut event = String::new();
+        tokio::time::timeout(STARTUP, event_reader.read_line(&mut event))
+            .await
+            .unwrap()
+            .unwrap();
+        failure_events.push(event.trim_end_matches(['\r', '\n']).to_string());
+    }
+    assert_eq!(
+        &failure_events[..2],
+        [
+            "#event {\"name\":\"deploy-queue.updated-entries\",\"msg\":\"addTaskGroup: FAIL\"}",
+            "#event {\"name\":\"deploy-queue.started\",\"msg\":{\"name\":\"FAIL\",\"task\":\"First fault\"}}",
+        ]
+    );
+    assert!(failure_events[2].starts_with(
+        "#event {\"name\":\"deploy-queue.debug\",\"msg\":{\"automaticReplay\":false,"
+    ));
+    assert!(failure_events[2].contains("\"instructionType\":\"PP_SAVE\""));
+    assert_eq!(
+        failure_events[3],
+        "#event {\"name\":\"deploy-queue.ended\",\"msg\":{\"name\":\"FAIL\",\"task\":\"First fault\",\"status\":\"ERROR\"}}"
+    );
+    let failed = wait_for(
+        &mut reader,
+        &mut writer,
+        "PROGRAMMER STATUS FAIL",
+        "\"progState\":\"ERROR\"",
+    )
+    .await;
+    assert!(failed[0].contains("\"remainingSeconds\":1"));
+    let mut unexpected_event = String::new();
+    assert!(
+        tokio::time::timeout(
+            std::time::Duration::from_millis(150),
+            event_reader.read_line(&mut unexpected_event)
+        )
+        .await
+        .is_err(),
+        "a failed instruction was replayed without RETRY"
     );
     assert_eq!(
         command(
             &mut reader,
             &mut writer,
             "deploy-delete-all",
-            "DEPLOY_QUEUE DELETE_ALL completed",
+            "DEPLOY_QUEUE DELETE_ALL all",
         )
         .await,
-        ["120-deleted: EMPTY", "200 OK: done"]
+        ["120-deleted: QUEUED", "120-deleted: FAIL", "200 OK: done"]
     );
     let mut delete_event = String::new();
     tokio::time::timeout(STARTUP, event_reader.read_line(&mut delete_event))
@@ -365,7 +523,7 @@ async fn pp_admin_and_programmer_are_local_native_shaped_and_restart_safe() {
         .unwrap();
     assert_eq!(
         delete_event.trim_end_matches(['\r', '\n']),
-        "#event {\"name\":\"deploy-queue.updated-entries\",\"msg\":\"removeAllCompletedTaskGroups: 1\"}"
+        "#event {\"name\":\"deploy-queue.updated-entries\",\"msg\":\"removeAllTaskGroups: 2\"}"
     );
     assert_eq!(
         command(
@@ -417,6 +575,16 @@ async fn pp_admin_and_programmer_are_local_native_shaped_and_restart_safe() {
     let mut restarted = start_with(options(&state, &unitspec)).await;
     wait_started(&restarted).await;
     let (mut reader, mut writer) = connect(&restarted).await;
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "persisted-value",
+            "PP QUICKGET //HARNESS/254/p/5 First",
+        )
+        .await,
+        ["315 First=7"]
+    );
     assert_eq!(
         command(&mut reader, &mut writer, "runtime", "PROGRAMMER LIST").await,
         ["450 no programmers registered."]

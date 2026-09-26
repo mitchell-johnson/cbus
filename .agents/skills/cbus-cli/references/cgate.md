@@ -1178,20 +1178,30 @@ PROGRAMMER STATUS NAME
 PROGRAMMER TEST NAME TEXT...
 PROGRAMMER ADD_INSTRUCTION NAME [priority=FIRST|LAST|DEFAULT|INTEGER] TYPE ARGS...
 PROGRAMMER CANCEL_INSTRUCTION NAME ID
-PROGRAMMER TRIGGER NAME PAUSE|RESUME|STOP|ERROR
+PROGRAMMER TRIGGER NAME START|PAUSE|RESUME|STOP|ERROR
 PROGRAMMER DELETE NAME
 ```
 
 Instruction TYPE is one of `PP_COPY`, `PP_SAVE`, `PP_SET`, `PP_END`,
-`PP_UNLOCK`, `DALI_READ`, `DALI_PROGRAM`, or `DALI`. LIST/STATUS return native
-status-130 JSON. Programmer names match case-insensitively and LIST preserves
-creation order. Cancellation retains queue/total count and removes its
-remaining duration. Queues are process-local and disappear on restart.
-`PROGRAMMER TRIGGER NAME START` is a specific 502 that leaves state and queue
-unchanged: cmqttd has no evidenced physical scheduler and must never simulate
-queued PP/DALI completion. With the optional LOGIN gate, PP mutations and
-PROGRAMMER create/delete/add/cancel/test/trigger require authentication;
-catalogue, inventory, LIST and STATUS reads remain open.
+`PP_UNLOCK`, `DALI_READ`, `DALI_PROGRAM`, or `DALI`. DALI_READ and DALI_PROGRAM
+take one gateway target. DALI retains the public grammar after its type: the
+subcommand comes first, followed by the normal mode/gateway/line/payload tail.
+LIST/STATUS return native status-130 JSON. Programmer names match
+case-insensitively and LIST preserves creation order. Cancellation retains the
+total history and removes its remaining duration. Queues are process-local and
+disappear on restart.
+
+START validates INIT, returns `200 OK: triggered` after registration, and runs
+asynchronously. TEST uses the retained three-second countdown. PP and DALI
+instructions enter the same owned-session and physical backends as interactive
+commands; PP_COPY owns and cleans up one temporary session. STATUS excludes the
+active instruction from `queueCount`, retains it in `totalCount`, and reports
+the current remaining estimate. PAUSE/RESUME/STOP/ERROR are observed between
+instructions and during TEST. The first failed receipt leaves ERROR and stops
+the worker. START cannot replay terminal work, and an uncertain physical
+command is never automatically retried. With the optional LOGIN gate, PP
+mutations and PROGRAMMER create/delete/add/cancel/test/trigger require
+authentication; catalogue, inventory, LIST and STATUS reads remain open.
 
 The separate volatile deployment queue supports all retained command paths:
 
@@ -1210,14 +1220,16 @@ its PROGRAMMER registry entry. DELETE_ALL defaults to ALL and emits ordered
 120/501 per-entry rows followed by `200 OK: done`. These operations are local
 and never access PCI.
 
-ADD is safe only when the programmer has no executable instructions (empty or
-fully cancelled). cmqttd completes that task immediately as STOPPED and emits
-the exact updated/started/ended envelopes. Any executable instruction returns
-502 before state or event mutation. RETRY validates registry identity and the
-native terminal-state boundary, then returns 502 unchanged because native
-retry reinitializes and executes the task. ADD, DELETE, DELETE_ALL and RETRY
-require LOGIN when the optional gate is armed; LIST and help remain open.
-PROGRAMMER and DEPLOY_QUEUE state is process-local and empty after restart.
+ADD validates an INIT programmer, registers it, returns `200 OK: added`, emits
+updated/started, and executes asynchronously. Completion emits ended with
+STOPPED. The first fault emits one structured cmqttd debug receipt and ended
+with ERROR; the worker does not claim native diagnostic-string equivalence.
+RETRY is accepted only for a queued STOPPED/ERROR programmer, reinitializes its
+created/start time and instruction countdown, returns `200 OK: retry added`,
+and deliberately executes it again. RETRY is the only replay operation; a
+fault never causes an automatic retry. ADD, DELETE, DELETE_ALL and RETRY require
+LOGIN when the optional gate is armed; LIST and help remain open. PROGRAMMER
+and DEPLOY_QUEUE state is process-local and empty after restart.
 
 Ground exact claims in
 `rust/testdata/fixtures/native_cgate_pp_programmer.json` and

@@ -52,14 +52,14 @@ physical, level, application, or observed-label caches or publish that success
 event. See the C-Gate reference for the covered command families.
 
 PP catalogue/XML queries, lock/session inventory, raw-memory edits and
-diagnostics, LOAD_FROM_FILE, and PROGRAMMER queue metadata stay on the local
-side of this boundary. Catalogue access is confined to `--cgate-unitspec`; raw
-bytes belong to one owned staged session; PROGRAMMER queues are volatile and
-discarded at restart. None of these operations sends PCI traffic or interrupts
-MQTT. The two execution edges remain explicit: `PP WRITE_PATCH` and
-`PROGRAMMER TRIGGER ... START` return 502 without changing state because cmqttd
-has neither the proprietary patch executor nor an evidenced queued-instruction
-scheduler.
+diagnostics, and LOAD_FROM_FILE stay local. Catalogue access is confined to
+`--cgate-unitspec`; raw bytes belong to one owned staged session. PROGRAMMER
+and DEPLOY_QUEUE state is volatile and discarded at restart. START/ADD execute
+asynchronously through the existing PP/DALI service paths on cmqttd's shared
+CNI, stop on the first failed receipt and never retry automatically; RETRY is
+the sole explicit re-execution operation. MQTT remains active while that work
+runs. `PP WRITE_PATCH` remains 502 before I/O because cmqttd has no verified
+vendor patchset or distinct patch protocol executor.
 
 The CONFIG family is a local compatibility subsystem inside the embedded
 endpoint. Its 148-entry native 3.4 catalogue, scoped global/project/network

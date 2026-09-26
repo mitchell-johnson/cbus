@@ -799,6 +799,18 @@ struct ProgrammerInstruction {
     priority: i32,
     seconds: u64,
     cancelled: bool,
+    /// Set only after the instruction's local or physical operation has
+    /// returned success.  PROGRAMMER queues are process-local, but retaining
+    /// this bit is essential while the process is alive: a second START must
+    /// never replay a confirmed PP/DALI write and completed task summaries
+    /// must report zero remaining time.
+    completed: bool,
+    /// The worker removes the running instruction from the native queue count
+    /// while retaining it in the immutable total-count history.
+    active: bool,
+    /// Runtime countdown used by TEST and exposed by STATUS/LIST. Physical
+    /// instructions retain their one-second estimate until terminal receipt.
+    remaining_seconds: u64,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -816,9 +828,16 @@ impl Programmer {
     fn remaining_seconds(&self) -> u64 {
         self.instructions
             .iter()
-            .filter(|instruction| !instruction.cancelled)
-            .map(|instruction| instruction.seconds)
+            .filter(|instruction| !instruction.cancelled && !instruction.completed)
+            .map(|instruction| instruction.remaining_seconds)
             .sum()
+    }
+
+    fn queue_count(&self) -> usize {
+        self.instructions
+            .iter()
+            .filter(|instruction| !instruction.completed && !instruction.active)
+            .count()
     }
 }
 
@@ -3708,7 +3727,7 @@ impl Server {
             serde_json::to_string(&programmer.task_name).expect("string JSON cannot fail"),
             serde_json::to_string(&programmer.task_route).expect("string JSON cannot fail"),
             programmer.remaining_seconds(),
-            programmer.instructions.len(),
+            programmer.queue_count(),
         )
     }
 
@@ -3716,7 +3735,7 @@ impl Server {
         format!(
             "{{\"progState\":\"{}\",\"queueCount\":{},\"totalCount\":{},\"remainingSeconds\":{}}}",
             programmer.state.as_str(),
-            programmer.instructions.len(),
+            programmer.queue_count(),
             programmer.instructions.len(),
             programmer.remaining_seconds(),
         )
@@ -3782,6 +3801,9 @@ impl Server {
             priority,
             seconds,
             cancelled: false,
+            completed: false,
+            active: false,
+            remaining_seconds: seconds,
         };
         let position = programmer
             .instructions
