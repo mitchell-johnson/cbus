@@ -65,6 +65,9 @@ pub fn run_vector(fname: &str, index: usize, id: &str) {
         | "security.jsonl"
         | "mediatransport.jsonl"
         | "telephony.jsonl"
+        | "identify.jsonl"
+        | "shortmessage.jsonl"
+        | "ereport.jsonl"
         | "network_management.jsonl" => check_encode(v),
         "checksum.jsonl" => check_checksum(v),
         "ramp_rates.jsonl" => check_ramp(v),

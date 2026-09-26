@@ -5,10 +5,13 @@ use crate::packet::{Meta, Packet};
 use crate::report::StatusReport;
 use crate::sal::aircon::{AirconCommand, AirconStatus};
 use crate::sal::audio::{AudioAddress, AudioCommand, AudioEvent};
+use crate::sal::ereport::ErrorReportMessage;
+use crate::sal::identify::IdentifyCommand;
 use crate::sal::measurement::MeasurementData;
 use crate::sal::mediatransport::MediaTransportMessage;
 use crate::sal::network_management::{LearnMode, LocateTarget, NetworkLocate};
 use crate::sal::security::{SecurityArmMode, SecurityCommand, SecurityEvent};
+use crate::sal::shortmessage::{ShortMessageCommand, ShortMessageEvent};
 use crate::sal::telephony::{
     DialFailure, OffHookReason, TelephonyCommand, TelephonyDirection, TelephonyEvent,
 };
@@ -42,6 +45,10 @@ pub fn sal_to_json(s: &Sal) -> Value {
             "grade":command.grade,
             "group":command.group
         }),
+        Sal::Identify(command) => identify_to_json(command),
+        Sal::ShortMessageCommand(command) => shortmessage_command_to_json(command),
+        Sal::ShortMessageEvent(event) => shortmessage_event_to_json(event),
+        Sal::ErrorReport(message) => ereport_to_json(message),
         Sal::TelephonyCommand(command) => telephony_command_to_json(command),
         Sal::TelephonyEvent(event) => telephony_event_to_json(event),
         Sal::LightingRamp {
@@ -141,6 +148,70 @@ fn network_locate_to_json(command: &NetworkLocate) -> Value {
             "serial":serial.canonical, "mode":command.mode
         }),
     }
+}
+
+fn identify_to_json(command: &IdentifyCommand) -> Value {
+    match command {
+        IdentifyCommand::On { group } => {
+            json!({"sal":"identify", "command":"on", "group":group})
+        }
+        IdentifyCommand::Off { group } => {
+            json!({"sal":"identify", "command":"off", "group":group})
+        }
+        IdentifyCommand::Ramp {
+            group,
+            duration,
+            level,
+        } => json!({"sal":"identify", "command":"ramp", "group":group,
+            "duration":duration, "level":level}),
+        IdentifyCommand::TerminateRamp { group } => {
+            json!({"sal":"identify", "command":"terminate_ramp", "group":group})
+        }
+    }
+}
+
+fn shortmessage_command_to_json(command: &ShortMessageCommand) -> Value {
+    match command {
+        ShortMessageCommand::Refresh { info_type } => {
+            json!({"sal":"shortmessage", "command":"refresh", "info_type":info_type})
+        }
+        ShortMessageCommand::Send {
+            total,
+            index,
+            info_type,
+            number,
+            symbol,
+            text,
+        } => json!({"sal":"shortmessage", "command":"send", "total":total,
+            "index":index, "info_type":info_type, "number":number,
+            "symbol":symbol, "text_hex":hex::encode(text)}),
+    }
+}
+
+fn shortmessage_event_to_json(event: &ShortMessageEvent) -> Value {
+    match event {
+        ShortMessageEvent::Refresh { info_type } => {
+            json!({"sal":"shortmessage_event", "event":"refresh", "info_type":info_type})
+        }
+        ShortMessageEvent::Send {
+            total,
+            sequence,
+            info_type,
+            number,
+            symbol,
+            text,
+        } => json!({"sal":"shortmessage_event", "event":"send", "total":total,
+            "sequence":sequence, "info_type":info_type, "number":number,
+            "symbol":symbol, "text_hex":hex::encode(text)}),
+    }
+}
+
+fn ereport_to_json(message: &ErrorReportMessage) -> Value {
+    json!({"sal":"ereport", "message_type":message.message_type,
+        "category":message.category, "most_recent":message.most_recent,
+        "acknowledged":message.acknowledged, "most_severe":message.most_severe,
+        "severity":message.severity, "unit":message.unit,
+        "data1":message.data1, "data2":message.data2})
 }
 
 fn telephony_command_to_json(command: &TelephonyCommand) -> Value {
@@ -1025,6 +1096,10 @@ pub fn sal_from_json(d: &Value) -> Result<Sal, JErr> {
             grade: get_u8(d, "grade")?,
             group: get_u8(d, "group")?,
         })),
+        "identify" => identify_from_json(d).map(Sal::Identify),
+        "shortmessage" => shortmessage_command_from_json(d).map(Sal::ShortMessageCommand),
+        "shortmessage_event" => shortmessage_event_from_json(d).map(Sal::ShortMessageEvent),
+        "ereport" => ereport_from_json(d).map(Sal::ErrorReport),
         "telephony" => telephony_command_from_json(d).map(Sal::TelephonyCommand),
         "telephony_event" => telephony_event_from_json(d).map(Sal::TelephonyEvent),
         "lighting_on" => Ok(Sal::LightingOn {
@@ -1118,6 +1193,87 @@ fn network_locate_from_json(d: &Value) -> Result<NetworkLocate, JErr> {
     Ok(NetworkLocate {
         target,
         mode: get_u8(d, "mode")?,
+    })
+}
+
+fn identify_from_json(d: &Value) -> Result<IdentifyCommand, JErr> {
+    let group = get_u8(d, "group")?;
+    Ok(match get_str(d, "command")? {
+        "on" => IdentifyCommand::On { group },
+        "off" => IdentifyCommand::Off { group },
+        "ramp" => IdentifyCommand::Ramp {
+            group,
+            duration: get_u32(d, "duration")?,
+            level: get_u8(d, "level")?,
+        },
+        "terminate_ramp" => IdentifyCommand::TerminateRamp { group },
+        command => return Err(format!("unhandled Identify command: {command}")),
+    })
+}
+
+fn optional_u16(d: &Value, key: &str) -> Result<Option<u16>, JErr> {
+    match d.get(key) {
+        None | Some(Value::Null) => Ok(None),
+        Some(_) => get_u16(d, key).map(Some),
+    }
+}
+
+fn optional_u8(d: &Value, key: &str) -> Result<Option<u8>, JErr> {
+    match d.get(key) {
+        None | Some(Value::Null) => Ok(None),
+        Some(_) => get_u8(d, key).map(Some),
+    }
+}
+
+fn shortmessage_text(d: &Value) -> Result<Vec<u8>, JErr> {
+    hex::decode(get_str(d, "text_hex")?).map_err(|error| error.to_string())
+}
+
+fn shortmessage_command_from_json(d: &Value) -> Result<ShortMessageCommand, JErr> {
+    Ok(match get_str(d, "command")? {
+        "refresh" => ShortMessageCommand::Refresh {
+            info_type: get_u8(d, "info_type")?,
+        },
+        "send" => ShortMessageCommand::Send {
+            total: get_u8(d, "total")?,
+            index: get_u8(d, "index")?,
+            info_type: get_u8(d, "info_type")?,
+            number: optional_u16(d, "number")?,
+            symbol: optional_u8(d, "symbol")?,
+            text: shortmessage_text(d)?,
+        },
+        command => return Err(format!("unhandled Short Message command: {command}")),
+    })
+}
+
+fn shortmessage_event_from_json(d: &Value) -> Result<ShortMessageEvent, JErr> {
+    Ok(match get_str(d, "event")? {
+        "refresh" => ShortMessageEvent::Refresh {
+            info_type: get_u8(d, "info_type")?,
+        },
+        "send" => ShortMessageEvent::Send {
+            total: get_u8(d, "total")?,
+            sequence: get_u8(d, "sequence")?,
+            info_type: get_u8(d, "info_type")?,
+            number: optional_u16(d, "number")?,
+            symbol: optional_u8(d, "symbol")?,
+            text: shortmessage_text(d)?,
+        },
+        event => return Err(format!("unhandled Short Message event: {event}")),
+    })
+}
+
+fn ereport_from_json(d: &Value) -> Result<ErrorReportMessage, JErr> {
+    Ok(ErrorReportMessage {
+        message_type: get_u8(d, "message_type")?,
+        category: get_u16(d, "category")?,
+        most_recent: get_bool(d, "most_recent")?,
+        acknowledged: get_bool(d, "acknowledged")?,
+        most_severe: get_bool(d, "most_severe")?,
+        severity: get_u8(d, "severity")?,
+        unit: get_u8(d, "unit")?,
+        data1: get_u8(d, "data1")?,
+        data2: get_u8(d, "data2")?,
     })
 }
 

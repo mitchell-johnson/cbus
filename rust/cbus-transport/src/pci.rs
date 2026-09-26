@@ -13,10 +13,13 @@ use cbus_protocol::report::StatusReport;
 use cbus_protocol::sal::{
     aircon::{AirconCommand, AirconStatus},
     audio::{AudioCommand, AudioEvent},
+    ereport::ErrorReportMessage,
+    identify::IdentifyCommand,
     measurement::MeasurementData,
     mediatransport::MediaTransportMessage,
     network_management::{LearnMode, NetworkLocate},
     security::{SecurityCommand, SecurityEvent},
+    shortmessage::ShortMessageEvent,
     telephony::{TelephonyCommand, TelephonyEvent},
     Sal,
 };
@@ -181,6 +184,27 @@ pub enum CBusEvent {
         source: Option<u8>,
         /// Fully decoded event payload.
         event: TelephonyEvent,
+    },
+    /// One Identify application command observed on the bus.
+    Identify {
+        /// Source unit address (`None` when the source byte was 0).
+        source: Option<u8>,
+        /// Decoded identify command.
+        command: IdentifyCommand,
+    },
+    /// One Short Message application event observed on the bus.
+    ShortMessage {
+        /// Source unit address (`None` when the source byte was 0).
+        source: Option<u8>,
+        /// Decoded event using native C-Gate field semantics.
+        event: ShortMessageEvent,
+    },
+    /// One Error Reporting application message observed on the bus.
+    ErrorReport {
+        /// Source unit address (`None` when the source byte was 0).
+        source: Option<u8>,
+        /// Decoded fixed-width message.
+        message: ErrorReportMessage,
     },
     /// A lighting group was switched on.
     LightingOn {
@@ -1120,6 +1144,17 @@ impl PciClient {
                         Sal::TelephonyEvent(event) => {
                             Some(CBusEvent::TelephonyEvent { source: src, event })
                         }
+                        Sal::Identify(command) => Some(CBusEvent::Identify {
+                            source: src,
+                            command,
+                        }),
+                        Sal::ShortMessageEvent(event) => {
+                            Some(CBusEvent::ShortMessage { source: src, event })
+                        }
+                        Sal::ErrorReport(message) => Some(CBusEvent::ErrorReport {
+                            source: src,
+                            message,
+                        }),
                         Sal::LightingRamp {
                             application,
                             group_address,
@@ -1468,6 +1503,9 @@ fn classify(cmd: &Packet, conf: Option<u8>) -> (Priority, ResponseKind) {
                 | Sal::LearnMode(_)
                 | Sal::TelephonyCommand(_)
                 | Sal::TelephonyEvent(_)
+                | Sal::Identify(_)
+                | Sal::ShortMessageCommand(_)
+                | Sal::ErrorReport(_)
                 | Sal::LightingOn { .. }
                 | Sal::LightingOff { .. }
                 | Sal::LightingRamp { .. }

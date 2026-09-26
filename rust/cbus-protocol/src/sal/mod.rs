@@ -4,23 +4,27 @@ pub mod aircon;
 pub mod audio;
 pub mod clock;
 pub mod enable;
+pub mod ereport;
+pub mod identify;
 pub mod label;
 pub mod lighting;
 pub mod measurement;
 pub mod mediatransport;
 pub mod network_management;
 pub mod security;
+pub mod shortmessage;
 pub mod status_request;
 pub mod telephony;
 pub mod temperature;
 pub mod trigger;
 
 use crate::common::{
-    duration_to_ramp_rate, APP_AIRCON, APP_AUDIO, APP_CLOCK, APP_ENABLE, APP_LIGHTING_FIRST,
-    APP_LIGHTING_LAST, APP_MEASUREMENT, APP_MEDIA_TRANSPORT, APP_SECURITY, APP_STATUS_REQUEST,
-    APP_TELEPHONY, APP_TEMPERATURE, APP_TRIGGER, CLOCK_ATTR_DATE, CLOCK_ATTR_TIME,
-    CLOCK_REQUEST_REFRESH, ENABLE_SET_NETWORK_VARIABLE, LIGHT_OFF, LIGHT_ON, LIGHT_TERMINATE_RAMP,
-    TEMPERATURE_BROADCAST, TRIGGER_EVENT, TRIGGER_INDICATOR_KILL, TRIGGER_MAX, TRIGGER_MIN,
+    duration_to_ramp_rate, APP_AIRCON, APP_AUDIO, APP_CLOCK, APP_ENABLE, APP_ERROR_REPORTING,
+    APP_IDENTIFY, APP_LIGHTING_FIRST, APP_LIGHTING_LAST, APP_MEASUREMENT, APP_MEDIA_TRANSPORT,
+    APP_SECURITY, APP_SHORT_MESSAGE, APP_STATUS_REQUEST, APP_TELEPHONY, APP_TEMPERATURE,
+    APP_TRIGGER, CLOCK_ATTR_DATE, CLOCK_ATTR_TIME, CLOCK_REQUEST_REFRESH,
+    ENABLE_SET_NETWORK_VARIABLE, LIGHT_OFF, LIGHT_ON, LIGHT_TERMINATE_RAMP, TEMPERATURE_BROADCAST,
+    TRIGGER_EVENT, TRIGGER_INDICATOR_KILL, TRIGGER_MAX, TRIGGER_MIN,
 };
 use crate::{DecodeError, EncodeError};
 use chrono::Datelike;
@@ -52,6 +56,14 @@ pub enum Sal {
     NetworkLocate(network_management::NetworkLocate),
     /// An application learn-mode command or observation.
     LearnMode(network_management::LearnMode),
+    /// An Identify application command or observation.
+    Identify(identify::IdentifyCommand),
+    /// An outbound Short Message command.
+    ShortMessageCommand(shortmessage::ShortMessageCommand),
+    /// An inbound Short Message observation.
+    ShortMessageEvent(shortmessage::ShortMessageEvent),
+    /// An Error Reporting message.
+    ErrorReport(ereport::ErrorReportMessage),
     /// Switch a lighting group on.
     LightingOn {
         /// Lighting application address (0x30..=0x5F).
@@ -174,6 +186,9 @@ impl Sal {
             Sal::MediaTransport(_) => APP_MEDIA_TRANSPORT,
             Sal::NetworkLocate(_) => network_management::APP_NETWORK_MANAGEMENT,
             Sal::LearnMode(command) => command.application,
+            Sal::Identify(_) => APP_IDENTIFY,
+            Sal::ShortMessageCommand(_) | Sal::ShortMessageEvent(_) => APP_SHORT_MESSAGE,
+            Sal::ErrorReport(_) => APP_ERROR_REPORTING,
             Sal::LightingOn { application, .. }
             | Sal::LightingOff { application, .. }
             | Sal::LightingTerminateRamp { application, .. }
@@ -207,6 +222,12 @@ impl Sal {
             Sal::MediaTransport(message) => message.encode(),
             Sal::NetworkLocate(command) => command.encode(),
             Sal::LearnMode(command) => command.encode(),
+            Sal::Identify(command) => command.encode(),
+            Sal::ShortMessageCommand(command) => command.encode(),
+            Sal::ShortMessageEvent(_) => Err(EncodeError::new(
+                "inbound Short Message events are not outbound commands",
+            )),
+            Sal::ErrorReport(message) => message.encode(),
             Sal::LightingOn { group_address, .. } => Ok(vec![LIGHT_ON, *group_address]),
             Sal::LightingOff { group_address, .. } => Ok(vec![LIGHT_OFF, *group_address]),
             Sal::LightingTerminateRamp { group_address, .. } => {
@@ -370,6 +391,18 @@ pub fn decode_sals(app: u8, data: &[u8]) -> Result<Vec<Sal>, DecodeError> {
                 })
                 .collect()
         });
+    }
+    if app == APP_IDENTIFY {
+        return identify::decode_sals(data)
+            .map(|messages| messages.into_iter().map(Sal::Identify).collect());
+    }
+    if app == APP_SHORT_MESSAGE {
+        return shortmessage::decode_sals(data)
+            .map(|messages| messages.into_iter().map(Sal::ShortMessageEvent).collect());
+    }
+    if app == APP_ERROR_REPORTING {
+        return ereport::decode_sals(data)
+            .map(|messages| messages.into_iter().map(Sal::ErrorReport).collect());
     }
     if data
         .first()

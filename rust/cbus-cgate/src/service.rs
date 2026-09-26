@@ -12,16 +12,19 @@ use crate::config::{
     parameter as config_parameter, ConfigParameter, ConfigScope, CONFIG_HELP, CONFIG_PARAMETERS,
 };
 use cbus_protocol::{
-    common::APP_MEDIA_TRANSPORT,
+    common::{APP_ERROR_REPORTING, APP_IDENTIFY, APP_MEDIA_TRANSPORT, APP_SHORT_MESSAGE},
     packet::{Meta, Packet},
     sal::{
         aircon::AirconCommand,
         audio::{AudioAddress, AudioCommand},
+        ereport::ErrorReportMessage,
+        identify::IdentifyCommand,
         label,
         measurement::MeasurementData,
         mediatransport::MediaTransportMessage,
         network_management::LocateTarget,
         security::{SecurityArmMode, SecurityCommand},
+        shortmessage::ShortMessageCommand,
         telephony::{TelephonyCommand, TelephonyDirection},
         Sal,
     },
@@ -1615,6 +1618,62 @@ impl Service {
                     source.unwrap_or(0),
                 );
             }
+            CBusEvent::Identify { source, command } => {
+                let source = source.unwrap_or(0);
+                let group = command.group();
+                let address = format!("//{}/{}/251/{group}", self.project, self.network);
+                match command {
+                    IdentifyCommand::On { .. } => {
+                        net.levels.insert((APP_IDENTIFY, group), 255);
+                        let _ = self
+                            .events
+                            .send(format!("#e# identify on {address} sourceUnit={source}"));
+                    }
+                    IdentifyCommand::Off { .. } => {
+                        net.levels.insert((APP_IDENTIFY, group), 0);
+                        let _ = self
+                            .events
+                            .send(format!("#e# identify off {address} sourceUnit={source}"));
+                    }
+                    IdentifyCommand::Ramp {
+                        duration, level, ..
+                    } => {
+                        if *duration == 0 {
+                            net.levels.insert((APP_IDENTIFY, group), *level);
+                        } else {
+                            net.levels.remove(&(APP_IDENTIFY, group));
+                        }
+                        let _ = self.events.send(format!(
+                            "#e# identify ramp {address} {level} {duration} sourceUnit={source}"
+                        ));
+                    }
+                    IdentifyCommand::TerminateRamp { .. } => {
+                        let level = net.levels.get(&(APP_IDENTIFY, group)).copied().unwrap_or(0);
+                        let _ = self.events.send(format!(
+                            "#e# identify terminateramp {address} #level={level} sourceUnit={source}"
+                        ));
+                    }
+                }
+            }
+            CBusEvent::ShortMessage { source, event } => {
+                let source = source.unwrap_or(0);
+                let _ = self.events.send(format!(
+                    "#e# shortmessage {} //{}/{}/173 {} sourceUnit={source}",
+                    event.event_name(),
+                    self.project,
+                    self.network,
+                    event.event_arguments()
+                ));
+            }
+            CBusEvent::ErrorReport { source, message } => {
+                let source = source.unwrap_or(0);
+                let _ = self.events.send(format!(
+                    "#e# ereport message //{}/{}/206 {} sourceUnit={source}",
+                    self.project,
+                    self.network,
+                    message.event_arguments()
+                ));
+            }
             CBusEvent::LightingOn {
                 source: Some(_),
                 app,
@@ -2298,6 +2357,33 @@ impl Service {
             ]);
             capabilities["telephony_event_fanout"] = serde_json::Value::Bool(true);
             capabilities["telephony_mqtt_state"] = serde_json::Value::Bool(false);
+            capabilities["identify_control"] = serde_json::Value::Bool(true);
+            capabilities["identify_application"] = serde_json::Value::from(APP_IDENTIFY);
+            capabilities["identify_commands"] =
+                serde_json::json!(["off", "on", "ramp", "terminateramp"]);
+            capabilities["identify_delivery_semantics"] =
+                serde_json::Value::String("pci-confirmed-exactly-once-no-replay".to_string());
+            capabilities["identify_event_fanout"] = serde_json::Value::Bool(true);
+            capabilities["identify_mqtt_state"] = serde_json::Value::Bool(false);
+            capabilities["shortmessage_control"] = serde_json::Value::Bool(true);
+            capabilities["shortmessage_application"] = serde_json::Value::from(APP_SHORT_MESSAGE);
+            capabilities["shortmessage_commands"] = serde_json::json!(["refresh", "send"]);
+            capabilities["shortmessage_delivery_semantics"] =
+                serde_json::Value::String("pci-confirmed-exactly-once-no-replay".to_string());
+            capabilities["shortmessage_send_compatibility"] = serde_json::Value::String(
+                "repaired-coherent-utf8-native-decoder-layout".to_string(),
+            );
+            capabilities["shortmessage_native_3_4_malformed_send_reproduced"] =
+                serde_json::Value::Bool(false);
+            capabilities["shortmessage_event_fanout"] = serde_json::Value::Bool(true);
+            capabilities["shortmessage_mqtt_state"] = serde_json::Value::Bool(false);
+            capabilities["ereport_control"] = serde_json::Value::Bool(true);
+            capabilities["ereport_application"] = serde_json::Value::from(APP_ERROR_REPORTING);
+            capabilities["ereport_commands"] = serde_json::json!(["message"]);
+            capabilities["ereport_delivery_semantics"] =
+                serde_json::Value::String("pci-confirmed-exactly-once-no-replay".to_string());
+            capabilities["ereport_event_fanout"] = serde_json::Value::Bool(true);
+            capabilities["ereport_mqtt_state"] = serde_json::Value::Bool(false);
             capabilities["dali_core_commands"] = serde_json::Value::from(48);
             capabilities["dali_emergency_commands"] = serde_json::Value::from(14);
             capabilities["dali_physical_leaf_commands"] = serde_json::Value::from(103);
@@ -2385,6 +2471,15 @@ impl Service {
                 return err(tag, 400, "400 Syntax Error.");
             }
             return self.telephony(tag, &words, sub).await;
+        }
+        if verb == "IDENTIFY" && is_identify_subcommand(sub) {
+            return self.identify(tag, &words, sub).await;
+        }
+        if verb == "SHORTMESSAGE" && is_shortmessage_subcommand(sub) {
+            return self.shortmessage(tag, &cmd.body, &words, sub).await;
+        }
+        if verb == "EREPORT" && sub == "MESSAGE" {
+            return self.ereport(tag, &words).await;
         }
         if verb == "REPOSITORY" && sub == "LIST" {
             return self.repository_list(tag, &words);
@@ -3551,6 +3646,28 @@ impl Service {
         let network = network.parse::<u8>().ok()?;
         let application = parse_application(application)?;
         (project == self.project && network == self.network).then_some(application)
+    }
+
+    fn direct_group_path(&self, address: &str) -> Option<(u8, u8)> {
+        if address.starts_with('!') {
+            return None;
+        }
+        let parts = address
+            .trim_start_matches('/')
+            .split('/')
+            .filter(|part| !part.is_empty())
+            .collect::<Vec<_>>();
+        let (project, network, application, group) = match parts.as_slice() {
+            [network, application, group] => {
+                (self.project.as_str(), *network, *application, *group)
+            }
+            [project, network, application, group] => (*project, *network, *application, *group),
+            _ => return None,
+        };
+        let network = network.parse::<u8>().ok()?;
+        let application = parse_application(application)?;
+        let group = group.parse::<u8>().ok()?;
+        (project == self.project && network == self.network).then_some((application, group))
     }
 
     async fn measurement_get(&self, tag: &str, address: &str, attribute: &str) -> Option<Response> {
@@ -6572,6 +6689,342 @@ impl Service {
         .await
     }
 
+    async fn identify(&self, tag: &str, words: &[&str], sub: &str) -> Response {
+        let Some(target) = words.get(2).copied() else {
+            return err(
+                tag,
+                400,
+                "400 Syntax Error: Missing parameter : <object-id>",
+            );
+        };
+        let Some((application, group)) = self.direct_group_path(target) else {
+            return err(
+                tag,
+                401,
+                &format!("401 Bad object or device ID: {target} (Network not found)"),
+            );
+        };
+        let canonical = format!("//{}/{}/{application}/{group}", self.project, self.network);
+        if application != APP_IDENTIFY {
+            // Native 3.4 reports 200 without emitting a packet when a generic
+            // application dynamically accepts this lighting-shaped method.
+            // Refuse that false physical success; only application 251 has an
+            // evidenced Identify transport.
+            return err(
+                tag,
+                402,
+                &format!("402 Operation not supported by: {target}"),
+            );
+        }
+        let command = match sub {
+            "ON" | "OFF" | "TERMINATERAMP" => {
+                if words.len() > 4
+                    || words
+                        .get(3)
+                        .is_some_and(|force| !force.eq_ignore_ascii_case("FORCE"))
+                {
+                    return err(tag, 400, "400 Syntax Error: Invalid parameter : [force]");
+                }
+                match sub {
+                    "ON" => IdentifyCommand::On { group },
+                    "OFF" => IdentifyCommand::Off { group },
+                    "TERMINATERAMP" => IdentifyCommand::TerminateRamp { group },
+                    _ => unreachable!(),
+                }
+            }
+            "RAMP" => {
+                let Some(level) = words.get(3) else {
+                    return err(tag, 400, "400 Syntax Error: Missing parameter : <level>");
+                };
+                let Some(level) = parse_identify_level(level) else {
+                    return err(
+                        tag,
+                        405,
+                        &format!("405 Parameter out of range: {canonical} (Bad parameter to Ramp)"),
+                    );
+                };
+                let mut duration = 0;
+                match words.get(4) {
+                    None => {}
+                    Some(force) if force.eq_ignore_ascii_case("FORCE") => {}
+                    Some(value) => {
+                        let Some(parsed) = parse_identify_duration(value) else {
+                            return err(
+                                tag,
+                                405,
+                                &format!(
+                                    "405 Parameter out of range: {canonical} (Bad parameter to Ramp)"
+                                ),
+                            );
+                        };
+                        duration = parsed;
+                        if words
+                            .get(5)
+                            .is_some_and(|force| !force.eq_ignore_ascii_case("FORCE"))
+                        {
+                            return err(tag, 400, "400 Syntax Error: Invalid parameter : [force]");
+                        }
+                    }
+                }
+                if words.len() > 6
+                    || (words
+                        .get(4)
+                        .is_some_and(|force| force.eq_ignore_ascii_case("FORCE"))
+                        && words.len() > 5)
+                {
+                    return err(tag, 400, "400 Syntax Error: Invalid parameter : [force]");
+                }
+                IdentifyCommand::Ramp {
+                    group,
+                    duration,
+                    level,
+                }
+            }
+            _ => return err(tag, 400, "400 Syntax Error."),
+        };
+        let _commands = self.commands.lock().await;
+        self.send_application_once(
+            tag,
+            Sal::Identify(command),
+            ok(tag, vec![], &format!("200 OK: {canonical}")),
+            "Identify delivery",
+        )
+        .await
+    }
+
+    async fn shortmessage(&self, tag: &str, body: &str, words: &[&str], sub: &str) -> Response {
+        let Some(target) = words.get(2).copied() else {
+            return err(
+                tag,
+                400,
+                "400 Syntax Error: Missing parameter : <application>",
+            );
+        };
+        let Some(application) = self.application_path(target) else {
+            return err(
+                tag,
+                401,
+                &format!("401 Bad object or device ID: {target} (Network not found)"),
+            );
+        };
+        if application != APP_SHORT_MESSAGE {
+            return err(
+                tag,
+                402,
+                &format!("402 Operation not supported by: {target}"),
+            );
+        }
+        let command = match sub {
+            "REFRESH" => {
+                let Some(info_type) = words.get(3) else {
+                    return err(
+                        tag,
+                        400,
+                        "400 Syntax Error: Missing parameter : <info-type>",
+                    );
+                };
+                if words.len() > 4 {
+                    return err(tag, 400, "400 Syntax Error: Too many parameters");
+                }
+                let info_type = match parse_application_integer(tag, info_type, "info-type", 0, 63)
+                {
+                    Ok(value) => value as u8,
+                    Err(response) => return response,
+                };
+                ShortMessageCommand::Refresh { info_type }
+            }
+            "SEND" => {
+                let parameters = [
+                    "application",
+                    "total",
+                    "sequence",
+                    "info-type",
+                    "number",
+                    "symbol",
+                    "text",
+                ];
+                let supplied = words.len().saturating_sub(2);
+                if supplied < parameters.len() {
+                    return err(
+                        tag,
+                        400,
+                        &format!(
+                            "400 Syntax Error: Missing parameter : <{}>",
+                            parameters[supplied]
+                        ),
+                    );
+                }
+                let total = match parse_application_integer(tag, words[3], "total", 0, 7) {
+                    Ok(value) => value as u8,
+                    Err(response) => return response,
+                };
+                let index = match parse_application_integer(tag, words[4], "sequence", 0, 7) {
+                    Ok(value) => value as u8,
+                    Err(response) => return response,
+                };
+                let info_type = match parse_application_integer(tag, words[5], "info-type", 0, 63) {
+                    Ok(value) => value as u8,
+                    Err(response) => return response,
+                };
+                let number = if words[6] == "-" {
+                    None
+                } else {
+                    match parse_application_integer(tag, words[6], "number", 0, 65535) {
+                        Ok(value) => Some(value as u16),
+                        Err(response) => return response,
+                    }
+                };
+                let symbol = if words[7] == "-" {
+                    None
+                } else {
+                    match parse_application_integer(tag, words[7], "symbol", 0, 255) {
+                        Ok(value) => Some(value as u8),
+                        Err(response) => return response,
+                    }
+                };
+                let text = config_remaining_value(body, 8);
+                if text.len() > 14 {
+                    return err(
+                        tag,
+                        400,
+                        "400 Syntax Error: Text too long. A maximum of 14 bytes is supported.",
+                    );
+                }
+                ShortMessageCommand::Send {
+                    total,
+                    index,
+                    info_type,
+                    number,
+                    symbol,
+                    text: text.into_bytes(),
+                }
+            }
+            _ => return err(tag, 400, "400 Syntax Error."),
+        };
+        let _commands = self.commands.lock().await;
+        self.send_application_once(
+            tag,
+            Sal::ShortMessageCommand(command),
+            ok(tag, vec![], "200 OK."),
+            "Short Message delivery",
+        )
+        .await
+    }
+
+    async fn ereport(&self, tag: &str, words: &[&str]) -> Response {
+        let Some(target) = words.get(2).copied() else {
+            return err(
+                tag,
+                400,
+                "400 Syntax Error: Missing parameter : <application>",
+            );
+        };
+        let Some(application) = self.application_path(target) else {
+            return err(
+                tag,
+                401,
+                &format!("401 Bad object or device ID: {target} (Network not found)"),
+            );
+        };
+        if application != APP_ERROR_REPORTING {
+            return err(
+                tag,
+                402,
+                &format!("402 Operation not supported by: {target}"),
+            );
+        }
+        let parameters = [
+            "application",
+            "type-id",
+            "category-id",
+            "most-recent",
+            "acknowledged",
+            "most-severe",
+            "severity-id",
+            "unit-id",
+        ];
+        let supplied = words.len().saturating_sub(2);
+        if supplied < parameters.len() {
+            return err(
+                tag,
+                400,
+                &format!(
+                    "400 Syntax Error: Missing parameter : <{}>",
+                    parameters[supplied]
+                ),
+            );
+        }
+        if words.len() > 12 {
+            return err(tag, 400, "400 Syntax Error: Too many parameters");
+        }
+        let message_type = match words[3].to_ascii_uppercase().as_str() {
+            "RECENT" => 5,
+            "ERROR_REPORT" | "SEVERE" => 21,
+            "ACK" => 37,
+            "CLEAR" => 53,
+            _ => match parse_application_integer(tag, words[3], "type-id", 0, 255) {
+                Ok(value) => value as u8,
+                Err(response) => return response,
+            },
+        };
+        let category = match parse_application_integer(tag, words[4], "category-id", 0, 1023) {
+            Ok(value) => value as u16,
+            Err(response) => return response,
+        };
+        let most_recent = match parse_application_boolean(tag, words[5], "most-recent") {
+            Ok(value) => value,
+            Err(response) => return response,
+        };
+        let acknowledged = match parse_application_boolean(tag, words[6], "acknowledged") {
+            Ok(value) => value,
+            Err(response) => return response,
+        };
+        let most_severe = match parse_application_boolean(tag, words[7], "most-severe") {
+            Ok(value) => value,
+            Err(response) => return response,
+        };
+        let severity = match parse_application_integer(tag, words[8], "severity-id", 0, 7) {
+            Ok(value) => value as u8,
+            Err(response) => return response,
+        };
+        let unit = match parse_application_integer(tag, words[9], "unit-id", 0, 255) {
+            Ok(value) => value as u8,
+            Err(response) => return response,
+        };
+        let data1 = match words.get(10) {
+            None => 255,
+            Some(value) => match parse_application_integer(tag, value, "data-byte-1", 0, 255) {
+                Ok(value) => value as u8,
+                Err(response) => return response,
+            },
+        };
+        let data2 = match words.get(11) {
+            None => 255,
+            Some(value) => match parse_application_integer(tag, value, "data-byte-2", 0, 255) {
+                Ok(value) => value as u8,
+                Err(response) => return response,
+            },
+        };
+        let _commands = self.commands.lock().await;
+        self.send_application_once(
+            tag,
+            Sal::ErrorReport(ErrorReportMessage {
+                message_type,
+                category,
+                most_recent,
+                acknowledged,
+                most_severe,
+                severity,
+                unit,
+                data1,
+                data2,
+            }),
+            ok(tag, vec![], "200 OK."),
+            "Error Reporting delivery",
+        )
+        .await
+    }
+
     async fn trigger(
         &self,
         client: &ClientState,
@@ -9524,6 +9977,80 @@ fn is_security_subcommand(sub: &str) -> bool {
     )
 }
 
+fn is_identify_subcommand(sub: &str) -> bool {
+    matches!(sub, "ON" | "OFF" | "RAMP" | "TERMINATERAMP")
+}
+
+fn is_shortmessage_subcommand(sub: &str) -> bool {
+    matches!(sub, "REFRESH" | "SEND")
+}
+
+fn parse_application_integer(
+    tag: &str,
+    value: &str,
+    parameter: &str,
+    minimum: i32,
+    maximum: i32,
+) -> Result<i32, Response> {
+    let prefixed = |prefix: &str| {
+        value
+            .get(..prefix.len())
+            .is_some_and(|head| head.eq_ignore_ascii_case(prefix))
+    };
+    let parsed = if prefixed("0b") {
+        i32::from_str_radix(&value[2..], 2)
+    } else if prefixed("0x") {
+        i32::from_str_radix(&value[2..], 16)
+    } else if let Some(hex) = value.strip_prefix('$') {
+        i32::from_str_radix(hex, 16)
+    } else {
+        value.parse::<i32>()
+    };
+    match parsed {
+        Ok(value) if (minimum..=maximum).contains(&value) => Ok(value),
+        _ => Err(err(
+            tag,
+            400,
+            &format!("400 Syntax Error: Integer parameter is out of range : <{parameter}>"),
+        )),
+    }
+}
+
+fn parse_application_boolean(tag: &str, value: &str, parameter: &str) -> Result<bool, Response> {
+    match value.to_ascii_lowercase().as_str() {
+        "y" | "1" => Ok(true),
+        "n" | "0" => Ok(false),
+        _ => Err(err(
+            tag,
+            400,
+            &format!("400 Syntax Error: Invalid boolean parameter : <{parameter}>"),
+        )),
+    }
+}
+
+fn parse_identify_duration(value: &str) -> Option<u32> {
+    let (number, multiplier, maximum) =
+        if let Some(seconds) = value.strip_suffix('s').or_else(|| value.strip_suffix('S')) {
+            (seconds, 1, i32::MAX as u32)
+        } else if let Some(minutes) = value.strip_suffix('m').or_else(|| value.strip_suffix('M')) {
+            (minutes, 60, 0x0222_2222)
+        } else {
+            (value, 1, i32::MAX as u32)
+        };
+    let number = number.parse::<u32>().ok()?;
+    (number <= maximum)
+        .then(|| number.checked_mul(multiplier))
+        .flatten()
+}
+
+fn parse_identify_level(value: &str) -> Option<u8> {
+    if let Some(percent) = value.strip_suffix('%') {
+        let percent = percent.parse::<u16>().ok()?;
+        return (percent <= 100).then_some((percent * 255 / 100) as u8);
+    }
+    value.parse::<u8>().ok()
+}
+
 fn security_help(tag: &str) -> Response {
     let mut rows = SECURITY_HELP
         .iter()
@@ -10347,6 +10874,9 @@ fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
             is_mediatransport_subcommand(sub) && !matches!(sub, "STATUS_REQUEST" | "ENUMERATE")
         }
         "TELEPHONY" => is_telephony_subcommand(sub) && sub != "RECALL_LAST_NUMBER_REQUEST",
+        "IDENTIFY" => is_identify_subcommand(sub),
+        "SHORTMESSAGE" => sub == "SEND",
+        "EREPORT" => sub == "MESSAGE",
         "DALI" => dali_requires_programming_auth(words),
         "PP" => matches!(
             sub,

@@ -1,0 +1,43 @@
+{
+  "format": "native-cgate-shortmessage-flags-acceptance-v1",
+  "oracle": {
+    "product": "C-Gate",
+    "version": "3.4.0.2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "applications_registry_sha256": "9be696d6425b3529ad7c0fe2d1e24f59a0bcd5c745850a401ee4dc7ae78db753"
+  },
+  "scope": "Disposable no-house native daemon and fake PCI only; no Docker service or live C-Bus network.",
+  "sequence": {
+    "wire": "(total & 7) << 3 | (index & 7)",
+    "native_event_total": "sequence_byte & 0x38 (not shifted)"
+  },
+  "coherent_inbound": [
+    {
+      "fields": "neither",
+      "sal_hex": "842B114142",
+      "event": "send total=40 sequence=3 info-type=17 number=-1 symbol=-1 text=\"AB\""
+    },
+    {
+      "fields": "number=4660",
+      "sal_hex": "862B5112344142",
+      "event": "send total=40 sequence=3 info-type=17 number=4660 symbol=-1 text=\"AB\""
+    },
+    {
+      "fields": "symbol=86",
+      "sal_hex": "852B91564142",
+      "event": "send total=40 sequence=3 info-type=17 number=-1 symbol=86 text=\"AB\""
+    },
+    {
+      "fields": "number=4660 symbol=86",
+      "sal_hex": "872BD11234564142",
+      "event": "send total=40 sequence=3 info-type=17 number=4660 symbol=86 text=\"AB\""
+    }
+  ],
+  "native_outbound_defect": {
+    "number_only_sal_hex": "872B9112344142",
+    "symbol_only_sal_hex": "862B51564142",
+    "both_sal_hex": "882BD11234564142",
+    "explanation": "outbound swaps number/symbol flags, overstates length by one, and appends user text verbatim to the PCI ASCII-hex stream; C-Gate logs bad SAL command but reports 200 after fake-PCI confirmation"
+  },
+  "source_evidence_sha256": "f3bb686bd40e5cb097dd92d1a02dfa415982688d8fccc7f02a477e93722ce55d"
+}

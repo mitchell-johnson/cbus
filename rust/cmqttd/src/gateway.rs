@@ -645,6 +645,9 @@ impl Gateway {
             | CBusEvent::LearnMode { .. }
             | CBusEvent::TelephonyCommand { .. }
             | CBusEvent::TelephonyEvent { .. }
+            | CBusEvent::Identify { .. }
+            | CBusEvent::ShortMessage { .. }
+            | CBusEvent::ErrorReport { .. }
             | CBusEvent::TriggerEvent { .. }
             | CBusEvent::TriggerIndicatorKill { .. }
             | CBusEvent::EnableSet { .. }

@@ -51,6 +51,21 @@ implements the physical subset in the
 ledger still require native C-Gate or further implementation when physical
 effects are the acceptance criterion.
 
+The embedded service now has physical direct-network implementations for the
+maintained `IDENTIFY OFF/ON/RAMP/TERMINATERAMP`, `SHORTMESSAGE REFRESH/SEND`,
+and `EREPORT MESSAGE` leaves. They validate address, arity and native ranges
+before I/O, send once through the shared PCI, require a correlated confirmation
+and never replay an outcome-uncertain command. Incoming traffic retains source
+identity on event fanout, with no invented MQTT state. Short Message SEND is a
+documented compatibility repair rather than byte-for-byte vendor reproduction:
+the retained C-Gate 3.4.0.2001 outbound encoder produces malformed length,
+text and number/symbol flags while still reporting success, so cmqttd emits
+real UTF-8 using the coherent layout accepted by the native inbound decoder.
+Exact oracle evidence and vectors live in
+`rust/testdata/fixtures/native_cgate_remaining_applications.json`,
+`rust/testdata/fixtures/native_cgate_shortmessage_flags.json`, and the
+`identify.jsonl`, `shortmessage.jsonl`, and `ereport.jsonl` vector files.
+
 The embedded cmqttd service implements all five maintained ACCESS paths plus
 native-shaped LOGIN/LOGOUT session levels. Active rows and LOAD/SAVE snapshots
 are durable local state and perform no PCI I/O. Its security boundary is
@@ -86,14 +101,19 @@ Exact sanitized evidence is in
 `rust/testdata/fixtures/native_cgate_deploy_queue.json`; the real-daemon test
 also verifies zero queue PCI traffic, restart volatility and MQTT continuity.
 
+Seven maintained Identify, Short Message, and Error Reporting leaves are now
+physical: `IDENTIFY` ON/OFF/RAMP/TERMINATERAMP, `SHORTMESSAGE` REFRESH/SEND,
+and `EREPORT MESSAGE`. Their retained family roots remain local help endpoints.
+
 Fourteen family roots now reproduce the exact retained C-Gate 3.4 help
 envelopes for bare, literal `?`, and `HELP` forms. Nine of those roots are in
 the 431-path inventory (`CGL`, `CLOCK`, `ENABLE`, `EREPORT`, `LIGHTING`,
 `SHORTMESSAGE`, `TEMPERATURE`, `TEST_SPAM`, and `TRIGGER`). The other five
 parent roots are pinned in the separate supplement. These local help endpoints
 do not change any child command's capability class. Together with the NET and
-deploy-queue tranches, the matrix now contains **208 physical, 159
-local/session, 62 fail-closed, and 2 obsolete paths**. Evidence is in
+deploy-queue, NET lifecycle, and remaining-application tranches, the matrix now
+contains **215 physical, 159 local/session, 55 fail-closed, and 2 obsolete
+paths**. The separate non-inventoried supplement contains 11 rows. Evidence is in
 `rust/testdata/fixtures/native_cgate_family_help.json`.
 
 Current verification is:

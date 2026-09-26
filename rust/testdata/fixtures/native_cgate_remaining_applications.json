@@ -1,0 +1,150 @@
+{
+  "format": "native-cgate-remaining-applications-acceptance-v1",
+  "oracle": {
+    "product": "C-Gate",
+    "version": "3.4.0.2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "applications_registry_sha256": "9be696d6425b3529ad7c0fe2d1e24f59a0bcd5c745850a401ee4dc7ae78db753"
+  },
+  "scope": "Disposable no-house native daemon and fake PCI only; no Docker service or live C-Bus network.",
+  "identify": {
+    "application": 251,
+    "commands": [
+      {
+        "command": "IDENTIFY ON 254/251/1",
+        "response": "200 OK: //PROJECT/254/251/1",
+        "payload_hex": "05FB007901"
+      },
+      {
+        "command": "IDENTIFY OFF 254/251/1",
+        "response": "200 OK: //PROJECT/254/251/1",
+        "payload_hex": "05FB000101"
+      },
+      {
+        "command": "IDENTIFY RAMP 254/251/1 128 20",
+        "response": "200 OK: //PROJECT/254/251/1",
+        "payload_hex": "05FB00220180"
+      },
+      {
+        "command": "IDENTIFY RAMP 254/251/1 128",
+        "response": "200 OK: //PROJECT/254/251/1",
+        "payload_hex": "05FB00020180"
+      },
+      {
+        "command": "IDENTIFY TERMINATERAMP 254/251/1",
+        "response": "200 OK: //PROJECT/254/251/1",
+        "payload_hex": "05FB000901"
+      }
+    ],
+    "false_success_boundary": {
+      "command": "IDENTIFY ON 254/250/1",
+      "response": "200 OK: //PROJECT/254/250/1",
+      "frames": [],
+      "cmqttd": "fails closed before I/O because application 250 is not Identify"
+    },
+    "inbound": [
+      {
+        "payload_hex": "0564FB0079AA",
+        "meaning": "on group 170 source 100"
+      },
+      {
+        "payload_hex": "0564FB00221180",
+        "meaning": "ramp group 17 to 128 in 20 seconds source 100"
+      }
+    ]
+  },
+  "shortmessage": {
+    "application": 173,
+    "refresh": [
+      {
+        "info_type": 0,
+        "payload_hex": "05AD000100"
+      },
+      {
+        "info_type": 4,
+        "payload_hex": "05AD000104"
+      },
+      {
+        "info_type": 63,
+        "payload_hex": "05AD00013F"
+      }
+    ],
+    "send_native_defect": {
+      "command": "SHORTMESSAGE SEND 254/173 7 1 4 - - \"test\"",
+      "wire_ascii": "\\05AD00853904test<confirmation>",
+      "response": "200 OK.",
+      "fake_pci": "rejected malformed hexadecimal command",
+      "defects": [
+        "text appended verbatim instead of encoded as UTF-8 hexadecimal bytes",
+        "extended length is one too large for its decoder",
+        "number and symbol presence flags are reversed relative to its decoder"
+      ]
+    },
+    "repair": "cmqttd emits the coherent native inbound layout, real UTF-8 bytes, exact length, number flag 0x40, symbol flag 0x80, and returns success only after correlated one-shot PCI confirmation",
+    "bounds": {
+      "total": [
+        0,
+        7
+      ],
+      "sequence": [
+        0,
+        7
+      ],
+      "info_type": [
+        0,
+        63
+      ],
+      "number": "- or 0..65535",
+      "symbol": "- or 0..255",
+      "text_utf8_bytes": [
+        0,
+        14
+      ]
+    }
+  },
+  "ereport": {
+    "application": 206,
+    "vectors": [
+      {
+        "command": "EREPORT MESSAGE 254/206 ACK 1023 n n n 7 255 255 255",
+        "payload_hex": "05CE0025FFC7FFFFFF"
+      },
+      {
+        "command": "EREPORT MESSAGE 254/206 RECENT 0 y 1 0 0 0",
+        "payload_hex": "05CE0005003000FFFF"
+      },
+      {
+        "command": "EREPORT MESSAGE 254/206 ERROR_REPORT 1 1 0 1 4 1 2",
+        "payload_hex": "05CE0015006C0102FF"
+      },
+      {
+        "command": "EREPORT MESSAGE 254/206 CLEAR 2 0 1 1 3 2 3 4",
+        "payload_hex": "05CE0035009B020304"
+      },
+      {
+        "command": "EREPORT MESSAGE 254/206 SEVERE 3 y y y 7 255 0 255",
+        "payload_hex": "05CE001500FFFF00FF"
+      }
+    ],
+    "bounds": {
+      "message_type": [
+        0,
+        255
+      ],
+      "category": [
+        0,
+        1023
+      ],
+      "severity": [
+        0,
+        7
+      ],
+      "unit": [
+        0,
+        255
+      ],
+      "optional_data_default": 255
+    },
+    "inbound_event": "ereport message ACK 1023 n n n 7 255 255 255 sourceUnit=100"
+  }
+}

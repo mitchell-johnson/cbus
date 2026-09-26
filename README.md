@@ -376,6 +376,34 @@ clients. A 200 proves active-generation PCI-confirmed broadcast delivery; it
 does not prove telephone acceptance, call state or persistence. cmqttd does
 not invent an MQTT Telephony state schema.
 
+The maintained `IDENTIFY` control leaves (`OFF`, `ON`, `RAMP`, and
+`TERMINATERAMP`) drive application 251 groups on the configured direct
+network. They use the native lighting-shaped SAL, including byte or percentage
+levels, native duration suffixes, and optional `FORCE`. cmqttd accepts only
+application 251: the retained native build falsely reports success without
+sending a packet for other applications, so that unsafe behavior fails before
+I/O. Incoming Identify traffic reaches C-Gate event clients and retains its
+source unit; no MQTT Identify state is created.
+
+`SHORTMESSAGE REFRESH` and `SHORTMESSAGE SEND` implement application 173.
+Refresh retains the native 0..63 information-type field. Send validates the
+fragment total/index, optional number and symbol, information type, and a
+14-byte UTF-8 payload before I/O. C-Gate 3.4.0.2001 emits malformed SEND SAL:
+it writes text as PCI hex characters, overstates the extended length, swaps
+the number/symbol flags, and can still return 200. cmqttd deliberately repairs
+SEND with real UTF-8 bytes, an exact extended length, and the layout accepted
+by the native inbound decoder. This is protocol-compatible repaired behavior,
+not byte-for-byte reproduction of the vendor defect.
+
+`EREPORT MESSAGE` implements application 206 Error Reporting messages with
+the native type aliases, category and `y`/`n` or `1`/`0` status flags,
+severity, unit, and optional data bytes. Identify, Short Message, and Error Reporting commands are
+sent once and require a correlated PCI confirmation on the active connection;
+they are never replayed after an uncertain transport outcome. Mutating forms
+require `LOGIN` when the optional gate is armed. Incoming Short Message and
+Error Reporting SAL fans out to C-Gate event clients, while cmqttd defines no
+MQTT state schema for either application.
+
 `DALI ?` exposes all 128 maintained DALI paths. For a configured `SYS_DAL2`
 gateway, 103 leaves have physical backends: 48 core, 14 emergency, and 41
 specialized gateway, error-reporting, measurement, or session operations. The
@@ -400,8 +428,9 @@ turn an unsupported child operation into a simulated success.
 **Full C-Gate replacement is the target, not the current completion claim.**
 Hardware-backed lighting, all eleven maintained AIRCON/HVAC commands, all 19 maintained
 AUDIO commands, all seven maintained SECURITY commands, the complete maintained
-MEASUREMENT and TELEPHONY families, and all 21 maintained MEDIATRANSPORT commands
-and reports on the configured direct network are implemented. All 128 retained
+MEASUREMENT and TELEPHONY families, all 21 maintained MEDIATRANSPORT commands,
+the four maintained IDENTIFY control leaves, both SHORTMESSAGE leaves, and
+EREPORT MESSAGE on the configured direct network are implemented. All 128 retained
 DALI command paths dispatch: 103 physical leaves and 25 local/help paths. The
 typed-device selectors inside SESSION EXTRACT/DEPLOY remain a documented
 fail-before-I/O boundary beyond the physical `EXT_ONLY` plan. The complete
@@ -430,16 +459,19 @@ continues on the same CNI connection. `DBNETWORKPATH` resolves native compact an
 routes, and `NET PINGU`, `NET SYNC`, general `NET SYNCNEW`, `DO ... SYNC`, and `NET CHECKUNIT`
 support source routes through one to six bridges with strict Reply Network correlation
 and per-network volatile caches. Direct targeted `NET SYNCNEW` also runs the three native
-duplicate challenges. AIRCON, AUDIO, SECURITY, MEASUREMENT, TELEPHONY and
-MEDIATRANSPORT success means the broadcast received a positive PCI confirmation;
+duplicate challenges. AIRCON, AUDIO, SECURITY, MEASUREMENT, TELEPHONY,
+MEDIATRANSPORT, IDENTIFY, SHORTMESSAGE and EREPORT success means the broadcast
+received a positive PCI confirmation;
 physical controller, alarm-panel, measurement-device, telephone-device or media-device
 acceptance and resulting state have not been validated. Routed AIRCON, AUDIO, SECURITY,
-MEASUREMENT, TELEPHONY and MEDIATRANSPORT, routed
+MEASUREMENT, TELEPHONY, MEDIATRANSPORT, IDENTIFY, SHORTMESSAGE and EREPORT, routed
 writes, routed OEM eDLT metadata, routed targeted `SYNCNEW`, and bridged commissioning
 mutations remain unavailable. When `--cgate-auth-file` is configured, log in before
-an AIRCON, AUDIO, SECURITY or Telephony mutation, `MEASUREMENT DATA`, or gated
-`MEDIATRANSPORT` traffic, any NET catalogue mutation, `NET LEARN`, or
-`NETWORK LOCATE`; the Telephony last-number request remains open. `NET SYNCNEW` and
+an AIRCON, AUDIO, SECURITY or Telephony mutation, `MEASUREMENT DATA`, gated
+`MEDIATRANSPORT` traffic, any IDENTIFY control, `SHORTMESSAGE SEND`, or
+`EREPORT MESSAGE`, any NET catalogue mutation, `NET LEARN`, or `NETWORK LOCATE`;
+`SHORTMESSAGE REFRESH` and the Telephony last-number request remain open.
+`NET SYNCNEW` and
 `NET SET_PROJECT_IDENTIFY` update the volatile physical cache and do not create persistent project
 units. The unravel backend requires exactly two known serials at address 255, two unique
 empty database destinations, and a direct network; broader unravel cases remain

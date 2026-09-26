@@ -155,9 +155,13 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // NET lifecycle adds two exact physical paths, nine local catalogue/help
     // paths and one native-obsolete path, moving twelve rows out of 502.
     // Nine retained family-help roots move fail_closed_502 -> local_database.
-    assert_eq!(class_count(RoutingClass::Physical), 208);
+    // Seven maintained application leaves moved fail_closed_502 -> physical:
+    // IDENTIFY ON/OFF/RAMP/TERMINATERAMP, SHORTMESSAGE REFRESH/SEND, and
+    // EREPORT MESSAGE. Root help rows retain their independently evidenced
+    // local classification boundary.
+    assert_eq!(class_count(RoutingClass::Physical), 215);
     assert_eq!(class_count(RoutingClass::LocalDatabase), 159);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 62);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 55);
     assert_eq!(class_count(RoutingClass::Obsolete400), 2);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here
@@ -165,6 +169,45 @@ fn matrix_class_counts_pin_the_routing_gap() {
     assert_eq!(class_count(RoutingClass::Rejected4xx), 0);
     let total: usize = counts.values().sum();
     assert_eq!(total, 431);
+}
+
+#[test]
+fn remaining_application_rows_retain_native_wire_and_repair_evidence() {
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_remaining_applications.json"
+    ))
+    .expect("remaining application evidence must remain valid JSON");
+    let flags: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_shortmessage_flags.json"
+    ))
+    .expect("Short Message flag evidence must remain valid JSON");
+    assert_eq!(fixture["oracle"]["version"], "3.4.0.2001");
+    assert_eq!(fixture["identify"]["application"], 251);
+    assert_eq!(fixture["shortmessage"]["application"], 173);
+    assert_eq!(fixture["ereport"]["application"], 206);
+    assert_eq!(flags["coherent_inbound"][3]["sal_hex"], "872BD11234564142");
+    for path in [
+        "IDENTIFY OFF",
+        "IDENTIFY ON",
+        "IDENTIFY RAMP",
+        "IDENTIFY TERMINATERAMP",
+        "SHORTMESSAGE REFRESH",
+        "SHORTMESSAGE SEND",
+        "EREPORT MESSAGE",
+    ] {
+        let entry = CAPABILITY_MATRIX
+            .iter()
+            .find(|entry| entry.path == path)
+            .unwrap_or_else(|| panic!("missing {path}"));
+        assert_eq!(entry.class, RoutingClass::Physical, "{path}");
+        assert!(entry.evidence.contains("native_cgate_"), "{path}");
+    }
+    let send = CAPABILITY_MATRIX
+        .iter()
+        .find(|entry| entry.path == "SHORTMESSAGE SEND")
+        .unwrap();
+    assert!(send.evidence.contains("repairs native 3.4"));
+    assert!(send.evidence.contains("without replay"));
 }
 
 #[test]

@@ -119,6 +119,18 @@ PCI-confirmed broadcast delivery from the active generation; media-device
 acceptance, resulting state, persistence and bridged routing remain outside the
 retained evidence.
 
+The same shared PCI implements the maintained Identify application-251 OFF,
+ON, RAMP and TERMINATERAMP leaves, Short Message application-173 REFRESH and
+SEND, and Error Reporting application-206 MESSAGE on the configured direct
+network. Commands validate selectors and native ranges before I/O, send once,
+require correlated active-generation confirmation, and are never replayed
+after an uncertain transport result. Incoming messages remain typed with their
+source unit on C-Gate event fanout, and none creates an MQTT state model.
+Short Message SEND is an explicit compatibility repair: native 3.4.0.2001
+generates malformed text/length/flag fields and can still return success, while
+cmqttd emits real UTF-8 and the coherent layout accepted by the native inbound
+decoder. Unsupported applications and routed selectors fail closed.
+
 Physical `NET CLOCKS` uses the synchronized unit inventory, IDENTIFY16 status,
 and decoded direct `ClockGenEnable` fields for target counts and gateway
 recovery. It retains native per-unit failure lines and requires write readback.
@@ -160,7 +172,7 @@ Put new behavior in its owning crate. Avoid embedding byte-level rules in a bina
 
 ## Protocol behavior
 
-The protocol crate covers point-to-multipoint, point-to-point, device-management, install-MMI status, reset, confirmation, error, and special packets. CAL support includes identify, recall, reply, NAK, standard label-cache clear, and extended execute, poll, status reply, and legacy extended messages. SAL support includes lighting, Air-Conditioning commands and reports, all maintained Audio commands plus label/load-icon events, Security, Trigger Control, clock, Enable Control, temperature, dynamic labels, status requests and install-MMI requests. Strict decoding rejects malformed input; lenient decoding retains compatibility behavior for imperfect frames. Install-MMI response decoding is enabled only during its active transaction because its wire header is ambiguous with priority-three addressed traffic.
+The protocol crate covers point-to-multipoint, point-to-point, device-management, install-MMI status, reset, confirmation, error, and special packets. CAL support includes identify, recall, reply, NAK, standard label-cache clear, and extended execute, poll, status reply, and legacy extended messages. SAL support includes lighting, Air-Conditioning commands and reports, all maintained Audio commands plus label/load-icon events, Security, Measurement, Media Transport, Telephony, Identify, Short Message, Error Reporting, Trigger Control, clock, Enable Control, temperature, dynamic labels, status requests and install-MMI requests. Strict decoding rejects malformed input; lenient decoding retains compatibility behavior for imperfect frames. Install-MMI response decoding is enabled only during its active transaction because its wire header is ambiguous with priority-three addressed traffic.
 
 The transport reassembles bounded byte streams, initializes the PCI, assigns confirmation codes, retries unconfirmed frames, and gives interactive commands priority over background status sweeps. It supports TCP CNI and serial PCI connections.
 
@@ -204,10 +216,10 @@ Supported project inputs are a one-file `.cbz` zip archive or bare project XML. 
 
 ## Test data and evidence
 
-- `rust/testdata/vectors/` contains JSONL cases for checksums, frame encode/decode, native AIRCON, AUDIO, Security, Measurement, Telephony and Media Transport commands/events, native label-cache clear, ramp rates, MQTT topics, Home Assistant discovery, and strict selected-serial plan interchange.
-- `rust/testdata/fixtures/` contains small non-production project and behavior fixtures, including sanitized disposable-native evidence for ACCESS, CONFIG, FILE, AIRCON, AUDIO, Security, Measurement, Telephony, Media Transport and project copy/delete behavior.
+- `rust/testdata/vectors/` contains JSONL cases for checksums, frame encode/decode, native AIRCON, AUDIO, Security, Measurement, Telephony, Media Transport, Identify, Short Message and Error Reporting commands/events, native label-cache clear, ramp rates, MQTT topics, Home Assistant discovery, and strict selected-serial plan interchange.
+- `rust/testdata/fixtures/` contains small non-production project and behavior fixtures, including sanitized disposable-native evidence for ACCESS, CONFIG, FILE, AIRCON, AUDIO, Security, Measurement, Telephony, Media Transport, Identify, Short Message, Error Reporting and project copy/delete behavior.
 - `cbus-golden-tests` generates a named test per committed vector.
-- `cmqttd` system tests run the real daemon against an in-process MQTT broker and scripted PCI, including ACCESS, CONFIG and FILE durability/no-PCI coverage, all six maintained specialist application families' command/event correlation, authentication and MQTT continuity, plus dedicated continuity checks after project administration.
+- `cmqttd` system tests run the real daemon against an in-process MQTT broker and scripted PCI, including ACCESS, CONFIG and FILE durability/no-PCI coverage, the maintained specialist application families' command/event correlation, authentication and MQTT continuity, plus dedicated continuity checks after project administration.
 - `cgate-mock` integration tests cover framing, state, sessions, event fanout, here-documents, inventory reachability, and programming access.
 - `toolkit-cli/tests/test_rust_cgate_interop.py` drives the Rust mock using the production Python C-Gate client and typed workflows.
 

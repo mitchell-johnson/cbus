@@ -486,6 +486,60 @@ remains unsupported. Ground exact behavior in
 `rust/testdata/vectors/mediatransport.jsonl`, and
 `rust/cmqttd/tests/system_cgate_mediatransport.rs`. `CMQTT CAPABILITIES` advertises application 192, `pci-confirmed-broadcast`, `exactly-once-no-replay`, all 21 message names, event fanout, and `mediatransport_mqtt_state: false`.
 
+### Identify, Short Message, and Error Reporting commands
+
+cmqttd implements the maintained physical child paths for Identify application
+251 (`$FB`), Short Message application 173 (`$AD`), and Error Reporting
+application 206 (`$CE`) on its configured direct network:
+
+```text
+IDENTIFY OFF|ON|TERMINATERAMP APP/GROUP [FORCE]
+IDENTIFY RAMP APP/GROUP LEVEL [DURATION] [FORCE]
+SHORTMESSAGE REFRESH APP INFO_TYPE
+SHORTMESSAGE SEND APP TOTAL INDEX INFO_TYPE NUMBER|- SYMBOL|- TEXT
+EREPORT MESSAGE APP TYPE CATEGORY MOST_RECENT ACKNOWLEDGED MOST_SEVERE SEVERITY UNIT [DATA1] [DATA2]
+```
+
+Identify levels are 0–255 or 0%–100%. Duration is nonnegative seconds, may
+use an `s` suffix, or may use bounded minutes with `m`; the wire ramp rate is
+the standard C-Bus table value. Only application 251 is admitted. Native C-Gate
+can falsely return 200 without wire traffic for another dynamically accepted
+application, so treat cmqttd's 402 as an intentional fail-closed correction.
+
+Short Message total/index are 0–7, information type is 0–63, optional number
+is 0–65535, optional symbol is 0–255, and text is at most 14 UTF-8 bytes.
+Native C-Gate 3.4.0.2001's SEND encoder is malformed: it writes text as PCI
+ASCII-hex, declares one extra body byte, swaps number/symbol flags, and can
+still return 200. cmqttd instead emits the coherent layout accepted by that
+build's inbound decoder: real UTF-8 bytes, exact body length, number flag
+`0x40`, and symbol flag `0x80`. Do not describe this as byte-for-byte native
+SEND compatibility; use `shortmessage_send_compatibility` from
+`CMQTT CAPABILITIES` to report the repaired contract.
+
+Error Reporting accepts type aliases `RECENT`, `ERROR_REPORT`/`SEVERE`, `ACK`,
+and `CLEAR`, or a byte type; category is 0–1023, each flag is `y`/`n` or
+`1`/`0`, severity is 0–7, and unit/data fields are bytes. Omitted data bytes
+are `255`.
+
+Only the seven child paths above have physical handlers. Bare `IDENTIFY`,
+`SHORTMESSAGE`, and `EREPORT` parent rows remain fail-closed rather than
+claiming unevidenced native help compatibility.
+
+All three families send once through the correlated PCI confirmation lane and
+are never replayed after an uncertain outcome. Identify, SHORTMESSAGE SEND,
+and EREPORT MESSAGE require LOGIN when the optional gate is armed;
+SHORTMESSAGE REFRESH stays open. Incoming traffic retains the source unit and
+fans out as typed C-Gate events. cmqttd defines no MQTT state for these
+applications. Routed selectors and unevidenced transports fail before I/O.
+Ground behavior in `native_cgate_remaining_applications.json`,
+`native_cgate_shortmessage_flags.json`, `identify.jsonl`, `shortmessage.jsonl`,
+`ereport.jsonl`, and `system_cgate_remaining_applications.rs`.
+`CMQTT CAPABILITIES` exposes each application number, command list,
+`pci-confirmed-exactly-once-no-replay` delivery semantics, event fanout, and
+false MQTT-state flags. It also exposes
+`shortmessage_send_compatibility: repaired-coherent-utf8-native-decoder-layout`
+and `shortmessage_native_3_4_malformed_send_reproduced: false`.
+
 ### Telephony commands
 
 cmqttd implements the complete maintained C-Gate 3.4 `TELEPHONY` family for
@@ -884,8 +938,9 @@ by NET SYNC,
 `cgate_auth: true` denotes the armed opt-in LOGIN gate (`false` dormant
 default): with `--cgate-auth-file` configured, each connection needs
 `LOGIN <token>` before programming verbs, AIRCON mutations, Security control
-forms, Telephony clear/divert/isolate/reject, and `MEASUREMENT DATA` while
-reads, the Telephony last-number request, and
+forms, Telephony clear/divert/isolate/reject, `MEASUREMENT DATA`, Identify
+controls, `SHORTMESSAGE SEND`, and `EREPORT MESSAGE` while reads,
+`SHORTMESSAGE REFRESH`, the Telephony last-number request, and
 other bus control stay open; failures answer `420 LOGIN required` / `420 LOGIN failed` (malformed
 `LOGIN` with no token is 400 and also clears the flag), never `401`.
 Not native `access.txt` parity; loopback-only first slice;

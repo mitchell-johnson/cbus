@@ -64,6 +64,14 @@ packet vectors live in `rust/testdata/vectors/network_management.jsonl`; the
 sanitized build-2001 help/runtime/class evidence lives in
 `rust/testdata/fixtures/native_cgate_net_lifecycle.json`.
 
+`cmqttd/tests/system_cgate_remaining_applications.rs` runs the real daemon
+against the same scripted PCI and broker for direct-network Identify, Short
+Message and Error Reporting. It pins exact confirmed command bytes, LOGIN
+boundaries, invalid-input no-I/O behavior, source-preserving inbound fanout,
+negative-confirmation no-replay behavior, capability reporting, and concurrent
+MQTT lighting continuity. Protocol unit and golden-vector tests separately pin
+the native wire layouts and the repaired Short Message SEND contract.
+
 ## Adding behavior
 
 Keep byte-level rules in `cbus-protocol`, endpoint behavior in `cbus-transport`, pure MQTT data transformations in `cbus-mqtt`, and orchestration in the binary crate. Add a golden vector when compatibility depends on exact bytes or JSON. Add a system test when correctness depends on interactions among the daemon, broker, and PCI.

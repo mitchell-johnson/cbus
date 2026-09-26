@@ -2,7 +2,7 @@
 
 ## C-Bus packets
 
-`cbus-protocol` models point-to-multipoint, point-to-point, routed point-to-point-to-multipoint, device-management, reset, confirmation, error, and special packet forms. It includes CAL identify, recall, reply, and extended messages; lighting, Air-Conditioning, Media Transport, Audio, Security, Measurement, clock, enable, temperature, and status-request SALs; binary and Manchester status reports; checksum helpers; ramp-rate conversion; and stable packet JSON.
+`cbus-protocol` models point-to-multipoint, point-to-point, routed point-to-point-to-multipoint, device-management, reset, confirmation, error, and special packet forms. It includes CAL identify, recall, reply, and extended messages; lighting, Air-Conditioning, Media Transport, Audio, Security, Measurement, Identify, Short Message, Error Reporting, clock, enable, temperature, and status-request SALs; binary and Manchester status reports; checksum helpers; ramp-rate conversion; and stable packet JSON.
 
 Air-Conditioning application `0xAC` has typed encode/decode coverage for the
 eleven commands registered by C-Gate 3.4: refresh, ward off/on, zone HVAC and
@@ -75,6 +75,36 @@ in `rust/testdata/vectors/telephony.jsonl`; isolated-oracle grammar, hashes and
 acceptance limits are in
 `rust/testdata/fixtures/native_cgate_telephony.json`. Incoming Telephony
 traffic stays a typed event and cannot satisfy a pending PCI confirmation.
+
+Identify application `0xFB` has typed encode/decode coverage for off, on,
+ramp and terminate-ramp group controls. The bytes use the standard
+lighting-shaped opcodes, but application dispatch and canonical `identify`
+JSON preserve the application-specific type. Ramp duration uses the standard
+C-Bus ramp-rate table. Exact native cases are in
+`rust/testdata/vectors/identify.jsonl`; selectors outside application 251 are
+rejected by the service because the retained native command can falsely report
+success without emitting SAL for those selectors.
+
+Short Message application `0xAD` distinguishes outbound commands from inbound
+events. Refresh encodes opcode `0x01` plus the six-bit information type. Send
+uses an extended length equal to the following body bytes, a packed three-bit
+total and index, optional number (`0x40`) and symbol (`0x80`) fields, and real
+UTF-8 payload bytes. Its canonical JSON distinguishes outbound `shortmessage`
+commands from `shortmessage_event` observations. The outbound layout
+deliberately repairs the
+retained C-Gate 3.4.0.2001 encoder, which appends text as PCI ASCII-hex,
+overstates the length and swaps the two flags while still reporting success;
+the repaired layout matches that build's coherent inbound decoder. Both forms
+and the exact defect evidence are pinned in
+`rust/testdata/vectors/shortmessage.jsonl` and
+`rust/testdata/fixtures/native_cgate_shortmessage_flags.json`.
+
+Error Reporting application `0xCE` has a typed six-byte message codec for
+message type, ten-bit category, most-recent/acknowledged/most-severe flags,
+three-bit severity, unit, and two data bytes. Canonical JSON uses `ereport` and
+the exact native examples live in `rust/testdata/vectors/ereport.jsonl`.
+Incoming Identify, Short Message and Error Reporting SAL remains typed
+transport traffic and cannot complete a pending PCI confirmation.
 
 DALI gateway control uses direct point-to-point extended CAL addressed to a
 `SYS_DAL2` unit with device type `0xDA`. The retained controls are EXECUTE
