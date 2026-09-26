@@ -973,8 +973,17 @@ the loaded cmqttd JSON model, and
 `project_delete_secondary: "cmqttd-internal"` denotes durable deletion of a
 secondary project while protecting the configured hardware project,
 `repository_list: true` and `repository_type: "cmqttd-json"` denote the one
-read-only repository descriptor, and explicit `cgl_import: false` /
-`cgl_export: false` preserve the vendor-format boundary,
+read-only repository descriptor,
+`cgl_import: true`, `cgl_export: true`, and
+`cgl_scope: "modeled-labels-known-routes"` denote the bounded CGL 1.1 label
+graph while `cgl_controller_side_effects: false` preserves the vendor-control
+boundary,
+`applications_catalog: "configured-unitspec-directory-applications.xml"`
+denotes the operator-supplied XML source,
+`network_calculator: "configured-cbusunits-database-records"` and
+`network_calculator_physical_measurement: false` denote local catalogue
+arithmetic, and explicit `repository_use: false` /
+`vendor_repository_transforms: false` preserve the repository boundary,
 while `full_cgate_compatibility` remains false until every remaining backend and
 acceptance requirement is complete.
 
@@ -1058,6 +1067,26 @@ it is not Schneider SQLite, XML `file`, or `db` storage. Do not issue
 it does not support the operation, and no repair transaction is established
 for `cmqttd-json`.
 
+`APPLICATIONS GET_CATALOG` reads only a bounded, containment-checked,
+XML-validated `applications.xml` from `--cgate-unitspec` and streams the native
+343/347/344 envelope. It never bundles or reconstructs the proprietary vendor
+catalogue. `CALCULATOR TEST` combines durable database unit records with the
+operator-supplied `cbusunits.xml` and returns the retained 134 arithmetic
+envelope; it is catalogue arithmetic, not a bus measurement, and sends no PCI
+traffic.
+
+`CGL IMPORT` and `CGL EXPORT` implement a bounded CGL 1.1 JSON label graph for
+known database routes. Import preserves existing application/group/level
+names, creates missing labels atomically, persists them in `cmqttd-json`, and
+uses the retained incomplete 380 result for skipped networks. Export supports
+network/application filters and keeps a selected network shell even when no
+application matches. Do not infer automation-controller programming or
+round-trip preservation of unknown vendor metadata. `REPOSITORY USE` and all
+five `TRANSFORM` leaves remain explicit 502: cmqttd has no safe server-global
+repository switch and its JSON state is neither Schneider SQLite nor vendor
+project XML. The exact evidence and boundaries are in
+`rust/testdata/fixtures/native_cgate_repository_transform.json`.
+
 The service has exact retained parent help for `APPLICATIONS`, `CALCULATOR`,
 `CGL`, `CLOCK`, `ENABLE`, `EREPORT`, `IDENTIFY`, `LIGHTING`, `REPOSITORY`,
 `SHORTMESSAGE`, `TEMPERATURE`, `TEST_SPAM`, `TRANSFORM`, and `TRIGGER`.
@@ -1068,11 +1097,11 @@ and the executable capability matrix for the individual child path.
 cmqttd recognizes `[tag] COMMAND << DELIMITER`, followed by a body and the exact
 delimiter on its own line. It limits individual lines to 1 MiB and the document
 to 16 MiB, drains an oversized body before returning tagged 400, and closes
-after a tagged 400 if EOF arrives before the delimiter. Completed `DBSETXML`
-and `CGL IMPORT` documents return 502 unchanged. Native DBSETXML replaces a
-typed object and the retained Toolkit workflows require a `301 OID=...`
-receipt plus XML readback; the mock's opaque string store does not establish
-that behavior. CGL format and transaction behavior also remain unimplemented.
+after a tagged 400 if EOF arrives before the delimiter. `CGL IMPORT` accepts
+only the bounded CGL 1.1 model above. `DBSETXML` remains 502 unchanged: native
+DBSETXML replaces a typed object and the retained Toolkit workflows require a
+`301 OID=...` receipt plus XML readback; the mock's opaque string store does
+not establish that behavior.
 
 Command connections also provide native-shaped `SESSION_ID`, `SESSION_ID ALL`
 and one-shot `SESSION_ID TAG` state, including live TCP/TLS peer and connection
@@ -1270,6 +1299,7 @@ The server model is shared across TCP connections. Each connection keeps its own
 
 - Input line: 1 MiB maximum.
 - Here-document body: 16 MiB maximum.
+- CGL import: 10,000 modeled application/group/level objects maximum.
 - Library event queue: 4,096 entries by default, with an overflow marker.
 - TCP fanout: unbounded channels; a subscribed client that never reads can consume growing memory while writers continue.
 - Unit-spec file: 8 MiB maximum; include traversal is capped at 128 files and checked for directory containment.

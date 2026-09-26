@@ -1,0 +1,124 @@
+{
+  "schema": "native-cgate-repository-transform-evidence-v1",
+  "captured_at": "2026-09-26",
+  "oracle": {
+    "version": "3.4.0.2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "binding": "127.0.0.1:<ephemeral>",
+    "project_start": "",
+    "project_default": "",
+    "network_opened": false,
+    "cni_or_bus_configured": false,
+    "live_site_project_used": false
+  },
+  "private_raw_capture_sha256": {
+    "grammar": "fc5a5161c09dbcee6861da4b7be858e2478b03dbbab5e21f2c416fdde1a322db",
+    "catalog": "cbf2b626d3c1647e4074b1e7be66f7b96f1e029738623152b73a92399512365a",
+    "calculator_success": "eebc732c3ba269a804334e2fa76239b472051b419ad78714ea1dcbb20c977abc",
+    "calculator_failure": "ad65a6fe23323a0ff517737312c81f0d60a69764b5e60e377d115c662146b5e1",
+    "cgl": "40b42a8fd60b17a7860819a99a9f510a2f2bf58d17484aa06ef24546d46f7861"
+  },
+  "applications_get_catalog": {
+    "help": [
+      "101-Help: syntax: APPLICATIONS GET_CATALOG",
+      "101 Help: Get the applications catalog as XML"
+    ],
+    "arity_error": "400 Syntax Error.",
+    "missing_catalog": "408 Operation failed: bad application catalog filename: unitspec/applications.xml (No such file or directory)",
+    "configured_envelope": {
+      "first": "343-Begin XML Snippet",
+      "payload_code": 347,
+      "source_lines": 343,
+      "last": "344 End XML Snippet",
+      "source_file_sha256": "9be696d6425b3529ad7c0fe2d1e24f59a0bcd5c745850a401ee4dc7ae78db753",
+      "vendor_payload_committed": false
+    },
+    "cmqttd_boundary": "Stream only an operator-supplied, bounded, XML-validated applications.xml from --cgate-unitspec; never bundle or invent the Schneider catalogue."
+  },
+  "calculator_test": {
+    "help": [
+      "101-Help: syntax: CALCULATOR TEST <network-address>",
+      "101-Help: Run the calculator for the given network",
+      "101 Help: <network-address> is the network to calculate."
+    ],
+    "success_case": {
+      "database_catalog_numbers": ["5034N", "5500BUR", "5500PS"],
+      "lines": [
+        "134-result: OK",
+        "134-current_supply(mA)=350",
+        "134-current_consumption(mA)=18",
+        "134-impedance(ohms)=944.0",
+        "134-units_calculated=3",
+        "134 units_not_calculated=0"
+      ],
+      "trailing_argument_ignored": true
+    },
+    "failed_case": [
+      "134-result: FAILED",
+      "134-current_supply(mA)=0",
+      "134-current_consumption(mA)=18",
+      "134-impedance(ohms)=110000.0",
+      "134-units_calculated=1",
+      "134 units_not_calculated=0"
+    ],
+    "unknown_only": "500 Internal error.",
+    "cmqttd_boundary": "Use only durable database unit records plus operator-supplied cbusunits.xml; this is catalogue arithmetic, not a physical measurement."
+  },
+  "cgl_1_1": {
+    "import_help": "101-Help: syntax: CGL IMPORT <project-name> << <end-tag>>",
+    "export_help": "101-Help: syntax: CGL EXPORT <project-name> [ network_list [application_list] ]",
+    "export_envelope": {
+      "first": "343-Begin CGL snippet",
+      "payload_code": 347,
+      "last_prefix": "344 End CGL snippet [numberOfExportedObjects:"
+    },
+    "minimal_import": [
+      "380-Importing routable networks from local Network 254 ...",
+      "380-Importing Network 254",
+      "380-  Created new application 254/56 ('Lighting')",
+      "380-    Created new group 254/56/1 ('Lounge')",
+      "380-      Created new level 254/56/1/255 ('On')",
+      "380-Imported 3 object(s) of 1 network(s): 1 application(s), 1 group(s), 1 level(s) ",
+      "200 OK."
+    ],
+    "observed_rules": {
+      "version": "1.1",
+      "existing_names_preserved": true,
+      "missing_objects_created": true,
+      "network_filter_preserves_network_shell": true,
+      "application_filter_omits_nonmatching_groups": true,
+      "missing_network_final": "380 CGL import not completed: Skipped 1 network(s). "
+    },
+    "cmqttd_boundary": "Import/export only modeled network, application, group and level labels over known database routes. No automation-controller programming or unknown vendor metadata side effects are claimed."
+  },
+  "repository_use": {
+    "syntax": "REPOSITORY USE NUMERIC_INDEX",
+    "current_index_success_without_projects": "200 OK.",
+    "when_any_project_open": "400 Syntax Error: Cannot change repository while projects are open.",
+    "scope": "server-global",
+    "cmqttd_boundary": "Remain 502: cmqttd has one always-loaded atomic cmqttd-json repository and no safe server-global switch."
+  },
+  "transform": {
+    "MIGRATE_SQL": {
+      "syntax": "TRANSFORM MIGRATE_SQL <source-name>",
+      "missing_source_prefix": "408 Operation failed: Transform failed: Src filename does not exist:"
+    },
+    "PROJECT": {
+      "syntax": "TRANSFORM PROJECT [--test] <project-name> [<xslt-file-name> [<output-project-name>]]",
+      "sqlite_repository": "408 Operation failed: The current repository does not support this command."
+    },
+    "SQL_TO_XML": {
+      "syntax": "TRANSFORM SQL_TO_XML <source-name> [dest-name]",
+      "source": "Schneider SQLite .db"
+    },
+    "SQL_TO_XML_CGATE2": {
+      "syntax": "TRANSFORM SQL_TO_XML_CGATE2 <source-name> [dest-name]",
+      "source": "Schneider SQLite .db"
+    },
+    "XML_TO_SQL": {
+      "syntax": "TRANSFORM XML_TO_SQL <source-name> [dest-name]",
+      "destination": "Schneider SQLite .db"
+    },
+    "cmqttd_boundary": "Remain 502: cmqttd-json is neither Schneider SQLite nor vendor project XML, and no format-faithful migration/XSLT transaction is available."
+  }
+}

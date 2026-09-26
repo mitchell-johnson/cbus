@@ -238,10 +238,20 @@ fn tcp_documents_and_oid_flow() {
     // Here-document field store.
     let set = s.document("DBSETXML //TEST/254/p/20/UnitName", "ENDDOC1", "LOUNGE\n");
     assert_eq!(set.status, 200);
-    // CGL import metric counts non-blank lines.
-    let import = s.document("CGL IMPORT TEST", "ENDDOC2", "a\n\nb\nc\n");
+    // Bounded CGL 1.1 JSON import uses native 380 progress and 200 completion.
+    let cgl = r#"{"cglVersion":"1.1","localNetwork":254,"networks":[{"address":254,"applications":[{"address":56,"name":"Lighting","groups":[{"address":1,"name":"Lounge"}]}]}]}"#;
+    let import = s.document("CGL IMPORT TEST", "ENDDOC2", &format!("{cgl}\n"));
     assert_eq!(import.status, 200);
-    assert!(import.lines.iter().any(|l| l.contains("imported=3")));
+    assert!(import
+        .lines
+        .iter()
+        .any(|line| line.contains("Created new group 254/56/1 ('Lounge')")));
+    let export = s.command("CGL EXPORT TEST 254 56");
+    assert_eq!(export.status, 344);
+    assert!(export
+        .lines
+        .iter()
+        .any(|line| line.contains("\"cglVersion\":\"1.1\"")));
     // Level OID dance: 301 answer, 342 resolution.
     let add = s.command("DBADDSAFE //TEST/254/56 Level 1 Evening");
     assert_eq!(add.status, 301);

@@ -1,4 +1,4 @@
-//! Exact retained C-Gate 3.4 parent-command help envelopes.
+//! Exact retained C-Gate 3.4 parent-command and evidenced leaf-help envelopes.
 //!
 //! These endpoints are local command discovery only. They never imply that
 //! every child command has a physical or repository backend; each child keeps
@@ -115,6 +115,40 @@ const REPOSITORY_HELP: &[&str] = &[
     "Help:  REPOSITORY USE - Set the current project repository to be used by this command session",
 ];
 
+const APPLICATIONS_GET_CATALOG_HELP: &[&str] = &[
+    "Help: syntax: APPLICATIONS GET_CATALOG",
+    "Help: Get the applications catalog as XML",
+];
+
+const CALCULATOR_TEST_HELP: &[&str] = &[
+    "Help: syntax: CALCULATOR TEST <network-address>",
+    "Help: Run the calculator for the given network",
+    "Help: <network-address> is the network to calculate.",
+];
+
+const CGL_EXPORT_HELP: &[&str] =
+    &["Help: syntax: CGL EXPORT <project-name> [ network_list [application_list] ]"];
+
+const CGL_IMPORT_HELP: &[&str] = &["Help: syntax: CGL IMPORT <project-name> << <end-tag>>"];
+
+const REPOSITORY_USE_HELP: &[&str] = &["Help: syntax: REPOSITORY USE NUMERIC_INDEX"];
+
+const TRANSFORM_MIGRATE_SQL_HELP: &[&str] = &["Help: syntax: TRANSFORM MIGRATE_SQL <source-name>"];
+
+const TRANSFORM_PROJECT_HELP: &[&str] = &[concat!(
+    "Help: syntax: TRANSFORM PROJECT [--test] <project-name> ",
+    "[<xslt-file-name> [<output-project-name>]]"
+)];
+
+const TRANSFORM_SQL_TO_XML_HELP: &[&str] =
+    &["Help: syntax: TRANSFORM SQL_TO_XML <source-name> [dest-name]"];
+
+const TRANSFORM_SQL_TO_XML_CGATE2_HELP: &[&str] =
+    &["Help: syntax: TRANSFORM SQL_TO_XML_CGATE2 <source-name> [dest-name]"];
+
+const TRANSFORM_XML_TO_SQL_HELP: &[&str] =
+    &["Help: syntax: TRANSFORM XML_TO_SQL <source-name> [dest-name]"];
+
 fn rows(family: &str) -> Option<&'static [&'static str]> {
     Some(match family {
         "CLOCK" => CLOCK_HELP,
@@ -135,9 +169,25 @@ fn rows(family: &str) -> Option<&'static [&'static str]> {
     })
 }
 
-/// Serve a bare/`?` family root or `HELP <family>` when retained evidence
-/// exists. Any extra token is left to the family dispatcher or 502 boundary.
-pub(super) fn response(tag: &str, words: &[&str], upper: &[String]) -> Option<Response> {
+fn leaf_rows(family: &str, leaf: &str) -> Option<&'static [&'static str]> {
+    Some(match (family, leaf) {
+        ("APPLICATIONS", "GET_CATALOG") => APPLICATIONS_GET_CATALOG_HELP,
+        ("CALCULATOR", "TEST") => CALCULATOR_TEST_HELP,
+        ("CGL", "EXPORT") => CGL_EXPORT_HELP,
+        ("CGL", "IMPORT") => CGL_IMPORT_HELP,
+        ("REPOSITORY", "USE") => REPOSITORY_USE_HELP,
+        ("TRANSFORM", "MIGRATE_SQL") => TRANSFORM_MIGRATE_SQL_HELP,
+        ("TRANSFORM", "PROJECT") => TRANSFORM_PROJECT_HELP,
+        ("TRANSFORM", "SQL_TO_XML") => TRANSFORM_SQL_TO_XML_HELP,
+        ("TRANSFORM", "SQL_TO_XML_CGATE2") => TRANSFORM_SQL_TO_XML_CGATE2_HELP,
+        ("TRANSFORM", "XML_TO_SQL") => TRANSFORM_XML_TO_SQL_HELP,
+        _ => return None,
+    })
+}
+
+/// Serve a bare/`?` family root, `HELP <family>`, or an evidenced leaf `?`
+/// form. Other tokens are left to the family dispatcher or 502 boundary.
+pub(crate) fn response(tag: &str, words: &[&str], upper: &[String]) -> Option<Response> {
     let family = upper.first()?.as_str();
     if let Some(help) = rows(family) {
         if words.len() == 1 || (words.len() == 2 && words[1] == "?") {
@@ -146,6 +196,9 @@ pub(super) fn response(tag: &str, words: &[&str], upper: &[String]) -> Option<Re
     }
     if family == "HELP" && words.len() == 2 {
         return rows(upper.get(1)?.as_str()).map(|help| command_help(tag, help));
+    }
+    if words.len() == 3 && words[2] == "?" {
+        return leaf_rows(family, upper.get(1)?.as_str()).map(|help| command_help(tag, help));
     }
     None
 }

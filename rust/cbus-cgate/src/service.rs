@@ -2,10 +2,44 @@
 //! deliberately not the fallback for unimplemented physical operations.
 
 use super::*;
+pub(crate) mod calculator;
+pub(crate) mod cgl;
 mod dali;
 mod dali_specialized;
-mod family_help;
+pub(crate) mod family_help;
 mod net_lifecycle;
+
+/// Stream an operator-supplied application catalogue with the native
+/// 343/347/344 XML-snippet envelope. The configured unit-specification
+/// directory is the only permitted source; no vendor catalogue is bundled or
+/// synthesized.
+pub(crate) fn applications_get_catalog(model: &Server, tag: &str, words: &[&str]) -> Response {
+    if words.len() != 2 {
+        return err(tag, 400, "400 Syntax Error.");
+    }
+    let Some(directory) = model.unitspec_dir.as_deref() else {
+        return err(
+            tag,
+            408,
+            "408 Operation failed: bad application catalog filename: unitspec/applications.xml (No such file or directory)",
+        );
+    };
+    match unitspec::load_application_catalog(directory) {
+        Ok(xml_lines) => Response {
+            tag: tag.to_string(),
+            lines: std::iter::once("343-Begin XML Snippet".to_string())
+                .chain(xml_lines.into_iter().map(|line| format!("347-{line}")))
+                .collect(),
+            final_text: "344 End XML Snippet".to_string(),
+            status: 344,
+        },
+        Err(_) => err(
+            tag,
+            408,
+            "408 Operation failed: bad application catalog filename: unitspec/applications.xml (No such file or directory)",
+        ),
+    }
+}
 use crate::access::{credential_digest_for, AccessEntry, CgateAccessLevel};
 use crate::auth;
 use crate::config::{
@@ -1943,6 +1977,9 @@ impl Service {
                 err(tag, 400, "400 Syntax Error.")
             };
         }
+        if let Some(response) = family_help::response(tag, &words, &upper) {
+            return response;
+        }
         if self.auth_token_hash.get().is_some()
             && !client.authenticated
             && requires_programming_auth(verb, sub, &upper)
@@ -1950,9 +1987,6 @@ impl Service {
             return err(tag, 420, "420 LOGIN required");
         }
         if let Some(response) = net_lifecycle::help(tag, &words, &upper) {
-            return response;
-        }
-        if let Some(response) = family_help::response(tag, &words, &upper) {
             return response;
         }
         if verb == "PORT" {
@@ -2135,8 +2169,21 @@ impl Service {
                 serde_json::Value::String("compatibility-bootstrap-then-explicit".to_string());
             capabilities["access_token_recovery_admission"] = serde_json::Value::Bool(true);
             capabilities["access_global_command_level_matrix"] = serde_json::Value::Bool(false);
-            capabilities["cgl_import"] = serde_json::Value::Bool(false);
-            capabilities["cgl_export"] = serde_json::Value::Bool(false);
+            capabilities["cgl_import"] = serde_json::Value::Bool(true);
+            capabilities["cgl_export"] = serde_json::Value::Bool(true);
+            capabilities["cgl_scope"] = serde_json::Value::String(
+                "bounded-cgl-1.1-database-labels-and-known-routes".to_string(),
+            );
+            capabilities["cgl_controller_side_effects"] = serde_json::Value::Bool(false);
+            capabilities["applications_catalog"] = serde_json::Value::String(
+                "configured-unitspec-directory-applications.xml".to_string(),
+            );
+            capabilities["network_calculator"] =
+                serde_json::Value::String("configured-cbusunits-database-records".to_string());
+            capabilities["network_calculator_physical_measurement"] =
+                serde_json::Value::Bool(false);
+            capabilities["repository_use"] = serde_json::Value::Bool(false);
+            capabilities["vendor_repository_transforms"] = serde_json::Value::Bool(false);
             capabilities["native_family_help_roots"] = serde_json::json!([
                 "applications",
                 "calculator",
@@ -2425,6 +2472,22 @@ impl Service {
         }
         if verb == "FILE" {
             return self.file(tag, &cmd.body, None).await;
+        }
+        if verb == "APPLICATIONS" && sub == "GET_CATALOG" {
+            let model = self.model.lock().await;
+            return applications_get_catalog(&model, tag, &words);
+        }
+        if verb == "CALCULATOR" && sub == "TEST" {
+            let mut model = self.model.lock().await;
+            model.current = client
+                .current
+                .clone()
+                .or_else(|| Some(self.project.clone()));
+            return calculator::command(&model, tag, &words);
+        }
+        if verb == "CGL" && sub == "EXPORT" {
+            let model = self.model.lock().await;
+            return cgl::export(&model, tag, &words, self.network);
         }
         if verb == "MEASUREMENT" {
             if words.len() == 1 || (words.len() == 2 && words[1] == "?") {
@@ -2884,8 +2947,9 @@ impl Service {
 
     /// Gate a C-Gate here-document after the connection has bounded and
     /// collected it. FILE UPLOAD consumes base64 into the durable virtual
-    /// root. Native DBSETXML replaces typed objects and CGL has a vendor
-    /// exchange format; those distinct document semantics remain fail-closed.
+    /// root, and CGL IMPORT validates and atomically applies the bounded CGL
+    /// 1.1 database-label graph. Native DBSETXML typed-object replacement
+    /// remains fail-closed.
     pub async fn handle_document(
         &self,
         client: &mut ClientState,
@@ -2910,6 +2974,32 @@ impl Service {
         }
         if verb == "FILE" {
             return self.file(tag, &cmd.body, Some(document)).await;
+        }
+        if verb == "CGL" && sub == "IMPORT" {
+            let mut model = self.model.lock().await;
+            model.current = client
+                .current
+                .clone()
+                .or_else(|| Some(self.project.clone()));
+            let before = model.clone();
+            let before_db = Database::from_server(&model);
+            let response = cgl::import(&mut model, tag, &words, document);
+            if response.status >= 400 {
+                *model = before;
+                return response;
+            }
+            let after_db = Database::from_server(&model);
+            if before_db != after_db {
+                if let Err(error) = after_db.save(&self.state_path) {
+                    *model = before;
+                    tracing::error!("C-Gate CGL import commit failed: {error}");
+                    return err(tag, 500, "500 Database commit failed; change rolled back");
+                }
+            }
+            for event in model.drain_events() {
+                let _ = self.events.send(event);
+            }
+            return response;
         }
         let _ = (line, document);
         err(
@@ -11108,6 +11198,11 @@ fn local_command(words: &[&str], upper: &[String], model: &Server) -> bool {
         // handled above; the model supplies cached network and unit fields.
         "GET" => words.len() == 3,
         "NET" => matches!(sub, "LIST" | "LIST_ALL" | "STATE"),
+        "REPOSITORY" => sub == "USE",
+        "TRANSFORM" => matches!(
+            sub,
+            "MIGRATE_SQL" | "PROJECT" | "SQL_TO_XML" | "SQL_TO_XML_CGATE2" | "XML_TO_SQL"
+        ),
         "FILE" => matches!(
             sub,
             "UPLOAD" | "DOWNLOAD" | "SHA256" | "DIR" | "LS" | "DELETE" | "MKDIR"

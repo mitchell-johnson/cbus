@@ -144,12 +144,14 @@ configured hardware project cannot be renamed or deleted during service
 operation. Archive keys never name host files. The bounded snapshot contains
 project/network/unit records and unit fields, excluding opaque auxiliary maps
 and all runtime bus state. TCP and TLS command sessions bound and drain native
-here-document framing, but completed DBSETXML/CGL documents return 502 without
-mutation because their typed-object/vendor-format semantics remain unavailable.
-Schneider archive/CGL formats, `PROJECT REPAIR`, and `REPOSITORY USE` remain unavailable. These
-operations perform no PCI I/O, and a real-daemon system regression verifies
-that MQTT commands continue through the shared PCI after the administrative
-workflow.
+here-document framing. Bounded CGL 1.1 import/export persists only modeled
+network/application/group/level labels over known routes; it never programs a
+controller or preserves unknown vendor metadata. DBSETXML remains 502 because
+its typed-object semantics are unavailable. Schneider archive formats,
+`PROJECT REPAIR`, `REPOSITORY USE`, and the five proprietary repository
+transformations remain unavailable. These operations perform no PCI I/O, and
+a real-daemon system regression verifies that MQTT commands continue through
+the shared PCI after the administrative workflow.
 
 ## Source ownership
 

@@ -135,13 +135,46 @@ async fn project_copy_delete_preserves_database_identity_and_mqtt_continuity() {
     let absent = command(&mut reader, &mut writer, "15", "PROJECT USE COPY").await;
     assert!(absent.last().unwrap().contains("404 Project not found"));
 
-    for (tag, text) in [("16", "PROJECT REPAIR AUX"), ("17", "REPOSITORY USE 1")] {
+    for (tag, text, expected) in [
+        (
+            "16",
+            "PROJECT REPAIR AUX",
+            "502 Command requires a physical backend that is not implemented",
+        ),
+        (
+            "17",
+            "REPOSITORY USE 1",
+            "502 REPOSITORY USE requires unsupported server-global repository selection",
+        ),
+        (
+            "18",
+            "TRANSFORM MIGRATE_SQL project.db",
+            "502 TRANSFORM MIGRATE_SQL requires proprietary repository transformation machinery",
+        ),
+        (
+            "19",
+            "TRANSFORM PROJECT AUX",
+            "502 TRANSFORM PROJECT requires proprietary repository transformation machinery",
+        ),
+        (
+            "20",
+            "TRANSFORM SQL_TO_XML project.db",
+            "502 TRANSFORM SQL_TO_XML requires proprietary repository transformation machinery",
+        ),
+        (
+            "21",
+            "TRANSFORM SQL_TO_XML_CGATE2 project.db",
+            "502 TRANSFORM SQL_TO_XML_CGATE2 requires proprietary repository transformation machinery",
+        ),
+        (
+            "22",
+            "TRANSFORM XML_TO_SQL project.xml",
+            "502 TRANSFORM XML_TO_SQL requires proprietary repository transformation machinery",
+        ),
+    ] {
         let reply = command(&mut reader, &mut writer, tag, text).await;
         assert!(
-            reply
-                .last()
-                .unwrap()
-                .contains("502 Command requires a physical backend that is not implemented"),
+            reply.last().unwrap().contains(expected),
             "{text}: {reply:?}"
         );
     }

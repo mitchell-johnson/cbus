@@ -566,10 +566,12 @@ fn project_identity_argument(body: &str) -> Result<String, ProjectIdentityArgume
 /// multi-status envelopes (CONFIG `304`, calculator `134`,
 /// cached-property `300`, parameter `315`, database `342`/`233`, FILE
 /// directory `304`/`305`, snippet/JSON/file-transfer `343`/`345`/`346`/`347`,
+/// CGL import progress `380`,
 /// PINGU/digest `302`, SYNCNEW discovery/failure `303`/`408`, multiplicity
 /// `120`), and retained DALI command/response diagnostics (`100`, `320`).
-const ENVELOPE_CODES: [u16; 19] = [
-    100, 120, 130, 134, 233, 300, 302, 303, 304, 305, 315, 320, 342, 343, 345, 346, 347, 408, 451,
+const ENVELOPE_CODES: [u16; 20] = [
+    100, 120, 130, 134, 233, 300, 302, 303, 304, 305, 315, 320, 342, 343, 345, 346, 347, 380, 408,
+    451,
 ];
 
 /// True when a reply line already carries a native multi-status envelope.
@@ -1229,6 +1231,13 @@ impl Server {
         if words.is_empty() {
             return err(&cmd.tag, status::BAD_REQUEST, "400 Empty command");
         }
+        let upper_words = words
+            .iter()
+            .map(|word| word.to_ascii_uppercase())
+            .collect::<Vec<_>>();
+        if let Some(response) = service::family_help::response(&cmd.tag, &words, &upper_words) {
+            return response;
+        }
         // These stateful families have command names in the generated manual
         // registry too. Route them before that generic metadata dispatcher so
         // the maintained native implementations cannot be shadowed by a
@@ -1241,6 +1250,9 @@ impl Server {
         }
         if starts_with(&upper, "DEPLOY_QUEUE") {
             return self.deploy_queue(&cmd.tag, &words);
+        }
+        if starts_with(&upper, "APPLICATIONS GET_CATALOG") {
+            return service::applications_get_catalog(self, &cmd.tag, &words);
         }
         if let Some(response) = self.handle_manual_command(&cmd.tag, &words, &cmd.body) {
             return response;
@@ -4748,8 +4760,8 @@ impl Server {
 
     /// Handle a here-document command: the `COMMAND << DELIMITER` line plus
     /// the already-collected document body (delimiter line excluded).
-    /// Supports `DBSETXML path` (stores the document) and `CGL IMPORT
-    /// project` (counts non-blank lines as an explicit mock metric).
+    /// Supports `DBSETXML path` (stores the document in the mock) and bounded
+    /// CGL 1.1 `CGL IMPORT project` label-graph documents.
     pub fn handle_document(&mut self, line: &str, document: &str) -> Response {
         let cmd = match parse_command(line) {
             Ok(c) => c,
@@ -4787,20 +4799,8 @@ impl Server {
             self.mirror_unit_field(words[1], document.trim_end_matches('\n'));
             return ok(tag_of(&cmd), vec![], "200 OK");
         }
-        if upper.len() >= 3 && upper[0] == "CGL" && upper[1] == "IMPORT" {
-            if words.len() != 3 || !valid_name(words[2]) {
-                return err(
-                    tag_of(&cmd),
-                    status::BAD_REQUEST,
-                    "400 CGL IMPORT requires a project",
-                );
-            }
-            if !self.projects.contains_key(words[2]) {
-                return err(tag_of(&cmd), status::NOT_FOUND, "404 Project not found");
-            }
-            let count = document.lines().filter(|l| !l.trim().is_empty()).count();
-            self.push_event(format!("#e# cgl import {}", words[2]));
-            return ok(tag_of(&cmd), vec![format!("imported={count}")], "200 OK");
+        if upper.len() >= 2 && upper[0] == "CGL" && upper[1] == "IMPORT" {
+            return service::cgl::import(self, tag_of(&cmd), &words, document);
         }
         err(
             tag_of(&cmd),
@@ -5675,54 +5675,29 @@ impl Server {
         }
     }
 
-    /// Native `CGL IMPORT project` without a document: accepted only with an
-    /// explicit empty import rather than invented content.
+    /// Native `CGL IMPORT project` requires here-document framing.
     fn cgl_import(&mut self, tag: &str, words: &[&str]) -> Response {
-        if words.len() != 3 || !valid_name(words[2]) {
-            return err(
-                tag,
-                status::BAD_REQUEST,
-                "400 CGL IMPORT requires a project",
-            );
-        }
-        if !self.projects.contains_key(words[2]) {
-            return err(tag, status::NOT_FOUND, "404 Project not found");
-        }
-        ok(tag, vec!["imported=0".to_string()], "200 OK")
+        let _ = words;
+        err(tag, status::BAD_REQUEST, "400 Syntax Error.")
     }
 
     /// Native `CGL EXPORT project networks applications`.
     ///
-    /// The reply carries the native 344 envelope (`343-` opener, one
-    /// `347-` document line, `344` final) which export parsers require.
-    /// The document line states the mock's honest inventory (project name
-    /// plus network count) rather than a fabricated CGL document: flows
-    /// that parse real CGL fail loudly on it instead of consuming fiction.
+    /// The reply carries a bounded CGL 1.1 JSON document in the native
+    /// 343/347/344 envelope.
     fn cgl_export(&mut self, tag: &str, words: &[&str]) -> Response {
-        if words.len() != 5 || !valid_name(words[2]) {
-            return err(
-                tag,
-                status::BAD_REQUEST,
-                "400 CGL EXPORT requires a project, networks and applications",
-            );
-        }
-        let Some(proj) = self.projects.get(words[2]) else {
-            return err(tag, status::NOT_FOUND, "404 Project not found");
-        };
-        let document = format!(
-            "<CGL project=\"{}\" networks=\"{}\"/>",
-            words[2],
-            proj.networks.len()
-        );
-        Response {
-            tag: tag.to_string(),
-            lines: vec![
-                "343-Begin CGL snippet".to_string(),
-                format!("347-{document}"),
-            ],
-            final_text: "344 End CGL snippet".to_string(),
-            status: 344,
-        }
+        let local_network = words
+            .get(2)
+            .and_then(|name| self.projects.get(*name))
+            .and_then(|project| {
+                project
+                    .networks
+                    .contains_key(&254)
+                    .then_some(254)
+                    .or_else(|| project.networks.keys().copied().min())
+            })
+            .unwrap_or(254);
+        service::cgl::export(self, tag, words, local_network)
     }
 
     /// Native `GET address attribute` reads.
@@ -6328,46 +6303,7 @@ impl Server {
 
     /// Native `CALCULATOR TEST //PROJECT/NET`.
     fn calculator(&mut self, tag: &str, words: &[&str]) -> Response {
-        if words.len() != 3 {
-            return err(
-                tag,
-                status::BAD_REQUEST,
-                "400 CALCULATOR TEST requires a network",
-            );
-        }
-        let (project, net) = match self.resolve_network_mut(words) {
-            Ok(v) => v,
-            Err(mut e) => {
-                e.tag = tag.to_string();
-                return e;
-            }
-        };
-        let current = self.current.clone().unwrap_or_default();
-        if !project.is_empty() && project != current {
-            return err(tag, status::NOT_FOUND, "404 Project not selected");
-        }
-        let Some(count) = self
-            .projects
-            .get(&current)
-            .and_then(|p| p.networks.get(&net))
-            .map(|n| n.physical.len())
-        else {
-            return err(tag, status::NOT_FOUND, "404 Network not found");
-        };
-        // Native calculator rows carry the 134 envelope on every line
-        // (including `result: OK`), which `calculate` requires verbatim.
-        Response {
-            tag: tag.to_string(),
-            lines: vec![
-                "134-current_supply(mA)=0".to_string(),
-                "134-current_consumption(mA)=0".to_string(),
-                "134-impedance(ohms)=0".to_string(),
-                format!("134-units_calculated={count}"),
-                "134-units_not_calculated=0".to_string(),
-            ],
-            final_text: "134 result: OK".to_string(),
-            status: 134,
-        }
+        service::calculator::command(self, tag, words)
     }
 
     /// Shared `//PROJECT/NET` resolution for commands taking one address.
@@ -6927,9 +6863,8 @@ mod tests {
         assert_eq!(s.handle("[20] NET CLOCKS //TEST/254 R").status, 200);
         assert_eq!(s.handle("[21] TREEXML //TEST/254").status, 200);
         let calc = s.handle("[22] CALCULATOR TEST //TEST/254");
-        assert_eq!(calc.status, 134);
-        assert!(calc.lines.iter().any(|l| l == "134-units_calculated=1"));
-        assert!(calc.final_text.contains("result: OK"));
+        assert_eq!(calc.status, 408);
+        assert!(calc.final_text.contains("No unit catalog available"));
         assert_eq!(s.handle("[23] DBVALIDATE //TEST/254/p/20").status, 233);
         assert_eq!(
             s.handle("[24] DBCOPYSAFE //TEST/254/p/20 //TEST/254 21 Hall")
@@ -7295,7 +7230,9 @@ mod tests {
         assert_eq!(export.status, 344);
         assert!(export.lines[0].starts_with("343-"));
         assert!(export.lines.iter().any(|l| l.starts_with("347-")));
-        assert_eq!(export.final_text, "344 End CGL snippet");
+        assert!(export
+            .final_text
+            .starts_with("344 End CGL snippet [numberOfExportedObjects:"));
         // Pinned network runtime snapshot for physical guards.
         let runtime = s.handle("[13] GET //TEST2/254 *");
         assert_eq!(runtime.status, 300);

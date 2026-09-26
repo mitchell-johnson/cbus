@@ -79,7 +79,7 @@ fn safe_file(dir: &Path, name: &str) -> Result<PathBuf, String> {
     Ok(path)
 }
 
-fn read_xml_file(dir: &Path, name: &str) -> Result<String, String> {
+pub(crate) fn read_xml_file(dir: &Path, name: &str) -> Result<String, String> {
     let path = safe_file(dir, name)?;
     let data = std::fs::read(&path).map_err(|error| format!("Cannot read {name:?}: {error}"))?;
     let mut text = data.as_slice();
@@ -92,6 +92,26 @@ fn read_xml_file(dir: &Path, name: &str) -> Result<String, String> {
     std::str::from_utf8(text)
         .map(str::to_string)
         .map_err(|_| format!("Malformed specification {name:?}: not UTF-8"))
+}
+
+/// Load and validate the optional native `applications.xml` catalogue.
+///
+/// The command service streams one `347` row for every source line, matching
+/// C-Gate's `APPLICATIONS GET_CATALOG` framing. The catalogue is supplied by
+/// the operator through the existing unit-specification directory; cmqttd
+/// never bundles or fabricates Schneider catalogue content.
+pub fn load_application_catalog(dir: &Path) -> Result<Vec<String>, String> {
+    let text = read_xml_file(dir, "applications.xml")?;
+    let document = roxmltree::Document::parse(&text)
+        .map_err(|error| format!("Malformed application catalogue: {error}"))?;
+    if document.root_element().tag_name().name() != "Applications" {
+        return Err("applications.xml is not an Applications catalogue".to_string());
+    }
+    let lines = text.lines().map(str::to_string).collect::<Vec<_>>();
+    if lines.is_empty() {
+        return Err("applications.xml is empty".to_string());
+    }
+    Ok(lines)
 }
 
 fn child_text(node: roxmltree::Node<'_, '_>, name: &str) -> String {

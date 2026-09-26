@@ -5,8 +5,8 @@ production transport (`CGateClient`) plus the native wrapper classes the
 CLI itself uses. This proves wire framing, tagging, event separation and
 command semantics agree across the two implementations.
 
-Payload literals asserted here (`imported=`, `UnitName=`, `unit=`) are the
-documented mock contract, not native C-Gate output: they pin the
+Payload literals asserted here (`UnitName=`, `unit=`) are the documented mock
+contract, not native C-Gate output: they pin the
 interoperability surface both sides implement. Status codes, framing and
 the typed-wrapper flows are the native-fidelity claims.
 
@@ -17,6 +17,7 @@ in-repo research copy; catalogue-backed tests skip without it.
 """
 from __future__ import annotations
 
+import json
 import os
 import queue
 import re
@@ -521,9 +522,16 @@ class RustInteropTests(unittest.TestCase):
         identity = self.client.command(f"DBGET !{oid}/OID")
         self.assertEqual(identity.code, 342)
         self.assertTrue(identity.final.endswith(oid))
-        # Here-document import counts non-blank lines.
-        imported = self.client.command_document("CGL IMPORT TEST", "a\n\nb\nc\n")
-        self.assertIn("imported=3", imported.lines[0])
+        # Here-document import validates bounded CGL 1.1 JSON and returns the
+        # native progress envelope.
+        document = {"cglVersion": "1.1", "localNetwork": 254, "networks": [
+            {"address": 254, "applications": [
+                {"address": 57, "name": "Local Application", "groups": [
+                    {"address": 2, "name": "Hall"}]}]}]}
+        imported = self.client.command_document(
+            "CGL IMPORT TEST", json.dumps(document))
+        self.assertTrue(any("Created new group 254/57/2 ('Hall')" in line
+                            for line in imported.lines))
         stored = self.client.command_document(
             "DBSETXML //TEST/254/p/20/UnitName", "LOUNGE\n")
         self.assertEqual(stored.code, 200)

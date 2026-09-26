@@ -105,15 +105,28 @@ Seven maintained Identify, Short Message, and Error Reporting leaves are now
 physical: `IDENTIFY` ON/OFF/RAMP/TERMINATERAMP, `SHORTMESSAGE` REFRESH/SEND,
 and `EREPORT MESSAGE`. Their retained family roots remain local help endpoints.
 
+The embedded service also implements four formerly fail-closed local paths:
+`APPLICATIONS GET_CATALOG` streams a bounded, XML-validated operator catalogue
+from `--cgate-unitspec`; `CALCULATOR TEST` evaluates durable database units
+against the operator-supplied `cbusunits.xml`; and CGL 1.1 JSON `IMPORT` and
+`EXPORT` round-trip the modeled network/application/group/level label graph
+over known database routes. These paths never read physical state or program a
+controller. `REPOSITORY USE` and all five `TRANSFORM` leaves remain explicit
+502 because their native semantics require server-global selection or
+proprietary SQLite/XML migration machinery. Exact envelopes, arithmetic, CGL
+filter/name-preservation rules, and fail-closed boundaries are pinned in
+`rust/testdata/fixtures/native_cgate_repository_transform.json`.
+
 Fourteen family roots now reproduce the exact retained C-Gate 3.4 help
 envelopes for bare, literal `?`, and `HELP` forms. Nine of those roots are in
 the 431-path inventory (`CGL`, `CLOCK`, `ENABLE`, `EREPORT`, `LIGHTING`,
 `SHORTMESSAGE`, `TEMPERATURE`, `TEST_SPAM`, and `TRIGGER`). The other five
 parent roots are pinned in the separate supplement. These local help endpoints
-do not change any child command's capability class. Together with the NET and
-deploy-queue, NET lifecycle, and remaining-application tranches, the matrix now
-contains **215 physical, 163 local/session, 51 fail-closed, and 2 obsolete
-paths**. The separate non-inventoried supplement contains 11 rows. Evidence is in
+do not change any child command's capability class. Together with the NET
+lifecycle, deploy-queue, remaining-application, legacy-database, catalogue,
+calculator, and bounded CGL tranches, the matrix now contains **215 physical,
+167 local/session, 47 fail-closed, and 2 obsolete paths**. The separate
+non-inventoried supplement contains 11 rows. Help evidence is in
 `rust/testdata/fixtures/native_cgate_family_help.json`.
 
 Current verification is:

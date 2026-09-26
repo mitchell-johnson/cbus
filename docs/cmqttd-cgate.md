@@ -75,9 +75,9 @@ connection. When the recovery-token gate is armed it retains the established
 no attempt cap in this slice: the
 loopback bind plus high-entropy token makes online guessing infeasible, and
 a cap is follow-up work.
-Unsupported mutating `CGL IMPORT` documents and `REPOSITORY USE` are also
-denied before dispatch while unauthenticated; after LOGIN they retain their
-generic 502 rather than reporting a simulated import or repository switch.
+`CGL IMPORT` and `REPOSITORY USE` are also denied before dispatch while
+unauthenticated. After LOGIN, CGL import may update only the bounded local CGL
+1.1 label model described below; repository selection remains an explicit 502.
 Project files and the persistent database contain site information and must
 not be committed or published.
 
@@ -113,12 +113,15 @@ The project-administration success envelope and data-readback boundary below
 are grounded in the retained native
 [`PROJECT ARCHIVE`/`RESTORE`/`RENAME` acceptance](../toolkit-cli/docs/native-project-acceptance.json).
 The repository row grammar is grounded in the retained
-[repository inventory evidence](../toolkit-cli/docs/repositories.md). These
-captures and the disposable native
+[repository inventory evidence](../toolkit-cli/docs/repositories.md). The
+bounded application-catalogue, calculator, CGL, repository-selection, and
+transform boundaries are grounded in
+[`native_cgate_repository_transform.json`](../rust/testdata/fixtures/native_cgate_repository_transform.json).
+Those captures and the disposable native
 [`PROJECT COPY`/`DELETE` evidence](../rust/testdata/fixtures/native_cgate_project_copy_delete.json)
-do not establish Schneider archive bytes, CGL bytes, arbitrary server-file
-behavior, or a safe repository switch for cmqttd, so those paths remain
-explicitly unavailable.
+do not establish Schneider archive bytes, arbitrary server-file behavior, or
+a safe repository switch for cmqttd, so those paths remain explicitly
+unavailable.
 
 | Operation | Backend and verification |
 | --- | --- |
@@ -129,12 +132,16 @@ explicitly unavailable.
 | Project list/use/load/save/new/close; database CRUD and database snapshots | Persistent JSON database; atomic replacement, restrictive permissions, failed-write rollback |
 | Bare `PROJECT`/`PROJECT ?`, `PROJECT DIRFULL` | Exact retained 18-line help and native 123 project/description rows. cmqttd's repository has no separate unloaded disk layer, so every modeled project is durable and appears in DIRFULL; an empty model returns native 124 |
 | Native parent help for application and administration families | Bare, literal `?`, and `HELP` forms return the exact retained C-Gate 3.4 envelopes for `APPLICATIONS`, `CALCULATOR`, `CGL`, `CLOCK`, `ENABLE`, `EREPORT`, `IDENTIFY`, `LIGHTING`, `REPOSITORY`, `SHORTMESSAGE`, `TEMPERATURE`, `TEST_SPAM`, `TRANSFORM`, and `TRIGGER`. Help is local and performs no PCI I/O. It only describes the native command surface; every child retains its own physical, local, obsolete, or fail-closed capability classification. See `rust/testdata/fixtures/native_cgate_family_help.json` |
+| `APPLICATIONS GET_CATALOG` | Streams the operator-supplied `applications.xml` under `--cgate-unitspec` in the retained 343/347/344 XML envelope. The file is bounded, containment-checked, and XML-validated. cmqttd does not bundle, reconstruct, or claim Schneider's proprietary application catalogue |
+| `CALCULATOR TEST` | Reproduces the retained 134 result envelope from durable database unit records and the operator-supplied bounded `cbusunits.xml`. The arithmetic reports current supply, current consumption, impedance, and known/unknown unit counts; it performs no physical measurement or PCI I/O |
+| `CGL IMPORT`, `CGL EXPORT` | Bounded CGL 1.1 JSON over known database routes. Import preserves existing application/group/level names, creates missing labels atomically, persists them in `cmqttd-json`, and reports unroutable networks with the retained incomplete 380 result. Export supports network/application filters and retains the selected network shell. The contract covers modeled network, application, group, and level labels only; it does not program automation controllers or preserve unknown vendor metadata |
 | `PROJECT ARCHIVE`, `PROJECT RESTORE`, secondary-project `PROJECT RENAME` | Exact retained native success envelope (`200 OK.`), optional LOGIN gating, and atomic durable commit/rollback. Archive tokens must use the explicit `cmqttd:KEY` namespace and address snapshots inside cmqttd's JSON state repository; other tokens return 408 and are never opened as filesystem paths. These are not Schneider ZIP/GZ/DB files. Snapshots retain modeled project/network/unit records and their unit fields; opaque auxiliary database maps are outside this bounded snapshot contract. Runtime physical presence, levels, and network state are excluded. The configured hardware project cannot be renamed while the service is running and returns 408 because the PCI/MQTT binding is immutable |
 | `PROJECT COPY SOURCE DESTINATION`, `PROJECT DELETE NAME` | Exact native success envelope (`200 OK.`), strict named grammar, optional LOGIN gating, and atomic durable commit/rollback. COPY preserves durable project/network/unit/level data and database OIDs while excluding physical presence, observed levels, and open network state; the source remains selected. A shared copied OID resolves only when the connection's effective selected project owns it; an unrelated selection returns 401. DELETE is limited to secondary projects, clears the deleting connection's selection, and removes only the target's durable records. The configured hardware project returns 408. Native C-Gate separates on-disk repository projects from loaded projects; cmqttd has one loaded atomic JSON model, so copies are immediately selectable and deletes take effect immediately. This is an explicit lifecycle difference, not vendor repository-file parity |
 | `REPOSITORY LIST` | One read-only native `123 index=1 type=cmqttd-json path=... current=yes` record for `--cgate-state`. `REPOSITORY USE` remains unavailable because native selection is server-global and rejects switching while any project is open. `PROJECT REPAIR` remains unavailable because native SQLite repositories report that they do not support it and cmqttd-json has no evidenced repair transaction |
+| `REPOSITORY USE`; `TRANSFORM MIGRATE_SQL/PROJECT/SQL_TO_XML/SQL_TO_XML_CGATE2/XML_TO_SQL` | Exact leaf help is retained, followed by explicit 502 execution boundaries. cmqttd has one always-loaded atomic JSON repository, so it cannot safely apply native's server-global repository selection. Its state is neither Schneider SQLite nor vendor project XML, and no format-faithful migration or XSLT transaction is available |
 | `DBGETJSON NAC_OBJECTS_LIST/NAC_ROUTING_TABLE/NAC_TAGMAP` | Exact root help and native JSON envelopes over a validated durable unit. The importer does not retain vendor `NACObjectList` definitions, so object and routing projections are explicitly empty and `database_json_nac_object_definitions` is false. TAGMAP emits the durable local network, supported application, group and level tags available in cmqttd's model. These reads perform no PCI I/O; see `rust/testdata/fixtures/native_cgate_local_admin.json` |
 | `DBTAGLIST`; `DBSET`; secondary-project `DBRENAMENET`/`DBRENAMENETSAFE` | Selected-project local database operations grounded in `rust/testdata/fixtures/native_cgate_legacy_database.json`. DBTAGLIST returns project-relative native 342 rows, with one case-insensitive filter token and exact no-match/arity errors. Unsafe DBSET resolves existing modeled paths and OIDs, accepts an empty scalar, persists atomically, and moves a database unit without changing physical observations. It rejects immutable OIDs and occupied unit destinations before mutation. The two network-rename spellings preserve their distinct native source/same-address validation, remap stored paths and Bridge references, and reject native's duplicate/non-numeric corruption defects with 408. The configured hardware project's network addresses remain immutable while the service is running; secondary-project changes survive restart and send no PCI traffic. `DBADD`, `DBCOPY`, `DBCREATE`, `DBNEW`, `DBUPDATE`, and `DBVERIFY` remain explicit 502 because incomplete typed-object creation, subtree OID ownership, physical snapshot replacement, and live verification are not coherently modeled. |
-| Here-document framing | TCP and TLS recognize native `COMMAND << DELIMITER` framing and apply the optional LOGIN gate. Lines are limited to 1 MiB and bodies to 16 MiB; an oversized body is drained to its delimiter and returns tagged 400 so the connection remains synchronized, while EOF before the delimiter returns tagged 400 and closes the connection. Completed `DBSETXML` and `CGL IMPORT` documents return explicit 502 without changing state: native DBSETXML typed-object replacement and its 301 OID receipt, and the vendor CGL format, are not implemented merely by accepting their framing |
+| Here-document framing | TCP and TLS recognize native `COMMAND << DELIMITER` framing and apply the optional LOGIN gate. Lines are limited to 1 MiB and bodies to 16 MiB; an oversized body is drained to its delimiter and returns tagged 400 so the connection remains synchronized, while EOF before the delimiter returns tagged 400 and closes the connection. `CGL IMPORT` validates and atomically applies only the bounded CGL 1.1 label model above. `DBSETXML` remains explicit 502 because native typed-object replacement and its 301 OID receipt are not implemented merely by accepting framing |
 | `DBNETWORKPATH` | Resolves Bridge `InterfaceAddress` topology using the standard far-side network-address convention, requires the corresponding source-network bridge unit, limits paths to six bridges, and returns native single-line `136` COMPACT or multi-line `137` network-OID results without PCI I/O. Returned OIDs resolve through `DBGET !oid/OID` in the selected project. The final `/p/<interface-unit>` component may differ from the child network; it validates as an interface address but does not replace the far-side route byte, and path discovery does not require that suffix unit to exist. Native zero-hop `START == END` requests return `408 ... No path found`; only a literal `COMPACT` selects compact output, while another mode token defaults to OID and later tokens are ignored |
 | `NET`, `NETWORK`, `TOPOLOGY`; `NET CREATE/DELETE/FLUSH/LIST/LOAD/RENAME/SAVE` | Exact retained build-2001 root/subcommand help and a runtime network-definition catalogue in the atomic `cmqttd-json` repository. CREATE accepts a bounded definition but never opens another interface. RENAME changes the runtime definition while preserving its immutable optional shared-PCI binding and does not rename the tag-database object. DELETE refuses an operating bound definition with native 468. FLUSH clears only volatile observations. SAVE/LOAD use internal `DB` or `FILE` snapshots; `FILE` is not a host path, and LOAD rejects duplicate names with the observed 408 before mutation. Their retained optional project token resolves the named project even when another project is selected; cross-project tests pin isolation and a missing project returns native 401. Mutations require LOGIN when armed and send no PCI traffic |
 | `NET LEARN`, `NETWORK LOCATE` | Exact retained learn-mode and locate-yourself SAL on the configured direct network. LEARN validates application, grades 1/2/128–131 and group, including its inner checksum. LOCATE supports UNIT, APP, GROUP and manufacturer/native-serial selectors with OFF/ON/byte modes on application 208. Each command enters the shared command lane, transmits once, waits for its correlated PCI confirmation, checks the active PCI generation, and never replays an uncertain outcome. A 200 proves interface delivery only. Unbound, foreign and routed definitions fail before I/O. Incoming frames fan out to C-Gate event clients and do not create MQTT state. See `rust/testdata/fixtures/native_cgate_net_lifecycle.json`, `rust/testdata/vectors/network_management.jsonl`, and `system_cgate_net_lifecycle.rs` |
@@ -508,7 +515,7 @@ all 431 have physical implementations in this service. `CMQTT CAPABILITIES`
 returns `full_cgate_compatibility: false`; unimplemented physical operations
 return 502. The enumerable gap tracker is the executable capability matrix in
 `cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 215
-physical, 163 local/session, 51 fail-closed 502, and 2 obsolete 400 over the
+physical, 167 local/session, 47 fail-closed 502, and 2 obsolete 400 over the
 431 inventoried paths, plus a separately asserted 11-row supplement for
 non-inventoried service commands. Full replacement still requires:
 
@@ -583,14 +590,16 @@ non-inventoried service commands. Full replacement still requires:
   implemented for the configured direct network; bridged routing, physical
   device acceptance and state readback remain unverified. Short Message SEND
   is a deliberate coherent repair of the retained native malformed encoder.
-- Schneider repository/archive and CGL import/export file formats, repository
-  selection, repository repair, DBSETXML/CGL document semantics, complete
-  server configuration/access/TLS, firmware and deployment workflows. cmqttd's
+- Schneider repository/archive formats, repository selection, repository
+  repair, full vendor CGL metadata/controller semantics, DBSETXML semantics,
+  and complete server configuration/access/TLS, firmware and deployment
+  workflows. cmqttd's
   internal project snapshots, OID-preserving secondary-project copy/delete,
   read-only `cmqttd-json` repository descriptor and all seven maintained FILE
   commands are implemented. FILE uses a durable virtual root rather than host
-  or vendor files. Here-document transport is bounded and synchronized, but
-  native DBSETXML/CGL documents remain explicit 502 and are not presented as
+  or vendor files. Here-document transport is bounded and synchronized. CGL
+  1.1 import/export is limited to the modeled label graph over known routes;
+  DBSETXML remains explicit 502 and no local path is presented as general
   vendor-file interoperability.
   C-Gate TLS is transport-only: no TLS client authentication is performed,
   no client certificates are requested, and ACCESS_CONTROL paths remain

@@ -1,4 +1,26 @@
 use cbus_cgate::{format_response, is_event_line, parse_command, AccessLevel, Server};
+use std::path::PathBuf;
+
+fn catalogue_dir() -> PathBuf {
+    static ID: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+    let directory = std::env::temp_dir().join(format!(
+        "cbus-cgate-repository-transform-{}-{}",
+        std::process::id(),
+        ID.fetch_add(1, std::sync::atomic::Ordering::Relaxed)
+    ));
+    std::fs::create_dir_all(&directory).unwrap();
+    std::fs::write(
+        directory.join("applications.xml"),
+        "<?xml version=\"1.0\"?>\n<Applications><Application Address=\"56\" Name=\"Lighting\"/></Applications>\n",
+    )
+    .unwrap();
+    std::fs::write(
+        directory.join("cbusunits.xml"),
+        r#"<CBusUnits><Calculator><MinImpedance>400</MinImpedance><MaxImpedance>1500</MaxImpedance><MaxSupplyCurrent>2000</MaxSupplyCurrent></Calculator><Units><Unit><CatalogNumber>5034N</CatalogNumber><CurrentDrawn>18</CurrentDrawn><CurrentSupplied>0</CurrentSupplied><Impedance>110000</Impedance></Unit><Unit><CatalogNumber>5500BUR</CatalogNumber><CurrentDrawn>0</CurrentDrawn><CurrentSupplied>0</CurrentSupplied><Impedance>1000</Impedance></Unit><Unit><CatalogNumber>5500PS</CatalogNumber><CurrentDrawn>0</CurrentDrawn><CurrentSupplied>350</CurrentSupplied><Impedance>20000</Impedance></Unit></Units></CBusUnits>"#,
+    )
+    .unwrap();
+    directory
+}
 
 #[test]
 fn greeting_and_noop() {
@@ -1022,11 +1044,12 @@ fn project_rename_selection_follow_and_guards() {
     assert_eq!(denied.status, 420);
 }
 
-/// Mock determinism for CALCULATOR TEST: the 134 envelope on every line
-/// including the final, unit count from physical presence, and guards.
+/// CALCULATOR TEST consumes durable database units and the configured bounded
+/// catalogue, reproducing the retained six-row native result envelope.
 #[test]
-fn calculator_envelope_count_and_guards() {
-    let mut s = Server::new(AccessLevel::Program);
+fn calculator_catalogue_arithmetic_envelope_and_guards() {
+    let directory = catalogue_dir();
+    let mut s = Server::new(AccessLevel::Program).with_unitspec_dir(directory.clone());
     assert_eq!(s.handle("[1] PROJECT NEW TEST").status, 200);
     assert_eq!(
         s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
@@ -1034,41 +1057,85 @@ fn calculator_envelope_count_and_guards() {
         200
     );
     assert_eq!(s.handle("[3] PROJECT USE TEST").status, 200);
-    assert_eq!(s.handle("[4] DBADDSAFE //TEST/254 Unit 20 A").status, 200);
-    assert_eq!(s.handle("[5] DBADDSAFE //TEST/254 Unit 21 B").status, 200);
-    let calc = s.handle("[6] CALCULATOR TEST //TEST/254");
+    for (address, catalog, unit_type) in [
+        (1, "5034N", "KEY4"),
+        (2, "5500BUR", "BURDEN"),
+        (3, "5500PS", "POWER"),
+    ] {
+        assert_eq!(
+            s.handle(&format!(
+                "[add-{address}] DBADDSAFE //TEST/254 Unit {address} U{address}"
+            ))
+            .status,
+            200
+        );
+        assert_eq!(
+            s.handle(&format!(
+                "[catalog-{address}] DBSETSAFE //TEST/254/p/{address}/CatalogNumber {catalog}"
+            ))
+            .status,
+            200
+        );
+        assert_eq!(
+            s.handle(&format!(
+                "[type-{address}] DBSETSAFE //TEST/254/p/{address}/UnitType {unit_type}"
+            ))
+            .status,
+            200
+        );
+    }
+    let calc = s.handle("[6] CALCULATOR TEST //TEST/254 ignored-trailing-token");
     assert_eq!(calc.status, 134);
-    assert!(calc
-        .lines
-        .iter()
-        .chain(std::iter::once(&calc.final_text))
-        .all(|l| l.starts_with("134-") || l.starts_with("134 ")));
-    assert!(calc.lines.iter().any(|l| l == "134-units_calculated=2"));
-    assert_eq!(calc.final_text, "134 result: OK");
-    assert!(calc.lines.iter().any(|l| l == "134-units_not_calculated=0"));
-    // Empty networks calculate zero units with the envelope intact.
+    assert_eq!(
+        calc.lines,
+        [
+            "134-result: OK",
+            "134-current_supply(mA)=350",
+            "134-current_consumption(mA)=18",
+            "134-impedance(ohms)=944.0",
+            "134-units_calculated=3",
+        ]
+    );
+    assert_eq!(calc.final_text, "134 units_not_calculated=0");
+
+    // The calculation uses database records, even when the mock-only physical
+    // layer no longer contains the unit.
+    assert_eq!(s.handle("[6a] MOCK BUS-DEL //TEST/254 1").status, 200);
+    assert_eq!(
+        s.handle("[6b] CALCULATOR TEST //TEST/254").lines,
+        calc.lines
+    );
+
+    // A known load without a supply is a native-shaped FAILED result.
     assert_eq!(
         s.handle("[6b] DBCREATENET 253 Local Cni 127.0.0.1:10001")
             .status,
         200
     );
-    let empty = s.handle("[6c] CALCULATOR TEST //TEST/253");
-    assert_eq!(empty.status, 134);
-    assert!(empty.lines.iter().any(|l| l == "134-units_calculated=0"));
-    // A database-only unit (physical record dropped) is not calculated:
-    // the count observes physical presence, not database records.
-    assert_eq!(s.handle("[6d] MOCK BUS-DEL //TEST/254 20").status, 200);
-    let dbonly = s.handle("[6e] CALCULATOR TEST //TEST/254");
-    assert_eq!(dbonly.status, 134);
-    assert!(dbonly.lines.iter().any(|l| l == "134-units_calculated=1"));
+    assert_eq!(
+        s.handle("[6c] DBADDSAFE //TEST/253 Unit 1 Load").status,
+        200
+    );
+    assert_eq!(
+        s.handle("[6d] DBSETSAFE //TEST/253/p/1/CatalogNumber 5034N")
+            .status,
+        200
+    );
+    assert_eq!(
+        s.handle("[6e] DBSETSAFE //TEST/253/p/1/UnitType KEY4")
+            .status,
+        200
+    );
+    let failed = s.handle("[6f] CALCULATOR TEST //TEST/253");
+    assert_eq!(failed.status, 134);
+    assert_eq!(failed.lines[0], "134-result: FAILED");
+    assert_eq!(failed.lines[1], "134-current_supply(mA)=0");
+    assert_eq!(failed.lines[2], "134-current_consumption(mA)=18");
+    assert_eq!(failed.lines[3], "134-impedance(ohms)=110000.0");
+
     for (line, status, fragment) in [
-        ("[7] CALCULATOR TEST", 400, "requires a network"),
-        (
-            "[8] CALCULATOR TEST //TEST/254 extra",
-            400,
-            "requires a network",
-        ),
-        ("[9] CALCULATOR TEST //TEST/250", 404, "Network not found"),
+        ("[7] CALCULATOR TEST", 400, "Syntax Error"),
+        ("[9] CALCULATOR TEST //TEST/250", 408, "Can't find network"),
     ] {
         let response = s.handle(line);
         assert_eq!(response.status, status, "{line}");
@@ -1080,6 +1147,184 @@ fn calculator_envelope_count_and_guards() {
     let away = s.handle("[12] CALCULATOR TEST //TEST/254");
     assert_eq!(away.status, 404);
     assert!(away.final_text.contains("Project not selected"));
+    std::fs::remove_dir_all(directory).unwrap();
+}
+
+#[test]
+fn applications_catalogue_is_operator_supplied_validated_xml() {
+    let missing = Server::new(AccessLevel::Program).handle("[1] APPLICATIONS GET_CATALOG");
+    assert_eq!(missing.status, 408);
+    assert_eq!(
+        missing.final_text,
+        "408 Operation failed: bad application catalog filename: unitspec/applications.xml (No such file or directory)"
+    );
+
+    let directory = catalogue_dir();
+    let mut server = Server::new(AccessLevel::Program).with_unitspec_dir(directory.clone());
+    let response = server.handle("[2] APPLICATIONS GET_CATALOG");
+    assert_eq!(response.status, 344);
+    assert_eq!(
+        response.lines,
+        [
+            "343-Begin XML Snippet",
+            "347-<?xml version=\"1.0\"?>",
+            "347-<Applications><Application Address=\"56\" Name=\"Lighting\"/></Applications>",
+        ]
+    );
+    assert_eq!(response.final_text, "344 End XML Snippet");
+    assert_eq!(
+        server.handle("[3] APPLICATIONS GET_CATALOG extra").status,
+        400
+    );
+    std::fs::remove_dir_all(directory).unwrap();
+}
+
+#[test]
+fn repository_transform_leaf_help_matches_native_evidence() {
+    let mut server = Server::new(AccessLevel::Program);
+    for (command, expected) in [
+        (
+            "[app] APPLICATIONS GET_CATALOG ?",
+            "[app] 101-Help: syntax: APPLICATIONS GET_CATALOG\n[app] 101 Help: Get the applications catalog as XML\n",
+        ),
+        (
+            "[calc] CALCULATOR TEST ?",
+            "[calc] 101-Help: syntax: CALCULATOR TEST <network-address>\n[calc] 101-Help: Run the calculator for the given network\n[calc] 101 Help: <network-address> is the network to calculate.\n",
+        ),
+        (
+            "[cgl-in] CGL IMPORT ?",
+            "[cgl-in] 101 Help: syntax: CGL IMPORT <project-name> << <end-tag>>\n",
+        ),
+        (
+            "[cgl-out] CGL EXPORT ?",
+            "[cgl-out] 101 Help: syntax: CGL EXPORT <project-name> [ network_list [application_list] ]\n",
+        ),
+        (
+            "[repo] REPOSITORY USE ?",
+            "[repo] 101 Help: syntax: REPOSITORY USE NUMERIC_INDEX\n",
+        ),
+        (
+            "[migrate] TRANSFORM MIGRATE_SQL ?",
+            "[migrate] 101 Help: syntax: TRANSFORM MIGRATE_SQL <source-name>\n",
+        ),
+        (
+            "[project] TRANSFORM PROJECT ?",
+            "[project] 101 Help: syntax: TRANSFORM PROJECT [--test] <project-name> [<xslt-file-name> [<output-project-name>]]\n",
+        ),
+        (
+            "[sql-xml] TRANSFORM SQL_TO_XML ?",
+            "[sql-xml] 101 Help: syntax: TRANSFORM SQL_TO_XML <source-name> [dest-name]\n",
+        ),
+        (
+            "[sql-cg2] TRANSFORM SQL_TO_XML_CGATE2 ?",
+            "[sql-cg2] 101 Help: syntax: TRANSFORM SQL_TO_XML_CGATE2 <source-name> [dest-name]\n",
+        ),
+        (
+            "[xml-sql] TRANSFORM XML_TO_SQL ?",
+            "[xml-sql] 101 Help: syntax: TRANSFORM XML_TO_SQL <source-name> [dest-name]\n",
+        ),
+    ] {
+        assert_eq!(format_response(&server.handle(command)), expected, "{command}");
+    }
+}
+
+#[test]
+fn bounded_cgl_json_import_export_filters_and_skip_boundaries() {
+    let mut server = Server::new(AccessLevel::Program);
+    assert_eq!(server.handle("[1] PROJECT NEW TEST").status, 200);
+    assert_eq!(
+        server
+            .handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
+            .status,
+        200
+    );
+    assert_eq!(server.handle("[3] PROJECT USE TEST").status, 200);
+    let document = r#"{"cglVersion":"1.1","localNetwork":254,"networks":[{"address":254,"name":"Local","applications":[{"address":56,"type":56,"name":"Lighting","groups":[{"address":1,"name":"Lounge","levels":[{"address":255,"name":"On"}]}]}]}]}"#;
+    let imported = server.handle_document("[4] CGL IMPORT TEST", document);
+    assert_eq!(imported.status, 200);
+    assert_eq!(
+        imported.lines,
+        [
+            "380-Importing routable networks from local Network 254 ...",
+            "380-Importing Network 254",
+            "380-  Created new application 254/56 ('Lighting')",
+            "380-    Created new group 254/56/1 ('Lounge')",
+            "380-      Created new level 254/56/1/255 ('On')",
+            "380-Imported 3 object(s) of 1 network(s): 1 application(s), 1 group(s), 1 level(s) ",
+        ]
+    );
+    assert_eq!(imported.final_text, "200 OK.");
+
+    let exported = server.handle("[5] CGL EXPORT TEST 254 56");
+    assert_eq!(exported.status, 344);
+    assert_eq!(exported.lines[0], "343-Begin CGL snippet");
+    assert_eq!(
+        exported.final_text,
+        "344 End CGL snippet [numberOfExportedObjects:3]"
+    );
+    let payload = exported.lines[1].strip_prefix("347-").unwrap();
+    let exported_json: serde_json::Value = serde_json::from_str(payload).unwrap();
+    assert_eq!(exported_json["cglVersion"], "1.1");
+    assert_eq!(exported_json["localNetwork"], 254);
+    assert_eq!(exported_json["networks"][0]["address"], 254);
+    assert_eq!(
+        exported_json["networks"][0]["applications"][0]["groups"][0]["name"],
+        "Lounge"
+    );
+
+    // Existing labels are preserved while missing objects are added.
+    let changed = r#"{"cglVersion":"1.1","localNetwork":254,"networks":[{"address":254,"applications":[{"address":56,"name":"Changed Lighting","groups":[{"address":1,"name":"Living Room"},{"address":2,"name":"Hall"}]}]}]}"#;
+    let changed = server.handle_document("[6] CGL IMPORT TEST", changed);
+    assert_eq!(changed.status, 200);
+    assert!(changed
+        .lines
+        .iter()
+        .any(|line| line.contains("Created new group 254/56/2 ('Hall')")));
+    assert!(changed
+        .lines
+        .iter()
+        .all(|line| !line.contains("Living Room") && !line.contains("Changed Lighting")));
+    let exported = server.handle("[7] CGL EXPORT TEST 254 56");
+    let exported_json: serde_json::Value =
+        serde_json::from_str(exported.lines[1].strip_prefix("347-").unwrap()).unwrap();
+    let groups = exported_json["networks"][0]["applications"][0]["groups"]
+        .as_array()
+        .unwrap();
+    assert_eq!(groups[0]["name"], "Lounge");
+    assert_eq!(groups[1]["name"], "Hall");
+
+    // An application filter keeps the selected network shell.
+    let filtered = server.handle("[8] CGL EXPORT TEST 254 57");
+    let filtered_json: serde_json::Value =
+        serde_json::from_str(filtered.lines[1].strip_prefix("347-").unwrap()).unwrap();
+    assert_eq!(filtered_json["networks"].as_array().unwrap().len(), 1);
+    assert!(filtered_json["networks"][0]["applications"]
+        .as_array()
+        .unwrap()
+        .is_empty());
+
+    // Unknown/non-routable networks produce the retained incomplete 380
+    // result and do not create a network shell.
+    let skipped = r#"{"cglVersion":"1.1","localNetwork":254,"networks":[{"address":253,"name":"Missing","route":[253]}]}"#;
+    let skipped = server.handle_document("[9] CGL IMPORT TEST", skipped);
+    assert_eq!(skipped.status, 380);
+    assert_eq!(
+        skipped.final_text,
+        "380 CGL import not completed: Skipped 1 network(s). "
+    );
+    assert!(skipped.lines.iter().any(|line| line.contains("SKIPPED")));
+
+    for (command, status) in [
+        ("[10] CGL IMPORT TEST", 400),
+        ("[11] REPOSITORY USE 1", 502),
+        ("[12] TRANSFORM MIGRATE_SQL project.db", 502),
+        ("[13] TRANSFORM PROJECT TEST", 502),
+        ("[14] TRANSFORM SQL_TO_XML project.db", 502),
+        ("[15] TRANSFORM SQL_TO_XML_CGATE2 project.db", 502),
+        ("[16] TRANSFORM XML_TO_SQL project.xml", 502),
+    ] {
+        assert_eq!(server.handle(command).status, status, "{command}");
+    }
 }
 
 /// Mock determinism for MOCK BUS-DEL: drops the physical-bus record while
@@ -1171,8 +1416,8 @@ fn mock_bus_del_drops_physical_keeps_database() {
 }
 
 /// Mock determinism for here-document commands: DBSETXML stores and mirrors
-/// single-line field writes, multi-line documents stay opaque, CGL IMPORT
-/// counts non-blank lines, and malformed shapes fail closed.
+/// single-line field writes, multi-line documents stay opaque, and malformed
+/// document commands fail closed.
 #[test]
 fn document_store_mirror_import_and_rejects() {
     let mut s = Server::new(AccessLevel::Program);
@@ -1194,8 +1439,13 @@ fn document_store_mirror_import_and_rejects() {
             400,
             "requires a path",
         ),
-        ("[7] CGL IMPORT", "", 400, "does not accept"),
-        ("[8] CGL IMPORT NOPE", "a\n", 404, "Project not found"),
+        ("[7] CGL IMPORT", "", 400, "Syntax Error"),
+        (
+            "[8] CGL IMPORT NOPE",
+            r#"{"cglVersion":"1.1","localNetwork":254,"networks":[]}"#,
+            401,
+            "Project not found",
+        ),
         ("[9] FROBNICATE //TEST/254", "x", 400, "does not accept"),
     ] {
         let response = s.handle_document(line, doc);
@@ -1244,12 +1494,10 @@ fn document_store_mirror_import_and_rejects() {
         .iter()
         .chain(std::iter::once(&hashed.final_text))
         .any(|line| line.contains("UnitName=a#b")));
-    // CGL import counts non-blank lines and records the event.
+    // Invalid CGL is rejected without treating arbitrary text as an import.
     let import = s.handle_document("[14] CGL IMPORT TEST", "a\n\nb\nc\n");
-    assert_eq!(import.status, 200);
-    assert!(import.lines.iter().any(|l| l.contains("imported=3")));
-    let events = s.drain_events();
-    assert!(events.iter().any(|e| e == "#e# cgl import TEST"));
+    assert_eq!(import.status, 400);
+    assert!(import.final_text.contains("Invalid CGL"));
     // Config-level access refuses documents outright.
     let mut config = Server::new(AccessLevel::Config);
     let refused = config.handle_document("[1] DBSETXML //TEST/254/p/20/UnitName", "X");

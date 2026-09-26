@@ -87,6 +87,22 @@ fn state_path() -> PathBuf {
     ))
 }
 
+fn repository_transform_unitspec() -> PathBuf {
+    let directory = state_path().with_extension("repository-transform-unitspec");
+    std::fs::create_dir_all(&directory).unwrap();
+    std::fs::write(
+        directory.join("applications.xml"),
+        "<?xml version=\"1.0\"?>\n<Applications><Application Address=\"56\" Name=\"Lighting\"/></Applications>\n",
+    )
+    .unwrap();
+    std::fs::write(
+        directory.join("cbusunits.xml"),
+        r#"<CBusUnits><Calculator><MinImpedance>400</MinImpedance><MaxImpedance>1500</MaxImpedance><MaxSupplyCurrent>2000</MaxSupplyCurrent></Calculator><Units><Unit><CatalogNumber>5034N</CatalogNumber><CurrentDrawn>18</CurrentDrawn><CurrentSupplied>0</CurrentSupplied><Impedance>110000</Impedance></Unit><Unit><CatalogNumber>5500BUR</CatalogNumber><CurrentDrawn>0</CurrentDrawn><CurrentSupplied>0</CurrentSupplied><Impedance>1000</Impedance></Unit><Unit><CatalogNumber>5500PS</CatalogNumber><CurrentDrawn>0</CurrentDrawn><CurrentSupplied>350</CurrentSupplied><Impedance>20000</Impedance></Unit></Units></CBusUnits>"#,
+    )
+    .unwrap();
+    directory
+}
+
 fn pci() -> (Arc<PciClient>, tokio::io::DuplexStream) {
     let (client, remote) = tokio::io::duplex(8192);
     let (rd, wr) = tokio::io::split(client);
@@ -1129,7 +1145,7 @@ async fn aircon_help_and_native_validation_fail_before_pci_io() {
 }
 
 #[tokio::test]
-async fn armed_auth_gate_covers_aircon_mutations_but_not_help() {
+async fn armed_auth_gate_covers_mutations_but_not_help() {
     let path = state_path();
     let (pci, _remote) = pci();
     let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
@@ -1141,6 +1157,24 @@ async fn armed_auth_gate_covers_aircon_mutations_but_not_help() {
         service.handle(&mut client, "[1] AIRCON ?").await.status,
         101
     );
+    for (line, final_text) in [
+        (
+            "[cgl] CGL IMPORT ?",
+            "101 Help: syntax: CGL IMPORT <project-name> << <end-tag>>",
+        ),
+        (
+            "[repository] REPOSITORY USE ?",
+            "101 Help: syntax: REPOSITORY USE NUMERIC_INDEX",
+        ),
+        (
+            "[transform] TRANSFORM PROJECT ?",
+            "101 Help: syntax: TRANSFORM PROJECT [--test] <project-name> [<xslt-file-name> [<output-project-name>]]",
+        ),
+    ] {
+        let response = service.handle(&mut client, line).await;
+        assert_eq!(response.status, 101, "{line}: {response:?}");
+        assert_eq!(response.final_text, final_text, "{line}");
+    }
     assert!(!super::requires_programming_auth(
         "AIRCON",
         "REFRESH",
@@ -3396,8 +3430,24 @@ async fn capabilities_report_observation_without_device_readback() {
         "base64-here-document-and-345-347-346-envelope"
     );
     assert_eq!(document["file_host_filesystem"], false);
-    assert_eq!(document["cgl_import"], false);
-    assert_eq!(document["cgl_export"], false);
+    assert_eq!(document["cgl_import"], true);
+    assert_eq!(document["cgl_export"], true);
+    assert_eq!(
+        document["cgl_scope"],
+        "bounded-cgl-1.1-database-labels-and-known-routes"
+    );
+    assert_eq!(document["cgl_controller_side_effects"], false);
+    assert_eq!(
+        document["applications_catalog"],
+        "configured-unitspec-directory-applications.xml"
+    );
+    assert_eq!(
+        document["network_calculator"],
+        "configured-cbusunits-database-records"
+    );
+    assert_eq!(document["network_calculator_physical_measurement"], false);
+    assert_eq!(document["repository_use"], false);
+    assert_eq!(document["vendor_repository_transforms"], false);
     assert_eq!(
         document["native_family_help_roots"],
         serde_json::json!([
@@ -8801,6 +8851,118 @@ async fn project_copy_and_secondary_delete_are_durable_database_only() {
 }
 
 #[tokio::test]
+async fn local_catalog_calculator_and_cgl_exchange_are_exact_and_durable() {
+    let path = state_path();
+    let unitspec = repository_transform_unitspec();
+    let (pci, mut remote) = pci();
+    let service = Service::new(
+        &fixture(),
+        None,
+        path.clone(),
+        pci.clone(),
+        Some(unitspec.clone()),
+    )
+    .unwrap();
+    let mut client = ClientState::default();
+
+    let applications = service
+        .handle(&mut client, "[catalog] APPLICATIONS GET_CATALOG")
+        .await;
+    assert_eq!(applications.status, 344);
+    assert_eq!(
+        applications.lines,
+        [
+            "343-Begin XML Snippet",
+            "347-<?xml version=\"1.0\"?>",
+            "347-<Applications><Application Address=\"56\" Name=\"Lighting\"/></Applications>",
+        ]
+    );
+    assert_eq!(applications.final_text, "344 End XML Snippet");
+
+    for command in [
+        "[u5-catalog] DBSETSAFE //HARNESS/254/p/5/CatalogNumber 5034N",
+        "[u5-type] DBSETSAFE //HARNESS/254/p/5/UnitType KEY4",
+        "[u6] DBADDSAFE //HARNESS/254 Unit 6 Burden",
+        "[u6-catalog] DBSETSAFE //HARNESS/254/p/6/CatalogNumber 5500BUR",
+        "[u6-type] DBSETSAFE //HARNESS/254/p/6/UnitType BURDEN",
+        "[u7] DBADDSAFE //HARNESS/254 Unit 7 Supply",
+        "[u7-catalog] DBSETSAFE //HARNESS/254/p/7/CatalogNumber 5500PS",
+        "[u7-type] DBSETSAFE //HARNESS/254/p/7/UnitType POWER",
+    ] {
+        let response = service.handle(&mut client, command).await;
+        assert_eq!(response.status, 200, "{command}: {response:?}");
+    }
+    let calculation = service
+        .handle(
+            &mut client,
+            "[calculator] CALCULATOR TEST //HARNESS/254 ignored",
+        )
+        .await;
+    assert_eq!(calculation.status, 134);
+    assert_eq!(
+        calculation.lines,
+        [
+            "134-result: OK",
+            "134-current_supply(mA)=350",
+            "134-current_consumption(mA)=18",
+            "134-impedance(ohms)=944.0",
+            "134-units_calculated=3",
+        ]
+    );
+    assert_eq!(calculation.final_text, "134 units_not_calculated=0");
+
+    let document = r#"{"cglVersion":"1.1","localNetwork":254,"networks":[{"address":254,"applications":[{"address":57,"type":57,"name":"Local Application","groups":[{"address":2,"name":"Hall","levels":[{"address":255,"name":"On"}]}]}]}]}"#;
+    let imported = service
+        .handle_document(&mut client, "[import] CGL IMPORT HARNESS", document)
+        .await;
+    assert_eq!(imported.status, 200, "{imported:?}");
+    assert!(imported
+        .lines
+        .iter()
+        .any(|line| line.contains("Created new application 254/57")));
+    assert_eq!(imported.final_text, "200 OK.");
+    let exported = service
+        .handle(&mut client, "[export] CGL EXPORT HARNESS 254 57")
+        .await;
+    assert_eq!(exported.status, 344);
+    assert_eq!(
+        exported.final_text,
+        "344 End CGL snippet [numberOfExportedObjects:3]"
+    );
+    let exported_json: serde_json::Value =
+        serde_json::from_str(exported.lines[1].strip_prefix("347-").unwrap()).unwrap();
+    assert_eq!(
+        exported_json["networks"][0]["applications"][0]["groups"][0]["name"],
+        "Hall"
+    );
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err()
+    );
+
+    drop(service);
+    let restarted =
+        Service::new(&fixture(), None, path.clone(), pci, Some(unitspec.clone())).unwrap();
+    let mut restarted_client = ClientState::default();
+    let exported = restarted
+        .handle(
+            &mut restarted_client,
+            "[restart-export] CGL EXPORT HARNESS 254 57",
+        )
+        .await;
+    let exported_json: serde_json::Value =
+        serde_json::from_str(exported.lines[1].strip_prefix("347-").unwrap()).unwrap();
+    assert_eq!(
+        exported_json["networks"][0]["applications"][0]["groups"][0]["levels"][0]["name"],
+        "On"
+    );
+
+    std::fs::remove_file(path).unwrap();
+    std::fs::remove_dir_all(unitspec).unwrap();
+}
+
+#[tokio::test]
 async fn administrative_guards_keep_configured_binding_and_unsupported_formats_closed() {
     let path = state_path();
     let before = std::fs::read(&path).ok();
@@ -8845,14 +9007,23 @@ async fn administrative_guards_keep_configured_binding_and_unsupported_formats_c
     for command in [
         "[5] PROJECT REPAIR HARNESS",
         "[6] REPOSITORY USE 1",
-        "[7] CGL EXPORT HARNESS * *",
+        "[7] TRANSFORM MIGRATE_SQL project.db",
+        "[8] TRANSFORM PROJECT HARNESS",
+        "[9] TRANSFORM SQL_TO_XML project.db",
+        "[10] TRANSFORM SQL_TO_XML_CGATE2 project.db",
+        "[11] TRANSFORM XML_TO_SQL project.xml",
     ] {
-        assert_eq!(
-            service.handle(&mut client, command).await.status,
-            502,
-            "{command}"
-        );
+        let response = service.handle(&mut client, command).await;
+        assert_eq!(response.status, 502, "{command}: {response:?}");
     }
+    assert_eq!(std::fs::read(&path).unwrap(), state_before);
+    assert_eq!(
+        service
+            .handle(&mut client, "[12] CGL EXPORT HARNESS * *")
+            .await
+            .status,
+        344
+    );
     drop(service);
     if before.is_none() {
         std::fs::remove_file(path).unwrap();
@@ -8886,25 +9057,25 @@ async fn repository_list_is_one_exact_read_only_cmqttd_descriptor() {
 }
 
 #[tokio::test]
-async fn document_semantics_fail_closed_without_mutation_and_remain_authenticated() {
+async fn document_semantics_validate_before_mutation_and_remain_authenticated() {
     let path = state_path();
     let (pci, _remote) = pci();
     let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
     let state_before = std::fs::read(&path).unwrap();
     let mut client = ClientState::default();
-    for (line, document) in [
-        (
+    let dbset = service
+        .handle_document(
+            &mut client,
             "[doc] DBSETXML //HARNESS/254/p/5",
             "<Unit><Address>5</Address></Unit>\n",
-        ),
-        ("[cgl] CGL IMPORT HARNESS", "opaque\n"),
-    ] {
-        let response = service.handle_document(&mut client, line, document).await;
-        assert_eq!(response.status, 502, "{line}: {response:?}");
-        assert!(response
-            .final_text
-            .contains("semantics are not implemented"));
-    }
+        )
+        .await;
+    assert_eq!(dbset.status, 502, "{dbset:?}");
+    let invalid = service
+        .handle_document(&mut client, "[cgl] CGL IMPORT HARNESS", "opaque\n")
+        .await;
+    assert_eq!(invalid.status, 400, "{invalid:?}");
+    assert!(invalid.final_text.contains("Invalid CGL"));
     assert_eq!(
         service.model.lock().await.projects["HARNESS"].networks[&254].units[&5].fields["TagName"],
         "Fixture eDLT"
@@ -8933,16 +9104,24 @@ async fn document_semantics_fail_closed_without_mutation_and_remain_authenticate
             .status,
         200
     );
-    for line in ["[4] DBSETXML //HARNESS/254/p/5", "[5] CGL IMPORT HARNESS"] {
-        assert_eq!(
-            authed
-                .handle_document(&mut authenticated, line, "opaque\n")
-                .await
-                .status,
-            502,
-            "{line}"
-        );
-    }
+    assert_eq!(
+        authed
+            .handle_document(
+                &mut authenticated,
+                "[4] DBSETXML //HARNESS/254/p/5",
+                "opaque\n",
+            )
+            .await
+            .status,
+        502
+    );
+    assert_eq!(
+        authed
+            .handle_document(&mut authenticated, "[5] CGL IMPORT HARNESS", "opaque\n",)
+            .await
+            .status,
+        400
+    );
     std::fs::remove_file(path).unwrap();
     std::fs::remove_file(auth_path).unwrap();
 }

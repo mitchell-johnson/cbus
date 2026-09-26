@@ -2522,15 +2522,22 @@ impl Server {
         }
         if root == "REPOSITORY" && sub == "USE" {
             if args.len() != 1 {
-                return Some(err(
-                    tag,
-                    status::BAD_REQUEST,
-                    "400 REPOSITORY USE requires a name",
-                ));
+                return Some(err(tag, status::BAD_REQUEST, "400 Syntax Error."));
             }
-            self.application_state
-                .insert("REPOSITORY".to_string(), args[0].to_string());
-            return Some(ok(tag, vec![], "200 OK"));
+            return Some(err(
+                tag,
+                502,
+                "502 REPOSITORY USE requires unsupported server-global repository selection",
+            ));
+        }
+        if root == "TRANSFORM" {
+            return Some(err(
+                tag,
+                502,
+                &format!(
+                    "502 TRANSFORM {sub} requires proprietary repository transformation machinery"
+                ),
+            ));
         }
         if root == "PROJECT" && sub == "DIRFULL" {
             let mut rows: Vec<String> = self
@@ -2608,18 +2615,6 @@ impl Server {
             return None;
         }
 
-        if root == "APPLICATIONS" && sub == "GET_CATALOG" {
-            return Some(envelope(
-                tag,
-                315,
-                [
-                    "56=Lighting",
-                    "172=Air Conditioning",
-                    "192=Media Transport",
-                    "205=Audio",
-                ],
-            ));
-        }
         let state_prefix = format!("{root} {sub}");
         if sub == "LIST" || sub == "STATUS" {
             let mut rows: Vec<String> = self

@@ -163,9 +163,12 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // rows to local_database with selected-project persistence and explicit
     // repairs for native duplicate/non-numeric address corruption. DBADD,
     // DBCOPY, DBCREATE, DBNEW, DBUPDATE and DBVERIFY remain fail-closed.
+    // APPLICATIONS GET_CATALOG, CALCULATOR TEST, CGL IMPORT and CGL EXPORT
+    // move fail_closed_502 -> local_database with bounded operator catalogue
+    // inputs and durable label-only CGL 1.1 semantics.
     assert_eq!(class_count(RoutingClass::Physical), 215);
-    assert_eq!(class_count(RoutingClass::LocalDatabase), 163);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 51);
+    assert_eq!(class_count(RoutingClass::LocalDatabase), 167);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 47);
     assert_eq!(class_count(RoutingClass::Obsolete400), 2);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here
@@ -902,16 +905,79 @@ fn administrative_subset_is_local_while_vendor_formats_stay_fail_closed() {
         "PROJECT DELETE",
         "REPOSITORY LIST",
         "DBSETXML",
+        "APPLICATIONS GET_CATALOG",
+        "CALCULATOR TEST",
+        "CGL IMPORT",
+        "CGL EXPORT",
     ] {
         assert_eq!(class(path), RoutingClass::LocalDatabase, "{path}");
     }
     for path in [
-        "CGL IMPORT",
-        "CGL EXPORT",
         "REPOSITORY USE",
         "PROJECT REPAIR",
+        "TRANSFORM MIGRATE_SQL",
+        "TRANSFORM PROJECT",
+        "TRANSFORM SQL_TO_XML",
+        "TRANSFORM SQL_TO_XML_CGATE2",
+        "TRANSFORM XML_TO_SQL",
     ] {
         assert_eq!(class(path), RoutingClass::FailClosed502, "{path}");
+    }
+}
+
+#[test]
+fn repository_transform_fixture_pins_local_exchange_and_fail_closed_boundaries() {
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_repository_transform.json"
+    ))
+    .expect("native repository/transform evidence must remain valid JSON");
+    assert_eq!(fixture["oracle"]["version"], "3.4.0.2001");
+    assert_eq!(
+        fixture["oracle"]["jar_sha256"],
+        "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+    );
+    assert_eq!(
+        fixture["calculator_test"]["success_case"]["lines"][0],
+        "134-result: OK"
+    );
+    assert_eq!(fixture["cgl_1_1"]["observed_rules"]["version"], "1.1");
+    assert_eq!(fixture["repository_use"]["scope"], "server-global");
+
+    for path in [
+        "APPLICATIONS GET_CATALOG",
+        "CALCULATOR TEST",
+        "CGL EXPORT",
+        "CGL IMPORT",
+    ] {
+        let row = CAPABILITY_MATRIX
+            .iter()
+            .find(|entry| entry.path == path)
+            .unwrap_or_else(|| panic!("missing capability row {path}"));
+        assert_eq!(row.class, RoutingClass::LocalDatabase, "{path}");
+        assert!(
+            row.evidence
+                .contains("native_cgate_repository_transform.json"),
+            "{path}"
+        );
+    }
+    for path in [
+        "REPOSITORY USE",
+        "TRANSFORM MIGRATE_SQL",
+        "TRANSFORM PROJECT",
+        "TRANSFORM SQL_TO_XML",
+        "TRANSFORM SQL_TO_XML_CGATE2",
+        "TRANSFORM XML_TO_SQL",
+    ] {
+        let row = CAPABILITY_MATRIX
+            .iter()
+            .find(|entry| entry.path == path)
+            .unwrap_or_else(|| panic!("missing capability row {path}"));
+        assert_eq!(row.class, RoutingClass::FailClosed502, "{path}");
+        assert!(
+            row.evidence
+                .contains("native_cgate_repository_transform.json"),
+            "{path}"
+        );
     }
 }
 
