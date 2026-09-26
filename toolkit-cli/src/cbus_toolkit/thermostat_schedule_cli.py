@@ -121,7 +121,9 @@ def _remember(args, evidence, error):
         'phase': evidence['phase'], 'evidence_export_failed': True,
         'native_operation_completed': evidence['native_operation_completed'],
         **{name: native[name] for name in ('backup_created', 'backup_source_save_confirmed',
+             'backup_source_save_outcome_uncertain', 'backup_copy_outcome_uncertain',
              'target_mutation_attempted', 'target_save_attempted', 'target_save_confirmed',
+             'target_save_outcome_uncertain', 'outcome_uncertain',
              'persistence_verified') if type(native.get(name)) is bool},
     }
     try:
@@ -176,7 +178,10 @@ def record_output_error(args, error):
             evidence = {'format': summary['format'], 'native_operation_completed': summary['native_operation_completed'],
                         'native_result': {name: value for name, value in summary.items() if name in (
                             'backup_created', 'backup_source_save_confirmed', 'target_mutation_attempted',
-                            'target_save_attempted', 'target_save_confirmed', 'persistence_verified')},
+                            'backup_source_save_outcome_uncertain', 'backup_copy_outcome_uncertain',
+                            'target_save_attempted', 'target_save_confirmed',
+                            'target_save_outcome_uncertain', 'outcome_uncertain',
+                            'persistence_verified')},
                         'evidence_export_failed': True}
         evidence.update(complete=False, phase='output', error=_brief(error))
         _remember(args, evidence, error)

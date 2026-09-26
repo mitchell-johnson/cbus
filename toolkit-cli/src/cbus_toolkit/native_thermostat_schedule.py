@@ -177,7 +177,14 @@ class NativeThermostatScheduleLevels:
         self._evidence = {'format': 'cbus-native-thermostat-schedule-result-v1', 'operation': operation,
                           'state': 'preconditions', 'complete': False, 'commands': [], 'levels': [],
                           'backup_created': False, 'target_mutation_attempted': False,
+                          'backup_source_save_attempted': False,
+                          'backup_source_save_confirmed': False,
+                          'backup_source_save_outcome_uncertain': False,
+                          'backup_copy_attempted': False,
+                          'backup_copy_outcome_uncertain': False,
                           'target_save_attempted': False, 'target_save_confirmed': False,
+                          'target_save_outcome_uncertain': False,
+                          'outcome_uncertain': False, 'uncertain_commands': [],
                           'persistence_verified': False, 'batch_atomic': False, 'automatic_retries': 0,
                           'physical_device_programmed': False, 'original_ui_workflow_executed': False,
                           'native_collection_order_verified': False,
@@ -200,8 +207,43 @@ class NativeThermostatScheduleLevels:
 
     def _fail(self, error):
         self.last_error = error
-        self._evidence.update(complete=False, error=_error(error),
-                              state='uncertain' if self._evidence['target_mutation_attempted'] or self._evidence['target_save_attempted'] else 'stopped')
+        incomplete = [row.get('command', '<unknown>')
+                      for row in self._evidence.get('commands', ())
+                      if row.get('attempted') is True
+                      and row.get('completed') is not True]
+        last = incomplete[-1] if incomplete else ''
+        state = self._evidence.get('state')
+        backup_save_uncertain = bool(
+            incomplete and state == 'backup'
+            and self._evidence.get('backup_source_save_attempted')
+            and not self._evidence.get('backup_source_save_confirmed')
+            and last.startswith('PROJECT SAVE '))
+        backup_copy_uncertain = bool(
+            incomplete and state == 'backup'
+            and self._evidence.get('backup_copy_attempted')
+            and not self._evidence.get('backup_created')
+            and last.startswith('PROJECT COPY '))
+        target_save_uncertain = bool(
+            incomplete and self._evidence.get('target_save_attempted')
+            and not self._evidence.get('target_save_confirmed')
+            and last.startswith('PROJECT SAVE '))
+        mutating_reply_uncertain = bool(
+            incomplete and self._evidence.get('target_mutation_attempted')
+            and (last.startswith('DBADDSAFE ') or last.startswith('DBSETSAFE ')))
+        outcome_uncertain = (backup_save_uncertain or backup_copy_uncertain
+                             or target_save_uncertain
+                             or mutating_reply_uncertain)
+        self._evidence.update(
+            complete=False, error=_error(error),
+            state=('uncertain' if outcome_uncertain
+                   or self._evidence['target_mutation_attempted']
+                   or self._evidence['target_save_attempted'] else 'stopped'))
+        self._evidence.update(
+            outcome_uncertain=outcome_uncertain,
+            uncertain_commands=incomplete,
+            backup_source_save_outcome_uncertain=backup_save_uncertain,
+            backup_copy_outcome_uncertain=backup_copy_uncertain,
+            target_save_outcome_uncertain=target_save_uncertain)
         try:
             result = self._finish()
         except BaseException as secondary:

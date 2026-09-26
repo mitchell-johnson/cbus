@@ -6,6 +6,7 @@ from unittest.mock import Mock, patch
 
 from cbus_toolkit import thermostat_schedule_cli as helper
 from cbus_toolkit.cli import build_parser, run
+from cbus_toolkit.native_thermostat_schedule import NativeScheduleError
 from tests.test_cli_thermostat_schedule import Connection
 from tests.test_native_thermostat_scheduling import CompositionClient, UNIT, RAW, group
 
@@ -101,7 +102,8 @@ class NativeThermostatSchedulingCLITests(unittest.TestCase):
         complete = {}
         for address, action in ((12, 'Enable'), (13, 'Disable'), (14, 'Overrd')):
             complete[address] = group(address, {
-                number: {'oid': '00000000-0000-0000-0000-' + format(address * 256 + number, '012x'),
+                number: {'oid': '00000000-0000-0000-0000-'
+                                + format(address * 256 + number, '012x'),
                          'value': number,
                          'tag': 'Sched ' + action + (' Zone:' if number in (1, 2, 4, 8, 16) else ' Zones:')
                                 + ','.join(name for bit, name in ((1, 'unsw'), (2, '1'), (4, '2'),
@@ -114,6 +116,30 @@ class NativeThermostatSchedulingCLITests(unittest.TestCase):
         self.assertFalse(result['target_mutation_attempted'])
         self.assertFalse(any(command.startswith(('PROJECT ', 'DBADD', 'DBSET'))
                              for command in client.commands))
+
+    def test_lost_target_save_reply_is_exported_as_uncertain_without_retry(self):
+        client = CompositionClient(groups={12: group(12)})
+        seen = 0
+
+        def lose(command):
+            nonlocal seen
+            if command == 'PROJECT SAVE TEST':
+                seen += 1
+                if seen == 2:
+                    return TimeoutError('target save reply lost')
+            return None
+
+        client.after = lose
+        args = arguments('--apply', '--backup-project', 'BACKUP')
+        with self.assertRaises(NativeScheduleError) as caught:
+            self.invoke(args, client)
+        evidence = helper.error_payload(caught.exception, args)[helper.EVIDENCE]
+        native = evidence['native_result']
+        self.assertTrue(native['outcome_uncertain'])
+        self.assertTrue(native['target_save_outcome_uncertain'])
+        self.assertFalse(native['target_save_confirmed'])
+        self.assertEqual(native['automatic_retries'], 0)
+        self.assertEqual(client.commands.count('PROJECT SAVE TEST'), 2)
 
 
 if __name__ == '__main__':

@@ -1273,9 +1273,12 @@ cbus-toolkit cgate --host 127.0.0.1 --port 20033 thermostat-schedule-compose \
 
 Add `--apply --backup-project THBAK2` to create a missing application 203, role
 groups and scheduling levels, then persist them with one target project save.
-The command preserves and verifies the complete unit record and existing native
-metadata. Its new composition layer passes 14 focused host tests plus two fresh
-owned C-Gate 3.4.0.2001 integrations covering manager and public CLI paths.
+The preview exposes the exact application/group/level creation plan. Apply
+rejects stale or ambiguous project identities before mutation, preserves and
+verifies the complete unit record plus unrelated project/network/unit/application
+metadata, and never retries a lost write or save reply. Its composition layer
+passes 18 focused host tests; two retained owned C-Gate 3.4.0.2001 integrations
+cover the manager and public CLI transaction paths from the earlier checkpoint.
 Physical thermostat verification remains outstanding.
 
 Evaluate the [retained outer scheduling workflow](docs/thermostat-scheduling.md) offline over supplied
@@ -1862,7 +1865,7 @@ outside that frozen wheel:
 - [PCI routing](docs/pci-routing.md), [incoming routing](docs/pci-incoming-routing.md), [routed RECALL](docs/pci-routed-recall.md) and [routed IDENTIFY](docs/pci-routed-identify.md): separate codec and transport checkpoints; IDENTIFY passes 104 tests with fresh original matcher comparisons and owned loopback exchanges.
 - [Database CSV export](docs/toolkit-database-csv.md): 82 current core/CLI tests, two host Windows-adapter guards, five owned Windows tests and one owned C-Gate acceptance for captured values, exact saved column selection, cached-object projection, RELAY4/generic/KEYE1-3/DIMDN8/RELDN12/SENPIROA file/live native XML, explicit ordered multi-unit and network-document-order export from one shared snapshot/request with whole-selection rejection before output creation, KEYE per-block secondary-application associations, ordered repeated group associations, guarded Area13 persistence, portable UTF-8 and Toolkit-native Windows ACP output; the historical 23-test checkpoint includes 88 fresh original cases per run, while original Toolkit manager enumeration remains unverified.
 - [Thermostat temperature conversions](docs/thermostat-temperature.md): 17 tests with 28,840 fresh original cases per run and separate original Windows arithmetic acceptance.
-- [Thermostat scheduling](docs/native-thermostat-schedule.md): 67 tests including the retained core, native backup/save/reload, public CLI and error/cleanup regressions; all 14 captured original outcomes replayed and eight native project/group scenarios per run.
+- [Thermostat scheduling](docs/native-thermostat-schedule.md): 67 tests in the retained level-writer checkpoint; the composed unit/application/group/level workflow adds 18 current host tests and two retained owned-C-Gate cases with exact planning, backup, one target save/reload, opaque project-data preservation and explicit no-retry uncertainty evidence.
 
 These overlapping focused counts must not be added to the full-suite count.
 Their linked fixtures identify the exact inputs and limitations; a later full

@@ -321,14 +321,18 @@ GLOBAL_PROGRAMMING_EVIDENCE_PATHS = [
 # - combined 67-test checkpoint: retained core + 5 native integration
 #   methods / 8 project-group scenarios + CLI + backup/save/reload, but
 #   with no fresh original execution in that checkpoint;
-# - native composition: 14-test host layer (8 manager + 6 CLI) with
-#   exactly one target save per case plus 2 fresh owned C-Gate 3.4.0.2001
+# - native composition: the retained acceptance pins the original 14-test
+#   host layer (8 manager + 6 CLI) with exactly one target save per case
+#   plus 2 fresh owned C-Gate 3.4.0.2001
 #   integrations (manager: application 203 + 3 groups + 93 levels; CLI:
 #   31 levels in one shared group + read-only no-op). The composition
 #   review records ``new_original_instruction_execution`` = false, and the
 #   composition acceptance ``not_claimed`` list (inherited loader/service
 #   factories, collection-order equivalence, remaining settings,
-#   physical) matches the ledger limits.
+#   physical) matches the ledger limits. Four later portable hardening
+#   tests bring the current source layer to 18 (11 manager + 7 CLI) and
+#   add opaque-project preservation and lost-reply evidence without
+#   changing the retained native/original acceptance facts below.
 # No single committed acceptance record bounds the FULL row scope
 # (conversions + levels + outer + load + composition + native CLI): each
 # record explicitly disclaims the other sub-areas, so the row-level

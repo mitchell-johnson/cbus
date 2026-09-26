@@ -441,7 +441,7 @@ with no provisioning. Gate runs here therefore rest on committed
     scheduling core/adapter/CLI -- not temperature, outer, load, or the
     full dialog.
   - "14-test host layer, exactly one target save, 2 fresh owned C-Gate
-    3.4.0.2001 integrations": verified. The composition review records
+    3.4.0.2001 integrations": verified as the retained checkpoint. The composition review records
     14 composition tests (8 manager + 6 CLI) and
     `new_original_instruction_execution` false; the composition
     acceptance records `tests_run` 2 with `target_project_save_count` 1
@@ -449,6 +449,9 @@ with no provisioning. Gate runs here therefore rest on committed
     levels + read-only no-op). Its `not_claimed` list (inherited
     loader/service factories, collection-order equivalence, remaining
     settings, physical) matches the ledger limits.
+    The current source has 18 portable composition tests (11 manager +
+    7 CLI); the four later preservation/uncertainty tests do not rewrite
+    that historical native acceptance record or add original execution.
   - Self-limit reconciliation: "no native writes/physical" applies to
     the outer/levels/load sub-areas; "exactly one target save" applies
     only to the narrow composition scope (one project/unit XML snapshot,

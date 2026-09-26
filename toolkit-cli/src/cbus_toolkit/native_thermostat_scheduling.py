@@ -68,15 +68,6 @@ def _name(value, label):
     return value
 
 
-def _one(parent, tag, *, address=None):
-    rows = _children(parent, tag)
-    if address is not None:
-        rows = [row for row in rows if _field(row, 'Address') == str(address)]
-    if len(rows) != 1:
-        raise ValueError('Expected exactly one native ' + tag)
-    return rows[0]
-
-
 @dataclass(frozen=True)
 class NativeCompositionGroup:
     identity: str
@@ -93,8 +84,15 @@ class NativeCompositionGroup:
 @dataclass(frozen=True)
 class NativeCompositionSnapshot:
     raw: tuple[tuple[str, int], ...]
+    unit_oid: str
     unit_identity: tuple[str, str, str | None]
     unit_metadata: str
+    project_metadata: str
+    network_metadata: str
+    other_networks: tuple[str, ...]
+    other_units: tuple[str, ...]
+    other_applications: tuple[str, ...]
+    object_oids: tuple[str, ...]
     application_identity: str | None
     application_tag: str | None
     application_metadata: str | None
@@ -104,11 +102,97 @@ class NativeCompositionSnapshot:
         return dict(self.raw)
 
 
-def _snapshot(text, network_address, unit_address):
+def _node_shape(node, *, exclude=frozenset()):
+    attrs = sorted((node.attributes.item(index).name,
+                    node.attributes.item(index).value)
+                   for index in range(node.attributes.length))
+    children = [_shape(child) for child in node.childNodes
+                if not(child.nodeType == Node.ELEMENT_NODE
+                       and child.tagName in exclude)]
+    return _json((node.tagName, attrs, children))
+
+
+def _preserved_shape(node):
+    """Canonical opaque shape with C-Gate's empty Level/TagsDLT normalization."""
+    if node.nodeType in (Node.TEXT_NODE, Node.CDATA_SECTION_NODE):
+        return ('text', node.data)
+    if node.nodeType == Node.COMMENT_NODE:
+        return ('comment', node.data)
+    if node.nodeType == Node.PROCESSING_INSTRUCTION_NODE:
+        return ('instruction', node.target, node.data)
+    if node.nodeType != Node.ELEMENT_NODE:
+        raise ValueError('Unsupported native metadata node')
+    attrs = sorted((node.attributes.item(index).name,
+                    node.attributes.item(index).value)
+                   for index in range(node.attributes.length))
+    children = []
+    for child in node.childNodes:
+        if (node.tagName == 'Level'
+                and child.nodeType == Node.ELEMENT_NODE
+                and child.tagName == 'TagsDLT'
+                and not child.attributes.length and not child.childNodes):
+            continue
+        children.append(_preserved_shape(child))
+    return (node.tagName, attrs, children)
+
+
+def _rows_by_address(parent, kind):
+    rows = _children(parent, kind)
+    values = []
+    for row in rows:
+        values.append((_byte(_field(row, 'Address')), row))
+    return values
+
+
+def _one_by_address(parent, kind, address):
+    rows = [row for value, row in _rows_by_address(parent, kind)
+            if value == address]
+    if len(rows) != 1:
+        raise ValueError('Expected exactly one native ' + kind
+                         + ' at address ' + str(address))
+    return rows[0]
+
+
+def _object_oids(root):
+    """Inventory native object identities before accepting OID-addressed writes."""
+    admitted = frozenset(('Project', 'Network', 'Application', 'Group',
+                          'NetVar', 'Unit', 'Level'))
+    result = []
+
+    def visit(node):
+        if node.nodeType != Node.ELEMENT_NODE:
+            return
+        if node.tagName in admitted:
+            rows = _children(node, 'OID')
+            if len(rows) > 1:
+                raise ValueError('Native object contains duplicate OID fields')
+            if rows:
+                result.append(_oid(_field(node, 'OID')))
+        for child in node.childNodes:
+            visit(child)
+
+    visit(root)
+    if len(result) != len(set(result)):
+        raise ValueError('Native project contains duplicate object identities')
+    return tuple(result)
+
+
+def _snapshot(text, project_name, network_address, unit_address):
     root = _container(text, 'Installation').documentElement
-    project = _one(root, 'Project')
-    network = _one(project, 'Network', address=network_address)
-    unit = _one(network, 'Unit', address=unit_address)
+    projects = _children(root, 'Project')
+    if (len(projects) != 1
+            or _field(projects[0], 'Address').upper() != project_name.upper()):
+        raise ValueError('Native XML must contain exactly the selected project')
+    project = projects[0]
+    networks = _rows_by_address(project, 'Network')
+    if not networks or len(networks) != len({address for address, _row in networks}):
+        raise ValueError('Native project networks must have unique byte addresses')
+    network = _one_by_address(project, 'Network', network_address)
+    units = _rows_by_address(network, 'Unit')
+    if len(units) != len({address for address, _row in units}):
+        raise ValueError('Native network units must have unique byte addresses')
+    unit = _one_by_address(network, 'Unit', unit_address)
+    unit_oid = _oid(_field(unit, 'OID'))
     unit_type = _field(unit, 'UnitType')
     firmware = _field(unit, 'FirmwareVersion')
     if unit_type != 'PC_TSA':
@@ -125,13 +209,29 @@ def _snapshot(text, network_address, unit_address):
             raise ValueError('Expected exactly one stored thermostat parameter: ' + name)
         raw.append((name, _byte_text(rows[0].getAttribute('Value'), name)))
 
-    applications = [node for node in _children(network, 'Application')
-                    if _field(node, 'Address') == '203']
+    application_rows = _rows_by_address(network, 'Application')
+    if len(application_rows) != len({address for address, _row in application_rows}):
+        raise ValueError('Native network applications must have unique byte addresses')
+    applications = [node for address, node in application_rows if address == 203]
     if len(applications) > 1:
         raise ValueError('Enable Control application address is duplicated')
+    project_metadata = _node_shape(project, exclude=frozenset(('Network',)))
+    network_metadata = _node_shape(
+        network, exclude=frozenset(('Application', 'Unit')))
+    other_networks = tuple(_json(_preserved_shape(row)) for address, row in networks
+                           if address != network_address)
+    other_units = tuple(_json(_preserved_shape(row)) for address, row in units
+                        if address != unit_address)
+    other_applications = tuple(_json(_preserved_shape(row))
+                               for address, row in application_rows
+                               if address != 203)
+    object_oids = _object_oids(root)
     if not applications:
-        return NativeCompositionSnapshot(tuple(raw), (unit_type, firmware, catalog),
-                                         _json(_shape(unit)), None, None, None, ())
+        return NativeCompositionSnapshot(
+            tuple(raw), unit_oid, (unit_type, firmware, catalog),
+            _json(_shape(unit)), project_metadata, network_metadata,
+            other_networks, other_units, other_applications, object_oids,
+            None, None, None, ())
     application = applications[0]
     application_identity = _oid(_field(application, 'OID'))
     application_tag = _field(application, 'TagName')
@@ -145,8 +245,8 @@ def _snapshot(text, network_address, unit_address):
     addresses = set()
     identities = set()
     for node in _children(application, 'NetVar'):
-        address = int(_field(node, 'Address'))
-        if not 0 <= address <= 255 or address in addresses:
+        address = _byte(_field(node, 'Address'))
+        if address in addresses:
             raise ValueError('Enable Control NetVar addresses must be unique bytes')
         identity, levels, metadata, level_metadata = _group(node.toxml(), address)
         if identity in identities:
@@ -157,10 +257,12 @@ def _snapshot(text, network_address, unit_address):
                                               tuple(sorted(level_metadata.items()))))
     if len(groups) > 256:
         raise ValueError('Enable Control NetVar collection exceeds byte address space')
-    return NativeCompositionSnapshot(tuple(raw), (unit_type, firmware, catalog),
-                                     _json(_shape(unit)),
-                                     application_identity, application_tag,
-                                     application_metadata, tuple(groups))
+    return NativeCompositionSnapshot(
+        tuple(raw), unit_oid, (unit_type, firmware, catalog),
+        _json(_shape(unit)), project_metadata, network_metadata,
+        other_networks, other_units, other_applications, object_oids,
+        application_identity, application_tag,
+        application_metadata, tuple(groups))
 
 
 @dataclass(frozen=True)
@@ -190,20 +292,51 @@ class NativeThermostatCompositionPlan:
     def as_dict(self):
         initial = {group.identity: group for group in self.initial.groups}
         created_levels = {}
+        level_creations = []
         for group in self.expected_groups:
             old = {level.address for level in initial[group.identity].levels} if group.identity in initial else set()
-            missing = [level.address for level in group.levels if level.address not in old]
+            missing = []
+            for level in group.levels:
+                if level.address in old:
+                    continue
+                missing.append(level.address)
+                level_creations.append({
+                    'parent': self.network + '/203/' + str(group.address),
+                    'group_address': group.address, 'address': level.address,
+                    'value': level.value, 'tag': level.tag})
             if missing:
                 created_levels[str(group.address)] = missing
+        created_groups = []
+        for identity in self.created_group_ids:
+            group = next(row for row in self.expected_groups
+                         if row.identity == identity)
+            created_groups.append({
+                'parent': self.network + '/203', 'address': group.address,
+                'tag': next(row.tag for row in self.load_outcome.groups
+                            if row.identity == identity)})
+        creations = {
+            'application': ({'parent': self.network, 'address': 203,
+                             'tag': self.application_name}
+                            if self.load_outcome.application_created else None),
+            'groups': created_groups, 'levels': level_creations,
+        }
         return {'format': 'cbus-native-thermostat-scheduling-plan-v1',
                 'profile': PROFILE, 'unit': self.unit,
+                'unit_oid': self.initial.unit_oid,
                 'unit_identity': {'unit_type': self.initial.unit_identity[0],
                                   'firmware': self.initial.unit_identity[1],
                                   'catalog_number': self.initial.unit_identity[2]},
                 'project_xml_sha256': hashlib.sha256(self.before_xml.encode('utf-8')).hexdigest(),
+                'preserved_project_sha256': hashlib.sha256(_json((
+                    self.initial.project_metadata,
+                    self.initial.network_metadata,
+                    self.initial.other_networks,
+                    self.initial.other_units,
+                    self.initial.other_applications)).encode('utf-8')).hexdigest(),
                 'raw': self.initial.raw_dict(), 'policy': self.policy,
                 'load': self.load_outcome.as_dict(),
                 'scheduling': self.scheduling_outcome.as_dict(),
+                'planned_creations': creations,
                 'application_created': self.load_outcome.application_created,
                 'created_group_addresses': [next(group.address for group in self.expected_groups
                                                    if group.identity == identity)
@@ -230,7 +363,14 @@ class NativeThermostatScheduling(NativeThermostatScheduleLevels):
             'profile': PROFILE, 'operation': operation, 'state': 'preconditions',
             'complete': False, 'commands': [], 'objects': [], 'levels': [],
             'backup_created': False, 'target_mutation_attempted': False,
+            'backup_source_save_attempted': False,
+            'backup_source_save_confirmed': False,
+            'backup_source_save_outcome_uncertain': False,
+            'backup_copy_attempted': False,
+            'backup_copy_outcome_uncertain': False,
             'target_save_attempted': False, 'target_save_confirmed': False,
+            'target_save_outcome_uncertain': False,
+            'outcome_uncertain': False, 'uncertain_commands': [],
             'target_project_save_count': 0, 'persistence_verified': False,
             'batch_atomic': False, 'automatic_retries': 0,
             'physical_device_programmed': False, 'original_ui_workflow_executed': False,
@@ -275,7 +415,8 @@ class NativeThermostatScheduling(NativeThermostatScheduleLevels):
             networks = self._closed_networks(project, before_xml)
             if network not in networks:
                 raise ValueError('Thermostat network is absent from the closed project inventory')
-            initial = _snapshot(before_xml, int(network.rsplit('/', 1)[1]), unit_address)
+            initial = _snapshot(before_xml, project,
+                                int(network.rsplit('/', 1)[1]), unit_address)
             loader = ThermostatUnitLoader()
             loaded = loader.load(initial.raw_dict(),
                 application_present=initial.application_identity is not None,
@@ -314,17 +455,22 @@ class NativeThermostatScheduling(NativeThermostatScheduleLevels):
         text = self._xml('//' + plan.project)
         if self._closed_networks(plan.project, text) != plan.networks:
             raise ValueError('Project network inventory changed since planning')
-        current = _snapshot(text, int(plan.network.rsplit('/', 1)[1]), _unit_path(plan.unit)[3])
+        current = _snapshot(text, plan.project,
+                            int(plan.network.rsplit('/', 1)[1]),
+                            _unit_path(plan.unit)[3])
         if current != plan.initial or exact_xml and text != plan.before_xml:
             raise ValueError('Thermostat unit or Enable Control metadata changed since planning')
 
-    def _add(self, parent, kind, address, name):
+    def _add(self, parent, kind, address, name, known_oids):
         _name(name, kind + ' name')
         response = self.command('DBADDSAFE ' + parent + ' ' + kind + ' '
                                 + str(address) + ' ' + name)
         if response.code != 301 or len(response.lines) != 1 or not response.lines[0].startswith('301 OID='):
             raise RuntimeError('Native ' + kind + ' creation did not return exactly one object ID')
         identity = _oid(response.lines[0][8:])
+        if identity in known_oids:
+            raise RuntimeError('New ' + kind + ' returned an existing object ID')
+        known_oids.add(identity)
         check = self.database.get('!' + identity + '/OID')
         if check.code != 342 or list(check.lines) != ['342 !' + identity + '/OID=' + identity]:
             raise RuntimeError('Created ' + kind + ' identity could not be resolved')
@@ -335,10 +481,9 @@ class NativeThermostatScheduling(NativeThermostatScheduleLevels):
                'tag': level.tag, 'created': False, 'value_confirmed': False,
                'tag_confirmed': False}
         self._evidence['levels'].append(row)
-        identity = self._add(path, 'Level', level.address, 'Level ' + str(level.address))
-        if identity in known_oids:
-            raise RuntimeError('New level returned an existing object ID')
-        known_oids.add(identity); row.update(created=True, oid=identity)
+        identity = self._add(path, 'Level', level.address,
+                             'Level ' + str(level.address), known_oids)
+        row.update(created=True, oid=identity)
         for field, value, flag in (('Value', level.value, 'value_confirmed'),
                                    ('TagName', level.tag, 'tag_confirmed')):
             row['field_attempted'] = field
@@ -375,8 +520,10 @@ class NativeThermostatScheduling(NativeThermostatScheduleLevels):
             self._operation('use', plan.project)
             self._evidence.update(state='creating', target_mutation_attempted=True)
             created_group_oids = {}
+            known_oids = set(plan.initial.object_oids)
             if plan.load_outcome.application_created:
-                identity = self._add(plan.network, 'Application', 203, plan.application_name)
+                identity = self._add(plan.network, 'Application', 203,
+                                     plan.application_name, known_oids)
                 self._evidence['objects'].append({'kind': 'Application', 'address': 203,
                                                   'oid': identity, 'created': True})
             expected = {group.identity: group for group in plan.expected_groups}
@@ -384,13 +531,11 @@ class NativeThermostatScheduling(NativeThermostatScheduleLevels):
                 group = expected[identity]
                 oid = self._add(plan.network + '/203', 'NetVar', group.address,
                                 next(item.tag for item in plan.load_outcome.groups
-                                     if item.identity == identity))
+                                     if item.identity == identity), known_oids)
                 created_group_oids[identity] = oid
                 self._evidence['objects'].append({'kind': 'NetVar', 'address': group.address,
                                                   'oid': oid, 'created': True})
             initial = {group.identity: group for group in plan.initial.groups}
-            known_oids = {group.identity for group in plan.initial.groups}
-            known_oids.update(level.identity for group in plan.initial.groups for level in group.levels)
             created_level_oids = {}
             for group in plan.expected_groups:
                 address = group.address
@@ -419,10 +564,19 @@ class NativeThermostatScheduling(NativeThermostatScheduleLevels):
         text = self._xml('//' + plan.project)
         if self._closed_networks(plan.project, text) != plan.networks:
             raise ValueError('Project networks changed after save/reload')
-        actual = _snapshot(text, int(plan.network.rsplit('/', 1)[1]), _unit_path(plan.unit)[3])
+        actual = _snapshot(text, plan.project,
+                           int(plan.network.rsplit('/', 1)[1]),
+                           _unit_path(plan.unit)[3])
         if (actual.raw != plan.initial.raw or actual.unit_identity != plan.initial.unit_identity
+                or actual.unit_oid != plan.initial.unit_oid
                 or actual.unit_metadata != plan.initial.unit_metadata):
             raise ValueError('Thermostat unit parameters or identity changed')
+        if (actual.project_metadata != plan.initial.project_metadata
+                or actual.network_metadata != plan.initial.network_metadata
+                or actual.other_networks != plan.initial.other_networks
+                or actual.other_units != plan.initial.other_units
+                or actual.other_applications != plan.initial.other_applications):
+            raise ValueError('Unrelated native project metadata changed')
         if actual.application_identity is None:
             raise ValueError('Enable Control application is absent after save')
         if plan.initial.application_identity is not None:
@@ -472,3 +626,4 @@ class NativeThermostatScheduling(NativeThermostatScheduleLevels):
             for group in actual.groups]
         self._evidence['existing_metadata_preserved'] = True
         self._evidence['unit_record_preserved'] = True
+        self._evidence['unknown_project_data_preserved'] = True
