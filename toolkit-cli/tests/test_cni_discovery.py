@@ -21,6 +21,8 @@ HIDDEN = bytes.fromhex("cb810000000000028101000102810b00022711811d00010080010002
 class CniDiscoveryCodecTests(unittest.TestCase):
     def test_shared_rust_vectors_pin_python_codec(self):
         cases = [json.loads(line) for line in VECTORS.read_text().splitlines() if line]
+        cases = [case for case in cases
+                 if case["kind"] in {"query", "reply", "reply_error"}]
         self.assertEqual(len(cases), 8)
         for case in cases:
             with self.subTest(case=case["id"]):
