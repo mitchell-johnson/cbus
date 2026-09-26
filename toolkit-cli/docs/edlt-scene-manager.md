@@ -2,7 +2,7 @@
 
 `EdltSceneManager` edits the retained scene objects for KEYGL5 / 5055EDL firmware 5.5.00. This is an additive workflow beside the declarative scene-table helper. It loads once, applies ordered operations to the same logical scene and group references, then serializes and calculates the five configuration CRCs. Exports are review-only; resuming arbitrary exported model identities is unsupported.
 
-The implemented scope is `model`. The original WinForms SceneManager was separately exercised for baseline binding, percent-cell synchronization and copy into an empty scene. Those three observations do not establish complete panel initialization or all UI interactions. This model editor itself performs no live I/O. One-shot capture and broadcast are provided by the separate [scene live coordinator](edlt-scene-live.md), and [retained scene trigger invocation](edlt-scene-trigger.md) composes the resolved group/action pair with native Trigger Control. Full control timing, confirmation dialogs and physical execution verification remain excluded. Static scene-name allocation is a database PP edit restricted to this exact KEYGL5 / 5055EDL / 5.5.00 profile. [Automatic scene metadata](edlt-scene-metadata.md) is a separate outer transaction: it can create exact missing action levels before applying this pure model plan without turning the model API itself into an I/O operation.
+The implemented scope is `model`. The original WinForms SceneManager was separately exercised for baseline binding, percent-cell synchronization and copy into an empty scene. Those three observations do not establish complete panel initialization or all UI interactions. This model editor itself performs no live I/O. One-shot capture and broadcast are provided by the separate [scene live coordinator](edlt-scene-live.md), and [retained scene trigger invocation](edlt-scene-trigger.md) composes the resolved group/action pair with native Trigger Control. Full control timing, confirmation dialogs and physical execution verification remain excluded. Static scene-name allocation is a database PP edit restricted to this exact KEYGL5 / 5055EDL / 5.5.00 profile. [Automatic scene metadata](edlt-scene-metadata.md) is a separate outer transaction: it can create the exact missing Trigger Control application/group/action chain before applying this pure model plan without turning the model API itself into an I/O operation.
 
 ```python
 from cbus_toolkit.edlt_scene_manager import EdltSceneManager, SceneManagerCache
@@ -78,13 +78,14 @@ cbus-toolkit cgate unit --lock-address //OWNED/254 \
 
 It resolves complete application/group lists, consumed trigger-level addresses
 and safe default-language action labels from one exact `DBGETXML` snapshot.
-It creates no application or trigger group. A missing exact action reached by
-the retained getter/setter is planned as `Action Selector N`, with matching
-Address/Value and four blank label variants. Image-dependent existing action
-labels fail closed. Native apply rechecks before and after its retained backup,
-creates and reads back planned levels, stages PP with connected rollback, then
-records separate PP SAVE and PROJECT SAVE outcomes and verifies after reload.
-A lost save reply is never retried.
+Retained getter accesses project a missing application 202 as `Trigger
+Control`, an exact non-255 trigger group as `Group N`, and a missing exact
+action as `Action Selector N` with matching Address/Value and four blank label
+variants. Image-dependent existing action labels fail closed. Native apply
+rechecks before and after its retained backup, creates and reads back planned
+objects, stages PP with connected rollback, then records separate PP SAVE and
+PROJECT SAVE outcomes and verifies after reload. A lost save reply is never
+retried.
 
 ## Declared cache
 

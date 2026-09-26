@@ -205,10 +205,10 @@ cbus-toolkit cgate unit --lock-address //PROJECT/254 \
   --auto-metadata --exclusive-project --operations scene-operations.json
 ```
 
-The automatic path requires all project networks closed and idle. It creates no
-application or trigger group. Exact missing actions reached by retained
-getters/setters appear in `planned_creations` as `Action Selector N` with
-Address=Value=N and four blank variants. Apply with a reviewed backup:
+The automatic path requires all project networks closed and idle. Retained
+getter accesses can add application202 as `Trigger Control`, an exact non-255
+trigger group as `Group N`, and exact missing actions as `Action Selector N`
+with Address=Value=N and four blank variants. Apply with a reviewed backup:
 
 ```sh
 cbus-toolkit cgate unit --lock-address //PROJECT/254 \
@@ -218,12 +218,14 @@ cbus-toolkit cgate unit --lock-address //PROJECT/254 \
 ```
 
 Apply rechecks the exact source before backup and its semantics afterward,
-creates and reads back levels, stages PP with connected rollback, then records
+creates and reads back all planned objects, stages PP with connected rollback, then records
 separate PP SAVE and PROJECT SAVE results and verifies after reload. Automatic
 rollback ends before the first applicable PP or target-project save. Never
 retry a lost or interrupted save reply.
 Consumed image-dependent existing labels fail closed; use the manual cache
 path only for independently established project-image or DLTP facts.
+The separate interactive blank Add dialogs are not implemented; the action
+dialog's source-backed allocator is first-free 0..254 with editable `Level N`.
 
 Allocation is case-sensitive and ordered. It reuses the first exact text slot,
 otherwise chooses the highest whole-unit unreferenced slot. The selected

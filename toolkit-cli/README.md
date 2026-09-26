@@ -1088,15 +1088,16 @@ behavior remain separate work.
 
 [Automatic SceneManager metadata](docs/edlt-scene-metadata.md) derives
 complete existing application/group lists, consumed trigger-level addresses
-and safe default-language text rows from one exact `DBGETXML` snapshot. When a
-retained action getter or setter reaches a missing level, the plan projects the
-native exact-address `Action Selector N` record with `Value=N` and four blank
-label variants. Native apply requires a closed, idle, exclusively owned
-project, saves and copies a backup before level creation, rechecks the source,
-then records the separate PP SAVE and PROJECT SAVE outcomes and verifies after
-reload. Use `--backup-project NAME` to select the retained backup name. Missing
-trigger-group creation, image-dependent labels, complete control binding and
-physical display behavior remain open.
+and safe default-language text rows from one exact `DBGETXML` snapshot. The
+retained getter chain projects a missing application 202 as `Trigger Control`,
+an exact non-255 trigger group as `Group N`, and an exact missing action as
+`Action Selector N` with `Value=N` and four blank label variants. Native apply
+requires a closed, idle, exclusively owned project, saves and copies a backup
+before creation, rechecks the source, then records the separate PP SAVE and
+PROJECT SAVE outcomes and verifies after reload. Use `--backup-project NAME`
+to select the retained backup name. Interactive blank Add dialogs,
+image-dependent labels, complete control binding, and physical display
+behavior remain open.
 
 Capture current lighting levels into a database scene, broadcast stored levels,
 or invoke the scene's retained Trigger binding:
@@ -1855,7 +1856,7 @@ Later changes have separate passing acceptance on both Python versions and are
 outside that frozen wheel:
 
 - [Configuration CRC](docs/edlt-crc.md): 21 tests, including 65,588 fresh original CRC results per run.
-- [Percentage conversion](docs/edlt-percentage.md), [bounded parent composition](docs/edlt-parent-form.md), [ordered parent transaction](docs/edlt-parent-transaction.md), [automatic parent metadata](docs/edlt-parent-metadata.md) and [automatic SceneManager metadata](docs/edlt-scene-metadata.md): pure conversion and CLI acceptance, standalone original Windows 12- and 528-case captures, 14 portable Measurement/Percentage lifecycle composition tests, a separate multi-edit suite for Measurement, Lighting and activation with one terminal save projection, 17 portable parent-metadata/CLI cases plus one optional native gate, and 20 portable SceneManager-metadata/CLI cases plus one optional native gate. The complete original parent/SceneManager dialogs and combined Schneider C-Gate/physical acceptance remain outstanding.
+- [Percentage conversion](docs/edlt-percentage.md), [bounded parent composition](docs/edlt-parent-form.md), [ordered parent transaction](docs/edlt-parent-transaction.md), [automatic parent metadata](docs/edlt-parent-metadata.md) and [automatic SceneManager metadata](docs/edlt-scene-metadata.md): pure conversion and CLI acceptance, standalone original Windows 12- and 528-case captures, 14 portable Measurement/Percentage lifecycle composition tests, a separate multi-edit suite for Measurement, Lighting and activation with one terminal save projection, 17 portable parent-metadata/CLI cases plus one optional native gate, and 32 portable SceneManager-metadata/CLI cases plus one optional native gate. The complete original parent/SceneManager dialogs and combined Schneider C-Gate/physical acceptance remain outstanding.
 - [About information](docs/toolkit-about.md): 16 tests, including 51 original instruction cases per run.
 - [Signed update metadata](docs/toolkit-update-metadata.md), [revocation stages](docs/toolkit-update-revocation.md) and [supplied-context registry conditions](docs/toolkit-update-registry-conditions.md): separate 56-, 53- and 78-test checkpoints with explicit trust and availability limits.
 - [PCI routing](docs/pci-routing.md), [incoming routing](docs/pci-incoming-routing.md), [routed RECALL](docs/pci-routed-recall.md) and [routed IDENTIFY](docs/pci-routed-identify.md): separate codec and transport checkpoints; IDENTIFY passes 104 tests with fresh original matcher comparisons and owned loopback exchanges.

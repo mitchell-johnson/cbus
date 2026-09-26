@@ -261,11 +261,13 @@ The retained [SceneManager](edlt-scene-manager.md) has its own
 application/group lists, trigger level-address facts and safe default-language
 action labels from the same exact project snapshot. Missing exact action
 levels reached by the retained getter/setter are projected as source-backed
-`Action Selector N` records. Native apply creates a retained project backup,
-rechecks the source, creates and reads back those levels, uses connected PP
+`Action Selector N` records. The preceding getter chain also projects a
+missing Trigger Control application and exact trigger group as `Trigger
+Control` and `Group N`. Native apply creates a retained project backup,
+rechecks the source, creates and reads back those objects, uses connected PP
 staging rollback, then records separate PP SAVE and PROJECT SAVE outcomes and
-verifies after reload. It does not create missing applications or trigger
-groups.
+verifies after reload. The separate interactive blank Add dialogs remain
+outside this automatic exact-address path.
 
 The native acceptance creates a unique marked project with an unopened CNI at
 `127.0.0.1:1`, loads a database-backed 5055EDL PP session and resets defaults.

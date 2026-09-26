@@ -4,6 +4,7 @@ import json
 import os
 from pathlib import Path
 import unittest
+from unittest.mock import patch
 
 from cbus_toolkit.edlt import _render
 from cbus_toolkit.edlt_scene_manager_cli import SceneCLIEditor
@@ -78,7 +79,7 @@ class SceneMetadataTests(unittest.TestCase):
         plan = self.plan()
         document = plan.as_dict()
         self.assertEqual(document['format'],
-                         'cbus-native-edlt-scene-metadata-plan-v2')
+                         'cbus-native-edlt-scene-metadata-plan-v3')
         self.assertEqual(document['automatic_metadata']
                          ['metadata_provenance'],
                          'one-admitted-native-project-xml-snapshot')
@@ -110,7 +111,7 @@ class SceneMetadataTests(unittest.TestCase):
             'validate-all-four', 'validate-shortcut-first',
             'validate-shortcut-second', 'validate-empty-duplicates',
             'validate-action255',
-            'validate-all-empty', 'get-new-missing-trigger',
+            'validate-all-empty',
             'get-set-action-valid',
             'get-disabled-trigger',
         )
@@ -139,7 +140,7 @@ class SceneMetadataTests(unittest.TestCase):
         self.assertEqual(automatic.terminal.as_dict(),
                          manual.terminal.as_dict())
 
-    def test_absent_trigger_action_access_preserves_raw_action_for_new_group(self):
+    def test_new_trigger_group_retains_and_creates_the_current_action(self):
         trigger = self.client.applications[202]['groups'][44]
         trigger['levels'] = (0, 1)
         trigger['level_tags'] = {
@@ -160,10 +161,18 @@ class SceneMetadataTests(unittest.TestCase):
                     {'op': 'get-action', 'scene': 1},
                 )
                 plan = self.plan(rows)
+                expected = 2 if kind == 'set-action' else 1
                 self.assertEqual(plan.scene_plan.terminal.scenes[0].raw_action,
-                                 1)
-                self.assertIn((44, 1), plan.resolved.action_pairs)
-                self.assertNotIn((44, 0), plan.resolved.action_pairs)
+                                 expected)
+                self.assertIn((200, expected), plan.resolved.action_pairs)
+                self.assertIn((44, expected), plan.resolved.action_pairs)
+                wanted = [('Group', 200, None)]
+                if kind == 'set-action':
+                    wanted.append(('Level', 2, 44))
+                wanted.append(('Level', expected, 200))
+                self.assertEqual(
+                    [(row['kind'], row['address'], row.get('group'))
+                     for row in plan.as_dict()['planned_creations']], wanted)
 
     def test_stale_ambiguous_and_image_dependent_sources_fail_closed(self):
         stale = dict(self.values)
@@ -230,6 +239,98 @@ class SceneMetadataTests(unittest.TestCase):
         self.assertFalse(any(command.startswith('DBADD')
                              for command in self.client.commands))
 
+    def test_missing_trigger_application_and_group_are_projected_exactly(self):
+        del self.client.applications[202]
+        plan = self.plan(operations('sync'))
+        creations = plan.as_dict()['planned_creations']
+        self.assertIn('bAdd=true', plan.as_dict()[
+            'original_group_auto_add_admission'])
+        self.assertEqual(
+            [(row['kind'], row.get('application'), row['address'], row['name'])
+             for row in creations],
+            [('Application', None, 202, 'Trigger Control'),
+             ('Group', 202, 42, 'Group 42'),
+             ('Level', 202, 1, 'Action Selector 1'),
+             ('Level', 202, 2, 'Action Selector 2')])
+        cache = plan.resolved.cache.application_cache
+        self.assertEqual(cache.find_application(202).name, 'Trigger Control')
+        self.assertEqual(next(
+            row for row in cache.find_group_list(202).groups
+            if row.address == 42).name, 'Group 42')
+        self.assertEqual(cache.lifecycle.find(202, 42).levels, (1, 2))
+        self.assertEqual(
+            [row.as_dict() for row in plan.resolved.cache.labels(42, 1)],
+            [{'value': str(index), 'name': '', 'image_present': False}
+             for index in range(4)])
+        self.assertFalse(any(command.startswith('DBADD')
+                             for command in self.client.commands))
+
+    def test_missing_trigger_group_is_projected_before_its_levels(self):
+        del self.client.applications[202]['groups'][42]
+        plan = self.plan(operations('sync'))
+        self.assertEqual(
+            [(row['kind'], row['address'])
+             for row in plan.as_dict()['planned_creations']],
+            [('Group', 42), ('Level', 1), ('Level', 2)])
+        self.assertEqual(plan.resolved.cache.application_cache.lifecycle.find(
+            202, 42).levels, (1, 2))
+
+    def test_disabled_scenes_create_only_the_missing_trigger_application(self):
+        source = dict(self.values)
+        source['SceneCount'] = (0,)
+        for slot in range(1, 9):
+            source[f'Scene{slot}StartAddress'] = (255,)
+        self.client.values = {name: _render(value)
+                              for name, value in source.items()}
+        self.values = self.editor.snapshot(self.client.values)
+        del self.client.applications[202]
+        plan = self.plan(())
+        self.assertEqual(
+            [(row['kind'], row['address'])
+             for row in plan.as_dict()['planned_creations']],
+            [('Application', 202)])
+        self.assertIsNotNone(
+            plan.resolved.cache.application_cache.lifecycle.find(202, 255))
+
+    def test_get_trigger_then_clear_projects_group_without_a_level(self):
+        rows = (
+            {'op': 'set-trigger', 'scene': 1, 'group': 99},
+            {'op': 'get-trigger', 'scene': 1},
+            {'op': 'clear-scene', 'scene': 1},
+        )
+        plan = self.plan(rows)
+        self.assertEqual(
+            [(row['kind'], row['address'])
+             for row in plan.as_dict()['planned_creations']],
+            [('Group', 99)])
+        self.assertIsNone(
+            plan.resolved.cache.application_cache.lifecycle.find(
+                202, 99).levels)
+
+    def test_missing_non_trigger_application_still_fails_closed(self):
+        del self.client.applications[203]
+        with self.assertRaisesRegex(ValueError,
+                                    'Required native applications.*203'):
+            self.plan(operations('sync'))
+
+    def test_container_projection_obeys_whole_inventory_capacity(self):
+        del self.client.applications[202]
+        with patch('cbus_toolkit.edlt_scene_metadata.MAX_OBJECTS', 1):
+            with self.assertRaisesRegex(ValueError, 'exceed 4096 objects'):
+                self.plan(operations('sync'))
+        self.assertFalse(any(command.startswith('DBADD')
+                             for command in self.client.commands))
+
+    def test_new_group_getter_uses_exact_creation_not_missing_fallback(self):
+        plan = self.plan(operations('get-new-missing-trigger'))
+        scene = plan.scene_plan.terminal.scenes[0]
+        self.assertEqual((scene.raw_trigger, scene.raw_action), (99, 1))
+        self.assertIn((99, 1), plan.resolved.action_pairs)
+        self.assertEqual(
+            [(row['kind'], row['address'], row.get('group'))
+             for row in plan.as_dict()['planned_creations']],
+            [('Group', 99, None), ('Level', 1, 99)])
+
     def test_native_apply_verifies_persistence_and_metadata_preservation(self):
         session = NativeSession(self.spec, self.client)
         manager = NativeSceneMetadataTransaction(
@@ -295,6 +396,92 @@ class SceneMetadataTests(unittest.TestCase):
                         self.client.commands.index('PP SAVE'))
         self.assertEqual(sum(command == 'PROJECT SAVE TEST'
                              for command in self.client.commands), 2)
+
+    def test_native_missing_application_group_levels_create_in_order(self):
+        del self.client.applications[202]
+        del self.client.saved_applications[202]
+        before = deepcopy(self.client.applications)
+        session = NativeSession(self.spec, self.client)
+        manager = NativeSceneMetadataTransaction(
+            self.client, self.editor, programmer=FakeProgrammer(session))
+        plan = manager.plan(
+            '/db//TEST/254/p/20', operations=operations('sync'),
+            exclusive_project=True)
+        result = manager.apply(
+            plan, backup_project='SCBACKUP').as_dict()
+        self.assertEqual(
+            [(row['kind'], row['address'], row.get('group'))
+             for row in result['objects']],
+            [('Application', 202, None), ('Group', 42, None),
+             ('Level', 1, 42), ('Level', 2, 42)])
+        self.assertTrue(all(row['created'] for row in result['objects']))
+        self.assertEqual(
+            [row['value_initialized'] for row in result['objects']],
+            [False, False, True, True])
+        expected = [
+            'DBADDSAFE //TEST/254 Application 202 Trigger Control',
+            'DBADDSAFE //TEST/254/202 Group 42 Group 42',
+            'DBADDSAFE //TEST/254/202/42 Level 1 Action Selector 1',
+            'DBADDSAFE //TEST/254/202/42 Level 2 Action Selector 2',
+        ]
+        positions = [self.client.commands.index(command) for command in expected]
+        self.assertEqual(positions, sorted(positions))
+        retained = deepcopy(self.client.applications)
+        del retained[202]
+        self.assertEqual(retained, before)
+        self.assertTrue(result['persistence_verified'])
+
+    def test_container_creation_rolls_back_in_reverse_before_pp_save(self):
+        del self.client.applications[202]
+        del self.client.saved_applications[202]
+        original = deepcopy(self.client.applications)
+        session = NativeSession(self.spec, self.client)
+        manager = NativeSceneMetadataTransaction(
+            self.client, self.editor, programmer=FakeProgrammer(session))
+        plan = manager.plan(
+            '/db//TEST/254/p/20', operations=operations('sync'),
+            exclusive_project=True)
+        session.failure = next(iter(plan.scene_plan.changes))
+        with self.assertRaises(NativeSceneMetadataError):
+            manager.apply(plan, backup_project='SCBACKUP')
+        evidence = manager.last_result.as_dict()
+        self.assertTrue(evidence['rollback_attempted'])
+        self.assertTrue(evidence['rollback_verified'])
+        self.assertFalse(evidence['pp_save_attempted'])
+        self.assertEqual(self.client.applications, original)
+        deletes = [row for row in self.client.commands
+                   if row.startswith('DBDELETE !')]
+        self.assertEqual(
+            deletes,
+            ['DBDELETE !' + row['oid']
+             for row in reversed(evidence['objects'])])
+
+    def test_group_conflict_after_application_creation_reloads_source(self):
+        del self.client.applications[202]
+        del self.client.saved_applications[202]
+        original = deepcopy(self.client.applications)
+        manager = NativeSceneMetadataTransaction(
+            self.client, self.editor,
+            programmer=FakeProgrammer(NativeSession(
+                self.spec, self.client)))
+        plan = manager.plan(
+            '/db//TEST/254/p/20', operations=operations('sync'),
+            exclusive_project=True)
+        self.client.failure = lambda command: (
+            response(401, 'Group capacity or address conflict')
+            if ' Group 42 ' in command else None)
+        with self.assertRaisesRegex(NativeSceneMetadataError,
+                                    'capacity or address conflict'):
+            manager.apply(plan, backup_project='SCBACKUP')
+        evidence = manager.last_result.as_dict()
+        self.assertTrue(evidence['unidentified_metadata_mutation'])
+        self.assertTrue(evidence['rollback_attempted'])
+        self.assertTrue(evidence['rollback_verified'])
+        self.assertFalse(evidence['pp_save_attempted'])
+        self.assertEqual(
+            [(row['kind'], row['address']) for row in evidence['objects']],
+            [('Application', 202)])
+        self.assertEqual(self.client.applications, original)
 
     def test_creation_conflict_and_pre_save_failure_restore_original(self):
         rows = (
@@ -514,8 +701,9 @@ class SceneMetadataTests(unittest.TestCase):
              for row in plan.resolved.creations],
             [(43, 255, 'Action Selector 255')])
         self.assertEqual(plan.as_dict()['native_blank_add_dialog_allocation'],
-                         ('first free address 0..254; outside this automatic '
-                          'exact-address path'))
+                         ('separate interactive path: first free address '
+                          '0..254, seed Level {address}, create only after '
+                          'acceptance'))
 
     def test_native_stale_capacity_rollback_and_lost_save_boundaries(self):
         capacity_client = SceneMetadataClient(self.spec)
@@ -589,35 +777,41 @@ class SceneMetadataTests(unittest.TestCase):
         evidence = json.loads(EVIDENCE.read_text())
         acceptance = json.loads(ACCEPTANCE.read_text())
         self.assertEqual(evidence['format'],
-                         'cbus-edlt-scene-metadata-evidence-v2')
+                         'cbus-edlt-scene-metadata-evidence-v3')
         self.assertTrue(evidence['implemented_boundary']
                         ['automatic_existing_metadata_resolution'])
         self.assertFalse(evidence['evidence_boundaries']
                          ['full_scene_manager_control_binding_verified'])
         self.assertTrue(evidence['implemented_boundary']
                         ['missing_exact_action_level_creation'])
+        self.assertTrue(evidence['implemented_boundary']
+                        ['missing_trigger_application_creation'])
+        self.assertTrue(evidence['implemented_boundary']
+                        ['missing_exact_trigger_group_creation'])
+        self.assertFalse(evidence['implemented_boundary']
+                         ['interactive_blank_add_dialog'])
         self.assertEqual(evidence['original_sources'][0]['sha256'],
                          ('9d01721abab3beb4724511e7d65e39328c0518e0721caa53'
                           'f4601cded20655ab'))
         self.assertEqual(acceptance['format'],
-                         'cbus-edlt-scene-metadata-acceptance-v2')
+                         'cbus-edlt-scene-metadata-acceptance-v3')
         self.assertTrue(acceptance['passed'])
 
     @unittest.skipUnless(
-        os.environ.get('CBUS_EDLT_SCENE_LEVEL_ACCEPTANCE') == '1'
-        and os.environ.get('CBUS_EDLT_SCENE_LEVEL_UNIT')
-        and os.environ.get('CBUS_EDLT_SCENE_LEVEL_BACKUP')
-        and os.environ.get('CBUS_EDLT_SCENE_LEVEL_GROUP')
-        and os.environ.get('CBUS_EDLT_SCENE_LEVEL_ACTION')
+        os.environ.get('CBUS_EDLT_SCENE_METADATA_ACCEPTANCE') == '1'
+        and os.environ.get('CBUS_EDLT_SCENE_METADATA_UNIT')
+        and os.environ.get('CBUS_EDLT_SCENE_METADATA_BACKUP')
+        and os.environ.get('CBUS_EDLT_SCENE_METADATA_GROUP')
+        and os.environ.get('CBUS_EDLT_SCENE_METADATA_ACTION')
         and os.environ.get('CBUS_CGATE_TEST_HOST')
         and os.environ.get('CBUS_UNITSPEC_DIR'),
-        'Set the explicit disposable closed-project scene-level acceptance environment')
-    def test_optional_native_missing_action_level_transaction(self):
+        'Set the explicit disposable closed-project scene-metadata acceptance environment')
+    def test_optional_native_missing_scene_metadata_transaction(self):
         from cbus_toolkit.cgate import CGateClient
         from cbus_toolkit.unitspec import UnitSpecStore
 
-        group = int(os.environ['CBUS_EDLT_SCENE_LEVEL_GROUP'])
-        action = int(os.environ['CBUS_EDLT_SCENE_LEVEL_ACTION'])
+        group = int(os.environ['CBUS_EDLT_SCENE_METADATA_GROUP'])
+        action = int(os.environ['CBUS_EDLT_SCENE_METADATA_ACTION'])
         rows = (
             {'op': 'set-trigger', 'scene': 1, 'group': group},
             {'op': 'set-action', 'scene': 1, 'action': action},
@@ -630,14 +824,26 @@ class SceneMetadataTests(unittest.TestCase):
                 timeout=30) as client:
             manager = NativeSceneMetadataTransaction(client, editor)
             plan = manager.plan(
-                os.environ['CBUS_EDLT_SCENE_LEVEL_UNIT'], operations=rows,
+                os.environ['CBUS_EDLT_SCENE_METADATA_UNIT'], operations=rows,
                 exclusive_project=True)
-            self.assertEqual(
-                [(row.group, row.address) for row in plan.resolved.creations],
-                [(group, action)])
+            creations = [row.as_dict() for row in plan.resolved.creations]
+            self.assertIn(
+                ('Level', group, action),
+                [(row['kind'], row.get('group'), row['address'])
+                 for row in creations])
+            if os.environ.get(
+                    'CBUS_EDLT_SCENE_METADATA_EXPECT_APPLICATION') == '1':
+                self.assertEqual(creations[0]['kind'], 'Application')
+                self.assertEqual(creations[0]['address'], 202)
+            if os.environ.get(
+                    'CBUS_EDLT_SCENE_METADATA_EXPECT_GROUP') == '1':
+                self.assertIn(
+                    ('Group', 202, group),
+                    [(row['kind'], row.get('application'), row['address'])
+                     for row in creations])
             result = manager.apply(
                 plan, backup_project=os.environ[
-                    'CBUS_EDLT_SCENE_LEVEL_BACKUP']).as_dict()
+                    'CBUS_EDLT_SCENE_METADATA_BACKUP']).as_dict()
         self.assertTrue(result['persistence_verified'])
         self.assertTrue(result['pp_save_confirmed'])
         self.assertTrue(result['target_project_save_confirmed'])

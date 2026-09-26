@@ -1,5 +1,5 @@
 {
-  "format": "cbus-edlt-scene-metadata-evidence-v2",
+  "format": "cbus-edlt-scene-metadata-evidence-v3",
   "profile": {
     "unit_type": "KEYGL5",
     "catalog_number": "5055EDL",
@@ -7,7 +7,7 @@
     "toolkit": "1.18.0.2754",
     "cgate": "3.4.0.2001"
   },
-  "scope": "Existing SceneManager metadata plus exact-address Trigger Control Level creation reached by retained EDLTScene action getter/setter accesses",
+  "scope": "Exact-address Trigger Control application, trigger-group and action-level creation reached by retained EDLTScene getter/setter accesses, plus existing SceneManager metadata",
   "original_sources": [
     {
       "path": "CBusToolkit.exe",
@@ -51,6 +51,30 @@
     }
   ],
   "original_methods": [
+    {
+      "method": "EDLTScene.TriggerGroup get",
+      "establishes": "Every getter first calls CBusNetwork.GetApplicationByAddress(202) with its default create=true, then calls GetGroupByAddress for the stored trigger with create=true and bShowDialog=false. Address255 resolves the managed virtual unused group; any other missing trigger follows the exact nonblank application/group creation path."
+    },
+    {
+      "method": "CBusNetwork.GetApplicationByAddress / TfrmKEYGL5.AddSharpApplication / TApplicationManager.ApplicationByAddress",
+      "map_entries": [
+        "TfrmKEYGL5.AddSharpApplication 0x011c5b44",
+        "TApplicationManager.ApplicationByAddress 0x00f264fc"
+      ],
+      "establishes": "A missing non-255 application sends its requested decimal address through AddApplicationRequest. The nonblank native branch parses that exact address, creates it, assigns the application-definition default tag, and saves it. Application202 is named Trigger Control."
+    },
+    {
+      "method": "CBusApplication.GetGroupByAddress / TfrmKEYGL5.AddSharpGroup / TGroupManager.GroupByAddress",
+      "map_entries": [
+        "TfrmKEYGL5.AddSharpGroup 0x011c6080",
+        "TGroupManager.GroupByAddress 0x00f28b68"
+      ],
+      "establishes": "A missing non-255 group sends the requested decimal application and group addresses through AddGroupRequest. The default bShowDialog=false path reaches the nonblank native branch, creates that exact group, assigns Group %d, saves it, and signals ProjectSave. A fresh CBusNetwork constructor resets AutoAddGroupsMessageShown=false and bAdd=true; a prior interactive decline can set the static bAdd flag false for that original process session."
+    },
+    {
+      "method": "CBusGroup constructor / InitialiseGroup",
+      "establishes": "A newly created group initializes exactly four blank TagDLT variants and an empty level list. The projected group cache can therefore report four image-free defaults without resolving project images or the local DLTP index."
+    },
     {
       "method": "EDLTScene.ActionSelector get/set",
       "establishes": "For an editable trigger, both paths call CBusGroup.GetLevelByAddress without overriding create=true. A nonnegative missing action therefore enters native exact-address level creation before DynamicAll refresh."
@@ -97,7 +121,8 @@
     "complete_consumed_trigger_level_addresses": true,
     "safe_default_language_dynamic_labels": true,
     "project_image_dependent_labels_fail_closed": true,
-    "missing_application_or_group_creation": false,
+    "missing_trigger_application_creation": true,
+    "missing_exact_trigger_group_creation": true,
     "missing_exact_action_level_creation": true,
     "interactive_blank_add_dialog": false,
     "created_level_address_equals_requested_action": true,
@@ -107,7 +132,12 @@
     "backup_before_metadata_creation": true,
     "pre_pp_save_delete_or_reload_rollback": true,
     "separate_pp_and_project_save_evidence": true,
-    "no_retry_after_save_attempt": true
+    "no_retry_after_save_attempt": true,
+    "created_application_address": 202,
+    "created_application_name": "Trigger Control",
+    "created_group_address_equals_requested_trigger": true,
+    "created_group_name_group_decimal": true,
+    "created_group_default_labels_are_four_blank_variants": true
   },
   "failure_semantics": {
     "exact_snapshot_rechecked_before_backup": true,
@@ -119,7 +149,9 @@
     "pp_save_and_project_save_are_non_atomic": true,
     "no_automatic_rollback_after_pp_save_attempt": true,
     "no_automatic_rollback_after_target_project_save_attempt": true,
-    "interruptions_export_the_same_partial_or_uncertain_evidence": true
+    "interruptions_export_the_same_partial_or_uncertain_evidence": true,
+    "application_group_or_level_conflict_stops_before_pp_save": true,
+    "created_container_and_level_oids_must_be_unique_and_read_back": true
   },
   "evidence_boundaries": {
     "original_managed_source_inspected": true,
@@ -131,6 +163,8 @@
     "full_scene_manager_control_binding_verified": false,
     "interactive_missing_metadata_add_dialog_executed": false,
     "fresh_schneider_cgate_transaction_executed": false,
-    "physical_device_verified": false
+    "physical_device_verified": false,
+    "fresh_network_default_auto_add_state_modelled": true,
+    "prior_original_session_auto_add_decline_replayed": false
   }
 }

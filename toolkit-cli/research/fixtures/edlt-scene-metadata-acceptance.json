@@ -1,8 +1,8 @@
 {
-  "format": "cbus-edlt-scene-metadata-acceptance-v2",
+  "format": "cbus-edlt-scene-metadata-acceptance-v3",
   "date": "2026-09-26",
   "profile": "KEYGL5 / 5055EDL / 5.5.00",
-  "scope": "automatic exact-address Trigger Control action-level creation plus guarded retained SceneManager PP persistence",
+  "scope": "automatic exact-address Trigger Control application, group and action-level creation plus guarded retained SceneManager PP persistence",
   "passed": true,
   "evidence": {
     "original_managed_sources_pinned": true,
@@ -17,36 +17,39 @@
   },
   "portable_focused": {
     "command": "PYTHONPATH=src:. .venv/bin/python -m pytest tests/test_edlt_scene_metadata.py tests/test_cli_edlt_scene_metadata.py -q -p no:cacheprovider",
-    "passed": 21,
+    "passed": 32,
     "skipped": 1,
-    "subtests_passed": 25,
-    "seconds": 17.93,
+    "subtests_passed": 24,
+    "seconds": 21.4,
     "status": "passed"
   },
   "portable_regression": {
     "command": "PYTHONPATH=src:. .venv/bin/python -m pytest tests/test_cli_edlt_scene_metadata.py tests/test_edlt_scene_metadata.py tests/test_cli_edlt_scene_manager.py tests/test_edlt_scene_manager.py tests/test_edlt_parent_metadata.py tests/test_cli_edlt_parent_metadata.py -q -p no:cacheprovider",
-    "passed": 56,
+    "passed": 67,
     "skipped": 5,
-    "subtests_passed": 86,
-    "seconds": 39.73,
+    "subtests_passed": 85,
+    "seconds": 41.17,
     "status": "passed"
   },
   "portable_full": {
     "command": "make check",
-    "passed": 2346,
-    "skipped": 260,
-    "subtests_passed": 18549,
-    "pytest_seconds": 752.64,
-    "wall_seconds": 753.1,
-    "status": "passed"
+    "passed": 2343,
+    "skipped": 274,
+    "subtests_passed": 18548,
+    "pytest_seconds": 704.83,
+    "wall_seconds": null,
+    "status": "passed",
+    "wall_seconds_recorded": false
   },
   "rust_interop": {
     "command": "make check-interop",
     "passed": 14,
     "skipped": 1,
-    "pytest_seconds": 12.04,
-    "wall_seconds": 12.4,
-    "status": "passed"
+    "pytest_seconds": 11.98,
+    "wall_seconds": null,
+    "status": "passed",
+    "build_seconds": 21.25,
+    "wall_seconds_recorded": false
   },
   "failure_semantics": {
     "exact_xml_and_pp_stale_rejection_before_backup": true,
@@ -60,11 +63,14 @@
     "existing_non_pp_metadata_preserved_after_reload": true,
     "automatic_retries": 0,
     "automatic_rollback_after_pp_save_attempt": false,
-    "automatic_rollback_after_target_project_save_attempt": false
+    "automatic_rollback_after_target_project_save_attempt": false,
+    "native_application_group_or_level_conflict_before_pp_save": true,
+    "reverse_level_group_application_rollback_verified": true
   },
   "boundaries": [
-    "Only exact nonnegative Trigger Control action addresses reached by retained ActionSelector getter/setter accesses are created; missing applications and trigger groups remain unsupported.",
-    "The separate interactive SceneManager Add button dialog, its editable Level N seed, and complete form binding are not implemented.",
+    "The retained TriggerGroup and ActionSelector getters/setters create a missing Trigger Control application 202, exact non-255 trigger groups, and exact nonnegative action levels through the original nonblank paths.",
+    "The automatic group path admits the fresh CBusNetwork default bAdd=true; it does not replay a prior Toolkit process session in which a user declined an unrelated auto-add prompt.",
+    "The separate interactive SceneManager Add buttons enter accepted dialogs. The action dialog scans first-free 0..254 and seeds editable Level N; that dialog was not executed or implemented because it does not share the automatic exact-address path.",
     "DYNAMIC/FONT project-image and ICON DLTP image presence is not derivable from DBGETXML and is rejected when an existing level consumes it; a created level uses only the source-established four blank variants.",
     "DBADDSAFE/DBSETSAFE, PP SAVE and PROJECT SAVE are separate operations. A retained backup is created before metadata mutation, rollback is automatic only before the first applicable persistence save starts, and no uncertain save is retried.",
     "The optional native gate requires a disposable closed project and explicit environment opt-in. It was not enabled for this recorded acceptance.",

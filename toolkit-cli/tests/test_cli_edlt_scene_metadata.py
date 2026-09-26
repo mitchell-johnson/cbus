@@ -59,13 +59,33 @@ class SceneMetadataCLITests(unittest.TestCase):
                 'edlt', 'scene-manager-state', *common,
                 '--list-groups', 1))
         self.assertEqual(plan['format'],
-                         'cbus-native-edlt-scene-metadata-plan-v2')
+                         'cbus-native-edlt-scene-metadata-plan-v3')
         self.assertEqual(state['format'],
                          'cbus-native-edlt-scene-metadata-state-v1')
         self.assertIn('automatic_metadata', state)
         self.assertIn('1', state['available_groups'])
         self.assertFalse(plan['metadata_mutation_planned'])
         self.assertFalse(plan['physical_device_programmed'])
+
+    def test_offline_plan_projects_missing_trigger_containers_without_io(self):
+        del self.client.applications[202]
+        self.project.write_text(self.client.xml())
+        common = (
+            self.values, '--project-xml', self.project,
+            '--unit', '//TEST/254/p/20', '--operations', self.ops,
+        )
+        with patch('cbus_toolkit.edlt_scene_manager_cli.editor',
+                   return_value=self.editor), patch(
+                'cbus_toolkit.cgate.CGateClient',
+                side_effect=AssertionError('offline plan connected')):
+            plan = self.invoke(('edlt', 'scene-manager-plan', *common))
+        self.assertEqual(
+            [(row['kind'], row['address'])
+             for row in plan['planned_creations']],
+            [('Application', 202), ('Group', 42),
+             ('Level', 1), ('Level', 2)])
+        self.assertFalse(any(command.startswith('DBADD')
+                             for command in self.client.commands))
 
     def test_native_auto_metadata_dry_run_and_apply(self):
         session = NativeSession(self.spec, self.client)

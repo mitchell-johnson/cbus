@@ -89,10 +89,11 @@ for the closed-project guards and the non-atomic PP/project save boundary.
 The retained SceneManager can also derive complete existing application/group
 lists and safe Trigger action text directly from the same exact project
 snapshot. See [automatic SceneManager metadata](toolkit-cli/docs/edlt-scene-metadata.md);
-it plans and can create exact missing Trigger action levels with a retained
-project backup, then records the separate PP and project-save boundaries.
-Missing trigger groups, image-dependent labels and complete form binding remain
-outside that bounded workflow.
+it plans and can create a missing Trigger Control application, exact trigger
+groups, and exact action levels with a retained project backup, then records
+the separate PP and project-save boundaries. Interactive blank Add dialogs,
+image-dependent labels, and complete form binding remain outside that bounded
+workflow.
 
 **Full Toolkit parity is not complete.** The feature ledger currently records 38 areas: 17 implemented, 19 in progress, and 2 pending. These categories are not a percentage of Toolkit functionality. Check the current machine-readable status with:
 

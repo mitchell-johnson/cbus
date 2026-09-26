@@ -2,9 +2,9 @@
 
 One exact ``DBGETXML`` snapshot supplies the application, group, trigger-level
 and DynamicAll cache consumed by :mod:`edlt_scene_manager`.  The retained
-model's action getter and setter call ``GetLevelByAddress`` with creation
-enabled.  This module therefore projects, and on guarded apply creates, only
-the missing Trigger Control levels reached by those exact model accesses.
+model's trigger and action getters follow the original create-enabled
+application, group and level lookups.  This module projects those exact
+Trigger Control objects and creates them during one guarded native apply.
 """
 from __future__ import annotations
 
@@ -30,9 +30,9 @@ from .native import NativeDatabase, NativeProjects, _project
 from .programming import Programmer, database_address, xml_text
 
 
-PROFILE = 'cbus-native-edlt-scene-metadata-v2'
-PLAN_FORMAT = 'cbus-native-edlt-scene-metadata-plan-v2'
-RESULT_FORMAT = 'cbus-native-edlt-scene-metadata-result-v2'
+PROFILE = 'cbus-native-edlt-scene-metadata-v3'
+PLAN_FORMAT = 'cbus-native-edlt-scene-metadata-plan-v3'
+RESULT_FORMAT = 'cbus-native-edlt-scene-metadata-result-v3'
 TRIGGER_APPLICATION = 202
 MAX_LEVELS = 256
 
@@ -57,6 +57,28 @@ class SceneLevelCreation:
         }
 
 
+@dataclass(frozen=True)
+class SceneContainerCreation:
+    kind: str
+    application: int
+    address: int
+    name: str
+    reasons: tuple[str, ...]
+
+    def as_dict(self):
+        result = {
+            'kind': self.kind, 'address': self.address, 'name': self.name,
+            'reasons': list(self.reasons),
+        }
+        if self.kind != 'Application':
+            result['application'] = self.application
+            result['default_dynamic_labels'] = [
+                {'value': str(variant), 'name': '', 'image_present': False}
+                for variant in range(4)
+            ]
+        return result
+
+
 def _normal_operations(engine, operations):
     if not isinstance(operations, (tuple, list)) or len(operations) > 256:
         raise EdltError('Scene operations must be an array of at most 256 entries')
@@ -72,13 +94,13 @@ def _record(snapshot, application, group):
 
 
 def _operation_facts(values, engine, snapshot, operations):
-    """Replay action accesses, including their original level side effect.
+    """Replay trigger/action accesses and their original creation side effects.
 
-    ``CBusGroup.GetLevelByAddress`` defaults ``create`` to true.  Its event
-    path passes the requested address to native ``FindLevelByAddress`` with
-    the action-selector naming flag, producing ``Action Selector N``.  The
-    projected inventory below lets the pure retained editor observe that same
-    newly issued object without performing I/O during planning.
+    ``CBusNetwork.GetApplicationByAddress`` and
+    ``CBusApplication.GetGroupByAddress`` default ``create`` to true before
+    ``CBusGroup.GetLevelByAddress`` does the same.  Their event paths pass
+    nonblank exact addresses to the native managers.  The projected inventory
+    lets the pure retained editor observe those objects without planning I/O.
     """
     primary = engine.lifecycle._primary(values)
     secondary = values['SecondaryApplication'][0]
@@ -86,10 +108,17 @@ def _operation_facts(values, engine, snapshot, operations):
     pairs = set()
     groups = {}
     level_groups = set()
+    applications = {row.address for row in snapshot.applications}
+    present_groups = {
+        (row.address, group.address)
+        for row in snapshot.applications for group in row.groups
+    }
     levels = {
         (row.address, group.address): set(group.levels)
         for row in snapshot.applications for group in row.groups
     }
+    application_reasons = []
+    group_creation_reasons = {}
     creation_reasons = {}
 
     def group(application, address, reason, *, levels=False):
@@ -97,12 +126,21 @@ def _operation_facts(values, engine, snapshot, operations):
         if levels:
             level_groups.add((application, address))
 
+    def ensure_trigger_application(reason):
+        if TRIGGER_APPLICATION not in applications:
+            application_reasons.append(reason)
+            applications.add(TRIGGER_APPLICATION)
+
     def retain_trigger(trigger, reason):
         """Match TriggerGroup.get without invoking ActionSelector.get."""
+        ensure_trigger_application(reason)
         if trigger == 255:
             return 255
-        if _record(snapshot, TRIGGER_APPLICATION, trigger) is None:
-            return 255
+        key = (TRIGGER_APPLICATION, trigger)
+        if key not in present_groups:
+            group_creation_reasons.setdefault(trigger, []).append(reason)
+            present_groups.add(key)
+            levels[key] = set()
         group(TRIGGER_APPLICATION, trigger, reason)
         return trigger
 
@@ -198,7 +236,18 @@ def _operation_facts(values, engine, snapshot, operations):
             scene[1], scene[2], _returned = get_action(
                 scene[1], scene[2],
                 f'Scene{slot} terminal fallback action')
-    creations = tuple(
+    containers = []
+    if application_reasons:
+        containers.append(SceneContainerCreation(
+            'Application', TRIGGER_APPLICATION, TRIGGER_APPLICATION,
+            'Trigger Control', tuple(dict.fromkeys(application_reasons))))
+    containers.extend(
+        SceneContainerCreation(
+            'Group', TRIGGER_APPLICATION, trigger, f'Group {trigger}',
+            tuple(dict.fromkeys(group_creation_reasons[trigger])))
+        for trigger in sorted(group_creation_reasons)
+    )
+    level_creations = tuple(
         SceneLevelCreation(
             trigger, address, f'Action Selector {address}',
             tuple(dict.fromkeys(creation_reasons[(trigger, address)])))
@@ -207,7 +256,9 @@ def _operation_facts(values, engine, snapshot, operations):
     projected = {
         key: tuple(sorted(value)) for key, value in levels.items()
     }
-    return groups, level_groups, tuple(sorted(pairs)), creations, projected
+    return (groups, level_groups, tuple(sorted(pairs)),
+            tuple(containers) + level_creations, projected,
+            frozenset(applications), frozenset(present_groups))
 
 
 @dataclass(frozen=True)
@@ -217,12 +268,12 @@ class ResolvedSceneMetadata:
     cache: SceneManagerCache
     requirements: str
     action_pairs: tuple[tuple[int, int], ...]
-    creations: tuple[SceneLevelCreation, ...]
+    creations: tuple[SceneContainerCreation | SceneLevelCreation, ...]
     group_reasons: str
 
     def as_dict(self):
         return {
-            'format': 'cbus-native-edlt-scene-cache-v2',
+            'format': 'cbus-native-edlt-scene-cache-v3',
             'profile': PROFILE,
             'cache': self.cache.as_dict(),
             'requirements': json.loads(self.requirements),
@@ -230,8 +281,10 @@ class ResolvedSceneMetadata:
                 {'group': group, 'action': action}
                 for group, action in self.action_pairs
             ],
+            'planned_creations': [row.as_dict() for row in self.creations],
             'planned_level_creations': [
                 row.as_dict() for row in self.creations
+                if isinstance(row, SceneLevelCreation)
             ],
             'group_reasons': json.loads(self.group_reasons),
             'metadata_provenance': 'one-admitted-native-project-xml-snapshot',
@@ -258,7 +311,8 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations):
     requirements = engine.lifecycle.requirements(supplied).as_dict()
     applications = {row.address: row for row in snapshot.applications}
     required_apps = {row['application'] for row in requirements['applications']}
-    missing_apps = sorted(required_apps - set(applications))
+    missing_apps = sorted(required_apps - set(applications)
+                          - {TRIGGER_APPLICATION})
     if missing_apps:
         raise ValueError('Required native applications are absent: '
                          + ', '.join(map(str, missing_apps)))
@@ -272,8 +326,8 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations):
         group_reasons.setdefault(key, []).extend(row['facts']['exists'])
         if row['facts'].get('complete_levels_if_present'):
             level_groups.add(key)
-    (extra_groups, extra_levels, action_pairs,
-     creations, projected_levels) = _operation_facts(
+    (extra_groups, extra_levels, action_pairs, creations, projected_levels,
+     projected_applications, projected_groups) = _operation_facts(
         supplied, engine, snapshot, operations)
     object_count = 1 + sum(
         1 + sum(1 + len(group.level_records) for group in application.groups)
@@ -287,7 +341,7 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations):
 
     cache_groups = []
     for (application, group), reasons in sorted(group_reasons.items()):
-        if application not in applications:
+        if application not in projected_applications:
             raise ValueError('Required native application is absent: '
                              + str(application))
         if group == 255:
@@ -296,7 +350,14 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations):
             continue
         record = _record(snapshot, application, group)
         if record is None:
-            cache_groups.append(LifecycleGroup(application, group, False))
+            if (application, group) not in projected_groups:
+                cache_groups.append(LifecycleGroup(application, group, False))
+                continue
+            cached_levels = (projected_levels[(application, group)]
+                             if (application, group) in level_groups else None)
+            cache_groups.append(LifecycleGroup(
+                application, group, True, (False,) * 4, True,
+                cached_levels))
             continue
         facts = requirements_by_group.get((application, group), {}).get(
             'facts', {})
@@ -316,20 +377,38 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations):
         raise ValueError('Resolved eDLT scene cache exceeds 512 group facts')
 
     lifecycle = LifecycleCache(
-        tuple(sorted(applications)), tuple(cache_groups))
-    displays = tuple(CachedDisplay(row.address, row.tag, row.tag)
-                     for row in snapshot.applications)
+        tuple(sorted(projected_applications)), tuple(cache_groups))
+    container_creations = {
+        (row.kind, row.application, row.address): row
+        for row in creations if isinstance(row, SceneContainerCreation)
+    }
+    displays = tuple(
+        CachedDisplay(address,
+                      (applications[address].tag
+                       if address in applications
+                       else container_creations[
+                           ('Application', address, address)].name),
+                      (applications[address].tag
+                       if address in applications
+                       else container_creations[
+                           ('Application', address, address)].name))
+        for address in sorted(projected_applications))
     virtual_apps = {row.application for row in cache_groups
                     if row.group == 255 and row.exists}
-    group_lists = tuple(CachedGroupList(
-        application.address, True,
-        tuple(CachedDisplay(row.address, row.tag, row.tag)
-              for row in application.groups)
-        + ((CachedDisplay(255, '<Unused>', '<Unused>'),)
-           if application.address in virtual_apps else ()))
-        for application in snapshot.applications)
+    group_lists = []
+    for address in sorted(projected_applications):
+        existing = applications.get(address)
+        rows = ({row.address: CachedDisplay(row.address, row.tag, row.tag)
+                 for row in existing.groups} if existing is not None else {})
+        for (kind, application, group), creation in container_creations.items():
+            if kind == 'Group' and application == address:
+                rows[group] = CachedDisplay(group, creation.name, creation.name)
+        if address in virtual_apps:
+            rows[255] = CachedDisplay(255, '<Unused>', '<Unused>')
+        group_lists.append(CachedGroupList(
+            address, True, tuple(rows[key] for key in sorted(rows))))
     application_cache = ApplicationCache(
-        lifecycle, True, displays, group_lists)
+        lifecycle, True, displays, tuple(group_lists))
 
     level_labels = []
     for group_address, action in action_pairs:
@@ -337,6 +416,7 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations):
         level = None if group is None else next(
             (row for row in group.level_records if row.address == action), None)
         creation = next((row for row in creations
+                         if isinstance(row, SceneLevelCreation)
                          if (row.group, row.address)
                          == (group_address, action)), None)
         if level is None and creation is None:
@@ -400,10 +480,17 @@ class NativeSceneMetadataPlan:
             'planned_creations': [
                 row.as_dict() for row in self.resolved.creations
             ],
-            'creation_order': 'Trigger group then exact requested action address',
+            'creation_order': ('Trigger Control application, trigger groups by '
+                               'address, then exact requested action addresses'),
+            'native_missing_application_name': 'Trigger Control',
+            'native_missing_group_name': 'Group {address}',
             'native_missing_level_name': 'Action Selector {address}',
+            'original_group_auto_add_admission': (
+                'fresh CBusNetwork defaults: AutoAddGroupsMessageShown=false, '
+                'bAdd=true; no prior interactive decline'),
             'native_blank_add_dialog_allocation': (
-                'first free address 0..254; outside this automatic exact-address path'),
+                'separate interactive path: first free address 0..254, seed '
+                'Level {address}, create only after acceptance'),
             'mutation_required': bool(
                 self.resolved.creations or self.scene_plan.changes),
             'stale_project_and_pp_rechecked_before_apply': True,
@@ -456,7 +543,7 @@ class NativeSceneMetadataError(RuntimeError):
 
 
 class NativeSceneMetadataTransaction:
-    """Single-use missing-level plus retained SceneManager transaction."""
+    """Single-use exact metadata plus retained SceneManager transaction."""
     def __init__(self, client, editor, *, programmer=None):
         from .edlt_scene_manager_cli import SceneCLIEditor
         if type(editor) is not SceneCLIEditor:
@@ -673,14 +760,21 @@ class NativeSceneMetadataTransaction:
         )
 
     def _add(self, plan, creation, known):
-        parent = (f'//{plan.resolved.snapshot.project}/'
-                  f'{plan.resolved.snapshot.network}/'
-                  f'{TRIGGER_APPLICATION}/{creation.group}')
+        root = (f'//{plan.resolved.snapshot.project}/'
+                f'{plan.resolved.snapshot.network}')
+        if isinstance(creation, SceneContainerCreation):
+            if creation.kind == 'Application':
+                parent, kind = root, 'application'
+            else:
+                parent, kind = root + f'/{creation.application}', 'group'
+        else:
+            parent = root + f'/{TRIGGER_APPLICATION}/{creation.group}'
+            kind = 'level'
         receipt = {**creation.as_dict(), 'attempted': True, 'created': False,
                    'value_initialized': False}
         try:
             response = self.database.add(
-                parent, 'level', creation.address,
+                parent, kind, creation.address,
                 creation.name)
         except BaseException:
             self._evidence['unidentified_metadata_mutation'] = True
@@ -691,7 +785,7 @@ class NativeSceneMetadataTransaction:
         if len(identities) != 1:
             self._evidence['unidentified_metadata_mutation'] = True
             raise RuntimeError(
-                'Created scene level did not return exactly one OID')
+                'Created scene metadata did not return exactly one OID')
         try:
             identity = _oid(identities[0])
         except ValueError:
@@ -699,9 +793,11 @@ class NativeSceneMetadataTransaction:
             raise
         if identity in known:
             self._evidence['unidentified_metadata_mutation'] = True
-            raise RuntimeError('Created scene level returned an existing OID')
+            raise RuntimeError('Created scene metadata returned an existing OID')
         known.add(identity)
-        receipt.update(oid=identity, created=True, value_initialized=True)
+        receipt.update(
+            oid=identity, created=True,
+            value_initialized=isinstance(creation, SceneLevelCreation))
         self._evidence['objects'].append(receipt)
         self._evidence['metadata_objects_created'] = len(
             self._evidence['objects'])
@@ -711,41 +807,95 @@ class NativeSceneMetadataTransaction:
         before_apps = {row.address: row
                        for row in plan.resolved.snapshot.applications}
         after_apps = {row.address: row for row in snapshot.applications}
-        if set(after_apps) != set(before_apps):
+        app_creations = {
+            row.address: row for row in plan.resolved.creations
+            if (isinstance(row, SceneContainerCreation)
+                and row.kind == 'Application')
+        }
+        group_creations = {
+            (row.application, row.address): row
+            for row in plan.resolved.creations
+            if (isinstance(row, SceneContainerCreation)
+                and row.kind == 'Group')
+        }
+        level_creations = {
+            (TRIGGER_APPLICATION, row.group, row.address): row
+            for row in plan.resolved.creations
+            if isinstance(row, SceneLevelCreation)
+        }
+        if set(after_apps) != set(before_apps) | set(app_creations):
             raise RuntimeError(
                 'Native application inventory changed during the transaction')
-        created_by_group = {}
-        for creation in plan.resolved.creations:
-            created_by_group.setdefault(creation.group, {})[
-                creation.address] = creation
-        receipts = {(row['group'], row['address']): row
-                    for row in self._evidence['objects']}
+        receipts = {}
+        for row in self._evidence['objects']:
+            if row['kind'] == 'Application':
+                key = ('Application', row['address'], None, row['address'])
+            else:
+                key = (row['kind'], row['application'], row.get('group'),
+                       row['address'])
+            if key in receipts:
+                raise RuntimeError('Duplicate scene metadata creation receipt')
+            receipts[key] = row
 
-        for app_address, before_app in before_apps.items():
-            after_app = after_apps[app_address]
-            if (after_app.oid, after_app.tag, after_app.metadata) != (
+        for app_address, after_app in after_apps.items():
+            before_app = before_apps.get(app_address)
+            if before_app is None:
+                creation = app_creations.get(app_address)
+                receipt = receipts.get(
+                    ('Application', app_address, None, app_address))
+                if (creation is None or receipt is None
+                        or after_app.oid != receipt['oid']
+                        or after_app.tag != creation.name):
+                    raise RuntimeError(
+                        'Created scene application differs after native readback')
+            elif (after_app.oid, after_app.tag, after_app.metadata) != (
                     before_app.oid, before_app.tag, before_app.metadata):
                 raise RuntimeError('Existing application metadata changed')
-            before_groups = {row.address: row for row in before_app.groups}
+
+            before_groups = ({row.address: row for row in before_app.groups}
+                             if before_app is not None else {})
+            expected_group_creations = {
+                address: row for (application, address), row
+                in group_creations.items() if application == app_address
+            }
             after_groups = {row.address: row for row in after_app.groups}
-            if set(after_groups) != set(before_groups):
+            if set(after_groups) != (set(before_groups)
+                                     | set(expected_group_creations)):
                 raise RuntimeError(
                     'Native group inventory changed during the transaction')
-            for group_address, before_group in before_groups.items():
-                after_group = after_groups[group_address]
-                if (after_group.kind, after_group.oid, after_group.tag,
-                    after_group.metadata,
-                    after_group.dynamic_images,
-                    after_group.dynamic_images_known) != (
-                        before_group.kind, before_group.oid,
-                        before_group.tag, before_group.metadata,
-                        before_group.dynamic_images,
-                        before_group.dynamic_images_known):
+
+            for group_address, after_group in after_groups.items():
+                before_group = before_groups.get(group_address)
+                if before_group is None:
+                    creation = expected_group_creations.get(group_address)
+                    receipt = receipts.get(
+                        ('Group', app_address, None, group_address))
+                    if (creation is None or receipt is None
+                            or after_group.kind != 'Group'
+                            or after_group.oid != receipt['oid']
+                            or after_group.tag != creation.name
+                            or not after_group.dynamic_images_known
+                            or after_group.dynamic_images != (False,) * 4):
+                        raise RuntimeError(
+                            'Created scene group differs after native readback')
+                elif (after_group.kind, after_group.oid, after_group.tag,
+                      after_group.metadata, after_group.dynamic_images,
+                      after_group.dynamic_images_known) != (
+                          before_group.kind, before_group.oid,
+                          before_group.tag, before_group.metadata,
+                          before_group.dynamic_images,
+                          before_group.dynamic_images_known):
                     raise RuntimeError('Existing group metadata changed')
-                expected_new = (created_by_group.get(group_address, {})
-                                if app_address == TRIGGER_APPLICATION else {})
-                before_levels = {row.address: row
-                                 for row in before_group.level_records}
+
+                before_levels = (
+                    {row.address: row for row in before_group.level_records}
+                    if before_group is not None else {})
+                expected_new = {
+                    address: creation
+                    for (application, group, address), creation
+                    in level_creations.items()
+                    if (application, group) == (app_address, group_address)
+                }
                 after_levels = {row.address: row
                                 for row in after_group.level_records}
                 if set(after_levels) != set(before_levels) | set(expected_new):
@@ -756,7 +906,8 @@ class NativeSceneMetadataTransaction:
                         raise RuntimeError('Existing level metadata changed')
                 for address, creation in expected_new.items():
                     row = after_levels[address]
-                    receipt = receipts.get((group_address, address))
+                    receipt = receipts.get(
+                        ('Level', app_address, group_address, address))
                     blanks = tuple((str(variant), '', False)
                                    for variant in range(4))
                     if (receipt is None or row.oid != receipt['oid']
@@ -766,6 +917,10 @@ class NativeSceneMetadataTransaction:
                             or row.dynamic_labels != blanks):
                         raise RuntimeError(
                             'Created scene level differs after native readback')
+
+        expected_receipts = len(plan.resolved.creations)
+        if len(receipts) != expected_receipts:
+            raise RuntimeError('Scene metadata creation receipts are incomplete')
         before = plan.resolved.snapshot
         if (snapshot.unit_oid != before.unit_oid
                 or snapshot.project_metadata != before.project_metadata
