@@ -404,7 +404,9 @@ credentials and sandboxed snapshots, the complete CONFIG and FILE families
 over local durable compatibility state, local project/NAC JSON inventory,
 deploy-queue event-channel subscriptions and session-owned advisory locks,
 the bounded local `DEPLOY_QUEUE` list/delete/bulk-delete lifecycle and no-work
-ADD events, and C-Gate
+ADD events, native-shaped durable `NET CREATE`/`DELETE`/`FLUSH`/`LOAD`/`RENAME`/`SAVE`
+catalogue lifecycle, exact `NET`/`NETWORK`/`TOPOLOGY` help, physical
+`NET LEARN`, physical `NETWORK LOCATE`, and C-Gate
 `DO` object methods for lighting, direct and bridged read-only synchronization,
 guarded KEYGL5 FactoryDefault, persistent named-scene record/playback, Trigger Control,
 Enable Control, clock, Temperature Broadcast, native text/icon/Unicode/dynamic-bitmap
@@ -428,7 +430,8 @@ MEASUREMENT, TELEPHONY and MEDIATRANSPORT, routed
 writes, routed OEM eDLT metadata, routed targeted `SYNCNEW`, and bridged commissioning
 mutations remain unavailable. When `--cgate-auth-file` is configured, log in before
 an AIRCON, AUDIO, SECURITY or Telephony mutation, `MEASUREMENT DATA`, or gated
-`MEDIATRANSPORT` traffic; the Telephony last-number request remains open. `NET SYNCNEW` and
+`MEDIATRANSPORT` traffic, any NET catalogue mutation, `NET LEARN`, or
+`NETWORK LOCATE`; the Telephony last-number request remains open. `NET SYNCNEW` and
 `NET SET_PROJECT_IDENTIFY` update the volatile physical cache and do not create persistent project
 units. The unravel backend requires exactly two known serials at address 255, two unique
 empty database destinations, and a direct network; broader unravel cases remain
@@ -442,6 +445,16 @@ parameter-`0xFF` transport, and changed C-Bus 3 saves complete the native
 Save-to-NVM EXECUTE/POLL sequence before reporting success. Physical programming
 requires privately installed decoded unit specifications. Unsupported protection modes
 return explicit errors instead of simulated success. See the [supported operations and remaining work](docs/cmqttd-cgate.md).
+
+The NET runtime catalogue is separate from the imported tag database, matching
+C-Gate's lifecycle boundary. Its active definitions and `DB`/`FILE` snapshots
+are atomic `cmqttd-json` state; `FILE` is an internal snapshot and never opens a
+caller-selected host path. `NET LEARN` and `NETWORK LOCATE` support only the
+configured direct shared PCI, send exact SAL once, wait for its correlated
+confirmation, and never replay an uncertain write. `NET OPEN`, `NET CLOSE`,
+whole-network `NET UNRAVEL`, and `TOPOLOGY EXPLORE` remain explicit 502 paths:
+they would take ownership of interfaces or run an incompletely evidenced
+destructive topology algorithm.
 
 ## Development tools and simulation
 

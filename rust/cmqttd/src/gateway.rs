@@ -641,6 +641,8 @@ impl Gateway {
             | CBusEvent::SecurityCommand { .. }
             | CBusEvent::SecurityEvent { .. }
             | CBusEvent::MediaTransport { .. }
+            | CBusEvent::NetworkLocate { .. }
+            | CBusEvent::LearnMode { .. }
             | CBusEvent::TelephonyCommand { .. }
             | CBusEvent::TelephonyEvent { .. }
             | CBusEvent::TriggerEvent { .. }

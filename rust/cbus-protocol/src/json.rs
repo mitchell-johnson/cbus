@@ -7,6 +7,7 @@ use crate::sal::aircon::{AirconCommand, AirconStatus};
 use crate::sal::audio::{AudioAddress, AudioCommand, AudioEvent};
 use crate::sal::measurement::MeasurementData;
 use crate::sal::mediatransport::MediaTransportMessage;
+use crate::sal::network_management::{LearnMode, LocateTarget, NetworkLocate};
 use crate::sal::security::{SecurityArmMode, SecurityCommand, SecurityEvent};
 use crate::sal::telephony::{
     DialFailure, OffHookReason, TelephonyCommand, TelephonyDirection, TelephonyEvent,
@@ -34,6 +35,13 @@ pub fn sal_to_json(s: &Sal) -> Value {
             "units":measurement.units
         }),
         Sal::MediaTransport(message) => mediatransport_to_json(message),
+        Sal::NetworkLocate(command) => network_locate_to_json(command),
+        Sal::LearnMode(command) => json!({
+            "sal":"learn_mode",
+            "application":command.application,
+            "grade":command.grade,
+            "group":command.group
+        }),
         Sal::TelephonyCommand(command) => telephony_command_to_json(command),
         Sal::TelephonyEvent(event) => telephony_event_to_json(event),
         Sal::LightingRamp {
@@ -109,6 +117,29 @@ pub fn sal_to_json(s: &Sal) -> Value {
             payload,
         } => json!({"sal": "dynamic_label", "application": application,
                     "payload_hex": hex::encode(payload)}),
+    }
+}
+
+fn network_locate_to_json(command: &NetworkLocate) -> Value {
+    match &command.target {
+        LocateTarget::Unit(unit) => json!({
+            "sal":"network_locate", "target":"unit", "unit":unit, "mode":command.mode
+        }),
+        LocateTarget::Application(application) => json!({
+            "sal":"network_locate", "target":"application", "application":application,
+            "mode":command.mode
+        }),
+        LocateTarget::Group { application, group } => json!({
+            "sal":"network_locate", "target":"group", "application":application,
+            "group":group, "mode":command.mode
+        }),
+        LocateTarget::Serial {
+            manufacturer,
+            serial,
+        } => json!({
+            "sal":"network_locate", "target":"serial", "manufacturer":manufacturer,
+            "serial":serial.canonical, "mode":command.mode
+        }),
     }
 }
 
@@ -988,6 +1019,12 @@ pub fn sal_from_json(d: &Value) -> Result<Sal, JErr> {
             units: get_u8(d, "units")?,
         })),
         "mediatransport" => mediatransport_from_json(d).map(Sal::MediaTransport),
+        "network_locate" => network_locate_from_json(d).map(Sal::NetworkLocate),
+        "learn_mode" => Ok(Sal::LearnMode(LearnMode {
+            application: get_u8(d, "application")?,
+            grade: get_u8(d, "grade")?,
+            group: get_u8(d, "group")?,
+        })),
         "telephony" => telephony_command_from_json(d).map(Sal::TelephonyCommand),
         "telephony_event" => telephony_event_from_json(d).map(Sal::TelephonyEvent),
         "lighting_on" => Ok(Sal::LightingOn {
@@ -1061,6 +1098,27 @@ pub fn sal_from_json(d: &Value) -> Result<Sal, JErr> {
         }),
         other => Err(format!("unhandled SAL json: {other}")),
     }
+}
+
+fn network_locate_from_json(d: &Value) -> Result<NetworkLocate, JErr> {
+    let target = match get_str(d, "target")? {
+        "unit" => LocateTarget::Unit(get_u8(d, "unit")?),
+        "application" => LocateTarget::Application(get_u8(d, "application")?),
+        "group" => LocateTarget::Group {
+            application: get_u8(d, "application")?,
+            group: get_u8(d, "group")?,
+        },
+        "serial" => LocateTarget::Serial {
+            manufacturer: get_u8(d, "manufacturer")?,
+            serial: crate::serial_address::parse_native_serial(get_str(d, "serial")?)
+                .map_err(|error| error.0)?,
+        },
+        target => return Err(format!("unhandled network locate target: {target}")),
+    };
+    Ok(NetworkLocate {
+        target,
+        mode: get_u8(d, "mode")?,
+    })
 }
 
 fn telephony_direction_from_json(d: &Value) -> Result<TelephonyDirection, JErr> {

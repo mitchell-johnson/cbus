@@ -8,6 +8,7 @@ pub mod label;
 pub mod lighting;
 pub mod measurement;
 pub mod mediatransport;
+pub mod network_management;
 pub mod security;
 pub mod status_request;
 pub mod telephony;
@@ -47,6 +48,10 @@ pub enum Sal {
     MeasurementData(measurement::MeasurementData),
     /// A Media Transport command, device event, or report.
     MediaTransport(mediatransport::MediaTransportMessage),
+    /// A Network Management locate-yourself command or observation.
+    NetworkLocate(network_management::NetworkLocate),
+    /// An application learn-mode command or observation.
+    LearnMode(network_management::LearnMode),
     /// Switch a lighting group on.
     LightingOn {
         /// Lighting application address (0x30..=0x5F).
@@ -167,6 +172,8 @@ impl Sal {
             Sal::TelephonyCommand(_) | Sal::TelephonyEvent(_) => APP_TELEPHONY,
             Sal::MeasurementData(_) => APP_MEASUREMENT,
             Sal::MediaTransport(_) => APP_MEDIA_TRANSPORT,
+            Sal::NetworkLocate(_) => network_management::APP_NETWORK_MANAGEMENT,
+            Sal::LearnMode(command) => command.application,
             Sal::LightingOn { application, .. }
             | Sal::LightingOff { application, .. }
             | Sal::LightingTerminateRamp { application, .. }
@@ -198,6 +205,8 @@ impl Sal {
             Sal::TelephonyEvent(event) => event.encode(),
             Sal::MeasurementData(measurement) => measurement.encode(),
             Sal::MediaTransport(message) => message.encode(),
+            Sal::NetworkLocate(command) => command.encode(),
+            Sal::LearnMode(command) => command.encode(),
             Sal::LightingOn { group_address, .. } => Ok(vec![LIGHT_ON, *group_address]),
             Sal::LightingOff { group_address, .. } => Ok(vec![LIGHT_OFF, *group_address]),
             Sal::LightingTerminateRamp { group_address, .. } => {
@@ -297,6 +306,10 @@ impl Sal {
 /// (0xCD), Security (0xD0), Measurement (0xE4), lighting (0x30-0x5F), and
 /// temperature (0x19) are registered; anything else errors (-> Invalid packet).
 pub fn decode_sals(app: u8, data: &[u8]) -> Result<Vec<Sal>, DecodeError> {
+    if data.len() == 4 && data.first() == Some(&0x03) {
+        return network_management::decode_learn(app, data)
+            .map(|command| vec![Sal::LearnMode(command)]);
+    }
     // Extended AIRCON schedule entries use the 0xA9 opcode. Application
     // dispatch must happen before the generic dynamic-label prefix check.
     if app == APP_AIRCON {
@@ -322,6 +335,10 @@ pub fn decode_sals(app: u8, data: &[u8]) -> Result<Vec<Sal>, DecodeError> {
         });
     }
     if app == APP_SECURITY {
+        if matches!(data.first(), Some(0x13) | Some(0x16)) {
+            return network_management::decode_locate(data)
+                .map(|command| vec![Sal::NetworkLocate(command)]);
+        }
         return security::decode_sals(data).map(|messages| {
             messages
                 .into_iter()

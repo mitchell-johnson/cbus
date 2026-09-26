@@ -1,0 +1,546 @@
+{
+  "schema": "native-cgate-net-lifecycle-v1",
+  "oracle": {
+    "product": "Schneider Electric C-Gate",
+    "version": "3.4.0",
+    "build": 2001,
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "transport": "owned disposable loopback process and fake PCI only",
+    "site_project_used": false,
+    "real_cbus_contacted": false
+  },
+  "help": [
+    {
+      "path": "NET",
+      "code": 101,
+      "lines": [
+        "101-Help: NET commands:",
+        "101-Help:  NET ? Help for these commands",
+        "101-Help:  NET CHECKUNIT - Test a unit address to see whether an unravel is required",
+        "101-Help:  NET CHECK_UNRAVEL - Test a network as to whether an unravel is required",
+        "101-Help:  NET CLOCKS - Optimise the number of clocks enabled on a network",
+        "101-Help:  NET CLOSE - Close a network in the current project, or all networks in all projects",
+        "101-Help:  NET CREATE - Create a new network definition in the current project",
+        "101-Help:  NET DELETE - Delete a network definition in the current project",
+        "101-Help:  NET FLUSH - Flush the objects for the given network",
+        "101-Help:  NET LEARN - Enable or disable learn command for given network and application",
+        "101-Help:  NET LIST - Return a list of networks defined in the project",
+        "101-Help:  NET LIST_ALL - Return a list of all networks defined in ALL projects",
+        "101-Help:  NET LOAD - Load network definitions into the project",
+        "101-Help:  NET OPEN - Open a network in the current project",
+        "101-Help:  NET PINGU - Perform a quick single-MMI network ping returning a list of unit addresses",
+        "101-Help:  NET PROJECT_IDENTIFY - Identify the project present on this interface",
+        "101-Help:  NET RENAME - Change the network name of the given network",
+        "101-Help:  NET SAVE - Save network definitions into the current project",
+        "101-Help:  NET SET_PROJECT_IDENTIFY - Set the project identify string for this network",
+        "101-Help:  NET STATE_INTERVAL - Set network status event interval",
+        "101-Help:  NET SYNC - Synchronize a network",
+        "101-Help:  NET SYNCNEW - Find and get details of new units on this network",
+        "101-Help:  NET UNRAVEL - Unravel a network.",
+        "101 Help:  NET UNRAVELUNIT - Unravel a unit address."
+      ]
+    },
+    {
+      "path": "NET CLOSE",
+      "code": 101,
+      "lines": [
+        "101 Help: No help is available for this command."
+      ]
+    },
+    {
+      "path": "NET CREATE",
+      "code": 101,
+      "lines": [
+        "101-Help: syntax: NET CREATE <name> <type> <interface-address> [<options>]",
+        "101-Help: Create a new network definition in the current project.",
+        "101-Help:  <name> is a valid network name.",
+        "101-Help:  <type> is the interface type (such as serial, cni, bridge, ..)",
+        "101-Help:  <interface-address> is the address of the port for this network",
+        "101 Help:  <options> (optional) depend on the network type."
+      ]
+    },
+    {
+      "path": "NET DELETE",
+      "code": 101,
+      "lines": [
+        "101-Help: syntax: NET DELETE <name>",
+        "101-Help: Delete a network definition in the current project.",
+        "101 Help:  <name> is a valid network name."
+      ]
+    },
+    {
+      "path": "NET FLUSH",
+      "code": 101,
+      "lines": [
+        "101-Help: syntax: NET FLUSH <net-address>",
+        "101-Help: Flush the objects from a network.",
+        "101 Help:  <net-address> is a valid network address."
+      ]
+    },
+    {
+      "path": "NET LEARN",
+      "code": 101,
+      "lines": [
+        "101-Help: syntax: NET LEARN <net-address> <app-number> <grade> <group>",
+        "101-Help: Return a list of networks defined in the current project.",
+        "101-Help:  <net-address> is the address of the network",
+        "101-Help:  <app-number> is the application to send the command for",
+        "101-Help:  <grade> is the learn operation to perform given as an integer:",
+        "101-Help:    init relay $1",
+        "101-Help:    init dim   $2",
+        "101-Help:    cancel     $80",
+        "101-Help:    exit relay $81",
+        "101-Help:    exit dim   $82",
+        "101-Help:    exit area  $83",
+        "101 Help:  <group> is the group number to learn."
+      ]
+    },
+    {
+      "path": "NET LOAD",
+      "code": 101,
+      "lines": [
+        "101-Help: syntax: NET LOAD 'DB' | 'FILE' [<project>]",
+        "101 Help: Loads network definitions from the tag database or from a networks file"
+      ]
+    },
+    {
+      "path": "NET OPEN",
+      "code": 101,
+      "lines": [
+        "101-Help: syntax: NET OPEN <net-address>",
+        "101-Help: Open a network.",
+        "101 Help:  <net-address> is a valid network address."
+      ]
+    },
+    {
+      "path": "NET RENAME",
+      "code": 101,
+      "lines": [
+        "101-Help: syntax: NET RENAME <net-address> <new-name> [\"nofixrefs\"]",
+        "101-Help: Change a network name.",
+        "101-Help:  <net-address> is a valid network name.",
+        "101-Help:  <new-name> is the new network name",
+        "101-Help:  \"nofixrefs\" (optional) prevents the command from changing bridge definitions",
+        "101 Help:  in other networks in this project to support the new network name."
+      ]
+    },
+    {
+      "path": "NET SAVE",
+      "code": 101,
+      "lines": [
+        "101-Help: syntax: NET SAVE 'DB' | 'FILE'",
+        "101 Help: Save network definitions to the tag database of to a networks file"
+      ]
+    },
+    {
+      "path": "NET STATE_INTERVAL",
+      "code": 101,
+      "lines": [
+        "101-Help: syntax: NET STATE_INTERVAL <state-interval>",
+        "101-Help: Sets network state event interval in seconds.",
+        "101-Help:  <state-interval> is the time in seconds between state events for all networks",
+        "101 Help:   A value of 0 disables state events"
+      ]
+    },
+    {
+      "path": "NET UNRAVEL",
+      "code": 101,
+      "lines": [
+        "101-Help: syntax: NET UNRAVEL <net-address> [MATCHDB]",
+        "101 Help: Unravel a network, placing all units at unique addresses. <net-address> is a valid network address. if MATCHDB is specified then the units where possible will move to their addresses in the database."
+      ]
+    },
+    {
+      "path": "NETWORK",
+      "code": 101,
+      "lines": [
+        "101-Help: NETWORK commands:",
+        "101-Help:  NETWORK ? Help for these commands",
+        "101 Help:  NETWORK LOCATE - Send a locate message on the network application"
+      ]
+    },
+    {
+      "path": "NETWORK LOCATE",
+      "code": 101,
+      "lines": [
+        "101-Help: syntax: NETWORK LOCATE <application> <options> <mode>",
+        "101-Help: Sends a locate yourself message to the matched units",
+        "101-Help:  <application> must resolve to a valid Network application address.",
+        "101-Help:  <options> is one of the following:",
+        "101-Help:    UNIT <unit-number>",
+        "101-Help:    APP <app-number>",
+        "101-Help:    GROUP <app-number> <group-number>",
+        "101-Help:    SERIAL <manufacturer> <serial-number>",
+        "101 Help:  <mode> is ON, OFF, or a number in the range 0 through 255"
+      ]
+    },
+    {
+      "path": "TOPOLOGY",
+      "code": 101,
+      "lines": [
+        "101-Help: TOPOLOGY commands:",
+        "101-Help:  TOPOLOGY ? Help for these commands",
+        "101 Help:  TOPOLOGY EXPLORE - Explore the topology of a set of network connections"
+      ]
+    },
+    {
+      "path": "TOPOLOGY EXPLORE",
+      "code": 101,
+      "lines": [
+        "101-Help: syntax: TOPOLOGY EXPLORE <addresses>",
+        "101-Help: Explore the topology of a set of network connections",
+        "101-Help: <addresses> is a list of space-separated addresses in the form",
+        "101-Help: <type>@address;option=value;option=value",
+        "101-Help:   some examples are: serial@COM1 cni@192.168.1.40:10001",
+        "101 Help:   modem@COM2;number=85431111;username=222;password=2345"
+      ]
+    }
+  ],
+  "runtime": {
+    "no_project_and_obsolete": [
+      {
+        "command": "NET STATE_INTERVAL ?",
+        "code": 400,
+        "lines": [
+          "400 Syntax Error: This command is obsolete.  Please use 'set projects NetStateInterval X' instead."
+        ],
+        "final": "400 Syntax Error: This command is obsolete.  Please use 'set projects NetStateInterval X' instead."
+      },
+      {
+        "command": "NET STATE_INTERVAL 1",
+        "code": 400,
+        "lines": [
+          "400 Syntax Error: This command is obsolete.  Please use 'set projects NetStateInterval X' instead."
+        ],
+        "final": "400 Syntax Error: This command is obsolete.  Please use 'set projects NetStateInterval X' instead."
+      },
+      {
+        "command": "NET STATE_INTERVAL //X/254 1",
+        "code": 400,
+        "lines": [
+          "400 Syntax Error: This command is obsolete.  Please use 'set projects NetStateInterval X' instead."
+        ],
+        "final": "400 Syntax Error: This command is obsolete.  Please use 'set projects NetStateInterval X' instead."
+      },
+      {
+        "command": "NET CREATE 254 cni 127.0.0.1:9",
+        "code": 408,
+        "lines": [
+          "408 Operation failed: No project specified"
+        ],
+        "final": "408 Operation failed: No project specified"
+      },
+      {
+        "command": "TOPOLOGY EXPLORE",
+        "code": 408,
+        "lines": [
+          "408 Operation failed: No interfaces to explore"
+        ],
+        "final": "408 Operation failed: No interfaces to explore"
+      }
+    ],
+    "disposable_project": [
+      {
+        "command": "PROJECT NEW DISPOSABLE",
+        "code": 200,
+        "lines": [
+          "200 OK."
+        ],
+        "final": "200 OK."
+      },
+      {
+        "command": "PROJECT USE DISPOSABLE",
+        "code": 200,
+        "lines": [
+          "200 OK."
+        ],
+        "final": "200 OK."
+      },
+      {
+        "command": "NET CREATE 254 cni 127.0.0.1:<owned-fake-pci>",
+        "code": 200,
+        "lines": [
+          "200 OK."
+        ],
+        "final": "200 OK."
+      },
+      {
+        "command": "NET LIST",
+        "code": 131,
+        "lines": [
+          "131 network=254 State=new InterfaceState=closed"
+        ],
+        "final": "131 network=254 State=new InterfaceState=closed"
+      },
+      {
+        "command": "NET SAVE DB DISPOSABLE",
+        "code": 200,
+        "lines": [
+          "200 OK."
+        ],
+        "final": "200 OK."
+      },
+      {
+        "command": "NET CLOSE //DISPOSABLE/254",
+        "code": 200,
+        "lines": [
+          "200 OK: //DISPOSABLE/254"
+        ],
+        "final": "200 OK: //DISPOSABLE/254"
+      },
+      {
+        "command": "NET OPEN //DISPOSABLE/254",
+        "code": 200,
+        "lines": [
+          "120-initializing",
+          "120-opening port",
+          "120-starting network threads",
+          "120-pci reset",
+          "120-checking connection",
+          "120-relinking to bridged networks",
+          "120-open complete",
+          "200 OK: //DISPOSABLE/254"
+        ],
+        "final": "200 OK: //DISPOSABLE/254"
+      },
+      {
+        "command": "NET FLUSH //DISPOSABLE/254",
+        "code": 200,
+        "lines": [
+          "200 OK."
+        ],
+        "final": "200 OK."
+      },
+      {
+        "command": "NET LEARN //DISPOSABLE/254 56 1 1",
+        "code": 200,
+        "lines": [
+          "200 OK."
+        ],
+        "final": "200 OK."
+      },
+      {
+        "command": "NET DELETE //DISPOSABLE/254",
+        "code": 468,
+        "lines": [
+          "468 Can not delete open network: network is operating"
+        ],
+        "final": "468 Can not delete open network: network is operating"
+      },
+      {
+        "command": "NET CLOSE //DISPOSABLE/254",
+        "code": 200,
+        "lines": [
+          "200 OK: //DISPOSABLE/254"
+        ],
+        "final": "200 OK: //DISPOSABLE/254"
+      },
+      {
+        "command": "NET RENAME //DISPOSABLE/254 253",
+        "code": 200,
+        "lines": [
+          "200 OK."
+        ],
+        "final": "200 OK."
+      },
+      {
+        "command": "NET LIST",
+        "code": 131,
+        "lines": [
+          "131 network=253 State=new InterfaceState=closed"
+        ],
+        "final": "131 network=253 State=new InterfaceState=closed"
+      },
+      {
+        "command": "NET SAVE FILE DISPOSABLE",
+        "code": 200,
+        "lines": [
+          "200 OK."
+        ],
+        "final": "200 OK."
+      },
+      {
+        "command": "NET LOAD FILE DISPOSABLE",
+        "code": 408,
+        "lines": [
+          "408 Operation failed: Problem loading: Network name already in use"
+        ],
+        "final": "408 Operation failed: Problem loading: Network name already in use"
+      },
+      {
+        "command": "NET FLUSH //DISPOSABLE/253",
+        "code": 200,
+        "lines": [
+          "200 OK."
+        ],
+        "final": "200 OK."
+      },
+      {
+        "command": "NET DELETE //DISPOSABLE/253",
+        "code": 200,
+        "lines": [
+          "200 OK."
+        ],
+        "final": "200 OK."
+      },
+      {
+        "command": "NET LIST",
+        "code": 132,
+        "lines": [
+          "132 no networks found"
+        ],
+        "final": "132 no networks found"
+      }
+    ],
+    "notes": [
+      "NET RENAME changes the runtime definition name; it does not rename the tag-database instance.",
+      "NET LOAD FILE merges definitions and returns 408 before mutation when a name already exists.",
+      "The optional SAVE/LOAD project argument resolves the named project even when another project is selected.",
+      "TOPOLOGY EXPLORE owns arbitrary interfaces; cmqttd keeps it fail closed."
+    ],
+    "cross_project_and_errors": [
+      {
+        "command": "NET CREATE 254 cni 127.0.0.1:<closed-loopback>",
+        "code": 408,
+        "lines": [
+          "408 Operation failed: Network name already in use"
+        ],
+        "final": "408 Operation failed: Network name already in use"
+      },
+      {
+        "command": "NET RENAME //NETA/254 253",
+        "code": 408,
+        "lines": [
+          "408 Operation failed: New name is in use"
+        ],
+        "final": "408 Operation failed: New name is in use"
+      },
+      {
+        "command": "NET SAVE BOGUS NETA",
+        "code": 400,
+        "lines": [
+          "400 Syntax Error: <destination> must be 'DB' or 'FILE'."
+        ],
+        "final": "400 Syntax Error: <destination> must be 'DB' or 'FILE'."
+      },
+      {
+        "command": "NET LOAD BOGUS NETA",
+        "code": 400,
+        "lines": [
+          "400 Syntax Error: <source> must be 'DB' or 'FILE'."
+        ],
+        "final": "400 Syntax Error: <source> must be 'DB' or 'FILE'."
+      },
+      {
+        "command": "NET SAVE FILE MISSING",
+        "code": 401,
+        "lines": [
+          "401 Bad object or device ID: MISSING (Network not found)"
+        ],
+        "final": "401 Bad object or device ID: MISSING (Network not found)"
+      },
+      {
+        "command": "NET LOAD FILE MISSING",
+        "code": 401,
+        "lines": [
+          "401 Bad object or device ID: MISSING (Network not found)"
+        ],
+        "final": "401 Bad object or device ID: MISSING (Network not found)"
+      },
+      {
+        "command": "NET SAVE FILE NETB",
+        "code": 200,
+        "lines": [
+          "200 OK."
+        ],
+        "final": "200 OK."
+      },
+      {
+        "command": "NET LOAD FILE NETB",
+        "code": 200,
+        "lines": [
+          "200 OK."
+        ],
+        "final": "200 OK."
+      }
+    ]
+  },
+  "decompiled_classes_sha256": {
+    "com/clipsal/cgate/cbus/net/NetCommand.class": "96c87692e2abaef9e9f3d08b9a2c60702f6cc3e76c5e3704f6b0b6dd753ba418",
+    "kE.class": "f27f0900601cbf8751bcf926b6dfae3ce0b4234e235ac5798b21195713dfaa84",
+    "kF.class": "6f67416d84f8040f701cdc753301d5675d6f00b1c175992a982ec3e4bbfb4a69",
+    "kG.class": "422ba0c336ae05b09c2fa2c72cf8b4d3d87cd1f1e168cd0fda3906486bebb160",
+    "kH.class": "f566c71902f1ad3048ddb949d50b9ad6afbcbe06409be28e4bd128759028392a",
+    "kI.class": "8437e76dfe781bfec48a137c273e0aefa9920488f172c9916d52b56868d5b2ba",
+    "kL.class": "dda26d9376ddff8c1227c89f583c5c463cb8fc194d7d5f9178aff56b8de3fd3b",
+    "kN.class": "e6e90e44a6fbad6d0271e1fc03de48c2c54a5cc888ae999dc685de6e3ff656fc",
+    "kQ.class": "4b2d24f562fe351b423711dda99fc5f3faba58d0bb1bdbaf76de62d478656f0f",
+    "kR.class": "69540da7b1c940ab7afcd64c26bcdf9dc27239677a942593042f20dc352b820f",
+    "kT.class": "1dc1a65322ce4f03aceae5a6a937cdd701b151769048e5e2f7fdd82136fa62d0",
+    "kX.class": "8501825716e055e4fea361992210923abfc23df0f332de7628a3b81ada3a6f93",
+    "bC.class": "e9f679a95ff5fac13204b70d02a367ed8b080e8998955c0116b8fccd4a03efa2",
+    "com/clipsal/cgate/cbus/app/netmanagement/NetworkCommand.class": "c610992f46d1ae3955aedcc76cd5ece2b662d25dc21cc36f037364aa75863c99",
+    "com/clipsal/cgate/cbus/app/netmanagement/NetworkLocateCommand.class": "5b8fd1dbafeacbfc8a2273d3b8ffbc6a8b33d460b9771f837950ea703712ad02",
+    "com/clipsal/cgate/cbus/app/netmanagement/CBusLocateYourselfCommand.class": "f99697d0ee48958203227113d282ae39519b7c73afd9a4d1282a0b9e7843d56e",
+    "nv.class": "d2c621987fe0594a89dacdd4fef7f1d41a46b8235370934e4333537272a8e135"
+  },
+  "wire_vectors": [
+    {
+      "command": "NET LEARN //DISPOSABLE/254 56 1 1",
+      "application": 56,
+      "sal_hex": "030101fe",
+      "packet_hex": "053800030101fe",
+      "captured_ascii": "\\053800030101FE<confirmation>\\r"
+    },
+    {
+      "command": "NETWORK LOCATE //DISPOSABLE/254/208 UNIT 1 ON",
+      "application": 208,
+      "sal_hex": "13ff0101",
+      "packet_hex": "05d00013ff0101"
+    },
+    {
+      "command": "NETWORK LOCATE //DISPOSABLE/254/208 APP 56 2",
+      "application": 208,
+      "sal_hex": "1338ff02",
+      "packet_hex": "05d0001338ff02"
+    },
+    {
+      "command": "NETWORK LOCATE //DISPOSABLE/254/208 GROUP 56 1 OFF",
+      "application": 208,
+      "sal_hex": "13380100",
+      "packet_hex": "05d00013380100"
+    },
+    {
+      "command": "NETWORK LOCATE //DISPOSABLE/254/208 SERIAL 1 12345.67 255",
+      "application": 208,
+      "sal_hex": "160103039043ff",
+      "packet_hex": "05d000160103039043ff"
+    }
+  ],
+  "implemented_classification": {
+    "local": [
+      "NET",
+      "NET CREATE",
+      "NET DELETE",
+      "NET FLUSH",
+      "NET LOAD",
+      "NET RENAME",
+      "NET SAVE",
+      "NETWORK",
+      "TOPOLOGY"
+    ],
+    "physical": [
+      "NET LEARN",
+      "NETWORK LOCATE"
+    ],
+    "obsolete_400": [
+      "NET STATE_INTERVAL"
+    ],
+    "fail_closed": [
+      "NET CLOSE",
+      "NET OPEN",
+      "NET UNRAVEL",
+      "TOPOLOGY EXPLORE"
+    ]
+  }
+}

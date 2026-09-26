@@ -15,6 +15,7 @@ use cbus_protocol::sal::{
     audio::{AudioCommand, AudioEvent},
     measurement::MeasurementData,
     mediatransport::MediaTransportMessage,
+    network_management::{LearnMode, NetworkLocate},
     security::{SecurityCommand, SecurityEvent},
     telephony::{TelephonyCommand, TelephonyEvent},
     Sal,
@@ -152,6 +153,20 @@ pub enum CBusEvent {
         source: Option<u8>,
         /// Fully decoded command/report payload.
         message: MediaTransportMessage,
+    },
+    /// One Network Management locate-yourself command observed on the bus.
+    NetworkLocate {
+        /// Source unit address (`None` when the source byte was 0).
+        source: Option<u8>,
+        /// Fully decoded selector and mode.
+        command: NetworkLocate,
+    },
+    /// One application learn-mode command observed on the bus.
+    LearnMode {
+        /// Source unit address (`None` when the source byte was 0).
+        source: Option<u8>,
+        /// Fully decoded application, grade and group.
+        command: LearnMode,
     },
     /// One Telephony command observed on the shared PCI receive stream.
     TelephonyCommand {
@@ -1090,6 +1105,14 @@ impl PciClient {
                             source: src,
                             message,
                         }),
+                        Sal::NetworkLocate(command) => Some(CBusEvent::NetworkLocate {
+                            source: src,
+                            command,
+                        }),
+                        Sal::LearnMode(command) => Some(CBusEvent::LearnMode {
+                            source: src,
+                            command,
+                        }),
                         Sal::TelephonyCommand(command) => Some(CBusEvent::TelephonyCommand {
                             source: src,
                             command,
@@ -1441,6 +1464,8 @@ fn classify(cmd: &Packet, conf: Option<u8>) -> (Priority, ResponseKind) {
                 | Sal::SecurityCommand(_)
                 | Sal::MeasurementData(_)
                 | Sal::MediaTransport(_)
+                | Sal::NetworkLocate(_)
+                | Sal::LearnMode(_)
                 | Sal::TelephonyCommand(_)
                 | Sal::TelephonyEvent(_)
                 | Sal::LightingOn { .. }

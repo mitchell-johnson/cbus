@@ -109,6 +109,11 @@ const VECTOR_FILES: &[(&str, &str, &str)] = &[
     ("measurement.jsonl", "measurement", "measurement-"),
     ("mediatransport.jsonl", "mediatransport", "mediatransport-"),
     ("telephony.jsonl", "telephony", "telephony-"),
+    (
+        "network_management.jsonl",
+        "network_management",
+        "network-management-",
+    ),
     ("checksum.jsonl", "checksum", "ck-"),
     ("ramp_rates.jsonl", "ramp_rates", "rr-"),
     ("mqtt_topics.jsonl", "mqtt_topics", "mt-"),

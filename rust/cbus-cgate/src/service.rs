@@ -4,6 +4,7 @@
 use super::*;
 mod dali;
 mod dali_specialized;
+mod net_lifecycle;
 use crate::access::{credential_digest_for, AccessEntry, CgateAccessLevel};
 use crate::auth;
 use crate::config::{
@@ -18,6 +19,7 @@ use cbus_protocol::{
         label,
         measurement::MeasurementData,
         mediatransport::MediaTransportMessage,
+        network_management::LocateTarget,
         security::{SecurityArmMode, SecurityCommand},
         telephony::{TelephonyCommand, TelephonyDirection},
         Sal,
@@ -1334,6 +1336,9 @@ impl Service {
             }
             Err(e) => return Err(e),
         }
+        if net_lifecycle::seed_catalogs(&mut model)? {
+            Database::from_server(&model).save(&state_path)?;
+        }
         let selected = model
             .projects
             .get_mut(&project)
@@ -1566,6 +1571,33 @@ impl Service {
                     self.project,
                     self.network,
                     message.event_arguments()
+                ));
+            }
+            CBusEvent::NetworkLocate { source, command } => {
+                let target = match &command.target {
+                    LocateTarget::Unit(unit) => format!("unit={unit}"),
+                    LocateTarget::Application(application) => {
+                        format!("application={application}")
+                    }
+                    LocateTarget::Group { application, group } => {
+                        format!("application={application} group={group}")
+                    }
+                    LocateTarget::Serial {
+                        manufacturer,
+                        serial,
+                    } => format!("manufacturer={manufacturer} serial={}", serial.canonical),
+                };
+                let source = source.unwrap_or(0);
+                let _ = self.events.send(format!(
+                    "#e# network locate //{}/{}/208 {target} mode={} sourceUnit={source}",
+                    self.project, self.network, command.mode
+                ));
+            }
+            CBusEvent::LearnMode { source, command } => {
+                let source = source.unwrap_or(0);
+                let _ = self.events.send(format!(
+                    "#e# net learn //{}/{} application={} grade={} group={} sourceUnit={source}",
+                    self.project, self.network, command.application, command.grade, command.group
                 ));
             }
             CBusEvent::TelephonyCommand { source, command } => {
@@ -1857,6 +1889,9 @@ impl Service {
         {
             return err(tag, 420, "420 LOGIN required");
         }
+        if let Some(response) = net_lifecycle::help(tag, &words, &upper) {
+            return response;
+        }
         if verb == "PORT" {
             return crate::port::handle(tag, &words, self.port_endpoint.get()).await;
         }
@@ -2042,6 +2077,18 @@ impl Service {
                 "DO SYNC"
             ]);
             capabilities["bridged_network_max_hops"] = serde_json::Value::from(6);
+            capabilities["net_catalog_commands"] =
+                serde_json::json!(["create", "delete", "flush", "list", "load", "rename", "save"]);
+            capabilities["net_catalog_storage"] =
+                serde_json::Value::String("cmqttd-json".to_string());
+            capabilities["net_catalog_file_storage"] =
+                serde_json::Value::String("cmqttd-internal".to_string());
+            capabilities["net_learn"] = serde_json::Value::Bool(true);
+            capabilities["network_locate"] = serde_json::Value::Bool(true);
+            capabilities["network_management_delivery_semantics"] =
+                serde_json::Value::String("pci-confirmed-exactly-once-no-replay".to_string());
+            capabilities["net_lifecycle_fail_closed"] =
+                serde_json::json!(["close", "open", "unravel", "topology_explore"]);
             capabilities["aircon_control"] = serde_json::Value::Bool(true);
             capabilities["aircon_application"] = serde_json::Value::from(172);
             capabilities["aircon_delivery_semantics"] =
@@ -2445,6 +2492,24 @@ impl Service {
         }
         if verb == "NET" && sub == "PINGU" {
             return self.net_pingu(client, line, tag, &words).await;
+        }
+        if verb == "NET" && sub == "STATE_INTERVAL" {
+            return err(
+                tag,
+                400,
+                "400 Syntax Error: This command is obsolete.  Please use 'set projects NetStateInterval X' instead.",
+            );
+        }
+        if verb == "NET"
+            && matches!(
+                sub,
+                "CREATE" | "DELETE" | "FLUSH" | "LEARN" | "LIST" | "LOAD" | "RENAME" | "SAVE"
+            )
+        {
+            return self.net_lifecycle(client, tag, &words, &upper).await;
+        }
+        if verb == "NETWORK" && sub == "LOCATE" {
+            return self.network_locate(client, tag, &words).await;
         }
         if verb == "NET" && sub == "PROJECT_IDENTIFY" {
             return self.net_project_identify(tag, &words).await;
@@ -10305,7 +10370,20 @@ fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
         "CGL" => sub == "IMPORT",
         "REPOSITORY" => sub == "USE",
         "SET" => true,
-        "NET" => matches!(sub, "SET_PROJECT_IDENTIFY" | "UNRAVEL" | "UNRAVELUNIT"),
+        "NET" => matches!(
+            sub,
+            "CREATE"
+                | "DELETE"
+                | "FLUSH"
+                | "LEARN"
+                | "LOAD"
+                | "RENAME"
+                | "SAVE"
+                | "SET_PROJECT_IDENTIFY"
+                | "UNRAVEL"
+                | "UNRAVELUNIT"
+        ),
+        "NETWORK" => sub == "LOCATE",
         "LABEL" => matches!(sub, "CLEAR" | "CLEAREDLT" | "KFIGET" | "KFISET"),
         "SCENE" => sub == "RECORD",
         "DO" => words

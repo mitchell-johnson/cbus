@@ -86,6 +86,16 @@ IN_PROGRESS or FAIL_BUSY. Connection loss makes the result uncertain and the
 request is not replayed. Exact request/reply and JSON cases are in
 `rust/testdata/vectors/dali.jsonl`; native help evidence for all 128 maintained
 DALI paths is in `rust/testdata/fixtures/native_cgate_dali_help.json`.
+
+Network Management application `0xD0` has typed UNIT, APP, GROUP, and
+manufacturer/native-serial locate-yourself SAL. Application learn mode uses
+the caller-selected application and retains opcode `0x03`, grades 1, 2, or
+128–131, group, and its inner two's-complement checksum. Both codecs round trip
+through canonical JSON and exact packets in
+`rust/testdata/vectors/network_management.jsonl`; malformed lengths, reserved
+selectors, invalid grades, and bad inner checksums fail closed. The opcode
+prefixes `0x13` and `0x16` are decoded before the other application-208
+Security layouts.
 Specialized gateway parameters use the existing page-aware programming codec:
 recalls split at 256-byte boundaries, and verified stores select the page,
 write at most 12 tagged bytes, require the matching device acknowledgement,

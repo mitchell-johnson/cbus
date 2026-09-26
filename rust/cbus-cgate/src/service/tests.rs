@@ -137,6 +137,409 @@ async fn command_lines(
 }
 
 #[tokio::test]
+async fn net_lifecycle_help_catalog_persistence_and_obsolete_boundary_are_native_shaped() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+
+    let help = service.handle(&mut client, "[root] NET").await;
+    assert_eq!(help.status, 101);
+    assert_eq!(help.lines.len(), 23);
+    assert_eq!(help.lines[0], "Help: NET commands:");
+    assert_eq!(
+        help.final_text,
+        "101 Help:  NET UNRAVELUNIT - Unravel a unit address."
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[help] HELP NETWORK LOCATE")
+            .await
+            .final_text,
+        "101 Help:  <mode> is ON, OFF, or a number in the range 0 through 255"
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[old] NET STATE_INTERVAL anything")
+            .await
+            .final_text,
+        "400 Syntax Error: This command is obsolete.  Please use 'set projects NetStateInterval X' instead."
+    );
+
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[create] NET CREATE GARAGE cni 127.0.0.1:10001 alpha=beta",
+            )
+            .await
+            .final_text,
+        "200 OK."
+    );
+    let list = service.handle(&mut client, "[list] NET LIST").await;
+    assert_eq!(list.status, 131);
+    assert!(format_response(&list).contains("network=GARAGE State=new InterfaceState=closed"));
+    assert_eq!(
+        service
+            .handle(&mut client, "[save] NET SAVE FILE")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[rename] NET RENAME GARAGE SHED")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[delete] NET DELETE SHED")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[duplicate] NET LOAD FILE")
+            .await
+            .final_text,
+        "408 Operation failed: Problem loading: Network name already in use"
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[new-project] PROJECT NEW EMPTY")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[use-project] PROJECT USE EMPTY")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[create-empty] NET CREATE CABIN cni loopback.invalid:1"
+            )
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[save-empty] NET SAVE FILE")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[delete-empty] NET DELETE CABIN")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[load-empty] NET LOAD FILE")
+            .await
+            .status,
+        200
+    );
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err(),
+        "catalogue/help/obsolete commands must not write to the PCI"
+    );
+
+    drop(service);
+    let (replacement, _replacement_remote) = pci();
+    let restarted = Service::new(&fixture(), None, path.clone(), replacement, None).unwrap();
+    let mut restarted_client = ClientState::default();
+    assert_eq!(
+        restarted
+            .handle(&mut restarted_client, "[restart-use] PROJECT USE EMPTY")
+            .await
+            .status,
+        200
+    );
+    let list = restarted
+        .handle(&mut restarted_client, "[restart] NET LIST")
+        .await;
+    assert!(format_response(&list).contains("network=CABIN State=new InterfaceState=closed"));
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn net_lifecycle_mutations_and_network_locate_require_login_before_io() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    service
+        .set_auth_token_hash(crate::auth::sha256(b"net-lifecycle-test-token"))
+        .unwrap();
+    let mut client = ClientState::default();
+    assert_eq!(service.handle(&mut client, "[help] NET").await.status, 101);
+    assert_eq!(
+        service.handle(&mut client, "[list] NET LIST").await.status,
+        131
+    );
+    for command in [
+        "NET CREATE TEMP cni 127.0.0.1:1",
+        "NET DELETE 254",
+        "NET FLUSH 254",
+        "NET LEARN 254 56 1 1",
+        "NET LOAD DB",
+        "NET RENAME 254 LOCAL",
+        "NET SAVE DB",
+        "NETWORK LOCATE 254/208 UNIT 1 ON",
+    ] {
+        let response = service
+            .handle(&mut client, &format!("[locked] {command}"))
+            .await;
+        assert_eq!(response.final_text, "420 LOGIN required", "{command}");
+    }
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err(),
+        "unauthenticated NET mutations must fail before PCI I/O"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn net_save_load_explicit_project_targets_only_the_named_project() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[create] NET CREATE GARAGE cni loopback.invalid:1"
+            )
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[new] PROJECT NEW OTHER")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[use] PROJECT USE OTHER")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[create-other] NET CREATE CABIN cni loopback.invalid:2",
+            )
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[save-other] NET SAVE FILE OTHER")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[delete-other] NET DELETE CABIN")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[use-harness] PROJECT USE HARNESS")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[load-other] NET LOAD FILE OTHER")
+            .await
+            .status,
+        200
+    );
+    let harness = service
+        .handle(&mut client, "[list-harness] NET LIST HARNESS")
+        .await;
+    assert!(format_response(&harness).contains("network=GARAGE"));
+    assert!(!format_response(&harness).contains("network=CABIN"));
+    let other = service
+        .handle(&mut client, "[list-other] NET LIST OTHER")
+        .await;
+    assert!(format_response(&other).contains("network=CABIN"));
+    assert!(!format_response(&other).contains("network=GARAGE"));
+
+    assert_eq!(
+        service
+            .handle(&mut client, "[save-db-other] NET SAVE DB OTHER")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[delete-qualified] NET DELETE //OTHER/CABIN")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[load-db-other] NET LOAD DB OTHER")
+            .await
+            .status,
+        200
+    );
+    assert!(format_response(
+        &service
+            .handle(&mut client, "[list-restored] NET LIST OTHER")
+            .await
+    )
+    .contains("network=CABIN"));
+
+    for (command, expected) in [
+        (
+            "NET CREATE GARAGE cni loopback.invalid:1",
+            "408 Operation failed: Network name already in use",
+        ),
+        (
+            "NET RENAME GARAGE GARAGE",
+            "408 Operation failed: New name is in use",
+        ),
+        (
+            "NET SAVE BOGUS OTHER",
+            "400 Syntax Error: <destination> must be 'DB' or 'FILE'.",
+        ),
+        (
+            "NET LOAD BOGUS OTHER",
+            "400 Syntax Error: <source> must be 'DB' or 'FILE'.",
+        ),
+        (
+            "NET SAVE FILE MISSING",
+            "401 Bad object or device ID: MISSING (Network not found)",
+        ),
+    ] {
+        assert_eq!(
+            service
+                .handle(&mut client, &format!("[native-error] {command}"))
+                .await
+                .final_text,
+            expected,
+            "{command}"
+        );
+    }
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err(),
+        "explicit-project catalogue validation must remain local"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn net_learn_and_network_locate_use_exact_once_confirmed_native_frames() {
+    let path = state_path();
+    let (pci_client, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci_client.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        let mut line = Vec::new();
+        remote_read.read_until(b'\r', &mut line).await.unwrap();
+    }
+    reset.await.unwrap().unwrap();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+
+    for (command, prefix) in [
+        (
+            "NET LEARN //HARNESS/254 56 1 1",
+            b"\\053800030101FE".as_slice(),
+        ),
+        (
+            "NETWORK LOCATE //HARNESS/254/208 UNIT 1 ON",
+            b"\\05D00013FF0101".as_slice(),
+        ),
+        (
+            "NETWORK LOCATE //HARNESS/254/208 SERIAL 1 12345.67 255",
+            b"\\05D000160103039043FF".as_slice(),
+        ),
+    ] {
+        let task = tokio::spawn({
+            let service = service.clone();
+            let command = command.to_string();
+            async move {
+                service
+                    .handle(
+                        &mut ClientState::default(),
+                        &format!("[physical] {command}"),
+                    )
+                    .await
+            }
+        });
+        let mut frame = Vec::new();
+        remote_read.read_until(b'\r', &mut frame).await.unwrap();
+        assert!(frame.starts_with(prefix), "{command}: {frame:?}");
+        let confirmation = frame[frame.len() - 2];
+        remote_write.write_all(&[confirmation, b'.']).await.unwrap();
+        assert_eq!(task.await.unwrap().status, 200, "{command}");
+    }
+
+    let rejected = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[nak] NETWORK LOCATE 254/208 GROUP 56 1 OFF",
+                )
+                .await
+        }
+    });
+    let mut frame = Vec::new();
+    remote_read.read_until(b'\r', &mut frame).await.unwrap();
+    assert!(frame.starts_with(b"\\05D00013380100"), "{frame:?}");
+    let confirmation = frame[frame.len() - 2];
+    remote_write.write_all(&[confirmation, b'#']).await.unwrap();
+    assert_eq!(rejected.await.unwrap().status, 502);
+    assert!(
+        tokio::time::timeout(Duration::from_millis(30), remote_read.read_u8())
+            .await
+            .is_err(),
+        "a definitive NAK must not replay NETWORK LOCATE"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn bridged_pingu_discovers_only_the_target_network_cache() {
     let path = state_path();
     let (pci_client, remote) = pci();

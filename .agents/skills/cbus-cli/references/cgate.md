@@ -621,6 +621,66 @@ Enable Control, clock date/time/refresh, Temperature Broadcast, `NET PINGU`, `NE
 changed store, SAVE performs native group-0 operation-4 EXECUTE followed by
 500 ms POLLs for up to 15 seconds and succeeds only on status zero. An unchanged
 or tag-filtered save does not issue the NVM command.
+
+### NET lifecycle and Network Management
+
+Use the retained help through `NET`, `NETWORK`, `TOPOLOGY`, or `HELP NET
+CREATE` style commands. cmqttd keeps a runtime definition catalogue separate
+from the imported tag database, as native C-Gate does:
+
+```text
+NET CREATE LAB cni 127.0.0.1:10001 option=value
+NET LIST
+NET SAVE FILE
+NET RENAME LAB TEST
+NET DELETE TEST
+NET LOAD FILE
+NET FLUSH //PROJECT/254
+```
+
+Active definitions and `DB`/`FILE` snapshots are durable atomic
+`cmqttd-json` values. `FILE` is an internal snapshot selector and never a host
+path. LOAD merges and fails with 408 before mutation if a saved name already
+exists. RENAME changes the runtime name only; do not infer that it renamed a
+tag-database network. DELETE of an operating bound definition returns 468.
+CREATE records a definition but does not open another interface. The optional
+fourth SAVE/LOAD project token resolves that named project, including a project
+other than the connection's current selection. Native build-2001 loopback
+probes pin that boundary, and cross-project tests ensure the selected project
+is not silently read or changed. A missing explicit project returns native 401.
+With `--cgate-auth-file`, CREATE, DELETE, FLUSH, LOAD, RENAME, and SAVE require
+LOGIN; LIST and help remain open.
+
+The two physical forms use the configured direct shared PCI:
+
+```text
+NET LEARN //PROJECT/254 56 1 1
+NET LEARN //PROJECT/254 56 $80 1
+NETWORK LOCATE //PROJECT/254/208 UNIT 1 ON
+NETWORK LOCATE //PROJECT/254/208 APP 56 2
+NETWORK LOCATE //PROJECT/254/208 GROUP 56 1 OFF
+NETWORK LOCATE //PROJECT/254/208 SERIAL 1 12345.67 255
+```
+
+LEARN accepts grades 1, 2, and 128–131. LOCATE requires application 208 and
+supports OFF, ON, or a byte mode. Both operations serialize through the shared
+command lane, send their exact SAL once, wait for correlated PCI confirmation,
+reject a stale PCI generation, and never replay an uncertain write. A 200
+proves delivery to the interface, not unit action. Foreign, unbound, or routed
+definitions fail before I/O. Neither family has an MQTT state schema; incoming
+frames are C-Gate events and ordinary MQTT lighting remains independent.
+
+`NET STATE_INTERVAL` always returns the retained obsolete 400. `NET OPEN`,
+`NET CLOSE`, whole-network `NET UNRAVEL`, and `TOPOLOGY EXPLORE` remain 502.
+Do not work around those boundaries: OPEN/CLOSE and EXPLORE would compete for
+interface ownership, and the general destructive unravel algorithm is not
+fully evidenced. Ground assertions in
+`rust/testdata/fixtures/native_cgate_net_lifecycle.json`, packets in
+`rust/testdata/vectors/network_management.jsonl`, and the daemon regression in
+`rust/cmqttd/tests/system_cgate_net_lifecycle.rs`. `CMQTT CAPABILITIES` exposes
+`net_catalog_commands`, `net_catalog_storage`, `net_catalog_file_storage`,
+`net_learn`, `network_locate`, `network_management_delivery_semantics`, and
+`net_lifecycle_fail_closed`.
 `LIGHTING`, `TRIGGER`, and `ENABLE` label commands also use the physical bus.
 They support the Toolkit CLI's raw/text, icon, language, segmented Unicode, and
 dynamic bitmap forms. Enable Unicode is a native-invalid form. A 200 response

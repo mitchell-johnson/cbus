@@ -55,6 +55,15 @@ Transport tests separately prove bounded AUTO polling and that a lost reply is
 never replayed after reconnect. These loopback tests do not establish behavior
 of a particular physical DALI gateway or downstream DALI bus.
 
+`system_cgate_net_lifecycle.rs` starts the real daemon with the fake PCI and
+mini broker. It pins exact NET/NETWORK/TOPOLOGY help, LOGIN boundaries, local
+catalogue operations with zero PCI writes, exact `NET LEARN` and all-selector
+`NETWORK LOCATE` wire behavior, definitive-NAK no-replay, explicit residual
+502 paths, capabilities, and MQTT lighting continuity. The five independent
+packet vectors live in `rust/testdata/vectors/network_management.jsonl`; the
+sanitized build-2001 help/runtime/class evidence lives in
+`rust/testdata/fixtures/native_cgate_net_lifecycle.json`.
+
 ## Adding behavior
 
 Keep byte-level rules in `cbus-protocol`, endpoint behavior in `cbus-transport`, pure MQTT data transformations in `cbus-mqtt`, and orchestration in the binary crate. Add a golden vector when compatibility depends on exact bytes or JSON. Add a system test when correctness depends on interactions among the daemon, broker, and PCI.

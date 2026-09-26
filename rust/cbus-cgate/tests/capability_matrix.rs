@@ -152,10 +152,12 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // conservatively fail-closed because only its empty/all-cancelled no-op
     // form is local, while any executable instruction refuses before
     // mutation. RETRY remains fail-closed because it would re-execute work.
-    assert_eq!(class_count(RoutingClass::Physical), 206);
-    assert_eq!(class_count(RoutingClass::LocalDatabase), 141);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 83);
-    assert_eq!(class_count(RoutingClass::Obsolete400), 1);
+    // NET lifecycle adds two exact physical paths, nine local catalogue/help
+    // paths and one native-obsolete path, moving twelve rows out of 502.
+    assert_eq!(class_count(RoutingClass::Physical), 208);
+    assert_eq!(class_count(RoutingClass::LocalDatabase), 150);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 71);
+    assert_eq!(class_count(RoutingClass::Obsolete400), 2);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here
     // so drift is caught.
@@ -916,13 +918,50 @@ fn fail_closed_pins_do_unravel_and_whole_network_unravel() {
 }
 
 #[test]
-fn obsolete_pins_net_check_unravel() {
+fn obsolete_pins_native_net_commands() {
     let obsolete: BTreeSet<&str> = CAPABILITY_MATRIX
         .iter()
         .filter(|entry| entry.class == RoutingClass::Obsolete400)
         .map(|entry| entry.path)
         .collect();
-    assert_eq!(obsolete, BTreeSet::from(["NET CHECK_UNRAVEL"]));
+    assert_eq!(
+        obsolete,
+        BTreeSet::from(["NET CHECK_UNRAVEL", "NET STATE_INTERVAL"])
+    );
+}
+
+#[test]
+fn net_lifecycle_rows_match_sanitized_build_2001_evidence_and_residuals() {
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_net_lifecycle.json"
+    ))
+    .expect("native NET lifecycle evidence must remain valid JSON");
+    assert_eq!(fixture["oracle"]["version"], "3.4.0");
+    assert_eq!(fixture["oracle"]["build"], 2001);
+    assert_eq!(fixture["oracle"]["site_project_used"], false);
+    assert_eq!(
+        fixture["oracle"]["jar_sha256"],
+        "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+    );
+    for (key, class) in [
+        ("local", RoutingClass::LocalDatabase),
+        ("physical", RoutingClass::Physical),
+        ("obsolete_400", RoutingClass::Obsolete400),
+        ("fail_closed", RoutingClass::FailClosed502),
+    ] {
+        for path in fixture["implemented_classification"][key]
+            .as_array()
+            .expect("classification is an array")
+        {
+            let path = path.as_str().expect("path is text");
+            let row = CAPABILITY_MATRIX
+                .iter()
+                .find(|entry| entry.path == path)
+                .unwrap_or_else(|| panic!("missing NET lifecycle row {path}"));
+            assert_eq!(row.class, class, "{path}");
+        }
+    }
+    assert_eq!(fixture["wire_vectors"].as_array().unwrap().len(), 5);
 }
 
 #[test]
