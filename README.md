@@ -9,6 +9,16 @@ This repository has two main applications:
 
 The Rust workspace also provides protocol tools, a PCI simulator, and a C-Gate compatibility server for development and testing. Install the application you need; the Python CLI and Rust bridge can be used independently.
 
+## Compatibility at a glance
+
+| Product | Compatibility measure | Current state |
+| --- | --- | --- |
+| `cbus-toolkit` | Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001 workflow parity | The strict ledger has 38 areas: **17 implemented, 19 in progress, and 2 pending**. `coverage` reports `complete: false` and `census_complete: false`; the categories are not a percentage of Toolkit functionality. |
+| `cmqttd --cgate-bind` | Primary routing for the maintained C-Gate command inventory | **431 paths: 230 physical, 199 local/session, 0 blanket fail-closed 502, and 2 native-obsolete.** All 429 non-obsolete primary paths are routed and `full_cgate_command_path_coverage` is `true`. `full_cgate_compatibility` remains `false` because selector-specific, vendor-format, device/topology/timing, and physical-acceptance boundaries remain. |
+| `cgate-mock` | In-memory C-Gate command surface | All **431** maintained paths parse and dispatch with deterministic protocol-shaped behavior. It does not provide persistent vendor storage, physical C-Bus effects, or device timing. |
+
+Raw `cgate exec` and `cgate run` can forward the command surface exposed by the selected server. That reach does not create a typed Toolkit workflow, reproduce Toolkit GUI state, prove native-server semantics, or verify a physical effect.
+
 ## Which program do I need?
 
 | I want to… | Use |
@@ -20,6 +30,7 @@ The Rust workspace also provides protocol tools, a PCI simulator, and a C-Gate c
 | Discover CNI2/Wiser interfaces without opening them | `cbus-toolkit interface discover-cni` or `cbus-tools cni-discover` |
 | Connect C-Bus lights to MQTT and Home Assistant | `cmqttd` |
 | Inventory live eDLT labels without Windows, while MQTT keeps running | `cbus-toolkit cgate edlt-labels --network //PROJECT/NETWORK`, connected to `cmqttd` |
+| Create or compare a serial-bound eDLT label baseline | `cbus-toolkit cgate edlt-label-audit //PROJECT/NETWORK` |
 | Decode a frame, export project labels, or interrogate a unit | `cbus-tools` |
 | Test a C-Gate client without a vendor server or hardware | `cgate-mock` |
 | Test PCI/CNI protocol traffic without hardware | `cbus-simulator` |
@@ -66,7 +77,14 @@ cbus-toolkit cgate --host 192.168.1.20 --port 20023 project list
 
 Replace the example address and port with your server's values. Use `cbus-toolkit cgate --help` for project, network, database, unit, addressing, scene, and control commands. The transport supports verified TLS and client certificates. Advanced parameter workflows may require vendor unit specifications; those files are supplied separately.
 
-For an exact C-Gate command, use `cbus-toolkit cgate exec 'PROJECT LIST'`. For a file of commands that must share one session, use `cbus-toolkit cgate run commands.txt`. Add the same connection options as above; command batches stop at the first failure.
+For an exact C-Gate command or a batch that must share one session, use:
+
+```sh
+cbus-toolkit cgate --host 192.168.1.20 --port 20023 exec 'PROJECT LIST'
+cbus-toolkit cgate --host 192.168.1.20 --port 20023 run commands.txt
+```
+
+Command batches stop at the first failure. These raw routes expose the selected server's command surface; typed CLI commands add workflow-specific validation and evidence, so raw forwarding is not typed Toolkit parity.
 
 Results are JSON on stdout; operation errors are JSON on stderr and return a nonzero exit status. Put `--compact` before the command for single-line JSON. Event monitoring emits JSON lines.
 
@@ -160,6 +178,8 @@ cbus-toolkit cgate --host 127.0.0.1 network set-project //PROJECT/254 PROJECT
 cbus-toolkit cgate --host 127.0.0.1 --timeout 120 edlt-labels --network //PROJECT/254
 cbus-toolkit cgate --host 127.0.0.1 edlt-labels //PROJECT/254/p/5
 cbus-toolkit cgate --host 127.0.0.1 --timeout 120 edlt-widget-groups //PROJECT/254/p/5
+cbus-toolkit cgate --host 127.0.0.1 --timeout 120 edlt-label-audit //PROJECT/254 --write-baseline labels.json
+cbus-toolkit cgate --host 127.0.0.1 --timeout 120 edlt-label-audit //PROJECT/254 --baseline labels.json --mode configuration
 cbus-toolkit cgate --host 127.0.0.1 label cache-clear //PROJECT/254/56 5 --key 2
 cbus-toolkit cgate --host 127.0.0.1 exec 'AIRCON ?'
 cbus-toolkit cgate --host 127.0.0.1 exec 'AIRCON SET_ZONE_HVAC_MODE //PROJECT/254/172 1 0,1 3 0 1 0 1 255 230 64'
@@ -281,10 +301,17 @@ namespace. It checks the saved and live type/firmware, requires an admitted
 current patch version for a normal run, then holds one physical programming
 lane across the recovered disable, block-write, full second verification,
 version and re-enable sequence. The live preflight requires exactly one type
-and firmware reply. Ordinary blocks use STORE tag `0x73`; parameter `0xF7`
+and firmware reply. Firmware bounds use native case-sensitive lexical ordering,
+an optional catalogue selector requires equal saved metadata, and non-overlapping
+blocks may occupy at most the effective 136 bytes in ranges 114–241 and
+247–254. The version parameter is native `0xF2`; target `FF` is reserved, while
+`FF` may be deliberately admitted as a current version for manual recovery.
+Ordinary blocks use STORE tag `0x73`; parameter `0xF7`
 uses the returned unlock challenge as its tag. An already-target unit is
 accepted only after every block and control `0x70` are verified, with enable
-repaired when necessary. Every write is read back and an incomplete
+repaired only when necessary. A successful physical reply identifies one of
+three dispositions: full pipeline, repaired enable only, or verified read only.
+Every write is read back and an incomplete
 transaction is never replayed automatically. `SIMULATE` validates and prints
 the complete plan and its SHA-256 without PCI traffic; pass that digest as
 `EXPECT_SHA256=<64hex>` on the physical command to bind the reviewed plan.
@@ -494,68 +521,37 @@ for clients that need to distinguish database state from live C-Bus evidence.
 When the optional C-Gate authentication gate is enabled, NEW and
 BROADCAST_EVENT require an authenticated session.
 
-**Full C-Gate replacement is the target, not the current completion claim.**
-Hardware-backed lighting, all eleven maintained AIRCON/HVAC commands, all 19 maintained
-AUDIO commands, all seven maintained SECURITY commands, the complete maintained
-MEASUREMENT and TELEPHONY families, all 21 maintained MEDIATRANSPORT commands,
-the four maintained IDENTIFY control leaves, both SHORTMESSAGE leaves, and
-EREPORT MESSAGE on the configured direct network are implemented. All 128 retained
-DALI command paths dispatch: 103 physical leaves and 25 local/help paths. The
-typed-device selectors inside SESSION EXTRACT/DEPLOY remain a documented
-fail-before-I/O boundary beyond the physical `EXT_ONLY` plan. The complete
-maintained `PORT` discovery, host enumeration, refresh, and probe family is
-implemented independently of the shared MQTT connection. The same endpoint
-implements C-Gate ACCESS ADD/DELETE/LIST/LOAD/SAVE with durable digest-only
-credentials and sandboxed snapshots, the complete CONFIG and FILE families
-over local durable compatibility state, local project/NAC JSON inventory,
-deploy-queue event-channel subscriptions and session-owned advisory locks,
-the bounded local `DEPLOY_QUEUE` list/delete/bulk-delete lifecycle and no-work
-ADD events, native-shaped durable `NET CREATE`/`DELETE`/`FLUSH`/`LOAD`/`RENAME`/`SAVE`
-catalogue lifecycle, exact `NET`/`NETWORK`/`TOPOLOGY` help, physical
-`NET LEARN`, physical `NETWORK LOCATE`, and C-Gate
-`DO` object methods for lighting, direct and bridged read-only synchronization,
-guarded KEYGL5 FactoryDefault, persistent named-scene record/playback, Trigger Control,
-Enable Control, clock, Temperature Broadcast, native text/icon/Unicode/dynamic-bitmap
-label commands, standard label-cache clear, eDLT dynamic-label clear, complete-coverage
-`NET PINGU`, identity-populating `NET SYNC`, five-pass general `NET SYNCNEW`,
-shared-interface read-only `NET PROJECT_IDENTIFY`, verified physical `NET SET_PROJECT_IDENTIFY` parameter-35 writes,
-duplicate-aware `NET CHECKUNIT`, guarded physical unit readdressing, safe direct-network
-`NET UNRAVEL`/`NET UNRAVELUNIT` planning, `DO ... UNRAVEL`, runtime `NET OPEN`/`NET CLOSE`
-and `PROJECT START`/`PROJECT STOP`, physical `TOPOLOGY EXPLORE`, unit identity,
-schema-driven physical `PP LOAD`, verified physical
-`PP SAVE` for `direct`, `edlt`, `paged`, `ncc`, `giu`,
-`sgiu`, `dali`, `goc`, `gocbyt`, and `goc2` parameters,
-extended-memory access, live observations, and persistent database operations while MQTT
-continues on the same CNI connection. `DBNETWORKPATH` resolves native compact and OID
-routes, and `NET PINGU`, `NET SYNC`, general `NET SYNCNEW`, `DO ... SYNC`, and `NET CHECKUNIT`
-support source routes through one to six bridges with strict Reply Network correlation
-and per-network volatile caches. Direct targeted `NET SYNCNEW` also runs the three native
-duplicate challenges. AIRCON, AUDIO, SECURITY, MEASUREMENT, TELEPHONY,
-MEDIATRANSPORT, IDENTIFY, SHORTMESSAGE and EREPORT success means the broadcast
-received a positive PCI confirmation;
-physical controller, alarm-panel, measurement-device, telephone-device or media-device
-acceptance and resulting state have not been validated. Routed AIRCON, AUDIO, SECURITY,
-MEASUREMENT, TELEPHONY, MEDIATRANSPORT, IDENTIFY, SHORTMESSAGE and EREPORT, routed
-writes, routed OEM eDLT metadata, routed targeted `SYNCNEW`, and bridged commissioning
-mutations remain unavailable. When `--cgate-auth-file` is configured, log in before
-an AIRCON, AUDIO, SECURITY or Telephony mutation, `MEASUREMENT DATA`, gated
-`MEDIATRANSPORT` traffic, any IDENTIFY control, `SHORTMESSAGE SEND`, or
-`EREPORT MESSAGE`, any NET catalogue mutation, `NET LEARN`, or `NETWORK LOCATE`;
-`SHORTMESSAGE REFRESH` and the Telephony last-number request remain open.
-`NET SYNCNEW` and
-`NET SET_PROJECT_IDENTIFY` update the volatile physical cache and do not create persistent project
-units. The unravel backend requires exactly two known serials at address 255, two unique
-empty database destinations, and a direct network; broader unravel cases remain
-unavailable. FactoryDefault acceptance proves the one-shot unit ACK but does not yet
-prove post-reset readback, reboot, retained address or persistence. Scene recording
-captures observed lighting levels on the configured network; playback sends confirmed
-zero-time ramps and requests physical readback. Direct and page-aware lock-protected
-fields and unit readdressing use the native one-use challenge phase; GIU uses native
-halt/store/resume, GOC-family programming uses its address-prefixed
-parameter-`0xFF` transport, and changed C-Bus 3 saves complete the native
-Save-to-NVM EXECUTE/POLL sequence before reporting success. Physical programming
-requires privately installed decoded unit specifications. Unsupported protection modes
-return explicit errors instead of simulated success. See the [supported operations and remaining work](docs/cmqttd-cgate.md).
+**All maintained non-obsolete C-Gate command paths now have a primary route.**
+The executable inventory contains 431 paths: 230 physical, 199 local/session,
+zero blanket `FailClosed502` paths, and the two native-obsolete `NET
+CHECK_UNRAVEL` and `NET STATE_INTERVAL` paths. This closes command-path routing;
+it does not make `full_cgate_compatibility` true. Individual handlers still
+reject unsupported selectors before I/O, and confirmed delivery is not proof of
+a downstream device's state, timing, persistence, or behavior on every firmware
+and topology.
+
+The embedded endpoint includes the full maintained CONFIG, FILE, ACCESS, PORT,
+and DEPLOY_QUEUE families; local repository selection and repair; all five
+portable TRANSFORM leaves; legacy local and physical database lifecycle; native
+parent help; the physical application, DALI, network, label, scene, and PP
+routes described below; and a verified `PP WRITE_PATCH` path for the explicit
+`cmqttd.pp-patch/v1` manifest. DEPLOY_QUEUE ADD and RETRY run admitted
+PROGRAMMER PP/DALI work asynchronously, stop at the first fault, and never
+replay an uncertain command automatically. Direct-network UNRAVEL handles the
+whole safe inventory plan, including address 255 and larger duplicate sets,
+with exact-once moves and a generation-bound final proof.
+
+Compatibility boundaries remain explicit. Routed mutations and some
+selector-specific DALI session plans refuse before I/O; the private Schneider
+`patchset.zip`, repository/archive formats, and SQLite/XML schemas are not
+reconstructed; cmqttd transforms only its versioned portable SQLite container
+inside the controlled FILE namespace. Its ACCESS policy is a safer digest-only
+local model, TLS has no client-certificate identity mapping, and the exact
+native per-handler access-level matrix is unfinished. Device-family coverage,
+unusual bridges and adapters, electrical/timing behavior, power-loss recovery,
+and hardware acceptance beyond the evidenced profiles still require validation.
+The Toolkit CLI's separate 17/19/2 workflow ledger remains incomplete.
+See the [supported operations and remaining work](docs/cmqttd-cgate.md).
 
 The NET runtime catalogue is separate from the imported tag database, matching
 C-Gate's lifecycle boundary. Its active definitions and `DB`/`FILE` snapshots

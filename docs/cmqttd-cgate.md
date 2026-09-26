@@ -5,6 +5,17 @@ interfaces share the same `PciClient`, writer, pacing, initialization and CNI
 socket. Neither Windows nor Schneider's C-Gate process is required for the
 operations listed here. `cgate-mock` remains a separate test server.
 
+The executable primary-routing matrix covers all 431 maintained paths: 230 are
+physical, 199 are local/session, none is a blanket fail-closed 502 path, and
+`NET CHECK_UNRAVEL` plus `NET STATE_INTERVAL` retain their native obsolete 400
+behavior. All 429 non-obsolete paths therefore have a primary route.
+The rejected class is also empty. `CMQTT CAPABILITIES` reports
+`full_cgate_command_path_coverage: true` and the seven inventory/class counters;
+it still reports `full_cgate_compatibility: false` because a
+path can contain selector-specific refusals and because private vendor formats,
+device/topology/timing behavior, and broad physical acceptance remain separate
+requirements.
+
 ## Start and connect
 
 ```sh
@@ -78,7 +89,8 @@ loopback bind plus high-entropy token makes online guessing infeasible, and
 a cap is follow-up work.
 `CGL IMPORT` and `REPOSITORY USE` are also denied before dispatch while
 unauthenticated. After LOGIN, CGL import may update only the bounded local CGL
-1.1 label model described below; repository selection remains an explicit 502.
+1.1 label model described below. Repository index 1 is an idempotent local
+selection; other or malformed indexes retain their explicit errors.
 Project files and the persistent database contain site information and must
 not be committed or published.
 
@@ -105,8 +117,8 @@ operation cannot repopulate or clear the replacement generation's physical,
 level, application, or dynamic-label observations, and cannot emit its success
 event. The guarded paths include lighting and scene cache invalidation,
 Trigger/Enable/clock/temperature state echoes, dynamic-label append and clear,
-FactoryDefault label invalidation, and the final `NET UNRAVELUNIT`
-inventory/event commit.
+FactoryDefault label invalidation, and final `NET`/`DO` unravel inventory/event
+commits.
 
 ## Implemented behavior
 
@@ -121,8 +133,9 @@ transform boundaries are grounded in
 Those captures and the disposable native
 [`PROJECT COPY`/`DELETE` evidence](../rust/testdata/fixtures/native_cgate_project_copy_delete.json)
 do not establish Schneider archive bytes, arbitrary server-file behavior, or
-a safe repository switch for cmqttd, so those paths remain explicitly
-unavailable.
+vendor SQLite/XML interoperability. cmqttd therefore confines selection to its
+single repository and confines repair/transforms to its atomic JSON state and
+versioned portable container.
 
 | Operation | Backend and verification |
 | --- | --- |
@@ -133,15 +146,15 @@ unavailable.
 | Advisory `LOCK OBJECT`, `UNLOCK OBJECT` | Resolves durable project/database objects and enforces command-session ownership with native 225/425/226/426 replies. Locks are volatile and released by successful credential-changing LOGIN, LOGOUT, disconnect, or owning UNLOCK. They are separate from PP locks, never persisted, and perform no PCI I/O |
 | Project list/use/load/save/new/close; database CRUD and database snapshots | Persistent JSON database; atomic replacement, restrictive permissions, failed-write rollback |
 | Bare `PROJECT`/`PROJECT ?`, `PROJECT DIRFULL` | Exact retained 18-line help and native 123 project/description rows. cmqttd's repository has no separate unloaded disk layer, so every modeled project is durable and appears in DIRFULL; an empty model returns native 124 |
-| Native parent help for application and administration families | Bare, literal `?`, and `HELP` forms return the exact retained C-Gate 3.4 envelopes for `APPLICATIONS`, `CALCULATOR`, `CGL`, `CLOCK`, `ENABLE`, `EREPORT`, `IDENTIFY`, `LIGHTING`, `REPOSITORY`, `SHORTMESSAGE`, `TEMPERATURE`, `TEST_SPAM`, `TRANSFORM`, and `TRIGGER`. Help is local and performs no PCI I/O. It only describes the native command surface; every child retains its own physical, local, obsolete, or fail-closed capability classification. See `rust/testdata/fixtures/native_cgate_family_help.json` |
+| Native parent help for application and administration families | Bare, literal `?`, and `HELP` forms return the exact retained C-Gate 3.4 envelopes for `APPLICATIONS`, `CALCULATOR`, `CGL`, `CLOCK`, `ENABLE`, `EREPORT`, `IDENTIFY`, `LIGHTING`, `REPOSITORY`, `SHORTMESSAGE`, `TEMPERATURE`, `TEST_SPAM`, `TRANSFORM`, and `TRIGGER`. Help is local and performs no PCI I/O. It only describes the native command surface; every child retains its own physical, local/session, or native-obsolete classification and its own selector limits. See `rust/testdata/fixtures/native_cgate_family_help.json` |
 | `APPLICATIONS GET_CATALOG` | Streams the operator-supplied `applications.xml` under `--cgate-unitspec` in the retained 343/347/344 XML envelope. The file is bounded, containment-checked, and XML-validated. cmqttd does not bundle, reconstruct, or claim Schneider's proprietary application catalogue |
 | `CALCULATOR TEST` | Reproduces the retained 134 result envelope from durable database unit records and the operator-supplied bounded `cbusunits.xml`. The arithmetic reports current supply, current consumption, impedance, and known/unknown unit counts; it performs no physical measurement or PCI I/O |
 | `CGL IMPORT`, `CGL EXPORT` | Bounded CGL 1.1 JSON over known database routes. Import preserves existing application/group/level names, creates missing labels atomically, persists them in `cmqttd-json`, and reports unroutable networks with the retained incomplete 380 result. Export supports network/application filters and retains the selected network shell. The contract covers modeled network, application, group, and level labels only; it does not program automation controllers or preserve unknown vendor metadata |
 | Comments, `OID`, `BROADCAST_EVENT`, `SHOW`, `REPORT`, `TREE`, `TREEXML`, `TREEXMLDETAIL`, `NEW` | Untagged `#` and `//` command-file comments are consumed without a reply; tagged markers retain the captured syntax-error behavior. `OID` returns a fresh native 301 version-1 UUID that is deliberately not registered as a database object. `BROADCAST_EVENT` fans its caller-supplied event class/text to subscribed C-Gate clients without PCI traffic. `SHOW` implements ordered `?`/`??` catalogues and `*`/named reads for `cgate`, projects, project C-Bus, project, network, application, group, unit, and output-terminal objects. It includes caller-cased named fields, canonical terminal aliases, foreign-project lookup, native object/parameter errors, and the retained application and child schemas for IDs 25, 48, 95, 172, 192, 202, 203, 205, 208, 223, 224, 228, and 238. `REPORT`/`TREE` use native 320 hierarchy framing; XML uses 343/347/344 framing and escapes retained text. Their parser admits the captured plain TREE/REPORT tails while keeping XML and `NET TREE` flags strict. The hierarchy renders the already observed physical cache plus durable database objects; `WITHSYNC`, `WITHPSYNC`, and `WITHQSYNC` do not start a hidden scan. `NEW UNIT/GROUP/PHANTOM` is durable and idempotent under an existing selected network; its address, application-child, and known/unknown firmware-token bounds follow native evidence and never invent physical presence. Exact tagged evidence is in `rust/testdata/fixtures/native_cgate_general_tree.json`, `native_cgate_show_objects.json` (62 commands), `native_cgate_show_audit.json` (69 rows), `native_cgate_show_appclasses.json` (78 rows), `native_cgate_show_parser.json` (18 rows), `native_cgate_new_bounds.json` (25 rows), and `native_cgate_tree_appclasses.json` (three rows). Runtime host/IP/JVM metrics and scheduled timestamps are shape-validated and normalized only where declared volatile by those fixtures. `rust/cmqttd/tests/system_cgate_general_tree.rs` verifies the daemon boundary and no command-induced PCI traffic. |
 | `PROJECT ARCHIVE`, `PROJECT RESTORE`, secondary-project `PROJECT RENAME` | Exact retained native success envelope (`200 OK.`), optional LOGIN gating, and atomic durable commit/rollback. Archive tokens must use the explicit `cmqttd:KEY` namespace and address snapshots inside cmqttd's JSON state repository; other tokens return 408 and are never opened as filesystem paths. These are not Schneider ZIP/GZ/DB files. Snapshots retain modeled project/network/unit records and their unit fields; opaque auxiliary database maps are outside this bounded snapshot contract. Runtime physical presence, levels, and network state are excluded. The configured hardware project cannot be renamed while the service is running and returns 408 because the PCI/MQTT binding is immutable |
 | `PROJECT COPY SOURCE DESTINATION`, `PROJECT DELETE NAME` | Exact native success envelope (`200 OK.`), strict named grammar, optional LOGIN gating, and atomic durable commit/rollback. COPY preserves durable project/network/unit/level data and database OIDs while excluding physical presence, observed levels, and open network state; the source remains selected. A shared copied OID resolves only when the connection's effective selected project owns it; an unrelated selection returns 401. DELETE is limited to secondary projects, clears the deleting connection's selection, and removes only the target's durable records. The configured hardware project returns 408. Native C-Gate separates on-disk repository projects from loaded projects; cmqttd has one loaded atomic JSON model, so copies are immediately selectable and deletes take effect immediately. This is an explicit lifecycle difference, not vendor repository-file parity |
-| `REPOSITORY LIST` | One read-only native `123 index=1 type=cmqttd-json path=... current=yes` record for `--cgate-state`. `REPOSITORY USE` remains unavailable because native selection is server-global and rejects switching while any project is open. `PROJECT REPAIR` remains unavailable because native SQLite repositories report that they do not support it and cmqttd-json has no evidenced repair transaction |
-| `REPOSITORY USE`; `TRANSFORM MIGRATE_SQL/PROJECT/SQL_TO_XML/SQL_TO_XML_CGATE2/XML_TO_SQL` | Exact leaf help is retained, followed by explicit 502 execution boundaries. cmqttd has one always-loaded atomic JSON repository, so it cannot safely apply native's server-global repository selection. Its state is neither Schneider SQLite nor vendor project XML, and no format-faithful migration or XSLT transaction is available |
+| `REPOSITORY LIST/USE`; `PROJECT REPAIR` | LIST returns one native-grammar `123 index=1 type=cmqttd-json path=... current=yes` record for `--cgate-state`. USE accepts only numeric index 1 as an idempotent selection, rejects unknown indexes with 408 and malformed values with 400, and never synthesizes a host path or hidden repository. PROJECT REPAIR performs a complete serialize/parse/restore validation of cmqttd's atomic JSON repository, preserves runtime physical caches, commits atomically, and rolls back on failure. These are cmqttd repository semantics rather than Schneider SQLite repository-file parity |
+| `TRANSFORM MIGRATE_SQL/PROJECT/SQL_TO_XML/SQL_TO_XML_CGATE2/XML_TO_SQL` | All five leaves operate only in the controlled FILE namespace. XML_TO_SQL creates a real versioned `cmqttd-portable-project-v14` SQLite container after bounded XML validation; SQL_TO_XML and SQL_TO_XML_CGATE2 integrity-check that exact schema and recover its byte-preserved XML; MIGRATE_SQL upgrades that portable schema with a `.0` backup; PROJECT maps its default operation to cmqttd-json repair and admits bounded non-networked XSLT with DTD, `document()`, include/import, and extension rejection. `--test` validates without writing. Private Schneider SQLite/XML schemas remain rejected and no transform opens an arbitrary host path |
 | `DBGETJSON NAC_OBJECTS_LIST/NAC_ROUTING_TABLE/NAC_TAGMAP` | Exact root help and native JSON envelopes over a validated durable unit. The importer does not retain vendor `NACObjectList` definitions, so object and routing projections are explicitly empty and `database_json_nac_object_definitions` is false. TAGMAP emits the durable local network, supported application, group and level tags available in cmqttd's model. These reads perform no PCI I/O; see `rust/testdata/fixtures/native_cgate_local_admin.json` |
 | `DBADD`; `DBCOPY`; `DBNEW`; `DBTAGLIST`; `DBSET`; secondary-project `DBRENAMENET`/`DBRENAMENETSAFE` | Selected-project local database lifecycle grounded in `rust/testdata/fixtures/native_cgate_legacy_database.json`. DBADD creates durable typed objects before compulsory fields exist; OID DBGET reports native nulls and DBSET atomically materializes the object after Address and TagName arrive. DBCOPY assigns fresh OIDs throughout the subtree, clears Address and TagName throughout a same-project copy, and retains them for a cross-project copy. DBNEW atomically leaves the selected Installation/Project blank while cmqttd retains its configured interface as a non-durable runtime shell. DBTAGLIST, unsafe DBSET and both network-rename spellings retain their selected-project, atomic-persistence and corruption-repair contracts. These local commands never send PCI traffic. |
 | `DBCREATE`; `DBUPDATE`; `DBVERIFY` | Physical database lifecycle over the configured shared CNI. Every operation first uses generation-guarded `NET SYNC`; an incomplete, disconnected or stale refresh fails before database mutation. DBCREATE replaces the selected tag database with fresh network/unit OIDs and `[default]` compulsory names where the network supplies none. DBUPDATE accepts a network or unit and optional exact `UnitDelete`, preserves existing OIDs and database names, updates physical identity, and removes absent database units only when requested. DBVERIFY compares database and physical presence plus nonblank type, firmware and serial identity, returning ordered 345 Difference rows and a counted final 408 or 200 when equal. Successful mutations commit atomically and survive restart. |
@@ -157,12 +170,13 @@ unavailable.
 | `FILE DIR/LS/MKDIR/DELETE/SHA256/DOWNLOAD/UPLOAD` | Complete maintained C-Gate 3.4 FILE family over a sandboxed virtual filesystem in `cmqttd-json`: exact nine-line parent help, 304/305 listings, recursive MKDIR, empty-directory/file deletion, multi-file 302 SHA256 rows, native 345/347/346 download framing with 76-character base64 rows, base64 here-document upload, and `.0` replacement backups. Ordinary relative paths reject leading separators, `~`, `..`, and `:`; `%PROJECT%/path` accepts the namespace separator for a known project and stays in a separate virtual root. No FILE path opens an arbitrary host or vendor project file and no FILE command sends PCI traffic. With LOGIN armed, UPLOAD, DELETE and MKDIR require authentication. See `rust/testdata/fixtures/native_cgate_file.json` and `rust/cmqttd/tests/system_cgate_file.rs` |
 | `PORT` and `PORT LIST/IFLIST/CNISCAN/CNISCAN2/PROBE/REFRESH` | Complete maintained C-Gate 3.4 PORT family. Bare/`?` returns exact retained help. LIST reports local serial names without `/dev/` and marks cmqttd's selected serial `inuse`; IFLIST excludes loopback addresses. CNISCAN sends the exact four-byte legacy request from UDP 30718, accepts only 124-byte replies and optionally tests the little-endian advertised TCP port. CNISCAN2 runs that legacy scan and the retained variable CCP request from UDP 20050 with the native CRC, parameter set and five-second window, returning extended type/MAC/serial/unit 129 rows. PROBE accepts serial/socket/CNI/Wiser/EtherLite grammar, refuses the active cmqttd endpoint with 431, uses a separate temporary connection for the retained DC1/`@2104` echo-and-serial exchange, returns the filtered PCI serial text and closes it. Direct serial uses native software flow, modem control and six-rate PCI baud detection. EtherLite uses its native FAS heartbeat, unit inquiry, serial setup and framed byte stream. Native build 2001 makes REFRESH inapplicable because its port list is automatic; cmqttd returns the exact observed 408. LOGIN gates scans, probe and refresh. See `rust/testdata/fixtures/native_cgate_port.json`, `rust/testdata/vectors/cni_discovery.jsonl`, and `rust/cmqttd/tests/system_cgate_port.rs` |
 | `ACCESS ADD/DELETE/LIST/LOAD/SAVE`, `LOGIN`, `LOGOUT` | Complete maintained C-Gate 3.4 ACCESS grammar, exact parent/subcommand help, ordered levels from None through Max, case-sensitive user login, first-match duplicate users, role-filtered 135 LIST rows, 1-based filtered DELETE, and session-local elevation retained until LOGOUT. Active rows, admission mode, and named SAVE/LOAD snapshots commit atomically in `cmqttd-json`; snapshot names are bounded identities and never host paths. cmqttd deliberately stores only credential digests and prints `<redacted>` where native C-Gate exposes plaintext. It validates interface/remote names before mutation and returns non-mutating 408 for missing LOAD snapshots. Fresh and pre-ACCESS repositories admit Docker/NAT peers at Clipsal until an operator adds, deletes, or loads interface/remote policy. Thereafter an unmatched non-loopback peer gets 421 without a recovery token; with the token configured it gets a restricted LOGIN/LOGOUT-only session so the token can repair policy. Loopback retains a Clipsal recovery path. With the recovery-token gate armed, ADD/DELETE/LOAD/SAVE require either its one-token LOGIN or a Clipsal/Max ACCESS-user LOGIN from an admitted connection. The exact native per-handler level matrix for unrelated commands is not yet enforced; `access_global_command_level_matrix` reports false. See `rust/testdata/fixtures/native_cgate_access.json` and `rust/cmqttd/tests/system_cgate_access.rs` |
+| `ACCESS_CONTROL CLOSE/LOCK` | Physical application-213 commands. They validate the native zone and point byte ranges, encode the retained CLOSE (`0x02`) or LOCK (`0x0A`) SAL, send exactly once through the shared PCI, and require the correlated active-generation confirmation. A 200 proves interface delivery, not door/controller state or persistence; routed Access Control writes and TLS-client-certificate identity mapping remain outside the evidenced scope |
 | Database PP locks, sessions, get/set/info/new/load/save | Existing programming model with connection ownership; staged sessions and locks are discarded on disconnect/restart |
 | `PP CANCEL_LOCK/LIST_LOCK/UNITS`, `GET_RAW_DATA/SET_RAW_DATA/DEBUG`, `LOAD_FROM_FILE` | Native 121/122 inventory, address cancellation, bounded session memory and nine-row memory diagnostics. Raw edits and file loads change only an owned staged session. `LOAD_FROM_FILE` accepts one bare `.xml` filename under `--cgate-unitspec`; it cannot open an arbitrary host path. Cancelling a lock leaves its session visible with `address=null`, matching retained native behavior |
-| `PP CATALOG_INFO/GET_UNIT_CATALOG/GET_UNIT_SPEC/LIST_CATALOG_NUMBERS/RELOAD_CATALOG/PATCH_VERSION` | Native catalogue, XML and status envelopes over optional private `cbusunits.xml` and decoded unit specs under `--cgate-unitspec`. Catalogue firmware matching is inclusive and numeric. Reload invalidates the bounded parsed caches. PATCH_VERSION returns status 301 and the version from a fully valid controlled-FILE patch manifest; DEBUG projects manifest-order native-shaped patch/block rows. Without a manifest it retains the native 408 missing-patchset response |
+| `PP CATALOG_INFO/GET_UNIT_CATALOG/GET_UNIT_SPEC/LIST_CATALOG_NUMBERS/RELOAD_CATALOG/PATCH_VERSION` | Native catalogue, XML and status envelopes over optional private `cbusunits.xml` and decoded unit specs under `--cgate-unitspec`. Catalogue matching follows its own decoded unit-spec rules; WRITE_PATCH manifest firmware bounds separately use native case-sensitive lexical comparison. Reload invalidates the bounded parsed caches. PATCH_VERSION returns status 301 and the version from a fully valid controlled-FILE patch manifest; DEBUG projects manifest-order native-shaped patch/block rows. Without a manifest it retains the native 408 missing-patchset response |
 | `PROGRAMMER CREATE/DELETE/LIST/STATUS/TEST/ADD_INSTRUCTION/CANCEL_INSTRUCTION/TRIGGER` | Runtime-only native queues with case-insensitive names in creation order, quoted task fields, priorities and instruction IDs. START acknowledges immediately and asynchronously runs TEST, PP_COPY, PP_SAVE, PP_SET, PP_END, PP_UNLOCK, DALI_READ, DALI_PROGRAM and public DALI command tails through the existing service dispatch. STATUS excludes the active instruction from queueCount, retains totalCount and exposes the TEST countdown. PAUSE/RESUME/STOP/ERROR are observed between commands and during TEST. A physical receipt failure stops the queue in ERROR; START cannot replay a terminal queue and no failed/uncertain command is retried automatically. Queues are discarded on restart |
 | `DEPLOY_QUEUE ADD/DELETE/DELETE_ALL/LIST/RETRY` | Dedicated runtime queue over PROGRAMMER task groups with retained help, 450/451/501/502 errors, TaskGroupSummary JSON field order/timestamps, ALL/PENDING/FAILED/COMPLETED bulk deletion, per-entry 120/501 rows, and all four event channels. ADD validates/registers an INIT task and acknowledges before asynchronous execution. The first instruction fault stops in ERROR and emits a structured cmqttd debug receipt before ended; this does not claim native diagnostic-string equivalence. RETRY admits only a queued STOPPED/ERROR task, refreshes the reinitialized timestamps/countdown and deliberately re-executes it. LIST, terminal DELETE and DELETE_ALL remain local. Queue state is never persisted. PP/DALI work uses the shared cmqttd CNI and preserves MQTT operation. See `rust/testdata/fixtures/native_cgate_deploy_queue.json` and `rust/cmqttd/tests/system_cgate_pp_programmer.rs` |
-| `PP WRITE_PATCH` | Physical execution from a strict operator-supplied `cmqttd.pp-patch/v1` manifest in the controlled FILE namespace. The retained unit/hex-version/optional-SIMULATE grammar selects by exact saved unit type, native case-sensitive lexical firmware range, optional catalogue and target patch version; cmqttd deliberately rejects a catalogue-constrained selector when saved catalogue metadata is absent. Before mutation cmqttd requires exactly one live type and firmware reply and checks the current patch-version byte. One programming lane then runs native 0x70 disable (`85:ffff`), temporary F2 version (`86:ff`), ordinary block STOREs with tag `73` and F7 STOREs with the returned unlock challenge, immediate readback, a distinct full verification pass, target F2 version, 0x70 enable (`85:9d40`) and final version readback. SIMULATE exposes a SHA-256; optional `EXPECT_SHA256=<64hex>` binds physical execution. Failed writes are never automatically retried and require reconnect. Proprietary Schneider `patchset.zip` ingestion remains unsupported and is reported by capabilities |
+| `PP WRITE_PATCH` | Physical execution from a strict operator-supplied `cmqttd.pp-patch/v1` manifest in the controlled FILE namespace. The retained unit/hex-version/optional-SIMULATE grammar selects by exact saved unit type, native case-sensitive lexical firmware range, optional catalogue and target patch version; cmqttd deliberately rejects a catalogue-constrained selector when saved catalogue metadata is absent. Blocks are 1–12 bytes, non-overlapping, wholly inside 114–241 or 247–254, for an effective maximum of 136 bytes. The patch-version parameter is native F2 (`0xF2`); target `FF` is reserved and may only be explicitly admitted as a current version for manual interrupted-write recovery. Before mutation cmqttd requires exactly one live type and firmware reply and checks the current patch-version byte. One programming lane then runs native 0x70 disable (`85:ffff`), temporary F2 version (`86:ff`), ordinary block STOREs with tag `73` and F7 STOREs with the returned unlock challenge, immediate readback, a distinct full verification pass, target F2 version, 0x70 enable (`85:9d40`) and final version readback. Already-target recovery is read-only when blocks/control match or repairs only enable when needed. A 200 reports full-pipeline, repaired-enable-only, or verified-read-only disposition. SIMULATE exposes a SHA-256; optional `EXPECT_SHA256=<64hex>` binds physical execution. Failed writes are never automatically retried and require reconnect. Proprietary Schneider `patchset.zip` ingestion remains unsupported and is reported by capabilities |
 | `PP RESET_TO_DEFAULTS` | Replaces one owned loaded session with exactly the `DefaultValue` fields in its parsed unit specification. The result remains staged until an explicit save; missing or malformed specifications return 408 unchanged, with no PCI access |
 | Physical PP LOAD and subsequent GET/INFO | Identifies the live unit, selects its privately installed decoded schema, recalls standard CAL parameters, explicit pages for `paged`/`ncc`, OEM memory, and GOC parameter-`0xFF` memory through the shared PCI, decodes int/long/bit/string/sixbit arrays and `ArrayMap`, applies tag selection, and commits the session only after every read succeeds |
 | Physical PP SAVE/SAVE_TO_SOURCE | Writes only dirty, tag-selected `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and `goc2` parameters with `none`/`checksum`/supported `lock` protection. Page-aware writes split at 256-byte boundaries; OEM methods use the selector/data path; GIU halts and resumes the unit; DALI observes the native settling interval; GOC methods use parameter `0xFF`, a big-endian address prefix, and their native block limits. The service validates the complete plan and live type/firmware first, preserves shared bits through pre-read/encode, requires source/parameter-matched acknowledgements, and reads every stored range back before success. Specifications containing the vendor `ncc` method are classified as C-Bus 3; after a changed save, the service runs native group-0 operation-4 EXECUTE/POLL until the NVM commit succeeds |
@@ -595,10 +609,12 @@ pipeline. No retry or temporary-version bypass occurs automatically.
 
 ## Outstanding replacement work
 
-The existing mock dispatches 431 command paths. That is **not** evidence that
-all 431 have physical implementations in this service. `CMQTT CAPABILITIES`
-returns `full_cgate_compatibility: false`; unimplemented physical operations
-return 502. The enumerable gap tracker is the executable capability matrix in
+The existing mock dispatches 431 command paths. The embedded service now has a
+primary route for every one of the 429 non-obsolete paths, but that is **not**
+evidence that every valid selector is physical or native-equivalent. `CMQTT
+CAPABILITIES` returns `full_cgate_compatibility: false`; unsupported forms inside
+an otherwise routed path fail explicitly before I/O. The enumerable primary
+routing tracker is the executable capability matrix in
 `cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 230
 physical, 199 local/session, no blanket fail-closed 502 paths, and 2 obsolete
 400 paths over the
@@ -675,21 +691,23 @@ non-inventoried service commands. Full replacement still requires:
   implemented for the configured direct network; bridged routing, physical
   device acceptance and state readback remain unverified. Short Message SEND
   is a deliberate coherent repair of the retained native malformed encoder.
-- Schneider repository/archive formats, repository selection, repository
-  repair, full vendor CGL metadata/controller semantics, DBSETXML semantics,
-  and complete server configuration/access/TLS, firmware and deployment
-  workflows. cmqttd's
-  internal project snapshots, OID-preserving secondary-project copy/delete,
-  read-only `cmqttd-json` repository descriptor and all seven maintained FILE
-  commands are implemented. FILE uses a durable virtual root rather than host
-  or vendor files. Here-document transport is bounded and synchronized. CGL
-  1.1 import/export is limited to the modeled label graph over known routes;
-  DBSETXML remains explicit 502 and no local path is presented as general
+- Schneider repository/archive formats, full vendor CGL metadata/controller
+  semantics, DBSETXML typed-object replacement, and exact native configuration,
+  access, TLS, firmware, and deployment semantics. `REPOSITORY USE 1`,
+  `PROJECT REPAIR`, all five portable TRANSFORM leaves, internal project
+  snapshots, OID-preserving secondary-project copy/delete, the `cmqttd-json`
+  repository descriptor, and all seven FILE commands are implemented. FILE and
+  TRANSFORM use a durable controlled namespace and the versioned
+  `cmqttd-portable-project-v14` SQLite container; they deliberately reject
+  arbitrary host paths and private Schneider schemas. CGL 1.1 import/export is
+  limited to the modeled label graph over known routes; DBSETXML remains a
+  selector-specific explicit 502 and no portable path is presented as general
   vendor-file interoperability.
-  C-Gate TLS is transport-only: no TLS client authentication is performed,
-  no client certificates are requested, and ACCESS_CONTROL paths remain
-  fail-closed 502. ACCESS is implemented with the safety boundaries described
-  above; TLS client-certificate identities are not mapped into ACCESS rows.
+  C-Gate TLS is transport-only: no TLS client authentication is performed and
+  no client certificates are requested. Physical `ACCESS_CONTROL CLOSE/LOCK`
+  is implemented for direct application 213, while TLS identities are not
+  mapped into ACCESS rows and the exact native per-handler access-level matrix
+  remains incomplete.
 - Command-by-command native interoperability and physical acceptance beyond
   the supported device profiles. Full Toolkit workflow parity remains tracked
   separately in `toolkit-cli/docs/implementation-status.md`.
@@ -721,10 +739,12 @@ pins real-daemon restart behavior.
 TaskGroupSummary field order, delete-type behavior, exact event JSON, owned
 class hashes, and the native registry-orphan edge from the same pinned jar.
 The oracle was a disposable loopback-only daemon with no project and no C-Bus
-endpoint; only synthetic no-work and TEST-only programmers were used. The
-service and real-daemon regressions verify per-session event filtering,
-volatile restart behavior, zero queue PCI writes, pre-mutation refusal of
-executable ADD/RETRY, and MQTT continuity after queue administration.
+endpoint, so its retained cases used synthetic no-work and TEST-only
+programmers. The cmqttd service and real-daemon regressions go further: they
+verify asynchronous admitted PP/DALI execution through the PROGRAMMER worker,
+per-session event filtering, first-fault termination, explicit RETRY as the
+only re-execution path, volatile restart behavior, and MQTT continuity while
+physical instructions share the existing PCI.
 
 `native_cgate_config.json` retains the complete 148-entry catalogue and exact
 help, grammar, scope, reset, LOAD/SAVE and no-current-project behavior from the

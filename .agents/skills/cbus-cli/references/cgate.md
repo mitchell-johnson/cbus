@@ -8,6 +8,14 @@ Windows for live eDLT static-label reads. Read `docs/cmqttd-cgate.md` for the
 current supported operations and remaining C-Gate replacement work. Query
 `CMQTT CAPABILITIES` before assuming an operation is implemented. Physical reads:
 
+The embedded service's primary matrix is complete: 431 inventoried paths split
+into 230 physical, 199 local/session, no blanket fail-closed 502 paths, and the
+two native-obsolete `NET CHECK_UNRAVEL` and `NET STATE_INTERVAL` paths. All 429
+non-obsolete paths have a primary route. This does not make
+`full_cgate_compatibility` true: selector-specific refusals, private vendor
+formats, device/topology/timing behavior, and broad hardware acceptance remain
+separate boundaries.
+
 ```sh
 cbus-toolkit cgate --host 127.0.0.1 --timeout 120 edlt-labels --network //PROJECT/254
 cbus-toolkit cgate --host 127.0.0.1 --timeout 30 edlt-labels //PROJECT/254/p/UNIT
@@ -530,9 +538,9 @@ and `CLEAR`, or a byte type; category is 0–1023, each flag is `y`/`n` or
 `1`/`0`, severity is 0–7, and unit/data fields are bytes. Omitted data bytes
 are `255`.
 
-Only the seven child paths above have physical handlers. Bare `IDENTIFY`,
-`SHORTMESSAGE`, and `EREPORT` parent rows remain fail-closed rather than
-claiming unevidenced native help compatibility.
+The seven child paths above have physical handlers. Bare `IDENTIFY`,
+`SHORTMESSAGE`, and `EREPORT` are local parent-help endpoints with the exact
+retained native envelopes and no PCI I/O.
 
 All three families send once through the correlated PCI confirmation lane and
 are never replayed after an uncertain outcome. Identify, SHORTMESSAGE SEND,
@@ -548,6 +556,16 @@ Ground behavior in `native_cgate_remaining_applications.json`,
 false MQTT-state flags. It also exposes
 `shortmessage_send_compatibility: repaired-coherent-utf8-native-decoder-layout`
 and `shortmessage_native_3_4_malformed_send_reproduced: false`.
+
+### Access Control commands
+
+`ACCESS_CONTROL CLOSE APP ZONE POINT` and `ACCESS_CONTROL LOCK APP ZONE POINT`
+are physical for direct application 213. cmqttd validates byte-sized zone and
+point values before I/O, encodes the retained `0x02` CLOSE or `0x0A` LOCK SAL,
+sends it exactly once, and requires the correlated confirmation on the current
+PCI generation. A 200 proves interface delivery only; it does not prove a door
+or controller changed state or persisted it. Routed Access Control writes and
+TLS-client-certificate identity mapping are outside the evidenced scope.
 
 ### Telephony commands
 
@@ -1002,10 +1020,18 @@ boundary,
 denotes the operator-supplied XML source,
 `network_calculator: "configured-cbusunits-database-records"` and
 `network_calculator_physical_measurement: false` denote local catalogue
-arithmetic, and explicit `repository_use: false` /
-`vendor_repository_transforms: false` preserve the repository boundary,
-while `full_cgate_compatibility` remains false until every remaining backend and
-acceptance requirement is complete.
+arithmetic; `repository_use: true` and `project_repair: true` denote the bounded
+single-repository operations; `portable_repository_transforms` lists all five
+implemented leaves over `cmqttd-portable-project-v14`; and
+`vendor_repository_transforms: false` preserves the private Schneider-format
+boundary. `full_cgate_command_path_coverage: true` accompanies
+`cgate_inventory_paths: 431`, `cgate_non_obsolete_paths: 429`,
+`cgate_physical_paths: 230`, `cgate_local_session_paths: 199`,
+`cgate_fail_closed_paths: 0`, `cgate_obsolete_paths: 2`, and
+`cgate_rejected_paths: 0`.
+`full_cgate_compatibility` remains false while selector, native-format,
+device/topology/timing, security-policy and hardware-acceptance requirements
+remain incomplete.
 
 For read-only local inventory, bare `PROJECT` returns the retained command
 help and `PROJECT DIRFULL` returns native 123 project/description rows from the
@@ -1086,11 +1112,12 @@ durable database unchanged. See
 
 `REPOSITORY LIST` returns exactly one native-grammar 123 row for the configured
 state file with type `cmqttd-json` and `current=yes`. Treat the type literally:
-it is not Schneider SQLite, XML `file`, or `db` storage. Do not issue
-`REPOSITORY USE`; its server-global selection semantics remain unimplemented.
-`PROJECT REPAIR` also remains 502: the captured native SQLite repository says
-it does not support the operation, and no repair transaction is established
-for `cmqttd-json`.
+it is not Schneider SQLite, XML `file`, or `db` storage. `REPOSITORY USE 1` is
+an idempotent local selection of that sole repository; another numeric index is
+408 and malformed input is 400. `PROJECT REPAIR NAME` serializes, parses and
+restores cmqttd's complete atomic JSON repository, preserves runtime physical
+caches, commits atomically and rolls back on failure. Neither operation opens a
+host path or implies vendor repository-file parity.
 
 `APPLICATIONS GET_CATALOG` reads only a bounded, containment-checked,
 XML-validated `applications.xml` from `--cgate-unitspec` and streams the native
@@ -1106,10 +1133,18 @@ names, creates missing labels atomically, persists them in `cmqttd-json`, and
 uses the retained incomplete 380 result for skipped networks. Export supports
 network/application filters and keeps a selected network shell even when no
 application matches. Do not infer automation-controller programming or
-round-trip preservation of unknown vendor metadata. `REPOSITORY USE` and all
-five `TRANSFORM` leaves remain explicit 502: cmqttd has no safe server-global
-repository switch and its JSON state is neither Schneider SQLite nor vendor
-project XML. The exact evidence and boundaries are in
+round-trip preservation of unknown vendor metadata.
+
+All five `TRANSFORM` leaves are local operations inside the controlled FILE
+namespace. `XML_TO_SQL` creates a real versioned
+`cmqttd-portable-project-v14` SQLite container after bounded XML validation;
+`SQL_TO_XML` and `SQL_TO_XML_CGATE2` integrity-check that exact schema and
+recover its byte-preserved XML; `MIGRATE_SQL` upgrades the portable schema with
+a `.0` backup; and `PROJECT` maps its default operation to cmqttd-json repair or
+runs bounded non-networked XSLT. DTDs, `document()`, include/import and extension
+elements are rejected, and `--test` validates without writing. Private
+Schneider SQLite/XML schemas and arbitrary host paths remain rejected. The exact
+native evidence and portable boundaries are in
 `rust/testdata/fixtures/native_cgate_repository_transform.json`.
 
 The service has exact retained parent help for `APPLICATIONS`, `CALCULATOR`,
@@ -1465,10 +1500,12 @@ Run with `--deny-programming` when testing access denial. Supply `--unitspec DIR
 With a synthetic `cbusunits.xml` and specs in that directory, the mock exposes
 the same bounded CATALOG_INFO/GET_UNIT_CATALOG/GET_UNIT_SPEC/catalog-number,
 LOAD_FROM_FILE and raw-memory operations as cmqttd. Its PROGRAMMER queues are
-also runtime-only and refuse START with 502. Its DEPLOY_QUEUE uses the same
-no-work ADD and execution/retry boundaries as cmqttd. Use only synthetic or
-privately owned catalogue data; the repository intentionally contains no
-vendor specs.
+also runtime-only and deliberately do not run physical instructions. Its
+DEPLOY_QUEUE models native lifecycle, summaries, events, deletion and explicit
+retry without claiming bus effects. The embedded cmqttd service is the endpoint
+whose START/ADD/RETRY worker executes admitted PP/DALI instructions through the
+shared PCI. Use only synthetic or privately owned catalogue data; the repository
+intentionally contains no vendor specs.
 
 ## Sessions and events
 

@@ -37,6 +37,13 @@ aliases) and confines any other supported descriptor to a temporary connection.
 
 `cbus-tools` calls the same protocol and project readers for one-shot work. `cbus-simulator` supplies a development PCI/CNI endpoint. `cbus-cgate` is an independent in-memory C-Gate protocol model exposed over TCP by `cgate-mock`.
 
+The embedded service's executable matrix has 431 primary paths: 230 physical,
+199 local/session, zero blanket fail-closed 502, and two native-obsolete. All
+429 non-obsolete paths have a primary route. This routing result is narrower
+than full native compatibility: selector-specific refusals, private vendor
+formats, device/topology/timing behavior and broad hardware acceptance keep
+`full_cgate_compatibility` false.
+
 Both C-Gate TCP frontends implement `BROADCAST_EVENT` as command-service-only
 fanout. The command emits one native timestamped, level-three `703 cmdN -
 broadcast_event` line to eligible EVENT subscribers. It does not enter the PCI,
@@ -64,7 +71,14 @@ available. The command is physical when a matching strict
 `%PROJECT%/patchsets/cmqttd-patches.json` (or its global fallback). It checks
 exactly one live type and firmware identity plus the current version, uses the
 recovered disable/write/readback/full-verify/version/enable pipeline under one
-programming lane, and never retries an uncertain write. `SIMULATE` validates
+programming lane, and never retries an uncertain write. Firmware selection is
+native case-sensitive lexical; catalogue-constrained entries require matching
+saved metadata. Blocks occupy at most the effective 136 bytes in native ranges
+114–241 and 247–254, version uses parameter `0xF2`, parameter `0xF7` uses its
+unlock challenge as the STORE tag, and target `FF` is reserved while an
+explicit current `FF` enables manual recovery. Already-target execution is
+read-only when all blocks and enable match and repairs only enable otherwise;
+the result reports one of three dispositions. `SIMULATE` validates
 the same selection and plan with no PCI I/O and exposes a digest that a
 physical run can pin with `EXPECT_SHA256=<64hex>`. Success rechecks the FILE
 revision and database record before atomically storing decimal PatchVersion,
@@ -165,6 +179,12 @@ generates malformed text/length/flag fields and can still return success, while
 cmqttd emits real UTF-8 and the coherent layout accepted by the native inbound
 decoder. Unsupported applications and routed selectors fail closed.
 
+Physical `ACCESS_CONTROL CLOSE` and `ACCESS_CONTROL LOCK` cover direct
+application 213. They validate zone/point bytes, send the retained CLOSE or
+LOCK SAL exactly once, and require the active-generation correlated
+confirmation. They do not establish controller state, persistence, routed
+write behavior, or TLS-client-certificate identity mapping.
+
 Physical `NET CLOCKS` uses the synchronized unit inventory, IDENTIFY16 status,
 and decoded direct `ClockGenEnable` fields for target counts and gateway
 recovery. It retains native per-unit failure lines and requires write readback.
@@ -180,12 +200,19 @@ project/network/unit records and unit fields, excluding opaque auxiliary maps
 and all runtime bus state. TCP and TLS command sessions bound and drain native
 here-document framing. Bounded CGL 1.1 import/export persists only modeled
 network/application/group/level labels over known routes; it never programs a
-controller or preserves unknown vendor metadata. DBSETXML remains 502 because
-its typed-object semantics are unavailable. Schneider archive formats,
-`PROJECT REPAIR`, `REPOSITORY USE`, and the five proprietary repository
-transformations remain unavailable. These operations perform no PCI I/O, and
-a real-daemon system regression verifies that MQTT commands continue through
-the shared PCI after the administrative workflow.
+controller or preserves unknown vendor metadata. The legacy database lifecycle
+also includes local DBADD/DBCOPY/DBNEW/tag/scalar/delete/rename transactions and
+physical generation-guarded DBCREATE/DBUPDATE/DBVERIFY inventory operations.
+DBSETXML remains 502 because
+its typed-object semantics are unavailable. `REPOSITORY USE 1` is an idempotent
+selection of cmqttd's only repository, and `PROJECT REPAIR` performs an atomic
+JSON serialize/parse/restore validation while preserving runtime caches. All
+five TRANSFORM leaves operate inside the controlled FILE namespace over the
+versioned `cmqttd-portable-project-v14` SQLite container, with bounded
+non-networked XSLT for TRANSFORM PROJECT. Schneider archive formats and private
+SQLite/XML schemas remain unsupported. These local operations perform no PCI
+I/O, and real-daemon regressions verify that MQTT continues through the shared
+PCI after administrative workflows.
 
 ## Source ownership
 

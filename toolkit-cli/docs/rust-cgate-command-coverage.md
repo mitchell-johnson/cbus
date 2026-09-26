@@ -23,7 +23,9 @@ project and repository lifecycle, database safe and unsafe verbs, CGL,
 network lifecycle and discovery, object reads and writes, XML and JSON
 envelopes, calculator, event subscriptions, application levels, labels,
 triggers, enables, named scenes, unit conversion, and PP locks/sessions,
-catalogue reads and raw data. Patch execution remains an explicit failure.
+catalogue reads and raw data. The standalone `cgate-mock` keeps physical patch
+execution as an explicit failure; the embedded cmqttd service has the verified
+manifest executor described below.
 Legacy `GET`, `SHOW`, `DO`, `ON`, `OFF`,
 `RAMP`, `TERMINATERAMP`, `REPORT`, `NEW`, `OID`, and macro `RUN` spellings are
 also implemented.
@@ -46,10 +48,10 @@ state and native-shaped responses without claiming a bus-side effect. Server
 files, access entries, database snapshots and shutdown confirmation are also
 process-local; `SHUTDOWN` confirms the modeled operation but deliberately does
 not kill the test server. The separate Rust service embedded in `cmqttd`
-implements the physical subset in the
-[cmqttd replacement ledger](../../docs/cmqttd-cgate.md); commands outside that
-ledger still require native C-Gate or further implementation when physical
-effects are the acceptance criterion.
+implements the physical and durable-local routes in the
+[cmqttd replacement ledger](../../docs/cmqttd-cgate.md). All 429 non-obsolete
+primary inventory paths are routed there, but a routed path can still reject an
+unsupported selector and cannot by itself prove a physical device effect.
 
 The embedded service now has physical direct-network implementations for the
 maintained `IDENTIFY OFF/ON/RAMP/TERMINATERAMP`, `SHORTMESSAGE REFRESH/SEND`,
@@ -88,8 +90,16 @@ count and countdown; first failure is terminal and no physical command is
 automatically replayed. `PP WRITE_PATCH` accepts a strict controlled-FILE
 `cmqttd.pp-patch/v1` manifest and runs the recovered physical
 disable/write/full-verify/version/enable pipeline with current-version and
-live-identity checks. SIMULATE validates without I/O; PATCH_VERSION exposes the
-manifest version, or reproduces the native missing-patchset 408 when absent.
+live-identity checks. Manifest firmware bounds use native case-sensitive lexical
+ordering, catalogue-constrained selectors require matching saved metadata, and
+non-overlapping blocks occupy at most the effective 136 bytes inside ranges
+114–241 and 247–254. The version parameter is `0xF2`; ordinary blocks use tag
+`0x73`, `0xF7` uses its returned unlock challenge, and target `FF` is reserved
+while an explicitly admitted current `FF` enables manual recovery. An
+already-target unit is verified read-only when blocks/control match or receives
+an enable-only repair; the third disposition is the full pipeline. SIMULATE
+validates without I/O; PATCH_VERSION exposes the manifest version, or reproduces
+the native missing-patchset 408 when absent.
 This is the embedded cmqttd path; the standalone `cgate-mock` patch executor
 remains an explicit failure. The proprietary Schneider `patchset.zip`
 container is not ingested. Retained evidence is
@@ -111,6 +121,9 @@ restart volatility and MQTT continuity.
 Seven maintained Identify, Short Message, and Error Reporting leaves are now
 physical: `IDENTIFY` ON/OFF/RAMP/TERMINATERAMP, `SHORTMESSAGE` REFRESH/SEND,
 and `EREPORT MESSAGE`. Their retained family roots remain local help endpoints.
+Physical `ACCESS_CONTROL CLOSE/LOCK` validates direct application 213 plus
+zone/point bounds and sends the retained SAL exactly once with correlated
+confirmation; this proves interface delivery rather than controller state.
 
 The embedded runtime also implements `NET OPEN`/`NET CLOSE` and `PROJECT
 START`/`PROJECT STOP` without surrendering cmqttd's shared PCI/MQTT transport.
@@ -123,17 +136,26 @@ The retained help/runtime/class evidence is in
 `native_cgate_net_lifecycle.json`; service and real-daemon tests pin transport
 ownership, MQTT continuity, parser boundaries, and reconnect-safe commits.
 
-The embedded service also implements four formerly fail-closed local paths:
+The embedded service also implements the formerly fail-closed local catalogue
+and CGL paths:
 `APPLICATIONS GET_CATALOG` streams a bounded, XML-validated operator catalogue
 from `--cgate-unitspec`; `CALCULATOR TEST` evaluates durable database units
 against the operator-supplied `cbusunits.xml`; and CGL 1.1 JSON `IMPORT` and
 `EXPORT` round-trip the modeled network/application/group/level label graph
 over known database routes. These paths never read physical state or program a
-controller. `REPOSITORY USE` and all five `TRANSFORM` leaves remain explicit
-502 because their native semantics require server-global selection or
-proprietary SQLite/XML migration machinery. Exact envelopes, arithmetic, CGL
-filter/name-preservation rules, and fail-closed boundaries are pinned in
+controller. `REPOSITORY USE 1` is an idempotent selection of cmqttd's sole
+repository, `PROJECT REPAIR` performs an atomic JSON round-trip validation, and
+all five `TRANSFORM` leaves operate in the controlled FILE namespace over the
+versioned `cmqttd-portable-project-v14` SQLite container. Private Schneider
+schemas and arbitrary host paths remain rejected. Exact envelopes, arithmetic,
+CGL rules and portable repository boundaries are pinned in
 `rust/testdata/fixtures/native_cgate_repository_transform.json`.
+
+The legacy database tranche is routed end to end. `DBADD`, recursive fresh-OID
+`DBCOPY`, `DBNEW`, tags, scalar mutation, recursive delete and network rename
+are durable local operations. `DBCREATE`, `DBUPDATE`, and `DBVERIFY` first
+obtain a generation-guarded physical inventory, then respectively replace,
+merge, or compare the durable model with atomic commit and rollback behavior.
 
 Fourteen family roots now reproduce the exact retained C-Gate 3.4 help
 envelopes for bare, literal `?`, and `HELP` forms. Nine of those roots are in
@@ -143,9 +165,21 @@ parent roots are pinned in the separate supplement. These local help endpoints
 do not change any child command's capability class. Together with the NET
 lifecycle, deploy-queue, remaining-application, legacy-database, catalogue,
 calculator, bounded CGL, and general-object tranches, the matrix now contains
-**229 physical, 199 local/session, 1 fail-closed, and 2 obsolete paths**. The
+**230 physical, 199 local/session, 0 blanket fail-closed, and 2 obsolete paths**.
+The obsolete rows are `NET CHECK_UNRAVEL` and `NET STATE_INTERVAL`; all 429
+non-obsolete primary paths are routed, and the separate rejected class is empty.
+`CMQTT CAPABILITIES` reports
+`full_cgate_command_path_coverage: true` and
+`full_cgate_compatibility: false`. The
 separate non-inventoried supplement contains 11 rows. Help evidence is in
 `rust/testdata/fixtures/native_cgate_family_help.json`.
+
+The false full-compatibility flag preserves the remaining boundaries inside
+routed commands: typed DALI/session selectors and routed mutations can refuse
+before I/O; Schneider patch, repository and archive formats are private; the
+ACCESS model and portable transforms deliberately differ from native storage;
+and tests cannot establish every device family, bridge, adapter, timing,
+power-loss or physical-persistence outcome.
 
 The embedded endpoint also implements the native general object and discovery
 surface used by command files and inventory clients: silent untagged `#`/`//`

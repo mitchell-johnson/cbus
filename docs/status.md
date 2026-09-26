@@ -8,7 +8,7 @@ The maintained applications are the Python Toolkit CLI in `toolkit-cli/` and the
 
 `cbus-toolkit` targets Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001. It provides offline XML/CBZ project editing, C-Gate and PCI clients, native project and unit workflows, commissioning, scenes, and supported keypad, sensor, and eDLT configuration. It also includes JSON output, compatibility evidence, and a feature ledger.
 
-Full Toolkit parity remains unfinished. The ledger records 38 feature areas: 17 implemented, 19 in progress, and 2 pending. See [Toolkit implementation status](../toolkit-cli/docs/implementation-status.md) for per-feature behavior and limits. `cbus-toolkit coverage --require-complete` reports the current machine-readable status and returns nonzero while completion requirements remain unmet.
+Full Toolkit parity remains unfinished. The ledger records 38 feature areas: 17 implemented, 19 in progress, and 2 pending. The machine-readable report still has `complete: false` and `census_complete: false`; these categories are not a percentage of Toolkit functionality. See [Toolkit implementation status](../toolkit-cli/docs/implementation-status.md) for per-feature behavior and limits. `cbus-toolkit coverage --require-complete` returns nonzero while completion requirements remain unmet.
 
 ## Rust functionality
 
@@ -26,14 +26,14 @@ Full Toolkit parity remains unfinished. The ledger records 38 feature areas: 17 
 | C-Gate command surface | Complete inventory coverage | 224 public manual headings plus 268 registered command paths, 431 unique paths |
 | C-Gate core state | Stateful | Project, database, network, unit, level, event, lock, session, and programming-session workflows |
 | C-Gate specialist families | Deterministic model | All registered commands dispatch; specialist or hardware-facing operations return stable in-memory results rather than controlling physical equipment |
-| Embedded physical C-Gate | In progress | Persistent database and confirmed physical application/DALI paths; shared-interface network OPEN/CLOSE, safe NET/DO unravel, TOPOLOGY EXPLORE and PROJECT START/STOP preserve MQTT; asynchronous PROGRAMMER and DEPLOY_QUEUE ADD/RETRY execute existing PP/DALI instructions with first-fault termination, explicit-only retry and event receipts. PP WRITE_PATCH executes a bounded controlled-FILE manifest through the recovered disable/write/full-verify/version/enable pipeline; proprietary `patchset.zip` ingestion remains outside the portable format. The service also provides local administration, portable transforms and exact command help |
+| Embedded physical C-Gate | All primary inventory paths routed; compatibility acceptance in progress | The 431-row matrix is **230 physical, 199 local/session, 0 blanket fail-closed 502, and 2 native-obsolete**; all 429 non-obsolete paths have a primary route. Persistent database and confirmed application/DALI/network paths share MQTT's interface; PROGRAMMER and DEPLOY_QUEUE execute PP/DALI work with first-fault termination and explicit-only retry. PP WRITE_PATCH executes the strict controlled-FILE manifest. Repository selection/repair, portable transforms, ACCESS_CONTROL and exact parent help are implemented. `full_cgate_compatibility` stays false for selector-specific refusals, private vendor formats, device/topology/timing limits, and incomplete hardware acceptance. |
 | Test infrastructure | Implemented | Compatibility vectors, generated per-vector tests, property tests, in-process MQTT broker, scripted PCI, full-system tests, formatting and lint gates |
 | Container image | Implemented | Builds and ships `cmqttd`, `cbus-tools`, `cbus-simulator`, and `cgate-mock` |
 
 ## Current limits and outstanding work
 
-- `cgate-mock` is an in-memory compatibility server. The separate C-Gate service embedded in `cmqttd` persists its database and implements the physical operations listed in [its replacement ledger](cmqttd-cgate.md); other physical commands fail explicitly.
-- Complete command dispatch means every inventory path has a response model. It does not mean every specialist command reproduces every device-specific side effect of native C-Gate.
+- `cgate-mock` is an in-memory compatibility server. The separate C-Gate service embedded in `cmqttd` persists its database and routes every non-obsolete primary inventory path as listed in [its replacement ledger](cmqttd-cgate.md).
+- Complete primary routing means every maintained inventory path has a physical or local/session handler. Selector-specific unsupported forms can still refuse before I/O, and this does not establish every native format, device-specific side effect, timing characteristic, topology, or physical result.
 - The PCI simulator models the protocol behavior needed by the workspace and test suite. It is not a complete electrical or timing simulation of every C-Bus unit.
 - Real-site validation remains necessary for unusual topologies, serial adapters, broker policies, and device families not represented by the committed fixtures.
 - Unit specifications must be supplied to `cgate-mock --unitspec DIR` when tests require catalogue-backed programming parameters. The repository does not distribute vendor catalogue files.
