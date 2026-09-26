@@ -1209,6 +1209,69 @@ async fn confirmed_audio_on_retired_pci_generation_fails_closed() {
 }
 
 #[tokio::test]
+async fn mediatransport_confirmation_from_retired_generation_fails_closed() {
+    let path = state_path();
+    let (old_pci, old_remote) = pci();
+    let (old_read, mut old_write) = tokio::io::split(old_remote);
+    let mut old_read = BufReader::new(old_read);
+    let reset = tokio::spawn({
+        let pci = old_pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        let mut line = Vec::new();
+        old_read.read_until(b'\r', &mut line).await.unwrap();
+    }
+    reset.await.unwrap().unwrap();
+    let service = Service::new(&fixture(), None, path.clone(), old_pci, None).unwrap();
+    let command = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[g] MEDIATRANSPORT STATUS_REQUEST 254/192 2",
+                )
+                .await
+        }
+    });
+    let mut frame = Vec::new();
+    old_read.read_until(b'\r', &mut frame).await.unwrap();
+    assert!(frame.starts_with(b"\\05C0007102"), "{frame:?}");
+    let confirmation = frame[frame.len() - 2];
+    let (replacement, _replacement_remote) = pci();
+    tokio::time::timeout(Duration::from_secs(2), service.set_pci(replacement))
+        .await
+        .expect("set_pci must complete");
+    old_write.write_all(&[confirmation, b'.']).await.unwrap();
+    let response = tokio::time::timeout(Duration::from_secs(2), command)
+        .await
+        .expect("retired generation command must complete")
+        .unwrap();
+    assert_eq!(response.status, 502, "{response:?}");
+    assert_eq!(
+        response.final_text,
+        "502 Media Transport delivery failed: PCI connection generation changed"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn mediatransport_native_integer_and_dequoted_text_grammar_is_retained() {
+    assert_eq!(parse_media_integer("g", "0b1010", "operation").unwrap(), 10);
+    assert_eq!(parse_media_integer("g", "0B1010", "operation").unwrap(), 10);
+    assert_eq!(parse_media_integer("g", "0x7f", "category").unwrap(), 127);
+    assert_eq!(parse_media_integer("g", "0X7F", "category").unwrap(), 127);
+    assert_eq!(parse_media_integer("g", "$7F", "category").unwrap(), 127);
+    assert_eq!(parse_media_integer("g", "127", "category").unwrap(), 127);
+    assert!(parse_media_integer("g", "0xGG", "category").is_err());
+
+    assert_eq!(media_text(&["\"A\\", "B\\\"C\\\\D\""]), "A B\"C\\D");
+    assert_eq!(media_text(&["\"A\\", "B"]), "A B");
+    assert_eq!(media_text(&["plain\\", "text"]), "plain\\ text");
+}
+
+#[tokio::test]
 async fn database_survives_restart_but_live_state_and_sessions_do_not() {
     let path = state_path();
     let (pci, _remote) = pci();

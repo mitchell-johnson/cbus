@@ -2,7 +2,7 @@
 
 ## C-Bus packets
 
-`cbus-protocol` models point-to-multipoint, point-to-point, routed point-to-point-to-multipoint, device-management, reset, confirmation, error, and special packet forms. It includes CAL identify, recall, reply, and extended messages; lighting, Air-Conditioning, Audio, Security, clock, enable, temperature, and status-request SALs; binary and Manchester status reports; checksum helpers; ramp-rate conversion; and stable packet JSON.
+`cbus-protocol` models point-to-multipoint, point-to-point, routed point-to-point-to-multipoint, device-management, reset, confirmation, error, and special packet forms. It includes CAL identify, recall, reply, and extended messages; lighting, Air-Conditioning, Media Transport, Audio, Security, Measurement, clock, enable, temperature, and status-request SALs; binary and Manchester status reports; checksum helpers; ramp-rate conversion; and stable packet JSON.
 
 Air-Conditioning application `0xAC` has typed encode/decode coverage for the
 eleven commands registered by C-Gate 3.4: refresh, ward off/on, zone HVAC and
@@ -48,6 +48,21 @@ uses `measurement_data`. Exact native extremes and signed cases are pinned in
 `rust/testdata/vectors/measurement.jsonl` and
 `rust/testdata/fixtures/native_cgate_measurement.json`. Incoming samples remain
 typed transport events and cannot satisfy a pending PCI confirmation.
+
+Media Transport application `0xC0` has typed, lossless encode/decode coverage
+for all 21 C-Gate 3.4 messages: playback controls, category/selection/track
+selection, enumeration requests/reports, track totals, status requests, source
+power, and fragmented names. Basic SAL lengths and extended `0x8x`, `0xAx`
+and `0xCx` name lengths are validated before decode; signed-size fields,
+reserved operations, page sizes and name lengths fail closed. Outbound WNI 3
+and 4 remain reserved, while inbound decode follows native C-Gate and preserves
+the full packed three-bit WNI range 0–7. Raw
+name fragments use `text_hex` in canonical `mediatransport` JSON. Application
+dispatch precedes the generic dynamic-label prefix check. The exact vectors
+are in `rust/testdata/vectors/mediatransport.jsonl`, with retained native
+C-Gate build/class hashes and parser evidence in
+`rust/testdata/fixtures/native_cgate_mediatransport.json`. No MQTT player
+state is derived from these bus observations.
 
 Strict decoding rejects malformed input. Lenient decoding retains compatibility behavior for imperfect frames. The golden-vector suite fixes the expected byte consumption, decoded JSON, and re-encoded bytes for representative and edge-case traffic.
 

@@ -14,6 +14,7 @@ use cbus_protocol::sal::{
     aircon::{AirconCommand, AirconStatus},
     audio::{AudioCommand, AudioEvent},
     measurement::MeasurementData,
+    mediatransport::MediaTransportMessage,
     security::{SecurityCommand, SecurityEvent},
     Sal,
 };
@@ -141,6 +142,13 @@ pub enum CBusEvent {
         source: Option<u8>,
         /// Fully decoded event or status report.
         event: SecurityEvent,
+    },
+    /// One Media Transport command or report observed on the shared PCI stream.
+    MediaTransport {
+        /// Source unit address (`None` when the source byte was 0).
+        source: Option<u8>,
+        /// Fully decoded command/report payload.
+        message: MediaTransportMessage,
     },
     /// A lighting group was switched on.
     LightingOn {
@@ -1061,6 +1069,10 @@ impl PciClient {
                             source: src,
                             measurement,
                         }),
+                        Sal::MediaTransport(message) => Some(CBusEvent::MediaTransport {
+                            source: src,
+                            message,
+                        }),
                         Sal::LightingRamp {
                             application,
                             group_address,
@@ -1404,6 +1416,7 @@ fn classify(cmd: &Packet, conf: Option<u8>) -> (Priority, ResponseKind) {
                 | Sal::AudioCommand(_)
                 | Sal::SecurityCommand(_)
                 | Sal::MeasurementData(_)
+                | Sal::MediaTransport(_)
                 | Sal::LightingOn { .. }
                 | Sal::LightingOff { .. }
                 | Sal::LightingRamp { .. }
@@ -1786,6 +1799,19 @@ mod tests {
         assert_eq!(
             classify(&aircon, Some(b'k')),
             (Priority::Command, ResponseKind::Confirmation(b'k'))
+        );
+        let media = Packet::PointToMultipoint {
+            meta: Meta::new(true, 0),
+            application: 0xc0,
+            sals: vec![Sal::MediaTransport(
+                cbus_protocol::sal::mediatransport::MediaTransportMessage::StatusRequest {
+                    group: 2,
+                },
+            )],
+        };
+        assert_eq!(
+            classify(&media, Some(b'l')),
+            (Priority::Command, ResponseKind::Confirmation(b'l'))
         );
         // codeless status request: background, released by the first
         // report matching app+block+kind

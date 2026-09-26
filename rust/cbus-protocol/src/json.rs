@@ -6,6 +6,7 @@ use crate::report::StatusReport;
 use crate::sal::aircon::{AirconCommand, AirconStatus};
 use crate::sal::audio::{AudioAddress, AudioCommand, AudioEvent};
 use crate::sal::measurement::MeasurementData;
+use crate::sal::mediatransport::MediaTransportMessage;
 use crate::sal::security::{SecurityArmMode, SecurityCommand, SecurityEvent};
 use crate::sal::Sal;
 use serde_json::{json, Map, Value};
@@ -29,6 +30,7 @@ pub fn sal_to_json(s: &Sal) -> Value {
             "multiplier":measurement.multiplier,
             "units":measurement.units
         }),
+        Sal::MediaTransport(message) => mediatransport_to_json(message),
         Sal::LightingRamp {
             application,
             group_address,
@@ -205,6 +207,97 @@ fn audio_event_to_json(event: &AudioEvent) -> Value {
         }
     }
     value
+}
+
+fn mediatransport_to_json(message: &MediaTransportMessage) -> Value {
+    use MediaTransportMessage as M;
+    match message {
+        M::Stop { group } => json!({"sal":"mediatransport", "command":"stop", "group":group}),
+        M::Play { group } => json!({"sal":"mediatransport", "command":"play", "group":group}),
+        M::Pause { group, operation } => {
+            json!({"sal":"mediatransport", "command":"pause", "group":group, "operation":operation})
+        }
+        M::SetCategory { group, category } => {
+            json!({"sal":"mediatransport", "command":"set_category", "group":group, "category":category})
+        }
+        M::SetSelection { group, selection } => {
+            json!({"sal":"mediatransport", "command":"set_selection", "group":group, "selection":selection})
+        }
+        M::SetTrack { group, track } => {
+            json!({"sal":"mediatransport", "command":"set_track", "group":group, "track":track})
+        }
+        M::Shuffle { group, operation } => {
+            json!({"sal":"mediatransport", "command":"shuffle", "group":group, "operation":operation})
+        }
+        M::Repeat { group, operation } => {
+            json!({"sal":"mediatransport", "command":"repeat", "group":group, "operation":operation})
+        }
+        M::NextCategory { group, operation } => {
+            json!({"sal":"mediatransport", "command":"next_category", "group":group, "operation":operation})
+        }
+        M::NextSelection { group, operation } => {
+            json!({"sal":"mediatransport", "command":"next_selection", "group":group, "operation":operation})
+        }
+        M::NextTrack { group, operation } => {
+            json!({"sal":"mediatransport", "command":"next_track", "group":group, "operation":operation})
+        }
+        M::Forward { group, operation } => {
+            json!({"sal":"mediatransport", "command":"forward", "group":group, "operation":operation})
+        }
+        M::Rewind { group, operation } => {
+            json!({"sal":"mediatransport", "command":"rewind", "group":group, "operation":operation})
+        }
+        M::SourcePower { group, operation } => {
+            json!({"sal":"mediatransport", "command":"source_power", "group":group, "operation":operation})
+        }
+        M::TotalTracks { group, tracks } => {
+            json!({"sal":"mediatransport", "command":"total_tracks", "group":group, "tracks":tracks})
+        }
+        M::StatusRequest { group } => {
+            json!({"sal":"mediatransport", "command":"status_request", "group":group})
+        }
+        M::Enumerate {
+            group,
+            enumeration_type,
+            start,
+        } => {
+            json!({"sal":"mediatransport", "command":"enumerate", "group":group, "enumeration_type":enumeration_type, "start":start})
+        }
+        M::EnumerationSize {
+            group,
+            enumeration_type,
+            start,
+            size,
+        } => {
+            json!({"sal":"mediatransport", "command":"enumeration_size", "group":group, "enumeration_type":enumeration_type, "start":start, "size":size})
+        }
+        M::TrackName {
+            group,
+            wni,
+            total,
+            index,
+            text,
+        } => media_name_json("track_name", *group, *wni, *total, *index, text),
+        M::SelectionName {
+            group,
+            wni,
+            total,
+            index,
+            text,
+        } => media_name_json("selection_name", *group, *wni, *total, *index, text),
+        M::CategoryName {
+            group,
+            wni,
+            total,
+            index,
+            text,
+        } => media_name_json("category_name", *group, *wni, *total, *index, text),
+    }
+}
+
+fn media_name_json(command: &str, group: u8, wni: u8, total: u8, index: u8, text: &[u8]) -> Value {
+    json!({"sal":"mediatransport", "command":command, "group":group,
+        "wni":wni, "total":total, "index":index, "text_hex":hex::encode(text)})
 }
 
 fn security_command_to_json(command: &SecurityCommand) -> Value {
@@ -790,6 +883,13 @@ fn get_i8(d: &Value, k: &str) -> Result<i8, JErr> {
         .ok_or_else(|| format!("missing/invalid field {k}"))
 }
 
+fn get_u32(d: &Value, k: &str) -> Result<u32, JErr> {
+    d.get(k)
+        .and_then(Value::as_u64)
+        .and_then(|value| u32::try_from(value).ok())
+        .ok_or_else(|| format!("missing/invalid field {k}"))
+}
+
 fn get_bool(d: &Value, k: &str) -> Result<bool, JErr> {
     d.get(k)
         .and_then(Value::as_bool)
@@ -818,6 +918,7 @@ pub fn sal_from_json(d: &Value) -> Result<Sal, JErr> {
             multiplier: get_i8(d, "multiplier")?,
             units: get_u8(d, "units")?,
         })),
+        "mediatransport" => mediatransport_from_json(d).map(Sal::MediaTransport),
         "lighting_on" => Ok(Sal::LightingOn {
             application: get_u8(d, "application")?,
             group_address: get_u8(d, "group_address")?,
@@ -992,6 +1093,114 @@ fn audio_event_from_json(d: &Value) -> Result<AudioEvent, JErr> {
             bytes: get_hex(d, "bytes_hex")?,
         },
         event => return Err(format!("unhandled Audio event: {event}")),
+    })
+}
+
+fn mediatransport_from_json(d: &Value) -> Result<MediaTransportMessage, JErr> {
+    use MediaTransportMessage as M;
+    let group = get_u8(d, "group")?;
+    let operation = || get_u8(d, "operation");
+    let name = |kind: &str| -> Result<M, JErr> {
+        let text = hex::decode(get_str(d, "text_hex")?).map_err(|e| e.to_string())?;
+        let wni = get_u8(d, "wni")?;
+        let total = get_u8(d, "total")?;
+        let index = get_u8(d, "index")?;
+        Ok(match kind {
+            "track_name" => M::TrackName {
+                group,
+                wni,
+                total,
+                index,
+                text,
+            },
+            "selection_name" => M::SelectionName {
+                group,
+                wni,
+                total,
+                index,
+                text,
+            },
+            "category_name" => M::CategoryName {
+                group,
+                wni,
+                total,
+                index,
+                text,
+            },
+            _ => unreachable!(),
+        })
+    };
+    Ok(match get_str(d, "command")? {
+        "stop" => M::Stop { group },
+        "play" => M::Play { group },
+        "pause" => M::Pause {
+            group,
+            operation: operation()?,
+        },
+        "set_category" => M::SetCategory {
+            group,
+            category: get_u8(d, "category")?,
+        },
+        "set_selection" => M::SetSelection {
+            group,
+            selection: get_u16(d, "selection")?,
+        },
+        "set_track" => M::SetTrack {
+            group,
+            track: get_u32(d, "track")?,
+        },
+        "shuffle" => M::Shuffle {
+            group,
+            operation: operation()?,
+        },
+        "repeat" => M::Repeat {
+            group,
+            operation: operation()?,
+        },
+        "next_category" => M::NextCategory {
+            group,
+            operation: operation()?,
+        },
+        "next_selection" => M::NextSelection {
+            group,
+            operation: operation()?,
+        },
+        "next_track" => M::NextTrack {
+            group,
+            operation: operation()?,
+        },
+        "forward" => M::Forward {
+            group,
+            operation: operation()?,
+        },
+        "rewind" => M::Rewind {
+            group,
+            operation: operation()?,
+        },
+        "source_power" => M::SourcePower {
+            group,
+            operation: operation()?,
+        },
+        "total_tracks" => M::TotalTracks {
+            group,
+            tracks: get_u32(d, "tracks")?,
+        },
+        "status_request" => M::StatusRequest { group },
+        "enumerate" => M::Enumerate {
+            group,
+            enumeration_type: get_u8(d, "enumeration_type")?,
+            start: get_u8(d, "start")?,
+        },
+        "enumeration_size" => M::EnumerationSize {
+            group,
+            enumeration_type: get_u8(d, "enumeration_type")?,
+            start: get_u8(d, "start")?,
+            size: get_u8(d, "size")?,
+        },
+        "track_name" => return name("track_name"),
+        "selection_name" => return name("selection_name"),
+        "category_name" => return name("category_name"),
+        command => return Err(format!("unhandled Media Transport command: {command}")),
     })
 }
 

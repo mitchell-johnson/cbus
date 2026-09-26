@@ -47,10 +47,11 @@ dormant by default and `true` once armed. Armed, each connection needs
 `NET SET_PROJECT_IDENTIFY`, and
 `SCENE RECORD`, the ten state-changing `AIRCON` subcommands, the thirteen
 state-changing `AUDIO` subcommands, Security arm/tamper/alarm/keypad/display
-control, and `MEASUREMENT DATA`; `GET`/`INFO`/`DBGET`-style reads, other
-bus-control SAL traffic, AIRCON, AUDIO, SECURITY and MEASUREMENT help,
-`AIRCON REFRESH`, the six AUDIO request/report forms,
-`SECURITY STATUS_REQUEST`, `SECURITY REQUEST_ZONE_NAME`, and `SCENE PLAY`
+control, `MEASUREMENT DATA`, and Media Transport controls/reports;
+`GET`/`INFO`/`DBGET`-style reads, other bus-control SAL traffic, AIRCON, AUDIO,
+SECURITY, MEASUREMENT and MEDIATRANSPORT help, `AIRCON REFRESH`, the six AUDIO
+request/report forms, `SECURITY STATUS_REQUEST`, `SECURITY REQUEST_ZONE_NAME`,
+`MEDIATRANSPORT STATUS_REQUEST`, `MEDIATRANSPORT ENUMERATE`, and `SCENE PLAY`
 stay open. Gated verbs attempted
 without the flag answer `420 LOGIN required`; a wrong token answers
 `420 LOGIN failed`; a malformed `LOGIN` with no token answers 400 and also
@@ -131,6 +132,7 @@ explicitly unavailable.
 | `AUDIO` and all 19 subcommands | The bare and `?` forms return the captured native 101 help envelope. Every maintained application-205 command uses the exact observed SAL layout and strict native integer, range and arity grammar. This includes the native low-bit masking of Z-address functions, omitted/`-1` sentinels for output-common-control and output-device-status requests, the accepted output-error-code range 0–7, and the native mixed 400/200 response for mute modes 8–254. Invalid input performs no PCI I/O. With LOGIN armed, the thirteen state-changing forms require authentication; current-feed, output status/error and descriptor/feed-label requests remain open. Incoming command SAL fans out to event clients. The label/load-icon decoder repairs an observed native 3.4 defect: native advertises these events but its impossible byte-length/hex-length comparison suppresses valid A0 frames. cmqttd decodes the evidenced wire fields and marks this as an extension rather than native fanout parity. AUDIO does not define MQTT state. A 200 means correlated confirmed broadcast delivery on the active PCI generation, not audio-controller acceptance or state. Only the configured direct network is supported; routed AUDIO writes fail closed. See `rust/testdata/fixtures/native_cgate_audio.json` and `rust/testdata/vectors/audio.jsonl` |
 | `SECURITY` and all 7 subcommands | The bare and `?` forms return the captured native 101 help envelope. `STATUS_REQUEST`, `ARM`, `TAMPER`, `RAISE_ALARM`, `EMULATE_KEYPAD`, `DISPLAY_MESSAGE`, and `REQUEST_ZONE_NAME` encode exact C-Gate 3.4 application-208 SAL and wait for correlated PCI confirmation. Application, arity, signed-integer, mode, 17-byte encoded-message, escape and zone 1–127 checks run before I/O; the native out-of-range zone array crash fails closed as 405. Native keypad values outside byte range map to `FF`. With LOGIN armed, status and zone-name requests stay open while the five control forms require authentication. All native events `0x80`–`0x98`, fixed 11-byte zone names, and both packed status reports fan out to event clients; no MQTT Security state contract is claimed. A 200 proves only confirmed broadcast delivery on the active PCI generation, not alarm-panel acceptance or resulting state. Bridged SECURITY routing remains unavailable. See `rust/testdata/fixtures/native_cgate_security.json` and `rust/testdata/vectors/security.jsonl` |
 | `MEASUREMENT` and `MEASUREMENT DATA` | The bare and `?` forms return the exact native help envelope. `DATA NETWORK/228/DEVICE/CHANNEL VALUE MULTIPLIER UNITS` accepts the captured signed 16-bit value, signed 8-bit multiplier and byte unit/device/channel ranges, emits exact application-228 SAL, and waits for a correlated positive PCI confirmation. With LOGIN armed, DATA requires authentication. Incoming samples lazily create the native application/device/channel object tree, fan out code-702-shaped events, and support application `State`/`Devices`, device `State`/`Channels`, and channel `State`/`Data` GETs. Data is `value,multiplier,units,age-ms`, or `0,0,0,-1` for an existing channel without a sample. There is no MQTT Measurement state contract. A 200 proves interface delivery only, not physical sensor acceptance. Bridged writes remain unavailable. See `rust/testdata/fixtures/native_cgate_measurement.json`, `rust/testdata/vectors/measurement.jsonl`, and `system_cgate_measurement.rs` |
+| `MEDIATRANSPORT` and all 21 subcommands | The bare and `?` forms return the captured native 101 help envelope. Playback, navigation, source-power, status/enumeration, total and category/selection/track name messages encode exact C-Gate 3.4 application-192 SAL and send exactly once and wait for correlated PCI confirmation. Native decimal, `0b`, `0x`, and `$` signed-integer grammar, range and reserved-operation checks, WNI values, enumeration size, quoted-name escapes, optional 11-byte text, and the captured non-ASCII-to-`FF` outbound quirk are checked before I/O. With LOGIN armed, `STATUS_REQUEST` and `ENUMERATE` stay open while controls and report injection require authentication. Incoming commands/reports preserve raw name bytes and fan out to event clients; no MQTT Media Transport state contract is claimed. Capabilities expose the `exactly-once-no-replay` policy. A 200 proves confirmed broadcast delivery on the active PCI generation, not player acceptance or state. Bridged routing remains unavailable. See `rust/testdata/fixtures/native_cgate_mediatransport.json` and `rust/testdata/vectors/mediatransport.jsonl` |
 | LIGHTING/TRIGGER/ENABLE LABEL and UNICODELABEL | Actual checksummed dynamic-label SAL on the selected application. Supports raw/text payloads, built-in icon references, language selection, native segmented UTF-8, and start/header/chunk/commit dynamic bitmap uploads. Every fragment requires positive PCI delivery confirmation; Enable Unicode and invalid native bounds fail before transmission |
 | Observed dynamic-label cache | Retains one network-wide ring of up to 4,096 exact incoming and confirmed outgoing label SAL payloads since the current connection, including source/direction and order. Outgoing append and standard/eDLT/FactoryDefault invalidation are committed only for the sending PCI generation, so an old completion cannot cross a reconnect boundary. `CMQTT LABELS` exposes the bounded observations with network scope and an unverified recipient; a unit-shaped request is a compatibility alias for the same ring. The Toolkit CLI assembles standard text/icons, Unicode, language selection and dynamic bitmaps while reporting incomplete transactions. This is explicitly not eDLT device-cache readback |
 | LABEL CLEAR | Sends native standard point-to-point label-cache controls for all keys (`A3 FF 00 27`) or one key 1–8 (`A4 FF 00 66 KEY`) to unit 0–255. It uses one generation-safe exact-once send and waits only for the correlated PCI confirmation; there is no unit ACK or device readback. Native C-Gate treats either confirmation outcome as completion, so success reports command acceptance without claiming cache erasure or persistence |
@@ -457,8 +459,8 @@ The existing mock dispatches 431 command paths. That is **not** evidence that
 all 431 have physical implementations in this service. `CMQTT CAPABILITIES`
 returns `full_cgate_compatibility: false`; unimplemented physical operations
 return 502. The enumerable gap tracker is the executable capability matrix in
-`cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 55
-physical, 52 local/session, 323 fail-closed 502, and 1 obsolete 400 over the
+`cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 95
+physical, 54 local/session, 281 fail-closed 502, and 1 obsolete 400 over the
 431 inventoried paths, plus a separately asserted 6-row supplement for
 non-inventoried service commands. Full replacement still requires:
 
@@ -503,10 +505,10 @@ non-inventoried service commands. Full replacement still requires:
   verification.
 - Device-resident scene triggering beyond PP table programming, a physical
   eDLT operation that can query pre-existing dynamic-label cache contents, and
-  specialist application families beyond the maintained Audio, AIRCON/HVAC
-  and Security families. Those three families are implemented for the
-  configured direct network; bridged routing, controller acceptance and state
-  readback remain unverified.
+  the remaining specialist application families. The maintained Audio,
+  AIRCON/HVAC, Security, Measurement and Media Transport families are
+  implemented for the configured direct network; bridged routing, physical
+  device acceptance and state readback remain unverified.
 - Schneider repository/archive and CGL import/export file formats, repository
   selection, repository repair, the remaining document commands, complete server
   configuration/access/TLS, firmware and deployment workflows. cmqttd's
@@ -576,6 +578,18 @@ checks LOGIN gating, exact confirmed frames, every captured error boundary,
 NAK recovery, event fanout, dynamic object GETs, and MQTT continuity. The
 oracle and tests use disposable projects and establish no physical
 Measurement-device acceptance.
+
+The sanitized `native_cgate_mediatransport.json` fixture records the owned
+C-Gate build and all 21 command-class hashes, exact payloads, parser bounds,
+inbound event layout, and the native non-ASCII name quirk.
+`mediatransport.jsonl` pins typed JSON and wire cases for every command plus
+empty, maximum and raw-byte names. `system_cgate_mediatransport.rs` drives the
+real daemon against fake PCI and MQTT, checks every command family member,
+authentication, no-I/O rejection, positive/negative confirmation recovery,
+event fanout, explicit absence of invented MQTT state, and MQTT continuity. A
+service regression replaces the shared PCI while a confirmed request is
+pending and rejects the retired generation. This evidence does not establish
+physical media-device acceptance or readback.
 
 `cbus-transport` tests pin direct routing for standard recall/tagged STORE,
 page-aware recall, page selection, cross-page tagged STORE, the native

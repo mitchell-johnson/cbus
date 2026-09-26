@@ -40,6 +40,8 @@ pub const APP_TEMPERATURE: u8 = 0x19;
 pub const APP_AIRCON: u8 = 0xac;
 /// Audio application.
 pub const APP_AUDIO: u8 = 0xcd;
+/// Media Transport application.
+pub const APP_MEDIA_TRANSPORT: u8 = 0xc0;
 /// Security application.
 pub const APP_SECURITY: u8 = 0xd0;
 /// Measurement application.

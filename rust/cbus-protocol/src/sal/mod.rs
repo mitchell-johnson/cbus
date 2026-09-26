@@ -7,6 +7,7 @@ pub mod enable;
 pub mod label;
 pub mod lighting;
 pub mod measurement;
+pub mod mediatransport;
 pub mod security;
 pub mod status_request;
 pub mod temperature;
@@ -14,8 +15,8 @@ pub mod trigger;
 
 use crate::common::{
     duration_to_ramp_rate, APP_AIRCON, APP_AUDIO, APP_CLOCK, APP_ENABLE, APP_LIGHTING_FIRST,
-    APP_LIGHTING_LAST, APP_MEASUREMENT, APP_SECURITY, APP_STATUS_REQUEST, APP_TEMPERATURE,
-    APP_TRIGGER, CLOCK_ATTR_DATE, CLOCK_ATTR_TIME, CLOCK_REQUEST_REFRESH,
+    APP_LIGHTING_LAST, APP_MEASUREMENT, APP_MEDIA_TRANSPORT, APP_SECURITY, APP_STATUS_REQUEST,
+    APP_TEMPERATURE, APP_TRIGGER, CLOCK_ATTR_DATE, CLOCK_ATTR_TIME, CLOCK_REQUEST_REFRESH,
     ENABLE_SET_NETWORK_VARIABLE, LIGHT_OFF, LIGHT_ON, LIGHT_TERMINATE_RAMP, TEMPERATURE_BROADCAST,
     TRIGGER_EVENT, TRIGGER_INDICATOR_KILL, TRIGGER_MAX, TRIGGER_MIN,
 };
@@ -39,6 +40,8 @@ pub enum Sal {
     SecurityEvent(security::SecurityEvent),
     /// A Measurement application channel sample.
     MeasurementData(measurement::MeasurementData),
+    /// A Media Transport command, device event, or report.
+    MediaTransport(mediatransport::MediaTransportMessage),
     /// Switch a lighting group on.
     LightingOn {
         /// Lighting application address (0x30..=0x5F).
@@ -157,6 +160,7 @@ impl Sal {
             Sal::AudioCommand(_) | Sal::AudioEvent(_) => APP_AUDIO,
             Sal::SecurityCommand(_) | Sal::SecurityEvent(_) => APP_SECURITY,
             Sal::MeasurementData(_) => APP_MEASUREMENT,
+            Sal::MediaTransport(_) => APP_MEDIA_TRANSPORT,
             Sal::LightingOn { application, .. }
             | Sal::LightingOff { application, .. }
             | Sal::LightingTerminateRamp { application, .. }
@@ -185,6 +189,7 @@ impl Sal {
             Sal::SecurityCommand(command) => command.encode(),
             Sal::SecurityEvent(event) => event.encode(),
             Sal::MeasurementData(measurement) => measurement.encode(),
+            Sal::MediaTransport(message) => message.encode(),
             Sal::LightingOn { group_address, .. } => Ok(vec![LIGHT_ON, *group_address]),
             Sal::LightingOff { group_address, .. } => Ok(vec![LIGHT_OFF, *group_address]),
             Sal::LightingTerminateRamp { group_address, .. } => {
@@ -280,9 +285,9 @@ impl Sal {
 
 /// Application dispatch: decode the SAL payload of a PM packet.
 /// The supported registry includes status-request (0xFF), clock (0xDF),
-/// enable (0xCB), Audio (0xCD), Security (0xD0), Air-Conditioning (0xAC),
-/// lighting (0x30-0x5F) and temperature (0x19) are registered; anything else
-/// errors (-> Invalid packet).
+/// enable (0xCB), Air-Conditioning (0xAC), Media Transport (0xC0), Audio
+/// (0xCD), Security (0xD0), Measurement (0xE4), lighting (0x30-0x5F), and
+/// temperature (0x19) are registered; anything else errors (-> Invalid packet).
 pub fn decode_sals(app: u8, data: &[u8]) -> Result<Vec<Sal>, DecodeError> {
     // Extended AIRCON schedule entries use the 0xA9 opcode. Application
     // dispatch must happen before the generic dynamic-label prefix check.
@@ -318,6 +323,13 @@ pub fn decode_sals(app: u8, data: &[u8]) -> Result<Vec<Sal>, DecodeError> {
                 })
                 .collect()
         });
+    }
+    // Media Transport name messages use the same 0xAx/0xCx extended-SAL
+    // prefix space as dynamic labels. Application dispatch must precede the
+    // generic label check.
+    if app == APP_MEDIA_TRANSPORT {
+        return mediatransport::decode_sals(data)
+            .map(|messages| messages.into_iter().map(Sal::MediaTransport).collect());
     }
     if app == APP_MEASUREMENT {
         return measurement::decode_sals(data)

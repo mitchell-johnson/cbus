@@ -4,12 +4,14 @@
 use super::*;
 use crate::auth;
 use cbus_protocol::{
+    common::APP_MEDIA_TRANSPORT,
     packet::{Meta, Packet},
     sal::{
         aircon::AirconCommand,
         audio::{AudioAddress, AudioCommand},
         label,
         measurement::MeasurementData,
+        mediatransport::MediaTransportMessage,
         security::{SecurityArmMode, SecurityCommand},
         Sal,
     },
@@ -95,6 +97,32 @@ const MEASUREMENT_HELP: &[&str] = &[
     "Help: MEASUREMENT commands:",
     "Help:  MEASUREMENT ? Help for these commands",
     "Help:  MEASUREMENT DATA - Channel Measurement Data produced by a Measurement Device",
+];
+
+const MEDIATRANSPORT_HELP: &[&str] = &[
+    "Help: MEDIATRANSPORT commands:",
+    "Help:  MEDIATRANSPORT ? Help for these commands",
+    "Help:  MEDIATRANSPORT CATEGORY_NAME - The name, in characters, of the Category currently active (or to be active) in the output device in <Media Link Group>",
+    "Help:  MEDIATRANSPORT ENUMERATE - The unit issuing this command is requesting a dump of the names of the first 16 categories / selections / tracks in <Media Link Group>",
+    "Help:  MEDIATRANSPORT ENUMERATION_SIZE - The unit issuing this command is describing the number of entries that it is about to send as part of a previous enumeration on <Media Link Group>",
+    "Help:  MEDIATRANSPORT FORWARD - The output unit in Media Link Group is to Fast forward the current track being played",
+    "Help:  MEDIATRANSPORT NEXT_CATEGORY - Requests the output unit on the Media Link Group change to the next or previous Category",
+    "Help:  MEDIATRANSPORT NEXT_SELECTION - Requests the output unit on a Media Link Group change to the next or previous Selection in the Active Category",
+    "Help:  MEDIATRANSPORT NEXT_TRACK - Requests the output unit change to the next or previous Track in the Active Selection",
+    "Help:  MEDIATRANSPORT PAUSE - The output unit on the Media Link Group is to suspend or resume media playback",
+    "Help:  MEDIATRANSPORT PLAY - The output unit on the Media Link Group is to play Tracks from the Active Selection",
+    "Help:  MEDIATRANSPORT REPEAT - Set the REPEAT modifier of the Media Link Group to OFF, REPEAT TRACKS or REPEAT CURRENT",
+    "Help:  MEDIATRANSPORT REWIND - The output unit in Media Link Group is to play the current track but in reverse",
+    "Help:  MEDIATRANSPORT SELECTION_NAME - The name, in characters, of the Selection currently active (or to be active) in the output device in <Media Link Group>",
+    "Help:  MEDIATRANSPORT SET_CATEGORY - The output unit on the Media Link Group is to select a numbered Category",
+    "Help:  MEDIATRANSPORT SET_SELECTION - The output unit on the Media Link Group is to select a numbered Selection in the currently active Category",
+    "Help:  MEDIATRANSPORT SET_TRACK - The output unit on the Media Link Group is to select a numbered Track in the currently active Category and Selection",
+    "Help:  MEDIATRANSPORT SHUFFLE - Set the SHUFFLE modifier of the Media Link Group either ON or OFF",
+    "Help:  MEDIATRANSPORT SOURCE_POWER - The output unit in <Media Link Group> has its power on/off state set",
+    "Help:  MEDIATRANSPORT STATUS_REQUEST - The unit issuing this command is requesting the current status of the output unit in <Media Link Group>",
+    "Help:  MEDIATRANSPORT STOP - The output unit on the Media Link Group is to stop playing the Active Track",
+    "Help:  MEDIATRANSPORT TOTAL_TRACKS - The output unit on the Media Link Group is describing how many tracks are available in the current Category and Selection",
+    "Help:  MEDIATRANSPORT TRACK_NAME - The name, in characters, of the track being played (or to be played) by the output device in <Media Link Group>",
 ];
 
 /// Default bound for the TLS pre-handshake accept (matches the existing
@@ -596,6 +624,16 @@ impl Service {
                     source.unwrap_or(0),
                 );
             }
+            CBusEvent::MediaTransport { source, message } => {
+                let source = source.unwrap_or(0);
+                let _ = self.events.send(format!(
+                    "#e# mediatransport {} //{}/{}/192 {} sourceUnit={source}",
+                    message.event_name(),
+                    self.project,
+                    self.network,
+                    message.event_arguments()
+                ));
+            }
             CBusEvent::LightingOn {
                 source: Some(_),
                 app,
@@ -1055,6 +1093,39 @@ impl Service {
             capabilities["measurement_commands"] = serde_json::json!(["data"]);
             capabilities["measurement_event_fanout"] = serde_json::Value::Bool(true);
             capabilities["measurement_mqtt_state"] = serde_json::Value::Bool(false);
+            capabilities["mediatransport_control"] = serde_json::Value::Bool(true);
+            capabilities["mediatransport_application"] = serde_json::Value::from(192);
+            capabilities["mediatransport_delivery_semantics"] =
+                serde_json::Value::String("pci-confirmed-broadcast".to_string());
+            capabilities["mediatransport_retry_policy"] =
+                serde_json::Value::String("exactly-once-no-replay".to_string());
+            capabilities["mediatransport_commands"] = serde_json::json!([
+                "stop",
+                "play",
+                "pause",
+                "set_category",
+                "set_selection",
+                "set_track",
+                "shuffle",
+                "repeat",
+                "next_category",
+                "next_selection",
+                "next_track",
+                "forward",
+                "rewind",
+                "source_power",
+                "total_tracks",
+                "status_request",
+                "enumerate",
+                "enumeration_size",
+                "track_name",
+                "selection_name",
+                "category_name"
+            ]);
+            capabilities["mediatransport_reports"] =
+                capabilities["mediatransport_commands"].clone();
+            capabilities["mediatransport_event_fanout"] = serde_json::Value::Bool(true);
+            capabilities["mediatransport_mqtt_state"] = serde_json::Value::Bool(false);
             return ok(tag, vec![capabilities.to_string()], "200 OK");
         }
         if verb == "MEASUREMENT" {
@@ -1092,6 +1163,15 @@ impl Service {
                 return err(tag, 400, "400 Syntax Error.");
             }
             return self.security(tag, &words, sub).await;
+        }
+        if verb == "MEDIATRANSPORT" {
+            if words.len() == 1 || (words.len() == 2 && words[1] == "?") {
+                return mediatransport_help(tag);
+            }
+            if !is_mediatransport_subcommand(sub) {
+                return err(tag, 400, "400 Syntax Error.");
+            }
+            return self.mediatransport(tag, &words, sub).await;
         }
         if verb == "REPOSITORY" && sub == "LIST" {
             return self.repository_list(tag, &words);
@@ -1732,6 +1812,54 @@ impl Service {
                 ),
             ),
         })
+    }
+
+    fn mediatransport_application(&self, tag: &str, address: &str) -> Result<u8, Response> {
+        let parts = address
+            .trim_start_matches('/')
+            .split('/')
+            .filter(|part| !part.is_empty())
+            .collect::<Vec<_>>();
+        let network_not_found = || {
+            err(
+                tag,
+                401,
+                &format!("401 Bad object or device ID: {address} (Network not found)"),
+            )
+        };
+        let object_not_found = || {
+            err(
+                tag,
+                401,
+                &format!("401 Bad object or device ID: {address} (Object not found)"),
+            )
+        };
+        let application = match parts.as_slice() {
+            [network, application] => {
+                let network = network.parse::<u8>().map_err(|_| network_not_found())?;
+                if network != self.network {
+                    return Err(network_not_found());
+                }
+                parse_application(application).ok_or_else(object_not_found)?
+            }
+            [project, network, application] => {
+                let network = network.parse::<u8>().map_err(|_| object_not_found())?;
+                if *project != self.project || network != self.network {
+                    return Err(object_not_found());
+                }
+                parse_application(application).ok_or_else(object_not_found)?
+            }
+            [_] => return Err(network_not_found()),
+            _ => return Err(object_not_found()),
+        };
+        if application != APP_MEDIA_TRANSPORT {
+            return Err(err(
+                tag,
+                402,
+                &format!("402 Operation not supported by: {address}"),
+            ));
+        }
+        Ok(application)
     }
 
     fn application_get(
@@ -4130,6 +4258,235 @@ impl Service {
             .await
     }
 
+    async fn mediatransport(&self, tag: &str, words: &[&str], sub: &str) -> Response {
+        let parameters: &[&str] = match sub {
+            "STOP" | "PLAY" | "STATUS_REQUEST" => &["application", "media-link-group"],
+            "PAUSE" | "SHUFFLE" | "REPEAT" | "NEXT_CATEGORY" | "NEXT_SELECTION" | "NEXT_TRACK"
+            | "FORWARD" | "REWIND" | "SOURCE_POWER" => {
+                &["application", "media-link-group", "operation"]
+            }
+            "SET_CATEGORY" => &["application", "media-link-group", "category"],
+            "SET_SELECTION" => &["application", "media-link-group", "selection"],
+            "SET_TRACK" => &["application", "media-link-group", "track"],
+            "TOTAL_TRACKS" => &["application", "media-link-group", "tracks"],
+            "ENUMERATE" => &["application", "media-link-group", "type", "start"],
+            "ENUMERATION_SIZE" => &["application", "media-link-group", "type", "start", "size"],
+            "TRACK_NAME" | "SELECTION_NAME" | "CATEGORY_NAME" => &[
+                "application",
+                "media-link-group",
+                "which-name-identification",
+                "total-packets",
+                "packet-index",
+            ],
+            _ => return err(tag, 400, "400 Syntax Error."),
+        };
+        let supplied = words.len().saturating_sub(2);
+        let name_command = matches!(sub, "TRACK_NAME" | "SELECTION_NAME" | "CATEGORY_NAME");
+        if supplied == 0 {
+            return err(
+                tag,
+                400,
+                "400 Syntax Error: Missing parameter : <application>",
+            );
+        }
+
+        let target = words[2];
+        if let Err(response) = self.mediatransport_application(tag, target) {
+            return response;
+        }
+        if supplied < parameters.len() {
+            return err(
+                tag,
+                400,
+                &format!(
+                    "400 Syntax Error: Missing parameter : <{}>",
+                    parameters[supplied]
+                ),
+            );
+        }
+        if !name_command && supplied > parameters.len() {
+            return err(tag, 400, "400 Syntax Error: Too many parameters");
+        }
+        let group = match parse_media_ranged(tag, words[3], "media-link-group", 0, 255) {
+            Ok(value) => value as u8,
+            Err(response) => return response,
+        };
+
+        let command = match sub {
+            "STOP" => MediaTransportMessage::Stop { group },
+            "PLAY" => MediaTransportMessage::Play { group },
+            "STATUS_REQUEST" => MediaTransportMessage::StatusRequest { group },
+            "PAUSE" | "SHUFFLE" => {
+                let operation = match parse_media_integer(tag, words[4], "operation") {
+                    Ok(value) if matches!(value, 0 | 255) => value as u8,
+                    Ok(value) => return media_reserved(tag, "operation", value),
+                    Err(response) => return response,
+                };
+                if sub == "PAUSE" {
+                    MediaTransportMessage::Pause { group, operation }
+                } else {
+                    MediaTransportMessage::Shuffle { group, operation }
+                }
+            }
+            "FORWARD" | "REWIND" => {
+                let operation = match parse_media_integer(tag, words[4], "operation") {
+                    Ok(value) if matches!(value, 0 | 2 | 4 | 6 | 8 | 10 | 12) => value as u8,
+                    Ok(value) => return media_reserved(tag, "operation", value),
+                    Err(response) => return response,
+                };
+                if sub == "FORWARD" {
+                    MediaTransportMessage::Forward { group, operation }
+                } else {
+                    MediaTransportMessage::Rewind { group, operation }
+                }
+            }
+            "REPEAT" | "NEXT_CATEGORY" | "NEXT_SELECTION" | "NEXT_TRACK" | "SOURCE_POWER" => {
+                let operation = match parse_media_ranged(tag, words[4], "operation", 0, 255) {
+                    Ok(value) => value as u8,
+                    Err(response) => return response,
+                };
+                match sub {
+                    "REPEAT" => MediaTransportMessage::Repeat { group, operation },
+                    "NEXT_CATEGORY" => MediaTransportMessage::NextCategory { group, operation },
+                    "NEXT_SELECTION" => MediaTransportMessage::NextSelection { group, operation },
+                    "NEXT_TRACK" => MediaTransportMessage::NextTrack { group, operation },
+                    "SOURCE_POWER" => MediaTransportMessage::SourcePower { group, operation },
+                    _ => unreachable!(),
+                }
+            }
+            "SET_CATEGORY" => {
+                let category = match parse_media_ranged(tag, words[4], "category", 0, 127) {
+                    Ok(value) => value as u8,
+                    Err(response) => return response,
+                };
+                MediaTransportMessage::SetCategory { group, category }
+            }
+            "SET_SELECTION" => {
+                let selection = match parse_media_ranged(tag, words[4], "selection", 0, 32767) {
+                    Ok(value) => value as u16,
+                    Err(response) => return response,
+                };
+                MediaTransportMessage::SetSelection { group, selection }
+            }
+            "SET_TRACK" | "TOTAL_TRACKS" => {
+                let parameter = if sub == "SET_TRACK" {
+                    "track"
+                } else {
+                    "tracks"
+                };
+                let value = match parse_media_ranged(tag, words[4], parameter, 0, i32::MAX) {
+                    Ok(value) => value as u32,
+                    Err(response) => return response,
+                };
+                if sub == "SET_TRACK" {
+                    MediaTransportMessage::SetTrack {
+                        group,
+                        track: value,
+                    }
+                } else {
+                    MediaTransportMessage::TotalTracks {
+                        group,
+                        tracks: value,
+                    }
+                }
+            }
+            "ENUMERATE" | "ENUMERATION_SIZE" => {
+                let enumeration_type = match parse_media_ranged(tag, words[4], "type", 0, 2) {
+                    Ok(value) => value as u8,
+                    Err(response) => return response,
+                };
+                let start = match parse_media_ranged(tag, words[5], "start", 0, 255) {
+                    Ok(value) => value as u8,
+                    Err(response) => return response,
+                };
+                if sub == "ENUMERATE" {
+                    MediaTransportMessage::Enumerate {
+                        group,
+                        enumeration_type,
+                        start,
+                    }
+                } else {
+                    let size = match parse_media_ranged(tag, words[6], "size", 0, 15) {
+                        Ok(value) => value as u8,
+                        Err(response) => return response,
+                    };
+                    MediaTransportMessage::EnumerationSize {
+                        group,
+                        enumeration_type,
+                        start,
+                        size,
+                    }
+                }
+            }
+            "TRACK_NAME" | "SELECTION_NAME" | "CATEGORY_NAME" => {
+                let wni = match parse_media_integer(tag, words[4], "which-name-identification") {
+                    Ok(value) if matches!(value, 0 | 1 | 2 | 5 | 6 | 7) => value as u8,
+                    Ok(value) => return media_reserved(tag, "which-name-identification", value),
+                    Err(response) => return response,
+                };
+                let total = match parse_media_ranged(tag, words[5], "total-packets", 0, 3) {
+                    Ok(value) => value as u8,
+                    Err(response) => return response,
+                };
+                let index = match parse_media_ranged(tag, words[6], "packet-index", 0, 3) {
+                    Ok(value) => value as u8,
+                    Err(response) => return response,
+                };
+                let text = media_text(&words[7..]);
+                if text.len() > 11 {
+                    return err(
+                        tag,
+                        400,
+                        "400 Syntax Error: Text too long. A maximum of 11 bytes is supported.",
+                    );
+                }
+                // Native C-Gate 3.4 passes signed Java UTF-8 bytes through an
+                // integer hex helper; every non-ASCII byte consequently
+                // becomes FF. Preserve that captured compatibility quirk at
+                // the command boundary while the protocol model stays raw.
+                let text = text
+                    .as_bytes()
+                    .iter()
+                    .map(|byte| if *byte >= 0x80 { 0xff } else { *byte })
+                    .collect();
+                match sub {
+                    "TRACK_NAME" => MediaTransportMessage::TrackName {
+                        group,
+                        wni,
+                        total,
+                        index,
+                        text,
+                    },
+                    "SELECTION_NAME" => MediaTransportMessage::SelectionName {
+                        group,
+                        wni,
+                        total,
+                        index,
+                        text,
+                    },
+                    "CATEGORY_NAME" => MediaTransportMessage::CategoryName {
+                        group,
+                        wni,
+                        total,
+                        index,
+                        text,
+                    },
+                    _ => unreachable!(),
+                }
+            }
+            _ => unreachable!(),
+        };
+
+        let _commands = self.commands.lock().await;
+        self.send_application_once(
+            tag,
+            Sal::MediaTransport(command),
+            ok(tag, vec![], "200 OK."),
+            "Media Transport delivery",
+        )
+        .await
+    }
+
     async fn security(&self, tag: &str, words: &[&str], sub: &str) -> Response {
         let parameters: &[&str] = match sub {
             "RAISE_ALARM" => &["application"],
@@ -5017,6 +5374,33 @@ impl Service {
         // delivery on the active connection. Callers that also commit live
         // state use send_application_on_pci directly and keep their own epoch
         // guard through the cache mutation and success event.
+        let Some(_commit_guard) = self.pci_commit_guard(generation, &pci).await else {
+            return err(
+                tag,
+                502,
+                &format!("502 {operation} failed: PCI connection generation changed"),
+            );
+        };
+        result
+    }
+
+    async fn send_application_once(
+        &self,
+        tag: &str,
+        sal: Sal,
+        response: Response,
+        operation: &str,
+    ) -> Response {
+        let (generation, pci) = self.current_pci_epoch().await;
+        let packet = Packet::PointToMultipoint {
+            meta: Meta::new(true, 0),
+            application: sal.application(),
+            sals: vec![sal],
+        };
+        let result = match pci.send_confirmed_once(&packet).await {
+            Ok(()) => response,
+            Err(error) => err(tag, 502, &format!("502 {operation} failed: {error}")),
+        };
         let Some(_commit_guard) = self.pci_commit_guard(generation, &pci).await else {
             return err(
                 tag,
@@ -7270,6 +7654,115 @@ fn parse_measurement_integer(
     Ok(parsed)
 }
 
+fn is_mediatransport_subcommand(sub: &str) -> bool {
+    matches!(
+        sub,
+        "CATEGORY_NAME"
+            | "ENUMERATE"
+            | "ENUMERATION_SIZE"
+            | "FORWARD"
+            | "NEXT_CATEGORY"
+            | "NEXT_SELECTION"
+            | "NEXT_TRACK"
+            | "PAUSE"
+            | "PLAY"
+            | "REPEAT"
+            | "REWIND"
+            | "SELECTION_NAME"
+            | "SET_CATEGORY"
+            | "SET_SELECTION"
+            | "SET_TRACK"
+            | "SHUFFLE"
+            | "SOURCE_POWER"
+            | "STATUS_REQUEST"
+            | "STOP"
+            | "TOTAL_TRACKS"
+            | "TRACK_NAME"
+    )
+}
+
+fn mediatransport_help(tag: &str) -> Response {
+    let mut rows = MEDIATRANSPORT_HELP
+        .iter()
+        .map(|row| (*row).to_string())
+        .collect::<Vec<_>>();
+    let final_text = format!(
+        "101 {}",
+        rows.pop().expect("MEDIATRANSPORT help is nonempty")
+    );
+    Response {
+        tag: tag.to_string(),
+        lines: rows,
+        final_text,
+        status: 101,
+    }
+}
+
+fn parse_media_integer(tag: &str, value: &str, parameter: &str) -> Result<i32, Response> {
+    let prefixed = |prefix: &str| {
+        value
+            .get(..prefix.len())
+            .is_some_and(|candidate| candidate.eq_ignore_ascii_case(prefix))
+    };
+    let parsed = if prefixed("0b") {
+        i32::from_str_radix(&value[2..], 2)
+    } else if prefixed("0x") {
+        i32::from_str_radix(&value[2..], 16)
+    } else if let Some(hex) = value.strip_prefix('$') {
+        i32::from_str_radix(hex, 16)
+    } else {
+        value.parse::<i32>()
+    };
+    parsed.map_err(|_| {
+        err(
+            tag,
+            400,
+            &format!("400 Syntax Error: Invalid integer parameter : <{parameter}>"),
+        )
+    })
+}
+
+fn parse_media_ranged(
+    tag: &str,
+    value: &str,
+    parameter: &str,
+    minimum: i32,
+    maximum: i32,
+) -> Result<i32, Response> {
+    let value = parse_media_integer(tag, value, parameter)?;
+    if !(minimum..=maximum).contains(&value) {
+        return Err(err(
+            tag,
+            400,
+            &format!("400 Syntax Error: Integer parameter is out of range : <{parameter}>"),
+        ));
+    }
+    Ok(value)
+}
+
+fn media_reserved(tag: &str, parameter: &str, value: i32) -> Response {
+    err(
+        tag,
+        400,
+        &format!("400 Syntax Error: Integer parameter <{parameter}> is a reserved value {value}"),
+    )
+}
+
+fn media_text(words: &[&str]) -> String {
+    let mut text = words.join(" ").trim().to_owned();
+    if text.starts_with('"') {
+        if let Some(last_quote) = text.rfind('"').filter(|index| *index > 0) {
+            text.remove(last_quote);
+        }
+        text.remove(0);
+        text = text
+            .replace("\\ ", " ")
+            .replace("\\\"", "\"")
+            .replace("\\\\", "\\");
+    }
+    text
+}
+
 fn parse_security_integer(tag: &str, value: &str, parameter: &str) -> Result<i32, Response> {
     let parsed = value
         .strip_prefix('$')
@@ -7434,6 +7927,9 @@ fn parse_aircon_boolean(tag: &str, value: &str, parameter: &str) -> Result<bool,
 /// - Security ARM/TAMPER/RAISE_ALARM/EMULATE_KEYPAD/DISPLAY_MESSAGE. These
 ///   controls have no MQTT equivalent. STATUS_REQUEST, REQUEST_ZONE_NAME,
 ///   parent help and unknown syntax remain open.
+/// - Media Transport requests STATUS_REQUEST and ENUMERATE remain open.
+///   Controls and bus-report injection have no MQTT equivalent and require
+///   LOGIN while the optional gate is armed.
 /// - SCENE RECORD (persists snapshots to the state file). SCENE PLAY stays
 ///   open (snapshot read plus bus control).
 /// - DO ... FactoryDefault (destructive KEYGL5 OEM programming control).
@@ -7459,6 +7955,9 @@ fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
         }
         "SECURITY" => {
             is_security_subcommand(sub) && !matches!(sub, "STATUS_REQUEST" | "REQUEST_ZONE_NAME")
+        }
+        "MEDIATRANSPORT" => {
+            is_mediatransport_subcommand(sub) && !matches!(sub, "STATUS_REQUEST" | "ENUMERATE")
         }
         "PP" => matches!(
             sub,

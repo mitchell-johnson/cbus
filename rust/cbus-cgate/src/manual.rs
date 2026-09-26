@@ -813,7 +813,7 @@ pub const APPLICATION_COMMANDS: &[ApplicationSpec] = &[
 pub const MEDIA_COMMANDS: &[ApplicationSpec] = &[
     ApplicationSpec {
         name: "MEDIATRANSPORT CATEGORY_NAME",
-        min_args: 6,
+        min_args: 5,
         max_args: None,
     },
     ApplicationSpec {
@@ -868,7 +868,7 @@ pub const MEDIA_COMMANDS: &[ApplicationSpec] = &[
     },
     ApplicationSpec {
         name: "MEDIATRANSPORT SELECTION_NAME",
-        min_args: 6,
+        min_args: 5,
         max_args: None,
     },
     ApplicationSpec {
@@ -913,7 +913,7 @@ pub const MEDIA_COMMANDS: &[ApplicationSpec] = &[
     },
     ApplicationSpec {
         name: "MEDIATRANSPORT TRACK_NAME",
-        min_args: 6,
+        min_args: 5,
         max_args: None,
     },
 ];

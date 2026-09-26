@@ -236,6 +236,50 @@ sample returns `0,0,0,-1`. cmqttd defines no MQTT Measurement state. Ground
 behavior in `native_cgate_measurement.json`, `measurement.jsonl`, and
 `system_cgate_measurement.rs`.
 
+### Media Transport commands
+
+cmqttd implements the complete maintained C-Gate 3.4 `MEDIATRANSPORT` family
+for application 192 (`$C0`) on its configured direct network. Use
+`MEDIATRANSPORT ?` for the captured native help. The grammar is:
+
+```text
+MEDIATRANSPORT STOP|PLAY|STATUS_REQUEST APP GROUP
+MEDIATRANSPORT PAUSE|SHUFFLE|REPEAT|NEXT_CATEGORY|NEXT_SELECTION|NEXT_TRACK APP GROUP OPERATION
+MEDIATRANSPORT FORWARD|REWIND|SOURCE_POWER APP GROUP OPERATION
+MEDIATRANSPORT SET_CATEGORY APP GROUP CATEGORY
+MEDIATRANSPORT SET_SELECTION APP GROUP SELECTION
+MEDIATRANSPORT SET_TRACK|TOTAL_TRACKS APP GROUP VALUE
+MEDIATRANSPORT ENUMERATE APP GROUP TYPE START
+MEDIATRANSPORT ENUMERATION_SIZE APP GROUP TYPE START SIZE
+MEDIATRANSPORT TRACK_NAME|SELECTION_NAME|CATEGORY_NAME APP GROUP WNI TOTAL INDEX [TEXT]
+```
+
+`GROUP`, byte operations and `START` are 0–255. Pause and shuffle operations
+are 0 or 255; forward/rewind rates are 0, 2, 4, 6, 8, 10 or 12. Category is
+0–127, selection is 0–32767, and track/count values are 0–2147483647.
+Enumeration type is 0–2 and size is 0–15. WNI accepts 0, 1, 2, 5, 6 or 7;
+`TOTAL` and `INDEX` are 0–3; name text is optional and at most 11 UTF-8 bytes.
+Decimal, case-insensitive `0b` binary, case-insensitive `0x` hexadecimal, and
+`$` hexadecimal integers use the native signed-32-bit parser. A name beginning
+with a quote uses native dequoting: the last quote is removed and escaped
+spaces, quotes, and backslashes are unescaped before the byte-length check.
+Native C-Gate corrupts every non-ASCII UTF-8 byte in an outbound name to
+`FF`; the command boundary preserves that captured quirk, while inbound SAL
+and typed JSON retain the raw bytes losslessly. Inbound decoding also preserves
+WNI 3 and 4 because native C-Gate accepts every packed three-bit WNI on the bus
+even though its outbound command parser reserves those two values.
+
+`STATUS_REQUEST` and `ENUMERATE` remain open when the optional LOGIN gate is
+armed. Controls and bus-report injection require LOGIN. Every admitted command is sent exactly once and
+waits for a positive correlated confirmation from the active shared PCI
+generation. A 200 proves interface delivery only, not media-device acceptance
+or resulting state. Incoming commands/reports fan out as `#e# mediatransport`
+events. cmqttd exposes no MQTT Media Transport entity or state. Bridged routing
+remains unsupported. Ground exact behavior in
+`rust/testdata/fixtures/native_cgate_mediatransport.json`,
+`rust/testdata/vectors/mediatransport.jsonl`, and
+`rust/cmqttd/tests/system_cgate_mediatransport.rs`. `CMQTT CAPABILITIES` advertises application 192, `pci-confirmed-broadcast`, `exactly-once-no-replay`, all 21 message names, event fanout, and `mediatransport_mqtt_state: false`.
+
 The physical service also implements lighting commands, C-Gate `DO` object
 methods for lighting and direct/bridged read-only `SYNC`, Trigger Control,
 Enable Control, clock date/time/refresh, Temperature Broadcast, `NET PINGU`, `NET SYNC`,

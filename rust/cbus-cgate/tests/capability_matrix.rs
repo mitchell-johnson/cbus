@@ -108,6 +108,9 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // MEASUREMENT root help moved fail_closed_502 -> local_database, and DATA
     // moved fail_closed_502 -> physical with exact native 3.4 SAL encoding,
     // active-generation PCI confirmation, and dynamic GET state.
+    // MEDIATRANSPORT root help moved fail_closed_502 -> local_database, and
+    // all 21 maintained commands/reports moved fail_closed_502 -> physical
+    // with exact native 3.4 SAL encoding and correlated PCI confirmation.
     // PROJECT ARCHIVE/RESTORE/RENAME/COPY/DELETE and REPOSITORY LIST moved
     // fail_closed_502 -> local_database with durable internal snapshots,
     // guarded secondary-project lifecycle, and a read-only cmqttd-json row.
@@ -116,9 +119,9 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // The eleven maintained AIRCON commands and NET PROJECT_IDENTIFY moved
     // fail_closed_502 -> physical. PROJECT_IDENTIFY uses the selected shared
     // interface's native read-only MMI/parameter-35 workflow.
-    assert_eq!(class_count(RoutingClass::Physical), 74);
-    assert_eq!(class_count(RoutingClass::LocalDatabase), 53);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 303);
+    assert_eq!(class_count(RoutingClass::Physical), 95);
+    assert_eq!(class_count(RoutingClass::LocalDatabase), 54);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 281);
     assert_eq!(class_count(RoutingClass::Obsolete400), 1);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here
@@ -278,6 +281,55 @@ fn measurement_rows_retain_native_boundaries_and_decoder_evidence() {
         .unwrap();
     assert_eq!(data.class, RoutingClass::Physical);
     assert!(data.evidence.contains("native_cgate_measurement.json"));
+}
+
+#[test]
+fn mediatransport_rows_retain_native_boundaries_and_decoder_evidence() {
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_mediatransport.json"
+    ))
+    .expect("native MEDIATRANSPORT evidence must remain valid JSON");
+    assert_eq!(fixture["oracle"]["version"], "3.4.0.2001");
+    assert_eq!(fixture["commands"].as_array().unwrap().len(), 24);
+    assert_eq!(
+        fixture["oracle"]["jar_sha256"],
+        "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+    );
+    assert_eq!(fixture["application"]["decimal"], 192);
+    assert_eq!(
+        fixture["oracle"]["command_parser_class_sha256"],
+        "7ae66677a8b82950214e52af91f1b3d8a8339f7d62c0f0617fb3a402760fe2f3"
+    );
+    assert_eq!(
+        fixture["oracle"]["dequote_helper_class_sha256"],
+        "7d5aed3401676c3e896e008a030a6d4a55e417d1d6ddf200734b938ca9ed7c7d"
+    );
+    assert!(fixture["native_quirks"]["unicode_name_encoder"]
+        .as_str()
+        .unwrap()
+        .contains("ten FF bytes"));
+    assert!(fixture["acceptance_boundary"]
+        .as_str()
+        .unwrap()
+        .contains("Media-device acceptance"));
+    let root = CAPABILITY_MATRIX
+        .iter()
+        .find(|entry| entry.path == "MEDIATRANSPORT")
+        .unwrap();
+    assert_eq!(root.class, RoutingClass::LocalDatabase);
+    let commands = CAPABILITY_MATRIX
+        .iter()
+        .filter(|entry| entry.path.starts_with("MEDIATRANSPORT "))
+        .collect::<Vec<_>>();
+    assert_eq!(commands.len(), 21);
+    for entry in commands {
+        assert_eq!(entry.class, RoutingClass::Physical, "{}", entry.path);
+        assert!(
+            entry.evidence.contains("native_cgate_mediatransport.json"),
+            "{}",
+            entry.path
+        );
+    }
 }
 
 #[test]

@@ -46,6 +46,16 @@ entity/state schema. A successful command proves PCI-confirmed broadcast
 delivery only; alarm-panel acceptance, resulting state, persistence and
 bridged routing remain outside the retained evidence.
 
+The endpoint also implements all 21 maintained C-Gate 3.4 MEDIATRANSPORT
+commands/reports for application 192 on the configured direct network. Exact
+basic and extended name SALs are sent once through the PCI confirmation lane; malformed ranges,
+reserved operations, oversized names and unsupported routes fail before I/O.
+Incoming messages remain raw-byte-safe typed events and fan out to C-Gate
+clients. cmqttd publishes no MQTT Media Transport state. A 200 proves
+PCI-confirmed broadcast delivery from the active generation; media-device
+acceptance, resulting state, persistence and bridged routing remain outside the
+retained evidence.
+
 Physical `NET CLOCKS` uses the synchronized unit inventory, IDENTIFY16 status,
 and decoded direct `ClockGenEnable` fields for target counts and gateway
 recovery. It retains native per-unit failure lines and requires write readback.
@@ -131,10 +141,10 @@ Supported project inputs are a one-file `.cbz` zip archive or bare project XML. 
 
 ## Test data and evidence
 
-- `rust/testdata/vectors/` contains JSONL cases for checksums, frame encode/decode, native AIRCON, AUDIO and SECURITY commands/events, native label-cache clear, ramp rates, MQTT topics, Home Assistant discovery, and strict selected-serial plan interchange.
-- `rust/testdata/fixtures/` contains small non-production project and behavior fixtures, including sanitized disposable-native evidence for AIRCON, AUDIO, SECURITY and project copy/delete behavior.
+- `rust/testdata/vectors/` contains JSONL cases for checksums, frame encode/decode, native AIRCON, AUDIO, SECURITY and Media Transport commands/events, native label-cache clear, ramp rates, MQTT topics, Home Assistant discovery, and strict selected-serial plan interchange.
+- `rust/testdata/fixtures/` contains small non-production project and behavior fixtures, including sanitized disposable-native evidence for AIRCON, AUDIO, SECURITY, Media Transport and project copy/delete behavior.
 - `cbus-golden-tests` generates a named test per committed vector.
-- `cmqttd` system tests run the real daemon against an in-process MQTT broker and scripted PCI, including AIRCON, AUDIO and SECURITY command/event, correlation, authentication and MQTT-continuity coverage plus dedicated continuity checks after project administration.
+- `cmqttd` system tests run the real daemon against an in-process MQTT broker and scripted PCI, including AIRCON, AUDIO, SECURITY and Media Transport command/event, correlation, authentication and MQTT-continuity coverage plus dedicated continuity checks after project administration.
 - `cgate-mock` integration tests cover framing, state, sessions, event fanout, here-documents, inventory reachability, and programming access.
 - `toolkit-cli/tests/test_rust_cgate_interop.py` drives the Rust mock using the production Python C-Gate client and typed workflows.
 

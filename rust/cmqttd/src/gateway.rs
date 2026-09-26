@@ -640,6 +640,7 @@ impl Gateway {
             | CBusEvent::MeasurementData { .. }
             | CBusEvent::SecurityCommand { .. }
             | CBusEvent::SecurityEvent { .. }
+            | CBusEvent::MediaTransport { .. }
             | CBusEvent::TriggerEvent { .. }
             | CBusEvent::TriggerIndicatorKill { .. }
             | CBusEvent::EnableSet { .. }

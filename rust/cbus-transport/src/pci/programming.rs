@@ -1394,6 +1394,48 @@ impl PciClient {
         result
     }
 
+    /// Send exactly once and wait for its PCI delivery confirmation.
+    ///
+    /// Unlike [`Self::send_confirmed`], this does not register the frame for
+    /// automatic retransmission. An absent confirmation is outcome-uncertain;
+    /// the confirmation code stays quarantined so a late reply cannot satisfy
+    /// another command.
+    pub async fn send_confirmed_once(&self, packet: &Packet) -> Result<()> {
+        let mut replies = self.packets.subscribe();
+        if !self.is_connected() {
+            return Err(Error::new(ErrorKind::BrokenPipe, "PCI disconnected"));
+        }
+        let confirmation = self.send_guarded_once(packet).await?;
+        let code = confirmation.code;
+        tokio::time::timeout(Duration::from_secs(12), async {
+            loop {
+                match replies.recv().await {
+                    Ok(Some(Packet::Confirmation { code: got, success })) if got == code => {
+                        return if success {
+                            Ok(())
+                        } else {
+                            Err(Error::other("PCI rejected command"))
+                        };
+                    }
+                    Ok(Some(_)) => {}
+                    Ok(None) | Err(_) => {
+                        return Err(Error::new(
+                            ErrorKind::BrokenPipe,
+                            "PCI response stream lost",
+                        ));
+                    }
+                }
+            }
+        })
+        .await
+        .unwrap_or_else(|_| {
+            Err(Error::new(
+                ErrorKind::TimedOut,
+                "PCI delivery confirmation timed out",
+            ))
+        })
+    }
+
     async fn programming_exchange(
         &self,
         unit: u8,
@@ -4921,6 +4963,47 @@ mod tests {
             .to_string()
             .contains("rejected"));
         assert!(pci.state.lock().unwrap().pending.is_empty());
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn one_shot_confirmation_timeout_never_registers_or_replays_the_frame() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let command = tokio::spawn(async move {
+            worker
+                .send_confirmed_once(&Packet::PointToMultipoint {
+                    meta: Meta::new(true, 0),
+                    application: cbus_protocol::common::APP_MEDIA_TRANSPORT,
+                    sals: vec![Sal::MediaTransport(
+                        cbus_protocol::sal::mediatransport::MediaTransportMessage::StatusRequest {
+                            group: 2,
+                        },
+                    )],
+                })
+                .await
+        });
+        assert_eq!(line(&mut remote).await, b"\\05C0007102C8h\r");
+        assert!(pci.state.lock().unwrap().pending.is_empty());
+
+        tokio::time::advance(Duration::from_secs(13)).await;
+        assert_eq!(
+            command.await.unwrap().unwrap_err().kind(),
+            ErrorKind::TimedOut
+        );
+        {
+            let state = pci.state.lock().unwrap();
+            assert!(state.pending.is_empty());
+            assert!(state.quarantined_codes.contains(&b'h'));
+        }
+
+        let mut replay = Vec::new();
+        assert!(tokio::time::timeout(
+            Duration::from_millis(1),
+            remote.read_until(b'\r', &mut replay)
+        )
+        .await
+        .is_err());
+        assert!(replay.is_empty());
     }
 
     #[tokio::test(start_paused = true)]
