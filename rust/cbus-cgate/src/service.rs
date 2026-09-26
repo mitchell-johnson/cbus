@@ -2308,6 +2308,32 @@ impl Service {
                 .await;
         }
         if verb == "CMQTT" && sub == "CAPABILITIES" && words.len() == 2 {
+            let physical_paths = crate::capability_matrix::CAPABILITY_MATRIX
+                .iter()
+                .filter(|entry| entry.class == crate::capability_matrix::RoutingClass::Physical)
+                .count();
+            let local_paths = crate::capability_matrix::CAPABILITY_MATRIX
+                .iter()
+                .filter(|entry| {
+                    entry.class == crate::capability_matrix::RoutingClass::LocalDatabase
+                })
+                .count();
+            let fail_closed_paths = crate::capability_matrix::CAPABILITY_MATRIX
+                .iter()
+                .filter(|entry| {
+                    entry.class == crate::capability_matrix::RoutingClass::FailClosed502
+                })
+                .count();
+            let obsolete_paths = crate::capability_matrix::CAPABILITY_MATRIX
+                .iter()
+                .filter(|entry| entry.class == crate::capability_matrix::RoutingClass::Obsolete400)
+                .count();
+            let rejected_paths = crate::capability_matrix::CAPABILITY_MATRIX
+                .iter()
+                .filter(|entry| entry.class == crate::capability_matrix::RoutingClass::Rejected4xx)
+                .count();
+            let inventory_paths = crate::capability_matrix::CAPABILITY_MATRIX.len();
+            let non_obsolete_paths = inventory_paths - obsolete_paths;
             let mut capabilities = serde_json::json!({"service":"cmqttd", "physical_bus":true,
                 "full_cgate_compatibility":false, "memory_read":true, "memory_write":true,
                 "physical_pp_load":true, "physical_pp_save":true,
@@ -2342,6 +2368,24 @@ impl Service {
                 "cgate_auth":self.auth_token_hash.get().is_some()});
             // Keep the new flat flag out of the already recursion-deep json!
             // invocation while retaining one static capability document.
+            capabilities["full_cgate_command_path_coverage"] = serde_json::Value::Bool(
+                inventory_paths == 431 && fail_closed_paths == 0 && rejected_paths == 0,
+            );
+            capabilities["cgate_inventory_paths"] = serde_json::json!(inventory_paths);
+            capabilities["cgate_non_obsolete_paths"] = serde_json::json!(non_obsolete_paths);
+            capabilities["cgate_physical_paths"] = serde_json::json!(physical_paths);
+            capabilities["cgate_local_session_paths"] = serde_json::json!(local_paths);
+            capabilities["cgate_fail_closed_paths"] = serde_json::json!(fail_closed_paths);
+            capabilities["cgate_obsolete_paths"] = serde_json::json!(obsolete_paths);
+            capabilities["cgate_rejected_paths"] = serde_json::json!(rejected_paths);
+            capabilities["cgate_compatibility_limitations"] = serde_json::json!([
+                "vendor-patchset-zip",
+                "vendor-repository-archive-sqlite-xml-formats",
+                "typed-dali-session-selectors",
+                "routed-targeted-syncnew-and-mutations",
+                "native-access-handler-and-tls-client-identity-matrix",
+                "device-family-topology-timing-power-cycle-hardware-acceptance"
+            ]);
             capabilities["label_kfi"] = serde_json::Value::Bool(true);
             capabilities["net_unravel"] = serde_json::Value::Bool(true);
             capabilities["net_unravel_direct_safe_planner"] = serde_json::Value::Bool(true);
@@ -9702,6 +9746,11 @@ impl Service {
 
     async fn pp_patch_version(&self, tag: &str, words: &[&str]) -> Response {
         let model = self.model.lock().await;
+        if !model.allow_programming
+            || matches!(model.access, AccessLevel::Admin | AccessLevel::Monitor)
+        {
+            return err(tag, status::ACCESS_DENIED, "420 Access denied");
+        }
         match pp_patch::manifest_info(&model, &self.project) {
             Ok(info)
                 if words
@@ -9755,11 +9804,21 @@ impl Service {
         if words.len() < 4 {
             return err(tag, 400, "400 not enough arguments to command");
         }
+        if words[2].trim_start_matches('/').split('/').count() != 4 {
+            return err(tag, 401, "401 Bad address");
+        }
         let Some((project, network, unit)) = Server::split_unit(words[2]) else {
             return err(tag, 401, "401 Bad address");
         };
         if project != self.project || network != self.network {
             return err(tag, 401, "401 Bad address");
+        }
+        if !(1..=254).contains(&unit) {
+            return err(
+                tag,
+                400,
+                "400 PP WRITE_PATCH requires a unit address from 1 through 254",
+            );
         }
         let target_version = match pp_patch::parse_version(words[3]) {
             Ok(version) => version,

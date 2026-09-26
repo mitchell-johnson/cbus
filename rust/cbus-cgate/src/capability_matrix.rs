@@ -24,7 +24,7 @@
 //!   their primary maintained behavior, with parser and safety fan-out
 //!   recorded in evidence.
 //! - `Obsolete400`: native-declared obsolete, deterministic 400 with no
-//!   physical I/O (`NET CHECK_UNRAVEL` only).
+//!   physical I/O (`NET CHECK_UNRAVEL` and `NET STATE_INTERVAL`).
 //! - `Rejected4xx`: reserved for paths deterministically rejected with 4xx
 //!   without bus I/O. No inventoried path is purely in this class today:
 //!   arity-gated 4xx readings (short `DO` to 400 and unknown `DO` methods to
@@ -478,7 +478,7 @@ pub const CAPABILITY_MATRIX: &[CapabilityEntry] = &[
     CapabilityEntry { path: "QUIT", class: RoutingClass::LocalDatabase, evidence: "Service::handle returns the native 204 envelope for QUIT/EXIT and Service::connection_io closes the command connection after flushing that reply, without PCI I/O." },
     CapabilityEntry { path: "RAMP", class: RoutingClass::Physical, evidence: "Service::handle pre-gate lighting branch routes bare ON/OFF/RAMP/TERMINATERAMP to Service::lighting for PCI bus I/O." },
     CapabilityEntry { path: "REPORT", class: RoutingClass::LocalDatabase, evidence: "Server::handle_manual_command renders the native 320 hierarchy over observed inventory and durable objects without PCI I/O; native_cgate_show_parser.json pins its captured trailing-token grammar and native_cgate_tree_appclasses.json pins exact multi-application ordering, labels, states and child rows." },
-    CapabilityEntry { path: "REPOSITORY LIST", class: RoutingClass::LocalDatabase, evidence: "Service::repository_list returns one read-only native 123 record describing the configured cmqttd-json state path; it performs no bus I/O and REPOSITORY USE remains fail-closed." },
+    CapabilityEntry { path: "REPOSITORY LIST", class: RoutingClass::LocalDatabase, evidence: "Service::repository_list returns one read-only native 123 record describing the configured cmqttd-json state path; it performs no bus I/O. REPOSITORY USE implements the separately inventoried numeric selection behavior." },
     CapabilityEntry { path: "REPOSITORY USE", class: RoutingClass::LocalDatabase, evidence: "Service::repository_use implements numeric selection of cmqttd's single repository: index 1 is an idempotent success, unknown indexes return 408 and malformed values return 400. No host path or hidden repository is synthesized." },
     CapabilityEntry { path: "RUN", class: RoutingClass::Physical, evidence: "Service::run_macro reads UTF-8 commands from the controlled FILE namespace, emits native 110/112/111 envelopes, dispatches every line through the same authenticated Service path (including confirmed physical commands), supports QUIET and rejects recursion with a loop guard." },
     CapabilityEntry { path: "SCENE", class: RoutingClass::Physical, evidence: "Service::handle routes verb SCENE to Service::scene: PLAY readings send confirmed PCI lighting packets (physical), while RECORD readings return before any PCI I/O after snapshotting observed levels to the model (local). One row per the primary-reading convention; the primary bus-control reading (PLAY) is physical." },

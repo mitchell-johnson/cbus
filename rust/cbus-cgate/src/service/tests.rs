@@ -2806,6 +2806,21 @@ async fn pp_write_patch_pins_selector_and_simulates_explicit_manifest_without_pc
         ),
         ("[2] PP WRITE_PATCH invalid 01", 401, "Bad address"),
         (
+            "[2a] PP WRITE_PATCH //HARNESS/254/p/5/FirmwareVersion 01",
+            401,
+            "Bad address",
+        ),
+        (
+            "[2b] PP WRITE_PATCH //HARNESS/254/p/0 01",
+            400,
+            "unit address from 1 through 254",
+        ),
+        (
+            "[2c] PP WRITE_PATCH //HARNESS/254/p/255 01",
+            400,
+            "unit address from 1 through 254",
+        ),
+        (
             "[3] PP WRITE_PATCH //HARNESS/254/p/5 100",
             408,
             "bad patch version",
@@ -2860,6 +2875,29 @@ async fn pp_write_patch_pins_selector_and_simulates_explicit_manifest_without_pc
     let version = service.handle(&mut client, "[v] PP PATCH_VERSION").await;
     assert_eq!(version.status, 301, "{version:?}");
     assert_eq!(version.final_text, "301 version=house-1");
+    {
+        let mut model = service.model.lock().await;
+        model.access = AccessLevel::Admin;
+    }
+    let denied = service
+        .handle(&mut client, "[denied-version] PP PATCH_VERSION DEBUG")
+        .await;
+    assert_eq!(denied.status, 420, "{denied:?}");
+    assert!(denied.lines.is_empty());
+    service.model.lock().await.access = AccessLevel::Program;
+    service.model.lock().await.allow_programming = false;
+    let denied = service
+        .handle(&mut client, "[disabled-version] PP PATCH_VERSION")
+        .await;
+    assert_eq!(denied.status, 420, "{denied:?}");
+    let denied = service
+        .handle(
+            &mut client,
+            "[disabled-write] PP WRITE_PATCH //HARNESS/254/p/5 01 simulate",
+        )
+        .await;
+    assert_eq!(denied.status, 420, "{denied:?}");
+    service.model.lock().await.allow_programming = true;
     let debug = service
         .handle(&mut client, "[vd] PP PATCH_VERSION DeBuG ignored")
         .await;
@@ -4642,6 +4680,21 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(response.lines.len(), 1);
     let document: serde_json::Value = serde_json::from_str(&response.lines[0]).unwrap();
     assert_eq!(document["full_cgate_compatibility"], false);
+    assert_eq!(document["full_cgate_command_path_coverage"], true);
+    assert_eq!(document["cgate_inventory_paths"], 431);
+    assert_eq!(document["cgate_non_obsolete_paths"], 429);
+    assert_eq!(document["cgate_physical_paths"], 230);
+    assert_eq!(document["cgate_local_session_paths"], 199);
+    assert_eq!(document["cgate_fail_closed_paths"], 0);
+    assert_eq!(document["cgate_obsolete_paths"], 2);
+    assert_eq!(document["cgate_rejected_paths"], 0);
+    assert_eq!(
+        document["cgate_compatibility_limitations"]
+            .as_array()
+            .unwrap()
+            .len(),
+        6
+    );
     assert_eq!(document["broadcast_event"], true);
     assert_eq!(document["broadcast_event_code"], 703);
     assert_eq!(document["broadcast_event_level"], 3);

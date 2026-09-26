@@ -2762,6 +2762,12 @@ impl PciClient {
         const PATCH_DISABLED: &[u8] = &[0xff, 0xff];
         const PATCH_ENABLED: &[u8] = &[0x9d, 0x40];
 
+        if !(1..=254).contains(&unit) {
+            return Err(Error::new(
+                ErrorKind::InvalidInput,
+                "patch programming requires a unit address from 1 through 254",
+            ));
+        }
         if patch_version_parameter != 0xf2 {
             return Err(Error::new(
                 ErrorKind::InvalidInput,
@@ -5247,6 +5253,25 @@ mod tests {
     #[tokio::test(start_paused = true)]
     async fn patch_version_precondition_refuses_before_unlock_or_store() {
         let (pci, mut remote, _) = setup().await;
+        for unit in [0, 255] {
+            assert_eq!(
+                pci.write_patch_verified(
+                    unit,
+                    0xf2,
+                    &[0],
+                    1,
+                    &[PatchProgrammingBlock {
+                        parameter: 0x72,
+                        data: vec![0xaa],
+                        unlock: false,
+                    }],
+                )
+                .await
+                .unwrap_err()
+                .kind(),
+                ErrorKind::InvalidInput
+            );
+        }
         assert_eq!(
             pci.write_patch_verified(
                 5,
