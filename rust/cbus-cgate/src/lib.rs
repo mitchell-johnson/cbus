@@ -2881,7 +2881,7 @@ impl Server {
                 if let Some(project) = self.current.as_deref() {
                     if let Some(object) = self.pending_object(project, rest) {
                         let mut fields = object.fields.iter().collect::<Vec<_>>();
-                        fields.sort_by(|(left, _), (right, _)| left.cmp(right));
+                        fields.sort_by_key(|(field, _)| *field);
                         let mut document = format!("<{}><OID>{}</OID>", object.element, object.oid);
                         for (name, value) in fields {
                             document.push_str(&format!("<{name}>{}</{name}>", xml_escape(value)));
