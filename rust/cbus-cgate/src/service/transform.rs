@@ -212,20 +212,14 @@ fn transform_project(model: &mut Server, tag: &str, words: &[&str]) -> Response 
         .stdout(Stdio::null())
         .stderr(Stdio::piped())
         .output();
-    let output_result = match result {
-        Ok(output) if output.status.success() => output,
-        Ok(output) => {
-            return failed(
-                tag,
-                String::from_utf8_lossy(&output.stderr).trim().to_string(),
-            )
-        }
+    match result {
+        Ok(output) if output.status.success() => {}
+        Ok(output) => return failed(tag, String::from_utf8_lossy(&output.stderr).trim()),
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
             return failed(tag, "xsltproc is not installed")
         }
         Err(error) => return failed(tag, error.to_string()),
-    };
-    drop(output_result);
+    }
     let transformed = match bounded_read(result_file.path()) {
         Ok(bytes) if !bytes.is_empty() => bytes,
         Ok(_) => return failed(tag, "transform produced an empty file."),
