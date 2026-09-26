@@ -45,6 +45,19 @@ exchange over a configured FAS serial channel. These operations do not
 replace the shared `PciClient` or pause MQTT. With LOGIN enabled, scans, probe,
 and refresh are gated; local help and enumeration remain open.
 
+The complete maintained ACCESS family is durable local security state in the
+same atomic repository. User credentials are stored as one-way digests and
+LIST substitutes `<redacted>` for the native plaintext field. SAVE/LOAD names
+select internal snapshots and never host paths. Address resolution completes
+before a row is inserted, and loopback recovery remains available after an
+empty or unmatched policy. Fresh/pre-ACCESS repositories admit Docker/NAT
+clients at Clipsal until interface/remote policy is explicitly changed. An
+unmatched peer then gets 421, or a LOGIN/LOGOUT-only recovery session when the
+high-entropy recovery token is configured. ACCESS commands send no PCI traffic.
+The token also adds a mutation gate: ADD, DELETE, LOAD and SAVE need that token
+or a Clipsal/Max ACCESS-user login, while LIST is available to an admitted
+Clipsal/Max session.
+
 The embedded C-Gate endpoint implements the eleven C-Gate 3.4 AIRCON commands
 for application 172 on the configured direct network. Commands use the shared
 PCI confirmation lane; incoming schedule, plant and zone report SALs stay on
@@ -171,9 +184,9 @@ Supported project inputs are a one-file `.cbz` zip archive or bare project XML. 
 ## Test data and evidence
 
 - `rust/testdata/vectors/` contains JSONL cases for checksums, frame encode/decode, native AIRCON, AUDIO, Security, Measurement, Telephony and Media Transport commands/events, native label-cache clear, ramp rates, MQTT topics, Home Assistant discovery, and strict selected-serial plan interchange.
-- `rust/testdata/fixtures/` contains small non-production project and behavior fixtures, including sanitized disposable-native evidence for CONFIG, FILE, AIRCON, AUDIO, Security, Measurement, Telephony, Media Transport and project copy/delete behavior.
+- `rust/testdata/fixtures/` contains small non-production project and behavior fixtures, including sanitized disposable-native evidence for ACCESS, CONFIG, FILE, AIRCON, AUDIO, Security, Measurement, Telephony, Media Transport and project copy/delete behavior.
 - `cbus-golden-tests` generates a named test per committed vector.
-- `cmqttd` system tests run the real daemon against an in-process MQTT broker and scripted PCI, including CONFIG and FILE durability/no-PCI coverage, all six maintained specialist application families' command/event correlation, authentication and MQTT continuity, plus dedicated continuity checks after project administration.
+- `cmqttd` system tests run the real daemon against an in-process MQTT broker and scripted PCI, including ACCESS, CONFIG and FILE durability/no-PCI coverage, all six maintained specialist application families' command/event correlation, authentication and MQTT continuity, plus dedicated continuity checks after project administration.
 - `cgate-mock` integration tests cover framing, state, sessions, event fanout, here-documents, inventory reachability, and programming access.
 - `toolkit-cli/tests/test_rust_cgate_interop.py` drives the Rust mock using the production Python C-Gate client and typed workflows.
 

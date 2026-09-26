@@ -339,6 +339,7 @@ dependencies = [
  "chrono",
  "clap",
  "hex",
+ "if-addrs",
  "mdns-sd",
  "rumqttc",
  "rustls",

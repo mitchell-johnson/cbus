@@ -1,9 +1,9 @@
-//! Optional cmqttd-local shared-secret gate for the embedded C-Gate
-//! service (auth first-slice; loopback tests only).
+//! Optional cmqttd-local high-entropy recovery credential for the embedded
+//! C-Gate service.
 //!
-//! This is explicitly **not** native `access.txt` parity: no native LOGIN
-//! captures exist, so native LOGIN/LOGOUT status codes and semantics are
-//! unknown and nothing here claims them.
+//! Native ACCESS user credentials and LOGIN/LOGOUT semantics live in the
+//! access/service modules. This file retains the deployed one-token
+//! `LOGIN <token>` form as an independent operator recovery gate.
 //!
 //! File framing: the auth file is a **high-entropy token file, not a
 //! password file**. Only SHA-256-family primitives are guaranteed present

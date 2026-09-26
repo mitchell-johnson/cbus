@@ -125,6 +125,10 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // All seven maintained FILE paths moved fail_closed_502 ->
     // local_database with retained native base64, digest, directory and
     // replacement-backup semantics over the sandboxed durable virtual root.
+    // All five maintained ACCESS paths plus LOGIN and LOGOUT moved
+    // fail_closed_502 -> local_database with retained native grammar, role
+    // filtering and session authentication over digest-only credentials and
+    // sandboxed snapshots.
     // The eleven maintained AIRCON commands and NET PROJECT_IDENTIFY moved
     // fail_closed_502 -> physical. PROJECT_IDENTIFY uses the selected shared
     // interface's native read-only MMI/parameter-35 workflow.
@@ -133,8 +137,8 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // REFRESH behavior are local; both discovery protocols and PROBE use
     // explicit physical network/port I/O.
     assert_eq!(class_count(RoutingClass::Physical), 103);
-    assert_eq!(class_count(RoutingClass::LocalDatabase), 75);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 252);
+    assert_eq!(class_count(RoutingClass::LocalDatabase), 82);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 245);
     assert_eq!(class_count(RoutingClass::Obsolete400), 1);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here
@@ -142,6 +146,39 @@ fn matrix_class_counts_pin_the_routing_gap() {
     assert_eq!(class_count(RoutingClass::Rejected4xx), 0);
     let total: usize = counts.values().sum();
     assert_eq!(total, 431);
+}
+
+#[test]
+fn access_rows_retain_native_roles_persistence_and_safety_repair_evidence() {
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_access.json"
+    ))
+    .expect("native ACCESS evidence must remain valid JSON");
+    assert_eq!(fixture["oracle"]["version"], "3.4.0.2001");
+    assert_eq!(
+        fixture["oracle"]["jar_sha256"],
+        "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+    );
+    assert_eq!(fixture["inventory"]["count"], 5);
+    assert_eq!(fixture["inventory"]["effective_family_minimum"], "Clipsal");
+    assert_eq!(
+        fixture["native_defects_and_unsafe_edges"]["unresolved_add"]["row_was_still_inserted"],
+        true
+    );
+    assert_eq!(
+        fixture["cmqttd_safety_boundary"]["passwords"],
+        "one-way digest at rest; ACCESS LIST renders <redacted>"
+    );
+    for entry in CAPABILITY_MATRIX.iter().filter(|entry| {
+        entry.path.starts_with("ACCESS ") || matches!(entry.path, "LOGIN" | "LOGOUT")
+    }) {
+        assert_eq!(entry.class, RoutingClass::LocalDatabase, "{}", entry.path);
+        assert!(
+            entry.evidence.contains("native_cgate_access.json"),
+            "{}",
+            entry.path
+        );
+    }
 }
 
 #[test]

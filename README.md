@@ -141,6 +141,9 @@ cbus-toolkit cgate --host 127.0.0.1 exec 'PORT LIST'
 cbus-toolkit cgate --host 127.0.0.1 exec 'PORT IFLIST'
 cbus-toolkit cgate --host 127.0.0.1 --timeout 15 exec 'PORT CNISCAN2 192.0.2.10 192.0.2.255 FAST'
 cbus-toolkit cgate --host 127.0.0.1 --timeout 30 exec 'PORT PROBE cni 192.0.2.20:10001'
+cbus-toolkit cgate --host 127.0.0.1 exec 'LOGIN'
+cbus-toolkit cgate --host 127.0.0.1 exec 'ACCESS LIST'
+cbus-toolkit cgate --host 127.0.0.1 exec 'ACCESS'
 cbus-toolkit cgate --host 127.0.0.1 --timeout 120 network sync-new //PROJECT/254 --unit 6
 cbus-toolkit cgate --host 127.0.0.1 network set-project //PROJECT/254 PROJECT
 cbus-toolkit cgate --host 127.0.0.1 --timeout 120 edlt-labels --network //PROJECT/254
@@ -165,14 +168,23 @@ cbus-toolkit cgate --host 127.0.0.1 exec 'TELEPHONY RECALL_LAST_NUMBER_REQUEST /
 cbus-toolkit cgate --host 127.0.0.1 exec 'TELEPHONY DIVERT //PROJECT/254/224 021234567'
 ```
 
-The embedded endpoint implements the complete maintained C-Gate 3.4 CONFIG and
-FILE command families. CONFIG provides help, GET, INFO, SET, scoped
+The embedded endpoint implements the complete maintained C-Gate 3.4 CONFIG,
+FILE, and ACCESS command families. CONFIG provides help, GET, INFO, SET, scoped
 OBGET/OBSET/OBRESET and LOAD/SAVE over durable compatibility state. FILE
 provides DIR/LS, recursive MKDIR, DELETE, SHA256, base64 DOWNLOAD and native
 here-document UPLOAD, including the native `.0` replacement backup. FILE data
 lives in a sandboxed virtual root inside cmqttd's atomic JSON repository; FILE
 paths never access the host filesystem and `%PROJECT%` is a virtual namespace.
 Mutating FILE commands require LOGIN when the optional command gate is armed.
+ACCESS provides ADD/DELETE/LIST/LOAD/SAVE, native role filtering and
+username/password LOGIN over durable rows. User passwords are digest-only and
+LIST prints `<redacted>`. LOAD/SAVE use sandboxed repository snapshots rather
+than host files; invalid hostnames and missing snapshots fail without changing
+the active policy. Fresh and pre-ACCESS repositories preserve Docker-published
+CLI access until an operator changes interface/remote policy. Thereafter an
+unmatched peer receives 421, or a LOGIN/LOGOUT-only recovery session when the optional
+token is configured. Mutating ACCESS commands require either that recovery-token
+LOGIN or a Clipsal/Max ACCESS-user LOGIN when the gate is armed.
 Query `CMQTT CAPABILITIES` for these explicit boundaries and see the
 [C-Gate replacement guide](docs/cmqttd-cgate.md) for wire examples,
 persistence, native evidence, and the remaining compatibility gaps.
@@ -330,7 +342,10 @@ AUDIO commands, all seven maintained SECURITY commands, the complete maintained
 MEASUREMENT and TELEPHONY families, and all 21 maintained MEDIATRANSPORT commands
 and reports on the configured direct network are implemented. The complete
 maintained `PORT` discovery, host enumeration, refresh, and probe family is
-implemented independently of the shared MQTT connection. The same endpoint implements C-Gate
+implemented independently of the shared MQTT connection. The same endpoint
+implements C-Gate ACCESS ADD/DELETE/LIST/LOAD/SAVE with durable digest-only
+credentials and sandboxed snapshots, the complete CONFIG and FILE families
+over local durable compatibility state, and C-Gate
 `DO` object methods for lighting, direct and bridged read-only synchronization,
 guarded KEYGL5 FactoryDefault, persistent named-scene record/playback, Trigger Control,
 Enable Control, clock, Temperature Broadcast, native text/icon/Unicode/dynamic-bitmap

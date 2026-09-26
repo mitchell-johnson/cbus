@@ -50,6 +50,18 @@ implements the physical subset in the
 ledger still require native C-Gate or further implementation when physical
 effects are the acceptance criterion.
 
+The embedded cmqttd service implements all five maintained ACCESS paths plus
+native-shaped LOGIN/LOGOUT session levels. Active rows and LOAD/SAVE snapshots
+are durable local state and perform no PCI I/O. Its security boundary is
+intentionally safer than the vendor daemon: credentials are digest-only and
+LIST-redacted, snapshot names cannot traverse the host filesystem, a missing
+LOAD cannot replace the active policy, and unresolved address rows never enter
+the list or poison later connections. Fresh/pre-ACCESS state remains reachable
+through Docker/NAT until address admission is explicitly changed; unmatched
+peers can still present a configured recovery token without gaining access to
+other commands first. These differences are pinned in
+`native_cgate_access.json` and the real-daemon `system_cgate_access.rs` test.
+
 Current verification is:
 
 - Rust unit, server-integration, TCP, and system tests for the modeled and

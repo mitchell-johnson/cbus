@@ -56,9 +56,19 @@ passes `/etc/cmqttd/unitspec` automatically when that directory exists. Compose 
 `CMQTTD_CGATE_BIND=0.0.0.0:20023` inside the container and a loopback-only host
 port. Set that variable to `off` for MQTT only. State lives in the named
 `cmqttd_data` volume; do not delete that volume when recreating containers.
-The embedded C-Gate CONFIG catalogue/snapshots and FILE virtual filesystem also
-live in this atomic state file. FILE paths are relative virtual paths and never
-address files elsewhere in the container or host.
+The embedded C-Gate CONFIG catalogue/snapshots, FILE virtual filesystem, and
+ACCESS rows/snapshots also live in this atomic state file. FILE paths are
+relative virtual paths and ACCESS SAVE/LOAD names are repository identities;
+neither addresses files elsewhere in the container or host. ACCESS user
+credentials are stored only as digests and LIST returns `<redacted>` rather
+than the native daemon's plaintext password. New or pre-ACCESS repositories
+receive a loopback Clipsal bootstrap row and admit existing Docker/NAT clients
+at Clipsal until an operator adds, deletes, or loads interface/remote policy.
+After that explicit transition, unmatched non-loopback peers receive 421. If
+`--cgate-auth-file` is configured, an unmatched peer instead gets a restricted
+LOGIN/LOGOUT session in which LOGIN can unlock the connection with the high-entropy
+recovery token. ACCESS ADD/DELETE/LOAD/SAVE then require that token or a
+Clipsal/Max ACCESS-user LOGIN.
 
 See [C-Gate service and replacement status](cmqttd-cgate.md) for the actual
 hardware operations, live eDLT label command, tests, and outstanding workflows.

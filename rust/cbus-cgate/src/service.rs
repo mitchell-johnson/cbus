@@ -2,6 +2,7 @@
 //! deliberately not the fallback for unimplemented physical operations.
 
 use super::*;
+use crate::access::{credential_digest_for, AccessEntry, CgateAccessLevel};
 use crate::auth;
 use crate::config::{
     parameter as config_parameter, ConfigParameter, ConfigScope, CONFIG_HELP, CONFIG_PARAMETERS,
@@ -39,7 +40,7 @@ use std::{
 };
 use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
-    net::{TcpListener, TcpStream},
+    net::{lookup_host, TcpListener, TcpStream},
     sync::{broadcast, Mutex, RwLock, Semaphore},
 };
 
@@ -48,6 +49,59 @@ const MAX_DOCUMENT: usize = 16 * 1024 * 1024;
 const MAX_STATE: usize = 32 * 1024 * 1024;
 const MAX_LABEL_OBSERVATIONS: usize = 4096;
 const CONFIG_KEY_PREFIX: &str = "@cmqttd/config/";
+
+const ACCESS_HELP: &[&str] = &[
+    "Help: ACCESS commands:",
+    "Help:  ACCESS ? Help for these commands",
+    "Help:  ACCESS ADD - Add an entry to the access control list",
+    "Help:  ACCESS DELETE - Deletes an entry from the access control list",
+    "Help:  ACCESS LIST - List current access control entries",
+    "Help:  ACCESS LOAD - Load an access control file in as the current access control list.",
+    "Help:  ACCESS SAVE - Save an access control file from the current access control list.",
+];
+
+const ACCESS_ADD_HELP: &[&str] = &[
+    "Help: Syntax:  ACCESS ADD <type> <arguments>",
+    "Help: Add an entry to the access control list",
+    "Help:  <type> is \"user\", \"interface\", or \"remote\"",
+    "Help:  To add a user entry:",
+    "Help:    user <username> <password> <access-level>",
+    "Help:  To add an interface entry:",
+    "Help:    interface <interface-address> <access-level",
+    "Help:    where <interface address> is an hostname, IPv4 or IPv6 address",
+    "Help:  To add a remote entry:",
+    "Help:    remote <remote-address> <access-level>",
+    "Help:    where <remote-ddress> is a hostname, IPv4 or IPv6 address",
+    "Help:  <access-level> is one of: ",
+    "Help:    None, Connect, Monitor, Operate, Admin, Program, Debug ",
+];
+
+const ACCESS_DELETE_HELP: &[&str] = &[
+    "Help: Syntax:  ACCESS DELETE <line-no>",
+    "Help: Deletes an entry from the access control list.",
+    "Help:  <line-no> is the line number given from the ACCESS LIST command",
+];
+
+const ACCESS_LIST_HELP: &[&str] = &[
+    "Help: Syntax:  ACCESS LIST",
+    "Help: List current access control entries",
+];
+
+const ACCESS_LOAD_HELP: &[&str] = &[
+    "Help: Syntax:  ACCESS LOAD [<filename>]",
+    "Help: Load an access control file in as the current access control list.",
+    "Help:  <filename> is the name of the file to load, relative to the directory",
+    "Help:  given in the config-path variable.  If no filename is given, the access file",
+    "Help:  given by the access-control-file parameter is used.",
+];
+
+const ACCESS_SAVE_HELP: &[&str] = &[
+    "Help: Syntax:  ACCESS SAVE [<filename>]",
+    "Help: Save an access control file from the current access control list.",
+    "Help:  <filename> is the name of the file to save, relative to the directory",
+    "Help:  given in the config-path variable.  If no filename is given, the access file",
+    "Help:  given by the access-control-file parameter is used.",
+];
 
 const AIRCON_HELP: &[&str] = &[
     "Help: AIRCON commands:",
@@ -182,6 +236,14 @@ struct Database {
     file_store: HashMap<String, Vec<u8>>,
     #[serde(default)]
     file_modified: HashMap<String, i64>,
+    #[serde(default = "crate::access::default_access_entries")]
+    access_entries: Vec<AccessEntry>,
+    #[serde(default)]
+    access_admission_enforced: bool,
+    #[serde(default)]
+    access_snapshots: HashMap<String, Vec<AccessEntry>>,
+    #[serde(default)]
+    access_snapshot_admission: HashMap<String, bool>,
 }
 
 impl Database {
@@ -198,6 +260,10 @@ impl Database {
             database_files: s.database_files.clone(),
             file_store: s.file_store.clone(),
             file_modified: s.file_modified.clone(),
+            access_entries: s.access_entries.clone(),
+            access_admission_enforced: s.access_admission_enforced,
+            access_snapshots: s.access_snapshots.clone(),
+            access_snapshot_admission: s.access_snapshot_admission.clone(),
         }
     }
 
@@ -245,6 +311,10 @@ impl Database {
         s.database_files = self.database_files;
         s.file_store = self.file_store;
         s.file_modified = self.file_modified;
+        s.access_entries = self.access_entries;
+        s.access_admission_enforced = self.access_admission_enforced;
+        s.access_snapshots = self.access_snapshots;
+        s.access_snapshot_admission = self.access_snapshot_admission;
         Ok(migrated_network_oids)
     }
 
@@ -296,14 +366,23 @@ pub struct ClientState {
     /// Native-style command-session identifier assigned by the TCP/TLS
     /// listener. Direct `Service::handle` callers have no command session.
     command_session: Option<u64>,
-    /// Session-local LOGIN flag for the optional shared-secret gate (auth
-    /// first-slice). `false` until a correct `LOGIN` on this connection;
-    /// cleared by `LOGOUT` or a failed `LOGIN`. Dormant (`false` forever
-    /// and never consulted) when no auth file is configured.
+    /// Session-local mutation flag for the optional recovery-token gate.
+    /// A correct one-token recovery LOGIN or a Clipsal/Max native user LOGIN
+    /// sets it; LOGOUT or a failed gated login clears it. It is never
+    /// consulted when no auth file is configured.
     authenticated: bool,
     /// Consecutive failed LOGIN attempts on this connection (saturating).
     /// Recorded for future rate-limiting; no cap is enforced in this slice.
     login_attempts: u32,
+    /// Current native ACCESS level. `None` means it has not yet been derived
+    /// from the connection's local/peer addresses.
+    access_level: Option<CgateAccessLevel>,
+    /// An explicitly unmatched peer admitted only so the configured recovery
+    /// token can repair address policy. All non-session commands stay closed
+    /// until the one-token LOGIN succeeds.
+    recovery_only: bool,
+    local_address: Option<std::net::IpAddr>,
+    remote_address: Option<std::net::IpAddr>,
 }
 
 /// One real, explicitly selected C-Bus network, shared with the MQTT gateway.
@@ -324,9 +403,9 @@ pub struct Service {
     command_sessions: Mutex<CommandSessions>,
     // Serialize command intents without preventing readback/event processing.
     commands: Mutex<()>,
-    /// SHA-256 digest of the optional shared-secret LOGIN token. `None`
-    /// (unset) means the gate is dormant and `handle` is byte-identical to
-    /// the pre-auth behavior. Set once at startup from
+    /// SHA-256 digest of the optional recovery LOGIN token. `None` (unset)
+    /// means the additional mutation gate is dormant while native ACCESS
+    /// LOGIN/LOGOUT remain available. Set once at startup from
     /// `--cgate-auth-file` via [`Service::set_auth_token_hash`].
     auth_token_hash: OnceLock<[u8; 32]>,
     /// Endpoint already owned by cmqttd. PORT PROBE must reject it instead
@@ -1619,6 +1698,16 @@ impl Service {
         let tag = &cmd.tag;
         let verb = upper.first().map(String::as_str).unwrap_or("");
         let sub = upper.get(1).map(String::as_str).unwrap_or("");
+        // LOGIN/LOGOUT expose the native ACCESS session view. When the
+        // optional cmqttd high-entropy token is configured, its historical
+        // one-argument LOGIN form remains available as an operator recovery
+        // credential; two-argument LOGIN uses native username/password rows.
+        if verb == "LOGIN" || verb == "LOGOUT" {
+            return self.session_auth(client, tag, &words).await;
+        }
+        if client.recovery_only {
+            return err(tag, 420, "420 LOGIN required");
+        }
         if verb == "SESSION_ID" {
             return self.session_id(client, tag, &words, &upper).await;
         }
@@ -1634,19 +1723,11 @@ impl Service {
                 err(tag, 400, "400 Syntax Error.")
             };
         }
-        // Optional cmqttd-local shared-secret gate (auth first-slice).
-        // Dormant when no --cgate-auth-file is configured: LOGIN/LOGOUT
-        // fall through to the generic 502 exactly as before, and no verb
-        // is gated. Armed: LOGIN/LOGOUT are session-local (no PCI I/O)
-        // and the mutating set in requires_programming_auth() needs the
-        // per-connection flag. NOT native access.txt parity.
-        if self.auth_token_hash.get().is_some() {
-            if verb == "LOGIN" || verb == "LOGOUT" {
-                return self.session_auth(client, tag, &words);
-            }
-            if !client.authenticated && requires_programming_auth(verb, sub, &upper) {
-                return err(tag, 420, "420 LOGIN required");
-            }
+        if self.auth_token_hash.get().is_some()
+            && !client.authenticated
+            && requires_programming_auth(verb, sub, &upper)
+        {
+            return err(tag, 420, "420 LOGIN required");
         }
         if verb == "PORT" {
             return crate::port::handle(tag, &words, self.port_endpoint.get()).await;
@@ -1725,6 +1806,20 @@ impl Service {
                 serde_json::json!(["legacy-cni-udp-30718", "cni2-ccp-udp-20050"]);
             capabilities["port_probe_types"] =
                 serde_json::json!(["serial", "socket", "cni", "wiser", "etherlite"]);
+            capabilities["access_commands"] =
+                serde_json::json!(["add", "delete", "list", "load", "save"]);
+            capabilities["access_persistence"] =
+                serde_json::Value::String("cmqttd-json".to_string());
+            capabilities["access_host_filesystem"] = serde_json::Value::Bool(false);
+            capabilities["access_password_list_redacted"] = serde_json::Value::Bool(true);
+            capabilities["access_unresolved_address_poisoning_repaired"] =
+                serde_json::Value::Bool(true);
+            capabilities["access_loopback_recovery"] = serde_json::Value::Bool(true);
+            capabilities["access_connection_admission"] = serde_json::Value::Bool(true);
+            capabilities["access_admission_mode"] =
+                serde_json::Value::String("compatibility-bootstrap-then-explicit".to_string());
+            capabilities["access_token_recovery_admission"] = serde_json::Value::Bool(true);
+            capabilities["access_global_command_level_matrix"] = serde_json::Value::Bool(false);
             capabilities["cgl_import"] = serde_json::Value::Bool(false);
             capabilities["cgl_export"] = serde_json::Value::Bool(false);
             capabilities["bridged_read_only_discovery"] = serde_json::Value::Bool(true);
@@ -1931,6 +2026,9 @@ impl Service {
         }
         if verb == "CONFIG" {
             return self.config(client, tag, &cmd.body, &words, &upper).await;
+        }
+        if verb == "ACCESS" || (verb == "HELP" && sub == "ACCESS") {
+            return self.access(client, tag, &words, &upper).await;
         }
         if verb == "FILE" {
             return self.file(tag, &cmd.body, None).await;
@@ -2432,6 +2530,275 @@ impl Service {
         response
     }
 
+    /// Native-shaped ACCESS administration backed by the atomic cmqttd JSON
+    /// repository. SAVE/LOAD names select repository snapshots, never host
+    /// paths. User rows retain only a digest and LIST always redacts the
+    /// password field.
+    async fn access(
+        &self,
+        client: &mut ClientState,
+        tag: &str,
+        words: &[&str],
+        upper: &[String],
+    ) -> Response {
+        let level = self.ensure_access_level(client).await;
+        if !level.can_manage_access() {
+            return err(tag, 420, "420 Access denied.");
+        }
+
+        let help_topic = upper.first().is_some_and(|word| word == "HELP");
+        if help_topic {
+            if words.len() == 2 {
+                return access_help(tag, ACCESS_HELP);
+            }
+            if words.len() != 3 {
+                return err(tag, 400, "400 HELP takes one optional topic");
+            }
+            return match upper[2].as_str() {
+                "ADD" => access_help(tag, ACCESS_ADD_HELP),
+                "DELETE" => access_help(tag, ACCESS_DELETE_HELP),
+                "LIST" => access_help(tag, ACCESS_LIST_HELP),
+                "LOAD" => access_help(tag, ACCESS_LOAD_HELP),
+                "SAVE" => access_help(tag, ACCESS_SAVE_HELP),
+                _ => err(tag, 404, "404 Help topic not found"),
+            };
+        }
+
+        if words.len() == 1 || (words.len() == 2 && words[1] == "?") {
+            return access_help(tag, ACCESS_HELP);
+        }
+        let sub = upper.get(1).map(String::as_str).unwrap_or("");
+        match sub {
+            "LIST" => {
+                let model = self.model.lock().await;
+                let mut rows = model
+                    .access_entries
+                    .iter()
+                    .filter(|entry| entry.level() <= level)
+                    .enumerate()
+                    .map(|(index, entry)| format!("line={} entry={}", index + 1, entry.list_text()))
+                    .collect::<Vec<_>>();
+                let Some(last) = rows.pop() else {
+                    return err(tag, 408, "408 Operation failed: No access control entries");
+                };
+                Response {
+                    tag: tag.to_string(),
+                    lines: rows,
+                    final_text: format!("135 {last}"),
+                    status: 135,
+                }
+            }
+            "ADD" => self.access_add(tag, words).await,
+            "DELETE" => self.access_delete(tag, words, level).await,
+            "SAVE" => self.access_save(tag, words).await,
+            "LOAD" => self.access_load(tag, words).await,
+            _ => err(tag, 400, "400 Syntax Error."),
+        }
+    }
+
+    async fn access_add(&self, tag: &str, words: &[&str]) -> Response {
+        if words.len() == 2 {
+            return err(
+                tag,
+                408,
+                "408 Operation failed: Add failed: No access control information given",
+            );
+        }
+        if words.len() < 5 {
+            return err(
+                tag,
+                408,
+                "408 Operation failed: Add failed: More information needed on access control line",
+            );
+        }
+        let kind = words[2].to_ascii_lowercase();
+        let entry = match kind.as_str() {
+            "user" => {
+                if words.len() < 6 {
+                    return err(
+                        tag,
+                        408,
+                        "408 Operation failed: Add failed: Insufficient arguments. user requires username, password and level",
+                    );
+                }
+                AccessEntry::User {
+                    username: words[3].to_string(),
+                    credential_digest: credential_digest_for(words[3], words[4]),
+                    level: CgateAccessLevel::parse(words[5]),
+                }
+            }
+            "interface" | "remote" => {
+                let resolved = match resolve_access_address(words[3]).await {
+                    Ok(addresses) => addresses,
+                    Err(()) => {
+                        return err(
+                            tag,
+                            408,
+                            &format!(
+                                "408 Operation failed: Add failed: Can not resolve address '{}'.",
+                                words[3]
+                            ),
+                        )
+                    }
+                };
+                let level = CgateAccessLevel::parse(words[4]);
+                if kind == "interface" {
+                    AccessEntry::Interface {
+                        address: words[3].to_string(),
+                        resolved,
+                        level,
+                    }
+                } else {
+                    AccessEntry::Remote {
+                        address: words[3].to_string(),
+                        resolved,
+                        level,
+                    }
+                }
+            }
+            _ => {
+                return err(
+                    tag,
+                    408,
+                    &format!(
+                        "408 Operation failed: Add failed: Unknown access control type: {}",
+                        words[2]
+                    ),
+                )
+            }
+        };
+        let installs_address_policy = matches!(
+            &entry,
+            AccessEntry::Interface { .. } | AccessEntry::Remote { .. }
+        );
+        let mut model = self.model.lock().await;
+        let before = model.clone();
+        model.access_entries.push(entry);
+        if installs_address_policy {
+            model.access_admission_enforced = true;
+        }
+        if let Err(error) = Database::from_server(&model).save(&self.state_path) {
+            *model = before;
+            tracing::error!("C-Gate ACCESS ADD commit failed: {error}");
+            return err(tag, 500, "500 Database commit failed; change rolled back");
+        }
+        ok(tag, vec![], "200 OK.")
+    }
+
+    async fn access_delete(&self, tag: &str, words: &[&str], level: CgateAccessLevel) -> Response {
+        let Some(line) = words.get(2).and_then(|value| value.parse::<usize>().ok()) else {
+            return err(tag, 408, "408 Operation failed: Invalid line number");
+        };
+        if line == 0 {
+            return err(tag, 408, "408 Operation failed: Invalid line number");
+        }
+        let mut model = self.model.lock().await;
+        let Some(index) = model
+            .access_entries
+            .iter()
+            .enumerate()
+            .filter(|(_, entry)| entry.level() <= level)
+            .nth(line - 1)
+            .map(|(index, _)| index)
+        else {
+            return err(tag, 408, "408 Operation failed: Invalid line number");
+        };
+        let before = model.clone();
+        let removed = model.access_entries.remove(index);
+        if matches!(
+            removed,
+            AccessEntry::Interface { .. } | AccessEntry::Remote { .. }
+        ) {
+            model.access_admission_enforced = true;
+        }
+        if let Err(error) = Database::from_server(&model).save(&self.state_path) {
+            *model = before;
+            tracing::error!("C-Gate ACCESS DELETE commit failed: {error}");
+            return err(tag, 500, "500 Database commit failed; change rolled back");
+        }
+        ok(tag, vec![], "200 OK.")
+    }
+
+    async fn access_save(&self, tag: &str, words: &[&str]) -> Response {
+        let mut model = self.model.lock().await;
+        let name = access_snapshot_name(&model, words);
+        if !valid_access_snapshot_name(&name) {
+            return err(
+                tag,
+                408,
+                &format!("408 Operation failed: Access save failed: Illegal path: {name}"),
+            );
+        }
+        let before = model.clone();
+        let previous_admission = model.access_snapshot_admission.get(&name).copied();
+        if let Some(previous) = model.access_snapshots.get(&name).cloned() {
+            model.access_snapshots.insert(format!("{name}.0"), previous);
+            if let Some(enforced) = previous_admission {
+                model
+                    .access_snapshot_admission
+                    .insert(format!("{name}.0"), enforced);
+            } else {
+                model.access_snapshot_admission.remove(&format!("{name}.0"));
+            }
+        }
+        let entries = model.access_entries.clone();
+        model.access_snapshots.insert(name.clone(), entries);
+        let enforced = model.access_admission_enforced;
+        model.access_snapshot_admission.insert(name, enforced);
+        if let Err(error) = Database::from_server(&model).save(&self.state_path) {
+            *model = before;
+            tracing::error!("C-Gate ACCESS SAVE commit failed: {error}");
+            return err(tag, 500, "500 Database commit failed; change rolled back");
+        }
+        ok(tag, vec![], "200 OK.")
+    }
+
+    async fn access_load(&self, tag: &str, words: &[&str]) -> Response {
+        let mut model = self.model.lock().await;
+        let name = access_snapshot_name(&model, words);
+        if !valid_access_snapshot_name(&name) {
+            return err(
+                tag,
+                408,
+                &format!("408 Operation failed: Access load failed: Illegal path: {name}"),
+            );
+        }
+        let Some(entries) = model.access_snapshots.get(&name).cloned() else {
+            // Native C-Gate silently creates a replacement access.txt when a
+            // load target is missing. That can discard the active policy and
+            // lock operators out, so cmqttd leaves the active list unchanged.
+            return err(
+                tag,
+                408,
+                "408 Operation failed: Access load failed: Access control snapshot not found",
+            );
+        };
+        let enforced = model
+            .access_snapshot_admission
+            .get(&name)
+            .copied()
+            .unwrap_or(false);
+        let before = model.clone();
+        model.access_entries = entries;
+        model.access_admission_enforced = enforced;
+        if let Err(error) = Database::from_server(&model).save(&self.state_path) {
+            *model = before;
+            tracing::error!("C-Gate ACCESS LOAD commit failed: {error}");
+            return err(tag, 500, "500 Database commit failed; change rolled back");
+        }
+        ok(tag, vec![], "200 OK.")
+    }
+
+    async fn ensure_access_level(&self, client: &mut ClientState) -> CgateAccessLevel {
+        if let Some(level) = client.access_level {
+            return level;
+        }
+        let model = self.model.lock().await;
+        let level = connection_access_level(&model, client);
+        client.access_level = Some(level);
+        level
+    }
+
     /// Read-only native repository-list envelope for cmqttd's one durable
     /// JSON state repository. The type token is intentionally cmqttd-specific;
     /// this is not presented as a Schneider SQLite/XML repository.
@@ -2523,50 +2890,91 @@ impl Service {
         }
     }
 
-    /// Session-local LOGIN/LOGOUT for the optional shared-secret gate.
-    /// Only reached when an auth hash is configured; the dormant service
-    /// never routes here (LOGIN/LOGOUT stay generic-502).
-    ///
-    /// `LOGIN <token>` hashes the candidate with SHA-256 and compares
-    /// digests in constant time, setting the per-connection flag on a
-    /// match. Any failure (bad arity or mismatch) clears the flag, as does
-    /// `LOGOUT` (which always answers 200). Nothing here performs PCI I/O,
-    /// and neither the token nor the candidate ever enters logs, events,
-    /// or responses.
-    ///
-    /// Failure status TBD: native LOGIN behavior is uncaptured, so 420
-    /// mirrors this service's session-scoped denial family (PP ownership
-    /// conflicts already use 420). It must NOT be read as native parity,
-    /// and 401 is deliberately avoided: 401 already means
-    /// absent-object/model-denied readings in this codebase.
-    fn session_auth(&self, client: &mut ClientState, tag: &str, words: &[&str]) -> Response {
-        let Some(expected) = self.auth_token_hash.get() else {
-            // Unreachable: handle() routes here only when configured.
-            return err(
-                tag,
-                502,
-                "502 Command requires a physical backend that is not implemented",
-            );
-        };
+    /// Native LOGIN query/user authentication plus the established optional
+    /// one-token cmqttd recovery credential. Candidate secrets never enter
+    /// logs, events, replies, LIST output or persisted plaintext.
+    async fn session_auth(&self, client: &mut ClientState, tag: &str, words: &[&str]) -> Response {
         if words[0].eq_ignore_ascii_case("LOGOUT") {
             client.authenticated = false;
-            return ok(tag, vec![], "200 OK");
+            let model = self.model.lock().await;
+            let level = connection_access_level(&model, client);
+            client.access_level = Some(level);
+            client.recovery_only =
+                level == CgateAccessLevel::None && self.auth_token_hash.get().is_some();
+            return if self.auth_token_hash.get().is_some() {
+                // Preserve the established cmqttd recovery-token contract.
+                ok(tag, vec![], "200 OK")
+            } else {
+                Response {
+                    tag: tag.to_string(),
+                    lines: Vec::new(),
+                    final_text: format!("211 Access level set to: {}", level.name()),
+                    status: 211,
+                }
+            };
         }
-        if words.len() != 2 {
-            // Fail-safe: a malformed LOGIN de-authenticates, matching the
-            // documented "any failure clears the flag" contract.
-            client.authenticated = false;
-            return err(tag, 400, "400 LOGIN requires a token");
+        let current = self.ensure_access_level(client).await;
+        if words.len() == 1 {
+            return Response {
+                tag: tag.to_string(),
+                lines: Vec::new(),
+                final_text: format!("210 Access level: {}", current.name()),
+                status: 210,
+            };
         }
-        let candidate = auth::sha256(words[1].as_bytes());
-        if auth::constant_time_eq(&candidate, expected) {
-            client.authenticated = true;
-            client.login_attempts = 0;
-            ok(tag, vec![], "200 OK")
-        } else {
+
+        if words.len() == 2 {
+            let Some(expected) = self.auth_token_hash.get() else {
+                client.login_attempts = client.login_attempts.saturating_add(1);
+                return err(tag, 422, "422 Username and Password do not match.");
+            };
+            let candidate = auth::sha256(words[1].as_bytes());
+            if auth::constant_time_eq(&candidate, expected) {
+                client.authenticated = true;
+                client.access_level = Some(CgateAccessLevel::Max);
+                client.recovery_only = false;
+                client.login_attempts = 0;
+                return ok(tag, vec![], "200 OK");
+            }
             client.authenticated = false;
             client.login_attempts = client.login_attempts.saturating_add(1);
-            err(tag, 420, "420 LOGIN failed")
+            return err(tag, 420, "420 LOGIN failed");
+        }
+
+        // Address admission precedes native user authentication. An unmatched
+        // peer gets only the independent recovery-token path, so an ACCESS
+        // username cannot silently bypass an explicitly installed address
+        // policy.
+        if client.recovery_only {
+            client.authenticated = false;
+            client.login_attempts = client.login_attempts.saturating_add(1);
+            return err(tag, 422, "422 Username and Password do not match.");
+        }
+
+        let matched = {
+            let model = self.model.lock().await;
+            model
+                .access_entries
+                .iter()
+                .find(|entry| entry.authenticates(words[1], words[2]))
+                .map(AccessEntry::level)
+        };
+        let Some(level) = matched else {
+            if self.auth_token_hash.get().is_some() {
+                client.authenticated = false;
+            }
+            client.login_attempts = client.login_attempts.saturating_add(1);
+            return err(tag, 422, "422 Username and Password do not match.");
+        };
+        client.access_level = Some(level);
+        client.recovery_only = false;
+        client.authenticated = level.can_manage_access();
+        client.login_attempts = 0;
+        Response {
+            tag: tag.to_string(),
+            lines: Vec::new(),
+            final_text: format!("211 Access level set to: {}", level.name()),
+            status: 211,
         }
     }
 
@@ -7976,20 +8384,36 @@ impl Service {
     }
 
     async fn connection(&self, stream: TcpStream) -> io::Result<()> {
-        let origin = format!("/{}", stream.peer_addr()?);
+        let peer = stream.peer_addr()?;
+        let local = stream.local_addr()?;
+        let origin = format!("/{peer}");
         let (reader, writer) = stream.into_split();
-        self.connection_io(BufReader::new(reader), writer, origin)
-            .await
+        self.connection_io(
+            BufReader::new(reader),
+            writer,
+            origin,
+            local.ip(),
+            peer.ip(),
+        )
+        .await
     }
 
     async fn connection_tls(
         &self,
         stream: tokio_rustls::server::TlsStream<TcpStream>,
     ) -> io::Result<()> {
-        let origin = format!("/{}", stream.get_ref().0.peer_addr()?);
+        let peer = stream.get_ref().0.peer_addr()?;
+        let local = stream.get_ref().0.local_addr()?;
+        let origin = format!("/{peer}");
         let (reader, writer) = tokio::io::split(stream);
-        self.connection_io(BufReader::new(reader), writer, origin)
-            .await
+        self.connection_io(
+            BufReader::new(reader),
+            writer,
+            origin,
+            local.ip(),
+            peer.ip(),
+        )
+        .await
     }
 
     /// Shared per-connection handler for plaintext and TLS streams alike.
@@ -7998,6 +8422,8 @@ impl Service {
         mut reader: BufReader<R>,
         mut writer: W,
         origin: String,
+        local_address: std::net::IpAddr,
+        remote_address: std::net::IpAddr,
     ) -> io::Result<()>
     where
         R: tokio::io::AsyncRead + Unpin,
@@ -8006,6 +8432,25 @@ impl Service {
         let mut events = self.events.subscribe();
         let mut mode = EventMode::OFF;
         let mut client = ClientState::default();
+        client.local_address = Some(local_address);
+        client.remote_address = Some(remote_address);
+        client.access_level = Some({
+            let model = self.model.lock().await;
+            connection_access_level(&model, &client)
+        });
+        if client.access_level == Some(CgateAccessLevel::None) {
+            if self.auth_token_hash.get().is_some() {
+                // Keep the high-entropy recovery credential reachable even
+                // when explicit address policy no longer matches this peer.
+                // The handler permits only session commands until it succeeds.
+                client.recovery_only = true;
+            } else {
+                writer.write_all(b"421 Connection refused.\r\n").await?;
+                writer.flush().await?;
+                writer.shutdown().await?;
+                return Ok(());
+            }
+        }
         let command_session = self.command_sessions.lock().await.register(origin);
         client.command_session = Some(command_session);
         let mut pending_line = Vec::new();
@@ -8943,8 +9388,100 @@ fn parse_aircon_boolean(tag: &str, value: &str, parameter: &str) -> Result<bool,
 ///
 /// NET LOAD/SAVE need no entry: the local_command NET arm admits only
 /// LIST|LIST_ALL|STATE, so they already fail closed with 502.
+fn access_help(tag: &str, rows: &[&str]) -> Response {
+    let mut rows = rows
+        .iter()
+        .map(|row| (*row).to_string())
+        .collect::<Vec<_>>();
+    let final_text = rows.pop().unwrap_or_else(|| "Help: ACCESS".to_string());
+    Response {
+        tag: tag.to_string(),
+        lines: rows,
+        final_text: format!("101 {final_text}"),
+        status: 101,
+    }
+}
+
+fn access_snapshot_name(model: &Server, words: &[&str]) -> String {
+    words.get(2).map_or_else(
+        || {
+            config_parameter("access-control-file").map_or_else(
+                || "access.txt".to_string(),
+                |parameter| config_global_value(model, parameter),
+            )
+        },
+        |name| (*name).to_string(),
+    )
+}
+
+fn valid_access_snapshot_name(name: &str) -> bool {
+    !name.is_empty()
+        && name.len() <= 255
+        && !name.starts_with(['/', '\\', '~'])
+        && !name.contains("..")
+        && !name.contains(['/', '\\', ':'])
+        && !name.chars().any(char::is_control)
+}
+
+async fn resolve_access_address(address: &str) -> Result<Vec<std::net::IpAddr>, ()> {
+    if address.is_empty()
+        || address.len() > 253
+        || address.chars().any(char::is_control)
+        || address.to_ascii_lowercase().ends_with(".invalid")
+    {
+        return Err(());
+    }
+    if let Ok(address) = address.parse() {
+        return Ok(vec![address]);
+    }
+    let result = tokio::time::timeout(Duration::from_secs(2), lookup_host((address, 0)))
+        .await
+        .map_err(|_| ())?
+        .map_err(|_| ())?;
+    let mut addresses = result.map(|socket| socket.ip()).collect::<Vec<_>>();
+    addresses.sort();
+    addresses.dedup();
+    if addresses.is_empty() {
+        Err(())
+    } else {
+        Ok(addresses)
+    }
+}
+
+fn connection_access_level(model: &Server, client: &ClientState) -> CgateAccessLevel {
+    // ACCESS did not exist in older cmqttd state. Keep those repositories and
+    // fresh installs reachable through Docker/NAT until an operator explicitly
+    // adds, deletes, or loads address policy. A user-only policy does not alter
+    // connection admission.
+    if !model.access_admission_enforced {
+        return CgateAccessLevel::Clipsal;
+    }
+    // Direct Service::handle callers have no socket metadata. Treat them as
+    // the historical loopback administrator used by embedded/unit callers.
+    let (Some(local), Some(remote)) = (client.local_address, client.remote_address) else {
+        return CgateAccessLevel::Clipsal;
+    };
+    let matched = model
+        .access_entries
+        .iter()
+        .filter(|entry| entry.matches_interface(local) || entry.matches_remote(remote))
+        .map(AccessEntry::level)
+        .max()
+        .unwrap_or(CgateAccessLevel::None);
+    // cmqttd's default listener is loopback-only. Keep that recovery path
+    // available even after an empty LOAD/DELETE sequence; unlike the vendor
+    // daemon, a bad access row must never poison or permanently brick the
+    // command listener.
+    if matched == CgateAccessLevel::None && local.is_loopback() && remote.is_loopback() {
+        CgateAccessLevel::Clipsal
+    } else {
+        matched
+    }
+}
+
 fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
     match verb {
+        "ACCESS" => matches!(sub, "ADD" | "DELETE" | "LOAD" | "SAVE"),
         "CONFIG" => matches!(sub, "SET" | "LOAD" | "SAVE" | "OBSET" | "OBRESET"),
         "FILE" => matches!(sub, "UPLOAD" | "DELETE" | "MKDIR"),
         "PORT" => matches!(sub, "CNISCAN" | "CNISCAN2" | "PROBE" | "REFRESH"),

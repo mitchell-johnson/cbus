@@ -32,18 +32,21 @@ transport-only with no TLS client authentication, so keep the
 default loopback binding unless TLS termination is understood.
 MQTT's existing TLS/authentication options remain independent.
 
-The command listener also offers an opt-in command-layer LOGIN gate via
-`--cgate-auth-file <token-file>` (requires `--cgate-bind`; loopback-only
-first slice, explicitly not native `access.txt` parity). The file holds one
+The command listener implements native-shaped `LOGIN`, `LOGOUT`, and the full
+maintained `ACCESS ADD/DELETE/LIST/LOAD/SAVE` family. It also offers an
+opt-in operator recovery token via `--cgate-auth-file <token-file>` (requires
+`--cgate-bind`). The file holds one
 high-entropy token on its first line (generate with
 `python3 -c "import secrets; print(secrets.token_hex(32))"`) with mode
 `0400` or `0600`; a missing/unreadable/short/whitespace-containing token or
 group/other-accessible file fails closed at startup before bind and before the
 state file is created. `CMQTT CAPABILITIES` reports `cgate_auth: false`
-dormant by default and `true` once armed. Armed, each connection needs
-`LOGIN <token>` (200) before PP mutating verbs (`PP LOCK/LOAD/SAVE/...`;
+dormant by default and `true` once armed. Armed, each connection needs either
+`LOGIN <token>` (200) or a Clipsal/Max `LOGIN <username> <password>` (211)
+before PP mutating verbs (`PP LOCK/LOAD/SAVE/...`;
 `PP GET/INFO/LIST` stay open), `PROJECT` lifecycle, `DB...` writes, `SET`,
-`CONFIG SET/LOAD/SAVE/OBSET/OBRESET` (CONFIG help, GET, INFO and OBGET stay
+`ACCESS ADD/DELETE/LOAD/SAVE` (ACCESS help and LIST stay open to a Clipsal or
+Max session), `CONFIG SET/LOAD/SAVE/OBSET/OBRESET` (CONFIG help, GET, INFO and OBGET stay
 open), `FILE UPLOAD/DELETE/MKDIR` (FILE help, DIR/LS, SHA256 and DOWNLOAD stay
 open),
 `LABEL CLEAR/CLEAREDLT/KFIGET/KFISET`, `DO ... FactoryDefault`,
@@ -57,12 +60,14 @@ help, `AIRCON REFRESH`, the six AUDIO request/report forms,
 `SECURITY STATUS_REQUEST`, `SECURITY REQUEST_ZONE_NAME`,
 `TELEPHONY RECALL_LAST_NUMBER_REQUEST`, `MEDIATRANSPORT STATUS_REQUEST`,
 `MEDIATRANSPORT ENUMERATE`, and `SCENE PLAY` stay open. Gated verbs attempted
-without the flag answer `420 LOGIN required`; a wrong token answers
-`420 LOGIN failed`; a malformed `LOGIN` with no token answers 400 and also
-clears the flag (never `401`, which already means
-absent-object/model-denied readings); when armed, `LOGOUT` answers 200 and
-clears the per-connection flag (dormant `LOGIN`/`LOGOUT` remain the generic
-502). There is no attempt cap in this slice: the
+without authenticated session state answer `420 LOGIN required`; a wrong token answers
+`420 LOGIN failed`. Native `LOGIN` with no arguments returns `210 Access
+level: ...`; `LOGIN <username> <password>` returns 211 on a matching ACCESS
+user row or 422 on failure, and uses the first duplicate match. Without a
+recovery token, `LOGOUT` returns the native 211 result after re-evaluating the
+connection. When the recovery-token gate is armed it retains the established
+`200 OK` LOGOUT contract and clears the per-connection mutation flag. There is
+no attempt cap in this slice: the
 loopback bind plus high-entropy token makes online guessing infeasible, and
 a cap is follow-up work.
 Unsupported mutating `CGL IMPORT` documents and `REPOSITORY USE` are also
@@ -123,6 +128,7 @@ explicitly unavailable.
 | `CONFIG` and `CONFIG GET/INFO/SET/OBGET/OBSET/OBRESET/LOAD/SAVE` | Complete maintained C-Gate 3.4 CONFIG family with its exact parent help, case-sensitive parameter names, 148 registered parameters, 142 queryable INFO records, 122 wildcard GET records, six obsolete registrations, and retained 303/304/error/mixed-status envelopes. Legacy GET/SET use global/project inheritance; object forms model global, selected-project and network inheritance, including project resets that remove descendant network overrides. Values and named global/project snapshots commit atomically inside `cmqttd-json`; caller filenames are bounded snapshot identities and are never opened on the host. CONFIG data does not reconfigure the running listener, PCI, MQTT, logging, or other daemon settings. With LOGIN armed, all five mutating verbs require authentication. Native 3.4 sends no response for an unknown or wrong-scope OBGET; cmqttd deliberately returns deterministic 408 so the connection remains live. See `rust/testdata/fixtures/native_cgate_config.json` and `rust/cmqttd/tests/system_cgate_config.rs` |
 | `FILE DIR/LS/MKDIR/DELETE/SHA256/DOWNLOAD/UPLOAD` | Complete maintained C-Gate 3.4 FILE family over a sandboxed virtual filesystem in `cmqttd-json`: exact nine-line parent help, 304/305 listings, recursive MKDIR, empty-directory/file deletion, multi-file 302 SHA256 rows, native 345/347/346 download framing with 76-character base64 rows, base64 here-document upload, and `.0` replacement backups. Ordinary relative paths reject leading separators, `~`, `..`, and `:`; `%PROJECT%/path` accepts the namespace separator for a known project and stays in a separate virtual root. No FILE path opens an arbitrary host or vendor project file and no FILE command sends PCI traffic. With LOGIN armed, UPLOAD, DELETE and MKDIR require authentication. See `rust/testdata/fixtures/native_cgate_file.json` and `rust/cmqttd/tests/system_cgate_file.rs` |
 | `PORT` and `PORT LIST/IFLIST/CNISCAN/CNISCAN2/PROBE/REFRESH` | Complete maintained C-Gate 3.4 PORT family. Bare/`?` returns exact retained help. LIST reports local serial names without `/dev/` and marks cmqttd's selected serial `inuse`; IFLIST excludes loopback addresses. CNISCAN sends the exact four-byte legacy request from UDP 30718, accepts only 124-byte replies and optionally tests the little-endian advertised TCP port. CNISCAN2 runs that legacy scan and the retained variable CCP request from UDP 20050 with the native CRC, parameter set and five-second window, returning extended type/MAC/serial/unit 129 rows. PROBE accepts serial/socket/CNI/Wiser/EtherLite grammar, refuses the active cmqttd endpoint with 431, uses a separate temporary connection for the retained DC1/`@2104` echo-and-serial exchange, returns the filtered PCI serial text and closes it. Direct serial uses native software flow, modem control and six-rate PCI baud detection. EtherLite uses its native FAS heartbeat, unit inquiry, serial setup and framed byte stream. Native build 2001 makes REFRESH inapplicable because its port list is automatic; cmqttd returns the exact observed 408. LOGIN gates scans, probe and refresh. See `rust/testdata/fixtures/native_cgate_port.json`, `rust/testdata/vectors/cni_discovery.jsonl`, and `rust/cmqttd/tests/system_cgate_port.rs` |
+| `ACCESS ADD/DELETE/LIST/LOAD/SAVE`, `LOGIN`, `LOGOUT` | Complete maintained C-Gate 3.4 ACCESS grammar, exact parent/subcommand help, ordered levels from None through Max, case-sensitive user login, first-match duplicate users, role-filtered 135 LIST rows, 1-based filtered DELETE, and session-local elevation retained until LOGOUT. Active rows, admission mode, and named SAVE/LOAD snapshots commit atomically in `cmqttd-json`; snapshot names are bounded identities and never host paths. cmqttd deliberately stores only credential digests and prints `<redacted>` where native C-Gate exposes plaintext. It validates interface/remote names before mutation and returns non-mutating 408 for missing LOAD snapshots. Fresh and pre-ACCESS repositories admit Docker/NAT peers at Clipsal until an operator adds, deletes, or loads interface/remote policy. Thereafter an unmatched non-loopback peer gets 421 without a recovery token; with the token configured it gets a restricted LOGIN/LOGOUT-only session so the token can repair policy. Loopback retains a Clipsal recovery path. With the recovery-token gate armed, ADD/DELETE/LOAD/SAVE require either its one-token LOGIN or a Clipsal/Max ACCESS-user LOGIN from an admitted connection. The exact native per-handler level matrix for unrelated commands is not yet enforced; `access_global_command_level_matrix` reports false. See `rust/testdata/fixtures/native_cgate_access.json` and `rust/cmqttd/tests/system_cgate_access.rs` |
 | Database PP locks, sessions, get/set/info/new/load/save | Existing programming model with connection ownership; staged sessions and locks are discarded on disconnect/restart |
 | `PP RESET_TO_DEFAULTS` | Replaces one owned loaded session with exactly the `DefaultValue` fields in its parsed unit specification. The result remains staged until an explicit save; missing or malformed specifications return 408 unchanged, with no PCI access |
 | Physical PP LOAD and subsequent GET/INFO | Identifies the live unit, selects its privately installed decoded schema, recalls standard CAL parameters, explicit pages for `paged`/`ncc`, OEM memory, and GOC parameter-`0xFF` memory through the shared PCI, decodes int/long/bit/string/sixbit arrays and `ArrayMap`, applies tag selection, and commits the session only after every read succeeds |
@@ -468,7 +474,7 @@ all 431 have physical implementations in this service. `CMQTT CAPABILITIES`
 returns `full_cgate_compatibility: false`; unimplemented physical operations
 return 502. The enumerable gap tracker is the executable capability matrix in
 `cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 103
-physical, 75 local/session, 252 fail-closed 502, and 1 obsolete 400 over the
+physical, 82 local/session, 245 fail-closed 502, and 1 obsolete 400 over the
 431 inventoried paths, plus a separately asserted 6-row supplement for
 non-inventoried service commands. Full replacement still requires:
 
@@ -527,9 +533,9 @@ non-inventoried service commands. Full replacement still requires:
   native DBSETXML/CGL documents remain explicit 502 and are not presented as
   vendor-file interoperability.
   C-Gate TLS is transport-only: no TLS client authentication is performed,
-  no client certificates are requested, and ACCESS/ACCESS_CONTROL
-  paths remain fail-closed 502. (Command-layer access control is only the
-  separate opt-in LOGIN gate described above.)
+  no client certificates are requested, and ACCESS_CONTROL paths remain
+  fail-closed 502. ACCESS is implemented with the safety boundaries described
+  above; TLS client-certificate identities are not mapped into ACCESS rows.
 - Command-by-command native interoperability and physical acceptance beyond
   the supported device profiles. Full Toolkit workflow parity remains tracked
   separately in `toolkit-cli/docs/implementation-status.md`.
@@ -572,6 +578,19 @@ host enumeration, active-endpoint refusal, refused transport handling, and a
 successful isolated native echo-and-serial probe, then confirms MQTT still
 uses the original shared PCI. This does not claim physical acceptance by every
 serial adapter, CNI firmware, Wiser, or EtherLite model.
+
+`native_cgate_access.json` records all five maintained registrations, exact
+help and status envelopes, ordered roles, filtered line numbering, duplicate
+login behavior, logout re-evaluation, SAVE/LOAD/restart behavior, and the
+vendor daemon's plaintext-password, traversal, missing-load, empty-load and
+unresolved-host defects. `system_cgate_access.rs` drives the real daemon with
+the recovery-token gate armed, verifies native user login, redacted LIST rows,
+sandboxed durable snapshots, non-mutating failures, restart authentication,
+zero ACCESS PCI frames, a healthy second connection after a failed address
+resolution, and the Docker-proxy transition from compatibility admission to
+explicit 421/token-only recovery. The native oracle used owned C-Gate
+3.4.0.2001 on six verified IPv4-loopback listeners with no C-Bus endpoint and
+completed cleanup.
 
 The sanitized `native_cgate_aircon.json` fixture records the owned C-Gate
 3.4.0.2001 version/hash, exact success payloads for all eleven maintained

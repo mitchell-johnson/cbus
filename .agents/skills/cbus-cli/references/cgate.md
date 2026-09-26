@@ -144,6 +144,71 @@ scope/snapshot durability across restart, zero CONFIG PCI frames and MQTT
 continuity. The fixture's oracle was the pinned C-Gate 3.4.0.2001 jar in a
 disposable loopback-only Java container with no C-Bus endpoint.
 
+### ACCESS and LOGIN commands
+
+cmqttd implements all five maintained C-Gate 3.4 ACCESS paths and native
+session-level authentication:
+
+```text
+LOGIN
+LOGIN USERNAME PASSWORD
+LOGOUT
+ACCESS
+ACCESS ADD user USERNAME PASSWORD LEVEL
+ACCESS ADD interface ADDRESS LEVEL
+ACCESS ADD remote ADDRESS LEVEL
+ACCESS LIST
+ACCESS DELETE LINE
+ACCESS SAVE [SNAPSHOT]
+ACCESS LOAD [SNAPSHOT]
+```
+
+`LOGIN` reports status 210. A matching user row returns status 211 and the
+row's ordered level; credentials and usernames are case-sensitive, duplicate
+rows are allowed, and the first matching user wins. `LOGOUT` re-evaluates the
+connection's interface/remote rows. The ACCESS family itself requires Clipsal
+or Max. LIST emits status-135 rows in insertion order, filters out rows above
+the current level, and DELETE uses the resulting 1-based visible line number.
+
+Native C-Gate exposes passwords in LIST and its saved file. cmqttd stores only
+a one-way digest and renders `user NAME <redacted> LEVEL`; do not expect to
+recover a credential. SAVE/LOAD operate on named snapshots in the atomic
+`cmqttd-json` repository. Names with separators, traversal, `~`, or `:` are
+rejected, and a missing snapshot returns 408 without replacing the active
+list. This differs intentionally from native C-Gate, whose missing LOAD resets
+the list and whose LOAD accepts traversal. cmqttd validates hostnames before
+insertion, so the native unresolved-address row/connection-poisoning defect is
+not reproduced. Fresh and pre-ACCESS repositories admit non-loopback peers at
+Clipsal so Docker-published Toolkit connections remain compatible. Adding,
+deleting, or loading interface/remote policy makes address admission explicit;
+an unmatched non-loopback peer then receives native 421. When the independent
+recovery token is configured, that peer instead receives a restricted session:
+`LOGIN` can report None and `LOGIN TOKEN` can unlock it, while every command
+other than `LOGOUT` returns 420. A loopback Clipsal recovery path remains available.
+The ACCESS family's Clipsal/Max boundary is enforced, but the exact native
+per-handler level table for unrelated commands is not. Check
+`access_global_command_level_matrix=false` before relying on role separation
+outside ACCESS and the optional mutation gate.
+
+When `--cgate-auth-file` is configured, `LOGIN TOKEN` remains the operator
+recovery form and returns 200. ADD, DELETE, LOAD and SAVE require that token or
+a Clipsal/Max ACCESS-user login; LIST remains available to a Clipsal/Max
+session. In this mode LOGOUT retains
+the established 200 response. Never put a site password or recovery token in
+logs, documentation, issue text, or test fixtures.
+
+`CMQTT CAPABILITIES` publishes the five `access_commands`,
+`access_persistence="cmqttd-json"`, `access_host_filesystem=false`, and flags
+for password redaction, connection admission, unresolved-address repair,
+loopback recovery, compatibility-bootstrap/explicit admission, token-only
+recovery admission, and the global command-level boundary.
+Ground native behavior and the deliberate differences in
+[`native_cgate_access.json`](../../../../rust/testdata/fixtures/native_cgate_access.json).
+The real-daemon `system_cgate_access.rs` regression covers authentication,
+role filtering, durable snapshot/restart behavior, redaction, path/missing
+errors, a healthy second connection after failed resolution, and zero PCI
+traffic.
+
 ### FILE commands
 
 cmqttd implements all seven maintained C-Gate 3.4 FILE paths over a durable,

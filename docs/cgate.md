@@ -21,7 +21,7 @@ Tests assert the inventory sizes, uniqueness, help exposure, parser reachability
 
 ## Stateful behavior
 
-The model tracks projects, databases, networks, units, group levels, labels, locks, sessions, event modes, programming sessions, and a sandboxed FILE virtual filesystem. Core `PROJECT`, `DB`, `NET`, `GET`, `SET`, `LIGHTING`, `EVENT`, `PP`, and all seven maintained `FILE` paths mutate and read this state. FILE supports binary base64 upload/download, SHA256, directories, deletion and replacement backups without opening host paths. Application families and private registered commands have deterministic handlers so clients can exercise every command path without physical hardware.
+The model tracks projects, databases, networks, units, group levels, labels, locks, sessions, event modes, programming sessions, access entries, and a sandboxed FILE virtual filesystem. Core `PROJECT`, `DB`, `NET`, `GET`, `SET`, `LIGHTING`, `EVENT`, `PP`, the five maintained `ACCESS` paths, and all seven maintained `FILE` paths mutate and read this state. FILE supports binary base64 upload/download, SHA256, directories, deletion and replacement backups without opening host paths. Application families and private registered commands have deterministic handlers so clients can exercise every command path without physical hardware.
 
 The TCP server shares model state across connections. Project selection remains connection-local. Subscribed clients receive event fanout according to their `EVENT` mode, while command replies retain their client tag and C-Gate continuation/final-line framing.
 
@@ -44,3 +44,10 @@ Vendor unit-specification files are not included. Without them, programming sess
 ## Compatibility boundary
 
 The server provides complete command dispatch and stable protocol-shaped behavior for automated clients. It does not connect to a physical C-Bus network, persist its in-memory projects across restarts, or reproduce every timing characteristic and device-specific side effect of Schneider C-Gate. Hardware discovery, firmware transfer, port probing, and specialist application commands are deterministic simulations.
+
+The separate cmqttd service persists the complete maintained ACCESS family.
+Its boundary intentionally differs from the native daemon: passwords are
+digest-only and redacted, LOAD/SAVE use internal snapshot identities, a missing
+snapshot cannot replace the active list, and a failed hostname resolution
+cannot poison future connections. Consult [the replacement ledger](cmqttd-cgate.md)
+before treating mock ACCESS behavior as the deployed security contract.

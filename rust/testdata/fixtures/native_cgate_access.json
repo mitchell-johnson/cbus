@@ -1,0 +1,234 @@
+{
+  "oracle": {
+    "product": "Schneider Electric C-Gate",
+    "version": "3.4.0.2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "transport": "owned native Java 11 child; six IPv4-loopback listeners; empty project set; no C-Bus endpoint",
+    "captured_at": "2026-09-26T16:16:29+12:00",
+    "listener_ownership_verified": true,
+    "server_log_sha256": "0fb722bb837909463ffb69999f12b870c95cb858681cff4eb500d2918ef1f580",
+    "cleanup": {
+      "cleanup_complete": true,
+      "process_exit_confirmed": true,
+      "work_removed": true,
+      "reserved_sockets_closed": true,
+      "log_closed": true
+    },
+    "restart_listener_ownership_verified": true,
+    "restart_cleanup": {
+      "cleanup_complete": true,
+      "process_exit_confirmed": true,
+      "work_removed": true,
+      "reserved_sockets_closed": true,
+      "log_closed": true
+    }
+  },
+  "inventory": {
+    "maintained_paths": [
+      "ACCESS ADD",
+      "ACCESS DELETE",
+      "ACCESS LIST",
+      "ACCESS LOAD",
+      "ACCESS SAVE"
+    ],
+    "count": 5,
+    "registry_class": "com.clipsal.cgate.access.AccessCommand",
+    "handler_classes": {
+      "ADD": "t",
+      "DELETE": "v",
+      "LIST": "x",
+      "LOAD": "y",
+      "SAVE": "z"
+    },
+    "access_levels": [
+      "None",
+      "Connect",
+      "Monitor",
+      "Operate",
+      "Admin",
+      "Program",
+      "Debug",
+      "Clipsal",
+      "Max"
+    ],
+    "effective_family_minimum": "Clipsal"
+  },
+  "help": {
+    "root": [
+      "101-Help: ACCESS commands:",
+      "101-Help:  ACCESS ? Help for these commands",
+      "101-Help:  ACCESS ADD - Add an entry to the access control list",
+      "101-Help:  ACCESS DELETE - Deletes an entry from the access control list",
+      "101-Help:  ACCESS LIST - List current access control entries",
+      "101-Help:  ACCESS LOAD - Load an access control file in as the current access control list.",
+      "101 Help:  ACCESS SAVE - Save an access control file from the current access control list."
+    ],
+    "add": [
+      "101-Help: Syntax:  ACCESS ADD <type> <arguments>",
+      "101-Help: Add an entry to the access control list",
+      "101-Help:  <type> is \"user\", \"interface\", or \"remote\"",
+      "101-Help:  To add a user entry:",
+      "101-Help:    user <username> <password> <access-level>",
+      "101-Help:  To add an interface entry:",
+      "101-Help:    interface <interface-address> <access-level",
+      "101-Help:    where <interface address> is an hostname, IPv4 or IPv6 address",
+      "101-Help:  To add a remote entry:",
+      "101-Help:    remote <remote-address> <access-level>",
+      "101-Help:    where <remote-ddress> is a hostname, IPv4 or IPv6 address",
+      "101-Help:  <access-level> is one of: ",
+      "101 Help:    None, Connect, Monitor, Operate, Admin, Program, Debug "
+    ],
+    "delete": [
+      "101-Help: Syntax:  ACCESS DELETE <line-no>",
+      "101-Help: Deletes an entry from the access control list.",
+      "101 Help:  <line-no> is the line number given from the ACCESS LIST command"
+    ],
+    "list": [
+      "101-Help: Syntax:  ACCESS LIST",
+      "101 Help: List current access control entries"
+    ],
+    "load": [
+      "101-Help: Syntax:  ACCESS LOAD [<filename>]",
+      "101-Help: Load an access control file in as the current access control list.",
+      "101-Help:  <filename> is the name of the file to load, relative to the directory",
+      "101-Help:  given in the config-path variable.  If no filename is given, the access file",
+      "101 Help:  given by the access-control-file parameter is used."
+    ],
+    "save": [
+      "101-Help: Syntax:  ACCESS SAVE [<filename>]",
+      "101-Help: Save an access control file from the current access control list.",
+      "101-Help:  <filename> is the name of the file to save, relative to the directory",
+      "101-Help:  given in the config-path variable.  If no filename is given, the access file",
+      "101 Help:  given by the access-control-file parameter is used."
+    ]
+  },
+  "syntax_and_status": {
+    "unknown": [
+      "400 Syntax Error."
+    ],
+    "login_query": [
+      "210 Access level: Clipsal"
+    ],
+    "add_empty": [
+      "408 Operation failed: Add failed: No access control information given"
+    ],
+    "add_short": [
+      "408 Operation failed: Add failed: More information needed on access control line"
+    ],
+    "add_user_no_level": [
+      "408 Operation failed: Add failed: Insufficient arguments. user requires username, password and level"
+    ],
+    "add_unknown_type": [
+      "408 Operation failed: Add failed: Unknown access control type: bogus"
+    ],
+    "delete_invalid": [
+      "408 Operation failed: Invalid line number"
+    ],
+    "list_empty": [
+      "408 Operation failed: No access control entries"
+    ],
+    "unknown_level_behavior": "accepted and stored as None",
+    "trailing_arguments": "ignored by ADD, DELETE, LIST, LOAD and SAVE"
+  },
+  "list_and_auth": {
+    "list_status": 135,
+    "line_numbers": "one-based over rows visible at or below the current session level",
+    "insertion_order": true,
+    "duplicate_rows": true,
+    "native_user_row_exposes_plaintext_password": true,
+    "clipsal_view": [
+      "135-line=1 entry=interface 127.0.0.1 Clipsal",
+      "135-line=2 entry=user min-user min-pass None",
+      "135-line=3 entry=user alice admin-pass Admin",
+      "135-line=4 entry=user alice admin-pass Admin",
+      "135-line=5 entry=remote 127.0.0.1 Monitor",
+      "135 line=6 entry=interface localhost Program"
+    ],
+    "max_view": [
+      "135-line=1 entry=interface 127.0.0.1 Clipsal",
+      "135-line=2 entry=user bootstrap bootstrap-pass Max",
+      "135-line=3 entry=user min-user min-pass None",
+      "135-line=4 entry=user alice admin-pass Admin",
+      "135-line=5 entry=user alice admin-pass Admin",
+      "135-line=6 entry=remote 127.0.0.1 Monitor",
+      "135 line=7 entry=interface localhost Program"
+    ],
+    "login_success": "211 Access level set to: <Level>",
+    "login_failure": "422 Username and Password do not match.",
+    "credential_case_sensitive": true,
+    "duplicate_login": "first matching user row wins",
+    "none_level_login": "a matching row succeeds with 211 and sets None (decompiled access lookup)",
+    "logout": "re-evaluates interface/remote rows for the current socket",
+    "live_session_after_delete_or_load": "retains its elevated level until LOGOUT"
+  },
+  "native_defects_and_unsafe_edges": {
+    "unresolved_add": {
+      "response": [
+        "408 Operation failed: Add failed: Can not resolve address 'definitely-nohost.invalid'."
+      ],
+      "row_was_still_inserted": true,
+      "next_connection": {
+        "greeting": "421 Connection refused.",
+        "command_error": "ConnectionResetError: [Errno 54] Connection reset by peer"
+      },
+      "recovery": "an already-open Clipsal session deleted the poisoned row"
+    },
+    "load_traversal": {
+      "command": "ACCESS LOAD ../outside.txt",
+      "response": [
+        "200 OK."
+      ],
+      "allowed": true
+    },
+    "save_traversal": {
+      "command": "ACCESS SAVE ../escape.txt",
+      "response": [
+        "408 Operation failed: Access save failed: Illegal path: ../escape.txt"
+      ],
+      "allowed": false
+    },
+    "missing_load": {
+      "response": [
+        "200 OK."
+      ],
+      "effect": "replaced the active list with three Program loopback rows and wrote the configured default file"
+    },
+    "empty_load": {
+      "response": [
+        "200 OK."
+      ],
+      "list_response": [
+        "408 Operation failed: No access control entries"
+      ],
+      "next_connection": {
+        "greeting": "421 Connection refused.",
+        "command_error": "EOFError: EOF during LOGIN: []"
+      }
+    },
+    "native_password_storage": "plaintext in ACCESS LIST and saved access file"
+  },
+  "persistence": {
+    "default_name_parameter": "access-control-file",
+    "explicit_save_response": [
+      "200 OK."
+    ],
+    "default_save_and_load_verified": true,
+    "restart_verified": true,
+    "replacement_backup": "the previous target bytes are moved to <target>.0, replacing an older .0",
+    "first_snapshot_sha256": "0d3578a33ea202829eda3de7972cb59bd2ea4d0be825586ffa058aa600c420f6",
+    "second_snapshot_sha256": "778e30adb5f8e351c4d67dc4ad86bca8998c941c79590a70e41a43de7db14e1f",
+    "backup_sha256": "0d3578a33ea202829eda3de7972cb59bd2ea4d0be825586ffa058aa600c420f6"
+  },
+  "cmqttd_safety_boundary": {
+    "passwords": "one-way digest at rest; ACCESS LIST renders <redacted>",
+    "load_save": "named snapshots inside atomic cmqttd JSON; no host-filesystem access",
+    "missing_load": "408 with no mutation",
+    "unresolved_address": "validate before mutation; no poisoned row",
+    "connection_failure": "unmatched/empty policies do not terminate the loopback recovery connection",
+    "compatibility_bootstrap": "fresh and pre-ACCESS repositories admit non-loopback Docker/NAT peers at Clipsal until interface/remote policy is explicitly changed",
+    "recovery_token": "an explicitly unmatched peer gets a LOGIN/LOGOUT-only session when the optional one-token credential is configured",
+    "connection_admission": "after explicit address policy, unmatched non-loopback peers receive 421 without a recovery token; loopback retains a Clipsal recovery path",
+    "global_command_level_matrix": "not implemented in this slice; ACCESS uses native Clipsal/Max and the optional mutation gate covers high-impact commands"
+  },
+  "capture_report_sha256": "552308298e1352f365d898a06179ab70e4434a97d7bbcdc2f92474dd652c05a3"
+}

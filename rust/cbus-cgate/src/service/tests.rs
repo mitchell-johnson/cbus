@@ -6918,14 +6918,408 @@ async fn physical_project_identify_fails_closed_before_store_and_on_bad_readback
     std::fs::remove_file(path).unwrap();
 }
 
-// Auth first-slice loopback tests (cmqttd-local shared-secret gate).
-//
-// Explicitly NOT native access.txt parity: no native LOGIN captures exist,
-// so these tests pin the cmqttd-local contract only — `420 LOGIN failed`
-// for a wrong secret (native status TBD, never 401-as-native), `200 OK`
-// for LOGIN/LOGOUT session handling, and `420 LOGIN required` for gated
-// programming verbs. Test secrets are throwaway literals, never site data.
+// Optional cmqttd recovery-token tests. Native ACCESS user LOGIN is covered
+// separately below; the established one-token form retains `200 OK`, wrong
+// token `420`, and `200 OK` LOGOUT for deployed clients.
 const AUTH_TOKEN: &[u8] = b"throwaway-loopback-token-0123456789abcdef";
+
+#[tokio::test]
+async fn access_native_help_errors_roles_and_redacted_rows_are_exact() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut client = ClientState::default();
+
+    let help = service.handle(&mut client, "[h] ACCESS").await;
+    assert_eq!(
+        format_response(&help),
+        concat!(
+            "[h] 101-Help: ACCESS commands:\n",
+            "[h] 101-Help:  ACCESS ? Help for these commands\n",
+            "[h] 101-Help:  ACCESS ADD - Add an entry to the access control list\n",
+            "[h] 101-Help:  ACCESS DELETE - Deletes an entry from the access control list\n",
+            "[h] 101-Help:  ACCESS LIST - List current access control entries\n",
+            "[h] 101-Help:  ACCESS LOAD - Load an access control file in as the current access control list.\n",
+            "[h] 101 Help:  ACCESS SAVE - Save an access control file from the current access control list.\n",
+        )
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[ha] HELP ACCESS LIST")
+            .await
+            .final_text,
+        "101 Help: List current access control entries"
+    );
+    assert_eq!(
+        service.handle(&mut client, "[q] LOGIN").await.final_text,
+        "210 Access level: Clipsal"
+    );
+
+    for (command, expected) in [
+        (
+            "ACCESS ADD",
+            "408 Operation failed: Add failed: No access control information given",
+        ),
+        (
+            "ACCESS ADD user only",
+            "408 Operation failed: Add failed: More information needed on access control line",
+        ),
+        (
+            "ACCESS ADD user only password",
+            "408 Operation failed: Add failed: Insufficient arguments. user requires username, password and level",
+        ),
+        (
+            "ACCESS ADD bogus x Program",
+            "408 Operation failed: Add failed: Unknown access control type: bogus",
+        ),
+    ] {
+        assert_eq!(
+            service
+                .handle(&mut client, &format!("[e] {command}"))
+                .await
+                .final_text,
+            expected,
+            "{command}"
+        );
+    }
+
+    for command in [
+        "ACCESS ADD user none-user none-pass TotallyBogus",
+        "ACCESS ADD user alice admin-pass Admin ignored-tail",
+        "ACCESS ADD user root max-pass Max",
+        "ACCESS ADD remote 192.0.2.1 Monitor ignored-tail",
+    ] {
+        assert_eq!(
+            service
+                .handle(&mut client, &format!("[a] {command}"))
+                .await
+                .status,
+            200,
+            "{command}"
+        );
+    }
+    let list = service
+        .handle(&mut client, "[list] ACCESS LIST ignored-tail")
+        .await;
+    assert_eq!(list.status, 135);
+    let wire = format_response(&list);
+    assert!(wire.contains("entry=user none-user <redacted> None"));
+    assert!(wire.contains("entry=user alice <redacted> Admin"));
+    assert!(wire.contains("entry=remote 192.0.2.1 Monitor"));
+    assert!(!wire.contains("admin-pass"));
+    assert!(!wire.contains("max-pass"), "Clipsal LIST hides Max rows");
+
+    let mut admin = ClientState::default();
+    assert_eq!(
+        service
+            .handle(&mut admin, "[login] LOGIN alice admin-pass")
+            .await
+            .final_text,
+        "211 Access level set to: Admin"
+    );
+    assert_eq!(
+        service
+            .handle(&mut admin, "[denied] ACCESS LIST")
+            .await
+            .final_text,
+        "420 Access denied."
+    );
+
+    let mut root = ClientState::default();
+    assert_eq!(
+        service
+            .handle(&mut root, "[root] LOGIN root max-pass")
+            .await
+            .final_text,
+        "211 Access level set to: Max"
+    );
+    assert!(
+        format_response(&service.handle(&mut root, "[all] ACCESS LIST").await)
+            .contains("entry=user root <redacted> Max")
+    );
+
+    let state = std::fs::read_to_string(&path).unwrap();
+    assert!(!state.contains("none-pass"));
+    assert!(!state.contains("admin-pass"));
+    assert!(!state.contains("max-pass"));
+    drop(service);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn access_snapshots_are_sandboxed_atomic_and_durable() {
+    let path = state_path();
+    let (pci_client, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[add] ACCESS ADD user saved saved-password Admin",
+            )
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[save] ACCESS SAVE policy.txt")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[later] ACCESS ADD user later later-password Monitor",
+            )
+            .await
+            .status,
+        200
+    );
+    assert!(
+        format_response(&service.handle(&mut client, "[before] ACCESS LIST").await)
+            .contains("user later <redacted> Monitor")
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[replace] ACCESS SAVE policy.txt ignored")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[backup] ACCESS LOAD policy.txt.0")
+            .await
+            .status,
+        200
+    );
+    let restored = format_response(&service.handle(&mut client, "[after] ACCESS LIST").await);
+    assert!(restored.contains("user saved <redacted> Admin"));
+    assert!(!restored.contains("user later"));
+    assert_eq!(
+        service
+            .handle(&mut client, "[latest] ACCESS LOAD policy.txt")
+            .await
+            .status,
+        200
+    );
+    assert!(format_response(
+        &service
+            .handle(&mut client, "[latest-list] ACCESS LIST")
+            .await
+    )
+    .contains("user later <redacted> Monitor"));
+    assert_eq!(
+        service
+            .handle(&mut client, "[restore-backup] ACCESS LOAD policy.txt.0")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[default-save] ACCESS SAVE")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[default-extra] ACCESS ADD user default-extra extra-pass Monitor",
+            )
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[default-load] ACCESS LOAD")
+            .await
+            .status,
+        200
+    );
+    assert!(!format_response(
+        &service
+            .handle(&mut client, "[default-list] ACCESS LIST")
+            .await
+    )
+    .contains("default-extra"));
+
+    let before_missing = std::fs::read(&path).unwrap();
+    assert_eq!(
+        service
+            .handle(&mut client, "[missing] ACCESS LOAD absent.txt")
+            .await
+            .status,
+        408
+    );
+    assert_eq!(std::fs::read(&path).unwrap(), before_missing);
+    for command in [
+        "ACCESS SAVE ../escape.txt",
+        "ACCESS LOAD ../escape.txt",
+        "ACCESS SAVE missing/child.txt",
+    ] {
+        assert_eq!(
+            service
+                .handle(&mut client, &format!("[path] {command}"))
+                .await
+                .status,
+            408,
+            "{command}"
+        );
+    }
+    drop(service);
+
+    let (pci_client, _remote) = pci();
+    let restarted = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut login = ClientState::default();
+    assert_eq!(
+        restarted
+            .handle(&mut login, "[login] LOGIN saved saved-password")
+            .await
+            .final_text,
+        "211 Access level set to: Admin"
+    );
+    drop(restarted);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn access_login_uses_first_duplicate_and_delete_does_not_demote_session() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut administrator = ClientState::default();
+    for command in [
+        "ACCESS ADD user duplicate duplicate-pass Monitor",
+        "ACCESS ADD user duplicate duplicate-pass Max",
+        "ACCESS ADD user root root-pass Max",
+        "ACCESS ADD user noaccess noaccess-pass TotallyBogus",
+    ] {
+        assert_eq!(
+            service
+                .handle(&mut administrator, &format!("[add] {command}"))
+                .await
+                .status,
+            200
+        );
+    }
+    assert_eq!(
+        service
+            .handle(&mut administrator, "[root] LOGIN root root-pass")
+            .await
+            .final_text,
+        "211 Access level set to: Max"
+    );
+    assert_eq!(
+        service
+            .handle(&mut administrator, "[delete] ACCESS DELETE 4")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut administrator, "[still] LOGIN")
+            .await
+            .final_text,
+        "210 Access level: Max"
+    );
+
+    let mut deleted = ClientState::default();
+    assert_eq!(
+        service
+            .handle(&mut deleted, "[gone] LOGIN root root-pass")
+            .await
+            .status,
+        422
+    );
+    let mut duplicate = ClientState::default();
+    assert_eq!(
+        service
+            .handle(&mut duplicate, "[duplicate] LOGIN duplicate duplicate-pass",)
+            .await
+            .final_text,
+        "211 Access level set to: Monitor"
+    );
+    assert_eq!(
+        service
+            .handle(&mut duplicate, "[denied] ACCESS LIST")
+            .await
+            .status,
+        420
+    );
+    let mut noaccess = ClientState::default();
+    assert_eq!(
+        service
+            .handle(&mut noaccess, "[none] LOGIN noaccess noaccess-pass")
+            .await
+            .final_text,
+        "211 Access level set to: None"
+    );
+    assert_eq!(
+        service
+            .handle(&mut noaccess, "[none-query] LOGIN")
+            .await
+            .final_text,
+        "210 Access level: None"
+    );
+    assert_eq!(
+        service
+            .handle(&mut noaccess, "[none-denied] ACCESS LIST")
+            .await
+            .status,
+        420
+    );
+    assert_eq!(
+        service
+            .handle(&mut administrator, "[logout] LOGOUT")
+            .await
+            .final_text,
+        "211 Access level set to: Clipsal"
+    );
+    drop(service);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn unresolved_access_add_does_not_mutate_or_poison_new_connections() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let address = listener.local_addr().unwrap();
+    let server = tokio::spawn(service.clone().serve(listener));
+    let (mut first_reader, mut first_writer) = connect_command_session(address).await;
+    let reply = command_lines(
+        &mut first_reader,
+        &mut first_writer,
+        "bad",
+        "ACCESS ADD interface definitely-nohost.invalid Operate",
+    )
+    .await;
+    assert_eq!(
+        reply,
+        ["[bad] 408 Operation failed: Add failed: Can not resolve address 'definitely-nohost.invalid'."]
+    );
+
+    let (mut second_reader, mut second_writer) = connect_command_session(address).await;
+    assert_eq!(
+        command_lines(&mut second_reader, &mut second_writer, "q", "LOGIN").await,
+        ["[q] 210 Access level: Clipsal"]
+    );
+    let list = command_lines(&mut second_reader, &mut second_writer, "l", "ACCESS LIST").await;
+    assert_eq!(list, ["[l] 135 line=1 entry=interface 127.0.0.1 Clipsal"]);
+
+    server.abort();
+    std::fs::remove_file(path).unwrap();
+}
 
 fn authed_service() -> (Arc<Service>, PathBuf) {
     let path = state_path();
@@ -6945,24 +7339,22 @@ fn response_text(response: &Response) -> String {
 }
 
 #[tokio::test]
-async fn auth_gate_dormant_without_auth_file_is_byte_identical() {
-    // No auth file configured: LOGIN/LOGOUT fall through to the generic
-    // 502 exactly as before, and programming verbs stay ungated.
+async fn auth_gate_dormant_exposes_native_login_and_leaves_programming_ungated() {
     let path = state_path();
     let (pci, _remote) = pci();
     let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
     let mut client = ClientState::default();
     let login = service.handle(&mut client, "[1] LOGIN anything").await;
-    assert_eq!(login.status, 502);
+    assert_eq!(login.status, 422);
     assert_eq!(
-        login.final_text, "502 Command requires a physical backend that is not implemented",
-        "dormant LOGIN must be byte-identical to the generic 502"
+        login.final_text, "422 Username and Password do not match.",
+        "one word is not a native username/password pair"
     );
     let logout = service.handle(&mut client, "[2] LOGOUT").await;
-    assert_eq!(logout.status, 502);
+    assert_eq!(logout.status, 211);
     assert_eq!(
-        logout.final_text, "502 Command requires a physical backend that is not implemented",
-        "dormant LOGOUT must be byte-identical to the generic 502"
+        logout.final_text, "211 Access level set to: Clipsal",
+        "native LOGOUT re-evaluates the connection access level"
     );
     assert_eq!(
         service
@@ -6978,7 +7370,8 @@ async fn auth_gate_dormant_without_auth_file_is_byte_identical() {
 async fn auth_wrong_secret_denied_and_gate_holds() {
     let (service, path) = authed_service();
     let mut client = ClientState::default();
-    // Wrong secret: contract status 420 (native TBD, never 401-as-native).
+    // Wrong recovery token retains the deployed 420 contract. Native
+    // two-argument user failures use the separately tested 422 response.
     let denied = service
         .handle(&mut client, "[1] LOGIN wrong-secret-value")
         .await;
@@ -7149,14 +7542,15 @@ async fn auth_failed_login_clears_flag_and_rejects_bad_arity() {
             .status,
         420
     );
-    // LOGIN arity is strict: bare and multi-token forms are 400.
-    assert_eq!(service.handle(&mut client, "[4] LOGIN").await.status, 400);
+    // Bare LOGIN is the native access-level query. Two or more arguments are
+    // a native username/password login (and therefore 422 when unmatched).
+    assert_eq!(service.handle(&mut client, "[4] LOGIN").await.status, 210);
     assert_eq!(
         service.handle(&mut client, "[5] LOGIN a b").await.status,
-        400
+        422
     );
-    // A malformed LOGIN also de-authenticates a live session: re-login,
-    // send bad arity, and the gate must hold again.
+    // A failed native user LOGIN also clears the optional mutation gate:
+    // re-login with the token, send an unmatched user pair, and the gate holds.
     assert_eq!(
         service
             .handle(
@@ -7169,7 +7563,7 @@ async fn auth_failed_login_clears_flag_and_rejects_bad_arity() {
     );
     assert_eq!(
         service.handle(&mut client, "[7] LOGIN a b").await.status,
-        400
+        422
     );
     assert_eq!(
         service

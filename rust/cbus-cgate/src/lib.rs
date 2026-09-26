@@ -22,6 +22,7 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::path::PathBuf;
 
+mod access;
 pub mod auth;
 pub mod capability_matrix;
 mod config;
@@ -859,6 +860,16 @@ pub struct Server {
     /// Unix modification seconds for virtual FILE entries. Kept separately
     /// so the established byte-map state representation remains migratable.
     file_modified: HashMap<String, i64>,
+    /// Active C-Gate ACCESS rows. Password-bearing rows retain only a digest.
+    access_entries: Vec<access::AccessEntry>,
+    /// Whether an operator has explicitly installed or changed address-based
+    /// admission policy. Legacy/untouched repositories remain reachable
+    /// through Docker/NAT until this is true.
+    access_admission_enforced: bool,
+    /// Sandboxed ACCESS SAVE/LOAD snapshots in the cmqttd repository.
+    access_snapshots: HashMap<String, Vec<access::AccessEntry>>,
+    /// Address-admission mode captured alongside each ACCESS snapshot.
+    access_snapshot_admission: HashMap<String, bool>,
 }
 
 impl Server {
@@ -889,6 +900,10 @@ impl Server {
             database_files: HashMap::new(),
             file_store: HashMap::new(),
             file_modified: HashMap::new(),
+            access_entries: access::default_access_entries(),
+            access_admission_enforced: false,
+            access_snapshots: HashMap::new(),
+            access_snapshot_admission: HashMap::new(),
         }
     }
 
