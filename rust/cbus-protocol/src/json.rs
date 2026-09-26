@@ -5,6 +5,7 @@ use crate::packet::{Meta, Packet};
 use crate::report::StatusReport;
 use crate::sal::aircon::{AirconCommand, AirconStatus};
 use crate::sal::audio::{AudioAddress, AudioCommand, AudioEvent};
+use crate::sal::measurement::MeasurementData;
 use crate::sal::security::{SecurityArmMode, SecurityCommand, SecurityEvent};
 use crate::sal::Sal;
 use serde_json::{json, Map, Value};
@@ -20,6 +21,14 @@ pub fn sal_to_json(s: &Sal) -> Value {
         Sal::AudioEvent(event) => audio_event_to_json(event),
         Sal::SecurityCommand(command) => security_command_to_json(command),
         Sal::SecurityEvent(event) => security_event_to_json(event),
+        Sal::MeasurementData(measurement) => json!({
+            "sal":"measurement_data",
+            "device":measurement.device,
+            "channel":measurement.channel,
+            "value":measurement.value,
+            "multiplier":measurement.multiplier,
+            "units":measurement.units
+        }),
         Sal::LightingRamp {
             application,
             group_address,
@@ -767,6 +776,20 @@ fn get_u16(d: &Value, k: &str) -> Result<u16, JErr> {
         .ok_or_else(|| format!("missing/invalid field {k}"))
 }
 
+fn get_i16(d: &Value, k: &str) -> Result<i16, JErr> {
+    d.get(k)
+        .and_then(Value::as_i64)
+        .and_then(|value| i16::try_from(value).ok())
+        .ok_or_else(|| format!("missing/invalid field {k}"))
+}
+
+fn get_i8(d: &Value, k: &str) -> Result<i8, JErr> {
+    d.get(k)
+        .and_then(Value::as_i64)
+        .and_then(|value| i8::try_from(value).ok())
+        .ok_or_else(|| format!("missing/invalid field {k}"))
+}
+
 fn get_bool(d: &Value, k: &str) -> Result<bool, JErr> {
     d.get(k)
         .and_then(Value::as_bool)
@@ -788,6 +811,13 @@ pub fn sal_from_json(d: &Value) -> Result<Sal, JErr> {
         "audio_event" => audio_event_from_json(d).map(Sal::AudioEvent),
         "security" => security_command_from_json(d).map(Sal::SecurityCommand),
         "security_event" => security_event_from_json(d).map(Sal::SecurityEvent),
+        "measurement_data" => Ok(Sal::MeasurementData(MeasurementData {
+            device: get_u8(d, "device")?,
+            channel: get_u8(d, "channel")?,
+            value: get_i16(d, "value")?,
+            multiplier: get_i8(d, "multiplier")?,
+            units: get_u8(d, "units")?,
+        })),
         "lighting_on" => Ok(Sal::LightingOn {
             application: get_u8(d, "application")?,
             group_address: get_u8(d, "group_address")?,

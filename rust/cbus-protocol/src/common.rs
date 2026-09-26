@@ -42,6 +42,8 @@ pub const APP_AIRCON: u8 = 0xac;
 pub const APP_AUDIO: u8 = 0xcd;
 /// Security application.
 pub const APP_SECURITY: u8 = 0xd0;
+/// Measurement application.
+pub const APP_MEASUREMENT: u8 = 0xe4;
 /// First lighting application address.
 pub const APP_LIGHTING_FIRST: u8 = 0x30;
 /// The default lighting application.

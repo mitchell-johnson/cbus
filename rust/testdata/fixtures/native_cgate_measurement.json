@@ -1,0 +1,58 @@
+{
+  "oracle": {
+    "version": "3.4.0.2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "measurement_application_class_sha256": "aef9af839c23d15c336a04b53811179b6bb0dfebe4cf467c13d8a4b5af5d9dd4",
+    "measurement_command_class_sha256": "c6a05b1f8af1f0d3121f07dccc07bf20b884d9c6e97c91226a18caeae0fdec3c",
+    "measurement_encoder_class_sha256": "3a82c80373b93bc93e18efb7285548963a76619847f57af2b44a2585d49510ff",
+    "raw_report_sha256": "6d37d21c7aa7def2212efdd45ec168e754db5f20b8cbe602b95d5499fd9fdc6a",
+    "get_audit_sha256": "b1d69ce288ab4422cd310c1bfd345f5a406bdfaff8281f8ea55bc5d7d069114a"
+  },
+  "application": 228,
+  "opcode": 14,
+  "help": [
+    "101-Help: MEASUREMENT commands:",
+    "101-Help:  MEASUREMENT ? Help for these commands",
+    "101 Help:  MEASUREMENT DATA - Channel Measurement Data produced by a Measurement Device"
+  ],
+  "syntax": "MEASUREMENT DATA channel-address measurement-value multiplier units",
+  "bounds": {
+    "device": [0, 255],
+    "channel": [0, 255],
+    "value": [-32768, 32767],
+    "multiplier": [-128, 127],
+    "units": [0, 255]
+  },
+  "wire_layout": ["0E", "device", "channel", "units", "multiplier_i8", "value_i16_be"],
+  "commands": [
+    {"command": "MEASUREMENT DATA 254/228/1/1 10234 -2 2", "status": "200 OK.", "payload_hex": "05E4000E010102FE27FA"},
+    {"command": "MEASUREMENT DATA //PROJECT/254/228/0/0 -32768 -128 0", "status": "200 OK.", "payload_hex": "05E4000E000000808000"},
+    {"command": "MEASUREMENT DATA 254/$E4/255/255 32767 127 255", "status": "200 OK.", "payload_hex": "05E4000EFFFFFF7F7FFF"},
+    {"command": "MEASUREMENT DATA 254/228/2/3 -1 -1 1", "status": "200 OK.", "payload_hex": "05E4000E020301FFFFFF"},
+    {"command": "MEASUREMENT DATA 254/228/1/1 $7FFF $7F $FF", "status": "200 OK.", "payload_hex": "05E4000E0101FF7F7FFF"}
+  ],
+  "error_contract": {
+    "missing": ["channel", "value", "multiplier", "units"],
+    "extra": "400 Syntax Error: Too many parameters",
+    "wrong_application": "401 Bad object or device ID: ADDRESS (Address not supported by application)",
+    "bad_device": "401 Bad object or device ID: ADDRESS (Invalid temperature group address)",
+    "bad_channel": "401 Bad object or device ID: ADDRESS (channel value out of range)",
+    "bad_integer": "400 Syntax Error: Invalid integer parameter : <NAME>",
+    "out_of_range": "400 Syntax Error: Integer parameter is out of range : <NAME>"
+  },
+  "incoming_event": {
+    "wire_hex": "0564E4000E010102FE27FA82",
+    "event_code": 702,
+    "line": "702 //PROJECT/254/228/1/1 - [measurement] data 10234 -2 2 sourceUnit=100"
+  },
+  "dynamic_get": {
+    "application": ["State=ok", "Devices=<ascending device list>"],
+    "device": ["State=ok", "Channels=<ascending channel list>"],
+    "channel": ["State=ok", "Data=<value>,<multiplier>,<units>,<age_ms>"],
+    "existing_channel_without_sample": "Data=0,0,0,-1",
+    "missing_object": "401 Bad object or device ID: ADDRESS (Object not found)",
+    "unknown_attribute": "402 Operation not supported by: ADDRESS (Parameter name not found)",
+    "aliases": "Relative paths and $ hexadecimal application/device/channel components canonicalize to the full decimal path"
+  },
+  "acceptance_boundary": "Captured with an isolated disposable project and owned fake PCI. PCI confirmation and decoder/event evidence do not establish acceptance by a physical Measurement device."
+}

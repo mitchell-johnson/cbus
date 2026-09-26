@@ -637,6 +637,7 @@ impl Gateway {
             | CBusEvent::AirconStatus { .. }
             | CBusEvent::AudioCommand { .. }
             | CBusEvent::AudioEvent { .. }
+            | CBusEvent::MeasurementData { .. }
             | CBusEvent::SecurityCommand { .. }
             | CBusEvent::SecurityEvent { .. }
             | CBusEvent::TriggerEvent { .. }

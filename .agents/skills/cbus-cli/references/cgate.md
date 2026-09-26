@@ -211,6 +211,31 @@ Ground exact behavior in `rust/testdata/fixtures/native_cgate_security.json`,
 also pins that an incoming Security event cannot satisfy a pending request
 confirmation.
 
+### Measurement data
+
+cmqttd implements the complete maintained C-Gate 3.4 Measurement family on
+the configured direct network:
+
+```text
+MEASUREMENT DATA NETWORK/228/DEVICE/CHANNEL VALUE MULTIPLIER UNITS
+```
+
+`VALUE` is signed 16-bit, `MULTIPLIER` is signed 8-bit, and units, device and
+channel are bytes. Scalar integers accept C-Gate `$` hexadecimal notation.
+The exact SAL order is `0E device channel units multiplier value-msb
+value-lsb`. A 200 proves only correlated PCI confirmation. With the optional
+LOGIN gate armed, authenticate before DATA. Do not claim bridged write support
+or physical sensor acceptance.
+
+Incoming application-228 samples appear on `EVENT ON` as
+`#e# measurement data //PROJECT/NETWORK/228/DEVICE/CHANNEL VALUE MULTIPLIER UNITS sourceUnit=SOURCE`.
+They lazily create native-shaped dynamic objects. Query application
+`State`/`Devices`, device `State`/`Channels`, and channel `State`/`Data` with
+`GET`; Data is `value,multiplier,units,age-ms`. An existing channel without a
+sample returns `0,0,0,-1`. cmqttd defines no MQTT Measurement state. Ground
+behavior in `native_cgate_measurement.json`, `measurement.jsonl`, and
+`system_cgate_measurement.rs`.
+
 The physical service also implements lighting commands, C-Gate `DO` object
 methods for lighting and direct/bridged read-only `SYNC`, Trigger Control,
 Enable Control, clock date/time/refresh, Temperature Broadcast, `NET PINGU`, `NET SYNC`,
@@ -424,8 +449,8 @@ Application/Application2 readback,
 by NET SYNC,
 `cgate_auth: true` denotes the armed opt-in LOGIN gate (`false` dormant
 default): with `--cgate-auth-file` configured, each connection needs
-`LOGIN <token>` before programming verbs, AIRCON mutations and Security
-control forms while reads and
+`LOGIN <token>` before programming verbs, AIRCON mutations, Security control
+forms, and `MEASUREMENT DATA` while reads and
 other bus control stay open; failures answer `420 LOGIN required` / `420 LOGIN failed` (malformed
 `LOGIN` with no token is 400 and also clears the flag), never `401`.
 Not native `access.txt` parity; loopback-only first slice;

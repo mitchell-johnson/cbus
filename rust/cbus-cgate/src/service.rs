@@ -9,6 +9,7 @@ use cbus_protocol::{
         aircon::AirconCommand,
         audio::{AudioAddress, AudioCommand},
         label,
+        measurement::MeasurementData,
         security::{SecurityArmMode, SecurityCommand},
         Sal,
     },
@@ -25,7 +26,7 @@ use std::{
         atomic::{AtomicU64, Ordering},
         Arc, OnceLock,
     },
-    time::Duration,
+    time::{Duration, Instant},
 };
 use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
@@ -88,6 +89,12 @@ const AUDIO_HELP: &[&str] = &[
     "Help:  AUDIO TERMINATERAMP - Send a Terminate Ramp command",
     "Help:  AUDIO ZONE_DESCRIPTOR_REQUEST - Send a Zone Descriptor Request command",
     "Help:  AUDIO ZONE_FEED_LABEL_REQUEST - Send a Zone Feed Label Request command",
+];
+
+const MEASUREMENT_HELP: &[&str] = &[
+    "Help: MEASUREMENT commands:",
+    "Help:  MEASUREMENT ? Help for these commands",
+    "Help:  MEASUREMENT DATA - Channel Measurement Data produced by a Measurement Device",
 ];
 
 /// Default bound for the TLS pre-handshake accept (matches the existing
@@ -263,6 +270,7 @@ pub struct Service {
     state_path: PathBuf,
     events: broadcast::Sender<String>,
     observed_labels: Mutex<ObservedLabels>,
+    measurement_state: Mutex<HashMap<(u8, u8), Option<MeasurementObservation>>>,
     command_sessions: Mutex<CommandSessions>,
     // Serialize command intents without preventing readback/event processing.
     commands: Mutex<()>,
@@ -286,6 +294,12 @@ struct LabelObservation {
 struct ObservedLabels {
     next_sequence: u64,
     observations: VecDeque<LabelObservation>,
+}
+
+#[derive(Clone, Copy)]
+struct MeasurementObservation {
+    data: MeasurementData,
+    observed_at: Instant,
 }
 
 #[derive(Clone)]
@@ -388,6 +402,7 @@ impl Service {
             state_path,
             events: broadcast::channel(512).0,
             observed_labels: Mutex::new(ObservedLabels::default()),
+            measurement_state: Mutex::new(HashMap::new()),
             command_sessions: Mutex::new(CommandSessions::default()),
             commands: Mutex::new(()),
             auth_token_hash: OnceLock::new(),
@@ -476,7 +491,10 @@ impl Service {
                 self.record_label("received", *source, *application, payload)
                     .await;
             }
-            CBusEvent::ConnectionLost => self.observed_labels.lock().await.observations.clear(),
+            CBusEvent::ConnectionLost => {
+                self.observed_labels.lock().await.observations.clear();
+                self.measurement_state.lock().await.clear();
+            }
             _ => {}
         }
         let mut model = self.model.lock().await;
@@ -501,6 +519,27 @@ impl Service {
         let mut updates = Vec::new();
         let mut application_update = None;
         match event {
+            CBusEvent::MeasurementData {
+                source,
+                measurement,
+            } => {
+                self.measurement_state.lock().await.insert(
+                    (measurement.device, measurement.channel),
+                    Some(MeasurementObservation {
+                        data: *measurement,
+                        observed_at: Instant::now(),
+                    }),
+                );
+                let source = source.unwrap_or(0);
+                let _ = self.events.send(format!(
+                    "#e# measurement data //{}/{}/228/{}/{} {} sourceUnit={source}",
+                    self.project,
+                    self.network,
+                    measurement.device,
+                    measurement.channel,
+                    measurement.event_arguments()
+                ));
+            }
             CBusEvent::AirconCommand { source, command } => {
                 let source = source.unwrap_or(0);
                 let _ = self.events.send(format!(
@@ -1009,7 +1048,23 @@ impl Service {
             ]);
             capabilities["security_event_fanout"] = serde_json::Value::Bool(true);
             capabilities["security_mqtt_state"] = serde_json::Value::Bool(false);
+            capabilities["measurement_control"] = serde_json::Value::Bool(true);
+            capabilities["measurement_application"] = serde_json::Value::from(228);
+            capabilities["measurement_delivery_semantics"] =
+                serde_json::Value::String("pci-confirmed-broadcast".to_string());
+            capabilities["measurement_commands"] = serde_json::json!(["data"]);
+            capabilities["measurement_event_fanout"] = serde_json::Value::Bool(true);
+            capabilities["measurement_mqtt_state"] = serde_json::Value::Bool(false);
             return ok(tag, vec![capabilities.to_string()], "200 OK");
+        }
+        if verb == "MEASUREMENT" {
+            if words.len() == 1 || (words.len() == 2 && words[1] == "?") {
+                return measurement_help(tag);
+            }
+            if sub != "DATA" {
+                return err(tag, 400, "400 Syntax Error.");
+            }
+            return self.measurement(tag, &words).await;
         }
         if verb == "AIRCON" {
             if words.len() == 1 || (words.len() == 2 && words[1] == "?") {
@@ -1240,6 +1295,11 @@ impl Service {
                 408,
                 "408 The configured hardware project cannot be deleted while the service is running",
             );
+        }
+        if verb == "GET" && words.len() == 3 {
+            if let Some(response) = self.measurement_get(tag, words[1], words[2]).await {
+                return response;
+            }
         }
         let mut model = self.model.lock().await;
         model.current = client
@@ -1575,6 +1635,103 @@ impl Service {
         let network = network.parse::<u8>().ok()?;
         let application = parse_application(application)?;
         (project == self.project && network == self.network).then_some(application)
+    }
+
+    async fn measurement_get(&self, tag: &str, address: &str, attribute: &str) -> Option<Response> {
+        let path = measurement_object_path(address, &self.project)?;
+        let (project, network) = path.project_network();
+        if project != self.project || network != self.network {
+            return Some(err(
+                tag,
+                404,
+                "404 Network is not connected to this service",
+            ));
+        }
+        let state = self.measurement_state.lock().await;
+        let exists = match path {
+            MeasurementObjectPath::Application { .. } => !state.is_empty(),
+            MeasurementObjectPath::Device { device, .. } => {
+                state.keys().any(|(candidate, _)| *candidate == device)
+            }
+            MeasurementObjectPath::Channel {
+                device, channel, ..
+            } => state.contains_key(&(device, channel)),
+        };
+        let canonical = path.canonical();
+        if !exists {
+            return Some(err(
+                tag,
+                401,
+                &format!("401 Bad object or device ID: {canonical} (Object not found)"),
+            ));
+        }
+        let value = if attribute.eq_ignore_ascii_case("State") {
+            Some("ok".to_string())
+        } else {
+            match path {
+                MeasurementObjectPath::Application { .. }
+                    if attribute.eq_ignore_ascii_case("Devices") =>
+                {
+                    let mut devices = state.keys().map(|(device, _)| *device).collect::<Vec<_>>();
+                    devices.sort_unstable();
+                    devices.dedup();
+                    Some(
+                        devices
+                            .into_iter()
+                            .map(|device| device.to_string())
+                            .collect::<Vec<_>>()
+                            .join(","),
+                    )
+                }
+                MeasurementObjectPath::Device { device, .. }
+                    if attribute.eq_ignore_ascii_case("Channels") =>
+                {
+                    let mut channels = state
+                        .keys()
+                        .filter_map(|(candidate, channel)| {
+                            (*candidate == device).then_some(*channel)
+                        })
+                        .collect::<Vec<_>>();
+                    channels.sort_unstable();
+                    Some(
+                        channels
+                            .into_iter()
+                            .map(|channel| channel.to_string())
+                            .collect::<Vec<_>>()
+                            .join(","),
+                    )
+                }
+                MeasurementObjectPath::Channel {
+                    device, channel, ..
+                } if attribute.eq_ignore_ascii_case("Data") => {
+                    match state.get(&(device, channel)).copied().flatten() {
+                        Some(observation) => {
+                            let data = observation.data;
+                            Some(format!(
+                                "{},{},{},{}",
+                                data.value,
+                                data.multiplier,
+                                data.units,
+                                observation.observed_at.elapsed().as_millis()
+                            ))
+                        }
+                        None => Some("0,0,0,-1".to_string()),
+                    }
+                }
+                _ => None,
+            }
+        };
+        Some(match value {
+            Some(value) => Server::property(tag, &canonical, attribute, &value),
+            None => err(
+                tag,
+                402,
+                &format!(
+                    "402 Operation not supported by: {canonical} (Parameter {} not found)",
+                    attribute.to_ascii_lowercase()
+                ),
+            ),
+        })
     }
 
     fn application_get(
@@ -3305,6 +3462,145 @@ impl Service {
         {
             network.state = state;
         }
+    }
+
+    async fn measurement(&self, tag: &str, words: &[&str]) -> Response {
+        let _commands = self.commands.lock().await;
+        let Some(target) = words.get(2) else {
+            return err(tag, 400, "400 Syntax Error: Missing parameter : <channel>");
+        };
+        let (device, channel) = match self.parse_measurement_address(tag, target) {
+            Ok(address) => address,
+            Err(response) => return response,
+        };
+        // Native C-Gate resolves (and therefore creates) the dynamic
+        // device/channel object before parsing DATA's scalar arguments.
+        self.measurement_state
+            .lock()
+            .await
+            .entry((device, channel))
+            .or_insert(None);
+        let Some(value) = words.get(3) else {
+            return err(tag, 400, "400 Syntax Error: Missing parameter : <value>");
+        };
+        let Some(multiplier) = words.get(4) else {
+            return err(
+                tag,
+                400,
+                "400 Syntax Error: Missing parameter : <multiplier>",
+            );
+        };
+        let Some(units) = words.get(5) else {
+            return err(tag, 400, "400 Syntax Error: Missing parameter : <units>");
+        };
+        if words.len() > 6 {
+            return err(tag, 400, "400 Syntax Error: Too many parameters");
+        }
+        let value = match parse_measurement_integer(
+            tag,
+            value,
+            "value",
+            i32::from(i16::MIN),
+            i32::from(i16::MAX),
+        ) {
+            Ok(value) => value as i16,
+            Err(response) => return response,
+        };
+        let multiplier = match parse_measurement_integer(
+            tag,
+            multiplier,
+            "multiplier",
+            i8::MIN.into(),
+            i8::MAX.into(),
+        ) {
+            Ok(value) => value as i8,
+            Err(response) => return response,
+        };
+        let units = match parse_measurement_integer(tag, units, "units", 0, u8::MAX.into()) {
+            Ok(value) => value as u8,
+            Err(response) => return response,
+        };
+        self.send_application(
+            tag,
+            Sal::MeasurementData(MeasurementData {
+                device,
+                channel,
+                value,
+                multiplier,
+                units,
+            }),
+            ok(tag, vec![], "200 OK."),
+            "Measurement data delivery",
+        )
+        .await
+    }
+
+    fn parse_measurement_address(&self, tag: &str, target: &str) -> Result<(u8, u8), Response> {
+        let parts: Vec<_> = target
+            .trim_start_matches('/')
+            .split('/')
+            .filter(|part| !part.is_empty())
+            .collect();
+        let (project, network, application, device, channel) = match parts.as_slice() {
+            [network, application, device, channel] => (
+                self.project.as_str(),
+                *network,
+                *application,
+                *device,
+                *channel,
+            ),
+            [project, network, application, device, channel] => {
+                (*project, *network, *application, *device, *channel)
+            }
+            _ => {
+                return Err(err(
+                    tag,
+                    401,
+                    &format!("401 Bad object or device ID: {target} (Network not found)"),
+                ));
+            }
+        };
+        if project != self.project || network.parse::<u8>().ok() != Some(self.network) {
+            return Err(err(
+                tag,
+                401,
+                &format!("401 Bad object or device ID: {target} (Network not found)"),
+            ));
+        }
+        if parse_application(application) != Some(228) {
+            return Err(err(
+                tag,
+                401,
+                &format!(
+                    "401 Bad object or device ID: {target} (Address not supported by application)"
+                ),
+            ));
+        }
+        let device = device
+            .parse::<i32>()
+            .ok()
+            .and_then(|value| u8::try_from(value).ok());
+        let Some(device) = device else {
+            return Err(err(
+                tag,
+                401,
+                &format!(
+                    "401 Bad object or device ID: {target} (Invalid temperature group address)"
+                ),
+            ));
+        };
+        let channel = channel
+            .parse::<i32>()
+            .ok()
+            .and_then(|value| u8::try_from(value).ok());
+        let Some(channel) = channel else {
+            return Err(err(
+                tag,
+                401,
+                &format!("401 Bad object or device ID: {target} (channel value out of range)"),
+            ));
+        };
+        Ok((device, channel))
     }
 
     async fn aircon(&self, tag: &str, words: &[&str], sub: &str) -> Response {
@@ -6843,6 +7139,137 @@ fn security_help(tag: &str) -> Response {
     }
 }
 
+fn measurement_help(tag: &str) -> Response {
+    let mut rows = MEASUREMENT_HELP
+        .iter()
+        .map(|line| (*line).to_string())
+        .collect::<Vec<_>>();
+    let final_text = format!("101 {}", rows.pop().expect("MEASUREMENT help is nonempty"));
+    Response {
+        tag: tag.to_string(),
+        lines: rows,
+        final_text,
+        status: 101,
+    }
+}
+
+#[derive(Clone, Copy)]
+enum MeasurementObjectPath<'a> {
+    Application {
+        project: &'a str,
+        network: u8,
+    },
+    Device {
+        project: &'a str,
+        network: u8,
+        device: u8,
+    },
+    Channel {
+        project: &'a str,
+        network: u8,
+        device: u8,
+        channel: u8,
+    },
+}
+
+impl<'a> MeasurementObjectPath<'a> {
+    fn project_network(self) -> (&'a str, u8) {
+        match self {
+            Self::Application { project, network }
+            | Self::Device {
+                project, network, ..
+            }
+            | Self::Channel {
+                project, network, ..
+            } => (project, network),
+        }
+    }
+
+    fn canonical(self) -> String {
+        match self {
+            Self::Application { project, network } => format!("//{project}/{network}/228"),
+            Self::Device {
+                project,
+                network,
+                device,
+            } => format!("//{project}/{network}/228/{device}"),
+            Self::Channel {
+                project,
+                network,
+                device,
+                channel,
+            } => format!("//{project}/{network}/228/{device}/{channel}"),
+        }
+    }
+}
+
+fn measurement_object_path<'a>(
+    address: &'a str,
+    default_project: &'a str,
+) -> Option<MeasurementObjectPath<'a>> {
+    let fully_qualified = address.starts_with("//");
+    let parts: Vec<_> = address
+        .trim_start_matches('/')
+        .split('/')
+        .filter(|part| !part.is_empty())
+        .collect();
+    let (project, rest) = if fully_qualified {
+        match parts.as_slice() {
+            [project, _, _] | [project, _, _, _] | [project, _, _, _, _] => (*project, &parts[1..]),
+            _ => return None,
+        }
+    } else {
+        match parts.as_slice() {
+            [_, _] | [_, _, _] | [_, _, _, _] => (default_project, &parts[..]),
+            _ => return None,
+        }
+    };
+    let network = parse_application(rest[0])?;
+    (parse_application(rest[1]) == Some(228)).then_some(())?;
+    match rest {
+        [_, _] => Some(MeasurementObjectPath::Application { project, network }),
+        [_, _, device] => Some(MeasurementObjectPath::Device {
+            project,
+            network,
+            device: parse_application(device)?,
+        }),
+        [_, _, device, channel] => Some(MeasurementObjectPath::Channel {
+            project,
+            network,
+            device: parse_application(device)?,
+            channel: parse_application(channel)?,
+        }),
+        _ => None,
+    }
+}
+
+fn parse_measurement_integer(
+    tag: &str,
+    value: &str,
+    parameter: &str,
+    minimum: i32,
+    maximum: i32,
+) -> Result<i32, Response> {
+    let parsed = value
+        .strip_prefix('$')
+        .map_or_else(|| value.parse::<i32>(), |hex| i32::from_str_radix(hex, 16));
+    let parsed = parsed.map_err(|_| {
+        err(
+            tag,
+            400,
+            &format!("400 Syntax Error: Invalid integer parameter : <{parameter}>"),
+        )
+    })?;
+    if !(minimum..=maximum).contains(&parsed) {
+        return Err(err(
+            tag,
+            400,
+            &format!("400 Syntax Error: Integer parameter is out of range : <{parameter}>"),
+        ));
+    }
+    Ok(parsed)
+}
+
 fn parse_security_integer(tag: &str, value: &str, parameter: &str) -> Result<i32, Response> {
     let parsed = value
         .strip_prefix('$')
@@ -7016,6 +7443,7 @@ fn parse_aircon_boolean(tag: &str, value: &str, parameter: &str) -> Result<bool,
 /// LIST|LIST_ALL|STATE, so they already fail closed with 502.
 fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
     match verb {
+        "MEASUREMENT" => sub == "DATA",
         "AIRCON" => is_aircon_subcommand(sub) && sub != "REFRESH",
         "AUDIO" => {
             is_audio_subcommand(sub)

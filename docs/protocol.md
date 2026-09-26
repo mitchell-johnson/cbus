@@ -41,6 +41,14 @@ The 52 exact command/report cases are in
 `rust/testdata/vectors/security.jsonl`; the retained native capture and class
 hashes are in `rust/testdata/fixtures/native_cgate_security.json`.
 
+Measurement application `0xE4` has typed encode/decode coverage for C-Gate
+3.4's `MEASUREMENT DATA` broadcast. Its fixed SAL is `0E`, device, channel,
+units, signed multiplier, then a signed big-endian 16-bit value. Canonical JSON
+uses `measurement_data`. Exact native extremes and signed cases are pinned in
+`rust/testdata/vectors/measurement.jsonl` and
+`rust/testdata/fixtures/native_cgate_measurement.json`. Incoming samples remain
+typed transport events and cannot satisfy a pending PCI confirmation.
+
 Strict decoding rejects malformed input. Lenient decoding retains compatibility behavior for imperfect frames. The golden-vector suite fixes the expected byte consumption, decoded JSON, and re-encoded bytes for representative and edge-case traffic.
 
 ## Framing and PCI behavior

@@ -105,6 +105,9 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // AUDIO root help moved fail_closed_502 -> local_database, and all 19
     // maintained AUDIO commands moved fail_closed_502 -> physical with exact
     // retained 3.4 SAL encoding and active-generation PCI confirmation.
+    // MEASUREMENT root help moved fail_closed_502 -> local_database, and DATA
+    // moved fail_closed_502 -> physical with exact native 3.4 SAL encoding,
+    // active-generation PCI confirmation, and dynamic GET state.
     // PROJECT ARCHIVE/RESTORE/RENAME/COPY/DELETE and REPOSITORY LIST moved
     // fail_closed_502 -> local_database with durable internal snapshots,
     // guarded secondary-project lifecycle, and a read-only cmqttd-json row.
@@ -113,9 +116,9 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // The eleven maintained AIRCON commands and NET PROJECT_IDENTIFY moved
     // fail_closed_502 -> physical. PROJECT_IDENTIFY uses the selected shared
     // interface's native read-only MMI/parameter-35 workflow.
-    assert_eq!(class_count(RoutingClass::Physical), 73);
-    assert_eq!(class_count(RoutingClass::LocalDatabase), 52);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 305);
+    assert_eq!(class_count(RoutingClass::Physical), 74);
+    assert_eq!(class_count(RoutingClass::LocalDatabase), 53);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 303);
     assert_eq!(class_count(RoutingClass::Obsolete400), 1);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here
@@ -247,6 +250,34 @@ fn audio_rows_retain_native_command_boundaries_and_decoder_evidence() {
             entry.path
         );
     }
+}
+
+#[test]
+fn measurement_rows_retain_native_boundaries_and_decoder_evidence() {
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_measurement.json"
+    ))
+    .expect("native MEASUREMENT evidence must remain valid JSON");
+    assert_eq!(fixture["oracle"]["version"], "3.4.0.2001");
+    assert_eq!(
+        fixture["oracle"]["jar_sha256"],
+        "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+    );
+    assert_eq!(fixture["application"], 228);
+    assert_eq!(fixture["opcode"], 14);
+    assert_eq!(fixture["commands"].as_array().unwrap().len(), 5);
+    assert_eq!(fixture["incoming_event"]["event_code"], 702);
+    let root = CAPABILITY_MATRIX
+        .iter()
+        .find(|entry| entry.path == "MEASUREMENT")
+        .unwrap();
+    assert_eq!(root.class, RoutingClass::LocalDatabase);
+    let data = CAPABILITY_MATRIX
+        .iter()
+        .find(|entry| entry.path == "MEASUREMENT DATA")
+        .unwrap();
+    assert_eq!(data.class, RoutingClass::Physical);
+    assert!(data.evidence.contains("native_cgate_measurement.json"));
 }
 
 #[test]

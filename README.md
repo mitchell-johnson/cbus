@@ -142,6 +142,8 @@ cbus-toolkit cgate --host 127.0.0.1 exec 'AUDIO SET_FEED //PROJECT/254/205 1 2 4
 cbus-toolkit cgate --host 127.0.0.1 exec 'SECURITY ?'
 cbus-toolkit cgate --host 127.0.0.1 exec 'SECURITY STATUS_REQUEST //PROJECT/254/208 1'
 cbus-toolkit cgate --host 127.0.0.1 exec 'SECURITY ARM //PROJECT/254/208 away'
+cbus-toolkit cgate --host 127.0.0.1 exec 'MEASUREMENT ?'
+cbus-toolkit cgate --host 127.0.0.1 exec 'MEASUREMENT DATA //PROJECT/254/228/1/1 10234 -2 2'
 ```
 
 Replace the example project, network and unit with your actual addresses. The
@@ -255,10 +257,16 @@ not establish alarm-panel acceptance or resulting state. Incoming Security
 events, zone names and packed status reports reach C-Gate event clients.
 cmqttd publishes no invented MQTT alarm-panel state.
 
+`MEASUREMENT ?` exposes the complete maintained C-Gate 3.4 Measurement
+family. `MEASUREMENT DATA` sends the exact application-228 device/channel
+sample and waits for PCI confirmation. Incoming samples reach C-Gate event
+clients and populate native-shaped application/device/channel GET properties;
+cmqttd does not publish them as MQTT state.
+
 **Full C-Gate replacement is the target, not the current completion claim.**
 Hardware-backed lighting, all eleven maintained AIRCON/HVAC commands, all 19
-maintained AUDIO commands and all seven maintained SECURITY commands on the
-configured direct network are implemented. The same endpoint implements
+maintained AUDIO commands and all seven maintained SECURITY commands and the complete maintained
+MEASUREMENT family on the configured direct network are implemented. The same endpoint implements
 C-Gate `DO` object methods for lighting, direct and bridged read-only
 synchronization, guarded KEYGL5 FactoryDefault, persistent named-scene
 record/playback, Trigger Control, Enable Control, clock, Temperature Broadcast,
@@ -277,13 +285,11 @@ native compact and OID routes, and `NET PINGU`, `NET SYNC`, general
 `NET SYNCNEW`, `DO ... SYNC`, and `NET CHECKUNIT` support source routes through
 one to six bridges with strict Reply Network correlation and per-network
 volatile caches. Direct targeted `NET SYNCNEW` also runs the three native
-duplicate challenges. AIRCON, AUDIO and SECURITY success means the broadcast
-received a positive PCI confirmation; physical controller or alarm-panel
-acceptance and resulting state have not been validated. Routed AIRCON, AUDIO
-and SECURITY, routed writes, routed OEM eDLT metadata, routed targeted
+duplicate challenges. AIRCON, AUDIO, SECURITY and MEASUREMENT success means the broadcast
+received a positive PCI confirmation; physical controller, alarm-panel or
+measurement-device acceptance and resulting state have not been validated. Routed AIRCON, AUDIO, SECURITY and MEASUREMENT, routed writes, routed OEM eDLT metadata, routed targeted
 `SYNCNEW`, and bridged commissioning mutations remain unavailable. When
-`--cgate-auth-file` is configured, log in before an AIRCON, AUDIO or SECURITY
-mutation. `NET SYNCNEW` and `NET SET_PROJECT_IDENTIFY` update the volatile
+`--cgate-auth-file` is configured, log in before an AIRCON, AUDIO or SECURITY mutation, or `MEASUREMENT DATA`. `NET SYNCNEW` and `NET SET_PROJECT_IDENTIFY` update the volatile
 physical cache and do not create persistent project units. The unravel backend
 requires exactly two known serials at address 255, two unique empty database
 destinations, and a direct network; broader unravel cases remain unavailable.

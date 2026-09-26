@@ -5001,6 +5001,47 @@ mod tests {
     }
 
     #[tokio::test(start_paused = true)]
+    async fn measurement_data_is_fanned_out_without_completing_confirmed_send() {
+        let (pci, mut remote, mut events) = setup().await;
+        let sample = MeasurementData {
+            device: 1,
+            channel: 1,
+            value: 10_234,
+            multiplier: -2,
+            units: 2,
+        };
+        let worker = pci.clone();
+        let command = tokio::spawn(async move {
+            worker
+                .send_confirmed(&Packet::PointToMultipoint {
+                    meta: Meta::new(true, 0),
+                    application: cbus_protocol::common::APP_MEASUREMENT,
+                    sals: vec![Sal::MeasurementData(sample)],
+                })
+                .await
+        });
+        assert_eq!(line(&mut remote).await, b"\\05E4000E010102FE27FAE6h\r");
+
+        // An observed sample remains independently visible while the sender
+        // waits for the assigned PCI confirmation character.
+        remote
+            .get_mut()
+            .write_all(b"0564E4000E010102FE27FA82\r\n")
+            .await
+            .unwrap();
+        assert_eq!(
+            events.recv().await,
+            Some(CBusEvent::MeasurementData {
+                source: Some(100),
+                measurement: sample,
+            })
+        );
+        assert!(!command.is_finished());
+        remote.get_mut().write_all(b"h.\r\n").await.unwrap();
+        assert!(command.await.unwrap().is_ok());
+    }
+
+    #[tokio::test(start_paused = true)]
     async fn identify_all_waits_for_quiet_and_preserves_distinct_replies() {
         let (pci, mut remote, mut events) = setup().await;
         let running = tokio::spawn({

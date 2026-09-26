@@ -13,6 +13,7 @@ use cbus_protocol::report::StatusReport;
 use cbus_protocol::sal::{
     aircon::{AirconCommand, AirconStatus},
     audio::{AudioCommand, AudioEvent},
+    measurement::MeasurementData,
     security::{SecurityCommand, SecurityEvent},
     Sal,
 };
@@ -92,6 +93,13 @@ const FORCE_CLEANUP_PERCENTAGE: f64 = 0.25;
 /// `PCIProtocol.on_*` handlers consumed by `mqtt_gateway.CBusHandler`).
 #[derive(Debug, Clone, PartialEq)]
 pub enum CBusEvent {
+    /// One Measurement application channel sample observed on the bus.
+    MeasurementData {
+        /// Source unit address (`None` when the source byte was 0).
+        source: Option<u8>,
+        /// Fully decoded device/channel sample.
+        measurement: MeasurementData,
+    },
     /// One AIRCON command observed on the shared PCI receive stream.
     AirconCommand {
         /// Source unit address (`None` when the source byte was 0).
@@ -1049,6 +1057,10 @@ impl PciClient {
                         Sal::SecurityEvent(event) => {
                             Some(CBusEvent::SecurityEvent { source: src, event })
                         }
+                        Sal::MeasurementData(measurement) => Some(CBusEvent::MeasurementData {
+                            source: src,
+                            measurement,
+                        }),
                         Sal::LightingRamp {
                             application,
                             group_address,
@@ -1391,6 +1403,7 @@ fn classify(cmd: &Packet, conf: Option<u8>) -> (Priority, ResponseKind) {
             Sal::Aircon(_)
                 | Sal::AudioCommand(_)
                 | Sal::SecurityCommand(_)
+                | Sal::MeasurementData(_)
                 | Sal::LightingOn { .. }
                 | Sal::LightingOff { .. }
                 | Sal::LightingRamp { .. }
