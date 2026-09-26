@@ -1,0 +1,118 @@
+{
+  "oracle": {
+    "product": "Schneider Electric C-Gate",
+    "version": "3.4.0.2001",
+    "build": "20241023-0011",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "transport": "owned loopback command session with file.base under a temporary root; no C-Bus network configured",
+    "captured_at": "2026-09-26T14:15:49+12:00"
+  },
+  "inventory": {
+    "maintained_paths": [
+      "FILE DELETE",
+      "FILE DIR",
+      "FILE DOWNLOAD",
+      "FILE LS",
+      "FILE MKDIR",
+      "FILE SHA256",
+      "FILE UPLOAD"
+    ],
+    "count": 7,
+    "api_component": {
+      "name": "cmd-file",
+      "version": "1.3",
+      "description": "FILE UPLOAD improved for different directories"
+    }
+  },
+  "help": [
+    "101-Help: FILE commands:",
+    "101-Help:  FILE ? Help for these commands",
+    "101-Help:  FILE DELETE - Remove a file or directory from the server",
+    "101-Help:  FILE DIR - Return a list of directory contents for the given directory",
+    "101-Help:  FILE DOWNLOAD - Download a copy of a file as a base-64 encoded chunk of data",
+    "101-Help:  FILE LS - Return a list of directory contents for the given directory",
+    "101-Help:  FILE MKDIR - Return a list of directory contents for the given directory",
+    "101-Help:  FILE SHA256 - Calculate an SHA256 hash of a project file on the server",
+    "101 Help:  FILE UPLOAD - Upload  a file to the server as a base-64 encoded chunk of data "
+  ],
+  "round_trip": {
+    "input_hex": "000102030405060708090A0B0C0D0E0F",
+    "upload": "FILE UPLOAD fixtures/sample.bin << delimiter",
+    "upload_response": "200 OK.",
+    "sha256_response": "302 File=fixtures/sample.bin SHA256Hash=be45cb2605bf36bebde684841a28f0fd43c69850a3dce5fedba69928ee3a8991",
+    "download_envelope": [
+      "345-Start file download for file: fixtures/sample.bin",
+      "347-AAECAwQFBgcICQoLDA0ODw==",
+      "346 End file download"
+    ],
+    "base64_line_width": 76,
+    "binary_all_bytes_sha256": "40aff2e9d2d8922e47afd4648e6967497158785fbd1da870e7110266bf944880"
+  },
+  "directory": {
+    "empty": "304 directory=\"<canonical-file.base>/fixtures\" files=0",
+    "populated": [
+      "304-directory=\"<canonical-file.base>/fixtures\" files=2",
+      "305-name=\"abc.bin\" size=3 modified=<java-date>",
+      "305 name=\"all-bytes.bin\" size=256 modified=<java-date>"
+    ],
+    "ls_alias_exact": true,
+    "mkdir_recursive": true,
+    "empty_directory_delete": "200 OK.",
+    "nonempty_directory_delete": "408 Operation failed: Delete failed"
+  },
+  "sha256": {
+    "multiple_success": [
+      "302-File=fixtures/abc.bin SHA256Hash=ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+      "302 File=fixtures/all-bytes.bin SHA256Hash=40aff2e9d2d8922e47afd4648e6967497158785fbd1da870e7110266bf944880"
+    ],
+    "missing": "408 Operation failed: Can not find file fixtures/missing.bin"
+  },
+  "replacement": {
+    "behavior": "existing target is renamed to target.0 before the new decoded payload is promoted; an older target.0 is deleted",
+    "original_sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+    "replacement_sha256": "6c1aa50442a93e42c0eb2907cf4e017cd19547891fa190f3ea473582b0479290"
+  },
+  "errors": {
+    "unknown": "400 Syntax Error.",
+    "upload_without_document": "408 Operation failed: no data to upload",
+    "invalid_base64_character": "408 Operation failed: Invalid character in Base64 data.",
+    "invalid_base64_padding": "408 Operation failed: Base64 input not properly padded.",
+    "missing_parent": "408 Operation failed: No such file or directory",
+    "mkdir_existing": "408 Operation failed: Already exists",
+    "download_missing": "408 Operation failed: <file.base>/fixtures/missing.bin (No such file or directory)",
+    "delete_missing": "408 Operation failed: Does not exist"
+  },
+  "path_guard": {
+    "rejected_prefixes": [
+      "/",
+      "\\",
+      "~"
+    ],
+    "rejected_contains": [
+      "..",
+      ":"
+    ],
+    "dir_error": "408 Operation failed: Unable to read directory: Illegal path element in filename <path>",
+    "mkdir_error": "408 Operation failed: Unable to make directory: Illegal path element in filename <path>",
+    "delete_error": "408 Operation failed: Unable to delete file or directory: Illegal path element in filename <path>"
+  },
+  "decompilation": {
+    "registry_class": "com.clipsal.cgate.file.FileCommand",
+    "path_class": "pM",
+    "delete_class": "pN",
+    "dir_ls_class": "pO",
+    "download_class": "pP",
+    "sha256_class": "pQ",
+    "mkdir_class": "pR",
+    "upload_class": "pS",
+    "download_encoder": "Dw mode 1",
+    "upload_decoder": "Dx mode 0"
+  },
+  "cmqttd_boundary": {
+    "storage": "atomic cmqttd-json virtual root",
+    "host_filesystem": false,
+    "reason": "preserves FILE workflows while preventing command-session traversal of arbitrary host data",
+    "directory_prefix": "cmqttd:/",
+    "project_namespace": "cmqttd-project://<project>/"
+  }
+}

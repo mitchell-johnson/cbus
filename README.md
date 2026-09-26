@@ -133,6 +133,9 @@ cbus-toolkit cgate --host 127.0.0.1 project list
 cbus-toolkit cgate --host 127.0.0.1 exec 'CMQTT CAPABILITIES'
 cbus-toolkit cgate --host 127.0.0.1 exec 'CONFIG GET *'
 cbus-toolkit cgate --host 127.0.0.1 exec 'CONFIG INFO sync-time'
+cbus-toolkit cgate --host 127.0.0.1 exec 'FILE'
+cbus-toolkit cgate --host 127.0.0.1 exec 'FILE DIR'
+cbus-toolkit cgate --host 127.0.0.1 exec 'FILE SHA256 exports/project.cgl'
 cbus-toolkit cgate --host 127.0.0.1 --timeout 120 network sync-new //PROJECT/254 --unit 6
 cbus-toolkit cgate --host 127.0.0.1 network set-project //PROJECT/254 PROJECT
 cbus-toolkit cgate --host 127.0.0.1 --timeout 120 edlt-labels --network //PROJECT/254
@@ -157,15 +160,17 @@ cbus-toolkit cgate --host 127.0.0.1 exec 'TELEPHONY RECALL_LAST_NUMBER_REQUEST /
 cbus-toolkit cgate --host 127.0.0.1 exec 'TELEPHONY DIVERT //PROJECT/254/224 021234567'
 ```
 
-The embedded endpoint implements the complete maintained C-Gate 3.4 CONFIG
-command family: help, GET, INFO, SET, scoped OBGET/OBSET/OBRESET, and
-LOAD/SAVE. Its retained catalogue contains 148 registrations and exact native
-scope/error envelopes. Values and snapshots are durable compatibility data in
-cmqttd's atomic JSON repository; supplied filenames are internal identities,
-and CONFIG does not change the running daemon's MQTT, PCI, listener, or logging
-configuration. Query `CMQTT CAPABILITIES` for the explicit boundary and see the
-[C-Gate replacement guide](docs/cmqttd-cgate.md) for authentication,
-persistence, native evidence, and the remaining non-CONFIG gaps.
+The embedded endpoint implements the complete maintained C-Gate 3.4 CONFIG and
+FILE command families. CONFIG provides help, GET, INFO, SET, scoped
+OBGET/OBSET/OBRESET and LOAD/SAVE over durable compatibility state. FILE
+provides DIR/LS, recursive MKDIR, DELETE, SHA256, base64 DOWNLOAD and native
+here-document UPLOAD, including the native `.0` replacement backup. FILE data
+lives in a sandboxed virtual root inside cmqttd's atomic JSON repository; FILE
+paths never access the host filesystem and `%PROJECT%` is a virtual namespace.
+Mutating FILE commands require LOGIN when the optional command gate is armed.
+Query `CMQTT CAPABILITIES` for these explicit boundaries and see the
+[C-Gate replacement guide](docs/cmqttd-cgate.md) for wire examples,
+persistence, native evidence, and the remaining compatibility gaps.
 
 Replace the example project, network and unit with your actual addresses. The
 network form performs one fresh `NET SYNC` plus `NET CHECKUNIT` serial refresh,

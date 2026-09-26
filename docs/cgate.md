@@ -21,7 +21,7 @@ Tests assert the inventory sizes, uniqueness, help exposure, parser reachability
 
 ## Stateful behavior
 
-The model tracks projects, databases, networks, units, group levels, labels, locks, sessions, event modes, and programming sessions. Core `PROJECT`, `DB`, `NET`, `GET`, `SET`, `LIGHTING`, `EVENT`, and `PP` flows mutate and read this state. Application families and private registered commands have deterministic handlers so clients can exercise every command path without physical hardware.
+The model tracks projects, databases, networks, units, group levels, labels, locks, sessions, event modes, programming sessions, and a sandboxed FILE virtual filesystem. Core `PROJECT`, `DB`, `NET`, `GET`, `SET`, `LIGHTING`, `EVENT`, `PP`, and all seven maintained `FILE` paths mutate and read this state. FILE supports binary base64 upload/download, SHA256, directories, deletion and replacement backups without opening host paths. Application families and private registered commands have deterministic handlers so clients can exercise every command path without physical hardware.
 
 The TCP server shares model state across connections. Project selection remains connection-local. Subscribed clients receive event fanout according to their `EVENT` mode, while command replies retain their client tag and C-Gate continuation/final-line framing.
 

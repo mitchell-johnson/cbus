@@ -2582,6 +2582,13 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["project_delete_secondary"], "cmqttd-internal");
     assert_eq!(document["repository_list"], true);
     assert_eq!(document["repository_type"], "cmqttd-json");
+    assert_eq!(document["file_commands"].as_array().unwrap().len(), 7);
+    assert_eq!(document["file_storage"], "cmqttd-json");
+    assert_eq!(
+        document["file_binary_transfer"],
+        "base64-here-document-and-345-347-346-envelope"
+    );
+    assert_eq!(document["file_host_filesystem"], false);
     assert_eq!(document["cgl_import"], false);
     assert_eq!(document["cgl_export"], false);
     assert_eq!(

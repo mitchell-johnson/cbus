@@ -25,6 +25,7 @@ use std::path::PathBuf;
 pub mod auth;
 pub mod capability_matrix;
 mod config;
+mod file;
 pub mod manual;
 pub mod service;
 pub mod unitspec;
@@ -498,11 +499,12 @@ fn project_identity_argument(body: &str) -> Result<String, ProjectIdentityArgume
 }
 /// Status codes that may prefix intermediate reply lines in native
 /// multi-status envelopes (CONFIG `304`, calculator `134`,
-/// cached-property `300`, parameter `315`, database `342`/`233`, snippet/JSON
-/// `343`/`345`/`346`/`347`, PINGU `302`, SYNCNEW discovery/failure
-/// `303`/`408`, multiplicity `120`).
-const ENVELOPE_CODES: [u16; 14] = [
-    120, 134, 233, 300, 302, 303, 304, 315, 342, 343, 345, 346, 347, 408,
+/// cached-property `300`, parameter `315`, database `342`/`233`, FILE
+/// directory `304`/`305`, snippet/JSON/file-transfer `343`/`345`/`346`/`347`,
+/// PINGU/digest `302`, SYNCNEW discovery/failure `303`/`408`, multiplicity
+/// `120`).
+const ENVELOPE_CODES: [u16; 15] = [
+    120, 134, 233, 300, 302, 303, 304, 305, 315, 342, 343, 345, 346, 347, 408,
 ];
 
 /// True when a reply line already carries a native multi-status envelope.
@@ -852,6 +854,9 @@ pub struct Server {
     database_files: HashMap<String, Project>,
     /// Server-side files addressed by the private `FILE` command family.
     file_store: HashMap<String, Vec<u8>>,
+    /// Unix modification seconds for virtual FILE entries. Kept separately
+    /// so the established byte-map state representation remains migratable.
+    file_modified: HashMap<String, i64>,
 }
 
 impl Server {
@@ -881,6 +886,7 @@ impl Server {
             shutdown_pending: false,
             database_files: HashMap::new(),
             file_store: HashMap::new(),
+            file_modified: HashMap::new(),
         }
     }
 
@@ -3270,6 +3276,9 @@ impl Server {
         }
         let words: Vec<&str> = cmd.body.split_whitespace().collect();
         let upper: Vec<String> = words.iter().map(|w| w.to_ascii_uppercase()).collect();
+        if upper.first().is_some_and(|word| word == "FILE") {
+            return crate::file::command(self, tag_of(&cmd), &cmd.body, Some(document));
+        }
         if upper.len() >= 2 && upper[0] == "DBSETXML" {
             if words.len() != 2 || !valid_target(words[1]) {
                 return err(

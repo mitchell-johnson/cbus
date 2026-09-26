@@ -44,6 +44,7 @@ dormant by default and `true` once armed. Armed, each connection needs
 `LOGIN <token>` (200) before PP mutating verbs (`PP LOCK/LOAD/SAVE/...`;
 `PP GET/INFO/LIST` stay open), `PROJECT` lifecycle, `DB...` writes, `SET`,
 `CONFIG SET/LOAD/SAVE/OBSET/OBRESET` (CONFIG help, GET, INFO and OBGET stay
+open), `FILE UPLOAD/DELETE/MKDIR` (FILE help, DIR/LS, SHA256 and DOWNLOAD stay
 open),
 `LABEL CLEAR/CLEAREDLT/KFIGET/KFISET`, `DO ... FactoryDefault`,
 `NET SET_PROJECT_IDENTIFY`, and
@@ -120,6 +121,7 @@ explicitly unavailable.
 | Here-document framing | TCP and TLS recognize native `COMMAND << DELIMITER` framing and apply the optional LOGIN gate. Lines are limited to 1 MiB and bodies to 16 MiB; an oversized body is drained to its delimiter and returns tagged 400 so the connection remains synchronized, while EOF before the delimiter returns tagged 400 and closes the connection. Completed `DBSETXML` and `CGL IMPORT` documents return explicit 502 without changing state: native DBSETXML typed-object replacement and its 301 OID receipt, and the vendor CGL format, are not implemented merely by accepting their framing |
 | `DBNETWORKPATH` | Resolves Bridge `InterfaceAddress` topology using the standard far-side network-address convention, requires the corresponding source-network bridge unit, limits paths to six bridges, and returns native single-line `136` COMPACT or multi-line `137` network-OID results without PCI I/O. Returned OIDs resolve through `DBGET !oid/OID` in the selected project. The final `/p/<interface-unit>` component may differ from the child network; it validates as an interface address but does not replace the far-side route byte, and path discovery does not require that suffix unit to exist. Native zero-hop `START == END` requests return `408 ... No path found`; only a literal `COMPACT` selects compact output, while another mode token defaults to OID and later tokens are ignored |
 | `CONFIG` and `CONFIG GET/INFO/SET/OBGET/OBSET/OBRESET/LOAD/SAVE` | Complete maintained C-Gate 3.4 CONFIG family with its exact parent help, case-sensitive parameter names, 148 registered parameters, 142 queryable INFO records, 122 wildcard GET records, six obsolete registrations, and retained 303/304/error/mixed-status envelopes. Legacy GET/SET use global/project inheritance; object forms model global, selected-project and network inheritance, including project resets that remove descendant network overrides. Values and named global/project snapshots commit atomically inside `cmqttd-json`; caller filenames are bounded snapshot identities and are never opened on the host. CONFIG data does not reconfigure the running listener, PCI, MQTT, logging, or other daemon settings. With LOGIN armed, all five mutating verbs require authentication. Native 3.4 sends no response for an unknown or wrong-scope OBGET; cmqttd deliberately returns deterministic 408 so the connection remains live. See `rust/testdata/fixtures/native_cgate_config.json` and `rust/cmqttd/tests/system_cgate_config.rs` |
+| `FILE DIR/LS/MKDIR/DELETE/SHA256/DOWNLOAD/UPLOAD` | Complete maintained C-Gate 3.4 FILE family over a sandboxed virtual filesystem in `cmqttd-json`: exact nine-line parent help, 304/305 listings, recursive MKDIR, empty-directory/file deletion, multi-file 302 SHA256 rows, native 345/347/346 download framing with 76-character base64 rows, base64 here-document upload, and `.0` replacement backups. Ordinary relative paths reject leading separators, `~`, `..`, and `:`; `%PROJECT%/path` accepts the namespace separator for a known project and stays in a separate virtual root. No FILE path opens an arbitrary host or vendor project file and no FILE command sends PCI traffic. With LOGIN armed, UPLOAD, DELETE and MKDIR require authentication. See `rust/testdata/fixtures/native_cgate_file.json` and `rust/cmqttd/tests/system_cgate_file.rs` |
 | Database PP locks, sessions, get/set/info/new/load/save | Existing programming model with connection ownership; staged sessions and locks are discarded on disconnect/restart |
 | `PP RESET_TO_DEFAULTS` | Replaces one owned loaded session with exactly the `DefaultValue` fields in its parsed unit specification. The result remains staged until an explicit save; missing or malformed specifications return 408 unchanged, with no PCI access |
 | Physical PP LOAD and subsequent GET/INFO | Identifies the live unit, selects its privately installed decoded schema, recalls standard CAL parameters, explicit pages for `paged`/`ncc`, OEM memory, and GOC parameter-`0xFF` memory through the shared PCI, decodes int/long/bit/string/sixbit arrays and `ArrayMap`, applies tag selection, and commits the session only after every read succeeds |
@@ -465,7 +467,7 @@ all 431 have physical implementations in this service. `CMQTT CAPABILITIES`
 returns `full_cgate_compatibility: false`; unimplemented physical operations
 return 502. The enumerable gap tracker is the executable capability matrix in
 `cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 100
-physical, 64 local/session, 266 fail-closed 502, and 1 obsolete 400 over the
+physical, 71 local/session, 259 fail-closed 502, and 1 obsolete 400 over the
 431 inventoried paths, plus a separately asserted 6-row supplement for
 non-inventoried service commands. Full replacement still requires:
 
@@ -515,13 +517,14 @@ non-inventoried service commands. Full replacement still requires:
   are implemented for the configured direct network; bridged routing, physical
   device acceptance and state readback remain unverified.
 - Schneider repository/archive and CGL import/export file formats, repository
-  selection, repository repair, the remaining document commands, complete server
-  configuration/access/TLS, firmware and deployment workflows. cmqttd's
-  internal project snapshots, OID-preserving secondary-project copy/delete and
-  read-only `cmqttd-json` repository descriptor are implemented. Here-document
-  transport is bounded and synchronized, but
-  native DBSETXML/CGL document semantics remain explicit 502; none is
-  presented as vendor-file interoperability.
+  selection, repository repair, DBSETXML/CGL document semantics, complete
+  server configuration/access/TLS, firmware and deployment workflows. cmqttd's
+  internal project snapshots, OID-preserving secondary-project copy/delete,
+  read-only `cmqttd-json` repository descriptor and all seven maintained FILE
+  commands are implemented. FILE uses a durable virtual root rather than host
+  or vendor files. Here-document transport is bounded and synchronized, but
+  native DBSETXML/CGL documents remain explicit 502 and are not presented as
+  vendor-file interoperability.
   C-Gate TLS is transport-only: no TLS client authentication is performed,
   no client certificates are requested, and ACCESS/ACCESS_CONTROL
   paths remain fail-closed 502. (Command-layer access control is only the
@@ -546,6 +549,17 @@ restart readback, zero CONFIG PCI frames and MQTT continuity on the same fake
 PCI. The oracle used a disposable
 loopback-only Java container with no C-Bus endpoint. This evidence does not
 claim native filesystem/config-format compatibility or runtime reconfiguration.
+
+`native_cgate_file.json` records the exact seven-command help, grammar,
+status envelopes, path guard, binary transfer, multi-file SHA256, directory
+semantics, replacement backup and failure behavior from the same pinned native
+build. `system_cgate_file.rs` drives the real daemon over TCP with LOGIN
+enabled, round-trips every byte value, checks 76-character download framing,
+listings, digest rows, backup/delete behavior, invalid input recovery and
+restart durability, and verifies zero FILE PCI frames plus MQTT continuity.
+The oracle ran as a disposable loopback-only process with no C-Bus endpoint.
+This evidence establishes the sandboxed cmqttd virtual-file contract, not
+arbitrary host filesystem or Schneider project/archive interoperability.
 
 The sanitized `native_cgate_aircon.json` fixture records the owned C-Gate
 3.4.0.2001 version/hash, exact success payloads for all eleven maintained

@@ -101,6 +101,53 @@ scope/snapshot durability across restart, zero CONFIG PCI frames and MQTT
 continuity. The fixture's oracle was the pinned C-Gate 3.4.0.2001 jar in a
 disposable loopback-only Java container with no C-Bus endpoint.
 
+### FILE commands
+
+cmqttd implements all seven maintained C-Gate 3.4 FILE paths over a durable,
+sandboxed virtual root:
+
+```text
+FILE
+FILE DIR [DIRECTORY]
+FILE LS [DIRECTORY]
+FILE MKDIR DIRECTORY
+FILE DELETE PATH
+FILE SHA256 PATH [PATH ...]
+FILE DOWNLOAD PATH
+FILE UPLOAD PATH << DELIMITER
+BASE64 DATA
+DELIMITER
+```
+
+`FILE` returns the exact nine-line native help. DIR and LS are aliases: a
+directory header is status 304 and each child row is status 305. SHA256 accepts
+multiple files and emits one status-302 digest row per path. DOWNLOAD uses the
+native status-345 start, status-347 base64 rows and status-346 completion
+envelope, with 76 base64 characters per data row. UPLOAD consumes a native
+here-document and rejects missing or invalid base64 without desynchronizing the
+connection. Replacing a file preserves the previous bytes as `PATH.0`, replacing
+any older backup. MKDIR creates parent directories; DELETE removes files and
+empty directories and rejects non-empty directories.
+
+Ordinary paths are relative and reject leading `/` or `\\`, `~`, `..`, and `:`.
+Contents, directories and modification times persist atomically in
+`--cgate-state`; they never open an arbitrary host path. `%PROJECT%/...`
+accepts its separator after a known project token and addresses a separate
+virtual project namespace; it does not denote a Schneider project or archive
+file.
+With LOGIN armed, UPLOAD, DELETE and MKDIR require authentication; FILE help,
+DIR/LS, SHA256 and DOWNLOAD remain open. FILE performs no PCI I/O.
+
+`CMQTT CAPABILITIES` publishes the seven `file_commands`,
+`file_storage="cmqttd-json"`,
+`file_binary_transfer="base64-here-document-and-345-347-346-envelope"`, and
+`file_host_filesystem=false`. Ground native behavior in
+[`native_cgate_file.json`](../../../../rust/testdata/fixtures/native_cgate_file.json).
+The real-daemon `system_cgate_file.rs` regression covers TCP framing, binary
+round-trip, SHA256, listings, replacement backup, path/base64 errors, LOGIN,
+restart durability, zero PCI traffic and MQTT continuity. The native oracle
+was a disposable loopback-only C-Gate 3.4.0.2001 process with no C-Bus endpoint.
+
 ### AIRCON/HVAC commands
 
 cmqttd implements every AIRCON subcommand registered by C-Gate 3.4 for its
@@ -609,6 +656,9 @@ optional routed targeted form remains unavailable,
 `pp_reset_to_defaults: true` denotes specification-backed staged
 `PP RESET_TO_DEFAULTS` behavior,
 `document_framing: true` denotes bounded, synchronized here-document transport;
+`file_commands`, `file_storage`, `file_binary_transfer`, and
+`file_host_filesystem` describe the complete FILE family and its sandboxed
+cmqttd repository boundary;
 `database_documents: false` records that native DBSETXML replacement semantics
 and its 301 OID receipt remain unavailable,
 `project_archive_restore: "cmqttd-internal"` denotes durable snapshot keys in

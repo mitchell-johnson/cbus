@@ -177,6 +177,8 @@ struct Database {
     scene_snapshots: HashMap<String, Vec<(String, u8)>>,
     database_files: HashMap<String, Project>,
     file_store: HashMap<String, Vec<u8>>,
+    #[serde(default)]
+    file_modified: HashMap<String, i64>,
 }
 
 impl Database {
@@ -192,6 +194,7 @@ impl Database {
             scene_snapshots: s.scene_snapshots.clone(),
             database_files: s.database_files.clone(),
             file_store: s.file_store.clone(),
+            file_modified: s.file_modified.clone(),
         }
     }
 
@@ -238,6 +241,7 @@ impl Database {
         s.scene_snapshots = self.scene_snapshots;
         s.database_files = self.database_files;
         s.file_store = self.file_store;
+        s.file_modified = self.file_modified;
         Ok(migrated_network_oids)
     }
 
@@ -1692,6 +1696,13 @@ impl Service {
             capabilities["config_runtime_reconfiguration"] = serde_json::Value::Bool(false);
             capabilities["config_native_obget_missing_reply_repaired"] =
                 serde_json::Value::Bool(true);
+            capabilities["file_commands"] =
+                serde_json::json!(["delete", "dir", "download", "ls", "mkdir", "sha256", "upload"]);
+            capabilities["file_storage"] = serde_json::Value::String("cmqttd-json".to_string());
+            capabilities["file_binary_transfer"] = serde_json::Value::String(
+                "base64-here-document-and-345-347-346-envelope".to_string(),
+            );
+            capabilities["file_host_filesystem"] = serde_json::Value::Bool(false);
             capabilities["cgl_import"] = serde_json::Value::Bool(false);
             capabilities["cgl_export"] = serde_json::Value::Bool(false);
             capabilities["bridged_read_only_discovery"] = serde_json::Value::Bool(true);
@@ -1898,6 +1909,9 @@ impl Service {
         }
         if verb == "CONFIG" {
             return self.config(client, tag, &cmd.body, &words, &upper).await;
+        }
+        if verb == "FILE" {
+            return self.file(tag, &cmd.body, None).await;
         }
         if verb == "MEASUREMENT" {
             if words.len() == 1 || (words.len() == 2 && words[1] == "?") {
@@ -2308,11 +2322,9 @@ impl Service {
     }
 
     /// Gate a C-Gate here-document after the connection has bounded and
-    /// collected it. Framing support is deliberately separate from document
-    /// semantics: native DBSETXML replaces typed objects and returns a 301 OID
-    /// envelope, while CGL has a vendor exchange format. The in-memory mock's
-    /// opaque store/count behavior cannot stand in for either operation, so the
-    /// hardware service keeps both fail-closed.
+    /// collected it. FILE UPLOAD consumes base64 into the durable virtual
+    /// root. Native DBSETXML replaces typed objects and CGL has a vendor
+    /// exchange format; those distinct document semantics remain fail-closed.
     pub async fn handle_document(
         &self,
         client: &mut ClientState,
@@ -2334,6 +2346,9 @@ impl Service {
             && requires_programming_auth(verb, sub, &upper)
         {
             return err(tag, 420, "420 LOGIN required");
+        }
+        if verb == "FILE" {
+            return self.file(tag, &cmd.body, Some(document)).await;
         }
         let _ = (line, document);
         err(
@@ -2370,6 +2385,25 @@ impl Service {
             if let Err(error) = after_db.save(&self.state_path) {
                 *model = before;
                 tracing::error!("C-Gate CONFIG commit failed: {error}");
+                return err(tag, 500, "500 Database commit failed; change rolled back");
+            }
+        }
+        response
+    }
+
+    /// Sandboxed native-shaped FILE workflow. Contents and modification
+    /// metadata live in the same atomic JSON repository as the local C-Gate
+    /// database; no command path resolves against the host filesystem.
+    async fn file(&self, tag: &str, body: &str, document: Option<&str>) -> Response {
+        let mut model = self.model.lock().await;
+        let before = model.clone();
+        let before_db = Database::from_server(&model);
+        let response = crate::file::command(&mut model, tag, body, document);
+        let after_db = Database::from_server(&model);
+        if before_db != after_db {
+            if let Err(error) = after_db.save(&self.state_path) {
+                *model = before;
+                tracing::error!("C-Gate FILE commit failed: {error}");
                 return err(tag, 500, "500 Database commit failed; change rolled back");
             }
         }
@@ -8880,6 +8914,8 @@ fn parse_aircon_boolean(tag: &str, value: &str, parameter: &str) -> Result<bool,
 ///   open (snapshot read plus bus control).
 /// - CONFIG SET/LOAD/SAVE/OBSET/OBRESET mutate active values or durable
 ///   repository snapshots. Root help, GET, INFO and OBGET remain open.
+/// - FILE UPLOAD/DELETE/MKDIR mutate the durable virtual FILE root. DIR/LS,
+///   DOWNLOAD and SHA256 remain open.
 /// - DO ... FactoryDefault (destructive KEYGL5 OEM programming control).
 ///   Other DO methods remain ordinary bus-control operations.
 ///
@@ -8888,6 +8924,7 @@ fn parse_aircon_boolean(tag: &str, value: &str, parameter: &str) -> Result<bool,
 fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
     match verb {
         "CONFIG" => matches!(sub, "SET" | "LOAD" | "SAVE" | "OBSET" | "OBRESET"),
+        "FILE" => matches!(sub, "UPLOAD" | "DELETE" | "MKDIR"),
         "MEASUREMENT" => sub == "DATA",
         "AIRCON" => is_aircon_subcommand(sub) && sub != "REFRESH",
         "AUDIO" => {
@@ -8982,6 +9019,10 @@ fn local_command(words: &[&str], upper: &[String], model: &Server) -> bool {
         // handled above; the model supplies cached network and unit fields.
         "GET" => words.len() == 3,
         "NET" => matches!(sub, "LIST" | "LIST_ALL" | "STATE"),
+        "FILE" => matches!(
+            sub,
+            "UPLOAD" | "DOWNLOAD" | "SHA256" | "DIR" | "LS" | "DELETE" | "MKDIR"
+        ),
         "PP" => match sub {
             "LOAD" | "SAVE" => words.get(3).is_some_and(|p| p.starts_with("/db/")),
             "SAVE_TO_SOURCE" => words

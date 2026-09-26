@@ -122,12 +122,15 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // All nine maintained CONFIG paths moved fail_closed_502 ->
     // local_database with the retained native catalogue, scoped durable
     // values and bounded cmqttd-json LOAD/SAVE snapshots.
+    // All seven maintained FILE paths moved fail_closed_502 ->
+    // local_database with retained native base64, digest, directory and
+    // replacement-backup semantics over the sandboxed durable virtual root.
     // The eleven maintained AIRCON commands and NET PROJECT_IDENTIFY moved
     // fail_closed_502 -> physical. PROJECT_IDENTIFY uses the selected shared
     // interface's native read-only MMI/parameter-35 workflow.
     assert_eq!(class_count(RoutingClass::Physical), 100);
-    assert_eq!(class_count(RoutingClass::LocalDatabase), 64);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 266);
+    assert_eq!(class_count(RoutingClass::LocalDatabase), 71);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 259);
     assert_eq!(class_count(RoutingClass::Obsolete400), 1);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here
@@ -135,6 +138,37 @@ fn matrix_class_counts_pin_the_routing_gap() {
     assert_eq!(class_count(RoutingClass::Rejected4xx), 0);
     let total: usize = counts.values().sum();
     assert_eq!(total, 431);
+}
+
+#[test]
+fn file_rows_retain_native_binary_directory_and_backup_evidence() {
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_file.json"
+    ))
+    .expect("native FILE evidence must remain valid JSON");
+    assert_eq!(fixture["oracle"]["version"], "3.4.0.2001");
+    assert_eq!(
+        fixture["oracle"]["jar_sha256"],
+        "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+    );
+    assert_eq!(fixture["inventory"]["count"], 7);
+    assert_eq!(fixture["round_trip"]["base64_line_width"], 76);
+    assert_eq!(
+        fixture["replacement"]["behavior"],
+        "existing target is renamed to target.0 before the new decoded payload is promoted; an older target.0 is deleted"
+    );
+    assert_eq!(fixture["cmqttd_boundary"]["host_filesystem"], false);
+    for entry in CAPABILITY_MATRIX
+        .iter()
+        .filter(|entry| entry.path.starts_with("FILE "))
+    {
+        assert_eq!(entry.class, RoutingClass::LocalDatabase, "{}", entry.path);
+        assert!(
+            entry.evidence.contains("native_cgate_file.json"),
+            "{}",
+            entry.path
+        );
+    }
 }
 
 #[test]

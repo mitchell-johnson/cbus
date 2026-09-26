@@ -26,6 +26,15 @@ LOAD, SAVE, OBSET and OBRESET; catalogue help and reads stay open. The one
 intentional protocol repair converts native's no-reply OBGET wrong-scope path
 to 408 so a client cannot hang.
 
+The complete maintained FILE family is another local compatibility subsystem.
+Its directories, binary contents, modification times and `.0` replacement
+backups live in the atomic `cmqttd-json` repository. The service exposes native
+DIR/LS, recursive MKDIR, DELETE, multi-file SHA256, base64 DOWNLOAD and
+here-document UPLOAD envelopes. Its relative-path guard and virtual
+`%PROJECT%` namespace prevent access to arbitrary host or vendor project files.
+FILE commands send no PCI traffic. The optional LOGIN gate protects UPLOAD,
+DELETE and MKDIR; help and reads stay open.
+
 The embedded C-Gate endpoint implements the eleven C-Gate 3.4 AIRCON commands
 for application 172 on the configured direct network. Commands use the shared
 PCI confirmation lane; incoming schedule, plant and zone report SALs stay on
@@ -152,9 +161,9 @@ Supported project inputs are a one-file `.cbz` zip archive or bare project XML. 
 ## Test data and evidence
 
 - `rust/testdata/vectors/` contains JSONL cases for checksums, frame encode/decode, native AIRCON, AUDIO, Security, Measurement, Telephony and Media Transport commands/events, native label-cache clear, ramp rates, MQTT topics, Home Assistant discovery, and strict selected-serial plan interchange.
-- `rust/testdata/fixtures/` contains small non-production project and behavior fixtures, including sanitized disposable-native evidence for CONFIG, AIRCON, AUDIO, Security, Measurement, Telephony, Media Transport and project copy/delete behavior.
+- `rust/testdata/fixtures/` contains small non-production project and behavior fixtures, including sanitized disposable-native evidence for CONFIG, FILE, AIRCON, AUDIO, Security, Measurement, Telephony, Media Transport and project copy/delete behavior.
 - `cbus-golden-tests` generates a named test per committed vector.
-- `cmqttd` system tests run the real daemon against an in-process MQTT broker and scripted PCI, including CONFIG durability/no-PCI coverage, all six maintained specialist application families' command/event correlation, authentication and MQTT continuity, plus dedicated continuity checks after project administration.
+- `cmqttd` system tests run the real daemon against an in-process MQTT broker and scripted PCI, including CONFIG and FILE durability/no-PCI coverage, all six maintained specialist application families' command/event correlation, authentication and MQTT continuity, plus dedicated continuity checks after project administration.
 - `cgate-mock` integration tests cover framing, state, sessions, event fanout, here-documents, inventory reachability, and programming access.
 - `toolkit-cli/tests/test_rust_cgate_interop.py` drives the Rust mock using the production Python C-Gate client and typed workflows.
 

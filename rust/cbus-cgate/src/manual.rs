@@ -1050,6 +1050,9 @@ impl Server {
         if first == "CONVERTUNIT" {
             return Some(self.convert_unit(tag, words));
         }
+        if first == "FILE" {
+            return Some(crate::file::command(self, tag, body, None));
+        }
         if let Some(response) = self.hidden_command(tag, words) {
             return Some(response);
         }
@@ -2598,9 +2601,6 @@ impl Server {
         }
         let args = &words[root_len + 1..];
 
-        if root == "FILE" {
-            return Some(self.file_command(tag, &sub, args));
-        }
         if root == "ACCESS" {
             return Some(self.access_command(tag, &sub, args));
         }
@@ -2781,55 +2781,6 @@ impl Server {
         }
     }
 
-    fn file_command(&mut self, tag: &str, sub: &str, args: &[&str]) -> Response {
-        match sub {
-            "UPLOAD" if args.len() >= 2 && safe_server_path(args[0]) => {
-                self.file_store
-                    .insert(args[0].to_string(), args[1..].join(" ").into_bytes());
-                ok(tag, vec![], "200 OK")
-            }
-            "DOWNLOAD" if args.len() == 1 && safe_server_path(args[0]) => {
-                if let Some(bytes) = self.file_store.get(args[0]) {
-                    envelope(tag, 347, [String::from_utf8_lossy(bytes).to_string()])
-                } else {
-                    err(tag, status::NOT_FOUND, "404 File not found")
-                }
-            }
-            "SHA256" if args.len() == 1 && safe_server_path(args[0]) => {
-                if let Some(bytes) = self.file_store.get(args[0]) {
-                    envelope(tag, 300, [sha256_hex(bytes)])
-                } else {
-                    err(tag, status::NOT_FOUND, "404 File not found")
-                }
-            }
-            "DIR" | "LS" if args.len() <= 1 => {
-                let prefix = args.first().copied().unwrap_or("");
-                let mut rows: Vec<String> = self
-                    .file_store
-                    .keys()
-                    .filter(|path| path.starts_with(prefix))
-                    .cloned()
-                    .collect();
-                rows.sort();
-                envelope(tag, 123, rows)
-            }
-            "DELETE" if args.len() == 1 && safe_server_path(args[0]) => {
-                if self.file_store.remove(args[0]).is_some() {
-                    ok(tag, vec![], "200 OK")
-                } else {
-                    err(tag, status::NOT_FOUND, "404 File not found")
-                }
-            }
-            "MKDIR" if args.len() == 1 && safe_server_path(args[0]) => {
-                self.file_store
-                    .entry(format!("{}/", args[0].trim_end_matches('/')))
-                    .or_default();
-                ok(tag, vec![], "200 OK")
-            }
-            _ => err(tag, status::BAD_REQUEST, "400 Invalid FILE command"),
-        }
-    }
-
     fn pp_private_command(&mut self, tag: &str, sub: &str, args: &[&str]) -> Option<Response> {
         if !matches!(
             sub,
@@ -2980,15 +2931,8 @@ fn hidden_group(words: &[&str]) -> Option<(&'static str, usize, &'static [&'stat
         .max_by_key(|(_, length, _)| *length)
 }
 
-fn safe_server_path(path: &str) -> bool {
-    !path.is_empty()
-        && !path.starts_with(['/', '\\'])
-        && !path.contains('\0')
-        && !path.split(['/', '\\']).any(|part| part == "..")
-}
-
 /// Dependency-free SHA-256 for the private FILE SHA256 command.
-fn sha256_hex(input: &[u8]) -> String {
+pub(crate) fn sha256_hex(input: &[u8]) -> String {
     const K: [u32; 64] = [
         0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4,
         0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe,
@@ -3201,18 +3145,22 @@ mod tests {
     #[test]
     fn private_file_and_queue_families_round_trip() {
         let mut server = Server::new(AccessLevel::Program);
+        assert_eq!(server.handle("[0] FILE MKDIR macros").status, 200);
         assert_eq!(
-            server.handle("[1] FILE UPLOAD macros/test.txt abc").status,
+            server
+                .handle_document("[1] FILE UPLOAD macros/test.txt", "YWJj\n")
+                .status,
             200
         );
         assert_eq!(
             server.handle("[2] FILE SHA256 macros/test.txt").final_text,
-            "300 ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+            "302 File=macros/test.txt SHA256Hash=ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
         );
         assert!(server
             .handle("[3] FILE DOWNLOAD macros/test.txt")
-            .final_text
-            .ends_with("abc"));
+            .lines
+            .iter()
+            .any(|line| line == "347-YWJj"));
         assert_eq!(
             server.handle("[4] DEPLOY_QUEUE ADD job1 payload").status,
             200

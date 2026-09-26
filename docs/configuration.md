@@ -56,6 +56,9 @@ passes `/etc/cmqttd/unitspec` automatically when that directory exists. Compose 
 `CMQTTD_CGATE_BIND=0.0.0.0:20023` inside the container and a loopback-only host
 port. Set that variable to `off` for MQTT only. State lives in the named
 `cmqttd_data` volume; do not delete that volume when recreating containers.
+The embedded C-Gate CONFIG catalogue/snapshots and FILE virtual filesystem also
+live in this atomic state file. FILE paths are relative virtual paths and never
+address files elsewhere in the container or host.
 
 See [C-Gate service and replacement status](cmqttd-cgate.md) for the actual
 hardware operations, live eDLT label command, tests, and outstanding workflows.
