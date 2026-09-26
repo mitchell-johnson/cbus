@@ -50,7 +50,9 @@ pub fn decode_sals(data: &[u8]) -> Result<Vec<MeasurementData>, DecodeError> {
     if !data.len().is_multiple_of(7) {
         return Err(DecodeError::new("truncated Measurement data command"));
     }
-    data.chunks_exact(7)
+    data.as_chunks::<7>()
+        .0
+        .iter()
         .map(|chunk| {
             if chunk[0] != 0x0e {
                 return Err(DecodeError::new(format!(
