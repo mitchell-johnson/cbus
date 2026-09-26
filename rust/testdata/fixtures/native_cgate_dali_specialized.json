@@ -1,0 +1,499 @@
+{
+  "format": "native-cgate-dali-specialized-v1",
+  "inventory": {
+    "local_paths": 19,
+    "maintained_paths": 60,
+    "physical_paths": 41,
+    "whole_path_fail_closed": 0
+  },
+  "local": {
+    "CATALOG GET_SPEC": {
+      "class": 124,
+      "class_sha256": "365dd0f62a7b22cea2d38dcf09539d7973fb152e6df4922a8df404848dc16184",
+      "obfuscated_class": "dI",
+      "routing": "local/session/catalog"
+    },
+    "CATALOG LIST": {
+      "class": 122,
+      "class_sha256": "f03d8f24db03e1b24db1c76c39c10be98d7fb09b2aae490f432ead1b59bc6e40",
+      "obfuscated_class": "dJ",
+      "routing": "local/session/catalog"
+    },
+    "CATALOG RELOAD": {
+      "class": 123,
+      "class_sha256": "14f32571748aea375dde6146f86336f9873cbb22b731a4efe4cb025bbd53337b",
+      "obfuscated_class": "dK",
+      "routing": "local/session/catalog"
+    },
+    "GATEWAY DEVICE_ID_LIST": {
+      "class": 67,
+      "class_sha256": "fabed8f0ccdb947c24f8c8cd3123b71d0e6c93af618a125df8f32abbd12f4115",
+      "obfuscated_class": "eA",
+      "routing": "local/session/catalog"
+    },
+    "GATEWAY LIST": {
+      "class": 66,
+      "class_sha256": "ed9a64cc6d2d54e25df0f088e8c7abfede7bc63c39db6a22382665ab5f0a0395",
+      "obfuscated_class": "eC",
+      "routing": "local/session/catalog"
+    },
+    "GATEWAY NAC_SUMMARY_LIST": {
+      "class": 68,
+      "class_sha256": "76a5efff21186facebebd3db79935142434310f11192c86a26b20abfcaf1e0d9",
+      "obfuscated_class": "eE",
+      "routing": "local/session/catalog"
+    },
+    "GATEWAY PROJECT_CUSTOM": {
+      "class": 65,
+      "class_sha256": "529aed1ef82674c9aa9478039140996b5054613c3de47db178c734f28071a0b2",
+      "obfuscated_class": "eI",
+      "routing": "local/session/catalog"
+    },
+    "GATEWAY SET_EXTENDED_PARAMETERS": {
+      "class": 59,
+      "class_sha256": "00cabbf420cc5fa69263e84bf045a7c5e0a2e32cd9f8384d985bb932e2d1dc49",
+      "obfuscated_class": "eM",
+      "routing": "local/session/catalog"
+    },
+    "SESSION CATALOG_DEVICE_ADD": {
+      "class": 116,
+      "class_sha256": "0da24b91c9a37fd91903ba0d700730a60d3468d2f9a1816a42a8878d35dabf35",
+      "obfuscated_class": "fq",
+      "routing": "local/session/catalog"
+    },
+    "SESSION CATALOG_DEVICE_REMOVE": {
+      "class": 117,
+      "class_sha256": "09c96acf09b93e2ef4ecc71d2c4cbdadda384e481060d7f82b63d4d362acbb57",
+      "obfuscated_class": "fr",
+      "routing": "local/session/catalog"
+    },
+    "SESSION END": {
+      "class": 111,
+      "class_sha256": "25644952232b51f2433d3ac67339d1313f1c0508ec796b44f6b74239d274c244",
+      "obfuscated_class": "ft",
+      "routing": "local/session/catalog"
+    },
+    "SESSION GET": {
+      "class": 112,
+      "class_sha256": "e1211aaeaa09e5615d53c321d22847e8664f063fee91f84d13d7b1be6bbbc089",
+      "obfuscated_class": "fv",
+      "routing": "local/session/catalog"
+    },
+    "SESSION LIST": {
+      "class": 109,
+      "class_sha256": "dea7df209735a4cda8cd8daf8701854e59d761451da3830bca8a849fc2122734",
+      "obfuscated_class": "fw",
+      "routing": "local/session/catalog"
+    },
+    "SESSION LOAD": {
+      "class": 119,
+      "class_sha256": "d39e36346930379cf6d3f54bd2d9c507c7d8d242e279ef99f53a6031953d4bab",
+      "obfuscated_class": "fx",
+      "routing": "local/session/catalog"
+    },
+    "SESSION MULTIGET": {
+      "class": 114,
+      "class_sha256": "f847d763a3e7a3507e695f97a64881775b8331c2c1e8e7864e154a7178d1cf83",
+      "obfuscated_class": "fy",
+      "routing": "local/session/catalog"
+    },
+    "SESSION NEW": {
+      "class": 110,
+      "class_sha256": "62f08a6b908828cf8a87b797ceaa43f2cc8ff44f6b43fc1388a51bf1d1eae4fe",
+      "obfuscated_class": "fz",
+      "routing": "local/session/catalog"
+    },
+    "SESSION SAVE": {
+      "class": 121,
+      "class_sha256": "1e43602fcab8fcff2ec1c522ef0135720dc18d12371c3b21aceb662b3ebd336f",
+      "obfuscated_class": "fA",
+      "routing": "local/session/catalog"
+    },
+    "SESSION SET": {
+      "class": 113,
+      "class_sha256": "895a7175c7ccc10a587955b3a07c7ba12539039cc1f510f009f5108bae8ab741",
+      "obfuscated_class": "fB",
+      "routing": "local/session/catalog"
+    },
+    "SESSION SET_EXT_PARAMS": {
+      "class": 115,
+      "class_sha256": "d34198a74c1b3ccd87559bee1e75817708a51dd3a3246421b0a422ca0f82c9d3",
+      "obfuscated_class": "fC",
+      "routing": "local/session/catalog"
+    }
+  },
+  "oracle": {
+    "decompiler": "CFR 0.152",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "product": "C-Gate",
+    "research_transport": "loopback-only; no C-Bus network",
+    "version": "3.4.0.2001"
+  },
+  "physical": {
+    "ERROR_REPORTING ACK_ALL_ERRORS_ACTION_SELECTOR": {
+      "address": 635,
+      "class": 91,
+      "class_sha256": "749891fe2a49a3c08b1628668ab6701341ec571d01a7cacf6690ae1a724d853f",
+      "length": 1,
+      "obfuscated_class": "ef",
+      "wire": "paged_memory"
+    },
+    "ERROR_REPORTING DEVICE_ID": {
+      "address": 556,
+      "class": 88,
+      "class_sha256": "7d08bb01217adb029f0d215aa09b72674b8fa0e453bbf05e38c3d5e1359b46f4",
+      "length": 1,
+      "obfuscated_class": "eg",
+      "wire": "paged_memory"
+    },
+    "ERROR_REPORTING ENABLE_GROUP": {
+      "address": 632,
+      "class": 87,
+      "class_sha256": "c5e9c2b1a74e97d83730307228361c0a5db78e5e314e6b5be5c1664e0b6af464",
+      "length": 1,
+      "obfuscated_class": "eh",
+      "wire": "paged_memory"
+    },
+    "ERROR_REPORTING INTERVAL": {
+      "address": 637,
+      "class": 85,
+      "class_sha256": "1e020b81dca3fb2ecb73bdcb866b7965d7ea2521999571a2103c7a9266066272",
+      "length": 1,
+      "obfuscated_class": "ei",
+      "wire": "paged_memory"
+    },
+    "ERROR_REPORTING MODE": {
+      "address": 636,
+      "class": 86,
+      "class_sha256": "13e483360c5493d87ba760099a4fa9473dca87dc0ae350321d3d24f754ee7fc9",
+      "length": 1,
+      "obfuscated_class": "ej",
+      "wire": "paged_memory"
+    },
+    "ERROR_REPORTING NETWORK_PATH": {
+      "address": 638,
+      "class": 92,
+      "class_sha256": "e650391e294ca611759137e0a95e05f0fb2f4d90a4b4362a2b60252c0da3621c",
+      "length": 6,
+      "obfuscated_class": "ek",
+      "wire": "paged_memory"
+    },
+    "ERROR_REPORTING RESEND_ACTION_SELECTOR": {
+      "address": 634,
+      "class": 90,
+      "class_sha256": "f8e5826b374dcafe76dcd3fd7c32833550ca2e300c4a671f6da513150383e26d",
+      "length": 1,
+      "obfuscated_class": "el",
+      "wire": "paged_memory"
+    },
+    "ERROR_REPORTING SET_ACK_ALL_ERRORS_ACTION_SELECTOR": {
+      "address": 635,
+      "class": 101,
+      "class_sha256": "169f645e53f0429f739a7041b3fdc705d283933614bd1f5855fd9dca91099644",
+      "length": 1,
+      "obfuscated_class": "em",
+      "wire": "paged_memory"
+    },
+    "ERROR_REPORTING SET_DEVICE_ID": {
+      "address": 556,
+      "class": 98,
+      "class_sha256": "6347a03d764cc10f1f27e0f0c2998c84212f453157054aa6ce8ec406350a422a",
+      "length": 1,
+      "obfuscated_class": "en",
+      "wire": "paged_memory"
+    },
+    "ERROR_REPORTING SET_ENABLE_GROUP": {
+      "address": 632,
+      "class": 97,
+      "class_sha256": "dd04913c9d556bebd825cbd3feddc3a021d440190c1dda7c4552d1b15a7a14b6",
+      "length": 1,
+      "obfuscated_class": "eo",
+      "wire": "paged_memory"
+    },
+    "ERROR_REPORTING SET_INTERVAL": {
+      "address": 637,
+      "class": 95,
+      "class_sha256": "fb42a414b56ee723d14bfada7cdaa231cb6211000bf7a28a8b665c8e7ed8d2c9",
+      "length": 1,
+      "obfuscated_class": "ep",
+      "wire": "paged_memory"
+    },
+    "ERROR_REPORTING SET_MODE": {
+      "address": 636,
+      "class": 96,
+      "class_sha256": "b1db45a00cf4c00003702fbac08103a56c89e91cd161b51392dd8b79f58ab7da",
+      "length": 1,
+      "obfuscated_class": "eq",
+      "wire": "paged_memory"
+    },
+    "ERROR_REPORTING SET_NETWORK_PATH": {
+      "address": 638,
+      "class": 102,
+      "class_sha256": "4b9af788bf2891c57f41843ed60f812f997d7bfca0f1eeb4a1efcd7a70213af9",
+      "length": 6,
+      "obfuscated_class": "er",
+      "wire": "paged_memory"
+    },
+    "ERROR_REPORTING SET_RESEND_ACTION_SELECTOR": {
+      "address": 634,
+      "class": 100,
+      "class_sha256": "9a999b3a876aa88977b65f142284bbd2152541ba9c45038c16a947bb3a06f701",
+      "length": 1,
+      "obfuscated_class": "es",
+      "wire": "paged_memory"
+    },
+    "ERROR_REPORTING SET_STORE_OPTION": {
+      "address": 521,
+      "class": 94,
+      "class_sha256": "53c8be5e2ee9066519d856f2eb6a82a7807bda01c5585a95eafb8995064a3c80",
+      "length": 1,
+      "obfuscated_class": "et",
+      "wire": "paged_memory"
+    },
+    "ERROR_REPORTING SET_TRIGGER_REPORT_GROUP": {
+      "address": 633,
+      "class": 99,
+      "class_sha256": "17686969323a8e7ddd99da14c18cb5e59f6a4b9fb1a1d909ca79f56c0abef7f9",
+      "length": 1,
+      "obfuscated_class": "eu",
+      "wire": "paged_memory"
+    },
+    "ERROR_REPORTING SET_USED_DEVICE_MASK": {
+      "address": 8800,
+      "class": 93,
+      "class_sha256": "a4846bc5d3f6f053d14c7fc32c842f80a208d2950cbc237836614083a402e8a6",
+      "length": 8,
+      "line_b_address": 8808,
+      "obfuscated_class": "ev",
+      "wire": "paged_memory"
+    },
+    "ERROR_REPORTING STORE_OPTION": {
+      "address": 521,
+      "class": 84,
+      "class_sha256": "d7970d20e80184d51be9626144548c2c54dba057efae6f04a94e1dddd8280a38",
+      "length": 1,
+      "obfuscated_class": "ew",
+      "wire": "paged_memory"
+    },
+    "ERROR_REPORTING TRIGGER_REPORT_GROUP": {
+      "address": 633,
+      "class": 89,
+      "class_sha256": "d2aacb2989ff0cc971609339dbbbc95c297a50741fc8ea072f33a8937b807203",
+      "length": 1,
+      "obfuscated_class": "ex",
+      "wire": "paged_memory"
+    },
+    "ERROR_REPORTING USED_DEVICE_MASK": {
+      "address": 8800,
+      "class": 83,
+      "class_sha256": "0af8abc760b2fdd6597e78f0f8c6c45a22a0b8da7de08d8df32d3831db15d10a",
+      "length": 8,
+      "line_b_address": 8808,
+      "obfuscated_class": "ey",
+      "wire": "paged_memory"
+    },
+    "GATEWAY FACTORY_RESET": {
+      "class": 51,
+      "class_sha256": "3b262293e4e212d2642df975f80343a261082d609c74ef4f66e6e1a763a39968",
+      "group": 0,
+      "obfuscated_class": "eB",
+      "operation": 1,
+      "wire": "extended_cal"
+    },
+    "GATEWAY LOAD_PRESET": {
+      "class": 52,
+      "class_sha256": "ecaaa5738e6c89d86fc9608b229ce01b87b1c13b4d5f3e7c4cddb369927daa18",
+      "group": 0,
+      "obfuscated_class": "eD",
+      "operation": 3,
+      "wire": "extended_cal"
+    },
+    "GATEWAY PAGED_RECALL": {
+      "class": 55,
+      "class_sha256": "2681ac79d46eb8387be1e595b0b263dff5a588cc401b466ea66d04a5637210d6",
+      "obfuscated_class": "eF",
+      "range": [
+        0,
+        11376
+      ],
+      "wire": "paged_memory"
+    },
+    "GATEWAY PAGED_STORE": {
+      "class": 56,
+      "class_sha256": "22ff91a5f88caba36913bf878457a5daf58645fde0699a717f0251aec52e8176",
+      "max_bytes": 16,
+      "obfuscated_class": "eG",
+      "range": [
+        0,
+        11376
+      ],
+      "wire": "paged_memory"
+    },
+    "GATEWAY PRIMARY_ADDRESS": {
+      "class": 60,
+      "class_sha256": "b28bde0bf81292ed89402cd0443f51b26739552526afa5b21197d170db86c21a",
+      "length": 1,
+      "line_a_base": 768,
+      "line_b_base": 3872,
+      "obfuscated_class": "eH",
+      "stride": 32,
+      "wire": "paged_memory"
+    },
+    "GATEWAY READ_EXTENDED_PARAMETERS": {
+      "address": 256,
+      "class": 57,
+      "class_sha256": "9476a9969930a0cfbf5a70febd269ad0a9770abef0d89f527cf2ae35405c16c1",
+      "length": 11120,
+      "obfuscated_class": "eJ",
+      "wire": "paged_memory"
+    },
+    "GATEWAY RESTART": {
+      "class": 53,
+      "class_sha256": "0f0cab648385bff215a84a8e7f445e483fe60e1b1268e328cbee4704624c82ef",
+      "group": 0,
+      "obfuscated_class": "eK",
+      "operation": 2,
+      "wire": "extended_cal"
+    },
+    "GATEWAY SAVE_TO_NVM": {
+      "class": 54,
+      "class_sha256": "3d1de1dbd1b8cf73097745e882c5d81c307666b54ff13760d38c81327ff658e5",
+      "group": 0,
+      "obfuscated_class": "eL",
+      "operation": 4,
+      "wire": "extended_cal"
+    },
+    "GATEWAY SET_PRIMARY_ADDRESS": {
+      "class": 61,
+      "class_sha256": "4dd71b2f425255d2b825d146d2b70d28480a95638ef2b7de280e13edf079c6f6",
+      "length": 1,
+      "line_a_base": 768,
+      "line_b_base": 3872,
+      "obfuscated_class": "eN",
+      "stride": 32,
+      "wire": "paged_memory"
+    },
+    "GATEWAY SET_VIRTUAL_GROUP": {
+      "class": 63,
+      "class_sha256": "67e3317132c9335d51cd11984c73dbbd34a647de680488fc0e4b959f63e70264",
+      "length": 8,
+      "line_a_base": 7168,
+      "line_b_base": 7296,
+      "obfuscated_class": "eO",
+      "stride": 8,
+      "wire": "paged_memory"
+    },
+    "GATEWAY SHORT_MAP": {
+      "class": 64,
+      "class_sha256": "ef514ac6730b4ba0cf7bb890f6732ca04d5ea8fc09d3ed2bd68ea28366de52b8",
+      "length": 16,
+      "line_a_base": 7040,
+      "line_b_base": 7104,
+      "obfuscated_class": "eP",
+      "wire": "paged_memory"
+    },
+    "GATEWAY VIRTUAL_GROUP": {
+      "class": 62,
+      "class_sha256": "6152c6934fedaa6ab6e62491f118c8942a74a8859188ea31261d5cb04f162e72",
+      "length": 8,
+      "line_a_base": 7168,
+      "line_b_base": 7296,
+      "obfuscated_class": "eQ",
+      "stride": 8,
+      "wire": "paged_memory"
+    },
+    "GATEWAY WRITE_EXTENDED_PARAMETERS": {
+      "address": 256,
+      "class": 58,
+      "class_sha256": "85865f5174572e1fb8b5bfbb04f0a0be079cd03846c94f59f190770634ef0f2b",
+      "length": 11120,
+      "obfuscated_class": "eR",
+      "wire": "paged_memory",
+      "write_chunk": 12
+    },
+    "MEASUREMENT CLEAR_TRIGGER_GROUP": {
+      "address": 559,
+      "class": 105,
+      "class_sha256": "ae5b1e4666faa5ab40047893a8887219cd3fa62bd5001205dc5b159c14478176",
+      "length": 1,
+      "obfuscated_class": "eW",
+      "stride": 0,
+      "wire": "paged_memory"
+    },
+    "MEASUREMENT LAMP_RUNNING_TIME": {
+      "address": 7424,
+      "class": 103,
+      "class_sha256": "f730ed9fa673e02722043e37ba0c78653d5e9e0d316f21a67d2df375eb3cc286",
+      "length": 4,
+      "line_b_address": 7680,
+      "obfuscated_class": "eX",
+      "stride": 4,
+      "wire": "paged_memory"
+    },
+    "MEASUREMENT REQUEST_TRIGGER_GROUP": {
+      "address": 558,
+      "class": 104,
+      "class_sha256": "a73c2f59819415e6dc30b71cd3089d1450ef568b44c7c34d51fe85a0e09f8791",
+      "length": 1,
+      "obfuscated_class": "eY",
+      "stride": 0,
+      "wire": "paged_memory"
+    },
+    "MEASUREMENT SET_CLEAR_TRIGGER_GROUP": {
+      "address": 559,
+      "class": 108,
+      "class_sha256": "d89c0eb1439834b61c79491e59a629a3dd67cf67d0bdc1b07e06b94f8ee8b2c3",
+      "length": 1,
+      "obfuscated_class": "eZ",
+      "stride": 0,
+      "wire": "paged_memory"
+    },
+    "MEASUREMENT SET_LAMP_RUNNING_TIME": {
+      "address": 7424,
+      "class": 106,
+      "class_sha256": "22098a232ad93f5b839d9c53b39b6224f7e6478f0b08423bf635b256c9db5962",
+      "length": 4,
+      "line_b_address": 7680,
+      "obfuscated_class": "fa",
+      "stride": 4,
+      "wire": "paged_memory"
+    },
+    "MEASUREMENT SET_REQUEST_TRIGGER_GROUP": {
+      "address": 558,
+      "class": 107,
+      "class_sha256": "db6acd9e8aeca9000bba73f5147a8d5c957d96f677cae351ee8623c8ef322899",
+      "length": 1,
+      "obfuscated_class": "fb",
+      "stride": 0,
+      "wire": "paged_memory"
+    },
+    "SESSION DEPLOY": {
+      "class": 120,
+      "class_sha256": "22e21c0bdd5b9f0779e8919e1870f94b7760b436d7744848ea61b11171e46d87",
+      "evidenced_selector": "EXT_ONLY",
+      "obfuscated_class": "fs",
+      "other_selectors": "fail-before-io",
+      "wire": "commissioning"
+    },
+    "SESSION EXTRACT": {
+      "class": 118,
+      "class_sha256": "f83c4a39ec30ef1fafb04fa7edcb2b45ee8e39e6301f2547867f618835534f15",
+      "evidenced_selector": "EXT_ONLY",
+      "obfuscated_class": "fu",
+      "other_selectors": "fail-before-io",
+      "wire": "commissioning"
+    }
+  },
+  "safety_boundary": {
+    "behavior": "refuse before I/O; retained plan names are evidenced but their complete typed model codec is not implemented",
+    "typed_session_plans": [
+      "DALI_ONLY",
+      "FULL",
+      "COND_QUICK",
+      "COND_EXTENDED",
+      "RESCAN_FAULT",
+      "REFRESH_STATUS_INFO",
+      "RETRIEVE_RECONCILE"
+    ]
+  }
+}

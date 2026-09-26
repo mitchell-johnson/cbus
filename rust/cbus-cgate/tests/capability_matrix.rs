@@ -136,18 +136,16 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // generic 502: root help, local serial/interface enumeration and native
     // REFRESH behavior are local; both discovery protocols and PROBE use
     // explicit physical network/port I/O.
-    // Sixty-two retained DALI core and emergency leaf commands moved from
-    // fail_closed_502 -> physical with their native extended-CAL payloads,
-    // source-correlated gateway replies and no-replay reconnect boundary.
-    // The six DALI group roots moved fail_closed_502 -> local_database to
-    // serve the exact retained help envelopes. The other sixty specialised
-    // DALI leaves remain explicitly fail closed.
+    // All 128 retained DALI paths are now routed: 103 physical leaves, six
+    // local help roots and nineteen local catalogue/session/database leaves.
+    // Typed DALI_ONLY/FULL session plans retain a narrower fail-before-I/O
+    // selector boundary, while the evidenced EXT_ONLY path is physical.
     // Eleven local/session administration paths moved fail_closed_502 ->
     // local_database: PROJECT root/DIRFULL, DBGETJSON root and three NAC
     // projections, EVENT_CHANNEL LIST/SUB/UNSUB, and advisory LOCK/UNLOCK.
-    assert_eq!(class_count(RoutingClass::Physical), 165);
-    assert_eq!(class_count(RoutingClass::LocalDatabase), 99);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 166);
+    assert_eq!(class_count(RoutingClass::Physical), 206);
+    assert_eq!(class_count(RoutingClass::LocalDatabase), 118);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 106);
     assert_eq!(class_count(RoutingClass::Obsolete400), 1);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here
@@ -235,7 +233,7 @@ fn local_admin_rows_retain_native_oracle_and_boundary_evidence() {
 }
 
 #[test]
-fn dali_rows_retain_native_help_wire_and_fail_closed_boundaries() {
+fn dali_rows_retain_native_help_wire_and_specialized_routing() {
     let fixture: serde_json::Value = serde_json::from_str(include_str!(
         "../../testdata/fixtures/native_cgate_dali_help.json"
     ))
@@ -259,21 +257,21 @@ fn dali_rows_retain_native_help_wire_and_fail_closed_boundaries() {
             .iter()
             .filter(|entry| entry.class == RoutingClass::Physical)
             .count(),
-        62
+        103
     );
     assert_eq!(
         dali_rows
             .iter()
             .filter(|entry| entry.class == RoutingClass::LocalDatabase)
             .count(),
-        6
+        25
     );
     assert_eq!(
         dali_rows
             .iter()
             .filter(|entry| entry.class == RoutingClass::FailClosed502)
             .count(),
-        60
+        0
     );
 
     for root in [
@@ -308,16 +306,25 @@ fn dali_rows_retain_native_help_wire_and_fail_closed_boundaries() {
 
     for path in [
         "DALI CATALOG LIST",
-        "DALI ERROR_REPORTING MODE",
         "DALI GATEWAY LIST",
-        "DALI MEASUREMENT LAMP_RUNNING_TIME",
         "DALI SESSION LIST",
     ] {
         let entry = CAPABILITY_MATRIX
             .iter()
             .find(|entry| entry.path == path)
             .unwrap();
-        assert_eq!(entry.class, RoutingClass::FailClosed502, "{path}");
+        assert_eq!(entry.class, RoutingClass::LocalDatabase, "{path}");
+    }
+    for path in [
+        "DALI ERROR_REPORTING MODE",
+        "DALI MEASUREMENT LAMP_RUNNING_TIME",
+        "DALI SESSION EXTRACT",
+    ] {
+        let entry = CAPABILITY_MATRIX
+            .iter()
+            .find(|entry| entry.path == path)
+            .unwrap();
+        assert_eq!(entry.class, RoutingClass::Physical, "{path}");
     }
 }
 

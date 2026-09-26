@@ -3,6 +3,7 @@
 
 use super::*;
 mod dali;
+mod dali_specialized;
 use crate::access::{credential_digest_for, AccessEntry, CgateAccessLevel};
 use crate::auth;
 use crate::config::{
@@ -293,6 +294,8 @@ struct Database {
     file_store: HashMap<String, Vec<u8>>,
     #[serde(default)]
     file_modified: HashMap<String, i64>,
+    #[serde(default)]
+    dali_saved_sessions: HashMap<String, serde_json::Value>,
     #[serde(default = "crate::access::default_access_entries")]
     access_entries: Vec<AccessEntry>,
     #[serde(default)]
@@ -317,6 +320,7 @@ impl Database {
             database_files: s.database_files.clone(),
             file_store: s.file_store.clone(),
             file_modified: s.file_modified.clone(),
+            dali_saved_sessions: s.dali_saved_sessions.clone(),
             access_entries: s.access_entries.clone(),
             access_admission_enforced: s.access_admission_enforced,
             access_snapshots: s.access_snapshots.clone(),
@@ -368,6 +372,7 @@ impl Database {
         s.database_files = self.database_files;
         s.file_store = self.file_store;
         s.file_modified = self.file_modified;
+        s.dali_saved_sessions = self.dali_saved_sessions;
         s.access_entries = self.access_entries;
         s.access_admission_enforced = self.access_admission_enforced;
         s.access_snapshots = self.access_snapshots;
@@ -469,6 +474,7 @@ pub struct Service {
     events: broadcast::Sender<String>,
     observed_labels: Mutex<ObservedLabels>,
     measurement_state: Mutex<HashMap<(u8, u8), Option<MeasurementObservation>>>,
+    dali_state: Mutex<dali_specialized::DaliState>,
     command_sessions: Mutex<CommandSessions>,
     /// Native advisory LOCK/UNLOCK ownership, separate from PP locks and from
     /// the durable database. Entries are released at session boundaries.
@@ -1327,6 +1333,7 @@ impl Service {
         selected.state = NetworkState::Open;
         open_reachable_networks(&mut model, &project, network);
         Ok(Arc::new(Self {
+            dali_state: Mutex::new(dali_specialized::DaliState::from_server(&model, &project)),
             model: Mutex::new(model),
             pci: RwLock::new(pci),
             pci_generation: AtomicU64::new(0),
@@ -1437,6 +1444,7 @@ impl Service {
             CBusEvent::ConnectionLost => {
                 self.observed_labels.lock().await.observations.clear();
                 self.measurement_state.lock().await.clear();
+                self.dali_state.lock().await.invalidate_physical();
             }
             _ => {}
         }
@@ -2168,15 +2176,20 @@ impl Service {
             capabilities["telephony_mqtt_state"] = serde_json::Value::Bool(false);
             capabilities["dali_core_commands"] = serde_json::Value::from(48);
             capabilities["dali_emergency_commands"] = serde_json::Value::from(14);
-            capabilities["dali_physical_leaf_commands"] = serde_json::Value::from(62);
+            capabilities["dali_physical_leaf_commands"] = serde_json::Value::from(103);
             capabilities["dali_local_help_roots"] = serde_json::Value::from(6);
-            capabilities["dali_specialized_commands_fail_closed"] = serde_json::Value::from(60);
+            capabilities["dali_specialized_local_leaf_commands"] = serde_json::Value::from(19);
+            capabilities["dali_specialized_physical_leaf_commands"] = serde_json::Value::from(41);
+            capabilities["dali_specialized_commands_fail_closed"] = serde_json::Value::from(0);
             capabilities["dali_full_compatibility"] = serde_json::Value::Bool(false);
             capabilities["dali_extended_cal"] = serde_json::Value::Bool(true);
             capabilities["dali_delivery_semantics"] =
                 serde_json::Value::String("source-correlated-exactly-once-no-replay".to_string());
             capabilities["dali_auto_poll_limit"] = serde_json::Value::from(10);
             capabilities["dali_native_help_paths"] = serde_json::Value::from(128);
+            capabilities["dali_session_ext_only"] = serde_json::Value::Bool(true);
+            capabilities["dali_session_typed_device_plans"] =
+                serde_json::Value::String("fail-closed-before-io".to_string());
             return ok(tag, vec![capabilities.to_string()], "200 OK");
         }
         if verb == "HELP" && sub == "DALI" {
@@ -2184,7 +2197,7 @@ impl Service {
                 .unwrap_or_else(|| err(tag, 400, "400 Syntax Error: DALI command not found"));
         }
         if verb == "DALI" {
-            return self.dali(tag, &words, &upper).await;
+            return self.dali(tag, &cmd.body, &words, &upper).await;
         }
         if verb == "CONFIG" {
             return self.config(client, tag, &cmd.body, &words, &upper).await;
@@ -10199,6 +10212,56 @@ fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
 }
 
 fn dali_requires_programming_auth(words: &[String]) -> bool {
+    if let (Some(group), Some(command)) = (words.get(1), words.get(2)) {
+        match group.as_str() {
+            "CATALOG" => return command == "RELOAD",
+            "ERROR_REPORTING" | "MEASUREMENT" => {
+                return command.starts_with("SET_");
+            }
+            "GATEWAY" => {
+                let mutating = matches!(
+                    command.as_str(),
+                    "FACTORY_RESET"
+                        | "LOAD_PRESET"
+                        | "RESTART"
+                        | "SAVE_TO_NVM"
+                        | "PAGED_STORE"
+                        | "SET_EXTENDED_PARAMETERS"
+                        | "WRITE_EXTENDED_PARAMETERS"
+                        | "SET_PRIMARY_ADDRESS"
+                        | "SET_VIRTUAL_GROUP"
+                );
+                if !mutating {
+                    return false;
+                }
+                if matches!(
+                    command.as_str(),
+                    "FACTORY_RESET" | "LOAD_PRESET" | "RESTART" | "SAVE_TO_NVM"
+                ) {
+                    return !matches!(
+                        words.get(3).map(String::as_str),
+                        Some(
+                            "POLL"
+                                | "P"
+                                | "PO"
+                                | "POL"
+                                | "STATUS"
+                                | "S"
+                                | "ST"
+                                | "STA"
+                                | "STAT"
+                                | "STATU"
+                        )
+                    );
+                }
+                return true;
+            }
+            "SESSION" => {
+                return !matches!(command.as_str(), "LIST" | "GET" | "MULTIGET");
+            }
+            _ => {}
+        }
+    }
     let (command_index, mode_index) = if words.get(1).is_some_and(|word| word == "EMERGENCY") {
         (2, 3)
     } else {

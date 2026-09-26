@@ -169,6 +169,9 @@ cbus-toolkit cgate --host 127.0.0.1 exec 'TELEPHONY DIVERT //PROJECT/254/224 021
 cbus-toolkit cgate --host 127.0.0.1 exec 'DALI ?'
 cbus-toolkit cgate --host 127.0.0.1 exec 'DALI KNOWN EXEC //PROJECT/254/p/20 A'
 cbus-toolkit cgate --host 127.0.0.1 exec 'DALI EMERGENCY STATUS EXEC //PROJECT/254/p/20 A 3'
+cbus-toolkit cgate --host 127.0.0.1 exec 'DALI ERROR_REPORTING STORE_OPTION //PROJECT/254/p/20'
+cbus-toolkit cgate --host 127.0.0.1 exec 'DALI GATEWAY PAGED_RECALL //PROJECT/254/p/20 521 1'
+cbus-toolkit cgate --host 127.0.0.1 exec 'DALI SESSION NEW commissioning'
 ```
 
 The embedded endpoint implements the complete maintained C-Gate 3.4 CONFIG,
@@ -346,24 +349,28 @@ clients. A 200 proves active-generation PCI-confirmed broadcast delivery; it
 does not prove telephone acceptance, call state or persistence. cmqttd does
 not invent an MQTT Telephony state schema.
 
-`DALI ?` exposes the retained DALI command catalogue. Sixty-two core and
-emergency leaf commands are physically backed for a configured `SYS_DAL2`
-gateway: 48 core commands and all 14 emergency commands. They use native
-extended CAL over the shared PCI, retain C-Gate's EXEC/POLL/CANCEL and bounded
-AUTO polling behavior, correlate replies to the addressed gateway, and never
-replay an outcome-uncertain write after reconnect. The six DALI group roots
-serve exact retained help locally. The 60 specialized CATALOG,
-ERROR_REPORTING, GATEWAY, MEASUREMENT, and SESSION leaves still return 502;
-`CMQTT CAPABILITIES` reports these counts explicitly. There is no DALI MQTT
-state contract.
+`DALI ?` exposes all 128 maintained DALI paths. For a configured `SYS_DAL2`
+gateway, 103 leaves have physical backends: 48 core, 14 emergency, and 41
+specialized gateway, error-reporting, measurement, or session operations. The
+remaining 25 paths are local: six exact retained group-help roots and 19
+catalogue, gateway-view, and commissioning-session operations. Physical work
+uses the shared PCI, source or programming-reply correlation, reconnect
+generation guards, and no replay after an outcome-uncertain write. Paged
+stores are read back before success; saved sessions use cmqttd's atomic JSON
+repository. `EXT_ONLY` session extraction/deployment is physical. The retained
+typed `DALI_ONLY`/`FULL` plans and related extraction selectors fail before I/O
+until their full model codec is evidenced, so `dali_full_compatibility` remains
+false. There is no invented DALI MQTT state contract. See the
+[DALI command guide](docs/cgate-dali.md).
 
 **Full C-Gate replacement is the target, not the current completion claim.**
 Hardware-backed lighting, all eleven maintained AIRCON/HVAC commands, all 19 maintained
 AUDIO commands, all seven maintained SECURITY commands, the complete maintained
 MEASUREMENT and TELEPHONY families, and all 21 maintained MEDIATRANSPORT commands
-and reports on the configured direct network are implemented. The physically
-backed DALI surface currently comprises 48 core and 14 emergency commands;
-the remaining 60 specialized DALI leaves fail closed. The complete
+and reports on the configured direct network are implemented. All 128 retained
+DALI command paths dispatch: 103 physical leaves and 25 local/help paths. The
+typed-device selectors inside SESSION EXTRACT/DEPLOY remain a documented
+fail-before-I/O boundary beyond the physical `EXT_ONLY` plan. The complete
 maintained `PORT` discovery, host enumeration, refresh, and probe family is
 implemented independently of the shared MQTT connection. The same endpoint
 implements C-Gate ACCESS ADD/DELETE/LIST/LOAD/SAVE with durable digest-only
@@ -446,7 +453,7 @@ For a PCI/CNI test endpoint, run `rust/target/release/cbus-simulator 127.0.0.1 1
 
 - [Toolkit CLI guide](toolkit-cli/README.md) and [feature status](toolkit-cli/docs/implementation-status.md)
 - [Architecture](docs/architecture.md), [command reference](docs/commands.md), and [protocols](docs/protocol.md)
-- [MQTT bridge configuration](docs/configuration.md) and [C-Gate compatibility](docs/cgate.md)
+- [MQTT bridge configuration](docs/configuration.md), [C-Gate compatibility](docs/cgate.md), and [physical DALI commands](docs/cgate-dali.md)
 - [Testing and development](docs/testing.md)
 - [AI skill](.agents/skills/cbus-cli/SKILL.md) with command, system, and workflow references; [repository agent guidance](AGENTS.md)
 

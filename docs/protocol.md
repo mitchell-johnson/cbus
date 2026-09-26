@@ -86,6 +86,14 @@ IN_PROGRESS or FAIL_BUSY. Connection loss makes the result uncertain and the
 request is not replayed. Exact request/reply and JSON cases are in
 `rust/testdata/vectors/dali.jsonl`; native help evidence for all 128 maintained
 DALI paths is in `rust/testdata/fixtures/native_cgate_dali_help.json`.
+Specialized gateway parameters use the existing page-aware programming codec:
+recalls split at 256-byte boundaries, and verified stores select the page,
+write at most 12 tagged bytes, require the matching device acknowledgement,
+then recall the range for comparison. The gateway group-zero operations use
+the same extended-CAL control codec as core DALI. Specialized class hashes,
+addresses, lengths, and local/physical routing are pinned in
+`rust/testdata/fixtures/native_cgate_dali_specialized.json`; the operator and
+safety contract is documented in [the DALI guide](cgate-dali.md).
 
 Strict decoding rejects malformed input. Lenient decoding retains compatibility behavior for imperfect frames. The golden-vector suite fixes the expected byte consumption, decoded JSON, and re-encoded bytes for representative and edge-case traffic.
 

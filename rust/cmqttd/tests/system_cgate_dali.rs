@@ -112,9 +112,14 @@ async fn dali_core_and_emergency_are_correlated_authenticated_and_keep_mqtt_live
         serde_json::from_str(capabilities[0].strip_prefix("200-").unwrap()).unwrap();
     assert_eq!(capability_json["dali_core_commands"], 48);
     assert_eq!(capability_json["dali_emergency_commands"], 14);
-    assert_eq!(capability_json["dali_physical_leaf_commands"], 62);
+    assert_eq!(capability_json["dali_physical_leaf_commands"], 103);
     assert_eq!(capability_json["dali_local_help_roots"], 6);
-    assert_eq!(capability_json["dali_specialized_commands_fail_closed"], 60);
+    assert_eq!(capability_json["dali_specialized_local_leaf_commands"], 19);
+    assert_eq!(
+        capability_json["dali_specialized_physical_leaf_commands"],
+        41
+    );
+    assert_eq!(capability_json["dali_specialized_commands_fail_closed"], 0);
     assert_eq!(capability_json["dali_full_compatibility"], false);
     assert_eq!(capability_json["dali_auto_poll_limit"], 10);
     assert_eq!(

@@ -225,7 +225,13 @@ fn help_response(tag: &str, mut rows: Vec<String>) -> Response {
 }
 
 impl Service {
-    pub(super) async fn dali(&self, tag: &str, words: &[&str], upper: &[String]) -> Response {
+    pub(super) async fn dali(
+        &self,
+        tag: &str,
+        body: &str,
+        words: &[&str],
+        upper: &[String],
+    ) -> Response {
         if words.len() == 1 || (words.len() == 2 && words[1] == "?") {
             return dali_root_help(tag);
         }
@@ -251,7 +257,7 @@ impl Service {
                     return help(tag, &["DALI".to_string(), name.clone()])
                         .expect("DALI group help is committed");
                 }
-                return known_or_unknown(tag, upper);
+                return self.dali_specialized(tag, body, upper).await;
             }
             let Some(spec) = CORE.iter().find(|spec| spec.path == name) else {
                 return known_or_unknown(tag, upper);
@@ -304,7 +310,7 @@ impl Service {
         response(tag, spec, parsed.line, &payload, result)
     }
 
-    async fn dali_gateway(
+    pub(super) async fn dali_gateway(
         &self,
         tag: &str,
         target: &str,

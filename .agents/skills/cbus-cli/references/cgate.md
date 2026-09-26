@@ -532,15 +532,21 @@ and a service regression rejects a confirmation from a retired PCI generation.
 
 ### DALI commands
 
-cmqttd implements 62 physical DALI leaf commands for a `SYS_DAL2` gateway:
-all 48 retained core commands and all 14 commands below `DALI EMERGENCY`.
-Start with the native help catalogue and address the gateway unit itself:
+cmqttd routes all 128 maintained DALI paths: 103 physical leaves and 25
+local/help paths. Physical coverage includes all 48 retained core commands, all
+14 commands below `DALI EMERGENCY`, and 41 specialized gateway,
+error-reporting, measurement, or session leaves. The six group roots and 19
+specialized catalogue/session/gateway-view leaves are local. Start with the
+native help catalogue and address the gateway unit itself:
 
 ```text
 DALI ?
 DALI KNOWN EXEC //PROJECT/254/p/20 A
 DALI KNOWN POLL //PROJECT/254/p/20 A
 DALI EMERGENCY STATUS EXEC //PROJECT/254/p/20 A 3
+DALI ERROR_REPORTING STORE_OPTION //PROJECT/254/p/20
+DALI GATEWAY PAGED_RECALL //PROJECT/254/p/20 521 1
+DALI SESSION NEW commissioning
 ```
 
 Each command accepts an optional mode before the gateway: AUTO is the default;
@@ -559,28 +565,50 @@ the outcome uncertain and the operation is not replayed. Native-shaped replies
 include DaliCommand, Line, Payload, SendCommand, Response, ResponseStatus and
 ResponsePayload rows; a NAK maps to FAIL_CATASTROPHE with a null payload.
 
-When LOGIN is armed, mutation commands in AUTO/EXEC/CANCEL mode require
-authentication. Read-only core/emergency operations and POLL/STATUS observations
-stay open. The six group roots CATALOG, EMERGENCY, ERROR_REPORTING, GATEWAY,
-MEASUREMENT and SESSION return exact retained help locally. Only EMERGENCY has
-physical leaves in this slice. The other 60 specialized leaves return 502; use
-the exact categorized list in `docs/cmqttd-cgate.md` and inspect the boundary
-programmatically with `CMQTT CAPABILITIES`:
+Specialized paged reads and stores use the shared programming lane. Stores are
+limited to 12 bytes per page-bounded chunk, require the tagged device reply,
+and read the range back before success. `GATEWAY SET_EXTENDED_PARAMETERS` and
+`SESSION SET_EXT_PARAMS` stage local bytes; `GATEWAY WRITE_EXTENDED_PARAMETERS`
+and `SESSION DEPLOY ... EXT_ONLY` perform the physical write. Catalogue JSON is
+loaded from `%PROJECT%/dali_catalogue/devices/*.json` in the virtual FILE
+repository. Active sessions are volatile; explicit SAVE/LOAD snapshots are
+keyed by gateway OID in the atomic cmqttd JSON database.
+
+When LOGIN is armed, mutation commands in AUTO/EXEC/CANCEL mode, specialized
+setters, catalogue reload, gateway mutations, and session mutations require
+authentication. Read-only operations stay open. The six group roots CATALOG,
+EMERGENCY, ERROR_REPORTING, GATEWAY, MEASUREMENT and SESSION return exact
+retained help locally. Inspect the boundary programmatically with
+`CMQTT CAPABILITIES`:
 
 ```json
 {
-  "dali_physical_leaf_commands": 62,
+  "dali_physical_leaf_commands": 103,
   "dali_local_help_roots": 6,
-  "dali_specialized_commands_fail_closed": 60,
+  "dali_specialized_local_leaf_commands": 19,
+  "dali_specialized_physical_leaf_commands": 41,
+  "dali_specialized_commands_fail_closed": 0,
   "dali_full_compatibility": false,
+  "dali_session_ext_only": true,
+  "dali_session_typed_device_plans": "fail-closed-before-io",
   "dali_delivery_semantics": "source-correlated-exactly-once-no-replay"
 }
 ```
 
+`EXT_ONLY` session extraction and deployment have exact paged-memory physical
+plans. Do not silently map `DALI_ONLY`, `FULL`, `COND_QUICK`, `COND_EXTENDED`,
+`RESCAN_FAULT`, `REFRESH_STATUS_INFO`, or `RETRIEVE_RECONCILE` onto that plan.
+C-Gate's retained classes make those typed-model workflows; cmqttd refuses
+them before I/O until the full typed model codec is evidenced.
+
 There is no MQTT DALI state contract. Ground syntax/help in
-`rust/testdata/fixtures/native_cgate_dali_help.json`, exact CAL bytes in
-`rust/testdata/vectors/dali.jsonl`, and orchestration/continuity behavior in
-`rust/cmqttd/tests/system_cgate_dali.rs`.
+`rust/testdata/fixtures/native_cgate_dali_help.json`, specialized class hashes,
+layouts, and the fail-before-I/O boundary in
+`rust/testdata/fixtures/native_cgate_dali_specialized.json`, exact CAL/page
+bytes in `rust/testdata/vectors/dali.jsonl`, and real-daemon fake-PCI/MQTT
+behavior in `rust/cmqttd/tests/system_cgate_dali.rs` and
+`rust/cmqttd/tests/system_cgate_dali_specialized.rs`. The complete operator
+guide is `docs/cgate-dali.md`.
 
 The physical service also implements lighting commands, C-Gate `DO` object
 methods for lighting and direct/bridged read-only `SYNC`, Trigger Control,

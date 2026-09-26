@@ -45,6 +45,12 @@ Do not equate offline test success with complete Toolkit parity. Run `cbus-toolk
 PCI and broker. It pins DALI help and capability reporting, LOGIN boundaries,
 exact core and emergency extended-CAL bytes, source-correlated replies,
 pre-I/O validation, and MQTT continuity while a gateway operation is pending.
+`cmqttd/tests/system_cgate_dali_specialized.rs` pins specialized memory recall,
+page selection, tagged store acknowledgement and readback, group-zero gateway
+control, session state, LOGIN, typed-plan pre-I/O refusal, and MQTT continuity
+through the same real-daemon harness. The 60-path fixture/dispatch test, local
+catalogue and durable session tests, and exact wire unit cases live in
+`cbus-cgate/src/service/dali_specialized.rs`.
 Transport tests separately prove bounded AUTO polling and that a lost reply is
 never replayed after reconnect. These loopback tests do not establish behavior
 of a particular physical DALI gateway or downstream DALI bus.

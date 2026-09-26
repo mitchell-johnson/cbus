@@ -860,6 +860,10 @@ pub struct Server {
     /// Unix modification seconds for virtual FILE entries. Kept separately
     /// so the established byte-map state representation remains migratable.
     file_modified: HashMap<String, i64>,
+    /// DALI commissioning-session snapshots saved against a gateway OID.
+    /// Active sessions remain endpoint state; only an explicit `DALI SESSION
+    /// SAVE` enters this durable repository map.
+    dali_saved_sessions: HashMap<String, serde_json::Value>,
     /// Active C-Gate ACCESS rows. Password-bearing rows retain only a digest.
     access_entries: Vec<access::AccessEntry>,
     /// Whether an operator has explicitly installed or changed address-based
@@ -900,6 +904,7 @@ impl Server {
             database_files: HashMap::new(),
             file_store: HashMap::new(),
             file_modified: HashMap::new(),
+            dali_saved_sessions: HashMap::new(),
             access_entries: access::default_access_entries(),
             access_admission_enforced: false,
             access_snapshots: HashMap::new(),
