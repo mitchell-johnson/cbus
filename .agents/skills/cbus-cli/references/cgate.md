@@ -280,6 +280,50 @@ remains unsupported. Ground exact behavior in
 `rust/testdata/vectors/mediatransport.jsonl`, and
 `rust/cmqttd/tests/system_cgate_mediatransport.rs`. `CMQTT CAPABILITIES` advertises application 192, `pci-confirmed-broadcast`, `exactly-once-no-replay`, all 21 message names, event fanout, and `mediatransport_mqtt_state: false`.
 
+### Telephony commands
+
+cmqttd implements the complete maintained C-Gate 3.4 `TELEPHONY` family for
+application 224 (`$E0`) on its configured direct network. Inspect the exact
+native help with `TELEPHONY ?`:
+
+```text
+TELEPHONY CLEAR_DIVERSION APP
+TELEPHONY DIVERT APP NUMBER
+TELEPHONY ISOLATE_SECONDARY_OUTLET APP normal|isolate
+TELEPHONY RECALL_LAST_NUMBER_REQUEST APP in|out
+TELEPHONY REJECT_INCOMING_CALL APP
+```
+
+`APP` accepts `NETWORK/224` or `//PROJECT/NETWORK/224`. Keep it on the
+configured direct network; foreign, absent and routed paths fail closed.
+Modes and directions are case-insensitive. `NUMBER` is exactly one literal
+whitespace-delimited token with Java UTF-16 length 1–16. Do not shell-decode
+quotes or backslashes: `\q` sends the two bytes `5C 71`, and `""` sends two
+quote bytes. Native 3.4 has an evidenced non-ASCII defect: it counts Java
+characters for the SAL prefix, converts each signed UTF-8 byte to `FF`, and
+can therefore emit an undeclared trailing byte. cmqttd intentionally retains
+that exact command output; do not normalize it when compatibility is required.
+
+Every admitted command is one application-`0xE0` broadcast and completes only
+after a correlated positive confirmation from the active shared PCI
+generation. A 200 proves interface delivery, not telephone-unit acceptance,
+call state, diversion persistence or readback. With LOGIN armed,
+`RECALL_LAST_NUMBER_REQUEST` stays open; clear/divert/isolate/reject require
+authentication. Incoming commands and `line_on_hook`, `line_off_hook`,
+`dial_out_failure`, `dial_in_failure`, `ringing`, `last_number`, and
+`internet_connection_request_made` events fan out to `EVENT ON` clients.
+The retained decoder has a formatting quirk for line-off-hook and last-number
+events: it inserts a separator before a number only when that number is longer
+than one byte, so single-byte values appear as `out data1` or `in1`. Preserve
+that spelling when parsing native-compatible event text. These events create
+no MQTT entity or state.
+
+Ground behavior in `rust/testdata/fixtures/native_cgate_telephony.json`,
+`rust/testdata/vectors/telephony.jsonl`, and
+`rust/cmqttd/tests/system_cgate_telephony.rs`. A transport regression proves
+that an incoming Telephony event cannot satisfy a pending send confirmation,
+and a service regression rejects a confirmation from a retired PCI generation.
+
 The physical service also implements lighting commands, C-Gate `DO` object
 methods for lighting and direct/bridged read-only `SYNC`, Trigger Control,
 Enable Control, clock date/time/refresh, Temperature Broadcast, `NET PINGU`, `NET SYNC`,
@@ -494,7 +538,8 @@ by NET SYNC,
 `cgate_auth: true` denotes the armed opt-in LOGIN gate (`false` dormant
 default): with `--cgate-auth-file` configured, each connection needs
 `LOGIN <token>` before programming verbs, AIRCON mutations, Security control
-forms, and `MEASUREMENT DATA` while reads and
+forms, Telephony clear/divert/isolate/reject, and `MEASUREMENT DATA` while
+reads, the Telephony last-number request, and
 other bus control stay open; failures answer `420 LOGIN required` / `420 LOGIN failed` (malformed
 `LOGIN` with no token is 400 and also clears the flag), never `401`.
 Not native `access.txt` parity; loopback-only first slice;

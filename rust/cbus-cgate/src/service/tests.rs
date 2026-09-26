@@ -1113,6 +1113,182 @@ async fn observed_security_events_use_native_names_addresses_and_byte_escaping()
 }
 
 #[tokio::test]
+async fn telephony_help_errors_and_auth_are_native_and_fail_before_io() {
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    service
+        .set_auth_token_hash(crate::auth::sha256(b"telephony-test-token"))
+        .unwrap();
+    let mut client = ClientState::default();
+
+    let help = service.handle(&mut client, "[h] TELEPHONY ?").await;
+    assert_eq!(help.status, 101);
+    assert_eq!(
+        format_response(&help),
+        concat!(
+            "[h] 101-Help: TELEPHONY commands:\n",
+            "[h] 101-Help:  TELEPHONY ? Help for these commands\n",
+            "[h] 101-Help:  TELEPHONY CLEAR_DIVERSION - Command the telephony device to clear any diversion\n",
+            "[h] 101-Help:  TELEPHONY DIVERT - Set a diversion for the telephony device\n",
+            "[h] 101-Help:  TELEPHONY ISOLATE_SECONDARY_OUTLET - Set the isolation mode for the telephony device\n",
+            "[h] 101-Help:  TELEPHONY RECALL_LAST_NUMBER_REQUEST - Request a last number recall from the telephony device\n",
+            "[h] 101 Help:  TELEPHONY REJECT_INCOMING_CALL - Command the telephony device to reject the incoming call\n",
+        )
+    );
+    assert!(!super::requires_programming_auth(
+        "TELEPHONY",
+        "RECALL_LAST_NUMBER_REQUEST",
+        &["TELEPHONY".into(), "RECALL_LAST_NUMBER_REQUEST".into()]
+    ));
+    assert!(super::requires_programming_auth(
+        "TELEPHONY",
+        "DIVERT",
+        &["TELEPHONY".into(), "DIVERT".into()]
+    ));
+    let locked = service
+        .handle(&mut client, "[locked] TELEPHONY CLEAR_DIVERSION 254/224")
+        .await;
+    assert_eq!(locked.final_text, "420 LOGIN required");
+
+    for (index, (command, expected)) in [
+        ("TELEPHONY BOGUS", "400 Syntax Error."),
+        (
+            "TELEPHONY RECALL_LAST_NUMBER_REQUEST",
+            "400 Syntax Error: Missing parameter : <application>",
+        ),
+        (
+            "TELEPHONY RECALL_LAST_NUMBER_REQUEST 254/224",
+            "400 Syntax Error: Missing parameter : <direction>",
+        ),
+        (
+            "TELEPHONY RECALL_LAST_NUMBER_REQUEST 254/224 bogus",
+            "400 Syntax Error: unknown <direction>",
+        ),
+        (
+            "TELEPHONY RECALL_LAST_NUMBER_REQUEST 254/224 in EXTRA",
+            "400 Syntax Error: Too many parameters",
+        ),
+        (
+            "TELEPHONY RECALL_LAST_NUMBER_REQUEST ? in",
+            "401 Bad object or device ID: ? (Network not found)",
+        ),
+        (
+            "TELEPHONY RECALL_LAST_NUMBER_REQUEST //OTHER/254/224 in",
+            "401 Bad object or device ID: //OTHER/254/224 (Object not found)",
+        ),
+        (
+            "TELEPHONY RECALL_LAST_NUMBER_REQUEST 253/224 in",
+            "401 Bad object or device ID: 253/224 (Network not found)",
+        ),
+        (
+            "TELEPHONY RECALL_LAST_NUMBER_REQUEST 254/223 in",
+            "402 Operation not supported by: 254/223",
+        ),
+        (
+            "TELEPHONY DIVERT 254/224 12345678901234567",
+            "420 LOGIN required",
+        ),
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        let response = service
+            .handle(&mut client, &format!("[{index}] {command}"))
+            .await;
+        assert_eq!(response.final_text, expected, "{command}");
+    }
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err(),
+        "rejected TELEPHONY forms must fail before PCI I/O"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn observed_telephony_commands_and_events_use_native_fanout() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut events = service.events.subscribe();
+    service
+        .observe(&CBusEvent::TelephonyEvent {
+            source: Some(4),
+            event: cbus_protocol::sal::telephony::TelephonyEvent::LineOffHook {
+                direction: TelephonyDirection::Out,
+                reason: cbus_protocol::sal::telephony::OffHookReason::Data,
+                number: b"12".to_vec(),
+            },
+        })
+        .await;
+    assert_eq!(
+        events.try_recv().unwrap(),
+        "#e# telephony line_off_hook //HARNESS/254/224 out data 12 sourceUnit=4"
+    );
+    service
+        .observe(&CBusEvent::TelephonyCommand {
+            source: None,
+            command: TelephonyCommand::ClearDiversion,
+        })
+        .await;
+    assert_eq!(
+        events.try_recv().unwrap(),
+        "#e# telephony clear_diversion //HARNESS/254/224 sourceUnit=0"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn confirmed_telephony_on_retired_pci_generation_fails_closed() {
+    let path = state_path();
+    let (old_pci, old_remote) = pci();
+    let (old_read, mut old_write) = tokio::io::split(old_remote);
+    let mut old_read = BufReader::new(old_read);
+    let reset = tokio::spawn({
+        let pci = old_pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        let mut line = Vec::new();
+        old_read.read_until(b'\r', &mut line).await.unwrap();
+    }
+    reset.await.unwrap().unwrap();
+    let service = Service::new(&fixture(), None, path.clone(), old_pci, None).unwrap();
+    let command = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[g] TELEPHONY RECALL_LAST_NUMBER_REQUEST 254/224 out",
+                )
+                .await
+        }
+    });
+    let mut frame = Vec::new();
+    old_read.read_until(b'\r', &mut frame).await.unwrap();
+    assert!(frame.starts_with(b"\\05E0000A8101"), "{frame:?}");
+    let confirmation = frame[frame.len() - 2];
+    let (replacement, _replacement_remote) = pci();
+    tokio::time::timeout(Duration::from_secs(2), service.set_pci(replacement))
+        .await
+        .expect("set_pci must complete");
+    old_write.write_all(&[confirmation, b'.']).await.unwrap();
+    let response = tokio::time::timeout(Duration::from_secs(2), command)
+        .await
+        .expect("retired generation command must complete")
+        .unwrap();
+    assert_eq!(response.status, 502, "{response:?}");
+    assert_eq!(
+        response.final_text,
+        "502 Telephony delivery failed: PCI connection generation changed"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn confirmed_application_on_retired_pci_generation_fails_closed() {
     let path = state_path();
     let (old_pci, old_remote) = pci();

@@ -111,6 +111,9 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // MEDIATRANSPORT root help moved fail_closed_502 -> local_database, and
     // all 21 maintained commands/reports moved fail_closed_502 -> physical
     // with exact native 3.4 SAL encoding and correlated PCI confirmation.
+    // TELEPHONY root help moved fail_closed_502 -> local_database, and all
+    // five maintained TELEPHONY commands moved fail_closed_502 -> physical
+    // with exact native 3.4 SAL encoding and active-generation confirmation.
     // PROJECT ARCHIVE/RESTORE/RENAME/COPY/DELETE and REPOSITORY LIST moved
     // fail_closed_502 -> local_database with durable internal snapshots,
     // guarded secondary-project lifecycle, and a read-only cmqttd-json row.
@@ -119,9 +122,9 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // The eleven maintained AIRCON commands and NET PROJECT_IDENTIFY moved
     // fail_closed_502 -> physical. PROJECT_IDENTIFY uses the selected shared
     // interface's native read-only MMI/parameter-35 workflow.
-    assert_eq!(class_count(RoutingClass::Physical), 95);
-    assert_eq!(class_count(RoutingClass::LocalDatabase), 54);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 281);
+    assert_eq!(class_count(RoutingClass::Physical), 100);
+    assert_eq!(class_count(RoutingClass::LocalDatabase), 55);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 275);
     assert_eq!(class_count(RoutingClass::Obsolete400), 1);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here
@@ -326,6 +329,49 @@ fn mediatransport_rows_retain_native_boundaries_and_decoder_evidence() {
         assert_eq!(entry.class, RoutingClass::Physical, "{}", entry.path);
         assert!(
             entry.evidence.contains("native_cgate_mediatransport.json"),
+            "{}",
+            entry.path
+        );
+    }
+}
+
+#[test]
+fn telephony_rows_retain_native_boundaries_and_decoder_evidence() {
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_telephony.json"
+    ))
+    .expect("native TELEPHONY evidence must remain valid JSON");
+    assert_eq!(fixture["oracle"]["version"], "3.4.0.2001");
+    assert_eq!(
+        fixture["oracle"]["jar_sha256"],
+        "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+    );
+    assert_eq!(fixture["application"]["decimal"], 224);
+    assert_eq!(fixture["commands"].as_array().unwrap().len(), 10);
+    assert_eq!(fixture["inbound_events"].as_array().unwrap().len(), 17);
+    assert_eq!(
+        fixture["validated_boundaries"]["divert_number"],
+        "exactly one whitespace-delimited token; Java UTF-16 length 1..16; quotes and backslash escape spelling are literal, not shell-style decoded"
+    );
+    assert!(fixture["validated_boundaries"]["single_byte_number_event"]
+        .as_str()
+        .unwrap()
+        .contains("out data1"));
+    assert!(fixture["commands"].as_array().unwrap().iter().any(|row| {
+        row["command"].as_str().unwrap().ends_with('é') && row["payload_hex"] == "05E000A283FFFF"
+    }));
+    let root = CAPABILITY_MATRIX
+        .iter()
+        .find(|entry| entry.path == "TELEPHONY")
+        .unwrap();
+    assert_eq!(root.class, RoutingClass::LocalDatabase);
+    for entry in CAPABILITY_MATRIX
+        .iter()
+        .filter(|entry| entry.path.starts_with("TELEPHONY "))
+    {
+        assert_eq!(entry.class, RoutingClass::Physical, "{}", entry.path);
+        assert!(
+            entry.evidence.contains("native_cgate_telephony.json"),
             "{}",
             entry.path
         );

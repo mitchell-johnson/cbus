@@ -64,6 +64,18 @@ C-Gate build/class hashes and parser evidence in
 `rust/testdata/fixtures/native_cgate_mediatransport.json`. No MQTT player
 state is derived from these bus observations.
 
+Telephony application `0xE0` has typed encode/decode coverage for all five
+maintained C-Gate 3.4 commands and the seven native device-event families.
+Canonical JSON uses `telephony` for commands and `telephony_event` for device
+observations. The decoder applies the native short-prefix low-three-bit and
+extended-prefix low-five-bit length rules and rejects unknown modes,
+directions, opcodes and truncated payloads. Exact command/event bytes,
+including the retained native malformed non-ASCII diversion case, are pinned
+in `rust/testdata/vectors/telephony.jsonl`; isolated-oracle grammar, hashes and
+acceptance limits are in
+`rust/testdata/fixtures/native_cgate_telephony.json`. Incoming Telephony
+traffic stays a typed event and cannot satisfy a pending PCI confirmation.
+
 Strict decoding rejects malformed input. Lenient decoding retains compatibility behavior for imperfect frames. The golden-vector suite fixes the expected byte consumption, decoded JSON, and re-encoded bytes for representative and edge-case traffic.
 
 ## Framing and PCI behavior

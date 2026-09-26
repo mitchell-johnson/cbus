@@ -16,6 +16,7 @@ use cbus_protocol::sal::{
     measurement::MeasurementData,
     mediatransport::MediaTransportMessage,
     security::{SecurityCommand, SecurityEvent},
+    telephony::{TelephonyCommand, TelephonyEvent},
     Sal,
 };
 use chrono::{Datelike, Timelike};
@@ -149,6 +150,20 @@ pub enum CBusEvent {
         source: Option<u8>,
         /// Fully decoded command/report payload.
         message: MediaTransportMessage,
+    },
+    /// One Telephony command observed on the shared PCI receive stream.
+    TelephonyCommand {
+        /// Source unit address (`None` when the source byte was 0).
+        source: Option<u8>,
+        /// Fully decoded command payload.
+        command: TelephonyCommand,
+    },
+    /// One Telephony device event observed on the shared PCI stream.
+    TelephonyEvent {
+        /// Source unit address (`None` when the source byte was 0).
+        source: Option<u8>,
+        /// Fully decoded event payload.
+        event: TelephonyEvent,
     },
     /// A lighting group was switched on.
     LightingOn {
@@ -1073,6 +1088,13 @@ impl PciClient {
                             source: src,
                             message,
                         }),
+                        Sal::TelephonyCommand(command) => Some(CBusEvent::TelephonyCommand {
+                            source: src,
+                            command,
+                        }),
+                        Sal::TelephonyEvent(event) => {
+                            Some(CBusEvent::TelephonyEvent { source: src, event })
+                        }
                         Sal::LightingRamp {
                             application,
                             group_address,
@@ -1417,6 +1439,8 @@ fn classify(cmd: &Packet, conf: Option<u8>) -> (Priority, ResponseKind) {
                 | Sal::SecurityCommand(_)
                 | Sal::MeasurementData(_)
                 | Sal::MediaTransport(_)
+                | Sal::TelephonyCommand(_)
+                | Sal::TelephonyEvent(_)
                 | Sal::LightingOn { .. }
                 | Sal::LightingOff { .. }
                 | Sal::LightingRamp { .. }

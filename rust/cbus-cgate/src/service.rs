@@ -13,6 +13,7 @@ use cbus_protocol::{
         measurement::MeasurementData,
         mediatransport::MediaTransportMessage,
         security::{SecurityArmMode, SecurityCommand},
+        telephony::{TelephonyCommand, TelephonyDirection},
         Sal,
     },
     serial_address::parse_native_serial,
@@ -123,6 +124,16 @@ const MEDIATRANSPORT_HELP: &[&str] = &[
     "Help:  MEDIATRANSPORT STOP - The output unit on the Media Link Group is to stop playing the Active Track",
     "Help:  MEDIATRANSPORT TOTAL_TRACKS - The output unit on the Media Link Group is describing how many tracks are available in the current Category and Selection",
     "Help:  MEDIATRANSPORT TRACK_NAME - The name, in characters, of the track being played (or to be played) by the output device in <Media Link Group>",
+];
+
+const TELEPHONY_HELP: &[&str] = &[
+    "Help: TELEPHONY commands:",
+    "Help:  TELEPHONY ? Help for these commands",
+    "Help:  TELEPHONY CLEAR_DIVERSION - Command the telephony device to clear any diversion",
+    "Help:  TELEPHONY DIVERT - Set a diversion for the telephony device",
+    "Help:  TELEPHONY ISOLATE_SECONDARY_OUTLET - Set the isolation mode for the telephony device",
+    "Help:  TELEPHONY RECALL_LAST_NUMBER_REQUEST - Request a last number recall from the telephony device",
+    "Help:  TELEPHONY REJECT_INCOMING_CALL - Command the telephony device to reject the incoming call",
 ];
 
 /// Default bound for the TLS pre-handshake accept (matches the existing
@@ -634,6 +645,20 @@ impl Service {
                     message.event_arguments()
                 ));
             }
+            CBusEvent::TelephonyCommand { source, command } => {
+                self.send_telephony_event(
+                    command.event_name(),
+                    &command.event_arguments(),
+                    source.unwrap_or(0),
+                );
+            }
+            CBusEvent::TelephonyEvent { source, event } => {
+                self.send_telephony_event(
+                    event.event_name(),
+                    &event.event_arguments(),
+                    source.unwrap_or(0),
+                );
+            }
             CBusEvent::LightingOn {
                 source: Some(_),
                 app,
@@ -780,6 +805,18 @@ impl Service {
         };
         let _ = self.events.send(format!(
             "#e# security {name} //{}/{}/208{zone}{arguments} sourceUnit={source}",
+            self.project, self.network
+        ));
+    }
+
+    fn send_telephony_event(&self, name: &str, arguments: &str, source: u8) {
+        let arguments = if arguments.is_empty() {
+            String::new()
+        } else {
+            format!(" {arguments}")
+        };
+        let _ = self.events.send(format!(
+            "#e# telephony {name} //{}/{}/224{arguments} sourceUnit={source}",
             self.project, self.network
         ));
     }
@@ -1126,6 +1163,28 @@ impl Service {
                 capabilities["mediatransport_commands"].clone();
             capabilities["mediatransport_event_fanout"] = serde_json::Value::Bool(true);
             capabilities["mediatransport_mqtt_state"] = serde_json::Value::Bool(false);
+            capabilities["telephony_control"] = serde_json::Value::Bool(true);
+            capabilities["telephony_application"] = serde_json::Value::from(224);
+            capabilities["telephony_delivery_semantics"] =
+                serde_json::Value::String("pci-confirmed-broadcast".to_string());
+            capabilities["telephony_commands"] = serde_json::json!([
+                "clear_diversion",
+                "divert",
+                "isolate_secondary_outlet",
+                "recall_last_number_request",
+                "reject_incoming_call"
+            ]);
+            capabilities["telephony_reports"] = serde_json::json!([
+                "line_on_hook",
+                "line_off_hook",
+                "dial_out_failure",
+                "dial_in_failure",
+                "ringing",
+                "last_number",
+                "internet_connection_request_made"
+            ]);
+            capabilities["telephony_event_fanout"] = serde_json::Value::Bool(true);
+            capabilities["telephony_mqtt_state"] = serde_json::Value::Bool(false);
             return ok(tag, vec![capabilities.to_string()], "200 OK");
         }
         if verb == "MEASUREMENT" {
@@ -1172,6 +1231,15 @@ impl Service {
                 return err(tag, 400, "400 Syntax Error.");
             }
             return self.mediatransport(tag, &words, sub).await;
+        }
+        if verb == "TELEPHONY" {
+            if words.len() == 1 || (words.len() == 2 && words[1] == "?") {
+                return telephony_help(tag);
+            }
+            if !is_telephony_subcommand(sub) {
+                return err(tag, 400, "400 Syntax Error.");
+            }
+            return self.telephony(tag, &words, sub).await;
         }
         if verb == "REPOSITORY" && sub == "LIST" {
             return self.repository_list(tag, &words);
@@ -4631,6 +4699,111 @@ impl Service {
         .await
     }
 
+    async fn telephony(&self, tag: &str, words: &[&str], sub: &str) -> Response {
+        let Some(target) = words.get(2).copied() else {
+            return err(
+                tag,
+                400,
+                "400 Syntax Error: Missing parameter : <application>",
+            );
+        };
+        let Some(application) = self.application_path(target) else {
+            let reason = if target.starts_with("//") && target != "?" {
+                "Object not found"
+            } else {
+                "Network not found"
+            };
+            return err(
+                tag,
+                401,
+                &format!("401 Bad object or device ID: {target} ({reason})"),
+            );
+        };
+        let parameter = match sub {
+            "DIVERT" => Some("number"),
+            "ISOLATE_SECONDARY_OUTLET" => Some("mode"),
+            "RECALL_LAST_NUMBER_REQUEST" => Some("direction"),
+            "CLEAR_DIVERSION" | "REJECT_INCOMING_CALL" => None,
+            _ => return err(tag, 400, "400 Syntax Error."),
+        };
+        let expected = 3 + usize::from(parameter.is_some());
+        if words.len() < expected {
+            return err(
+                tag,
+                400,
+                &format!(
+                    "400 Syntax Error: Missing parameter : <{}>",
+                    parameter.expect("only commands with a tail can be short")
+                ),
+            );
+        }
+        if words.len() > expected {
+            return err(tag, 400, "400 Syntax Error: Too many parameters");
+        }
+        let command = match sub {
+            "CLEAR_DIVERSION" => TelephonyCommand::ClearDiversion,
+            "REJECT_INCOMING_CALL" => TelephonyCommand::RejectIncomingCall,
+            "ISOLATE_SECONDARY_OUTLET" => {
+                let isolated = match words[3].to_ascii_lowercase().as_str() {
+                    "normal" => false,
+                    "isolate" => true,
+                    _ => return err(tag, 400, "400 Syntax Error: unknown <mode>"),
+                };
+                TelephonyCommand::IsolateSecondaryOutlet { isolated }
+            }
+            "RECALL_LAST_NUMBER_REQUEST" => {
+                let direction = match words[3].to_ascii_lowercase().as_str() {
+                    "out" => TelephonyDirection::Out,
+                    "in" => TelephonyDirection::In,
+                    _ => return err(tag, 400, "400 Syntax Error: unknown <direction>"),
+                };
+                TelephonyCommand::RecallLastNumberRequest { direction }
+            }
+            "DIVERT" => {
+                let number = words[3];
+                // Native argAsString counts Java UTF-16 code units. Its
+                // subsequent byte encoder maps every signed UTF-8 byte to FF,
+                // clips at sixteen bytes, but still declares the character
+                // count in the SAL prefix. Retain that captured malformed
+                // non-ASCII behavior for exact wire compatibility.
+                let declared_length = number.encode_utf16().count();
+                if declared_length > 16 {
+                    return err(
+                        tag,
+                        400,
+                        "400 Syntax Error: String parameter is too long : <number>",
+                    );
+                }
+                let number = number
+                    .as_bytes()
+                    .iter()
+                    .take(16)
+                    .map(|byte| if *byte >= 0x80 { 0xff } else { *byte })
+                    .collect();
+                TelephonyCommand::Divert {
+                    number,
+                    declared_length: declared_length as u8,
+                }
+            }
+            _ => unreachable!(),
+        };
+        if application != 224 {
+            return err(
+                tag,
+                402,
+                &format!("402 Operation not supported by: {target}"),
+            );
+        }
+        let _commands = self.commands.lock().await;
+        self.send_application(
+            tag,
+            Sal::TelephonyCommand(command),
+            ok(tag, vec![], "200 OK."),
+            "Telephony delivery",
+        )
+        .await
+    }
+
     async fn trigger(
         &self,
         client: &ClientState,
@@ -7537,6 +7710,31 @@ fn measurement_help(tag: &str) -> Response {
     }
 }
 
+fn is_telephony_subcommand(sub: &str) -> bool {
+    matches!(
+        sub,
+        "CLEAR_DIVERSION"
+            | "DIVERT"
+            | "ISOLATE_SECONDARY_OUTLET"
+            | "RECALL_LAST_NUMBER_REQUEST"
+            | "REJECT_INCOMING_CALL"
+    )
+}
+
+fn telephony_help(tag: &str) -> Response {
+    let mut rows = TELEPHONY_HELP
+        .iter()
+        .map(|row| (*row).to_string())
+        .collect::<Vec<_>>();
+    let final_text = format!("101 {}", rows.pop().expect("TELEPHONY help is nonempty"));
+    Response {
+        tag: tag.to_string(),
+        lines: rows,
+        final_text,
+        status: 101,
+    }
+}
+
 #[derive(Clone, Copy)]
 enum MeasurementObjectPath<'a> {
     Application {
@@ -7930,6 +8128,9 @@ fn parse_aircon_boolean(tag: &str, value: &str, parameter: &str) -> Result<bool,
 /// - Media Transport requests STATUS_REQUEST and ENUMERATE remain open.
 ///   Controls and bus-report injection have no MQTT equivalent and require
 ///   LOGIN while the optional gate is armed.
+/// - Telephony CLEAR_DIVERSION/DIVERT/ISOLATE_SECONDARY_OUTLET/
+///   REJECT_INCOMING_CALL. RECALL_LAST_NUMBER_REQUEST remains open as a
+///   read/request operation, as do parent help and unknown syntax.
 /// - SCENE RECORD (persists snapshots to the state file). SCENE PLAY stays
 ///   open (snapshot read plus bus control).
 /// - DO ... FactoryDefault (destructive KEYGL5 OEM programming control).
@@ -7959,6 +8160,7 @@ fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
         "MEDIATRANSPORT" => {
             is_mediatransport_subcommand(sub) && !matches!(sub, "STATUS_REQUEST" | "ENUMERATE")
         }
+        "TELEPHONY" => is_telephony_subcommand(sub) && sub != "RECALL_LAST_NUMBER_REQUEST",
         "PP" => matches!(
             sub,
             "LOCK"

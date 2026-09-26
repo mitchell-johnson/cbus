@@ -149,6 +149,9 @@ cbus-toolkit cgate --host 127.0.0.1 exec 'MEDIATRANSPORT STATUS_REQUEST //PROJEC
 cbus-toolkit cgate --host 127.0.0.1 exec 'MEDIATRANSPORT PLAY //PROJECT/254/192 2'
 cbus-toolkit cgate --host 127.0.0.1 exec 'MEASUREMENT ?'
 cbus-toolkit cgate --host 127.0.0.1 exec 'MEASUREMENT DATA //PROJECT/254/228/1/1 10234 -2 2'
+cbus-toolkit cgate --host 127.0.0.1 exec 'TELEPHONY ?'
+cbus-toolkit cgate --host 127.0.0.1 exec 'TELEPHONY RECALL_LAST_NUMBER_REQUEST //PROJECT/254/224 out'
+cbus-toolkit cgate --host 127.0.0.1 exec 'TELEPHONY DIVERT //PROJECT/254/224 021234567'
 ```
 
 Replace the example project, network and unit with your actual addresses. The
@@ -278,11 +281,20 @@ preserve raw name bytes, and incoming messages reach C-Gate event clients;
 cmqttd publishes no invented MQTT player state. A 200 response does not prove
 media-device acceptance or resulting state.
 
+`TELEPHONY ?` exposes all five maintained C-Gate 3.4 Telephony commands for
+application 224: clear diversion, divert, secondary-outlet isolation,
+last-number recall, and incoming-call rejection. Exact native token grammar,
+including the captured non-ASCII diversion defect, is retained. Incoming
+line, call, ringing, number and Internet-request events reach C-Gate event
+clients. A 200 proves active-generation PCI-confirmed broadcast delivery; it
+does not prove telephone acceptance, call state or persistence. cmqttd does
+not invent an MQTT Telephony state schema.
+
 **Full C-Gate replacement is the target, not the current completion claim.**
 Hardware-backed lighting, all eleven maintained AIRCON/HVAC commands, all 19 maintained
 AUDIO commands, all seven maintained SECURITY commands, the complete maintained
-MEASUREMENT family, and all 21 maintained MEDIATRANSPORT commands and reports on the
-configured direct network are implemented. The same endpoint implements C-Gate
+MEASUREMENT and TELEPHONY families, and all 21 maintained MEDIATRANSPORT commands
+and reports on the configured direct network are implemented. The same endpoint implements C-Gate
 `DO` object methods for lighting, direct and bridged read-only synchronization,
 guarded KEYGL5 FactoryDefault, persistent named-scene record/playback, Trigger Control,
 Enable Control, clock, Temperature Broadcast, native text/icon/Unicode/dynamic-bitmap
@@ -298,13 +310,15 @@ continues on the same CNI connection. `DBNETWORKPATH` resolves native compact an
 routes, and `NET PINGU`, `NET SYNC`, general `NET SYNCNEW`, `DO ... SYNC`, and `NET CHECKUNIT`
 support source routes through one to six bridges with strict Reply Network correlation
 and per-network volatile caches. Direct targeted `NET SYNCNEW` also runs the three native
-duplicate challenges. AIRCON, AUDIO, SECURITY, MEASUREMENT and MEDIATRANSPORT success
-means the broadcast received a positive PCI confirmation; physical controller,
-alarm-panel, measurement-device or media-device acceptance and resulting state have not
-been validated. Routed AIRCON, AUDIO, SECURITY, MEASUREMENT and MEDIATRANSPORT, routed
+duplicate challenges. AIRCON, AUDIO, SECURITY, MEASUREMENT, TELEPHONY and
+MEDIATRANSPORT success means the broadcast received a positive PCI confirmation;
+physical controller, alarm-panel, measurement-device, telephone-device or media-device
+acceptance and resulting state have not been validated. Routed AIRCON, AUDIO, SECURITY,
+MEASUREMENT, TELEPHONY and MEDIATRANSPORT, routed
 writes, routed OEM eDLT metadata, routed targeted `SYNCNEW`, and bridged commissioning
-mutations remain unavailable. When `--cgate-auth-file` is configured, log in before an AIRCON,
-AUDIO or SECURITY mutation, `MEASUREMENT DATA`, or gated `MEDIATRANSPORT` traffic. `NET SYNCNEW` and
+mutations remain unavailable. When `--cgate-auth-file` is configured, log in before
+an AIRCON, AUDIO, SECURITY or Telephony mutation, `MEASUREMENT DATA`, or gated
+`MEDIATRANSPORT` traffic; the Telephony last-number request remains open. `NET SYNCNEW` and
 `NET SET_PROJECT_IDENTIFY` update the volatile physical cache and do not create persistent project
 units. The unravel backend requires exactly two known serials at address 255, two unique
 empty database destinations, and a direct network; broader unravel cases remain

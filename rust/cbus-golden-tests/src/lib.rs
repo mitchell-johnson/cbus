@@ -63,7 +63,8 @@ pub fn run_vector(fname: &str, index: usize, id: &str) {
         | "audio.jsonl"
         | "measurement.jsonl"
         | "security.jsonl"
-        | "mediatransport.jsonl" => check_encode(v),
+        | "mediatransport.jsonl"
+        | "telephony.jsonl" => check_encode(v),
         "checksum.jsonl" => check_checksum(v),
         "ramp_rates.jsonl" => check_ramp(v),
         "mqtt_topics.jsonl" => cbus_mqtt::vector_check::check_topic(v),

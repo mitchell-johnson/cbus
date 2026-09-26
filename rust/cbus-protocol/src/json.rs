@@ -8,6 +8,9 @@ use crate::sal::audio::{AudioAddress, AudioCommand, AudioEvent};
 use crate::sal::measurement::MeasurementData;
 use crate::sal::mediatransport::MediaTransportMessage;
 use crate::sal::security::{SecurityArmMode, SecurityCommand, SecurityEvent};
+use crate::sal::telephony::{
+    DialFailure, OffHookReason, TelephonyCommand, TelephonyDirection, TelephonyEvent,
+};
 use crate::sal::Sal;
 use serde_json::{json, Map, Value};
 
@@ -31,6 +34,8 @@ pub fn sal_to_json(s: &Sal) -> Value {
             "units":measurement.units
         }),
         Sal::MediaTransport(message) => mediatransport_to_json(message),
+        Sal::TelephonyCommand(command) => telephony_command_to_json(command),
+        Sal::TelephonyEvent(event) => telephony_event_to_json(event),
         Sal::LightingRamp {
             application,
             group_address,
@@ -105,6 +110,61 @@ pub fn sal_to_json(s: &Sal) -> Value {
         } => json!({"sal": "dynamic_label", "application": application,
                     "payload_hex": hex::encode(payload)}),
     }
+}
+
+fn telephony_command_to_json(command: &TelephonyCommand) -> Value {
+    match command {
+        TelephonyCommand::ClearDiversion => {
+            json!({"sal":"telephony", "command":"clear_diversion"})
+        }
+        TelephonyCommand::Divert {
+            number,
+            declared_length,
+        } => json!({"sal":"telephony", "command":"divert",
+                    "number_hex":hex::encode(number), "declared_length":declared_length}),
+        TelephonyCommand::IsolateSecondaryOutlet { isolated } => {
+            json!({"sal":"telephony", "command":"isolate_secondary_outlet",
+                   "mode":if *isolated { "isolate" } else { "normal" }})
+        }
+        TelephonyCommand::RecallLastNumberRequest { direction } => {
+            json!({"sal":"telephony", "command":"recall_last_number_request",
+                   "direction":direction.name()})
+        }
+        TelephonyCommand::RejectIncomingCall => {
+            json!({"sal":"telephony", "command":"reject_incoming_call"})
+        }
+    }
+}
+
+fn telephony_event_to_json(event: &TelephonyEvent) -> Value {
+    let mut value = json!({"sal":"telephony_event", "event":event.event_name()});
+    let object = value.as_object_mut().expect("object");
+    match event {
+        TelephonyEvent::LineOnHook
+        | TelephonyEvent::DialInFailure
+        | TelephonyEvent::InternetConnectionRequestMade => {}
+        TelephonyEvent::LineOffHook {
+            direction,
+            reason,
+            number,
+        } => {
+            object.insert("direction".into(), json!(direction.name()));
+            object.insert("reason".into(), json!(reason.name()));
+            object.insert("number_hex".into(), json!(hex::encode(number)));
+        }
+        TelephonyEvent::DialOutFailure { reason } => {
+            object.insert("reason".into(), json!(reason.name()));
+        }
+        TelephonyEvent::Ringing { qualifier, number } => {
+            object.insert("qualifier".into(), json!(qualifier));
+            object.insert("number_hex".into(), json!(hex::encode(number)));
+        }
+        TelephonyEvent::LastNumber { direction, number } => {
+            object.insert("direction".into(), json!(direction.name()));
+            object.insert("number_hex".into(), json!(hex::encode(number)));
+        }
+    }
+    value
 }
 
 fn insert_audio_address(object: &mut Map<String, Value>, address: AudioAddress) {
@@ -919,6 +979,8 @@ pub fn sal_from_json(d: &Value) -> Result<Sal, JErr> {
             units: get_u8(d, "units")?,
         })),
         "mediatransport" => mediatransport_from_json(d).map(Sal::MediaTransport),
+        "telephony" => telephony_command_from_json(d).map(Sal::TelephonyCommand),
+        "telephony_event" => telephony_event_from_json(d).map(Sal::TelephonyEvent),
         "lighting_on" => Ok(Sal::LightingOn {
             application: get_u8(d, "application")?,
             group_address: get_u8(d, "group_address")?,
@@ -990,6 +1052,77 @@ pub fn sal_from_json(d: &Value) -> Result<Sal, JErr> {
         }),
         other => Err(format!("unhandled SAL json: {other}")),
     }
+}
+
+fn telephony_direction_from_json(d: &Value) -> Result<TelephonyDirection, JErr> {
+    match get_str(d, "direction")? {
+        "out" => Ok(TelephonyDirection::Out),
+        "in" => Ok(TelephonyDirection::In),
+        direction => Err(format!("unhandled Telephony direction: {direction}")),
+    }
+}
+
+fn telephony_command_from_json(d: &Value) -> Result<TelephonyCommand, JErr> {
+    Ok(match get_str(d, "command")? {
+        "clear_diversion" => TelephonyCommand::ClearDiversion,
+        "divert" => TelephonyCommand::Divert {
+            number: get_hex(d, "number_hex")?,
+            declared_length: get_u8(d, "declared_length")?,
+        },
+        "isolate_secondary_outlet" => TelephonyCommand::IsolateSecondaryOutlet {
+            isolated: match get_str(d, "mode")? {
+                "normal" => false,
+                "isolate" => true,
+                mode => return Err(format!("unhandled Telephony isolation mode: {mode}")),
+            },
+        },
+        "recall_last_number_request" => TelephonyCommand::RecallLastNumberRequest {
+            direction: telephony_direction_from_json(d)?,
+        },
+        "reject_incoming_call" => TelephonyCommand::RejectIncomingCall,
+        command => return Err(format!("unhandled Telephony command: {command}")),
+    })
+}
+
+fn telephony_event_from_json(d: &Value) -> Result<TelephonyEvent, JErr> {
+    let number = || get_hex(d, "number_hex");
+    Ok(match get_str(d, "event")? {
+        "line_on_hook" => TelephonyEvent::LineOnHook,
+        "line_off_hook" => TelephonyEvent::LineOffHook {
+            direction: telephony_direction_from_json(d)?,
+            reason: match get_str(d, "reason")? {
+                "voice" => OffHookReason::Voice,
+                "data" => OffHookReason::Data,
+                "other" => OffHookReason::Other,
+                reason => return Err(format!("unhandled Telephony off-hook reason: {reason}")),
+            },
+            number: number()?,
+        },
+        "dial_out_failure" => TelephonyEvent::DialOutFailure {
+            reason: match get_str(d, "reason")? {
+                "no_dialtone" => DialFailure::NoDialtone,
+                "no_answer" => DialFailure::NoAnswer,
+                "no_ack_prompt" => DialFailure::NoAckPrompt,
+                "unobtainable" => DialFailure::Unobtainable,
+                "busy" => DialFailure::Busy,
+                reason => return Err(format!("unhandled Telephony dial failure: {reason}")),
+            },
+        },
+        "dial_in_failure" => TelephonyEvent::DialInFailure,
+        "ringing" => TelephonyEvent::Ringing {
+            qualifier: match d.get("qualifier") {
+                None | Some(Value::Null) => None,
+                Some(_) => Some(get_u8(d, "qualifier")?),
+            },
+            number: number()?,
+        },
+        "last_number" => TelephonyEvent::LastNumber {
+            direction: telephony_direction_from_json(d)?,
+            number: number()?,
+        },
+        "internet_connection_request_made" => TelephonyEvent::InternetConnectionRequestMade,
+        event => return Err(format!("unhandled Telephony event: {event}")),
+    })
 }
 
 fn audio_address_from_json(d: &Value) -> Result<AudioAddress, JErr> {
@@ -1910,5 +2043,33 @@ mod tests {
         let mut contradictory = alarm;
         contradictory["active"] = json!(false);
         assert!(sal_from_json(&contradictory).is_err());
+    }
+
+    #[test]
+    fn telephony_command_and_event_json_preserve_native_fields() {
+        for value in [
+            json!({
+                "sal": "telephony",
+                "command": "divert",
+                "number_hex": "ffff",
+                "declared_length": 1
+            }),
+            json!({
+                "sal": "telephony_event",
+                "event": "line_off_hook",
+                "direction": "out",
+                "reason": "data",
+                "number_hex": "3132"
+            }),
+            json!({
+                "sal": "telephony_event",
+                "event": "ringing",
+                "qualifier": 0,
+                "number_hex": "3132"
+            }),
+        ] {
+            let sal = sal_from_json(&value).unwrap();
+            assert_eq!(sal_to_json(&sal), value);
+        }
     }
 }

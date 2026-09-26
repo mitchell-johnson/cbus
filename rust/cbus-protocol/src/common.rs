@@ -44,6 +44,8 @@ pub const APP_AUDIO: u8 = 0xcd;
 pub const APP_MEDIA_TRANSPORT: u8 = 0xc0;
 /// Security application.
 pub const APP_SECURITY: u8 = 0xd0;
+/// Telephony application.
+pub const APP_TELEPHONY: u8 = 0xe0;
 /// Measurement application.
 pub const APP_MEASUREMENT: u8 = 0xe4;
 /// First lighting application address.

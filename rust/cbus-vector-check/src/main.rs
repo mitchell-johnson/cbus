@@ -96,7 +96,8 @@ fn check_vector(fname: &str, v: &Value) -> Result<(), String> {
         | "audio.jsonl"
         | "measurement.jsonl"
         | "security.jsonl"
-        | "mediatransport.jsonl" => check_encode(v),
+        | "mediatransport.jsonl"
+        | "telephony.jsonl" => check_encode(v),
         "checksum.jsonl" => check_checksum(v),
         "ramp_rates.jsonl" => check_ramp(v),
         "mqtt_topics.jsonl" => check_topic(v),

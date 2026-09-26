@@ -5084,6 +5084,48 @@ mod tests {
     }
 
     #[tokio::test(start_paused = true)]
+    async fn telephony_event_is_fanned_out_without_completing_confirmed_send() {
+        let (pci, mut remote, mut events) = setup().await;
+        let worker = pci.clone();
+        let command = tokio::spawn(async move {
+            worker
+                .send_confirmed(&Packet::PointToMultipoint {
+                    meta: Meta::new(true, 0),
+                    application: cbus_protocol::common::APP_TELEPHONY,
+                    sals: vec![Sal::TelephonyCommand(
+                        TelephonyCommand::RecallLastNumberRequest {
+                            direction: cbus_protocol::sal::telephony::TelephonyDirection::Out,
+                        },
+                    )],
+                })
+                .await
+        });
+        assert_eq!(line(&mut remote).await, b"\\05E0000A81018Fh\r");
+
+        // Telephony application traffic is a bus event, not the PCI
+        // confirmation assigned to this send generation.
+        remote
+            .get_mut()
+            .write_all(b"0504E0000A02010A\r\n")
+            .await
+            .unwrap();
+        assert_eq!(
+            events.recv().await,
+            Some(CBusEvent::TelephonyEvent {
+                source: Some(4),
+                event: TelephonyEvent::LineOffHook {
+                    direction: cbus_protocol::sal::telephony::TelephonyDirection::In,
+                    reason: cbus_protocol::sal::telephony::OffHookReason::Voice,
+                    number: Vec::new(),
+                },
+            })
+        );
+        assert!(!command.is_finished());
+        remote.get_mut().write_all(b"h.\r\n").await.unwrap();
+        assert!(command.await.unwrap().is_ok());
+    }
+
+    #[tokio::test(start_paused = true)]
     async fn measurement_data_is_fanned_out_without_completing_confirmed_send() {
         let (pci, mut remote, mut events) = setup().await;
         let sample = MeasurementData {

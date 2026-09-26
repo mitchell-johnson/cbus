@@ -1,0 +1,80 @@
+{
+  "format": "native-cgate-telephony-evidence-v1",
+  "oracle": {
+    "product": "C-Gate",
+    "version": "3.4.0.2001",
+    "build": "20241023-0011",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "application_registry_sha256": "b3b5f65260968af6d00825bfb2df1a5a50bd602bc68ad1b8a0f90aaa3be2d7d5",
+    "telephony_decoder_class_sha256": "28ad2e8a533c5eca19519441ed8159fc679a56e389d4fd09456f44ab8652cbdd3",
+    "raw_probe_report_sha256": "c6e2f53198191dde2d8bb698a880f044e19b522223a6dc35ae5b506ce13ff841",
+    "single_byte_event_probe_report_sha256": "ce91db7403f870db76d6da4b1d18771880043cb2d04772929b5c5caea875f3ea"
+  },
+  "scope": "Captured from an isolated owned C-Gate daemon and disposable fake PCI. No house, Docker service, telephone equipment, or live C-Bus network was used. Payloads exclude the optional PCI checksum and confirmation character.",
+  "application": {
+    "decimal": 224,
+    "hex": "E0",
+    "registry_evidence": "The retained application.spe maps telephony to E0/E0/E0 and CBusTelephonyApplication."
+  },
+  "help": [
+    "101-Help: TELEPHONY commands:",
+    "101-Help:  TELEPHONY ? Help for these commands",
+    "101-Help:  TELEPHONY CLEAR_DIVERSION - Command the telephony device to clear any diversion",
+    "101-Help:  TELEPHONY DIVERT - Set a diversion for the telephony device",
+    "101-Help:  TELEPHONY ISOLATE_SECONDARY_OUTLET - Set the isolation mode for the telephony device",
+    "101-Help:  TELEPHONY RECALL_LAST_NUMBER_REQUEST - Request a last number recall from the telephony device",
+    "101 Help:  TELEPHONY REJECT_INCOMING_CALL - Command the telephony device to reject the incoming call"
+  ],
+  "commands": [
+    {"command":"TELEPHONY CLEAR_DIVERSION 254/224","response":"200 OK.","payload_hex":"05E0000984"},
+    {"command":"TELEPHONY REJECT_INCOMING_CALL 254/$E0","response":"200 OK.","payload_hex":"05E0000982"},
+    {"command":"TELEPHONY ISOLATE_SECONDARY_OUTLET 254/224 normal","response":"200 OK.","payload_hex":"05E0000A8000"},
+    {"command":"TELEPHONY ISOLATE_SECONDARY_OUTLET 254/224 isolate","response":"200 OK.","payload_hex":"05E0000A8001"},
+    {"command":"TELEPHONY RECALL_LAST_NUMBER_REQUEST 254/224 in","response":"200 OK.","payload_hex":"05E0000A8102"},
+    {"command":"TELEPHONY RECALL_LAST_NUMBER_REQUEST 254/224 out","response":"200 OK.","payload_hex":"05E0000A8101"},
+    {"command":"TELEPHONY DIVERT 254/224 1","response":"200 OK.","payload_hex":"05E000A28331"},
+    {"command":"TELEPHONY DIVERT 254/224 1234567890123456","response":"200 OK.","payload_hex":"05E000B18331323334353637383930313233343536"},
+    {"command":"TELEPHONY DIVERT 254/224 \\q","response":"200 OK.","payload_hex":"05E000A3835C71"},
+    {"command":"TELEPHONY DIVERT 254/224 é","response":"200 OK.","payload_hex":"05E000A283FFFF","note":"Native defect: Java counts one UTF-16 character but converts the two signed UTF-8 bytes through an FF fallback, producing one undeclared trailing byte."}
+  ],
+  "validated_boundaries": {
+    "application": "Telephony application 224 (0xE0); decimal, $E0, selected-project and full-project paths",
+    "divert_number": "exactly one whitespace-delimited token; Java UTF-16 length 1..16; quotes and backslash escape spelling are literal, not shell-style decoded",
+    "isolation_mode": "case-insensitive normal or isolate",
+    "last_number_direction": "case-insensitive in or out",
+    "single_byte_number_event": "retained decoder inserts a separator only when a line-off-hook or last-number value is longer than one byte; a one-byte value is concatenated (for example out data1 or in1)",
+    "wire_length": "short SAL prefixes use their low three length bits; extended 0x80-prefixed forms use the low five bits"
+  },
+  "negative_examples": [
+    {"command":"TELEPHONY BOGUS","response":"400 Syntax Error."},
+    {"command":"TELEPHONY CLEAR_DIVERSION","response":"400 Syntax Error: Missing parameter : <application>"},
+    {"command":"TELEPHONY CLEAR_DIVERSION 254/224 EXTRA","response":"400 Syntax Error: Too many parameters"},
+    {"command":"TELEPHONY CLEAR_DIVERSION 254/223","response":"402 Operation not supported by: 254/223"},
+    {"command":"TELEPHONY CLEAR_DIVERSION 253/224","response":"401 Bad object or device ID: 253/224 (Network not found)"},
+    {"command":"TELEPHONY DIVERT 254/224","response":"400 Syntax Error: Missing parameter : <number>"},
+    {"command":"TELEPHONY DIVERT 254/224 12345678901234567","response":"400 Syntax Error: String parameter is too long : <number>"},
+    {"command":"TELEPHONY ISOLATE_SECONDARY_OUTLET 254/224 bogus","response":"400 Syntax Error: unknown <mode>"},
+    {"command":"TELEPHONY RECALL_LAST_NUMBER_REQUEST 254/224 bogus","response":"400 Syntax Error: unknown <direction>"}
+  ],
+  "inbound_events": [
+    {"sal_hex":"0901","event":"line_on_hook"},
+    {"sal_hex":"0A0201","event":"line_off_hook in voice"},
+    {"sal_hex":"0C02203132","event":"line_off_hook out data 12"},
+    {"sal_hex":"0B022031","event":"line_off_hook out data1","note":"Native inserts a separator only when the decoded number is longer than one byte."},
+    {"sal_hex":"0A0305","event":"dial_out_failure busy"},
+    {"sal_hex":"0904","event":"dial_in_failure no_answer"},
+    {"sal_hex":"0C05003132","event":"ringing 12","note":"The qualifier byte after opcode 05 is ignored in native event text."},
+    {"sal_hex":"0C06013132","event":"last_number out 12"},
+    {"sal_hex":"0B060231","event":"last_number in1","note":"Native inserts a separator only when the decoded number is longer than one byte."},
+    {"sal_hex":"0907","event":"internet_connection_request_made"},
+    {"sal_hex":"0A8000","event":"isolate_secondary_outlet normal"},
+    {"sal_hex":"0A8001","event":"isolate_secondary_outlet isolate"},
+    {"sal_hex":"0A8101","event":"recall_last_number_request out"},
+    {"sal_hex":"0A8102","event":"recall_last_number_request in"},
+    {"sal_hex":"0982","event":"reject_incoming_call"},
+    {"sal_hex":"A3833132","event":"divert 12"},
+    {"sal_hex":"0984","event":"clear_diversion"}
+  ],
+  "authorization": "All five native command classes declare Program access. cmqttd's optional LOGIN gate is deliberately operation-based rather than access.txt parity: diversion, isolation, rejection and clear operations are gated; the last-number request remains available as a read/request command.",
+  "acceptance_boundary": "A cmqttd 200 response establishes active-generation PCI-confirmed broadcast delivery only. Telephone-unit acceptance, call state, durable diversion and real telephone hardware were not tested. Bridged-network routing remains unsupported. Telephony traffic is fanned to C-Gate EVENT subscribers and intentionally creates no MQTT entity or state schema."
+}
