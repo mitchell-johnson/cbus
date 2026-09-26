@@ -3766,7 +3766,12 @@ impl Service {
         }
     }
 
-    async fn run_macro(&self, client: &mut ClientState, tag: &str, body: &str) -> Response {
+    async fn run_macro(
+        self: &Arc<Self>,
+        client: &mut ClientState,
+        tag: &str,
+        body: &str,
+    ) -> Response {
         let args = crate::file::tokens(body);
         if !(2..=3).contains(&args.len())
             || args
