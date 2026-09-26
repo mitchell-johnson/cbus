@@ -851,6 +851,14 @@ pub struct Network {
     /// Runtime state.
     #[serde(skip)]
     pub state: NetworkState,
+    /// Volatile command retry count exposed by network `GET`/`SHOW`.
+    ///
+    /// Native C-Gate starts at two and permits the guarded Toolkit workflows
+    /// to select zero with `SET //PROJECT/NET Retries 0`. The override is
+    /// process-local: it is neither part of the durable project database nor
+    /// retained across a runtime reset.
+    #[serde(skip, default = "default_network_retries")]
+    pub retries: u8,
     /// Database units keyed by address.
     pub units: HashMap<u8, Unit>,
     /// Physical bus units keyed by address.
@@ -873,6 +881,10 @@ pub struct Network {
     /// such as scene record can run end to end. Untouched groups read 0.
     #[serde(skip)]
     pub levels: HashMap<(u8, u8), u8>,
+}
+
+fn default_network_retries() -> u8 {
+    2
 }
 
 /// One project.
@@ -1101,6 +1113,15 @@ pub struct Server {
 }
 
 impl Server {
+    /// Remove volatile network retry preparation from a database-shaped
+    /// project clone. Ordinary selection and rename retain live state; only
+    /// copy/archive/file-load/database-snapshot boundaries call this helper.
+    pub(crate) fn reset_project_retries(project: &mut Project) {
+        for network in project.networks.values_mut() {
+            network.retries = default_network_retries();
+        }
+    }
+
     /// New server with the given interface role.
     pub fn new(access: AccessLevel) -> Self {
         Self {
@@ -1539,6 +1560,7 @@ impl Server {
         let Some(mut project) = self.database_files.get(words[3]).cloned() else {
             return err(tag, status::NOT_FOUND, "404 Project file not found");
         };
+        Self::reset_project_retries(&mut project);
         project.name = words[2].to_string();
         self.projects.insert(words[2].to_string(), project);
         self.current = Some(words[2].to_string());
@@ -1629,6 +1651,7 @@ impl Server {
             );
         }
         let mut copy = project.clone();
+        Self::reset_project_retries(&mut copy);
         copy.name = dst.to_string();
         self.projects.insert(dst.to_string(), copy);
         // A copy duplicates database state, not just the project record.
@@ -1810,9 +1833,10 @@ impl Server {
                 "400 PROJECT ARCHIVE requires a project and server path",
             );
         }
-        let Some(project) = self.projects.get(words[2]).cloned() else {
+        let Some(mut project) = self.projects.get(words[2]).cloned() else {
             return err(tag, status::NOT_FOUND, "404 Project not found");
         };
+        Self::reset_project_retries(&mut project);
         self.database_files.insert(words[3].to_string(), project);
         ok(tag, vec![], "200 OK.")
     }
@@ -1833,6 +1857,7 @@ impl Server {
         let Some(mut project) = self.database_files.get(words[3]).cloned() else {
             return err(tag, status::NOT_FOUND, "404 No such archived project");
         };
+        Self::reset_project_retries(&mut project);
         project.name = words[2].to_string();
         self.projects.insert(words[2].to_string(), project);
         ok(tag, vec![], "200 OK.")
@@ -1943,6 +1968,7 @@ impl Server {
                 iface_type: words[3].to_string(),
                 iface_addr: words[4].to_string(),
                 state: NetworkState::Closed,
+                retries: default_network_retries(),
                 units: HashMap::new(),
                 physical: HashMap::new(),
                 levels: HashMap::new(),
@@ -5111,12 +5137,17 @@ impl Server {
         }
     }
 
-    /// Native scalar `SET source-path Address new-address`: the single
-    /// physical-address mutation. The move is physical-only: the database
-    /// record stays put, so verification observes `database_unchanged`,
-    /// exactly like native. The reply confirms the destination in the
-    /// exact native shape `200 OK: <destination>`.
+    /// Native scalar `SET`. The one evidenced network-runtime form is
+    /// `SET //PROJECT/NET Retries 0`; every other non-Address form remains
+    /// closed. `SET source-path Address new-address` is the independent
+    /// physical-address mutation below.
     fn scalar_set(&mut self, tag: &str, words: &[&str]) -> Response {
+        if words
+            .get(2)
+            .is_some_and(|field| field.eq_ignore_ascii_case("Retries"))
+        {
+            return self.scalar_set_retries(tag, words);
+        }
         if words.len() != 4 || !words[2].eq_ignore_ascii_case("Address") {
             return err(
                 tag,
@@ -5175,6 +5206,57 @@ impl Server {
             tag: tag.to_string(),
             lines: Vec::new(),
             final_text: format!("200 OK: {dest}"),
+            status: status::OK,
+        }
+    }
+
+    /// Native-evidenced volatile retry preparation used by guarded Toolkit
+    /// physical workflows. The exact accepted value is zero; it causes no
+    /// PCI traffic, database mutation or event.
+    fn scalar_set_retries(&mut self, tag: &str, words: &[&str]) -> Response {
+        if words.len() != 4 || words[3] != "0" {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 SET network Retries requires the exact value 0",
+            );
+        }
+        let Some(path) = words[1].strip_prefix("//") else {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 SET network Retries requires an exact //PROJECT/NET path",
+            );
+        };
+        let parts = path.split('/').collect::<Vec<_>>();
+        let [project, network] = parts.as_slice() else {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 SET network Retries requires an exact //PROJECT/NET path",
+            );
+        };
+        if project.is_empty() || !valid_name(project) {
+            return err(tag, status::BAD_REQUEST, "400 Invalid network path");
+        }
+        let Ok(network) = network.parse::<u8>() else {
+            return err(tag, status::BAD_REQUEST, "400 Invalid network path");
+        };
+        if self.current.as_deref() != Some(*project) {
+            return err(tag, status::NOT_FOUND, "404 Project not selected");
+        }
+        let Some(record) = self
+            .projects
+            .get_mut(*project)
+            .and_then(|project| project.networks.get_mut(&network))
+        else {
+            return err(tag, status::NOT_FOUND, "404 Network not found");
+        };
+        record.retries = 0;
+        Response {
+            tag: tag.to_string(),
+            lines: Vec::new(),
+            final_text: format!("200 OK: //{project}/{network}"),
             status: status::OK,
         }
     }
@@ -6653,7 +6735,7 @@ impl Server {
             ("FastResponse".to_string(), "no".to_string()),
             ("QuickDetect".to_string(), "no".to_string()),
             ("ResponseDelay".to_string(), "0".to_string()),
-            ("Retries".to_string(), "0".to_string()),
+            ("Retries".to_string(), network.retries.to_string()),
             ("ShortSync".to_string(), "no".to_string()),
             ("SyncTime".to_string(), "0".to_string()),
             ("TxEnable".to_string(), "yes".to_string()),
@@ -7201,6 +7283,7 @@ mod tests {
             iface_type: iface_type.to_string(),
             iface_addr: iface_addr.to_string(),
             state: NetworkState::Open,
+            retries: default_network_retries(),
             units: bridge_units
                 .iter()
                 .map(|unit| (*unit, Unit::blank(*unit, "BRIDGE2N")))
@@ -7959,7 +8042,7 @@ mod tests {
             "AutoUpdate=no",
             "Retries=2",
             "NetworkType=Wired",
-            "Name=Local",
+            "Name=254",
             "Type=Cni",
             "InterfaceAddress=127.0.0.1:10001",
         ] {

@@ -163,9 +163,17 @@ class RustInteropTests(unittest.TestCase):
         # Database unit lifecycle through the native SAFE verbs.
         database.add("//TEST/254", "unit", 20, "Lounge")
         database.set("//TEST/254/p/20/UnitName", "LOUNGE")
-        fields = self.client.command("GET //TEST/254/p/20 UnitName")
+        # UnitName is a database field: native C-Gate rejects the runtime
+        # GET form with 402, so read it through the database layer.
+        fields = database.get("//TEST/254/p/20/UnitName")
         self.assertTrue(any("UnitName=LOUNGE" in line for line in fields.lines))
         database.delete("//TEST/254/p/20")
+
+        # A never-commanded level is readable only when its group exists in
+        # the database. Native/live unknown groups remain a 408 rather than
+        # inventing a zero-valued bus observation.
+        database.add("//TEST/254", "application", 56, "Lighting")
+        database.add("//TEST/254/56", "group", 9, "Untouched")
 
         # Scene playback over the real executor.
         from cbus_toolkit.scenes import SceneAction, SceneExecutor, SceneFile
@@ -176,9 +184,9 @@ class RustInteropTests(unittest.TestCase):
         self.assertEqual(len(played.responses), 2)
 
         # Behavioral round-trip: record samples the played levels back.
-        # Levels are mock behavior (instant apply, untouched groups read 0),
-        # not native device fidelity; the assertion pins the write-then-
-        # observe contract both sides implement.
+        # Levels are mock behavior (instant apply, durable untouched groups
+        # read 0), not native device fidelity; the assertion pins the
+        # write-then-observe contract both sides implement.
         recorded = SceneExecutor(self.client).record(SceneFile((
             SceneAction("//TEST/254/56/1", 0),
             SceneAction("//TEST/254/56/2", 0),
@@ -389,6 +397,7 @@ class RustInteropTests(unittest.TestCase):
         self.client.command("DBSETSAFE //TEST/254/p/4/FirmwareVersion 2.5.00")
         self.client.command("DBSETSAFE //TEST/254/p/4/SerialNumber 101136.1558")
         self.client.command("NET OPEN //TEST/254")
+        self.client.command("SET //TEST/254 Retries 0")
         outcome = PhysicalAddressing(self.client).readdress(
             "//TEST/254/p/4", 6, expected_serial="101136.1558")
         self.assertEqual(outcome["outcome"], "confirmed_moved")
@@ -420,6 +429,7 @@ class RustInteropTests(unittest.TestCase):
         self.client.command("DBDELETE //TEST/254/p/255")
         self.client.command("MOCK BUS-DEL //TEST/254 6")
         self.client.command("NET OPEN //TEST/254")
+        self.client.command("SET //TEST/254 Retries 0")
         outcome = SerialCommissioning(self.client).commission(
             "//TEST/254/p/255", 6, expected_serial="101136.1558")
         self.assertEqual(outcome["outcome"], "confirmed_moved")
@@ -472,6 +482,7 @@ class RustInteropTests(unittest.TestCase):
         self.client.command("DBSETSAFE //TEST/254/p/5/FirmwareVersion 5.5.00")
         self.client.command("DBSETSAFE //TEST/254/p/5/SerialNumber 101183.1666")
         self.client.command("NET OPEN //TEST/254")
+        self.client.command("SET //TEST/254 Retries 0")
         manager = EdltDynamicLabelClear(self.client)
         plan = manager.plan("//TEST/254/p/5", expected_serial="101183.1666")
         evidence = manager.request(plan)

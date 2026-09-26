@@ -860,7 +860,7 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     assert!(pingu.contains("302-Units=16, 255"), "{pingu:?}");
     assert!(pingu.contains("200 OK."), "{pingu:?}");
     let units = command(&mut reader, &mut writer, "GET //HARNESS/254 Units").await;
-    assert!(units.contains("Units=5,16,255"), "{units:?}");
+    assert!(units.contains("Units=16,255"), "{units:?}");
     sys.broker
         .inject("homeassistant/light/cbus_1/set", br#"{"state":"OFF"}"#);
     require(COMMAND_DRAIN, "MQTT command on shared PCI", || {
@@ -912,7 +912,7 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     assert!(sync.contains("202 Done: //HARNESS/254"), "{sync:?}");
     assert!(command(&mut reader, &mut writer, "GET //HARNESS/254 Units")
         .await
-        .contains("Units=5,16,255"));
+        .contains("Units=16,255"));
     assert!(
         command(&mut reader, &mut writer, "GET //HARNESS/254/p/16 Type")
             .await

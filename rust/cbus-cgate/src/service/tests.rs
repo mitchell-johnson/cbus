@@ -3306,6 +3306,73 @@ async fn broadcast_event_is_local_authenticated_and_has_no_pci_side_effect() {
 }
 
 #[tokio::test]
+async fn network_retries_zero_is_local_volatile_and_restart_resets_default() {
+    let path = state_path();
+    let (initial_pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), initial_pci, None).unwrap();
+    let mut client = ClientState::default();
+    let mut events = service.events.subscribe();
+    let durable_before = std::fs::read(&path).unwrap();
+
+    let before = service
+        .handle(&mut client, "[before] GET //HARNESS/254 Retries")
+        .await;
+    assert_eq!(before.status, 300);
+    assert_eq!(before.final_text, "300 //HARNESS/254: Retries=2");
+    let set = service
+        .handle(&mut client, "[set] SET //HARNESS/254 Retries 0")
+        .await;
+    assert_eq!(set.status, 200);
+    assert!(set.lines.is_empty());
+    assert_eq!(set.final_text, "200 OK: //HARNESS/254");
+    let after = service
+        .handle(&mut client, "[after] GET //HARNESS/254 Retries")
+        .await;
+    assert_eq!(after.status, 300);
+    assert_eq!(after.final_text, "300 //HARNESS/254: Retries=0");
+
+    for (line, expected) in [
+        ("[value] SET //HARNESS/254 Retries 2", 400),
+        ("[missing-value] SET //HARNESS/254 Retries", 400),
+        ("[relative] SET /254 Retries 0", 400),
+        ("[foreign] SET //OTHER/254 Retries 0", 404),
+        ("[missing] SET //HARNESS/253 Retries 0", 404),
+        ("[broader] SET //HARNESS/254 AutoUpdate no", 502),
+    ] {
+        let rejected = service.handle(&mut client, line).await;
+        assert_eq!(rejected.status, expected, "{line}");
+        let preserved = service
+            .handle(&mut client, "[preserved] GET //HARNESS/254 Retries")
+            .await;
+        assert_eq!(preserved.final_text, "300 //HARNESS/254: Retries=0");
+    }
+
+    assert!(events.try_recv().is_err(), "network SET emitted an event");
+    assert_eq!(
+        std::fs::read(&path).unwrap(),
+        durable_before,
+        "volatile retry preparation rewrote the durable database"
+    );
+    assert!(
+        tokio::time::timeout(Duration::from_millis(25), remote.read_u8())
+            .await
+            .is_err(),
+        "network SET wrote to the PCI"
+    );
+
+    drop(service);
+    let (restart_pci, _restart_remote) = pci();
+    let restarted = Service::new(&fixture(), None, path.clone(), restart_pci, None).unwrap();
+    let mut restarted_client = ClientState::default();
+    let restarted_value = restarted
+        .handle(&mut restarted_client, "[restart] GET //HARNESS/254 Retries")
+        .await;
+    assert_eq!(restarted_value.status, 300);
+    assert_eq!(restarted_value.final_text, "300 //HARNESS/254: Retries=2");
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn broadcast_event_fans_out_between_embedded_command_connections() {
     let path = state_path();
     let (pci, _remote) = pci();

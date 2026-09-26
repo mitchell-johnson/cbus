@@ -734,6 +734,139 @@ fn label_kfi_round_trip_and_valueless_reject() {
     assert_eq!(replaced.final_text, "300 newvalue");
 }
 
+/// The sole local scalar-SET exception pins the owned native capture used by
+/// guarded Toolkit physical workflows: default two, exact zero mutation,
+/// native reply/readback, and no event. Invalid, foreign, missing and broader
+/// non-Address forms remain closed without changing the accepted value.
+#[test]
+fn scalar_set_network_retries_zero_is_exact_and_volatile() {
+    let mut s = Server::new(AccessLevel::Program);
+    assert_eq!(s.handle("[1] PROJECT NEW TEST").status, 200);
+    assert_eq!(
+        s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
+            .status,
+        200
+    );
+    let default = s.handle("[3] GET //TEST/254 Retries");
+    assert_eq!(default.status, 300);
+    assert_eq!(default.final_text, "300 //TEST/254: Retries=2");
+    s.drain_events();
+
+    let set = s.handle("[4] SET //TEST/254 Retries 0");
+    assert_eq!(set.status, 200);
+    assert!(set.lines.is_empty());
+    assert_eq!(set.final_text, "200 OK: //TEST/254");
+    assert!(s.drain_events().is_empty());
+    let readback = s.handle("[5] GET //TEST/254 Retries");
+    assert_eq!(readback.status, 300);
+    assert_eq!(readback.final_text, "300 //TEST/254: Retries=0");
+
+    for command in [
+        "SET //TEST/254 Retries 2",
+        "SET //TEST/254 Retries -1",
+        "SET //TEST/254 Retries",
+        "SET /254 Retries 0",
+        "SET //TEST/254/p/1 Retries 0",
+        "SET //TEST/254 AutoUpdate no",
+    ] {
+        let rejected = s.handle(&format!("[bad] {command}"));
+        assert!(rejected.status >= 400, "{command}: {rejected:?}");
+        assert_eq!(
+            s.handle("[check] GET //TEST/254 Retries").final_text,
+            "300 //TEST/254: Retries=0",
+            "{command} changed runtime state"
+        );
+        assert!(s.drain_events().is_empty(), "{command} emitted an event");
+    }
+
+    assert_eq!(s.handle("[6] PROJECT NEW OTHER").status, 200);
+    s.drain_events();
+    let foreign = s.handle("[7] SET //TEST/254 Retries 0");
+    assert_eq!(foreign.status, 404);
+    assert!(foreign.final_text.contains("Project not selected"));
+    assert!(s.drain_events().is_empty());
+    assert_eq!(s.handle("[8] PROJECT USE TEST").status, 200);
+    let missing = s.handle("[9] SET //TEST/253 Retries 0");
+    assert_eq!(missing.status, 404);
+    assert!(missing.final_text.contains("Network not found"));
+    assert_eq!(
+        s.handle("[10] GET //TEST/254 Retries").final_text,
+        "300 //TEST/254: Retries=0"
+    );
+    assert!(s.drain_events().is_empty());
+}
+
+#[test]
+fn network_retries_do_not_cross_database_snapshot_boundaries() {
+    let mut server = Server::new(AccessLevel::Program);
+    assert_eq!(server.handle("[1] PROJECT NEW SOURCE").status, 200);
+    assert_eq!(
+        server
+            .handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
+            .status,
+        200
+    );
+    assert_eq!(server.handle("[3] SET //SOURCE/254 Retries 0").status, 200);
+    let get = |server: &mut Server, tag: &str, project: &str| {
+        server
+            .handle(&format!("[{tag}] GET //{project}/254 Retries"))
+            .final_text
+    };
+
+    assert_eq!(server.handle("[4] PROJECT COPY SOURCE COPY").status, 200);
+    assert_eq!(
+        get(&mut server, "5", "SOURCE"),
+        "300 //SOURCE/254: Retries=0"
+    );
+    assert_eq!(server.handle("[6] PROJECT USE COPY").status, 200);
+    assert_eq!(get(&mut server, "7", "COPY"), "300 //COPY/254: Retries=2");
+
+    assert_eq!(server.handle("[8] PROJECT USE SOURCE").status, 200);
+    assert_eq!(
+        server
+            .handle("[9] PROJECT ARCHIVE SOURCE /tmp/retries.arc")
+            .status,
+        200
+    );
+    assert_eq!(
+        get(&mut server, "10", "SOURCE"),
+        "300 //SOURCE/254: Retries=0"
+    );
+    assert_eq!(
+        server
+            .handle("[11] PROJECT RESTORE RESTORED /tmp/retries.arc")
+            .status,
+        200
+    );
+    assert_eq!(server.handle("[12] PROJECT USE RESTORED").status, 200);
+    assert_eq!(
+        get(&mut server, "13", "RESTORED"),
+        "300 //RESTORED/254: Retries=2"
+    );
+    assert_eq!(
+        server
+            .handle("[14] PROJECT LOAD LOADED /tmp/retries.arc")
+            .status,
+        200
+    );
+    assert_eq!(
+        get(&mut server, "15", "LOADED"),
+        "300 //LOADED/254: Retries=2"
+    );
+
+    assert_eq!(server.handle("[16] PROJECT USE SOURCE").status, 200);
+    assert_eq!(server.handle("[17] DBSAVE retries.db").status, 200);
+    assert_eq!(
+        get(&mut server, "18", "SOURCE"),
+        "300 //SOURCE/254: Retries=0"
+    );
+    assert_eq!(server.handle("[19] DBLOAD retries.db").status, 200);
+    assert_eq!(
+        get(&mut server, "20", "SOURCE"),
+        "300 //SOURCE/254: Retries=2"
+    );
+}
+
 /// Mock determinism for the scalar address move: the reply confirms the
 /// destination in the exact native shape, the database record stays put,
 /// and guard rails fail closed in existence-before-occupancy order.
@@ -1761,6 +1894,10 @@ fn mock_bus_del_drops_physical_keeps_database() {
     let dropped = s.handle("[13] MOCK BUS-DEL //TEST/254 20");
     assert_eq!(dropped.status, 200);
     assert_eq!(dropped.final_text, "200 OK");
+    assert_eq!(
+        s.handle("[13b] GET //TEST/254 Units").final_text,
+        "300 //TEST/254: Units="
+    );
     assert_eq!(s.handle("[14] GET //TEST/254/p/20 *").status, 300);
     let dbdoc = s.handle("[15] DBGETXML //TEST/254/p/20");
     assert_eq!(dbdoc.status, 200);

@@ -359,16 +359,24 @@ struct Database {
 
 impl Database {
     fn from_server(s: &Server) -> Self {
+        // Network retries are live command state. Normalize the cloned
+        // projects before durable comparison and serialization so SET does
+        // not cause an atomic database rewrite or survive daemon restart.
+        let mut projects = s.projects.clone();
+        let mut database_files = s.database_files.clone();
+        for project in projects.values_mut().chain(database_files.values_mut()) {
+            Server::reset_project_retries(project);
+        }
         Self {
             version: 1,
-            projects: s.projects.clone(),
+            projects,
             db_fields: s.db_fields.clone(),
             objects: s.objects.clone(),
             known_oids: s.known_oids.clone(),
             db_levels: s.db_levels.clone(),
             config_values: s.config_values.clone(),
             scene_snapshots: s.scene_snapshots.clone(),
-            database_files: s.database_files.clone(),
+            database_files,
             file_store: s.file_store.clone(),
             file_modified: s.file_modified.clone(),
             dali_saved_sessions: s.dali_saved_sessions.clone(),
@@ -9769,6 +9777,7 @@ fn preserve_physical_state(before: &Server, model: &mut Server) {
 }
 
 fn clear_project_runtime(project: &mut Project) {
+    Server::reset_project_retries(project);
     for network in project.networks.values_mut() {
         network.state = NetworkState::Closed;
         network.physical.clear();
@@ -11147,6 +11156,12 @@ fn local_command(words: &[&str], upper: &[String], model: &Server) -> bool {
         // GET is read-only. Application and live-lighting special cases are
         // handled above; the model supplies cached network and unit fields.
         "GET" => words.len() >= 3,
+        // Exact native-evidenced Toolkit preparation. Address mutation is
+        // intercepted above and remains the only physical scalar SET form;
+        // other non-Address SET fields stay fail-closed.
+        "SET" => words
+            .get(2)
+            .is_some_and(|field| field.eq_ignore_ascii_case("Retries")),
         "NET" => matches!(sub, "LIST" | "LIST_ALL" | "STATE" | "TREE"),
         "REPOSITORY" => sub == "USE",
         "TRANSFORM" => matches!(
@@ -11565,6 +11580,7 @@ fn import_project(xml: &str, network_name: Option<&str>) -> io::Result<(Server, 
                     .map(|n| field(n, "InterfaceAddress"))
                     .unwrap_or_default(),
                 state: NetworkState::Closed,
+                retries: 2,
                 units,
                 physical: HashMap::new(),
                 levels: HashMap::new(),

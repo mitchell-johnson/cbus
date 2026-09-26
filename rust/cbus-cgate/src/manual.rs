@@ -2291,6 +2291,7 @@ impl Server {
                 iface_type: words[3].to_string(),
                 iface_addr: words[4..].join(" "),
                 state: NetworkState::Closed,
+                retries: 2,
                 units: Default::default(),
                 physical: Default::default(),
                 levels: Default::default(),
@@ -2378,7 +2379,7 @@ impl Server {
         if words.len() != 2 || words[1].is_empty() {
             return err(tag, status::BAD_REQUEST, "400 DBSAVE requires a filename");
         }
-        let Some(project) = self
+        let Some(mut project) = self
             .current
             .as_ref()
             .and_then(|name| self.projects.get(name))
@@ -2386,6 +2387,7 @@ impl Server {
         else {
             return err(tag, status::NOT_FOUND, "404 No project selected");
         };
+        Self::reset_project_retries(&mut project);
         self.database_files.insert(words[1].to_string(), project);
         ok(tag, vec![], "200 OK.")
     }
@@ -2397,6 +2399,7 @@ impl Server {
         let Some(mut snapshot) = self.database_files.get(words[1]).cloned() else {
             return err(tag, 442, "442 Error reading tag database");
         };
+        Self::reset_project_retries(&mut snapshot);
         let Some(current) = self.current.clone() else {
             return err(tag, status::NOT_FOUND, "404 No project selected");
         };

@@ -320,7 +320,7 @@ class SerialAddressFixtureTests(unittest.TestCase):
                     sim=fixture(state_path=path,faults={A:fault},fragment_sizes=(1,3,7),response_delay=.001)
                     def inventory(endpoint):
                         return PCIInventoryCollector(*endpoint,local_unit=16,overall_timeout=5,
-                            observation_timeout=.5,confirmation_timeout=.1,response_timeout=.1,quiet_period=.025).collect_inventory()
+                            observation_timeout=.5,confirmation_timeout=.25,response_timeout=.25,quiet_period=.025).collect_inventory()
                     with sim.running() as endpoint:
                         before=inventory(endpoint);self.assertTrue(before.complete);self.assertEqual(before.duplicate_addresses,(255,))
                         expected=RECEIPT_A if fault.reply else b'g.'

@@ -1497,7 +1497,16 @@ impl Server {
         let units = network
             .physical
             .keys()
-            .chain(network.units.keys())
+            // Native NEW UNIT objects are immediately present in the runtime
+            // tree even without bus presence. Ordinary database records are
+            // not: after a physical move or MOCK BUS-DEL, their stale address
+            // must not reappear in the physical `Units` inventory.
+            .chain(
+                network
+                    .units
+                    .iter()
+                    .filter_map(|(address, unit)| unit.created_by_new.then_some(address)),
+            )
             .copied()
             .collect::<BTreeSet<_>>();
         let free_unit = (0_u16..=255)
@@ -1561,7 +1570,9 @@ impl Server {
             ("InterfaceState".into(), interface_state.into()),
             ("LastSyncTime".into(), String::new()),
             ("LSP".into(), "0".into()),
-            ("Name".into(), network.name.clone()),
+            // Runtime network Name is the decimal object address. The
+            // database TagName remains separate (for example "Local").
+            ("Name".into(), network_number.to_string()),
             (
                 "NetworkType".into(),
                 if wired { "Wired" } else { "Bridge" }.into(),
@@ -1575,7 +1586,7 @@ impl Server {
             ("Options".into(), "null".into()),
             ("QuickDetect".into(), "no".into()),
             ("ResponseDelay".into(), "3000".into()),
-            ("Retries".into(), "2".into()),
+            ("Retries".into(), network.retries.to_string()),
             ("RxQ".into(), "null".into()),
             ("ShortSync".into(), "no".into()),
             ("State".into(), object_state.into()),

@@ -214,6 +214,45 @@ fn tcp_project_network_lighting_cycle() {
 }
 
 #[test]
+fn tcp_network_retries_zero_matches_native_reply_and_readback() {
+    let mock = Mock::spawn();
+    let mut session = mock.connect();
+    assert!(session.greeting().starts_with("201 "));
+    assert_eq!(session.command("PROJECT NEW TEST").status, 200);
+    assert_eq!(
+        session
+            .command("DBCREATENET 254 Local Cni 127.0.0.1:10001")
+            .status,
+        200
+    );
+
+    let before = session.command("GET //TEST/254 Retries");
+    assert_eq!(before.status, 300);
+    assert_eq!(before.lines, ["300 //TEST/254: Retries=2"]);
+    let set = session.command("SET //TEST/254 Retries 0");
+    assert_eq!(set.status, 200);
+    assert_eq!(set.lines, ["200 OK: //TEST/254"]);
+    assert!(set.events.is_empty());
+    let after = session.command("GET //TEST/254 Retries");
+    assert_eq!(after.status, 300);
+    assert_eq!(after.lines, ["300 //TEST/254: Retries=0"]);
+
+    for rejected in [
+        "SET //TEST/254 Retries 2",
+        "SET //TEST/254 Retries",
+        "SET /254 Retries 0",
+        "SET //TEST/254 AutoUpdate no",
+    ] {
+        assert!(session.command(rejected).status >= 400, "{rejected}");
+        assert_eq!(
+            session.command("GET //TEST/254 Retries").lines,
+            ["300 //TEST/254: Retries=0"],
+            "{rejected} changed the accepted runtime value"
+        );
+    }
+}
+
+#[test]
 fn tcp_comments_match_native_silent_and_tagged_behavior() {
     let mock = Mock::spawn();
     let mut session = mock.connect();
