@@ -110,6 +110,96 @@ fn pci() -> (Arc<PciClient>, tokio::io::DuplexStream) {
     (PciClient::new(Box::new(rd), Box::new(wr), tx), remote)
 }
 
+async fn database_pci_line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+    let mut line = Vec::new();
+    reader.read_until(b'\r', &mut line).await.unwrap();
+    line
+}
+
+async fn database_pci_reply<W: tokio::io::AsyncWrite + Unpin>(
+    writer: &mut W,
+    source: u8,
+    cal: &[u8],
+) {
+    let mut bytes = vec![0x86, source, 0x10, 0x00];
+    bytes.extend_from_slice(cal);
+    let sum = bytes.iter().fold(0u8, |sum, byte| sum.wrapping_add(*byte));
+    bytes.push(0u8.wrapping_sub(sum));
+    let mut wire = hex::encode_upper(bytes).into_bytes();
+    wire.extend_from_slice(b"\r\n");
+    writer.write_all(&wire).await.unwrap();
+}
+
+fn database_mmi_block(start: u8, count: usize, present: u8) -> Vec<u8> {
+    let mut states = vec![0u8; count];
+    if (usize::from(start)..usize::from(start) + count).contains(&usize::from(present)) {
+        states[usize::from(present) - usize::from(start)] = 1;
+    }
+    let mut wire = cbus_protocol::packet::Packet::StandardStatus {
+        application: 0xff,
+        block_start: start,
+        states,
+    }
+    .encode_packet()
+    .unwrap();
+    wire.extend_from_slice(b"\r\n");
+    wire
+}
+
+/// Serve one complete direct NET SYNC with a single non-eDLT unit.  The
+/// identity is intentionally ordinary so the refresh has no optional OEM
+/// reads after the serial quiet interval.
+async fn serve_database_sync<R, W>(
+    reader: &mut R,
+    writer: &mut W,
+    address: u8,
+    unit_type: &str,
+    firmware: &str,
+) where
+    R: tokio::io::AsyncBufRead + Unpin,
+    W: tokio::io::AsyncWrite + Unpin,
+{
+    let mut request = database_pci_line(reader).await;
+    if request == b"@1A2001\r" {
+        writer.write_all(b"8220104E\r\n").await.unwrap();
+        request = database_pci_line(reader).await;
+    }
+    assert!(request.starts_with(b"\\05FF00FAFF"), "{request:?}");
+    let code = request[request.len() - 2];
+    writer.write_all(&[code, b'.']).await.unwrap();
+    for (start, count) in [(0, 88), (88, 88), (176, 80)] {
+        writer
+            .write_all(&database_mmi_block(start, count, address))
+            .await
+            .unwrap();
+    }
+
+    for (attribute, value) in [(1, unit_type.as_bytes()), (2, firmware.as_bytes())] {
+        let request = database_pci_line(reader).await;
+        assert!(
+            request
+                .windows(4)
+                .any(|window| window == [b'2', b'1', b'0', b'0' + attribute]),
+            "{request:?}"
+        );
+        let code = request[request.len() - 2];
+        writer.write_all(&[code, b'.']).await.unwrap();
+        let mut cal = vec![0x80 | (value.len() as u8 + 1), attribute];
+        cal.extend_from_slice(value);
+        database_pci_reply(writer, address, &cal).await;
+    }
+
+    let request = database_pci_line(reader).await;
+    assert!(request.starts_with(format!("\\46{address:02X}002104").as_bytes()));
+    let code = request[request.len() - 2];
+    writer.write_all(&[code, b'.']).await.unwrap();
+    let mut identity = vec![0x8d, 4, 0x38, 0xff, 0xff, 0xff, 0xff];
+    identity.extend_from_slice(&[0x18, 0xb1, 0x06, 0x16, 0xa2, 0x00, address]);
+    database_pci_reply(writer, address, &identity).await;
+    tokio::time::advance(Duration::from_secs(2)).await;
+    tokio::task::yield_now().await;
+}
+
 fn assert_native_broadcast_event(line: &str, session: u64, content: &str) {
     let body = line
         .strip_prefix("#e# ")
@@ -4090,6 +4180,30 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["quit"], true);
     assert_eq!(document["document_framing"], true);
     assert_eq!(document["database_documents"], false);
+    assert_eq!(
+        document["legacy_database_local_commands"],
+        serde_json::json!([
+            "dbadd",
+            "dbcopy",
+            "dbnew",
+            "dbrenamenet",
+            "dbrenamenetsafe",
+            "dbset",
+            "dbtaglist"
+        ])
+    );
+    assert_eq!(
+        document["legacy_database_physical_commands"],
+        serde_json::json!(["dbcreate", "dbupdate", "dbverify"])
+    );
+    assert_eq!(
+        document["legacy_database_fail_closed"],
+        serde_json::json!([])
+    );
+    assert_eq!(document["legacy_database_incomplete_oid_objects"], true);
+    assert_eq!(document["legacy_database_recursive_copy"], true);
+    assert_eq!(document["legacy_database_physical_refresh"], true);
+    assert_eq!(document["legacy_database_verify_differences"], true);
     assert_eq!(document["project_archive_restore"], "cmqttd-internal");
     assert_eq!(document["project_rename_secondary"], true);
     assert_eq!(document["project_copy"], "cmqttd-internal");
@@ -10879,19 +10993,50 @@ async fn legacy_database_local_subset_is_durable_and_never_touches_pci() {
     let rendered = format_response(&tags);
     assert!(rendered.contains("2/p/22/TagName=Legacy Unit"));
 
+    let add = service
+        .handle(&mut client, "[11] DBADD //AUX/2 Unit ignored")
+        .await;
+    assert_eq!(add.status, 301);
+    let oid = add.final_text.trim_start_matches("301 OID=");
+    assert_eq!(
+        service
+            .handle(&mut client, &format!("[11a] DBSET !{oid}/Address 23"))
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, &format!("[11b] DBSET !{oid}/TagName Pending"))
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[12] DBCOPY //AUX/2/p/22 //AUX/2 trailing")
+            .await
+            .status,
+        301
+    );
     for (tag, command) in [
-        ("11", "DBADD //AUX/2 Unit"),
-        ("12", "DBCOPY //AUX/2/p/22 //AUX/2"),
         ("13", "DBCREATE"),
-        ("14", "DBNEW"),
         ("15", "DBUPDATE //AUX/2"),
         ("16", "DBVERIFY"),
     ] {
         let response = service
             .handle(&mut client, &format!("[{tag}] {command}"))
             .await;
-        assert_eq!(response.status, 502, "{command}: {response:?}");
+        assert_eq!(response.status, 408, "{command}: {response:?}");
+        assert!(response.final_text.contains("not connected"));
     }
+    assert_eq!(
+        service
+            .handle(&mut client, "[14] DBNEW trailing")
+            .await
+            .status,
+        200
+    );
 
     assert_eq!(
         service
@@ -10928,7 +11073,137 @@ async fn legacy_database_local_subset_is_durable_and_never_touches_pci() {
     let persisted = restarted
         .handle(&mut restarted_client, "[20] DBTAGLIST legacy")
         .await;
-    assert_eq!(persisted.final_text, "342 2/p/22/TagName=Legacy Unit");
+    assert_eq!(persisted.status, 401);
+    assert!(persisted.final_text.contains("No objects found"));
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test(start_paused = true)]
+async fn legacy_database_physical_lifecycle_syncs_commits_and_survives_restart() {
+    let path = state_path();
+    let (pci_client, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci_client = pci_client.clone();
+        async move { pci_client.pci_reset().await }
+    });
+    for _ in 0..8 {
+        database_pci_line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+
+    // Persist an incomplete DBADD record before any physical work.  Its NULL
+    // address/name and assigned UnitType must survive the daemon boundary.
+    let pending = service
+        .handle(&mut client, "[1] DBADD //HARNESS/254 Unit trailing")
+        .await;
+    assert_eq!(pending.status, 301);
+    let pending_oid = pending
+        .final_text
+        .trim_start_matches("301 OID=")
+        .to_string();
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                &format!("[2] DBSET !{pending_oid}/UnitType KEYM4"),
+            )
+            .await
+            .status,
+        200
+    );
+
+    // Database-address validation wins before physical I/O. An absent target
+    // must not consume the interface transaction that follows.
+    assert_eq!(
+        service
+            .handle(&mut client, "[2a] DBUPDATE //HARNESS/99 UnitDelete")
+            .await
+            .status,
+        401
+    );
+
+    // DBVERIFY refreshes the PCI first.  The fixture database has unit 5;
+    // live inventory has only unit 6, so both sides of the mismatch appear.
+    let verify = service.handle(&mut client, "[3] DBVERIFY trailing");
+    let peer = serve_database_sync(&mut remote_read, &mut remote_write, 6, "RELAY4", "1.0.00");
+    let (verify, ()) = tokio::join!(verify, peer);
+    assert_eq!(verify.status, 408, "{verify:?}");
+    assert_eq!(verify.lines.len(), 2, "{verify:?}");
+
+    // UnitDelete refreshes again and atomically replaces the database
+    // inventory. No PCI write beyond the read-only SYNC exchange occurs.
+    let update = service.handle(&mut client, "[4] DBUPDATE //HARNESS/254 UnitDelete ignored");
+    let peer = serve_database_sync(&mut remote_read, &mut remote_write, 6, "RELAY4", "1.0.00");
+    let (update, ()) = tokio::join!(update, peer);
+    assert_eq!(update.status, 200, "{update:?}");
+
+    let verify = service.handle(&mut client, "[5] DBVERIFY");
+    let peer = serve_database_sync(&mut remote_read, &mut remote_write, 6, "RELAY4", "1.0.00");
+    let (verify, ()) = tokio::join!(verify, peer);
+    assert_eq!(verify.status, 200, "{verify:?}");
+    drop(service);
+
+    let (restart_pci, _restart_remote) = pci();
+    let restarted = Service::new(&fixture(), None, path.clone(), restart_pci, None).unwrap();
+    let mut restarted_client = ClientState::default();
+    assert_eq!(
+        restarted
+            .handle(
+                &mut restarted_client,
+                &format!("[6] DBGET !{pending_oid}/UnitType"),
+            )
+            .await
+            .final_text,
+        format!("342 !{pending_oid}/UnitType=KEYM4")
+    );
+    assert_eq!(
+        restarted
+            .handle(
+                &mut restarted_client,
+                "[7] DBGET //HARNESS/254/p/6/UnitType"
+            )
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        restarted
+            .handle(&mut restarted_client, "[8] DBGET //HARNESS/254/p/5")
+            .await
+            .status,
+        401
+    );
+    assert_eq!(
+        restarted
+            .handle(
+                &mut restarted_client,
+                &format!("[9] DBSET !{pending_oid}/Address 7"),
+            )
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        restarted
+            .handle(
+                &mut restarted_client,
+                &format!("[10] DBSET !{pending_oid}/TagName Restarted"),
+            )
+            .await
+            .status,
+        200
+    );
+    assert!(format_response(
+        &restarted
+            .handle(&mut restarted_client, "[11] DBTAGLIST Restarted")
+            .await
+    )
+    .contains("254/p/7/TagName=Restarted"));
     std::fs::remove_file(path).unwrap();
 }
 

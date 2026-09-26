@@ -951,9 +951,261 @@ pub fn help_lines(root: &str) -> Vec<String> {
 }
 
 use super::{
-    err, network_path, ok, status, valid_name, valid_target, AccessLevel, Network, NetworkState,
-    Response, Server,
+    err, fresh_oid, network_path, ok, status, valid_name, valid_target, AccessLevel, DbLevel,
+    DbPendingObject, Network, NetworkState, Response, Server, Unit,
 };
+
+#[derive(Clone)]
+struct DatabaseCopyNode {
+    element: String,
+    fields: std::collections::HashMap<String, String>,
+    children: Vec<DatabaseCopyNode>,
+}
+
+fn pending_key(project: &str, oid: &str) -> String {
+    format!("{project}\u{1f}{oid}")
+}
+
+fn database_path_project(path: &str) -> Option<&str> {
+    path.strip_prefix("//")?.split('/').next()
+}
+
+fn database_network_parent(path: &str) -> Option<(&str, u8)> {
+    let parts = path.strip_prefix("//")?.split('/').collect::<Vec<_>>();
+    let [project, network] = parts.as_slice() else {
+        return None;
+    };
+    Some((*project, network.parse().ok()?))
+}
+
+fn canonical_database_element(raw: &str) -> String {
+    match raw.to_ascii_uppercase().as_str() {
+        "PROJECT" => "Project",
+        "INSTALLATIONDETAIL" => "InstallationDetail",
+        "NETWORK" => "Network",
+        "INTERFACE" => "Interface",
+        "UNIT" => "Unit",
+        "APPLICATION" => "Application",
+        "GROUP" => "Group",
+        "LEVEL" => "Level",
+        "NETVAR" => "NetVar",
+        _ => "",
+    }
+    .to_string()
+}
+
+fn database_child_allowed(parent: &str, child: &str) -> bool {
+    matches!(
+        (parent.to_ascii_uppercase().as_str(), child),
+        ("INSTALLATION", "Project")
+            | ("INSTALLATION", "InstallationDetail")
+            | ("PROJECT", "Network")
+            | ("NETWORK", "Unit")
+            | ("NETWORK", "Application")
+            | ("NETWORK", "Interface")
+            | ("APPLICATION", "Group")
+            | ("APPLICATION", "NetVar")
+            | ("GROUP", "Level")
+            | ("NETVAR", "Level")
+    )
+}
+
+fn database_unit_node(unit: &Unit) -> DatabaseCopyNode {
+    let mut fields = unit.fields.clone();
+    fields.insert("Address".to_string(), unit.address.to_string());
+    fields
+        .entry("TagName".to_string())
+        .or_insert_with(|| unit.fields.get("UnitName").cloned().unwrap_or_default());
+    if !unit.unit_type.is_empty() {
+        fields.insert("UnitType".to_string(), unit.unit_type.clone());
+    }
+    if !unit.firmware.is_empty() {
+        fields.insert("FirmwareVersion".to_string(), unit.firmware.clone());
+    }
+    if !unit.serial.is_empty() {
+        fields.insert("SerialNumber".to_string(), unit.serial.clone());
+    }
+    DatabaseCopyNode {
+        element: "Unit".to_string(),
+        fields,
+        children: Vec::new(),
+    }
+}
+
+fn database_level_node(level: &DbLevel) -> DatabaseCopyNode {
+    let mut fields = std::collections::HashMap::new();
+    fields.insert("Address".to_string(), level.address.to_string());
+    fields.insert("TagName".to_string(), level.tag.clone());
+    if let Some(value) = level.value {
+        fields.insert("Value".to_string(), value.to_string());
+    }
+    DatabaseCopyNode {
+        element: if level.netvar { "NetVar" } else { "Level" }.to_string(),
+        fields,
+        children: Vec::new(),
+    }
+}
+
+fn normalize_update_target(raw: &str, project: &str) -> String {
+    if raw.starts_with("//") {
+        raw.trim_end_matches('/').to_string()
+    } else {
+        format!("//{project}/{}", raw.trim_matches('/'))
+    }
+}
+
+fn parse_update_target(
+    target: &str,
+    project: &str,
+    record: &super::Project,
+) -> Option<(u8, Option<u8>)> {
+    let parts = target.strip_prefix("//")?.split('/').collect::<Vec<_>>();
+    let resolve_network = |value: &str| {
+        value.parse::<u8>().ok().or_else(|| {
+            record
+                .networks
+                .iter()
+                .find(|(_, network)| network.name.eq_ignore_ascii_case(value))
+                .map(|(address, _)| *address)
+        })
+    };
+    let resolve_unit = |network: u8, value: &str| {
+        value.parse::<u8>().ok().or_else(|| {
+            record.networks.get(&network).and_then(|network| {
+                network
+                    .units
+                    .iter()
+                    .find(|(_, unit)| {
+                        unit.fields
+                            .get("TagName")
+                            .or_else(|| unit.fields.get("UnitName"))
+                            .is_some_and(|name| name.eq_ignore_ascii_case(value))
+                    })
+                    .map(|(address, _)| *address)
+            })
+        })
+    };
+    match parts.as_slice() {
+        [target_project, network] if *target_project == project => {
+            Some((resolve_network(network)?, None))
+        }
+        [target_project, network, marker, unit]
+            if *target_project == project && marker.eq_ignore_ascii_case("p") =>
+        {
+            let network = resolve_network(network)?;
+            Some((network, Some(resolve_unit(network, unit)?)))
+        }
+        // The manual's abbreviated unit example is `p/1/22`.
+        [target_project, marker, network, unit]
+            if *target_project == project && marker.eq_ignore_ascii_case("p") =>
+        {
+            let network = resolve_network(network)?;
+            Some((network, Some(resolve_unit(network, unit)?)))
+        }
+        _ => None,
+    }
+}
+
+fn update_database_unit_from_physical(
+    known_oids: &mut std::collections::HashSet<String>,
+    units: &mut std::collections::HashMap<u8, Unit>,
+    address: u8,
+    mut physical: Unit,
+) {
+    let existing = units.get(&address).cloned();
+    physical.address = address;
+    physical
+        .fields
+        .insert("Address".to_string(), address.to_string());
+    physical.serial_alternates.clear();
+    if let Some(existing) = existing {
+        physical.oid = existing.oid;
+        for field in ["TagName", "UnitName", "Description", "Location"] {
+            if let Some(value) = existing.fields.get(field) {
+                physical.fields.insert(field.to_string(), value.clone());
+            }
+        }
+    } else {
+        physical.oid = loop {
+            let candidate = fresh_oid();
+            if known_oids.insert(candidate.clone()) {
+                break candidate;
+            }
+        };
+        let default_name = physical
+            .fields
+            .get("TagName")
+            .or_else(|| physical.fields.get("UnitName"))
+            .filter(|name| !name.is_empty())
+            .cloned()
+            .unwrap_or_else(|| "[default]".to_string());
+        physical
+            .fields
+            .insert("TagName".to_string(), default_name.clone());
+        physical
+            .fields
+            .entry("UnitName".to_string())
+            .or_insert(default_name);
+    }
+    known_oids.insert(physical.oid.clone());
+    units.insert(address, physical);
+}
+
+fn mirror_materialized_unit(
+    pending: &mut std::collections::HashMap<String, DbPendingObject>,
+    project: &str,
+    path: &str,
+    unit: &Unit,
+) {
+    let Some(object) = pending
+        .values_mut()
+        .find(|object| object.project == project && object.path.as_deref() == Some(path))
+    else {
+        return;
+    };
+    object
+        .fields
+        .insert("Address".to_string(), unit.address.to_string());
+    for field in ["TagName", "UnitName", "Description", "Location"] {
+        if let Some(value) = unit.fields.get(field) {
+            object.fields.insert(field.to_string(), value.clone());
+        }
+    }
+    for (field, value) in [
+        ("UnitType", unit.unit_type.as_str()),
+        ("FirmwareVersion", unit.firmware.as_str()),
+        ("SerialNumber", unit.serial.as_str()),
+    ] {
+        if value.is_empty() {
+            object.fields.remove(field);
+        } else {
+            object.fields.insert(field.to_string(), value.to_string());
+        }
+    }
+}
+
+fn remove_materialized_pending_path(
+    pending: &mut std::collections::HashMap<String, DbPendingObject>,
+    project: &str,
+    path: &str,
+) -> Vec<String> {
+    let prefix = format!("{path}/");
+    let removed = pending
+        .iter()
+        .filter(|(_, object)| {
+            object.project == project
+                && object
+                    .path
+                    .as_deref()
+                    .is_some_and(|candidate| candidate == path || candidate.starts_with(&prefix))
+        })
+        .map(|(key, object)| (key.clone(), object.oid.clone()))
+        .collect::<Vec<_>>();
+    for (key, _) in &removed {
+        pending.remove(key);
+    }
+    removed.into_iter().map(|(_, oid)| oid).collect()
+}
 
 /// Return the command tail after `count` whitespace-delimited arguments using
 /// C-Gate's `remainingArgsAsDequotedString` rules. Quote delimiters disappear,
@@ -2338,7 +2590,8 @@ impl Server {
         match op.as_str() {
             "DBADD" => Some(self.dbadd_unsafe(tag, words)),
             "DBCOPY" => Some(self.dbcopy_unsafe(tag, words)),
-            "DBCREATE" | "DBNEW" => Some(self.db_new(tag, words)),
+            "DBCREATE" => Some(self.db_create(tag, words)),
+            "DBNEW" => Some(self.db_new(tag, words)),
             "DBLOAD" => Some(self.db_load(tag, words)),
             "DBSAVE" => Some(self.db_save(tag, words)),
             "DBNETWORKPATH" => Some(self.db_network_path(tag, words)),
@@ -2351,28 +2604,1116 @@ impl Server {
         }
     }
 
-    fn dbadd_unsafe(&mut self, tag: &str, _words: &[&str]) -> Response {
-        err(
-            tag,
-            502,
-            "502 Command requires a physical backend that is not implemented",
-        )
+    fn dbadd_unsafe(&mut self, tag: &str, words: &[&str]) -> Response {
+        // Native consumes only parent and element type; trailing tokens are
+        // ignored (they are not the SAFE command's address/name arguments).
+        if words.len() < 3 {
+            return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
+        }
+        let Some(project) = self.current.clone() else {
+            return err(
+                tag,
+                440,
+                "440 There is no tag database to perform this operation on",
+            );
+        };
+        if !self.projects.contains_key(&project) {
+            return err(
+                tag,
+                440,
+                "440 There is no tag database to perform this operation on",
+            );
+        }
+        let Some(parent) = self.canonical_database_add_parent(words[1], &project) else {
+            return err(
+                tag,
+                status::ABSENT,
+                &format!(
+                    "401 Bad object or device ID: Element {} not found.",
+                    words[1]
+                ),
+            );
+        };
+        let element = canonical_database_element(words[2]);
+        if element.is_empty() || !self.database_parent_accepts(&project, &parent, &element) {
+            return err(
+                tag,
+                status::ABSENT,
+                &format!(
+                    "401 Bad object or device ID: Unable to add element: Field '{}' not found in {}.",
+                    words[2], words[1]
+                ),
+            );
+        }
+        let oid = self.issue_oid();
+        let key = pending_key(&project, &oid);
+        self.db_pending.insert(
+            key,
+            DbPendingObject {
+                oid: oid.clone(),
+                project,
+                parent,
+                element,
+                fields: Default::default(),
+                path: None,
+            },
+        );
+        self.objects.insert(format!("!{oid}"));
+        Response {
+            tag: tag.to_string(),
+            lines: Vec::new(),
+            final_text: format!("301 OID={oid}"),
+            status: 301,
+        }
     }
 
-    fn dbcopy_unsafe(&mut self, tag: &str, _words: &[&str]) -> Response {
-        err(
-            tag,
-            502,
-            "502 Command requires a physical backend that is not implemented",
-        )
+    fn dbcopy_unsafe(&mut self, tag: &str, words: &[&str]) -> Response {
+        // Like native, only the first two operands belong to DBCOPY; later
+        // words are ignored rather than reinterpreted as SAFE arguments.
+        if words.len() < 3 {
+            return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
+        }
+        let Some(selected) = self.current.clone() else {
+            return err(
+                tag,
+                440,
+                "440 There is no tag database to perform this operation on",
+            );
+        };
+        let (source_project, source) = match self.database_copy_source(words[1], &selected) {
+            Ok(value) => value,
+            Err(reason) => {
+                return err(
+                    tag,
+                    status::ABSENT,
+                    &format!("401 Bad object or device ID: Bad source address: {reason}"),
+                )
+            }
+        };
+        let Some(destination) = self.canonical_database_copy_parent(words[2], &selected) else {
+            return err(
+                tag,
+                status::ABSENT,
+                &format!(
+                    "401 Bad object or device ID: Bad destination address: Element {} not found.",
+                    words[2]
+                ),
+            );
+        };
+        let Some(destination_project) = database_path_project(&destination) else {
+            return err(
+                tag,
+                status::ABSENT,
+                "401 Bad object or device ID: Bad destination address",
+            );
+        };
+        if !self.projects.contains_key(destination_project)
+            || !self.database_parent_accepts(destination_project, &destination, &source.element)
+        {
+            return err(
+                tag,
+                408,
+                "408 Operation failed: Source and destination element types do not match",
+            );
+        }
+        let clear_identity = source_project == destination_project;
+        let before = self.clone();
+        let oid = match self.insert_database_copy(
+            destination_project,
+            &destination,
+            &source,
+            clear_identity,
+        ) {
+            Ok(oid) => oid,
+            Err(reason) => {
+                *self = before;
+                return err(tag, 408, &format!("408 Operation failed: {reason}"));
+            }
+        };
+        Response {
+            tag: tag.to_string(),
+            lines: Vec::new(),
+            final_text: format!("301 OID={oid}"),
+            status: 301,
+        }
     }
 
-    fn db_new(&mut self, tag: &str, _words: &[&str]) -> Response {
-        err(
-            tag,
-            502,
-            "502 Command requires a physical backend that is not implemented",
-        )
+    fn db_new(&mut self, tag: &str, words: &[&str]) -> Response {
+        // Native ignores trailing words.  Build 2001 can throw 500 after it
+        // has already made this change for a generated PROJECT NEW database;
+        // cmqttd performs the documented operation atomically instead.
+        let _ = words;
+        let Some(project) = self.current.clone() else {
+            return err(tag, 408, "408 Operation failed: Project not found");
+        };
+        if !self.projects.contains_key(&project) {
+            return err(tag, 408, "408 Operation failed: Project not found");
+        }
+        self.clear_project_database(&project);
+        if let Some(record) = self.projects.get_mut(&project) {
+            record.networks.clear();
+        }
+        ok(tag, vec![], "200 OK.")
+    }
+
+    fn db_create(&mut self, tag: &str, words: &[&str]) -> Response {
+        // Native ignores trailing words.  The service refreshes physical
+        // inventory before reaching this model operation.
+        let _ = words;
+        let Some(project_name) = self.current.clone() else {
+            return err(tag, 443, "443 Error creating tag database");
+        };
+        let Some(previous) = self.projects.get(&project_name).cloned() else {
+            return err(tag, 443, "443 Error creating tag database");
+        };
+        self.clear_project_database(&project_name);
+        let mut networks = std::collections::HashMap::new();
+        for (address, old) in previous.networks {
+            let network_oid = self.issue_oid();
+            let mut units = std::collections::HashMap::new();
+            for (unit_address, physical) in &old.physical {
+                let mut unit = physical.clone();
+                unit.address = *unit_address;
+                unit.oid = self.issue_oid();
+                unit.serial_alternates.clear();
+                let default_name = unit
+                    .fields
+                    .get("TagName")
+                    .or_else(|| unit.fields.get("UnitName"))
+                    .filter(|name| !name.is_empty())
+                    .cloned()
+                    .unwrap_or_else(|| "[default]".to_string());
+                unit.fields
+                    .insert("TagName".to_string(), default_name.clone());
+                unit.fields
+                    .entry("UnitName".to_string())
+                    .or_insert(default_name);
+                self.objects
+                    .insert(format!("//{project_name}/{address}/p/{unit_address}"));
+                units.insert(*unit_address, unit);
+            }
+            networks.insert(
+                address,
+                Network {
+                    oid: network_oid,
+                    address,
+                    name: if old.name.is_empty() {
+                        "[default]".to_string()
+                    } else {
+                        old.name
+                    },
+                    iface_type: old.iface_type,
+                    iface_addr: old.iface_addr,
+                    state: old.state,
+                    retries: 2,
+                    units,
+                    physical: old.physical,
+                    levels: old.levels,
+                },
+            );
+        }
+        self.projects.insert(
+            project_name.clone(),
+            super::Project {
+                name: project_name,
+                networks,
+            },
+        );
+        ok(tag, vec![], "200 OK.")
+    }
+
+    fn canonical_database_address(&self, raw: &str, selected: &str) -> Option<String> {
+        if let Some(oid) = raw.strip_prefix('!') {
+            let oid = oid.split('/').next().unwrap_or("");
+            return self.pending_for_project(selected, oid).or_else(|| {
+                self.oid_in_project(selected, oid)
+                    .then_some(format!("!{oid}"))
+            });
+        }
+        let qualified = if raw.starts_with("//") {
+            raw.trim_end_matches('/').to_string()
+        } else {
+            format!("//{selected}/{}", raw.trim_matches('/'))
+        };
+        self.database_address_exists(&qualified)
+            .then_some(qualified)
+    }
+
+    fn canonical_database_add_parent(&self, raw: &str, selected: &str) -> Option<String> {
+        let relative = raw.trim_start_matches('/');
+        if relative.eq_ignore_ascii_case("Installation") {
+            return Some(format!("//{selected}/Installation"));
+        }
+        if relative.eq_ignore_ascii_case("Installation/Project") {
+            return Some(format!("//{selected}/Installation/Project"));
+        }
+        self.canonical_database_address(raw, selected)
+    }
+
+    fn canonical_database_copy_parent(&self, raw: &str, selected: &str) -> Option<String> {
+        let relative = raw.trim_start_matches('/');
+        if relative.eq_ignore_ascii_case("Installation") {
+            return Some(format!("//{selected}/Installation"));
+        }
+        if relative.eq_ignore_ascii_case("Installation/Project") {
+            return Some(format!("//{selected}/Installation/Project"));
+        }
+        if !raw.contains('/') && self.projects.contains_key(raw) {
+            // Native's documented network-copy spelling names a project
+            // directly (`DBCOPY //source/network destination-project`).  The
+            // corresponding DBADD parent is Installation/Project.
+            return Some(format!("//{raw}/Installation/Project"));
+        }
+        self.canonical_database_address(raw, selected)
+    }
+
+    pub(crate) fn database_address_exists(&self, path: &str) -> bool {
+        if let Some(oid) = path.strip_prefix('!') {
+            let Some(project) = self.current.as_deref() else {
+                return false;
+            };
+            return self.oid_in_project(project, oid);
+        }
+        let parts = path.trim_start_matches('/').split('/').collect::<Vec<_>>();
+        let Some(project) = parts.first().copied() else {
+            return false;
+        };
+        let Some(record) = self.projects.get(project) else {
+            return false;
+        };
+        match parts.as_slice() {
+            [_] | [_, "@root"] | [_, "Installation"] | [_, "Installation", "Project"] => true,
+            [_, network] => network
+                .parse::<u8>()
+                .ok()
+                .is_some_and(|network| record.networks.contains_key(&network)),
+            [_, network, marker, unit] if marker.eq_ignore_ascii_case("p") => network
+                .parse::<u8>()
+                .ok()
+                .zip(unit.parse::<u8>().ok())
+                .is_some_and(|(network, unit)| {
+                    record
+                        .networks
+                        .get(&network)
+                        .is_some_and(|network| network.units.contains_key(&unit))
+                }),
+            [_, network, application] => network
+                .parse::<u8>()
+                .ok()
+                .zip(application.parse::<u8>().ok())
+                .is_some_and(|(network, application)| {
+                    self.db_fields
+                        .contains_key(&format!("//{project}/{network}/{application}/TagName"))
+                        || self
+                            .objects
+                            .contains(&format!("//{project}/{network}-APPLICATION-{application}"))
+                        || self
+                            .db_pending
+                            .values()
+                            .any(|object| object.path.as_deref() == Some(path))
+                }),
+            [_, network, application, group] => network
+                .parse::<u8>()
+                .ok()
+                .zip(application.parse::<u8>().ok())
+                .zip(group.parse::<u8>().ok())
+                .is_some_and(|((network, application), group)| {
+                    self.db_fields.contains_key(&format!(
+                        "//{project}/{network}/{application}/{group}/TagName"
+                    )) || self.objects.contains(&format!(
+                        "//{project}/{network}/{application}-GROUP-{group}"
+                    )) || self
+                        .db_pending
+                        .values()
+                        .any(|object| object.path.as_deref() == Some(path))
+                }),
+            [_, network, application, group, level] => {
+                let parent = format!("//{project}/{network}/{application}/{group}");
+                level.parse::<u8>().ok().is_some_and(|address| {
+                    self.db_levels
+                        .values()
+                        .any(|candidate| candidate.parent == parent && candidate.address == address)
+                })
+            }
+            _ => false,
+        }
+    }
+
+    fn database_parent_accepts(&self, project: &str, parent: &str, element: &str) -> bool {
+        if let Some(oid) = parent.strip_prefix('!') {
+            let Some(parent) = self.pending_object(project, oid) else {
+                return false;
+            };
+            return database_child_allowed(&parent.element, element);
+        }
+        if !self.database_address_exists(parent) {
+            return false;
+        }
+        let parts = parent
+            .trim_start_matches('/')
+            .split('/')
+            .collect::<Vec<_>>();
+        if parts.first().copied() != Some(project) {
+            return false;
+        }
+        let parent_element = match parts.as_slice() {
+            [_] => return false,
+            [_, "@root"] | [_, "Installation"] => "Installation",
+            [_, "Installation", "Project"] => "Project",
+            [_, _] => "Network",
+            [_, _, marker, _] if marker.eq_ignore_ascii_case("p") => "Unit",
+            [_, _, _] => "Application",
+            [_, _, _, _] => "Group",
+            [_, _, _, _, _] => "Level",
+            _ => return false,
+        };
+        database_child_allowed(parent_element, element)
+    }
+
+    fn pending_for_project(&self, project: &str, oid: &str) -> Option<String> {
+        self.db_pending
+            .contains_key(&pending_key(project, oid))
+            .then_some(format!("!{oid}"))
+    }
+
+    pub(crate) fn pending_object(&self, project: &str, oid: &str) -> Option<&DbPendingObject> {
+        self.db_pending.get(&pending_key(project, oid))
+    }
+
+    fn oid_in_project(&self, project: &str, oid: &str) -> bool {
+        self.pending_object(project, oid).is_some()
+            || self.projects.get(project).is_some_and(|record| {
+                record.networks.values().any(|network| {
+                    network.oid == oid || network.units.values().any(|unit| unit.oid == oid)
+                })
+            })
+            || self.db_levels.values().any(|level| {
+                level.oid == oid && database_path_project(&level.parent) == Some(project)
+            })
+    }
+
+    /// Apply a field to an incomplete object.  `Ok(true)` means the OID was
+    /// handled; `Ok(false)` lets the ordinary OID resolver continue.
+    pub(crate) fn set_pending_database_field(
+        &mut self,
+        project: &str,
+        oid: &str,
+        field: &str,
+        value: String,
+    ) -> Result<bool, String> {
+        let key = pending_key(project, oid);
+        let Some(existing) = self.db_pending.get(&key).cloned() else {
+            return Ok(false);
+        };
+        let before = self.clone();
+        if existing.path.is_some() {
+            // Once addressable, the ordinary typed maps own moves and field
+            // writes.  Keep the metadata mirror current for OID reads.
+            if let Some(object) = self.db_pending.get_mut(&key) {
+                object.fields.insert(field.to_string(), value);
+            }
+            return Ok(false);
+        }
+        self.db_pending
+            .get_mut(&key)
+            .expect("pending object exists")
+            .fields
+            .insert(field.to_string(), value);
+        if matches!(
+            existing.element.as_str(),
+            "InstallationDetail" | "Interface"
+        ) {
+            if existing.element == "Interface" {
+                if let Some((parent_project, network)) = database_network_parent(&existing.parent) {
+                    if parent_project == project {
+                        if let Some(network) = self
+                            .projects
+                            .get_mut(project)
+                            .and_then(|record| record.networks.get_mut(&network))
+                        {
+                            let value = self
+                                .db_pending
+                                .get(&key)
+                                .and_then(|object| object.fields.get(field))
+                                .cloned()
+                                .unwrap_or_default();
+                            match field {
+                                "InterfaceType" => network.iface_type = value,
+                                "InterfaceAddress" => network.iface_addr = value,
+                                _ => {}
+                            }
+                        }
+                    }
+                }
+            }
+            return Ok(true);
+        }
+        if let Err(error) = self.materialize_pending(project, oid) {
+            // A complete parent can recursively materialize complete
+            // descendants. Roll the entire subtree back if any descendant
+            // conflicts instead of leaving an addressable partial parent.
+            *self = before;
+            return Err(error);
+        }
+        Ok(true)
+    }
+
+    pub(crate) fn sync_pending_database_field(
+        &mut self,
+        project: &str,
+        oid: &str,
+        field: &str,
+        value: &str,
+    ) {
+        if let Some(object) = self.db_pending.get_mut(&pending_key(project, oid)) {
+            object.fields.insert(field.to_string(), value.to_string());
+        }
+    }
+
+    fn materialize_pending(&mut self, project: &str, oid: &str) -> Result<bool, String> {
+        let key = pending_key(project, oid);
+        let Some(object) = self.db_pending.get(&key).cloned() else {
+            return Ok(false);
+        };
+        if object.path.is_some() {
+            return Ok(true);
+        }
+        let parent = if let Some(parent_oid) = object.parent.strip_prefix('!') {
+            let Some(path) = self
+                .pending_object(project, parent_oid)
+                .and_then(|parent| parent.path.clone())
+            else {
+                return Ok(false);
+            };
+            path
+        } else {
+            object.parent.clone()
+        };
+        let address = object
+            .fields
+            .get("Address")
+            .or_else(|| object.fields.get("NetworkNumber"))
+            .map(String::as_str);
+        let tag_name = object.fields.get("TagName").map(String::as_str);
+        let element = object.element.as_str();
+        if matches!(element, "InstallationDetail" | "Interface") {
+            // These native typed containers have OIDs but no Address or
+            // TagName identity. They remain OID-addressable and carry their
+            // scalar fields in the pending-object store.
+            return Ok(true);
+        }
+        let requires_address = matches!(
+            element,
+            "Network" | "Unit" | "Application" | "Group" | "Level" | "NetVar"
+        );
+        let requires_tag = matches!(
+            element,
+            "Project" | "Network" | "Unit" | "Application" | "Group" | "Level" | "NetVar"
+        );
+        if requires_address && address.is_none() || requires_tag && tag_name.is_none() {
+            return Ok(false);
+        }
+        let address = if requires_address {
+            Some(
+                address
+                    .expect("checked")
+                    .parse::<u8>()
+                    .map_err(|_| format!("{element} Address must be a byte"))?,
+            )
+        } else {
+            None
+        };
+        let tag_name = tag_name.unwrap_or("").to_string();
+        let path = match element {
+            "Project" => {
+                // A Project element belongs to the selected tag database; it
+                // does not load a new C-Gate repository project. Native keeps
+                // its address NULL and DBTAGLIST renders `null/TagName=...`.
+                let path = format!("//{project}/null");
+                self.db_fields.insert(format!("{path}/TagName"), tag_name);
+                self.objects.insert(path.clone());
+                path
+            }
+            "Network" => {
+                let address = address.expect("required");
+                let record = self
+                    .projects
+                    .get_mut(project)
+                    .ok_or_else(|| "Project not found".to_string())?;
+                if record.networks.contains_key(&address) {
+                    return Err("Network Address is already in use".to_string());
+                }
+                record.networks.insert(
+                    address,
+                    Network {
+                        oid: oid.to_string(),
+                        address,
+                        name: tag_name,
+                        iface_type: object
+                            .fields
+                            .get("InterfaceType")
+                            .cloned()
+                            .unwrap_or_default(),
+                        iface_addr: object
+                            .fields
+                            .get("InterfaceAddress")
+                            .cloned()
+                            .unwrap_or_default(),
+                        state: NetworkState::Closed,
+                        retries: 2,
+                        units: Default::default(),
+                        physical: Default::default(),
+                        levels: Default::default(),
+                    },
+                );
+                format!("//{project}/{address}")
+            }
+            "Unit" => {
+                let address = address.expect("required");
+                let Some((parent_project, network)) = database_network_parent(&parent) else {
+                    return Err("Unit parent is not a network".to_string());
+                };
+                if parent_project != project {
+                    return Err("Unit parent belongs to another project".to_string());
+                }
+                let network = self
+                    .projects
+                    .get_mut(project)
+                    .and_then(|project| project.networks.get_mut(&network))
+                    .ok_or_else(|| "Unit parent network not found".to_string())?;
+                if network.units.contains_key(&address) {
+                    return Err("Unit Address is already in use".to_string());
+                }
+                let mut unit = Unit::blank(address, &tag_name);
+                unit.oid = oid.to_string();
+                unit.fields.extend(object.fields.clone());
+                unit.fields.insert("TagName".to_string(), tag_name.clone());
+                unit.fields
+                    .entry("UnitName".to_string())
+                    .or_insert(tag_name);
+                unit.unit_type = unit
+                    .fields
+                    .get("UnitType")
+                    .or_else(|| unit.fields.get("Type"))
+                    .cloned()
+                    .unwrap_or_default();
+                unit.firmware = unit
+                    .fields
+                    .get("FirmwareVersion")
+                    .or_else(|| unit.fields.get("Version"))
+                    .cloned()
+                    .unwrap_or_default();
+                unit.serial = unit.fields.get("SerialNumber").cloned().unwrap_or_default();
+                network.units.insert(address, unit);
+                format!("{parent}/p/{address}")
+            }
+            "Application" | "Group" => {
+                let address = address.expect("required");
+                let path = format!("{parent}/{address}");
+                if self.database_address_exists(&path) {
+                    return Err(format!("{element} Address is already in use"));
+                }
+                self.db_fields.insert(format!("{path}/TagName"), tag_name);
+                self.objects.insert(path.clone());
+                if element == "Application" {
+                    self.objects
+                        .insert(format!("{parent}-APPLICATION-{address}"));
+                } else {
+                    self.objects.insert(format!("{parent}-GROUP-{address}"));
+                }
+                path
+            }
+            "Level" | "NetVar" => {
+                let address = address.expect("required");
+                if self
+                    .db_levels
+                    .values()
+                    .any(|level| level.parent == parent && level.address == address)
+                {
+                    return Err(format!("{element} Address is already in use"));
+                }
+                let value = object
+                    .fields
+                    .get("Value")
+                    .filter(|value| !value.is_empty())
+                    .map(|value| {
+                        value
+                            .parse::<u8>()
+                            .map_err(|_| format!("{element} Value must be a byte"))
+                    })
+                    .transpose()?;
+                self.db_levels.insert(
+                    key.clone(),
+                    DbLevel {
+                        oid: oid.to_string(),
+                        parent: parent.clone(),
+                        address,
+                        tag: tag_name,
+                        value,
+                        netvar: element == "NetVar",
+                    },
+                );
+                format!("{parent}/{address}")
+            }
+            _ => return Err(format!("unsupported database element {element}")),
+        };
+        self.db_pending
+            .get_mut(&key)
+            .expect("pending object exists")
+            .path = Some(path);
+
+        // A cross-project subtree may already have complete descendants.
+        // Materialize them only after the parent has an address.
+        let children = self
+            .db_pending
+            .values()
+            .filter(|candidate| {
+                candidate.project == project && candidate.parent == format!("!{oid}")
+            })
+            .map(|candidate| candidate.oid.clone())
+            .collect::<Vec<_>>();
+        for child in children {
+            self.materialize_pending(project, &child)?;
+        }
+        Ok(true)
+    }
+
+    fn database_copy_source(
+        &self,
+        raw: &str,
+        selected: &str,
+    ) -> Result<(String, DatabaseCopyNode), String> {
+        if let Some(oid) = raw.strip_prefix('!') {
+            let oid = oid.split('/').next().unwrap_or("");
+            if let Some(object) = self.pending_object(selected, oid) {
+                return Ok((
+                    selected.to_string(),
+                    self.copy_pending_node(selected, object),
+                ));
+            }
+            if let Some(level) = self.db_levels.values().find(|level| {
+                level.oid == oid && database_path_project(&level.parent) == Some(selected)
+            }) {
+                return Ok((selected.to_string(), database_level_node(level)));
+            }
+            for (project_name, project) in &self.projects {
+                for network in project.networks.values() {
+                    if network.oid == oid {
+                        return Ok((
+                            project_name.clone(),
+                            self.copy_network_node(project_name, network.address),
+                        ));
+                    }
+                    if let Some(unit) = network.units.values().find(|unit| unit.oid == oid) {
+                        return Ok((project_name.clone(), database_unit_node(unit)));
+                    }
+                }
+            }
+            return Err(format!("Element {raw} not found."));
+        }
+        let path = if raw.starts_with("//") {
+            raw.trim_end_matches('/').to_string()
+        } else if raw.eq_ignore_ascii_case(selected) {
+            format!("//{selected}")
+        } else {
+            format!("//{selected}/{}", raw.trim_matches('/'))
+        };
+        let parts = path.trim_start_matches('/').split('/').collect::<Vec<_>>();
+        let Some(project_name) = parts.first().copied() else {
+            return Err(format!("Element {raw} not found."));
+        };
+        let Some(project) = self.projects.get(project_name) else {
+            return Err(format!("Element {raw} not found."));
+        };
+        let node = match parts.as_slice() {
+            [_] => {
+                let mut fields = std::collections::HashMap::new();
+                fields.insert("TagName".to_string(), project.name.clone());
+                let mut children = project
+                    .networks
+                    .keys()
+                    .copied()
+                    .map(|network| self.copy_network_node(project_name, network))
+                    .collect::<Vec<_>>();
+                children.extend(
+                    self.db_pending
+                        .values()
+                        .filter(|object| {
+                            object.project == project_name
+                                && object.element == "InstallationDetail"
+                                && matches!(
+                                    object.parent.as_str(),
+                                    parent if parent == format!("//{project_name}/Installation")
+                                        || parent == format!("//{project_name}/@root")
+                                )
+                        })
+                        .map(|object| self.copy_pending_node(project_name, object)),
+                );
+                DatabaseCopyNode {
+                    element: "Project".to_string(),
+                    fields,
+                    children,
+                }
+            }
+            [_, network] => {
+                let network = network
+                    .parse::<u8>()
+                    .map_err(|_| format!("Element {raw} not found."))?;
+                if !project.networks.contains_key(&network) {
+                    return Err(format!("Element {network} not found."));
+                }
+                self.copy_network_node(project_name, network)
+            }
+            [_, network, marker, unit] if marker.eq_ignore_ascii_case("p") => {
+                let network = network
+                    .parse::<u8>()
+                    .map_err(|_| format!("Element {raw} not found."))?;
+                let unit = unit
+                    .parse::<u8>()
+                    .map_err(|_| format!("Element {raw} not found."))?;
+                let unit = project
+                    .networks
+                    .get(&network)
+                    .and_then(|network| network.units.get(&unit))
+                    .ok_or_else(|| format!("Element {unit} not found."))?;
+                database_unit_node(unit)
+            }
+            [_, network, application] => {
+                let network = network
+                    .parse::<u8>()
+                    .map_err(|_| format!("Element {raw} not found."))?;
+                let application = application
+                    .parse::<u8>()
+                    .map_err(|_| format!("Element {raw} not found."))?;
+                self.copy_application_node(project_name, network, application)
+                    .ok_or_else(|| format!("Element {application} not found."))?
+            }
+            [_, network, application, group] => {
+                let network = network
+                    .parse::<u8>()
+                    .map_err(|_| format!("Element {raw} not found."))?;
+                let application = application
+                    .parse::<u8>()
+                    .map_err(|_| format!("Element {raw} not found."))?;
+                let group = group
+                    .parse::<u8>()
+                    .map_err(|_| format!("Element {raw} not found."))?;
+                self.copy_netvar_node(project_name, network, application, group)
+                    .or_else(|| self.copy_group_node(project_name, network, application, group))
+                    .ok_or_else(|| format!("Element {group} not found."))?
+            }
+            [_, network, application, group, level] => {
+                let parent = format!("//{project_name}/{network}/{application}/{group}");
+                let level = level
+                    .parse::<u8>()
+                    .map_err(|_| format!("Element {raw} not found."))?;
+                let record = self
+                    .db_levels
+                    .values()
+                    .find(|record| record.parent == parent && record.address == level)
+                    .ok_or_else(|| format!("Element {level} not found."))?;
+                database_level_node(record)
+            }
+            _ => return Err(format!("Element {raw} not found.")),
+        };
+        Ok((project_name.to_string(), node))
+    }
+
+    fn copy_pending_node(&self, project: &str, object: &DbPendingObject) -> DatabaseCopyNode {
+        DatabaseCopyNode {
+            element: object.element.clone(),
+            fields: object.fields.clone(),
+            children: self
+                .db_pending
+                .values()
+                .filter(|child| {
+                    child.project == project && child.parent == format!("!{}", object.oid)
+                })
+                .map(|child| self.copy_pending_node(project, child))
+                .collect(),
+        }
+    }
+
+    fn copy_network_node(&self, project: &str, address: u8) -> DatabaseCopyNode {
+        let network = &self.projects[project].networks[&address];
+        let mut fields = std::collections::HashMap::new();
+        fields.insert("Address".to_string(), address.to_string());
+        fields.insert("NetworkNumber".to_string(), address.to_string());
+        fields.insert("TagName".to_string(), network.name.clone());
+        fields.insert("InterfaceType".to_string(), network.iface_type.clone());
+        fields.insert("InterfaceAddress".to_string(), network.iface_addr.clone());
+        let mut children = network
+            .units
+            .values()
+            .map(database_unit_node)
+            .collect::<Vec<_>>();
+        let network_path = format!("//{project}/{address}");
+        children.extend(
+            self.db_pending
+                .values()
+                .filter(|object| {
+                    object.project == project
+                        && object.element == "Interface"
+                        && object.parent == network_path
+                })
+                .map(|object| self.copy_pending_node(project, object)),
+        );
+        let prefix = format!("//{project}/{address}/");
+        let mut applications = std::collections::BTreeSet::new();
+        for path in self.db_fields.keys() {
+            let Some(rest) = path.strip_prefix(&prefix) else {
+                continue;
+            };
+            let Some(application) = rest
+                .split('/')
+                .next()
+                .and_then(|part| part.parse::<u8>().ok())
+            else {
+                continue;
+            };
+            applications.insert(application);
+        }
+        for application in applications {
+            if let Some(node) = self.copy_application_node(project, address, application) {
+                children.push(node);
+            }
+        }
+        DatabaseCopyNode {
+            element: "Network".to_string(),
+            fields,
+            children,
+        }
+    }
+
+    fn copy_application_node(
+        &self,
+        project: &str,
+        network: u8,
+        application: u8,
+    ) -> Option<DatabaseCopyNode> {
+        let path = format!("//{project}/{network}/{application}");
+        let tag = self.db_fields.get(&format!("{path}/TagName"))?.clone();
+        let mut fields = std::collections::HashMap::new();
+        fields.insert("Address".to_string(), application.to_string());
+        fields.insert("TagName".to_string(), tag);
+        let prefix = format!("{path}/");
+        let netvars = self
+            .db_levels
+            .values()
+            .filter(|level| level.parent == path && level.netvar)
+            .map(|level| level.address)
+            .collect::<std::collections::BTreeSet<_>>();
+        let mut groups = std::collections::BTreeSet::new();
+        for candidate in self.db_fields.keys() {
+            let Some(rest) = candidate.strip_prefix(&prefix) else {
+                continue;
+            };
+            if let Some(group) = rest
+                .split('/')
+                .next()
+                .and_then(|part| part.parse::<u8>().ok())
+            {
+                groups.insert(group);
+            }
+        }
+        for level in self
+            .db_levels
+            .values()
+            .filter(|level| level.parent.starts_with(&prefix))
+        {
+            if let Some(group) = level
+                .parent
+                .strip_prefix(&prefix)
+                .and_then(|rest| rest.split('/').next())
+                .and_then(|part| part.parse::<u8>().ok())
+            {
+                if !netvars.contains(&group) {
+                    groups.insert(group);
+                }
+            }
+        }
+        let mut children = groups
+            .into_iter()
+            .filter_map(|group| self.copy_group_node(project, network, application, group))
+            .collect::<Vec<_>>();
+        children.extend(
+            netvars
+                .into_iter()
+                .filter_map(|netvar| self.copy_netvar_node(project, network, application, netvar)),
+        );
+        Some(DatabaseCopyNode {
+            element: "Application".to_string(),
+            fields,
+            children,
+        })
+    }
+
+    fn copy_group_node(
+        &self,
+        project: &str,
+        network: u8,
+        application: u8,
+        group: u8,
+    ) -> Option<DatabaseCopyNode> {
+        let path = format!("//{project}/{network}/{application}/{group}");
+        let tag = self.db_fields.get(&format!("{path}/TagName"))?.clone();
+        let mut fields = std::collections::HashMap::new();
+        fields.insert("Address".to_string(), group.to_string());
+        fields.insert("TagName".to_string(), tag);
+        let mut levels = self
+            .db_levels
+            .values()
+            .filter(|level| level.parent == path)
+            .map(database_level_node)
+            .collect::<Vec<_>>();
+        levels.sort_by_key(|level| {
+            level
+                .fields
+                .get("Address")
+                .and_then(|value| value.parse::<u8>().ok())
+                .unwrap_or(0)
+        });
+        Some(DatabaseCopyNode {
+            element: "Group".to_string(),
+            fields,
+            children: levels,
+        })
+    }
+
+    fn copy_netvar_node(
+        &self,
+        project: &str,
+        network: u8,
+        application: u8,
+        address: u8,
+    ) -> Option<DatabaseCopyNode> {
+        let application_path = format!("//{project}/{network}/{application}");
+        let record = self.db_levels.values().find(|level| {
+            level.parent == application_path && level.address == address && level.netvar
+        })?;
+        let mut node = database_level_node(record);
+        let child_parent = format!("{application_path}/{address}");
+        node.children = self
+            .db_levels
+            .values()
+            .filter(|level| level.parent == child_parent)
+            .map(database_level_node)
+            .collect();
+        node.children.sort_by_key(|level| {
+            level
+                .fields
+                .get("Address")
+                .and_then(|value| value.parse::<u8>().ok())
+                .unwrap_or(0)
+        });
+        Some(node)
+    }
+
+    fn insert_database_copy(
+        &mut self,
+        project: &str,
+        parent: &str,
+        node: &DatabaseCopyNode,
+        clear_identity: bool,
+    ) -> Result<String, String> {
+        let oid = self.issue_oid();
+        let mut fields = node.fields.clone();
+        if clear_identity {
+            fields.remove("Address");
+            fields.remove("NetworkNumber");
+            fields.remove("TagName");
+        }
+        self.db_pending.insert(
+            pending_key(project, &oid),
+            DbPendingObject {
+                oid: oid.clone(),
+                project: project.to_string(),
+                parent: parent.to_string(),
+                element: node.element.clone(),
+                fields,
+                path: None,
+            },
+        );
+        self.objects.insert(format!("!{oid}"));
+        self.materialize_pending(project, &oid)?;
+        for child in &node.children {
+            self.insert_database_copy(project, &format!("!{oid}"), child, clear_identity)?;
+        }
+        // The parent may have materialized only after a cross-project copy;
+        // give complete children a second chance now that every sibling has
+        // been registered.
+        self.materialize_pending(project, &oid)?;
+        Ok(oid)
+    }
+
+    fn clear_project_database(&mut self, project: &str) {
+        let prefix = format!("//{project}/");
+        self.db_fields.retain(|path, _| !path.starts_with(&prefix));
+        self.objects.retain(|path| {
+            if path.starts_with('!') {
+                true
+            } else {
+                !path.starts_with(&prefix)
+            }
+        });
+        let removed_pending = self
+            .db_pending
+            .iter()
+            .filter(|(_, object)| object.project == project)
+            .map(|(key, object)| (key.clone(), object.oid.clone()))
+            .collect::<Vec<_>>();
+        let mut removed_oids = removed_pending
+            .iter()
+            .map(|(_, oid)| oid.clone())
+            .collect::<std::collections::HashSet<_>>();
+        removed_oids.extend(
+            self.db_levels
+                .values()
+                .filter(|level| database_path_project(&level.parent) == Some(project))
+                .map(|level| level.oid.clone()),
+        );
+        removed_oids.extend(
+            self.projects
+                .get(project)
+                .into_iter()
+                .flat_map(|record| record.networks.values())
+                .flat_map(|network| {
+                    std::iter::once(network.oid.clone())
+                        .chain(network.units.values().map(|unit| unit.oid.clone()))
+                }),
+        );
+        for (key, _) in &removed_pending {
+            self.db_pending.remove(key);
+        }
+        self.db_levels
+            .retain(|_, level| database_path_project(&level.parent) != Some(project));
+        if let Some(record) = self.projects.get_mut(project) {
+            record.networks.clear();
+        }
+        for oid in removed_oids {
+            if !self.oid_used_anywhere(&oid) {
+                self.known_oids.remove(&oid);
+                self.objects.remove(&format!("!{oid}"));
+                let oid_prefix = format!("!{oid}/");
+                self.db_fields
+                    .retain(|path, _| !path.starts_with(&oid_prefix));
+            }
+        }
+    }
+
+    pub(crate) fn oid_used_anywhere(&self, oid: &str) -> bool {
+        self.db_pending.values().any(|object| object.oid == oid)
+            || self.db_levels.values().any(|level| level.oid == oid)
+            || self.projects.values().any(|project| {
+                project.networks.values().any(|network| {
+                    network.oid == oid || network.units.values().any(|unit| unit.oid == oid)
+                })
+            })
+            || self.database_files.values().any(|project| {
+                project.networks.values().any(|network| {
+                    network.oid == oid || network.units.values().any(|unit| unit.oid == oid)
+                })
+            })
     }
 
     fn db_save(&mut self, tag: &str, words: &[&str]) -> Response {
@@ -2590,20 +3931,235 @@ impl Server {
         envelope(tag, 342, rows)
     }
 
-    fn db_update(&mut self, tag: &str, _words: &[&str]) -> Response {
-        err(
-            tag,
-            502,
-            "502 Command requires a physical backend that is not implemented",
-        )
+    fn db_update(&mut self, tag: &str, words: &[&str]) -> Response {
+        if words.len() < 2 {
+            return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
+        }
+        let delete_missing = words
+            .get(2)
+            .is_some_and(|value| value.eq_ignore_ascii_case("UnitDelete"));
+        let Some(project_name) = self.current.clone() else {
+            return err(
+                tag,
+                440,
+                "440 There is no tag database to perform this operation on",
+            );
+        };
+        if !self.projects.contains_key(&project_name) {
+            return err(
+                tag,
+                440,
+                "440 There is no tag database to perform this operation on",
+            );
+        }
+        let target = normalize_update_target(words[1], &project_name);
+        let parsed = self
+            .projects
+            .get(&project_name)
+            .and_then(|record| parse_update_target(&target, &project_name, record));
+        let Some((network_address, unit_address)) = parsed else {
+            return err(
+                tag,
+                status::ABSENT,
+                &format!(
+                    "401 Bad object or device ID: {} (Network not found)",
+                    words[1]
+                ),
+            );
+        };
+        let mut removed_oids = std::collections::HashSet::new();
+        let Some(network) = self
+            .projects
+            .get_mut(&project_name)
+            .and_then(|project| project.networks.get_mut(&network_address))
+        else {
+            return err(
+                tag,
+                status::ABSENT,
+                &format!(
+                    "401 Bad object or device ID: {} (Network not found)",
+                    words[1]
+                ),
+            );
+        };
+        if network.state != NetworkState::Ok && network.physical.is_empty() {
+            return err(
+                tag,
+                408,
+                "408 Operation failed: Physical inventory has not been synchronized",
+            );
+        }
+
+        if let Some(address) = unit_address {
+            let physical = network.physical.get(&address).cloned();
+            let path = format!("//{project_name}/{network_address}/p/{address}");
+            match physical {
+                Some(physical) => {
+                    update_database_unit_from_physical(
+                        &mut self.known_oids,
+                        &mut network.units,
+                        address,
+                        physical,
+                    );
+                    self.objects.insert(path.clone());
+                    if let Some(unit) = network.units.get(&address) {
+                        mirror_materialized_unit(&mut self.db_pending, &project_name, &path, unit);
+                    }
+                }
+                None if delete_missing => {
+                    if let Some(unit) = network.units.remove(&address) {
+                        removed_oids.insert(unit.oid);
+                    }
+                    for oid in
+                        remove_materialized_pending_path(&mut self.db_pending, &project_name, &path)
+                    {
+                        removed_oids.insert(oid);
+                    }
+                    self.db_fields.retain(|candidate, _| {
+                        candidate != &path && !candidate.starts_with(&format!("{path}/"))
+                    });
+                    self.objects.retain(|candidate| {
+                        candidate != &path && !candidate.starts_with(&format!("{path}/"))
+                    });
+                }
+                None => {
+                    return err(
+                        tag,
+                        status::ABSENT,
+                        &format!(
+                            "401 Bad object or device ID: {} (Unit not found on physical network)",
+                            words[1]
+                        ),
+                    )
+                }
+            }
+        } else {
+            let physical = network.physical.clone();
+            for (address, unit) in physical {
+                update_database_unit_from_physical(
+                    &mut self.known_oids,
+                    &mut network.units,
+                    address,
+                    unit,
+                );
+                let path = format!("//{project_name}/{network_address}/p/{address}");
+                self.objects.insert(path.clone());
+                if let Some(unit) = network.units.get(&address) {
+                    mirror_materialized_unit(&mut self.db_pending, &project_name, &path, unit);
+                }
+            }
+            if delete_missing {
+                let absent = network
+                    .units
+                    .keys()
+                    .filter(|address| !network.physical.contains_key(address))
+                    .copied()
+                    .collect::<Vec<_>>();
+                for address in absent {
+                    if let Some(unit) = network.units.remove(&address) {
+                        removed_oids.insert(unit.oid);
+                    }
+                    let prefix = format!("//{project_name}/{network_address}/p/{address}");
+                    for oid in remove_materialized_pending_path(
+                        &mut self.db_pending,
+                        &project_name,
+                        &prefix,
+                    ) {
+                        removed_oids.insert(oid);
+                    }
+                    self.db_fields.retain(|path, _| {
+                        path != &prefix && !path.starts_with(&format!("{prefix}/"))
+                    });
+                    self.objects
+                        .retain(|path| path != &prefix && !path.starts_with(&format!("{prefix}/")));
+                }
+            }
+        }
+        for oid in removed_oids {
+            if !self.oid_used_anywhere(&oid) {
+                self.known_oids.remove(&oid);
+                self.objects.remove(&format!("!{oid}"));
+                let oid_prefix = format!("!{oid}/");
+                self.db_fields
+                    .retain(|path, _| !path.starts_with(&oid_prefix));
+            }
+        }
+        self.push_event(format!("#e# db update {target}"));
+        ok(tag, vec![], "200 OK.")
     }
 
     fn db_verify(&self, tag: &str, _words: &[&str]) -> Response {
-        err(
-            tag,
-            502,
-            "502 Command requires a physical backend that is not implemented",
-        )
+        let Some(project_name) = self.current.as_deref() else {
+            return err(
+                tag,
+                440,
+                "440 There is no tag database to perform this operation on",
+            );
+        };
+        let Some(project) = self.projects.get(project_name) else {
+            return err(
+                tag,
+                440,
+                "440 There is no tag database to perform this operation on",
+            );
+        };
+        let mut differences = Vec::new();
+        let mut networks = project.networks.iter().collect::<Vec<_>>();
+        networks.sort_by_key(|(address, _)| **address);
+        for (network_address, network) in networks {
+            if network.state != NetworkState::Ok && network.physical.is_empty() {
+                differences.push(format!(
+                    "network {network_address} has no synchronized physical inventory"
+                ));
+                continue;
+            }
+            let mut addresses = network
+                .units
+                .keys()
+                .chain(network.physical.keys())
+                .copied()
+                .collect::<std::collections::BTreeSet<_>>();
+            for address in std::mem::take(&mut addresses) {
+                match (network.units.get(&address), network.physical.get(&address)) {
+                    (None, Some(_)) => differences.push(format!(
+                        "//{project_name}/{network_address}/p/{address} is present on the physical network but absent from the database"
+                    )),
+                    (Some(_), None) => differences.push(format!(
+                        "//{project_name}/{network_address}/p/{address} is present in the database but absent from the physical network"
+                    )),
+                    (Some(database), Some(physical)) => {
+                        for (field, database_value, physical_value) in [
+                            ("UnitType", database.unit_type.as_str(), physical.unit_type.as_str()),
+                            ("FirmwareVersion", database.firmware.as_str(), physical.firmware.as_str()),
+                            ("SerialNumber", database.serial.as_str(), physical.serial.as_str()),
+                        ] {
+                            if !database_value.is_empty()
+                                && !physical_value.is_empty()
+                                && database_value != physical_value
+                            {
+                                differences.push(format!(
+                                    "//{project_name}/{network_address}/p/{address}/{field} database={database_value} physical={physical_value}"
+                                ));
+                            }
+                        }
+                    }
+                    (None, None) => unreachable!(),
+                }
+            }
+        }
+        if differences.is_empty() {
+            return ok(tag, vec![], "200 OK.");
+        }
+        let count = differences.len();
+        Response {
+            tag: tag.to_string(),
+            lines: differences
+                .into_iter()
+                .map(|difference| format!("345-Difference: {difference}"))
+                .collect(),
+            final_text: format!("408 Operation failed: Verify failed: {count} differences"),
+            status: 408,
+        }
     }
 
     fn run_macro(&mut self, tag: &str, words: &[&str]) -> Response {
@@ -3456,9 +5012,23 @@ mod tests {
             .lines
             .iter()
             .any(|line| line == "level=56/1=255"));
-        assert_eq!(server.handle("[10] DBADD //TEST/254 Unit").status, 502);
+        let added = server.handle("[10] DBADD //TEST/254 Unit");
+        assert_eq!(added.status, 301);
+        let oid = added.final_text.trim_start_matches("301 OID=");
+        assert_eq!(
+            server
+                .handle(&format!("[10a] DBSET !{oid}/Address 20"))
+                .status,
+            200
+        );
+        assert_eq!(
+            server
+                .handle(&format!("[10b] DBSET !{oid}/TagName Legacy"))
+                .status,
+            200
+        );
         assert_eq!(server.handle("[11] DBSAVE memory.db").status, 200);
-        assert_eq!(server.handle("[12] DBNEW").status, 502);
+        assert_eq!(server.handle("[12] DBNEW").status, 200);
         assert_eq!(server.handle("[13] DBLOAD memory.db").status, 200);
         assert!(server.handle("[14] GET 254 UNITS").status < 400);
     }

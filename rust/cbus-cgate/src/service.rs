@@ -341,6 +341,8 @@ struct Database {
     objects: HashSet<String>,
     known_oids: HashSet<String>,
     db_levels: HashMap<String, DbLevel>,
+    #[serde(default)]
+    db_pending: HashMap<String, crate::DbPendingObject>,
     config_values: HashMap<String, String>,
     scene_snapshots: HashMap<String, Vec<(String, u8)>>,
     database_files: HashMap<String, Project>,
@@ -368,6 +370,12 @@ impl Database {
         let mut database_files = s.database_files.clone();
         for project in projects.values_mut().chain(database_files.values_mut()) {
             Server::reset_project_retries(project);
+            // An empty OID marks the non-durable configured-interface shell
+            // retained after DBNEW.  Native keeps that runtime connection
+            // outside the blank tag database; omit it from the repository.
+            project
+                .networks
+                .retain(|_, network| !network.oid.is_empty());
         }
         Self {
             version: 1,
@@ -376,6 +384,7 @@ impl Database {
             objects: s.objects.clone(),
             known_oids: s.known_oids.clone(),
             db_levels: s.db_levels.clone(),
+            db_pending: s.db_pending.clone(),
             config_values: s.config_values.clone(),
             scene_snapshots: s.scene_snapshots.clone(),
             database_files,
@@ -399,7 +408,13 @@ impl Database {
                 if !network.oid.is_empty() {
                     used_oids.insert(network.oid.clone());
                 }
+                used_oids.extend(network.units.values().map(|unit| unit.oid.clone()));
             }
+        }
+        used_oids.extend(self.db_levels.values().map(|level| level.oid.clone()));
+        used_oids.extend(self.db_pending.values().map(|object| object.oid.clone()));
+        for oid in &used_oids {
+            reserve_restored_oid(oid);
         }
         let mut migrated_network_oids = false;
         for project in self
@@ -428,6 +443,7 @@ impl Database {
         // both migrated and already-populated network records.
         s.known_oids = used_oids;
         s.db_levels = self.db_levels;
+        s.db_pending = self.db_pending;
         s.config_values = self.config_values;
         s.scene_snapshots = self.scene_snapshots;
         s.database_files = self.database_files;
@@ -1444,6 +1460,12 @@ impl Service {
         unitspec: Option<PathBuf>,
     ) -> io::Result<Arc<Self>> {
         let (mut model, project, network) = import_project(xml, network_name)?;
+        let configured_runtime_template = model
+            .projects
+            .get(&project)
+            .and_then(|project| project.networks.get(&network))
+            .cloned()
+            .expect("import_project selected an existing network");
         if let Some(dir) = unitspec {
             model = model.with_unitspec_dir(dir);
         }
@@ -1464,6 +1486,31 @@ impl Service {
         }
         if net_lifecycle::seed_catalogs(&mut model)? {
             Database::from_server(&model).save(&state_path)?;
+        }
+        if !model
+            .projects
+            .get(&project)
+            .is_some_and(|record| record.networks.contains_key(&network))
+        {
+            // A durable DBNEW contains only the Installation/Project.  Keep
+            // the configured CNI as runtime state so the blank database can
+            // still be repopulated by DBCREATE after restart.
+            let mut runtime = configured_runtime_template;
+            runtime.oid.clear();
+            runtime.name.clear();
+            runtime.units.clear();
+            runtime.physical.clear();
+            runtime.levels.clear();
+            runtime.retries = 2;
+            model
+                .projects
+                .entry(project.clone())
+                .or_insert_with(|| Project {
+                    name: project.clone(),
+                    networks: HashMap::new(),
+                })
+                .networks
+                .insert(network, runtime);
         }
         let selected = model
             .projects
@@ -2253,10 +2300,22 @@ impl Service {
             capabilities["broadcast_event_persistence"] = serde_json::Value::Bool(false);
             capabilities["document_framing"] = serde_json::Value::Bool(true);
             capabilities["database_documents"] = serde_json::Value::Bool(false);
-            capabilities["legacy_database_local_commands"] =
-                serde_json::json!(["dbrenamenet", "dbrenamenetsafe", "dbset", "dbtaglist"]);
-            capabilities["legacy_database_fail_closed"] =
-                serde_json::json!(["dbadd", "dbcopy", "dbcreate", "dbnew", "dbupdate", "dbverify"]);
+            capabilities["legacy_database_local_commands"] = serde_json::json!([
+                "dbadd",
+                "dbcopy",
+                "dbnew",
+                "dbrenamenet",
+                "dbrenamenetsafe",
+                "dbset",
+                "dbtaglist"
+            ]);
+            capabilities["legacy_database_physical_commands"] =
+                serde_json::json!(["dbcreate", "dbupdate", "dbverify"]);
+            capabilities["legacy_database_fail_closed"] = serde_json::json!([]);
+            capabilities["legacy_database_incomplete_oid_objects"] = serde_json::Value::Bool(true);
+            capabilities["legacy_database_recursive_copy"] = serde_json::Value::Bool(true);
+            capabilities["legacy_database_physical_refresh"] = serde_json::Value::Bool(true);
+            capabilities["legacy_database_verify_differences"] = serde_json::Value::Bool(true);
             capabilities["legacy_database_selected_project_tags"] = serde_json::Value::Bool(true);
             capabilities["legacy_database_unique_address_repair"] = serde_json::Value::Bool(true);
             capabilities["legacy_database_configured_project_rename"] =
@@ -2972,6 +3031,89 @@ impl Service {
         if verb == "NET" && matches!(sub, "UNRAVEL" | "UNRAVELUNIT") {
             return self.net_unravel(client, line, tag, &words).await;
         }
+        let mut database_epoch = None;
+        if matches!(verb, "DBCREATE" | "DBUPDATE" | "DBVERIFY") {
+            // These legacy commands are physical inventory operations, not
+            // aliases for their local SAFE relatives.  Refresh every target
+            // through the same generation-guarded NET SYNC path used by
+            // Toolkit before the model compares or replaces durable state.
+            let selected = client.current.as_deref().unwrap_or(&self.project);
+            if selected != self.project {
+                return err(
+                    tag,
+                    408,
+                    "408 Operation failed: Selected project is not connected to the configured physical interface",
+                );
+            }
+            if verb == "DBUPDATE" && words.len() < 2 {
+                return err(tag, 400, "400 Syntax Error.");
+            }
+            let targets = if verb == "DBUPDATE" {
+                let target = {
+                    let model = self.model.lock().await;
+                    database_refresh_target(words[1], &self.project, &model)
+                };
+                match target {
+                    Some(target) => vec![target],
+                    None => {
+                        // Let the model retain native database-address error
+                        // precedence without touching the PCI.
+                        Vec::new()
+                    }
+                }
+            } else {
+                let model = self.model.lock().await;
+                model
+                    .projects
+                    .get(&self.project)
+                    .map(|project| {
+                        let mut targets = project.networks.keys().copied().collect::<Vec<_>>();
+                        targets.sort_unstable();
+                        targets
+                    })
+                    .unwrap_or_default()
+            };
+            if !targets.is_empty() {
+                database_epoch = Some(self.current_pci_epoch().await);
+            }
+            for network in targets {
+                let sync_line = format!(
+                    "[{tag}-db-sync-{network}] NET SYNC //{}/{network}",
+                    self.project
+                );
+                let sync_words = [
+                    "NET",
+                    "SYNC",
+                    sync_line
+                        .split_whitespace()
+                        .last()
+                        .expect("sync line has a target"),
+                ];
+                let response = self.net_sync(client, &sync_line, tag, &sync_words).await;
+                if response.status >= 400 {
+                    return err(
+                        tag,
+                        408,
+                        &format!(
+                            "408 Operation failed: physical inventory refresh for network {network} failed: {}",
+                            response.final_text
+                        ),
+                    );
+                }
+            }
+        }
+        let _database_commit_guard = if let Some((generation, pci)) = database_epoch.as_ref() {
+            let Some(guard) = self.pci_commit_guard(*generation, pci).await else {
+                return err(
+                    tag,
+                    408,
+                    "408 Operation failed: PCI connection generation changed",
+                );
+            };
+            Some(guard)
+        } else {
+            None
+        };
         // Native C-Gate declares CHECK_UNRAVEL obsolete and returns 400
         // without running it. Answer likewise: no physical I/O exists.
         if verb == "NET" && sub == "CHECK_UNRAVEL" {
@@ -3156,6 +3298,40 @@ impl Service {
         if response.status >= 400 && !retained_application_creation {
             *model = before;
             return response;
+        }
+        if verb == "DBNEW"
+            && client.current.as_deref().unwrap_or(&self.project) == self.project
+            && !model
+                .projects
+                .get(&self.project)
+                .is_some_and(|project| project.networks.contains_key(&self.network))
+        {
+            // Runtime connectivity is independent of the tag database in
+            // native C-Gate.  The compact model normally stores both in one
+            // Network record, so retain an explicitly non-durable shell for
+            // the configured interface after DBNEW.  It has no OID, name or
+            // database units and is filtered from Database::from_server;
+            // DBCREATE can subsequently snapshot its live inventory.
+            if let Some(mut runtime) = before
+                .projects
+                .get(&self.project)
+                .and_then(|project| project.networks.get(&self.network))
+                .cloned()
+            {
+                runtime.oid.clear();
+                runtime.name.clear();
+                runtime.units.clear();
+                runtime.retries = 2;
+                model
+                    .projects
+                    .entry(self.project.clone())
+                    .or_insert_with(|| Project {
+                        name: self.project.clone(),
+                        networks: HashMap::new(),
+                    })
+                    .networks
+                    .insert(self.network, runtime);
+            }
         }
         if verb == "PROJECT" && sub == "ARCHIVE" {
             if let Some(snapshot) = words
@@ -12650,11 +12826,12 @@ fn local_command(words: &[&str], upper: &[String], model: &Server) -> bool {
     let sub = upper.get(1).map(String::as_str).unwrap_or("");
     match verb {
         "NOOP" | "APIVER" | "HELP" | "COMMANDS" | "BROADCAST_EVENT" | "NEW" | "OID" | "REPORT"
-        | "SHOW" | "TREE" | "TREEXML" | "TREEXMLDETAIL" | "DBGET" | "DBGETXML"
-        | "DBNETWORKPATH" | "DBRENAMENET" | "DBRENAMENETSAFE" | "DBSET" | "DBTAGLIST"
-        | "DBSETSAFE" | "DBSETXML" | "DBADDSAFE" | "DBCOPYSAFE" | "DBDELETE" | "DBVALIDATE"
-        | "DBSAVE" | "DBLOAD" | "DBGETNET" | "DBGETAPP" | "DBGETGROUP" | "DBGETUNIT"
-        | "DBCREATENET" | "DBCREATEAPP" | "DBCREATEGROUP" | "DBCREATEUNIT" => true,
+        | "SHOW" | "TREE" | "TREEXML" | "TREEXMLDETAIL" | "DBGET" | "DBGETXML" | "DBADD"
+        | "DBCOPY" | "DBCREATE" | "DBNEW" | "DBUPDATE" | "DBVERIFY" | "DBNETWORKPATH"
+        | "DBRENAMENET" | "DBRENAMENETSAFE" | "DBSET" | "DBTAGLIST" | "DBSETSAFE" | "DBSETXML"
+        | "DBADDSAFE" | "DBCOPYSAFE" | "DBDELETE" | "DBVALIDATE" | "DBSAVE" | "DBLOAD"
+        | "DBGETNET" | "DBGETAPP" | "DBGETGROUP" | "DBGETUNIT" | "DBCREATENET" | "DBCREATEAPP"
+        | "DBCREATEGROUP" | "DBCREATEUNIT" => true,
         "CONVERTUNIT" => matches!(sub, "CHECK" | "CONVERT"),
         "PROJECT" => matches!(
             sub,
@@ -12773,6 +12950,61 @@ fn internal_command(tag: &str, family: &str, operation: &str, arguments: &[Strin
         format!("[{tag}] {family} {operation}")
     } else {
         format!("[{tag}] {family} {operation} {tail}")
+    }
+}
+
+fn database_refresh_target(raw: &str, project: &str, model: &Server) -> Option<u8> {
+    let abbreviated_unit = raw.starts_with("p/");
+    let qualified = if raw.starts_with("//") {
+        raw.trim_end_matches('/').to_string()
+    } else if let Some(rest) = raw.strip_prefix("p/") {
+        // Manual spelling for a unit target: p/NETWORK/UNIT.
+        format!("//{project}/{rest}")
+    } else {
+        format!("//{project}/{}", raw.trim_matches('/'))
+    };
+    let parts = qualified.strip_prefix("//")?.split('/').collect::<Vec<_>>();
+    let record = model.projects.get(project)?;
+    let resolve = |value: &str| {
+        value.parse::<u8>().ok().or_else(|| {
+            record
+                .networks
+                .iter()
+                .find(|(_, network)| network.name.eq_ignore_ascii_case(value))
+                .map(|(address, _)| *address)
+        })
+    };
+    let resolves_unit = |network: u8, value: &str| {
+        value.parse::<u8>().is_ok()
+            || record.networks.get(&network).is_some_and(|record| {
+                record.units.values().any(|unit| {
+                    unit.fields
+                        .get("TagName")
+                        .or_else(|| unit.fields.get("UnitName"))
+                        .is_some_and(|name| name.eq_ignore_ascii_case(value))
+                })
+            })
+    };
+    match parts.as_slice() {
+        [target_project, network] if *target_project == project => {
+            let network = resolve(network)?;
+            record.networks.contains_key(&network).then_some(network)
+        }
+        [target_project, network, marker, unit]
+            if *target_project == project && marker.eq_ignore_ascii_case("p") =>
+        {
+            let network = resolve(network)?;
+            (record.networks.contains_key(&network) && resolves_unit(network, unit))
+                .then_some(network)
+        }
+        // Normalized p/NETWORK/UNIT becomes //PROJECT/NETWORK/UNIT; retain
+        // the manual's unusual spelling without accepting arbitrary triples.
+        [target_project, network, unit] if *target_project == project && abbreviated_unit => {
+            let network = resolve(network)?;
+            (record.networks.contains_key(&network) && resolves_unit(network, unit))
+                .then_some(network)
+        }
+        _ => None,
     }
 }
 

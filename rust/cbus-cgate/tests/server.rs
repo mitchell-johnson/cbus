@@ -2235,19 +2235,310 @@ fn legacy_database_scalar_tags_and_network_renames_are_coherent() {
     assert!(!rendered.contains("Secret"));
     assert!(!rendered.contains("//DBL1/"));
 
-    for (tag, command) in [
-        ("41", "DBADD //DBL1/251 Unit"),
-        ("42", "DBCOPY //DBL1/251/p/22 //DBL1/251"),
-        ("43", "DBCREATE"),
-        ("44", "DBNEW"),
-        ("45", "DBUPDATE //DBL1/251"),
-        ("46", "DBVERIFY"),
+    let add = server.handle("[41] DBADD //DBL1/251 Unit ignored trailing");
+    assert_eq!(add.status, 301);
+    let pending_oid = add.final_text.trim_start_matches("301 OID=");
+    assert_eq!(
+        server
+            .handle(&format!("[42] DBGET !{pending_oid}/Address"))
+            .final_text,
+        "401 Bad object or device ID: Object is null"
+    );
+}
+
+#[test]
+fn legacy_database_add_copy_and_cross_project_subtrees_use_fresh_oids() {
+    let mut server = Server::new(AccessLevel::Program);
+    assert_eq!(server.handle("[1] PROJECT NEW SOURCE").status, 200);
+    let detail = server.handle("[1a] DBADD Installation InstallationDetail trailing");
+    assert_eq!(detail.status, 301);
+    let detail_oid = detail.final_text.trim_start_matches("301 OID=").to_string();
+    assert_eq!(
+        server
+            .handle(&format!("[1b] DBSET !{detail_oid}/SystemLocation Lab"))
+            .status,
+        200
+    );
+    assert_eq!(
+        server
+            .handle(&format!("[1c] DBGET !{detail_oid}/SystemLocation"))
+            .final_text,
+        format!("342 !{detail_oid}/SystemLocation=Lab")
+    );
+    assert_eq!(
+        server
+            .handle("[2] DBCREATENET 254 Source Cni nowhere")
+            .status,
+        200
+    );
+    let interface = server.handle("[2a] DBADD //SOURCE/254 Interface ignored");
+    assert_eq!(interface.status, 301);
+    let interface_oid = interface
+        .final_text
+        .trim_start_matches("301 OID=")
+        .to_string();
+    assert_eq!(
+        server
+            .handle(&format!("[2b] DBGET !{interface_oid}/InterfaceType"))
+            .status,
+        401
+    );
+    assert_eq!(
+        server
+            .handle(&format!("[2c] DBSET !{interface_oid}/InterfaceType Bridge"))
+            .status,
+        200
+    );
+    assert_eq!(
+        server
+            .handle(&format!("[2d] DBGET !{interface_oid}/InterfaceType"))
+            .final_text,
+        format!("342 !{interface_oid}/InterfaceType=Bridge")
+    );
+    let added = server.handle("[3] DBADD //SOURCE/254 Unit ignored ignored");
+    assert_eq!(added.status, 301);
+    let oid = added.final_text.trim_start_matches("301 OID=").to_string();
+    assert_eq!(
+        server.handle(&format!("[4] DBGET !{oid}/Address")).status,
+        401
+    );
+    assert_eq!(
+        server.handle(&format!("[5] DBGET !{oid}/TagName")).status,
+        401
+    );
+    for (tag, field, value) in [
+        ("6", "UnitType", "KEYGL5"),
+        ("7", "Address", "20"),
+        ("8", "TagName", "Original"),
     ] {
-        let response = server.handle(&format!("[{tag}] {command}"));
-        assert_eq!(response.status, 502, "{command}: {response:?}");
         assert_eq!(
-            response.final_text,
-            "502 Command requires a physical backend that is not implemented"
+            server
+                .handle(&format!("[{tag}] DBSET !{oid}/{field} {value}"))
+                .status,
+            200
         );
     }
+    assert!(server
+        .handle("[9] DBTAGLIST")
+        .final_text
+        .contains("254/p/20/TagName=Original"));
+
+    let same = server.handle("[10] DBCOPY //SOURCE/254/p/20 //SOURCE/254 trailing");
+    assert_eq!(same.status, 301);
+    let same_oid = same.final_text.trim_start_matches("301 OID=").to_string();
+    assert_ne!(same_oid, oid);
+    assert_eq!(
+        server
+            .handle(&format!("[11] DBGET !{same_oid}/Address"))
+            .status,
+        401
+    );
+    assert_eq!(
+        server
+            .handle(&format!("[12] DBGET !{same_oid}/TagName"))
+            .status,
+        401
+    );
+    assert_eq!(
+        server
+            .handle(&format!("[13] DBGET !{same_oid}/UnitType"))
+            .final_text,
+        format!("342 !{same_oid}/UnitType=KEYGL5")
+    );
+    assert_eq!(
+        server
+            .handle(&format!("[14] DBSET !{same_oid}/Address 21"))
+            .status,
+        200
+    );
+    assert_eq!(
+        server
+            .handle(&format!("[15] DBSET !{same_oid}/TagName Same"))
+            .status,
+        200
+    );
+
+    assert_eq!(server.handle("[16] PROJECT NEW DEST").status, 200);
+    assert_eq!(
+        server
+            .handle("[17] DBCREATENET 1 Destination Cni nowhere")
+            .status,
+        200
+    );
+    assert_eq!(server.handle("[18] PROJECT USE SOURCE").status, 200);
+    let cross = server.handle("[19] DBCOPY //SOURCE/254/p/20 //DEST/1 ignored");
+    assert_eq!(cross.status, 301);
+    let cross_oid = cross.final_text.trim_start_matches("301 OID=").to_string();
+    assert_ne!(cross_oid, oid);
+    assert_eq!(server.handle("[20] PROJECT USE DEST").status, 200);
+    let tags = format_response(&server.handle("[21] DBTAGLIST"));
+    assert!(tags.contains("1/p/20/TagName=Original"));
+    assert_eq!(
+        server
+            .handle(&format!("[22] DBGET !{cross_oid}/UnitType"))
+            .final_text,
+        format!("342 !{cross_oid}/UnitType=KEYGL5")
+    );
+
+    assert_eq!(server.handle("[23] PROJECT USE SOURCE").status, 200);
+    for (command, expected) in [
+        ("[23a] DBADDSAFE //SOURCE/254 Application 56 Lighting", 200),
+        ("[23b] DBADDSAFE //SOURCE/254/56 Group 7 GroupSeven", 200),
+        ("[23c] DBADDSAFE //SOURCE/254/56/7 Level 3 LevelThree", 301),
+    ] {
+        let response = server.handle(command);
+        assert_eq!(response.status, expected, "{command}: {response:?}");
+    }
+    let netvar = server.handle("[23d] DBADD //SOURCE/254/56 NetVar");
+    assert_eq!(netvar.status, 301);
+    let netvar_oid = netvar.final_text.trim_start_matches("301 OID=");
+    assert_eq!(
+        server
+            .handle(&format!("[23e] DBSET !{netvar_oid}/Address 8"))
+            .status,
+        200
+    );
+    assert_eq!(
+        server
+            .handle(&format!("[23f] DBSET !{netvar_oid}/TagName Variable"))
+            .status,
+        200
+    );
+    let child = server.handle(&format!("[23g] DBADD !{netvar_oid} Level"));
+    assert_eq!(child.status, 301);
+    let child_oid = child.final_text.trim_start_matches("301 OID=");
+    for (tag, field, value) in [
+        ("23h", "Address", "1"),
+        ("23i", "TagName", "Child"),
+        ("23j", "Value", "77"),
+    ] {
+        assert_eq!(
+            server
+                .handle(&format!("[{tag}] DBSET !{child_oid}/{field} {value}"))
+                .status,
+            200
+        );
+    }
+    let same_tree = server.handle("[24] DBCOPY //SOURCE/254/56 //SOURCE/254");
+    assert_eq!(same_tree.status, 301);
+    let same_tree_oid = same_tree
+        .final_text
+        .trim_start_matches("301 OID=")
+        .to_string();
+    assert_eq!(
+        server
+            .handle(&format!("[25] DBSET !{same_tree_oid}/Address 57"))
+            .status,
+        200
+    );
+    assert_eq!(
+        server
+            .handle(&format!("[26] DBSET !{same_tree_oid}/TagName Copy"))
+            .status,
+        200
+    );
+    let source_tags = format_response(&server.handle("[27] DBTAGLIST"));
+    assert!(source_tags.contains("254/57/TagName=Copy"));
+    assert!(!source_tags.contains("254/57/7/TagName=GroupSeven"));
+
+    let cross_tree = server.handle("[28] DBCOPY //SOURCE/254/56 //DEST/1");
+    assert_eq!(cross_tree.status, 301);
+    let cross_tree_oid = cross_tree
+        .final_text
+        .trim_start_matches("301 OID=")
+        .to_string();
+    assert_eq!(server.handle("[29] PROJECT USE DEST").status, 200);
+    let destination_tags = format_response(&server.handle("[30] DBTAGLIST"));
+    assert!(destination_tags.contains("1/56/TagName=Lighting"));
+    assert!(destination_tags.contains("1/56/7/TagName=GroupSeven"));
+    assert!(destination_tags.contains("1/56/7/3/TagName=LevelThree"));
+    assert!(destination_tags.contains("1/56/8/TagName=Variable"));
+    assert!(destination_tags.contains("1/56/8/1/TagName=Child"));
+    assert_eq!(
+        server.handle("[31] DBSET //DEST/1/56/Address 58").status,
+        200
+    );
+    assert_eq!(
+        server
+            .handle(&format!("[32] DBGET !{cross_tree_oid}/Address"))
+            .final_text,
+        format!("342 !{cross_tree_oid}/Address=58")
+    );
+    let moved_tags = format_response(&server.handle("[33] DBTAGLIST"));
+    assert!(moved_tags.contains("1/58/8/1/TagName=Child"));
+    assert!(!moved_tags.contains("1/56/TagName=Lighting"));
+    assert_eq!(
+        server
+            .handle(&format!("[34] DBDELETE !{cross_tree_oid}"))
+            .status,
+        200
+    );
+    let deleted_tags = format_response(&server.handle("[35] DBTAGLIST"));
+    assert!(!deleted_tags.contains("1/58/"));
+}
+
+#[test]
+fn legacy_database_create_update_verify_and_new_track_physical_inventory() {
+    let mut server = Server::new(AccessLevel::Program);
+    assert_eq!(server.handle("[1] PROJECT NEW LIFE").status, 200);
+    assert_eq!(
+        server
+            .handle("[2] DBCREATENET 254 Physical Cni nowhere")
+            .status,
+        200
+    );
+    assert_eq!(
+        server.handle("[3] DBADDSAFE //LIFE/254 Unit 1 One").status,
+        200
+    );
+    assert_eq!(
+        server.handle("[4] DBADDSAFE //LIFE/254 Unit 2 Two").status,
+        200
+    );
+    assert_eq!(
+        server
+            .handle("[5] DBSET //LIFE/254/p/1/UnitType KEYGL5")
+            .status,
+        200
+    );
+    assert_eq!(
+        server.handle("[6] SET //LIFE/254/p/1 Address 3").status,
+        200
+    );
+    let different = server.handle("[7] DBVERIFY trailing ignored");
+    assert_eq!(different.status, 408);
+    assert_eq!(different.lines.len(), 2);
+    assert!(different
+        .lines
+        .iter()
+        .all(|line| line.starts_with("345-Difference: ")));
+
+    assert_eq!(server.handle("[8] DBUPDATE Physical").status, 200);
+    let retained = server.handle("[9] DBVERIFY");
+    assert_eq!(retained.status, 408);
+    assert_eq!(retained.lines.len(), 1);
+    assert_eq!(
+        server
+            .handle("[10] DBUPDATE //LIFE/254 UnitDelete ignored")
+            .status,
+        200
+    );
+    assert_eq!(server.handle("[11] DBVERIFY").status, 200);
+    assert_eq!(server.handle("[12] MOCK BUS-DEL //LIFE/254 2").status, 200);
+    assert_eq!(
+        server
+            .handle("[13] DBUPDATE //LIFE/254/p/2 UnitDelete")
+            .status,
+        200
+    );
+    assert_eq!(server.handle("[14] DBGET //LIFE/254/p/2").status, 401);
+
+    // DBCREATE replaces stale address/OID state with a fresh snapshot of
+    // the still-live physical inventory.
+    assert_eq!(server.handle("[15] DBCREATE trailing ignored").status, 200);
+    assert_eq!(server.handle("[16] DBVERIFY").status, 200);
+    assert_eq!(server.handle("[17] DBNEW trailing ignored").status, 200);
+    let tags = format_response(&server.handle("[18] DBTAGLIST"));
+    assert!(tags.contains("LIFE/TagName=LIFE"));
+    assert!(!tags.contains("254/TagName="));
 }

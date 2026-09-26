@@ -1045,6 +1045,31 @@ pub struct DbLevel {
     pub netvar: bool,
 }
 
+/// A typed database object created without its compulsory address/name.
+///
+/// Native `DBADD` and same-database `DBCOPY` deliberately create objects in
+/// this incomplete state and return an OID.  Callers then populate fields by
+/// OID with `DBSET`.  Keeping the record independently of the address maps is
+/// essential: using a made-up address would make the object visible through
+/// a path before native C-Gate considers it addressable and would prevent two
+/// incomplete siblings from coexisting.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub struct DbPendingObject {
+    /// Fresh database identity returned by the creating command.
+    pub oid: String,
+    /// Project which owns the object.  OIDs are resolved in selected-project
+    /// context because project copies can retain identities.
+    pub project: String,
+    /// Address or OID of the destination parent.
+    pub parent: String,
+    /// Native element type (`Network`, `Unit`, `Application`, ...).
+    pub element: String,
+    /// Fields assigned before the object becomes addressable.
+    pub fields: HashMap<String, String>,
+    /// Canonical address after all compulsory fields have been supplied.
+    pub path: Option<String>,
+}
+
 /// In-memory C-Gate server.
 #[derive(Clone)]
 pub struct Server {
@@ -1073,6 +1098,9 @@ pub struct Server {
     /// more than one project, so duplicate identities use composite keys and
     /// are resolved through selected-project context.
     db_levels: HashMap<String, DbLevel>,
+    /// Incomplete typed objects created by legacy DBADD/DBCOPY.  These are
+    /// durable and remain OID-addressable across daemon restart.
+    db_pending: HashMap<String, DbPendingObject>,
     /// Programming locks (`PP LOCK name address`).
     locks: HashMap<String, String>,
     /// Open programming sessions (`PP START name lock`).
@@ -1157,6 +1185,7 @@ impl Server {
             objects: std::collections::HashSet::new(),
             known_oids: std::collections::HashSet::new(),
             db_levels: HashMap::new(),
+            db_pending: HashMap::new(),
             locks: HashMap::new(),
             sessions: HashMap::new(),
             programmers: HashMap::new(),
@@ -1746,6 +1775,33 @@ impl Server {
             self.objects.insert(format!("!{}", level.oid));
             self.db_levels.insert(key, level);
         }
+        let source_project = from.trim_start_matches('/');
+        let destination_project = to.trim_start_matches('/');
+        let pending = self
+            .db_pending
+            .values()
+            .filter(|object| object.project == source_project)
+            .cloned()
+            .collect::<Vec<_>>();
+        for mut object in pending {
+            object.project = destination_project.to_string();
+            if object.parent == from {
+                object.parent = to.to_string();
+            } else if let Some(rest) = object.parent.strip_prefix(&format!("{from}/")) {
+                object.parent = format!("{to}/{rest}");
+            }
+            if let Some(path) = object.path.as_mut() {
+                if *path == from {
+                    *path = to.to_string();
+                } else if let Some(rest) = path.strip_prefix(&format!("{from}/")) {
+                    *path = format!("{to}/{rest}");
+                }
+            }
+            self.db_pending.insert(
+                format!("{}\u{1f}{}", destination_project, object.oid),
+                object,
+            );
+        }
     }
 
     /// Remove all durable database records owned by one project while
@@ -1767,7 +1823,20 @@ impl Server {
         self.db_levels
             .retain(|_, level| level.parent != exact && !level.parent.starts_with(&prefix));
 
-        let removed_oids: HashSet<String> = project_oids.union(&level_oids).cloned().collect();
+        let pending_oids = self
+            .db_pending
+            .values()
+            .filter(|object| object.project == project)
+            .map(|object| object.oid.clone())
+            .collect::<HashSet<_>>();
+        self.db_pending
+            .retain(|_, object| object.project != project);
+
+        let removed_oids: HashSet<String> = project_oids
+            .union(&level_oids)
+            .cloned()
+            .chain(pending_oids)
+            .collect();
         for oid in removed_oids {
             let object_in_use = self.projects.values().any(|project| {
                 project.networks.values().any(|network| {
@@ -1775,7 +1844,8 @@ impl Server {
                 })
             });
             let level_in_use = self.db_levels.values().any(|level| level.oid == oid);
-            if !object_in_use && !level_in_use {
+            let pending_in_use = self.db_pending.values().any(|object| object.oid == oid);
+            if !object_in_use && !level_in_use && !pending_in_use {
                 self.known_oids.remove(&oid);
                 self.objects.remove(&format!("!{oid}"));
                 let oid_prefix = format!("!{oid}/");
@@ -2695,6 +2765,27 @@ impl Server {
                 let mut segments = rest.splitn(2, '/');
                 let oid = segments.next().unwrap_or("");
                 let field = segments.next();
+                if let Some(field) = field {
+                    if let Some(project) = self.current.as_deref() {
+                        if let Some(object) = self.pending_object(project, oid) {
+                            let value = object.fields.get(field).cloned().unwrap_or_default();
+                            return if value.is_empty() {
+                                err(
+                                    tag,
+                                    status::ABSENT,
+                                    "401 Bad object or device ID: Object is null",
+                                )
+                            } else {
+                                Response {
+                                    tag: tag.to_string(),
+                                    lines: Vec::new(),
+                                    final_text: format!("342 {path}={value}"),
+                                    status: 342,
+                                }
+                            };
+                        }
+                    }
+                }
                 if field == Some("Value") {
                     if let Some(level) = self.level(oid) {
                         let value = level
@@ -2787,6 +2878,23 @@ impl Server {
                 }
             }
             if xml && !rest.contains('/') {
+                if let Some(project) = self.current.as_deref() {
+                    if let Some(object) = self.pending_object(project, rest) {
+                        let mut fields = object.fields.iter().collect::<Vec<_>>();
+                        fields.sort_by(|(left, _), (right, _)| left.cmp(right));
+                        let mut document = format!("<{}><OID>{}</OID>", object.element, object.oid);
+                        for (name, value) in fields {
+                            document.push_str(&format!("<{name}>{}</{name}>", xml_escape(value)));
+                        }
+                        document.push_str(&format!("</{}>", object.element));
+                        return Response {
+                            tag: tag.to_string(),
+                            lines: vec![format!("347-{document}")],
+                            final_text: "200 OK".to_string(),
+                            status: status::OK,
+                        };
+                    }
+                }
                 if let Some(level) = self.level(rest) {
                     return Self::level_xml(tag, level);
                 }
@@ -5364,6 +5472,39 @@ impl Server {
                 level.parent = format!("{to}/{rest}");
             }
         }
+        let renamed_project = if from.matches('/').count() == 2 {
+            Some((
+                from.trim_start_matches('/').to_string(),
+                to.trim_start_matches('/').to_string(),
+            ))
+        } else {
+            None
+        };
+        for object in self.db_pending.values_mut() {
+            if object.parent == from {
+                object.parent = to.to_string();
+            } else if let Some(rest) = object.parent.strip_prefix(&slash) {
+                object.parent = format!("{to}/{rest}");
+            }
+            if let Some(path) = object.path.as_mut() {
+                if *path == from {
+                    *path = to.to_string();
+                } else if let Some(rest) = path.strip_prefix(&slash) {
+                    *path = format!("{to}/{rest}");
+                }
+            }
+            if let Some((source, destination)) = &renamed_project {
+                if object.project == *source {
+                    object.project = destination.clone();
+                }
+            }
+        }
+        if renamed_project.is_some() {
+            self.db_pending = std::mem::take(&mut self.db_pending)
+                .into_values()
+                .map(|object| (format!("{}\u{1f}{}", object.project, object.oid), object))
+                .collect();
+        }
     }
 
     /// Native `ENABLE REMOVE address`.
@@ -5898,6 +6039,104 @@ impl Server {
             if self.known_oids.contains(&oid) && !self.oid_in_current_project(&oid) {
                 return err(tag, status::ABSENT, "401 Object not found");
             }
+            if let Some(project) = self.current.clone() {
+                if let Some(root) = self.pending_object(&project, &oid).cloned() {
+                    let mut remove = vec![oid.clone()];
+                    let mut index = 0;
+                    while index < remove.len() {
+                        let parent = format!("!{}", remove[index]);
+                        let children = self
+                            .db_pending
+                            .values()
+                            .filter(|object| object.project == project && object.parent == parent)
+                            .map(|object| object.oid.clone())
+                            .collect::<Vec<_>>();
+                        remove.extend(children);
+                        index += 1;
+                    }
+                    for remove_oid in remove.iter().rev() {
+                        if let Some(key) = self
+                            .db_pending
+                            .iter()
+                            .find(|(_, object)| {
+                                object.project == project && object.oid == *remove_oid
+                            })
+                            .map(|(key, _)| key.clone())
+                        {
+                            self.db_pending.remove(&key);
+                            self.db_levels.remove(&key);
+                        }
+                    }
+                    if let Some(path) = root.path {
+                        let path_prefix = format!("{path}/");
+                        let level_oids = self
+                            .db_levels
+                            .values()
+                            .filter(|level| {
+                                level.parent == path || level.parent.starts_with(&path_prefix)
+                            })
+                            .map(|level| level.oid.clone())
+                            .collect::<Vec<_>>();
+                        remove.extend(level_oids);
+                        self.db_levels.retain(|_, level| {
+                            level.parent != path && !level.parent.starts_with(&path_prefix)
+                        });
+                        if root.element == "Unit" {
+                            let nested = ["DBDELETE", path.as_str()];
+                            let _ = self.dbdelete(tag, &nested);
+                        } else if root.element == "Network" {
+                            if let Some((path_project, network)) = path
+                                .strip_prefix("//")
+                                .and_then(|path| path.split_once('/'))
+                                .and_then(|(project, network)| {
+                                    Some((project, network.parse::<u8>().ok()?))
+                                })
+                            {
+                                if let Some(network) = self
+                                    .projects
+                                    .get_mut(path_project)
+                                    .and_then(|project| project.networks.remove(&network))
+                                {
+                                    remove.push(network.oid);
+                                    remove.extend(network.units.into_values().map(|unit| unit.oid));
+                                }
+                            }
+                        }
+                        self.db_fields.retain(|candidate, _| {
+                            candidate != &path && !candidate.starts_with(&path_prefix)
+                        });
+                        self.objects.retain(|candidate| {
+                            candidate != &path && !candidate.starts_with(&path_prefix)
+                        });
+                        let parts = path.trim_start_matches('/').split('/').collect::<Vec<_>>();
+                        match (root.element.as_str(), parts.as_slice()) {
+                            ("Application", [project, network, application]) => {
+                                self.objects.remove(&format!(
+                                    "//{project}/{network}-APPLICATION-{application}"
+                                ));
+                            }
+                            ("Group", [project, network, application, group]) => {
+                                self.objects.remove(&format!(
+                                    "//{project}/{network}/{application}-GROUP-{group}"
+                                ));
+                            }
+                            _ => {}
+                        }
+                    }
+                    remove.sort();
+                    remove.dedup();
+                    for remove_oid in remove {
+                        if !self.oid_used_anywhere(&remove_oid) {
+                            self.known_oids.remove(&remove_oid);
+                            self.objects.remove(&format!("!{remove_oid}"));
+                            let field_prefix = format!("!{remove_oid}/");
+                            self.db_fields
+                                .retain(|path, _| !path.starts_with(&field_prefix));
+                        }
+                    }
+                    return ok(tag, vec![], "200 OK");
+                }
+            }
             if let Some(key) = self.level_key(&oid) {
                 self.db_levels.remove(&key);
                 if self.db_levels.values().any(|level| level.oid == oid) {
@@ -6024,6 +6263,7 @@ impl Server {
         }
 
         let mut path = words[1].to_string();
+        let mut materialized_pending_oid = None;
         if let Some(rest) = path.strip_prefix('!') {
             let Some((oid, field)) = rest.split_once('/') else {
                 return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
@@ -6074,35 +6314,62 @@ impl Server {
                         return ok(tag, vec![], "200 OK.");
                     }
                 }
+                self.sync_pending_database_field(&current, oid, field, &value);
                 self.db_fields.insert(path, value);
                 return ok(tag, vec![], "200 OK.");
             }
 
-            let mut resolved = None;
-            if let Some(project) = self.projects.get(&current) {
-                for (network_address, network) in &project.networks {
-                    if network.oid == oid {
-                        resolved = Some(format!("//{current}/{network_address}/{field}"));
-                        break;
-                    }
-                    if let Some((unit_address, _)) =
-                        network.units.iter().find(|(_, unit)| unit.oid == oid)
-                    {
-                        resolved = Some(format!(
-                            "//{current}/{network_address}/p/{unit_address}/{field}"
-                        ));
-                        break;
+            // DBADD and same-project DBCOPY produce an OID-addressable object
+            // whose compulsory fields are initially NULL.  Do not invent a
+            // temporary numeric path: retain the incomplete object until its
+            // Address and TagName are both supplied, then materialize it into
+            // the ordinary typed maps atomically.
+            if let Some(object) = self.pending_object(&current, oid).cloned() {
+                if object.path.is_none() {
+                    return match self.set_pending_database_field(
+                        &current,
+                        oid,
+                        field,
+                        value.clone(),
+                    ) {
+                        Ok(true) => ok(tag, vec![], "200 OK."),
+                        Ok(false) => err(
+                            tag,
+                            status::ABSENT,
+                            &format!("401 Bad object or device ID: Element !{oid} not found."),
+                        ),
+                        Err(reason) => err(tag, 408, &format!("408 Operation failed: {reason}")),
+                    };
+                }
+                materialized_pending_oid = Some(oid.to_string());
+                path = format!("{}/{field}", object.path.expect("materialized path"));
+            } else {
+                let mut resolved = None;
+                if let Some(project) = self.projects.get(&current) {
+                    for (network_address, network) in &project.networks {
+                        if network.oid == oid {
+                            resolved = Some(format!("//{current}/{network_address}/{field}"));
+                            break;
+                        }
+                        if let Some((unit_address, _)) =
+                            network.units.iter().find(|(_, unit)| unit.oid == oid)
+                        {
+                            resolved = Some(format!(
+                                "//{current}/{network_address}/p/{unit_address}/{field}"
+                            ));
+                            break;
+                        }
                     }
                 }
+                let Some(resolved) = resolved else {
+                    return err(
+                        tag,
+                        status::ABSENT,
+                        &format!("401 Bad object or device ID: Element !{oid} not found."),
+                    );
+                };
+                path = resolved;
             }
-            let Some(resolved) = resolved else {
-                return err(
-                    tag,
-                    status::ABSENT,
-                    &format!("401 Bad object or device ID: Element !{oid} not found."),
-                );
-            };
-            path = resolved;
         } else if path.starts_with("//") {
             let selected = path.trim_start_matches('/').split('/').next().unwrap_or("");
             if selected != current {
@@ -6132,12 +6399,28 @@ impl Server {
                 "408 Operation failed: OID field can not be changed",
             );
         }
+        if materialized_pending_oid.is_none() {
+            let object_path = path
+                .rsplit_once('/')
+                .map(|(object, _)| object)
+                .unwrap_or("");
+            materialized_pending_oid = self
+                .db_pending
+                .values()
+                .find(|object| {
+                    object.project == current && object.path.as_deref() == Some(object_path)
+                })
+                .map(|object| object.oid.clone());
+        }
         // Project/installation-root scalar metadata is local durable
         // compatibility data. Project lifecycle remains owned by PROJECT.
         if matches!(
             parts.get(1).copied(),
             Some("@root" | "Project" | "Installation")
         ) {
+            if let Some(oid) = &materialized_pending_oid {
+                self.sync_pending_database_field(&current, oid, field, &value);
+            }
             self.db_fields.insert(path, value);
             return ok(tag, vec![], "200 OK.");
         }
@@ -6184,6 +6467,9 @@ impl Server {
                 "InterfaceType" => network.iface_type = value.clone(),
                 "InterfaceAddress" => network.iface_addr = value.clone(),
                 _ => {}
+            }
+            if let Some(oid) = &materialized_pending_oid {
+                self.sync_pending_database_field(&current, oid, field, &value);
             }
             self.db_fields.insert(path, value);
             return ok(tag, vec![], "200 OK.");
@@ -6244,9 +6530,15 @@ impl Server {
                     let destination_path = format!("//{current}/{network_address}/p/{destination}");
                     self.remap_prefix(&object_path, &destination_path);
                 }
+                if let Some(oid) = &materialized_pending_oid {
+                    self.sync_pending_database_field(&current, oid, field, &value);
+                }
                 return ok(tag, vec![], "200 OK.");
             }
             self.mirror_unit_field(&path, &value);
+            if let Some(oid) = &materialized_pending_oid {
+                self.sync_pending_database_field(&current, oid, field, &value);
+            }
             self.db_fields.insert(path, value);
             return ok(tag, vec![], "200 OK.");
         }
@@ -6278,6 +6570,82 @@ impl Server {
                     words[1]
                 ),
             );
+        }
+        if field.eq_ignore_ascii_case("Address") {
+            let Ok(destination) = value.parse::<u8>() else {
+                return err(
+                    tag,
+                    408,
+                    "408 Operation failed: database Address must be a byte",
+                );
+            };
+            let Some(source) = parts
+                .get(parts.len().saturating_sub(2))
+                .and_then(|part| part.parse::<u8>().ok())
+            else {
+                return err(
+                    tag,
+                    408,
+                    "408 Operation failed: object has no numeric Address",
+                );
+            };
+            if destination != source {
+                let parent = parts[..parts.len() - 2].join("/");
+                let destination_object = format!("//{parent}/{destination}");
+                if self.database_address_exists(&destination_object) {
+                    return err(
+                        tag,
+                        408,
+                        "408 Operation failed: database Address is already in use",
+                    );
+                }
+                match parts.len() {
+                    4 => {
+                        self.objects
+                            .remove(&format!("//{}/{}-APPLICATION-{source}", parts[0], parts[1]));
+                        self.objects.insert(format!(
+                            "//{}/{}-APPLICATION-{destination}",
+                            parts[0], parts[1]
+                        ));
+                    }
+                    5 => {
+                        let level_parent = format!("//{}/{}/{}", parts[0], parts[1], parts[2]);
+                        if let Some(netvar) = self.db_levels.values_mut().find(|level| {
+                            level.netvar && level.parent == level_parent && level.address == source
+                        }) {
+                            netvar.address = destination;
+                        } else {
+                            self.objects.remove(&format!(
+                                "//{}/{}/{}-GROUP-{source}",
+                                parts[0], parts[1], parts[2]
+                            ));
+                            self.objects.insert(format!(
+                                "//{}/{}/{}-GROUP-{destination}",
+                                parts[0], parts[1], parts[2]
+                            ));
+                        }
+                    }
+                    6 => {
+                        let level_parent = format!("//{parent}");
+                        if let Some(level) = self
+                            .db_levels
+                            .values_mut()
+                            .find(|level| level.parent == level_parent && level.address == source)
+                        {
+                            level.address = destination;
+                        }
+                    }
+                    _ => {}
+                }
+                self.remap_prefix(&canonical_object, &destination_object);
+            }
+            if let Some(oid) = &materialized_pending_oid {
+                self.sync_pending_database_field(&current, oid, field, &value);
+            }
+            return ok(tag, vec![], "200 OK.");
+        }
+        if let Some(oid) = &materialized_pending_oid {
+            self.sync_pending_database_field(&current, oid, field, &value);
         }
         self.db_fields.insert(path, value);
         ok(tag, vec![], "200 OK.")
@@ -7197,11 +7565,13 @@ impl Server {
         let Some(current) = self.current.as_deref() else {
             return false;
         };
-        self.projects.get(current).is_some_and(|project| {
-            project.networks.values().any(|network| {
-                network.oid == oid || network.units.values().any(|unit| unit.oid == oid)
+        self.pending_object(current, oid).is_some()
+            || self.projects.get(current).is_some_and(|project| {
+                project.networks.values().any(|network| {
+                    network.oid == oid || network.units.values().any(|unit| unit.oid == oid)
+                })
             })
-        }) || self.level_key(oid).is_some()
+            || self.level_key(oid).is_some()
     }
 
     /// Issue a deterministic OID for `Level`/`NetVar` creation and units.
@@ -7209,15 +7579,33 @@ impl Server {
     /// The counter is process-global so parallel connections (each with
     /// their own `Server`) never issue colliding OIDs.
     fn issue_oid(&mut self) -> String {
-        let oid = fresh_oid();
-        self.known_oids.insert(oid.clone());
-        oid
+        loop {
+            let oid = fresh_oid();
+            if self.known_oids.insert(oid.clone()) {
+                return oid;
+            }
+        }
+    }
+}
+
+static NEXT_OID: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(1);
+
+/// Advance the deterministic allocator beyond an identity restored from
+/// durable state. Vendor UUIDs use another shape and do not affect it.
+pub(crate) fn reserve_restored_oid(oid: &str) {
+    let Some(suffix) = oid.strip_prefix("00000000-0000-0000-0000-") else {
+        return;
+    };
+    if let Ok(value) = u64::from_str_radix(suffix, 16) {
+        NEXT_OID.fetch_max(
+            value.saturating_add(1),
+            std::sync::atomic::Ordering::Relaxed,
+        );
     }
 }
 
 /// Process-global OID source shared by units and levels.
 pub(crate) fn fresh_oid() -> String {
-    static NEXT_OID: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(1);
     let n = NEXT_OID.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
     format!("00000000-0000-0000-0000-{n:012x}")
 }

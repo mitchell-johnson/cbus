@@ -1054,20 +1054,25 @@ selectable and a delete is immediate. Do not infer Schneider file-repository
 parity from these commands. Retained disposable-native evidence is in
 `rust/testdata/fixtures/native_cgate_project_copy_delete.json`.
 
-The local legacy database subset also includes selected-project `DBTAGLIST`,
-unsafe scalar `DBSET`, and `DBRENAMENET`/`DBRENAMENETSAFE` for secondary
-projects. These changes commit atomically to `--cgate-state`, survive restart,
-and never send PCI traffic. DBTAGLIST uses project-relative 342 rows and a
-single case-insensitive filter token. DBSET resolves existing modeled paths and
-OIDs, permits an empty scalar, and can move a database unit while leaving the
-physical snapshot alone. cmqttd rejects an occupied unit destination before
-mutation. Both network-rename forms remap stored paths and Bridge references;
-the running hardware project's addresses are immutable, and duplicate or
-non-numeric unsafe destinations return 408 instead of reproducing native tag
-database corruption. `DBADD`, `DBCOPY`, `DBCREATE`, `DBNEW`, `DBUPDATE`, and
-`DBVERIFY` remain explicit 502 because their incomplete typed-object,
-subtree-OID, physical replacement, or live verification semantics are not
-coherently modeled. See
+The legacy database lifecycle is implemented end to end. `DBADD` creates a
+durable typed record with a fresh OID before compulsory fields exist; read the
+null fields through `DBGET !oid/field`, then populate them with `DBSET`.
+`DBCOPY` recursively assigns new OIDs. Within one project it clears Address and
+TagName throughout the copied subtree; across projects it preserves those
+fields and materializes the copied tree. `DBNEW` leaves a blank selected
+Installation/Project and survives restart. These local operations, DBTAGLIST,
+unsafe scalar DBSET and secondary-project DBRENAMENET variants commit atomically
+and send no PCI traffic.
+
+`DBCREATE`, `DBUPDATE` and `DBVERIFY` are physical inventory operations for the
+configured project. They run the normal generation-guarded NET SYNC first.
+DBCREATE replaces the database from the resulting physical cache with fresh
+OIDs and `[default]` names where needed. DBUPDATE accepts a network or unit and
+an optional exact `UnitDelete`; it preserves existing database OIDs/names and
+only removes absent units when requested. DBVERIFY compares presence and
+nonblank type, firmware and serial identity, returning 345 Difference rows and
+a counted 408 when unequal. A failed refresh or state-file commit leaves the
+durable database unchanged. See
 `rust/testdata/fixtures/native_cgate_legacy_database.json`.
 
 `REPOSITORY LIST` returns exactly one native-grammar 123 row for the configured

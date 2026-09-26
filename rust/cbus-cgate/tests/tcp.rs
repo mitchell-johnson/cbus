@@ -421,6 +421,91 @@ fn tcp_documents_and_oid_flow() {
 }
 
 #[test]
+fn tcp_legacy_database_add_and_copy_preserve_native_oid_flow() {
+    let mock = Mock::spawn();
+    let mut session = mock.connect();
+    assert!(session.greeting().starts_with("201 "));
+    assert_eq!(session.command("PROJECT NEW SOURCE").status, 200);
+    assert_eq!(
+        session
+            .command("DBCREATENET 254 Source Cni loopback")
+            .status,
+        200
+    );
+
+    let interface = session.command("DBADD //SOURCE/254 Interface trailing");
+    assert_eq!(interface.status, 301);
+    let interface_oid = interface.lines[0].trim_start_matches("301 OID=");
+    assert_eq!(
+        session
+            .command(&format!("DBGET !{interface_oid}/InterfaceType"))
+            .lines,
+        ["401 Bad object or device ID: Object is null"]
+    );
+    assert_eq!(
+        session
+            .command(&format!("DBSET !{interface_oid}/InterfaceType Cni"))
+            .status,
+        200
+    );
+
+    let add = session.command("DBADD //SOURCE/254 Unit ignored trailing");
+    assert_eq!(add.status, 301);
+    let oid = add.lines[0].trim_start_matches("301 OID=").to_string();
+    assert_eq!(
+        session.command(&format!("DBGET !{oid}/Address")).lines,
+        ["401 Bad object or device ID: Object is null"]
+    );
+    for command in [
+        format!("DBSET !{oid}/UnitType KEYM4"),
+        format!("DBSET !{oid}/Address 20"),
+        format!("DBSET !{oid}/TagName Original"),
+    ] {
+        assert_eq!(session.command(&command).status, 200, "{command}");
+    }
+
+    let same = session.command("DBCOPY //SOURCE/254/p/20 //SOURCE/254 ignored");
+    assert_eq!(same.status, 301);
+    let same_oid = same.lines[0].trim_start_matches("301 OID=").to_string();
+    assert_ne!(same_oid, oid);
+    assert_eq!(
+        session
+            .command(&format!("DBGET !{same_oid}/Address"))
+            .status,
+        401
+    );
+    assert_eq!(
+        session
+            .command(&format!("DBGET !{same_oid}/UnitType"))
+            .lines,
+        [format!("342 !{same_oid}/UnitType=KEYM4")]
+    );
+
+    assert_eq!(session.command("PROJECT NEW DEST").status, 200);
+    assert_eq!(
+        session
+            .command("DBCREATENET 1 Destination Cni loopback")
+            .status,
+        200
+    );
+    assert_eq!(session.command("PROJECT USE SOURCE").status, 200);
+    let cross = session.command("DBCOPY //SOURCE/254/p/20 //DEST/1 ignored");
+    assert_eq!(cross.status, 301);
+    let cross_oid = cross.lines[0].trim_start_matches("301 OID=").to_string();
+    assert_ne!(cross_oid, oid);
+    assert_eq!(session.command("PROJECT USE DEST").status, 200);
+    let tags = session.command("DBTAGLIST Original");
+    assert_eq!(tags.status, 342);
+    assert_eq!(tags.lines, ["342 1/p/20/TagName=Original"]);
+    assert_eq!(
+        session
+            .command(&format!("DBGET !{cross_oid}/UnitType"))
+            .lines,
+        [format!("342 !{cross_oid}/UnitType=KEYM4")]
+    );
+}
+
+#[test]
 fn tcp_truncated_document_delivers_error_before_close() {
     let mock = Mock::spawn();
     let mut s = mock.connect();

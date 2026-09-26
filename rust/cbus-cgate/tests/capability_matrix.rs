@@ -158,19 +158,19 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // IDENTIFY ON/OFF/RAMP/TERMINATERAMP, SHORTMESSAGE REFRESH/SEND, and
     // EREPORT MESSAGE. Root help rows retain their independently evidenced
     // local classification boundary.
-    // Legacy DBRENAMENET/DBRENAMENETSAFE, DBSET and DBTAGLIST move four
-    // rows to local_database with selected-project persistence and explicit
-    // repairs for native duplicate/non-numeric address corruption. DBADD,
-    // DBCOPY, DBCREATE, DBNEW, DBUPDATE and DBVERIFY remain fail-closed.
+    // All retained legacy database paths are now routed. DBADD/DBCOPY retain
+    // native incomplete/fresh-OID subtree semantics, DBNEW is an atomic local
+    // clear, and DBCREATE/DBUPDATE/DBVERIFY consume generation-guarded live
+    // inventory rather than substituting a synthetic success.
     // APPLICATIONS GET_CATALOG, CALCULATOR TEST, CGL IMPORT and CGL EXPORT
     // move fail_closed_502 -> local_database with bounded operator catalogue
     // inputs and durable label-only CGL 1.1 semantics.
     // Ten general/object paths move fail_closed_502 -> local_database: both
     // native comment spellings, OID, BROADCAST_EVENT, SHOW, REPORT, all three
     // TREE renderings and durable NEW object creation.
-    assert_eq!(class_count(RoutingClass::Physical), 226);
-    assert_eq!(class_count(RoutingClass::LocalDatabase), 196);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 7);
+    assert_eq!(class_count(RoutingClass::Physical), 229);
+    assert_eq!(class_count(RoutingClass::LocalDatabase), 199);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 1);
     assert_eq!(class_count(RoutingClass::Obsolete400), 2);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here
@@ -311,7 +311,15 @@ fn legacy_database_rows_pin_local_and_fail_closed_boundaries() {
         "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
     );
 
-    for path in ["DBRENAMENET", "DBRENAMENETSAFE", "DBSET", "DBTAGLIST"] {
+    for path in [
+        "DBADD",
+        "DBCOPY",
+        "DBNEW",
+        "DBRENAMENET",
+        "DBRENAMENETSAFE",
+        "DBSET",
+        "DBTAGLIST",
+    ] {
         let row = CAPABILITY_MATRIX
             .iter()
             .find(|row| row.path == path)
@@ -322,14 +330,12 @@ fn legacy_database_rows_pin_local_and_fail_closed_boundaries() {
             "{path}"
         );
     }
-    for path in [
-        "DBADD", "DBCOPY", "DBCREATE", "DBNEW", "DBUPDATE", "DBVERIFY",
-    ] {
+    for path in ["DBCREATE", "DBUPDATE", "DBVERIFY"] {
         let row = CAPABILITY_MATRIX
             .iter()
             .find(|row| row.path == path)
             .unwrap_or_else(|| panic!("missing {path}"));
-        assert_eq!(row.class, RoutingClass::FailClosed502, "{path}");
+        assert_eq!(row.class, RoutingClass::Physical, "{path}");
         assert!(
             row.evidence.contains("native_cgate_legacy_database.json"),
             "{path}"

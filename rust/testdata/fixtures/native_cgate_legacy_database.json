@@ -24,7 +24,10 @@
       "342 253/TagName=LocalB"
     ],
     "case_insensitive_filter": {
-      "commands": ["DBTAGLIST legacy", "DBTAGLIST LEGACY"],
+      "commands": [
+        "DBTAGLIST legacy",
+        "DBTAGLIST LEGACY"
+      ],
       "reply": "342 254/p/20/TagName=Legacy Unit"
     },
     "no_match": "401 Bad object or device ID: No objects found.",
@@ -64,19 +67,70 @@
     "reference_behavior": "manual and command implementation require bridge references to travel with a successful readdress",
     "cmqttd_binding_boundary": "all network readdressing in the configured hardware project is rejected; secondary projects remain local and durable"
   },
-  "retained_fail_closed": {
+  "database_lifecycle": {
     "DBADD": {
-      "native": "creates an incomplete typed object and returns 301 OID; later DBSET by OID assigns Address and TagName",
-      "boundary": "the existing simplified mock auto-addresses and auto-names, so cmqttd does not admit it as native behavior"
+      "syntax": "DBADD parent element; fewer than two operands returns 400; trailing operands are ignored",
+      "native_incomplete_unit": [
+        "301 OID=<fresh>",
+        "DBGET !oid/Address -> 401 Object is null",
+        "DBGET !oid/TagName -> 401 Object is null",
+        "DBSET !oid/Address 20 -> 200",
+        "DBSET !oid/TagName U20 -> 200",
+        "DBTAGLIST -> 342 254/p/20/TagName=U20"
+      ],
+      "native_typed_containers": [
+        "DBADD Installation InstallationDetail -> 301 fresh OID",
+        "DBADD //SOURCE/1 Interface -> 301 fresh OID",
+        "missing scalar fields read as 401 Object is null and remain OID-addressable after DBSET"
+      ],
+      "persistence": "cmqttd stores the incomplete typed record independently of numeric address maps and atomically materializes it after compulsory fields are set"
     },
     "DBCOPY": {
-      "native_same_project": "fresh subtree OIDs, Address and TagName cleared until DBSET",
-      "native_cross_project": "fresh subtree OIDs with Address and TagName preserved",
-      "boundary": "complete typed subtree ownership/remapping is not implemented"
+      "syntax": "DBCOPY source destination; fewer than two operands returns 400; trailing operands are ignored",
+      "native_same_project": [
+        "301 fresh root OID",
+        "Address and TagName read as null until DBSET",
+        "all subtree identities are fresh",
+        "after materializing a copied Application root, its copied Group/Level remain unaddressable because their Address and TagName are also null"
+      ],
+      "native_cross_project": [
+        "301 fresh root OID",
+        "Address and TagName are preserved",
+        "all subtree identities are fresh",
+        "copied Application, Group and Level tags are immediately addressable in the destination project"
+      ],
+      "persistence": "cmqttd recursively retains pending same-project descendants and materialized cross-project descendants across restart"
     },
-    "DBCREATE": "generated PROJECT NEW tag databases returned native 500; documented semantics also require a physical-network snapshot",
-    "DBNEW": "generated PROJECT NEW tag databases returned native 500 (TagDB instance unsupported), so no destructive approximation is admitted",
-    "DBUPDATE": "isolated unopened generated networks returned 401; successful semantics require physical inventory replacement",
-    "DBVERIFY": "generated PROJECT NEW tag databases returned native 500; documented semantics compare the live network with the database"
+    "DBCREATE": {
+      "manual": "replaces the current tag database with a representation of connected C-Bus networks and C-Gate implementation; unspecified compulsory values use [default]",
+      "native_generated_project_defect": "build 2001 emitted an intermediate 408 Project not found followed by final 200 or returned 500 on the generated-project TagDB path",
+      "cmqttd": "generation-guarded NET SYNC precedes an atomic fresh-OID snapshot; no stale or synthetic inventory is accepted"
+    },
+    "DBNEW": {
+      "manual": "replaces the current project tag database with a blank Installation/Project database",
+      "native_generated_project_defect": "build 2001 returned 500 after creating the blank database; DBTAGLIST subsequently returned only the project tag",
+      "cmqttd_repair": "performs the documented clear atomically and retains only a non-durable configured-interface runtime shell"
+    },
+    "DBUPDATE": {
+      "syntax": "DBUPDATE network-or-unit [UnitDelete]; no target is 400; native ignores later words",
+      "manual": "refreshes one network or unit from physical configuration; exact UnitDelete removes database units absent physically",
+      "cmqttd": "refreshes the target through NET SYNC, merges physical identity while retaining database OID/name, and commits atomically"
+    },
+    "DBVERIFY": {
+      "syntax": "DBVERIFY ignores trailing words",
+      "manual": "zero or more 345 Difference rows; 200 when equal; final 408 Verify failed with difference count when unequal",
+      "cmqttd": "refreshes live networks through NET SYNC and compares presence plus nonblank type, firmware and serial identity"
+    },
+    "manual_source": {
+      "document": "C-Gate Manual 3.4",
+      "sections": [
+        "4.5.54",
+        "4.5.56",
+        "4.5.58",
+        "4.5.65",
+        "4.5.73",
+        "4.5.75"
+      ]
+    }
   }
 }

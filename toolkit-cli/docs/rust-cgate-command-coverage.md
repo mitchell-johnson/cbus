@@ -138,7 +138,7 @@ parent roots are pinned in the separate supplement. These local help endpoints
 do not change any child command's capability class. Together with the NET
 lifecycle, deploy-queue, remaining-application, legacy-database, catalogue,
 calculator, bounded CGL, and general-object tranches, the matrix now contains
-**226 physical, 196 local/session, 7 fail-closed, and 2 obsolete paths**. The
+**229 physical, 199 local/session, 1 fail-closed, and 2 obsolete paths**. The
 separate non-inventoried supplement contains 11 rows. Help evidence is in
 `rust/testdata/fixtures/native_cgate_family_help.json`.
 
