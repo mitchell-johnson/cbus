@@ -983,7 +983,7 @@ other bus control stay open; failures answer `420 LOGIN required` / `420 LOGIN f
 `LOGIN` with no token is 400 and also clears the flag), never `401`.
 Not native `access.txt` parity; loopback-only first slice;
 `named_scenes: true` denotes hardware-backed named-scene playback,
-and `do_methods: ["factorydefault", "lighting", "sync"]` denotes the physical object-method aliases,
+and `do_methods: ["factorydefault", "lighting", "sync", "unravel"]` denotes the physical object-method aliases,
 `network_clocks: true` denotes IDENTIFY16 inspection plus schema-backed target
 count and gateway recovery,
 `network_syncnew: true` denotes the five-pass direct backend,
