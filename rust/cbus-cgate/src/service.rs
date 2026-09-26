@@ -2105,6 +2105,11 @@ impl Service {
                 "deploy-queue.ended"
             ]);
             capabilities["deploy_queue_debug_events"] = serde_json::Value::Bool(false);
+            capabilities["broadcast_event"] = serde_json::Value::Bool(true);
+            capabilities["broadcast_event_code"] = serde_json::Value::from(703);
+            capabilities["broadcast_event_level"] = serde_json::Value::from(3);
+            capabilities["broadcast_event_fanout"] = serde_json::Value::Bool(true);
+            capabilities["broadcast_event_persistence"] = serde_json::Value::Bool(false);
             capabilities["document_framing"] = serde_json::Value::Bool(true);
             capabilities["database_documents"] = serde_json::Value::Bool(false);
             capabilities["legacy_database_local_commands"] =
@@ -2908,7 +2913,9 @@ impl Service {
         }
         let before = model.clone();
         let before_db = Database::from_server(&model);
+        model.set_command_session(client.command_session);
         let response = model.handle(line);
+        model.set_command_session(None);
         let retained_application_creation = response.status == status::ABSENT
             && verb == "NEW"
             && matches!(sub, "GROUP" | "PHANTOM")
@@ -9607,7 +9614,7 @@ impl Service {
                         Ok(event) => {
                             let deploy_channel = deploy_queue_event_channel(&event);
                             let deliver = deploy_channel.map_or_else(
-                                || mode.delivers(event_category(&event)),
+                                || mode.delivers_line(&event),
                                 |channel| client.event_channels.contains(channel),
                             );
                             if deliver {
@@ -10904,6 +10911,7 @@ fn connection_access_level(model: &Server, client: &ClientState) -> CgateAccessL
 
 fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
     match verb {
+        "BROADCAST_EVENT" => true,
         "ACCESS" => matches!(sub, "ADD" | "DELETE" | "LOAD" | "SAVE"),
         "CONFIG" => matches!(sub, "SET" | "LOAD" | "SAVE" | "OBSET" | "OBRESET"),
         "FILE" => matches!(sub, "UPLOAD" | "DELETE" | "MKDIR"),
@@ -10974,7 +10982,7 @@ fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
         "LOCK" | "UNLOCK" => true,
         "CGL" => sub == "IMPORT",
         "REPOSITORY" => sub == "USE",
-        "SET" | "NEW" | "BROADCAST_EVENT" => true,
+        "SET" | "NEW" => true,
         "NET" => matches!(
             sub,
             "CREATE"

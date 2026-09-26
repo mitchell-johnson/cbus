@@ -220,6 +220,48 @@ fn general_object_and_tree_rows_retain_native_evidence() {
 }
 
 #[test]
+fn broadcast_event_row_matches_native_build_2001_evidence() {
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_broadcast_event.json"
+    ))
+    .expect("native BROADCAST_EVENT evidence must remain valid JSON");
+    assert_eq!(fixture["oracle"]["version"], "3.4.0");
+    assert_eq!(fixture["oracle"]["build"], 2001);
+    assert_eq!(fixture["oracle"]["listener_ownership_verified"], true);
+    assert_eq!(
+        fixture["oracle"]["jar_sha256"],
+        "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+    );
+    let rows = fixture["rows"].as_array().unwrap();
+    assert_eq!(rows.len(), 5);
+    assert!(rows[1..]
+        .iter()
+        .all(|row| row["code"] == 200 && row["final"] == "200 OK."));
+    assert!(rows[2]["events_during_command"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .any(|line| line
+            .as_str()
+            .is_some_and(|line| line.ends_with("703 cmd3 - broadcast_event SP "))));
+    assert!(rows[4]["events_during_command"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .any(|line| line
+            .as_str()
+            .is_some_and(|line| line.ends_with("703 cmd3 - broadcast_event XX class payload"))));
+
+    let row = CAPABILITY_MATRIX
+        .iter()
+        .find(|entry| entry.path == "BROADCAST_EVENT")
+        .expect("BROADCAST_EVENT row exists");
+    assert_eq!(row.class, RoutingClass::LocalDatabase);
+    assert!(row.evidence.contains("native_cgate_broadcast_event.json"));
+    assert!(row.evidence.contains("703 cmdN"));
+}
+
+#[test]
 fn remaining_application_rows_retain_native_wire_and_repair_evidence() {
     let fixture: serde_json::Value = serde_json::from_str(include_str!(
         "../../testdata/fixtures/native_cgate_remaining_applications.json"

@@ -1110,6 +1110,19 @@ connection. `QUIT` and `EXIT` flush `204 Closing connection.` before closing the
 stream. These operations are volatile and perform no PCI or persistent database
 I/O.
 
+`BROADCAST_EVENT event-class [event-text]` is also local command traffic. In
+retained help, `SP` denotes the required whitespace before `event-class`; it is
+not a separate argument. C-Gate 3.4 build 2001 accepts arbitrary event-class
+tokens, including the minimal `BROADCAST_EVENT SP` invocation where `SP` is the
+event class and the event text is empty. Quoted event text follows native mK
+dequoting for escaped spaces, quotes, and backslashes.
+cmqttd returns exact `200 OK.` and fans out
+`#e# YYYYMMDD-HHMMSS.mmm 703 cmdN - broadcast_event ...`; the minimal form has
+a trailing space. Code 703 is reporting level 3, so use `EVENT e3s0c0` or a
+higher event level. It sends no PCI packet, publishes no MQTT state, persists
+nothing, and requires LOGIN when the optional command gate is armed. See
+`rust/testdata/fixtures/native_cgate_broadcast_event.json`.
+
 ### PP administration and PROGRAMMER queues
 
 cmqttd implements the maintained local PP administrative surface against the
@@ -1346,6 +1359,12 @@ vendor specs.
 ## Sessions and events
 
 The server model is shared across TCP connections. Each connection keeps its own selected project and event mode. `EVENT ON`, `EVENT OFF`, or a detailed `e[+0-9]s[01]c[01]` mode controls delivery. Subscribed clients receive cross-client events; the originating client receives eligible command events in order before its reply.
+
+`BROADCAST_EVENT` uses the native timestamped `703 cmdN - broadcast_event`
+envelope in both `cgate-mock` and cmqttd. It is a level-three event: `e2...`
+filters it, while `e3...`, higher numeric modes and `e+...` deliver it. The
+first argument is preserved and need not literally be `SP`; an empty command
+is 400 and any accepted form is one volatile fanout event plus `200 OK.`.
 
 ## Resource bounds
 

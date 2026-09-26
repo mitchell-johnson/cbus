@@ -22,6 +22,20 @@ fn catalogue_dir() -> PathBuf {
     directory
 }
 
+fn assert_broadcast_event(line: &str, session: u64, content: &str) {
+    let body = line
+        .strip_prefix("#e# ")
+        .unwrap_or_else(|| panic!("missing event marker: {line:?}"));
+    let (timestamp, payload) = body
+        .split_once(" 703 ")
+        .unwrap_or_else(|| panic!("missing native 703 envelope: {line:?}"));
+    chrono::NaiveDateTime::parse_from_str(timestamp, "%Y%m%d-%H%M%S%.3f")
+        .unwrap_or_else(|error| panic!("invalid native timestamp {timestamp:?}: {error}"));
+    assert_eq!(payload, format!("cmd{session} - broadcast_event {content}"));
+    assert_eq!(cbus_cgate::event_reporting_level(line), Some(3));
+    assert!(is_event_line(line));
+}
+
 #[test]
 fn greeting_and_noop() {
     assert!(Server::greeting().starts_with("201 "));
@@ -69,6 +83,63 @@ fn event_lines_never_complete_commands() {
         assert!(is_event_line(line), "{line}");
     }
     assert!(!is_event_line("[1] 200 OK"));
+}
+
+#[test]
+fn broadcast_event_matches_native_reply_help_payload_and_level() {
+    let mut server = Server::new(AccessLevel::Program);
+    server.set_command_session(Some(3));
+
+    let help = server.handle("[help] HELP BROADCAST_EVENT");
+    assert_eq!(help.status, 101);
+    assert_eq!(
+        format_response(&help).lines().collect::<Vec<_>>(),
+        [
+            "[help] 101-Help: Syntax:  BROADCAST_EVENT SP event-class [event-text]",
+            "[help] 101-Help: Send a broadcast event to the event and status change ports.",
+            "[help] 101-Help:  event-class is the class of this event.",
+            "[help] 101 Help:  event-text (optional) is the text that will be sent as an event.",
+        ]
+    );
+
+    let missing = server.handle("[missing] BROADCAST_EVENT");
+    assert_eq!(missing.status, 400);
+    assert_eq!(missing.final_text, "400 Syntax Error.");
+    assert!(server.drain_events().is_empty());
+
+    for (tag, command, content) in [
+        ("minimal", "BROADCAST_EVENT SP", "SP "),
+        ("class", "BROADCAST_EVENT SP class", "SP class"),
+        (
+            "payload",
+            "BROADCAST_EVENT SP class payload text",
+            "SP class payload text",
+        ),
+        (
+            "arbitrary",
+            "BROADCAST_EVENT XX class payload",
+            "XX class payload",
+        ),
+        (
+            "dequoted",
+            r#"BROADCAST_EVENT SP "quoted\ payload \"and\\slash""#,
+            r#"SP quoted payload "and\slash"#,
+        ),
+    ] {
+        let response = server.handle(&format!("[{tag}] {command}"));
+        assert_eq!(response.status, 200, "{command}");
+        assert!(response.lines.is_empty(), "{command}");
+        assert_eq!(response.final_text, "200 OK.", "{command}");
+        let events = server.drain_events();
+        assert_eq!(events.len(), 1, "{command}");
+        assert_broadcast_event(&events[0], 3, content);
+    }
+
+    let level_three = cbus_cgate::EventMode::parse("e3s0c0").unwrap();
+    let level_two = cbus_cgate::EventMode::parse("e2s0c0").unwrap();
+    let sample = "#e# 20260926-211833.803 703 cmd3 - broadcast_event SP class";
+    assert!(level_three.delivers_line(sample));
+    assert!(!level_two.delivers_line(sample));
 }
 
 #[test]
@@ -254,12 +325,19 @@ fn native_general_object_and_tree_commands_share_one_honest_model() {
         "400 Syntax Error."
     );
 
+    // Direct model callers normally fall back to cmd0. Pin a non-zero source
+    // here so this general-object regression also proves that the transport's
+    // command-session identity is carried into the native event envelope.
+    s.set_command_session(Some(17));
     let broadcast = s.handle("[15] BROADCAST_EVENT SP class payload text");
     assert_eq!(broadcast.final_text, "200 OK.");
-    assert!(s
+    let event = s
         .drain_events()
         .iter()
-        .any(|event| event == "#e# SP class payload text"));
+        .find(|event| event.contains("broadcast_event SP class payload text"))
+        .expect("BROADCAST_EVENT must enqueue the native event envelope")
+        .clone();
+    assert_broadcast_event(&event, 17, "SP class payload text");
 }
 
 #[test]

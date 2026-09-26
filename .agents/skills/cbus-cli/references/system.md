@@ -34,6 +34,12 @@ exceed the evidenced destructive algorithm.
 
 `cbus-tools` calls the same protocol and project readers for one-shot work. `cbus-simulator` supplies a development PCI/CNI endpoint. `cbus-cgate` is an independent in-memory C-Gate protocol model exposed over TCP by `cgate-mock`.
 
+Both C-Gate TCP frontends implement `BROADCAST_EVENT` as command-service-only
+fanout. The command emits one native timestamped, level-three `703 cmdN -
+broadcast_event` line to eligible EVENT subscribers. It does not enter the PCI,
+MQTT gateway, or durable database; cmqttd advertises this boundary through
+`CMQTT CAPABILITIES`.
+
 The embedded C-Gate service uses the shared PCI generation and client pointer
 as the ownership token for guarded volatile results. Those physical paths hold
 one generation commit guard across their cache mutation, cache invalidation, or

@@ -248,6 +248,22 @@ impl EventMode {
             EventCategory::Config => self.config,
         }
     }
+
+    /// True when a complete event line reaches a connection holding this
+    /// mode. Native timestamped `7xx` lines encode their reporting level in
+    /// the final digit (`703` is level 3); unlevelled model events retain the
+    /// historical category-only behavior.
+    pub fn delivers_line(&self, line: &str) -> bool {
+        match (event_category(line), self.events) {
+            (EventCategory::Event, EventLevel::Capped(0)) => false,
+            (EventCategory::Event, EventLevel::Capped(maximum)) => {
+                event_reporting_level(line).is_none_or(|level| level <= maximum)
+            }
+            (EventCategory::Event, EventLevel::Plus) => true,
+            (EventCategory::Status, _) => self.status,
+            (EventCategory::Config, _) => self.config,
+        }
+    }
 }
 
 impl std::fmt::Display for EventMode {
@@ -279,6 +295,31 @@ pub fn event_category(line: &str) -> EventCategory {
     } else {
         EventCategory::Event
     }
+}
+
+/// Reporting level encoded by a native timestamped event envelope.
+///
+/// C-Gate's event wire form is `#e# YYYYMMDD-HHMMSS.mmm 7xx ...`; the final
+/// status-code digit is the event level used by `EVENT eNs..`. Other event
+/// forms in the compatibility model are deliberately unlevelled.
+pub fn event_reporting_level(line: &str) -> Option<u8> {
+    let body = line.strip_prefix("#e# ").unwrap_or(line);
+    let mut fields = body.split_whitespace();
+    let timestamp = fields.next()?;
+    let code = fields.next()?;
+    let bytes = timestamp.as_bytes();
+    let valid_timestamp = (bytes.len() == 15 || bytes.len() == 19)
+        && bytes.get(8) == Some(&b'-')
+        && bytes[..8].iter().all(u8::is_ascii_digit)
+        && bytes[9..15].iter().all(u8::is_ascii_digit)
+        && (bytes.len() == 15
+            || (bytes.get(15) == Some(&b'.') && bytes[16..19].iter().all(u8::is_ascii_digit)));
+    let code = code.as_bytes();
+    (valid_timestamp
+        && code.len() == 3
+        && code[0] == b'7'
+        && code[1..].iter().all(u8::is_ascii_digit))
+    .then_some(code[2] - b'0')
 }
 
 /// True for accepted C-Gate event subscription modes.
@@ -984,6 +1025,9 @@ pub struct Server {
     /// existed. Native C-Gate exposes these object trees as `error`; freshly
     /// created, never reselected local objects remain `new` until activation.
     activated_networks: HashSet<(String, u8)>,
+    /// Command-session number used only in native timestamped event
+    /// envelopes. TCP frontends set and clear it around each dispatch.
+    command_session: Option<u64>,
     events: VecDeque<String>,
     events_lost: bool,
     max_events: usize,
@@ -1065,6 +1109,7 @@ impl Server {
             projects: HashMap::new(),
             current: None,
             activated_networks: HashSet::new(),
+            command_session: None,
             events: VecDeque::new(),
             events_lost: false,
             max_events: DEFAULT_MAX_EVENTS,
@@ -1187,6 +1232,19 @@ impl Server {
     /// Restore the session-selected project (hub plumbing).
     pub fn set_current_project(&mut self, project: Option<String>) {
         self.current = project;
+    }
+
+    /// Set the native command-session number for the next synchronous
+    /// dispatch. Transport frontends clear it after draining command events;
+    /// direct model callers use the bounded `cmd0` fallback.
+    pub fn set_command_session(&mut self, session: Option<u64>) {
+        self.command_session = session;
+    }
+
+    fn broadcast_event_line(&self, source: &str, text: &str) -> String {
+        let session = self.command_session.unwrap_or(0);
+        let timestamp = chrono::Local::now().format("%Y%m%d-%H%M%S%.3f");
+        format!("#e# {timestamp} 703 cmd{session} - broadcast_event {source} {text}")
     }
 
     /// Service-ready greeting.

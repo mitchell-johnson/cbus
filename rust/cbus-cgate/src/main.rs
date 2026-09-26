@@ -13,8 +13,8 @@
 //! flows work. Both paths filter by the connection's event mode
 //! (`EVENT ON|OFF|e[+0-9]s[01]c[01]`, manual 4.5.83; `ON` is `e+s0c0`,
 //! `OFF` is `e0s0c0`, a bare `EVENT` reports `306 <mode>`); every event
-//! this model emits is an unlevelled `#e#` line, so any `e` but `e0`
-//! delivers them.
+//! unlevelled model events pass any `e` but `e0`; native timestamped events
+//! such as `BROADCAST_EVENT` also honor their encoded reporting level.
 //!
 //! Test-double limits, stated plainly: fanout channels are unbounded, so a
 //! subscribed connection that stops reading while a writer stays chatty
@@ -28,7 +28,7 @@
 //! cgate-mock --bind 127.0.0.1:0   # ephemeral port, prints the address
 //! ```
 
-use cbus_cgate::{event_category, format_response, EventMode, Response, Server};
+use cbus_cgate::{format_response, EventMode, Response, Server};
 use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
@@ -86,7 +86,7 @@ impl Hub {
     fn emit(&mut self, origin: u64, resp: &Response, events: &[String]) {
         if let Some(sub) = self.subs.get(&origin) {
             for event in events {
-                if sub.mode.delivers(event_category(event)) {
+                if sub.mode.delivers_line(event) {
                     let _ = sub.tx.send(event.clone());
                 }
             }
@@ -97,7 +97,7 @@ impl Hub {
         for (id, sub) in self.subs.iter() {
             if *id != origin && sub.subscribed {
                 for event in events {
-                    if sub.mode.delivers(event_category(event)) {
+                    if sub.mode.delivers_line(event) {
                         let _ = sub.tx.send(event.clone());
                     }
                 }
@@ -112,7 +112,10 @@ impl Hub {
     fn dispatch(&mut self, origin: u64, op: impl FnOnce(&mut Server) -> Response) -> Response {
         let current = self.subs.get(&origin).and_then(|s| s.current.clone());
         self.server.set_current_project(current);
+        self.server
+            .set_command_session(Some(origin.saturating_mul(2).saturating_add(1)));
         let resp = op(&mut self.server);
+        self.server.set_command_session(None);
         let events: Vec<String> = self.server.drain_events();
         let back = self.server.current_project();
         if let Some(sub) = self.subs.get_mut(&origin) {

@@ -110,6 +110,18 @@ fn pci() -> (Arc<PciClient>, tokio::io::DuplexStream) {
     (PciClient::new(Box::new(rd), Box::new(wr), tx), remote)
 }
 
+fn assert_native_broadcast_event(line: &str, session: u64, content: &str) {
+    let body = line
+        .strip_prefix("#e# ")
+        .unwrap_or_else(|| panic!("missing event marker: {line:?}"));
+    let (timestamp, payload) = body
+        .split_once(" 703 ")
+        .unwrap_or_else(|| panic!("missing native 703 envelope: {line:?}"));
+    chrono::NaiveDateTime::parse_from_str(timestamp, "%Y%m%d-%H%M%S%.3f").unwrap();
+    assert_eq!(payload, format!("cmd{session} - broadcast_event {content}"));
+    assert_eq!(crate::event_reporting_level(line), Some(3));
+}
+
 #[tokio::test]
 async fn retained_family_help_roots_match_native_fixture_for_all_three_forms() {
     let evidence: serde_json::Value = serde_json::from_str(include_str!(
@@ -3246,6 +3258,117 @@ async fn fragmented_command_survives_event_delivery_and_disconnect_releases_lock
 }
 
 #[tokio::test]
+async fn broadcast_event_is_local_authenticated_and_has_no_pci_side_effect() {
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    service
+        .set_auth_token_hash(crate::auth::sha256(b"broadcast-event-test-token"))
+        .unwrap();
+    let mut events = service.events.subscribe();
+    let mut client = ClientState {
+        command_session: Some(3),
+        ..ClientState::default()
+    };
+
+    let blocked = service
+        .handle(&mut client, "[blocked] BROADCAST_EVENT SP class payload")
+        .await;
+    assert_eq!(blocked.status, 420);
+    assert_eq!(blocked.final_text, "420 LOGIN required");
+    assert!(events.try_recv().is_err());
+
+    assert_eq!(
+        service
+            .handle(&mut client, "[login] LOGIN broadcast-event-test-token")
+            .await
+            .status,
+        200
+    );
+    let response = service
+        .handle(&mut client, "[send] BROADCAST_EVENT XX class payload")
+        .await;
+    assert_eq!(response.status, 200);
+    assert!(response.lines.is_empty());
+    assert_eq!(response.final_text, "200 OK.");
+    let event = tokio::time::timeout(Duration::from_secs(2), events.recv())
+        .await
+        .expect("broadcast event timed out")
+        .unwrap();
+    assert_native_broadcast_event(&event, 3, "XX class payload");
+    assert!(
+        tokio::time::timeout(Duration::from_millis(50), remote.read_u8())
+            .await
+            .is_err(),
+        "BROADCAST_EVENT must not write to the PCI"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn broadcast_event_fans_out_between_embedded_command_connections() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let address = listener.local_addr().unwrap();
+    let server = tokio::spawn(service.clone().serve(listener));
+    // Producer is the first accepted connection and therefore cmd3.
+    let (mut producer_reader, mut producer_writer) = connect_command_session(address).await;
+    let (mut event_reader, mut event_writer) = connect_command_session(address).await;
+
+    assert_eq!(
+        command_lines(&mut event_reader, &mut event_writer, "on", "EVENT e3s0c0").await,
+        ["[on] 200 OK."]
+    );
+    assert_eq!(
+        command_lines(
+            &mut producer_reader,
+            &mut producer_writer,
+            "send",
+            "BROADCAST_EVENT SP class payload text",
+        )
+        .await,
+        ["[send] 200 OK."]
+    );
+    let mut event = String::new();
+    tokio::time::timeout(Duration::from_secs(2), event_reader.read_line(&mut event))
+        .await
+        .expect("subscribed client did not receive BROADCAST_EVENT")
+        .unwrap();
+    let event = event.trim_end_matches(['\r', '\n']);
+    assert_native_broadcast_event(event, 3, "SP class payload text");
+
+    assert_eq!(
+        command_lines(&mut event_reader, &mut event_writer, "off", "EVENT OFF").await,
+        ["[off] 200 OK."]
+    );
+    assert_eq!(
+        command_lines(
+            &mut producer_reader,
+            &mut producer_writer,
+            "after-off",
+            "BROADCAST_EVENT SP class hidden",
+        )
+        .await,
+        ["[after-off] 200 OK."]
+    );
+    let mut unexpected = String::new();
+    assert!(
+        tokio::time::timeout(
+            Duration::from_millis(100),
+            event_reader.read_line(&mut unexpected)
+        )
+        .await
+        .is_err(),
+        "EVENT OFF client received {unexpected:?}"
+    );
+
+    server.abort();
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn native_session_event_alias_and_quit_are_connection_local() {
     let path = state_path();
     let (pci, _remote) = pci();
@@ -3399,6 +3522,11 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(response.lines.len(), 1);
     let document: serde_json::Value = serde_json::from_str(&response.lines[0]).unwrap();
     assert_eq!(document["full_cgate_compatibility"], false);
+    assert_eq!(document["broadcast_event"], true);
+    assert_eq!(document["broadcast_event_code"], 703);
+    assert_eq!(document["broadcast_event_level"], 3);
+    assert_eq!(document["broadcast_event_fanout"], true);
+    assert_eq!(document["broadcast_event_persistence"], false);
     assert_eq!(document["dynamic_labels"], true);
     assert_eq!(document["label_clear"], true);
     assert_eq!(document["label_kfi"], true);

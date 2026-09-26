@@ -140,6 +140,8 @@ Enable `--cgate-bind 127.0.0.1:20023` together with `--project-file house.cbz`. 
 ```sh
 cbus-toolkit cgate --host 127.0.0.1 project list
 cbus-toolkit cgate --host 127.0.0.1 exec 'CMQTT CAPABILITIES'
+cbus-toolkit cgate --host 127.0.0.1 exec 'HELP BROADCAST_EVENT'
+cbus-toolkit cgate --host 127.0.0.1 exec 'BROADCAST_EVENT SP maintenance started'
 cbus-toolkit cgate --host 127.0.0.1 exec 'CONFIG GET *'
 cbus-toolkit cgate --host 127.0.0.1 exec 'CONFIG INFO sync-time'
 cbus-toolkit cgate --host 127.0.0.1 exec 'FILE'
@@ -203,6 +205,11 @@ LOGIN or a Clipsal/Max ACCESS-user LOGIN when the gate is armed.
 Query `CMQTT CAPABILITIES` for these explicit boundaries and see the
 [C-Gate replacement guide](docs/cmqttd-cgate.md) for wire examples,
 persistence, native evidence, and the remaining compatibility gaps.
+
+`BROADCAST_EVENT` is local command-session traffic: it sends one native
+timestamped level-three `703 cmdN - broadcast_event` line to clients subscribed
+with `EVENT e3s0c0` (or a higher event level), without writing C-Bus, MQTT, or
+the persistent database. The optional LOGIN gate protects event injection.
 
 It also implements the complete maintained C-Gate 3.4 `PORT` command family.
 `PORT LIST` and `PORT IFLIST` enumerate the cmqttd host, `CNISCAN` uses the

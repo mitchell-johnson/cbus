@@ -125,13 +125,14 @@ parent roots are pinned in the separate supplement. These local help endpoints
 do not change any child command's capability class. Together with the NET
 lifecycle, deploy-queue, remaining-application, legacy-database, catalogue,
 calculator, bounded CGL, and general-object tranches, the matrix now contains
-**215 physical, 177 local/session, 37 fail-closed, and 2 obsolete paths**. The separate
-non-inventoried supplement contains 11 rows. Help evidence is in
+**215 physical, 177 local/session, 37 fail-closed, and 2 obsolete paths**. The
+separate non-inventoried supplement contains 11 rows. Help evidence is in
 `rust/testdata/fixtures/native_cgate_family_help.json`.
 
 The embedded endpoint also implements the native general object and discovery
 surface used by command files and inventory clients: silent untagged `#`/`//`
-comments, 301 `OID`, local `BROADCAST_EVENT`, the `SHOW` alias, native-shaped
+comments, 301 `OID`, native timestamped `BROADCAST_EVENT` fanout, the `SHOW`
+alias, native-shaped
 `REPORT`/`TREE`/`TREEXML`/`TREEXMLDETAIL`, and durable idempotent `NEW`
 UNIT/GROUP/PHANTOM creation. Tree output combines the already observed
 physical cache with durable database objects and never treats a TREE flag as
@@ -159,6 +160,14 @@ status, ordering, fields, and framing exactly. Process-specific host/IP/JVM
 metrics and scheduled timestamps are shape-validated and then normalized only
 where each fixture declares them volatile. `system_cgate_general_tree.rs`
 verifies the real daemon boundary and no command-induced PCI traffic.
+
+`BROADCAST_EVENT` is now a local/session path in both C-Gate frontends. Native
+build 2001 accepts its minimal and payload forms, returns exact `200 OK.`, and
+emits one timestamped level-three `703 cmdN - broadcast_event` line to eligible
+EVENT subscribers without PCI, MQTT, or persistent-state effects. The optional
+LOGIN gate requires authentication before cmqttd accepts the command. Exact
+evidence is in
+`rust/testdata/fixtures/native_cgate_broadcast_event.json`.
 
 Current verification is:
 

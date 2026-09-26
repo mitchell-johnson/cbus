@@ -955,6 +955,43 @@ use super::{
     Response, Server,
 };
 
+/// Return the command tail after `count` whitespace-delimited arguments using
+/// C-Gate's `remainingArgsAsDequotedString` rules. Quote delimiters disappear,
+/// and the three native escapes (`\\`, `\"`, and `\ `) decode; unknown
+/// escapes retain their backslash.
+fn remaining_dequoted(body: &str, count: usize) -> String {
+    let bytes = body.as_bytes();
+    let mut offset = 0;
+    for _ in 0..count {
+        while offset < bytes.len() && bytes[offset].is_ascii_whitespace() {
+            offset += 1;
+        }
+        while offset < bytes.len() && !bytes[offset].is_ascii_whitespace() {
+            offset += 1;
+        }
+    }
+    while offset < bytes.len() && bytes[offset].is_ascii_whitespace() {
+        offset += 1;
+    }
+
+    let mut value = String::with_capacity(body.len() - offset);
+    let mut chars = body[offset..].chars();
+    while let Some(character) = chars.next() {
+        match character {
+            '"' => {}
+            '\\' => match chars.clone().next() {
+                Some(next @ ('\\' | '"' | ' ')) => {
+                    chars.next();
+                    value.push(next);
+                }
+                _ => value.push('\\'),
+            },
+            _ => value.push(character),
+        }
+    }
+    value
+}
+
 impl Server {
     /// Handle commands whose implementation is defined by the manual
     /// registry rather than one of the richer database/network handlers.
@@ -1124,7 +1161,7 @@ impl Server {
             if words.len() < 2 {
                 return Some(err(tag, status::BAD_REQUEST, "400 Syntax Error."));
             }
-            self.push_event(format!("#e# {}", words[1..].join(" ")));
+            self.push_event(self.broadcast_event_line(words[1], &remaining_dequoted(body, 2)));
             return Some(ok(tag, vec![], "200 OK."));
         }
 

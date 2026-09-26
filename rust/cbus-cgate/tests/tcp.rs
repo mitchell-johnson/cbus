@@ -119,7 +119,7 @@ impl Session {
         let status = loop {
             let mut line = String::new();
             self.reader.read_line(&mut line).unwrap();
-            let line = line.trim().to_string();
+            let line = line.trim_end_matches(['\r', '\n']).to_string();
             // Event shape, never tag: reuse the library matcher so the
             // timestamped and overflow forms stay covered here too.
             if cbus_cgate::is_event_line(&line) {
@@ -142,6 +142,47 @@ impl Session {
             events,
         }
     }
+
+    fn read_event(&mut self) -> String {
+        let mut line = String::new();
+        self.reader
+            .read_line(&mut line)
+            .expect("event must arrive before the five-second socket timeout");
+        let line = line.trim_end_matches(['\r', '\n']).to_string();
+        assert!(cbus_cgate::is_event_line(&line), "not an event: {line:?}");
+        line
+    }
+
+    fn assert_silent_for(&mut self, timeout: Duration) {
+        self.reader
+            .get_ref()
+            .set_read_timeout(Some(timeout))
+            .unwrap();
+        let mut line = String::new();
+        let error = self
+            .reader
+            .read_line(&mut line)
+            .expect_err("unexpected asynchronous line");
+        assert!(
+            matches!(
+                error.kind(),
+                std::io::ErrorKind::WouldBlock | std::io::ErrorKind::TimedOut
+            ),
+            "unexpected read failure: {error}"
+        );
+        self.reader
+            .get_ref()
+            .set_read_timeout(Some(Duration::from_secs(5)))
+            .unwrap();
+    }
+}
+
+fn assert_timestamped_broadcast(line: &str, session: u64, content: &str) {
+    let body = line.strip_prefix("#e# ").unwrap();
+    let (timestamp, payload) = body.split_once(" 703 ").unwrap();
+    chrono::NaiveDateTime::parse_from_str(timestamp, "%Y%m%d-%H%M%S%.3f").unwrap();
+    assert_eq!(payload, format!("cmd{session} - broadcast_event {content}"));
+    assert_eq!(cbus_cgate::event_reporting_level(line), Some(3));
 }
 
 #[test]
@@ -248,6 +289,48 @@ fn tcp_cross_connection_broadcast() {
     assert_eq!(writer.command("PROJECT NEW WPROJ").status, 200);
     assert_eq!(writer.command("PROJECT CLOSE").status, 200);
     assert_eq!(reader.command("PROJECT SAVE").status, 200);
+}
+
+#[test]
+fn tcp_broadcast_event_uses_native_703_shape_and_subscription_level() {
+    let mock = Mock::spawn();
+    // Connect the producer first so its native-style command session is cmd3.
+    let mut producer = mock.connect();
+    assert!(producer.greeting().starts_with("201 "));
+    let mut subscriber = mock.connect();
+    assert!(subscriber.greeting().starts_with("201 "));
+
+    // Native 703 is a level-three event: e2 does not receive it.
+    assert_eq!(subscriber.command("EVENT e2s0c0").status, 200);
+    let blocked = producer.command("BROADCAST_EVENT SP class below-threshold");
+    assert_eq!(blocked.status, 200);
+    assert_eq!(blocked.lines, ["200 OK."]);
+    assert_eq!(blocked.events.len(), 1);
+    assert_timestamped_broadcast(&blocked.events[0], 3, "SP class below-threshold");
+    let poll = subscriber.command("NOOP");
+    assert!(poll.events.is_empty(), "level-two subscriber received 703");
+
+    assert_eq!(subscriber.command("EVENT e3s0c0").status, 200);
+    let minimal = producer.command("BROADCAST_EVENT SP");
+    assert_eq!(minimal.status, 200);
+    assert_eq!(minimal.lines, ["200 OK."]);
+    assert_timestamped_broadcast(&minimal.events[0], 3, "SP ");
+    let fanned_out = subscriber.read_event();
+    assert_timestamped_broadcast(&fanned_out, 3, "SP ");
+
+    let arbitrary = producer.command("BROADCAST_EVENT XX class payload");
+    assert_eq!(arbitrary.status, 200);
+    let fanned_out = subscriber.read_event();
+    assert_timestamped_broadcast(&fanned_out, 3, "XX class payload");
+
+    assert_eq!(subscriber.command("EVENT OFF").status, 200);
+    assert_eq!(
+        producer
+            .command("BROADCAST_EVENT SP class after-off")
+            .status,
+        200
+    );
+    subscriber.assert_silent_for(Duration::from_millis(100));
 }
 
 #[test]

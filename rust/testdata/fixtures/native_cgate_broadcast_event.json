@@ -1,0 +1,72 @@
+{
+  "oracle": {
+    "version": "3.4.0",
+    "build": 2001,
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "listener_ownership_verified": true
+  },
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+  "rows": [
+    {
+      "command": "EVENT e9s0c0",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK.",
+      "events_during_command": []
+    },
+    {
+      "command": "BROADCAST_EVENT SP",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK.",
+      "events_during_command": [
+        "#e# 20260926-211833.802 766 cmd3 - Response: [1] 200 OK.",
+        "#e# 20260926-211833.802 761 cmd3 - Command: [2] BROADCAST_EVENT SP"
+      ]
+    },
+    {
+      "command": "BROADCAST_EVENT SP class",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK.",
+      "events_during_command": [
+        "#e# 20260926-211833.802 703 cmd3 - broadcast_event SP ",
+        "#e# 20260926-211833.802 766 cmd3 - Response: [2] 200 OK.",
+        "#e# 20260926-211833.803 761 cmd3 - Command: [3] BROADCAST_EVENT SP class",
+        "#e# 20260926-211833.803 703 cmd3 - broadcast_event SP class"
+      ]
+    },
+    {
+      "command": "BROADCAST_EVENT SP class payload text",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK.",
+      "events_during_command": [
+        "#e# 20260926-211833.803 766 cmd3 - Response: [3] 200 OK.",
+        "#e# 20260926-211833.803 761 cmd3 - Command: [4] BROADCAST_EVENT SP class payload text"
+      ]
+    },
+    {
+      "command": "BROADCAST_EVENT XX class payload",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK.",
+      "events_during_command": [
+        "#e# 20260926-211833.803 703 cmd3 - broadcast_event SP class payload text",
+        "#e# 20260926-211833.803 766 cmd3 - Response: [4] 200 OK.",
+        "#e# 20260926-211833.803 761 cmd3 - Command: [5] BROADCAST_EVENT XX class payload",
+        "#e# 20260926-211833.803 703 cmd3 - broadcast_event XX class payload"
+      ]
+    }
+  ]
+}
