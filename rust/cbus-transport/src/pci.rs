@@ -38,7 +38,10 @@ use crate::framing::FrameBuffer;
 mod mmi;
 mod programming;
 
-pub use programming::{DaliCommandResult, DaliExchange};
+pub use programming::{
+    DaliCommandResult, DaliExchange, PatchApplyDisposition, PatchApplyReceipt,
+    PatchProgrammingBlock,
+};
 
 /// Holds both local commissioning lanes across a complete observation.
 /// Ordinary SAL traffic is deliberately outside this scope.

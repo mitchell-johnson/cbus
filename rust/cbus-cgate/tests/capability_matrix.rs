@@ -147,8 +147,9 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // PROGRAMMER queue-metadata paths moved fail_closed_502 -> local_database.
     // PROGRAMMER START and DEPLOY_QUEUE ADD/RETRY now execute the retained
     // TEST/PP/DALI catalogue through the real shared service backends with
-    // explicit retry and no automatic replay. PP WRITE_PATCH remains the one
-    // fail-closed patch boundary because no verified patchset/executor exists.
+    // explicit retry and no automatic replay. PP WRITE_PATCH executes a
+    // strict operator-supplied FILE manifest through the recovered native
+    // disable/write/verify/version/enable pipeline with no automatic replay.
     // DEPLOY_QUEUE DELETE, DELETE_ALL and LIST remain local over the volatile
     // PROGRAMMER task-group queue; ADD and RETRY are physical execution paths.
     // NET lifecycle adds two exact physical paths, nine local catalogue/help
@@ -168,9 +169,9 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // Ten general/object paths move fail_closed_502 -> local_database: both
     // native comment spellings, OID, BROADCAST_EVENT, SHOW, REPORT, all three
     // TREE renderings and durable NEW object creation.
-    assert_eq!(class_count(RoutingClass::Physical), 229);
+    assert_eq!(class_count(RoutingClass::Physical), 230);
     assert_eq!(class_count(RoutingClass::LocalDatabase), 199);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 1);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 0);
     assert_eq!(class_count(RoutingClass::Obsolete400), 2);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here
@@ -412,8 +413,9 @@ fn pp_administration_and_programmer_queue_retain_native_evidence_and_boundaries(
         .iter()
         .find(|entry| entry.path == "PP WRITE_PATCH")
         .expect("PP WRITE_PATCH row");
-    assert_eq!(patch.class, RoutingClass::FailClosed502);
+    assert_eq!(patch.class, RoutingClass::Physical);
     assert!(patch.evidence.contains("patchset.zip"));
+    assert!(patch.evidence.contains("no PCI I/O"));
 }
 
 #[test]
@@ -481,10 +483,10 @@ fn programmer_execution_vectors_pin_receipts_faults_and_replay_policy() {
         .all(|vector| vector["automatic_replay"] == false));
     assert_eq!(vectors[3]["explicit_replay"], true);
     assert_eq!(vectors[4]["bus_commands"], 0);
-    assert!(vectors[4]["expect_receipt"]
-        .as_str()
-        .unwrap()
-        .contains("no bus command was sent"));
+    assert_eq!(vectors[4]["expect_receipt"], "200 OK");
+    assert_eq!(vectors[4]["physical_sequence"].as_array().unwrap().len(), 9);
+    assert_eq!(vectors[4]["automatic_replay"], false);
+    assert_eq!(vectors[4]["vendor_patchset_zip"], false);
 }
 
 #[test]

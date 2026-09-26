@@ -112,6 +112,56 @@ pub struct DaliCommandResult {
     pub exchanges: Vec<DaliExchange>,
 }
 
+/// One already-validated native patch-memory block.
+///
+/// C-Gate's patch parser emits at most twelve contiguous bytes and marks
+/// blocks that need the parameter unlock exchange.  The service validates
+/// address ranges and overlap before constructing this transport value.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct PatchProgrammingBlock {
+    /// First standard CAL parameter written by this block.
+    pub parameter: u8,
+    /// One to twelve patch bytes.
+    pub data: Vec<u8>,
+    /// Run native parameter unlock before the tagged STORE.
+    pub unlock: bool,
+}
+
+/// Verified result of a complete physical patch pipeline.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct PatchApplyReceipt {
+    /// Patch version read before any mutation.
+    pub previous_version: u8,
+    /// Version required and read back after the pipeline.
+    pub target_version: u8,
+    /// Number of patch blocks with exact readback.
+    pub verified_blocks: usize,
+    /// Which verified physical path completed.
+    pub disposition: PatchApplyDisposition,
+}
+
+/// Observable outcome of a verified patch request.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum PatchApplyDisposition {
+    /// The complete disable/write/full-verify/version/enable pipeline ran.
+    AppliedFullPipeline,
+    /// Version and blocks matched, but control parameter 0x70 needed repair.
+    RepairedEnableOnly,
+    /// Version, blocks and control parameter 0x70 matched without a STORE.
+    AlreadyVerifiedReadOnly,
+}
+
+impl PatchApplyDisposition {
+    /// Stable receipt/event spelling.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::AppliedFullPipeline => "applied_full_pipeline",
+            Self::RepairedEnableOnly => "repaired_enable_only",
+            Self::AlreadyVerifiedReadOnly => "already_verified_read_only",
+        }
+    }
+}
+
 /// Correlated acceptance of one selected-serial address broadcast.
 ///
 /// This records the exact addressed receipt only. It never proves movement,
@@ -2690,6 +2740,334 @@ impl PciClient {
         Ok(())
     }
 
+    /// Apply one operator-reviewed PP patch through the pipeline recovered
+    /// from C-Gate 3.4's `mi`/`mh` patch executor.
+    ///
+    /// The programming lane remains held from the initial version read to the
+    /// final version readback. Every STORE is source/tag correlated and then
+    /// recalled exactly. An incomplete phase faults the lane until reconnect,
+    /// so a caller can never replay an uncertain firmware write.
+    pub async fn write_patch_verified(
+        &self,
+        unit: u8,
+        patch_version_parameter: u8,
+        expected_current_versions: &[u8],
+        target_version: u8,
+        blocks: &[PatchProgrammingBlock],
+    ) -> Result<PatchApplyReceipt> {
+        const PATCH_CONTROL_PARAMETER: u8 = 0x70;
+        const PATCH_CONTROL_TAG: u8 = 0x85;
+        const PATCH_VERSION_TAG: u8 = 0x86;
+        const PATCH_BLOCK_TAG: u8 = 0x73;
+        const PATCH_DISABLED: &[u8] = &[0xff, 0xff];
+        const PATCH_ENABLED: &[u8] = &[0x9d, 0x40];
+
+        if patch_version_parameter != 0xf2 {
+            return Err(Error::new(
+                ErrorKind::InvalidInput,
+                "native patch-version parameter must be 0xF2",
+            ));
+        }
+        if expected_current_versions.is_empty() || blocks.is_empty() || blocks.len() > 4096 {
+            return Err(Error::new(
+                ErrorKind::InvalidInput,
+                "patch requires expected versions and 1..4096 blocks",
+            ));
+        }
+        let mut claimed = HashSet::new();
+        let mut total = 0usize;
+        for block in blocks {
+            if block.data.is_empty() || block.data.len() > 12 {
+                return Err(Error::new(
+                    ErrorKind::InvalidInput,
+                    "patch blocks require 1..12 bytes",
+                ));
+            }
+            let end = usize::from(block.parameter) + block.data.len();
+            let native_range = (114..=241).contains(&block.parameter) && end <= 242
+                || (247..=254).contains(&block.parameter) && end <= 255;
+            if !native_range {
+                return Err(Error::new(
+                    ErrorKind::InvalidInput,
+                    "patch block is outside native patch memory ranges",
+                ));
+            }
+            for byte in usize::from(block.parameter)..end {
+                if !claimed.insert(byte as u8) {
+                    return Err(Error::new(ErrorKind::InvalidInput, "patch blocks overlap"));
+                }
+            }
+            total += block.data.len();
+            if total > 136 {
+                return Err(Error::new(
+                    ErrorKind::InvalidInput,
+                    "patch exceeds the 136-byte native range limit",
+                ));
+            }
+        }
+
+        let _lane = self.programming_lane.lock().await;
+        if self.programming_fault.load(Ordering::Acquire) {
+            return Err(Error::other(
+                "programming stream needs reconnect after an incomplete transaction",
+            ));
+        }
+        let mut transaction = Transaction {
+            fault: &self.programming_fault,
+            complete: false,
+        };
+        let previous_version = self
+            .patch_recall_inner(unit, patch_version_parameter, 1)
+            .await?[0];
+
+        if previous_version == target_version {
+            for block in blocks {
+                let actual = self
+                    .patch_recall_inner(unit, block.parameter, block.data.len())
+                    .await?;
+                if actual != block.data {
+                    transaction.complete = true;
+                    return Err(Error::other(format!(
+                        "target patch version is already set but block at 0x{:02X} does not match",
+                        block.parameter
+                    )));
+                }
+            }
+            // A previous attempt can set the target version and then lose the
+            // final enable acknowledgement. Prove 0x70 before declaring the
+            // patch complete, and repair it only when the recalled value is
+            // not enabled.
+            let control = self
+                .patch_recall_inner(unit, PATCH_CONTROL_PARAMETER, PATCH_ENABLED.len())
+                .await?;
+            let repaired_control = control != PATCH_ENABLED;
+            if repaired_control {
+                self.patch_store_inner(
+                    unit,
+                    PATCH_CONTROL_PARAMETER,
+                    PATCH_ENABLED,
+                    true,
+                    PATCH_CONTROL_TAG,
+                )
+                .await
+                .map_err(|error| {
+                    Error::new(
+                        error.kind(),
+                        format!("existing patch re-enable failed: {error}"),
+                    )
+                })?;
+            }
+            let final_version = self
+                .patch_recall_inner(unit, patch_version_parameter, 1)
+                .await?[0];
+            if final_version != target_version {
+                return Err(Error::other(format!(
+                    "final patch version readback was 0x{final_version:02X}, expected 0x{target_version:02X}"
+                )));
+            }
+            transaction.complete = true;
+            return Ok(PatchApplyReceipt {
+                previous_version,
+                target_version,
+                verified_blocks: blocks.len(),
+                disposition: if repaired_control {
+                    PatchApplyDisposition::RepairedEnableOnly
+                } else {
+                    PatchApplyDisposition::AlreadyVerifiedReadOnly
+                },
+            });
+        }
+        if !expected_current_versions.contains(&previous_version) {
+            transaction.complete = true;
+            return Err(Error::other(format!(
+                "current patch version 0x{previous_version:02X} is not admitted by the patch manifest"
+            )));
+        }
+
+        self.patch_store_inner(
+            unit,
+            PATCH_CONTROL_PARAMETER,
+            PATCH_DISABLED,
+            true,
+            PATCH_CONTROL_TAG,
+        )
+        .await
+        .map_err(|error| Error::new(error.kind(), format!("patch disable failed: {error}")))?;
+        self.patch_store_inner(
+            unit,
+            patch_version_parameter,
+            &[u8::MAX],
+            true,
+            PATCH_VERSION_TAG,
+        )
+        .await
+        .map_err(|error| {
+            Error::new(
+                error.kind(),
+                format!("temporary patch-version write failed: {error}"),
+            )
+        })?;
+
+        for (index, block) in blocks.iter().enumerate() {
+            self.patch_store_inner(
+                unit,
+                block.parameter,
+                &block.data,
+                block.unlock || block.parameter == 247,
+                PATCH_BLOCK_TAG,
+            )
+            .await
+            .map_err(|error| {
+                Error::new(
+                    error.kind(),
+                    format!(
+                        "patch block {} at 0x{:02X} failed: {error}",
+                        index + 1,
+                        block.parameter
+                    ),
+                )
+            })?;
+        }
+
+        // Native `mi.a(patch, ..., true)` runs a distinct full verify pass
+        // after the complete write pass. Retain the immediate per-STORE
+        // readback above to prove each acknowledgement, then recall every
+        // block again so a later block cannot silently disturb an earlier
+        // one before the version is finalized.
+        for (index, block) in blocks.iter().enumerate() {
+            let actual = self
+                .patch_recall_inner(unit, block.parameter, block.data.len())
+                .await
+                .map_err(|error| {
+                    Error::new(
+                        error.kind(),
+                        format!(
+                            "full patch verify read {} at 0x{:02X} failed: {error}",
+                            index + 1,
+                            block.parameter
+                        ),
+                    )
+                })?;
+            if actual != block.data {
+                return Err(Error::other(format!(
+                    "full patch verify failed at block {} parameter 0x{:02X}",
+                    index + 1,
+                    block.parameter
+                )));
+            }
+        }
+
+        self.patch_store_inner(
+            unit,
+            patch_version_parameter,
+            &[target_version],
+            true,
+            PATCH_VERSION_TAG,
+        )
+        .await
+        .map_err(|error| {
+            Error::new(
+                error.kind(),
+                format!("target patch-version write failed: {error}"),
+            )
+        })?;
+        self.patch_store_inner(
+            unit,
+            PATCH_CONTROL_PARAMETER,
+            PATCH_ENABLED,
+            true,
+            PATCH_CONTROL_TAG,
+        )
+        .await
+        .map_err(|error| Error::new(error.kind(), format!("patch enable failed: {error}")))?;
+        let final_version = self
+            .patch_recall_inner(unit, patch_version_parameter, 1)
+            .await?[0];
+        if final_version != target_version {
+            return Err(Error::other(format!(
+                "final patch version readback was 0x{final_version:02X}, expected 0x{target_version:02X}"
+            )));
+        }
+        transaction.complete = true;
+        Ok(PatchApplyReceipt {
+            previous_version,
+            target_version,
+            verified_blocks: blocks.len(),
+            disposition: PatchApplyDisposition::AppliedFullPipeline,
+        })
+    }
+
+    async fn patch_store_inner(
+        &self,
+        unit: u8,
+        parameter: u8,
+        data: &[u8],
+        unlock: bool,
+        tag: u8,
+    ) -> Result<()> {
+        let effective_tag = if parameter == 0xf7 {
+            // Native mh.java classifies 0xF7 as custom type 3 and uses the
+            // returned dd unlock challenge as the ct STORE tag.
+            self.programming_unlock(unit, parameter).await?
+        } else {
+            if unlock {
+                // Ordinary protected blocks discard the challenge and retain
+                // their fixed native operation tag.
+                self.programming_unlock(unit, parameter).await?;
+            }
+            tag
+        };
+        let mut tagged = Vec::with_capacity(data.len() + 1);
+        tagged.push(effective_tag);
+        tagged.extend_from_slice(data);
+        self.programming_exchange(
+            unit,
+            Cal::Write {
+                parameter,
+                data: tagged,
+            },
+            parameter,
+            0,
+            Some(effective_tag),
+            ProgrammingRoute::DirectChecksummed,
+        )
+        .await?;
+        let actual = self.patch_recall_inner(unit, parameter, data.len()).await?;
+        if actual != data {
+            return Err(Error::other(format!(
+                "parameter 0x{parameter:02X} readback did not match STORE"
+            )));
+        }
+        Ok(())
+    }
+
+    async fn patch_recall_inner(&self, unit: u8, parameter: u8, count: usize) -> Result<Vec<u8>> {
+        let count_u8 = u8::try_from(count).map_err(|_| {
+            Error::new(
+                ErrorKind::InvalidInput,
+                "patch recall requires 1..255 bytes",
+            )
+        })?;
+        if count_u8 == 0 {
+            return Err(Error::new(
+                ErrorKind::InvalidInput,
+                "patch recall requires 1..255 bytes",
+            ));
+        }
+        self.programming_exchange(
+            unit,
+            Cal::Recall {
+                param: parameter,
+                count: count_u8,
+            },
+            parameter,
+            count,
+            None,
+            ProgrammingRoute::DirectChecksummed,
+        )
+        .await
+    }
+
     /// Store a bounded OEM physical-memory range through the captured 0x41
     /// pointer and tagged 0x42 data path, then reselect and read the entire
     /// range back before reporting success.
@@ -4707,6 +5085,357 @@ mod tests {
                 .unwrap_err()
                 .kind(),
             ErrorKind::InvalidInput
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn patch_pipeline_uses_native_tags_verifies_every_write_and_is_idempotent() {
+        async fn recall(
+            remote: &mut BufReader<tokio::io::DuplexStream>,
+            parameter: u8,
+            data: &[u8],
+        ) {
+            let request = line(remote).await;
+            assert!(
+                request
+                    .starts_with(format!("\\4605001A{parameter:02X}{:02X}", data.len()).as_bytes()),
+                "{request:?}"
+            );
+            let mut cal = vec![0x80 | (data.len() as u8 + 1), parameter];
+            cal.extend_from_slice(data);
+            reply(remote, 5, &cal).await;
+        }
+
+        async fn unlock(remote: &mut BufReader<tokio::io::DuplexStream>, parameter: u8) -> u8 {
+            let request = line(remote).await;
+            assert!(
+                request.starts_with(format!("\\46050011{parameter:02X}").as_bytes()),
+                "{request:?}"
+            );
+            let code = request[request.len() - 2];
+            let challenge = 0x5a;
+            reply(remote, 5, &[0x82, parameter, challenge]).await;
+            remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+            challenge
+        }
+
+        async fn store(
+            remote: &mut BufReader<tokio::io::DuplexStream>,
+            parameter: u8,
+            tag: u8,
+            data: &[u8],
+            locked: bool,
+        ) {
+            let challenge = if locked {
+                Some(unlock(remote, parameter).await)
+            } else {
+                None
+            };
+            let effective_tag = if parameter == 0xf7 {
+                challenge.expect("0xF7 must use custom unlock")
+            } else {
+                tag
+            };
+            let request = line(remote).await;
+            let mut prefix = format!(
+                "\\460500A{:X}{parameter:02X}{effective_tag:02X}",
+                data.len() + 2
+            );
+            prefix.push_str(&hex::encode_upper(data));
+            assert!(request.starts_with(prefix.as_bytes()), "{request:?}");
+            reply(remote, 5, &[0x32, parameter, effective_tag]).await;
+            recall(remote, parameter, data).await;
+        }
+
+        let (pci, mut remote, _) = setup().await;
+        let blocks = vec![
+            PatchProgrammingBlock {
+                parameter: 0x72,
+                data: vec![0xaa, 0xbb],
+                unlock: false,
+            },
+            PatchProgrammingBlock {
+                parameter: 0xf7,
+                data: vec![0xcc],
+                unlock: true,
+            },
+            PatchProgrammingBlock {
+                parameter: 0x80,
+                data: vec![0xdd],
+                unlock: true,
+            },
+        ];
+        let worker = pci.clone();
+        let apply_blocks = blocks.clone();
+        let apply = tokio::spawn(async move {
+            worker
+                .write_patch_verified(5, 0xf2, &[0, 0xff], 1, &apply_blocks)
+                .await
+        });
+
+        // Explicitly admitted 0xFF recovers a prior interrupted run that
+        // reached the native temporary-version phase before reconnect.
+        recall(&mut remote, 0xf2, &[0xff]).await;
+        store(&mut remote, 0x70, 0x85, &[0xff, 0xff], true).await;
+        store(&mut remote, 0xf2, 0x86, &[0xff], true).await;
+        store(&mut remote, 0x72, 0x73, &[0xaa, 0xbb], false).await;
+        store(&mut remote, 0xf7, 0x73, &[0xcc], true).await;
+        // Ordinary protected blocks discard the 0x5A challenge and keep the
+        // fixed 0x73 tag; only 0xF7 substitutes its challenge.
+        store(&mut remote, 0x80, 0x73, &[0xdd], true).await;
+        recall(&mut remote, 0x72, &[0xaa, 0xbb]).await;
+        recall(&mut remote, 0xf7, &[0xcc]).await;
+        recall(&mut remote, 0x80, &[0xdd]).await;
+        store(&mut remote, 0xf2, 0x86, &[1], true).await;
+        store(&mut remote, 0x70, 0x85, &[0x9d, 0x40], true).await;
+        recall(&mut remote, 0xf2, &[1]).await;
+        assert_eq!(
+            apply.await.unwrap().unwrap(),
+            PatchApplyReceipt {
+                previous_version: 0xff,
+                target_version: 1,
+                verified_blocks: 3,
+                disposition: PatchApplyDisposition::AppliedFullPipeline,
+            }
+        );
+
+        // Model a reconnect after an earlier attempt set the target version
+        // and blocks but left 0x70 disabled. The retry repairs only enable.
+        let worker = pci.clone();
+        let repeat_blocks = blocks.clone();
+        let repeat = tokio::spawn(async move {
+            worker
+                .write_patch_verified(5, 0xf2, &[0], 1, &repeat_blocks)
+                .await
+        });
+        recall(&mut remote, 0xf2, &[1]).await;
+        recall(&mut remote, 0x72, &[0xaa, 0xbb]).await;
+        recall(&mut remote, 0xf7, &[0xcc]).await;
+        recall(&mut remote, 0x80, &[0xdd]).await;
+        recall(&mut remote, 0x70, &[0xff, 0xff]).await;
+        store(&mut remote, 0x70, 0x85, &[0x9d, 0x40], true).await;
+        recall(&mut remote, 0xf2, &[1]).await;
+        assert_eq!(
+            repeat.await.unwrap().unwrap().disposition,
+            PatchApplyDisposition::RepairedEnableOnly
+        );
+
+        // Once control, version and blocks all match, replay is read-only.
+        let worker = pci.clone();
+        let idempotent =
+            tokio::spawn(
+                async move { worker.write_patch_verified(5, 0xf2, &[0], 1, &blocks).await },
+            );
+        recall(&mut remote, 0xf2, &[1]).await;
+        recall(&mut remote, 0x72, &[0xaa, 0xbb]).await;
+        recall(&mut remote, 0xf7, &[0xcc]).await;
+        recall(&mut remote, 0x80, &[0xdd]).await;
+        recall(&mut remote, 0x70, &[0x9d, 0x40]).await;
+        recall(&mut remote, 0xf2, &[1]).await;
+        assert_eq!(
+            idempotent.await.unwrap().unwrap().disposition,
+            PatchApplyDisposition::AlreadyVerifiedReadOnly
+        );
+        assert!(
+            tokio::time::timeout(Duration::from_millis(25), line(&mut remote))
+                .await
+                .is_err(),
+            "existing-patch recovery emitted an unexpected extra command"
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn patch_version_precondition_refuses_before_unlock_or_store() {
+        let (pci, mut remote, _) = setup().await;
+        assert_eq!(
+            pci.write_patch_verified(
+                5,
+                5,
+                &[0],
+                1,
+                &[PatchProgrammingBlock {
+                    parameter: 0x72,
+                    data: vec![0xaa],
+                    unlock: false,
+                }],
+            )
+            .await
+            .unwrap_err()
+            .kind(),
+            ErrorKind::InvalidInput
+        );
+        let worker = pci.clone();
+        let apply = tokio::spawn(async move {
+            worker
+                .write_patch_verified(
+                    5,
+                    0xf2,
+                    &[0],
+                    1,
+                    &[PatchProgrammingBlock {
+                        parameter: 0x72,
+                        data: vec![0xaa],
+                        unlock: false,
+                    }],
+                )
+                .await
+        });
+        let request = line(&mut remote).await;
+        assert!(request.starts_with(b"\\4605001AF201"), "{request:?}");
+        reply(&mut remote, 5, &[0x82, 0xf2, 2]).await;
+        assert!(apply
+            .await
+            .unwrap()
+            .unwrap_err()
+            .to_string()
+            .contains("not admitted"));
+        assert!(!pci.programming_fault.load(Ordering::Acquire));
+        assert!(
+            tokio::time::timeout(Duration::from_millis(25), line(&mut remote))
+                .await
+                .is_err(),
+            "version mismatch emitted a mutating command"
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn full_patch_verify_detects_post_store_corruption_and_faults_lane() {
+        async fn respond_recall(
+            remote: &mut BufReader<tokio::io::DuplexStream>,
+            parameter: u8,
+            data: &[u8],
+        ) {
+            let request = line(remote).await;
+            assert!(request
+                .starts_with(format!("\\4605001A{parameter:02X}{:02X}", data.len()).as_bytes()));
+            let mut cal = vec![0x80 | (data.len() as u8 + 1), parameter];
+            cal.extend_from_slice(data);
+            reply(remote, 5, &cal).await;
+        }
+        async fn respond_unlock(remote: &mut BufReader<tokio::io::DuplexStream>, parameter: u8) {
+            let request = line(remote).await;
+            assert!(request.starts_with(format!("\\46050011{parameter:02X}").as_bytes()));
+            let code = request[request.len() - 2];
+            reply(remote, 5, &[0x82, parameter, 0x5a]).await;
+            remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        }
+        async fn respond_store(
+            remote: &mut BufReader<tokio::io::DuplexStream>,
+            parameter: u8,
+            tag: u8,
+            data: &[u8],
+            unlock: bool,
+        ) {
+            if unlock {
+                respond_unlock(remote, parameter).await;
+            }
+            let request = line(remote).await;
+            let marker = format!("{parameter:02X}{tag:02X}");
+            assert!(request
+                .windows(marker.len())
+                .any(|window| window == marker.as_bytes()));
+            reply(remote, 5, &[0x32, parameter, tag]).await;
+            respond_recall(remote, parameter, data).await;
+        }
+
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let apply = tokio::spawn(async move {
+            worker
+                .write_patch_verified(
+                    5,
+                    0xf2,
+                    &[0],
+                    1,
+                    &[PatchProgrammingBlock {
+                        parameter: 0x72,
+                        data: vec![0xaa],
+                        unlock: false,
+                    }],
+                )
+                .await
+        });
+        respond_recall(&mut remote, 0xf2, &[0]).await;
+        respond_store(&mut remote, 0x70, 0x85, &[0xff, 0xff], true).await;
+        respond_store(&mut remote, 0xf2, 0x86, &[0xff], true).await;
+        respond_store(&mut remote, 0x72, 0x73, &[0xaa], false).await;
+        // The immediate STORE readback matched, then the distinct full verify
+        // sees corruption before target-version finalization or re-enable.
+        respond_recall(&mut remote, 0x72, &[0xbb]).await;
+        assert!(apply
+            .await
+            .unwrap()
+            .unwrap_err()
+            .to_string()
+            .contains("full patch verify failed"));
+        assert!(pci.programming_fault.load(Ordering::Acquire));
+        assert!(
+            tokio::time::timeout(Duration::from_millis(25), line(&mut remote))
+                .await
+                .is_err(),
+            "failed full verification continued to version finalization"
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn existing_patch_enable_recovery_requires_verified_readback() {
+        async fn respond_recall(
+            remote: &mut BufReader<tokio::io::DuplexStream>,
+            parameter: u8,
+            data: &[u8],
+        ) {
+            let request = line(remote).await;
+            assert!(request
+                .starts_with(format!("\\4605001A{parameter:02X}{:02X}", data.len()).as_bytes()));
+            let mut cal = vec![0x80 | (data.len() as u8 + 1), parameter];
+            cal.extend_from_slice(data);
+            reply(remote, 5, &cal).await;
+        }
+
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let apply = tokio::spawn(async move {
+            worker
+                .write_patch_verified(
+                    5,
+                    0xf2,
+                    &[0],
+                    1,
+                    &[PatchProgrammingBlock {
+                        parameter: 0x72,
+                        data: vec![0xaa],
+                        unlock: false,
+                    }],
+                )
+                .await
+        });
+        respond_recall(&mut remote, 0xf2, &[1]).await;
+        respond_recall(&mut remote, 0x72, &[0xaa]).await;
+        respond_recall(&mut remote, 0x70, &[0xff, 0xff]).await;
+
+        let unlock_request = line(&mut remote).await;
+        assert!(unlock_request.starts_with(b"\\4605001170"));
+        let code = unlock_request[unlock_request.len() - 2];
+        reply(&mut remote, 5, &[0x82, 0x70, 0x5a]).await;
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+
+        let store_request = line(&mut remote).await;
+        assert!(store_request.windows(8).any(|window| window == b"70859D40"));
+        reply(&mut remote, 5, &[0x32, 0x70, 0x85]).await;
+        // The STORE ACK arrived, but readback proves that enable did not take.
+        respond_recall(&mut remote, 0x70, &[0xff, 0xff]).await;
+
+        assert!(apply
+            .await
+            .unwrap()
+            .unwrap_err()
+            .to_string()
+            .contains("existing patch re-enable failed"));
+        assert!(pci.programming_fault.load(Ordering::Acquire));
+        assert!(
+            tokio::time::timeout(Duration::from_millis(25), line(&mut remote))
+                .await
+                .is_err()
         );
     }
 

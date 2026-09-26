@@ -58,8 +58,18 @@ and DEPLOY_QUEUE state is volatile and discarded at restart. START/ADD execute
 asynchronously through the existing PP/DALI service paths on cmqttd's shared
 CNI, stop on the first failed receipt and never retry automatically; RETRY is
 the sole explicit re-execution operation. MQTT remains active while that work
-runs. `PP WRITE_PATCH` remains 502 before I/O because cmqttd has no verified
-vendor patchset or distinct patch protocol executor.
+runs. `PP WRITE_PATCH` returns 408 before I/O when no matching manifest is
+available. The command is physical when a matching strict
+`cmqttd.pp-patch/v1` manifest has been uploaded to the controlled FILE path
+`%PROJECT%/patchsets/cmqttd-patches.json` (or its global fallback). It checks
+exactly one live type and firmware identity plus the current version, uses the
+recovered disable/write/readback/full-verify/version/enable pipeline under one
+programming lane, and never retries an uncertain write. `SIMULATE` validates
+the same selection and plan with no PCI I/O and exposes a digest that a
+physical run can pin with `EXPECT_SHA256=<64hex>`. Success rechecks the FILE
+revision and database record before atomically storing decimal PatchVersion,
+PatchManifestSha256 and PatchManifestVersion. Proprietary
+`patchset.zip` ingestion remains unsupported.
 
 The CONFIG family is a local compatibility subsystem inside the embedded
 endpoint. Its 148-entry native 3.4 catalogue, scoped global/project/network

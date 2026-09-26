@@ -95,7 +95,68 @@
       "bad_patch_version": "400 bad patch version",
       "optional_simulate_case_insensitive": true,
       "additional_tokens_ignored": true,
-      "executor": "patchset.zip-backed distinct unlock/write/version pipeline"
+      "executor": "patchset.zip-backed distinct unlock/write/version pipeline",
+      "accepted_patch_version_spellings": [
+        "01",
+        "0x01",
+        "$01",
+        "0b1",
+        "+01",
+        "0x+01"
+      ],
+      "error_precedence": "syntax and -1 return 400; parsed non-byte values return 408"
+    },
+    "write_patch_pipeline": {
+      "selection": [
+        "unitType exact",
+        "firmware inclusive lexical range",
+        "catalogNumber exact only when both live and patch values are non-null",
+        "requested hexadecimal patchVersion exact"
+      ],
+      "disable": {
+        "parameter_hex": "70",
+        "unlock": true,
+        "tag_hex": "85",
+        "data_hex": "ffff"
+      },
+      "temporary_patch_version": {
+        "unlock": true,
+        "tag_hex": "86",
+        "data_hex": "ff",
+        "parameter_hex": "f2"
+      },
+      "patch_blocks": {
+        "ranges_decimal": [
+          "114..241",
+          "247..254"
+        ],
+        "maximum_contiguous_bytes": 12,
+        "unlock_after_command_11": true,
+        "custom_unlock_parameter_hex": "f7",
+        "ordinary_store_tag_hex": "73",
+        "custom_unlock_store_tag": "returned challenge byte"
+      },
+      "verification": "Every selected patch block is recalled and compared in a distinct complete second pass after all writes.",
+      "target_patch_version": {
+        "unlock": true,
+        "tag_hex": "86",
+        "parameter_hex": "f2"
+      },
+      "enable": {
+        "parameter_hex": "70",
+        "unlock": true,
+        "tag_hex": "85",
+        "data_hex": "9d40"
+      },
+      "simulate": "Runs selection and emits progress but performs no physical command."
+    },
+    "patch_version_debug": {
+      "debug_recognized_only_as_first_optional_token_case_insensitive": true,
+      "later_tokens_ignored": true,
+      "patch_order": "HashMap values order unspecified",
+      "blank_line_between_patches": true,
+      "native_detail_prefix": "347- for every debug line; decompiled flush has no terminal-space status line",
+      "cmqttd_projection": "manifest order, synthetic controlled-FILE path#N names, and deterministic terminal 347-space repair"
     }
   },
   "sanitization": {
@@ -108,7 +169,56 @@
     "catalog_source": "Only cbusunits.xml and bare .xml files under the configured unitspec directory; traversal and arbitrary host files are rejected.",
     "queue_persistence": "Runtime only, matching the observed daemon lifecycle.",
     "programmer_start": "Acknowledges after INIT registration, runs asynchronously through the shared PP/DALI service backends, stops on first fault, and never automatically replays a command.",
-    "write_patch": "502 after retained selector parsing; no verified patchset.zip or distinct patch protocol executor is present, no ordinary PP SAVE substitution is permitted, and no bus command is sent.",
-    "patch_version_without_patchset": "408 native-shaped missing patchset response."
+    "write_patch": "Physical only for validated cmqttd.pp-patch/v1 manifests in the controlled FILE namespace: exact stable database identity, exactly one live type and firmware reply, explicit normal current-version precondition or verified already-target recovery, one programming lane, recovered disable/write/full-verify/version/enable tags and unlocks, exact readback, no automatic replay, and durable decimal PatchVersion plus manifest provenance only after verified completion and commit-time digest recheck. SIMULATE validates and plans without PCI I/O; EXPECT_SHA256 can bind execution. Proprietary patchset.zip ingestion remains unsupported and is advertised separately.",
+    "patch_version_without_patchset": "408 native-shaped missing patchset response.",
+    "write_patch_manifest": {
+      "schema": "cmqttd.pp-patch/v1",
+      "project_path": "%PROJECT%/patchsets/cmqttd-patches.json",
+      "fallback_path": "patchsets/cmqttd-patches.json",
+      "maximum_manifest_bytes": 1048576,
+      "maximum_patches": 1024,
+      "maximum_blocks_per_patch": 4096,
+      "maximum_patch_bytes": 136,
+      "maximum_block_bytes": 12,
+      "patch_version_parameter": 242,
+      "requires": [
+        "unitType",
+        "minFirmware",
+        "maxFirmware",
+        "patchVersion",
+        "currentPatchVersions",
+        "blocks"
+      ],
+      "vendor_patchset_zip": false,
+      "firmware_comparison": "native case-sensitive lexical inclusive",
+      "catalogue_missing_behavior": "catalog-constrained selectors fail when the saved unit lacks catalogue metadata (stricter than native)",
+      "expected_sha256": "optional 64-hex execution binding",
+      "exact_one_live_identity": true,
+      "commit_revision_guard": true,
+      "durable_success_fields": [
+        "PatchVersion decimal",
+        "PatchManifestSha256",
+        "PatchManifestVersion"
+      ],
+      "temporary_ff_recovery": "same reviewed manifest must explicitly admit FF in currentPatchVersions",
+      "reserved_target_patch_version": "FF (temporary interrupted-write sentinel); FF remains permitted in currentPatchVersions for explicit recovery"
+    },
+    "already_target_recovery": "Verify all blocks and recall 0x70; read-only success at 9d40, otherwise repair and verify enable.",
+    "physical_receipt_dispositions": [
+      "applied_full_pipeline",
+      "repaired_enable_only",
+      "already_verified_read_only"
+    ],
+    "volatile_patch_version": "Final verified F2 readback updates the active-generation physical snapshot even if durable record/manifest commit is rejected."
+  },
+  "owned_decompile_sources": {
+    "CFR_version": "0.152",
+    "PP_WRITE_PATCH_mc_java_sha256": "83123178c6e2ba921ef44296a7d56737a0fd0175974b55c4bec32ad143fe8552",
+    "patchset_me_java_sha256": "cc47386d099f5392bb05fd787481386374b8ce812a861cf7e6d9d0950a8e1531",
+    "patch_executor_mi_java_sha256": "af481178e1d915dbcebcb74b3a27325f560026d64ad791051179c89165e64369",
+    "CBusUnit_java_sha256": "1e7741586ee61460741da8632666589b3d08b5dc35c40c2a80100ce73b0a41da",
+    "patch_file_mh_java_sha256": "3bab904df44401963149794f5429f3e9946d1bff50abfb7085ba2ab5c2d7ef5d",
+    "patch_block_mf_java_sha256": "627817eb050aee09f88b3229c50547bf111b0357904a57b98271474735df6725",
+    "PP_PATCH_VERSION_li_java_sha256": "be3131ac203a0cd444f9026845acbb16c7ac0793567f2a347af70ce95fc375a6"
   }
 }

@@ -1178,10 +1178,85 @@ NEW and LOAD_FROM_FILE construct a concrete default image, SET_RAW_DATA accepts
 one even-length hex token, and DEBUG returns the native nine 199 rows. These
 operations do not touch the PCI. A later physical PP SAVE is a separate action.
 
-PATCH_VERSION deliberately returns the native missing-`patchset.zip` 408.
-`PP WRITE_PATCH` remains 502 because the proprietary patch parser and physical
-executor are absent. Do not interpret either response as firmware-patch
-support and never retry through another endpoint automatically.
+Without an uploaded manifest, PATCH_VERSION deliberately retains the native
+missing-`patchset.zip` 408 and WRITE_PATCH returns 408 before PCI I/O. Upload a
+strict `cmqttd.pp-patch/v1` manifest through FILE at
+`%PROJECT%/patchsets/cmqttd-patches.json` (or the global fallback) to enable
+the portable executor. PATCH_VERSION then returns its version as status 301.
+`PP PATCH_VERSION DEBUG` consumes only its first optional token, case
+insensitively, and projects each manifest selector as a synthetic
+`%PROJECT%/...#N` patch name plus native-shaped type/start/byte rows. cmqttd
+keeps manifest order and supplies a deterministic terminal 347 row; native
+prints archive filenames, uses unspecified HashMap order, and has an awkward
+continuation-only terminal framing quirk.
+
+WRITE_PATCH selects by exact unit type, native case-sensitive lexical inclusive
+firmware range, optional catalogue and requested hexadecimal version. cmqttd is
+deliberately stricter than native when `catalogNumber` is present: missing saved
+catalogue metadata rejects the selector. A normal run requires an admitted
+current version. An already-target recovery requires every block to match and
+then verifies control parameter `0x70`, repairing enable only when needed. The
+physical preflight requires exactly one live type reply and exactly one live
+firmware reply. The executor performs the recovered disable/write/full second
+verification/version/enable pipeline under one programming lane and reads back
+every mutation. Ordinary blocks use STORE tag `0x73`; parameter `0xF7` uses the
+returned unlock challenge as its STORE tag.
+
+`SIMULATE` is point-in-time validation with no physical I/O. Its progress
+includes the raw manifest SHA-256. To bind execution to that review, issue
+`PP WRITE_PATCH //PROJECT/NETWORK/p/UNIT VERSION EXPECT_SHA256=<64hex>`.
+`SIMULATE` is true only when token 5 is `SIMULATE`; its digest option may follow
+as token 6. `EXPECT_SHA256` is cmqttd's deliberate extension to native's
+otherwise ignored trailing tokens, and a mismatch fails before identity or PCI
+I/O. Version spellings accept plain hex, `$`, `0x`, `0b` and a Java-style
+leading `+`; syntax and `-1` return 400, while parsed non-byte values return
+408. Never retry a failed physical patch through another endpoint; an
+incomplete transaction requires PCI reconnect. The proprietary Schneider
+`patchset.zip` container is not accepted.
+
+The controlled manifest is JSON. Keep every block within one native patch
+range, use distinct parameter bytes, and retain the recovered version parameter
+`0xF2`:
+
+```json
+{
+  "schema": "cmqttd.pp-patch/v1",
+  "version": "site-2026-09-27",
+  "patches": [{
+    "unitType": "KEYGL5",
+    "minFirmware": "5.5.0",
+    "maxFirmware": "5.5.99",
+    "patchVersion": "01",
+    "currentPatchVersions": ["00"],
+    "patchVersionParameter": 242,
+    "blocks": [{"parameter": 114, "dataHex": "A55A", "unlock": false}]
+  }]
+}
+```
+
+Firmware strings use native Java `String.compareTo` ordering, so `10.0` sorts
+below `9.9`.
+Blocks contain 1..12 bytes, start and finish wholly within `114..241` or
+`247..254`, and may not overlap. `patchVersionParameter` defaults to and must
+equal decimal 242 (`0xF2`), the C-Gate 3.4 `CBusUnit.N()` address; the document,
+selected patch and block counts also have hard size limits. Non-overlap across
+the two native ranges limits a selected patch to 136 bytes. Target version
+`FF` is reserved as the interrupted-write sentinel; it may appear only in
+`currentPatchVersions` for explicit recovery. A non-SIMULATE
+failure after the first
+physical write faults the programming lane and may have left the unit disabled
+or on temporary version `FF`. Record the error, reconnect the PCI, inspect the
+unit independently, then issue a new explicitly reviewed command. Recovery
+from `FF` requires the same reviewed manifest to deliberately include `FF` in
+`currentPatchVersions`; this reruns the entire verified pipeline and is not an
+automatic bypass. Do not automatically retry, and do not edit the durable
+database to imply completion. When a retry finds the target version and every
+block already present, it recalls `0x70`; an enabled `9D40` result is read-only,
+while any other value is repaired and verified before success. A successful
+commit rechecks both the stable unit record and selected manifest digest, then
+stores decimal `PatchVersion`, `PatchManifestSha256` and
+`PatchManifestVersion` atomically. A concurrent replacement returns 409 and
+does not attach provenance to the wrong database state.
 
 The runtime PROGRAMMER queue supports:
 

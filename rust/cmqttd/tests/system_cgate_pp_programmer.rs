@@ -1,10 +1,12 @@
 //! Real cmqttd process: PROGRAMMER and DEPLOY_QUEUE acknowledge asynchronous
 //! execution, expose the native TEST countdown, stop on first instruction
-//! fault, and retry only on an explicit request. PP patching stays fail-closed
-//! without a verified vendor patchset. MQTT remains live throughout.
+//! fault, and retry only on an explicit request. PP patching consumes a
+//! bounded explicit FILE manifest and can validate its complete physical plan
+//! in SIMULATE mode without touching the PCI. MQTT remains live throughout.
 
 mod util;
 
+use base64::{engine::general_purpose::STANDARD, Engine as _};
 use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
     net::TcpStream,
@@ -32,6 +34,36 @@ async fn command(
             .unwrap_or_else(|| panic!("expected {prefix:?}, got {line:?}"));
         let complete = payload.as_bytes().get(3) == Some(&b' ');
         reply.push(payload.to_string());
+        if complete {
+            return reply;
+        }
+    }
+}
+
+async fn document(
+    reader: &mut BufReader<tokio::net::tcp::OwnedReadHalf>,
+    writer: &mut tokio::net::tcp::OwnedWriteHalf,
+    tag: &str,
+    text: &str,
+    body: &str,
+) -> Vec<String> {
+    let delimiter = format!("PP_FILE_END_{tag}");
+    writer
+        .write_all(format!("[{tag}] {text} << {delimiter}\r\n{body}\r\n{delimiter}\r\n").as_bytes())
+        .await
+        .unwrap();
+    let prefix = format!("[{tag}] ");
+    let mut reply = Vec::new();
+    loop {
+        let mut line = String::new();
+        assert_ne!(reader.read_line(&mut line).await.unwrap(), 0);
+        let payload = line
+            .trim_end_matches(['\r', '\n'])
+            .strip_prefix(&prefix)
+            .unwrap()
+            .to_string();
+        let complete = payload.as_bytes().get(3) == Some(&b' ');
+        reply.push(payload);
         if complete {
             return reply;
         }
@@ -224,6 +256,21 @@ async fn pp_admin_and_programmer_are_local_native_shaped_and_restart_safe() {
         .await,
         ["200 OK"]
     );
+    for (tag, command_text) in [
+        (
+            "database-unit-type",
+            "DBSETSAFE //HARNESS/254/p/5/UnitType TEST",
+        ),
+        (
+            "database-unit-firmware",
+            "DBSETSAFE //HARNESS/254/p/5/FirmwareVersion 1.2.3",
+        ),
+    ] {
+        assert_eq!(
+            command(&mut reader, &mut writer, tag, command_text).await,
+            ["200 OK"]
+        );
+    }
 
     assert_eq!(
         command(
@@ -341,12 +388,58 @@ async fn pp_admin_and_programmer_are_local_native_shaped_and_restart_safe() {
         command(
             &mut reader,
             &mut writer,
-            "patch",
-            "PP WRITE_PATCH //HARNESS/254/p/1 01",
+            "patch-missing",
+            "PP WRITE_PATCH //HARNESS/254/p/5 01 SIMULATE",
         )
         .await,
-        ["502 PP WRITE_PATCH requires a verified vendor patchset and patch protocol executor; no bus command was sent"]
+        ["408 No patch manifest; upload patchsets/cmqttd-patches.json with FILE UPLOAD"]
     );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "patch-mkdir",
+            "FILE MKDIR %HARNESS%/patchsets",
+        )
+        .await,
+        ["200 OK."]
+    );
+    let patch_manifest = r#"{"schema":"cmqttd.pp-patch/v1","version":"system-1","patches":[{"unitType":"TEST","minFirmware":"1.0","maxFirmware":"1.9.99","patchVersion":"01","currentPatchVersions":["00"],"blocks":[{"parameter":114,"dataHex":"aabb"},{"parameter":247,"dataHex":"cc"}]}]}"#;
+    assert_eq!(
+        document(
+            &mut reader,
+            &mut writer,
+            "patch-upload",
+            "FILE UPLOAD %HARNESS%/patchsets/cmqttd-patches.json",
+            &STANDARD.encode(patch_manifest),
+        )
+        .await,
+        ["200 OK."]
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "patch-version",
+            "PP PATCH_VERSION"
+        )
+        .await,
+        ["301 version=system-1"]
+    );
+    let patch = command(
+        &mut reader,
+        &mut writer,
+        "patch-simulate",
+        "PP WRITE_PATCH //HARNESS/254/p/5 01 SIMULATE ignored",
+    )
+    .await;
+    assert_eq!(patch.last().unwrap(), "200 OK");
+    assert!(patch[0].contains("version system-1"));
+    assert!(patch[0].contains(" sha256 "));
+    assert!(patch[0].contains("target 01 (simulate)"));
+    assert!(patch
+        .iter()
+        .any(|line| line.contains("block 2 of 2 at $f7:cc unlock")));
 
     let (mut event_reader, mut event_writer) = connect(&system).await;
     for (tag, channel) in [
@@ -606,6 +699,16 @@ async fn pp_admin_and_programmer_are_local_native_shaped_and_restart_safe() {
     assert_eq!(
         command(&mut reader, &mut writer, "sessions", "PP UNITS").await,
         ["122 no open sessions"]
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "persisted-patch-version",
+            "PP PATCH_VERSION",
+        )
+        .await,
+        ["301 version=system-1"]
     );
     assert!(restarted.daemon.is_running());
     drop(restarted);

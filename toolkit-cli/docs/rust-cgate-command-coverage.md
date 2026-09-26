@@ -85,9 +85,14 @@ memory belongs to an owned staged session. START now acknowledges
 asynchronously and executes TEST plus all eight retained PP/DALI instruction
 types through the existing service backends. STATUS exposes the active queue
 count and countdown; first failure is terminal and no physical command is
-automatically replayed. `PP WRITE_PATCH` remains 502 because the verified
-vendor patchset and distinct protocol executor are unavailable, while
-PATCH_VERSION reproduces the native missing-patchset 408. Retained evidence is
+automatically replayed. `PP WRITE_PATCH` accepts a strict controlled-FILE
+`cmqttd.pp-patch/v1` manifest and runs the recovered physical
+disable/write/full-verify/version/enable pipeline with current-version and
+live-identity checks. SIMULATE validates without I/O; PATCH_VERSION exposes the
+manifest version, or reproduces the native missing-patchset 408 when absent.
+This is the embedded cmqttd path; the standalone `cgate-mock` patch executor
+remains an explicit failure. The proprietary Schneider `patchset.zip`
+container is not ingested. Retained evidence is
 in `rust/testdata/fixtures/native_cgate_pp_programmer.json`, with real-daemon
 coverage in `system_cgate_pp_programmer.rs`.
 

@@ -159,10 +159,10 @@ unavailable.
 | `ACCESS ADD/DELETE/LIST/LOAD/SAVE`, `LOGIN`, `LOGOUT` | Complete maintained C-Gate 3.4 ACCESS grammar, exact parent/subcommand help, ordered levels from None through Max, case-sensitive user login, first-match duplicate users, role-filtered 135 LIST rows, 1-based filtered DELETE, and session-local elevation retained until LOGOUT. Active rows, admission mode, and named SAVE/LOAD snapshots commit atomically in `cmqttd-json`; snapshot names are bounded identities and never host paths. cmqttd deliberately stores only credential digests and prints `<redacted>` where native C-Gate exposes plaintext. It validates interface/remote names before mutation and returns non-mutating 408 for missing LOAD snapshots. Fresh and pre-ACCESS repositories admit Docker/NAT peers at Clipsal until an operator adds, deletes, or loads interface/remote policy. Thereafter an unmatched non-loopback peer gets 421 without a recovery token; with the token configured it gets a restricted LOGIN/LOGOUT-only session so the token can repair policy. Loopback retains a Clipsal recovery path. With the recovery-token gate armed, ADD/DELETE/LOAD/SAVE require either its one-token LOGIN or a Clipsal/Max ACCESS-user LOGIN from an admitted connection. The exact native per-handler level matrix for unrelated commands is not yet enforced; `access_global_command_level_matrix` reports false. See `rust/testdata/fixtures/native_cgate_access.json` and `rust/cmqttd/tests/system_cgate_access.rs` |
 | Database PP locks, sessions, get/set/info/new/load/save | Existing programming model with connection ownership; staged sessions and locks are discarded on disconnect/restart |
 | `PP CANCEL_LOCK/LIST_LOCK/UNITS`, `GET_RAW_DATA/SET_RAW_DATA/DEBUG`, `LOAD_FROM_FILE` | Native 121/122 inventory, address cancellation, bounded session memory and nine-row memory diagnostics. Raw edits and file loads change only an owned staged session. `LOAD_FROM_FILE` accepts one bare `.xml` filename under `--cgate-unitspec`; it cannot open an arbitrary host path. Cancelling a lock leaves its session visible with `address=null`, matching retained native behavior |
-| `PP CATALOG_INFO/GET_UNIT_CATALOG/GET_UNIT_SPEC/LIST_CATALOG_NUMBERS/RELOAD_CATALOG/PATCH_VERSION` | Native catalogue, XML and status envelopes over optional private `cbusunits.xml` and decoded unit specs under `--cgate-unitspec`. Firmware matching is inclusive and numeric. Reload invalidates the bounded parsed caches. With no proprietary `patchset.zip`, PATCH_VERSION returns the retained native 408 missing-patchset response; it does not imply patch support |
+| `PP CATALOG_INFO/GET_UNIT_CATALOG/GET_UNIT_SPEC/LIST_CATALOG_NUMBERS/RELOAD_CATALOG/PATCH_VERSION` | Native catalogue, XML and status envelopes over optional private `cbusunits.xml` and decoded unit specs under `--cgate-unitspec`. Catalogue firmware matching is inclusive and numeric. Reload invalidates the bounded parsed caches. PATCH_VERSION returns status 301 and the version from a fully valid controlled-FILE patch manifest; DEBUG projects manifest-order native-shaped patch/block rows. Without a manifest it retains the native 408 missing-patchset response |
 | `PROGRAMMER CREATE/DELETE/LIST/STATUS/TEST/ADD_INSTRUCTION/CANCEL_INSTRUCTION/TRIGGER` | Runtime-only native queues with case-insensitive names in creation order, quoted task fields, priorities and instruction IDs. START acknowledges immediately and asynchronously runs TEST, PP_COPY, PP_SAVE, PP_SET, PP_END, PP_UNLOCK, DALI_READ, DALI_PROGRAM and public DALI command tails through the existing service dispatch. STATUS excludes the active instruction from queueCount, retains totalCount and exposes the TEST countdown. PAUSE/RESUME/STOP/ERROR are observed between commands and during TEST. A physical receipt failure stops the queue in ERROR; START cannot replay a terminal queue and no failed/uncertain command is retried automatically. Queues are discarded on restart |
 | `DEPLOY_QUEUE ADD/DELETE/DELETE_ALL/LIST/RETRY` | Dedicated runtime queue over PROGRAMMER task groups with retained help, 450/451/501/502 errors, TaskGroupSummary JSON field order/timestamps, ALL/PENDING/FAILED/COMPLETED bulk deletion, per-entry 120/501 rows, and all four event channels. ADD validates/registers an INIT task and acknowledges before asynchronous execution. The first instruction fault stops in ERROR and emits a structured cmqttd debug receipt before ended; this does not claim native diagnostic-string equivalence. RETRY admits only a queued STOPPED/ERROR task, refreshes the reinitialized timestamps/countdown and deliberately re-executes it. LIST, terminal DELETE and DELETE_ALL remain local. Queue state is never persisted. PP/DALI work uses the shared cmqttd CNI and preserves MQTT operation. See `rust/testdata/fixtures/native_cgate_deploy_queue.json` and `rust/cmqttd/tests/system_cgate_pp_programmer.rs` |
-| `PP WRITE_PATCH` | Explicit 502 before mutation or PCI I/O after retained address, hexadecimal-byte version and optional `simulate` parsing. Native bytecode consumes `patchset.zip` and a distinct unlock/write/version pipeline. No verified vendor patchset or transport executor is present, so cmqttd never translates this selector to ordinary PP SAVE or simulates a successful firmware patch |
+| `PP WRITE_PATCH` | Physical execution from a strict operator-supplied `cmqttd.pp-patch/v1` manifest in the controlled FILE namespace. The retained unit/hex-version/optional-SIMULATE grammar selects by exact saved unit type, native case-sensitive lexical firmware range, optional catalogue and target patch version; cmqttd deliberately rejects a catalogue-constrained selector when saved catalogue metadata is absent. Before mutation cmqttd requires exactly one live type and firmware reply and checks the current patch-version byte. One programming lane then runs native 0x70 disable (`85:ffff`), temporary F2 version (`86:ff`), ordinary block STOREs with tag `73` and F7 STOREs with the returned unlock challenge, immediate readback, a distinct full verification pass, target F2 version, 0x70 enable (`85:9d40`) and final version readback. SIMULATE exposes a SHA-256; optional `EXPECT_SHA256=<64hex>` binds physical execution. Failed writes are never automatically retried and require reconnect. Proprietary Schneider `patchset.zip` ingestion remains unsupported and is reported by capabilities |
 | `PP RESET_TO_DEFAULTS` | Replaces one owned loaded session with exactly the `DefaultValue` fields in its parsed unit specification. The result remains staged until an explicit save; missing or malformed specifications return 408 unchanged, with no PCI access |
 | Physical PP LOAD and subsequent GET/INFO | Identifies the live unit, selects its privately installed decoded schema, recalls standard CAL parameters, explicit pages for `paged`/`ncc`, OEM memory, and GOC parameter-`0xFF` memory through the shared PCI, decodes int/long/bit/string/sixbit arrays and `ArrayMap`, applies tag selection, and commits the session only after every read succeeds |
 | Physical PP SAVE/SAVE_TO_SOURCE | Writes only dirty, tag-selected `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and `goc2` parameters with `none`/`checksum`/supported `lock` protection. Page-aware writes split at 256-byte boundaries; OEM methods use the selector/data path; GIU halts and resumes the unit; DALI observes the native settling interval; GOC methods use parameter `0xFF`, a big-endian address prefix, and their native block limits. The service validates the complete plan and live type/firmware first, preserves shared bits through pre-read/encode, requires source/parameter-matched acknowledgements, and reads every stored range back before success. Specifications containing the vendor `ncc` method are classified as C-Bus 3; after a changed save, the service runs native group-0 operation-4 EXECUTE/POLL until the NVM commit succeeds |
@@ -519,14 +519,89 @@ declared defaults. `GET_RAW_DATA` renders unknown bytes as `??`; a new or
 file-loaded session has a concrete default image. These commands do not read or
 write a unit until a separate physical SAVE is issued.
 
+### PP patch manifests
+
+Create `%PROJECT%/patchsets` with `FILE MKDIR`, then upload
+`%PROJECT%/patchsets/cmqttd-patches.json` with the standard base64
+here-document form of `FILE UPLOAD`. If no project-specific file exists, the
+service checks `patchsets/cmqttd-patches.json` in the global virtual root.
+Neither spelling opens a host file.
+
+```json
+{
+  "schema": "cmqttd.pp-patch/v1",
+  "version": "site-reviewed-1",
+  "patches": [
+    {
+      "unitType": "KEYGL5",
+      "minFirmware": "5.5.0",
+      "maxFirmware": "5.9.99",
+      "catalogNumber": "5085EDLW",
+      "patchVersion": "01",
+      "currentPatchVersions": ["00"],
+      "patchVersionParameter": 242,
+      "blocks": [
+        {"parameter": 114, "dataHex": "aabb", "unlock": false},
+        {"parameter": 247, "dataHex": "cc", "unlock": true}
+      ]
+    }
+  ]
+}
+```
+
+The manifest is limited to 1 MiB, 1,024 patch selectors, 4,096 blocks and an
+effective 136 bytes per selected patch. Each block contains 1–12 bytes, cannot
+overlap, and must stay wholly inside the native patch ranges 114–241 or
+247–254. Parameter 247 always takes the custom unlock path. Firmware versions
+are bounded safe ASCII tokens and compare with native case-sensitive lexical
+ordering, so `10.0` sorts below `9.9`. `patchVersionParameter` defaults to and,
+in this schema version,
+must equal decimal 242 (`0xF2`), matching `CBusUnit.N()` in C-Gate 3.4; the
+0x70 control and patch-data ranges are reserved. Target patch version `FF` is
+also reserved because the native pipeline uses it as its interrupted-write
+sentinel; `currentPatchVersions` may explicitly admit `FF` for reviewed
+recovery. A physical command is accepted
+only when the current version is in
+`currentPatchVersions`; a request whose target version is already installed
+performs version and full-block readback, then recalls the native 0x70 enable
+value. It is read-only when that value is already `9d40`; otherwise it repairs
+and verifies enable. Ordinary blocks use fixed STORE tag `0x73`. Parameter
+`0xF7` performs the native custom unlock and uses the returned challenge byte
+as its STORE tag. A selector with `catalogNumber` requires equal saved catalogue
+metadata, a deliberate stricter rule than native's missing-catalog behavior.
+
+Run `PP WRITE_PATCH //PROJECT/NETWORK/p/UNIT VERSION SIMULATE` first. A 200
+proves point-in-time manifest selection and validation only and prints its
+SHA-256. Bind the physical command with
+`PP WRITE_PATCH //PROJECT/NETWORK/p/UNIT VERSION EXPECT_SHA256=<64hex>`.
+`SIMULATE` is recognized only as token 5; `EXPECT_SHA256` may follow it for a
+review run, while a bound physical run puts it in token 5. The SHA option is a
+cmqttd extension to native's otherwise ignored trailing tokens and a mismatch
+fails before identity or PCI I/O. A physical 200 reports one of three exact
+dispositions: the full pipeline proves every STORE acknowledgement, immediate
+readback, complete second verification pass, final version and enable readback;
+enable-only recovery proves matching version/blocks plus the repaired control;
+and read-only recovery proves matching version, blocks and enabled control. It
+does not make an
+operator-supplied patch safe for a device; the manifest bytes and device
+eligibility remain the operator's reviewed input. Success rechecks the manifest
+digest and exact database unit record, then atomically persists decimal
+`PatchVersion`, `PatchManifestSha256` and `PatchManifestVersion`.
+
+Any failure after temporary version `FF` requires PCI reconnect and independent
+inspection. An explicit recovery must use the same reviewed manifest with `FF`
+deliberately admitted in `currentPatchVersions`, then reruns the full verified
+pipeline. No retry or temporary-version bypass occurs automatically.
+
 ## Outstanding replacement work
 
 The existing mock dispatches 431 command paths. That is **not** evidence that
 all 431 have physical implementations in this service. `CMQTT CAPABILITIES`
 returns `full_cgate_compatibility: false`; unimplemented physical operations
 return 502. The enumerable gap tracker is the executable capability matrix in
-`cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 229
-physical, 199 local/session, 1 fail-closed 502, and 2 obsolete 400 over the
+`cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 230
+physical, 199 local/session, no blanket fail-closed 502 paths, and 2 obsolete
+400 paths over the
 431 inventoried paths, plus a separately asserted 11-row supplement for
 non-inventoried service commands. Full replacement still requires:
 
@@ -540,13 +615,11 @@ non-inventoried service commands. Full replacement still requires:
   proves a correlated gateway/programming exchange, not downstream DALI-device
   state or persistence. See [the DALI guide](cgate-dali.md).
 
-- A physical `PP WRITE_PATCH` backend. PROGRAMMER START and DEPLOY_QUEUE
-  ADD/RETRY now schedule the complete retained TEST/PP/DALI instruction set
-  through cmqttd's existing execution paths, stop at the first fault and retry
-  only after an explicit RETRY. The remaining firmware selector cannot be
-  implemented faithfully without the vendor `patchset.zip` content and its
-  distinct unlock/write/version protocol; PATCH_VERSION retains the evidenced
-  missing-patchset 408 and WRITE_PATCH returns 502 before bus I/O.
+- Proprietary Schneider `patchset.zip` ingestion. The physical WRITE_PATCH
+  protocol is implemented for the documented explicit manifest format, while
+  the encrypted/signed vendor container, its private patch catalogue and its
+  trust policy are not reproduced. PROGRAMMER and DEPLOY_QUEUE still stop at
+  the first fault and retry only after an explicit RETRY.
 
 - Physical PP multi-range failure recovery, power-loss behavior, and hardware write acceptance for
   every programming method and unit family. LOAD has full decoded-catalogue
@@ -629,7 +702,7 @@ from the pinned C-Gate 3.4.0.2001 jar. The oracle used a disposable loopback
 daemon, loaded a temporary database network without opening it, and contacted
 no C-Bus endpoint. `system_cgate_pp_programmer.rs` drives the real cmqttd
 binary over TCP, exercises catalogue, raw-memory, lock/session and queue
-lifecycle, verifies START and WRITE_PATCH stay fail-closed, observes no
+lifecycle, verifies WRITE_PATCH manifest persistence and no-I/O SIMULATE, observes no
 administrative PCI traffic, sends MQTT through the same fake PCI afterward,
 and verifies that runtime locks, sessions and queues do not survive restart.
 No vendor catalogue/spec XML is retained in the fixture.

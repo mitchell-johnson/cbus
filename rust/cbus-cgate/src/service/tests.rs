@@ -1,4 +1,5 @@
 use super::*;
+use base64::Engine as _;
 use tokio::io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader};
 
 fn fixture() -> String {
@@ -856,9 +857,13 @@ async fn bridged_pingu_discovers_only_the_target_network_cache() {
 #[tokio::test(start_paused = true)]
 async fn bridged_sync_populates_identity_rejects_cross_route_and_clears_on_reconnect() {
     async fn line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
-        let mut line = Vec::new();
-        reader.read_until(b'\r', &mut line).await.unwrap();
-        line
+        tokio::time::timeout(Duration::from_secs(3), async {
+            let mut line = Vec::new();
+            reader.read_until(b'\r', &mut line).await.unwrap();
+            line
+        })
+        .await
+        .expect("timed out waiting for identity PCI request")
     }
 
     let path = state_path();
@@ -2324,7 +2329,7 @@ async fn programming_ownership_and_unimplemented_hardware_are_enforced() {
             .handle(&mut first, "[5] PP WRITE_PATCH //HARNESS/254/p/5 01",)
             .await
             .status,
-        502
+        408
     );
     assert_eq!(
         service
@@ -2783,11 +2788,16 @@ async fn programmer_dali_instruction_grammar_reuses_public_dispatch() {
 }
 
 #[tokio::test]
-async fn pp_write_patch_pins_selector_and_fails_before_pci_io() {
+async fn pp_write_patch_pins_selector_and_simulates_explicit_manifest_without_pci_io() {
     let path = state_path();
     let (pci, mut remote) = pci();
     let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
     let mut client = ClientState::default();
+    let missing_version = service.handle(&mut client, "[pv0] PP PATCH_VERSION").await;
+    assert_eq!(missing_version.status, 408, "{missing_version:?}");
+    assert!(missing_version
+        .final_text
+        .contains("patchset.zip not Found"));
     for (line, status, text) in [
         (
             "[1] PP WRITE_PATCH //HARNESS/254/p/5",
@@ -2797,13 +2807,23 @@ async fn pp_write_patch_pins_selector_and_fails_before_pci_io() {
         ("[2] PP WRITE_PATCH invalid 01", 401, "Bad address"),
         (
             "[3] PP WRITE_PATCH //HARNESS/254/p/5 100",
+            408,
+            "bad patch version",
+        ),
+        (
+            "[3b] PP WRITE_PATCH //HARNESS/254/p/5 -1",
             400,
             "bad patch version",
         ),
         (
+            "[3c] PP WRITE_PATCH //HARNESS/254/p/5 -2",
+            408,
+            "bad patch version",
+        ),
+        (
             "[4] PP WRITE_PATCH //HARNESS/254/p/5 01 SIMULATE ignored",
-            502,
-            "no bus command was sent",
+            408,
+            "No patch manifest",
         ),
     ] {
         let response = service.handle(&mut client, line).await;
@@ -2814,8 +2834,550 @@ async fn pp_write_patch_pins_selector_and_fails_before_pci_io() {
         tokio::time::timeout(Duration::from_millis(25), remote.read_u8())
             .await
             .is_err(),
-        "WRITE_PATCH boundary emitted PCI traffic"
+        "invalid or unconfigured WRITE_PATCH emitted PCI traffic"
     );
+
+    assert_eq!(
+        service
+            .handle(&mut client, "[mkdir] FILE MKDIR %HARNESS%/patchsets")
+            .await
+            .status,
+        200
+    );
+    let manifest = r#"{"schema":"cmqttd.pp-patch/v1","version":"house-1","patches":[{"unitType":"KEYGL5","minFirmware":"5.0","maxFirmware":"6.0","patchVersion":"01","currentPatchVersions":["00"],"blocks":[{"parameter":114,"dataHex":"aabb"},{"parameter":247,"dataHex":"cc"}]}]}"#;
+    let encoded = base64::engine::general_purpose::STANDARD.encode(manifest);
+    assert_eq!(
+        service
+            .handle_document(
+                &mut client,
+                "[upload] FILE UPLOAD %HARNESS%/patchsets/cmqttd-patches.json",
+                &encoded,
+            )
+            .await
+            .status,
+        200
+    );
+    let version = service.handle(&mut client, "[v] PP PATCH_VERSION").await;
+    assert_eq!(version.status, 301, "{version:?}");
+    assert_eq!(version.final_text, "301 version=house-1");
+    let debug = service
+        .handle(&mut client, "[vd] PP PATCH_VERSION DeBuG ignored")
+        .await;
+    assert_eq!(debug.status, 347, "{debug:?}");
+    assert_eq!(debug.final_text, "347 type: 3 start add: $f7 bytes: $cc");
+    assert_eq!(
+        debug.lines,
+        [
+            "301-version=house-1",
+            "347-Patch name: %HARNESS%/patchsets/cmqttd-patches.json#1",
+            "347-type: 0 start add: $72 bytes: $aa $bb",
+        ]
+    );
+    let unknown_debug = service
+        .handle(&mut client, "[vu] PP PATCH_VERSION other DEBUG")
+        .await;
+    assert!(unknown_debug.lines.is_empty());
+
+    let mismatch = service
+        .handle(
+            &mut client,
+            &format!(
+                "[sha] PP WRITE_PATCH //HARNESS/254/p/5 01 EXPECT_SHA256={}",
+                "0".repeat(64)
+            ),
+        )
+        .await;
+    assert_eq!(mismatch.status, 409, "{mismatch:?}");
+    assert!(mismatch.final_text.contains("does not match"));
+    let simulated = service
+        .handle(
+            &mut client,
+            "[sim] PP WRITE_PATCH //HARNESS/254/p/5 01 SiMuLaTe ignored",
+        )
+        .await;
+    assert_eq!(simulated.status, 200, "{simulated:?}");
+    assert!(simulated
+        .lines
+        .iter()
+        .any(|line| line.contains("(simulate)")));
+    assert!(simulated.lines.iter().any(|line| line.contains("sha256 ")));
+    assert!(simulated
+        .lines
+        .iter()
+        .any(|line| line.contains("block 2 of 2 at $f7:cc unlock")));
+    assert!(
+        tokio::time::timeout(Duration::from_millis(25), remote.read_u8())
+            .await
+            .is_err(),
+        "SIMULATE emitted PCI traffic"
+    );
+
+    let unsafe_manifest = r#"{"schema":"cmqttd.pp-patch/v1","version":"safe\r\n[evil] 200 OK","patches":[{"unitType":"KEYGL5","minFirmware":"5.0","maxFirmware":"6.0","patchVersion":"01","currentPatchVersions":["00"],"blocks":[{"parameter":114,"dataHex":"aa"}]}]}"#;
+    let encoded = base64::engine::general_purpose::STANDARD.encode(unsafe_manifest);
+    assert_eq!(
+        service
+            .handle_document(
+                &mut client,
+                "[unsafe] FILE UPLOAD %HARNESS%/patchsets/cmqttd-patches.json",
+                &encoded,
+            )
+            .await
+            .status,
+        200
+    );
+    let rejected = service
+        .handle(&mut client, "[pvbad] PP PATCH_VERSION")
+        .await;
+    assert_eq!(rejected.status, 408, "{rejected:?}");
+    assert!(rejected.lines.is_empty());
+    assert!(!rejected.final_text.contains('\r'));
+    assert!(!rejected.final_text.contains('\n'));
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn patch_result_progress_reports_the_actual_physical_disposition() {
+    let patch = pp_patch::ResolvedPatch {
+        manifest_path: "%P%/patchsets/cmqttd-patches.json".to_string(),
+        manifest_version: "v1".to_string(),
+        manifest_sha256: "a".repeat(64),
+        unit_type: "KEYGL5".to_string(),
+        min_firmware: "5".to_string(),
+        max_firmware: "6".to_string(),
+        target_version: 1,
+        current_versions: vec![0],
+        patch_version_parameter: 0xf2,
+        blocks: vec![pp_patch::ResolvedBlock {
+            parameter: 0x72,
+            data: vec![0xaa],
+            unlock: false,
+        }],
+    };
+    let full = patch_result_progress(&patch, PatchApplyDisposition::AppliedFullPipeline);
+    assert!(full.iter().any(|line| line.contains("patch disable")));
+    let repaired = patch_result_progress(&patch, PatchApplyDisposition::RepairedEnableOnly);
+    assert!(repaired.iter().any(|line| line.contains("repaired")));
+    assert!(!repaired.iter().any(|line| line.contains("patch disable")));
+    let read_only = patch_result_progress(&patch, PatchApplyDisposition::AlreadyVerifiedReadOnly);
+    assert!(read_only
+        .iter()
+        .any(|line| line.contains("no physical mutation")));
+    assert!(!read_only.iter().any(|line| line.contains("patch disable")));
+}
+
+#[tokio::test]
+async fn pp_write_patch_requires_exactly_one_live_identity_before_any_store() {
+    async fn line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+    async fn reply<W: tokio::io::AsyncWrite + Unpin>(writer: &mut W, source: u8, cal: &[u8]) {
+        let mut bytes = vec![0x86, source, 0x10, 0x01, 0x00];
+        bytes.extend_from_slice(cal);
+        let sum = bytes.iter().fold(0u8, |sum, byte| sum.wrapping_add(*byte));
+        bytes.push(0u8.wrapping_sub(sum));
+        let mut wire = hex::encode_upper(bytes).into_bytes();
+        wire.extend_from_slice(b"\r\n");
+        writer.write_all(&wire).await.unwrap();
+    }
+
+    let path = state_path();
+    let (pci, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut client = ClientState::default();
+    assert_eq!(
+        service
+            .handle(&mut client, "[mkdir] FILE MKDIR %HARNESS%/patchsets")
+            .await
+            .status,
+        200
+    );
+    let manifest = r#"{"schema":"cmqttd.pp-patch/v1","version":"identity-test","patches":[{"unitType":"KEYGL5","minFirmware":"5.0","maxFirmware":"6.0","patchVersion":"01","currentPatchVersions":["00"],"blocks":[{"parameter":114,"dataHex":"aabb"}]}]}"#;
+    let encoded = base64::engine::general_purpose::STANDARD.encode(manifest);
+    assert_eq!(
+        service
+            .handle_document(
+                &mut client,
+                "[upload] FILE UPLOAD %HARNESS%/patchsets/cmqttd-patches.json",
+                &encoded,
+            )
+            .await
+            .status,
+        200
+    );
+
+    let no_reply = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[none] PP WRITE_PATCH //HARNESS/254/p/5 01",
+                )
+                .await
+        }
+    });
+    let request = line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\4605002101"), "{request:?}");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    tokio::time::sleep(Duration::from_millis(2100)).await;
+    let response = tokio::time::timeout(Duration::from_secs(3), no_reply)
+        .await
+        .unwrap()
+        .unwrap();
+    assert_eq!(response.status, 401, "{response:?}");
+    assert!(response.final_text.contains("did not answer IDENTIFY"));
+
+    let duplicates = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[duplicate] PP WRITE_PATCH //HARNESS/254/p/5 $01",
+                )
+                .await
+        }
+    });
+    let request = line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\4605002101"), "{request:?}");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    let mut cal = vec![0x80 | (b"KEYGL5".len() as u8 + 1), 1];
+    cal.extend_from_slice(b"KEYGL5");
+    reply(&mut remote_write, 5, &cal).await;
+    reply(&mut remote_write, 5, &cal).await;
+    tokio::time::sleep(Duration::from_millis(2100)).await;
+    let response = tokio::time::timeout(Duration::from_secs(3), duplicates)
+        .await
+        .unwrap()
+        .unwrap();
+    assert_eq!(response.status, 409, "{response:?}");
+    assert!(response.final_text.contains("More than one physical unit"));
+    assert!(
+        tokio::time::timeout(Duration::from_millis(25), line(&mut remote_read))
+            .await
+            .is_err(),
+        "identity failure continued to firmware, unlock, or STORE"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test(start_paused = true)]
+async fn pp_write_patch_physical_pipeline_persists_version_and_rejects_commit_races() {
+    async fn line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        tokio::time::timeout(Duration::from_secs(2), async {
+            let mut line = Vec::new();
+            reader.read_until(b'\r', &mut line).await.unwrap();
+            line
+        })
+        .await
+        .expect("timed out waiting for scripted PCI request")
+    }
+    async fn reply<W: tokio::io::AsyncWrite + Unpin>(writer: &mut W, source: u8, cal: &[u8]) {
+        let mut bytes = vec![0x86, source, 0x10, 0x01, 0x00];
+        bytes.extend_from_slice(cal);
+        let sum = bytes.iter().fold(0u8, |sum, byte| sum.wrapping_add(*byte));
+        bytes.push(0u8.wrapping_sub(sum));
+        let mut wire = hex::encode_upper(bytes).into_bytes();
+        wire.extend_from_slice(b"\r\n");
+        writer.write_all(&wire).await.unwrap();
+    }
+    async fn identify<R, W>(reader: &mut R, writer: &mut W, attribute: u8, value: &[u8])
+    where
+        R: tokio::io::AsyncBufRead + Unpin,
+        W: tokio::io::AsyncWrite + Unpin,
+    {
+        let request = line(reader).await;
+        assert!(
+            request.starts_with(format!("\\46050021{attribute:02X}").as_bytes()),
+            "{request:?}"
+        );
+        let code = request[request.len() - 2];
+        writer.write_all(&[code, b'.']).await.unwrap();
+        let mut cal = vec![0x80 | (value.len() as u8 + 1), attribute];
+        cal.extend_from_slice(value);
+        reply(writer, 5, &cal).await;
+        tokio::task::yield_now().await;
+        tokio::time::advance(Duration::from_secs(2)).await;
+        tokio::task::yield_now().await;
+    }
+    async fn recall<R, W>(reader: &mut R, writer: &mut W, parameter: u8, data: &[u8])
+    where
+        R: tokio::io::AsyncBufRead + Unpin,
+        W: tokio::io::AsyncWrite + Unpin,
+    {
+        let request = line(reader).await;
+        assert!(
+            request.starts_with(format!("\\4605001A{parameter:02X}{:02X}", data.len()).as_bytes()),
+            "{request:?}"
+        );
+        let mut cal = vec![0x80 | (data.len() as u8 + 1), parameter];
+        cal.extend_from_slice(data);
+        reply(writer, 5, &cal).await;
+    }
+    async fn unlock<R, W>(reader: &mut R, writer: &mut W, parameter: u8) -> u8
+    where
+        R: tokio::io::AsyncBufRead + Unpin,
+        W: tokio::io::AsyncWrite + Unpin,
+    {
+        let request = line(reader).await;
+        assert!(
+            request.starts_with(format!("\\46050011{parameter:02X}").as_bytes()),
+            "{request:?}"
+        );
+        let code = request[request.len() - 2];
+        let challenge = 0x5a;
+        reply(writer, 5, &[0x82, parameter, challenge]).await;
+        writer.write_all(&[code, b'.']).await.unwrap();
+        challenge
+    }
+    async fn store<R, W>(
+        reader: &mut R,
+        writer: &mut W,
+        parameter: u8,
+        tag: u8,
+        data: &[u8],
+        locked: bool,
+    ) where
+        R: tokio::io::AsyncBufRead + Unpin,
+        W: tokio::io::AsyncWrite + Unpin,
+    {
+        let challenge = if locked {
+            Some(unlock(reader, writer, parameter).await)
+        } else {
+            None
+        };
+        let effective_tag = if parameter == 0xf7 {
+            challenge.unwrap()
+        } else {
+            tag
+        };
+        let request = line(reader).await;
+        let marker = format!(
+            "{parameter:02X}{effective_tag:02X}{}",
+            hex::encode_upper(data)
+        );
+        assert!(request
+            .windows(marker.len())
+            .any(|window| window == marker.as_bytes()));
+        reply(writer, 5, &[0x32, parameter, effective_tag]).await;
+        recall(reader, writer, parameter, data).await;
+    }
+    async fn drive<R, W>(
+        reader: &mut R,
+        writer: &mut W,
+        current_version: u8,
+        target_version: u8,
+        service: &Arc<Service>,
+        mutation: u8,
+    ) where
+        R: tokio::io::AsyncBufRead + Unpin,
+        W: tokio::io::AsyncWrite + Unpin,
+    {
+        identify(reader, writer, 1, b"KEYGL5").await;
+        identify(reader, writer, 2, b"5.5.00").await;
+        recall(reader, writer, 0xf2, &[current_version]).await;
+        store(reader, writer, 0x70, 0x85, &[0xff, 0xff], true).await;
+        store(reader, writer, 0xf2, 0x86, &[0xff], true).await;
+        store(reader, writer, 0x72, 0x73, &[0xaa, 0xbb], false).await;
+        store(reader, writer, 0xf7, 0x73, &[0xcc], true).await;
+        // Distinct native full verification pass.
+        recall(reader, writer, 0x72, &[0xaa, 0xbb]).await;
+        recall(reader, writer, 0xf7, &[0xcc]).await;
+        store(reader, writer, 0xf2, 0x86, &[target_version], true).await;
+        store(reader, writer, 0x70, 0x85, &[0x9d, 0x40], true).await;
+
+        let final_request = line(reader).await;
+        assert!(final_request.starts_with(b"\\4605001AF201"));
+        if mutation == 1 {
+            service
+                .model
+                .lock()
+                .await
+                .projects
+                .get_mut("HARNESS")
+                .unwrap()
+                .networks
+                .get_mut(&254)
+                .unwrap()
+                .units
+                .get_mut(&5)
+                .unwrap()
+                .fields
+                .insert("UnitName".to_string(), "Concurrent replacement".to_string());
+        } else if mutation == 2 {
+            service
+                .model
+                .lock()
+                .await
+                .file_store
+                .remove("%HARNESS%/patchsets/cmqttd-patches.json");
+        }
+        reply(writer, 5, &[0x82, 0xf2, target_version]).await;
+    }
+
+    let path = state_path();
+    let (pci_client, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci_client.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    {
+        let mut model = service.model.lock().await;
+        let network = model
+            .projects
+            .get_mut("HARNESS")
+            .unwrap()
+            .networks
+            .get_mut(&254)
+            .unwrap();
+        let mut physical = network.units[&5].clone();
+        physical
+            .fields
+            .insert("PatchVersion".to_string(), "0".to_string());
+        network.physical.insert(5, physical);
+    }
+    let mut events = service.events.subscribe();
+    let mut client = ClientState::default();
+    assert_eq!(
+        service
+            .handle(&mut client, "[mkdir] FILE MKDIR %HARNESS%/patchsets")
+            .await
+            .status,
+        200
+    );
+
+    for (target, current, tag, mutation) in [
+        (0xaf, 0x00, "first", 0),
+        (0xb0, 0xaf, "record-race", 1),
+        (0xb1, 0xb0, "manifest-race", 2),
+    ] {
+        if mutation == 2 {
+            // Restore the deliberately raced record before starting the
+            // independent manifest-replacement case.
+            service
+                .model
+                .lock()
+                .await
+                .projects
+                .get_mut("HARNESS")
+                .unwrap()
+                .networks
+                .get_mut(&254)
+                .unwrap()
+                .units
+                .get_mut(&5)
+                .unwrap()
+                .fields
+                .insert("UnitName".to_string(), "Fixture eDLT".to_string());
+        }
+        let manifest = format!(
+            r#"{{"schema":"cmqttd.pp-patch/v1","version":"physical-{tag}","patches":[{{"unitType":"KEYGL5","minFirmware":"5.0","maxFirmware":"6.0","patchVersion":"{target:02X}","currentPatchVersions":["{current:02X}"],"blocks":[{{"parameter":114,"dataHex":"aabb"}},{{"parameter":247,"dataHex":"cc"}}]}}]}}"#
+        );
+        let encoded = base64::engine::general_purpose::STANDARD.encode(manifest);
+        assert_eq!(
+            service
+                .handle_document(
+                    &mut client,
+                    "[upload] FILE UPLOAD %HARNESS%/patchsets/cmqttd-patches.json",
+                    &encoded,
+                )
+                .await
+                .status,
+            200
+        );
+        let command = tokio::spawn({
+            let service = service.clone();
+            async move {
+                service
+                    .handle(
+                        &mut ClientState::default(),
+                        &format!("[{tag}] PP WRITE_PATCH //HARNESS/254/p/5 {target:02X}"),
+                    )
+                    .await
+            }
+        });
+        drive(
+            &mut remote_read,
+            &mut remote_write,
+            current,
+            target,
+            &service,
+            mutation,
+        )
+        .await;
+        let response = command.await.unwrap();
+        assert_eq!(
+            service.model.lock().await.projects["HARNESS"].networks[&254].physical[&5].fields
+                ["PatchVersion"],
+            target.to_string(),
+            "verified physical truth must update even when durable commit is rejected"
+        );
+        if mutation == 1 {
+            assert_eq!(response.status, 409, "{response:?}");
+            assert!(response.final_text.contains("record changed"));
+        } else if mutation == 2 {
+            assert_eq!(response.status, 409, "{response:?}");
+            assert!(response.final_text.contains("manifest changed"));
+        } else {
+            assert_eq!(response.status, 200, "{response:?}");
+            let event = events.recv().await.unwrap();
+            assert!(event.contains("version=AF"), "{event}");
+            assert!(event.contains("manifest_sha256="), "{event}");
+            let get = service
+                .handle(
+                    &mut ClientState::default(),
+                    "[get-patch] GET //HARNESS/254/p/5 PatchVersion",
+                )
+                .await;
+            assert_eq!(get.status, 300, "{get:?}");
+            assert!(get.final_text.contains("PatchVersion=175"), "{get:?}");
+        }
+    }
+
+    {
+        let model = service.model.lock().await;
+        let unit = &model.projects["HARNESS"].networks[&254].units[&5];
+        assert_eq!(unit.fields["PatchVersion"], "175");
+        assert_eq!(unit.fields["PatchManifestVersion"], "physical-first");
+        assert_eq!(unit.fields["PatchManifestSha256"].len(), 64);
+    }
+    assert!(
+        tokio::time::timeout(Duration::from_millis(25), events.recv())
+            .await
+            .is_err()
+    );
+
+    // The rejected concurrent in-memory edit was never persisted; restart
+    // retains the first verified patch receipt and its provenance.
+    let (restart_pci, _restart_remote) = pci();
+    let restarted = Service::new(&fixture(), None, path.clone(), restart_pci, None).unwrap();
+    let model = restarted.model.lock().await;
+    let unit = &model.projects["HARNESS"].networks[&254].units[&5];
+    assert_eq!(unit.fields["PatchVersion"], "175");
+    assert_eq!(unit.fields["PatchManifestVersion"], "physical-first");
+    assert_eq!(unit.fields["PatchManifestSha256"].len(), 64);
+    drop(model);
     std::fs::remove_file(path).unwrap();
 }
 
@@ -4124,7 +4686,7 @@ async fn capabilities_report_observation_without_device_readback() {
         document["pp_catalog_scope"],
         "configured-unitspec-directory-only"
     );
-    assert_eq!(document["pp_write_patch"], false);
+    assert_eq!(document["pp_write_patch"], true);
     assert_eq!(
         document["pp_local_administration"]
             .as_array()

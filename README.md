@@ -274,8 +274,24 @@ PP_SET, PP_END, PP_UNLOCK, DALI_READ, DALI_PROGRAM and public DALI commands in
 priority order through cmqttd's existing local or physical backends. STATUS
 reports the active queue count and TEST countdown. The worker stops on the
 first failed receipt and never automatically replays an uncertain bus command.
-`PP WRITE_PATCH` remains 502 before I/O because the vendor patchset and its
-distinct unlock/write/version executor are not available.
+`PP WRITE_PATCH` executes a strict operator-supplied
+`cmqttd.pp-patch/v1` manifest uploaded to
+`%PROJECT%/patchsets/cmqttd-patches.json` through the controlled `FILE`
+namespace. It checks the saved and live type/firmware, requires an admitted
+current patch version for a normal run, then holds one physical programming
+lane across the recovered disable, block-write, full second verification,
+version and re-enable sequence. The live preflight requires exactly one type
+and firmware reply. Ordinary blocks use STORE tag `0x73`; parameter `0xF7`
+uses the returned unlock challenge as its tag. An already-target unit is
+accepted only after every block and control `0x70` are verified, with enable
+repaired when necessary. Every write is read back and an incomplete
+transaction is never replayed automatically. `SIMULATE` validates and prints
+the complete plan and its SHA-256 without PCI traffic; pass that digest as
+`EXPECT_SHA256=<64hex>` on the physical command to bind the reviewed plan.
+Successful completion persists the decimal patch version and manifest
+provenance. The proprietary
+Schneider `patchset.zip` container is not ingested; `CMQTT CAPABILITIES`
+reports that boundary explicitly.
 
 The five-command `DEPLOY_QUEUE` family is wired to that volatile PROGRAMMER
 worker. LIST, DELETE and typed DELETE_ALL return the retained native JSON/status

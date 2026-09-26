@@ -8,6 +8,7 @@ mod dali;
 mod dali_specialized;
 pub(crate) mod family_help;
 mod net_lifecycle;
+mod pp_patch;
 mod transform;
 
 /// Stream an operator-supplied application catalogue with the native
@@ -68,7 +69,7 @@ use cbus_protocol::{
 };
 use cbus_transport::{
     conn::{self, Endpoint},
-    pci::{CBusEvent, GocProgramming, PciClient},
+    pci::{CBusEvent, GocProgramming, PatchApplyDisposition, PatchProgrammingBlock, PciClient},
 };
 use chrono::{Datelike, Local, NaiveDate, NaiveTime, Timelike};
 use serde::{Deserialize, Serialize};
@@ -1451,6 +1452,125 @@ fn config_command(
     }
 }
 
+fn patch_progress(patch: &pp_patch::ResolvedPatch, simulate: bool) -> Vec<String> {
+    let mut lines = vec![
+        format!(
+            "120-PatchWrite: manifest {} version {} sha256 {} target {:02X}{}",
+            patch.manifest_path,
+            patch.manifest_version,
+            patch.manifest_sha256,
+            patch.target_version,
+            if simulate { " (simulate)" } else { "" }
+        ),
+        "120-PatchWrite: patch disable".to_string(),
+        "120-PatchWrite: setting patch version to $ff".to_string(),
+        "120-PatchWrite: starting write".to_string(),
+    ];
+    for (index, block) in patch.blocks.iter().enumerate() {
+        lines.push(format!(
+            "120-PatchWrite: {} block {} of {} at ${:02x}:{}{}",
+            if simulate { "simulating" } else { "writing" },
+            index + 1,
+            patch.blocks.len(),
+            block.parameter,
+            hex::encode(&block.data),
+            if block.unlock { " unlock" } else { "" }
+        ));
+    }
+    lines.extend([
+        "120-PatchWrite: write complete".to_string(),
+        "120-PatchWrite: verify complete".to_string(),
+        format!(
+            "120-PatchWrite: setting patch version to ${:02x}",
+            patch.target_version
+        ),
+        "120-PatchWrite: patch enable".to_string(),
+    ]);
+    lines
+}
+
+fn patch_result_progress(
+    patch: &pp_patch::ResolvedPatch,
+    disposition: PatchApplyDisposition,
+) -> Vec<String> {
+    let mut lines = vec![format!(
+        "120-PatchWrite: manifest {} version {} sha256 {} target {:02X}",
+        patch.manifest_path, patch.manifest_version, patch.manifest_sha256, patch.target_version,
+    )];
+    match disposition {
+        PatchApplyDisposition::AppliedFullPipeline => {
+            lines.extend(patch_progress(patch, false).into_iter().skip(1));
+        }
+        PatchApplyDisposition::RepairedEnableOnly => lines.extend([
+            "120-PatchWrite: existing target version and blocks verified".to_string(),
+            "120-PatchWrite: repaired and verified patch enable".to_string(),
+            "120-PatchWrite: final patch version verified".to_string(),
+        ]),
+        PatchApplyDisposition::AlreadyVerifiedReadOnly => lines.extend([
+            "120-PatchWrite: existing target version and blocks verified".to_string(),
+            "120-PatchWrite: patch enable verified".to_string(),
+            "120-PatchWrite: no physical mutation required".to_string(),
+        ]),
+    }
+    lines
+}
+
+fn commit_verified_patch_version(
+    model: &mut Server,
+    project: &str,
+    network: u8,
+    unit: u8,
+    expected: &Unit,
+    target_version: u8,
+    manifest: (&str, &str),
+) -> Result<(), &'static str> {
+    let Some(network_record) = model
+        .projects
+        .get_mut(project)
+        .and_then(|project| project.networks.get_mut(&network))
+    else {
+        return Err("disappeared");
+    };
+    let Some(record) = network_record.units.get_mut(&unit) else {
+        return Err("disappeared");
+    };
+    if record != expected {
+        return Err("changed");
+    }
+    // Unit PatchVersion is a numeric database field. Keep the same canonical
+    // decimal representation used by SHOW/DBGET rather than ambiguous bare
+    // hexadecimal text (for example 0xAF is stored as 175).
+    record
+        .fields
+        .insert("PatchVersion".to_string(), target_version.to_string());
+    record
+        .fields
+        .insert("PatchManifestSha256".to_string(), manifest.0.to_string());
+    record
+        .fields
+        .insert("PatchManifestVersion".to_string(), manifest.1.to_string());
+    Ok(())
+}
+
+fn update_physical_patch_version(
+    model: &mut Server,
+    project: &str,
+    network: u8,
+    unit: u8,
+    target_version: u8,
+) {
+    if let Some(physical) = model
+        .projects
+        .get_mut(project)
+        .and_then(|project| project.networks.get_mut(&network))
+        .and_then(|network| network.physical.get_mut(&unit))
+    {
+        physical
+            .fields
+            .insert("PatchVersion".to_string(), target_version.to_string());
+    }
+}
+
 impl Service {
     /// Import the supplied project on first start; thereafter load the atomic
     /// database. A corrupt or mismatched database is an error, never reset.
@@ -2248,7 +2368,28 @@ impl Service {
             capabilities["pp_catalog_scope"] =
                 serde_json::Value::String("configured-unitspec-directory-only".to_string());
             capabilities["pp_raw_session_memory"] = serde_json::Value::Bool(true);
-            capabilities["pp_write_patch"] = serde_json::Value::Bool(false);
+            capabilities["pp_write_patch"] = serde_json::Value::Bool(true);
+            capabilities["pp_write_patch_manifest"] = serde_json::json!({
+                "schema":pp_patch::SCHEMA,
+                "project_path":format!("%{}%/{}", self.project, pp_patch::PROJECT_MANIFEST),
+                "fallback_path":pp_patch::PROJECT_MANIFEST,
+                "vendor_patchset_zip":false,
+                "simulate":true,
+                "expected_sha256":true,
+                "verified_physical_pipeline":true,
+                "firmware_comparison":"native-case-sensitive-lexical-inclusive",
+                "catalogue_missing":"reject-constrained-selector",
+                "exact_one_live_identity":true,
+                "patch_version_parameter":242,
+                "reserved_target_version":255,
+                "effective_maximum_patch_bytes":136,
+                "version_precondition":"admitted-current-or-verified-already-target",
+                "readback":true,
+                "full_second_verification":true,
+                "commit_manifest_revision_guard":true,
+                "durable_provenance":["PatchVersion", "PatchManifestSha256", "PatchManifestVersion"],
+                "automatic_retry":false
+            });
             capabilities["programmer_queue"] = serde_json::Value::Bool(true);
             capabilities["programmer_commands"] = serde_json::json!([
                 "add_instruction",
@@ -2908,6 +3049,9 @@ impl Service {
         }
         if verb == "DEPLOY_QUEUE" && sub == "RETRY" {
             return self.deploy_queue_retry(client, tag, &words).await;
+        }
+        if verb == "PP" && sub == "PATCH_VERSION" {
+            return self.pp_patch_version(tag, &words).await;
         }
         if verb == "PP" && sub == "WRITE_PATCH" {
             return self.pp_write_patch(tag, &words).await;
@@ -9556,12 +9700,50 @@ impl Service {
         }
     }
 
-    /// The vendor command is not a generic PP memory write. It consumes a
-    /// signed/vendor patchset and runs a distinct unlock/write/version
-    /// protocol. No patchset is shipped or configured by cmqttd, so preserve
-    /// that selector as an explicit pre-I/O boundary rather than translating
-    /// it to ordinary PP SAVE writes.
+    async fn pp_patch_version(&self, tag: &str, words: &[&str]) -> Response {
+        let model = self.model.lock().await;
+        match pp_patch::manifest_info(&model, &self.project) {
+            Ok(info)
+                if words
+                    .get(2)
+                    .is_some_and(|word| word.eq_ignore_ascii_case("debug")) =>
+            {
+                // Native li_0 flushes 301 as a continuation before its 347
+                // debug text. Response cannot leave a continuation open, so
+                // terminate on the final safe 347 detail line.
+                let mut details = info.debug;
+                let final_text = details
+                    .pop()
+                    .unwrap_or_else(|| "347 End patch information".to_string())
+                    .replacen("347-", "347 ", 1);
+                let mut lines = vec![format!("301-version={}", info.version)];
+                lines.extend(details);
+                Response {
+                    tag: tag.to_string(),
+                    lines,
+                    final_text,
+                    status: 347,
+                }
+            }
+            Ok(info) => Response {
+                tag: tag.to_string(),
+                lines: vec![],
+                final_text: format!("301 version={}", info.version),
+                status: 301,
+            },
+            Err(error) if error.starts_with("No patch manifest") => err(
+                tag,
+                408,
+                "408 Operation failed: Exception reading patch set: com.clipsal.cgate.cbus.pp.patch.PatchException: Unable to load patch set: Patch set patchset.zip not Found",
+            ),
+            Err(error) => err(tag, 408, &format!("408 Invalid patch manifest: {error}")),
+        }
+    }
+
+    /// Run C-Gate 3.4's distinct disable/write/verify/version/enable pipeline
+    /// from a strict manifest in the controlled FILE namespace.
     async fn pp_write_patch(&self, tag: &str, words: &[&str]) -> Response {
+        let _commands = self.commands.lock().await;
         {
             let model = self.model.lock().await;
             if !model.allow_programming
@@ -9573,26 +9755,255 @@ impl Service {
         if words.len() < 4 {
             return err(tag, 400, "400 not enough arguments to command");
         }
-        let Some((project, network, _unit)) = Server::split_unit(words[2]) else {
+        let Some((project, network, unit)) = Server::split_unit(words[2]) else {
             return err(tag, 401, "401 Bad address");
         };
         if project != self.project || network != self.network {
             return err(tag, 401, "401 Bad address");
         }
-        if u8::from_str_radix(words[3], 16).is_err() {
-            return err(tag, 400, "400 bad patch version");
-        }
+        let target_version = match pp_patch::parse_version(words[3]) {
+            Ok(version) => version,
+            Err(pp_patch::VersionParseError::Syntax) => {
+                return err(tag, 400, "400 bad patch version");
+            }
+            Err(pp_patch::VersionParseError::OutOfRange) => {
+                return err(tag, 408, "408 bad patch version");
+            }
+        };
         // Native consumes one optional token, treats only `simulate`
-        // case-insensitively as true, and ignores later tokens. The value
-        // cannot alter this fail-before-I/O boundary without a patchset.
-        let _simulate = words
+        // case-insensitively as true, and ignores later tokens.
+        let simulate = words
             .get(4)
             .is_some_and(|option| option.eq_ignore_ascii_case("simulate"));
-        err(
-            tag,
-            502,
-            "502 PP WRITE_PATCH requires a verified vendor patchset and patch protocol executor; no bus command was sent",
-        )
+        let mut expected_sha256 = None;
+        for option in words.iter().skip(4) {
+            const PREFIX: &str = "EXPECT_SHA256=";
+            if option
+                .get(..PREFIX.len())
+                .is_some_and(|prefix| prefix.eq_ignore_ascii_case(PREFIX))
+            {
+                if expected_sha256.is_some() {
+                    return err(tag, 400, "400 duplicate EXPECT_SHA256 option");
+                }
+                let digest = &option[PREFIX.len()..];
+                if digest.len() != 64 || !digest.bytes().all(|byte| byte.is_ascii_hexdigit()) {
+                    return err(tag, 400, "400 invalid EXPECT_SHA256 option");
+                }
+                expected_sha256 = Some(digest.to_ascii_lowercase());
+            }
+        }
+        let (unit_record, patch) = {
+            let model = self.model.lock().await;
+            let Some(unit_record) = model
+                .projects
+                .get(&self.project)
+                .and_then(|project| project.networks.get(&self.network))
+                .and_then(|network| network.units.get(&unit))
+                .cloned()
+            else {
+                return err(tag, 408, "408 Unable to resolve unit");
+            };
+            if unit_record.unit_type.is_empty() || unit_record.firmware.is_empty() {
+                return err(tag, 408, "408 Bad type or version");
+            }
+            let patch = match pp_patch::select(&model, &self.project, &unit_record, target_version)
+            {
+                Ok(patch) => patch,
+                Err(error) => return err(tag, 408, &format!("408 {error}")),
+            };
+            (unit_record, patch)
+        };
+        if expected_sha256
+            .as_ref()
+            .is_some_and(|expected| expected != &patch.manifest_sha256)
+        {
+            return err(
+                tag,
+                409,
+                "409 Patch manifest SHA-256 does not match EXPECT_SHA256",
+            );
+        }
+        let progress = patch_progress(&patch, simulate);
+        if simulate {
+            return ok(tag, progress, "200 OK");
+        }
+
+        let (generation, pci) = self.current_pci_epoch().await;
+        let live_type = match pci.identify_all(unit, 1).await {
+            Ok(replies) if replies.len() == 1 => match identity_text(&replies[0], "unit type") {
+                Ok(value) => value,
+                Err(error) => {
+                    return err(
+                        tag,
+                        502,
+                        &format!("502 Physical PP identity failed: {error}"),
+                    )
+                }
+            },
+            Ok(replies) if replies.is_empty() => {
+                return err(tag, 401, "401 Physical unit did not answer IDENTIFY")
+            }
+            Ok(_) => {
+                return err(
+                    tag,
+                    409,
+                    "409 More than one physical unit answered the target address",
+                )
+            }
+            Err(error) => {
+                return err(
+                    tag,
+                    502,
+                    &format!("502 Physical PP identity failed: {error}"),
+                )
+            }
+        };
+        let live_firmware = match pci.identify_all(unit, 2).await {
+            Ok(replies) if replies.len() == 1 => {
+                match identity_text(&replies[0], "firmware version") {
+                    Ok(value) => value,
+                    Err(error) => {
+                        return err(
+                            tag,
+                            502,
+                            &format!("502 Physical PP identity failed: {error}"),
+                        )
+                    }
+                }
+            }
+            Ok(replies) if replies.is_empty() => {
+                return err(tag, 408, "408 Physical unit provided no firmware identity")
+            }
+            Ok(_) => {
+                return err(
+                    tag,
+                    409,
+                    "409 More than one physical unit answered the target address",
+                )
+            }
+            Err(error) => {
+                return err(
+                    tag,
+                    502,
+                    &format!("502 Physical PP identity failed: {error}"),
+                )
+            }
+        };
+        if live_type != unit_record.unit_type
+            || live_firmware != unit_record.firmware
+            || live_type != patch.unit_type
+            || !pp_patch::firmware_in_range(
+                &live_firmware,
+                &patch.min_firmware,
+                &patch.max_firmware,
+            )
+            .unwrap_or(false)
+        {
+            return err(
+                tag,
+                409,
+                "409 Physical unit identity does not match the selected patch",
+            );
+        }
+        let blocks = patch
+            .blocks
+            .iter()
+            .map(|block| PatchProgrammingBlock {
+                parameter: block.parameter,
+                data: block.data.clone(),
+                unlock: block.unlock,
+            })
+            .collect::<Vec<_>>();
+        let receipt = match pci
+            .write_patch_verified(
+                unit,
+                patch.patch_version_parameter,
+                &patch.current_versions,
+                target_version,
+                &blocks,
+            )
+            .await
+        {
+            Ok(receipt) => receipt,
+            Err(error) => {
+                return err(
+                    tag,
+                    502,
+                    &format!("502 Physical PP WRITE_PATCH failed: {error}"),
+                )
+            }
+        };
+        let Some(_commit_guard) = self.pci_commit_guard(generation, &pci).await else {
+            return err(
+                tag,
+                408,
+                "408 Physical PP WRITE_PATCH completed on a replaced PCI; database was not updated",
+            );
+        };
+        let mut model = self.model.lock().await;
+        // The final F2 readback is physical truth even when a concurrent FILE
+        // or database edit prevents the durable provenance commit below. SHOW
+        // and GET prefer this volatile snapshot, so do not leave it stale.
+        update_physical_patch_version(
+            &mut model,
+            &self.project,
+            self.network,
+            unit,
+            target_version,
+        );
+        let before = model.clone();
+        let manifest_still_matches =
+            pp_patch::select(&model, &self.project, &unit_record, target_version).is_ok_and(
+                |current| {
+                    current.manifest_path == patch.manifest_path
+                        && current.manifest_sha256 == patch.manifest_sha256
+                },
+            );
+        if !manifest_still_matches {
+            return err(
+                tag,
+                409,
+                "409 Patch manifest changed during physical patch; PatchVersion was not committed",
+            );
+        }
+        if let Err(reason) = commit_verified_patch_version(
+            &mut model,
+            &self.project,
+            self.network,
+            unit,
+            &unit_record,
+            target_version,
+            (&patch.manifest_sha256, &patch.manifest_version),
+        ) {
+            return err(
+                tag,
+                409,
+                if reason == "disappeared" {
+                    "409 Unit database record disappeared after physical patch"
+                } else {
+                    "409 Unit database record changed during physical patch; PatchVersion was not committed"
+                },
+            );
+        }
+        if let Err(error) = Database::from_server(&model).save(&self.state_path) {
+            *model = before;
+            tracing::error!("PP WRITE_PATCH database commit failed: {error}");
+            return err(
+                tag,
+                500,
+                "500 Physical patch verified but database commit failed",
+            );
+        }
+        drop(model);
+        let progress = patch_result_progress(&patch, receipt.disposition);
+        let _ = self.events.send(format!(
+            "#e# pp patch {} version={target_version:02X} blocks={} disposition={} manifest_sha256={}",
+            words[2],
+            receipt.verified_blocks,
+            receipt.disposition.as_str(),
+            patch.manifest_sha256
+        ));
+        ok(tag, progress, "200 OK")
     }
 
     async fn pp_load_physical(
