@@ -3296,16 +3296,16 @@ impl Server {
             }) {
                 return Ok((selected.to_string(), database_level_node(level)));
             }
-            for (project_name, project) in &self.projects {
+            if let Some(project) = self.projects.get(selected) {
                 for network in project.networks.values() {
                     if network.oid == oid {
                         return Ok((
-                            project_name.clone(),
-                            self.copy_network_node(project_name, network.address),
+                            selected.to_string(),
+                            self.copy_network_node(selected, network.address),
                         ));
                     }
                     if let Some(unit) = network.units.values().find(|unit| unit.oid == oid) {
-                        return Ok((project_name.clone(), database_unit_node(unit)));
+                        return Ok((selected.to_string(), database_unit_node(unit)));
                     }
                 }
             }

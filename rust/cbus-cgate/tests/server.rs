@@ -2467,14 +2467,136 @@ fn legacy_database_add_copy_and_cross_project_subtrees_use_fresh_oids() {
     let moved_tags = format_response(&server.handle("[33] DBTAGLIST"));
     assert!(moved_tags.contains("1/58/8/1/TagName=Child"));
     assert!(!moved_tags.contains("1/56/TagName=Lighting"));
+    assert_eq!(server.handle("[34] DBDELETE //DEST/1/58").status, 200);
+    let deleted_tags = format_response(&server.handle("[35] DBTAGLIST"));
+    assert!(!deleted_tags.contains("1/58/"));
     assert_eq!(
         server
-            .handle(&format!("[34] DBDELETE !{cross_tree_oid}"))
+            .handle(&format!("[36] DBGET !{cross_tree_oid}/TagName"))
+            .status,
+        401
+    );
+    assert_eq!(
+        server
+            .handle("[36a] DBSET //DEST/1/58/7/TagName Ghost")
+            .status,
+        401
+    );
+    assert_eq!(
+        server
+            .handle("[37] DBADDSAFE //DEST/1 Application 58 Reused")
             .status,
         200
     );
-    let deleted_tags = format_response(&server.handle("[35] DBTAGLIST"));
-    assert!(!deleted_tags.contains("1/58/"));
+}
+
+#[test]
+fn legacy_database_oid_copy_stays_in_selected_project_and_netvar_moves_its_tree() {
+    let mut server = Server::new(AccessLevel::Program);
+    assert_eq!(server.handle("[1] PROJECT NEW ORIGIN").status, 200);
+    assert_eq!(
+        server
+            .handle("[2] DBCREATENET 254 Original Cni nowhere")
+            .status,
+        200
+    );
+    let unit = server.handle("[3] DBADD //ORIGIN/254 Unit");
+    let unit_oid = unit.final_text.trim_start_matches("301 OID=").to_string();
+    for (tag, field, value) in [("4", "Address", "20"), ("5", "TagName", "Unit20")] {
+        assert_eq!(
+            server
+                .handle(&format!("[{tag}] DBSET !{unit_oid}/{field} {value}"))
+                .status,
+            200
+        );
+    }
+    assert_eq!(server.handle("[6] PROJECT COPY ORIGIN CLONE").status, 200);
+    assert_eq!(server.handle("[7] PROJECT USE CLONE").status, 200);
+    let copied = server.handle(&format!("[8] DBCOPY !{unit_oid} //CLONE/254"));
+    assert_eq!(copied.status, 301, "{copied:?}");
+    let copied_oid = copied.final_text.trim_start_matches("301 OID=");
+    assert_ne!(copied_oid, unit_oid);
+    assert_eq!(
+        server
+            .handle(&format!("[9] DBGET !{copied_oid}/Address"))
+            .status,
+        401
+    );
+    assert_eq!(
+        server
+            .handle(&format!("[10] DBGET !{copied_oid}/TagName"))
+            .status,
+        401
+    );
+
+    assert_eq!(server.handle("[11] PROJECT USE ORIGIN").status, 200);
+    assert_eq!(
+        server
+            .handle("[12] DBADDSAFE //ORIGIN/254 Application 56 Lighting")
+            .status,
+        200
+    );
+    let netvar = server.handle("[13] DBADD //ORIGIN/254/56 NetVar");
+    let netvar_oid = netvar.final_text.trim_start_matches("301 OID=").to_string();
+    for (tag, field, value) in [("14", "Address", "8"), ("15", "TagName", "Variable")] {
+        assert_eq!(
+            server
+                .handle(&format!("[{tag}] DBSET !{netvar_oid}/{field} {value}"))
+                .status,
+            200
+        );
+    }
+    let child = server.handle(&format!("[16] DBADD !{netvar_oid} Level"));
+    let child_oid = child.final_text.trim_start_matches("301 OID=").to_string();
+    for (tag, field, value) in [("17", "Address", "1"), ("18", "TagName", "Child")] {
+        assert_eq!(
+            server
+                .handle(&format!("[{tag}] DBSET !{child_oid}/{field} {value}"))
+                .status,
+            200
+        );
+    }
+    assert_eq!(
+        server
+            .handle(&format!("[19] DBSET !{netvar_oid}/Address 9"))
+            .status,
+        200
+    );
+    assert_eq!(
+        server
+            .handle(&format!("[20] DBGET !{netvar_oid}/Address"))
+            .final_text,
+        format!("342 !{netvar_oid}/Address=9")
+    );
+    let tags = format_response(&server.handle("[21] DBTAGLIST"));
+    assert!(tags.contains("254/56/9/TagName=Variable"));
+    assert!(tags.contains("254/56/9/1/TagName=Child"));
+    assert!(!tags.contains("254/56/8/"));
+    let occupied = server.handle("[22] DBADD //ORIGIN/254/56 NetVar");
+    let occupied_oid = occupied
+        .final_text
+        .trim_start_matches("301 OID=")
+        .to_string();
+    for (tag, field, value) in [("23", "Address", "10"), ("24", "TagName", "Occupied")] {
+        assert_eq!(
+            server
+                .handle(&format!("[{tag}] DBSET !{occupied_oid}/{field} {value}"))
+                .status,
+            200
+        );
+    }
+    assert_eq!(
+        server
+            .handle(&format!("[25] DBSET !{netvar_oid}/Address 10"))
+            .status,
+        408
+    );
+    assert_eq!(
+        server
+            .handle(&format!("[26] DBGET !{netvar_oid}/Address"))
+            .final_text,
+        format!("342 !{netvar_oid}/Address=9")
+    );
 }
 
 #[test]

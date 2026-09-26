@@ -5997,7 +5997,28 @@ impl Server {
         if words.len() != 2 || !valid_target(words[1]) {
             return err(tag, status::BAD_REQUEST, "400 DBDELETE requires a path");
         }
-        if let Some((proj_name, net, addr)) = self.unit_of(words[1]) {
+        let target = if words[1].starts_with('!') || words[1].starts_with('/') {
+            words[1].to_string()
+        } else if let Some(project) = self.current.as_deref() {
+            format!("//{project}/{}", words[1].trim_start_matches('/'))
+        } else {
+            words[1].to_string()
+        };
+        let pending_oid = self.current.as_deref().and_then(|project| {
+            self.db_pending
+                .values()
+                .find(|object| {
+                    target.starts_with("//")
+                        && object.project == project
+                        && object.path.as_deref() == Some(target.as_str())
+                })
+                .map(|object| object.oid.clone())
+        });
+        if let Some(oid) = pending_oid {
+            let oid_target = format!("!{oid}");
+            return self.dbdelete(tag, &["DBDELETE", oid_target.as_str()]);
+        }
+        if let Some((proj_name, net, addr)) = self.unit_of(&target) {
             if proj_name != self.current.clone().unwrap_or_default() {
                 return err(tag, status::NOT_FOUND, "404 Project not selected");
             }
@@ -6008,10 +6029,10 @@ impl Server {
                 .and_then(|n| n.units.remove(&addr));
             // Boundary-checked prefix: `//P/252/p/20` must not wipe
             // `//P/252/p/200` or unrelated siblings.
-            let prefix = format!("{}/", words[1]);
+            let prefix = format!("{target}/");
             self.db_fields
-                .retain(|k, _| *k != words[1] && !k.starts_with(&prefix));
-            self.objects.remove(words[1]);
+                .retain(|k, _| k != &target && !k.starts_with(&prefix));
+            self.objects.remove(&target);
             if let Some(unit) = removed {
                 // Repository copies retain OIDs, so retire the identity only
                 // after the last project record using it is deleted.
@@ -6034,7 +6055,7 @@ impl Server {
         // An OID may occur in multiple loaded native-style project copies.
         // Remove the selected project's record and keep the identity alive
         // until its last occurrence is gone.
-        if let Some(rest) = words[1].strip_prefix('!') {
+        if let Some(rest) = target.strip_prefix('!') {
             let oid = rest.split('/').next().unwrap_or("").to_string();
             if self.known_oids.contains(&oid) && !self.oid_in_current_project(&oid) {
                 return err(tag, status::ABSENT, "401 Object not found");
@@ -6102,12 +6123,38 @@ impl Server {
                                 }
                             }
                         }
+                        let markers = self
+                            .db_fields
+                            .keys()
+                            .filter_map(|field| {
+                                let object = field.strip_suffix("/TagName")?;
+                                if object != path && !object.starts_with(&path_prefix) {
+                                    return None;
+                                }
+                                let parts = object
+                                    .trim_start_matches('/')
+                                    .split('/')
+                                    .collect::<Vec<_>>();
+                                match parts.as_slice() {
+                                    [project, network, application] => Some(format!(
+                                        "//{project}/{network}-APPLICATION-{application}"
+                                    )),
+                                    [project, network, application, group] => Some(format!(
+                                        "//{project}/{network}/{application}-GROUP-{group}"
+                                    )),
+                                    _ => None,
+                                }
+                            })
+                            .collect::<Vec<_>>();
                         self.db_fields.retain(|candidate, _| {
                             candidate != &path && !candidate.starts_with(&path_prefix)
                         });
                         self.objects.retain(|candidate| {
                             candidate != &path && !candidate.starts_with(&path_prefix)
                         });
+                        for marker in markers {
+                            self.objects.remove(&marker);
+                        }
                         let parts = path.trim_start_matches('/').split('/').collect::<Vec<_>>();
                         match (root.element.as_str(), parts.as_slice()) {
                             ("Application", [project, network, application]) => {
@@ -6151,7 +6198,136 @@ impl Server {
                 return ok(tag, vec![], "200 OK");
             }
         }
-        if self.objects.remove(words[1]) || self.db_fields.remove(words[1]).is_some() {
+        if target.starts_with("//") {
+            let prefix = format!("{target}/");
+            let mut existed = self.objects.contains(&target)
+                || self.objects.iter().any(|path| path.starts_with(&prefix))
+                || self
+                    .db_fields
+                    .keys()
+                    .any(|path| path == &target || path.starts_with(&prefix));
+            let mut removed_oids = std::collections::HashSet::new();
+            let selected = self.current.clone().unwrap_or_default();
+
+            let mut pending_remove = self
+                .db_pending
+                .values()
+                .filter(|object| {
+                    object.project == selected
+                        && (object
+                            .path
+                            .as_deref()
+                            .is_some_and(|path| path == target || path.starts_with(&prefix))
+                            || object.parent == target
+                            || object.parent.starts_with(&prefix))
+                })
+                .map(|object| object.oid.clone())
+                .collect::<Vec<_>>();
+            let mut index = 0;
+            while index < pending_remove.len() {
+                let parent = format!("!{}", pending_remove[index]);
+                let children = self
+                    .db_pending
+                    .values()
+                    .filter(|object| object.project == selected && object.parent == parent)
+                    .map(|object| object.oid.clone())
+                    .collect::<Vec<_>>();
+                pending_remove.extend(children);
+                index += 1;
+            }
+            pending_remove.sort();
+            pending_remove.dedup();
+            existed |= !pending_remove.is_empty();
+            for oid in pending_remove {
+                if let Some(key) = self
+                    .db_pending
+                    .iter()
+                    .find(|(_, object)| object.project == selected && object.oid == oid)
+                    .map(|(key, _)| key.clone())
+                {
+                    self.db_pending.remove(&key);
+                    self.db_levels.remove(&key);
+                    removed_oids.insert(oid);
+                }
+            }
+
+            let removed_levels = self
+                .db_levels
+                .iter()
+                .filter(|(_, level)| {
+                    let path = format!("{}/{}", level.parent, level.address);
+                    path == target || path.starts_with(&prefix)
+                })
+                .map(|(key, level)| (key.clone(), level.oid.clone()))
+                .collect::<Vec<_>>();
+            existed |= !removed_levels.is_empty();
+            for (key, oid) in removed_levels {
+                self.db_levels.remove(&key);
+                removed_oids.insert(oid);
+            }
+
+            let parts = target
+                .trim_start_matches('/')
+                .split('/')
+                .collect::<Vec<_>>();
+            if let [project, network] = parts.as_slice() {
+                if let Ok(address) = network.parse::<u8>() {
+                    if let Some(network) = self
+                        .projects
+                        .get_mut(*project)
+                        .and_then(|project| project.networks.remove(&address))
+                    {
+                        existed = true;
+                        removed_oids.insert(network.oid);
+                        removed_oids.extend(network.units.into_values().map(|unit| unit.oid));
+                    }
+                }
+            }
+
+            let markers = self
+                .db_fields
+                .keys()
+                .filter_map(|field| {
+                    let object = field.strip_suffix("/TagName")?;
+                    if object != target && !object.starts_with(&prefix) {
+                        return None;
+                    }
+                    let parts = object
+                        .trim_start_matches('/')
+                        .split('/')
+                        .collect::<Vec<_>>();
+                    match parts.as_slice() {
+                        [project, network, application] => {
+                            Some(format!("//{project}/{network}-APPLICATION-{application}"))
+                        }
+                        [project, network, application, group] => {
+                            Some(format!("//{project}/{network}/{application}-GROUP-{group}"))
+                        }
+                        _ => None,
+                    }
+                })
+                .collect::<Vec<_>>();
+            self.db_fields
+                .retain(|path, _| path != &target && !path.starts_with(&prefix));
+            self.objects
+                .retain(|path| path != &target && !path.starts_with(&prefix));
+            for marker in markers {
+                self.objects.remove(&marker);
+            }
+            for oid in removed_oids {
+                if !self.oid_used_anywhere(&oid) {
+                    self.known_oids.remove(&oid);
+                    self.objects.remove(&format!("!{oid}"));
+                    let oid_prefix = format!("!{oid}/");
+                    self.db_fields
+                        .retain(|path, _| !path.starts_with(&oid_prefix));
+                }
+            }
+            if existed {
+                return ok(tag, vec![], "200 OK");
+            }
+        }
+        if self.objects.remove(&target) || self.db_fields.remove(&target).is_some() {
             return ok(tag, vec![], "200 OK");
         }
         err(tag, status::NOT_FOUND, "404 Object not found")
@@ -6282,41 +6458,43 @@ impl Server {
                     &format!("401 Bad object or device ID: Element !{oid} not found."),
                 );
             }
-            if let Some(level) = self.level_mut(oid) {
-                match field {
-                    "Address" => {
-                        let Ok(address) = value.parse::<u8>() else {
-                            return err(
-                                tag,
-                                408,
-                                "408 Operation failed: Level Address must be a byte",
-                            );
-                        };
-                        level.address = address;
-                    }
-                    "TagName" => level.tag = value.clone(),
-                    "Value" => {
-                        if value.is_empty() {
-                            level.value = None;
-                        } else {
-                            let Ok(byte) = value.parse::<u8>() else {
+            if self.pending_object(&current, oid).is_none() {
+                if let Some(level) = self.level_mut(oid) {
+                    match field {
+                        "Address" => {
+                            let Ok(address) = value.parse::<u8>() else {
                                 return err(
                                     tag,
                                     408,
-                                    "408 Operation failed: Level Value must be a byte",
+                                    "408 Operation failed: Level Address must be a byte",
                                 );
                             };
-                            level.value = Some(byte);
+                            level.address = address;
+                        }
+                        "TagName" => level.tag = value.clone(),
+                        "Value" => {
+                            if value.is_empty() {
+                                level.value = None;
+                            } else {
+                                let Ok(byte) = value.parse::<u8>() else {
+                                    return err(
+                                        tag,
+                                        408,
+                                        "408 Operation failed: Level Value must be a byte",
+                                    );
+                                };
+                                level.value = Some(byte);
+                            }
+                        }
+                        _ => {
+                            self.db_fields.insert(path, value);
+                            return ok(tag, vec![], "200 OK.");
                         }
                     }
-                    _ => {
-                        self.db_fields.insert(path, value);
-                        return ok(tag, vec![], "200 OK.");
-                    }
+                    self.sync_pending_database_field(&current, oid, field, &value);
+                    self.db_fields.insert(path, value);
+                    return ok(tag, vec![], "200 OK.");
                 }
-                self.sync_pending_database_field(&current, oid, field, &value);
-                self.db_fields.insert(path, value);
-                return ok(tag, vec![], "200 OK.");
             }
 
             // DBADD and same-project DBCOPY produce an OID-addressable object
@@ -6552,6 +6730,10 @@ impl Server {
             || self.db_fields.keys().any(|key| {
                 key == &canonical_object || key.starts_with(&format!("{canonical_object}/"))
             })
+            || self
+                .db_levels
+                .values()
+                .any(|level| format!("{}/{}", level.parent, level.address) == canonical_object)
             || match parts.as_slice() {
                 [project, network, application, _field] => self
                     .objects
@@ -6570,6 +6752,35 @@ impl Server {
                     words[1]
                 ),
             );
+        }
+        let materialized_level_key = materialized_pending_oid
+            .as_deref()
+            .and_then(|oid| self.level_key(oid));
+        if !field.eq_ignore_ascii_case("Address") {
+            if let Some(key) = materialized_level_key {
+                let level = self
+                    .db_levels
+                    .get_mut(&key)
+                    .expect("level key resolved an existing level");
+                match field {
+                    "TagName" => level.tag = value.clone(),
+                    "Value" => {
+                        if value.is_empty() {
+                            level.value = None;
+                        } else {
+                            let Ok(byte) = value.parse::<u8>() else {
+                                return err(
+                                    tag,
+                                    408,
+                                    "408 Operation failed: Level Value must be a byte",
+                                );
+                            };
+                            level.value = Some(byte);
+                        }
+                    }
+                    _ => {}
+                }
+            }
         }
         if field.eq_ignore_ascii_case("Address") {
             let Ok(destination) = value.parse::<u8>() else {
