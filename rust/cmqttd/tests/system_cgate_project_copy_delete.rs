@@ -135,46 +135,39 @@ async fn project_copy_delete_preserves_database_identity_and_mqtt_continuity() {
     let absent = command(&mut reader, &mut writer, "15", "PROJECT USE COPY").await;
     assert!(absent.last().unwrap().contains("404 Project not found"));
 
-    for (tag, text, expected) in [
-        (
-            "16",
-            "PROJECT REPAIR AUX",
-            "502 Command requires a physical backend that is not implemented",
-        ),
-        (
-            "17",
-            "REPOSITORY USE 1",
-            "502 REPOSITORY USE requires unsupported server-global repository selection",
-        ),
+    for (tag, text, status, expected) in [
+        ("16", "PROJECT REPAIR AUX", 200, "200 OK."),
+        ("17", "REPOSITORY USE 1", 200, "200 OK."),
         (
             "18",
             "TRANSFORM MIGRATE_SQL project.db",
-            "502 TRANSFORM MIGRATE_SQL requires proprietary repository transformation machinery",
+            408,
+            "Src filename does not exist: project.db",
         ),
-        (
-            "19",
-            "TRANSFORM PROJECT AUX",
-            "502 TRANSFORM PROJECT requires proprietary repository transformation machinery",
-        ),
+        ("19", "TRANSFORM PROJECT AUX", 200, "200 OK."),
         (
             "20",
             "TRANSFORM SQL_TO_XML project.db",
-            "502 TRANSFORM SQL_TO_XML requires proprietary repository transformation machinery",
+            408,
+            "Src filename does not exist: project.db",
         ),
         (
             "21",
             "TRANSFORM SQL_TO_XML_CGATE2 project.db",
-            "502 TRANSFORM SQL_TO_XML_CGATE2 requires proprietary repository transformation machinery",
+            408,
+            "Src filename does not exist: project.db",
         ),
         (
             "22",
             "TRANSFORM XML_TO_SQL project.xml",
-            "502 TRANSFORM XML_TO_SQL requires proprietary repository transformation machinery",
+            408,
+            "Src filename does not exist: project.xml",
         ),
     ] {
         let reply = command(&mut reader, &mut writer, tag, text).await;
+        let final_line = reply.last().unwrap();
         assert!(
-            reply.last().unwrap().contains(expected),
+            final_line.contains(&format!(" {status} ")) && final_line.contains(expected),
             "{text}: {reply:?}"
         );
     }
