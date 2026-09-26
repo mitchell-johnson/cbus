@@ -1,0 +1,2152 @@
+{
+  "oracle": {
+    "product": "Schneider Electric C-Gate",
+    "version": "3.4.0 build 2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "environment": "disposable Docker Java 11 daemon; loopback command port; no C-Bus endpoint; clean temporary work directory"
+  },
+  "inventory": {
+    "maintained_paths": [
+      "CONFIG",
+      "CONFIG GET",
+      "CONFIG INFO",
+      "CONFIG LOAD",
+      "CONFIG OBGET",
+      "CONFIG OBRESET",
+      "CONFIG OBSET",
+      "CONFIG SAVE",
+      "CONFIG SET"
+    ],
+    "catalog_entries": 148,
+    "info_entries": 142,
+    "obsolete_entries": [
+      "secure.client-auth",
+      "secure.enable",
+      "secure.key-password",
+      "secure.keystore-dir",
+      "secure.keystore-file",
+      "secure.keystore-password"
+    ],
+    "get_all_entries": 122,
+    "get_all_order": [
+      "accept-connections-from",
+      "access-control-file",
+      "allow-fast-start",
+      "allow-recall-write",
+      "allow-v3-pci",
+      "application.catalog.directory",
+      "application.catalog.filename",
+      "application.model-change-events",
+      "application.show-command-failure",
+      "auto-reopen",
+      "cbus-application",
+      "cbus-tx-delay",
+      "cbus.tx-cache",
+      "cbus.tx-compress",
+      "ccp.display-oids",
+      "ccp.display-state",
+      "cgate-name",
+      "cgroups-file",
+      "clock.master",
+      "clock.mastermode",
+      "clock.update-interval",
+      "command-local-address",
+      "command-port",
+      "command.encoding",
+      "command.show-responses",
+      "command.show-time",
+      "comms-debug",
+      "config-change-port",
+      "config-path",
+      "console.enable-commands",
+      "dali.catalogue.dir.user",
+      "default-tag-db",
+      "enable-xml-to-sql-background-job",
+      "enable.save-state",
+      "event-file.buffer-size",
+      "event-file.event-level",
+      "event-file.keep-days",
+      "event-file.split",
+      "event-file.split-count",
+      "event-file.split-size",
+      "event-file.startup-dump",
+      "event-filename",
+      "event-host",
+      "event-millis",
+      "event-mode",
+      "event-port",
+      "event-printer",
+      "event-sink.buffer-size",
+      "event.display-oids",
+      "file.base",
+      "global-event-level",
+      "heartbeat-time",
+      "hide-project-names",
+      "instance.lock-file",
+      "instance.lock-timeout",
+      "lighting.auto-phantom-groups",
+      "lighting.learn-update",
+      "load-change-port",
+      "load-change.buffer-size",
+      "local-flow-control",
+      "macro-path",
+      "memory-report",
+      "network.application-connect",
+      "network.auto-phantom-bridge",
+      "network.bridge.mmi-failure-ceiling",
+      "network.bridge.mmi-fallback-delay",
+      "network.error.commands-failed",
+      "network.error.units-failed",
+      "network.error.units-failed-hysteresis",
+      "network.pci.poll-interval",
+      "network.retries",
+      "network.retries.pci-check",
+      "network.source",
+      "network.state-interval",
+      "networks-file",
+      "patchset.file",
+      "pci-flow-control",
+      "pci.local-sal",
+      "pp.spec-base-directory",
+      "project.default",
+      "project.default.archive-dir",
+      "project.default.dir",
+      "project.start",
+      "reopen-delay",
+      "report-new-objects",
+      "response-delay",
+      "scene-base",
+      "secure.bind-address",
+      "secure.port-base",
+      "serial.fixbaud",
+      "speed-write",
+      "startup-delay",
+      "sweep-timeout",
+      "sync-fast-pci",
+      "sync-time",
+      "sync.gateway-pool-size",
+      "sync.global-pool-size",
+      "sync.padding.enabled",
+      "sync.padding.maximum",
+      "sync.padding.minimum",
+      "sync.padding.sync-time-factor",
+      "sync.sync-free.periods",
+      "tag-autosave",
+      "tag-name-output",
+      "tag-use-zip",
+      "tag-validate-db",
+      "tagname-prefix",
+      "transform.base",
+      "unit-auto-delete",
+      "unit-auto-update-db",
+      "unit.template.default.dir",
+      "unitcatalog.directory",
+      "unitcatalog.filename",
+      "unravel.readdress-bridge",
+      "use-1.0-addressing",
+      "use-cgroups",
+      "use-config-change-port",
+      "use-event-file",
+      "use-load-change-port",
+      "use-queue-sweeper",
+      "use-scenes",
+      "use-tags"
+    ]
+  },
+  "parameters": [
+    {
+      "name": "accept-connections-from",
+      "value": "all",
+      "description": "Space separated list of IP addresses or hostnames from which to accept command connections",
+      "default": "all",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "access-control-file",
+      "value": "access.txt",
+      "description": "Name of this access control file relative to the config directory",
+      "default": "access.txt",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "allow-fast-start",
+      "value": "no",
+      "description": "Allow networks to use database for fast startup",
+      "default": "no",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "allow-recall-write",
+      "value": "yes",
+      "description": "Enable the recall from command sessions",
+      "default": "yes",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "allow-v3-pci",
+      "value": "yes",
+      "description": "Allow network to use version 3 or later PCI advanced features",
+      "default": "yes",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "application.catalog.directory",
+      "value": "unitspec",
+      "description": "directory where application catalog is stored",
+      "default": "unitspec",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "application.catalog.filename",
+      "value": "applications.xml",
+      "description": "application catalog filename",
+      "default": "applications.xml",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "application.model-change-events",
+      "value": "yes",
+      "description": "show events indicating model updates from sync processes",
+      "default": "yes",
+      "scope": "project",
+      "effective": "immediate",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "application.show-command-failure",
+      "value": "yes",
+      "description": "Show SAL command failures in SCP and event port",
+      "default": "yes",
+      "scope": "project",
+      "effective": "immediate",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "auto-reopen",
+      "value": "yes",
+      "description": "Automatically attempt to re-open networks that have been closed due to failures.",
+      "default": "yes",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "cbus-application",
+      "value": "56",
+      "description": "The default application number for this network. This should be left set to 56",
+      "default": "56",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "cbus-tx-delay",
+      "value": "250",
+      "description": "Time in milliseconds between commands sent to the network if there is no other mechanism in use (flow control, pci-sync)",
+      "default": "250",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "cbus.tx-cache",
+      "value": "yes",
+      "description": "Cache outgoing identical commands",
+      "default": "yes",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "cbus.tx-compress",
+      "value": "yes",
+      "description": "Perform header compression on outgoing commands",
+      "default": "yes",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "ccp.display-oids",
+      "value": "yes",
+      "description": "Display OIDs in the config change port (CCP)",
+      "default": "yes",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "ccp.display-state",
+      "value": "yes",
+      "description": "Display object state changes in the config change port (CCP)",
+      "default": "yes",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "cgate-name",
+      "value": "Schneider Electric C-Gate",
+      "description": "Name of this server",
+      "default": "Schneider Electric C-Gate",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "cgroups-file",
+      "value": "cgroups.txt",
+      "description": "Name of the C-Groups file in the config directory",
+      "default": "cgroups.txt",
+      "scope": "project",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "clock.master",
+      "value": "no",
+      "description": "Operate the clock application in master mode",
+      "default": "no",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "clock.mastermode",
+      "value": "secondary",
+      "description": "Selects primary or secondard master mode",
+      "default": "secondary",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "clock.update-interval",
+      "value": "30",
+      "description": "Interval in minutes between clock and timekeeping messages",
+      "default": "30",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "command-local-address",
+      "value": "",
+      "description": "If set, gives the IP address that the command interface server will be started on",
+      "default": "",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "command-port",
+      "value": "20023",
+      "description": "TCP port number for the command interface",
+      "default": "20023",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "command.encoding",
+      "value": "utf-8",
+      "description": "character encoding used for command, event, SCP and CCP ports",
+      "default": "utf-8",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "command.show-responses",
+      "value": "yes",
+      "description": "produce an event for each response to a command",
+      "default": "yes",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "command.show-time",
+      "value": "no",
+      "description": "show execution time events for commands",
+      "default": "no",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "comms-debug",
+      "value": "no",
+      "description": "Enable write of comms debug log",
+      "default": "no",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "config-change-port",
+      "value": "20026",
+      "description": "Port number to use for the config change port",
+      "default": "20026",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "config-path",
+      "value": "config",
+      "description": "Path to directory where configuration files are held",
+      "default": "config",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "console.enable-commands",
+      "value": "yes",
+      "description": "allow command input on the console",
+      "default": "yes",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "dali.catalogue.dir.sys",
+      "value": "dali_catalogue/",
+      "description": "Base directory for Dali Catalogue definitions by Schneider Electric",
+      "default": "dali_catalogue/",
+      "scope": "global",
+      "effective": "restart",
+      "listed": false,
+      "obsolete": false
+    },
+    {
+      "name": "dali.catalogue.dir.user",
+      "value": "Dali Catalogue/",
+      "description": "Base directory for Custom Dali Catalogue definitions by Users",
+      "default": "Dali Catalogue/",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "default-tag-db",
+      "value": "",
+      "description": "(DEPRECATED -- only supported to prevent errors for old configs",
+      "default": "",
+      "scope": "global",
+      "effective": "immediate",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "enable-xml-to-sql-background-job",
+      "value": "yes",
+      "description": "Enable the background job of converting XML to SQL.",
+      "default": "yes",
+      "scope": "global",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "enable.save-state",
+      "value": "no",
+      "description": "Allow the Control Enable application to save state to disk and restore it",
+      "default": "no",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "event-file.asynchronous",
+      "value": "yes",
+      "description": "Enable asynchronous logging to the event file.",
+      "default": "yes",
+      "scope": "global",
+      "effective": "restart",
+      "listed": false,
+      "obsolete": false
+    },
+    {
+      "name": "event-file.buffer-size",
+      "value": "2000",
+      "description": "Maximum number of lines in the event-file buffer",
+      "default": "2000",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "event-file.event-level",
+      "value": "9",
+      "description": "Event level to log to the event file.",
+      "default": "9",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "event-file.keep-days",
+      "value": "30",
+      "description": "Number of days worth of event files to keep",
+      "default": "30",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "event-file.split",
+      "value": "yes",
+      "description": "Determines whether the event-file will be split",
+      "default": "yes",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "event-file.split-count",
+      "value": "50",
+      "description": "Maximum number of split event-files",
+      "default": "50",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "event-file.split-size",
+      "value": "5000000",
+      "description": "Size in bytes at which to split the event-file",
+      "default": "5000000",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "event-file.startup-dump",
+      "value": "yes",
+      "description": "Dump useful information to the event file on startup",
+      "default": "yes",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "event-filename",
+      "value": "event.log",
+      "description": "Filename for the event log (if enabled by use-event-file)",
+      "default": "event.log",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "event-host",
+      "value": "localhost",
+      "description": "Hostname to send events to, if event-mode is set to socket",
+      "default": "localhost",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "event-millis",
+      "value": "yes",
+      "description": "Show milliseconds in event outout displayed as .xxx after time",
+      "default": "yes",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "event-mode",
+      "value": "server",
+      "description": "Set to server to run an event server, or as socket to deliver events to another host/port",
+      "default": "server",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "event-port",
+      "value": "20024",
+      "description": "TCP port number for the event interface",
+      "default": "20024",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "event-printer",
+      "value": "",
+      "description": "Name of device to use as event printer (eg. LPT1)",
+      "default": "",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "event-sink.buffer-size",
+      "value": "500",
+      "description": "Maximum number of lines in each event-sink by default",
+      "default": "500",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "event.display-oids",
+      "value": "yes",
+      "description": "Display OIDs in event output if OID is available",
+      "default": "yes",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "file.base",
+      "value": ".",
+      "description": "Root directory for FILE commands",
+      "default": ".",
+      "scope": "global",
+      "effective": "immediate",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "global-event-level",
+      "value": "5",
+      "description": "Global event reporting level (events <= event level will be reported (range 0-9)",
+      "default": "5",
+      "scope": "global",
+      "effective": "immediate",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "heartbeat-time",
+      "value": "0",
+      "description": "Number of seconds between heartbeat events",
+      "default": "0",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "hide-project-names",
+      "value": "no",
+      "description": "Do not show project names in any output from the server",
+      "default": "no",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "instance.lock-file",
+      "value": "cgate.lock",
+      "description": "filename for the lock to ensure one instance of C-Gate only",
+      "default": "cgate.lock",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "instance.lock-timeout",
+      "value": "20",
+      "description": "stale timeout for instance lock file, in seconds",
+      "default": "20",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "lighting.auto-phantom-groups",
+      "value": "yes",
+      "description": "Automatically create phantom groups when lighting commands received from the network",
+      "default": "yes",
+      "scope": "network",
+      "effective": "immediate",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "lighting.learn-update",
+      "value": "no",
+      "description": "Allow the Lighting Application to perform database updates from Learn mode",
+      "default": "no",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "load-change-port",
+      "value": "20025",
+      "description": "TCPIP port to use for load change port",
+      "default": "20025",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "load-change.buffer-size",
+      "value": "500",
+      "description": "Maximum number of lines in the load change event buffer",
+      "default": "500",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "local-flow-control",
+      "value": "no",
+      "description": "Perform flow control in the server rather than the serial port",
+      "default": "no",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "macro-path",
+      "value": "macros",
+      "description": "Path to directory where macro files are stored",
+      "default": "macros",
+      "scope": "global",
+      "effective": "immediate",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "memory-report",
+      "value": "no",
+      "description": "Write memory reports along with heartbeat",
+      "default": "no",
+      "scope": "global",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "network.application-connect",
+      "value": "yes",
+      "description": "Model application connect and forwarding for bridges",
+      "default": "yes",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "network.auto-phantom-bridge",
+      "value": "yes",
+      "description": "Automatically create phantom bridge units and networks when messages are received",
+      "default": "yes",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "network.bridge.mmi-failure-ceiling",
+      "value": "10",
+      "description": "Max number of failed MMIs in a row before aborting net check_unravel on a bridged network",
+      "default": "10",
+      "scope": "network",
+      "effective": "immediate",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "network.bridge.mmi-fallback-delay",
+      "value": "1000",
+      "description": "Delay after failed bridge installation MMI when performing net check_unravel (milliseconds)",
+      "default": "1000",
+      "scope": "network",
+      "effective": "immediate",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "network.error.commands-failed",
+      "value": "3",
+      "description": "Number of times commands should fail before the network is deemed to be in error",
+      "default": "3",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "network.error.units-failed",
+      "value": "3",
+      "description": "Number of units to fail during sync before the network is deemed to be in error",
+      "default": "3",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "network.error.units-failed-hysteresis",
+      "value": "0",
+      "description": "Number of units to recover during sync before the network is deemed OK again",
+      "default": "0",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "network.pci.poll-interval",
+      "value": "60",
+      "description": "Interval to poll gateway to check the connection",
+      "default": "60",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "network.retries",
+      "value": "2",
+      "description": "Number of times commands are retried before the command is deemed to have failed",
+      "default": "2",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "network.retries.pci-check",
+      "value": "1",
+      "description": "PCI Checking begins at this number of retries",
+      "default": "1",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "network.simultaneous-identifies",
+      "value": "5",
+      "description": "Simultaneous Identify command being sent out during network scan (must be 1 to 5)",
+      "default": "5",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": false,
+      "obsolete": false
+    },
+    {
+      "name": "network.source",
+      "value": "db",
+      "description": "The default source of networks definitions.  Valid values are db or file",
+      "default": "db",
+      "scope": "project",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "network.state-interval",
+      "value": "0",
+      "description": "Interval (seconds) between network status events being sent for all networks",
+      "default": "0",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "networks-file",
+      "value": "networks.txt",
+      "description": "The base name of the networks file, which will be prefixedby the project name to make the network filename ",
+      "default": "networks.txt",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "patchset.file",
+      "value": "patchset.zip",
+      "description": "name of the file containing patch sets",
+      "default": "patchset.zip",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "pci-flow-control",
+      "value": "yes",
+      "description": "Enable XON/XOFF flow control by the PCI",
+      "default": "yes",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "pci.local-sal",
+      "value": "yes",
+      "description": "Send Application-Connect compatible messages via this PCI",
+      "default": "yes",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "pp.spec-base-directory",
+      "value": "unitspec/",
+      "description": "Base directory for unit specifications",
+      "default": "unitspec/",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "prerelease.custom-version",
+      "value": "",
+      "description": "Produce a custom version string (prerelease only)",
+      "default": "",
+      "scope": "global",
+      "effective": "restart",
+      "listed": false,
+      "obsolete": false
+    },
+    {
+      "name": "prerelease.use-api-file",
+      "value": "no",
+      "description": "Load api versions from api.txt in the config directory (prerelease only)",
+      "default": "no",
+      "scope": "global",
+      "effective": "restart",
+      "listed": false,
+      "obsolete": false
+    },
+    {
+      "name": "project.default",
+      "value": "",
+      "description": "Name of the default project",
+      "default": "",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "project.default.archive-dir",
+      "value": "Projects/archived/",
+      "description": "Directory where archived projects are stored",
+      "default": "Projects/archived/",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "project.default.dir",
+      "value": "Projects/",
+      "description": "Default directory holding project files",
+      "default": "Projects/",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "project.start",
+      "value": "",
+      "description": "Space-separated list of projects to start on server startup",
+      "default": "",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "reopen-delay",
+      "value": "15000",
+      "description": "Delay time in milliseconds between attempted re-opens of a network",
+      "default": "15000",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "report-new-objects",
+      "value": "no",
+      "description": "Sends events indicating when new units are located on the network",
+      "default": "no",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "response-delay",
+      "value": "5500",
+      "description": "Time in milliseconds to wait for a response before errors or resending",
+      "default": "5500",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "scene-base",
+      "value": "scene",
+      "description": "Path to scene files (relative to server base directory)",
+      "default": "scene",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "secure.bind-address",
+      "value": "",
+      "description": "hostname or ip address of local interfaces to bind secure interfaces to",
+      "default": "",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "secure.client-auth",
+      "obsolete": true,
+      "listed": false
+    },
+    {
+      "name": "secure.enable",
+      "obsolete": true,
+      "listed": false
+    },
+    {
+      "name": "secure.key-password",
+      "obsolete": true,
+      "listed": false
+    },
+    {
+      "name": "secure.keystore-dir",
+      "obsolete": true,
+      "listed": false
+    },
+    {
+      "name": "secure.keystore-file",
+      "obsolete": true,
+      "listed": false
+    },
+    {
+      "name": "secure.keystore-password",
+      "obsolete": true,
+      "listed": false
+    },
+    {
+      "name": "secure.port-base",
+      "value": "20123",
+      "description": "Base port number for SSL secured ports",
+      "default": "20123",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "serial.fixbaud",
+      "value": "yes",
+      "description": "Serial network connection will attempt to fix buad rate if no response",
+      "default": "yes",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "serial.plugin-id",
+      "value": "jserialcomm",
+      "description": "Name of the serial port plugin library to use",
+      "default": "jserialcomm",
+      "scope": "global",
+      "effective": "restart",
+      "listed": false,
+      "obsolete": false
+    },
+    {
+      "name": "smartinspect-file",
+      "value": "event9.sil",
+      "description": "The file to send the SmartInspect messages to",
+      "default": "event9.sil",
+      "scope": "global",
+      "effective": "restart",
+      "listed": false,
+      "obsolete": false
+    },
+    {
+      "name": "smartinspect-file-max",
+      "value": "100MB",
+      "description": "The maximum size (if any) to use in SmartInspect file mode",
+      "default": "100MB",
+      "scope": "global",
+      "effective": "restart",
+      "listed": false,
+      "obsolete": false
+    },
+    {
+      "name": "smartinspect-file-rotate",
+      "value": "none",
+      "description": "The rotation (if any) to use in SmartInspect file mode",
+      "default": "none",
+      "scope": "global",
+      "effective": "restart",
+      "listed": false,
+      "obsolete": false
+    },
+    {
+      "name": "smartinspect-mode",
+      "value": "none",
+      "description": "SmartInspect mode",
+      "default": "none",
+      "scope": "global",
+      "effective": "restart",
+      "listed": false,
+      "obsolete": false
+    },
+    {
+      "name": "smartinspect-tcp-host",
+      "value": "localhost",
+      "description": "The host to send messages to in SmartInspect tcp mode",
+      "default": "localhost",
+      "scope": "global",
+      "effective": "restart",
+      "listed": false,
+      "obsolete": false
+    },
+    {
+      "name": "smartinspect-tcp-port",
+      "value": "4228",
+      "description": "The port to send messages to in SmartInspect tcp mode",
+      "default": "4228",
+      "scope": "global",
+      "effective": "restart",
+      "listed": false,
+      "obsolete": false
+    },
+    {
+      "name": "speed-write",
+      "value": "yes",
+      "description": "Enable fast writing of on/off/ramp commands with instant returns",
+      "default": "yes",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "startup-delay",
+      "value": "0",
+      "description": "(DEPRECATED) Delay (in seconds) before opening a network",
+      "default": "0",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "sweep-timeout",
+      "value": "2000",
+      "description": "Time in milliseconds between executions of the queue sweeper",
+      "default": "2000",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "sync-fast-pci",
+      "value": "yes",
+      "description": "Operate PCI in a synchronous mode (wait for response before sending)",
+      "default": "yes",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "sync-time",
+      "value": "3600",
+      "description": "Time in seconds between the beginnings of successive sync operations",
+      "default": "3600",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "sync.app-stage.psync",
+      "value": "yes",
+      "description": "If yes, performs a final psync of all units",
+      "default": "yes",
+      "scope": "global",
+      "effective": "restart",
+      "listed": false,
+      "obsolete": false
+    },
+    {
+      "name": "sync.gateway-pool-size",
+      "value": "3",
+      "description": "Maximum number of concurrent background syncs per local gateway",
+      "default": "3",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "sync.global-pool-size",
+      "value": "25",
+      "description": "Maximum number of concurrent background syncs",
+      "default": "25",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "sync.padding.enabled",
+      "value": "yes",
+      "description": "Whether sync padding is enabled.",
+      "default": "yes",
+      "scope": "project",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "sync.padding.maximum",
+      "value": "300",
+      "description": "The maximum padding distance between networks, in seconds.",
+      "default": "300",
+      "scope": "project",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "sync.padding.minimum",
+      "value": "5",
+      "description": "The minimum padding distance between networks, in seconds.",
+      "default": "5",
+      "scope": "project",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "sync.padding.sync-time-factor",
+      "value": "0.75",
+      "description": "A factor (0.1 to 1.0) applied to the project's sync-time to determine the overall padding period.",
+      "default": "0.75",
+      "scope": "project",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "sync.sync-free.periods",
+      "value": "",
+      "description": "Periods during which to avoid performing background syncs.",
+      "default": "",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "sync.unit-parameter.areaaddress",
+      "value": "5",
+      "description": "Sync level for a unit's AreaAddress parameter",
+      "default": "5",
+      "scope": "global",
+      "effective": "restart",
+      "listed": false,
+      "obsolete": false
+    },
+    {
+      "name": "sync.unit-parameter.currentsenselevels",
+      "value": "5",
+      "description": "Sync level for a unit's CurrentSenseLevels parameter.",
+      "default": "5",
+      "scope": "global",
+      "effective": "restart",
+      "listed": false,
+      "obsolete": false
+    },
+    {
+      "name": "sync.unit-parameter.patchversion",
+      "value": "5",
+      "description": "Sync level for a unit's PatchVersion parameter",
+      "default": "5",
+      "scope": "global",
+      "effective": "restart",
+      "listed": false,
+      "obsolete": false
+    },
+    {
+      "name": "sync.unit-parameter.physicaloutputlevels",
+      "value": "5",
+      "description": "Sync level for a unit's PhysicalOutputLevels parameter.",
+      "default": "5",
+      "scope": "global",
+      "effective": "restart",
+      "listed": false,
+      "obsolete": false
+    },
+    {
+      "name": "sync.unit-parameter.project",
+      "value": "5",
+      "description": "Sync level for a unit's Project parameter",
+      "default": "5",
+      "scope": "global",
+      "effective": "restart",
+      "listed": false,
+      "obsolete": false
+    },
+    {
+      "name": "sync.unit-parameter.targetlevels",
+      "value": "5",
+      "description": "Sync level for a unit's TargetLevels parameter.",
+      "default": "5",
+      "scope": "global",
+      "effective": "restart",
+      "listed": false,
+      "obsolete": false
+    },
+    {
+      "name": "sync.unit-parameter.unitsummary",
+      "value": "5",
+      "description": "Sync level for a unit's UnitSummary parameter.",
+      "default": "5",
+      "scope": "global",
+      "effective": "restart",
+      "listed": false,
+      "obsolete": false
+    },
+    {
+      "name": "tag-autosave",
+      "value": "no",
+      "description": "If project (tag) database is updated by learn mode, then automatically save the database to disk",
+      "default": "no",
+      "scope": "global",
+      "effective": "immediate",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "tag-name-output",
+      "value": "no",
+      "description": "Show tag names in any output from the server",
+      "default": "no",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "tag-use-zip",
+      "value": "no",
+      "description": "Store tag databases as zip files",
+      "default": "no",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "tag-validate-db",
+      "value": "yes",
+      "description": "Perform XML validation on tag databases",
+      "default": "yes",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "tagname-prefix",
+      "value": "yes",
+      "description": "Require prefix before tag names in address paths",
+      "default": "yes",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "transform.base",
+      "value": "transform/",
+      "description": "base directory for xslt transforms",
+      "default": "transform/",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "unit-auto-delete",
+      "value": "no",
+      "description": "Units are automatically deleted from the server if they are not found on the network",
+      "default": "no",
+      "scope": "network",
+      "effective": "immediate",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "unit-auto-update-db",
+      "value": "no",
+      "description": "Units parameters are automatically updated to the project database",
+      "default": "no",
+      "scope": "network",
+      "effective": "immediate",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "unit.template.default.dir",
+      "value": "Assets/Device Template Files/",
+      "description": "Default directory holding device template files",
+      "default": "Assets/Device Template Files/",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "unitcatalog.directory",
+      "value": "unitspec",
+      "description": "Directory where the unit catalog is stored (relative to server home directory)",
+      "default": "unitspec",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "unitcatalog.filename",
+      "value": "cbusunits.xml",
+      "description": "Name of the unit catalog file",
+      "default": "cbusunits.xml",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "unravel.readdress-bridge",
+      "value": "yes",
+      "description": "During an unravel, automatically readdress the bridge to match the near side network",
+      "default": "yes",
+      "scope": "network",
+      "effective": "immediate",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "use-1.0-addressing",
+      "value": "no",
+      "description": "Use C-Gate 1.0-style addresses in any output from the server",
+      "default": "no",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "use-cgroups",
+      "value": "no",
+      "description": "Use C-Groups",
+      "default": "no",
+      "scope": "project",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "use-config-change-port",
+      "value": "yes",
+      "description": "Enable the config change port operation",
+      "default": "yes",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "use-event-file",
+      "value": "yes",
+      "description": "Save events to a file (filename specified in event-filename)",
+      "default": "yes",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "use-load-change-port",
+      "value": "yes",
+      "description": "Start the load change port",
+      "default": "yes",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "use-queue-sweeper",
+      "value": "yes",
+      "description": "Run the queue sweeper to remove stale commands",
+      "default": "yes",
+      "scope": "network",
+      "effective": "closeopen",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "use-scenes",
+      "value": "no",
+      "description": "Enable CGate server scenes",
+      "default": "no",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    },
+    {
+      "name": "use-tags",
+      "value": "yes",
+      "description": "Use tag databases",
+      "default": "yes",
+      "scope": "global",
+      "effective": "restart",
+      "listed": true,
+      "obsolete": false
+    }
+  ],
+  "global_cases": [
+    {
+      "command": "CONFIG",
+      "response": [
+        "101-Help: CONFIG commands:",
+        "101-Help:  CONFIG ? Help for these commands",
+        "101-Help:  CONFIG GET - ",
+        "101-Help:  CONFIG INFO - ",
+        "101-Help:  CONFIG LOAD - ",
+        "101-Help:  CONFIG OBGET - ",
+        "101-Help:  CONFIG OBRESET - ",
+        "101-Help:  CONFIG OBSET - ",
+        "101-Help:  CONFIG SAVE - ",
+        "101 Help:  CONFIG SET - "
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG ?",
+      "response": [
+        "101-Help: CONFIG commands:",
+        "101-Help:  CONFIG ? Help for these commands",
+        "101-Help:  CONFIG GET - ",
+        "101-Help:  CONFIG INFO - ",
+        "101-Help:  CONFIG LOAD - ",
+        "101-Help:  CONFIG OBGET - ",
+        "101-Help:  CONFIG OBRESET - ",
+        "101-Help:  CONFIG OBSET - ",
+        "101-Help:  CONFIG SAVE - ",
+        "101 Help:  CONFIG SET - "
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG GET sync-time",
+      "response": [
+        "303 sync-time=3600"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG INFO sync-time",
+      "response": [
+        "304-parameter=sync-time",
+        "304-value=3600",
+        "304-description=Time in seconds between the beginnings of successive sync operations",
+        "304-defaultValue=3600",
+        "304-scope=network",
+        "304 effective=closeopen"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG GET no-such-param",
+      "response": [
+        "408 Operation failed: config parameter not found"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG INFO no-such-param",
+      "response": [
+        "408 Operation failed: config parameter not found"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG GET",
+      "response": [
+        "400 Syntax Error."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG GET sync-time extra ignored",
+      "response": [
+        "303 sync-time=3600"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG GET SYNC-TIME",
+      "response": [
+        "408 Operation failed: config parameter not found"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG SET sync-time",
+      "response": [
+        "200 OK."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG GET sync-time",
+      "response": [
+        "303 sync-time="
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG SET sync-time \"two words\"",
+      "response": [
+        "200 OK."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG GET sync-time",
+      "response": [
+        "303 sync-time=two words"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG GET sync-time",
+      "response": [
+        "303 sync-time=two words"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBSET global sync-time 3600",
+      "response": [
+        "408 Operation failed: Config value is still the same."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBSET global sync-time 7",
+      "response": [
+        "200 OK."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBSET global sync-time 7",
+      "response": [
+        "408 Operation failed: Config value is still the same."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBGET global sync-time",
+      "response": [
+        "303 sync-time=7"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBGET global no-such-param",
+      "response": [],
+      "complete": false
+    },
+    {
+      "command": "CONFIG OBRESET global sync-time",
+      "response": [
+        "440 No object specified."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG LOAD global missing.conf",
+      "response": [
+        "408 Operation failed: Global config load from missing.conf failed:Config file not found"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG SAVE global fixture.conf extra ignored",
+      "response": [
+        "200 OK."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG LOAD global fixture.conf extra ignored",
+      "response": [
+        "200 OK."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG GET sync-time",
+      "response": [
+        "303 sync-time=7"
+      ],
+      "complete": true
+    }
+  ],
+  "value_grammar_cases": [
+    {
+      "command": "CONFIG SET sync-time unquoted multiple words",
+      "response": [
+        "200 OK."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG GET sync-time",
+      "response": [
+        "303 sync-time=unquoted multiple words"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG SET sync-time \"quoted multiple words\"",
+      "response": [
+        "200 OK."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG GET sync-time",
+      "response": [
+        "303 sync-time=quoted multiple words"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG SET sync-time \"a b\" ignored tail",
+      "response": [
+        "200 OK."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG GET sync-time",
+      "response": [
+        "303 sync-time=a b ignored tail"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG SET sync-time",
+      "response": [
+        "200 OK."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG GET sync-time",
+      "response": [
+        "303 sync-time="
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG SET sync-time 3600",
+      "response": [
+        "200 OK."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG GET sync-time",
+      "response": [
+        "303 sync-time=3600"
+      ],
+      "complete": true
+    }
+  ],
+  "scope_cases": [
+    {
+      "command": "CONFIG OBGET project application.model-change-events",
+      "response": [
+        "303 application.model-change-events=yes"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBGET //CFG application.model-change-events",
+      "response": [
+        "303 application.model-change-events=yes"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBGET project sync-time",
+      "response": [
+        "303 sync-time=7"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBGET project global-event-level",
+      "response": [],
+      "complete": false
+    },
+    {
+      "command": "CONFIG OBSET project application.model-change-events yes",
+      "response": [
+        "408 Operation failed: Config value is still the same."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBSET project application.model-change-events no",
+      "response": [
+        "200 OK."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBGET project application.model-change-events",
+      "response": [
+        "303 application.model-change-events=no"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBSET project sync-time 8",
+      "response": [
+        "200 OK."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBGET project sync-time",
+      "response": [
+        "303 sync-time=8"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG GET sync-time",
+      "response": [
+        "303 sync-time=8"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBGET //CFG/254 sync-time",
+      "response": [
+        "303 sync-time=8"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBGET 254 sync-time",
+      "response": [
+        "303 sync-time=8"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBSET //CFG/254 sync-time 9",
+      "response": [
+        "200 OK."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBGET //CFG/254 sync-time",
+      "response": [
+        "303 sync-time=9"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBGET //CFG/254 application.model-change-events",
+      "response": [],
+      "complete": false
+    },
+    {
+      "command": "CONFIG OBGET //CFG/254 global-event-level",
+      "response": [],
+      "complete": false
+    },
+    {
+      "command": "CONFIG OBSET //CFG/254 application.model-change-events no",
+      "response": [
+        "408 Operation failed: Config value is still the same."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBSET //CFG/254 global-event-level 6",
+      "response": [
+        "408 Operation failed: Property name cannot be found in the project."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBRESET //CFG/254 sync-time",
+      "response": [
+        "200 OK."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBGET //CFG/254 sync-time",
+      "response": [
+        "303 sync-time=8"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBSET //CFG/254 sync-time 9",
+      "response": [
+        "200 OK."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBRESET project sync-time",
+      "response": [
+        "200 OK."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBGET project sync-time",
+      "response": [
+        "303 sync-time=7"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBGET //CFG/254 sync-time",
+      "response": [
+        "303 sync-time=7"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBRESET project",
+      "response": [
+        "200 OK."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBGET project application.model-change-events",
+      "response": [
+        "303 application.model-change-events=yes"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBGET //CFG/254/p/5 sync-time",
+      "response": [
+        "401 Bad object or device ID: //CFG/254/p/5 (Unit not found)"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBGET //NOPE/254 sync-time",
+      "response": [
+        "440 No object specified."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBGET GLOBAL sync-time",
+      "response": [
+        "401 Bad object or device ID: GLOBAL (Network not found)"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG SAVE project",
+      "response": [
+        "200 OK."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBSET project application.model-change-events no",
+      "response": [
+        "200 OK."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG LOAD project",
+      "response": [
+        "200 OK."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG OBGET project application.model-change-events",
+      "response": [
+        "303 application.model-change-events=yes"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG SAVE all",
+      "response": [
+        "200 OK."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG LOAD all",
+      "response": [
+        "200-OK.",
+        "200 OK."
+      ],
+      "complete": true
+    }
+  ],
+  "no_current_project_cases": [
+    {
+      "command": "CONFIG LOAD project",
+      "response": [
+        "408 Operation failed: No project in use"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG LOAD all",
+      "response": [
+        "200-OK.",
+        "408 Operation failed: No project in use"
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG SAVE project",
+      "response": [
+        "408-Operation failed: No project in use",
+        "200 OK."
+      ],
+      "complete": true
+    },
+    {
+      "command": "CONFIG SAVE all",
+      "response": [
+        "408-Operation failed: No project in use",
+        "200 OK."
+      ],
+      "complete": true
+    }
+  ],
+  "observed_native_defects": {
+    "obget_unknown_or_wrong_scope": "Native accepts the command but sends no response; cmqttd deliberately repairs this to a deterministic 408 so clients do not hang.",
+    "save_project_without_current": "Native emits a 408 continuation and then final 200.",
+    "obreset_global": "Global is not a resettable scope and resolves to 440 No object specified."
+  },
+  "implementation_boundary": "The native LOAD/SAVE global filename targets its config directory and project forms target vendor project storage. cmqttd retains the grammar and response/state workflow in its bounded atomic JSON repository; it never exposes arbitrary host-file access or claims that CONFIG values reconfigure cmqttd runtime listeners, PCI, MQTT, or logging."
+}

@@ -1938,6 +1938,26 @@ async fn failed_persistence_rolls_back_database_changes() {
         service
             .handle(
                 &mut ClientState::default(),
+                "[config] CONFIG SET sync-time changed",
+            )
+            .await
+            .status,
+        500
+    );
+    assert_eq!(
+        service
+            .handle(
+                &mut ClientState::default(),
+                "[config-read] CONFIG GET sync-time",
+            )
+            .await
+            .final_text,
+        "303 sync-time=3600"
+    );
+    assert_eq!(
+        service
+            .handle(
+                &mut ClientState::default(),
                 "[1a] PROJECT ARCHIVE HARNESS cmqttd:rollback-slot",
             )
             .await
@@ -7751,4 +7771,472 @@ async fn tcp_here_documents_preserve_tags_drain_limits_and_close_on_truncation()
 
     server.abort();
     std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn config_catalog_scopes_snapshots_and_restart_are_durable_without_pci_io() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+
+    let help = service.handle(&mut client, "[h] CONFIG ?").await;
+    assert_eq!(help.status, 101);
+    assert_eq!(help.lines.len(), 9);
+    assert_eq!(help.final_text, "101 Help:  CONFIG SET - ");
+
+    let all = service.handle(&mut client, "[all] CONFIG GET *").await;
+    assert_eq!(all.status, 303);
+    assert_eq!(all.lines.len() + 1, 122);
+    assert_eq!(all.lines[0], "accept-connections-from=all");
+    assert_eq!(all.final_text, "303 use-tags=yes");
+    assert_eq!(
+        service
+            .handle(&mut client, "[get] CONFIG GET sync-time")
+            .await
+            .final_text,
+        "303 sync-time=3600"
+    );
+
+    assert_eq!(
+        service
+            .handle(&mut client, "[set] CONFIG SET sync-time 123")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[global] CONFIG OBGET global sync-time")
+            .await
+            .final_text,
+        "303 sync-time=3600"
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[project] CONFIG OBGET project sync-time")
+            .await
+            .final_text,
+        "303 sync-time=123"
+    );
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[network] CONFIG OBGET //HARNESS/254 sync-time",
+            )
+            .await
+            .final_text,
+        "303 sync-time=123"
+    );
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[network-set] CONFIG OBSET //HARNESS/254 sync-time 124",
+            )
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[save-project] CONFIG SAVE project")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[reset-project] CONFIG OBRESET project sync-time"
+            )
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[reset-read] CONFIG OBGET //HARNESS/254 sync-time",
+            )
+            .await
+            .final_text,
+        "303 sync-time=3600"
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[load-project] CONFIG LOAD project")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[restored-network] CONFIG OBGET //HARNESS/254 sync-time",
+            )
+            .await
+            .final_text,
+        "303 sync-time=124"
+    );
+
+    assert_eq!(
+        service
+            .handle(&mut client, "[global-set] CONFIG OBSET global sync-time 7",)
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[global-save] CONFIG SAVE global retained.conf",
+            )
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[global-set-2] CONFIG OBSET global sync-time 8",
+            )
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[global-load] CONFIG LOAD global retained.conf",
+            )
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[global-read] CONFIG OBGET global sync-time")
+            .await
+            .final_text,
+        "303 sync-time=7"
+    );
+
+    let missing = service
+        .handle(&mut client, "[missing] CONFIG OBGET global not-a-parameter")
+        .await;
+    assert_eq!(missing.status, 408);
+    let wrong_scope = service
+        .handle(
+            &mut client,
+            "[scope] CONFIG OBGET //HARNESS/254 global-event-level",
+        )
+        .await;
+    assert_eq!(wrong_scope.status, 408);
+
+    let capabilities = service
+        .handle(&mut client, "[caps] CMQTT CAPABILITIES")
+        .await;
+    let document: serde_json::Value = serde_json::from_str(&capabilities.lines[0]).unwrap();
+    assert_eq!(
+        document["config_commands"],
+        serde_json::json!(["get", "info", "load", "obget", "obreset", "obset", "save", "set"])
+    );
+    assert_eq!(document["config_catalog_parameters"], 148);
+    assert_eq!(document["config_get_parameters"], 122);
+    assert_eq!(document["config_persistence"], "cmqttd-json");
+    assert_eq!(document["config_runtime_reconfiguration"], false);
+    assert_eq!(document["config_native_obget_missing_reply_repaired"], true);
+
+    let mut byte = [0u8; 1];
+    assert!(
+        tokio::time::timeout(Duration::from_millis(10), remote.read(&mut byte))
+            .await
+            .is_err()
+    );
+    drop(service);
+
+    let (pci, _remote) = pci();
+    let restarted = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    assert_eq!(
+        restarted
+            .handle(
+                &mut ClientState::default(),
+                "[restart] CONFIG OBGET global sync-time",
+            )
+            .await
+            .final_text,
+        "303 sync-time=7"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn config_mutations_require_login_while_catalog_reads_stay_open() {
+    let (service, path) = authed_service();
+    let mut client = ClientState::default();
+    assert_eq!(
+        service
+            .handle(&mut client, "[read] CONFIG GET sync-time")
+            .await
+            .status,
+        303
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[locked] CONFIG SET sync-time 55")
+            .await
+            .final_text,
+        "420 LOGIN required"
+    );
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[login] LOGIN throwaway-loopback-token-0123456789abcdef",
+            )
+            .await
+            .status,
+        200
+    );
+    for command in [
+        "CONFIG SET sync-time 55",
+        "CONFIG OBSET global sync-time 56",
+        "CONFIG OBRESET project sync-time",
+        "CONFIG SAVE global auth.conf",
+        "CONFIG LOAD global auth.conf",
+    ] {
+        assert_eq!(
+            service
+                .handle(&mut client, &format!("[mutate] {command}"))
+                .await
+                .status,
+            200,
+            "{command}"
+        );
+    }
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn config_native_grammar_errors_and_mixed_envelopes_are_pinned() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut client = ClientState::default();
+
+    for (command, status, final_text) in [
+        ("CONFIG BOGUS", 400, "400 Syntax Error."),
+        ("CONFIG GET", 400, "400 Syntax Error."),
+        (
+            "CONFIG GET no-such-param",
+            408,
+            "408 Operation failed: config parameter not found",
+        ),
+        (
+            "CONFIG GET SYNC-TIME",
+            408,
+            "408 Operation failed: config parameter not found",
+        ),
+        ("CONFIG INFO", 400, "400 Syntax Error."),
+        (
+            "CONFIG INFO no-such-param",
+            408,
+            "408 Operation failed: config parameter not found",
+        ),
+        (
+            "CONFIG INFO secure.enable",
+            408,
+            "408 Operation failed: project property not found",
+        ),
+        (
+            "CONFIG OBGET",
+            400,
+            "400 Syntax Error: Missing parameter : <object>",
+        ),
+        (
+            "CONFIG OBGET global",
+            400,
+            "400 Syntax Error: Missing parameter : <config-parameter>",
+        ),
+        (
+            "CONFIG OBSET",
+            400,
+            "400 Syntax Error: Missing parameter : <object>",
+        ),
+        (
+            "CONFIG OBSET global",
+            400,
+            "400 Syntax Error: Missing parameter : <config-parameter>",
+        ),
+        (
+            "CONFIG OBSET global sync-time 3600",
+            408,
+            "408 Operation failed: Config value is still the same.",
+        ),
+        (
+            "CONFIG OBRESET",
+            400,
+            "400 Syntax Error: Missing parameter : <object>",
+        ),
+        ("CONFIG OBRESET global sync-time", 440, "440 No object specified."),
+        ("CONFIG LOAD", 400, "400 Syntax Error."),
+        ("CONFIG LOAD bogus", 400, "400 Syntax Error."),
+        (
+            "CONFIG LOAD global missing.conf",
+            408,
+            "408 Operation failed: Global config load from missing.conf failed:Config file not found",
+        ),
+        ("CONFIG SAVE", 400, "400 Syntax Error."),
+        ("CONFIG SAVE bogus", 400, "400 Syntax Error."),
+        (
+            "CONFIG SET secure.enable yes",
+            408,
+            "408 Operation failed: Can't set an obsolete option.",
+        ),
+    ] {
+        let response = service
+            .handle(&mut client, &format!("[case] {command}"))
+            .await;
+        assert_eq!(response.status, status, "{command}: {response:?}");
+        assert_eq!(response.final_text, final_text, "{command}");
+    }
+
+    let info = service
+        .handle(&mut client, "[info] CONFIG INFO sync-time trailing words")
+        .await;
+    assert_eq!(
+        info.lines,
+        [
+            "parameter=sync-time",
+            "value=3600",
+            "description=Time in seconds between the beginnings of successive sync operations",
+            "defaultValue=3600",
+            "scope=network",
+        ]
+    );
+    assert_eq!(info.final_text, "304 effective=closeopen");
+
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[unit] CONFIG OBGET //HARNESS/254/p/5 sync-time",
+            )
+            .await
+            .final_text,
+        "440 Not an object with config parameters."
+    );
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[missing-unit] CONFIG OBGET //HARNESS/254/p/6 sync-time",
+            )
+            .await
+            .final_text,
+        "401 Bad object or device ID: //HARNESS/254/p/6 (Unit not found)"
+    );
+
+    assert_eq!(
+        service
+            .handle(&mut client, "[null] CONFIG SET sync-time")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[null-get] CONFIG GET sync-time ignored")
+            .await
+            .final_text,
+        "303 sync-time="
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[quoted] CONFIG SET sync-time \"two words\"",)
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[quoted-get] CONFIG GET sync-time")
+            .await
+            .final_text,
+        "303 sync-time=two words"
+    );
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[quoted-tail] CONFIG SET sync-time \"a b\" ignored tail",
+            )
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[quoted-tail-get] CONFIG GET sync-time")
+            .await
+            .final_text,
+        "303 sync-time=a b ignored tail"
+    );
+
+    let load_all = service
+        .handle(&mut client, "[load-all] CONFIG LOAD all")
+        .await;
+    assert_eq!(load_all.lines, ["OK."]);
+    assert_eq!(load_all.final_text, "200 OK.");
+    let save_all = service
+        .handle(&mut client, "[save-all] CONFIG SAVE all ignored extra")
+        .await;
+    assert!(save_all.lines.is_empty());
+    assert_eq!(save_all.final_text, "200 OK.");
+
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn config_no_current_project_preserves_native_load_save_mixed_statuses() {
+    let mut model = Server::new(AccessLevel::Program);
+    for (body, expected_lines, expected_final) in [
+        (
+            "CONFIG LOAD project",
+            Vec::<String>::new(),
+            "408 Operation failed: No project in use",
+        ),
+        (
+            "CONFIG LOAD all",
+            vec!["200-OK.".to_string()],
+            "408 Operation failed: No project in use",
+        ),
+        (
+            "CONFIG SAVE project",
+            vec!["408-Operation failed: No project in use".to_string()],
+            "200 OK.",
+        ),
+        (
+            "CONFIG SAVE all",
+            vec!["408-Operation failed: No project in use".to_string()],
+            "200 OK.",
+        ),
+    ] {
+        let words = body.split_whitespace().collect::<Vec<_>>();
+        let upper = words
+            .iter()
+            .map(|word| word.to_ascii_uppercase())
+            .collect::<Vec<_>>();
+        let response = config_command(&mut model, "case", body, &words, &upper, None);
+        assert_eq!(response.lines, expected_lines, "{body}");
+        assert_eq!(response.final_text, expected_final, "{body}");
+    }
 }

@@ -24,6 +24,7 @@ use std::path::PathBuf;
 
 pub mod auth;
 pub mod capability_matrix;
+mod config;
 pub mod manual;
 pub mod service;
 pub mod unitspec;
@@ -496,11 +497,12 @@ fn project_identity_argument(body: &str) -> Result<String, ProjectIdentityArgume
     }
 }
 /// Status codes that may prefix intermediate reply lines in native
-/// multi-status envelopes (calculator `134`, cached-property `300`,
-/// parameter `315`, database `342`/`233`, snippet/JSON `343`/`345`/`346`/`347`,
-/// PINGU `302`, SYNCNEW discovery/failure `303`/`408`, multiplicity `120`).
-const ENVELOPE_CODES: [u16; 13] = [
-    120, 134, 233, 300, 302, 303, 315, 342, 343, 345, 346, 347, 408,
+/// multi-status envelopes (CONFIG `304`, calculator `134`,
+/// cached-property `300`, parameter `315`, database `342`/`233`, snippet/JSON
+/// `343`/`345`/`346`/`347`, PINGU `302`, SYNCNEW discovery/failure
+/// `303`/`408`, multiplicity `120`).
+const ENVELOPE_CODES: [u16; 14] = [
+    120, 134, 233, 300, 302, 303, 304, 315, 342, 343, 345, 346, 347, 408,
 ];
 
 /// True when a reply line already carries a native multi-status envelope.

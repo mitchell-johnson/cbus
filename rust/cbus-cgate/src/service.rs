@@ -3,6 +3,9 @@
 
 use super::*;
 use crate::auth;
+use crate::config::{
+    parameter as config_parameter, ConfigParameter, ConfigScope, CONFIG_HELP, CONFIG_PARAMETERS,
+};
 use cbus_protocol::{
     common::APP_MEDIA_TRANSPORT,
     packet::{Meta, Packet},
@@ -41,6 +44,7 @@ const MAX_LINE: usize = 1024 * 1024;
 const MAX_DOCUMENT: usize = 16 * 1024 * 1024;
 const MAX_STATE: usize = 32 * 1024 * 1024;
 const MAX_LABEL_OBSERVATIONS: usize = 4096;
+const CONFIG_KEY_PREFIX: &str = "@cmqttd/config/";
 
 const AIRCON_HELP: &[&str] = &[
     "Help: AIRCON commands:",
@@ -391,6 +395,701 @@ struct ClockSummary {
     enabled: bool,
     active: bool,
     burden: bool,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+enum ConfigObject {
+    Global,
+    Project(String),
+    Network { project: String, network: u8 },
+}
+
+impl ConfigObject {
+    fn accepts(&self, parameter: &ConfigParameter) -> bool {
+        match self {
+            Self::Global => true,
+            Self::Project(_) => parameter.scope != ConfigScope::Global,
+            Self::Network { .. } => parameter.scope == ConfigScope::Network,
+        }
+    }
+}
+
+fn config_component(value: &str) -> String {
+    hex::encode(value.as_bytes())
+}
+
+fn config_global_prefix() -> String {
+    format!("{CONFIG_KEY_PREFIX}active/global/")
+}
+
+fn config_project_prefix(project: &str) -> String {
+    format!(
+        "{CONFIG_KEY_PREFIX}active/project/{}/",
+        config_component(project)
+    )
+}
+
+fn config_network_prefix(project: &str, network: u8) -> String {
+    format!(
+        "{CONFIG_KEY_PREFIX}active/network/{}/{network}/",
+        config_component(project)
+    )
+}
+
+fn config_key(target: &ConfigObject, name: &str) -> String {
+    match target {
+        ConfigObject::Global => format!("{}{name}", config_global_prefix()),
+        ConfigObject::Project(project) => {
+            format!("{}{name}", config_project_prefix(project))
+        }
+        ConfigObject::Network { project, network } => {
+            format!("{}{name}", config_network_prefix(project, *network))
+        }
+    }
+}
+
+fn config_global_value(model: &Server, parameter: &ConfigParameter) -> String {
+    model
+        .config_values
+        .get(&config_key(&ConfigObject::Global, parameter.name))
+        .cloned()
+        .unwrap_or_else(|| parameter.default.to_string())
+}
+
+fn config_project_value(model: &Server, project: &str, parameter: &ConfigParameter) -> String {
+    model
+        .config_values
+        .get(&config_key(
+            &ConfigObject::Project(project.to_string()),
+            parameter.name,
+        ))
+        .cloned()
+        .unwrap_or_else(|| config_global_value(model, parameter))
+}
+
+fn config_object_value(
+    model: &Server,
+    target: &ConfigObject,
+    parameter: &ConfigParameter,
+) -> Result<String, &'static str> {
+    match target {
+        ConfigObject::Global => Ok(config_global_value(model, parameter)),
+        ConfigObject::Project(project) => Ok(config_project_value(model, project, parameter)),
+        ConfigObject::Network {
+            project,
+            network: _,
+        } => {
+            if parameter.scope == ConfigScope::Global {
+                return Err("Property name cannot be found in the project.");
+            }
+            Ok(model
+                .config_values
+                .get(&config_key(target, parameter.name))
+                .cloned()
+                .unwrap_or_else(|| config_project_value(model, project, parameter)))
+        }
+    }
+}
+
+fn config_legacy_value(
+    model: &Server,
+    current: Option<&str>,
+    parameter: &ConfigParameter,
+) -> String {
+    if parameter.scope != ConfigScope::Global {
+        if let Some(project) = current {
+            return config_project_value(model, project, parameter);
+        }
+    }
+    config_global_value(model, parameter)
+}
+
+fn config_help(tag: &str) -> Response {
+    let mut rows = CONFIG_HELP
+        .iter()
+        .map(|line| (*line).to_string())
+        .collect::<Vec<_>>();
+    let final_text = format!("101 {}", rows.pop().expect("CONFIG help is nonempty"));
+    Response {
+        tag: tag.to_string(),
+        lines: rows,
+        final_text,
+        status: 101,
+    }
+}
+
+fn config_payload_response(tag: &str, status: u16, mut rows: Vec<String>) -> Response {
+    let final_row = rows.pop().expect("CONFIG payload response is nonempty");
+    Response {
+        tag: tag.to_string(),
+        lines: rows,
+        final_text: format!("{status} {final_row}"),
+        status,
+    }
+}
+
+fn config_status_response(tag: &str, mut rows: Vec<(u16, String)>) -> Response {
+    let (status, final_row) = rows.pop().expect("CONFIG status response is nonempty");
+    Response {
+        tag: tag.to_string(),
+        lines: rows
+            .into_iter()
+            .map(|(code, row)| {
+                if code == status {
+                    row
+                } else {
+                    format!("{code}-{row}")
+                }
+            })
+            .collect(),
+        final_text: format!("{status} {final_row}"),
+        status,
+    }
+}
+
+fn config_remaining_value(body: &str, tokens: usize) -> String {
+    let bytes = body.as_bytes();
+    let mut offset = 0;
+    for _ in 0..tokens {
+        while offset < bytes.len() && bytes[offset].is_ascii_whitespace() {
+            offset += 1;
+        }
+        while offset < bytes.len() && !bytes[offset].is_ascii_whitespace() {
+            offset += 1;
+        }
+    }
+    while offset < bytes.len() && bytes[offset].is_ascii_whitespace() {
+        offset += 1;
+    }
+    // Command.remainingArgsAsDequotedString removes quote delimiters across
+    // the entire remaining tail, rather than requiring one pair to wrap the
+    // complete value. Thus `"a b" ignored` becomes `a b ignored`.
+    let mut value = String::with_capacity(body.len() - offset);
+    let mut chars = body[offset..].chars();
+    while let Some(character) = chars.next() {
+        match character {
+            '"' => {}
+            '\\' => match chars.clone().next() {
+                Some(next @ ('\\' | '"' | ' ')) => {
+                    chars.next();
+                    value.push(next);
+                }
+                _ => value.push('\\'),
+            },
+            _ => value.push(character),
+        }
+    }
+    value
+}
+
+fn resolve_config_object(
+    model: &Server,
+    tag: &str,
+    current: Option<&str>,
+    object: &str,
+) -> Result<ConfigObject, Response> {
+    if object == "global" {
+        return Ok(ConfigObject::Global);
+    }
+    if object == "project" {
+        return current
+            .filter(|project| model.projects.contains_key(*project))
+            .map(|project| ConfigObject::Project(project.to_string()))
+            .ok_or_else(|| err(tag, 440, "440 No object specified."));
+    }
+
+    let qualified = object.starts_with('/') || object.contains('/');
+    let parts = object
+        .trim_start_matches('/')
+        .split('/')
+        .collect::<Vec<_>>();
+    if qualified {
+        match parts.as_slice() {
+            [project] => {
+                return model
+                    .projects
+                    .contains_key(*project)
+                    .then(|| ConfigObject::Project((*project).to_string()))
+                    .ok_or_else(|| err(tag, 440, "440 No object specified."));
+            }
+            [project, network] => {
+                let Some(project_model) = model.projects.get(*project) else {
+                    return Err(err(tag, 440, "440 No object specified."));
+                };
+                let Ok(network) = network.parse::<u8>() else {
+                    return Err(err(
+                        tag,
+                        401,
+                        &format!("401 Bad object or device ID: {object} (Network not found)"),
+                    ));
+                };
+                if !project_model.networks.contains_key(&network) {
+                    return Err(err(
+                        tag,
+                        401,
+                        &format!("401 Bad object or device ID: {object} (Network not found)"),
+                    ));
+                }
+                return Ok(ConfigObject::Network {
+                    project: (*project).to_string(),
+                    network,
+                });
+            }
+            [project, network, rest @ ..] => {
+                let Some(project_model) = model.projects.get(*project) else {
+                    return Err(err(tag, 440, "440 No object specified."));
+                };
+                let Some(network_address) = network.parse::<u8>().ok() else {
+                    return Err(err(
+                        tag,
+                        401,
+                        &format!("401 Bad object or device ID: {object} (Network not found)"),
+                    ));
+                };
+                let Some(network_model) = project_model.networks.get(&network_address) else {
+                    return Err(err(
+                        tag,
+                        401,
+                        &format!("401 Bad object or device ID: {object} (Network not found)"),
+                    ));
+                };
+                if let [kind, unit] = rest {
+                    if kind.eq_ignore_ascii_case("p") {
+                        let exists = unit.parse::<u8>().ok().is_some_and(|address| {
+                            network_model.units.contains_key(&address)
+                                || network_model.physical.contains_key(&address)
+                        });
+                        if !exists {
+                            return Err(err(
+                                tag,
+                                401,
+                                &format!("401 Bad object or device ID: {object} (Unit not found)"),
+                            ));
+                        }
+                        return Err(err(tag, 440, "440 Not an object with config parameters."));
+                    }
+                }
+                let normalized = format!("//{project}/{network_address}/{}", rest.join("/"));
+                let exists = model.objects.contains(&normalized)
+                    || model.db_fields.keys().any(|path| {
+                        path == &normalized || path.starts_with(&format!("{normalized}/"))
+                    });
+                if exists {
+                    return Err(err(tag, 440, "440 Not an object with config parameters."));
+                }
+                return Err(err(
+                    tag,
+                    401,
+                    &format!("401 Bad object or device ID: {object} (Object not found)"),
+                ));
+            }
+            [] => {}
+        }
+    }
+
+    if let (Some(project), Ok(network)) = (current, object.parse::<u8>()) {
+        if model
+            .projects
+            .get(project)
+            .is_some_and(|project| project.networks.contains_key(&network))
+        {
+            return Ok(ConfigObject::Network {
+                project: project.to_string(),
+                network,
+            });
+        }
+    }
+    Err(err(
+        tag,
+        401,
+        &format!("401 Bad object or device ID: {object} (Network not found)"),
+    ))
+}
+
+fn config_snapshot_prefix(kind: &str, identity: &str) -> String {
+    format!(
+        "{CONFIG_KEY_PREFIX}snapshot/{kind}/{}/",
+        config_component(identity)
+    )
+}
+
+fn save_config_snapshot(
+    model: &mut Server,
+    kind: &str,
+    identity: &str,
+    active_prefixes: &[String],
+) {
+    let snapshot_prefix = config_snapshot_prefix(kind, identity);
+    model
+        .config_values
+        .retain(|key, _| !key.starts_with(&snapshot_prefix));
+    let active = model
+        .config_values
+        .iter()
+        .filter(|(key, _)| active_prefixes.iter().any(|prefix| key.starts_with(prefix)))
+        .map(|(key, value)| (key.clone(), value.clone()))
+        .collect::<Vec<_>>();
+    model
+        .config_values
+        .insert(format!("{snapshot_prefix}@present"), "1".to_string());
+    for (key, value) in active {
+        model.config_values.insert(
+            format!("{snapshot_prefix}{}", hex::encode(key.as_bytes())),
+            value,
+        );
+    }
+}
+
+fn load_config_snapshot(
+    model: &mut Server,
+    kind: &str,
+    identity: &str,
+    active_prefixes: &[String],
+    allow_implicit_empty: bool,
+) -> bool {
+    let snapshot_prefix = config_snapshot_prefix(kind, identity);
+    let present = model
+        .config_values
+        .contains_key(&format!("{snapshot_prefix}@present"));
+    if !present && !allow_implicit_empty {
+        return false;
+    }
+    let restored = model
+        .config_values
+        .iter()
+        .filter_map(|(key, value)| {
+            let encoded = key.strip_prefix(&snapshot_prefix)?;
+            if encoded == "@present" {
+                return None;
+            }
+            let decoded = hex::decode(encoded).ok()?;
+            let active_key = String::from_utf8(decoded).ok()?;
+            active_prefixes
+                .iter()
+                .any(|prefix| active_key.starts_with(prefix))
+                .then(|| (active_key, value.clone()))
+        })
+        .collect::<Vec<_>>();
+    model
+        .config_values
+        .retain(|key, _| !active_prefixes.iter().any(|prefix| key.starts_with(prefix)));
+    model.config_values.extend(restored);
+    true
+}
+
+fn config_info_statuses(
+    model: &Server,
+    current: Option<&str>,
+    parameter: &ConfigParameter,
+) -> Vec<(u16, String)> {
+    // Native resolves INFO through the selected project's property set before
+    // it consults the obsolete registration. Thus a global obsolete name is a
+    // project-property miss while a project is selected, but a plain config
+    // parameter miss with no selected project.
+    if current.is_some() && parameter.scope == ConfigScope::Global {
+        return vec![(
+            408,
+            "Operation failed: project property not found".to_string(),
+        )];
+    }
+    if parameter.obsolete {
+        return vec![(
+            408,
+            "Operation failed: config parameter not found".to_string(),
+        )];
+    }
+    let value = if let Some(project) = current {
+        config_project_value(model, project, parameter)
+    } else {
+        config_global_value(model, parameter)
+    };
+    vec![
+        (304, format!("parameter={}", parameter.name)),
+        (304, format!("value={value}")),
+        (304, format!("description={}", parameter.description)),
+        (304, format!("defaultValue={}", parameter.default)),
+        (304, format!("scope={}", parameter.scope.as_str())),
+        (304, format!("effective={}", parameter.effective)),
+    ]
+}
+
+fn config_command(
+    model: &mut Server,
+    tag: &str,
+    body: &str,
+    words: &[&str],
+    upper: &[String],
+    current: Option<&str>,
+) -> Response {
+    if words.len() == 1 || upper.get(1).is_some_and(|word| word == "?") {
+        return config_help(tag);
+    }
+    let sub = upper.get(1).map(String::as_str).unwrap_or("");
+    match sub {
+        "GET" => {
+            let Some(name) = words.get(2) else {
+                return err(tag, 400, "400 Syntax Error.");
+            };
+            if *name == "*" {
+                let rows = CONFIG_PARAMETERS
+                    .iter()
+                    .filter(|parameter| parameter.listed)
+                    .map(|parameter| {
+                        format!(
+                            "{}={}",
+                            parameter.name,
+                            config_legacy_value(model, current, parameter)
+                        )
+                    })
+                    .collect();
+                return config_payload_response(tag, 303, rows);
+            }
+            let Some(parameter) = config_parameter(name).filter(|parameter| !parameter.obsolete)
+            else {
+                return err(tag, 408, "408 Operation failed: config parameter not found");
+            };
+            config_payload_response(
+                tag,
+                303,
+                vec![format!(
+                    "{}={}",
+                    parameter.name,
+                    config_legacy_value(model, current, parameter)
+                )],
+            )
+        }
+        "INFO" => {
+            let Some(name) = words.get(2) else {
+                return err(tag, 400, "400 Syntax Error.");
+            };
+            let statuses = if *name == "*" {
+                CONFIG_PARAMETERS
+                    .iter()
+                    .flat_map(|parameter| config_info_statuses(model, current, parameter))
+                    .collect::<Vec<_>>()
+            } else {
+                let Some(parameter) = config_parameter(name) else {
+                    return err(tag, 408, "408 Operation failed: config parameter not found");
+                };
+                config_info_statuses(model, current, parameter)
+            };
+            config_status_response(tag, statuses)
+        }
+        "SET" => {
+            let Some(name) = words.get(2) else {
+                return err(tag, 400, "400 Syntax Error.");
+            };
+            let Some(parameter) = config_parameter(name) else {
+                return err(tag, 408, "408 Operation failed: config parameter not found");
+            };
+            if parameter.obsolete {
+                return err(
+                    tag,
+                    408,
+                    "408 Operation failed: Can't set an obsolete option.",
+                );
+            }
+            let target = match (parameter.scope, current) {
+                (ConfigScope::Global, _) | (_, None) => ConfigObject::Global,
+                (_, Some(project)) => ConfigObject::Project(project.to_string()),
+            };
+            model.config_values.insert(
+                config_key(&target, parameter.name),
+                config_remaining_value(body, 3),
+            );
+            ok(tag, vec![], "200 OK.")
+        }
+        "OBGET" => {
+            let Some(object) = words.get(2) else {
+                return err(tag, 400, "400 Syntax Error: Missing parameter : <object>");
+            };
+            let Some(name) = words.get(3) else {
+                return err(
+                    tag,
+                    400,
+                    "400 Syntax Error: Missing parameter : <config-parameter>",
+                );
+            };
+            let target = match resolve_config_object(model, tag, current, object) {
+                Ok(target) => target,
+                Err(response) => return response,
+            };
+            if *name == "*" {
+                let rows = CONFIG_PARAMETERS
+                    .iter()
+                    .filter(|parameter| parameter.listed && target.accepts(parameter))
+                    .filter_map(|parameter| {
+                        config_object_value(model, &target, parameter)
+                            .ok()
+                            .map(|value| format!("{}={value}", parameter.name))
+                    })
+                    .collect::<Vec<_>>();
+                return config_payload_response(tag, 303, rows);
+            }
+            let Some(parameter) = config_parameter(name).filter(|parameter| !parameter.obsolete)
+            else {
+                return err(tag, 408, "408 Operation failed: config parameter not found");
+            };
+            if !target.accepts(parameter) {
+                // Native 3.4 sends no response for this branch. Returning 408
+                // is an intentional liveness repair retained in capabilities.
+                return err(tag, 408, "408 Operation failed: config parameter not found");
+            }
+            match config_object_value(model, &target, parameter) {
+                Ok(value) => {
+                    config_payload_response(tag, 303, vec![format!("{}={value}", parameter.name)])
+                }
+                Err(message) => err(tag, 408, &format!("408 Operation failed: {message}")),
+            }
+        }
+        "OBSET" => {
+            let Some(object) = words.get(2) else {
+                return err(tag, 400, "400 Syntax Error: Missing parameter : <object>");
+            };
+            let Some(name) = words.get(3) else {
+                return err(
+                    tag,
+                    400,
+                    "400 Syntax Error: Missing parameter : <config-parameter>",
+                );
+            };
+            let target = match resolve_config_object(model, tag, current, object) {
+                Ok(target) => target,
+                Err(response) => return response,
+            };
+            let Some(parameter) = config_parameter(name) else {
+                return err(tag, 408, "408 Operation failed: config parameter not found");
+            };
+            if parameter.obsolete {
+                return err(
+                    tag,
+                    408,
+                    "408 Operation failed: Can't set an obsolete option.",
+                );
+            }
+            let value = config_remaining_value(body, 4);
+            let existing = match config_object_value(model, &target, parameter) {
+                Ok(value) => value,
+                Err(message) => return err(tag, 408, &format!("408 Operation failed: {message}")),
+            };
+            if existing == value {
+                return err(
+                    tag,
+                    408,
+                    "408 Operation failed: Config value is still the same.",
+                );
+            }
+            model
+                .config_values
+                .insert(config_key(&target, parameter.name), value);
+            ok(tag, vec![], "200 OK.")
+        }
+        "OBRESET" => {
+            let Some(object) = words.get(2) else {
+                return err(tag, 400, "400 Syntax Error: Missing parameter : <object>");
+            };
+            let target = match resolve_config_object(model, tag, current, object) {
+                Ok(target) => target,
+                Err(response) => return response,
+            };
+            if target == ConfigObject::Global {
+                return err(tag, 440, "440 No object specified.");
+            }
+            let name = words.get(3).copied();
+            if let Some(name) = name {
+                let Some(parameter) = config_parameter(name) else {
+                    return err(tag, 408, "408 Operation failed: config parameter not found");
+                };
+                if parameter.obsolete {
+                    return err(
+                        tag,
+                        408,
+                        "408 Operation failed: Can't reset an obsolete option.",
+                    );
+                }
+            }
+            match &target {
+                ConfigObject::Project(project) => {
+                    let project_prefix = config_project_prefix(project);
+                    let network_prefix = format!(
+                        "{CONFIG_KEY_PREFIX}active/network/{}/",
+                        config_component(project)
+                    );
+                    model.config_values.retain(|key, _| {
+                        let in_scope =
+                            key.starts_with(&project_prefix) || key.starts_with(&network_prefix);
+                        !in_scope || name.is_some_and(|name| !key.ends_with(&format!("/{name}")))
+                    });
+                }
+                ConfigObject::Network { project, network } => {
+                    let prefix = config_network_prefix(project, *network);
+                    model.config_values.retain(|key, _| {
+                        !key.starts_with(&prefix)
+                            || name.is_some_and(|name| !key.ends_with(&format!("/{name}")))
+                    });
+                }
+                ConfigObject::Global => unreachable!(),
+            }
+            ok(tag, vec![], "200 OK.")
+        }
+        "LOAD" | "SAVE" => {
+            let Some(kind) = upper.get(2).map(String::as_str) else {
+                return err(tag, 400, "400 Syntax Error.");
+            };
+            if !matches!(kind, "GLOBAL" | "PROJECT" | "ALL") {
+                return err(tag, 400, "400 Syntax Error.");
+            }
+            let filename = words.get(3).copied();
+            let mut statuses = Vec::new();
+            if matches!(kind, "GLOBAL" | "ALL") {
+                let identity = filename.unwrap_or("<default>");
+                if sub == "SAVE" {
+                    save_config_snapshot(model, "global", identity, &[config_global_prefix()]);
+                } else if load_config_snapshot(
+                    model,
+                    "global",
+                    identity,
+                    &[config_global_prefix()],
+                    filename.is_none(),
+                ) {
+                    statuses.push((200, "OK.".to_string()));
+                } else {
+                    statuses.push((
+                        408,
+                        format!(
+                            "Operation failed: Global config load from {identity} failed:Config file not found"
+                        ),
+                    ));
+                }
+            }
+            if matches!(kind, "PROJECT" | "ALL") {
+                if let Some(project) = current.filter(|name| model.projects.contains_key(*name)) {
+                    let prefixes = vec![
+                        config_project_prefix(project),
+                        format!(
+                            "{CONFIG_KEY_PREFIX}active/network/{}/",
+                            config_component(project)
+                        ),
+                    ];
+                    if sub == "SAVE" {
+                        save_config_snapshot(model, "project", project, &prefixes);
+                    } else {
+                        load_config_snapshot(model, "project", project, &prefixes, true);
+                        statuses.push((200, "OK.".to_string()));
+                    }
+                } else {
+                    statuses.push((408, "Operation failed: No project in use".to_string()));
+                }
+            }
+            if sub == "SAVE" {
+                // Native SAVE has one final success even after its project
+                // branch emitted a 408 continuation.
+                statuses.push((200, "OK.".to_string()));
+            }
+            config_status_response(tag, statuses)
+        }
+        _ => err(tag, 400, "400 Syntax Error."),
+    }
 }
 
 impl Service {
@@ -983,6 +1682,16 @@ impl Service {
                 serde_json::Value::String("cmqttd-internal".to_string());
             capabilities["repository_list"] = serde_json::Value::Bool(true);
             capabilities["repository_type"] = serde_json::Value::String("cmqttd-json".to_string());
+            capabilities["config_commands"] = serde_json::json!([
+                "get", "info", "load", "obget", "obreset", "obset", "save", "set"
+            ]);
+            capabilities["config_catalog_parameters"] = serde_json::Value::from(148);
+            capabilities["config_get_parameters"] = serde_json::Value::from(122);
+            capabilities["config_persistence"] =
+                serde_json::Value::String("cmqttd-json".to_string());
+            capabilities["config_runtime_reconfiguration"] = serde_json::Value::Bool(false);
+            capabilities["config_native_obget_missing_reply_repaired"] =
+                serde_json::Value::Bool(true);
             capabilities["cgl_import"] = serde_json::Value::Bool(false);
             capabilities["cgl_export"] = serde_json::Value::Bool(false);
             capabilities["bridged_read_only_discovery"] = serde_json::Value::Bool(true);
@@ -1186,6 +1895,9 @@ impl Service {
             capabilities["telephony_event_fanout"] = serde_json::Value::Bool(true);
             capabilities["telephony_mqtt_state"] = serde_json::Value::Bool(false);
             return ok(tag, vec![capabilities.to_string()], "200 OK");
+        }
+        if verb == "CONFIG" {
+            return self.config(client, tag, &cmd.body, &words, &upper).await;
         }
         if verb == "MEASUREMENT" {
             if words.len() == 1 || (words.len() == 2 && words[1] == "?") {
@@ -1629,6 +2341,39 @@ impl Service {
             502,
             "502 Document command semantics are not implemented",
         )
+    }
+
+    /// Native-shaped CONFIG catalogue and scoped value workflow backed only
+    /// by cmqttd's atomic JSON repository. Values are durable command data;
+    /// they never reconfigure the running listener, PCI, MQTT, filesystem or
+    /// logger. LOAD/SAVE snapshots therefore stay inside the repository and
+    /// cannot be used as an arbitrary host-file interface.
+    async fn config(
+        &self,
+        client: &ClientState,
+        tag: &str,
+        body: &str,
+        words: &[&str],
+        upper: &[String],
+    ) -> Response {
+        let mut model = self.model.lock().await;
+        let current = client
+            .current
+            .clone()
+            .or_else(|| Some(self.project.clone()));
+        model.current = current.clone();
+        let before = model.clone();
+        let before_db = Database::from_server(&model);
+        let response = config_command(&mut model, tag, body, words, upper, current.as_deref());
+        let after_db = Database::from_server(&model);
+        if before_db != after_db {
+            if let Err(error) = after_db.save(&self.state_path) {
+                *model = before;
+                tracing::error!("C-Gate CONFIG commit failed: {error}");
+                return err(tag, 500, "500 Database commit failed; change rolled back");
+            }
+        }
+        response
     }
 
     /// Read-only native repository-list envelope for cmqttd's one durable
@@ -8133,6 +8878,8 @@ fn parse_aircon_boolean(tag: &str, value: &str, parameter: &str) -> Result<bool,
 ///   read/request operation, as do parent help and unknown syntax.
 /// - SCENE RECORD (persists snapshots to the state file). SCENE PLAY stays
 ///   open (snapshot read plus bus control).
+/// - CONFIG SET/LOAD/SAVE/OBSET/OBRESET mutate active values or durable
+///   repository snapshots. Root help, GET, INFO and OBGET remain open.
 /// - DO ... FactoryDefault (destructive KEYGL5 OEM programming control).
 ///   Other DO methods remain ordinary bus-control operations.
 ///
@@ -8140,6 +8887,7 @@ fn parse_aircon_boolean(tag: &str, value: &str, parameter: &str) -> Result<bool,
 /// LIST|LIST_ALL|STATE, so they already fail closed with 502.
 fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
     match verb {
+        "CONFIG" => matches!(sub, "SET" | "LOAD" | "SAVE" | "OBSET" | "OBRESET"),
         "MEASUREMENT" => sub == "DATA",
         "AIRCON" => is_aircon_subcommand(sub) && sub != "REFRESH",
         "AUDIO" => {

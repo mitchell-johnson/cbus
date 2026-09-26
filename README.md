@@ -130,6 +130,8 @@ Enable `--cgate-bind 127.0.0.1:20023` together with `--project-file house.cbz`. 
 ```sh
 cbus-toolkit cgate --host 127.0.0.1 project list
 cbus-toolkit cgate --host 127.0.0.1 exec 'CMQTT CAPABILITIES'
+cbus-toolkit cgate --host 127.0.0.1 exec 'CONFIG GET *'
+cbus-toolkit cgate --host 127.0.0.1 exec 'CONFIG INFO sync-time'
 cbus-toolkit cgate --host 127.0.0.1 --timeout 120 network sync-new //PROJECT/254 --unit 6
 cbus-toolkit cgate --host 127.0.0.1 network set-project //PROJECT/254 PROJECT
 cbus-toolkit cgate --host 127.0.0.1 --timeout 120 edlt-labels --network //PROJECT/254
@@ -153,6 +155,16 @@ cbus-toolkit cgate --host 127.0.0.1 exec 'TELEPHONY ?'
 cbus-toolkit cgate --host 127.0.0.1 exec 'TELEPHONY RECALL_LAST_NUMBER_REQUEST //PROJECT/254/224 out'
 cbus-toolkit cgate --host 127.0.0.1 exec 'TELEPHONY DIVERT //PROJECT/254/224 021234567'
 ```
+
+The embedded endpoint implements the complete maintained C-Gate 3.4 CONFIG
+command family: help, GET, INFO, SET, scoped OBGET/OBSET/OBRESET, and
+LOAD/SAVE. Its retained catalogue contains 148 registrations and exact native
+scope/error envelopes. Values and snapshots are durable compatibility data in
+cmqttd's atomic JSON repository; supplied filenames are internal identities,
+and CONFIG does not change the running daemon's MQTT, PCI, listener, or logging
+configuration. Query `CMQTT CAPABILITIES` for the explicit boundary and see the
+[C-Gate replacement guide](docs/cmqttd-cgate.md) for authentication,
+persistence, native evidence, and the remaining non-CONFIG gaps.
 
 Replace the example project, network and unit with your actual addresses. The
 network form performs one fresh `NET SYNC` plus `NET CHECKUNIT` serial refresh,

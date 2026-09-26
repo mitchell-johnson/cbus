@@ -119,12 +119,15 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // guarded secondary-project lifecycle, and a read-only cmqttd-json row.
     // DBNETWORKPATH moved fail_closed_502 -> local_database with native 136
     // COMPACT and 137 OID topology resolution and no PCI traffic.
+    // All nine maintained CONFIG paths moved fail_closed_502 ->
+    // local_database with the retained native catalogue, scoped durable
+    // values and bounded cmqttd-json LOAD/SAVE snapshots.
     // The eleven maintained AIRCON commands and NET PROJECT_IDENTIFY moved
     // fail_closed_502 -> physical. PROJECT_IDENTIFY uses the selected shared
     // interface's native read-only MMI/parameter-35 workflow.
     assert_eq!(class_count(RoutingClass::Physical), 100);
-    assert_eq!(class_count(RoutingClass::LocalDatabase), 55);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 275);
+    assert_eq!(class_count(RoutingClass::LocalDatabase), 64);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 266);
     assert_eq!(class_count(RoutingClass::Obsolete400), 1);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here
@@ -132,6 +135,40 @@ fn matrix_class_counts_pin_the_routing_gap() {
     assert_eq!(class_count(RoutingClass::Rejected4xx), 0);
     let total: usize = counts.values().sum();
     assert_eq!(total, 431);
+}
+
+#[test]
+fn config_rows_retain_native_catalog_scope_and_liveness_repair_evidence() {
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_config.json"
+    ))
+    .expect("native CONFIG evidence must remain valid JSON");
+    assert_eq!(fixture["oracle"]["version"], "3.4.0 build 2001");
+    assert_eq!(
+        fixture["oracle"]["jar_sha256"],
+        "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+    );
+    assert_eq!(fixture["inventory"]["catalog_entries"], 148);
+    assert_eq!(fixture["inventory"]["info_entries"], 142);
+    assert_eq!(fixture["inventory"]["get_all_entries"], 122);
+    assert!(
+        fixture["observed_native_defects"]["obget_unknown_or_wrong_scope"]
+            .as_str()
+            .unwrap()
+            .contains("sends no response")
+    );
+    for entry in CAPABILITY_MATRIX
+        .iter()
+        .filter(|entry| entry.path == "CONFIG" || entry.path.starts_with("CONFIG "))
+    {
+        assert_eq!(entry.class, RoutingClass::LocalDatabase, "{}", entry.path);
+        assert!(
+            entry.evidence.contains("native_cgate_config.json")
+                || entry.evidence.contains("Service::config"),
+            "{}",
+            entry.path
+        );
+    }
 }
 
 #[test]

@@ -50,6 +50,57 @@ cmqttd extensions.
 A 502 response is a missing backend or failed device operation; never replace
 it with saved project data and describe that as a live result.
 
+### CONFIG commands
+
+cmqttd implements all nine maintained C-Gate 3.4 CONFIG paths. Use the exact
+parent command to inspect native-shaped help:
+
+```text
+CONFIG
+CONFIG GET NAME|*
+CONFIG INFO NAME|*
+CONFIG SET NAME [VALUE]
+CONFIG OBGET OBJECT NAME|*
+CONFIG OBSET OBJECT NAME [VALUE]
+CONFIG OBRESET OBJECT [NAME]
+CONFIG LOAD global|project|all [FILENAME]
+CONFIG SAVE global|project|all [FILENAME]
+```
+
+The catalogue has 148 registered names. INFO exposes metadata for 142; six
+`secure.*` registrations are obsolete and return 408. `GET *` returns the 122
+native-listed entries in retained order. Verbs are case-insensitive and
+parameter names are case-sensitive. SET and OBSET preserve the dequoted
+remaining value, including blank and multiword values. GET and INFO ignore
+trailing words, matching the retained server.
+
+Legacy GET/SET resolve global defaults and the selected project's overrides.
+Object forms accept literal lowercase `global`, the selected `project`, a
+project path, or a network path. Project and network values inherit upward;
+resetting a project parameter also removes descendant network overrides.
+`OBGET` for a parameter unavailable at that object is a deliberate cmqttd
+liveness repair: native 3.4 accepts the command and never sends a response,
+while cmqttd returns 408 so clients do not hang.
+
+CONFIG state is command compatibility data in cmqttd's atomic JSON repository.
+`LOAD` and `SAVE` retain native response ordering but use bounded internal
+snapshots; a supplied filename is only an identity and is never opened on the
+host. These values do not reconfigure cmqttd's listener, PCI, MQTT, loggers, or
+other runtime settings. With the optional LOGIN gate armed, SET, LOAD, SAVE,
+OBSET and OBRESET require authentication; help, GET, INFO and OBGET remain
+open. CONFIG performs no PCI I/O and must not be described as physical C-Bus
+state.
+
+`CMQTT CAPABILITIES` publishes the exact command list, catalogue/wildcard
+counts, `config_persistence="cmqttd-json"`,
+`config_runtime_reconfiguration=false`, and the OBGET repair flag. Ground
+native claims in
+[`native_cgate_config.json`](../../../../rust/testdata/fixtures/native_cgate_config.json).
+The real-daemon `system_cgate_config.rs` regression checks TCP framing, LOGIN,
+scope/snapshot durability across restart, zero CONFIG PCI frames and MQTT
+continuity. The fixture's oracle was the pinned C-Gate 3.4.0.2001 jar in a
+disposable loopback-only Java container with no C-Bus endpoint.
+
 ### AIRCON/HVAC commands
 
 cmqttd implements every AIRCON subcommand registered by C-Gate 3.4 for its

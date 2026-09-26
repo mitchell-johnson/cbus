@@ -16,6 +16,16 @@ commit, the command returns 408; it cannot mutate the replacement generation's
 physical, level, application, or observed-label caches or publish that success
 event. See the C-Gate reference for the covered command families.
 
+The CONFIG family is a local compatibility subsystem inside the embedded
+endpoint. Its 148-entry native 3.4 catalogue, scoped global/project/network
+overrides, and bounded LOAD/SAVE snapshots live in the same atomic JSON
+repository as other durable C-Gate state. CONFIG never opens caller-named
+files, sends PCI traffic, or applies its values to the running cmqttd listener,
+MQTT client, transport, or loggers. The optional LOGIN gate protects SET,
+LOAD, SAVE, OBSET and OBRESET; catalogue help and reads stay open. The one
+intentional protocol repair converts native's no-reply OBGET wrong-scope path
+to 408 so a client cannot hang.
+
 The embedded C-Gate endpoint implements the eleven C-Gate 3.4 AIRCON commands
 for application 172 on the configured direct network. Commands use the shared
 PCI confirmation lane; incoming schedule, plant and zone report SALs stay on
@@ -141,10 +151,10 @@ Supported project inputs are a one-file `.cbz` zip archive or bare project XML. 
 
 ## Test data and evidence
 
-- `rust/testdata/vectors/` contains JSONL cases for checksums, frame encode/decode, native AIRCON, AUDIO, SECURITY and Media Transport commands/events, native label-cache clear, ramp rates, MQTT topics, Home Assistant discovery, and strict selected-serial plan interchange.
-- `rust/testdata/fixtures/` contains small non-production project and behavior fixtures, including sanitized disposable-native evidence for AIRCON, AUDIO, SECURITY, Media Transport and project copy/delete behavior.
+- `rust/testdata/vectors/` contains JSONL cases for checksums, frame encode/decode, native AIRCON, AUDIO, Security, Measurement, Telephony and Media Transport commands/events, native label-cache clear, ramp rates, MQTT topics, Home Assistant discovery, and strict selected-serial plan interchange.
+- `rust/testdata/fixtures/` contains small non-production project and behavior fixtures, including sanitized disposable-native evidence for CONFIG, AIRCON, AUDIO, Security, Measurement, Telephony, Media Transport and project copy/delete behavior.
 - `cbus-golden-tests` generates a named test per committed vector.
-- `cmqttd` system tests run the real daemon against an in-process MQTT broker and scripted PCI, including AIRCON, AUDIO, SECURITY and Media Transport command/event, correlation, authentication and MQTT-continuity coverage plus dedicated continuity checks after project administration.
+- `cmqttd` system tests run the real daemon against an in-process MQTT broker and scripted PCI, including CONFIG durability/no-PCI coverage, all six maintained specialist application families' command/event correlation, authentication and MQTT continuity, plus dedicated continuity checks after project administration.
 - `cgate-mock` integration tests cover framing, state, sessions, event fanout, here-documents, inventory reachability, and programming access.
 - `toolkit-cli/tests/test_rust_cgate_interop.py` drives the Rust mock using the production Python C-Gate client and typed workflows.
 
