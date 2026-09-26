@@ -166,9 +166,12 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // APPLICATIONS GET_CATALOG, CALCULATOR TEST, CGL IMPORT and CGL EXPORT
     // move fail_closed_502 -> local_database with bounded operator catalogue
     // inputs and durable label-only CGL 1.1 semantics.
+    // Ten general/object paths move fail_closed_502 -> local_database: both
+    // native comment spellings, OID, BROADCAST_EVENT, SHOW, REPORT, all three
+    // TREE renderings and durable NEW object creation.
     assert_eq!(class_count(RoutingClass::Physical), 215);
-    assert_eq!(class_count(RoutingClass::LocalDatabase), 167);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 47);
+    assert_eq!(class_count(RoutingClass::LocalDatabase), 177);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 37);
     assert_eq!(class_count(RoutingClass::Obsolete400), 2);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here
@@ -176,6 +179,44 @@ fn matrix_class_counts_pin_the_routing_gap() {
     assert_eq!(class_count(RoutingClass::Rejected4xx), 0);
     let total: usize = counts.values().sum();
     assert_eq!(total, 431);
+}
+
+#[test]
+fn general_object_and_tree_rows_retain_native_evidence() {
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_general_tree.json"
+    ))
+    .expect("native general/tree evidence must remain valid JSON");
+    assert_eq!(fixture["oracle"]["version"], "3.4.0");
+    assert_eq!(fixture["oracle"]["build"], 2001);
+    assert_eq!(
+        fixture["oracle"]["jar_sha256"],
+        "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+    );
+    assert_eq!(fixture["oracle"]["site_project_used"], false);
+    assert_eq!(fixture["oracle"]["real_cbus_contacted"], false);
+    for path in [
+        "#",
+        "//",
+        "BROADCAST_EVENT",
+        "NEW",
+        "OID",
+        "REPORT",
+        "SHOW",
+        "TREE",
+        "TREEXML",
+        "TREEXMLDETAIL",
+    ] {
+        let entry = CAPABILITY_MATRIX
+            .iter()
+            .find(|entry| entry.path == path)
+            .unwrap_or_else(|| panic!("missing {path}"));
+        assert_eq!(entry.class, RoutingClass::LocalDatabase, "{path}");
+        assert!(
+            entry.evidence.contains("native") || matches!(path, "#" | "//"),
+            "{path} must retain native evidence"
+        );
+    }
 }
 
 #[test]

@@ -1994,8 +1994,60 @@ async fn database_survives_restart_but_live_state_and_sessions_do_not() {
             .handle(&mut client, "[4] GET //HARNESS/254/56/1 level")
             .await
             .status,
-        408
+        300
     );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn new_units_groups_and_phantoms_survive_service_restart_as_database_only_objects() {
+    let path = state_path();
+    let (pci_client, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client.clone(), None).unwrap();
+    let mut client = ClientState::default();
+    for command in [
+        "[new-group] NEW GROUP //HARNESS/254/56/44",
+        "[new-phantom] NEW PHANTOM //HARNESS/254/56/45 91",
+        "[new-unit] NEW UNIT //HARNESS/254/p/20 KEYE1 2.5.00",
+    ] {
+        let response = service.handle(&mut client, command).await;
+        assert_eq!(response.status, 200, "{command}: {response:?}");
+    }
+    drop(service);
+
+    let restarted = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut restarted_client = ClientState::default();
+    let unit = restarted
+        .handle(
+            &mut restarted_client,
+            "[show-unit] SHOW //HARNESS/254/p/20 Type",
+        )
+        .await;
+    assert_eq!(unit.final_text, "300 //HARNESS/254/p/20: Type=KEYE1");
+    let group = restarted
+        .handle(
+            &mut restarted_client,
+            "[show-group] SHOW //HARNESS/254/56/44 *",
+        )
+        .await;
+    assert_eq!(group.status, 300);
+    assert!(group
+        .lines
+        .iter()
+        .any(|line| line == "300-//HARNESS/254/56/44: Level=0"));
+    let tree = restarted
+        .handle(&mut restarted_client, "[tree] TREE //HARNESS/254")
+        .await;
+    assert_eq!(tree.status, 320);
+    assert!(tree.lines.iter().any(|line| line == "320-  Unit count=0"));
+    assert!(tree
+        .lines
+        .iter()
+        .any(|line| line.contains("//HARNESS/254/p/20 ($14) type=KEYE1")));
+    assert!(tree
+        .lines
+        .iter()
+        .any(|line| { line.contains("//HARNESS/254/56/45 ($2d)") && line.ends_with("(phantom)") }));
     std::fs::remove_file(path).unwrap();
 }
 
@@ -3080,8 +3132,8 @@ async fn observed_trigger_enable_and_clock_state_is_live_and_cleared_on_disconne
     assert!(trigger
         .lines
         .iter()
-        .any(|line| line.contains("EventLevel=5")));
-    assert!(trigger.final_text.contains("State=ok"));
+        .any(|line| line.contains("EventLevel=9")));
+    assert!(trigger.final_text.contains("State=open"), "{trigger:?}");
     assert_eq!(
         service
             .handle(&mut client, "[2] GET //HARNESS/254/202/4 Level")
@@ -3116,7 +3168,7 @@ async fn observed_trigger_enable_and_clock_state_is_live_and_cleared_on_disconne
             .handle(&mut client, "[6] GET //HARNESS/254/203/5 Level")
             .await
             .status,
-        408
+        401
     );
     assert!(service
         .handle(&mut client, "[7] CLOCK DATE 254/223")
@@ -5933,7 +5985,7 @@ async fn physical_net_sync_surfaces_duplicate_serial_conflict_on_events() {
                 &format!("[{sequence}] GET //HARNESS/254/p/5 {field}"),
             )
             .await;
-        assert_eq!(get.status, 404, "ambiguous {field}: {get:?}");
+        assert_eq!(get.status, 402, "ambiguous {field}: {get:?}");
     }
     let version = service
         .handle(
@@ -6169,7 +6221,7 @@ async fn run_state_two_ambiguous_raw_serial_sync(case: AmbiguousRawSerialReplies
                 &format!("[{sequence}] GET //HARNESS/254/p/5 {field}"),
             )
             .await;
-        assert_eq!(get.status, 404, "{case:?}: stale {field}: {get:?}");
+        assert_eq!(get.status, 402, "{case:?}: stale {field}: {get:?}");
     }
 
     let mut seen = Vec::new();
@@ -6696,7 +6748,7 @@ async fn physical_net_sync_state_three_skips_edlt_metadata() {
                 &format!("[{sequence}] GET //HARNESS/254/p/5 {field}"),
             )
             .await;
-        assert_eq!(get.status, 404, "state-three {field}: {get:?}");
+        assert_eq!(get.status, 402, "state-three {field}: {get:?}");
     }
 
     let mut seen = Vec::new();
@@ -8287,6 +8339,8 @@ async fn auth_wrong_secret_denied_and_gate_holds() {
         "[28] PORT CNISCAN2 127.0.0.1 127.0.0.1 FAST",
         "[29] PORT PROBE socket 127.0.0.1:1",
         "[30] PORT REFRESH",
+        "[31] NEW GROUP //HARNESS/254/56/44",
+        "[32] BROADCAST_EVENT SP auth-test",
     ] {
         let response = service.handle(&mut client, command).await;
         assert_eq!(response.status, 420, "{command}: {response:?}");
@@ -8475,13 +8529,14 @@ async fn auth_reads_and_bus_control_stay_open() {
             .status,
         200
     );
-    // No live level observed: the read path itself answers 408, not 420.
+    // The durable group exists in the project database, so its default level
+    // remains readable without LOGIN even before a live bus observation.
     assert_eq!(
         service
             .handle(&mut client, "[4] GET //HARNESS/254/56/1 level")
             .await
             .status,
-        408
+        300
     );
     // PP session reads are not gated (a missing session answers from the
     // model, never 420).

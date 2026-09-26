@@ -1,0 +1,1029 @@
+{
+  "schema": "native-cgate-show-r9-v1",
+  "oracle": {
+    "product": "Schneider Electric C-Gate",
+    "version": "3.4.0",
+    "build": 2001,
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "transport": "owned disposable process; closed loopback-only synthetic network endpoint",
+    "global_event_level": 9,
+    "site_project_used": false,
+    "real_cbus_contacted": false,
+    "source_probe_sha256": "aaf7873aa214ee1cbad566399bcb2b05a5c7cc726c22ef5ea1d27ce3bfbec242"
+  },
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+  "rows": [
+    {
+      "command": "PROJECT NEW SHOWR9",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "PROJECT USE SHOWR9",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NET CREATE 254 cni 127.0.0.1:9",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW GROUP //SHOWR9/254/56/1",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW PHANTOM //SHOWR9/254/56/4 128",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW UNIT //SHOWR9/254/p/20 KEYE1 2.5.00",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW UNIT //SHOWR9/254/p/22 DIMMER4 1.0.00",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW UNIT //SHOWR9/254/p/23 RELAY4 1.0.00",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW UNIT //SHOWR9/254/p/24 BOGUS 1.0.00",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW UNIT //SHOWR9/254/p/25 DIMMER4 bogus",
+      "code": 500,
+      "lines": [
+        "500 Internal error."
+      ],
+      "final": "500 Internal error."
+    },
+    {
+      "command": "NEW UNIT //SHOWR9/254/p/26 DIMMER4 99.99.99",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW UNIT //SHOWR9/254/p/27 KEYE1 99.99.99",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "SHOW //SHOWR9/254 ?",
+      "code": 300,
+      "lines": [
+        "300 //SHOWR9/254: Parameters=DBUnitAddressesNew,DBUnitAddressesMissing,Retries,DBUnitAddressesDuplicate,Groups,TxQ,Name,Applications,InterfaceState,FreeApplication,DBUnitAddressesOnline,EventLevel,RxQ,Options,NextSyncTime,FreeUnit,TargetInterfaceState,TxEnable,NetworkType,InterfaceAddress,AutoSync,LastSyncTime,SyncSubState,AutoUnravel,FastResponse,ResponseDelay,QuickDetect,ShortSync,LSP,SyncTime,SyncState,DBUnitAddressesError,Interface,Stats,Units,XState,DefaultApplication,AutoUpdate,State,Type"
+      ],
+      "final": "300 //SHOWR9/254: Parameters=DBUnitAddressesNew,DBUnitAddressesMissing,Retries,DBUnitAddressesDuplicate,Groups,TxQ,Name,Applications,InterfaceState,FreeApplication,DBUnitAddressesOnline,EventLevel,RxQ,Options,NextSyncTime,FreeUnit,TargetInterfaceState,TxEnable,NetworkType,InterfaceAddress,AutoSync,LastSyncTime,SyncSubState,AutoUnravel,FastResponse,ResponseDelay,QuickDetect,ShortSync,LSP,SyncTime,SyncState,DBUnitAddressesError,Interface,Stats,Units,XState,DefaultApplication,AutoUpdate,State,Type"
+    },
+    {
+      "command": "SHOW //SHOWR9/254 ??",
+      "code": 102,
+      "lines": [
+        "102-//SHOWR9/254: DBUnitAddressesNew - List of units on this network but not in database",
+        "102-//SHOWR9/254: DBUnitAddressesMissing - List of units not on this network but in database",
+        "102-//SHOWR9/254: Retries - The number of retries made before a command fails",
+        "102-//SHOWR9/254: DBUnitAddressesDuplicate - List of units on this network and also in database and in duplicates",
+        "102-//SHOWR9/254: Groups - The list of groups in the DEFAULT application",
+        "102-//SHOWR9/254: TxQ - List of the commands in the transmit queue",
+        "102-//SHOWR9/254: Name - Name of this network",
+        "102-//SHOWR9/254: Applications - List of applications on this network",
+        "102-//SHOWR9/254: InterfaceState - The current state of this interface",
+        "102-//SHOWR9/254: FreeApplication - The next free application address on this network",
+        "102-//SHOWR9/254: DBUnitAddressesOnline - List of units on this network and also in database and not in error",
+        "102-//SHOWR9/254: EventLevel - The level of displayed events for this object",
+        "102-//SHOWR9/254: RxQ - List of the commands waiting for responses",
+        "102-//SHOWR9/254: Options - The interface options for this interface",
+        "102-//SHOWR9/254: NextSyncTime - The next scheduled sync time for this network",
+        "102-//SHOWR9/254: FreeUnit - The next free unit address on this network",
+        "102-//SHOWR9/254: TargetInterfaceState - The current state of this interface",
+        "102-//SHOWR9/254: TxEnable - True if the transmitter is enabled",
+        "102-//SHOWR9/254: NetworkType - Type of C-Bus Network",
+        "102-//SHOWR9/254: InterfaceAddress - Address of the interface for this network",
+        "102-//SHOWR9/254: AutoSync - If set to yes, will perform automatic network synchronisations.",
+        "102-//SHOWR9/254: LastSyncTime - The last sync time of this network",
+        "102-//SHOWR9/254: SyncSubState - Get the sync sub-state for this network",
+        "102-//SHOWR9/254: AutoUnravel - If set to yes, will perform automatic unravels when errors are detected in sync operations.",
+        "102-//SHOWR9/254: FastResponse - If set to yes, retries and timeouts are shortened to give quick responses.",
+        "102-//SHOWR9/254: ResponseDelay - Time in ms to delay before a command is retried.",
+        "102-//SHOWR9/254: QuickDetect - If set to yes, perform continuous install MMIs looking for new units.",
+        "102-//SHOWR9/254: ShortSync - If set to yes, perform only sync to type-version-serial.",
+        "102-//SHOWR9/254: LSP - The count of Lost Sync Packets",
+        "102-//SHOWR9/254: SyncTime - The time  between full network sync operations",
+        "102-//SHOWR9/254: SyncState - Get the sync state for this network",
+        "102-//SHOWR9/254: DBUnitAddressesError - List of units on this network and also in database and in error",
+        "102-//SHOWR9/254: Interface - Address of the interface for this network",
+        "102-//SHOWR9/254: Stats - List of statistics for this interface",
+        "102-//SHOWR9/254: Units - The list of units that are in this network",
+        "102-//SHOWR9/254: XState - Get the extended state for this network",
+        "102-//SHOWR9/254: DefaultApplication - The default application for this network",
+        "102-//SHOWR9/254: AutoUpdate - If set to yes, automatically update the tag database for a new unit.",
+        "102-//SHOWR9/254: State - The state of connection of this object",
+        "102 //SHOWR9/254: Type - Type of network interface"
+      ],
+      "final": "102 //SHOWR9/254: Type - Type of network interface"
+    },
+    {
+      "command": "SHOW //SHOWR9/254/p/20 ?",
+      "code": 300,
+      "lines": [
+        "300 //SHOWR9/254/p/20: Parameters=LearnEnable,ProjectName,ShortName,Type,Address,Version,Serial,State,Application2,Application,GeneratingClock,SerialNumber,PSyncTime,BlockGroups,ClockGenActive,BlockApplications,NetVoltage,UnitBlock,BurdenActive,PatchVersion,EventLevel,ErrorFlags,PartName,Version2,SlotGroups,Area,LearnActive,Groups,SummaryFlags,ClassName,CatalogNumber,Name"
+      ],
+      "final": "300 //SHOWR9/254/p/20: Parameters=LearnEnable,ProjectName,ShortName,Type,Address,Version,Serial,State,Application2,Application,GeneratingClock,SerialNumber,PSyncTime,BlockGroups,ClockGenActive,BlockApplications,NetVoltage,UnitBlock,BurdenActive,PatchVersion,EventLevel,ErrorFlags,PartName,Version2,SlotGroups,Area,LearnActive,Groups,SummaryFlags,ClassName,CatalogNumber,Name"
+    },
+    {
+      "command": "SHOW //SHOWR9/254/p/20 ??",
+      "code": 102,
+      "lines": [
+        "102-//SHOWR9/254/p/20: LearnEnable - The state of the learn enable flag in the unit.",
+        "102-//SHOWR9/254/p/20: ProjectName - The user-defined project name of this C-Bus unit.",
+        "102-//SHOWR9/254/p/20: ShortName - The name of this object",
+        "102-//SHOWR9/254/p/20: Type - The device type string for this unit",
+        "102-//SHOWR9/254/p/20: Address - The address of this unit",
+        "102-//SHOWR9/254/p/20: Version - The version of this C-Bus unit",
+        "102-//SHOWR9/254/p/20: Serial - The serial number of this unit",
+        "102-//SHOWR9/254/p/20: State - The state of connection of this object",
+        "102-//SHOWR9/254/p/20: Application2 - The secondary C-Bus Application for this device",
+        "102-//SHOWR9/254/p/20: Application - The primary C-Bus Application for this device",
+        "102-//SHOWR9/254/p/20: GeneratingClock - Flag indicating that the unit is generating a C-Bus clock.",
+        "102-//SHOWR9/254/p/20: SerialNumber - The serial number of this unit",
+        "102-//SHOWR9/254/p/20: PSyncTime - The time between parameter syncs for this unit",
+        "102-//SHOWR9/254/p/20: BlockGroups - List of groups belonging to blocks",
+        "102-//SHOWR9/254/p/20: ClockGenActive - Flag indicating that the unit Clock Generation is Active.",
+        "102-//SHOWR9/254/p/20: BlockApplications - Flags indicating primary (0) or secondary (1) application on block",
+        "102-//SHOWR9/254/p/20: NetVoltage - The voltage of the C-Bus network at this unit",
+        "102-//SHOWR9/254/p/20: UnitBlock - Unit blocks for this unit.",
+        "102-//SHOWR9/254/p/20: BurdenActive - Flag indicating that the unit has an active network burden.",
+        "102-//SHOWR9/254/p/20: PatchVersion - The version of patch in this unit",
+        "102-//SHOWR9/254/p/20: EventLevel - The level of displayed events for this object",
+        "102-//SHOWR9/254/p/20: ErrorFlags - Unit error flags",
+        "102-//SHOWR9/254/p/20: PartName - The user-defined part name of this C-Bus unit.",
+        "102-//SHOWR9/254/p/20: Version2 - The version of the micro in the unit",
+        "102-//SHOWR9/254/p/20: SlotGroups - List of groups used by this unit",
+        "102-//SHOWR9/254/p/20: Area - The area address for this unit",
+        "102-//SHOWR9/254/p/20: LearnActive - Flag indicating that learn mode is active for this unit.",
+        "102-//SHOWR9/254/p/20: Groups - List of groups used by this unit",
+        "102-//SHOWR9/254/p/20: SummaryFlags - Unit summary flags",
+        "102-//SHOWR9/254/p/20: ClassName - The name of the class that implements this unit or application",
+        "102-//SHOWR9/254/p/20: CatalogNumber - The catalog number of this unit.",
+        "102 //SHOWR9/254/p/20: Name - The name of this object"
+      ],
+      "final": "102 //SHOWR9/254/p/20: Name - The name of this object"
+    },
+    {
+      "command": "SHOW //SHOWR9/254/p/22 ?",
+      "code": 300,
+      "lines": [
+        "300 //SHOWR9/254/p/22: Parameters=LearnEnable,ProjectName,TerminalCount,ShortName,Type,Address,Version,State,Application2,Application,PSyncTime,Terminals,UnitBlock,PatchVersion,EventLevel,ErrorFlags,PartName,Version2,SlotGroups,Area,Groups,ClassName,CatalogNumber,Name"
+      ],
+      "final": "300 //SHOWR9/254/p/22: Parameters=LearnEnable,ProjectName,TerminalCount,ShortName,Type,Address,Version,State,Application2,Application,PSyncTime,Terminals,UnitBlock,PatchVersion,EventLevel,ErrorFlags,PartName,Version2,SlotGroups,Area,Groups,ClassName,CatalogNumber,Name"
+    },
+    {
+      "command": "SHOW //SHOWR9/254/p/22 ??",
+      "code": 102,
+      "lines": [
+        "102-//SHOWR9/254/p/22: LearnEnable - The state of the learn enable flag in the unit.",
+        "102-//SHOWR9/254/p/22: ProjectName - The user-defined project name of this C-Bus unit.",
+        "102-//SHOWR9/254/p/22: TerminalCount - Count of terminals provided by this unit",
+        "102-//SHOWR9/254/p/22: ShortName - The name of this object",
+        "102-//SHOWR9/254/p/22: Type - The device type string for this unit",
+        "102-//SHOWR9/254/p/22: Address - The address of this unit",
+        "102-//SHOWR9/254/p/22: Version - The version of this C-Bus unit",
+        "102-//SHOWR9/254/p/22: State - The state of connection of this object",
+        "102-//SHOWR9/254/p/22: Application2 - The secondary C-Bus Application for this device",
+        "102-//SHOWR9/254/p/22: Application - The primary C-Bus Application for this device",
+        "102-//SHOWR9/254/p/22: PSyncTime - The time between parameter syncs for this unit",
+        "102-//SHOWR9/254/p/22: Terminals - List of terminals provided by this unit",
+        "102-//SHOWR9/254/p/22: UnitBlock - Unit blocks for this unit.",
+        "102-//SHOWR9/254/p/22: PatchVersion - The version of patch in this unit",
+        "102-//SHOWR9/254/p/22: EventLevel - The level of displayed events for this object",
+        "102-//SHOWR9/254/p/22: ErrorFlags - Unit error flags",
+        "102-//SHOWR9/254/p/22: PartName - The user-defined part name of this C-Bus unit.",
+        "102-//SHOWR9/254/p/22: Version2 - The version of the micro in the unit",
+        "102-//SHOWR9/254/p/22: SlotGroups - List of groups used by this unit",
+        "102-//SHOWR9/254/p/22: Area - The area address for this unit",
+        "102-//SHOWR9/254/p/22: Groups - List of groups used by this unit",
+        "102-//SHOWR9/254/p/22: ClassName - The name of the class that implements this unit or application",
+        "102-//SHOWR9/254/p/22: CatalogNumber - The catalog number of this unit.",
+        "102 //SHOWR9/254/p/22: Name - The name of this object"
+      ],
+      "final": "102 //SHOWR9/254/p/22: Name - The name of this object"
+    },
+    {
+      "command": "SHOW //SHOWR9/254/56/1 ?",
+      "code": 300,
+      "lines": [
+        "300 //SHOWR9/254/56/1: Parameters=Units,RampTime,Name,Protected,Type,EventLevel,State,Level"
+      ],
+      "final": "300 //SHOWR9/254/56/1: Parameters=Units,RampTime,Name,Protected,Type,EventLevel,State,Level"
+    },
+    {
+      "command": "SHOW //SHOWR9/254/56/1 ??",
+      "code": 102,
+      "lines": [
+        "102-//SHOWR9/254/56/1: Units - List of unit that this group is used by.",
+        "102-//SHOWR9/254/56/1: RampTime - The stored ramp time for this group - only impacts CI command",
+        "102-//SHOWR9/254/56/1: Name - The name of this object",
+        "102-//SHOWR9/254/56/1: Protected - If set, protects group from allon/alloff operations",
+        "102-//SHOWR9/254/56/1: Type - Returns either group or area if this is an area",
+        "102-//SHOWR9/254/56/1: EventLevel - The level of displayed events for this object",
+        "102-//SHOWR9/254/56/1: State - The state of connection of this object",
+        "102 //SHOWR9/254/56/1: Level - The current level of this group"
+      ],
+      "final": "102 //SHOWR9/254/56/1: Level - The current level of this group"
+    },
+    {
+      "command": "SHOW //SHOWR9/254/56 ?",
+      "code": 300,
+      "lines": [
+        "300 //SHOWR9/254/56: Parameters=State,Name,LearnGroup,FreeGroup,Groups,ClassName,ShortName,Learning,EventLevel,Address"
+      ],
+      "final": "300 //SHOWR9/254/56: Parameters=State,Name,LearnGroup,FreeGroup,Groups,ClassName,ShortName,Learning,EventLevel,Address"
+    },
+    {
+      "command": "SHOW //SHOWR9/254/56 ??",
+      "code": 102,
+      "lines": [
+        "102-//SHOWR9/254/56: State - The state of connection of this object",
+        "102-//SHOWR9/254/56: Name - The name of this object",
+        "102-//SHOWR9/254/56: LearnGroup - The group currently involved in learning",
+        "102-//SHOWR9/254/56: FreeGroup - The next free group address in this application",
+        "102-//SHOWR9/254/56: Groups - List of groups in this application",
+        "102-//SHOWR9/254/56: ClassName - The name of the class that implements this unit or application",
+        "102-//SHOWR9/254/56: ShortName - The name of this object",
+        "102-//SHOWR9/254/56: Learning - The state of learning in this application",
+        "102-//SHOWR9/254/56: EventLevel - The level of displayed events for this object",
+        "102 //SHOWR9/254/56: Address - The C-Bus Address of this device"
+      ],
+      "final": "102 //SHOWR9/254/56: Address - The C-Bus Address of this device"
+    },
+    {
+      "command": "SHOW //SHOWR9/254/p/20/1 ?",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID: //SHOWR9/254/p/20/1 (Unit does not have terminals)"
+      ],
+      "final": "401 Bad object or device ID: //SHOWR9/254/p/20/1 (Unit does not have terminals)"
+    },
+    {
+      "command": "SHOW //SHOWR9/254/p/22/1 ?",
+      "code": 300,
+      "lines": [
+        "300 //SHOWR9/254/p/22/1: Parameters=Groups,Logic,Name,Power,EventLevel,Load,State,Level"
+      ],
+      "final": "300 //SHOWR9/254/p/22/1: Parameters=Groups,Logic,Name,Power,EventLevel,Load,State,Level"
+    },
+    {
+      "command": "SHOW //SHOWR9/254/p/22/1 ??",
+      "code": 102,
+      "lines": [
+        "102-//SHOWR9/254/p/22/1: Groups - List of groups used by this terminal",
+        "102-//SHOWR9/254/p/22/1: Logic - Logic setting for this terminal",
+        "102-//SHOWR9/254/p/22/1: Name - Name of this terminal",
+        "102-//SHOWR9/254/p/22/1: Power - The power output level of this terminal",
+        "102-//SHOWR9/254/p/22/1: EventLevel - The level of displayed events for this object",
+        "102-//SHOWR9/254/p/22/1: Load - The power rating of the load connected to this terminal",
+        "102-//SHOWR9/254/p/22/1: State - The state of connection of this object",
+        "102 //SHOWR9/254/p/22/1: Level - The output level of this terminal"
+      ],
+      "final": "102 //SHOWR9/254/p/22/1: Level - The output level of this terminal"
+    },
+    {
+      "command": "SHOW //SHOWR9/p/254/22/1 ?",
+      "code": 300,
+      "lines": [
+        "300 //SHOWR9/254/p/22/1: Parameters=Groups,Logic,Name,Power,EventLevel,Load,State,Level"
+      ],
+      "final": "300 //SHOWR9/254/p/22/1: Parameters=Groups,Logic,Name,Power,EventLevel,Load,State,Level"
+    },
+    {
+      "command": "SHOW p/254/22/1 ?",
+      "code": 300,
+      "lines": [
+        "300 //SHOWR9/254/p/22/1: Parameters=Groups,Logic,Name,Power,EventLevel,Load,State,Level"
+      ],
+      "final": "300 //SHOWR9/254/p/22/1: Parameters=Groups,Logic,Name,Power,EventLevel,Load,State,Level"
+    },
+    {
+      "command": "SHOW 254/p/22/1 ?",
+      "code": 300,
+      "lines": [
+        "300 //SHOWR9/254/p/22/1: Parameters=Groups,Logic,Name,Power,EventLevel,Load,State,Level"
+      ],
+      "final": "300 //SHOWR9/254/p/22/1: Parameters=Groups,Logic,Name,Power,EventLevel,Load,State,Level"
+    },
+    {
+      "command": "SHOW /p/254/22/1 ?",
+      "code": 300,
+      "lines": [
+        "300 //SHOWR9/254/p/22/1: Parameters=Groups,Logic,Name,Power,EventLevel,Load,State,Level"
+      ],
+      "final": "300 //SHOWR9/254/p/22/1: Parameters=Groups,Logic,Name,Power,EventLevel,Load,State,Level"
+    },
+    {
+      "command": "SHOW /254/p/22/1 ?",
+      "code": 300,
+      "lines": [
+        "300 //SHOWR9/254/p/22/1: Parameters=Groups,Logic,Name,Power,EventLevel,Load,State,Level"
+      ],
+      "final": "300 //SHOWR9/254/p/22/1: Parameters=Groups,Logic,Name,Power,EventLevel,Load,State,Level"
+    },
+    {
+      "command": "SHOW cgate ?",
+      "code": 300,
+      "lines": [
+        "300 cgate: Parameters=ProjectFreeSpace,State,DatabaseVersion,MemoryFree,ServerMode,LogFreeSpace,KCount,MemoryUsed,Version,MemoryMaximum,JavaArguments,EventLevel,IsPrerelease,MemoryTotal,Threads,IPAddress,ComputerName"
+      ],
+      "final": "300 cgate: Parameters=ProjectFreeSpace,State,DatabaseVersion,MemoryFree,ServerMode,LogFreeSpace,KCount,MemoryUsed,Version,MemoryMaximum,JavaArguments,EventLevel,IsPrerelease,MemoryTotal,Threads,IPAddress,ComputerName"
+    },
+    {
+      "command": "SHOW cgate ??",
+      "code": 102,
+      "lines": [
+        "102-cgate: ProjectFreeSpace - Free space in the project directory",
+        "102-cgate: State - The state of connection of this object",
+        "102-cgate: DatabaseVersion - Tag Database Version Number",
+        "102-cgate: MemoryFree - Free memory in bytes",
+        "102-cgate: ServerMode - The ServerMode compile flag is set",
+        "102-cgate: LogFreeSpace - Free space in the log directory",
+        "102-cgate: KCount - KCount",
+        "102-cgate: MemoryUsed - Used memory in bytes",
+        "102-cgate: Version - C-Gate Version Number",
+        "102-cgate: MemoryMaximum - Limit of available memory in bytes",
+        "102-cgate: JavaArguments - Command line arguments passed to the Java VM",
+        "102-cgate: EventLevel - The level of displayed events for this object",
+        "102-cgate: IsPrerelease - The prerelease compile flag is set",
+        "102-cgate: MemoryTotal - Available memory in bytes",
+        "102-cgate: Threads - Number of active threads in this application",
+        "102-cgate: IPAddress - IP address of the C-Gate server",
+        "102 cgate: ComputerName - Name of the Computer"
+      ],
+      "final": "102 cgate: ComputerName - Name of the Computer"
+    },
+    {
+      "command": "SHOW projects ?",
+      "code": 300,
+      "lines": [
+        "300 projects: Parameters=EventLevel,State,NetStateInterval"
+      ],
+      "final": "300 projects: Parameters=EventLevel,State,NetStateInterval"
+    },
+    {
+      "command": "SHOW projects ??",
+      "code": 102,
+      "lines": [
+        "102-projects: EventLevel - The level of displayed events for this object",
+        "102-projects: State - The state of connection of this object",
+        "102 projects: NetStateInterval - The interval between network status being output as an event"
+      ],
+      "final": "102 projects: NetStateInterval - The interval between network status being output as an event"
+    },
+    {
+      "command": "SHOW cbus ?",
+      "code": 300,
+      "lines": [
+        "300 //SHOWR9/cbus: Parameters=EventLevel,State,Networks"
+      ],
+      "final": "300 //SHOWR9/cbus: Parameters=EventLevel,State,Networks"
+    },
+    {
+      "command": "SHOW cbus ??",
+      "code": 102,
+      "lines": [
+        "102-//SHOWR9/cbus: EventLevel - The level of displayed events for this object",
+        "102-//SHOWR9/cbus: State - The state of connection of this object",
+        "102 //SHOWR9/cbus: Networks - List of available C-Bus networks"
+      ],
+      "final": "102 //SHOWR9/cbus: Networks - List of available C-Bus networks"
+    },
+    {
+      "command": "SHOW //SHOWR9 ?",
+      "code": 300,
+      "lines": [
+        "300 //SHOWR9: Parameters=AccessContextLocks,EventLevel,State,Networks"
+      ],
+      "final": "300 //SHOWR9: Parameters=AccessContextLocks,EventLevel,State,Networks"
+    },
+    {
+      "command": "SHOW //SHOWR9 ??",
+      "code": 102,
+      "lines": [
+        "102-//SHOWR9: AccessContextLocks - List of access contexts using this project",
+        "102-//SHOWR9: EventLevel - The level of displayed events for this object",
+        "102-//SHOWR9: State - The state of connection of this object",
+        "102 //SHOWR9: Networks - List of networks for this project"
+      ],
+      "final": "102 //SHOWR9: Networks - List of networks for this project"
+    },
+    {
+      "command": "SHOW //SHOWR9/254 *",
+      "code": 300,
+      "lines": [
+        "300-//SHOWR9/254: Applications=56",
+        "300-//SHOWR9/254: AutoSync=yes",
+        "300-//SHOWR9/254: AutoUnravel=no",
+        "300-//SHOWR9/254: AutoUpdate=no",
+        "300-//SHOWR9/254: DBUnitAddressesDuplicate=",
+        "300-//SHOWR9/254: DBUnitAddressesError=",
+        "300-//SHOWR9/254: DBUnitAddressesMissing=",
+        "300-//SHOWR9/254: DBUnitAddressesNew=",
+        "300-//SHOWR9/254: DBUnitAddressesOnline=",
+        "300-//SHOWR9/254: DefaultApplication=56",
+        "300-//SHOWR9/254: EventLevel=9",
+        "300-//SHOWR9/254: FastResponse=no",
+        "300-//SHOWR9/254: FreeApplication=0",
+        "300-//SHOWR9/254: FreeUnit=0",
+        "300-//SHOWR9/254: Groups=1,4",
+        "300-//SHOWR9/254: Interface=127.0.0.1:9",
+        "300-//SHOWR9/254: InterfaceAddress=127.0.0.1:9",
+        "300-//SHOWR9/254: InterfaceState=closed",
+        "300-//SHOWR9/254: LastSyncTime=",
+        "300-//SHOWR9/254: LSP=0",
+        "300-//SHOWR9/254: Name=254",
+        "300-//SHOWR9/254: NetworkType=Wired",
+        "300-//SHOWR9/254: NextSyncTime=20260926-212536",
+        "300-//SHOWR9/254: Options=null",
+        "300-//SHOWR9/254: QuickDetect=no",
+        "300-//SHOWR9/254: ResponseDelay=3000",
+        "300-//SHOWR9/254: Retries=2",
+        "300-//SHOWR9/254: RxQ=null",
+        "300-//SHOWR9/254: ShortSync=no",
+        "300-//SHOWR9/254: State=error",
+        "300-//SHOWR9/254: Stats=",
+        "300-//SHOWR9/254: SyncState=idle",
+        "300-//SHOWR9/254: SyncSubState=idle",
+        "300-//SHOWR9/254: SyncTime=300",
+        "300-//SHOWR9/254: TargetInterfaceState=closed",
+        "300-//SHOWR9/254: TxEnable=no",
+        "300-//SHOWR9/254: TxQ=null",
+        "300-//SHOWR9/254: Type=cni",
+        "300-//SHOWR9/254: Units=20,22,23,24,26,27",
+        "300 //SHOWR9/254: XState=error+idle"
+      ],
+      "final": "300 //SHOWR9/254: XState=error+idle"
+    },
+    {
+      "command": "SHOW //SHOWR9/254/56 *",
+      "code": 300,
+      "lines": [
+        "300-//SHOWR9/254/56: Address=56",
+        "300-//SHOWR9/254/56: ClassName=com.clipsal.cgate.cbus.app.lighting.CBusLightingApplication",
+        "300-//SHOWR9/254/56: EventLevel=9",
+        "300-//SHOWR9/254/56: FreeGroup=0",
+        "300-//SHOWR9/254/56: Groups=1,4",
+        "300-//SHOWR9/254/56: LearnGroup=255",
+        "300-//SHOWR9/254/56: Learning=no",
+        "300-//SHOWR9/254/56: Name=",
+        "300-//SHOWR9/254/56: ShortName=lighting",
+        "300 //SHOWR9/254/56: State=error"
+      ],
+      "final": "300 //SHOWR9/254/56: State=error"
+    },
+    {
+      "command": "SHOW //SHOWR9/254/56/1 *",
+      "code": 300,
+      "lines": [
+        "300-//SHOWR9/254/56/1: EventLevel=9",
+        "300-//SHOWR9/254/56/1: Level=0",
+        "300-//SHOWR9/254/56/1: Name=",
+        "300-//SHOWR9/254/56/1: Protected=no",
+        "300-//SHOWR9/254/56/1: RampTime=0",
+        "300-//SHOWR9/254/56/1: State=error",
+        "300-//SHOWR9/254/56/1: Type=group",
+        "300 //SHOWR9/254/56/1: Units="
+      ],
+      "final": "300 //SHOWR9/254/56/1: Units="
+    },
+    {
+      "command": "SHOW //SHOWR9/254/p/20 *",
+      "code": 300,
+      "lines": [
+        "300-//SHOWR9/254/p/20: Address=20",
+        "300-//SHOWR9/254/p/20: Application=255",
+        "300-//SHOWR9/254/p/20: Application2=255",
+        "300-//SHOWR9/254/p/20: Area=255",
+        "300-//SHOWR9/254/p/20: BlockApplications=0,0,0,0,0,0,0,0,0",
+        "300-//SHOWR9/254/p/20: BlockGroups=255,255,255,255,255,255,255,255,255",
+        "300-//SHOWR9/254/p/20: BurdenActive=no",
+        "300-//SHOWR9/254/p/20: CatalogNumber=5031NMML",
+        "300-//SHOWR9/254/p/20: ClassName=com.clipsal.cgate.cbus.dev.CBusNeoInputUnit",
+        "300-//SHOWR9/254/p/20: ClockGenActive=no",
+        "300-//SHOWR9/254/p/20: ErrorFlags=0",
+        "300-//SHOWR9/254/p/20: EventLevel=9",
+        "300-//SHOWR9/254/p/20: GeneratingClock=no",
+        "300-//SHOWR9/254/p/20: Groups=",
+        "300-//SHOWR9/254/p/20: LearnActive=no",
+        "408-Operation failed: //SHOWR9/254/p/20 (Can not get parameter from unit)",
+        "300-//SHOWR9/254/p/20: Name=",
+        "300-//SHOWR9/254/p/20: NetVoltage=0.5",
+        "300-//SHOWR9/254/p/20: PartName=",
+        "300-//SHOWR9/254/p/20: PatchVersion=255",
+        "300-//SHOWR9/254/p/20: ProjectName=",
+        "300-//SHOWR9/254/p/20: PSyncTime=300",
+        "300-//SHOWR9/254/p/20: Serial=0.0",
+        "300-//SHOWR9/254/p/20: SerialNumber=0.0",
+        "300-//SHOWR9/254/p/20: ShortName=",
+        "300-//SHOWR9/254/p/20: SlotGroups=255,255,255,255,255,255,255,255,255",
+        "300-//SHOWR9/254/p/20: State=error",
+        "300-//SHOWR9/254/p/20: SummaryFlags=0",
+        "300-//SHOWR9/254/p/20: Type=KEYE1",
+        "300-//SHOWR9/254/p/20: UnitBlock=",
+        "300-//SHOWR9/254/p/20: Version=2.5.00",
+        "300 //SHOWR9/254/p/20: Version2=null"
+      ],
+      "final": "300 //SHOWR9/254/p/20: Version2=null"
+    },
+    {
+      "command": "SHOW //SHOWR9/254/p/22 *",
+      "code": 300,
+      "lines": [
+        "300-//SHOWR9/254/p/22: Address=22",
+        "300-//SHOWR9/254/p/22: Application=255",
+        "300-//SHOWR9/254/p/22: Application2=255",
+        "300-//SHOWR9/254/p/22: Area=255",
+        "300-//SHOWR9/254/p/22: CatalogNumber=",
+        "300-//SHOWR9/254/p/22: ClassName=com.clipsal.cgate.cbus.dev.CBusDimmerUnit",
+        "300-//SHOWR9/254/p/22: ErrorFlags=0",
+        "300-//SHOWR9/254/p/22: EventLevel=9",
+        "300-//SHOWR9/254/p/22: Groups=",
+        "408-Operation failed: //SHOWR9/254/p/22 (Can not get parameter from unit)",
+        "300-//SHOWR9/254/p/22: Name=",
+        "300-//SHOWR9/254/p/22: PartName=",
+        "300-//SHOWR9/254/p/22: PatchVersion=255",
+        "300-//SHOWR9/254/p/22: ProjectName=",
+        "300-//SHOWR9/254/p/22: PSyncTime=300",
+        "300-//SHOWR9/254/p/22: ShortName=",
+        "300-//SHOWR9/254/p/22: SlotGroups=255,255,255,255,255,255",
+        "300-//SHOWR9/254/p/22: State=new",
+        "300-//SHOWR9/254/p/22: TerminalCount=4",
+        "300-//SHOWR9/254/p/22: Terminals=1,2,3,4",
+        "300-//SHOWR9/254/p/22: Type=DIMMER4",
+        "300-//SHOWR9/254/p/22: UnitBlock=",
+        "300-//SHOWR9/254/p/22: Version=1.0.00",
+        "300 //SHOWR9/254/p/22: Version2=null"
+      ],
+      "final": "300 //SHOWR9/254/p/22: Version2=null"
+    },
+    {
+      "command": "SHOW //SHOWR9/254/p/23 *",
+      "code": 300,
+      "lines": [
+        "300-//SHOWR9/254/p/23: Address=23",
+        "300-//SHOWR9/254/p/23: Application=255",
+        "300-//SHOWR9/254/p/23: Application2=255",
+        "300-//SHOWR9/254/p/23: Area=255",
+        "300-//SHOWR9/254/p/23: CatalogNumber=",
+        "300-//SHOWR9/254/p/23: ClassName=com.clipsal.cgate.cbus.dev.CBusRelayUnit",
+        "300-//SHOWR9/254/p/23: ErrorFlags=0",
+        "300-//SHOWR9/254/p/23: EventLevel=9",
+        "300-//SHOWR9/254/p/23: Groups=",
+        "408-Operation failed: //SHOWR9/254/p/23 (Can not get parameter from unit)",
+        "300-//SHOWR9/254/p/23: Name=",
+        "300-//SHOWR9/254/p/23: PartName=",
+        "300-//SHOWR9/254/p/23: PatchVersion=255",
+        "300-//SHOWR9/254/p/23: ProjectName=",
+        "300-//SHOWR9/254/p/23: PSyncTime=300",
+        "300-//SHOWR9/254/p/23: ShortName=",
+        "300-//SHOWR9/254/p/23: SlotGroups=255,255,255,255,255,255",
+        "300-//SHOWR9/254/p/23: State=new",
+        "300-//SHOWR9/254/p/23: TerminalCount=4",
+        "300-//SHOWR9/254/p/23: Terminals=1,2,3,4",
+        "300-//SHOWR9/254/p/23: Type=RELAY4",
+        "300-//SHOWR9/254/p/23: UnitBlock=",
+        "300-//SHOWR9/254/p/23: Version=1.0.00",
+        "300 //SHOWR9/254/p/23: Version2=null"
+      ],
+      "final": "300 //SHOWR9/254/p/23: Version2=null"
+    },
+    {
+      "command": "SHOW //SHOWR9/254/p/24 *",
+      "code": 300,
+      "lines": [
+        "300-//SHOWR9/254/p/24: Address=24",
+        "300-//SHOWR9/254/p/24: Application=255",
+        "300-//SHOWR9/254/p/24: Application2=255",
+        "300-//SHOWR9/254/p/24: CatalogNumber=",
+        "300-//SHOWR9/254/p/24: ClassName=com.clipsal.cgate.cbus.core.CBusUnit",
+        "300-//SHOWR9/254/p/24: ErrorFlags=0",
+        "300-//SHOWR9/254/p/24: EventLevel=9",
+        "408-Operation failed: //SHOWR9/254/p/24 (Can not get parameter from unit)",
+        "300-//SHOWR9/254/p/24: Name=",
+        "300-//SHOWR9/254/p/24: PartName=",
+        "300-//SHOWR9/254/p/24: PatchVersion=255",
+        "300-//SHOWR9/254/p/24: ProjectName=",
+        "300-//SHOWR9/254/p/24: PSyncTime=300",
+        "300-//SHOWR9/254/p/24: ShortName=",
+        "300-//SHOWR9/254/p/24: SlotGroups=",
+        "300-//SHOWR9/254/p/24: State=new",
+        "300-//SHOWR9/254/p/24: Type=BOGUS",
+        "300-//SHOWR9/254/p/24: UnitBlock=",
+        "300-//SHOWR9/254/p/24: Version=1.0.00",
+        "300 //SHOWR9/254/p/24: Version2=null"
+      ],
+      "final": "300 //SHOWR9/254/p/24: Version2=null"
+    },
+    {
+      "command": "SHOW //SHOWR9/254/p/25 *",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID: //SHOWR9/254/p/25 (Unit not found)"
+      ],
+      "final": "401 Bad object or device ID: //SHOWR9/254/p/25 (Unit not found)"
+    },
+    {
+      "command": "SHOW //SHOWR9/254/p/26 *",
+      "code": 300,
+      "lines": [
+        "300-//SHOWR9/254/p/26: Address=26",
+        "300-//SHOWR9/254/p/26: Application=255",
+        "300-//SHOWR9/254/p/26: Application2=255",
+        "300-//SHOWR9/254/p/26: CatalogNumber=",
+        "300-//SHOWR9/254/p/26: ClassName=com.clipsal.cgate.cbus.core.CBusUnit",
+        "300-//SHOWR9/254/p/26: ErrorFlags=0",
+        "300-//SHOWR9/254/p/26: EventLevel=9",
+        "408-Operation failed: //SHOWR9/254/p/26 (Can not get parameter from unit)",
+        "300-//SHOWR9/254/p/26: Name=",
+        "300-//SHOWR9/254/p/26: PartName=",
+        "300-//SHOWR9/254/p/26: PatchVersion=255",
+        "300-//SHOWR9/254/p/26: ProjectName=",
+        "300-//SHOWR9/254/p/26: PSyncTime=300",
+        "300-//SHOWR9/254/p/26: ShortName=",
+        "300-//SHOWR9/254/p/26: SlotGroups=",
+        "300-//SHOWR9/254/p/26: State=new",
+        "300-//SHOWR9/254/p/26: Type=DIMMER4",
+        "300-//SHOWR9/254/p/26: UnitBlock=",
+        "300-//SHOWR9/254/p/26: Version=99.99.99",
+        "300 //SHOWR9/254/p/26: Version2=null"
+      ],
+      "final": "300 //SHOWR9/254/p/26: Version2=null"
+    },
+    {
+      "command": "SHOW //SHOWR9/254/p/27 *",
+      "code": 300,
+      "lines": [
+        "300-//SHOWR9/254/p/27: Address=27",
+        "300-//SHOWR9/254/p/27: Application=255",
+        "300-//SHOWR9/254/p/27: Application2=255",
+        "300-//SHOWR9/254/p/27: CatalogNumber=",
+        "300-//SHOWR9/254/p/27: ClassName=com.clipsal.cgate.cbus.core.CBusUnit",
+        "300-//SHOWR9/254/p/27: ErrorFlags=0",
+        "300-//SHOWR9/254/p/27: EventLevel=9",
+        "408-Operation failed: //SHOWR9/254/p/27 (Can not get parameter from unit)",
+        "300-//SHOWR9/254/p/27: Name=",
+        "300-//SHOWR9/254/p/27: PartName=",
+        "300-//SHOWR9/254/p/27: PatchVersion=255",
+        "300-//SHOWR9/254/p/27: ProjectName=",
+        "300-//SHOWR9/254/p/27: PSyncTime=300",
+        "300-//SHOWR9/254/p/27: ShortName=",
+        "300-//SHOWR9/254/p/27: SlotGroups=",
+        "300-//SHOWR9/254/p/27: State=new",
+        "300-//SHOWR9/254/p/27: Type=KEYE1",
+        "300-//SHOWR9/254/p/27: UnitBlock=",
+        "300-//SHOWR9/254/p/27: Version=99.99.99",
+        "300 //SHOWR9/254/p/27: Version2=null"
+      ],
+      "final": "300 //SHOWR9/254/p/27: Version2=null"
+    },
+    {
+      "command": "SHOW //SHOWR9/254/p/22/1 *",
+      "code": 300,
+      "lines": [
+        "300-//SHOWR9/254/p/22/1: EventLevel=9",
+        "300-//SHOWR9/254/p/22/1: Groups=",
+        "300-//SHOWR9/254/p/22/1: Level=255",
+        "300-//SHOWR9/254/p/22/1: Load=0",
+        "300-//SHOWR9/254/p/22/1: Logic=lesser",
+        "300-//SHOWR9/254/p/22/1: Name=null",
+        "300-//SHOWR9/254/p/22/1: Power=0",
+        "300 //SHOWR9/254/p/22/1: State=unknown"
+      ],
+      "final": "300 //SHOWR9/254/p/22/1: State=unknown"
+    },
+    {
+      "command": "SHOW projects *",
+      "code": 300,
+      "lines": [
+        "300-projects: EventLevel=9",
+        "300-projects: NetStateInterval=0",
+        "300 projects: State=new"
+      ],
+      "final": "300 projects: State=new"
+    },
+    {
+      "command": "SHOW cbus *",
+      "code": 300,
+      "lines": [
+        "300-//SHOWR9/cbus: EventLevel=9",
+        "300-//SHOWR9/cbus: Networks=254",
+        "300 //SHOWR9/cbus: State=new"
+      ],
+      "final": "300 //SHOWR9/cbus: State=new"
+    },
+    {
+      "command": "SHOW //SHOWR9 *",
+      "code": 300,
+      "lines": [
+        "300-//SHOWR9: AccessContextLocks=",
+        "300-//SHOWR9: EventLevel=9",
+        "300-//SHOWR9: Networks=254",
+        "300 //SHOWR9: State=new"
+      ],
+      "final": "300 //SHOWR9: State=new"
+    },
+    {
+      "command": "SHOW //SHOWR9/254 Bogus",
+      "code": 402,
+      "lines": [
+        "402 Operation not supported by: //SHOWR9/254 (Parameter bogus not found)"
+      ],
+      "final": "402 Operation not supported by: //SHOWR9/254 (Parameter bogus not found)"
+    },
+    {
+      "command": "SHOW //SHOWR9/254/p/20 Bogus",
+      "code": 402,
+      "lines": [
+        "402 Operation not supported by: //SHOWR9/254/p/20 (Parameter bogus not found)"
+      ],
+      "final": "402 Operation not supported by: //SHOWR9/254/p/20 (Parameter bogus not found)"
+    },
+    {
+      "command": "SHOW //SHOWR9/254/56/1 Bogus",
+      "code": 402,
+      "lines": [
+        "402 Operation not supported by: //SHOWR9/254/56/1 (Parameter bogus not found)"
+      ],
+      "final": "402 Operation not supported by: //SHOWR9/254/56/1 (Parameter bogus not found)"
+    },
+    {
+      "command": "SHOW //SHOWR9/254/56 Bogus",
+      "code": 402,
+      "lines": [
+        "402 Operation not supported by: //SHOWR9/254/56 (Parameter bogus not found)"
+      ],
+      "final": "402 Operation not supported by: //SHOWR9/254/56 (Parameter bogus not found)"
+    },
+    {
+      "command": "SHOW //SHOWR9/254/p/22/1 Bogus",
+      "code": 402,
+      "lines": [
+        "402 Operation not supported by: //SHOWR9/254/p/22/1 (Parameter bogus not found)"
+      ],
+      "final": "402 Operation not supported by: //SHOWR9/254/p/22/1 (Parameter bogus not found)"
+    },
+    {
+      "command": "SHOW cgate Bogus",
+      "code": 402,
+      "lines": [
+        "402 Operation not supported by: cgate (Parameter bogus not found)"
+      ],
+      "final": "402 Operation not supported by: cgate (Parameter bogus not found)"
+    },
+    {
+      "command": "SHOW //SHOWR9/254/56/999 ?",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID: //SHOWR9/254/56/999 (Invalid group address)"
+      ],
+      "final": "401 Bad object or device ID: //SHOWR9/254/56/999 (Invalid group address)"
+    },
+    {
+      "command": "SHOW //SHOWR9/254/p/22/99 ?",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID: //SHOWR9/254/p/22/99 (Invalid terminal address)"
+      ],
+      "final": "401 Bad object or device ID: //SHOWR9/254/p/22/99 (Invalid terminal address)"
+    },
+    {
+      "command": "TREEXML //SHOWR9/254",
+      "code": 344,
+      "lines": [
+        "343-Begin XML Snippet",
+        "347-<Network>",
+        "347- <Unit>",
+        "347-  <Type>KEYE1</Type>",
+        "347-  <CatalogueNumber>5031NMML</CatalogueNumber>",
+        "347-  <Version>2.5.00</Version>",
+        "347-  <SerialNo>0.0</SerialNo>",
+        "347-  <Address>20</Address>",
+        "347-  <PartName></PartName>",
+        "347-  <Application>255, 255</Application>",
+        "347-  <Groups></Groups>",
+        "347-  <Voltage>0.5</Voltage>",
+        "347-  <Burden>no</Burden>",
+        "347-  <Clock>no</Clock>",
+        "347- </Unit>",
+        "347- <Unit>",
+        "347-  <Type>DIMMER4</Type>",
+        "347-  <CatalogueNumber>5104D750</CatalogueNumber>",
+        "347-  <Version>1.0.00</Version>",
+        "347-  <SerialNo>{none}</SerialNo>",
+        "347-  <Address>22</Address>",
+        "347-  <PartName></PartName>",
+        "347-  <Application>255, 255</Application>",
+        "347-  <Groups></Groups>",
+        "347-  <Voltage></Voltage>",
+        "347-  <Burden>no</Burden>",
+        "347-  <Clock>no</Clock>",
+        "347- </Unit>",
+        "347- <Unit>",
+        "347-  <Type>RELAY4</Type>",
+        "347-  <CatalogueNumber>5504RDP</CatalogueNumber>",
+        "347-  <Version>1.0.00</Version>",
+        "347-  <SerialNo>{none}</SerialNo>",
+        "347-  <Address>23</Address>",
+        "347-  <PartName></PartName>",
+        "347-  <Application>255, 255</Application>",
+        "347-  <Groups></Groups>",
+        "347-  <Voltage></Voltage>",
+        "347-  <Burden>no</Burden>",
+        "347-  <Clock>no</Clock>",
+        "347- </Unit>",
+        "347- <Unit>",
+        "347-  <Type>BOGUS</Type>",
+        "347-  <CatalogueNumber></CatalogueNumber>",
+        "347-  <Version>1.0.00</Version>",
+        "347-  <SerialNo>{none}</SerialNo>",
+        "347-  <Address>24</Address>",
+        "347-  <PartName></PartName>",
+        "347-  <Application>255, 255</Application>",
+        "347-  <Groups></Groups>",
+        "347-  <Voltage></Voltage>",
+        "347-  <Burden>no</Burden>",
+        "347-  <Clock>no</Clock>",
+        "347- </Unit>",
+        "347- <Unit>",
+        "347-  <Type>DIMMER4</Type>",
+        "347-  <CatalogueNumber></CatalogueNumber>",
+        "347-  <Version>99.99.99</Version>",
+        "347-  <SerialNo>{none}</SerialNo>",
+        "347-  <Address>26</Address>",
+        "347-  <PartName></PartName>",
+        "347-  <Application>255, 255</Application>",
+        "347-  <Groups></Groups>",
+        "347-  <Voltage></Voltage>",
+        "347-  <Burden>no</Burden>",
+        "347-  <Clock>no</Clock>",
+        "347- </Unit>",
+        "347- <Unit>",
+        "347-  <Type>KEYE1</Type>",
+        "347-  <CatalogueNumber></CatalogueNumber>",
+        "347-  <Version>99.99.99</Version>",
+        "347-  <SerialNo>{none}</SerialNo>",
+        "347-  <Address>27</Address>",
+        "347-  <PartName></PartName>",
+        "347-  <Application>255, 255</Application>",
+        "347-  <Groups></Groups>",
+        "347-  <Voltage></Voltage>",
+        "347-  <Burden>no</Burden>",
+        "347-  <Clock>no</Clock>",
+        "347- </Unit>",
+        "347-</Network>",
+        "344 End XML Snippet"
+      ],
+      "final": "344 End XML Snippet"
+    },
+    {
+      "command": "TREEXMLDETAIL //SHOWR9/254",
+      "code": 344,
+      "lines": [
+        "343-Begin XML Snippet",
+        "347-<Network>",
+        "347- <Unit>",
+        "347-  <Type>KEYE1</Type>",
+        "347-  <CatalogueNumber>5031NMML</CatalogueNumber>",
+        "347-  <Version>2.5.00</Version>",
+        "347-  <SerialNo>0.0</SerialNo>",
+        "347-  <Address>20</Address>",
+        "347-  <PartName></PartName>",
+        "347-  <Application>255, 255</Application>",
+        "347-  <Groups></Groups>",
+        "347-  <Voltage>0.5</Voltage>",
+        "347-  <Burden>no</Burden>",
+        "347-  <Clock>no</Clock>",
+        "347-  <State>error</State>",
+        "347-  <OnlineStatus>unknown</OnlineStatus>",
+        "347- </Unit>",
+        "347- <Unit>",
+        "347-  <Type>DIMMER4</Type>",
+        "347-  <CatalogueNumber>5104D750</CatalogueNumber>",
+        "347-  <Version>1.0.00</Version>",
+        "347-  <SerialNo>{none}</SerialNo>",
+        "347-  <Address>22</Address>",
+        "347-  <PartName></PartName>",
+        "347-  <Application>255, 255</Application>",
+        "347-  <Groups></Groups>",
+        "347-  <Voltage></Voltage>",
+        "347-  <Burden>no</Burden>",
+        "347-  <Clock>no</Clock>",
+        "347-  <State>new</State>",
+        "347-  <OnlineStatus>unknown</OnlineStatus>",
+        "347- </Unit>",
+        "347- <Unit>",
+        "347-  <Type>RELAY4</Type>",
+        "347-  <CatalogueNumber>5504RDP</CatalogueNumber>",
+        "347-  <Version>1.0.00</Version>",
+        "347-  <SerialNo>{none}</SerialNo>",
+        "347-  <Address>23</Address>",
+        "347-  <PartName></PartName>",
+        "347-  <Application>255, 255</Application>",
+        "347-  <Groups></Groups>",
+        "347-  <Voltage></Voltage>",
+        "347-  <Burden>no</Burden>",
+        "347-  <Clock>no</Clock>",
+        "347-  <State>new</State>",
+        "347-  <OnlineStatus>unknown</OnlineStatus>",
+        "347- </Unit>",
+        "347- <Unit>",
+        "347-  <Type>BOGUS</Type>",
+        "347-  <CatalogueNumber></CatalogueNumber>",
+        "347-  <Version>1.0.00</Version>",
+        "347-  <SerialNo>{none}</SerialNo>",
+        "347-  <Address>24</Address>",
+        "347-  <PartName></PartName>",
+        "347-  <Application>255, 255</Application>",
+        "347-  <Groups></Groups>",
+        "347-  <Voltage></Voltage>",
+        "347-  <Burden>no</Burden>",
+        "347-  <Clock>no</Clock>",
+        "347-  <State>new</State>",
+        "347-  <OnlineStatus>unknown</OnlineStatus>",
+        "347- </Unit>",
+        "347- <Unit>",
+        "347-  <Type>DIMMER4</Type>",
+        "347-  <CatalogueNumber></CatalogueNumber>",
+        "347-  <Version>99.99.99</Version>",
+        "347-  <SerialNo>{none}</SerialNo>",
+        "347-  <Address>26</Address>",
+        "347-  <PartName></PartName>",
+        "347-  <Application>255, 255</Application>",
+        "347-  <Groups></Groups>",
+        "347-  <Voltage></Voltage>",
+        "347-  <Burden>no</Burden>",
+        "347-  <Clock>no</Clock>",
+        "347-  <State>new</State>",
+        "347-  <OnlineStatus>unknown</OnlineStatus>",
+        "347- </Unit>",
+        "347- <Unit>",
+        "347-  <Type>KEYE1</Type>",
+        "347-  <CatalogueNumber></CatalogueNumber>",
+        "347-  <Version>99.99.99</Version>",
+        "347-  <SerialNo>{none}</SerialNo>",
+        "347-  <Address>27</Address>",
+        "347-  <PartName></PartName>",
+        "347-  <Application>255, 255</Application>",
+        "347-  <Groups></Groups>",
+        "347-  <Voltage></Voltage>",
+        "347-  <Burden>no</Burden>",
+        "347-  <Clock>no</Clock>",
+        "347-  <State>new</State>",
+        "347-  <OnlineStatus>unknown</OnlineStatus>",
+        "347- </Unit>",
+        "347-</Network>",
+        "344 End XML Snippet"
+      ],
+      "final": "344 End XML Snippet"
+    }
+  ]
+}

@@ -968,11 +968,11 @@ impl Server {
     ) -> Option<Response> {
         let first = words.first()?.to_ascii_uppercase();
 
-        // The wire server cannot express a command with no response through
-        // `Response`; comments therefore complete locally with 200 and never
-        // mutate state. TCP clients normally strip them before sending.
-        if first == "#" || first == "//" {
-            return Some(ok(tag, vec![], "200 Comment ignored"));
+        // Wire frontends consume untagged comments before dispatch. Once a
+        // marker is tagged, native C-Gate treats it as command text and
+        // rejects it.
+        if first.starts_with('#') || first.starts_with("//") {
+            return Some(err(tag, status::BAD_REQUEST, "400 Syntax Error."));
         }
 
         if first == "GET" && words.len() >= 2 {
@@ -998,14 +998,14 @@ impl Server {
             return Some(self.do_command(tag, words));
         }
         if first == "OID" {
-            if words.len() != 1 {
-                return Some(err(tag, status::BAD_REQUEST, "400 OID takes no arguments"));
-            }
+            // Native C-Gate 3.4 ignores trailing tokens and returns 301.  The
+            // generated identity is not registered as a database object;
+            // OID is only a UUID factory.
             return Some(Response {
                 tag: tag.to_string(),
                 lines: vec![],
-                final_text: format!("302 OID={}", self.issue_oid()),
-                status: 302,
+                final_text: format!("301 OID={}", fresh_command_oid()),
+                status: 301,
             });
         }
         if first == "NEW" {
@@ -1028,12 +1028,8 @@ impl Server {
             }
         }
         if first == "REPORT" {
-            if words.len() != 2 {
-                return Some(err(
-                    tag,
-                    status::BAD_REQUEST,
-                    "400 REPORT requires a network",
-                ));
+            if words.len() < 2 {
+                return Some(err(tag, status::BAD_REQUEST, "400 Syntax Error."));
             }
             let tree = ["TREE", words[1]];
             return Some(self.net_tree(tag, &tree));
@@ -1099,6 +1095,11 @@ impl Server {
                     "400 HELP takes one optional topic",
                 ));
             }
+            if let Some(topic) = words.get(1) {
+                if let Some(rows) = general_object_help(&topic.to_ascii_uppercase()) {
+                    return Some(fixed_help_response(tag, rows));
+                }
+            }
             let names: Vec<&str> = if let Some(topic) = words.get(1) {
                 let topic = topic.to_ascii_uppercase();
                 DOCUMENTED_COMMANDS
@@ -1121,11 +1122,7 @@ impl Server {
 
         if first == "BROADCAST_EVENT" {
             if words.len() < 2 {
-                return Some(err(
-                    tag,
-                    status::BAD_REQUEST,
-                    "400 BROADCAST_EVENT requires a class",
-                ));
+                return Some(err(tag, status::BAD_REQUEST, "400 Syntax Error."));
             }
             self.push_event(format!("#e# {}", words[1..].join(" ")));
             return Some(ok(tag, vec![], "200 OK."));
@@ -1626,16 +1623,12 @@ impl Server {
     }
 
     fn show_command(&mut self, tag: &str, words: &[&str]) -> Response {
-        if words.len() < 2 {
-            return err(
-                tag,
-                status::BAD_REQUEST,
-                "400 SHOW requires an object identifier",
-            );
+        if words.len() < 3 {
+            return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
         }
-        let mut get_words = Vec::with_capacity(words.len());
+        let mut get_words = Vec::with_capacity(3);
         get_words.push("GET");
-        get_words.extend_from_slice(&words[1..]);
+        get_words.extend_from_slice(&words[1..3]);
         if let Some(response) = self.legacy_get(tag, &get_words) {
             response
         } else {
@@ -1654,6 +1647,35 @@ impl Server {
         } else {
             None
         }
+    }
+
+    /// Resolve the local value of a durable group created/imported in the
+    /// database. This lets the hardware service distinguish a database-backed
+    /// zero from the absence of any live bus observation.
+    pub(crate) fn durable_group_level(&self, raw: &str) -> Option<(String, u8)> {
+        let path = self.qualify_group(raw)?;
+        let durable = self.objects.contains(&path)
+            || self
+                .db_fields
+                .keys()
+                .any(|field| field.starts_with(&format!("{path}/")));
+        if !durable {
+            return None;
+        }
+        let (project, network, application, group) = Self::split_lighting(&path)?;
+        let level = self
+            .projects
+            .get(&project)
+            .and_then(|project| project.networks.get(&network))
+            .and_then(|network| network.levels.get(&(application, group)))
+            .copied()
+            .or_else(|| {
+                self.db_fields
+                    .get(&format!("{path}/Level"))
+                    .and_then(|level| level.parse::<u8>().ok())
+            })
+            .unwrap_or(0);
+        Some((path, level))
     }
 
     fn legacy_lighting(&mut self, tag: &str, words: &[&str]) -> Response {
@@ -1807,22 +1829,303 @@ impl Server {
     }
 
     fn new_object(&mut self, tag: &str, words: &[&str]) -> Response {
-        if words.len() < 3
-            || !matches!(
-                words[1].to_ascii_uppercase().as_str(),
-                "UNIT" | "GROUP" | "PHANTOM"
-            )
-            || !valid_target(words[2])
-        {
-            return err(
-                tag,
-                status::BAD_REQUEST,
-                "400 NEW requires UNIT, GROUP or PHANTOM and an identifier",
-            );
+        if matches!(self.access, AccessLevel::Admin | AccessLevel::Monitor) {
+            return err(tag, status::ACCESS_DENIED, "420 Access denied");
         }
-        self.application_state
-            .insert(format!("NEW {}", words[2]), words[1..].join(" "));
-        ok(tag, vec![], "200 OK.")
+        let Some(kind) = words.get(1).map(|kind| kind.to_ascii_uppercase()) else {
+            return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
+        };
+        let Some(target) = words.get(2).copied() else {
+            return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
+        };
+        if !valid_target(target) {
+            return err(tag, status::BAD_REQUEST, "400 Invalid object identifier");
+        }
+        match kind.as_str() {
+            "NETWORK" => err(
+                tag,
+                402,
+                "402 Operation not supported by: C-Gate. Define networks with NET CREATE",
+            ),
+            "CGROUP" => err(
+                tag,
+                402,
+                "402 Operation not supported by: Define cgroups in the startup igroups file",
+            ),
+            "AREA" => err(
+                tag,
+                402,
+                "402 Operation not supported by: Define areas with the area suffix in a new group definition",
+            ),
+            "IGROUP" => err(tag, status::BAD_REQUEST, "400 Syntax Error."),
+            "UNIT" => {
+                let (Some(unit_type), Some(firmware)) = (words.get(3), words.get(4)) else {
+                    return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
+                };
+                let unit_type = unit_type.trim_matches('"').to_string();
+                let firmware = firmware.trim_matches('"').to_string();
+                let numeric_components = || {
+                    firmware
+                        .split('.')
+                        .all(|part| !part.is_empty() && part.bytes().all(|byte| byte.is_ascii_digit()))
+                };
+                let keye1_version = || {
+                    firmware.as_bytes().first().is_some_and(u8::is_ascii_digit)
+                        && firmware
+                            .bytes()
+                            .all(|byte| byte.is_ascii_digit() || byte == b'.')
+                };
+                let invalid_firmware = match unit_type.as_str() {
+                    "DIMMER4" | "RELAY4" => !numeric_components(),
+                    "KEYE1" => !keye1_version(),
+                    _ => false,
+                };
+                if invalid_firmware {
+                    return err(tag, 500, "500 Internal error.");
+                }
+                #[derive(Clone, Copy)]
+                enum NativeUnitClass {
+                    Generic,
+                    NeoInput,
+                    Dimmer4,
+                    Relay4,
+                }
+                let native_class = match (unit_type.as_str(), firmware.as_str()) {
+                    ("KEYE1", "2.5.00") => NativeUnitClass::NeoInput,
+                    ("DIMMER4", "1.0.00") => NativeUnitClass::Dimmer4,
+                    ("RELAY4", "1.0.00") => NativeUnitClass::Relay4,
+                    _ => NativeUnitClass::Generic,
+                };
+                let catalog_number = if matches!(native_class, NativeUnitClass::NeoInput) {
+                    self.catalog()
+                        .ok()
+                        .and_then(|catalog| {
+                            catalog
+                                .matching(&unit_type, &firmware)
+                                .first()
+                                .map(|entry| entry.catalog_number.clone())
+                        })
+                        .unwrap_or_else(|| "5031NMML".to_string())
+                } else {
+                    String::new()
+                };
+                let Some(path) = self.qualify_unit(target) else {
+                    return err(tag, status::BAD_REQUEST, "400 Invalid unit address");
+                };
+                let unit_parts = path
+                    .trim_start_matches('/')
+                    .split('/')
+                    .collect::<Vec<_>>();
+                if unit_parts.len() != 4 || !unit_parts[2].eq_ignore_ascii_case("p") {
+                    return err(tag, status::BAD_REQUEST, "400 Invalid unit address");
+                }
+                let Some((project, network, address)) = self.unit_of(&path) else {
+                    return err(
+                        tag,
+                        status::ABSENT,
+                        &format!("401 Bad object or device ID: {target} (Network not found)"),
+                    );
+                };
+                if self.current.as_deref() != Some(project.as_str()) {
+                    return err(tag, status::NOT_FOUND, "404 Project not selected");
+                }
+                let network = self
+                    .projects
+                    .get_mut(&project)
+                    .and_then(|project| project.networks.get_mut(&network))
+                    .expect("unit_of established the network");
+                if network.units.contains_key(&address) {
+                    return ok(tag, vec![], "200 OK.");
+                }
+                let mut unit = super::Unit::blank(address, "");
+                unit.unit_type = unit_type;
+                unit.firmware = firmware;
+                unit.created_by_new = true;
+                unit.fields.clear();
+                for (name, value) in [
+                    ("Address", address.to_string()),
+                    ("Application", "255".to_string()),
+                    ("Application2", "255".to_string()),
+                    (
+                        "ClassName",
+                        match native_class {
+                            NativeUnitClass::Generic => "com.clipsal.cgate.cbus.core.CBusUnit",
+                            NativeUnitClass::NeoInput => {
+                                "com.clipsal.cgate.cbus.dev.CBusNeoInputUnit"
+                            }
+                            NativeUnitClass::Dimmer4 => {
+                                "com.clipsal.cgate.cbus.dev.CBusDimmerUnit"
+                            }
+                            NativeUnitClass::Relay4 => {
+                                "com.clipsal.cgate.cbus.dev.CBusRelayUnit"
+                            }
+                        }
+                        .to_string(),
+                    ),
+                    ("CatalogNumber", catalog_number),
+                    ("ErrorFlags", "0".to_string()),
+                    ("EventLevel", "9".to_string()),
+                    ("Name", String::new()),
+                    ("PartName", String::new()),
+                    ("PatchVersion", "255".to_string()),
+                    ("ProjectName", String::new()),
+                    ("PSyncTime", "300".to_string()),
+                    ("ShortName", String::new()),
+                    ("SlotGroups", String::new()),
+                    ("State", "new".to_string()),
+                    ("Type", unit.unit_type.clone()),
+                    ("UnitBlock", String::new()),
+                    ("Version", unit.firmware.clone()),
+                    ("Version2", "null".to_string()),
+                ] {
+                    unit.fields.insert(name.to_string(), value);
+                }
+                match native_class {
+                    NativeUnitClass::NeoInput => {
+                        for (name, value) in [
+                            ("Area", "255"),
+                            ("BlockApplications", "0,0,0,0,0,0,0,0,0"),
+                            ("BlockGroups", "255,255,255,255,255,255,255,255,255"),
+                            ("BurdenActive", "no"),
+                            ("ClockGenActive", "no"),
+                            ("GeneratingClock", "no"),
+                            ("Groups", ""),
+                            ("LearnActive", "no"),
+                            ("NetVoltage", "0.5"),
+                            ("Serial", "0.0"),
+                            ("SerialNumber", "0.0"),
+                            ("SlotGroups", "255,255,255,255,255,255,255,255,255"),
+                            ("State", "error"),
+                            ("SummaryFlags", "0"),
+                        ] {
+                            unit.fields.insert(name.to_string(), value.to_string());
+                        }
+                    }
+                    NativeUnitClass::Dimmer4 | NativeUnitClass::Relay4 => {
+                        for (name, value) in [
+                            ("Area", "255"),
+                            ("Groups", ""),
+                            ("SlotGroups", "255,255,255,255,255,255"),
+                            ("TerminalCount", "4"),
+                            ("Terminals", "1,2,3,4"),
+                        ] {
+                            unit.fields.insert(name.to_string(), value.to_string());
+                        }
+                    }
+                    NativeUnitClass::Generic => {}
+                }
+                self.known_oids.insert(unit.oid.clone());
+                network.units.insert(address, unit);
+                ok(tag, vec![], "200 OK.")
+            }
+            "GROUP" | "PHANTOM" => {
+                let Some(path) = self.qualify_group(target) else {
+                    return err(tag, status::BAD_REQUEST, "400 Invalid group address");
+                };
+                let parts = path
+                    .trim_start_matches('/')
+                    .split('/')
+                    .collect::<Vec<_>>();
+                let [project, network, application, group] = parts.as_slice() else {
+                    return err(tag, status::BAD_REQUEST, "400 Invalid group address");
+                };
+                let (Ok(network), Ok(application), Ok(_group)) = (
+                    network.parse::<u8>(),
+                    application.parse::<u8>(),
+                    group.parse::<u8>(),
+                ) else {
+                    return err(tag, status::BAD_REQUEST, "400 Invalid group address");
+                };
+                if self.current.as_deref() != Some(*project)
+                    || !self
+                        .projects
+                        .get(*project)
+                        .is_some_and(|project| project.networks.contains_key(&network))
+                {
+                    return err(
+                        tag,
+                        status::ABSENT,
+                        &format!("401 Bad object or device ID: {target} (Network not found)"),
+                    );
+                }
+                let application_path = format!("//{project}/{network}/{application}");
+                if matches!(application, 192 | 223 | 224) {
+                    // Native creates the application object while rejecting
+                    // child-address creation for these objectless classes.
+                    self.objects.insert(application_path.clone());
+                }
+                if matches!(application, 192 | 255) {
+                    return err(
+                        tag,
+                        status::ABSENT,
+                        &format!(
+                            "401 Bad object or device ID: {path} (Address not supported by application)"
+                        ),
+                    );
+                }
+                if matches!(application, 223 | 224) {
+                    return err(
+                        tag,
+                        status::ABSENT,
+                        &format!("401 Bad object or device ID: {path} (Object not found)"),
+                    );
+                }
+                self.objects.insert(application_path);
+                if self.objects.contains(&path)
+                    || self
+                        .db_fields
+                        .keys()
+                        .any(|field| field.starts_with(&format!("{path}/")))
+                {
+                    return ok(tag, vec![], "200 OK.");
+                }
+                let initial_level = if kind == "PHANTOM" {
+                    match words.get(3) {
+                        None => {
+                            return err(
+                                tag,
+                                status::ABSENT,
+                                &format!(
+                                    "401 Bad object or device ID: {target} (Bad initial level for phantom)"
+                                ),
+                            )
+                        }
+                        Some(value) => match value.parse::<u8>() {
+                            Ok(value) => value,
+                            Err(_) => {
+                                return err(
+                                    tag,
+                                    status::ABSENT,
+                                    &format!(
+                                        "401 Bad object or device ID: {target} (Bad initial level for phantom)"
+                                    ),
+                                )
+                            }
+                        },
+                    }
+                } else {
+                    0
+                };
+                self.objects.insert(path.clone());
+                self.db_fields
+                    .insert(format!("{path}/Type"), "group".to_string());
+                self.db_fields
+                    .insert(format!("{path}/Level"), "0".to_string());
+                if kind == "PHANTOM" {
+                    self.db_fields.insert(
+                        format!("{path}/PhantomInitialLevel"),
+                        initial_level.to_string(),
+                    );
+                }
+                self.db_fields
+                    .insert(format!("{path}/State"), "new".to_string());
+                // Keep the variables used above intentionally validated and
+                // documented in the stored canonical address.
+                let _ = (application, group);
+                ok(tag, vec![], "200 OK.")
+            }
+            _ => err(tag, status::BAD_REQUEST, "400 Syntax Error."),
+        }
     }
 
     fn project_start_stop(&mut self, tag: &str, words: &[&str], start: bool) -> Response {
@@ -1925,9 +2228,15 @@ impl Server {
         let Some(project) = self.current_project_mut() else {
             return err(tag, status::NOT_FOUND, "404 No project selected");
         };
-        let Some(address) = (0_u16..=255)
-            .map(|n| n as u8)
-            .find(|n| !project.networks.contains_key(n))
+        let Some(address) = words[2]
+            .parse::<u8>()
+            .ok()
+            .filter(|address| !project.networks.contains_key(address))
+            .or_else(|| {
+                (0_u16..=255)
+                    .map(|n| n as u8)
+                    .find(|n| !project.networks.contains_key(n))
+            })
         else {
             return err(
                 tag,
@@ -1951,7 +2260,7 @@ impl Server {
             },
         );
         self.known_oids.insert(oid);
-        envelope(tag, 301, [format!("network={address}")])
+        ok(tag, vec![], "200 OK.")
     }
 
     fn net_delete(&mut self, tag: &str, words: &[&str]) -> Response {
@@ -2793,6 +3102,59 @@ where
     }
 }
 
+fn fixed_help_response(tag: &str, rows: &[&str]) -> Response {
+    let (final_text, intermediate) = rows
+        .split_last()
+        .expect("fixed native help always has a final row");
+    Response {
+        tag: tag.to_string(),
+        lines: intermediate
+            .iter()
+            .map(|row| row.strip_prefix("101-").unwrap_or(row).to_string())
+            .collect(),
+        final_text: (*final_text).to_string(),
+        status: 101,
+    }
+}
+
+fn general_object_help(topic: &str) -> Option<&'static [&'static str]> {
+    Some(match topic {
+        "OID" => &[
+            "101-Help: Syntax:  OID",
+            "101 Help: Generate a unique Object ID (OID or uuid).",
+        ],
+        "TREE" | "TREEXML" | "TREEXMLDETAIL" | "REPORT" => {
+            &["101 Help: No help is available for this command."]
+        }
+        "SHOW" => &[
+            "101-Help: syntax: GET <object-id> <param-name>",
+            "101-Help: or:     SHOW  <object-id> <param-name>",
+            "101-Help: Show the parameter given in <param-name> for the object",
+            "101-Help: given in <object-id>.",
+            "101-Help: <object-id> is a network, group, unit, application, terminal or system entity",
+            "101-Help: <param-name> is a named parameter or '*' to show all parameters, ",
+            "101-Help: '?' to get a list of parameters, or '??' to get a list of parameters with",
+            "101 Help: descriptions.",
+        ],
+        "NEW" => &[
+            "101-Help: syntax: NEW <object-type> <object-id> <parameter>",
+            "101-Help: Creates a new object of the specified object type",
+            "101-Help:   <object-type>s are: UNIT | GROUP | IGROUP | PHANTOM",
+            "101-Help:   <object-id> is a network, group, unit, or system entity",
+            "101-Help: <param> is a parameter appropriate to the object type",
+            "101-Help: In the case of a UNIT type, then there is a second parameter defining",
+            "101 Help: the version of the unit to be created.",
+        ],
+        "BROADCAST_EVENT" => &[
+            "101-Help: Syntax:  BROADCAST_EVENT SP event-class [event-text]",
+            "101-Help: Send a broadcast event to the event and status change ports.",
+            "101-Help:  event-class is the class of this event.",
+            "101 Help:  event-text (optional) is the text that will be sent as an event.",
+        ],
+        _ => return None,
+    })
+}
+
 fn valid_date(value: &str) -> bool {
     let parts: Vec<_> = value.split('-').collect();
     parts.len() == 3
@@ -2807,6 +3169,43 @@ fn valid_time(value: &str) -> bool {
         && parts[0].parse::<u8>().is_ok_and(|v| v <= 23)
         && parts[1].parse::<u8>().is_ok_and(|v| v <= 59)
         && parts[2].parse::<u8>().is_ok_and(|v| v <= 59)
+}
+
+/// Generate a standards-shaped version-1 UUID for the public `OID` command.
+///
+/// Native C-Gate returns a time UUID.  Database identities keep their
+/// deterministic test-friendly source in `fresh_oid`; this public factory is
+/// intentionally independent and does not make the result resolvable.
+fn fresh_command_oid() -> String {
+    use std::sync::{
+        atomic::{AtomicU16, Ordering},
+        OnceLock,
+    };
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    // Number of 100 ns intervals between 1582-10-15 and 1970-01-01.
+    const UUID_EPOCH_OFFSET: u128 = 0x01b2_1dd2_1381_4000;
+    static CLOCK_SEQUENCE: AtomicU16 = AtomicU16::new(0);
+    static NODE: OnceLock<u64> = OnceLock::new();
+
+    let unix = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_nanos()
+        / 100;
+    let timestamp = ((UUID_EPOCH_OFFSET + unix) & ((1_u128 << 60) - 1)) as u64;
+    let time_low = timestamp as u32;
+    let time_mid = (timestamp >> 32) as u16;
+    let time_high = ((timestamp >> 48) as u16 & 0x0fff) | 0x1000;
+    let sequence = (CLOCK_SEQUENCE.fetch_add(1, Ordering::Relaxed) & 0x3fff) | 0x8000;
+    // RFC 4122 permits a locally generated node when the multicast bit is
+    // set.  Mix process identity with the time field without exposing a host
+    // MAC address.
+    let node = *NODE.get_or_init(|| {
+        0x0100_0000_0000_u64
+            | (((u64::from(std::process::id()) << 16) ^ timestamp) & 0x00ff_ffff_ffff)
+    });
+    format!("{time_low:08x}-{time_mid:04x}-{time_high:04x}-{sequence:04x}-{node:012x}")
 }
 
 fn parse_duration(value: &str) -> Option<i64> {

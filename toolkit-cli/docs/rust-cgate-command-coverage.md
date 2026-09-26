@@ -124,10 +124,41 @@ the 431-path inventory (`CGL`, `CLOCK`, `ENABLE`, `EREPORT`, `LIGHTING`,
 parent roots are pinned in the separate supplement. These local help endpoints
 do not change any child command's capability class. Together with the NET
 lifecycle, deploy-queue, remaining-application, legacy-database, catalogue,
-calculator, and bounded CGL tranches, the matrix now contains **215 physical,
-167 local/session, 47 fail-closed, and 2 obsolete paths**. The separate
+calculator, bounded CGL, and general-object tranches, the matrix now contains
+**215 physical, 177 local/session, 37 fail-closed, and 2 obsolete paths**. The separate
 non-inventoried supplement contains 11 rows. Help evidence is in
 `rust/testdata/fixtures/native_cgate_family_help.json`.
+
+The embedded endpoint also implements the native general object and discovery
+surface used by command files and inventory clients: silent untagged `#`/`//`
+comments, 301 `OID`, local `BROADCAST_EVENT`, the `SHOW` alias, native-shaped
+`REPORT`/`TREE`/`TREEXML`/`TREEXMLDETAIL`, and durable idempotent `NEW`
+UNIT/GROUP/PHANTOM creation. Tree output combines the already observed
+physical cache with durable database objects and never treats a TREE flag as
+permission to run an implicit bus scan. A NEW UNIT is a database record until
+an independent physical discovery observes it.
+
+SHOW covers ordered `?`/`??` discovery and `*`/named reads across `cgate`,
+projects, project C-Bus, project, network, application, group, unit, and
+output-terminal objects. Native matrices pin caller-cased named reads,
+canonical terminal aliases, foreign-project lookup, missing-object errors,
+and application/child schemas for IDs 25, 48, 95, 172, 192, 202, 203, 205,
+208, 223, 224, 228, and 238. The parser fixture distinguishes the captured
+GET/SHOW trailing-token tolerance from strict XML/NET TREE flag grammar. The
+NEW fixture covers address limits, unsupported application children, and the
+different known- versus unknown-unit firmware-token rules. The tree fixture
+pins application labels, `Groups` versus `Net Vars`, states, ordering, and XML
+detail framing across the retained application classes.
+
+Exact native evidence is in `native_cgate_general_tree.json`, the 62-command
+`native_cgate_show_objects.json`, the 69-row `native_cgate_show_audit.json`,
+the 78-row `native_cgate_show_appclasses.json`, the 18-row
+`native_cgate_show_parser.json`, the 25-row `native_cgate_new_bounds.json`,
+and the three-row `native_cgate_tree_appclasses.json`. Replay compares tagged
+status, ordering, fields, and framing exactly. Process-specific host/IP/JVM
+metrics and scheduled timestamps are shape-validated and then normalized only
+where each fixture declares them volatile. `system_cgate_general_tree.rs`
+verifies the real daemon boundary and no command-induced PCI traffic.
 
 Current verification is:
 

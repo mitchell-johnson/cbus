@@ -72,7 +72,7 @@ async fn confirmed_mqtt_command_requests_physical_level_without_manufacturing_cg
     assert!(
         cgate_command(&mut reader, &mut writer, "GET //HARNESS/254/56/1 level")
             .await
-            .contains("408 No live level")
+            .contains("300 //HARNESS/254/56/1: level=0")
     );
 
     sys.broker
@@ -108,8 +108,8 @@ async fn confirmed_mqtt_command_requests_physical_level_without_manufacturing_cg
     assert!(
         cgate_command(&mut reader, &mut writer, "GET //HARNESS/254/56/1 level")
             .await
-            .contains("408 No live level"),
-        "a PCI confirmation and optimistic MQTT echo are not physical level evidence"
+            .contains("300 //HARNESS/254/56/1: level=0"),
+        "a PCI confirmation and optimistic MQTT echo must not replace the durable default"
     );
 
     // Exact retained level-report fixture: group 0 absent, group 1 = 255,

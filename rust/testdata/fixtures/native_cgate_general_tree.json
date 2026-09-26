@@ -1,0 +1,486 @@
+{
+  "schema": "native-cgate-general-tree-v1",
+  "oracle": {
+    "product": "Schneider Electric C-Gate",
+    "version": "3.4.0",
+    "build": 2001,
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "transport": "owned disposable loopback process plus synthetic PCI only",
+    "site_project_used": false,
+    "real_cbus_contacted": false,
+    "source_probe_sha256": "4babba9398cd60a2415d300e5a8c7bd7d5136957f3106b4bf769474aa8bf669b",
+    "comment_probe_sha256": "7dd20875035334d523ce7b8475cb517bc013f865de8ef5291b3a277860bfa719",
+    "new_object_probe_sha256": "cb757dfe46a4c0d546d3bba5831146d95890cd20e91f924659010e15eaa61efd"
+  },
+  "boundaries": {
+    "tree_inventory": "physical units already observed by an explicit NET SYNC; no per-TREE scan",
+    "new_objects": "database-only; NEW UNIT does not create physical presence",
+    "oid": "factory result is not a database object identity",
+    "comments": "native command interface consumes hash and double-slash lines without a response"
+  },
+  "help": [
+    {
+      "command": "HELP OID",
+      "lines": [
+        "101-Help: Syntax:  OID",
+        "101 Help: Generate a unique Object ID (OID or uuid)."
+      ]
+    },
+    {
+      "command": "HELP TREE",
+      "lines": [
+        "101 Help: No help is available for this command."
+      ]
+    },
+    {
+      "command": "HELP TREEXML",
+      "lines": [
+        "101 Help: No help is available for this command."
+      ]
+    },
+    {
+      "command": "HELP TREEXMLDETAIL",
+      "lines": [
+        "101 Help: No help is available for this command."
+      ]
+    },
+    {
+      "command": "HELP SHOW",
+      "lines": [
+        "101-Help: syntax: GET <object-id> <param-name>",
+        "101-Help: or:     SHOW  <object-id> <param-name>",
+        "101-Help: Show the parameter given in <param-name> for the object",
+        "101-Help: given in <object-id>.",
+        "101-Help: <object-id> is a network, group, unit, application, terminal or system entity",
+        "101-Help: <param-name> is a named parameter or '*' to show all parameters, ",
+        "101-Help: '?' to get a list of parameters, or '??' to get a list of parameters with",
+        "101 Help: descriptions."
+      ]
+    },
+    {
+      "command": "HELP REPORT",
+      "lines": [
+        "101 Help: No help is available for this command."
+      ]
+    },
+    {
+      "command": "HELP NEW",
+      "lines": [
+        "101-Help: syntax: NEW <object-type> <object-id> <parameter>",
+        "101-Help: Creates a new object of the specified object type",
+        "101-Help:   <object-type>s are: UNIT | GROUP | IGROUP | PHANTOM",
+        "101-Help:   <object-id> is a network, group, unit, or system entity",
+        "101-Help: <param> is a parameter appropriate to the object type",
+        "101-Help: In the case of a UNIT type, then there is a second parameter defining",
+        "101 Help: the version of the unit to be created."
+      ]
+    },
+    {
+      "command": "HELP BROADCAST_EVENT",
+      "lines": [
+        "101-Help: Syntax:  BROADCAST_EVENT SP event-class [event-text]",
+        "101-Help: Send a broadcast event to the event and status change ports.",
+        "101-Help:  event-class is the class of this event.",
+        "101 Help:  event-text (optional) is the text that will be sent as an event."
+      ]
+    }
+  ],
+  "transcript": [
+    {
+      "command": "OID",
+      "code": 301,
+      "lines": [
+        "301 OID=bf36fd20-9bb1-103f-bb06-ec289c85ea64"
+      ],
+      "final": "301 OID=bf36fd20-9bb1-103f-bb06-ec289c85ea64"
+    },
+    {
+      "command": "OID ignored tail",
+      "code": 301,
+      "lines": [
+        "301 OID=bf372430-9bb1-103f-bb07-ec289c85ea64"
+      ],
+      "final": "301 OID=bf372430-9bb1-103f-bb07-ec289c85ea64"
+    },
+    {
+      "command": "BROADCAST_EVENT",
+      "code": 400,
+      "lines": [
+        "400 Syntax Error."
+      ],
+      "final": "400 Syntax Error."
+    },
+    {
+      "command": "BROADCAST_EVENT SP",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "BROADCAST_EVENT SP class payload text",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "TREE //GENTREE/254",
+      "code": 320,
+      "lines": [
+        "320- Network name:254 type=cni address=127.0.0.1:<owned-synthetic-pci> state=ok",
+        "320-  Unit count=2",
+        "320- Units:",
+        "320-//GENTREE/254/p/4 ($4) type=KEYE1 app=56($38), 255($ff) state=ok groups=12",
+        "320-//GENTREE/254/p/16 ($10) type=PC_CNIED app=255($ff), 255($ff) state=ok groups=",
+        "320-Applications:",
+        "320- Application 56 ($38) [lighting]",
+        "320- Groups:",
+        "320-  //GENTREE/254/56/12 ($c) level=0 state=ok units=4 ",
+        "320-  //GENTREE/254/56/24 ($18) level=0 state=ok units= ",
+        "320-  //GENTREE/254/56/25 ($19) level=0 state=ok units= ",
+        "320-  //GENTREE/254/56/27 ($1b) level=0 state=ok units= ",
+        "320-  //GENTREE/254/56/33 ($21) level=0 state=ok units= ",
+        "320 -end-"
+      ],
+      "final": "320 -end-"
+    },
+    {
+      "command": "REPORT //GENTREE/254",
+      "code": 320,
+      "lines": [
+        "320- Network name:254 type=cni address=127.0.0.1:<owned-synthetic-pci> state=ok",
+        "320-  Unit count=2",
+        "320- Units:",
+        "320-//GENTREE/254/p/4 ($4) type=KEYE1 app=56($38), 255($ff) state=ok groups=12",
+        "320-//GENTREE/254/p/16 ($10) type=PC_CNIED app=255($ff), 255($ff) state=ok groups=",
+        "320-Applications:",
+        "320- Application 56 ($38) [lighting]",
+        "320- Groups:",
+        "320-  //GENTREE/254/56/12 ($c) level=0 state=ok units=4 ",
+        "320-  //GENTREE/254/56/24 ($18) level=0 state=ok units= ",
+        "320-  //GENTREE/254/56/25 ($19) level=0 state=ok units= ",
+        "320-  //GENTREE/254/56/27 ($1b) level=0 state=ok units= ",
+        "320-  //GENTREE/254/56/33 ($21) level=0 state=ok units= ",
+        "320 -end-"
+      ],
+      "final": "320 -end-"
+    },
+    {
+      "command": "TREE //GENTREE/254 WITHSYNC",
+      "code": 320,
+      "lines": [
+        "320- Network name:254 type=cni address=127.0.0.1:<owned-synthetic-pci> state=ok",
+        "320-  Unit count=2",
+        "320- Units:",
+        "320-//GENTREE/254/p/4 ($4) type=KEYE1 app=56($38), 255($ff) state=ok groups=12",
+        "320-//GENTREE/254/p/16 ($10) type=PC_CNIED app=255($ff), 255($ff) state=ok groups=",
+        "320-Applications:",
+        "320- Application 56 ($38) [lighting]",
+        "320- Groups:",
+        "320-  //GENTREE/254/56/12 ($c) level=0 state=ok units=4 ",
+        "320-  //GENTREE/254/56/24 ($18) level=0 state=ok units= ",
+        "320-  //GENTREE/254/56/25 ($19) level=0 state=ok units= ",
+        "320-  //GENTREE/254/56/27 ($1b) level=0 state=ok units= ",
+        "320-  //GENTREE/254/56/33 ($21) level=0 state=ok units= ",
+        "320 -end-"
+      ],
+      "final": "320 -end-"
+    },
+    {
+      "command": "TREEXML //GENTREE/254",
+      "code": 344,
+      "lines": [
+        "343-Begin XML Snippet",
+        "347-<Network>",
+        "347- <Unit>",
+        "347-  <Type>KEYE1</Type>",
+        "347-  <CatalogueNumber>5031NMML</CatalogueNumber>",
+        "347-  <Version>2.5.00</Version>",
+        "347-  <SerialNo>101136.1558</SerialNo>",
+        "347-  <Address>4</Address>",
+        "347-  <PartName>SIMKEY1 </PartName>",
+        "347-  <Application>56, 255</Application>",
+        "347-  <Groups>12</Groups>",
+        "347-  <Voltage>26.3</Voltage>",
+        "347-  <Burden>no</Burden>",
+        "347-  <Clock>no</Clock>",
+        "347- </Unit>",
+        "347- <Unit>",
+        "347-  <Type>PC_CNIED</Type>",
+        "347-  <CatalogueNumber>5500CN2</CatalogueNumber>",
+        "347-  <Version>5.5.00</Version>",
+        "347-  <SerialNo>100966.1187</SerialNo>",
+        "347-  <Address>16</Address>",
+        "347-  <PartName>NETWORK </PartName>",
+        "347-  <Application>255, 255</Application>",
+        "347-  <Groups></Groups>",
+        "347-  <Voltage>28.7</Voltage>",
+        "347-  <Burden>no</Burden>",
+        "347-  <Clock>yes</Clock>",
+        "347- </Unit>",
+        "347-</Network>",
+        "344 End XML Snippet"
+      ],
+      "final": "344 End XML Snippet"
+    },
+    {
+      "command": "TREEXMLDETAIL //GENTREE/254",
+      "code": 344,
+      "lines": [
+        "343-Begin XML Snippet",
+        "347-<Network>",
+        "347- <Unit>",
+        "347-  <Type>KEYE1</Type>",
+        "347-  <CatalogueNumber>5031NMML</CatalogueNumber>",
+        "347-  <Version>2.5.00</Version>",
+        "347-  <SerialNo>101136.1558</SerialNo>",
+        "347-  <Address>4</Address>",
+        "347-  <PartName>SIMKEY1 </PartName>",
+        "347-  <Application>56, 255</Application>",
+        "347-  <Groups>12</Groups>",
+        "347-  <Voltage>26.3</Voltage>",
+        "347-  <Burden>no</Burden>",
+        "347-  <Clock>no</Clock>",
+        "347-  <State>ok</State>",
+        "347-  <OnlineStatus>new</OnlineStatus>",
+        "347- </Unit>",
+        "347- <Unit>",
+        "347-  <Type>PC_CNIED</Type>",
+        "347-  <CatalogueNumber>5500CN2</CatalogueNumber>",
+        "347-  <Version>5.5.00</Version>",
+        "347-  <SerialNo>100966.1187</SerialNo>",
+        "347-  <Address>16</Address>",
+        "347-  <PartName>NETWORK </PartName>",
+        "347-  <Application>255, 255</Application>",
+        "347-  <Groups></Groups>",
+        "347-  <Voltage>28.7</Voltage>",
+        "347-  <Burden>no</Burden>",
+        "347-  <Clock>yes</Clock>",
+        "347-  <State>ok</State>",
+        "347-  <OnlineStatus>new</OnlineStatus>",
+        "347- </Unit>",
+        "347-</Network>",
+        "344 End XML Snippet"
+      ],
+      "final": "344 End XML Snippet"
+    },
+    {
+      "command": "SHOW //GENTREE/254 ?",
+      "code": 300,
+      "lines": [
+        "300 //GENTREE/254: Parameters=DBUnitAddressesNew,DBUnitAddressesMissing,Retries,DBUnitAddressesDuplicate,Groups,TxQ,Name,Applications,InterfaceState,FreeApplication,DBUnitAddressesOnline,EventLevel,RxQ,Options,NextSyncTime,FreeUnit,TargetInterfaceState,TxEnable,NetworkType,InterfaceAddress,AutoSync,LastSyncTime,SyncSubState,AutoUnravel,FastResponse,ResponseDelay,QuickDetect,ShortSync,LSP,SyncTime,SyncState,DBUnitAddressesError,Interface,Stats,Units,XState,DefaultApplication,AutoUpdate,State,Type"
+      ],
+      "final": "300 //GENTREE/254: Parameters=DBUnitAddressesNew,DBUnitAddressesMissing,Retries,DBUnitAddressesDuplicate,Groups,TxQ,Name,Applications,InterfaceState,FreeApplication,DBUnitAddressesOnline,EventLevel,RxQ,Options,NextSyncTime,FreeUnit,TargetInterfaceState,TxEnable,NetworkType,InterfaceAddress,AutoSync,LastSyncTime,SyncSubState,AutoUnravel,FastResponse,ResponseDelay,QuickDetect,ShortSync,LSP,SyncTime,SyncState,DBUnitAddressesError,Interface,Stats,Units,XState,DefaultApplication,AutoUpdate,State,Type"
+    },
+    {
+      "command": "TREE //GENTREE/253",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID: Network not found"
+      ],
+      "final": "401 Bad object or device ID: Network not found"
+    },
+    {
+      "command": "REPORT //GENTREE",
+      "code": 402,
+      "lines": [
+        "402 Operation not supported by: //GENTREE"
+      ],
+      "final": "402 Operation not supported by: //GENTREE"
+    },
+    {
+      "command": "TREEXML //GENTREE",
+      "code": 344,
+      "lines": [
+        "343-Begin XML Snippet",
+        "402-Operation not supported by: //GENTREE",
+        "344 End XML Snippet"
+      ],
+      "final": "344 End XML Snippet"
+    }
+  ],
+  "comments": [
+    {
+      "line": "# hash comment",
+      "reply": null,
+      "observation_ms": 350
+    },
+    {
+      "line": "// slash comment",
+      "reply": null,
+      "observation_ms": 350
+    },
+    {
+      "line": "[c] # tagged hash",
+      "reply": "400 Syntax Error.",
+      "observation_ms": 350
+    },
+    {
+      "line": "[d] // tagged slash",
+      "reply": "[d] 400 Syntax Error.",
+      "observation_ms": 350
+    }
+  ],
+  "new_object_transcript": [
+    {
+      "command": "PROJECT NEW NEWOBJ",
+      "lines": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT USE NEWOBJ",
+      "lines": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "NET CREATE 254 cni 127.0.0.1:9",
+      "lines": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "NEW GROUP //NEWOBJ/254/56/1",
+      "lines": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "NEW GROUP //NEWOBJ/254/56/2 ignored extra",
+      "lines": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "NEW GROUP //NEWOBJ/254/56/1",
+      "lines": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "NEW PHANTOM //NEWOBJ/254/56/3",
+      "lines": [
+        "401 Bad object or device ID: //NEWOBJ/254/56/3 (Bad initial level for phantom)"
+      ]
+    },
+    {
+      "command": "NEW PHANTOM //NEWOBJ/254/56/4 128",
+      "lines": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "NEW PHANTOM //NEWOBJ/254/56/5 bad",
+      "lines": [
+        "401 Bad object or device ID: //NEWOBJ/254/56/5 (Bad initial level for phantom)"
+      ]
+    },
+    {
+      "command": "NEW UNIT //NEWOBJ/254/p/20 KEYE1 2.5.00",
+      "lines": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "NEW UNIT //NEWOBJ/254/p/20 KEYE1 2.5.00",
+      "lines": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "NEW UNIT //NEWOBJ/254/p/21 KEYE1",
+      "lines": [
+        "400 Syntax Error."
+      ]
+    },
+    {
+      "command": "NEW IGROUP //NEWOBJ/254/56/6",
+      "lines": [
+        "400 Syntax Error."
+      ]
+    },
+    {
+      "command": "SHOW //NEWOBJ/254/p/20 *",
+      "lines": [
+        "300-//NEWOBJ/254/p/20: Address=20",
+        "300-//NEWOBJ/254/p/20: Application=255",
+        "300-//NEWOBJ/254/p/20: Application2=255",
+        "300-//NEWOBJ/254/p/20: Area=255",
+        "300-//NEWOBJ/254/p/20: BlockApplications=0,0,0,0,0,0,0,0,0",
+        "300-//NEWOBJ/254/p/20: BlockGroups=255,255,255,255,255,255,255,255,255",
+        "300-//NEWOBJ/254/p/20: BurdenActive=no",
+        "300-//NEWOBJ/254/p/20: CatalogNumber=5031NMML",
+        "300-//NEWOBJ/254/p/20: ClassName=com.clipsal.cgate.cbus.dev.CBusNeoInputUnit",
+        "300-//NEWOBJ/254/p/20: ClockGenActive=no",
+        "300-//NEWOBJ/254/p/20: ErrorFlags=0",
+        "300-//NEWOBJ/254/p/20: EventLevel=9",
+        "300-//NEWOBJ/254/p/20: GeneratingClock=no",
+        "300-//NEWOBJ/254/p/20: Groups=",
+        "300-//NEWOBJ/254/p/20: LearnActive=no",
+        "408-Operation failed: //NEWOBJ/254/p/20 (Can not get parameter from unit)",
+        "300-//NEWOBJ/254/p/20: Name=",
+        "300-//NEWOBJ/254/p/20: NetVoltage=0.5",
+        "300-//NEWOBJ/254/p/20: PartName=",
+        "300-//NEWOBJ/254/p/20: PatchVersion=255",
+        "300-//NEWOBJ/254/p/20: ProjectName=",
+        "300-//NEWOBJ/254/p/20: PSyncTime=300",
+        "300-//NEWOBJ/254/p/20: Serial=0.0",
+        "300-//NEWOBJ/254/p/20: SerialNumber=0.0",
+        "300-//NEWOBJ/254/p/20: ShortName=",
+        "300-//NEWOBJ/254/p/20: SlotGroups=255,255,255,255,255,255,255,255,255",
+        "300-//NEWOBJ/254/p/20: State=error",
+        "300-//NEWOBJ/254/p/20: SummaryFlags=0",
+        "300-//NEWOBJ/254/p/20: Type=KEYE1",
+        "300-//NEWOBJ/254/p/20: UnitBlock=",
+        "300-//NEWOBJ/254/p/20: Version=2.5.00",
+        "300 //NEWOBJ/254/p/20: Version2=null"
+      ]
+    },
+    {
+      "command": "SHOW //NEWOBJ/254/56/1 *",
+      "lines": [
+        "300-//NEWOBJ/254/56/1: EventLevel=9",
+        "300-//NEWOBJ/254/56/1: Level=0",
+        "300-//NEWOBJ/254/56/1: Name=",
+        "300-//NEWOBJ/254/56/1: Protected=no",
+        "300-//NEWOBJ/254/56/1: RampTime=0",
+        "300-//NEWOBJ/254/56/1: State=error",
+        "300-//NEWOBJ/254/56/1: Type=group",
+        "300 //NEWOBJ/254/56/1: Units="
+      ]
+    },
+    {
+      "command": "SHOW //NEWOBJ/254/56/4 *",
+      "lines": [
+        "300-//NEWOBJ/254/56/4: EventLevel=9",
+        "300-//NEWOBJ/254/56/4: Level=0",
+        "300-//NEWOBJ/254/56/4: Name=",
+        "300-//NEWOBJ/254/56/4: Protected=no",
+        "300-//NEWOBJ/254/56/4: RampTime=0",
+        "300-//NEWOBJ/254/56/4: State=error",
+        "300-//NEWOBJ/254/56/4: Type=group",
+        "300 //NEWOBJ/254/56/4: Units="
+      ]
+    },
+    {
+      "command": "TREE //NEWOBJ/254",
+      "lines": [
+        "320- Network name:254 type=cni address=127.0.0.1:9 state=error",
+        "320-  Unit count=0",
+        "320- Units:",
+        "320-//NEWOBJ/254/p/20 ($14) type=KEYE1 app=255($ff), 255($ff) state=error groups=",
+        "320-Applications:",
+        "320- Application 56 ($38) [lighting]",
+        "320- Groups:",
+        "320-  //NEWOBJ/254/56/1 ($1) level=0 state=error units= ",
+        "320-  //NEWOBJ/254/56/2 ($2) level=0 state=error units= ",
+        "320-  //NEWOBJ/254/56/4 ($4) level=0 state=error units= (phantom)",
+        "320 -end-"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,809 @@
+{
+  "schema": "native-cgate-show-audit-v1",
+  "oracle": {
+    "product": "Schneider Electric C-Gate",
+    "version": "3.4.0",
+    "build": 2001,
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "transport": "owned disposable process; closed loopback-only synthetic network endpoints",
+    "global_event_level": 9,
+    "site_project_used": false,
+    "real_cbus_contacted": false,
+    "source_probe_sha256": "067b16ee11880f414e00535f1766c893eac0b2ff67b1da2940953d6873ef4caa",
+    "sanitization": "volatile host IP replaced with an RFC 5737 documentation address",
+    "volatile_values": [
+      "cgate ComputerName/IPAddress/memory/thread values",
+      "network NextSyncTime"
+    ]
+  },
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+  "setup": [
+    {
+      "command": "PROJECT NEW AUDS2",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "PROJECT USE AUDS2",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NET CREATE 254 cni 127.0.0.1:9",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW GROUP //AUDS2/254/56/1",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW GROUP //AUDS2/254/202/1",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW GROUP //AUDS2/254/203/2",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW UNIT //AUDS2/254/p/20 KEYE1 2.5.00",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW UNIT //AUDS2/254/p/22 DIMMER4 1.0.00",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "PROJECT NEW AUDF2",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "PROJECT USE AUDF2",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NET CREATE 1 cni 127.0.0.1:9",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW GROUP //AUDF2/1/56/3",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "PROJECT USE AUDS2",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    }
+  ],
+  "rows": [
+    {
+      "command": "SHOW cgate *",
+      "code": 300,
+      "lines": [
+        "300-cgate: ComputerName=null",
+        "300-cgate: DatabaseVersion=2.3",
+        "300-cgate: EventLevel=9",
+        "300-cgate: IPAddress=192.0.2.1",
+        "300-cgate: IsPrerelease=no",
+        "300-cgate: JavaArguments=[]",
+        "420-Access denied: cgate (Insufficient access level for read)",
+        "300-cgate: LogFreeSpace=unknown",
+        "300-cgate: MemoryFree=332720184",
+        "300-cgate: MemoryMaximum=6442450944",
+        "300-cgate: MemoryTotal=402653184",
+        "300-cgate: MemoryUsed=70160208",
+        "300-cgate: ProjectFreeSpace=unknown",
+        "300-cgate: ServerMode=no",
+        "300-cgate: State=new",
+        "300-cgate: Threads=23",
+        "300 cgate: Version=v3.4.0 (build 2001)"
+      ],
+      "final": "300 cgate: Version=v3.4.0 (build 2001)"
+    },
+    {
+      "command": "SHOW //AUDS2/254 state",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254: state=error"
+      ],
+      "final": "300 //AUDS2/254: state=error"
+    },
+    {
+      "command": "SHOW //AUDS2/254 State",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254: State=error"
+      ],
+      "final": "300 //AUDS2/254: State=error"
+    },
+    {
+      "command": "SHOW //AUDS2/254/56/1 LEVEL",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254/56/1: LEVEL=0"
+      ],
+      "final": "300 //AUDS2/254/56/1: LEVEL=0"
+    },
+    {
+      "command": "SHOW //AUDS2/254/56/1 type",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254/56/1: type=group"
+      ],
+      "final": "300 //AUDS2/254/56/1: type=group"
+    },
+    {
+      "command": "SHOW //AUDS2/254/p/20 type",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254/p/20: type=KEYE1"
+      ],
+      "final": "300 //AUDS2/254/p/20: type=KEYE1"
+    },
+    {
+      "command": "SHOW //AUDS2/254/p/20 NAME",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254/p/20: NAME="
+      ],
+      "final": "300 //AUDS2/254/p/20: NAME="
+    },
+    {
+      "command": "SHOW //AUDS2/254/p/22/1 level",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254/p/22/1: level=255"
+      ],
+      "final": "300 //AUDS2/254/p/22/1: level=255"
+    },
+    {
+      "command": "SHOW //AUDS2/254/202 ?",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254/202: Parameters=State,Name,LearnGroup,FreeGroup,Groups,ClassName,ShortName,Learning,EventLevel,Address"
+      ],
+      "final": "300 //AUDS2/254/202: Parameters=State,Name,LearnGroup,FreeGroup,Groups,ClassName,ShortName,Learning,EventLevel,Address"
+    },
+    {
+      "command": "SHOW //AUDS2/254/202 ??",
+      "code": 102,
+      "lines": [
+        "102-//AUDS2/254/202: State - The state of connection of this object",
+        "102-//AUDS2/254/202: Name - The name of this object",
+        "102-//AUDS2/254/202: LearnGroup - The group currently involved in learning",
+        "102-//AUDS2/254/202: FreeGroup - The next free group address in this application",
+        "102-//AUDS2/254/202: Groups - List of groups in this application",
+        "102-//AUDS2/254/202: ClassName - The name of the class that implements this unit or application",
+        "102-//AUDS2/254/202: ShortName - The name of this object",
+        "102-//AUDS2/254/202: Learning - The state of learning in this application",
+        "102-//AUDS2/254/202: EventLevel - The level of displayed events for this object",
+        "102 //AUDS2/254/202: Address - The C-Bus Address of this device"
+      ],
+      "final": "102 //AUDS2/254/202: Address - The C-Bus Address of this device"
+    },
+    {
+      "command": "SHOW //AUDS2/254/202 *",
+      "code": 300,
+      "lines": [
+        "300-//AUDS2/254/202: Address=202",
+        "300-//AUDS2/254/202: ClassName=com.clipsal.cgate.cbus.app.triggercontrol.CBusTriggerControlApplication",
+        "300-//AUDS2/254/202: EventLevel=9",
+        "300-//AUDS2/254/202: FreeGroup=0",
+        "300-//AUDS2/254/202: Groups=1",
+        "300-//AUDS2/254/202: LearnGroup=255",
+        "300-//AUDS2/254/202: Learning=no",
+        "300-//AUDS2/254/202: Name=",
+        "300-//AUDS2/254/202: ShortName=trigger",
+        "300 //AUDS2/254/202: State=error"
+      ],
+      "final": "300 //AUDS2/254/202: State=error"
+    },
+    {
+      "command": "SHOW //AUDS2/254/202 Groups",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254/202: Groups=1"
+      ],
+      "final": "300 //AUDS2/254/202: Groups=1"
+    },
+    {
+      "command": "SHOW //AUDS2/254/202 groups",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254/202: groups=1"
+      ],
+      "final": "300 //AUDS2/254/202: groups=1"
+    },
+    {
+      "command": "SHOW //AUDS2/254/202 ClassName",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254/202: ClassName=com.clipsal.cgate.cbus.app.triggercontrol.CBusTriggerControlApplication"
+      ],
+      "final": "300 //AUDS2/254/202: ClassName=com.clipsal.cgate.cbus.app.triggercontrol.CBusTriggerControlApplication"
+    },
+    {
+      "command": "SHOW //AUDS2/254/202 ShortName",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254/202: ShortName=trigger"
+      ],
+      "final": "300 //AUDS2/254/202: ShortName=trigger"
+    },
+    {
+      "command": "SHOW //AUDS2/254/202/1 ?",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254/202/1: Parameters=Name,EventLevel,State"
+      ],
+      "final": "300 //AUDS2/254/202/1: Parameters=Name,EventLevel,State"
+    },
+    {
+      "command": "SHOW //AUDS2/254/202/1 ??",
+      "code": 102,
+      "lines": [
+        "102-//AUDS2/254/202/1: Name - The name of this object",
+        "102-//AUDS2/254/202/1: EventLevel - The level of displayed events for this object",
+        "102 //AUDS2/254/202/1: State - The state of connection of this object"
+      ],
+      "final": "102 //AUDS2/254/202/1: State - The state of connection of this object"
+    },
+    {
+      "command": "SHOW //AUDS2/254/202/1 *",
+      "code": 300,
+      "lines": [
+        "300-//AUDS2/254/202/1: EventLevel=9",
+        "300-//AUDS2/254/202/1: Name=",
+        "300 //AUDS2/254/202/1: State=error"
+      ],
+      "final": "300 //AUDS2/254/202/1: State=error"
+    },
+    {
+      "command": "SHOW //AUDS2/254/202/1 State",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254/202/1: State=error"
+      ],
+      "final": "300 //AUDS2/254/202/1: State=error"
+    },
+    {
+      "command": "SHOW //AUDS2/254/202/1 Name",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254/202/1: Name="
+      ],
+      "final": "300 //AUDS2/254/202/1: Name="
+    },
+    {
+      "command": "SHOW //AUDS2/254/202/1 EventLevel",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254/202/1: EventLevel=9"
+      ],
+      "final": "300 //AUDS2/254/202/1: EventLevel=9"
+    },
+    {
+      "command": "SHOW //AUDS2/254/202/1 Level",
+      "code": 402,
+      "lines": [
+        "402 Operation not supported by: //AUDS2/254/202/1 (Parameter level not found)"
+      ],
+      "final": "402 Operation not supported by: //AUDS2/254/202/1 (Parameter level not found)"
+    },
+    {
+      "command": "SHOW //AUDS2/254/202/1 Type",
+      "code": 402,
+      "lines": [
+        "402 Operation not supported by: //AUDS2/254/202/1 (Parameter type not found)"
+      ],
+      "final": "402 Operation not supported by: //AUDS2/254/202/1 (Parameter type not found)"
+    },
+    {
+      "command": "SHOW //AUDS2/254/202/1 Bogus",
+      "code": 402,
+      "lines": [
+        "402 Operation not supported by: //AUDS2/254/202/1 (Parameter bogus not found)"
+      ],
+      "final": "402 Operation not supported by: //AUDS2/254/202/1 (Parameter bogus not found)"
+    },
+    {
+      "command": "SHOW //AUDS2/254/203 ?",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254/203: Parameters=Groups,Address,ShortName,Name,FreeGroup,EventLevel,State,ClassName"
+      ],
+      "final": "300 //AUDS2/254/203: Parameters=Groups,Address,ShortName,Name,FreeGroup,EventLevel,State,ClassName"
+    },
+    {
+      "command": "SHOW //AUDS2/254/203 ??",
+      "code": 102,
+      "lines": [
+        "102-//AUDS2/254/203: Groups - List of groups in this application",
+        "102-//AUDS2/254/203: Address - The C-Bus Address of this device",
+        "102-//AUDS2/254/203: ShortName - The name of this object",
+        "102-//AUDS2/254/203: Name - The name of this object",
+        "102-//AUDS2/254/203: FreeGroup - The next free group address in this application",
+        "102-//AUDS2/254/203: EventLevel - The level of displayed events for this object",
+        "102-//AUDS2/254/203: State - The state of connection of this object",
+        "102 //AUDS2/254/203: ClassName - The name of the class that implements this unit or application"
+      ],
+      "final": "102 //AUDS2/254/203: ClassName - The name of the class that implements this unit or application"
+    },
+    {
+      "command": "SHOW //AUDS2/254/203 *",
+      "code": 300,
+      "lines": [
+        "300-//AUDS2/254/203: Address=203",
+        "300-//AUDS2/254/203: ClassName=com.clipsal.cgate.cbus.app.enablecontrol.CBusEnableControlApplication",
+        "300-//AUDS2/254/203: EventLevel=9",
+        "300-//AUDS2/254/203: FreeGroup=0",
+        "300-//AUDS2/254/203: Groups=2",
+        "300-//AUDS2/254/203: Name=",
+        "300-//AUDS2/254/203: ShortName=enable",
+        "300 //AUDS2/254/203: State=error"
+      ],
+      "final": "300 //AUDS2/254/203: State=error"
+    },
+    {
+      "command": "SHOW //AUDS2/254/203 Groups",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254/203: Groups=2"
+      ],
+      "final": "300 //AUDS2/254/203: Groups=2"
+    },
+    {
+      "command": "SHOW //AUDS2/254/203 ClassName",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254/203: ClassName=com.clipsal.cgate.cbus.app.enablecontrol.CBusEnableControlApplication"
+      ],
+      "final": "300 //AUDS2/254/203: ClassName=com.clipsal.cgate.cbus.app.enablecontrol.CBusEnableControlApplication"
+    },
+    {
+      "command": "SHOW //AUDS2/254/203 ShortName",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254/203: ShortName=enable"
+      ],
+      "final": "300 //AUDS2/254/203: ShortName=enable"
+    },
+    {
+      "command": "SHOW //AUDS2/254/203/2 ?",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254/203/2: Parameters=Name,EventLevel,State,Level"
+      ],
+      "final": "300 //AUDS2/254/203/2: Parameters=Name,EventLevel,State,Level"
+    },
+    {
+      "command": "SHOW //AUDS2/254/203/2 ??",
+      "code": 102,
+      "lines": [
+        "102-//AUDS2/254/203/2: Name - The name of this object",
+        "102-//AUDS2/254/203/2: EventLevel - The level of displayed events for this object",
+        "102-//AUDS2/254/203/2: State - The state of connection of this object",
+        "102 //AUDS2/254/203/2: Level - The current level of this network variable"
+      ],
+      "final": "102 //AUDS2/254/203/2: Level - The current level of this network variable"
+    },
+    {
+      "command": "SHOW //AUDS2/254/203/2 *",
+      "code": 300,
+      "lines": [
+        "300-//AUDS2/254/203/2: EventLevel=9",
+        "300-//AUDS2/254/203/2: Level=0",
+        "300-//AUDS2/254/203/2: Name=",
+        "300 //AUDS2/254/203/2: State=error"
+      ],
+      "final": "300 //AUDS2/254/203/2: State=error"
+    },
+    {
+      "command": "SHOW //AUDS2/254/203/2 State",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254/203/2: State=error"
+      ],
+      "final": "300 //AUDS2/254/203/2: State=error"
+    },
+    {
+      "command": "SHOW //AUDS2/254/203/2 Name",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254/203/2: Name="
+      ],
+      "final": "300 //AUDS2/254/203/2: Name="
+    },
+    {
+      "command": "SHOW //AUDS2/254/203/2 EventLevel",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254/203/2: EventLevel=9"
+      ],
+      "final": "300 //AUDS2/254/203/2: EventLevel=9"
+    },
+    {
+      "command": "SHOW //AUDS2/254/203/2 Level",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254/203/2: Level=0"
+      ],
+      "final": "300 //AUDS2/254/203/2: Level=0"
+    },
+    {
+      "command": "SHOW //AUDS2/254/203/2 Type",
+      "code": 402,
+      "lines": [
+        "402 Operation not supported by: //AUDS2/254/203/2 (Parameter type not found)"
+      ],
+      "final": "402 Operation not supported by: //AUDS2/254/203/2 (Parameter type not found)"
+    },
+    {
+      "command": "SHOW //AUDS2/254/203/2 Bogus",
+      "code": 402,
+      "lines": [
+        "402 Operation not supported by: //AUDS2/254/203/2 (Parameter bogus not found)"
+      ],
+      "final": "402 Operation not supported by: //AUDS2/254/203/2 (Parameter bogus not found)"
+    },
+    {
+      "command": "SHOW //AUDS2/254/p/20 FirmwareVersion",
+      "code": 402,
+      "lines": [
+        "402 Operation not supported by: //AUDS2/254/p/20 (Parameter firmwareversion not found)"
+      ],
+      "final": "402 Operation not supported by: //AUDS2/254/p/20 (Parameter firmwareversion not found)"
+    },
+    {
+      "command": "SHOW //AUDS2/254/p/20 UnitType",
+      "code": 402,
+      "lines": [
+        "402 Operation not supported by: //AUDS2/254/p/20 (Parameter unittype not found)"
+      ],
+      "final": "402 Operation not supported by: //AUDS2/254/p/20 (Parameter unittype not found)"
+    },
+    {
+      "command": "SHOW //AUDS2/254/p/20 UnitAddress",
+      "code": 402,
+      "lines": [
+        "402 Operation not supported by: //AUDS2/254/p/20 (Parameter unitaddress not found)"
+      ],
+      "final": "402 Operation not supported by: //AUDS2/254/p/20 (Parameter unitaddress not found)"
+    },
+    {
+      "command": "SHOW //AUDS2/254/p/20 UnitName",
+      "code": 402,
+      "lines": [
+        "402 Operation not supported by: //AUDS2/254/p/20 (Parameter unitname not found)"
+      ],
+      "final": "402 Operation not supported by: //AUDS2/254/p/20 (Parameter unitname not found)"
+    },
+    {
+      "command": "SHOW //AUDS2/254/p/20 SerialNumber",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254/p/20: SerialNumber=0.0"
+      ],
+      "final": "300 //AUDS2/254/p/20: SerialNumber=0.0"
+    },
+    {
+      "command": "SHOW //AUDS2/254/p/22 FirmwareVersion",
+      "code": 402,
+      "lines": [
+        "402 Operation not supported by: //AUDS2/254/p/22 (Parameter firmwareversion not found)"
+      ],
+      "final": "402 Operation not supported by: //AUDS2/254/p/22 (Parameter firmwareversion not found)"
+    },
+    {
+      "command": "SHOW //AUDS2/254/p/22 UnitType",
+      "code": 402,
+      "lines": [
+        "402 Operation not supported by: //AUDS2/254/p/22 (Parameter unittype not found)"
+      ],
+      "final": "402 Operation not supported by: //AUDS2/254/p/22 (Parameter unittype not found)"
+    },
+    {
+      "command": "SHOW //AUDS2/254/p/22 UnitAddress",
+      "code": 402,
+      "lines": [
+        "402 Operation not supported by: //AUDS2/254/p/22 (Parameter unitaddress not found)"
+      ],
+      "final": "402 Operation not supported by: //AUDS2/254/p/22 (Parameter unitaddress not found)"
+    },
+    {
+      "command": "SHOW //AUDS2/254/p/22 UnitName",
+      "code": 402,
+      "lines": [
+        "402 Operation not supported by: //AUDS2/254/p/22 (Parameter unitname not found)"
+      ],
+      "final": "402 Operation not supported by: //AUDS2/254/p/22 (Parameter unitname not found)"
+    },
+    {
+      "command": "SHOW //AUDS2/254/p/22 SerialNumber",
+      "code": 402,
+      "lines": [
+        "402 Operation not supported by: //AUDS2/254/p/22 (Parameter serialnumber not found)"
+      ],
+      "final": "402 Operation not supported by: //AUDS2/254/p/22 (Parameter serialnumber not found)"
+    },
+    {
+      "command": "SHOW //AUDF2 ?",
+      "code": 300,
+      "lines": [
+        "300 //AUDF2: Parameters=AccessContextLocks,EventLevel,State,Networks"
+      ],
+      "final": "300 //AUDF2: Parameters=AccessContextLocks,EventLevel,State,Networks"
+    },
+    {
+      "command": "SHOW //AUDF2 *",
+      "code": 300,
+      "lines": [
+        "300-//AUDF2: AccessContextLocks=",
+        "300-//AUDF2: EventLevel=9",
+        "300-//AUDF2: Networks=1",
+        "300 //AUDF2: State=new"
+      ],
+      "final": "300 //AUDF2: State=new"
+    },
+    {
+      "command": "SHOW //AUDF2/cbus ?",
+      "code": 300,
+      "lines": [
+        "300 //AUDF2/cbus: Parameters=EventLevel,State,Networks"
+      ],
+      "final": "300 //AUDF2/cbus: Parameters=EventLevel,State,Networks"
+    },
+    {
+      "command": "SHOW //AUDF2/cbus *",
+      "code": 300,
+      "lines": [
+        "300-//AUDF2/cbus: EventLevel=9",
+        "300-//AUDF2/cbus: Networks=1",
+        "300 //AUDF2/cbus: State=new"
+      ],
+      "final": "300 //AUDF2/cbus: State=new"
+    },
+    {
+      "command": "SHOW //AUDF2/1 ?",
+      "code": 300,
+      "lines": [
+        "300 //AUDF2/1: Parameters=DBUnitAddressesNew,DBUnitAddressesMissing,Retries,DBUnitAddressesDuplicate,Groups,TxQ,Name,Applications,InterfaceState,FreeApplication,DBUnitAddressesOnline,EventLevel,RxQ,Options,NextSyncTime,FreeUnit,TargetInterfaceState,TxEnable,NetworkType,InterfaceAddress,AutoSync,LastSyncTime,SyncSubState,AutoUnravel,FastResponse,ResponseDelay,QuickDetect,ShortSync,LSP,SyncTime,SyncState,DBUnitAddressesError,Interface,Stats,Units,XState,DefaultApplication,AutoUpdate,State,Type"
+      ],
+      "final": "300 //AUDF2/1: Parameters=DBUnitAddressesNew,DBUnitAddressesMissing,Retries,DBUnitAddressesDuplicate,Groups,TxQ,Name,Applications,InterfaceState,FreeApplication,DBUnitAddressesOnline,EventLevel,RxQ,Options,NextSyncTime,FreeUnit,TargetInterfaceState,TxEnable,NetworkType,InterfaceAddress,AutoSync,LastSyncTime,SyncSubState,AutoUnravel,FastResponse,ResponseDelay,QuickDetect,ShortSync,LSP,SyncTime,SyncState,DBUnitAddressesError,Interface,Stats,Units,XState,DefaultApplication,AutoUpdate,State,Type"
+    },
+    {
+      "command": "SHOW //AUDF2/1 *",
+      "code": 300,
+      "lines": [
+        "300-//AUDF2/1: Applications=56",
+        "300-//AUDF2/1: AutoSync=yes",
+        "300-//AUDF2/1: AutoUnravel=no",
+        "300-//AUDF2/1: AutoUpdate=no",
+        "300-//AUDF2/1: DBUnitAddressesDuplicate=",
+        "300-//AUDF2/1: DBUnitAddressesError=",
+        "300-//AUDF2/1: DBUnitAddressesMissing=",
+        "300-//AUDF2/1: DBUnitAddressesNew=",
+        "300-//AUDF2/1: DBUnitAddressesOnline=",
+        "300-//AUDF2/1: DefaultApplication=56",
+        "300-//AUDF2/1: EventLevel=9",
+        "300-//AUDF2/1: FastResponse=no",
+        "300-//AUDF2/1: FreeApplication=0",
+        "300-//AUDF2/1: FreeUnit=0",
+        "300-//AUDF2/1: Groups=3",
+        "300-//AUDF2/1: Interface=127.0.0.1:9",
+        "300-//AUDF2/1: InterfaceAddress=127.0.0.1:9",
+        "300-//AUDF2/1: InterfaceState=closed",
+        "300-//AUDF2/1: LastSyncTime=",
+        "300-//AUDF2/1: LSP=0",
+        "300-//AUDF2/1: Name=1",
+        "300-//AUDF2/1: NetworkType=Wired",
+        "300-//AUDF2/1: NextSyncTime=20260926-213946",
+        "300-//AUDF2/1: Options=null",
+        "300-//AUDF2/1: QuickDetect=no",
+        "300-//AUDF2/1: ResponseDelay=3000",
+        "300-//AUDF2/1: Retries=2",
+        "300-//AUDF2/1: RxQ=null",
+        "300-//AUDF2/1: ShortSync=no",
+        "300-//AUDF2/1: State=new",
+        "300-//AUDF2/1: Stats=",
+        "300-//AUDF2/1: SyncState=idle",
+        "300-//AUDF2/1: SyncSubState=idle",
+        "300-//AUDF2/1: SyncTime=300",
+        "300-//AUDF2/1: TargetInterfaceState=closed",
+        "300-//AUDF2/1: TxEnable=no",
+        "300-//AUDF2/1: TxQ=null",
+        "300-//AUDF2/1: Type=cni",
+        "300-//AUDF2/1: Units=",
+        "300 //AUDF2/1: XState=new+idle"
+      ],
+      "final": "300 //AUDF2/1: XState=new+idle"
+    },
+    {
+      "command": "SHOW //AUDF2/1/56 ?",
+      "code": 300,
+      "lines": [
+        "300 //AUDF2/1/56: Parameters=State,Name,LearnGroup,FreeGroup,Groups,ClassName,ShortName,Learning,EventLevel,Address"
+      ],
+      "final": "300 //AUDF2/1/56: Parameters=State,Name,LearnGroup,FreeGroup,Groups,ClassName,ShortName,Learning,EventLevel,Address"
+    },
+    {
+      "command": "SHOW //AUDF2/1/56/3 *",
+      "code": 300,
+      "lines": [
+        "300-//AUDF2/1/56/3: EventLevel=9",
+        "300-//AUDF2/1/56/3: Level=0",
+        "300-//AUDF2/1/56/3: Name=",
+        "300-//AUDF2/1/56/3: Protected=no",
+        "300-//AUDF2/1/56/3: RampTime=0",
+        "300-//AUDF2/1/56/3: State=new",
+        "300-//AUDF2/1/56/3: Type=group",
+        "300 //AUDF2/1/56/3: Units="
+      ],
+      "final": "300 //AUDF2/1/56/3: Units="
+    },
+    {
+      "command": "TREE //AUDF2/1",
+      "code": 320,
+      "lines": [
+        "320- Network name:1 type=cni address=127.0.0.1:9 state=new",
+        "320-  Unit count=0",
+        "320- Units:",
+        "320-Applications:",
+        "320- Application 56 ($38) [lighting]",
+        "320- Groups:",
+        "320-  //AUDF2/1/56/3 ($3) level=0 state=new units= ",
+        "320 -end-"
+      ],
+      "final": "320 -end-"
+    },
+    {
+      "command": "REPORT //AUDF2/1",
+      "code": 320,
+      "lines": [
+        "320- Network name:1 type=cni address=127.0.0.1:9 state=new",
+        "320-  Unit count=0",
+        "320- Units:",
+        "320-Applications:",
+        "320- Application 56 ($38) [lighting]",
+        "320- Groups:",
+        "320-  //AUDF2/1/56/3 ($3) level=0 state=new units= ",
+        "320 -end-"
+      ],
+      "final": "320 -end-"
+    },
+    {
+      "command": "TREEXML //AUDF2/1",
+      "code": 344,
+      "lines": [
+        "343-Begin XML Snippet",
+        "347-<Network>",
+        "347-</Network>",
+        "344 End XML Snippet"
+      ],
+      "final": "344 End XML Snippet"
+    },
+    {
+      "command": "TREEXMLDETAIL //AUDF2/1",
+      "code": 344,
+      "lines": [
+        "343-Begin XML Snippet",
+        "347-<Network>",
+        "347-</Network>",
+        "344 End XML Snippet"
+      ],
+      "final": "344 End XML Snippet"
+    },
+    {
+      "command": "SHOW //NOEXIST ?",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID."
+      ],
+      "final": "401 Bad object or device ID."
+    },
+    {
+      "command": "SHOW //NOEXIST/cbus ?",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID."
+      ],
+      "final": "401 Bad object or device ID."
+    },
+    {
+      "command": "SHOW //NOEXIST/254 ?",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID."
+      ],
+      "final": "401 Bad object or device ID."
+    },
+    {
+      "command": "SHOW //AUDS2/253 ?",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID: //AUDS2/253 (Network not found)"
+      ],
+      "final": "401 Bad object or device ID: //AUDS2/253 (Network not found)"
+    },
+    {
+      "command": "SHOW //AUDS2/254/57 ?",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID: //AUDS2/254/57 (Object not found)"
+      ],
+      "final": "401 Bad object or device ID: //AUDS2/254/57 (Object not found)"
+    },
+    {
+      "command": "SHOW //AUDS2/254/57/1 ?",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID: //AUDS2/254/57/1 (Object not found)"
+      ],
+      "final": "401 Bad object or device ID: //AUDS2/254/57/1 (Object not found)"
+    },
+    {
+      "command": "SHOW //AUDS2/254/p/99 ?",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID: //AUDS2/254/p/99 (Unit not found)"
+      ],
+      "final": "401 Bad object or device ID: //AUDS2/254/p/99 (Unit not found)"
+    },
+    {
+      "command": "SHOW //AUDS2/254/p/99/1 ?",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID: //AUDS2/254/p/99/1 (Unit not found)"
+      ],
+      "final": "401 Bad object or device ID: //AUDS2/254/p/99/1 (Unit not found)"
+    }
+  ]
+}

@@ -206,6 +206,22 @@ async fn serve(stream: TcpStream, hub: Arc<Mutex<Hub>>) {
         if raw.ends_with('\r') {
             raw.pop();
         }
+        let untagged_body = raw.trim_start();
+        if !untagged_body.starts_with('[')
+            && (untagged_body.starts_with('#') || untagged_body.starts_with("//"))
+        {
+            continue;
+        }
+        let tagged_hash_comment = raw
+            .strip_prefix('[')
+            .and_then(|line| line.split_once(']'))
+            .is_some_and(|(_, body)| body.trim_start().starts_with('#'));
+        if tagged_hash_comment {
+            if send_raw(&hub, id, "400 Syntax Error.").await.is_err() {
+                break;
+            }
+            continue;
+        }
         // Here-document: `[tag] COMMAND << DELIMITER` + body + DELIMITER.
         if let Some((head, delimiter)) = split_heredoc(&raw) {
             let mut document = String::new();

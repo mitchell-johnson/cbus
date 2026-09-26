@@ -1213,6 +1213,58 @@ decoded direct schema, preserving neighbouring bits and requiring physical
 readback. Inspect the response lines because native behavior can report a
 per-unit failure before final status 200.
 
+## General objects and inventory trees
+
+The embedded cmqttd endpoint consumes untagged `#` and `//` command-file
+comments without replying. Tagged markers are command text and retain the
+captured syntax-error behavior. `OID` returns a fresh 301 RFC 4122 version-1
+UUID, but that UUID is a factory result and does not resolve through DBGET.
+`BROADCAST_EVENT EVENT-CLASS [EVENT-TEXT]` publishes the caller-supplied event to C-Gate
+event subscribers without sending C-Bus traffic. `SHOW` provides native ordered
+`?` parameter lists, `??` descriptions, `*` values, and named-property reads
+for `cgate`, projects, project C-Bus, project, network, application, group,
+unit, and output-terminal objects. Output aliases resolve to the native
+canonical object path. Named fields match case-insensitively and retain the
+caller's spelling in the response. The application and child schemas cover the
+retained classes represented by IDs 25, 48, 95, 172, 192, 202, 203, 205, 208,
+223, 224, 228, and 238. Foreign projects, missing objects and the captured
+GET/SHOW trailing-token grammar are explicitly tested. A durable unit remains
+distinguishable from a physically observed unit; SHOW itself never sends PCI
+traffic.
+
+`REPORT`, `TREE`, `TREEXML`, and `TREEXMLDETAIL` render the already observed
+physical inventory together with durable database units and groups. The plain
+form uses native 320 hierarchy framing; XML uses 343/347/344 framing and
+escapes every retained text value. The application tree pins native labels,
+`Groups` versus `Net Vars`, state, ordering, and detailed XML fields. Plain
+TREE/REPORT tolerate the captured trailing tokens; XML and `NET TREE` accept
+only their captured flag grammar. WITHSYNC/WITHPSYNC/WITHQSYNC never cause an
+implicit physical scan. Run the explicit NET discovery operation when current
+bus evidence is required.
+
+`NEW UNIT`, `NEW GROUP`, and `NEW PHANTOM` create idempotent durable database
+records under an existing selected network. NEW UNIT requires type and firmware
+tokens and may attach an exact configured catalogue number. Known unit types
+apply their captured firmware-token grammar; unknown types retain an opaque
+nonempty token. The native matrix also pins address limits and application
+children that return object-not-found or address-unsupported. A created unit
+remains absent from physical presence and the TREE unit count until independent
+discovery observes it. PHANTOM requires its initial byte, retains that byte as
+metadata, and reports current level zero like retained C-Gate 3.4. With the
+optional authentication gate armed, every NEW form requires LOGIN.
+
+Ground exact claims in `rust/testdata/fixtures/native_cgate_general_tree.json`,
+`native_cgate_show_objects.json` (62 commands),
+`native_cgate_show_audit.json` (69 rows),
+`native_cgate_show_appclasses.json` (78 rows),
+`native_cgate_show_parser.json` (18 rows),
+`native_cgate_new_bounds.json` (25 rows), and
+`native_cgate_tree_appclasses.json` (three rows). Tagged status, ordering,
+fields, and framing are compared exactly. Runtime host/IP/JVM metrics and
+scheduled timestamps are shape-validated and normalized only when the fixture
+declares them volatile. The real-daemon boundary is
+`rust/cmqttd/tests/system_cgate_general_tree.rs`.
+
 `DO //PROJECT/NETWORK/APPLICATION/GROUP ON|OFF|RAMP|TERMINATERAMP` uses the
 same confirmed SAL path as the corresponding lighting command. `DO
 //PROJECT/NETWORK SYNC` runs the same physical identity-populating direct or

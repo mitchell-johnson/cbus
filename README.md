@@ -425,6 +425,47 @@ application and administration families, including `CLOCK`, `LIGHTING`,
 still follows its own capability classification; showing native help does not
 turn an unsupported child operation into a simulated success.
 
+General C-Gate clients can use silent untagged `#`/`//` comments, 301 `OID`,
+local `BROADCAST_EVENT`, native object discovery and reads through `SHOW`, and
+native-shaped `REPORT`, `TREE`, `TREEXML`, and `TREEXMLDETAIL`. `SHOW`
+implements ordered `?`/`??` property catalogues and `*`/named reads for
+`cgate`, projects, project C-Bus, project, network, application, group, unit,
+and output-terminal objects. The application and child-object schemas cover
+the retained Temperature, Lighting, Air Conditioning, Media Transport,
+Trigger, Enable, Audio, Security, Clock, Telephony, Measurement, and generic
+application classes represented by application IDs 25, 48, 95, 172, 192,
+202, 203, 205, 208, 223, 224, 228, and 238. Named fields are
+case-insensitive while preserving the caller's field spelling in the reply;
+foreign-project lookup, canonical terminal aliases, object errors, and the
+captured GET/SHOW trailing-token grammar are also pinned.
+
+The exact native evidence includes the 62-command base object transcript
+[`native_cgate_show_objects.json`](rust/testdata/fixtures/native_cgate_show_objects.json),
+the 69-row casing/error audit
+[`native_cgate_show_audit.json`](rust/testdata/fixtures/native_cgate_show_audit.json),
+the 78-row application matrix
+[`native_cgate_show_appclasses.json`](rust/testdata/fixtures/native_cgate_show_appclasses.json),
+and the 18-row parser matrix
+[`native_cgate_show_parser.json`](rust/testdata/fixtures/native_cgate_show_parser.json).
+Tagged response order, status, fields, and framing are compared exactly.
+Runtime host/IP/JVM metrics and scheduled timestamps vary by process, so the
+replay validates their native shape and normalizes only values explicitly
+declared volatile by a fixture before comparison.
+
+`NEW UNIT/GROUP/PHANTOM` creates durable, idempotent database objects without
+pretending that a unit exists on the bus. Its address, application-child, and
+known/unknown firmware-token boundaries are pinned by the 25-row
+[`native_cgate_new_bounds.json`](rust/testdata/fixtures/native_cgate_new_bounds.json)
+transcript. Tree output combines those records with physical units already
+observed by an explicit sync; TREE flags do not trigger a hidden physical scan.
+The multi-application hierarchy, application labels, `Groups` versus `Net
+Vars`, object states, and XML detail framing are pinned by
+[`native_cgate_tree_appclasses.json`](rust/testdata/fixtures/native_cgate_tree_appclasses.json).
+`CMQTT CAPABILITIES` reports these inventory and object-creation boundaries
+for clients that need to distinguish database state from live C-Bus evidence.
+When the optional C-Gate authentication gate is enabled, NEW and
+BROADCAST_EVENT require an authenticated session.
+
 **Full C-Gate replacement is the target, not the current completion claim.**
 Hardware-backed lighting, all eleven maintained AIRCON/HVAC commands, all 19 maintained
 AUDIO commands, all seven maintained SECURITY commands, the complete maintained

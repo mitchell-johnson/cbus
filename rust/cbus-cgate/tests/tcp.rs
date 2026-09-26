@@ -172,6 +172,43 @@ fn tcp_project_network_lighting_cycle() {
     assert_eq!(s.command("PROJECT SAVE").status, 200);
 }
 
+#[test]
+fn tcp_comments_match_native_silent_and_tagged_behavior() {
+    let mock = Mock::spawn();
+    let mut session = mock.connect();
+    assert!(session.greeting().starts_with("201 "));
+    for comment in ["# comment\n", "// comment\n", "#no-space\n", "//no-space\n"] {
+        session.writer.write_all(comment.as_bytes()).unwrap();
+        session
+            .reader
+            .get_ref()
+            .set_read_timeout(Some(Duration::from_millis(100)))
+            .unwrap();
+        let mut unexpected = String::new();
+        let error = session.reader.read_line(&mut unexpected).unwrap_err();
+        assert!(matches!(
+            error.kind(),
+            std::io::ErrorKind::WouldBlock | std::io::ErrorKind::TimedOut
+        ));
+        assert!(unexpected.is_empty());
+        session
+            .reader
+            .get_ref()
+            .set_read_timeout(Some(Duration::from_secs(5)))
+            .unwrap();
+    }
+
+    session.writer.write_all(b"[hash] # tagged\n").unwrap();
+    let mut line = String::new();
+    session.reader.read_line(&mut line).unwrap();
+    assert_eq!(line.trim_end(), "400 Syntax Error.");
+
+    session.writer.write_all(b"[slash] // tagged\n").unwrap();
+    line.clear();
+    session.reader.read_line(&mut line).unwrap();
+    assert_eq!(line.trim_end(), "[slash] 400 Syntax Error.");
+}
+
 /// Cross-connection broadcast: a subscribed reader observes another
 /// session's project creation asynchronously, then stops after OFF.
 #[test]

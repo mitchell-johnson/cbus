@@ -1,0 +1,1101 @@
+{
+  "schema": "native-cgate-show-application-classes-v1",
+  "oracle": {
+    "product": "Schneider Electric C-Gate",
+    "version": "3.4.0",
+    "build": 2001,
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "transport": "owned disposable process; closed loopback-only synthetic network endpoint",
+    "global_event_level": 9,
+    "site_project_used": false,
+    "real_cbus_contacted": false,
+    "source_probe_sha256": "f7ac060d163aa73210cb10053513ba6edcba7f3b79cf137c2709c44395aaa7af",
+    "volatile_values": [
+      "Clock PrimaryMasterNextUpdateTime"
+    ]
+  },
+  "applications": [
+    25,
+    48,
+    95,
+    172,
+    192,
+    202,
+    203,
+    205,
+    208,
+    223,
+    224,
+    228,
+    238
+  ],
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+  "setup": [
+    {
+      "command": "PROJECT NEW APPA1",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "PROJECT USE APPA1",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NET CREATE 254 cni 127.0.0.1:9",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW GROUP //APPA1/254/25/7",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW GROUP //APPA1/254/48/7",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW GROUP //APPA1/254/95/7",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW GROUP //APPA1/254/172/7",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW GROUP //APPA1/254/192/7",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID: //APPA1/254/192/7 (Address not supported by application)"
+      ],
+      "final": "401 Bad object or device ID: //APPA1/254/192/7 (Address not supported by application)"
+    },
+    {
+      "command": "NEW GROUP //APPA1/254/202/7",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW GROUP //APPA1/254/203/7",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW GROUP //APPA1/254/205/7",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW GROUP //APPA1/254/208/7",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW GROUP //APPA1/254/223/7",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID: //APPA1/254/223/7 (Object not found)"
+      ],
+      "final": "401 Bad object or device ID: //APPA1/254/223/7 (Object not found)"
+    },
+    {
+      "command": "NEW GROUP //APPA1/254/224/7",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID: //APPA1/254/224/7 (Object not found)"
+      ],
+      "final": "401 Bad object or device ID: //APPA1/254/224/7 (Object not found)"
+    },
+    {
+      "command": "NEW GROUP //APPA1/254/228/7",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW GROUP //APPA1/254/238/7",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    }
+  ],
+  "rows": [
+    {
+      "command": "SHOW //APPA1/254/25 ?",
+      "code": 300,
+      "lines": [
+        "300 //APPA1/254/25: Parameters=Groups,Address,ShortName,Name,FreeGroup,EventLevel,State,ClassName"
+      ],
+      "final": "300 //APPA1/254/25: Parameters=Groups,Address,ShortName,Name,FreeGroup,EventLevel,State,ClassName"
+    },
+    {
+      "command": "SHOW //APPA1/254/25 ??",
+      "code": 102,
+      "lines": [
+        "102-//APPA1/254/25: Groups - List of groups in this application",
+        "102-//APPA1/254/25: Address - The C-Bus Address of this device",
+        "102-//APPA1/254/25: ShortName - The name of this object",
+        "102-//APPA1/254/25: Name - The name of this object",
+        "102-//APPA1/254/25: FreeGroup - The next free group address in this application",
+        "102-//APPA1/254/25: EventLevel - The level of displayed events for this object",
+        "102-//APPA1/254/25: State - The state of connection of this object",
+        "102 //APPA1/254/25: ClassName - The name of the class that implements this unit or application"
+      ],
+      "final": "102 //APPA1/254/25: ClassName - The name of the class that implements this unit or application"
+    },
+    {
+      "command": "SHOW //APPA1/254/25 *",
+      "code": 300,
+      "lines": [
+        "300-//APPA1/254/25: Address=25",
+        "300-//APPA1/254/25: ClassName=com.clipsal.cgate.cbus.app.temperature.CBusTemperatureBroadcastApplication",
+        "300-//APPA1/254/25: EventLevel=9",
+        "300-//APPA1/254/25: FreeGroup=0",
+        "300-//APPA1/254/25: Groups=7",
+        "300-//APPA1/254/25: Name=",
+        "300-//APPA1/254/25: ShortName=temperature",
+        "300 //APPA1/254/25: State=new"
+      ],
+      "final": "300 //APPA1/254/25: State=new"
+    },
+    {
+      "command": "SHOW //APPA1/254/25/7 ?",
+      "code": 300,
+      "lines": [
+        "300 //APPA1/254/25/7: Parameters=Temperature,Name,EventLevel,State"
+      ],
+      "final": "300 //APPA1/254/25/7: Parameters=Temperature,Name,EventLevel,State"
+    },
+    {
+      "command": "SHOW //APPA1/254/25/7 ??",
+      "code": 102,
+      "lines": [
+        "102-//APPA1/254/25/7: Temperature - The current temperature for this temperature group",
+        "102-//APPA1/254/25/7: Name - The name of this object",
+        "102-//APPA1/254/25/7: EventLevel - The level of displayed events for this object",
+        "102 //APPA1/254/25/7: State - The state of connection of this object"
+      ],
+      "final": "102 //APPA1/254/25/7: State - The state of connection of this object"
+    },
+    {
+      "command": "SHOW //APPA1/254/25/7 *",
+      "code": 300,
+      "lines": [
+        "300-//APPA1/254/25/7: EventLevel=9",
+        "300-//APPA1/254/25/7: Name=",
+        "300-//APPA1/254/25/7: State=new",
+        "300 //APPA1/254/25/7: Temperature=0.0"
+      ],
+      "final": "300 //APPA1/254/25/7: Temperature=0.0"
+    },
+    {
+      "command": "SHOW //APPA1/254/48 ?",
+      "code": 300,
+      "lines": [
+        "300 //APPA1/254/48: Parameters=State,Name,LearnGroup,FreeGroup,Groups,ClassName,ShortName,Learning,EventLevel,Address"
+      ],
+      "final": "300 //APPA1/254/48: Parameters=State,Name,LearnGroup,FreeGroup,Groups,ClassName,ShortName,Learning,EventLevel,Address"
+    },
+    {
+      "command": "SHOW //APPA1/254/48 ??",
+      "code": 102,
+      "lines": [
+        "102-//APPA1/254/48: State - The state of connection of this object",
+        "102-//APPA1/254/48: Name - The name of this object",
+        "102-//APPA1/254/48: LearnGroup - The group currently involved in learning",
+        "102-//APPA1/254/48: FreeGroup - The next free group address in this application",
+        "102-//APPA1/254/48: Groups - List of groups in this application",
+        "102-//APPA1/254/48: ClassName - The name of the class that implements this unit or application",
+        "102-//APPA1/254/48: ShortName - The name of this object",
+        "102-//APPA1/254/48: Learning - The state of learning in this application",
+        "102-//APPA1/254/48: EventLevel - The level of displayed events for this object",
+        "102 //APPA1/254/48: Address - The C-Bus Address of this device"
+      ],
+      "final": "102 //APPA1/254/48: Address - The C-Bus Address of this device"
+    },
+    {
+      "command": "SHOW //APPA1/254/48 *",
+      "code": 300,
+      "lines": [
+        "300-//APPA1/254/48: Address=48",
+        "300-//APPA1/254/48: ClassName=com.clipsal.cgate.cbus.app.lighting.CBusLightingApplication",
+        "300-//APPA1/254/48: EventLevel=9",
+        "300-//APPA1/254/48: FreeGroup=0",
+        "300-//APPA1/254/48: Groups=7",
+        "300-//APPA1/254/48: LearnGroup=255",
+        "300-//APPA1/254/48: Learning=no",
+        "300-//APPA1/254/48: Name=",
+        "300-//APPA1/254/48: ShortName=lighting",
+        "300 //APPA1/254/48: State=new"
+      ],
+      "final": "300 //APPA1/254/48: State=new"
+    },
+    {
+      "command": "SHOW //APPA1/254/48/7 ?",
+      "code": 300,
+      "lines": [
+        "300 //APPA1/254/48/7: Parameters=Units,RampTime,Name,Protected,Type,EventLevel,State,Level"
+      ],
+      "final": "300 //APPA1/254/48/7: Parameters=Units,RampTime,Name,Protected,Type,EventLevel,State,Level"
+    },
+    {
+      "command": "SHOW //APPA1/254/48/7 ??",
+      "code": 102,
+      "lines": [
+        "102-//APPA1/254/48/7: Units - List of unit that this group is used by.",
+        "102-//APPA1/254/48/7: RampTime - The stored ramp time for this group - only impacts CI command",
+        "102-//APPA1/254/48/7: Name - The name of this object",
+        "102-//APPA1/254/48/7: Protected - If set, protects group from allon/alloff operations",
+        "102-//APPA1/254/48/7: Type - Returns either group or area if this is an area",
+        "102-//APPA1/254/48/7: EventLevel - The level of displayed events for this object",
+        "102-//APPA1/254/48/7: State - The state of connection of this object",
+        "102 //APPA1/254/48/7: Level - The current level of this group"
+      ],
+      "final": "102 //APPA1/254/48/7: Level - The current level of this group"
+    },
+    {
+      "command": "SHOW //APPA1/254/48/7 *",
+      "code": 300,
+      "lines": [
+        "300-//APPA1/254/48/7: EventLevel=9",
+        "300-//APPA1/254/48/7: Level=0",
+        "300-//APPA1/254/48/7: Name=",
+        "300-//APPA1/254/48/7: Protected=no",
+        "300-//APPA1/254/48/7: RampTime=0",
+        "300-//APPA1/254/48/7: State=new",
+        "300-//APPA1/254/48/7: Type=group",
+        "300 //APPA1/254/48/7: Units="
+      ],
+      "final": "300 //APPA1/254/48/7: Units="
+    },
+    {
+      "command": "SHOW //APPA1/254/95 ?",
+      "code": 300,
+      "lines": [
+        "300 //APPA1/254/95: Parameters=State,Name,LearnGroup,FreeGroup,Groups,ClassName,ShortName,Learning,EventLevel,Address"
+      ],
+      "final": "300 //APPA1/254/95: Parameters=State,Name,LearnGroup,FreeGroup,Groups,ClassName,ShortName,Learning,EventLevel,Address"
+    },
+    {
+      "command": "SHOW //APPA1/254/95 ??",
+      "code": 102,
+      "lines": [
+        "102-//APPA1/254/95: State - The state of connection of this object",
+        "102-//APPA1/254/95: Name - The name of this object",
+        "102-//APPA1/254/95: LearnGroup - The group currently involved in learning",
+        "102-//APPA1/254/95: FreeGroup - The next free group address in this application",
+        "102-//APPA1/254/95: Groups - List of groups in this application",
+        "102-//APPA1/254/95: ClassName - The name of the class that implements this unit or application",
+        "102-//APPA1/254/95: ShortName - The name of this object",
+        "102-//APPA1/254/95: Learning - The state of learning in this application",
+        "102-//APPA1/254/95: EventLevel - The level of displayed events for this object",
+        "102 //APPA1/254/95: Address - The C-Bus Address of this device"
+      ],
+      "final": "102 //APPA1/254/95: Address - The C-Bus Address of this device"
+    },
+    {
+      "command": "SHOW //APPA1/254/95 *",
+      "code": 300,
+      "lines": [
+        "300-//APPA1/254/95: Address=95",
+        "300-//APPA1/254/95: ClassName=com.clipsal.cgate.cbus.app.lighting.CBusLightingApplication",
+        "300-//APPA1/254/95: EventLevel=9",
+        "300-//APPA1/254/95: FreeGroup=0",
+        "300-//APPA1/254/95: Groups=7",
+        "300-//APPA1/254/95: LearnGroup=255",
+        "300-//APPA1/254/95: Learning=no",
+        "300-//APPA1/254/95: Name=",
+        "300-//APPA1/254/95: ShortName=lighting",
+        "300 //APPA1/254/95: State=new"
+      ],
+      "final": "300 //APPA1/254/95: State=new"
+    },
+    {
+      "command": "SHOW //APPA1/254/95/7 ?",
+      "code": 300,
+      "lines": [
+        "300 //APPA1/254/95/7: Parameters=Units,RampTime,Name,Protected,Type,EventLevel,State,Level"
+      ],
+      "final": "300 //APPA1/254/95/7: Parameters=Units,RampTime,Name,Protected,Type,EventLevel,State,Level"
+    },
+    {
+      "command": "SHOW //APPA1/254/95/7 ??",
+      "code": 102,
+      "lines": [
+        "102-//APPA1/254/95/7: Units - List of unit that this group is used by.",
+        "102-//APPA1/254/95/7: RampTime - The stored ramp time for this group - only impacts CI command",
+        "102-//APPA1/254/95/7: Name - The name of this object",
+        "102-//APPA1/254/95/7: Protected - If set, protects group from allon/alloff operations",
+        "102-//APPA1/254/95/7: Type - Returns either group or area if this is an area",
+        "102-//APPA1/254/95/7: EventLevel - The level of displayed events for this object",
+        "102-//APPA1/254/95/7: State - The state of connection of this object",
+        "102 //APPA1/254/95/7: Level - The current level of this group"
+      ],
+      "final": "102 //APPA1/254/95/7: Level - The current level of this group"
+    },
+    {
+      "command": "SHOW //APPA1/254/95/7 *",
+      "code": 300,
+      "lines": [
+        "300-//APPA1/254/95/7: EventLevel=9",
+        "300-//APPA1/254/95/7: Level=0",
+        "300-//APPA1/254/95/7: Name=",
+        "300-//APPA1/254/95/7: Protected=no",
+        "300-//APPA1/254/95/7: RampTime=0",
+        "300-//APPA1/254/95/7: State=new",
+        "300-//APPA1/254/95/7: Type=group",
+        "300 //APPA1/254/95/7: Units="
+      ],
+      "final": "300 //APPA1/254/95/7: Units="
+    },
+    {
+      "command": "SHOW //APPA1/254/172 ?",
+      "code": 300,
+      "lines": [
+        "300 //APPA1/254/172: Parameters=Address,ShortName,Name,EventLevel,Wards,State,ClassName"
+      ],
+      "final": "300 //APPA1/254/172: Parameters=Address,ShortName,Name,EventLevel,Wards,State,ClassName"
+    },
+    {
+      "command": "SHOW //APPA1/254/172 ??",
+      "code": 102,
+      "lines": [
+        "102-//APPA1/254/172: Address - The C-Bus Address of this device",
+        "102-//APPA1/254/172: ShortName - The name of this object",
+        "102-//APPA1/254/172: Name - The name of this object",
+        "102-//APPA1/254/172: EventLevel - The level of displayed events for this object",
+        "102-//APPA1/254/172: Wards - List of wards in this application",
+        "102-//APPA1/254/172: State - The state of connection of this object",
+        "102 //APPA1/254/172: ClassName - The name of the class that implements this unit or application"
+      ],
+      "final": "102 //APPA1/254/172: ClassName - The name of the class that implements this unit or application"
+    },
+    {
+      "command": "SHOW //APPA1/254/172 *",
+      "code": 300,
+      "lines": [
+        "300-//APPA1/254/172: Address=172",
+        "300-//APPA1/254/172: ClassName=com.clipsal.cgate.cbus.app.aircon.CBusAirConditioningApplication",
+        "300-//APPA1/254/172: EventLevel=9",
+        "300-//APPA1/254/172: Name=",
+        "300-//APPA1/254/172: ShortName=aircon",
+        "300-//APPA1/254/172: State=new",
+        "300 //APPA1/254/172: Wards=7"
+      ],
+      "final": "300 //APPA1/254/172: Wards=7"
+    },
+    {
+      "command": "SHOW //APPA1/254/172/7 ?",
+      "code": 300,
+      "lines": [
+        "300 //APPA1/254/172/7: Parameters=Zones,Schedules,Name,EventLevel,State"
+      ],
+      "final": "300 //APPA1/254/172/7: Parameters=Zones,Schedules,Name,EventLevel,State"
+    },
+    {
+      "command": "SHOW //APPA1/254/172/7 ??",
+      "code": 102,
+      "lines": [
+        "102-//APPA1/254/172/7: Zones - List of zones in this ward",
+        "102-//APPA1/254/172/7: Schedules - List of Schedule types in this zone",
+        "102-//APPA1/254/172/7: Name - The name of this object",
+        "102-//APPA1/254/172/7: EventLevel - The level of displayed events for this object",
+        "102 //APPA1/254/172/7: State - The state of connection of this object"
+      ],
+      "final": "102 //APPA1/254/172/7: State - The state of connection of this object"
+    },
+    {
+      "command": "SHOW //APPA1/254/172/7 *",
+      "code": 300,
+      "lines": [
+        "300-//APPA1/254/172/7: EventLevel=9",
+        "300-//APPA1/254/172/7: Name=",
+        "300-//APPA1/254/172/7: Schedules=T,H",
+        "300-//APPA1/254/172/7: State=new",
+        "300 //APPA1/254/172/7: Zones="
+      ],
+      "final": "300 //APPA1/254/172/7: Zones="
+    },
+    {
+      "command": "SHOW //APPA1/254/192 ?",
+      "code": 300,
+      "lines": [
+        "300 //APPA1/254/192: Parameters=Address,ShortName,Name,EventLevel,State,ClassName"
+      ],
+      "final": "300 //APPA1/254/192: Parameters=Address,ShortName,Name,EventLevel,State,ClassName"
+    },
+    {
+      "command": "SHOW //APPA1/254/192 ??",
+      "code": 102,
+      "lines": [
+        "102-//APPA1/254/192: Address - The C-Bus Address of this device",
+        "102-//APPA1/254/192: ShortName - The name of this object",
+        "102-//APPA1/254/192: Name - The name of this object",
+        "102-//APPA1/254/192: EventLevel - The level of displayed events for this object",
+        "102-//APPA1/254/192: State - The state of connection of this object",
+        "102 //APPA1/254/192: ClassName - The name of the class that implements this unit or application"
+      ],
+      "final": "102 //APPA1/254/192: ClassName - The name of the class that implements this unit or application"
+    },
+    {
+      "command": "SHOW //APPA1/254/192 *",
+      "code": 300,
+      "lines": [
+        "300-//APPA1/254/192: Address=192",
+        "300-//APPA1/254/192: ClassName=com.clipsal.cgate.cbus.app.mediatransport.CBusMediaTransportApplication",
+        "300-//APPA1/254/192: EventLevel=9",
+        "300-//APPA1/254/192: Name=",
+        "300-//APPA1/254/192: ShortName=mediatransport",
+        "300 //APPA1/254/192: State=new"
+      ],
+      "final": "300 //APPA1/254/192: State=new"
+    },
+    {
+      "command": "SHOW //APPA1/254/192/7 ?",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID: //APPA1/254/192/7 (Address not supported by application)"
+      ],
+      "final": "401 Bad object or device ID: //APPA1/254/192/7 (Address not supported by application)"
+    },
+    {
+      "command": "SHOW //APPA1/254/192/7 ??",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID: //APPA1/254/192/7 (Address not supported by application)"
+      ],
+      "final": "401 Bad object or device ID: //APPA1/254/192/7 (Address not supported by application)"
+    },
+    {
+      "command": "SHOW //APPA1/254/192/7 *",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID: //APPA1/254/192/7 (Address not supported by application)"
+      ],
+      "final": "401 Bad object or device ID: //APPA1/254/192/7 (Address not supported by application)"
+    },
+    {
+      "command": "SHOW //APPA1/254/202 ?",
+      "code": 300,
+      "lines": [
+        "300 //APPA1/254/202: Parameters=State,Name,LearnGroup,FreeGroup,Groups,ClassName,ShortName,Learning,EventLevel,Address"
+      ],
+      "final": "300 //APPA1/254/202: Parameters=State,Name,LearnGroup,FreeGroup,Groups,ClassName,ShortName,Learning,EventLevel,Address"
+    },
+    {
+      "command": "SHOW //APPA1/254/202 ??",
+      "code": 102,
+      "lines": [
+        "102-//APPA1/254/202: State - The state of connection of this object",
+        "102-//APPA1/254/202: Name - The name of this object",
+        "102-//APPA1/254/202: LearnGroup - The group currently involved in learning",
+        "102-//APPA1/254/202: FreeGroup - The next free group address in this application",
+        "102-//APPA1/254/202: Groups - List of groups in this application",
+        "102-//APPA1/254/202: ClassName - The name of the class that implements this unit or application",
+        "102-//APPA1/254/202: ShortName - The name of this object",
+        "102-//APPA1/254/202: Learning - The state of learning in this application",
+        "102-//APPA1/254/202: EventLevel - The level of displayed events for this object",
+        "102 //APPA1/254/202: Address - The C-Bus Address of this device"
+      ],
+      "final": "102 //APPA1/254/202: Address - The C-Bus Address of this device"
+    },
+    {
+      "command": "SHOW //APPA1/254/202 *",
+      "code": 300,
+      "lines": [
+        "300-//APPA1/254/202: Address=202",
+        "300-//APPA1/254/202: ClassName=com.clipsal.cgate.cbus.app.triggercontrol.CBusTriggerControlApplication",
+        "300-//APPA1/254/202: EventLevel=9",
+        "300-//APPA1/254/202: FreeGroup=0",
+        "300-//APPA1/254/202: Groups=7",
+        "300-//APPA1/254/202: LearnGroup=255",
+        "300-//APPA1/254/202: Learning=no",
+        "300-//APPA1/254/202: Name=",
+        "300-//APPA1/254/202: ShortName=trigger",
+        "300 //APPA1/254/202: State=new"
+      ],
+      "final": "300 //APPA1/254/202: State=new"
+    },
+    {
+      "command": "SHOW //APPA1/254/202/7 ?",
+      "code": 300,
+      "lines": [
+        "300 //APPA1/254/202/7: Parameters=Name,EventLevel,State"
+      ],
+      "final": "300 //APPA1/254/202/7: Parameters=Name,EventLevel,State"
+    },
+    {
+      "command": "SHOW //APPA1/254/202/7 ??",
+      "code": 102,
+      "lines": [
+        "102-//APPA1/254/202/7: Name - The name of this object",
+        "102-//APPA1/254/202/7: EventLevel - The level of displayed events for this object",
+        "102 //APPA1/254/202/7: State - The state of connection of this object"
+      ],
+      "final": "102 //APPA1/254/202/7: State - The state of connection of this object"
+    },
+    {
+      "command": "SHOW //APPA1/254/202/7 *",
+      "code": 300,
+      "lines": [
+        "300-//APPA1/254/202/7: EventLevel=9",
+        "300-//APPA1/254/202/7: Name=",
+        "300 //APPA1/254/202/7: State=new"
+      ],
+      "final": "300 //APPA1/254/202/7: State=new"
+    },
+    {
+      "command": "SHOW //APPA1/254/203 ?",
+      "code": 300,
+      "lines": [
+        "300 //APPA1/254/203: Parameters=Groups,Address,ShortName,Name,FreeGroup,EventLevel,State,ClassName"
+      ],
+      "final": "300 //APPA1/254/203: Parameters=Groups,Address,ShortName,Name,FreeGroup,EventLevel,State,ClassName"
+    },
+    {
+      "command": "SHOW //APPA1/254/203 ??",
+      "code": 102,
+      "lines": [
+        "102-//APPA1/254/203: Groups - List of groups in this application",
+        "102-//APPA1/254/203: Address - The C-Bus Address of this device",
+        "102-//APPA1/254/203: ShortName - The name of this object",
+        "102-//APPA1/254/203: Name - The name of this object",
+        "102-//APPA1/254/203: FreeGroup - The next free group address in this application",
+        "102-//APPA1/254/203: EventLevel - The level of displayed events for this object",
+        "102-//APPA1/254/203: State - The state of connection of this object",
+        "102 //APPA1/254/203: ClassName - The name of the class that implements this unit or application"
+      ],
+      "final": "102 //APPA1/254/203: ClassName - The name of the class that implements this unit or application"
+    },
+    {
+      "command": "SHOW //APPA1/254/203 *",
+      "code": 300,
+      "lines": [
+        "300-//APPA1/254/203: Address=203",
+        "300-//APPA1/254/203: ClassName=com.clipsal.cgate.cbus.app.enablecontrol.CBusEnableControlApplication",
+        "300-//APPA1/254/203: EventLevel=9",
+        "300-//APPA1/254/203: FreeGroup=0",
+        "300-//APPA1/254/203: Groups=7",
+        "300-//APPA1/254/203: Name=",
+        "300-//APPA1/254/203: ShortName=enable",
+        "300 //APPA1/254/203: State=new"
+      ],
+      "final": "300 //APPA1/254/203: State=new"
+    },
+    {
+      "command": "SHOW //APPA1/254/203/7 ?",
+      "code": 300,
+      "lines": [
+        "300 //APPA1/254/203/7: Parameters=Name,EventLevel,State,Level"
+      ],
+      "final": "300 //APPA1/254/203/7: Parameters=Name,EventLevel,State,Level"
+    },
+    {
+      "command": "SHOW //APPA1/254/203/7 ??",
+      "code": 102,
+      "lines": [
+        "102-//APPA1/254/203/7: Name - The name of this object",
+        "102-//APPA1/254/203/7: EventLevel - The level of displayed events for this object",
+        "102-//APPA1/254/203/7: State - The state of connection of this object",
+        "102 //APPA1/254/203/7: Level - The current level of this network variable"
+      ],
+      "final": "102 //APPA1/254/203/7: Level - The current level of this network variable"
+    },
+    {
+      "command": "SHOW //APPA1/254/203/7 *",
+      "code": 300,
+      "lines": [
+        "300-//APPA1/254/203/7: EventLevel=9",
+        "300-//APPA1/254/203/7: Level=0",
+        "300-//APPA1/254/203/7: Name=",
+        "300 //APPA1/254/203/7: State=new"
+      ],
+      "final": "300 //APPA1/254/203/7: State=new"
+    },
+    {
+      "command": "SHOW //APPA1/254/205 ?",
+      "code": 300,
+      "lines": [
+        "300 //APPA1/254/205: Parameters=State,Name,LearnGroup,FreeGroup,Groups,ClassName,ShortName,Learning,EventLevel,Address"
+      ],
+      "final": "300 //APPA1/254/205: Parameters=State,Name,LearnGroup,FreeGroup,Groups,ClassName,ShortName,Learning,EventLevel,Address"
+    },
+    {
+      "command": "SHOW //APPA1/254/205 ??",
+      "code": 102,
+      "lines": [
+        "102-//APPA1/254/205: State - The state of connection of this object",
+        "102-//APPA1/254/205: Name - The name of this object",
+        "102-//APPA1/254/205: LearnGroup - The group currently involved in learning",
+        "102-//APPA1/254/205: FreeGroup - The next free group address in this application",
+        "102-//APPA1/254/205: Groups - List of groups in this application",
+        "102-//APPA1/254/205: ClassName - The name of the class that implements this unit or application",
+        "102-//APPA1/254/205: ShortName - The name of this object",
+        "102-//APPA1/254/205: Learning - The state of learning in this application",
+        "102-//APPA1/254/205: EventLevel - The level of displayed events for this object",
+        "102 //APPA1/254/205: Address - The C-Bus Address of this device"
+      ],
+      "final": "102 //APPA1/254/205: Address - The C-Bus Address of this device"
+    },
+    {
+      "command": "SHOW //APPA1/254/205 *",
+      "code": 300,
+      "lines": [
+        "300-//APPA1/254/205: Address=205",
+        "300-//APPA1/254/205: ClassName=com.clipsal.cgate.cbus.app.audio.CBusAudioApplication",
+        "300-//APPA1/254/205: EventLevel=9",
+        "300-//APPA1/254/205: FreeGroup=0",
+        "300-//APPA1/254/205: Groups=7",
+        "300-//APPA1/254/205: LearnGroup=255",
+        "300-//APPA1/254/205: Learning=no",
+        "300-//APPA1/254/205: Name=",
+        "300-//APPA1/254/205: ShortName=audio",
+        "300 //APPA1/254/205: State=new"
+      ],
+      "final": "300 //APPA1/254/205: State=new"
+    },
+    {
+      "command": "SHOW //APPA1/254/205/7 ?",
+      "code": 300,
+      "lines": [
+        "300 //APPA1/254/205/7: Parameters=Units,RampTime,Name,Protected,Type,EventLevel,State,Level"
+      ],
+      "final": "300 //APPA1/254/205/7: Parameters=Units,RampTime,Name,Protected,Type,EventLevel,State,Level"
+    },
+    {
+      "command": "SHOW //APPA1/254/205/7 ??",
+      "code": 102,
+      "lines": [
+        "102-//APPA1/254/205/7: Units - List of unit that this group is used by.",
+        "102-//APPA1/254/205/7: RampTime - The stored ramp time for this group - only impacts CI command",
+        "102-//APPA1/254/205/7: Name - The name of this object",
+        "102-//APPA1/254/205/7: Protected - If set, protects group from allon/alloff operations",
+        "102-//APPA1/254/205/7: Type - Returns either group or area if this is an area",
+        "102-//APPA1/254/205/7: EventLevel - The level of displayed events for this object",
+        "102-//APPA1/254/205/7: State - The state of connection of this object",
+        "102 //APPA1/254/205/7: Level - The current level of this group"
+      ],
+      "final": "102 //APPA1/254/205/7: Level - The current level of this group"
+    },
+    {
+      "command": "SHOW //APPA1/254/205/7 *",
+      "code": 300,
+      "lines": [
+        "300-//APPA1/254/205/7: EventLevel=9",
+        "300-//APPA1/254/205/7: Level=0",
+        "300-//APPA1/254/205/7: Name=",
+        "300-//APPA1/254/205/7: Protected=no",
+        "300-//APPA1/254/205/7: RampTime=0",
+        "300-//APPA1/254/205/7: State=new",
+        "300-//APPA1/254/205/7: Type=group",
+        "300 //APPA1/254/205/7: Units="
+      ],
+      "final": "300 //APPA1/254/205/7: Units="
+    },
+    {
+      "command": "SHOW //APPA1/254/208 ?",
+      "code": 300,
+      "lines": [
+        "300 //APPA1/254/208: Parameters=ChargingState,ShortName,ArmState,LowBatteryState,Address,State,MainsState,PassEntryState,Zones,FireAlarmState,OtherAlarmState,EventLevel,LineCutState,GasAlarmState,ArmFailedState,AlarmState,ClassName,PanicState,TamperState,Name"
+      ],
+      "final": "300 //APPA1/254/208: Parameters=ChargingState,ShortName,ArmState,LowBatteryState,Address,State,MainsState,PassEntryState,Zones,FireAlarmState,OtherAlarmState,EventLevel,LineCutState,GasAlarmState,ArmFailedState,AlarmState,ClassName,PanicState,TamperState,Name"
+    },
+    {
+      "command": "SHOW //APPA1/254/208 ??",
+      "code": 102,
+      "lines": [
+        "102-//APPA1/254/208: ChargingState - The battery charging state of the security system",
+        "102-//APPA1/254/208: ShortName - The name of this object",
+        "102-//APPA1/254/208: ArmState - The arm state of this security application",
+        "102-//APPA1/254/208: LowBatteryState - The low battery state of the security system",
+        "102-//APPA1/254/208: Address - The C-Bus Address of this device",
+        "102-//APPA1/254/208: State - The state of connection of this object",
+        "102-//APPA1/254/208: MainsState - The main power state of the security system",
+        "102-//APPA1/254/208: PassEntryState - The pass entry state of this security application",
+        "102-//APPA1/254/208: Zones - List of zones in this application",
+        "102-//APPA1/254/208: FireAlarmState - Alarm flag indicating that a fire has been detected",
+        "102-//APPA1/254/208: OtherAlarmState - An alarm flag indicating that a special alarm condition has been detected",
+        "102-//APPA1/254/208: EventLevel - The level of displayed events for this object",
+        "102-//APPA1/254/208: LineCutState - Alarm flag indicating the attached phone line has been cut",
+        "102-//APPA1/254/208: GasAlarmState - An alarm flag indicating that the presence of gas has been detected",
+        "102-//APPA1/254/208: ArmFailedState - Alarm flag indicating that the security system failed to arm",
+        "102-//APPA1/254/208: AlarmState - The alarm state of the security system",
+        "102-//APPA1/254/208: ClassName - The name of the class that implements this unit or application",
+        "102-//APPA1/254/208: PanicState - The panic state of the security system",
+        "102-//APPA1/254/208: TamperState - The alarm state of the security system",
+        "102 //APPA1/254/208: Name - The name of this object"
+      ],
+      "final": "102 //APPA1/254/208: Name - The name of this object"
+    },
+    {
+      "command": "SHOW //APPA1/254/208 *",
+      "code": 300,
+      "lines": [
+        "300-//APPA1/254/208: Address=208",
+        "300-//APPA1/254/208: AlarmState=unknown",
+        "300-//APPA1/254/208: ArmFailedState=unknown",
+        "300-//APPA1/254/208: ArmState=-1",
+        "300-//APPA1/254/208: ChargingState=unknown",
+        "300-//APPA1/254/208: ClassName=com.clipsal.cgate.cbus.app.security.CBusSecurityApplication",
+        "300-//APPA1/254/208: EventLevel=9",
+        "300-//APPA1/254/208: FireAlarmState=unknown",
+        "300-//APPA1/254/208: GasAlarmState=unknown",
+        "300-//APPA1/254/208: LineCutState=unknown",
+        "300-//APPA1/254/208: LowBatteryState=unknown",
+        "300-//APPA1/254/208: MainsState=unknown",
+        "300-//APPA1/254/208: Name=",
+        "300-//APPA1/254/208: OtherAlarmState=unknown",
+        "300-//APPA1/254/208: PanicState=unknown",
+        "300-//APPA1/254/208: PassEntryState=-1",
+        "300-//APPA1/254/208: ShortName=security",
+        "300-//APPA1/254/208: State=new",
+        "300-//APPA1/254/208: TamperState=unknown",
+        "300 //APPA1/254/208: Zones=7"
+      ],
+      "final": "300 //APPA1/254/208: Zones=7"
+    },
+    {
+      "command": "SHOW //APPA1/254/208/7 ?",
+      "code": 300,
+      "lines": [
+        "300 //APPA1/254/208/7: Parameters=Name,ZoneState,EventLevel,ZoneIsolated,State,ZoneName"
+      ],
+      "final": "300 //APPA1/254/208/7: Parameters=Name,ZoneState,EventLevel,ZoneIsolated,State,ZoneName"
+    },
+    {
+      "command": "SHOW //APPA1/254/208/7 ??",
+      "code": 102,
+      "lines": [
+        "102-//APPA1/254/208/7: Name - The name of this object",
+        "102-//APPA1/254/208/7: ZoneState - The state of this Zone",
+        "102-//APPA1/254/208/7: EventLevel - The level of displayed events for this object",
+        "102-//APPA1/254/208/7: ZoneIsolated - The isolation state of this Zone",
+        "102-//APPA1/254/208/7: State - The state of connection of this object",
+        "102 //APPA1/254/208/7: ZoneName - The name of this zone"
+      ],
+      "final": "102 //APPA1/254/208/7: ZoneName - The name of this zone"
+    },
+    {
+      "command": "SHOW //APPA1/254/208/7 *",
+      "code": 300,
+      "lines": [
+        "300-//APPA1/254/208/7: EventLevel=9",
+        "300-//APPA1/254/208/7: Name=",
+        "300-//APPA1/254/208/7: State=new",
+        "300-//APPA1/254/208/7: ZoneIsolated=no",
+        "300-//APPA1/254/208/7: ZoneName=unknown",
+        "300 //APPA1/254/208/7: ZoneState=-1"
+      ],
+      "final": "300 //APPA1/254/208/7: ZoneState=-1"
+    },
+    {
+      "command": "SHOW //APPA1/254/223 ?",
+      "code": 300,
+      "lines": [
+        "300 //APPA1/254/223: Parameters=State,Name,ClassName,Offset,ShortName,PrimaryMasterEnabled,EventLevel,Address,PrimaryMasterNextUpdateTime"
+      ],
+      "final": "300 //APPA1/254/223: Parameters=State,Name,ClassName,Offset,ShortName,PrimaryMasterEnabled,EventLevel,Address,PrimaryMasterNextUpdateTime"
+    },
+    {
+      "command": "SHOW //APPA1/254/223 ??",
+      "code": 102,
+      "lines": [
+        "102-//APPA1/254/223: State - The state of connection of this object",
+        "102-//APPA1/254/223: Name - The name of this object",
+        "102-//APPA1/254/223: ClassName - The name of the class that implements this unit or application",
+        "102-//APPA1/254/223: Offset - Offset from the system time to the network time",
+        "102-//APPA1/254/223: ShortName - The name of this object",
+        "102-//APPA1/254/223: PrimaryMasterEnabled - True if C-Gate is the primary master clock",
+        "102-//APPA1/254/223: EventLevel - The level of displayed events for this object",
+        "102-//APPA1/254/223: Address - The C-Bus Address of this device",
+        "102 //APPA1/254/223: PrimaryMasterNextUpdateTime - The next scheduled primary master clock update"
+      ],
+      "final": "102 //APPA1/254/223: PrimaryMasterNextUpdateTime - The next scheduled primary master clock update"
+    },
+    {
+      "command": "SHOW //APPA1/254/223 *",
+      "code": 300,
+      "lines": [
+        "300-//APPA1/254/223: Address=223",
+        "300-//APPA1/254/223: ClassName=com.clipsal.cgate.cbus.app.clock.CBusClockApplication",
+        "300-//APPA1/254/223: EventLevel=9",
+        "300-//APPA1/254/223: Name=",
+        "300-//APPA1/254/223: Offset=0",
+        "300-//APPA1/254/223: PrimaryMasterEnabled=no",
+        "300-//APPA1/254/223: PrimaryMasterNextUpdateTime=19700101-120000",
+        "300-//APPA1/254/223: ShortName=clock",
+        "300 //APPA1/254/223: State=new"
+      ],
+      "final": "300 //APPA1/254/223: State=new"
+    },
+    {
+      "command": "SHOW //APPA1/254/223/7 ?",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID: //APPA1/254/223/7 (Object not found)"
+      ],
+      "final": "401 Bad object or device ID: //APPA1/254/223/7 (Object not found)"
+    },
+    {
+      "command": "SHOW //APPA1/254/223/7 ??",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID: //APPA1/254/223/7 (Object not found)"
+      ],
+      "final": "401 Bad object or device ID: //APPA1/254/223/7 (Object not found)"
+    },
+    {
+      "command": "SHOW //APPA1/254/223/7 *",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID: //APPA1/254/223/7 (Object not found)"
+      ],
+      "final": "401 Bad object or device ID: //APPA1/254/223/7 (Object not found)"
+    },
+    {
+      "command": "SHOW //APPA1/254/224 ?",
+      "code": 300,
+      "lines": [
+        "300 //APPA1/254/224: Parameters=Address,ShortName,Name,EventLevel,State,ClassName"
+      ],
+      "final": "300 //APPA1/254/224: Parameters=Address,ShortName,Name,EventLevel,State,ClassName"
+    },
+    {
+      "command": "SHOW //APPA1/254/224 ??",
+      "code": 102,
+      "lines": [
+        "102-//APPA1/254/224: Address - The C-Bus Address of this device",
+        "102-//APPA1/254/224: ShortName - The name of this object",
+        "102-//APPA1/254/224: Name - The name of this object",
+        "102-//APPA1/254/224: EventLevel - The level of displayed events for this object",
+        "102-//APPA1/254/224: State - The state of connection of this object",
+        "102 //APPA1/254/224: ClassName - The name of the class that implements this unit or application"
+      ],
+      "final": "102 //APPA1/254/224: ClassName - The name of the class that implements this unit or application"
+    },
+    {
+      "command": "SHOW //APPA1/254/224 *",
+      "code": 300,
+      "lines": [
+        "300-//APPA1/254/224: Address=224",
+        "300-//APPA1/254/224: ClassName=com.clipsal.cgate.cbus.app.telephony.CBusTelephonyApplication",
+        "300-//APPA1/254/224: EventLevel=9",
+        "300-//APPA1/254/224: Name=",
+        "300-//APPA1/254/224: ShortName=telephony",
+        "300 //APPA1/254/224: State=new"
+      ],
+      "final": "300 //APPA1/254/224: State=new"
+    },
+    {
+      "command": "SHOW //APPA1/254/224/7 ?",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID: //APPA1/254/224/7 (Object not found)"
+      ],
+      "final": "401 Bad object or device ID: //APPA1/254/224/7 (Object not found)"
+    },
+    {
+      "command": "SHOW //APPA1/254/224/7 ??",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID: //APPA1/254/224/7 (Object not found)"
+      ],
+      "final": "401 Bad object or device ID: //APPA1/254/224/7 (Object not found)"
+    },
+    {
+      "command": "SHOW //APPA1/254/224/7 *",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID: //APPA1/254/224/7 (Object not found)"
+      ],
+      "final": "401 Bad object or device ID: //APPA1/254/224/7 (Object not found)"
+    },
+    {
+      "command": "SHOW //APPA1/254/228 ?",
+      "code": 300,
+      "lines": [
+        "300 //APPA1/254/228: Parameters=Address,Devices,ShortName,Name,EventLevel,State,ClassName"
+      ],
+      "final": "300 //APPA1/254/228: Parameters=Address,Devices,ShortName,Name,EventLevel,State,ClassName"
+    },
+    {
+      "command": "SHOW //APPA1/254/228 ??",
+      "code": 102,
+      "lines": [
+        "102-//APPA1/254/228: Address - The C-Bus Address of this device",
+        "102-//APPA1/254/228: Devices - List of measurement devices in this application",
+        "102-//APPA1/254/228: ShortName - The name of this object",
+        "102-//APPA1/254/228: Name - The name of this object",
+        "102-//APPA1/254/228: EventLevel - The level of displayed events for this object",
+        "102-//APPA1/254/228: State - The state of connection of this object",
+        "102 //APPA1/254/228: ClassName - The name of the class that implements this unit or application"
+      ],
+      "final": "102 //APPA1/254/228: ClassName - The name of the class that implements this unit or application"
+    },
+    {
+      "command": "SHOW //APPA1/254/228 *",
+      "code": 300,
+      "lines": [
+        "300-//APPA1/254/228: Address=228",
+        "300-//APPA1/254/228: ClassName=com.clipsal.cgate.cbus.app.measurement.CBusMeasurementApplication",
+        "300-//APPA1/254/228: Devices=7",
+        "300-//APPA1/254/228: EventLevel=9",
+        "300-//APPA1/254/228: Name=",
+        "300-//APPA1/254/228: ShortName=measurement",
+        "300 //APPA1/254/228: State=new"
+      ],
+      "final": "300 //APPA1/254/228: State=new"
+    },
+    {
+      "command": "SHOW //APPA1/254/228/7 ?",
+      "code": 300,
+      "lines": [
+        "300 //APPA1/254/228/7: Parameters=Channels,Name,EventLevel,State"
+      ],
+      "final": "300 //APPA1/254/228/7: Parameters=Channels,Name,EventLevel,State"
+    },
+    {
+      "command": "SHOW //APPA1/254/228/7 ??",
+      "code": 102,
+      "lines": [
+        "102-//APPA1/254/228/7: Channels - List of channels on this measurement device",
+        "102-//APPA1/254/228/7: Name - The name of this object",
+        "102-//APPA1/254/228/7: EventLevel - The level of displayed events for this object",
+        "102 //APPA1/254/228/7: State - The state of connection of this object"
+      ],
+      "final": "102 //APPA1/254/228/7: State - The state of connection of this object"
+    },
+    {
+      "command": "SHOW //APPA1/254/228/7 *",
+      "code": 300,
+      "lines": [
+        "300-//APPA1/254/228/7: Channels=",
+        "300-//APPA1/254/228/7: EventLevel=9",
+        "300-//APPA1/254/228/7: Name=",
+        "300 //APPA1/254/228/7: State=new"
+      ],
+      "final": "300 //APPA1/254/228/7: State=new"
+    },
+    {
+      "command": "SHOW //APPA1/254/238 ?",
+      "code": 300,
+      "lines": [
+        "300 //APPA1/254/238: Parameters=State,Name,LearnGroup,FreeGroup,Groups,ClassName,ShortName,Learning,EventLevel,Address"
+      ],
+      "final": "300 //APPA1/254/238: Parameters=State,Name,LearnGroup,FreeGroup,Groups,ClassName,ShortName,Learning,EventLevel,Address"
+    },
+    {
+      "command": "SHOW //APPA1/254/238 ??",
+      "code": 102,
+      "lines": [
+        "102-//APPA1/254/238: State - The state of connection of this object",
+        "102-//APPA1/254/238: Name - The name of this object",
+        "102-//APPA1/254/238: LearnGroup - The group currently involved in learning",
+        "102-//APPA1/254/238: FreeGroup - The next free group address in this application",
+        "102-//APPA1/254/238: Groups - List of groups in this application",
+        "102-//APPA1/254/238: ClassName - The name of the class that implements this unit or application",
+        "102-//APPA1/254/238: ShortName - The name of this object",
+        "102-//APPA1/254/238: Learning - The state of learning in this application",
+        "102-//APPA1/254/238: EventLevel - The level of displayed events for this object",
+        "102 //APPA1/254/238: Address - The C-Bus Address of this device"
+      ],
+      "final": "102 //APPA1/254/238: Address - The C-Bus Address of this device"
+    },
+    {
+      "command": "SHOW //APPA1/254/238 *",
+      "code": 300,
+      "lines": [
+        "300-//APPA1/254/238: Address=238",
+        "300-//APPA1/254/238: ClassName=com.clipsal.cgate.cbus.app.lighting.CBusLightingApplication",
+        "300-//APPA1/254/238: EventLevel=9",
+        "300-//APPA1/254/238: FreeGroup=0",
+        "300-//APPA1/254/238: Groups=7",
+        "300-//APPA1/254/238: LearnGroup=255",
+        "300-//APPA1/254/238: Learning=no",
+        "300-//APPA1/254/238: Name=",
+        "300-//APPA1/254/238: ShortName=application",
+        "300 //APPA1/254/238: State=new"
+      ],
+      "final": "300 //APPA1/254/238: State=new"
+    },
+    {
+      "command": "SHOW //APPA1/254/238/7 ?",
+      "code": 300,
+      "lines": [
+        "300 //APPA1/254/238/7: Parameters=Units,RampTime,Name,Protected,Type,EventLevel,State,Level"
+      ],
+      "final": "300 //APPA1/254/238/7: Parameters=Units,RampTime,Name,Protected,Type,EventLevel,State,Level"
+    },
+    {
+      "command": "SHOW //APPA1/254/238/7 ??",
+      "code": 102,
+      "lines": [
+        "102-//APPA1/254/238/7: Units - List of unit that this group is used by.",
+        "102-//APPA1/254/238/7: RampTime - The stored ramp time for this group - only impacts CI command",
+        "102-//APPA1/254/238/7: Name - The name of this object",
+        "102-//APPA1/254/238/7: Protected - If set, protects group from allon/alloff operations",
+        "102-//APPA1/254/238/7: Type - Returns either group or area if this is an area",
+        "102-//APPA1/254/238/7: EventLevel - The level of displayed events for this object",
+        "102-//APPA1/254/238/7: State - The state of connection of this object",
+        "102 //APPA1/254/238/7: Level - The current level of this group"
+      ],
+      "final": "102 //APPA1/254/238/7: Level - The current level of this group"
+    },
+    {
+      "command": "SHOW //APPA1/254/238/7 *",
+      "code": 300,
+      "lines": [
+        "300-//APPA1/254/238/7: EventLevel=9",
+        "300-//APPA1/254/238/7: Level=0",
+        "300-//APPA1/254/238/7: Name=",
+        "300-//APPA1/254/238/7: Protected=no",
+        "300-//APPA1/254/238/7: RampTime=0",
+        "300-//APPA1/254/238/7: State=new",
+        "300-//APPA1/254/238/7: Type=group",
+        "300 //APPA1/254/238/7: Units="
+      ],
+      "final": "300 //APPA1/254/238/7: Units="
+    }
+  ]
+}

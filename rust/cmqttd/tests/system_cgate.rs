@@ -432,7 +432,7 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     assert!(
         command(&mut reader, &mut writer, "GET //HARNESS/254/56/1 level")
             .await
-            .contains("408 No live level")
+            .contains("300 //HARNESS/254/56/1: level=0")
     );
     assert!(command(&mut reader, &mut writer, "ON //HARNESS/254/56/1")
         .await
@@ -456,11 +456,11 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
         );
         assert!(sys.pci.count_payload(payload) >= 1, "{method}: {payload}");
     }
-    // Successful delivery does not manufacture an observed brightness.
+    // Successful delivery does not mutate the durable database level.
     assert!(
         command(&mut reader, &mut writer, "GET //HARNESS/254/56/1 level")
             .await
-            .contains("408 No live level")
+            .contains("300 //HARNESS/254/56/1: level=0")
     );
     sys.pci.inject(&pci_wire(&[5, 4, 56, 0, 121, 1]));
     require(STARTUP, "bus state in MQTT", || {
@@ -494,7 +494,7 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     assert!(
         command(&mut reader, &mut writer, "GET //HARNESS/254/56/1 level")
             .await
-            .contains("408 No live level")
+            .contains("300 //HARNESS/254/56/1: level=0")
     );
     assert!(
         command(&mut reader, &mut writer, "SCENE PLAY house evening")
@@ -506,7 +506,7 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     assert!(
         command(&mut reader, &mut writer, "GET //HARNESS/254/56/1 level")
             .await
-            .contains("408 No live level")
+            .contains("300 //HARNESS/254/56/1: level=0")
     );
     assert!(
         command(&mut reader, &mut writer, "TERMINATERAMP //HARNESS/254/56/2")
@@ -834,7 +834,9 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     assert!(
         command(&mut reader, &mut writer, "GET //HARNESS/254/202/1 Level")
             .await
-            .contains("402 Parameter not found")
+            .contains(
+                "402 Operation not supported by: //HARNESS/254/202/1 (Parameter level not found)"
+            )
     );
     assert!(
         command(&mut reader, &mut writer, "GET //HARNESS/254/202 Groups")
@@ -857,9 +859,8 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     let (pingu, ()) = tokio::join!(pingu, mmi);
     assert!(pingu.contains("302-Units=16, 255"), "{pingu:?}");
     assert!(pingu.contains("200 OK."), "{pingu:?}");
-    assert!(command(&mut reader, &mut writer, "GET //HARNESS/254 Units")
-        .await
-        .contains("Units=16, 255"));
+    let units = command(&mut reader, &mut writer, "GET //HARNESS/254 Units").await;
+    assert!(units.contains("Units=5,16,255"), "{units:?}");
     sys.broker
         .inject("homeassistant/light/cbus_1/set", br#"{"state":"OFF"}"#);
     require(COMMAND_DRAIN, "MQTT command on shared PCI", || {
@@ -911,7 +912,7 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     assert!(sync.contains("202 Done: //HARNESS/254"), "{sync:?}");
     assert!(command(&mut reader, &mut writer, "GET //HARNESS/254 Units")
         .await
-        .contains("Units=16, 255"));
+        .contains("Units=5,16,255"));
     assert!(
         command(&mut reader, &mut writer, "GET //HARNESS/254/p/16 Type")
             .await

@@ -1952,6 +1952,12 @@ impl Service {
         let tag = &cmd.tag;
         let verb = upper.first().map(String::as_str).unwrap_or("");
         let sub = upper.get(1).map(String::as_str).unwrap_or("");
+        // Untagged comment lines are consumed by connection_io before they
+        // become commands. Once a client prefixes a command id, native C-Gate
+        // treats either marker as command text and rejects it.
+        if cmd.body.trim_start().starts_with('#') || cmd.body.trim_start().starts_with("//") {
+            return err(tag, 400, "400 Syntax Error.");
+        }
         // LOGIN/LOGOUT expose the native ACCESS session view. When the
         // optional cmqttd high-entropy token is configured, its historical
         // one-argument LOGIN form remains available as an operator recovery
@@ -2118,6 +2124,26 @@ impl Service {
             capabilities["repository_list"] = serde_json::Value::Bool(true);
             capabilities["repository_type"] = serde_json::Value::String("cmqttd-json".to_string());
             capabilities["project_dirfull"] = serde_json::Value::Bool(true);
+            capabilities["general_object_commands"] = serde_json::json!([
+                "broadcast_event",
+                "comments",
+                "new",
+                "oid",
+                "report",
+                "show",
+                "tree",
+                "treexml",
+                "treexmldetail"
+            ]);
+            capabilities["tree_inventory_source"] = serde_json::Value::String(
+                "observed-physical-cache-plus-durable-database-objects".to_string(),
+            );
+            capabilities["tree_implicit_physical_scan"] = serde_json::Value::Bool(false);
+            capabilities["new_objects_database_only"] = serde_json::Value::Bool(true);
+            capabilities["oid_factory"] =
+                serde_json::Value::String("non-resolvable-rfc4122-version-1".to_string());
+            capabilities["comment_syntax"] =
+                serde_json::json!({"untagged": "silent", "tagged": "syntax-error"});
             capabilities["database_json_commands"] =
                 serde_json::json!(["nac_objects_list", "nac_routing_table", "nac_tagmap"]);
             capabilities["database_json_nac_object_definitions"] = serde_json::Value::Bool(false);
@@ -2797,11 +2823,6 @@ impl Service {
             .current
             .clone()
             .or_else(|| Some(self.project.clone()));
-        if verb == "GET" && words.len() == 3 {
-            if let Some(response) = self.application_get(&model, tag, words[1], words[2]) {
-                return response;
-            }
-        }
         if matches!(verb, "GET" | "GETSTATE")
             && words
                 .last()
@@ -2813,18 +2834,24 @@ impl Service {
             let Some((a, g)) = self.bound_group(&address) else {
                 return err(tag, 404, "404 Network is not connected to this service");
             };
-            if !(48..=95).contains(&a) {
-                return err(tag, 402, "402 Parameter not found");
+            // Durable groups and non-lighting application objects have
+            // application-specific GET schemas in Server::get.  Delegate
+            // those reads so Trigger rejects Level while Enable exposes it,
+            // exactly as the native SHOW/GET matrix records.  This fast path
+            // remains only for an otherwise unknown live Lighting group,
+            // where the service must distinguish an observed level from no
+            // bus evidence.
+            if model.durable_group_level(&address).is_none() && (48..=95).contains(&a) {
+                let value = model
+                    .projects
+                    .get(&self.project)
+                    .and_then(|p| p.networks.get(&self.network))
+                    .and_then(|n| n.levels.get(&(a, g)));
+                return match value {
+                    Some(v) => Server::property(tag, &address, "level", &v.to_string()),
+                    None => err(tag, 408, "408 No live level has been observed"),
+                };
             }
-            let value = model
-                .projects
-                .get(&self.project)
-                .and_then(|p| p.networks.get(&self.network))
-                .and_then(|n| n.levels.get(&(a, g)));
-            return match value {
-                Some(v) => Server::property(tag, &address, "level", &v.to_string()),
-                None => err(tag, 408, "408 No live level has been observed"),
-            };
         }
         // Never allow a simulator-only success to stand in for physical I/O.
         if !local_command(&words, &upper, &model) {
@@ -2882,7 +2909,20 @@ impl Service {
         let before = model.clone();
         let before_db = Database::from_server(&model);
         let response = model.handle(line);
-        if response.status >= 400 {
+        let retained_application_creation = response.status == status::ABSENT
+            && verb == "NEW"
+            && matches!(sub, "GROUP" | "PHANTOM")
+            && words
+                .get(2)
+                .and_then(|target| model.qualify_group(target))
+                .and_then(|path| {
+                    path.trim_start_matches('/')
+                        .split('/')
+                        .nth(2)
+                        .and_then(|application| application.parse::<u8>().ok())
+                })
+                .is_some_and(|application| matches!(application, 192 | 223 | 224));
+        if response.status >= 400 && !retained_application_creation {
             *model = before;
             return response;
         }
@@ -3925,125 +3965,6 @@ impl Service {
             ));
         }
         Ok(application)
-    }
-
-    fn application_get(
-        &self,
-        model: &Server,
-        tag: &str,
-        address: &str,
-        attribute: &str,
-    ) -> Option<Response> {
-        if let Some(application) = self.application_path(address) {
-            if !matches!(application, 202 | 203) {
-                return None;
-            }
-            if !attribute.eq_ignore_ascii_case("Groups") {
-                return Some(err(tag, 402, "402 Parameter not found"));
-            }
-            let mut groups = HashSet::new();
-            if let Some(network) = model
-                .projects
-                .get(&self.project)
-                .and_then(|p| p.networks.get(&self.network))
-            {
-                groups.extend(
-                    network
-                        .levels
-                        .keys()
-                        .filter_map(|(app, group)| (*app == application).then_some(*group)),
-                );
-            }
-            let prefix = format!("//{}/{}/{application}/", self.project, self.network);
-            for key in model.db_fields.keys() {
-                if let Some(rest) = key
-                    .strip_prefix(&prefix)
-                    .and_then(|value| value.strip_suffix("/TagName"))
-                {
-                    if let Ok(group) = rest.parse::<u8>() {
-                        groups.insert(group);
-                    }
-                }
-            }
-            let mut groups: Vec<_> = groups.into_iter().collect();
-            groups.sort_unstable();
-            let value = groups
-                .into_iter()
-                .map(|group| group.to_string())
-                .collect::<Vec<_>>()
-                .join(",");
-            return Some(Server::property(tag, address, "Groups", &value));
-        }
-        let (application, group) = self.bound_group(address)?;
-        if !matches!(application, 202 | 203) {
-            return None;
-        }
-        let level = model
-            .projects
-            .get(&self.project)
-            .and_then(|p| p.networks.get(&self.network))
-            .and_then(|n| n.levels.get(&(application, group)))
-            .copied();
-        let name = model
-            .db_fields
-            .get(&format!("{address}/TagName"))
-            .cloned()
-            .unwrap_or_default();
-        let known = level.is_some() || !name.is_empty();
-        if !known {
-            return Some(err(
-                tag,
-                408,
-                "408 No live application state has been observed",
-            ));
-        }
-        let response = if attribute.eq_ignore_ascii_case("Level") {
-            if application == 202 {
-                err(tag, 402, "402 Parameter not found")
-            } else if let Some(level) = level {
-                Server::property(tag, address, "Level", &level.to_string())
-            } else {
-                err(tag, 408, "408 No live Enable level has been observed")
-            }
-        } else if attribute.eq_ignore_ascii_case("State") {
-            Server::property(tag, address, "State", "ok")
-        } else if attribute.eq_ignore_ascii_case("Name") {
-            Server::property(tag, address, "Name", &name)
-        } else if application == 202 && attribute.eq_ignore_ascii_case("EventLevel") {
-            Server::property(tag, address, "EventLevel", "5")
-        } else if attribute == "*" {
-            let mut fields = if application == 202 {
-                vec![
-                    ("EventLevel", "5".to_string()),
-                    ("Name", name),
-                    ("State", "ok".to_string()),
-                ]
-            } else {
-                vec![("Name", name), ("State", "ok".to_string())]
-            };
-            if application == 203 {
-                if let Some(level) = level {
-                    fields.insert(0, ("Level", level.to_string()));
-                }
-            }
-            let mut rows: Vec<_> = fields
-                .into_iter()
-                .map(|(name, value)| format!("300-{address}: {name}={value}"))
-                .collect();
-            let final_text = rows
-                .pop()
-                .expect("application wildcard has fields")
-                .replacen("300-", "300 ", 1);
-            Response {
-                tag: tag.to_string(),
-                lines: rows,
-                final_text,
-                status: 300,
-            }
-        } else {
-            err(tag, 402, "402 Parameter not found")
-        };
-        Some(response)
     }
 
     async fn net_pingu(
@@ -9614,6 +9535,14 @@ impl Service {
                 tokio::select! {
                     result = bounded_line(&mut reader, &mut pending_line) => {
                         let Some(line) = result? else { return Ok(()); };
+                        // Native command files and interactive clients may
+                        // send either untagged comment spelling. Comments are
+                        // consumed silently and allocate no command state;
+                        // tagged markers remain command text and receive the
+                        // captured syntax error below.
+                        if is_cgate_comment(&line) {
+                            continue;
+                        }
                         let tagged = line.starts_with('[');
                         if let Some((head, delimiter)) = split_heredoc(&line) {
                             let command = if tagged { head } else { format!("[untagged] {head}") };
@@ -9640,6 +9569,10 @@ impl Service {
                         }
                         let command = if tagged {line} else {format!("[untagged] {line}")};
                         let parsed = parse_command(&command).ok();
+                        let tagged_hash_comment = tagged
+                            && parsed
+                                .as_ref()
+                                .is_some_and(|command| command.body.trim_start().starts_with('#'));
                         let close = parsed.as_ref().is_some_and(|c| {
                             let words: Vec<_> = c.body.split_whitespace().collect();
                             words.len() == 1 && matches!(words[0].to_ascii_uppercase().as_str(), "QUIT" | "EXIT")
@@ -9652,7 +9585,10 @@ impl Service {
                                 else { err(&c.tag, 400, "400 Invalid event mode") }
                             } else { err(&c.tag, 400, "400 Invalid event command") }
                         } else { self.handle(&mut client, &command).await };
-                        if !tagged { response.tag.clear(); }
+                        // Retained C-Gate 3.4 has one oddity: a tagged hash
+                        // marker is rejected with an untagged syntax error,
+                        // while a tagged double-slash marker echoes its tag.
+                        if !tagged || tagged_hash_comment { response.tag.clear(); }
                         tokio::time::timeout(Duration::from_secs(10), writer.write_all(format_response(&response).replace('\n', "\r\n").as_bytes())).await
                             .map_err(|_| io::Error::new(io::ErrorKind::TimedOut,"C-Gate client is not reading"))??;
                         if close && response.status == 204 {
@@ -9805,6 +9741,11 @@ fn split_heredoc(line: &str) -> Option<(String, String)> {
         return None;
     }
     Some((head.to_string(), delimiter.to_string()))
+}
+
+fn is_cgate_comment(line: &str) -> bool {
+    let body = line.trim_start();
+    body.starts_with('#') || body.starts_with("//")
 }
 
 fn preserve_physical_state(before: &Server, model: &mut Server) {
@@ -11033,7 +10974,7 @@ fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
         "LOCK" | "UNLOCK" => true,
         "CGL" => sub == "IMPORT",
         "REPOSITORY" => sub == "USE",
-        "SET" => true,
+        "SET" | "NEW" | "BROADCAST_EVENT" => true,
         "NET" => matches!(
             sub,
             "CREATE"
@@ -11174,11 +11115,12 @@ fn local_command(words: &[&str], upper: &[String], model: &Server) -> bool {
     let verb = upper.first().map(String::as_str).unwrap_or("");
     let sub = upper.get(1).map(String::as_str).unwrap_or("");
     match verb {
-        "NOOP" | "APIVER" | "HELP" | "COMMANDS" | "DBGET" | "DBGETXML" | "DBNETWORKPATH"
-        | "DBRENAMENET" | "DBRENAMENETSAFE" | "DBSET" | "DBTAGLIST" | "DBSETSAFE" | "DBSETXML"
-        | "DBADDSAFE" | "DBCOPYSAFE" | "DBDELETE" | "DBVALIDATE" | "DBSAVE" | "DBLOAD"
-        | "DBGETNET" | "DBGETAPP" | "DBGETGROUP" | "DBGETUNIT" | "DBCREATENET" | "DBCREATEAPP"
-        | "DBCREATEGROUP" | "DBCREATEUNIT" => true,
+        "NOOP" | "APIVER" | "HELP" | "COMMANDS" | "BROADCAST_EVENT" | "NEW" | "OID" | "REPORT"
+        | "SHOW" | "TREE" | "TREEXML" | "TREEXMLDETAIL" | "DBGET" | "DBGETXML"
+        | "DBNETWORKPATH" | "DBRENAMENET" | "DBRENAMENETSAFE" | "DBSET" | "DBTAGLIST"
+        | "DBSETSAFE" | "DBSETXML" | "DBADDSAFE" | "DBCOPYSAFE" | "DBDELETE" | "DBVALIDATE"
+        | "DBSAVE" | "DBLOAD" | "DBGETNET" | "DBGETAPP" | "DBGETGROUP" | "DBGETUNIT"
+        | "DBCREATENET" | "DBCREATEAPP" | "DBCREATEGROUP" | "DBCREATEUNIT" => true,
         "PROJECT" => matches!(
             sub,
             "LIST"
@@ -11196,8 +11138,8 @@ fn local_command(words: &[&str], upper: &[String], model: &Server) -> bool {
         ),
         // GET is read-only. Application and live-lighting special cases are
         // handled above; the model supplies cached network and unit fields.
-        "GET" => words.len() == 3,
-        "NET" => matches!(sub, "LIST" | "LIST_ALL" | "STATE"),
+        "GET" => words.len() >= 3,
+        "NET" => matches!(sub, "LIST" | "LIST_ALL" | "STATE" | "TREE"),
         "REPOSITORY" => sub == "USE",
         "TRANSFORM" => matches!(
             sub,
@@ -11575,6 +11517,7 @@ fn import_project(xml: &str, network_name: Option<&str>) -> io::Result<(Server, 
                     firmware: field(u, "FirmwareVersion"),
                     fields,
                     oid,
+                    created_by_new: false,
                 },
             );
         }

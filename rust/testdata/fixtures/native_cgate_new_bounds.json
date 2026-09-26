@@ -1,0 +1,216 @@
+{
+  "schema": "native-cgate-new-bounds-v1",
+  "oracle": {
+    "product": "Schneider Electric C-Gate",
+    "version": "3.4.0",
+    "build": 2001,
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "transport": "owned disposable process; closed loopback-only synthetic network endpoint",
+    "site_project_used": false,
+    "real_cbus_contacted": false,
+    "source_probe_sha256": "f61610af10cfe80d5d719c34feac7e0f27965cf40796f52b45db0545342f0738"
+  },
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+  "rows": [
+    {
+      "command": "PROJECT NEW NEWA1",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "PROJECT USE NEWA1",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NET CREATE 254 cni 127.0.0.1:9",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW GROUP //NEWA1/254/25/7",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW GROUP //NEWA1/254/192/7",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID: //NEWA1/254/192/7 (Address not supported by application)"
+      ],
+      "final": "401 Bad object or device ID: //NEWA1/254/192/7 (Address not supported by application)"
+    },
+    {
+      "command": "NEW GROUP //NEWA1/254/223/7",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID: //NEWA1/254/223/7 (Object not found)"
+      ],
+      "final": "401 Bad object or device ID: //NEWA1/254/223/7 (Object not found)"
+    },
+    {
+      "command": "NEW GROUP //NEWA1/254/224/7",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID: //NEWA1/254/224/7 (Object not found)"
+      ],
+      "final": "401 Bad object or device ID: //NEWA1/254/224/7 (Object not found)"
+    },
+    {
+      "command": "NEW GROUP //NEWA1/254/255/7",
+      "code": 401,
+      "lines": [
+        "401 Bad object or device ID: //NEWA1/254/255/7 (Address not supported by application)"
+      ],
+      "final": "401 Bad object or device ID: //NEWA1/254/255/7 (Address not supported by application)"
+    },
+    {
+      "command": "NEW GROUP //NEWA1/254/56/255",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW UNIT //NEWA1/254/p/0 BOGUS 1.0.00",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW UNIT //NEWA1/254/p/255 BOGUS 1.0.00",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW UNIT //NEWA1/254/p/20 DIMMER4 1",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW UNIT //NEWA1/254/p/21 DIMMER4 1.0",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW UNIT //NEWA1/254/p/22 DIMMER4 1.2.3.4",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW UNIT //NEWA1/254/p/23 DIMMER4 bogus",
+      "code": 500,
+      "lines": [
+        "500 Internal error."
+      ],
+      "final": "500 Internal error."
+    },
+    {
+      "command": "NEW UNIT //NEWA1/254/p/24 DIMMER4 .1",
+      "code": 500,
+      "lines": [
+        "500 Internal error."
+      ],
+      "final": "500 Internal error."
+    },
+    {
+      "command": "NEW UNIT //NEWA1/254/p/25 DIMMER4 1..2",
+      "code": 500,
+      "lines": [
+        "500 Internal error."
+      ],
+      "final": "500 Internal error."
+    },
+    {
+      "command": "NEW UNIT //NEWA1/254/p/26 KEYE1 1",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW UNIT //NEWA1/254/p/27 KEYE1 1.2.3.4",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW UNIT //NEWA1/254/p/28 KEYE1 bogus",
+      "code": 500,
+      "lines": [
+        "500 Internal error."
+      ],
+      "final": "500 Internal error."
+    },
+    {
+      "command": "NEW UNIT //NEWA1/254/p/29 KEYE1 .1",
+      "code": 500,
+      "lines": [
+        "500 Internal error."
+      ],
+      "final": "500 Internal error."
+    },
+    {
+      "command": "NEW UNIT //NEWA1/254/p/30 KEYE1 1..2",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW UNIT //NEWA1/254/p/31 UNKNOWN bogus",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW UNIT //NEWA1/254/p/32 UNKNOWN .1",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "NEW UNIT //NEWA1/254/p/33 UNKNOWN 1..2",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    }
+  ]
+}

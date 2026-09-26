@@ -1,0 +1,360 @@
+{
+  "schema": "native-cgate-show-tree-parser-v1",
+  "oracle": {
+    "product": "Schneider Electric C-Gate",
+    "version": "3.4.0",
+    "build": 2001,
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "transport": "owned disposable process; closed loopback-only synthetic network endpoint",
+    "site_project_used": false,
+    "real_cbus_contacted": false,
+    "source_probe_sha256": "dfb7bf0e16b3a82d541a4b09089ed45f8770cad352f5629d730fa12e04b85dda"
+  },
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+  "rows": [
+    {
+      "command": "PROJECT USE AUDS2",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK."
+    },
+    {
+      "command": "GET",
+      "code": 400,
+      "lines": [
+        "400 Syntax Error."
+      ],
+      "final": "400 Syntax Error."
+    },
+    {
+      "command": "GET ?",
+      "code": 400,
+      "lines": [
+        "400 Syntax Error."
+      ],
+      "final": "400 Syntax Error."
+    },
+    {
+      "command": "GET //AUDS2/254",
+      "code": 400,
+      "lines": [
+        "400 Syntax Error."
+      ],
+      "final": "400 Syntax Error."
+    },
+    {
+      "command": "SHOW",
+      "code": 400,
+      "lines": [
+        "400 Syntax Error."
+      ],
+      "final": "400 Syntax Error."
+    },
+    {
+      "command": "SHOW ?",
+      "code": 400,
+      "lines": [
+        "400 Syntax Error."
+      ],
+      "final": "400 Syntax Error."
+    },
+    {
+      "command": "SHOW HELP",
+      "code": 400,
+      "lines": [
+        "400 Syntax Error."
+      ],
+      "final": "400 Syntax Error."
+    },
+    {
+      "command": "SHOW //AUDS2/254",
+      "code": 400,
+      "lines": [
+        "400 Syntax Error."
+      ],
+      "final": "400 Syntax Error."
+    },
+    {
+      "command": "GET //AUDS2/254 state extra more",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254: state=error"
+      ],
+      "final": "300 //AUDS2/254: state=error"
+    },
+    {
+      "command": "SHOW //AUDS2/254 State extra more",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254: State=error"
+      ],
+      "final": "300 //AUDS2/254: State=error"
+    },
+    {
+      "command": "SHOW //AUDS2/254/p/20 ? extra",
+      "code": 300,
+      "lines": [
+        "300 //AUDS2/254/p/20: Parameters=LearnEnable,ProjectName,ShortName,Type,Address,Version,Serial,State,Application2,Application,GeneratingClock,SerialNumber,PSyncTime,BlockGroups,ClockGenActive,BlockApplications,NetVoltage,UnitBlock,BurdenActive,PatchVersion,EventLevel,ErrorFlags,PartName,Version2,SlotGroups,Area,LearnActive,Groups,SummaryFlags,ClassName,CatalogNumber,Name"
+      ],
+      "final": "300 //AUDS2/254/p/20: Parameters=LearnEnable,ProjectName,ShortName,Type,Address,Version,Serial,State,Application2,Application,GeneratingClock,SerialNumber,PSyncTime,BlockGroups,ClockGenActive,BlockApplications,NetVoltage,UnitBlock,BurdenActive,PatchVersion,EventLevel,ErrorFlags,PartName,Version2,SlotGroups,Area,LearnActive,Groups,SummaryFlags,ClassName,CatalogNumber,Name"
+    },
+    {
+      "command": "TREE //AUDS2/254 nonsense",
+      "code": 320,
+      "lines": [
+        "320- Network name:254 type=cni address=127.0.0.1:9 state=error",
+        "320-  Unit count=0",
+        "320- Units:",
+        "320-//AUDS2/254/p/20 ($14) type=KEYE1 app=255($ff), 255($ff) state=error groups=",
+        "320-//AUDS2/254/p/22 ($16) type=DIMMER4 app=255($ff), 255($ff) state=new groups=",
+        "320-Applications:",
+        "320- Application 25 ($19) [temperature]",
+        "320- Net Vars:",
+        "320-  //AUDS2/254/25/7 ($7) level=0 state=error",
+        "320- Application 48 ($30) [lighting]",
+        "320- Groups:",
+        "320-  //AUDS2/254/48/7 ($7) level=0 state=error units= ",
+        "320- Application 56 ($38) [lighting]",
+        "320- Groups:",
+        "320-  //AUDS2/254/56/1 ($1) level=0 state=error units= ",
+        "320- Application 95 ($5f) [lighting]",
+        "320- Groups:",
+        "320-  //AUDS2/254/95/7 ($7) level=0 state=error units= ",
+        "320- Application 172 ($ac) [aircon]",
+        "320- Net Vars:",
+        "320- Application 192 ($c0) [mediatransport]",
+        "320- Net Vars:",
+        "320- Application 202 ($ca) [trigger]",
+        "320- Net Vars:",
+        "320-  //AUDS2/254/202/1 ($1) level=0 state=error",
+        "320-  //AUDS2/254/202/7 ($7) level=0 state=error",
+        "320- Application 203 ($cb) [enable]",
+        "320- Net Vars:",
+        "320-  //AUDS2/254/203/2 ($2) level=0 state=error",
+        "320-  //AUDS2/254/203/7 ($7) level=0 state=error",
+        "320- Application 205 ($cd) [audio]",
+        "320- Groups:",
+        "320-  //AUDS2/254/205/7 ($7) level=0 state=error units= ",
+        "320- Application 208 ($d0) [security]",
+        "320- Net Vars:",
+        "320-  //AUDS2/254/208/7 ($7) level=0 state=error",
+        "320- Application 223 ($df) [clock]",
+        "320- Net Vars:",
+        "320- Application 224 ($e0) [telephony]",
+        "320- Net Vars:",
+        "320- Application 228 ($e4) [measurement]",
+        "320- Net Vars:",
+        "320-  //AUDS2/254/228/7 ($7) level=0 state=error",
+        "320- Application 238 ($ee) [application]",
+        "320- Groups:",
+        "320-  //AUDS2/254/238/7 ($7) level=0 state=error units= ",
+        "320 -end-"
+      ],
+      "final": "320 -end-"
+    },
+    {
+      "command": "TREE //AUDS2/254 WITHSYNC nonsense",
+      "code": 320,
+      "lines": [
+        "320- Network name:254 type=cni address=127.0.0.1:9 state=error",
+        "320-  Unit count=0",
+        "320- Units:",
+        "320-//AUDS2/254/p/20 ($14) type=KEYE1 app=255($ff), 255($ff) state=error groups=",
+        "320-//AUDS2/254/p/22 ($16) type=DIMMER4 app=255($ff), 255($ff) state=new groups=",
+        "320-Applications:",
+        "320- Application 25 ($19) [temperature]",
+        "320- Net Vars:",
+        "320-  //AUDS2/254/25/7 ($7) level=0 state=error",
+        "320- Application 48 ($30) [lighting]",
+        "320- Groups:",
+        "320-  //AUDS2/254/48/7 ($7) level=0 state=error units= ",
+        "320- Application 56 ($38) [lighting]",
+        "320- Groups:",
+        "320-  //AUDS2/254/56/1 ($1) level=0 state=error units= ",
+        "320- Application 95 ($5f) [lighting]",
+        "320- Groups:",
+        "320-  //AUDS2/254/95/7 ($7) level=0 state=error units= ",
+        "320- Application 172 ($ac) [aircon]",
+        "320- Net Vars:",
+        "320- Application 192 ($c0) [mediatransport]",
+        "320- Net Vars:",
+        "320- Application 202 ($ca) [trigger]",
+        "320- Net Vars:",
+        "320-  //AUDS2/254/202/1 ($1) level=0 state=error",
+        "320-  //AUDS2/254/202/7 ($7) level=0 state=error",
+        "320- Application 203 ($cb) [enable]",
+        "320- Net Vars:",
+        "320-  //AUDS2/254/203/2 ($2) level=0 state=error",
+        "320-  //AUDS2/254/203/7 ($7) level=0 state=error",
+        "320- Application 205 ($cd) [audio]",
+        "320- Groups:",
+        "320-  //AUDS2/254/205/7 ($7) level=0 state=error units= ",
+        "320- Application 208 ($d0) [security]",
+        "320- Net Vars:",
+        "320-  //AUDS2/254/208/7 ($7) level=0 state=error",
+        "320- Application 223 ($df) [clock]",
+        "320- Net Vars:",
+        "320- Application 224 ($e0) [telephony]",
+        "320- Net Vars:",
+        "320- Application 228 ($e4) [measurement]",
+        "320- Net Vars:",
+        "320-  //AUDS2/254/228/7 ($7) level=0 state=error",
+        "320- Application 238 ($ee) [application]",
+        "320- Groups:",
+        "320-  //AUDS2/254/238/7 ($7) level=0 state=error units= ",
+        "320 -end-"
+      ],
+      "final": "320 -end-"
+    },
+    {
+      "command": "REPORT //AUDS2/254 WITHSYNC nonsense",
+      "code": 320,
+      "lines": [
+        "320- Network name:254 type=cni address=127.0.0.1:9 state=error",
+        "320-  Unit count=0",
+        "320- Units:",
+        "320-//AUDS2/254/p/20 ($14) type=KEYE1 app=255($ff), 255($ff) state=error groups=",
+        "320-//AUDS2/254/p/22 ($16) type=DIMMER4 app=255($ff), 255($ff) state=new groups=",
+        "320-Applications:",
+        "320- Application 25 ($19) [temperature]",
+        "320- Net Vars:",
+        "320-  //AUDS2/254/25/7 ($7) level=0 state=error",
+        "320- Application 48 ($30) [lighting]",
+        "320- Groups:",
+        "320-  //AUDS2/254/48/7 ($7) level=0 state=error units= ",
+        "320- Application 56 ($38) [lighting]",
+        "320- Groups:",
+        "320-  //AUDS2/254/56/1 ($1) level=0 state=error units= ",
+        "320- Application 95 ($5f) [lighting]",
+        "320- Groups:",
+        "320-  //AUDS2/254/95/7 ($7) level=0 state=error units= ",
+        "320- Application 172 ($ac) [aircon]",
+        "320- Net Vars:",
+        "320- Application 192 ($c0) [mediatransport]",
+        "320- Net Vars:",
+        "320- Application 202 ($ca) [trigger]",
+        "320- Net Vars:",
+        "320-  //AUDS2/254/202/1 ($1) level=0 state=error",
+        "320-  //AUDS2/254/202/7 ($7) level=0 state=error",
+        "320- Application 203 ($cb) [enable]",
+        "320- Net Vars:",
+        "320-  //AUDS2/254/203/2 ($2) level=0 state=error",
+        "320-  //AUDS2/254/203/7 ($7) level=0 state=error",
+        "320- Application 205 ($cd) [audio]",
+        "320- Groups:",
+        "320-  //AUDS2/254/205/7 ($7) level=0 state=error units= ",
+        "320- Application 208 ($d0) [security]",
+        "320- Net Vars:",
+        "320-  //AUDS2/254/208/7 ($7) level=0 state=error",
+        "320- Application 223 ($df) [clock]",
+        "320- Net Vars:",
+        "320- Application 224 ($e0) [telephony]",
+        "320- Net Vars:",
+        "320- Application 228 ($e4) [measurement]",
+        "320- Net Vars:",
+        "320-  //AUDS2/254/228/7 ($7) level=0 state=error",
+        "320- Application 238 ($ee) [application]",
+        "320- Groups:",
+        "320-  //AUDS2/254/238/7 ($7) level=0 state=error units= ",
+        "320 -end-"
+      ],
+      "final": "320 -end-"
+    },
+    {
+      "command": "TREEXML //AUDS2/254 nonsense",
+      "code": 400,
+      "lines": [
+        "400 Syntax Error."
+      ],
+      "final": "400 Syntax Error."
+    },
+    {
+      "command": "TREEXML //AUDS2/254 WITHSYNC",
+      "code": 344,
+      "lines": [
+        "343-Begin XML Snippet",
+        "347-<Network>",
+        "347- <Unit>",
+        "347-  <Type>KEYE1</Type>",
+        "347-  <CatalogueNumber>5031NMML</CatalogueNumber>",
+        "347-  <Version>2.5.00</Version>",
+        "347-  <SerialNo>0.0</SerialNo>",
+        "347-  <Address>20</Address>",
+        "347-  <PartName></PartName>",
+        "347-  <Application>255, 255</Application>",
+        "347-  <Groups></Groups>",
+        "347-  <Voltage>0.5</Voltage>",
+        "347-  <Burden>no</Burden>",
+        "347-  <Clock>no</Clock>",
+        "347- </Unit>",
+        "347- <Unit>",
+        "347-  <Type>DIMMER4</Type>",
+        "347-  <CatalogueNumber>5104D750</CatalogueNumber>",
+        "347-  <Version>1.0.00</Version>",
+        "347-  <SerialNo>{none}</SerialNo>",
+        "347-  <Address>22</Address>",
+        "347-  <PartName></PartName>",
+        "347-  <Application>255, 255</Application>",
+        "347-  <Groups></Groups>",
+        "347-  <Voltage></Voltage>",
+        "347-  <Burden>no</Burden>",
+        "347-  <Clock>no</Clock>",
+        "347- </Unit>",
+        "347-</Network>",
+        "344 End XML Snippet"
+      ],
+      "final": "344 End XML Snippet"
+    },
+    {
+      "command": "TREEXMLDETAIL //AUDS2/254 WITHPSYNC",
+      "code": 344,
+      "lines": [
+        "343-Begin XML Snippet",
+        "347-<Network>",
+        "347- <Unit>",
+        "347-  <Type>KEYE1</Type>",
+        "347-  <CatalogueNumber>5031NMML</CatalogueNumber>",
+        "347-  <Version>2.5.00</Version>",
+        "347-  <SerialNo>0.0</SerialNo>",
+        "347-  <Address>20</Address>",
+        "347-  <PartName></PartName>",
+        "347-  <Application>255, 255</Application>",
+        "347-  <Groups></Groups>",
+        "347-  <Voltage>0.5</Voltage>",
+        "347-  <Burden>no</Burden>",
+        "347-  <Clock>no</Clock>",
+        "347-  <State>error</State>",
+        "347-  <OnlineStatus>unknown</OnlineStatus>",
+        "347- </Unit>",
+        "347- <Unit>",
+        "347-  <Type>DIMMER4</Type>",
+        "347-  <CatalogueNumber>5104D750</CatalogueNumber>",
+        "347-  <Version>1.0.00</Version>",
+        "347-  <SerialNo>{none}</SerialNo>",
+        "347-  <Address>22</Address>",
+        "347-  <PartName></PartName>",
+        "347-  <Application>255, 255</Application>",
+        "347-  <Groups></Groups>",
+        "347-  <Voltage></Voltage>",
+        "347-  <Burden>no</Burden>",
+        "347-  <Clock>no</Clock>",
+        "347-  <State>new</State>",
+        "347-  <OnlineStatus>unknown</OnlineStatus>",
+        "347- </Unit>",
+        "347-</Network>",
+        "344 End XML Snippet"
+      ],
+      "final": "344 End XML Snippet"
+    },
+    {
+      "command": "NET TREE //AUDS2/254 nonsense",
+      "code": 400,
+      "lines": [
+        "400 Syntax Error."
+      ],
+      "final": "400 Syntax Error."
+    }
+  ]
+}

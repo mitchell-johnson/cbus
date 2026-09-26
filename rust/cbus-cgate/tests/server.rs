@@ -93,6 +93,300 @@ fn full_project_network_cycle() {
 }
 
 #[test]
+fn native_general_object_and_tree_commands_share_one_honest_model() {
+    let mut s = Server::new(AccessLevel::Program).with_programming(true);
+    assert_eq!(s.handle("[1] PROJECT NEW GENERAL").status, 200);
+    assert_eq!(
+        s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
+            .status,
+        200
+    );
+
+    // Native NEW is idempotent and ignores GROUP trailing tokens. PHANTOM
+    // requires its initial byte; NEW UNIT creates only the database record.
+    for command in [
+        "[3] NEW GROUP //GENERAL/254/56/1 ignored trailing tokens",
+        "[4] NEW GROUP //GENERAL/254/56/1",
+        "[5] NEW PHANTOM //GENERAL/254/56/4 128",
+        "[6] NEW UNIT //GENERAL/254/p/20 KEYE1 2.5.00",
+        "[7] NEW UNIT //GENERAL/254/p/20 KEYE1 2.5.00",
+    ] {
+        assert_eq!(s.handle(command).status, 200, "{command}");
+    }
+    assert_eq!(s.handle("[8] NEW PHANTOM //GENERAL/254/56/5").status, 401);
+    assert_eq!(s.handle("[9] NEW IGROUP //GENERAL/254/56/6").status, 400);
+    assert_eq!(
+        s.handle("[9a] NEW UNIT //GENERAL/254/p/22/Type KEYE1 2.5.00")
+            .status,
+        400
+    );
+
+    let network_parameters = s.handle("[9b] SHOW //GENERAL/254 ?");
+    assert_eq!(network_parameters.status, 300);
+    assert!(network_parameters
+        .final_text
+        .contains("Parameters=DBUnitAddressesNew,DBUnitAddressesMissing"));
+
+    let unit = s.handle("[9c] SHOW //GENERAL/254/p/20 *");
+    assert_eq!(unit.status, 300);
+    assert_eq!(unit.final_text, "300 //GENERAL/254/p/20: Version2=null");
+    assert!(unit
+        .lines
+        .iter()
+        .any(|line| line == "300-//GENERAL/254/p/20: Application=255"));
+    assert!(unit.lines.iter().any(|line| {
+        line == "408-Operation failed: //GENERAL/254/p/20 (Can not get parameter from unit)"
+    }));
+
+    for (address, phantom) in [(1, false), (4, true)] {
+        let group = s.handle(&format!("[9d-{address}] SHOW //GENERAL/254/56/{address} *"));
+        assert_eq!(group.status, 300);
+        assert_eq!(
+            group.final_text,
+            format!("300 //GENERAL/254/56/{address}: Units=")
+        );
+        assert!(group
+            .lines
+            .iter()
+            .any(|line| { line == &format!("300-//GENERAL/254/56/{address}: Type=group") }));
+        assert_eq!(
+            s.handle(&format!(
+                "[9e-{address}] SHOW //GENERAL/254/56/{address} Level"
+            ))
+            .final_text,
+            format!("300 //GENERAL/254/56/{address}: Level=0")
+        );
+        if phantom {
+            assert_eq!(
+                s.handle(&format!(
+                    "[9f-{address}] SHOW //GENERAL/254/56/{address} Type"
+                ))
+                .final_text,
+                format!("300 //GENERAL/254/56/{address}: Type=group")
+            );
+        }
+    }
+
+    let tree = s.handle("[10] TREE //GENERAL/254 WITHSYNC");
+    assert_eq!(tree.status, 320);
+    assert_eq!(tree.final_text, "320 -end-");
+    assert!(tree.lines.iter().any(|line| line == "320-  Unit count=0"));
+    assert!(tree
+        .lines
+        .iter()
+        .any(|line| line.contains("//GENERAL/254/p/20 ($14) type=KEYE1")));
+    assert!(tree
+        .lines
+        .iter()
+        .any(|line| line.contains("//GENERAL/254/56/1 ($1) level=0")));
+    assert!(tree.lines.iter().any(|line| {
+        line.contains("//GENERAL/254/56/4 ($4) level=0") && line.ends_with("(phantom)")
+    }));
+    assert!(tree
+        .lines
+        .first()
+        .is_some_and(|line| line.ends_with("state=error")));
+    assert!(!tree
+        .lines
+        .iter()
+        .any(|line| line.contains("Application 255")));
+    let net_tree = s.handle("[10a] NET TREE //GENERAL/254");
+    assert_eq!(net_tree.status, tree.status);
+    assert_eq!(net_tree.lines, tree.lines);
+    assert_eq!(net_tree.final_text, tree.final_text);
+
+    let report = s.handle("[11] REPORT //GENERAL/254");
+    assert_eq!(report.status, tree.status);
+    assert_eq!(report.lines, tree.lines);
+    assert_eq!(report.final_text, tree.final_text);
+
+    let xml = s.handle("[12] TREEXMLDETAIL //GENERAL/254");
+    assert_eq!(xml.status, 344);
+    assert_eq!(
+        xml.lines.first().map(String::as_str),
+        Some("343-Begin XML Snippet")
+    );
+    assert!(xml
+        .lines
+        .iter()
+        .any(|line| line == "347-  <Type>KEYE1</Type>"));
+    assert!(xml
+        .lines
+        .iter()
+        .any(|line| line == "347-  <Address>20</Address>"));
+    assert!(xml
+        .lines
+        .iter()
+        .any(|line| line.starts_with("347-  <State>")));
+
+    let show = s.handle("[13] SHOW //GENERAL/254/p/20 Type");
+    let get = s.handle("[14] GET //GENERAL/254/p/20 Type");
+    assert_eq!(show.status, 300);
+    assert_eq!(show.lines, get.lines);
+    assert_eq!(show.final_text, get.final_text);
+
+    let missing = s.handle("[16] TREE //GENERAL/253");
+    assert_eq!(missing.status, 401);
+    assert_eq!(
+        missing.final_text,
+        "401 Bad object or device ID: Network not found"
+    );
+    let project_report = s.handle("[17] REPORT //GENERAL");
+    assert_eq!(project_report.status, 402);
+    assert_eq!(
+        project_report.final_text,
+        "402 Operation not supported by: //GENERAL"
+    );
+    let project_xml = s.handle("[18] TREEXML //GENERAL");
+    assert_eq!(project_xml.status, 344);
+    assert_eq!(
+        project_xml.lines,
+        [
+            "343-Begin XML Snippet",
+            "402-Operation not supported by: //GENERAL"
+        ]
+    );
+    assert!(
+        format_response(&project_xml).contains("[18] 402-Operation not supported by: //GENERAL\n")
+    );
+    assert_eq!(
+        s.handle("[19] BROADCAST_EVENT").final_text,
+        "400 Syntax Error."
+    );
+
+    let broadcast = s.handle("[15] BROADCAST_EVENT SP class payload text");
+    assert_eq!(broadcast.final_text, "200 OK.");
+    assert!(s
+        .drain_events()
+        .iter()
+        .any(|event| event == "#e# SP class payload text"));
+}
+
+#[test]
+fn monitor_cannot_create_new_database_objects() {
+    let mut server = Server::new(AccessLevel::Monitor);
+    for command in [
+        "[1] NEW UNIT //P/254/p/1 KEYE1 2.5.00",
+        "[2] NEW GROUP //P/254/56/1",
+        "[3] NEW PHANTOM //P/254/56/2 1",
+    ] {
+        assert_eq!(server.handle(command).status, 420, "{command}");
+    }
+}
+
+#[test]
+fn general_object_help_matches_the_retained_native_fixture() {
+    let evidence: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_general_tree.json"
+    ))
+    .unwrap();
+    let mut server = Server::new(AccessLevel::Program).with_programming(true);
+    for (index, item) in evidence["help"].as_array().unwrap().iter().enumerate() {
+        let command = item["command"].as_str().unwrap();
+        let tag = format!("help-{index}");
+        let response = server.handle(&format!("[{tag}] {command}"));
+        let actual = format_response(&response)
+            .lines()
+            .map(|line| line.strip_prefix(&format!("[{tag}] ")).unwrap().to_string())
+            .collect::<Vec<_>>();
+        let expected = item["lines"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|line| line.as_str().unwrap().to_string())
+            .collect::<Vec<_>>();
+        assert_eq!(actual, expected, "{command}");
+    }
+}
+
+#[test]
+fn new_object_transcript_matches_the_retained_native_fixture_exactly() {
+    let evidence: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_general_tree.json"
+    ))
+    .unwrap();
+    let mut server = Server::new(AccessLevel::Program).with_programming(true);
+    for (index, item) in evidence["new_object_transcript"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .enumerate()
+    {
+        let command = item["command"].as_str().unwrap();
+        let tag = format!("new-{index}");
+        let response = server.handle(&format!("[{tag}] {command}"));
+        let actual = format_response(&response)
+            .lines()
+            .map(|line| line.strip_prefix(&format!("[{tag}] ")).unwrap().to_string())
+            .collect::<Vec<_>>();
+        let expected = item["lines"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|line| line.as_str().unwrap().to_string())
+            .collect::<Vec<_>>();
+        assert_eq!(actual, expected, "{command}");
+    }
+}
+
+#[test]
+fn show_object_matrix_matches_the_retained_native_fixture() {
+    let evidence: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_show_objects.json"
+    ))
+    .unwrap();
+    let mut server = Server::new(AccessLevel::Program).with_programming(true);
+    for (index, item) in evidence["rows"].as_array().unwrap().iter().enumerate() {
+        let command = item["command"].as_str().unwrap();
+        let tag = format!("show-{index}");
+        let response = server.handle(&format!("[{tag}] {command}"));
+        let normalize = |line: String| {
+            if let Some((prefix, _)) = line.split_once("NextSyncTime=") {
+                format!("{prefix}NextSyncTime=<scheduled>")
+            } else {
+                line
+            }
+        };
+        let actual = format_response(&response)
+            .lines()
+            .map(|line| normalize(line.strip_prefix(&format!("[{tag}] ")).unwrap().to_string()))
+            .collect::<Vec<_>>();
+        let expected = item["lines"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|line| normalize(line.as_str().unwrap().to_string()))
+            .collect::<Vec<_>>();
+        assert_eq!(actual, expected, "{command}");
+    }
+}
+
+#[test]
+fn oid_is_a_native_301_uuid_factory_not_a_database_object() {
+    let mut s = Server::new(AccessLevel::Program).with_programming(true);
+    let first = s.handle("[1] OID ignored tail");
+    let second = s.handle("[2] OID");
+    assert_eq!(first.status, 301);
+    assert_eq!(second.status, 301);
+    let first = first.final_text.strip_prefix("301 OID=").unwrap();
+    let second = second.final_text.strip_prefix("301 OID=").unwrap();
+    assert_ne!(first, second);
+    let parts = first.split('-').collect::<Vec<_>>();
+    assert_eq!(
+        parts.iter().map(|part| part.len()).collect::<Vec<_>>(),
+        [8, 4, 4, 4, 12]
+    );
+    assert_eq!(parts[2].as_bytes()[0], b'1');
+    assert!(matches!(parts[3].as_bytes()[0], b'8' | b'9' | b'a' | b'b'));
+    assert_eq!(parts[4], second.split('-').nth(4).unwrap());
+    assert!(first
+        .chars()
+        .filter(|character| *character != '-')
+        .all(|character| character.is_ascii_hexdigit()));
+    assert_eq!(s.handle(&format!("[3] DBGET !{first}/OID")).status, 401);
+}
+
+#[test]
 fn edlt_factory_default_method_has_a_bounded_mock_contract() {
     let mut s = Server::new(AccessLevel::Program).with_programming(true);
     assert_eq!(s.handle("[1] PROJECT NEW TEST").status, 200);
@@ -445,11 +739,14 @@ fn scalar_set_move_contract_and_guards() {
     assert_eq!(moved.status, 200);
     assert!(moved.lines.is_empty());
     assert_eq!(moved.final_text, "200 OK: //TEST/254/p/32");
-    let gone = s.handle("[14] GET //TEST/254/p/30 *");
-    assert_eq!(gone.status, 401);
+    // The independently retained database record remains readable at the old
+    // address after only the physical unit moves. Physical inventory and
+    // addressed object lookup deliberately expose those two layers.
+    let database_record = s.handle("[14] GET //TEST/254/p/30 *");
+    assert_eq!(database_record.status, 300);
     let arrived = s.handle("[15] GET //TEST/254/p/32 *");
     assert_eq!(arrived.status, 300);
-    assert!(arrived
+    assert!(!arrived
         .lines
         .iter()
         .chain(std::iter::once(&arrived.final_text))
@@ -727,21 +1024,15 @@ fn dbset_unit_field_store_readback_and_absent() {
         assert_eq!(response.status, 400, "{line}");
         assert!(response.final_text.contains(fragment), "{line}");
     }
-    // Baseline: TagName is not seeded by DBADDSAFE, so the later readback
-    // must come from the mirror, not setup data.
+    // TagName is a database field rather than a native unit SHOW/GET
+    // property, both before and after it is stored.
     let baseline = s.handle("[8b] GET //TEST/254/p/30 TagName");
-    assert_eq!(baseline.status, 404);
-    // Multi-word values join; the write mirrors into GET reads.
+    assert_eq!(baseline.status, 402);
+    // Multi-word values join and remain available through DBGET.
     let stored = s.handle("[9] DBSETSAFE //TEST/254/p/30/TagName Two Words");
     assert_eq!(stored.status, 200);
     let read = s.handle("[10] GET //TEST/254/p/30 TagName");
-    assert_eq!(read.status, 300);
-    assert!(read
-        .lines
-        .iter()
-        .chain(std::iter::once(&read.final_text))
-        .any(|line| line.contains("TagName=Two Words")));
-    // The database layer observes the same write (rules out half-mirror).
+    assert_eq!(read.status, 402);
     let dbread = s.handle("[10b] DBGET //TEST/254/p/30/TagName");
     assert_eq!(dbread.status, 200);
     assert!(dbread
@@ -1381,7 +1672,8 @@ fn mock_bus_del_drops_physical_keeps_database() {
     assert_eq!(away.status, 404);
     assert!(away.final_text.contains("Project not selected"));
     assert_eq!(s.handle("[12] PROJECT USE TEST").status, 200);
-    // The drop removes physical presence; the database record stays.
+    // The drop removes physical presence; addressed GET/SHOW still resolve
+    // the database object while PINGU and the network Units field stay empty.
     // Bare network forms resolve the same lookup path: an absent address
     // proves the form parses (no extra OID-issuing units are created, so
     // the process-global counter other tests pin is undisturbed).
@@ -1391,7 +1683,7 @@ fn mock_bus_del_drops_physical_keeps_database() {
     let dropped = s.handle("[13] MOCK BUS-DEL //TEST/254 20");
     assert_eq!(dropped.status, 200);
     assert_eq!(dropped.final_text, "200 OK");
-    assert_eq!(s.handle("[14] GET //TEST/254/p/20 *").status, 401);
+    assert_eq!(s.handle("[14] GET //TEST/254/p/20 *").status, 300);
     let dbdoc = s.handle("[15] DBGETXML //TEST/254/p/20");
     assert_eq!(dbdoc.status, 200);
     let dbfield = s.handle("[15b] DBGET //TEST/254/p/20/TagName");
@@ -1452,17 +1744,12 @@ fn document_store_mirror_import_and_rejects() {
         assert_eq!(response.status, status, "{line}");
         assert!(response.final_text.contains(fragment), "{line}");
     }
-    // Single-line field store mirrors into both read layers (trailing
-    // newline trimmed); no-trailing-newline stores identically.
+    // Single-line field stores mirror into the unit model (trailing newline
+    // trimmed), while UnitName remains a database rather than SHOW property.
     let stored = s.handle_document("[10] DBSETXML //TEST/254/p/20/UnitName", "LOUNGE\n");
     assert_eq!(stored.status, 200);
     let read = s.handle("[11] GET //TEST/254/p/20 UnitName");
-    assert_eq!(read.status, 300);
-    assert!(read
-        .lines
-        .iter()
-        .chain(std::iter::once(&read.final_text))
-        .any(|line| line.contains("UnitName=LOUNGE")));
+    assert_eq!(read.status, 402);
     let dbread = s.handle("[11b] DBGET //TEST/254/p/20/UnitName");
     assert_eq!(dbread.status, 200);
     assert!(dbread
@@ -1476,24 +1763,26 @@ fn document_store_mirror_import_and_rejects() {
     // content itself remains readable through the database layer.
     let opaque = s.handle_document("[12] DBSETXML //TEST/254/p/20/UnitName", "one\ntwo\n");
     assert_eq!(opaque.status, 200);
-    let kept = s.handle("[13] GET //TEST/254/p/20 UnitName");
+    let kept = s.handle("[13] TREEXMLDETAIL //TEST/254");
+    assert_eq!(kept.status, 344);
     assert!(kept
         .lines
         .iter()
         .chain(std::iter::once(&kept.final_text))
-        .any(|line| line.contains("UnitName=PLAIN")));
+        .any(|line| line.contains("<PartName>PLAIN</PartName>")));
     let odoc = s.handle("[13b] DBGET //TEST/254/p/20/UnitName");
     assert_eq!(odoc.status, 200);
     // Unlike DBSETSAFE, document bodies accept `#` without rejection,
     // and the value mirrors like any single-line write.
     let hash = s.handle_document("[13c] DBSETXML //TEST/254/p/20/UnitName", "a#b\n");
     assert_eq!(hash.status, 200);
-    let hashed = s.handle("[13d] GET //TEST/254/p/20 UnitName");
+    let hashed = s.handle("[13d] TREEXMLDETAIL //TEST/254");
+    assert_eq!(hashed.status, 344);
     assert!(hashed
         .lines
         .iter()
         .chain(std::iter::once(&hashed.final_text))
-        .any(|line| line.contains("UnitName=a#b")));
+        .any(|line| line.contains("<PartName>a#b</PartName>")));
     // Invalid CGL is rejected without treating arbitrary text as an import.
     let import = s.handle_document("[14] CGL IMPORT TEST", "a\n\nb\nc\n");
     assert_eq!(import.status, 400);

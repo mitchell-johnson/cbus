@@ -33,6 +33,7 @@ mod file;
 pub mod manual;
 mod port;
 pub mod service;
+mod show;
 pub mod unitspec;
 
 /// C-Gate service-ready greeting prefix.
@@ -592,6 +593,16 @@ fn has_status_prefix(line: &str) -> bool {
     if line.starts_with("501-failed: could not delete programmer: ") {
         return true;
     }
+    // TREEXML wraps its generated project-level unsupported row between the
+    // 343/344 snippet markers. Do not admit arbitrary 402-prefixed data.
+    if line.starts_with("402-Operation not supported by: ") {
+        return true;
+    }
+    // SHOW cgate * contains one unreadable debug-only KCount property inside
+    // its otherwise-300 table. Keep this native mixed-status row exact.
+    if line == "420-Access denied: cgate (Insufficient access level for read)" {
+        return true;
+    }
     let b = line.as_bytes();
     if b.len() <= 4 || (b[3] != b'-' && b[3] != b' ') {
         return false;
@@ -633,6 +644,15 @@ pub struct Unit {
     pub fields: HashMap<String, String>,
     /// Stable object identity issued at creation (also resolvable).
     pub oid: String,
+    /// Private marker for a database-only record introduced by `NEW UNIT`.
+    /// It selects the retained native SHOW defaults and is never a C-Gate
+    /// database field.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub created_by_new: bool,
+}
+
+fn is_false(value: &bool) -> bool {
+    !*value
 }
 
 impl Unit {
@@ -647,6 +667,7 @@ impl Unit {
             firmware: String::new(),
             fields,
             oid: fresh_oid(),
+            created_by_new: false,
         }
     }
 
@@ -798,9 +819,10 @@ pub struct Network {
     /// `DBDELETE`) touch only the database layer, and scalar `SET` moves
     /// only the physical layer — so a physical readdress leaves
     /// `database_unchanged` true for verification, exactly like native.
-    /// Serials, PINGU/CHECKUNIT, `GET` field reads, `Units` snapshots and
-    /// `TREE` observe the physical layer; `DBGET`, `DBGETXML` and PP
-    /// observe the database.
+    /// Serials, PINGU/CHECKUNIT and `Units` snapshots observe only physical
+    /// presence. Addressed `GET`/`SHOW` and TREE rows prefer physical data but
+    /// fall back to durable units, matching native NEW UNIT; TREE's unit count
+    /// remains physical. `DBGET`, `DBGETXML` and PP observe the database.
     #[serde(skip)]
     pub physical: HashMap<u8, Unit>,
     /// Live group levels keyed by (application, group).
@@ -958,6 +980,10 @@ pub struct Server {
     allow_programming: bool,
     projects: HashMap<String, Project>,
     current: Option<String>,
+    /// Closed networks whose project was selected after the network already
+    /// existed. Native C-Gate exposes these object trees as `error`; freshly
+    /// created, never reselected local objects remain `new` until activation.
+    activated_networks: HashSet<(String, u8)>,
     events: VecDeque<String>,
     events_lost: bool,
     max_events: usize,
@@ -1038,6 +1064,7 @@ impl Server {
             allow_programming: false,
             projects: HashMap::new(),
             current: None,
+            activated_networks: HashSet::new(),
             events: VecDeque::new(),
             events_lost: false,
             max_events: DEFAULT_MAX_EVENTS,
@@ -1403,7 +1430,7 @@ impl Server {
         // other connections) can identify what changed without a follow-up
         // query — the shape the native configuration stream relies on.
         self.push_event(format!("#e# project {name} created"));
-        ok(tag, vec![], "200 OK")
+        ok(tag, vec![], "200 OK.")
     }
 
     fn project_use(&mut self, tag: &str, words: &[&str]) -> Response {
@@ -1427,11 +1454,17 @@ impl Server {
             );
         }
         let name = words[2];
-        if !self.projects.contains_key(name) {
+        let Some(project) = self.projects.get(name) else {
             return err(tag, status::NOT_FOUND, "404 Project not found");
-        }
+        };
+        self.activated_networks.extend(
+            project
+                .networks
+                .keys()
+                .map(|network| (name.to_string(), *network)),
+        );
         self.current = Some(name.to_string());
-        ok(tag, vec![], "200 OK")
+        ok(tag, vec![], "200 OK.")
     }
 
     fn project_load(&mut self, tag: &str, words: &[&str]) -> Response {
@@ -1955,14 +1988,19 @@ impl Server {
                 return e;
             }
         };
-        let current = self.current.clone().unwrap_or_default();
-        if !project.is_empty() && project != current {
-            return err(tag, status::NOT_FOUND, "404 Project not selected");
-        }
-        let Some(proj) = self.current_project_mut() else {
+        let selected = self.current.clone().unwrap_or_default();
+        let resolved_project = if project.is_empty() {
+            selected.clone()
+        } else {
+            project
+        };
+        let Some(proj) = self.projects.get(&resolved_project) else {
             return err(tag, status::NOT_FOUND, "404 No project selected");
         };
-        let Some(entry) = proj.networks.get(&net) else {
+        // Rendering also consults the server-wide durable object maps. Keep an
+        // owned network snapshot so those reads cannot alias the project map,
+        // and so one reply is internally consistent even as this method grows.
+        let Some(entry) = proj.networks.get(&net).cloned() else {
             return err(tag, status::NOT_FOUND, "404 Network not found");
         };
         let text = match entry.state {
@@ -1987,13 +2025,36 @@ impl Server {
         let Some(&target) = words.get(target_index) else {
             return err(tag, status::BAD_REQUEST, "400 Tree requires an address");
         };
-        for flag in &words[target_index + 1..] {
-            if !matches!(
-                flag.to_ascii_uppercase().as_str(),
-                "WITHSYNC" | "WITHPSYNC" | "WITHQSYNC"
-            ) {
-                return err(tag, status::BAD_REQUEST, "400 Unknown tree flag");
+        let strict_flags = xml || verb == "NET";
+        if strict_flags {
+            for flag in &words[target_index + 1..] {
+                if !matches!(
+                    flag.to_ascii_uppercase().as_str(),
+                    "WITHSYNC" | "WITHPSYNC" | "WITHQSYNC"
+                ) {
+                    return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
+                }
             }
+        }
+        let target_parts = target
+            .trim_start_matches('/')
+            .split('/')
+            .filter(|part| !part.is_empty())
+            .collect::<Vec<_>>();
+        if target.starts_with("//") && target_parts.len() == 1 {
+            let unsupported = format!("Operation not supported by: {target}");
+            if xml {
+                return Response {
+                    tag: tag.to_string(),
+                    lines: vec![
+                        "343-Begin XML Snippet".to_string(),
+                        format!("402-{unsupported}"),
+                    ],
+                    final_text: "344 End XML Snippet".to_string(),
+                    status: 344,
+                };
+            }
+            return err(tag, 402, &format!("402 {unsupported}"));
         }
         let probe = ["TREE", "OP", target];
         let (project, net) = match self.resolve_network_mut(&probe) {
@@ -2003,36 +2064,491 @@ impl Server {
                 return e;
             }
         };
-        let current = self.current.clone().unwrap_or_default();
-        if !project.is_empty() && project != current {
-            return err(tag, status::NOT_FOUND, "404 Project not selected");
-        }
-        let Some(proj) = self.current_project_mut() else {
+        let selected = self.current.clone().unwrap_or_default();
+        let resolved_project = if project.is_empty() {
+            selected.clone()
+        } else {
+            project
+        };
+        let Some(proj) = self.projects.get(&resolved_project) else {
             return err(tag, status::NOT_FOUND, "404 No project selected");
         };
-        let Some(entry) = proj.networks.get(&net) else {
-            return err(tag, status::NOT_FOUND, "404 Network not found");
+        // Rendering also consults the server-wide durable object maps. Keep an
+        // owned network snapshot so those reads cannot alias the project map,
+        // and so one reply is internally consistent even as this method grows.
+        let Some(entry) = proj.networks.get(&net).cloned() else {
+            return err(
+                tag,
+                status::ABSENT,
+                "401 Bad object or device ID: Network not found",
+            );
         };
-        // The tree reports physically present units (discovery view).
-        let mut addrs: Vec<u8> = entry.physical.keys().copied().collect();
-        addrs.sort();
-        if !xml {
-            let lines = addrs.into_iter().map(|a| format!("unit={a}")).collect();
-            return ok(tag, lines, "200 OK");
-        }
-        // Minimal XML tree: one document line per network plus unit lines.
-        // Like every other multiline reply, rows travel as tagged
-        // continuations; XML consumers strip envelopes via `_rows`
-        // (the same convention as DBGETXML snippet lines).
-        let mut lines = vec![format!(
-            "<Tree project=\"{current}\" network=\"{net}\" detail=\"{detail}\"/>"
-        )];
-        lines.extend(
-            addrs
+        fn byte_list(value: Option<&str>) -> Vec<u8> {
+            let mut values = value
                 .into_iter()
-                .map(|a| format!("<Unit address=\"{a}\"/>")),
-        );
-        ok(tag, lines, "200 OK")
+                .flat_map(|value| {
+                    value
+                        .split(|character: char| !character.is_ascii_digit())
+                        .filter_map(|part| part.parse::<u8>().ok())
+                })
+                .collect::<Vec<_>>();
+            values.sort_unstable();
+            values.dedup();
+            values
+        }
+        fn xml_text(value: &str) -> String {
+            value
+                .replace('&', "&amp;")
+                .replace('<', "&lt;")
+                .replace('>', "&gt;")
+                .replace('"', "&quot;")
+                .replace('\'', "&apos;")
+                .replace('\r', "&#13;")
+                .replace('\n', "&#10;")
+        }
+        fn wire_text(value: &str) -> String {
+            let mut escaped = String::with_capacity(value.len());
+            for character in value.chars() {
+                match character {
+                    '\r' => escaped.push_str("\\r"),
+                    '\n' => escaped.push_str("\\n"),
+                    character if character.is_control() => {
+                        use std::fmt::Write as _;
+                        let _ = write!(escaped, "\\u{{{:x}}}", u32::from(character));
+                    }
+                    character => escaped.push(character),
+                }
+            }
+            escaped
+        }
+
+        let state = match entry.state {
+            NetworkState::Closed if entry.physical.is_empty() && entry.units.is_empty() => "new",
+            NetworkState::Closed => "error",
+            NetworkState::Open => "open",
+            NetworkState::Syncing => "syncing",
+            NetworkState::Ok => "ok",
+        };
+        // TREE reports database unit rows as well as physically observed
+        // units, but its count remains the physical-presence count. This is
+        // the native NEW UNIT behavior on a closed network.
+        let physical_count = entry.physical.len();
+        let addrs = entry
+            .physical
+            .keys()
+            .chain(entry.units.keys())
+            .copied()
+            .collect::<std::collections::BTreeSet<_>>()
+            .into_iter()
+            .collect::<Vec<_>>();
+        let mut groups = std::collections::BTreeMap::<u8, std::collections::BTreeSet<u8>>::new();
+        for &(application, group) in entry.levels.keys() {
+            groups.entry(application).or_default().insert(group);
+        }
+        let network_prefix = format!("//{resolved_project}/{net}/");
+        for object in &self.objects {
+            let Some(tail) = object.strip_prefix(&network_prefix) else {
+                continue;
+            };
+            let parts = tail.split('/').collect::<Vec<_>>();
+            match parts.as_slice() {
+                [application] => {
+                    if let Ok(application) = application.parse::<u8>() {
+                        groups.entry(application).or_default();
+                    }
+                }
+                [application, group] => {
+                    if let (Ok(application), Ok(group)) =
+                        (application.parse::<u8>(), group.parse::<u8>())
+                    {
+                        groups.entry(application).or_default().insert(group);
+                    }
+                }
+                _ => {}
+            }
+        }
+        for level in self.db_levels.values() {
+            let Some(tail) = level.parent.strip_prefix(&network_prefix) else {
+                continue;
+            };
+            let parts = tail.split('/').collect::<Vec<_>>();
+            if let [application, group] = parts.as_slice() {
+                if let (Ok(application), Ok(group)) =
+                    (application.parse::<u8>(), group.parse::<u8>())
+                {
+                    groups.entry(application).or_default().insert(group);
+                }
+            }
+        }
+        for field in self.db_fields.keys() {
+            let Some(tail) = field.strip_prefix(&network_prefix) else {
+                continue;
+            };
+            let parts = tail.split('/').collect::<Vec<_>>();
+            match parts.as_slice() {
+                [application, _field_name] => {
+                    if let Ok(application) = application.parse::<u8>() {
+                        groups.entry(application).or_default();
+                    }
+                }
+                [application, group, _field_name] => {
+                    if let (Ok(application), Ok(group)) =
+                        (application.parse::<u8>(), group.parse::<u8>())
+                    {
+                        groups.entry(application).or_default().insert(group);
+                    }
+                }
+                _ => {}
+            }
+        }
+        for address in &addrs {
+            let physical = entry.physical.get(address);
+            let database = entry.units.get(address);
+            let applications = [
+                physical
+                    .and_then(|unit| unit.fields.get("Application"))
+                    .or_else(|| database.and_then(|unit| unit.fields.get("Application"))),
+                physical
+                    .and_then(|unit| unit.fields.get("Application2"))
+                    .or_else(|| database.and_then(|unit| unit.fields.get("Application2"))),
+            ]
+            .into_iter()
+            .flatten()
+            .filter_map(|application| application.parse::<u8>().ok())
+            .collect::<Vec<_>>();
+            let widget_groups = byte_list(
+                physical
+                    .and_then(|unit| unit.fields.get("WidgetGroups"))
+                    .or_else(|| database.and_then(|unit| unit.fields.get("WidgetGroups")))
+                    .or_else(|| physical.and_then(|unit| unit.fields.get("Groups")))
+                    .or_else(|| database.and_then(|unit| unit.fields.get("Groups")))
+                    .map(String::as_str),
+            );
+            if let Some(application) = applications
+                .first()
+                .copied()
+                .filter(|application| *application != 255 && !widget_groups.is_empty())
+            {
+                groups.entry(application).or_default().extend(widget_groups);
+            }
+        }
+
+        if !xml {
+            let mut lines = vec![
+                format!(
+                    "320- Network name:{} type={} address={} state={state}",
+                    wire_text(&entry.name),
+                    wire_text(&entry.iface_type.to_ascii_lowercase()),
+                    wire_text(&entry.iface_addr)
+                ),
+                format!("320-  Unit count={physical_count}"),
+                "320- Units:".to_string(),
+            ];
+            for address in &addrs {
+                let physical = entry.physical.get(address);
+                let database = entry.units.get(address);
+                let unit = physical
+                    .or(database)
+                    .expect("address came from one inventory layer");
+                let applications = [
+                    physical
+                        .and_then(|unit| unit.fields.get("Application"))
+                        .or_else(|| database.and_then(|unit| unit.fields.get("Application"))),
+                    physical
+                        .and_then(|unit| unit.fields.get("Application2"))
+                        .or_else(|| database.and_then(|unit| unit.fields.get("Application2"))),
+                ]
+                .into_iter()
+                .flatten()
+                .filter_map(|application| application.parse::<u8>().ok())
+                .collect::<Vec<_>>();
+                let apps = applications
+                    .iter()
+                    .map(|application| format!("{application}(${application:x})"))
+                    .collect::<Vec<_>>()
+                    .join(", ");
+                let widget_groups = byte_list(
+                    physical
+                        .and_then(|unit| unit.fields.get("WidgetGroups"))
+                        .or_else(|| database.and_then(|unit| unit.fields.get("WidgetGroups")))
+                        .or_else(|| physical.and_then(|unit| unit.fields.get("Groups")))
+                        .or_else(|| database.and_then(|unit| unit.fields.get("Groups")))
+                        .map(String::as_str),
+                )
+                .into_iter()
+                .map(|group| group.to_string())
+                .collect::<Vec<_>>()
+                .join(",");
+                let unit_state = {
+                    let value = unit.field("State");
+                    if value.is_empty() {
+                        state.to_string()
+                    } else {
+                        value
+                    }
+                };
+                lines.push(format!(
+                    "320-//{resolved_project}/{net}/p/{address} (${address:x}) type={} app={apps} state={unit_state} groups={widget_groups}",
+                    wire_text(&unit.unit_type),
+                    unit_state = wire_text(&unit_state)
+                ));
+            }
+            lines.push("320-Applications:".to_string());
+            for (application, application_groups) in &groups {
+                let (application_type, grouped, render_children) = match *application {
+                    25 => ("temperature", false, true),
+                    48..=95 => ("lighting", true, true),
+                    172 => ("aircon", false, false),
+                    192 => ("mediatransport", false, false),
+                    202 => ("trigger", false, true),
+                    203 => ("enable", false, true),
+                    205 => ("audio", true, true),
+                    208 => ("security", false, true),
+                    223 => ("clock", false, false),
+                    224 => ("telephony", false, false),
+                    228 => ("measurement", false, true),
+                    238 => ("application", true, true),
+                    _ => ("application", false, true),
+                };
+                lines.push(format!(
+                    "320- Application {application} (${application:x}) [{application_type}]"
+                ));
+                lines.push(if grouped {
+                    "320- Groups:".to_string()
+                } else {
+                    "320- Net Vars:".to_string()
+                });
+                if !render_children {
+                    continue;
+                }
+                for group in application_groups {
+                    let path = format!("//{resolved_project}/{net}/{application}/{group}");
+                    let level = entry
+                        .levels
+                        .get(&(*application, *group))
+                        .copied()
+                        .or_else(|| {
+                            self.db_fields
+                                .get(&format!("{path}/Level"))
+                                .and_then(|level| level.parse::<u8>().ok())
+                        })
+                        .unwrap_or(0);
+                    let mut units = addrs
+                        .iter()
+                        .filter_map(|address| {
+                            let physical = entry.physical.get(address);
+                            let database = entry.units.get(address);
+                            let primary = physical
+                                .and_then(|unit| unit.fields.get("Application"))
+                                .or_else(|| {
+                                    database.and_then(|unit| unit.fields.get("Application"))
+                                })
+                                .and_then(|value| value.parse::<u8>().ok());
+                            let unit_groups = byte_list(
+                                physical
+                                    .and_then(|unit| unit.fields.get("WidgetGroups"))
+                                    .or_else(|| {
+                                        database.and_then(|unit| unit.fields.get("WidgetGroups"))
+                                    })
+                                    .or_else(|| physical.and_then(|unit| unit.fields.get("Groups")))
+                                    .or_else(|| database.and_then(|unit| unit.fields.get("Groups")))
+                                    .map(String::as_str),
+                            );
+                            (primary == Some(*application) && unit_groups.contains(group))
+                                .then_some(*address)
+                        })
+                        .collect::<Vec<_>>();
+                    units.sort_unstable();
+                    let units = units
+                        .into_iter()
+                        .map(|unit| unit.to_string())
+                        .collect::<Vec<_>>()
+                        .join(" ");
+                    let phantom = if self
+                        .db_fields
+                        .contains_key(&format!("{path}/PhantomInitialLevel"))
+                    {
+                        "(phantom)"
+                    } else {
+                        ""
+                    };
+                    if grouped {
+                        lines.push(format!(
+                            "320-  {path} (${group:x}) level={level} state={state} units={units} {phantom}"
+                        ));
+                    } else {
+                        lines.push(format!(
+                            "320-  {path} (${group:x}) level={level} state={state}"
+                        ));
+                    }
+                }
+            }
+            return Response {
+                tag: tag.to_string(),
+                lines,
+                final_text: "320 -end-".to_string(),
+                status: 320,
+            };
+        }
+
+        let mut lines = vec![
+            "343-Begin XML Snippet".to_string(),
+            "347-<Network>".to_string(),
+        ];
+        for address in addrs {
+            let physical = entry.physical.get(&address);
+            let database = entry.units.get(&address);
+            let unit = physical
+                .or(database)
+                .expect("address came from one inventory layer");
+            let value = |names: &[&str]| {
+                names
+                    .iter()
+                    .find_map(|name| {
+                        physical
+                            .and_then(|unit| unit.fields.get(*name))
+                            .filter(|value| !value.is_empty())
+                    })
+                    .or_else(|| {
+                        names.iter().find_map(|name| {
+                            database
+                                .and_then(|unit| unit.fields.get(*name))
+                                .filter(|value| !value.is_empty())
+                        })
+                    })
+                    .cloned()
+                    .unwrap_or_default()
+            };
+            let applications = [
+                physical
+                    .and_then(|unit| unit.fields.get("Application"))
+                    .or_else(|| database.and_then(|unit| unit.fields.get("Application"))),
+                physical
+                    .and_then(|unit| unit.fields.get("Application2"))
+                    .or_else(|| database.and_then(|unit| unit.fields.get("Application2"))),
+            ]
+            .into_iter()
+            .flatten()
+            .filter_map(|application| application.parse::<u8>().ok())
+            .map(|application| application.to_string())
+            .collect::<Vec<_>>()
+            .join(", ");
+            let widget_groups = byte_list(
+                physical
+                    .and_then(|unit| unit.fields.get("WidgetGroups"))
+                    .or_else(|| database.and_then(|unit| unit.fields.get("WidgetGroups")))
+                    .or_else(|| physical.and_then(|unit| unit.fields.get("Groups")))
+                    .or_else(|| database.and_then(|unit| unit.fields.get("Groups")))
+                    .map(String::as_str),
+            )
+            .into_iter()
+            .map(|group| group.to_string())
+            .collect::<Vec<_>>()
+            .join(",");
+            let unit_type = if unit.unit_type.is_empty() {
+                database.map_or_else(String::new, |unit| unit.unit_type.clone())
+            } else {
+                unit.unit_type.clone()
+            };
+            let firmware = if unit.firmware.is_empty() {
+                database.map_or_else(String::new, |unit| unit.firmware.clone())
+            } else {
+                unit.firmware.clone()
+            };
+            let catalogue = {
+                let value = value(&["CatalogNumber"]);
+                if value.is_empty() {
+                    match (unit_type.as_str(), firmware.as_str()) {
+                        ("DIMMER4", "1.0.00") => "5104D750".to_string(),
+                        ("RELAY4", "1.0.00") => "5504RDP".to_string(),
+                        _ => value,
+                    }
+                } else {
+                    value
+                }
+            };
+            let part_name = value(&["PartName", "UnitName", "TagName"]);
+            let burden = match value(&["BurdenActive", "HardwareBurdenMarker"]).as_str() {
+                "" | "0" | "false" | "no" => "no".to_string(),
+                _ => "yes".to_string(),
+            };
+            let clock = match value(&["ClockGenActive", "GeneratingClock", "ClockActive"]).as_str()
+            {
+                "1" | "true" | "yes" => "yes".to_string(),
+                _ => "no".to_string(),
+            };
+            let serial = if unit.serial.is_empty() {
+                let value = value(&["Serial", "SerialNumber"]);
+                if value.is_empty() {
+                    if unit.created_by_new {
+                        "{none}".to_string()
+                    } else {
+                        "0.0".to_string()
+                    }
+                } else {
+                    value
+                }
+            } else {
+                unit.serial.clone()
+            };
+            for row in [
+                " <Unit>".to_string(),
+                format!("  <Type>{}</Type>", xml_text(&unit_type)),
+                format!(
+                    "  <CatalogueNumber>{}</CatalogueNumber>",
+                    xml_text(&catalogue)
+                ),
+                format!("  <Version>{}</Version>", xml_text(&firmware)),
+                format!("  <SerialNo>{}</SerialNo>", xml_text(&serial)),
+                format!("  <Address>{address}</Address>"),
+                format!("  <PartName>{}</PartName>", xml_text(&part_name)),
+                format!("  <Application>{applications}</Application>"),
+                format!("  <Groups>{widget_groups}</Groups>"),
+                format!(
+                    "  <Voltage>{}</Voltage>",
+                    xml_text(&value(&["NetVoltage", "Voltage"]))
+                ),
+                format!("  <Burden>{burden}</Burden>"),
+                format!("  <Clock>{clock}</Clock>"),
+            ] {
+                lines.push(format!("347-{row}"));
+            }
+            if detail {
+                let unit_state = {
+                    let observed = value(&["State"]);
+                    if observed.is_empty() {
+                        state.to_string()
+                    } else {
+                        observed
+                    }
+                };
+                lines.push(format!("347-  <State>{}</State>", xml_text(&unit_state)));
+                let online_status = {
+                    let observed = value(&["OnlineStatus"]);
+                    if observed.is_empty() {
+                        if physical.is_some() {
+                            "new".to_string()
+                        } else {
+                            "unknown".to_string()
+                        }
+                    } else {
+                        observed
+                    }
+                };
+                lines.push(format!(
+                    "347-  <OnlineStatus>{}</OnlineStatus>",
+                    xml_text(&online_status)
+                ));
+            }
+            lines.push("347- </Unit>".to_string());
+        }
+        lines.push("347-</Network>".to_string());
+        Response {
+            tag: tag.to_string(),
+            lines,
+            final_text: "344 End XML Snippet".to_string(),
+            status: 344,
+        }
     }
 
     fn dbget(&mut self, tag: &str, words: &[&str]) -> Response {
@@ -2231,7 +2747,7 @@ impl Server {
             if let Some((_, _, addr)) = Self::split_unit(path) {
                 if let Some(unit) = proj.networks[&(net as u8)].units.get(&addr) {
                     let mut names: Vec<&String> = unit.fields.keys().collect();
-                    names.sort();
+                    names.sort_by_key(|name| name.to_ascii_lowercase());
                     // Rows carry their own 342 envelope (the formatter
                     // passes coded lines through untouched).
                     let mut lines: Vec<String> = names
@@ -5630,7 +6146,7 @@ impl Server {
     /// addresses (`SAVE` stays database-only — physical transfer is a
     /// separate unverified step).
     fn mirror_unit_field(&mut self, path: &str, value: &str) {
-        if value.contains('\n') {
+        if value.contains(['\r', '\n']) {
             return;
         }
         let parts: Vec<&str> = path.split('/').filter(|s| !s.is_empty()).collect();
@@ -5706,12 +6222,8 @@ impl Server {
     /// line: the serial, network and application parsers all require 300
     /// status, exactly one line, and the `addr: name=value` shape.
     fn get(&mut self, tag: &str, words: &[&str]) -> Response {
-        if words.len() != 3 || !valid_target(words[1]) || words[2].is_empty() {
-            return err(
-                tag,
-                status::BAD_REQUEST,
-                "400 GET requires an address and attribute",
-            );
+        if words.len() < 3 || !valid_target(words[1]) || words[2].is_empty() {
+            return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
         }
         let address = words[1];
         let attribute = words[2];
@@ -5732,6 +6244,9 @@ impl Server {
             let value = self.db_fields.get(address).cloned().unwrap_or_default();
             return Self::property(tag, address, attribute, &value);
         }
+        if let Some(response) = self.show_object(tag, address, attribute) {
+            return response;
+        }
         let Some((proj_name, net)) = self.network_of(address) else {
             return err(tag, status::ABSENT, "401 Network not found");
         };
@@ -5749,6 +6264,14 @@ impl Server {
             let parts: Vec<&str> = address.split('/').filter(|s| !s.is_empty()).collect();
             parts.len() == 2
         };
+        if attribute == "?" && is_network_path {
+            return Self::property(
+                tag,
+                address,
+                "Parameters",
+                "DBUnitAddressesNew,DBUnitAddressesMissing,Retries,DBUnitAddressesDuplicate,Groups,TxQ,Name,Applications,InterfaceState,FreeApplication,DBUnitAddressesOnline,EventLevel,RxQ,Options,NextSyncTime,FreeUnit,TargetInterfaceState,TxEnable,NetworkType,InterfaceAddress,AutoSync,LastSyncTime,SyncSubState,AutoUnravel,FastResponse,ResponseDelay,QuickDetect,ShortSync,LSP,SyncTime,SyncState,DBUnitAddressesError,Interface,Stats,Units,XState,DefaultApplication,AutoUpdate,State,Type",
+            );
+        }
         if attribute.eq_ignore_ascii_case("state") && is_network_path {
             let text = match network.state {
                 NetworkState::Closed => "closed",
@@ -5816,6 +6339,98 @@ impl Server {
                 status: 300,
             };
         }
+        let durable_group = Self::split_lighting(address).is_some()
+            && (self.objects.contains(address)
+                || self
+                    .db_fields
+                    .keys()
+                    .any(|field| field.starts_with(&format!("{address}/"))));
+        if durable_group {
+            let (_, _, application, group) =
+                Self::split_lighting(address).expect("checked group address");
+            let state = match network.state {
+                NetworkState::Closed => "error",
+                NetworkState::Open => "open",
+                NetworkState::Syncing => "syncing",
+                NetworkState::Ok => "ok",
+            };
+            let level = network
+                .levels
+                .get(&(application, group))
+                .copied()
+                .or_else(|| {
+                    self.db_fields
+                        .get(&format!("{address}/Level"))
+                        .and_then(|value| value.parse::<u8>().ok())
+                })
+                .unwrap_or(0);
+            let units = network
+                .physical
+                .iter()
+                .chain(network.units.iter())
+                .filter_map(|(unit_address, unit)| {
+                    let unit_application = unit
+                        .fields
+                        .get("Application")
+                        .and_then(|value| value.parse::<u8>().ok());
+                    let contains_group = unit
+                        .fields
+                        .get("WidgetGroups")
+                        .or_else(|| unit.fields.get("Groups"))
+                        .is_some_and(|values| {
+                            values
+                                .split(|character: char| !character.is_ascii_digit())
+                                .filter_map(|part| part.parse::<u8>().ok())
+                                .any(|value| value == group)
+                        });
+                    (unit_application == Some(application) && contains_group)
+                        .then_some(*unit_address)
+                })
+                .collect::<std::collections::BTreeSet<_>>()
+                .into_iter()
+                .map(|address| address.to_string())
+                .collect::<Vec<_>>()
+                .join(" ");
+            let name = self
+                .db_fields
+                .get(&format!("{address}/Name"))
+                .or_else(|| self.db_fields.get(&format!("{address}/TagName")))
+                .cloned()
+                .unwrap_or_default();
+            let fields = [
+                ("EventLevel", "9".to_string()),
+                ("Level", level.to_string()),
+                ("Name", name),
+                ("Protected", "no".to_string()),
+                ("RampTime", "0".to_string()),
+                ("State", state.to_string()),
+                ("Type", "group".to_string()),
+                ("Units", units),
+            ];
+            if attribute == "*" {
+                let mut rows = fields
+                    .into_iter()
+                    .map(|(name, value)| format!("300-{address}: {name}={value}"))
+                    .collect::<Vec<_>>();
+                let final_text = rows
+                    .pop()
+                    .expect("group property table is nonempty")
+                    .replacen("300-", "300 ", 1);
+                return Response {
+                    tag: tag.to_string(),
+                    lines: rows,
+                    final_text,
+                    status: 300,
+                };
+            }
+            if let Some((name, value)) = fields
+                .into_iter()
+                .find(|(name, _)| name.eq_ignore_ascii_case(attribute))
+            {
+                return Self::property(tag, address, name, &value);
+            }
+            return err(tag, status::NOT_FOUND, "404 Parameter not found");
+        }
         if attribute.eq_ignore_ascii_case("level") {
             // Cached group level for scene record flows: exactly one
             // `300 <addr>: level=<byte>` line. Lighting addresses carry
@@ -5836,23 +6451,33 @@ impl Server {
             };
             return Self::property(tag, address, "level", &level.to_string());
         }
-        // Unit field reads (`//P/N/p/addr[/Field]`) observe the physical
-        // layer, like serials scans and PINGU; database reads use DBGET.
+        // Unit field reads prefer the independently observed physical layer,
+        // but native NEW UNIT immediately creates a readable database object.
+        // Physical inventory commands and the network Units property remain
+        // strictly physical; this fallback only exposes the addressed object.
         if let Some((_, _, addr)) = Self::split_unit(address) {
-            if let Some(unit) = network.physical.get(&addr) {
+            if let Some(unit) = network
+                .physical
+                .get(&addr)
+                .or_else(|| network.units.get(&addr))
+            {
                 if attribute == "*" {
                     // Every row must match the 300 envelope, including the
                     // final line, so all but the last row travel as
                     // 300-prefixed continuations via the passthrough
                     // formatter.
-                    let identity_names = if unit.unit_type.eq_ignore_ascii_case("KEYGL5") {
+                    let new_database_object =
+                        unit.created_by_new && !network.physical.contains_key(&addr);
+                    let identity_names: &[&str] = if new_database_object {
+                        &[]
+                    } else if unit.unit_type.eq_ignore_ascii_case("KEYGL5") {
                         // KEYGL5 FirmwareVersion is the optional native 0xFB
                         // property. Version remains IDENTIFY2 even when that
                         // optional recall failed, so do not manufacture a
                         // FirmwareVersion row from the IDENTIFY value.
-                        ["UnitType", "Version", "SerialNumber", "UnitAddress"]
+                        &["UnitType", "Version", "SerialNumber", "UnitAddress"]
                     } else {
-                        ["UnitType", "FirmwareVersion", "SerialNumber", "UnitAddress"]
+                        &["UnitType", "FirmwareVersion", "SerialNumber", "UnitAddress"]
                     };
                     let mut names: Vec<String> = unit
                         .fields
@@ -5866,10 +6491,16 @@ impl Server {
                     if names.is_empty() {
                         return err(tag, status::NOT_FOUND, "404 Object not found");
                     }
-                    let mut rows: Vec<String> = names
-                        .iter()
-                        .map(|k| format!("300-{address}: {k}={}", unit.field(k)))
-                        .collect();
+                    let mut rows =
+                        Vec::with_capacity(names.len() + usize::from(new_database_object));
+                    for name in &names {
+                        if new_database_object && name == "Name" {
+                            rows.push(format!(
+                                "408-Operation failed: {address} (Can not get parameter from unit)"
+                            ));
+                        }
+                        rows.push(format!("300-{address}: {name}={}", unit.field(name)));
+                    }
                     let last = rows.pop().expect("names nonempty");
                     let final_text = last.replacen("300-", "300 ", 1);
                     return Response {
@@ -6827,9 +7458,13 @@ mod tests {
                 .status,
             200
         );
-        let g = s.handle("[6] GET //TEST/254/p/20 UnitName");
-        assert_eq!(g.status, 300);
-        assert!(g.final_text.contains("UnitName=LOUNGE"));
+        // UnitName is a database/programming field, not a native SHOW/GET
+        // property.  Read it through DBGET; native GET rejects the alias.
+        let unsupported = s.handle("[6] GET //TEST/254/p/20 UnitName");
+        assert_eq!(unsupported.status, 402);
+        let g = s.handle("[6b] DBGET //TEST/254/p/20/UnitName");
+        assert_eq!(g.status, 200);
+        assert!(g.lines.iter().any(|line| line.ends_with("UnitName=LOUNGE")));
         // Level creation answers 301 + OID; the OID resolves with 342.
         let add = s.handle("[7] DBADDSAFE //TEST/254/56 Level 1 Evening");
         assert_eq!(add.status, 301);
@@ -6861,7 +7496,7 @@ mod tests {
         );
         assert_eq!(s.handle("[19] NET CLOCKS //TEST/254 2").status, 200);
         assert_eq!(s.handle("[20] NET CLOCKS //TEST/254 R").status, 200);
-        assert_eq!(s.handle("[21] TREEXML //TEST/254").status, 200);
+        assert_eq!(s.handle("[21] TREEXML //TEST/254").status, 344);
         let calc = s.handle("[22] CALCULATOR TEST //TEST/254");
         assert_eq!(calc.status, 408);
         assert!(calc.final_text.contains("No unit catalog available"));
@@ -6892,11 +7527,16 @@ mod tests {
         assert_eq!(s.handle("[32] DBDELETE //TEST/252/p/3").status, 404);
         let star = s.handle("[33] GET //TEST/252/p/30 *");
         assert_eq!(star.status, 300);
-        assert!(star
+        assert!(!star
             .lines
             .iter()
             .chain(std::iter::once(&star.final_text))
-            .any(|l| l.contains("UnitName=Study")));
+            .any(|l| l.contains("UnitName=")));
+        let study = s.handle("[33b] DBGET //TEST/252/p/30/UnitName");
+        assert!(study
+            .lines
+            .iter()
+            .any(|line| line.ends_with("UnitName=Study")));
         // Exact native validation + clear + scalar-move shapes.
         let valid = s.handle("[34] DBVALIDATE //TEST/252/p/30");
         assert_eq!(valid.status, 233);
@@ -6911,11 +7551,12 @@ mod tests {
         let moved = s.handle("[36] SET //TEST/252/p/30 Address 31");
         assert_eq!(moved.status, 200);
         assert!(moved.lines.is_empty() && moved.final_text == "200 OK: //TEST/252/p/31");
-        // The move is physical-only: the database record stays put while
-        // physical reads observe the new address.
+        // The move is physical-only: the database object stays readable at
+        // its old path while the newly observed physical object is readable
+        // at the destination.
         assert_eq!(s.handle("[37] DBGET //TEST/252/p/30/UnitName").status, 200);
-        assert_eq!(s.handle("[37b] GET //TEST/252/p/30 UnitName").status, 401);
-        let moved_read = s.handle("[37c] GET //TEST/252/p/31 UnitName");
+        assert_eq!(s.handle("[37b] GET //TEST/252/p/30 State").status, 300);
+        let moved_read = s.handle("[37c] GET //TEST/252/p/31 State");
         assert_eq!(moved_read.status, 300);
         let oid_add = s.handle("[38] DBADDSAFE //TEST/252/56 Level 1 Evening");
         let oid = oid_add.final_text.rsplit('=').next().unwrap().to_string();
@@ -6926,20 +7567,20 @@ mod tests {
         // Deleting retires the identity: the OID stops resolving.
         assert_eq!(s.handle(&format!("[40] DBDELETE !{oid}")).status, 200);
         assert_eq!(s.handle(&format!("[41] DBGET !{oid}/OID")).status, 401);
-        // Unknown unit fields are 404 (QUICKGET parity); alias writes
-        // land in both layers' struct twins (unit 40 is fresh below).
+        // Unknown native object properties are 402; Type writes land in both
+        // layers' struct twins (unit 40 is fresh below).
         assert_eq!(
             s.handle("[42] DBADDSAFE //TEST/252 Unit 40 Aux").status,
             200
         );
-        assert_eq!(s.handle("[43] GET //TEST/252/p/40 NoSuchField").status, 404);
+        assert_eq!(s.handle("[43] GET //TEST/252/p/40 NoSuchField").status, 402);
         assert_eq!(
             s.handle("[44] DBSETSAFE //TEST/252/p/40/Type KEYE1X")
                 .status,
             200
         );
-        let aliased = s.handle("[45] GET //TEST/252/p/40 UnitType");
-        assert!(aliased.final_text.contains("UnitType=KEYE1X"));
+        let aliased = s.handle("[45] GET //TEST/252/p/40 Type");
+        assert!(aliased.final_text.contains("Type=KEYE1X"));
     }
 
     #[test]
@@ -6953,10 +7594,10 @@ mod tests {
                 .status,
             200
         );
-        // Untouched groups read level 0.
+        // Native C-Gate rejects an unknown group until the group is created
+        // by a database entry or first observed through a lighting command.
         let fresh = s.handle("[4] GET //TEST/254/56/1 level");
-        assert_eq!(fresh.status, 300);
-        assert!(fresh.final_text.ends_with(": level=0"));
+        assert_eq!(fresh.status, 401);
         assert_eq!(s.handle("[5] LIGHTING ON //TEST/254/56/1").status, 200);
         let on = s.handle("[6] GET //TEST/254/56/1 level");
         assert!(on.final_text.ends_with(": level=255"));
@@ -6982,13 +7623,14 @@ mod tests {
         assert!(other.final_text.ends_with(": level=64"));
         let first = s.handle("[15] GET //TEST/254/56/1 level");
         assert!(first.final_text.ends_with(": level=0"));
-        // Malformed lighting addresses stay 400.
+        // The application object is valid, but has no `level` property.
         assert_eq!(s.handle("[16] LIGHTING ON //TEST/254/56").status, 400);
-        assert_eq!(s.handle("[17] GET //TEST/254/56 level").status, 400);
-        // STOP on a never-touched group is a side-effect-free no-op.
+        assert_eq!(s.handle("[17] GET //TEST/254/56 level").status, 402);
+        // The local STOP extension remains a side-effect-free no-op: it does
+        // not manufacture a group object that native GET could resolve.
         assert_eq!(s.handle("[18] LIGHTING STOP //TEST/254/56/7").status, 200);
         let held_empty = s.handle("[19] GET //TEST/254/56/7 level");
-        assert!(held_empty.final_text.ends_with(": level=0"));
+        assert_eq!(held_empty.status, 401);
     }
 
     #[test]
@@ -7145,9 +7787,12 @@ mod tests {
         assert_eq!(s.handle("[6] PROJECT USE TEST").status, 404);
         assert_eq!(s.handle("[7] PROJECT USE TEST2").status, 200);
         // Database keys followed the project: new-path reads hit.
-        let moved = s.handle("[7b] GET //TEST2/254/p/20 UnitName");
-        assert_eq!(moved.status, 300);
-        assert!(moved.final_text.contains("UnitName=LOUNGE"));
+        let moved = s.handle("[7b] DBGET //TEST2/254/p/20/UnitName");
+        assert_eq!(moved.status, 200);
+        assert!(moved
+            .lines
+            .iter()
+            .any(|line| line.ends_with("UnitName=LOUNGE")));
         let level = s.handle("[7b1] DBADDSAFE //TEST2/254/56/1 Level 7 Seven");
         let level_oid = level
             .final_text
@@ -7163,9 +7808,12 @@ mod tests {
         let copied = s.handle("[7c] PROJECT COPY TEST2 TEST3");
         assert_eq!(copied.final_text, "200 OK.");
         assert_eq!(s.handle("[7d] PROJECT USE TEST3").status, 200);
-        let cloned = s.handle("[7e] GET //TEST3/254/p/20 UnitName");
-        assert_eq!(cloned.status, 300);
-        assert!(cloned.final_text.contains("UnitName=LOUNGE"));
+        let cloned = s.handle("[7e] DBGET //TEST3/254/p/20/UnitName");
+        assert_eq!(cloned.status, 200);
+        assert!(cloned
+            .lines
+            .iter()
+            .any(|line| line.ends_with("UnitName=LOUNGE")));
         // Fresh native C-Gate 3.4 evidence shows repository copies retain
         // OIDs. Selected-project context disambiguates duplicate level OIDs.
         let xml_new = s.handle("[7e1] DBGETXML //TEST3/254");
@@ -7211,13 +7859,16 @@ mod tests {
                 .status,
             200
         );
-        let source = s.handle("[7i] GET //TEST2/254/p/20 UnitName");
-        assert!(source.final_text.contains("UnitName=LOUNGE"));
+        let source = s.handle("[7i] DBGET //TEST2/254/p/20/UnitName");
+        assert!(source
+            .lines
+            .iter()
+            .any(|line| line.ends_with("UnitName=LOUNGE")));
         // Process-local project archives round-trip under a new name.
         assert_eq!(s.handle("[8] PROJECT ARCHIVE TEST2 /tmp/x.zip").status, 200);
         assert_eq!(s.handle("[9] PROJECT RESTORE TEST4 /tmp/x.zip").status, 200);
         assert_eq!(s.handle("[9b] PROJECT USE TEST4").status, 200);
-        assert_eq!(s.handle("[9c] GET //TEST4/254/p/20 UnitName").status, 300);
+        assert_eq!(s.handle("[9c] DBGET //TEST4/254/p/20/UnitName").status, 200);
         assert_eq!(s.handle("[9d] PROJECT USE TEST2").status, 200);
         // The mock models no server repositories: exact empty 124 reply.
         let repos = s.handle("[10] REPOSITORY LIST");
@@ -7248,15 +7899,15 @@ mod tests {
             "SyncState=idle",
             "AutoUnravel=no",
             "AutoUpdate=no",
-            "Retries=0",
+            "Retries=2",
             "NetworkType=Wired",
-            "Name=254",
+            "Name=Local",
             "Type=Cni",
             "InterfaceAddress=127.0.0.1:10001",
         ] {
             assert!(rows.iter().any(|l| l.contains(expected)), "{expected}");
         }
-        assert_eq!(runtime.lines.len() + 1, 21);
+        assert_eq!(runtime.lines.len() + 1, 40);
     }
 
     #[test]
@@ -7460,8 +8111,8 @@ mod tests {
             200
         );
         assert_eq!(s.handle("[3] DBADDSAFE //TEST/254 Unit 6 Hall").status, 200);
-        // Dropping bus presence keeps the database record: physical
-        // reads go absent while database reads still hit.
+        // Dropping bus presence keeps the database object addressable while
+        // physical inventory remains empty.
         assert_eq!(s.handle("[4] MOCK BUS-DEL //TEST/254 6").status, 200);
         assert_eq!(s.handle("[5] MOCK BUS-DEL //TEST/254 6").status, 404);
         let pingu = s.handle("[6] NET PINGU //TEST/254");
@@ -7469,7 +8120,7 @@ mod tests {
         assert!(pingu.lines.iter().any(|l| l == "302-Units="));
         assert_eq!(pingu.final_text, "200 OK.");
         assert_eq!(s.handle("[7] DBGET //TEST/254/p/6/UnitName").status, 200);
-        assert_eq!(s.handle("[8] GET //TEST/254/p/6 UnitName").status, 401);
+        assert_eq!(s.handle("[8] GET //TEST/254/p/6 UnitName").status, 402);
     }
 
     #[test]
@@ -7610,6 +8261,10 @@ mod tests {
         assert!(has_status_prefix(
             "501-failed: could not delete programmer: Orphan"
         ));
+        assert!(has_status_prefix(
+            "402-Operation not supported by: //PROJECT"
+        ));
+        assert!(!has_status_prefix("402-user-controlled"));
         assert!(!has_status_prefix("501-user-controlled"));
         assert!(!has_status_prefix("200-foo"));
         assert!(!has_status_prefix("301 OID=x"));
@@ -7650,7 +8305,8 @@ mod tests {
             .chain(std::iter::once(star.final_text.as_str()))
             .collect();
         assert!(!rows.iter().any(|l| l.contains(": 20=")));
-        assert!(rows.iter().any(|l| l.contains("UnitName=Lounge")));
+        assert!(rows.iter().any(|l| l.contains(": Name=")));
+        assert!(!rows.iter().any(|l| l.contains("UnitName=")));
     }
 
     #[test]
@@ -7671,10 +8327,10 @@ mod tests {
             200
         );
         assert_eq!(s.handle("[5] DBRENAMENETSAFE 254 253").status, 200);
-        // The stored field followed the network to its new address.
-        let g = s.handle("[6] GET //TEST/253/p/20 UnitName");
-        assert_eq!(g.status, 300);
-        assert!(g.final_text.contains("UnitName=X"));
+        // The stored database field followed the network to its new address.
+        let g = s.handle("[6] DBGET //TEST/253/p/20/UnitName");
+        assert_eq!(g.status, 200);
+        assert!(g.lines.iter().any(|line| line.ends_with("UnitName=X")));
         let stale = s.handle("[7] DBGET //TEST/254/56");
         assert_eq!(stale.status, 401);
     }

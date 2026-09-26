@@ -99,7 +99,7 @@ async fn project_copy_delete_preserves_database_identity_and_mqtt_continuity() {
             .await
             .last()
             .unwrap(),
-        "[7] 200 OK"
+        "[7] 200 OK."
     );
     let destination = command(&mut reader, &mut writer, "8", "DBGETXML //COPY/1").await;
     assert_eq!(xml_oid(&destination), source_oid);
