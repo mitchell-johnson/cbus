@@ -76,6 +76,17 @@ acceptance limits are in
 `rust/testdata/fixtures/native_cgate_telephony.json`. Incoming Telephony
 traffic stays a typed event and cannot satisfy a pending PCI confirmation.
 
+DALI gateway control uses direct point-to-point extended CAL addressed to a
+`SYS_DAL2` unit with device type `0xDA`. The retained controls are EXECUTE
+`0x81`, POLL `0x82`, STATUS `0x83`, and CANCEL `0x84`; DALI uses priority class
+zero and carries no PCI confirmation code. Completion therefore requires a
+source-correlated extended reply from the gateway. AUTO sends EXECUTE exactly
+once, then polls at most ten times at 1.5-second intervals while status is
+IN_PROGRESS or FAIL_BUSY. Connection loss makes the result uncertain and the
+request is not replayed. Exact request/reply and JSON cases are in
+`rust/testdata/vectors/dali.jsonl`; native help evidence for all 128 maintained
+DALI paths is in `rust/testdata/fixtures/native_cgate_dali_help.json`.
+
 Strict decoding rejects malformed input. Lenient decoding retains compatibility behavior for imperfect frames. The golden-vector suite fixes the expected byte consumption, decoded JSON, and re-encoded bytes for representative and edge-case traffic.
 
 ## Framing and PCI behavior

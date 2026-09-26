@@ -2,6 +2,7 @@
 //! Pointer selection is volatile; memory reads never issue a memory write.
 
 use super::*;
+use cbus_protocol::dali::DaliCalMode;
 use cbus_protocol::serial_address::{encode_serial_address, parse_native_serial};
 use cbus_protocol::{kfi, label_clear};
 use std::io::{Error, ErrorKind, Result};
@@ -75,10 +76,40 @@ enum ProgrammingRoute {
     Oem,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 enum ExtendedOutcome {
-    Status(u8),
-    Nak,
+    Reply {
+        status: u8,
+        data: Vec<u8>,
+        response_wire: Vec<u8>,
+    },
+    Nak {
+        response_wire: Vec<u8>,
+    },
+}
+
+/// One source-correlated DALI extended-CAL exchange.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DaliExchange {
+    /// Native command mode sent for this exchange.
+    pub mode: DaliCalMode,
+    /// Canonical native outgoing command string, including its leading `\`.
+    pub request_wire: String,
+    /// Exact decoded C-Bus reply re-encoded as binary wire bytes.
+    pub response_wire: Vec<u8>,
+    /// Native gateway status byte, or `0xFF` for a correlated NAK.
+    pub status: u8,
+    /// Operation-specific response bytes.
+    pub data: Vec<u8>,
+    /// Whether the correlated response was a CAL negative acknowledgement.
+    pub nak: bool,
+}
+
+/// Result of one explicit DALI mode or an AUTO execute/poll sequence.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DaliCommandResult {
+    /// Every exchange in order. AUTO retains its execute and all polls.
+    pub exchanges: Vec<DaliExchange>,
 }
 
 /// Correlated acceptance of one selected-serial address broadcast.
@@ -1560,10 +1591,11 @@ impl PciClient {
         request: Cal,
         group: u8,
         operation: u8,
+        priority_class: u8,
     ) -> Result<ExtendedOutcome> {
         let mut replies = self.packets.subscribe();
         let packet = Packet::PointToPoint {
-            meta: Meta::new(false, 1),
+            meta: Meta::new(false, priority_class),
             unit_address: unit,
             bridged: false,
             hops: vec![],
@@ -1590,22 +1622,50 @@ impl PciClient {
                 .await
                 .map_err(|_| Error::new(ErrorKind::BrokenPipe, "PCI writer ended"))??;
             loop {
-                let cals = match replies.recv().await {
-                    Ok(Some(Packet::PointToPoint { meta, cals, .. }))
-                        if meta.source_address == Some(unit) =>
-                    {
-                        cals
+                let (cals, response_wire) = match replies.recv().await {
+                    Ok(Some(Packet::PointToPoint {
+                        meta,
+                        unit_address,
+                        bridged,
+                        hops,
+                        cals,
+                    })) if meta.source_address == Some(unit) => {
+                        let response_wire = Packet::PointToPoint {
+                            meta,
+                            unit_address,
+                            bridged,
+                            hops,
+                            cals: cals.clone(),
+                        }
+                        .encode()
+                        .map_err(|error| Error::new(ErrorKind::InvalidData, error.0))?;
+                        (cals, response_wire)
                     }
-                    Ok(Some(Packet::PointToPoint { meta, cals, .. }))
-                        if meta.source_address.is_none()
-                            && self.local_unit.load(Ordering::Acquire) == u16::from(unit) =>
+                    Ok(Some(Packet::PointToPoint {
+                        meta,
+                        unit_address,
+                        bridged,
+                        hops,
+                        cals,
+                    })) if meta.source_address.is_none()
+                        && self.local_unit.load(Ordering::Acquire) == u16::from(unit) =>
                     {
-                        cals
+                        let response_wire = Packet::PointToPoint {
+                            meta,
+                            unit_address,
+                            bridged,
+                            hops,
+                            cals: cals.clone(),
+                        }
+                        .encode()
+                        .map_err(|error| Error::new(ErrorKind::InvalidData, error.0))?;
+                        (cals, response_wire)
                     }
                     Ok(Some(Packet::BareCal(cal)))
                         if self.local_unit.load(Ordering::Acquire) == u16::from(unit) =>
                     {
-                        vec![cal]
+                        let response_wire = cal.encode();
+                        (vec![cal], response_wire)
                     }
                     Ok(Some(_)) => continue,
                     Ok(None) | Err(_) => {
@@ -1621,14 +1681,20 @@ impl PciClient {
                             group: got_group,
                             operation: got_operation,
                             status,
-                            ..
-                        } if got_group == group && got_operation == operation => {
-                            return Ok(ExtendedOutcome::Status(status));
+                            data,
+                        } if (got_group == group || (group == 0xda && got_group == 0))
+                            && got_operation == operation =>
+                        {
+                            return Ok(ExtendedOutcome::Reply {
+                                status,
+                                data,
+                                response_wire,
+                            });
                         }
                         // Native aQ accepts any 0x3B response from the
                         // correlated unit as the command's negative ACK.
                         Cal::Nak { .. } | Cal::ReaddressNak => {
-                            return Ok(ExtendedOutcome::Nak);
+                            return Ok(ExtendedOutcome::Nak { response_wire });
                         }
                         _ => {}
                     }
@@ -1642,6 +1708,82 @@ impl PciClient {
                 "extended CAL reply timed out",
             ))
         })
+    }
+
+    /// Send a DALI extended-CAL command through the shared PCI exactly once
+    /// per exchange. AUTO performs one execute followed by at most ten polls,
+    /// matching C-Gate 3.4's bounded sequence. It never retries a lost or
+    /// uncertain write. Any incomplete exchange faults the programming lane
+    /// until the caller installs a fresh [`PciClient`].
+    pub async fn dali_command(
+        &self,
+        unit: u8,
+        mode: DaliCalMode,
+        device_type: u8,
+        operation: u8,
+        payload: &[u8],
+    ) -> Result<DaliCommandResult> {
+        if unit == 0 || unit == 255 {
+            return Err(Error::new(
+                ErrorKind::InvalidInput,
+                "DALI gateway address must be in 1..254",
+            ));
+        }
+        // Build every possible first request before taking the lane. This
+        // makes malformed input a definite pre-I/O refusal.
+        let first_mode = if mode == DaliCalMode::Auto {
+            DaliCalMode::Execute
+        } else {
+            mode
+        };
+        let first_request = first_mode
+            .request(device_type, operation, payload)
+            .map_err(|error| Error::new(ErrorKind::InvalidInput, error.0))?;
+        let _lane = self.programming_lane.lock().await;
+        if self.programming_fault.load(Ordering::Acquire) {
+            return Err(Error::other(
+                "programming stream needs reconnect after an incomplete transaction",
+            ));
+        }
+        let mut transaction = Transaction {
+            fault: &self.programming_fault,
+            complete: false,
+        };
+        let mut exchanges = Vec::new();
+        let mut next = Some((first_mode, first_request));
+        let mut polls = 0usize;
+        while let Some((sent_mode, request)) = next.take() {
+            let request_wire = format!("\\06{unit:02X}00{}", hex::encode_upper(request.encode()));
+            let outcome = self
+                .programming_extended_exchange(unit, request, device_type, operation, 0)
+                .await?;
+            let (status, data, response_wire, nak) = match outcome {
+                ExtendedOutcome::Reply {
+                    status,
+                    data,
+                    response_wire,
+                } => (status, data, response_wire, false),
+                ExtendedOutcome::Nak { response_wire } => (0xff, Vec::new(), response_wire, true),
+            };
+            exchanges.push(DaliExchange {
+                mode: sent_mode,
+                request_wire,
+                response_wire,
+                status,
+                data,
+                nak,
+            });
+            if mode == DaliCalMode::Auto && !nak && matches!(status, 1 | 2) && polls < 10 {
+                polls += 1;
+                tokio::time::sleep(Duration::from_millis(1500)).await;
+                let poll = DaliCalMode::Poll
+                    .request(device_type, operation, &[])
+                    .expect("payload-free DALI poll is always encodable");
+                next = Some((DaliCalMode::Poll, poll));
+            }
+        }
+        transaction.complete = true;
+        Ok(DaliCommandResult { exchanges })
     }
 
     /// Commit volatile programming changes in a C-Bus 3 unit to NVM using
@@ -1667,25 +1809,26 @@ impl PciClient {
                 },
                 0,
                 4,
+                1,
             )
             .await?;
         match execute {
-            ExtendedOutcome::Status(0) => {
+            ExtendedOutcome::Reply { status: 0, .. } => {
                 transaction.complete = true;
                 return Ok(());
             }
-            ExtendedOutcome::Status(1) => {}
-            ExtendedOutcome::Status(2) => {
+            ExtendedOutcome::Reply { status: 1, .. } => {}
+            ExtendedOutcome::Reply { status: 2, .. } => {
                 transaction.complete = true;
                 return Err(Error::other("C-Bus 3 unit is busy saving to NVM"));
             }
-            ExtendedOutcome::Status(status) => {
+            ExtendedOutcome::Reply { status, .. } => {
                 transaction.complete = true;
                 return Err(Error::other(format!(
                     "Save-to-NVM EXECUTE returned status 0x{status:02X}"
                 )));
             }
-            ExtendedOutcome::Nak => {
+            ExtendedOutcome::Nak { .. } => {
                 transaction.complete = true;
                 return Err(Error::other("unit rejected Save-to-NVM EXECUTE"));
             }
@@ -1702,10 +1845,11 @@ impl PciClient {
                         },
                         0,
                         4,
+                        1,
                     )
                     .await?;
                 match outcome {
-                    ExtendedOutcome::Status(1) => {
+                    ExtendedOutcome::Reply { status: 1, .. } => {
                         tokio::time::sleep(NVM_POLL_INTERVAL).await;
                     }
                     other => return Ok(other),
@@ -1725,11 +1869,11 @@ impl PciClient {
         };
         transaction.complete = true;
         match outcome {
-            ExtendedOutcome::Status(0) => Ok(()),
-            ExtendedOutcome::Status(status) => Err(Error::other(format!(
+            ExtendedOutcome::Reply { status: 0, .. } => Ok(()),
+            ExtendedOutcome::Reply { status, .. } => Err(Error::other(format!(
                 "Save-to-NVM POLL returned status 0x{status:02X}"
             ))),
-            ExtendedOutcome::Nak => Err(Error::other("unit rejected Save-to-NVM POLL")),
+            ExtendedOutcome::Nak { .. } => Err(Error::other("unit rejected Save-to-NVM POLL")),
         }
     }
 
@@ -3300,6 +3444,18 @@ mod tests {
         remote.get_mut().write_all(wire.as_bytes()).await.unwrap();
     }
 
+    async fn direct_reply(remote: &mut BufReader<tokio::io::DuplexStream>, source: u8, cal: &[u8]) {
+        // Literal native direct-reply envelope: source, local PCI unit 0x10,
+        // route terminator, CAL and checksum.
+        let mut bytes = vec![0x86, source, 0x10, 0x00];
+        bytes.extend(cal);
+        let sum = bytes.iter().fold(0u8, |acc, byte| acc.wrapping_add(*byte));
+        bytes.push(0u8.wrapping_sub(sum));
+        let mut wire = hex::encode_upper(bytes).into_bytes();
+        wire.extend_from_slice(b"\r\n");
+        remote.get_mut().write_all(&wire).await.unwrap();
+    }
+
     async fn routed_reply(
         remote: &mut BufReader<tokio::io::DuplexStream>,
         bridges: &[u8],
@@ -4712,6 +4868,110 @@ mod tests {
             })
         ));
         assert!(!pci.programming_fault.load(Ordering::Acquire));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn dali_auto_uses_native_priority_zero_and_correlates_execute_poll_sequence() {
+        let (pci, mut remote, mut events) = setup().await;
+        let worker = pci.clone();
+        let running = tokio::spawn(async move {
+            worker
+                .dali_command(20, DaliCalMode::Auto, 0xda, 7, &[])
+                .await
+        });
+        assert_eq!(line(&mut remote).await, b"\\061400E381DA07\r");
+
+        // MQTT/event fanout stays live while the source-correlated DALI
+        // transaction owns only the programming lane.
+        remote
+            .get_mut()
+            .write_all(b"05043800790145\r\n")
+            .await
+            .unwrap();
+        direct_reply(&mut remote, 19, &[0xe4, 0x83, 0xda, 7, 0]).await;
+        tokio::task::yield_now().await;
+        assert!(
+            !running.is_finished(),
+            "a different source must not satisfy DALI"
+        );
+
+        // Retained firmware accepts group zero as an alias for device type
+        // 0xDA in an otherwise correlated response.
+        direct_reply(&mut remote, 20, &[0xe4, 0x83, 0, 7, 1]).await;
+        tokio::time::advance(Duration::from_millis(1500)).await;
+        tokio::task::yield_now().await;
+        assert_eq!(line(&mut remote).await, b"\\061400E382DA07\r");
+        direct_reply(&mut remote, 20, &[0xe4, 0x83, 0xda, 7, 2]).await;
+        tokio::time::advance(Duration::from_millis(1500)).await;
+        tokio::task::yield_now().await;
+        assert_eq!(line(&mut remote).await, b"\\061400E382DA07\r");
+        direct_reply(&mut remote, 20, &[0xe5, 0x83, 0xda, 7, 0, 0xaa]).await;
+
+        let result = running.await.unwrap().unwrap();
+        assert_eq!(
+            result
+                .exchanges
+                .iter()
+                .map(|exchange| (exchange.mode, exchange.status, exchange.data.clone()))
+                .collect::<Vec<_>>(),
+            [
+                (DaliCalMode::Execute, 1, vec![]),
+                (DaliCalMode::Poll, 2, vec![]),
+                (DaliCalMode::Poll, 0, vec![0xaa]),
+            ]
+        );
+        assert_eq!(result.exchanges[0].request_wire, "\\061400E381DA07");
+        assert!(matches!(
+            events.recv().await,
+            Some(CBusEvent::LightingOn {
+                source: Some(4),
+                app: 56,
+                group: 1
+            })
+        ));
+        assert!(!pci.programming_fault.load(Ordering::Acquire));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn dali_nak_is_definitive_but_lost_reply_faults_without_replay() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let rejected = tokio::spawn(async move {
+            worker
+                .dali_command(20, DaliCalMode::Execute, 0xda, 7, &[])
+                .await
+        });
+        assert_eq!(line(&mut remote).await, b"\\061400E381DA07\r");
+        direct_reply(&mut remote, 20, &[0x3b, 0, 7, 2]).await;
+        let result = rejected.await.unwrap().unwrap();
+        assert_eq!(result.exchanges.len(), 1);
+        assert!(result.exchanges[0].nak);
+        assert_eq!(result.exchanges[0].status, 0xff);
+        assert!(!pci.programming_fault.load(Ordering::Acquire));
+
+        let worker = pci.clone();
+        let uncertain = tokio::spawn(async move {
+            worker
+                .dali_command(20, DaliCalMode::Execute, 0xda, 7, &[])
+                .await
+        });
+        assert_eq!(line(&mut remote).await, b"\\061400E381DA07\r");
+        assert_eq!(
+            uncertain.await.unwrap().unwrap_err().kind(),
+            ErrorKind::TimedOut
+        );
+        assert!(pci.programming_fault.load(Ordering::Acquire));
+        assert!(pci
+            .dali_command(20, DaliCalMode::Execute, 0xda, 7, &[])
+            .await
+            .unwrap_err()
+            .to_string()
+            .contains("needs reconnect"));
+        assert!(
+            tokio::time::timeout(Duration::from_millis(1), line(&mut remote))
+                .await
+                .is_err()
+        );
     }
 
     #[tokio::test(start_paused = true)]

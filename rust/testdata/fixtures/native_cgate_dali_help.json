@@ -1,0 +1,1265 @@
+{
+  "format": "native-cgate-dali-help-v1",
+  "oracle": {
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "listener_ownership_verified": true,
+    "product": "Schneider Electric C-Gate",
+    "transport": "owned native Java 11 child; IPv4 loopback listeners only; empty project set; no C-Bus endpoint",
+    "version": "3.4.0.2001"
+  },
+  "paths": {
+    "DALI ADDRESS_UNKNOWN": [
+      "101-Help: syntax: dali address_unknown [mode=(auto)] <cdg-object-id> <line>",
+      "101-Help: Starts assigning short addresses to all unaddressed devices on specified dali line.",
+      "101-Help: Returns 64 bit bitmask of short addresses which have been assigned/discovered.",
+      "101-Help: Does not resolve address conflicts.",
+      "101-Help: monitor progress via dali address_unknown poll <cdg-object-id> <line>",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101 Help: <line> refers to dali line A or B."
+    ],
+    "DALI BROKEN": [
+      "101-Help: syntax: dali broken [mode=(auto)] <cdg-object-id> <line>",
+      "101-Help: Begin search for broken device addresses known by CDG.",
+      "101-Help: Will return current broken list",
+      "101-Help: Execution of command is non-destructive & non-remediating.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101 Help: <line> refers to dali line A or B."
+    ],
+    "DALI CATALOG": [
+      "101-Help: DALI CATALOG commands:",
+      "101-Help:  DALI CATALOG ? Help for these commands",
+      "101-Help:  DALI CATALOG GET_SPEC - Gets full DALI catalog device specification for specified name",
+      "101-Help:  DALI CATALOG LIST - Lists all loaded DALI catalogue device names",
+      "101 Help:  DALI CATALOG RELOAD - Reloads global DALI catalog from project"
+    ],
+    "DALI CATALOG GET_SPEC": [
+      "101-Help: dali catalog get_spec <dc-device-name>",
+      "101-Help: Gets full DALI catalog device specification for specified name.",
+      "101-Help: ",
+      "101 Help: <dc-device-name> must exist in `dali catalog list` command"
+    ],
+    "DALI CATALOG LIST": [
+      "101-Help: dali catalog list",
+      "101 Help: Lists all loaded DALI catalogue device names + supported channel's features"
+    ],
+    "DALI CATALOG RELOAD": [
+      "101-Help: dali catalog reload [project-address]",
+      "101-Help: Reloads global DALI catalog device schemas from system, project database and user files.",
+      "101-Help: NOTE: it also saves updated catalog back to project.",
+      "101-Help: ",
+      "101 Help: [project-address] any project that is loadable. if blank, will attempt to load default project"
+    ],
+    "DALI CHECK_FOR_UNKNOWN": [
+      "101-Help: syntax: dali address_unknown [mode=(auto)] <cdg-object-id> <line>",
+      "101-Help: Will initiate search for new addresses not known by CDG.",
+      "101-Help: Will return current status of unknown devices",
+      "101-Help: Execution of command is non-destructive & non-remediating.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101 Help: <line> refers to dali line A or B."
+    ],
+    "DALI COLOUR_POWER_FAIL_PARAMS": [
+      "101-Help: syntax: dali colour_power_fail_params [mode=(auto)] <cdg-object-id> <line> <ecg-address> <param-type>",
+      "101-Help: Retrieves colour power on / system failure params for DT8 @ the addressed ECG.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: <ecg-address> refers to short address",
+      "101 Help: <param-type> 0-PowerOn, 1-SystemFailure"
+    ],
+    "DALI COLOUR_TEMPERATURE": [
+      "101-Help: syntax: dali colour_temperature [mode=(auto)] <cdg-object-id> <line> <ecg-address>",
+      "101-Help: Retrieves colour temperature limits for DT8 @ the addressed ECG.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: <ecg-address> refers to short address"
+    ],
+    "DALI COLOUR_TYPE": [
+      "101-Help: syntax: dali colour_type [mode=(auto)] <cdg-object-id> <line> <ecg-address>",
+      "101-Help: Retrieves colour type for DT8 @ the addressed ECG.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: <ecg-address> refers to short address"
+    ],
+    "DALI COMMON_PARAMS": [
+      "101-Help: syntax: dali common_params [mode=(auto)] <cdg-object-id> <line> <ecg-address>",
+      "101-Help: Retrieves common parameters discovered for the addressed ECG.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: <ecg-address> refers to short address"
+    ],
+    "DALI COMMON_READ_ONLY_PARAMS": [
+      "101-Help: syntax: dali common_read_only_params [mode=(auto)] <cdg-object-id> <line> <ecg-address>",
+      "101-Help: Retrieves common parameters discovered for the addressed ECG.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: <ecg-address> refers to short address"
+    ],
+    "DALI CONFLICTING": [
+      "101-Help: syntax: dali conflicting [mode=(auto)] <cdg-object-id> <line>",
+      "101-Help: Return current list for conflicting device addresses known by CDG.",
+      "101-Help: NOTE: does not refresh list. use RESCAN command to refresh list.",
+      "101-Help: Execution of command is non-destructive & non-remediating.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101 Help: <line> refers to dali line A or B."
+    ],
+    "DALI DISCOVER_GTIN_SERIAL": [
+      "101-Help: syntax: dali discover_gtin_serial [mode=(auto)] <cdg-object-id> <line> <ecg-address>",
+      "101-Help: Initiates retrieval of the GTIN & serial number for addressed ECG.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: <ecg-address> refers to short address"
+    ],
+    "DALI DISCOVER_KNOWN_FULL_INFO": [
+      "101-Help: syntax: dali discover_known_full_info [mode=(auto)] <cdg-object-id> <line>",
+      "101-Help: Will initiate search for all parameters for supported devices known by CDG.",
+      "101-Help: Will return bitmask of short addresses for which full info has been retrieved.",
+      "101-Help: NOTE: assumes `dali discover_known_type_info` has been run.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101 Help: <line> refers to dali line A or B."
+    ],
+    "DALI DISCOVER_KNOWN_TYPE_INFO": [
+      "101-Help: syntax: dali discover_known_type_info [mode=(auto)] <cdg-object-id> <line>",
+      "101-Help: Initiate & check progress of discovering device type info for all discovered devices on specified dali line.",
+      "101-Help: Returns 64 bit bitmask of short addresses which contains discovered info.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101 Help: <line> refers to dali line A or B."
+    ],
+    "DALI DISCOVER_STATUS_INFO": [
+      "101-Help: syntax: dali discover_status_info [mode=(auto)] <cdg-object-id> <line> <ecg-address>",
+      "101-Help: Initiates refresh of all status registers for addressed ECG.",
+      "101-Help: NOTE: does device specific status update (i.e. DT1, DT6, DT8)",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: <ecg-address> refers to short address"
+    ],
+    "DALI EMERGENCY": [
+      "101-Help: DALI EMERGENCY commands:",
+      "101-Help:  DALI EMERGENCY ? Help for these commands",
+      "101-Help:  DALI EMERGENCY INHIBIT - Send emergency inhibit command to ecg.",
+      "101-Help:  DALI EMERGENCY PARAMS - Retrieve emergency params for device.",
+      "101-Help:  DALI EMERGENCY RELIGHT - Send emergency relight command to ecg.",
+      "101-Help:  DALI EMERGENCY REST - Send emergency rest command to ecg.",
+      "101-Help:  DALI EMERGENCY SET_LEVEL_MANY - Set emergency level for specified devices.",
+      "101-Help:  DALI EMERGENCY SET_PARAMS - Set emergency params for specified device.",
+      "101-Help:  DALI EMERGENCY SET_PROLONG_MANY - Set emergency prolong time for specified devices.",
+      "101-Help:  DALI EMERGENCY SET_TEST_TIMEOUT_MANY - Set emergency test timeout for specified devices.",
+      "101-Help:  DALI EMERGENCY START_DURATION_TEST - Send emergency start duration test command to ecg.",
+      "101-Help:  DALI EMERGENCY START_FUNCTION_TEST - Send emergency start function test command to ecg.",
+      "101-Help:  DALI EMERGENCY STATUS - Retrieve emergency status for device.",
+      "101-Help:  DALI EMERGENCY STOP_TEST - Send emergency stop test command to ecg.",
+      "101-Help:  DALI EMERGENCY TEST_STATUS - Retrieve latest emergency status for object-id.",
+      "101 Help:  DALI EMERGENCY UPDATE_TEST_STATUS - Refresh emergency test status values for object-id."
+    ],
+    "DALI EMERGENCY INHIBIT": [
+      "101-Help: syntax: dali emergency inhibit [mode=(auto)] <cdg-object-id> <line> [ecg-address=($50)]",
+      "101-Help: Send an Emergency Inhibit Mode command to the addressed ECG.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: [ecg-address=($50)] refers to short address, broadcast address or group address"
+    ],
+    "DALI EMERGENCY PARAMS": [
+      "101-Help: syntax: dali emergency params [mode=(auto)] <cdg-object-id> <line> <ecg-address>",
+      "101-Help: Gets ONLY for DT1 emergency parameters (202) for addressed ECG.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: <ecg-address> refers to short address"
+    ],
+    "DALI EMERGENCY RELIGHT": [
+      "101-Help: syntax: dali emergency relight [mode=(auto)] <cdg-object-id> <line> [ecg-address=($50)]",
+      "101-Help: Send an Emergency Relight Mode command to the addressed ECG.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: [ecg-address=($50)] refers to short address, broadcast address or group address"
+    ],
+    "DALI EMERGENCY REST": [
+      "101-Help: syntax: dali emergency rest [mode=(auto)] <cdg-object-id> <line> [ecg-address=($50)]",
+      "101-Help: Send an Emergency Rest Mode command to the addressed ECG.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: [ecg-address=($50)] refers to short address, broadcast address or group address"
+    ],
+    "DALI EMERGENCY SET_LEVEL_MANY": [
+      "101-Help: syntax: dali set_emergency_level_many [mode=(auto)] <cdg-object-id> <line> <emerg-level> <bitmask64>",
+      "101-Help: Sets the Emergency Level for specified devices.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: <emerg-level> Emergency Level value to set in the selected devices",
+      "101-Help:      (must be between Emergency Levels returned by GET 202 BLOB)",
+      "101 Help: <bitmask64> refers to selected short addresses as 64bit bitmask"
+    ],
+    "DALI EMERGENCY SET_PARAMS": [
+      "101-Help: syntax: dali set_emergency_params [mode=(auto)] <cdg-object-id> <line> <ecg-address> <emerg-level> <prolong-time> <timeout>",
+      "101-Help: Set emergency params for specified device (DT1).",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: <ecg-address> device short address",
+      "101-Help: <emerg-level> Emergency Level value to set in the selected devices",
+      "101-Help:      (must be between Emergency Levels returned by GET 202 BLOB)",
+      "101-Help: <prolong-time> refers to amount of time that device statys in emergency after power recovery",
+      "101-Help:      (value to be stored is in increments of 0.5 minutes (0-255 = 0 to 127.5 minutes))",
+      "101-Help: <timeout> test timeout value to set in the selected devices",
+      "101 Help:      (timeout in days, ($0=15 minutes))"
+    ],
+    "DALI EMERGENCY SET_PROLONG_MANY": [
+      "101-Help: syntax: dali set_emergency_prolong_many [mode=(auto)] <cdg-object-id> <line> <prolong-time> <bitmask64>",
+      "101-Help: Sets the Prolong time period for specified devices.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: <prolong-time> refers to amount of time that device statys in emergency after power recovery",
+      "101-Help:      (value to be stored is in increments of 0.5 minutes (0-255 = 0 to 127.5 minutes))",
+      "101 Help: <bitmask64> refers to selected short addresses as 64bit bitmask"
+    ],
+    "DALI EMERGENCY SET_TEST_TIMEOUT_MANY": [
+      "101-Help: syntax: dali set_emergency_test_timeout_many [mode=(auto)] <cdg-object-id> <line> <test-timeout> <bitmask64>",
+      "101-Help: Sets the amount of time device will continue to try running test for specified devices",
+      "101-Help: before reporting test failed in FAIL STATUS register.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: <test-timeout> Test Timeout value to set in the selected devices",
+      "101-Help:      (timeout in days, ($0=15 minutes))",
+      "101 Help: <bitmask64> refers to selected short addresses as 64bit bitmask"
+    ],
+    "DALI EMERGENCY START_DURATION_TEST": [
+      "101-Help: syntax: dali emergency start_duration_test [mode=(auto)] <cdg-object-id> <line> [ecg-address=($50)]",
+      "101-Help: Send an Emergency Start Duration Test command to the addressed ECG.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: [ecg-address=($50)] refers to short address, broadcast address or group address"
+    ],
+    "DALI EMERGENCY START_FUNCTION_TEST": [
+      "101-Help: syntax: dali emergency start_function_test [mode=(auto)] <cdg-object-id> <line> [ecg-address=($50)]",
+      "101-Help: Send an Emergency Start Function Test command to the addressed ECG.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: [ecg-address=($50)] refers to short address, broadcast address or group address"
+    ],
+    "DALI EMERGENCY STATUS": [
+      "101-Help: syntax: dali emergency status [mode=(auto)] <cdg-object-id> <line> <ecg-address>",
+      "101-Help: Gets ONLY for DT1 emergency status (202) for addressed ECG.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: <ecg-address> refers to short address"
+    ],
+    "DALI EMERGENCY STOP_TEST": [
+      "101-Help: syntax: dali emergency stop_test [mode=(auto)] <cdg-object-id> <line> [ecg-address=($50)]",
+      "101-Help: Send an Emergency Stop Test command to the addressed ECG.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: [ecg-address=($50)] refers to short address, broadcast address or group address"
+    ],
+    "DALI EMERGENCY TEST_STATUS": [
+      "101-Help: syntax: dali emergency test_status [mode=(auto)] <cdg-object-id> <line> <object-id>",
+      "101-Help: Retrieve the latest Emergency Status values from the gateway, for the Object ID provided.",
+      "101-Help: note: to use latest values please perform 'update_test_status' command prior to this.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: <object-id> refers to device object id in gateway"
+    ],
+    "DALI EMERGENCY UPDATE_TEST_STATUS": [
+      "101-Help: syntax: dali emergency update_test_status [mode=(auto)] <cdg-object-id> <line> <object-id>",
+      "101-Help: Request the gateway to refresh the Part 202 test status values from the given Object ID.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: <object-id> refers to device object id in gateway"
+    ],
+    "DALI ERROR_REPORTING": [
+      "101-Help: DALI ERROR_REPORTING commands:",
+      "101-Help:  DALI ERROR_REPORTING ? Help for these commands",
+      "101-Help:  DALI ERROR_REPORTING ACK_ALL_ERRORS_ACTION_SELECTOR - Get Ack Action Selector that clears errors.",
+      "101-Help:  DALI ERROR_REPORTING DEVICE_ID - Get device-id used for error reports.",
+      "101-Help:  DALI ERROR_REPORTING ENABLE_GROUP - Get group that enables error reporting.",
+      "101-Help:  DALI ERROR_REPORTING INTERVAL - Get time between error reporting cycles.",
+      "101-Help:  DALI ERROR_REPORTING MODE - Get error reporting mode.",
+      "101-Help:  DALI ERROR_REPORTING NETWORK_PATH - Get destination error report network route.",
+      "101-Help:  DALI ERROR_REPORTING RESEND_ACTION_SELECTOR - Get error report Resend Action Selector.",
+      "101-Help:  DALI ERROR_REPORTING SET_ACK_ALL_ERRORS_ACTION_SELECTOR - Set Ack Action Selector that clears errors.",
+      "101-Help:  DALI ERROR_REPORTING SET_DEVICE_ID - Set device-id used for error reports.",
+      "101-Help:  DALI ERROR_REPORTING SET_ENABLE_GROUP - Set group that enables error reporting.",
+      "101-Help:  DALI ERROR_REPORTING SET_INTERVAL - Set time between error reporting cycles.",
+      "101-Help:  DALI ERROR_REPORTING SET_MODE - Set error reporting mode.",
+      "101-Help:  DALI ERROR_REPORTING SET_NETWORK_PATH - Set destination error report network route.",
+      "101-Help:  DALI ERROR_REPORTING SET_RESEND_ACTION_SELECTOR - Set error report Resend Action Selector.",
+      "101-Help:  DALI ERROR_REPORTING SET_STORE_OPTION - Set error report control bitfield (Enable, Level Store & WBO).",
+      "101-Help:  DALI ERROR_REPORTING SET_TRIGGER_REPORT_GROUP - Set trigger group for error reporting.",
+      "101-Help:  DALI ERROR_REPORTING SET_USED_DEVICE_MASK - Set used device mask for error reporting.",
+      "101-Help:  DALI ERROR_REPORTING STORE_OPTION - Get error report control bitfield (Enable, Level Store & WBO).",
+      "101-Help:  DALI ERROR_REPORTING TRIGGER_REPORT_GROUP - Get trigger group for error reporting.",
+      "101 Help:  DALI ERROR_REPORTING USED_DEVICE_MASK - Get used device mask for error reporting."
+    ],
+    "DALI ERROR_REPORTING ACK_ALL_ERRORS_ACTION_SELECTOR": [
+      "101-Help: dali error_reporting ack_all_errors_action_selector <cdg>",
+      "101-Help: Gets the Ack Action Selector for triggering clearing of all most all latched (Most Severe) errors.",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <ack-action-selector> refers to ack action selector / clear errors",
+      "101 Help:           Default 0xFF"
+    ],
+    "DALI ERROR_REPORTING DEVICE_ID": [
+      "101-Help: dali error_reporting set_device_id <cdg>",
+      "101-Help: Gets the device-id used for error reporting messages.",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <device-id> refers to Device ID used for Error Reporting",
+      "101-Help:     if set to 0xFF, unit address used as Device ID,",
+      "101-Help:             however should be set to a unique value per network by software.",
+      "101 Help:             Default 0xFF"
+    ],
+    "DALI ERROR_REPORTING ENABLE_GROUP": [
+      "101-Help: dali error_reporting enable_group <cdg>",
+      "101-Help: Gets the Reporting Enable Group that ENABLES error reporting",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <reporting-enable-group> refers to the Enable Group for dynamic control of Error Reporting mode.",
+      "101-Help:           static mode == 0xFF",
+      "101-Help:           dynamic mode != 0xFF",
+      "101 Help:                      Default 0xFF (unused) (static mode)"
+    ],
+    "DALI ERROR_REPORTING INTERVAL": [
+      "101-Help: dali error_reporting interval <cdg>",
+      "101-Help: Gets the Time between end of regular error reporting cycle and beginning of next cycle.",
+      "101-Help: This interval is also used after a forced trigger for the next normal one.",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <report-interval> refers to the interval till next error report in increments of 15 minutes",
+      "101-Help:           Valid values 1-255",
+      "101 Help:           Default = 2 (30 minutes)"
+    ],
+    "DALI ERROR_REPORTING MODE": [
+      "101-Help: dali error_reporting mode <cdg>",
+      "101-Help: Gets the error mode for error reporting.",
+      "101-Help: If in dynamic mode => gets power-on mode stored",
+      "101-Help: Dynamic or Static mode can be determined based on",
+      "101-Help: if enable_group is set to 0xFF or not, respectively.",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <error-mode> refers to the selected Error Reporting mode",
+      "101-Help:     0 = OFF",
+      "101-Help:                1 = On without latched errors",
+      "101-Help:                2 (or higher) = On with latched errors",
+      "101 Help:                Default = 0x00 (Error Rerporting OFF)"
+    ],
+    "DALI ERROR_REPORTING NETWORK_PATH": [
+      "101-Help: dali error_reporting network_path <cdg>",
+      "101-Help: Gets the destination network path for Error Reports and Measurements to be routed to.",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <network-path> 0xFF for local, or up to 6 bridge addresses.",
+      "101-Help:          Set any unused bytes to 0xFF",
+      "101 Help:          Default = 0xFF (Messages are sent to local network)"
+    ],
+    "DALI ERROR_REPORTING RESEND_ACTION_SELECTOR": [
+      "101-Help: dali error_reporting resend_action_selector <cdg>",
+      "101-Help: Gets the Resend Action Selector for triggering resend of error reports",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <resend-action-selector> Action Selector for triggering resend of error reports",
+      "101-Help:               Can be used in all Error modes",
+      "101 Help:               Default 0xFF"
+    ],
+    "DALI ERROR_REPORTING SET_ACK_ALL_ERRORS_ACTION_SELECTOR": [
+      "101-Help: dali error_reporting set_ack_all_errors_action_selector <cdg> <ack-action-selector>",
+      "101-Help: Sets the Ack Action Selector for triggering clearing of all most all latched (Most Severe) errors.",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <ack-action-selector> refers to ack action selector / clear errors",
+      "101 Help:           Default 0xFF"
+    ],
+    "DALI ERROR_REPORTING SET_DEVICE_ID": [
+      "101-Help: dali error_reporting set_device_id <cdg> <device-id>",
+      "101-Help: Sets the device-id used for error reporting messages.",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <device-id> refers to Device ID used for Error Reporting",
+      "101-Help:     if set to 0xFF, unit address used as Device ID,",
+      "101-Help:             however should be set to a unique value per network by software.",
+      "101 Help:             Default 0xFF"
+    ],
+    "DALI ERROR_REPORTING SET_ENABLE_GROUP": [
+      "101-Help: dali error_reporting set_enable_group <cdg> <reporting-enable-group>",
+      "101-Help: Sets the Reporting Enable Group that ENABLES error reporting",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <reporting-enable-group> refers to the Enable Group for dynamic control of Error Reporting mode.",
+      "101-Help:           static mode == 0xFF",
+      "101-Help:           dynamic mode != 0xFF",
+      "101 Help:                      Default 0xFF (unused) (static mode)"
+    ],
+    "DALI ERROR_REPORTING SET_INTERVAL": [
+      "101-Help: dali error_reporting set_interval <cdg> <report-interval>",
+      "101-Help: Sets the Time between end of regular error reporting cycle and beginning of next cycle.",
+      "101-Help: This interval is also used after a forced trigger for the next normal one.",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <report-interval> refers to the interval till next error report in increments of 15 minutes",
+      "101-Help:           Valid values 1-255",
+      "101 Help:           Default = 2 (30 minutes)"
+    ],
+    "DALI ERROR_REPORTING SET_MODE": [
+      "101-Help: dali error_reporting set_mode <cdg> <error-mode>",
+      "101-Help: Sets the mode for error reporting.",
+      "101-Help: For static Error Reporting mode => set this to the desired mode and ensure ",
+      "101-Help: Error Reporting Enable Group is set to Unused (0xFF).",
+      "101-Help: For Dynamic Error Reporting => set Error Reporting Enable Group to a value other than 0xFF.",
+      "101-Help: Then the value stored here is the Power On value for the Error Reporting.",
+      "101-Help: In dynamic mode, the error mode is controlled by the level of the Enable Group.",
+      "101-Help: If level store option is enabled => treat this value as read-only.",
+      "101-Help: Current level at power fail is stored here.",
+      "101-Help: If level store option is not enabled => this is the power-on mode value.",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <error-mode> refers to the selected Error Reporting mode",
+      "101-Help:     0 = OFF",
+      "101-Help:                1 = On without latched errors",
+      "101-Help:                2 (or higher) = On with latched errors",
+      "101 Help:                Default = 0x00 (Error Rerporting OFF)"
+    ],
+    "DALI ERROR_REPORTING SET_NETWORK_PATH": [
+      "101-Help: dali error_reporting set_network_path <cdg> <network-path>",
+      "101-Help: Sets the destination network path for Error Reports and Measurements to be routed to.",
+      "101-Help: Setting this allows messages to be sent to a remote network for central monitoring, ",
+      "101-Help: without the need to set up network bridges to forward the messages ",
+      "101-Help: which would normally simply be sent on the local network.",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <network-path> set to 0xFF for local, or up to 6 bridge addresses.",
+      "101-Help:          Set any unused bytes to 0xFF",
+      "101 Help:          Default = 0xFF (6) (Messages are sent to local network)"
+    ],
+    "DALI ERROR_REPORTING SET_RESEND_ACTION_SELECTOR": [
+      "101-Help: dali error_reporting set_resend_action_selector <cdg> <resend-action-selector>",
+      "101-Help: Sets the Resend Action Selector for triggering resend of error reports",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <resend-action-selector> Action Selector for triggering resend of error reports",
+      "101-Help:               Can be used in all Error modes",
+      "101 Help:               Default 0xFF"
+    ],
+    "DALI ERROR_REPORTING SET_STORE_OPTION": [
+      "101-Help: dali error_reporting set_store_option <cdg> <store-option>",
+      "101-Help: Sets the bitfield to Enable Error Reporting, Level Store Option & WBO",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <store-option> refers to the bitfield to enable level store for various Enable Groups",
+      "101-Help:                   Bit 0 : Line A WBO Enable",
+      "101-Help:                   Bit 1 : Line B WBO Enable",
+      "101-Help:                   Bit 2 : Error Level Store Enable",
+      "101-Help:                   Bit 3 : Line A Colour Mode Enable",
+      "101-Help:                   Bit 4 : Line B Colour Mode Enable",
+      "101-Help:                   Bits 5-7 : Reserved",
+      "101 Help:                   Default = 0xFF (All enabled)"
+    ],
+    "DALI ERROR_REPORTING SET_TRIGGER_REPORT_GROUP": [
+      "101-Help: dali error_reporting set_trigger_report_group <cdg> <trigger-report-group>",
+      "101-Help: Sets the trigger group used force send error reports / clearing pending errors",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <trigger-report-group> refers to Trigger Group used for triggering resend/clear",
+      "101-Help:           must be different to Trigger Groups used in Scene Triggers",
+      "101 Help:           Default 0xFF (unused)"
+    ],
+    "DALI ERROR_REPORTING SET_USED_DEVICE_MASK": [
+      "101-Help: dali error_reporting set_used_device_mask <cdg> <line> <bitmask64>",
+      "101-Help: Sets dali devices (objectid64) that are used for error reporting / broken listing for specified line",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: <bitmask64> refers to the hex 64 bit - bitmask - of object ids to enable reporting",
+      "101 Help:           assumes a hexstring of 16 string characters long."
+    ],
+    "DALI ERROR_REPORTING STORE_OPTION": [
+      "101-Help: dali error_reporting store_option <cdg>",
+      "101-Help: Gets the bitfield to Enable Error Reporting, Level Store & WBO",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <store-option> refers to the bitfield to enable level store for various Enable Groups",
+      "101-Help:                   Bit = 1 : Level Store enabled",
+      "101-Help:                   Bit 0 : Line A WBO Enable",
+      "101-Help:                   Bit 1 : Line B WBO Enable",
+      "101-Help:                   Bit 2 : Error Reporting Enable",
+      "101-Help:                   Bits 3-7 : Reserved",
+      "101 Help:                   Default = 0xFF (All enabled)"
+    ],
+    "DALI ERROR_REPORTING TRIGGER_REPORT_GROUP": [
+      "101-Help: dali error_reporting trigger_report_group <cdg>",
+      "101-Help: Gets the trigger group used force send error reports / clearing pending errors",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <trigger-report-group> refers to Trigger Group used for triggering resend/clear",
+      "101-Help:           must be different to Trigger Groups used in Scene Triggers",
+      "101 Help:           Default 0xFF (unused)"
+    ],
+    "DALI ERROR_REPORTING USED_DEVICE_MASK": [
+      "101-Help: dali error_reporting used_device_mask <cdg> <line>",
+      "101-Help: Gets dali devices (objectid64) that are used for error reporting / broken listing for specified line",
+      "101-Help: note: default <used_device_mask_64> is all FFFFs",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101 Help: <line> refers to dali line A or B."
+    ],
+    "DALI FACTORY_RESET": [
+      "101-Help: syntax: dali factory_reset [mode=(auto)] <cdg-object-id> <line> [ecg-address=($50)]",
+      "101-Help: Reset all to factory defaults.",
+      "101-Help: Clears all short addresses & settings",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: [ecg-address=($50)] refers to short address, group or broadcast address"
+    ],
+    "DALI GATEWAY": [
+      "101-Help: DALI GATEWAY commands:",
+      "101-Help:  DALI GATEWAY ? Help for these commands",
+      "101-Help:  DALI GATEWAY DEVICE_ID_LIST - Lists unique device_id used within dali gateways for network in project",
+      "101-Help:  DALI GATEWAY FACTORY_RESET - Reset GATEWAY to factory defaults.",
+      "101-Help:  DALI GATEWAY LIST - Lists summary info for dali gateways in project",
+      "101-Help:  DALI GATEWAY LOAD_PRESET - Load gateway preset config.",
+      "101-Help:  DALI GATEWAY NAC_SUMMARY_LIST - Lists nac summary info for emergency devices in dali gateways for network in project",
+      "101-Help:  DALI GATEWAY PAGED_RECALL - Paged recall GATEWAY memory.",
+      "101-Help:  DALI GATEWAY PAGED_STORE - Paged store GATEWAY memory.",
+      "101-Help:  DALI GATEWAY PRIMARY_ADDRESS - Get assigned Cbus Group for object-id.",
+      "101-Help:  DALI GATEWAY PROJECT_CUSTOM - DEBUG project custom cdg line command",
+      "101-Help:  DALI GATEWAY READ_EXTENDED_PARAMETERS - Read all extended parameters for gateway.",
+      "101-Help:  DALI GATEWAY RESTART - Send restart command to gateway.",
+      "101-Help:  DALI GATEWAY SAVE_TO_NVM - Send SAVE_TO_NVM command to gateway.",
+      "101-Help:  DALI GATEWAY SET_EXTENDED_PARAMETERS - Set extended parameter values in programmer virtual memory.",
+      "101-Help:  DALI GATEWAY SET_PRIMARY_ADDRESS - Set assigned Cbus Group for object-id.",
+      "101-Help:  DALI GATEWAY SET_VIRTUAL_GROUP - Set virtual group member bitmask.",
+      "101-Help:  DALI GATEWAY SHORT_MAP - Get object-id to short-address map",
+      "101-Help:  DALI GATEWAY VIRTUAL_GROUP - Set virtual group member bitmask.",
+      "101 Help:  DALI GATEWAY WRITE_EXTENDED_PARAMETERS - Write dirty parameters from programmer virtual memory to gateway."
+    ],
+    "DALI GATEWAY DEVICE_ID_LIST": [
+      "101-Help: dali gateway device_id_list <network-address> [project-name]",
+      "101-Help: Performs a dynamic query on database to retrieve unique set of device_id used",
+      "101-Help: within dali gateways for network in project.",
+      "101-Help: NOTE: will return empty set if no gateways or parameter not set.",
+      "101-Help: NOTE: value of 255 means unassigned device_id.",
+      "101-Help: NOTE: only returns non-orphaned unit oids with SYS_DAL2 matching unit_type and matches network address specified.",
+      "101-Help: ",
+      "101-Help: <network-address> network address to filter",
+      "101 Help: [project-name] any project that is loadable. if blank, will attempt to load default project"
+    ],
+    "DALI GATEWAY FACTORY_RESET": [
+      "101-Help: syntax: dali gateway factory_reset [mode=(auto)] <cdg-object-id>",
+      "101-Help: Reset the gateway to factory defaults.",
+      "101-Help: Clears all short addresses & settings",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101 Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway)."
+    ],
+    "DALI GATEWAY LIST": [
+      "101-Help: dali gateway list [project-name]",
+      "101-Help: Performs a dynamic query on database to retrieve all known dali gateways in project.",
+      "101-Help: NOTE: only returns non-orphaned unit oids with SYS_DAL2 matching unit_type.",
+      "101-Help: ",
+      "101 Help: [project-name] any project that is loadable. if blank, will attempt to load default project"
+    ],
+    "DALI GATEWAY LOAD_PRESET": [
+      "101-Help: syntax: dali gateway load_preset [mode=(auto)] <cdg-object-id> <preset=($0)>",
+      "101-Help: Load specified preset.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101 Help: [preset=($0)] 0=dev, 1=factory, 2=groups+broadcast, 3=groups+devices"
+    ],
+    "DALI GATEWAY NAC_SUMMARY_LIST": [
+      "101-Help: dali gateway nac_summary_list <network-address> [project-name]",
+      "101-Help: Performs a dynamic query on database to retrieve all known parameters for emergency devices",
+      "101-Help: within dali gateways for network in project.",
+      "101-Help: NOTE: will return empty channels array if NO emergency devices found for filtered gateways",
+      "101-Help: NOTE: only returns non-orphaned unit oids with SYS_DAL2 matching unit_type and matches network address specified.",
+      "101-Help: ",
+      "101-Help: <network-address> network address to filter",
+      "101 Help: [project-name] any project that is loadable. if blank, will attempt to load default project"
+    ],
+    "DALI GATEWAY PAGED_RECALL": [
+      "101-Help: dali gateway paged_recall <cdg> <address> <count>",
+      "101-Help: Paged recall from startaddress for requested number of bytes.",
+      "101-Help: (works across page boundaries)",
+      "101 Help: count > 16 currently not supported."
+    ],
+    "DALI GATEWAY PAGED_STORE": [
+      "101-Help: dali gateway paged_store <cdg> <address> <value-0> ... [value-15]",
+      "101-Help: Paged store from startaddress for supplied number of bytes.",
+      "101-Help: (works across page boundaries)",
+      "101 Help: max 16 bytes at once for now"
+    ],
+    "DALI GATEWAY PRIMARY_ADDRESS": [
+      "101-Help: dali gateway primary_address <cdg> <line> <object-id>",
+      "101 Help: Gets CBUS group address designated as primary controller object for the dali object."
+    ],
+    "DALI GATEWAY PROJECT_CUSTOM": [
+      "400 Syntax Error."
+    ],
+    "DALI GATEWAY READ_EXTENDED_PARAMETERS": [
+      "101-Help: dali gateway read_extended_parameters <cdg>",
+      "101 Help: Read complete extended parameter map for gateway."
+    ],
+    "DALI GATEWAY RESTART": [
+      "101-Help: syntax: dali gateway restart [mode=(auto)] <cdg-object-id>",
+      "101-Help: Restart gateway.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101 Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway)."
+    ],
+    "DALI GATEWAY SAVE_TO_NVM": [
+      "101-Help: syntax: dali gateway save_to_nvm [mode=(auto)] <cdg-object-id>",
+      "101-Help: Save any uncommitted values in RAM to NVM.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101 Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway)."
+    ],
+    "DALI GATEWAY SET_EXTENDED_PARAMETERS": [
+      "101-Help: dali gateway set_extended_parameters <cdg> <address> <value-0> ... [value-15]",
+      "101-Help: Set extended parameters from startaddress for supplied number of bytes.",
+      "101-Help: NOTE: this will NOT write to the gateway immediately",
+      "101-Help:       send 'write_extended_params' after all the sets, when ready",
+      "101 Help: max 16 bytes at once for now"
+    ],
+    "DALI GATEWAY SET_PRIMARY_ADDRESS": [
+      "101-Help: dali gateway primary_address <cdg> <line> <object-id> <primary-address>",
+      "101 Help: Sets CBUS group address designated as primary controller object for the dali object."
+    ],
+    "DALI GATEWAY SET_VIRTUAL_GROUP": [
+      "101-Help: dali gateway set_virtual_group <cdg> <line> <virtual-group-id> <bitmask64>",
+      "101-Help: Sets members of virtual group @ specified line via a bitmask of object ids",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: <virtual-group-id> refers to virtual dali group in gateway",
+      "101-Help: <bitmask64> refers to the hex 64 bit - mask of dali devices included in virtual group",
+      "101-Help:             NOTE : Bit position is by Object ID, NOT Short Address",
+      "101 Help:     Default = 0x0000000000000000"
+    ],
+    "DALI GATEWAY SHORT_MAP": [
+      "101-Help: dali gateway short_map <cdg> <line>",
+      "101 Help: Gets CBUS ObjectID to ShortAddress mapping."
+    ],
+    "DALI GATEWAY VIRTUAL_GROUP": [
+      "101-Help: dali gateway set_virtual_group <cdg> <line> <virtual-group-id>",
+      "101-Help: Gets members of virtual group @ specified line via a bitmask of object ids",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: <virtual-group-id> refers to virtual dali group in gateway",
+      "101-Help: <bitmask64> refers to the hex 64 bit - mask of dali devices included in virtual group",
+      "101-Help:             NOTE : Bit position is by Object ID, NOT Short Address",
+      "101 Help:     Default = 0x0000000000000000"
+    ],
+    "DALI GATEWAY WRITE_EXTENDED_PARAMETERS": [
+      "101-Help: dali gateway write_extended_parameters <cdg>",
+      "101-Help: Write dirty extended parameter map for gateway.",
+      "101 Help: NOTE: writes may be slower if read_extended_parameters is not run prior."
+    ],
+    "DALI GTIN": [
+      "101-Help: syntax: dali gtin [mode=(auto)] <cdg-object-id> <line> <ecg-address>",
+      "101-Help: Returns stored GTIN for addressed ECG.",
+      "101-Help: NOTE: requires `dali discover_gtin_serial` to be run",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: <ecg-address> refers to short address"
+    ],
+    "DALI KNOWN": [
+      "101-Help: syntax: dali known [mode=(auto)] <cdg-object-id> <line>",
+      "101-Help: Will initiate search for new addresses not known by CDG.",
+      "101-Help: Will return current known list",
+      "101-Help: Execution of command is non-destructive & non-remediating.",
+      "101-Help: note: poll - will not initiate a refresh",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101 Help: <line> refers to dali line A or B."
+    ],
+    "DALI KNOWN_TYPE_INFO": [
+      "101-Help: syntax: dali known_type_info [mode=(auto)] <cdg-object-id> <line> <ecg-address>",
+      "101-Help: Retrieves list of device types present at the addressed ECG.",
+      "101-Help: <1st><2nd>... $00=DT0, $01=DT1 etc..",
+      "101-Help: NOTE: this should be used after `dali discover_known_type_info`",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: <ecg-address> refers to short address"
+    ],
+    "DALI LED_PARAMS": [
+      "101-Help: syntax: dali led_params [mode=(auto)] <cdg-object-id> <line> <ecg-address>",
+      "101-Help: Gets ONLY for DT6 LED params (207) for addressed ECG.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: <ecg-address> refers to short address"
+    ],
+    "DALI MEASUREMENT": [
+      "101-Help: DALI MEASUREMENT commands:",
+      "101-Help:  DALI MEASUREMENT ? Help for these commands",
+      "101-Help:  DALI MEASUREMENT CLEAR_TRIGGER_GROUP - Get measurement clear trigger group.",
+      "101-Help:  DALI MEASUREMENT LAMP_RUNNING_TIME - Get lamp running time for device.",
+      "101-Help:  DALI MEASUREMENT REQUEST_TRIGGER_GROUP - Get measurement request trigger group.",
+      "101-Help:  DALI MEASUREMENT SET_CLEAR_TRIGGER_GROUP - Set measurement clear trigger group.",
+      "101-Help:  DALI MEASUREMENT SET_LAMP_RUNNING_TIME - Set lamp running time for device.",
+      "101 Help:  DALI MEASUREMENT SET_REQUEST_TRIGGER_GROUP - Set measurement request trigger group."
+    ],
+    "DALI MEASUREMENT CLEAR_TRIGGER_GROUP": [
+      "101-Help: dali measurement clear_trigger_group <cdg>",
+      "101-Help: Gets the trigger group used to clear lamp hour values.",
+      "101-Help: Level sent on group determines type of request.",
+      "101-Help: Lamp is addressed by Object ID not SA",
+      "101-Help: Lamp (A/B/64) [0-63/64-127]",
+      "101-Help: All           [255     ]",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <clear-trigger-group> refers to Trigger Group for clearing lamp hour values.",
+      "101 Help:            Default 0xFF (unused)"
+    ],
+    "DALI MEASUREMENT LAMP_RUNNING_TIME": [
+      "101-Help: dali measurement lamp_running_time <cdg> <line> <short-address-lamp>",
+      "101-Help: Gets the lamp running time for Short Address @ specified line",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: <short-address-lamp> refers to specified lamp at Short Address for dali lines",
+      "101-Help: <running-time32> refers to the hex 32 bit - Lamp running time in minutes",
+      "101 Help:       Default = 0."
+    ],
+    "DALI MEASUREMENT REQUEST_TRIGGER_GROUP": [
+      "101-Help: dali measurement request_trigger_group <cdg>",
+      "101-Help: Gets the trigger group used to request measurements.",
+      "101-Help: Level sent on group determines type of request.",
+      "101-Help: Lamp is addressed by Object ID not SA",
+      "101-Help: Lamp Running times (A/B/64) [0-63/64-127]",
+      "101-Help: Line Voltage       (A/B)    [130 /131]",
+      "101-Help: Line Current       (A/B)    [128 /129]",
+      "101-Help: MAC Temp degrees C (A/B)    [132 /133]",
+      "101-Help: Broadcast all measurements  [255     ]",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <request-trigger-group> refers to Trigger Group for requesting broadcast of lamp hour",
+      "101-Help:              and other measurement values on Measurement Application.",
+      "101 Help:              Default 0xFF (unused)"
+    ],
+    "DALI MEASUREMENT SET_CLEAR_TRIGGER_GROUP": [
+      "101-Help: dali measurement set_clear_trigger_group <cdg> <clear-trigger-group>",
+      "101-Help: Sets the trigger group used to clear lamp hour values.",
+      "101-Help: Level sent on group determines type of request.",
+      "101-Help: Lamp is addressed by Object ID not SA",
+      "101-Help: Lamp (A/B/64) [0-63/64-127]",
+      "101-Help: All           [255     ]",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <clear-trigger-group> refers to Trigger Group for clearing lamp hour values.",
+      "101 Help:            Default 0xFF (unused)"
+    ],
+    "DALI MEASUREMENT SET_LAMP_RUNNING_TIME": [
+      "101-Help: dali measurement set_lamp_running_time <cdg> <line> <short-address-lamp> <running-time32>",
+      "101-Help: Sets lamp running time for Short Address @ specified line",
+      "101-Help: note: you might have to save_to_nvm or wait for this number to update.",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: <short-address-lamp> refers to specified lamp at Short Address for dali lines",
+      "101-Help: <running-time32> refers to the hex 32 bit - Lamp running time in minutes",
+      "101 Help:       Default = 0."
+    ],
+    "DALI MEASUREMENT SET_REQUEST_TRIGGER_GROUP": [
+      "101-Help: dali measurement set_request_trigger_group <cdg> <request-trigger-group>",
+      "101-Help: Sets the trigger group used to request measurements.",
+      "101-Help: Level sent on group determines type of request.",
+      "101-Help: Lamp is addressed by Object ID not SA",
+      "101-Help: Lamp Running times (A/B/64) [0-63/64-127]",
+      "101-Help: Line Voltage       (A/B)    [130 /131]",
+      "101-Help: Line Current       (A/B)    [128 /129]",
+      "101-Help: MAC Temp degrees C (A/B)    [132 /133]",
+      "101-Help: Broadcast all measurements  [255     ]",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <request-trigger-group> refers to Trigger Group for requesting broadcast of lamp hour",
+      "101-Help:              and other measurement values on Measurement Application.",
+      "101 Help:              Default 0xFF (unused)"
+    ],
+    "DALI MISSING": [
+      "101-Help: syntax: dali missing [mode=(auto)] <cdg-object-id> <line>",
+      "101-Help: Will initiate search for missing addresses by CDG.",
+      "101-Help: Will return current missing list",
+      "101-Help: Execution of command is non-destructive & non-remediating.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101 Help: <line> refers to dali line A or B."
+    ],
+    "DALI REASSIGN_ONE": [
+      "101-Help: syntax: dali reassign_one [mode=(auto)] <cdg-object-id> <line> <ecg-address-existing> <ecg-address-new>",
+      "101-Help: Change short address of ECG device to the newly specified value.",
+      "101-Help: Can be used to unassign, new address must be vacant to succeed.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: <ecg-address-xxx> refers to short address of device (existing / new)",
+      "101 Help:           [$FF = unassigned]"
+    ],
+    "DALI RECALL_MAX": [
+      "101-Help: syntax: dali recall_max [mode=(auto)] <cdg-object-id> <line> [ecg-address=($50)]",
+      "101-Help: Send a Recall MAX command to the addressed ECG.",
+      "101-Help: NOTE: effectively equivalent to ON",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: [ecg-address=($50)] refers to short address, broadcast address or group address"
+    ],
+    "DALI RECALL_MAX_MANY": [
+      "101-Help: syntax: dali recall_max_many [mode=(auto)] <cdg-object-id> <line> <selected-addresses>",
+      "101-Help: Send a Recall MAX command to the addressed ECG via mask.",
+      "101-Help: NOTE: effectively equivalent to ON",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: <selected-addresses> refers to the 64 bit - bitmask - of short address to turn ON",
+      "101 Help:           assumes a hexstring of 16 string characters long."
+    ],
+    "DALI RECALL_MIN": [
+      "101-Help: syntax: dali recall_min [mode=(auto)] <cdg-object-id> <line> [ecg-address=($50)]",
+      "101-Help: Send a Recall MIN command to the addressed ECG.",
+      "101-Help: NOTE: effectively equal to DIMMEST / LOWEST setting",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: [ecg-address=($50)] refers to short address, broadcast address or group address"
+    ],
+    "DALI RECALL_OFF": [
+      "101-Help: syntax: dali recall_off [mode=(auto)] <cdg-object-id> <line> [ecg-address=($50)]",
+      "101-Help: Send an OFF command to the addressed ECG.",
+      "101-Help: NOTE: effectively equal to OFF",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: [ecg-address=($50)] refers to short address, broadcast address or group address"
+    ],
+    "DALI RECALL_OFF_MANY": [
+      "101-Help: syntax: dali recall_off_many [mode=(auto)] <cdg-object-id> <line> <selected-addresses>",
+      "101-Help: Send an OFF command to the addressed ECG addresses via mask.",
+      "101-Help: NOTE: effectively equal to OFF",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: <selected-addresses> refers to the 64 bit - bitmask - of short address to turn OFF",
+      "101 Help:           assumes a hexstring of 16 string characters long."
+    ],
+    "DALI REMOVE_GROUP_MANY": [
+      "101-Help: syntax: dali remove_group_many [mode=(auto)] <cdg-object-id> <line> <group-num> <bitmask64>",
+      "101-Help: Removes the Group Membership for specified devices.",
+      "101-Help: note: will still keep previously defined group memberships.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: <group-num> Group number to remove from the selected devices.",
+      "101 Help: <bitmask64> refers to selected short addresses as 64bit bitmask"
+    ],
+    "DALI REMOVE_MANY": [
+      "101-Help: syntax: dali remove_many [mode=(auto)] <cdg-object-id> <line> <remove-addresses>",
+      "101-Help: Remove specified short addresses.",
+      "101-Help: Can remove one or more.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: <remove-addresses> refers to the 64 bit - bitmask - of short address for removal",
+      "101 Help:         assumes a hexstring of 16 string characters long."
+    ],
+    "DALI REPLACE_BAD": [
+      "101-Help: syntax: dali replace_bad [mode=(auto)] <cdg-object-id> <line> <ecg-address-existing-bad> <ecg-address-new>",
+      "101-Help: Change short address of *BAD* ECG device to the newly specified value.",
+      "101-Help: BAD = broken or missing device, existing device must be recognised as missing for success.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: <ecg-address-xxx> refers to short address of device (existing / new)"
+    ],
+    "DALI RESCAN": [
+      "101-Help: syntax: dali rescan [mode=(auto)] <cdg-object-id> <line>",
+      "101-Help: Will initiate full discovery scan by CDG.",
+      "101-Help: Will search for unaddressed, broken, missing & conflicting devices.",
+      "101-Help: Execution of command is non-remediating.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101 Help: <line> refers to dali line A or B."
+    ],
+    "DALI SCENE_VALUES_HIGH": [
+      "101-Help: syntax: dali scene_values_high [mode=(auto)] <cdg-object-id> <line> <ecg-address>",
+      "101-Help: Retrieves the scene values of the addressed ECG.",
+      "101-Help: NOTE: levels for scenes 8-15 (valid range $00 to $FE, $FF=unset)",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: <ecg-address> refers to short address of existing device"
+    ],
+    "DALI SCENE_VALUES_LOW": [
+      "101-Help: syntax: dali scene_values_low [mode=(auto)] <cdg-object-id> <line> <ecg-address>",
+      "101-Help: Retrieves the scene values of the addressed ECG.",
+      "101-Help: NOTE: levels for scenes 0-7 (valid range $00 to $FE, $FF=unset)",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: <ecg-address> refers to short address of existing device"
+    ],
+    "DALI SERIAL": [
+      "101-Help: syntax: dali serial [mode=(auto)] <cdg-object-id> <line> <ecg-address>",
+      "101-Help: Returns stored Serial Number for addressed ECG.",
+      "101-Help: NOTE: requires `dali discover_gtin_serial` to be run",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: <ecg-address> refers to short address"
+    ],
+    "DALI SESSION": [
+      "101-Help: DALI SESSION commands:",
+      "101-Help:  DALI SESSION ? Help for these commands",
+      "101-Help:  DALI SESSION CATALOG_DEVICE_ADD - Creates new instance of dali catalogue device",
+      "101-Help:  DALI SESSION CATALOG_DEVICE_REMOVE - Removes instance of dali catalogue device",
+      "101-Help:  DALI SESSION DEPLOY - Deploy DALI parameters to CDG specified.",
+      "101-Help:  DALI SESSION END - Ends an existing DALI session",
+      "101-Help:  DALI SESSION EXTRACT - Extracts DALI parameters from CDG specified.",
+      "101-Help:  DALI SESSION GET - Get PARAMS from DALI session",
+      "101-Help:  DALI SESSION LIST - Lists all active DALI session names",
+      "101-Help:  DALI SESSION LOAD - Load DALI parameters to session for database unit specified.",
+      "101-Help:  DALI SESSION MULTIGET - MultiGet PARAMS from DALI session",
+      "101-Help:  DALI SESSION NEW - Create a new DALI session",
+      "101-Help:  DALI SESSION SAVE - Save DALI parameters to database unit specified.",
+      "101-Help:  DALI SESSION SET - Set PARAMS in DALI session",
+      "101 Help:  DALI SESSION SET_EXT_PARAMS - Set extended parameter values in programmer virtual memory."
+    ],
+    "DALI SESSION CATALOG_DEVICE_ADD": [
+      "101-Help: dali session catalog_device_add <session-name> <dc-device-name> <dali-line> [dali-OID]",
+      "101-Help: creates a new instance of specified dali catalogue device type.",
+      "101-Help: it will create in dali catalogue model of session specified, and on the line specified",
+      "101-Help: it will attempt to also place at specified OID. if -1 or empty attempts to find next free spot.",
+      "101-Help: NOTE: there is no guarantee that channel OIDs are going to be sequential.",
+      "101-Help: NOTE: will return !SessionOID upon success.",
+      "101-Help: ",
+      "101-Help: <session-name> any name that is currently active. no spaces allowed",
+      "101-Help: <dc-device-name> must exist in `dali catalog list` command",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: [dali-OID] refers to desired dali OID. default is -1, which creates at next free OID"
+    ],
+    "DALI SESSION CATALOG_DEVICE_REMOVE": [
+      "101-Help: dali session catalog_device_remove <session-name> <session-OID>",
+      "101-Help: removes an existing instance of dali catalogue device.",
+      "101-Help: will remove specified dali catalogue device and all its channels.",
+      "101-Help: NOTE: session-OID is NOT daliOid.",
+      "101-Help: ",
+      "101-Help: <session-name> any name that is currently active. no spaces allowed",
+      "101 Help: <session-OID> refers to session OID assigned to dali catalogue device"
+    ],
+    "DALI SESSION DEPLOY": [
+      "101-Help: dali session deploy <session-name> <cdg> <line> <deploy-type> [ecg-address-range]",
+      "101-Help: deploy DALI parameters from specified session to live CDG.",
+      "101-Help: will use plan indicated by deploy type for the address range specified",
+      "101-Help: <cdg> must be open",
+      "101-Help: <line> A,B, or BOTH",
+      "101-Help:        (Anything apart from A,B will get interpreted as BOTH)",
+      "101-Help: <deploy-type> EXT_ONLY, DALI_ONLY, FULL",
+      "101-Help:        (Ascending order of estimated time till complete)",
+      "101-Help: [ecg-address-range] if empty will assume full ecg range.",
+      "101-Help:        will accept specified short address separated by commas",
+      "101-Help:        e.g. 0,5,2,4 => will only scan subset if applicable",
+      "101 Help:        note: ext_params only respects the changed parameter set"
+    ],
+    "DALI SESSION END": [
+      "101-Help: dali session end <session-name>",
+      "101-Help: ends an existing DALI session with specified name.",
+      "101-Help: note: end means remove from active sesssions list",
+      "101-Help: ",
+      "101 Help: <session-name> any name that is currently active. no spaces allowed"
+    ],
+    "DALI SESSION EXTRACT": [
+      "101-Help: dali session extract <session-name> <cdg> <line> <extract-type> [ecg-address-range]",
+      "101-Help: extracts DALI parameters into specified session from live CDG.",
+      "101-Help: will use plan indicated by extract type for the address range specified",
+      "101-Help: <cdg> must be open",
+      "101-Help: <line> A,B, or BOTH",
+      "101-Help:        (Anything apart from A,B will get interpreted as BOTH)",
+      "101-Help: <extract-type> EXT_ONLY, DALI_ONLY, COND_QUICK, COND_EXTENDED, FULL",
+      "101-Help:        RESCAN_FAULT, REFRESH_STATUS_INFO, RETRIEVE_RECONCILE",
+      "101-Help: [ecg-address-range] if empty will assume full ecg range.",
+      "101-Help:        will accept specified short address separated by commas",
+      "101-Help:        e.g. 0,5,2,4 => will only scan subset if applicable",
+      "101 Help:        note: group, virtualgroup oids will also be subsetted."
+    ],
+    "DALI SESSION GET": [
+      "101-Help: dali session get <session-name> <model-path>",
+      "101-Help: Get PARAMs from DALI session for model-path specified.",
+      "101-Help: ",
+      "101-Help: <session-name> any name that is currently active. no spaces allowed",
+      "101-Help: <model-path> usually the /oids[@name='session-OID']/sub-model OR /path/to/model[0]",
+      "101 Help:              beware it expects cgate style enquoted string"
+    ],
+    "DALI SESSION LIST": [
+      "101-Help: dali session list",
+      "101 Help: Lists all active DALI session names."
+    ],
+    "DALI SESSION LOAD": [
+      "101-Help: dali session load <session-name> <db-cdg>",
+      "101-Help: load DALI parameters from sqlite db to specified session for database CDG unit.",
+      "101 Help: <db-cdg> must exist and match SYS_DAL2 type. OID will also work."
+    ],
+    "DALI SESSION MULTIGET": [
+      "101-Help: dali session multiget <session-name> <model-path>",
+      "101-Help: MultiGet PARAMs from DALI session for model-path specified.",
+      "101-Help: ",
+      "101-Help: <session-name> any name that is currently active. no spaces allowed",
+      "101-Help: <model-path> usually the (iterable) /oids[@name='session-OID']/sub-model OR /path/to/model[0]",
+      "101 Help:              beware it expects cgate style enquoted string"
+    ],
+    "DALI SESSION NEW": [
+      "101-Help: dali session new <session-name> [project-name]",
+      "101-Help: creates a new active DALI session with specified name.",
+      "101-Help: if project not specified will attemt to load default project.",
+      "101-Help: used for LOAD/SAVE models & GET/SET parameters, for a CbusDaliGateway.",
+      "101-Help: ",
+      "101-Help: <session-name> any name that is currently not in use. no spaces allowed",
+      "101 Help: [project-name] any project that is loadable. if blank, will attempt to load default project"
+    ],
+    "DALI SESSION SAVE": [
+      "101-Help: dali session save <session-name> <db-cdg>",
+      "101-Help: save DALI parameters from specified session to database CDG unit.",
+      "101 Help: <db-cdg> must exist and match SYS_DAL2 type. OID will also work."
+    ],
+    "DALI SESSION SET": [
+      "101-Help: dali session set <session-name> <model-path> <model-json>",
+      "101-Help: Set PARAMs in DALI session for model-path specified.",
+      "101-Help: ",
+      "101-Help: <session-name> any name that is currently active. no spaces allowed",
+      "101-Help: <model-path> usually the /oids[@name='session-OID']/sub-model OR /path/to/model[0]",
+      "101-Help:              beware it expects cgate style enquoted string",
+      "101 Help: <model-json> parameter value in json, beware wrapped around in cgate style enquoted string"
+    ],
+    "DALI SESSION SET_EXT_PARAMS": [
+      "101-Help: dali session set_ext_params <session-name> <address> <value-0> ... [value-15]",
+      "101-Help: Set extended parameters from startaddress for supplied number of bytes.",
+      "101-Help: NOTE: this will NOT write to the gateway immediately",
+      "101-Help:       send 'deploy' after all the sets, when ready",
+      "101-Help: max 16 bytes at once for now",
+      "101-Help: ",
+      "101 Help: <session-name> any name that is currently active. no spaces allowed"
+    ],
+    "DALI SET_COLOUR_POWER_FAIL_PARAMS": [
+      "101-Help: syntax: dali set_colour_power_fail_params [mode=(auto)] <cdg-object-id> <line> <ecg-address> <param-type> <color-type> <param-1> <param-2> <param-3> <param-4> <param-5> <param-6>",
+      "101-Help: Retrieves colour power on / system failure params for DT8 @ the addressed ECG.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: <ecg-address> refers to short address",
+      "101-Help: <param-type> 0-PowerOn, 1-SystemFailure",
+      "101-Help: <color-type> 0-XY, 1-ColourTemp, 2-PrimaryN , 3-RGBW",
+      "101-Help: <param-1> Red dimming level",
+      "101-Help: <param-2> Green dimming level",
+      "101-Help: <param-3> Blue dimming level",
+      "101-Help: <param-4> White dimming level",
+      "101-Help: <param-5> Amber dimming level",
+      "101 Help: <param-6> Free colour dimming level"
+    ],
+    "DALI SET_COLOUR_TEMPERATURE": [
+      "101-Help: syntax: dali set_colour_temperature [mode=(auto)] <cdg-object-id> <line> <ecg-address> <coolest-short> <warmest-short>",
+      "101-Help: Set Colour Temperature limits for specified DT8 @ the addressed ECG.",
+      "101-Help: NOTE: try to keep temp divisible by 50K. use physical limits for min/max",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: <ecg-address> refers to short address",
+      "101-Help: <coolest-short> coolest temp in kelvin",
+      "101 Help: <warmest-short> warmest temp in kelvin"
+    ],
+    "DALI SET_COMMON_PARAMS": [
+      "101-Help: syntax: dali set_common_params [mode=(auto)] <cdg-object-id> <line> <ecg-address> <groups-bitmask16> <min> <max> <rec> <fail>",
+      "101-Help: Add or remove devices to scene and set the scene level.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: <ecg-address> short address",
+      "101-Help: <groups-bitmask16> bitmask16 of DALI group membership <7...0,15..8>",
+      "101-Help: <min> minimum level",
+      "101-Help: <max> maximum level",
+      "101-Help: <rec> poweron/recovery level. ($FF = restore to last active level)",
+      "101 Help: <fail> system failure level. ($FF = stay at current level)"
+    ],
+    "DALI SET_FAILURE_MANY": [
+      "101-Help: syntax: dali set_failure_many [mode=(auto)] <cdg-object-id> <line> <failure-level> <bitmask64>",
+      "101-Help: Sets the Failure Value for specified devices.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: <failure-level> refers to value to be configured",
+      "101 Help: <bitmask64> refers to selected short addresses as 64bit bitmask"
+    ],
+    "DALI SET_GROUP_MANY": [
+      "101-Help: syntax: dali set_group_many [mode=(auto)] <cdg-object-id> <line> <group-num> <bitmask64>",
+      "101-Help: Adds the Group Membership for specified devices.",
+      "101-Help: note: will still keep previously defined group memberships.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: <group-num> Group number that will be assigned to the selected devices",
+      "101 Help: <bitmask64> refers to selected short addresses as 64bit bitmask"
+    ],
+    "DALI SET_LED_PARAMS": [
+      "101-Help: syntax: dali set_led_params [mode=(auto)] <cdg-object-id> <line> <ecg-address> <dimm-curve>",
+      "101-Help: Set LED dimming curve for the specified device (DT6).",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: <ecg-address> device short address",
+      "101 Help: <dimm-curve> dimming curve. 0=Logarithmic, 1=Linear"
+    ],
+    "DALI SET_MAX_MANY": [
+      "101-Help: syntax: dali set_max_many [mode=(auto)] <cdg-object-id> <line> <max-value> <bitmask64>",
+      "101-Help: Sets the Max Value for specified devices.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: <max-value> refers to value to be configured ",
+      "101-Help:    (must be greater than the min level)",
+      "101 Help: <bitmask64> refers to selected short addresses as 64bit bitmask"
+    ],
+    "DALI SET_MIN_MANY": [
+      "101-Help: syntax: dali set_min_many [mode=(auto)] <cdg-object-id> <line> <min-value> <bitmask64>",
+      "101-Help: Sets the Min Value for specified devices.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: <min-value> refers to value to be configured ",
+      "101-Help:    (must be greater than or equal to the physical min, and less than the max level)",
+      "101 Help: <bitmask64> refers to selected short addresses as 64bit bitmask"
+    ],
+    "DALI SET_RECOVERY_MANY": [
+      "101-Help: syntax: dali set_recovery_many [mode=(auto)] <cdg-object-id> <line> <recovery-value> <bitmask64>",
+      "101-Help: Sets the recovery Value for specified devices.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: <recovery-value> refers to value to be configured ",
+      "101-Help:     (Valid range $00 to $FF ($FF = go to last active level))",
+      "101 Help: <bitmask64> refers to selected short addresses as 64bit bitmask"
+    ],
+    "DALI SET_SCENE_LEVEL_MANY": [
+      "101-Help: syntax: dali set_scene_level_many [mode=(auto)] <cdg-object-id> <line> <scene-num> <scene-level> <bitmask64>",
+      "101-Help: Add or remove devices to scene and set the scene level.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: <scene-num> Scene number to set the level for in the selected devices (0-15)",
+      "101-Help: <scene-level> New scene level to store. Setting level of $FF clears scene membership.",
+      "101 Help: <bitmask64> refers to short address, broadcast address or group address"
+    ],
+    "DALI SET_SCENE_VALUES_HIGH": [
+      "101-Help: syntax: dali set_scene_values_high [mode=(auto)] <cdg-object-id> <line> <ecg-address> <scene-level-64>",
+      "101-Help: Sets the scene values and membership for scenes 9 to 16 for specified device.",
+      "101-Help: Can be used to unassign by $FF",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: <ecg-address> refers to short address, group address, or broadcast address",
+      "101 Help: <scene-level-64> levels for scenes 9-16 (valid range $00 to $FE, $FF clears scene membership.)"
+    ],
+    "DALI SET_SCENE_VALUES_LOW": [
+      "101-Help: syntax: dali set_scene_values_low [mode=(auto)] <cdg-object-id> <line> <ecg-address> <scene-level-64>",
+      "101-Help: Sets the scene values and membership for scenes 1 to 8 for specified device.",
+      "101-Help: Can be used to unassign by $FF",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: <ecg-address> refers to short address, group address, or broadcast address",
+      "101 Help: <scene-level-64> levels for scenes 1-8 (valid range $00 to $FE, $FF clears scene membership.)"
+    ],
+    "DALI SWAP_TWO": [
+      "101-Help: syntax: dali swap_two [mode=(auto)] <cdg-object-id> <line> <ecg-address-1> <ecg-address-2>",
+      "101-Help: Swap short address between two existing ECG devices.",
+      "101-Help: note: requires at least one free short address",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101 Help: <ecg-address-xxx> refers to short address of existing device"
+    ],
+    "DALI TRIGGER_SCENE": [
+      "101-Help: syntax: dali trigger_scene [mode=(auto)] <cdg-object-id> <line> [ecg-address=($50)] [scene-num=($00)]",
+      "101-Help: Trigger specified scene on the addressed ECG device.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: [ecg-address=($50)] refers to short address of existing device",
+      "101 Help: [scene-num=($00)] refers to the scene number to be set on the device"
+    ],
+    "DALI WINK_ECG_OFF": [
+      "101-Help: syntax: dali wink_ecg_off [mode=(auto)] <cdg-object-id> <line>",
+      "101-Help: Stops all winks that are already running on specified line.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101 Help: <line> refers to dali line A or B."
+    ],
+    "DALI WINK_ECG_ON": [
+      "101-Help: syntax: dali wink_ecg_on [mode=(auto)] <cdg-object-id> <line> [ecg-address=($50)] [timeout=($FF)]",
+      "101-Help: Starts winking the ECG device specified.",
+      "101-Help: The wink process will stop after the specified timeout (in seconds).",
+      "101-Help: Normally used for identifying a device (via binary search addressing)",
+      "101-Help: but can also be used on the broadcast address as a basic test for device operation.",
+      "101-Help: [mode=(auto)] CAL command mode type.",
+      "101-Help:    {auto, exec, poll, status, cancel}",
+      "101-Help: <cdg-object-id> must be of type CDG (CBus DALI Gateway).",
+      "101-Help: <line> refers to dali line A or B.",
+      "101-Help: [ecg-address=($50)] refers to short address or broadcast address (group wink not supported)",
+      "101 Help: [timeout=($FF)] refers to timeout used in seconds. 0=(default-dali ~30s)"
+    ]
+  }
+}

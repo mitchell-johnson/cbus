@@ -41,6 +41,14 @@ Do not equate offline test success with complete Toolkit parity. Run `cbus-toolk
 
 `cgate-mock` tests exercise tagged framing, multiline replies, shared state, per-session project selection, event filtering and fanout, here-documents, command inventory reachability, and programming access. The hardware-service tests separately pin bounded `DBSETXML` document framing, durable project archive/restore/rename/copy/delete rollback, read-only repository listing, and MQTT continuity through those local administrative commands. `cmqttd/tests/system_cgate_project_copy_delete.rs` is the dedicated real-daemon copy/delete and MQTT-continuity regression.
 
+`cmqttd/tests/system_cgate_dali.rs` launches the real daemon with the scripted
+PCI and broker. It pins DALI help and capability reporting, LOGIN boundaries,
+exact core and emergency extended-CAL bytes, source-correlated replies,
+pre-I/O validation, and MQTT continuity while a gateway operation is pending.
+Transport tests separately prove bounded AUTO polling and that a lost reply is
+never replayed after reconnect. These loopback tests do not establish behavior
+of a particular physical DALI gateway or downstream DALI bus.
+
 ## Adding behavior
 
 Keep byte-level rules in `cbus-protocol`, endpoint behavior in `cbus-transport`, pure MQTT data transformations in `cbus-mqtt`, and orchestration in the binary crate. Add a golden vector when compatibility depends on exact bytes or JSON. Add a system test when correctness depends on interactions among the daemon, broker, and PCI.

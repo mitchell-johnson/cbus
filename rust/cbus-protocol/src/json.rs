@@ -735,6 +735,15 @@ pub fn cal_to_json(c: &Cal) -> Value {
         Cal::Poll { group, operation } => {
             json!({"cal": "poll", "group": group, "operation": operation})
         }
+        Cal::ExtendedStatusRequest {
+            group,
+            operation,
+            status,
+        } => json!({"cal": "extended_status_request", "group": group,
+                    "operation": operation, "status": status}),
+        Cal::Cancel { group, operation } => {
+            json!({"cal": "cancel", "group": group, "operation": operation})
+        }
         Cal::ExtendedReply {
             group,
             operation,
@@ -1788,6 +1797,15 @@ pub fn cal_from_json(d: &Value) -> Result<Cal, JErr> {
             data: hex::decode(get_str(d, "data_hex")?).map_err(|e| e.to_string())?,
         }),
         "poll" => Ok(Cal::Poll {
+            group: get_u8(d, "group")?,
+            operation: get_u8(d, "operation")?,
+        }),
+        "extended_status_request" => Ok(Cal::ExtendedStatusRequest {
+            group: get_u8(d, "group")?,
+            operation: get_u8(d, "operation")?,
+            status: get_u8(d, "status")?,
+        }),
+        "cancel" => Ok(Cal::Cancel {
             group: get_u8(d, "group")?,
             operation: get_u8(d, "operation")?,
         }),

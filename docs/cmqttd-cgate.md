@@ -147,6 +147,7 @@ explicitly unavailable.
 | `MEASUREMENT` and `MEASUREMENT DATA` | The bare and `?` forms return the exact native help envelope. `DATA NETWORK/228/DEVICE/CHANNEL VALUE MULTIPLIER UNITS` accepts the captured signed 16-bit value, signed 8-bit multiplier and byte unit/device/channel ranges, emits exact application-228 SAL, and waits for a correlated positive PCI confirmation. With LOGIN armed, DATA requires authentication. Incoming samples lazily create the native application/device/channel object tree, fan out code-702-shaped events, and support application `State`/`Devices`, device `State`/`Channels`, and channel `State`/`Data` GETs. Data is `value,multiplier,units,age-ms`, or `0,0,0,-1` for an existing channel without a sample. There is no MQTT Measurement state contract. A 200 proves interface delivery only, not physical sensor acceptance. Bridged writes remain unavailable. See `rust/testdata/fixtures/native_cgate_measurement.json`, `rust/testdata/vectors/measurement.jsonl`, and `system_cgate_measurement.rs` |
 | `MEDIATRANSPORT` and all 21 subcommands | The bare and `?` forms return the captured native 101 help envelope. Playback, navigation, source-power, status/enumeration, total and category/selection/track name messages encode exact C-Gate 3.4 application-192 SAL and send exactly once and wait for correlated PCI confirmation. Native decimal, `0b`, `0x`, and `$` signed-integer grammar, range and reserved-operation checks, WNI values, enumeration size, quoted-name escapes, optional 11-byte text, and the captured non-ASCII-to-`FF` outbound quirk are checked before I/O. With LOGIN armed, `STATUS_REQUEST` and `ENUMERATE` stay open while controls and report injection require authentication. Incoming commands/reports preserve raw name bytes and fan out to event clients; no MQTT Media Transport state contract is claimed. Capabilities expose the `exactly-once-no-replay` policy. A 200 proves confirmed broadcast delivery on the active PCI generation, not player acceptance or state. Bridged routing remains unavailable. See `rust/testdata/fixtures/native_cgate_mediatransport.json` and `rust/testdata/vectors/mediatransport.jsonl` |
 | `TELEPHONY` and all 5 subcommands | The bare and `?` forms return the exact seven-line native help envelope. `CLEAR_DIVERSION`, `DIVERT`, `ISOLATE_SECONDARY_OUTLET`, `RECALL_LAST_NUMBER_REQUEST`, and `REJECT_INCOMING_CALL` encode exact C-Gate 3.4 application-224 SAL and wait for a correlated positive confirmation on the active PCI generation. Native arity, application, mode/direction and 1–16 Java-UTF-16-code-unit diversion bounds run before I/O; diversion is one literal whitespace token, with no quote or backslash decoding. The captured native malformed non-ASCII conversion is retained. With LOGIN armed, recall stays open and the four mutation forms require authentication. Incoming commands and native line/call/ringing/number/Internet-request events fan out without completing a pending confirmation. There is no MQTT Telephony state contract or durable call/diversion model. A 200 proves interface delivery only, not telephone-unit acceptance. Routed writes remain unavailable. See `rust/testdata/fixtures/native_cgate_telephony.json`, `rust/testdata/vectors/telephony.jsonl`, and `system_cgate_telephony.rs` |
+| `DALI` core and `DALI EMERGENCY` | Sixty-two physical leaves are implemented: all 48 retained core commands and all 14 emergency commands. The target must resolve to a `SYS_DAL2` unit on the configured project/network. Line A/B selects the native operation high bit; EXECUTE uses priority-zero extended CAL, POLL and CANCEL send their retained controls, and AUTO executes once then performs at most ten 1.5-second polls while the gateway reports IN_PROGRESS or FAIL_BUSY. Responses retain native 100/120/300/320 rows, status names, payloads and NAK-as-`FAIL_CATASTROPHE` behavior. Gateway responses are source-correlated on the active PCI generation. A lost or reconnect-crossing outcome faults the operation and is never replayed. STATUS is advertised by native help but retained C-Gate 3.4 fails it before I/O because it never supplies the mandatory selector; cmqttd returns the same deterministic 400. Mutating EXEC/AUTO/CANCEL forms require LOGIN when armed; observations remain open. The six DALI group roots serve exact retained help locally. The 60 specialized CATALOG, ERROR_REPORTING, GATEWAY, MEASUREMENT and SESSION leaves remain explicit 502. No MQTT DALI state is invented. See `rust/testdata/fixtures/native_cgate_dali_help.json`, `rust/testdata/vectors/dali.jsonl`, and `system_cgate_dali.rs` |
 | LIGHTING/TRIGGER/ENABLE LABEL and UNICODELABEL | Actual checksummed dynamic-label SAL on the selected application. Supports raw/text payloads, built-in icon references, language selection, native segmented UTF-8, and start/header/chunk/commit dynamic bitmap uploads. Every fragment requires positive PCI delivery confirmation; Enable Unicode and invalid native bounds fail before transmission |
 | Observed dynamic-label cache | Retains one network-wide ring of up to 4,096 exact incoming and confirmed outgoing label SAL payloads since the current connection, including source/direction and order. Outgoing append and standard/eDLT/FactoryDefault invalidation are committed only for the sending PCI generation, so an old completion cannot cross a reconnect boundary. `CMQTT LABELS` exposes the bounded observations with network scope and an unverified recipient; a unit-shaped request is a compatibility alias for the same ring. The Toolkit CLI assembles standard text/icons, Unicode, language selection and dynamic bitmaps while reporting incomplete transactions. This is explicitly not eDLT device-cache readback |
 | LABEL CLEAR | Sends native standard point-to-point label-cache controls for all keys (`A3 FF 00 27`) or one key 1–8 (`A4 FF 00 66 KEY`) to unit 0–255. It uses one generation-safe exact-once send and waits only for the correlated PCI confirmation; there is no unit ACK or device readback. Native C-Gate treats either confirmation outcome as completion, so success reports command acceptance without claiming cache erasure or persistence |
@@ -473,11 +474,34 @@ The existing mock dispatches 431 command paths. That is **not** evidence that
 all 431 have physical implementations in this service. `CMQTT CAPABILITIES`
 returns `full_cgate_compatibility: false`; unimplemented physical operations
 return 502. The enumerable gap tracker is the executable capability matrix in
-`cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 103
-physical, 82 local/session, 245 fail-closed 502, and 1 obsolete 400 over the
+`cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 165
+physical, 88 local/session, 177 fail-closed 502, and 1 obsolete 400 over the
 431 inventoried paths, plus a separately asserted 6-row supplement for
 non-inventoried service commands. Full replacement still requires:
 
+- Sixty specialized DALI leaves. The group roots already serve native help,
+  but these commands continue to return 502 without PCI or database changes:
+  `CATALOG GET_SPEC`, `CATALOG LIST`, `CATALOG RELOAD`;
+  `ERROR_REPORTING ACK_ALL_ERRORS_ACTION_SELECTOR`, `DEVICE_ID`, `ENABLE_GROUP`,
+  `INTERVAL`, `MODE`, `NETWORK_PATH`, `RESEND_ACTION_SELECTOR`,
+  `SET_ACK_ALL_ERRORS_ACTION_SELECTOR`, `SET_DEVICE_ID`, `SET_ENABLE_GROUP`,
+  `SET_INTERVAL`, `SET_MODE`, `SET_NETWORK_PATH`,
+  `SET_RESEND_ACTION_SELECTOR`, `SET_STORE_OPTION`,
+  `SET_TRIGGER_REPORT_GROUP`, `SET_USED_DEVICE_MASK`, `STORE_OPTION`,
+  `TRIGGER_REPORT_GROUP`, `USED_DEVICE_MASK`; `GATEWAY DEVICE_ID_LIST`,
+  `FACTORY_RESET`, `LIST`, `LOAD_PRESET`, `NAC_SUMMARY_LIST`, `PAGED_RECALL`,
+  `PAGED_STORE`, `PRIMARY_ADDRESS`, `PROJECT_CUSTOM`,
+  `READ_EXTENDED_PARAMETERS`, `RESTART`, `SAVE_TO_NVM`,
+  `SET_EXTENDED_PARAMETERS`, `SET_PRIMARY_ADDRESS`, `SET_VIRTUAL_GROUP`,
+  `SHORT_MAP`, `VIRTUAL_GROUP`, `WRITE_EXTENDED_PARAMETERS`;
+  `MEASUREMENT CLEAR_TRIGGER_GROUP`, `LAMP_RUNNING_TIME`,
+  `REQUEST_TRIGGER_GROUP`, `SET_CLEAR_TRIGGER_GROUP`,
+  `SET_LAMP_RUNNING_TIME`, `SET_REQUEST_TRIGGER_GROUP`; and
+  `SESSION CATALOG_DEVICE_ADD`, `CATALOG_DEVICE_REMOVE`, `DEPLOY`, `END`,
+  `EXTRACT`, `GET`, `LIST`, `LOAD`, `MULTIGET`, `NEW`, `SAVE`, `SET`,
+  `SET_EXT_PARAMS`. The 48 core and 14 emergency leaves are already physical;
+  their success proves a source-correlated gateway response, not downstream
+  DALI-device state or persistence.
 - Physical PP multi-range failure recovery, power-loss behavior, and hardware write acceptance for
   every programming method and unit family. LOAD has full decoded-catalogue
   layout coverage plus live KEYGL5 acceptance; SAVE audits every well-formed

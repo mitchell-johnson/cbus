@@ -7,6 +7,7 @@ pub mod cal;
 pub mod cni_discovery;
 pub mod common;
 pub mod consts;
+pub mod dali;
 pub mod decode;
 pub mod edlt_sync_metadata;
 pub mod edlt_widget_groups;

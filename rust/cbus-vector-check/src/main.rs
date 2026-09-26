@@ -92,6 +92,7 @@ fn check_vector(fname: &str, v: &Value) -> Result<(), String> {
     match fname {
         "decode_from_pci.jsonl" | "decode_to_pci.jsonl" => check_decode(v),
         "encode.jsonl"
+        | "dali.jsonl"
         | "aircon.jsonl"
         | "audio.jsonl"
         | "measurement.jsonl"

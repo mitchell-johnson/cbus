@@ -166,6 +166,9 @@ cbus-toolkit cgate --host 127.0.0.1 exec 'MEASUREMENT DATA //PROJECT/254/228/1/1
 cbus-toolkit cgate --host 127.0.0.1 exec 'TELEPHONY ?'
 cbus-toolkit cgate --host 127.0.0.1 exec 'TELEPHONY RECALL_LAST_NUMBER_REQUEST //PROJECT/254/224 out'
 cbus-toolkit cgate --host 127.0.0.1 exec 'TELEPHONY DIVERT //PROJECT/254/224 021234567'
+cbus-toolkit cgate --host 127.0.0.1 exec 'DALI ?'
+cbus-toolkit cgate --host 127.0.0.1 exec 'DALI KNOWN EXEC //PROJECT/254/p/20 A'
+cbus-toolkit cgate --host 127.0.0.1 exec 'DALI EMERGENCY STATUS EXEC //PROJECT/254/p/20 A 3'
 ```
 
 The embedded endpoint implements the complete maintained C-Gate 3.4 CONFIG,
@@ -336,11 +339,24 @@ clients. A 200 proves active-generation PCI-confirmed broadcast delivery; it
 does not prove telephone acceptance, call state or persistence. cmqttd does
 not invent an MQTT Telephony state schema.
 
+`DALI ?` exposes the retained DALI command catalogue. Sixty-two core and
+emergency leaf commands are physically backed for a configured `SYS_DAL2`
+gateway: 48 core commands and all 14 emergency commands. They use native
+extended CAL over the shared PCI, retain C-Gate's EXEC/POLL/CANCEL and bounded
+AUTO polling behavior, correlate replies to the addressed gateway, and never
+replay an outcome-uncertain write after reconnect. The six DALI group roots
+serve exact retained help locally. The 60 specialized CATALOG,
+ERROR_REPORTING, GATEWAY, MEASUREMENT, and SESSION leaves still return 502;
+`CMQTT CAPABILITIES` reports these counts explicitly. There is no DALI MQTT
+state contract.
+
 **Full C-Gate replacement is the target, not the current completion claim.**
 Hardware-backed lighting, all eleven maintained AIRCON/HVAC commands, all 19 maintained
 AUDIO commands, all seven maintained SECURITY commands, the complete maintained
 MEASUREMENT and TELEPHONY families, and all 21 maintained MEDIATRANSPORT commands
-and reports on the configured direct network are implemented. The complete
+and reports on the configured direct network are implemented. The physically
+backed DALI surface currently comprises 48 core and 14 emergency commands;
+the remaining 60 specialized DALI leaves fail closed. The complete
 maintained `PORT` discovery, host enumeration, refresh, and probe family is
 implemented independently of the shared MQTT connection. The same endpoint
 implements C-Gate ACCESS ADD/DELETE/LIST/LOAD/SAVE with durable digest-only

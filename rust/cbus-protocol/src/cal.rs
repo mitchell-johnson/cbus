@@ -61,6 +61,23 @@ pub enum Cal {
         /// Operation within the group.
         operation: u8,
     },
+    /// Ask for the current extended operation status (`0x83`). This has the
+    /// same wire shape as a zero-data reply and is distinguished by direction.
+    ExtendedStatusRequest {
+        /// Extended-command group.
+        group: u8,
+        /// Operation within the group.
+        operation: u8,
+        /// Requested native status selector.
+        status: u8,
+    },
+    /// Cancel an extended operation (`0x84`).
+    Cancel {
+        /// Extended-command group.
+        group: u8,
+        /// Operation within the group.
+        operation: u8,
+    },
     /// Extended CAL operation status (`0x83`).
     ExtendedReply {
         /// Extended-command group.
@@ -156,6 +173,12 @@ impl Cal {
                 out
             }
             Cal::Poll { group, operation } => vec![0xe3, 0x82, *group, *operation],
+            Cal::ExtendedStatusRequest {
+                group,
+                operation,
+                status,
+            } => vec![0xe4, 0x83, *group, *operation, *status],
+            Cal::Cancel { group, operation } => vec![0xe3, 0x84, *group, *operation],
             Cal::ExtendedReply {
                 group,
                 operation,
@@ -274,7 +297,7 @@ impl Cal {
         } else if cmd & 0xe0 == 0xc0 {
             // STANDARD_STATUS is not supported by this decoder.
             Err(DecodeError::new("standard status cal"))
-        } else if cmd & 0xe0 == CAL_EXTENDED_STATUS && matches!(data.get(1), Some(0x81..=0x83)) {
+        } else if cmd & 0xe0 == CAL_EXTENDED_STATUS && matches!(data.get(1), Some(0x81..=0x84)) {
             let length = usize::from(cmd & 0x1f);
             let cal_end = length + 1;
             if !(3..=14).contains(&length) || data.len() < cal_end {
@@ -298,6 +321,8 @@ impl Cal {
                     data: data[5..cal_end].to_vec(),
                 },
                 0x83 => return Err(DecodeError::new("extended CAL reply has no status")),
+                0x84 if length == 3 => Cal::Cancel { group, operation },
+                0x84 => return Err(DecodeError::new("invalid extended CAL cancel length")),
                 _ => unreachable!("extended CAL verb was range checked"),
             };
             Ok((cal, cal_end))

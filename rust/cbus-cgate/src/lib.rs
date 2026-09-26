@@ -505,9 +505,9 @@ fn project_identity_argument(body: &str) -> Result<String, ProjectIdentityArgume
 /// cached-property `300`, parameter `315`, database `342`/`233`, FILE
 /// directory `304`/`305`, snippet/JSON/file-transfer `343`/`345`/`346`/`347`,
 /// PINGU/digest `302`, SYNCNEW discovery/failure `303`/`408`, multiplicity
-/// `120`).
-const ENVELOPE_CODES: [u16; 15] = [
-    120, 134, 233, 300, 302, 303, 304, 305, 315, 342, 343, 345, 346, 347, 408,
+/// `120`), and retained DALI command/response diagnostics (`100`, `320`).
+const ENVELOPE_CODES: [u16; 17] = [
+    100, 120, 134, 233, 300, 302, 303, 304, 305, 315, 320, 342, 343, 345, 346, 347, 408,
 ];
 
 /// True when a reply line already carries a native multi-status envelope.

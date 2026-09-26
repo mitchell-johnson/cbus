@@ -530,6 +530,58 @@ Ground behavior in `rust/testdata/fixtures/native_cgate_telephony.json`,
 that an incoming Telephony event cannot satisfy a pending send confirmation,
 and a service regression rejects a confirmation from a retired PCI generation.
 
+### DALI commands
+
+cmqttd implements 62 physical DALI leaf commands for a `SYS_DAL2` gateway:
+all 48 retained core commands and all 14 commands below `DALI EMERGENCY`.
+Start with the native help catalogue and address the gateway unit itself:
+
+```text
+DALI ?
+DALI KNOWN EXEC //PROJECT/254/p/20 A
+DALI KNOWN POLL //PROJECT/254/p/20 A
+DALI EMERGENCY STATUS EXEC //PROJECT/254/p/20 A 3
+```
+
+Each command accepts an optional mode before the gateway: AUTO is the default;
+EXEC/EXECUTE, POLL and CANCEL use retained extended-CAL controls. The line is
+`A` or `B`. EXEC payload grammar is command-specific; POLL and CANCEL carry no
+payload. Native help also advertises STATUS, but retained C-Gate 3.4 never
+supplies its mandatory selector and fails before I/O. Preserve cmqttd's
+`400 dali cal status must be set` rather than inventing a selector.
+
+DALI uses priority-zero direct point-to-point CAL and has no PCI confirmation
+code. Treat the source-correlated extended reply from the addressed gateway as
+the completion boundary. AUTO sends EXECUTE once, waits 1.5 seconds, and polls
+at most ten times while status is IN_PROGRESS or FAIL_BUSY. It never repeats
+the EXECUTE. A disconnect, lost gateway reply or PCI-generation change makes
+the outcome uncertain and the operation is not replayed. Native-shaped replies
+include DaliCommand, Line, Payload, SendCommand, Response, ResponseStatus and
+ResponsePayload rows; a NAK maps to FAIL_CATASTROPHE with a null payload.
+
+When LOGIN is armed, mutation commands in AUTO/EXEC/CANCEL mode require
+authentication. Read-only core/emergency operations and POLL/STATUS observations
+stay open. The six group roots CATALOG, EMERGENCY, ERROR_REPORTING, GATEWAY,
+MEASUREMENT and SESSION return exact retained help locally. Only EMERGENCY has
+physical leaves in this slice. The other 60 specialized leaves return 502; use
+the exact categorized list in `docs/cmqttd-cgate.md` and inspect the boundary
+programmatically with `CMQTT CAPABILITIES`:
+
+```json
+{
+  "dali_physical_leaf_commands": 62,
+  "dali_local_help_roots": 6,
+  "dali_specialized_commands_fail_closed": 60,
+  "dali_full_compatibility": false,
+  "dali_delivery_semantics": "source-correlated-exactly-once-no-replay"
+}
+```
+
+There is no MQTT DALI state contract. Ground syntax/help in
+`rust/testdata/fixtures/native_cgate_dali_help.json`, exact CAL bytes in
+`rust/testdata/vectors/dali.jsonl`, and orchestration/continuity behavior in
+`rust/cmqttd/tests/system_cgate_dali.rs`.
+
 The physical service also implements lighting commands, C-Gate `DO` object
 methods for lighting and direct/bridged read-only `SYNC`, Trigger Control,
 Enable Control, clock date/time/refresh, Temperature Broadcast, `NET PINGU`, `NET SYNC`,

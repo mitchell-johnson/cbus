@@ -136,9 +136,15 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // generic 502: root help, local serial/interface enumeration and native
     // REFRESH behavior are local; both discovery protocols and PROBE use
     // explicit physical network/port I/O.
-    assert_eq!(class_count(RoutingClass::Physical), 103);
-    assert_eq!(class_count(RoutingClass::LocalDatabase), 82);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 245);
+    // Sixty-two retained DALI core and emergency leaf commands moved from
+    // fail_closed_502 -> physical with their native extended-CAL payloads,
+    // source-correlated gateway replies and no-replay reconnect boundary.
+    // The six DALI group roots moved fail_closed_502 -> local_database to
+    // serve the exact retained help envelopes. The other sixty specialised
+    // DALI leaves remain explicitly fail closed.
+    assert_eq!(class_count(RoutingClass::Physical), 165);
+    assert_eq!(class_count(RoutingClass::LocalDatabase), 88);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 177);
     assert_eq!(class_count(RoutingClass::Obsolete400), 1);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here
@@ -178,6 +184,93 @@ fn access_rows_retain_native_roles_persistence_and_safety_repair_evidence() {
             "{}",
             entry.path
         );
+    }
+}
+
+#[test]
+fn dali_rows_retain_native_help_wire_and_fail_closed_boundaries() {
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_dali_help.json"
+    ))
+    .expect("native DALI evidence must remain valid JSON");
+    assert_eq!(fixture["format"], "native-cgate-dali-help-v1");
+    assert_eq!(fixture["oracle"]["version"], "3.4.0.2001");
+    assert_eq!(
+        fixture["oracle"]["jar_sha256"],
+        "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+    );
+    assert_eq!(fixture["oracle"]["listener_ownership_verified"], true);
+    assert_eq!(fixture["paths"].as_object().unwrap().len(), 128);
+
+    let dali_rows: Vec<_> = CAPABILITY_MATRIX
+        .iter()
+        .filter(|entry| entry.path.starts_with("DALI "))
+        .collect();
+    assert_eq!(dali_rows.len(), 128);
+    assert_eq!(
+        dali_rows
+            .iter()
+            .filter(|entry| entry.class == RoutingClass::Physical)
+            .count(),
+        62
+    );
+    assert_eq!(
+        dali_rows
+            .iter()
+            .filter(|entry| entry.class == RoutingClass::LocalDatabase)
+            .count(),
+        6
+    );
+    assert_eq!(
+        dali_rows
+            .iter()
+            .filter(|entry| entry.class == RoutingClass::FailClosed502)
+            .count(),
+        60
+    );
+
+    for root in [
+        "DALI CATALOG",
+        "DALI EMERGENCY",
+        "DALI ERROR_REPORTING",
+        "DALI GATEWAY",
+        "DALI MEASUREMENT",
+        "DALI SESSION",
+    ] {
+        let entry = CAPABILITY_MATRIX
+            .iter()
+            .find(|entry| entry.path == root)
+            .unwrap();
+        assert_eq!(entry.class, RoutingClass::LocalDatabase, "{root}");
+        assert!(entry.evidence.contains("native_cgate_dali_help.json"));
+    }
+
+    for path in [
+        "DALI ADDRESS_UNKNOWN",
+        "DALI EMERGENCY REST",
+        "DALI FACTORY_RESET",
+        "DALI WINK_ECG_ON",
+    ] {
+        let entry = CAPABILITY_MATRIX
+            .iter()
+            .find(|entry| entry.path == path)
+            .unwrap();
+        assert_eq!(entry.class, RoutingClass::Physical, "{path}");
+        assert!(entry.evidence.contains("PciClient::dali_command"));
+    }
+
+    for path in [
+        "DALI CATALOG LIST",
+        "DALI ERROR_REPORTING MODE",
+        "DALI GATEWAY LIST",
+        "DALI MEASUREMENT LAMP_RUNNING_TIME",
+        "DALI SESSION LIST",
+    ] {
+        let entry = CAPABILITY_MATRIX
+            .iter()
+            .find(|entry| entry.path == path)
+            .unwrap();
+        assert_eq!(entry.class, RoutingClass::FailClosed502, "{path}");
     }
 }
 

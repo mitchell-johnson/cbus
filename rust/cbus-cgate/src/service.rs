@@ -2,6 +2,7 @@
 //! deliberately not the fallback for unimplemented physical operations.
 
 use super::*;
+mod dali;
 use crate::access::{credential_digest_for, AccessEntry, CgateAccessLevel};
 use crate::auth;
 use crate::config::{
@@ -2022,7 +2023,25 @@ impl Service {
             ]);
             capabilities["telephony_event_fanout"] = serde_json::Value::Bool(true);
             capabilities["telephony_mqtt_state"] = serde_json::Value::Bool(false);
+            capabilities["dali_core_commands"] = serde_json::Value::from(48);
+            capabilities["dali_emergency_commands"] = serde_json::Value::from(14);
+            capabilities["dali_physical_leaf_commands"] = serde_json::Value::from(62);
+            capabilities["dali_local_help_roots"] = serde_json::Value::from(6);
+            capabilities["dali_specialized_commands_fail_closed"] = serde_json::Value::from(60);
+            capabilities["dali_full_compatibility"] = serde_json::Value::Bool(false);
+            capabilities["dali_extended_cal"] = serde_json::Value::Bool(true);
+            capabilities["dali_delivery_semantics"] =
+                serde_json::Value::String("source-correlated-exactly-once-no-replay".to_string());
+            capabilities["dali_auto_poll_limit"] = serde_json::Value::from(10);
+            capabilities["dali_native_help_paths"] = serde_json::Value::from(128);
             return ok(tag, vec![capabilities.to_string()], "200 OK");
+        }
+        if verb == "HELP" && sub == "DALI" {
+            return dali::help(tag, &upper[1..])
+                .unwrap_or_else(|| err(tag, 400, "400 Syntax Error: DALI command not found"));
+        }
+        if verb == "DALI" {
+            return self.dali(tag, &words, &upper).await;
         }
         if verb == "CONFIG" {
             return self.config(client, tag, &cmd.body, &words, &upper).await;
@@ -9385,6 +9404,9 @@ fn parse_aircon_boolean(tag: &str, value: &str, parameter: &str) -> Result<bool,
 ///   DOWNLOAD and SHA256 remain open.
 /// - DO ... FactoryDefault (destructive KEYGL5 OEM programming control).
 ///   Other DO methods remain ordinary bus-control operations.
+/// - DALI device-changing core/emergency commands when they execute, run in
+///   AUTO mode, or cancel work. POLL/STATUS observations and group help stay
+///   open. This gate is evaluated before the exact-once extended-CAL branch.
 ///
 /// NET LOAD/SAVE need no entry: the local_command NET arm admits only
 /// LIST|LIST_ALL|STATE, so they already fail closed with 502.
@@ -9506,6 +9528,7 @@ fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
             is_mediatransport_subcommand(sub) && !matches!(sub, "STATUS_REQUEST" | "ENUMERATE")
         }
         "TELEPHONY" => is_telephony_subcommand(sub) && sub != "RECALL_LAST_NUMBER_REQUEST",
+        "DALI" => dali_requires_programming_auth(words),
         "PP" => matches!(
             sub,
             "LOCK"
@@ -9550,6 +9573,65 @@ fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
         | "DBRENAMENETSAFE" => true,
         _ => false,
     }
+}
+
+fn dali_requires_programming_auth(words: &[String]) -> bool {
+    let (command_index, mode_index) = if words.get(1).is_some_and(|word| word == "EMERGENCY") {
+        (2, 3)
+    } else {
+        (1, 2)
+    };
+    let Some(command) = words.get(command_index).map(String::as_str) else {
+        return false;
+    };
+    let mutating = matches!(
+        command,
+        "FACTORY_RESET"
+            | "ADDRESS_UNKNOWN"
+            | "REASSIGN_ONE"
+            | "SWAP_TWO"
+            | "REPLACE_BAD"
+            | "REMOVE_MANY"
+            | "WINK_ECG_ON"
+            | "WINK_ECG_OFF"
+            | "RECALL_MAX"
+            | "RECALL_MIN"
+            | "RECALL_OFF"
+            | "RECALL_MAX_MANY"
+            | "RECALL_OFF_MANY"
+            | "TRIGGER_SCENE"
+            | "SET_SCENE_VALUES_LOW"
+            | "SET_SCENE_VALUES_HIGH"
+            | "SET_SCENE_LEVEL_MANY"
+            | "SET_MIN_MANY"
+            | "SET_MAX_MANY"
+            | "SET_RECOVERY_MANY"
+            | "SET_FAILURE_MANY"
+            | "SET_GROUP_MANY"
+            | "REMOVE_GROUP_MANY"
+            | "SET_COMMON_PARAMS"
+            | "SET_LED_PARAMS"
+            | "SET_COLOUR_TEMPERATURE"
+            | "SET_COLOUR_POWER_FAIL_PARAMS"
+            | "SET_PARAMS"
+            | "SET_LEVEL_MANY"
+            | "SET_PROLONG_MANY"
+            | "SET_TEST_TIMEOUT_MANY"
+            | "START_FUNCTION_TEST"
+            | "START_DURATION_TEST"
+            | "STOP_TEST"
+            | "REST"
+            | "INHIBIT"
+            | "RELIGHT"
+            | "UPDATE_TEST_STATUS"
+    );
+    if !mutating {
+        return false;
+    }
+    !matches!(
+        words.get(mode_index).map(String::as_str),
+        Some("POLL" | "P" | "PO" | "POL" | "STATUS" | "S" | "ST" | "STA" | "STAT" | "STATU")
+    )
 }
 
 fn local_command(words: &[&str], upper: &[String], model: &Server) -> bool {

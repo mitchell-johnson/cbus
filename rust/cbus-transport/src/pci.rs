@@ -34,6 +34,8 @@ use crate::framing::FrameBuffer;
 mod mmi;
 mod programming;
 
+pub use programming::{DaliCommandResult, DaliExchange};
+
 /// Holds both local commissioning lanes across a complete observation.
 /// Ordinary SAL traffic is deliberately outside this scope.
 pub(crate) struct CommissioningObservation<'a> {
