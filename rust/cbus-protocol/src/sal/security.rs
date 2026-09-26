@@ -709,7 +709,9 @@ fn pack_zones(zones: &[u8]) -> Result<Vec<u8>, EncodeError> {
         return Err(EncodeError::new("Security zone state is out of range"));
     }
     Ok(zones
-        .chunks_exact(4)
+        .as_chunks::<4>()
+        .0
+        .iter()
         .map(|z| (z[0] << 6) | (z[1] << 4) | (z[2] << 2) | z[3])
         .collect())
 }
