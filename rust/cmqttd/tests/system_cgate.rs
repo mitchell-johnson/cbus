@@ -421,7 +421,10 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
             .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0xff, 0]));
     }
     let capabilities = command(&mut reader, &mut writer, "CMQTT CAPABILITIES").await;
-    assert!(capabilities.contains("\"do_methods\":[\"factorydefault\",\"lighting\",\"sync\"]"));
+    assert!(capabilities
+        .contains("\"do_methods\":[\"factorydefault\",\"lighting\",\"sync\",\"unravel\"]"));
+    assert!(capabilities.contains("\"full_cgate_command_path_coverage\":true"));
+    assert!(capabilities.contains("\"cgate_non_obsolete_paths\":429"));
     assert!(capabilities.contains("\"full_cgate_compatibility\":false"));
     assert!(capabilities.contains("\"dynamic_label_device_readback\":false"));
     assert!(capabilities.contains("\"label_clear\":true"));
