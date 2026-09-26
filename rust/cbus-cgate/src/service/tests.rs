@@ -9811,3 +9811,115 @@ async fn armed_auth_gate_protects_event_mutations_and_advisory_locks() {
     );
     std::fs::remove_file(path).unwrap();
 }
+
+#[tokio::test]
+async fn legacy_database_local_subset_is_durable_and_never_touches_pci() {
+    let evidence: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../testdata/fixtures/native_cgate_legacy_database.json"
+    ))
+    .unwrap();
+    assert_eq!(evidence["oracle"]["version"], "3.4.0 build 2001");
+    assert_eq!(
+        evidence["oracle"]["jar_sha256"],
+        "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+    );
+
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    for (tag, command) in [
+        ("1", "PROJECT NEW AUX"),
+        ("2", "DBCREATENET 1 Auxiliary Cni nowhere"),
+        ("3", "DBADDSAFE //AUX/1 Unit 20 Original"),
+        ("4", "DBADDSAFE //AUX/1 Unit 21 Occupied"),
+        ("5", "DBSET //AUX/1/p/20/TagName Legacy Unit"),
+    ] {
+        assert_eq!(
+            service
+                .handle(&mut client, &format!("[{tag}] {command}"))
+                .await
+                .status,
+            200,
+            "{command}"
+        );
+    }
+    let filtered = service.handle(&mut client, "[6] DBTAGLIST legacy").await;
+    assert_eq!(filtered.status, 342);
+    assert_eq!(filtered.final_text, "342 1/p/20/TagName=Legacy Unit");
+
+    let duplicate = service
+        .handle(&mut client, "[7] DBSET //AUX/1/p/20/Address 21")
+        .await;
+    assert_eq!(duplicate.status, 408);
+    assert!(duplicate.final_text.contains("duplicate unit addresses"));
+    assert_eq!(
+        service
+            .handle(&mut client, "[8] DBSET //AUX/1/p/20/Address 22")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[9] DBRENAMENETSAFE 1 2")
+            .await
+            .status,
+        200
+    );
+    let tags = service.handle(&mut client, "[10] DBTAGLIST").await;
+    let rendered = format_response(&tags);
+    assert!(rendered.contains("2/p/22/TagName=Legacy Unit"));
+
+    for (tag, command) in [
+        ("11", "DBADD //AUX/2 Unit"),
+        ("12", "DBCOPY //AUX/2/p/22 //AUX/2"),
+        ("13", "DBCREATE"),
+        ("14", "DBNEW"),
+        ("15", "DBUPDATE //AUX/2"),
+        ("16", "DBVERIFY"),
+    ] {
+        let response = service
+            .handle(&mut client, &format!("[{tag}] {command}"))
+            .await;
+        assert_eq!(response.status, 502, "{command}: {response:?}");
+    }
+
+    assert_eq!(
+        service
+            .handle(&mut client, "[17] PROJECT USE HARNESS")
+            .await
+            .status,
+        200
+    );
+    let configured = service
+        .handle(&mut client, "[18] DBRENAMENETSAFE 254 252")
+        .await;
+    assert_eq!(configured.status, 408);
+    assert!(configured
+        .final_text
+        .contains("configured hardware project"));
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err(),
+        "legacy database operations must not write to PCI"
+    );
+
+    drop(service);
+    let (replacement, _replacement_remote) = pci();
+    let restarted = Service::new(&fixture(), None, path.clone(), replacement, None).unwrap();
+    let mut restarted_client = ClientState::default();
+    assert_eq!(
+        restarted
+            .handle(&mut restarted_client, "[19] PROJECT USE AUX")
+            .await
+            .status,
+        200
+    );
+    let persisted = restarted
+        .handle(&mut restarted_client, "[20] DBTAGLIST legacy")
+        .await;
+    assert_eq!(persisted.final_text, "342 2/p/22/TagName=Legacy Unit");
+    std::fs::remove_file(path).unwrap();
+}

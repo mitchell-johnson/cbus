@@ -159,9 +159,13 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // IDENTIFY ON/OFF/RAMP/TERMINATERAMP, SHORTMESSAGE REFRESH/SEND, and
     // EREPORT MESSAGE. Root help rows retain their independently evidenced
     // local classification boundary.
+    // Legacy DBRENAMENET/DBRENAMENETSAFE, DBSET and DBTAGLIST move four
+    // rows to local_database with selected-project persistence and explicit
+    // repairs for native duplicate/non-numeric address corruption. DBADD,
+    // DBCOPY, DBCREATE, DBNEW, DBUPDATE and DBVERIFY remain fail-closed.
     assert_eq!(class_count(RoutingClass::Physical), 215);
-    assert_eq!(class_count(RoutingClass::LocalDatabase), 159);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 55);
+    assert_eq!(class_count(RoutingClass::LocalDatabase), 163);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 51);
     assert_eq!(class_count(RoutingClass::Obsolete400), 2);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here
@@ -208,6 +212,44 @@ fn remaining_application_rows_retain_native_wire_and_repair_evidence() {
         .unwrap();
     assert!(send.evidence.contains("repairs native 3.4"));
     assert!(send.evidence.contains("without replay"));
+}
+
+#[test]
+fn legacy_database_rows_pin_local_and_fail_closed_boundaries() {
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_legacy_database.json"
+    ))
+    .expect("native legacy-database evidence must remain valid JSON");
+    assert_eq!(fixture["oracle"]["version"], "3.4.0 build 2001");
+    assert_eq!(
+        fixture["oracle"]["jar_sha256"],
+        "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+    );
+
+    for path in ["DBRENAMENET", "DBRENAMENETSAFE", "DBSET", "DBTAGLIST"] {
+        let row = CAPABILITY_MATRIX
+            .iter()
+            .find(|row| row.path == path)
+            .unwrap_or_else(|| panic!("missing {path}"));
+        assert_eq!(row.class, RoutingClass::LocalDatabase, "{path}");
+        assert!(
+            row.evidence.contains("native_cgate_legacy_database.json"),
+            "{path}"
+        );
+    }
+    for path in [
+        "DBADD", "DBCOPY", "DBCREATE", "DBNEW", "DBUPDATE", "DBVERIFY",
+    ] {
+        let row = CAPABILITY_MATRIX
+            .iter()
+            .find(|row| row.path == path)
+            .unwrap_or_else(|| panic!("missing {path}"));
+        assert_eq!(row.class, RoutingClass::FailClosed502, "{path}");
+        assert!(
+            row.evidence.contains("native_cgate_legacy_database.json"),
+            "{path}"
+        );
+    }
 }
 
 #[test]

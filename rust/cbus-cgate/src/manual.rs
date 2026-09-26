@@ -1995,16 +1995,8 @@ impl Server {
             "DBLOAD" => Some(self.db_load(tag, words)),
             "DBSAVE" => Some(self.db_save(tag, words)),
             "DBNETWORKPATH" => Some(self.db_network_path(tag, words)),
-            "DBRENAMENET" => {
-                let mut alias = words.to_vec();
-                alias[0] = "DBRENAMENETSAFE";
-                Some(self.dbrename_net(tag, &alias))
-            }
-            "DBSET" => {
-                let mut alias = words.to_vec();
-                alias[0] = "DBSETSAFE";
-                Some(self.dbset(tag, &alias))
-            }
+            "DBRENAMENET" => Some(self.dbrename_net(tag, words)),
+            "DBSET" => Some(self.dbset_unsafe(tag, words)),
             "DBTAGLIST" => Some(self.db_tag_list(tag, words)),
             "DBUPDATE" => Some(self.db_update(tag, words)),
             "DBVERIFY" => Some(self.db_verify(tag, words)),
@@ -2012,111 +2004,28 @@ impl Server {
         }
     }
 
-    fn dbadd_unsafe(&mut self, tag: &str, words: &[&str]) -> Response {
-        if words.len() != 3 || !valid_target(words[1]) {
-            return err(
-                tag,
-                status::BAD_REQUEST,
-                "400 DBADD requires a parent and element type",
-            );
-        }
-        let element = words[2].to_ascii_uppercase();
-        if element == "PROJECT" {
-            let name = format!("PROJECT{}", self.projects.len() + 1);
-            let args = ["PROJECT", "NEW", name.as_str()];
-            return self.project_new(tag, &args);
-        }
-        let Some((project, net)) = self.network_of(words[1]) else {
-            return err(tag, status::NOT_FOUND, "404 Network not found");
-        };
-        let network = self
-            .projects
-            .get(&project)
-            .and_then(|p| p.networks.get(&net))
-            .expect("network resolved");
-        let address = if element == "UNIT" {
-            (0_u16..=255)
-                .map(|n| n as u8)
-                .find(|n| !network.units.contains_key(n))
-        } else {
-            (0_u16..=255).map(|n| n as u8).find(|n| {
-                !self
-                    .objects
-                    .contains(&format!("{}-{element}-{n}", words[1]))
-            })
-        };
-        let Some(address) = address else {
-            return err(
-                tag,
-                status::CONFLICT_EXISTS,
-                "409 No element address available",
-            );
-        };
-        let name = format!("{element}{address}");
-        let args = [
-            "DBADDSAFE",
-            words[1],
-            element.as_str(),
-            &address.to_string(),
-            name.as_str(),
-        ];
-        self.dbadd(tag, &args)
+    fn dbadd_unsafe(&mut self, tag: &str, _words: &[&str]) -> Response {
+        err(
+            tag,
+            502,
+            "502 Command requires a physical backend that is not implemented",
+        )
     }
 
-    fn dbcopy_unsafe(&mut self, tag: &str, words: &[&str]) -> Response {
-        if words.len() != 3 || !valid_target(words[1]) || !valid_target(words[2]) {
-            return err(
-                tag,
-                status::BAD_REQUEST,
-                "400 DBCOPY requires a source and destination parent",
-            );
-        }
-        let address = Server::split_unit(words[1])
-            .map(|(_, _, address)| address)
-            .unwrap_or(0);
-        let name = Server::split_unit(words[1])
-            .and_then(|(project, net, address)| {
-                self.projects
-                    .get(&project)?
-                    .networks
-                    .get(&net)?
-                    .units
-                    .get(&address)
-            })
-            .and_then(|unit| unit.fields.get("UnitName"))
-            .cloned()
-            .unwrap_or_else(|| format!("COPY{address}"));
-        let address_text = address.to_string();
-        let args = [
-            "DBCOPYSAFE",
-            words[1],
-            words[2],
-            address_text.as_str(),
-            name.as_str(),
-        ];
-        self.dbcopy(tag, &args)
+    fn dbcopy_unsafe(&mut self, tag: &str, _words: &[&str]) -> Response {
+        err(
+            tag,
+            502,
+            "502 Command requires a physical backend that is not implemented",
+        )
     }
 
-    fn db_new(&mut self, tag: &str, words: &[&str]) -> Response {
-        if words.len() != 1 {
-            return err(
-                tag,
-                status::BAD_REQUEST,
-                "400 DBCREATE/DBNEW takes no arguments",
-            );
-        }
-        let Some(name) = self.current.clone() else {
-            return err(tag, status::NOT_FOUND, "404 No project selected");
-        };
-        if let Some(project) = self.projects.get_mut(&name) {
-            project.networks.clear();
-        }
-        let prefix = format!("//{name}/");
-        self.db_fields.retain(|key, _| !key.starts_with(&prefix));
-        self.objects.retain(|key| !key.starts_with(&prefix));
-        self.db_levels
-            .retain(|_, level| !level.parent.starts_with(&prefix));
-        ok(tag, vec![], "200 OK.")
+    fn db_new(&mut self, tag: &str, _words: &[&str]) -> Response {
+        err(
+            tag,
+            502,
+            "502 Command requires a physical backend that is not implemented",
+        )
     }
 
     fn db_save(&mut self, tag: &str, words: &[&str]) -> Response {
@@ -2243,108 +2152,109 @@ impl Server {
             return err(
                 tag,
                 status::BAD_REQUEST,
-                "400 DBTAGLIST takes one optional pattern",
+                "400 Syntax Error: Too many parameters",
             );
         }
+        let Some(project_name) = self.current.as_deref() else {
+            return err(
+                tag,
+                440,
+                "440 There is no tag database to perform this operation on",
+            );
+        };
+        let Some(project) = self.projects.get(project_name) else {
+            return err(
+                tag,
+                440,
+                "440 There is no tag database to perform this operation on",
+            );
+        };
         let pattern = words.get(1).map(|p| p.to_ascii_lowercase());
         let mut rows = Vec::new();
-        for (project_name, project) in &self.projects {
-            for (net, network) in &project.networks {
-                rows.push(format!("//{project_name}/{net}/TagName={}", network.name));
-                for (address, unit) in &network.units {
-                    let name = unit.fields.get("UnitName").cloned().unwrap_or_default();
-                    rows.push(format!("//{project_name}/{net}/p/{address}/TagName={name}"));
+        let mut seen = std::collections::HashSet::new();
+        let mut push = |row: String| {
+            if seen.insert(row.clone()) {
+                rows.push(row);
+            }
+        };
+        push(format!("{project_name}/TagName={project_name}"));
+        let mut networks = project.networks.iter().collect::<Vec<_>>();
+        networks.sort_by_key(|(address, _)| std::cmp::Reverse(**address));
+        for (net, network) in networks {
+            if !network.name.is_empty() {
+                push(format!("{net}/TagName={}", network.name));
+            }
+            let mut units = network.units.iter().collect::<Vec<_>>();
+            units.sort_by_key(|(address, _)| **address);
+            for (address, unit) in units {
+                let name = unit
+                    .fields
+                    .get("TagName")
+                    .or_else(|| unit.fields.get("UnitName"))
+                    .cloned()
+                    .unwrap_or_default();
+                if !name.is_empty() {
+                    push(format!("{net}/p/{address}/TagName={name}"));
                 }
             }
+
+            let network_prefix = format!("//{project_name}/{net}/");
+            let mut descendants = std::collections::BTreeSet::new();
+            for (path, value) in &self.db_fields {
+                if value.is_empty() || !path.ends_with("/TagName") {
+                    continue;
+                }
+                if let Some(relative) = path.strip_prefix(&network_prefix) {
+                    descendants.insert(format!("{net}/{relative}={value}"));
+                }
+            }
+            for level in self.db_levels.values() {
+                let Some(parent) = level.parent.strip_prefix(&network_prefix) else {
+                    continue;
+                };
+                if !level.tag.is_empty() {
+                    descendants.insert(format!(
+                        "{net}/{parent}/{}/TagName={}",
+                        level.address, level.tag
+                    ));
+                }
+            }
+            for row in descendants {
+                push(row);
+            }
         }
-        rows.retain(|row| {
-            pattern
-                .as_ref()
-                .is_none_or(|p| row.to_ascii_lowercase().contains(p))
-        });
-        rows.sort();
+        let rows = rows
+            .into_iter()
+            .filter(|row| {
+                pattern
+                    .as_ref()
+                    .is_none_or(|p| row.to_ascii_lowercase().contains(p))
+            })
+            .collect::<Vec<_>>();
+        if rows.is_empty() {
+            return err(
+                tag,
+                status::ABSENT,
+                "401 Bad object or device ID: No objects found.",
+            );
+        }
         envelope(tag, 342, rows)
     }
 
-    fn db_update(&mut self, tag: &str, words: &[&str]) -> Response {
-        if !(2..=3).contains(&words.len())
-            || words
-                .get(2)
-                .is_some_and(|word| !word.eq_ignore_ascii_case("UNITDELETE"))
-        {
-            return err(
-                tag,
-                status::BAD_REQUEST,
-                "400 DBUPDATE requires a network and optional UnitDelete",
-            );
-        }
-        let (project, net) = match self.require_network(tag, words[1]) {
-            Ok(value) => value,
-            Err(response) => return response,
-        };
-        let network = self
-            .projects
-            .get_mut(&project)
-            .and_then(|p| p.networks.get_mut(&net))
-            .expect("network resolved");
-        if words.len() == 3 {
-            network
-                .units
-                .retain(|address, _| network.physical.contains_key(address));
-        }
-        for (address, unit) in network.physical.clone() {
-            network.units.insert(address, unit);
-        }
-        ok(tag, vec![], "200 OK.")
+    fn db_update(&mut self, tag: &str, _words: &[&str]) -> Response {
+        err(
+            tag,
+            502,
+            "502 Command requires a physical backend that is not implemented",
+        )
     }
 
-    fn db_verify(&self, tag: &str, words: &[&str]) -> Response {
-        if words.len() != 1 {
-            return err(tag, status::BAD_REQUEST, "400 DBVERIFY takes no arguments");
-        }
-        let Some(project) = self
-            .current
-            .as_ref()
-            .and_then(|name| self.projects.get(name))
-        else {
-            return err(tag, status::NOT_FOUND, "440 There is no tag database");
-        };
-        let mut differences = Vec::new();
-        for (net, network) in &project.networks {
-            for address in network
-                .units
-                .keys()
-                .filter(|address| !network.physical.contains_key(address))
-            {
-                differences.push(format!(
-                    "Difference: //{}/{net}/p/{address} missing from network",
-                    project.name
-                ));
-            }
-            for address in network
-                .physical
-                .keys()
-                .filter(|address| !network.units.contains_key(address))
-            {
-                differences.push(format!(
-                    "Difference: //{}/{net}/p/{address} missing from database",
-                    project.name
-                ));
-            }
-        }
-        if differences.is_empty() {
-            ok(tag, vec![], "200 OK.")
-        } else {
-            Response {
-                tag: tag.to_string(),
-                lines: differences
-                    .into_iter()
-                    .map(|line| format!("345-{line}"))
-                    .collect(),
-                final_text: "408 Operation failed: Verify found differences".to_string(),
-                status: status::CONFLICT_STATE,
-            }
-        }
+    fn db_verify(&self, tag: &str, _words: &[&str]) -> Response {
+        err(
+            tag,
+            502,
+            "502 Command requires a physical backend that is not implemented",
+        )
     }
 
     fn run_macro(&mut self, tag: &str, words: &[&str]) -> Response {
@@ -3112,9 +3022,9 @@ mod tests {
             .lines
             .iter()
             .any(|line| line == "level=56/1=255"));
-        assert_eq!(server.handle("[10] DBADD //TEST/254 Unit").status, 200);
+        assert_eq!(server.handle("[10] DBADD //TEST/254 Unit").status, 502);
         assert_eq!(server.handle("[11] DBSAVE memory.db").status, 200);
-        assert_eq!(server.handle("[12] DBNEW").status, 200);
+        assert_eq!(server.handle("[12] DBNEW").status, 502);
         assert_eq!(server.handle("[13] DBLOAD memory.db").status, 200);
         assert!(server.handle("[14] GET 254 UNITS").status < 400);
     }

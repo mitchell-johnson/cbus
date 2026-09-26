@@ -1,0 +1,82 @@
+{
+  "schema": "native-cgate-legacy-database-evidence-v1",
+  "captured_at": "2026-09-26",
+  "oracle": {
+    "product": "Schneider Electric C-Gate",
+    "version": "3.4.0 build 2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "runtime": "Temurin Java 11",
+    "transport": "owned disposable Docker child with command port published on IPv4 loopback",
+    "live_cbus_endpoint": false,
+    "site_project_used": false,
+    "cleanup_complete": true
+  },
+  "raw_probe_sha256": [
+    "9829876d60aeeb6a63e4633f03a99edcf34b59b858ee85194b2be78230064033",
+    "91af663176dc409ab460a4defa8cd9d9235e02e7e00bcd0bc6702347e91bfd31",
+    "91995a80ffc97075a8525ca35c7d2828d5cacbb49ba24e8117585562f9d38357"
+  ],
+  "dbtaglist": {
+    "selected_project_rows": [
+      "342-DBL1/TagName=DBL1",
+      "342-254/TagName=LocalA",
+      "342-254/p/20/TagName=Legacy Unit",
+      "342 253/TagName=LocalB"
+    ],
+    "case_insensitive_filter": {
+      "commands": ["DBTAGLIST legacy", "DBTAGLIST LEGACY"],
+      "reply": "342 254/p/20/TagName=Legacy Unit"
+    },
+    "no_match": "401 Bad object or device ID: No objects found.",
+    "extra_token": "400 Syntax Error: Too many parameters",
+    "scope": "rows are relative to the selected project and never include another loaded project's tags"
+  },
+  "dbset": {
+    "oid_flow": [
+      "DBSET !<oid>/Address 20 -> 200 OK.",
+      "DBSET !<oid>/TagName Legacy Unit -> 200 OK.",
+      "DBGET !<oid>/Address -> 342 !<oid>/Address=20",
+      "DBGET !<oid>/TagName -> 342 !<oid>/TagName=Legacy Unit"
+    ],
+    "path_flow": "DBSET //DBL1/254/p/20/TagName Renamed Legacy -> 200 OK.",
+    "unknown_path": "401 Bad object or device ID: Element 99 not found.",
+    "unknown_oid": "401 Bad object or device ID: Element !ffffffff-ffff-ffff-ffff-ffffffffffff not found.",
+    "oid_immutable": "408 Operation failed: OID field can not be changed",
+    "blank_unsafe_value": "DBSET existing/TagName with no value -> 200 OK.",
+    "blank_safe_value": "DBSETSAFE existing/TagName with no value -> 401 Bad object or device ID: TagName can't be null or blank",
+    "native_duplicate_defect": "unsafe Address accepted an occupied unit address and DBTAGLIST then emitted two distinct TagName rows for the same path",
+    "cmqttd_repair": "reject an occupied unit destination with deterministic 408 before mutation"
+  },
+  "dbrenamenet": {
+    "safe": {
+      "success": "DBRENAMENETSAFE 254 252 -> 200 OK.",
+      "occupied": "401 Bad object or device ID: New network address in use",
+      "same": "401 Bad object or device ID: Can't rename network to the same address",
+      "qualified_source": "401 Bad object or device ID: Invalid network address"
+    },
+    "unsafe": {
+      "qualified_success": "DBRENAMENET //RNP/251 250 -> 200 OK.",
+      "same": "DBRENAMENET 250 250 -> 200 OK.",
+      "native_duplicate_defect": "DBRENAMENET 252 253 succeeded when 253 already existed and DBTAGLIST emitted both names at address 253",
+      "native_non_numeric_defect": "DBRENAMENET 250 abc succeeded and DBTAGLIST emitted abc/TagName=B",
+      "cmqttd_repair": "reject duplicate or non-numeric destinations with deterministic 408 before mutation"
+    },
+    "reference_behavior": "manual and command implementation require bridge references to travel with a successful readdress",
+    "cmqttd_binding_boundary": "all network readdressing in the configured hardware project is rejected; secondary projects remain local and durable"
+  },
+  "retained_fail_closed": {
+    "DBADD": {
+      "native": "creates an incomplete typed object and returns 301 OID; later DBSET by OID assigns Address and TagName",
+      "boundary": "the existing simplified mock auto-addresses and auto-names, so cmqttd does not admit it as native behavior"
+    },
+    "DBCOPY": {
+      "native_same_project": "fresh subtree OIDs, Address and TagName cleared until DBSET",
+      "native_cross_project": "fresh subtree OIDs with Address and TagName preserved",
+      "boundary": "complete typed subtree ownership/remapping is not implemented"
+    },
+    "DBCREATE": "generated PROJECT NEW tag databases returned native 500; documented semantics also require a physical-network snapshot",
+    "DBNEW": "generated PROJECT NEW tag databases returned native 500 (TagDB instance unsupported), so no destructive approximation is admitted",
+    "DBUPDATE": "isolated unopened generated networks returned 401; successful semantics require physical inventory replacement",
+    "DBVERIFY": "generated PROJECT NEW tag databases returned native 500; documented semantics compare the live network with the database"
+  }
+}

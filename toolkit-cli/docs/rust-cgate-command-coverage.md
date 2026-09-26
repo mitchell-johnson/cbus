@@ -112,7 +112,7 @@ the 431-path inventory (`CGL`, `CLOCK`, `ENABLE`, `EREPORT`, `LIGHTING`,
 parent roots are pinned in the separate supplement. These local help endpoints
 do not change any child command's capability class. Together with the NET and
 deploy-queue, NET lifecycle, and remaining-application tranches, the matrix now
-contains **215 physical, 159 local/session, 55 fail-closed, and 2 obsolete
+contains **215 physical, 163 local/session, 51 fail-closed, and 2 obsolete
 paths**. The separate non-inventoried supplement contains 11 rows. Evidence is in
 `rust/testdata/fixtures/native_cgate_family_help.json`.
 

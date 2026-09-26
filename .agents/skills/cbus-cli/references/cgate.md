@@ -1034,6 +1034,22 @@ selectable and a delete is immediate. Do not infer Schneider file-repository
 parity from these commands. Retained disposable-native evidence is in
 `rust/testdata/fixtures/native_cgate_project_copy_delete.json`.
 
+The local legacy database subset also includes selected-project `DBTAGLIST`,
+unsafe scalar `DBSET`, and `DBRENAMENET`/`DBRENAMENETSAFE` for secondary
+projects. These changes commit atomically to `--cgate-state`, survive restart,
+and never send PCI traffic. DBTAGLIST uses project-relative 342 rows and a
+single case-insensitive filter token. DBSET resolves existing modeled paths and
+OIDs, permits an empty scalar, and can move a database unit while leaving the
+physical snapshot alone. cmqttd rejects an occupied unit destination before
+mutation. Both network-rename forms remap stored paths and Bridge references;
+the running hardware project's addresses are immutable, and duplicate or
+non-numeric unsafe destinations return 408 instead of reproducing native tag
+database corruption. `DBADD`, `DBCOPY`, `DBCREATE`, `DBNEW`, `DBUPDATE`, and
+`DBVERIFY` remain explicit 502 because their incomplete typed-object,
+subtree-OID, physical replacement, or live verification semantics are not
+coherently modeled. See
+`rust/testdata/fixtures/native_cgate_legacy_database.json`.
+
 `REPOSITORY LIST` returns exactly one native-grammar 123 row for the configured
 state file with type `cmqttd-json` and `current=yes`. Treat the type literally:
 it is not Schneider SQLite, XML `file`, or `db` storage. Do not issue

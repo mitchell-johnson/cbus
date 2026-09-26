@@ -2063,7 +2063,8 @@ impl Server {
             if !xml {
                 let mut segments = rest.splitn(2, '/');
                 let oid = segments.next().unwrap_or("");
-                if segments.next() == Some("Value") {
+                let field = segments.next();
+                if field == Some("Value") {
                     if let Some(level) = self.level(oid) {
                         let value = level
                             .value
@@ -2078,6 +2079,78 @@ impl Server {
                             final_text: format!("342 {path}={value}"),
                             status: 342,
                         };
+                    }
+                    return err(tag, status::ABSENT, "401 Object not found");
+                }
+                if let Some(field) = field {
+                    if let Some(level) = self.level(oid) {
+                        let value = match field {
+                            "Address" => Some(level.address.to_string()),
+                            "TagName" => Some(level.tag.clone()),
+                            _ => self.db_fields.get(path).cloned(),
+                        };
+                        return match value.filter(|value| !value.is_empty()) {
+                            Some(value) => Response {
+                                tag: tag.to_string(),
+                                lines: Vec::new(),
+                                final_text: format!("342 {path}={value}"),
+                                status: 342,
+                            },
+                            None => err(
+                                tag,
+                                status::ABSENT,
+                                "401 Bad object or device ID: Object is null",
+                            ),
+                        };
+                    }
+                    if let Some(project) = self
+                        .current
+                        .as_ref()
+                        .and_then(|name| self.projects.get(name))
+                    {
+                        for network in project.networks.values() {
+                            if network.oid == oid {
+                                let value = match field {
+                                    "Address" | "NetworkNumber" => network.address.to_string(),
+                                    "TagName" => network.name.clone(),
+                                    "InterfaceType" => network.iface_type.clone(),
+                                    "InterfaceAddress" => network.iface_addr.clone(),
+                                    _ => self.db_fields.get(path).cloned().unwrap_or_default(),
+                                };
+                                return if value.is_empty() {
+                                    err(
+                                        tag,
+                                        status::ABSENT,
+                                        "401 Bad object or device ID: Object is null",
+                                    )
+                                } else {
+                                    Response {
+                                        tag: tag.to_string(),
+                                        lines: Vec::new(),
+                                        final_text: format!("342 {path}={value}"),
+                                        status: 342,
+                                    }
+                                };
+                            }
+                            if let Some(unit) = network.units.values().find(|unit| unit.oid == oid)
+                            {
+                                let value = unit.field(field);
+                                return if value.is_empty() {
+                                    err(
+                                        tag,
+                                        status::ABSENT,
+                                        "401 Bad object or device ID: Object is null",
+                                    )
+                                } else {
+                                    Response {
+                                        tag: tag.to_string(),
+                                        lines: Vec::new(),
+                                        final_text: format!("342 {path}={value}"),
+                                        status: 342,
+                                    }
+                                };
+                            }
+                        }
                     }
                     return err(tag, status::ABSENT, "401 Object not found");
                 }
@@ -4816,6 +4889,12 @@ impl Server {
         }
         self.objects
             .insert(format!("{}-{element}-{addr}", words[1]));
+        if matches!(element.as_str(), "APPLICATION" | "GROUP") {
+            self.db_fields.insert(
+                format!("{}/{addr}/TagName", words[1].trim_end_matches('/')),
+                words[4].to_string(),
+            );
+        }
         ok(tag, vec![], "200 OK")
     }
 
@@ -4915,45 +4994,140 @@ impl Server {
         ok(tag, vec![], "200 OK")
     }
 
-    /// Native `DBRENAMENETSAFE net destination` (database layer only).
+    /// Native `DBRENAMENET[SAFE] net destination` (database layer only).
+    ///
+    /// The unsafe command accepts a selected-project-qualified source, while
+    /// the SAFE spelling accepts only the retained decimal source grammar.
+    /// Native DBRENAMENET also permits duplicate and non-numeric addresses,
+    /// leaving an ambiguous tag database. This model deliberately rejects
+    /// those two corrupting cases because its address map must stay unique.
     fn dbrename_net(&mut self, tag: &str, words: &[&str]) -> Response {
         if words.len() != 3 {
             return err(
                 tag,
                 status::BAD_REQUEST,
-                "400 DBRENAMENETSAFE requires a network and destination",
+                "400 Syntax Error: No network given",
             );
         }
-        let src: i64 = words[1].parse().unwrap_or(-1);
-        let dst: i64 = words[2].parse().unwrap_or(-1);
-        if !(0..=255).contains(&src) || !(0..=255).contains(&dst) {
-            return err(tag, status::BAD_REQUEST, "400 Invalid network address");
-        }
-        if src == dst {
+        let safe = words[0].eq_ignore_ascii_case("DBRENAMENETSAFE");
+        let current = self.current.clone().unwrap_or_default();
+        if current.is_empty() || !self.projects.contains_key(&current) {
             return err(
                 tag,
-                status::BAD_REQUEST,
-                "400 New network address must differ",
+                440,
+                "440 There is no tag database to perform this operation on",
             );
         }
-        let current = self.current.clone().unwrap_or_default();
-        let Some(proj) = self.projects.get_mut(&current) else {
-            return err(tag, status::NOT_FOUND, "404 No project selected");
+        let (source_project, source_text) = if words[1].starts_with("//") {
+            if safe {
+                return err(
+                    tag,
+                    status::ABSENT,
+                    "401 Bad object or device ID: Invalid network address",
+                );
+            }
+            let parts = words[1]
+                .trim_start_matches('/')
+                .split('/')
+                .collect::<Vec<_>>();
+            let [project, network] = parts.as_slice() else {
+                return err(
+                    tag,
+                    status::ABSENT,
+                    "401 Bad object or device ID: Invalid network address",
+                );
+            };
+            ((*project).to_string(), *network)
+        } else {
+            (current.clone(), words[1])
         };
-        let Some(network) = proj.networks.remove(&(src as u8)) else {
-            return err(tag, status::NOT_FOUND, "404 Network not found");
-        };
-        if proj.networks.contains_key(&(dst as u8)) {
-            proj.networks.insert(src as u8, network);
-            return err(tag, status::CONFLICT_EXISTS, "409 Network already exists");
+        if source_project != current {
+            return err(
+                tag,
+                status::ABSENT,
+                "401 Bad object or device ID: Invalid network address",
+            );
         }
-        let mut network = network;
-        network.address = dst as u8;
-        proj.networks.insert(dst as u8, network);
-        let project = self.current.clone().unwrap_or_default();
-        self.remap_network_paths(&project, src as u8, dst as u8);
+        let Ok(src) = source_text.parse::<u8>() else {
+            return err(
+                tag,
+                status::ABSENT,
+                "401 Bad object or device ID: Invalid network address",
+            );
+        };
+        let dst = match words[2].parse::<u8>() {
+            Ok(dst) => dst,
+            Err(_) if safe => {
+                return err(
+                    tag,
+                    status::ABSENT,
+                    "401 Bad object or device ID: Invalid network address",
+                )
+            }
+            Err(_) => {
+                return err(
+                    tag,
+                    408,
+                    "408 Operation failed: cmqttd refuses a non-numeric or out-of-range network address",
+                )
+            }
+        };
+        if src == dst {
+            return if safe {
+                err(
+                    tag,
+                    status::ABSENT,
+                    "401 Bad object or device ID: Can't rename network to the same address",
+                )
+            } else {
+                ok(tag, vec![], "200 OK.")
+            };
+        }
+        let Some(proj) = self.projects.get_mut(&current) else {
+            return err(
+                tag,
+                440,
+                "440 There is no tag database to perform this operation on",
+            );
+        };
+        if !proj.networks.contains_key(&src) {
+            return err(
+                tag,
+                status::ABSENT,
+                &format!("401 Bad object or device ID: Element {source_text} not found."),
+            );
+        }
+        if proj.networks.contains_key(&dst) {
+            return err(
+                tag,
+                if safe { status::ABSENT } else { 408 },
+                if safe {
+                    "401 Bad object or device ID: New network address in use"
+                } else {
+                    "408 Operation failed: cmqttd refuses duplicate network addresses"
+                },
+            );
+        };
+        let mut network = proj.networks.remove(&src).expect("source presence checked");
+        network.address = dst;
+        proj.networks.insert(dst, network);
+        // Native fixes bridge references as part of both spellings. Preserve
+        // a relative `N/p/U` or selected-project-qualified `//P/N/p/U` form.
+        for candidate in proj.networks.values_mut() {
+            if !candidate.iface_type.eq_ignore_ascii_case("Bridge") {
+                continue;
+            }
+            let relative = format!("{src}/");
+            let absolute = format!("//{current}/{src}/");
+            if let Some(rest) = candidate.iface_addr.strip_prefix(&relative) {
+                candidate.iface_addr = format!("{dst}/{rest}");
+            } else if let Some(rest) = candidate.iface_addr.strip_prefix(&absolute) {
+                candidate.iface_addr = format!("//{current}/{dst}/{rest}");
+            }
+        }
+        self.remap_network_paths(&current, src, dst);
         self.push_event(format!("#e# net renamed {src} {dst}"));
-        ok(tag, vec![], "200 OK")
+        ok(tag, vec![], "200 OK.")
     }
 
     /// Remap `db_fields`/`objects` keys across a network rename, using an
@@ -5091,6 +5265,17 @@ impl Server {
     /// the rest silently (half-mirror layers stay consistent because each
     /// read resolves against its own layer).
     fn dbset(&mut self, tag: &str, words: &[&str]) -> Response {
+        if words.len() == 2
+            && valid_target(words[1])
+            && words[1].ends_with("/TagName")
+            && self.unit_anywhere(words[1])
+        {
+            return err(
+                tag,
+                status::ABSENT,
+                "401 Bad object or device ID: TagName can't be null or blank",
+            );
+        }
         if words.len() < 3 || !valid_target(words[1]) {
             return err(
                 tag,
@@ -5130,6 +5315,294 @@ impl Server {
         self.mirror_unit_field(words[1], &value);
         self.db_fields.insert(words[1].to_string(), value);
         ok(tag, vec![], "200 OK")
+    }
+
+    /// Native unsafe `DBSET path [value]` over objects represented by the
+    /// durable cmqttd database.
+    ///
+    /// Native accepts blank values and resolves OIDs. It also permits two
+    /// units to acquire the same Address, which makes later path resolution
+    /// ambiguous. cmqttd deliberately rejects that corruption with 408 and
+    /// leaves the database unchanged. Network Address changes use the
+    /// dedicated DBRENAMENET family so bridge references remain coherent.
+    fn dbset_unsafe(&mut self, tag: &str, words: &[&str]) -> Response {
+        if words.len() < 2 || !valid_target(words[1]) {
+            return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
+        }
+        let value = words.get(2..).unwrap_or_default().join(" ");
+        let Some(current) = self.current.clone() else {
+            return err(
+                tag,
+                440,
+                "440 There is no tag database to perform this operation on",
+            );
+        };
+        if !self.projects.contains_key(&current) {
+            return err(
+                tag,
+                440,
+                "440 There is no tag database to perform this operation on",
+            );
+        }
+
+        let mut path = words[1].to_string();
+        if let Some(rest) = path.strip_prefix('!') {
+            let Some((oid, field)) = rest.split_once('/') else {
+                return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
+            };
+            if field.eq_ignore_ascii_case("OID") {
+                return err(
+                    tag,
+                    408,
+                    "408 Operation failed: OID field can not be changed",
+                );
+            }
+            if self.known_oids.contains(oid) && !self.oid_in_current_project(oid) {
+                return err(
+                    tag,
+                    status::ABSENT,
+                    &format!("401 Bad object or device ID: Element !{oid} not found."),
+                );
+            }
+            if let Some(level) = self.level_mut(oid) {
+                match field {
+                    "Address" => {
+                        let Ok(address) = value.parse::<u8>() else {
+                            return err(
+                                tag,
+                                408,
+                                "408 Operation failed: Level Address must be a byte",
+                            );
+                        };
+                        level.address = address;
+                    }
+                    "TagName" => level.tag = value.clone(),
+                    "Value" => {
+                        if value.is_empty() {
+                            level.value = None;
+                        } else {
+                            let Ok(byte) = value.parse::<u8>() else {
+                                return err(
+                                    tag,
+                                    408,
+                                    "408 Operation failed: Level Value must be a byte",
+                                );
+                            };
+                            level.value = Some(byte);
+                        }
+                    }
+                    _ => {
+                        self.db_fields.insert(path, value);
+                        return ok(tag, vec![], "200 OK.");
+                    }
+                }
+                self.db_fields.insert(path, value);
+                return ok(tag, vec![], "200 OK.");
+            }
+
+            let mut resolved = None;
+            if let Some(project) = self.projects.get(&current) {
+                for (network_address, network) in &project.networks {
+                    if network.oid == oid {
+                        resolved = Some(format!("//{current}/{network_address}/{field}"));
+                        break;
+                    }
+                    if let Some((unit_address, _)) =
+                        network.units.iter().find(|(_, unit)| unit.oid == oid)
+                    {
+                        resolved = Some(format!(
+                            "//{current}/{network_address}/p/{unit_address}/{field}"
+                        ));
+                        break;
+                    }
+                }
+            }
+            let Some(resolved) = resolved else {
+                return err(
+                    tag,
+                    status::ABSENT,
+                    &format!("401 Bad object or device ID: Element !{oid} not found."),
+                );
+            };
+            path = resolved;
+        } else if path.starts_with("//") {
+            let selected = path.trim_start_matches('/').split('/').next().unwrap_or("");
+            if selected != current {
+                return err(
+                    tag,
+                    status::ABSENT,
+                    &format!(
+                        "401 Bad object or device ID: Element {} not found.",
+                        words[1]
+                    ),
+                );
+            }
+        } else if path == "Installation" || path.starts_with("Installation/") {
+            path = format!("//{current}/@root/{path}");
+        } else {
+            path = format!("//{current}/{}", path.trim_start_matches('/'));
+        }
+
+        let parts = path.trim_start_matches('/').split('/').collect::<Vec<_>>();
+        let Some(field) = parts.last().copied() else {
+            return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
+        };
+        if field.eq_ignore_ascii_case("OID") {
+            return err(
+                tag,
+                408,
+                "408 Operation failed: OID field can not be changed",
+            );
+        }
+        // Project/installation-root scalar metadata is local durable
+        // compatibility data. Project lifecycle remains owned by PROJECT.
+        if matches!(
+            parts.get(1).copied(),
+            Some("@root" | "Project" | "Installation")
+        ) {
+            self.db_fields.insert(path, value);
+            return ok(tag, vec![], "200 OK.");
+        }
+        let Some(network_address) = parts.get(1).and_then(|part| part.parse::<u8>().ok()) else {
+            return err(
+                tag,
+                status::ABSENT,
+                &format!(
+                    "401 Bad object or device ID: Element {} not found.",
+                    words[1]
+                ),
+            );
+        };
+        if !self.projects[&current]
+            .networks
+            .contains_key(&network_address)
+        {
+            return err(
+                tag,
+                status::ABSENT,
+                &format!(
+                    "401 Bad object or device ID: Element {} not found.",
+                    words[1]
+                ),
+            );
+        }
+
+        if parts.len() == 3 {
+            if field.eq_ignore_ascii_case("Address") || field.eq_ignore_ascii_case("NetworkNumber")
+            {
+                return err(
+                    tag,
+                    408,
+                    "408 Operation failed: use DBRENAMENET for a network address",
+                );
+            }
+            let network = self
+                .projects
+                .get_mut(&current)
+                .and_then(|project| project.networks.get_mut(&network_address))
+                .expect("network presence checked");
+            match field {
+                "TagName" => network.name = value.clone(),
+                "InterfaceType" => network.iface_type = value.clone(),
+                "InterfaceAddress" => network.iface_addr = value.clone(),
+                _ => {}
+            }
+            self.db_fields.insert(path, value);
+            return ok(tag, vec![], "200 OK.");
+        }
+
+        if parts.len() >= 5
+            && parts
+                .get(2)
+                .is_some_and(|kind| kind.eq_ignore_ascii_case("p"))
+        {
+            let Some(unit_address) = parts.get(3).and_then(|part| part.parse::<u8>().ok()) else {
+                return err(
+                    tag,
+                    status::ABSENT,
+                    &format!(
+                        "401 Bad object or device ID: Element {} not found.",
+                        words[1]
+                    ),
+                );
+            };
+            let object_path = format!("//{current}/{network_address}/p/{unit_address}");
+            let network = self
+                .projects
+                .get_mut(&current)
+                .and_then(|project| project.networks.get_mut(&network_address))
+                .expect("network presence checked");
+            if !network.units.contains_key(&unit_address) {
+                return err(
+                    tag,
+                    status::ABSENT,
+                    &format!("401 Bad object or device ID: Element {unit_address} not found."),
+                );
+            }
+            if field.eq_ignore_ascii_case("Address") {
+                let Ok(destination) = value.parse::<u8>() else {
+                    return err(
+                        tag,
+                        408,
+                        "408 Operation failed: Unit Address must be a byte",
+                    );
+                };
+                if destination != unit_address {
+                    if network.units.contains_key(&destination) {
+                        return err(
+                            tag,
+                            408,
+                            "408 Operation failed: cmqttd refuses duplicate unit addresses",
+                        );
+                    }
+                    let mut unit = network
+                        .units
+                        .remove(&unit_address)
+                        .expect("unit presence checked");
+                    unit.address = destination;
+                    unit.fields
+                        .insert("Address".to_string(), destination.to_string());
+                    network.units.insert(destination, unit);
+                    let destination_path = format!("//{current}/{network_address}/p/{destination}");
+                    self.remap_prefix(&object_path, &destination_path);
+                }
+                return ok(tag, vec![], "200 OK.");
+            }
+            self.mirror_unit_field(&path, &value);
+            self.db_fields.insert(path, value);
+            return ok(tag, vec![], "200 OK.");
+        }
+
+        // Application/group/level paths are admitted only after another
+        // database command established the object. DBSET must not invent a
+        // missing tree simply because its parent network exists.
+        let object = parts[..parts.len() - 1].join("/");
+        let canonical_object = format!("//{object}");
+        let exists = self.objects.contains(&canonical_object)
+            || self.db_fields.keys().any(|key| {
+                key == &canonical_object || key.starts_with(&format!("{canonical_object}/"))
+            })
+            || match parts.as_slice() {
+                [project, network, application, _field] => self
+                    .objects
+                    .contains(&format!("//{project}/{network}-APPLICATION-{application}")),
+                [project, network, application, group, _field] => self.objects.contains(&format!(
+                    "//{project}/{network}/{application}-GROUP-{group}"
+                )),
+                _ => false,
+            };
+        if !exists {
+            return err(
+                tag,
+                status::ABSENT,
+                &format!(
+                    "401 Bad object or device ID: Element {} not found.",
+                    words[1]
+                ),
+            );
+        }
+        self.db_fields.insert(path, value);
+        ok(tag, vec![], "200 OK.")
     }
 
     /// True when a unit path resolves to a record on either layer.

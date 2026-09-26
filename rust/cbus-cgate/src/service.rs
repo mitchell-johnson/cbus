@@ -2067,6 +2067,14 @@ impl Service {
             capabilities["deploy_queue_debug_events"] = serde_json::Value::Bool(false);
             capabilities["document_framing"] = serde_json::Value::Bool(true);
             capabilities["database_documents"] = serde_json::Value::Bool(false);
+            capabilities["legacy_database_local_commands"] =
+                serde_json::json!(["dbrenamenet", "dbrenamenetsafe", "dbset", "dbtaglist"]);
+            capabilities["legacy_database_fail_closed"] =
+                serde_json::json!(["dbadd", "dbcopy", "dbcreate", "dbnew", "dbupdate", "dbverify"]);
+            capabilities["legacy_database_selected_project_tags"] = serde_json::Value::Bool(true);
+            capabilities["legacy_database_unique_address_repair"] = serde_json::Value::Bool(true);
+            capabilities["legacy_database_configured_project_rename"] =
+                serde_json::Value::Bool(false);
             capabilities["project_archive_restore"] =
                 serde_json::Value::String("cmqttd-internal".to_string());
             capabilities["project_rename_secondary"] = serde_json::Value::Bool(true);
@@ -2700,6 +2708,20 @@ impl Service {
                 tag,
                 408,
                 "408 The configured hardware project cannot be deleted while the service is running",
+            );
+        }
+        // A database-network address is part of this Service instance's
+        // immutable PCI/MQTT binding. Legacy DBRENAMENET remains available
+        // for secondary projects, but moving any network in the configured
+        // project could detach physical cache and route state from that
+        // binding, so refuse before the model mutates.
+        if matches!(verb, "DBRENAMENET" | "DBRENAMENETSAFE")
+            && client.current.as_deref().unwrap_or(&self.project) == self.project
+        {
+            return err(
+                tag,
+                408,
+                "408 The configured hardware project's network addresses cannot be changed while the service is running",
             );
         }
         if verb == "GET" && words.len() == 3 {
@@ -10472,8 +10494,10 @@ fn parse_aircon_boolean(tag: &str, value: &str, parameter: &str) -> Result<bool,
 ///   ARCHIVE/RESTORE/REPAIR. Open: LIST/USE/DIR. (Verbs outside the
 ///   local_command PROJECT arm already 502 when dormant; gating them keeps
 ///   the armed reading uniform.)
-/// - DB mutating verbs: DBSETSAFE/DBSETXML/DBADDSAFE/DBCOPYSAFE/DBDELETE/
-///   DBSAVE/DBLOAD/DBCREATE*/DBRENAMENETSAFE. Open: DBGET*/DBVALIDATE.
+/// - DB mutating verbs: legacy DBADD/DBCOPY/DBCREATE/DBNEW/DBRENAMENET/
+///   DBSET/DBUPDATE plus DBSETSAFE/DBSETXML/DBADDSAFE/DBCOPYSAFE/DBDELETE/
+///   DBSAVE/DBLOAD/DBCREATE*/DBRENAMENETSAFE. Open: DBGET*/DBTAGLIST/
+///   DBVALIDATE/DBVERIFY.
 ///   DB verbs mutate the same durable database PP SAVE persists to, so
 ///   leaving them open would bypass the gate.
 /// - SET in all forms (unit readdress via the pre-gate Address branch and
@@ -10939,9 +10963,10 @@ fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
         "DO" => words
             .get(2)
             .is_some_and(|method| method == "FACTORYDEFAULT"),
-        "DBSETSAFE" | "DBSETXML" | "DBADDSAFE" | "DBCOPYSAFE" | "DBDELETE" | "DBSAVE"
-        | "DBLOAD" | "DBCREATENET" | "DBCREATEAPP" | "DBCREATEGROUP" | "DBCREATEUNIT"
-        | "DBRENAMENETSAFE" => true,
+        "DBADD" | "DBCOPY" | "DBCREATE" | "DBNEW" | "DBRENAMENET" | "DBRENAMENETSAFE" | "DBSET"
+        | "DBSETSAFE" | "DBSETXML" | "DBUPDATE" | "DBADDSAFE" | "DBCOPYSAFE" | "DBDELETE"
+        | "DBSAVE" | "DBLOAD" | "DBCREATENET" | "DBCREATEAPP" | "DBCREATEGROUP"
+        | "DBCREATEUNIT" => true,
         _ => false,
     }
 }
@@ -11060,9 +11085,10 @@ fn local_command(words: &[&str], upper: &[String], model: &Server) -> bool {
     let sub = upper.get(1).map(String::as_str).unwrap_or("");
     match verb {
         "NOOP" | "APIVER" | "HELP" | "COMMANDS" | "DBGET" | "DBGETXML" | "DBNETWORKPATH"
-        | "DBSETSAFE" | "DBSETXML" | "DBADDSAFE" | "DBCOPYSAFE" | "DBDELETE" | "DBVALIDATE"
-        | "DBSAVE" | "DBLOAD" | "DBGETNET" | "DBGETAPP" | "DBGETGROUP" | "DBGETUNIT"
-        | "DBCREATENET" | "DBCREATEAPP" | "DBCREATEGROUP" | "DBCREATEUNIT" => true,
+        | "DBRENAMENET" | "DBRENAMENETSAFE" | "DBSET" | "DBTAGLIST" | "DBSETSAFE" | "DBSETXML"
+        | "DBADDSAFE" | "DBCOPYSAFE" | "DBDELETE" | "DBVALIDATE" | "DBSAVE" | "DBLOAD"
+        | "DBGETNET" | "DBGETAPP" | "DBGETGROUP" | "DBGETUNIT" | "DBCREATENET" | "DBCREATEAPP"
+        | "DBCREATEGROUP" | "DBCREATEUNIT" => true,
         "PROJECT" => matches!(
             sub,
             "LIST"

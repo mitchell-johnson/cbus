@@ -749,11 +749,11 @@ fn network_rename_chain_moves_units_and_guards() {
     );
     // Malformed shapes fail before any lookup.
     for (line, status, fragment) in [
-        ("[5] DBRENAMENETSAFE", 400, "network and destination"),
-        ("[6] DBRENAMENETSAFE 254 254", 400, "must differ"),
+        ("[5] DBRENAMENETSAFE", 400, "No network given"),
+        ("[6] DBRENAMENETSAFE 254 254", 401, "same address"),
         (
             "[7] DBRENAMENETSAFE 254 999",
-            400,
+            401,
             "Invalid network address",
         ),
         ("[8] NET RENAME //TEST/254", 400, "address and destination"),
@@ -776,21 +776,29 @@ fn network_rename_chain_moves_units_and_guards() {
     }
     // Unselected projects refuse both verbs before any lookup. NOTE:
     // PROJECT NEW selects, so select away to T2 (which exists but holds
-    // no networks, hence Network-not-found on the database verb).
+    // no networks, hence the native missing-element response).
     assert_eq!(s.handle("[10a] PROJECT NEW T2").status, 200);
     assert_eq!(s.handle("[10b] PROJECT USE T2").status, 200);
     for (line, fragment) in [
-        ("[10c] DBRENAMENETSAFE 254 253", "Network not found"),
+        ("[10c] DBRENAMENETSAFE 254 253", "Element 254 not found"),
         ("[10d] NET RENAME //TEST/254 253", "Project not selected"),
     ] {
         let response = s.handle(line);
-        assert_eq!(response.status, 404, "{line}");
+        assert_eq!(
+            response.status,
+            if line.contains("DBRENAMENET") {
+                401
+            } else {
+                404
+            },
+            "{line}"
+        );
         assert!(response.final_text.contains(fragment), "{line}");
     }
     assert_eq!(s.handle("[10e] PROJECT USE TEST").status, 200);
     // Missing source network fails closed.
     let missing = s.handle("[10f] DBRENAMENETSAFE 253 252");
-    assert_eq!(missing.status, 404);
+    assert_eq!(missing.status, 401);
     // The database rename moves the network; the old path is gone.
     let moved = s.handle("[11] DBRENAMENETSAFE 254 253");
     assert_eq!(moved.status, 200);
@@ -812,7 +820,7 @@ fn network_rename_chain_moves_units_and_guards() {
         200
     );
     let busy = s.handle("[15e] DBRENAMENETSAFE 253 252");
-    assert_eq!(busy.status, 409);
+    assert_eq!(busy.status, 401);
     assert_eq!(s.handle("[15f] NET OPEN //TEST/253").status, 200);
     let busy = s.handle("[15g] NET RENAME //TEST/253 252");
     assert_eq!(busy.status, 409);
@@ -1246,4 +1254,248 @@ fn document_store_mirror_import_and_rejects() {
     let mut config = Server::new(AccessLevel::Config);
     let refused = config.handle_document("[1] DBSETXML //TEST/254/p/20/UnitName", "X");
     assert_eq!(refused.status, 421);
+}
+
+#[test]
+fn legacy_database_scalar_tags_and_network_renames_are_coherent() {
+    let evidence: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_legacy_database.json"
+    ))
+    .unwrap();
+    assert_eq!(
+        evidence["schema"],
+        "native-cgate-legacy-database-evidence-v1"
+    );
+    assert_eq!(evidence["oracle"]["version"], "3.4.0 build 2001");
+
+    let mut server = Server::new(AccessLevel::Program);
+    assert_eq!(server.handle("[1] PROJECT NEW DBL1").status, 200);
+    assert_eq!(
+        server
+            .handle("[2] DBCREATENET 254 LocalA Cni 127.0.0.1:10001")
+            .status,
+        200
+    );
+    assert_eq!(
+        server
+            .handle("[3] DBCREATENET 253 LocalB Bridge 254/p/253")
+            .status,
+        200
+    );
+    assert_eq!(
+        server
+            .handle("[4] DBADDSAFE //DBL1/254 Unit 20 Original")
+            .status,
+        200
+    );
+    let network_xml = server.handle("[6] DBGETXML //DBL1/254");
+    let document = network_xml.lines.join("\n");
+    let unit = document
+        .split("<Unit>")
+        .find(|unit| unit.contains("<Address>20</Address>"))
+        .expect("address-20 unit document");
+    let oid = unit
+        .split_once("<OID>")
+        .and_then(|(_, value)| value.split_once("</OID>"))
+        .map(|(oid, _)| oid)
+        .expect("unit OID");
+
+    assert_eq!(
+        server
+            .handle(&format!("[7] DBSET !{oid}/Address 20"))
+            .final_text,
+        "200 OK."
+    );
+    assert_eq!(
+        server
+            .handle(&format!("[8] DBSET !{oid}/TagName Legacy Unit"))
+            .final_text,
+        "200 OK."
+    );
+    assert_eq!(
+        server
+            .handle(&format!("[9] DBGET !{oid}/Address"))
+            .final_text,
+        format!("342 !{oid}/Address=20")
+    );
+    assert_eq!(
+        server
+            .handle(&format!("[10] DBGET !{oid}/TagName"))
+            .final_text,
+        format!("342 !{oid}/TagName=Legacy Unit")
+    );
+
+    let listing = server.handle("[11] DBTAGLIST");
+    let observed = listing
+        .lines
+        .iter()
+        .map(|row| format!("342-{row}"))
+        .chain(std::iter::once(listing.final_text.clone()))
+        .collect::<Vec<_>>();
+    let expected = evidence["dbtaglist"]["selected_project_rows"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|row| row.as_str().unwrap().to_string())
+        .collect::<Vec<_>>();
+    assert_eq!(observed, expected);
+    for (tag, pattern) in [("12", "legacy"), ("13", "LEGACY")] {
+        let filtered = server.handle(&format!("[{tag}] DBTAGLIST {pattern}"));
+        assert_eq!(filtered.status, 342);
+        assert_eq!(
+            filtered.final_text,
+            evidence["dbtaglist"]["case_insensitive_filter"]["reply"]
+                .as_str()
+                .unwrap()
+        );
+    }
+    assert_eq!(
+        server.handle("[14] DBTAGLIST missing").final_text,
+        evidence["dbtaglist"]["no_match"].as_str().unwrap()
+    );
+    assert_eq!(
+        server.handle("[15] DBTAGLIST two words").final_text,
+        evidence["dbtaglist"]["extra_token"].as_str().unwrap()
+    );
+
+    assert_eq!(
+        server
+            .handle("[16] DBSET //DBL1/254/p/20/TagName Renamed Legacy")
+            .final_text,
+        "200 OK."
+    );
+    assert_eq!(
+        server
+            .handle("[17] DBSET //DBL1/254/p/99/TagName Missing")
+            .final_text,
+        "401 Bad object or device ID: Element 99 not found."
+    );
+    assert_eq!(
+        server
+            .handle("[18] DBSET !ffffffff-ffff-ffff-ffff-ffffffffffff/TagName Missing")
+            .final_text,
+        "401 Bad object or device ID: Element !ffffffff-ffff-ffff-ffff-ffffffffffff not found."
+    );
+    assert_eq!(
+        server
+            .handle(&format!("[19] DBSET !{oid}/OID changed"))
+            .final_text,
+        "408 Operation failed: OID field can not be changed"
+    );
+    assert_eq!(
+        server
+            .handle("[20] DBSETSAFE //DBL1/254/p/20/TagName")
+            .final_text,
+        "401 Bad object or device ID: TagName can't be null or blank"
+    );
+    assert_eq!(
+        server
+            .handle("[21a] DBADDSAFE //DBL1/254 Unit 21 Occupied")
+            .status,
+        200
+    );
+    assert_eq!(
+        server
+            .handle("[21] DBSET //DBL1/254/p/21/TagName Temporary")
+            .status,
+        200
+    );
+    assert_eq!(
+        server.handle("[22] DBSET //DBL1/254/p/21/TagName").status,
+        200
+    );
+
+    // Native unsafe DBSET accepts an occupied address and corrupts lookup.
+    // The maintained model rejects it before mutation.
+    let duplicate = server.handle("[23] DBSET //DBL1/254/p/20/Address 21");
+    assert_eq!(duplicate.status, 408);
+    assert!(duplicate.final_text.contains("duplicate unit addresses"));
+    assert_eq!(
+        server
+            .handle("[24] DBSET //DBL1/254/p/20/Address 22")
+            .status,
+        200
+    );
+    assert_eq!(
+        server.handle("[25] DBGET //DBL1/254/p/22/Address").status,
+        200
+    );
+    assert_eq!(
+        server.handle("[26] DBGET //DBL1/254/p/20/Address").status,
+        401
+    );
+
+    assert_eq!(
+        server
+            .handle("[27] DBRENAMENETSAFE //DBL1/254 252")
+            .final_text,
+        "401 Bad object or device ID: Invalid network address"
+    );
+    assert_eq!(
+        server.handle("[28] DBRENAMENETSAFE 254 254").final_text,
+        "401 Bad object or device ID: Can't rename network to the same address"
+    );
+    let safe = server.handle("[29] DBRENAMENETSAFE 254 252");
+    assert_eq!(safe.final_text, "200 OK.");
+    let bridge = server.handle("[30] DBGETXML //DBL1/253");
+    assert!(bridge
+        .lines
+        .iter()
+        .any(|line| line.contains("<InterfaceAddress>252/p/253</InterfaceAddress>")));
+    let occupied = server.handle("[31] DBRENAMENETSAFE 252 253");
+    assert_eq!(occupied.status, 401);
+    assert_eq!(
+        occupied.final_text,
+        "401 Bad object or device ID: New network address in use"
+    );
+    assert_eq!(server.handle("[32] DBRENAMENET //DBL1/252 251").status, 200);
+    assert_eq!(
+        server.handle("[33] DBRENAMENET 251 251").final_text,
+        "200 OK."
+    );
+    assert_eq!(server.handle("[34] DBRENAMENET 251 253").status, 408);
+    assert_eq!(server.handle("[35] DBRENAMENET 251 nonsense").status, 408);
+    let bridge = server.handle("[36] DBGETXML //DBL1/253");
+    assert!(bridge
+        .lines
+        .iter()
+        .any(|line| line.contains("<InterfaceAddress>251/p/253</InterfaceAddress>")));
+
+    // Listings are selected-project relative and never leak another loaded
+    // project's names.
+    assert_eq!(server.handle("[37] PROJECT NEW OTHER").status, 200);
+    assert_eq!(
+        server
+            .handle("[38] DBCREATENET 1 Secret Cni nowhere")
+            .status,
+        200
+    );
+    assert_eq!(server.handle("[39] PROJECT USE DBL1").status, 200);
+    let listing = server.handle("[40] DBTAGLIST");
+    let rendered = listing
+        .lines
+        .iter()
+        .chain(std::iter::once(&listing.final_text))
+        .cloned()
+        .collect::<Vec<_>>()
+        .join("\n");
+    assert!(rendered.contains("251/TagName=Local"));
+    assert!(!rendered.contains("Secret"));
+    assert!(!rendered.contains("//DBL1/"));
+
+    for (tag, command) in [
+        ("41", "DBADD //DBL1/251 Unit"),
+        ("42", "DBCOPY //DBL1/251/p/22 //DBL1/251"),
+        ("43", "DBCREATE"),
+        ("44", "DBNEW"),
+        ("45", "DBUPDATE //DBL1/251"),
+        ("46", "DBVERIFY"),
+    ] {
+        let response = server.handle(&format!("[{tag}] {command}"));
+        assert_eq!(response.status, 502, "{command}: {response:?}");
+        assert_eq!(
+            response.final_text,
+            "502 Command requires a physical backend that is not implemented"
+        );
+    }
 }
