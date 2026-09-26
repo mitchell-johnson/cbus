@@ -20,6 +20,230 @@ const MAX_SPEC_BYTES: u64 = 8 * 1024 * 1024;
 /// Include fan-out cap: at most this many files per load.
 const MAX_SPEC_FILES: usize = 128;
 
+/// Parsed metadata from the optional `cbusunits.xml` catalogue.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CatalogInfo {
+    pub spec_version: String,
+    pub author: String,
+    pub status: String,
+    pub approval_date: String,
+}
+
+/// One catalogue number that supports a unit type and firmware revision.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CatalogEntry {
+    pub catalog_number: String,
+    pub description: String,
+    pub unit_type: String,
+    pub min_version: String,
+    pub max_version: String,
+    pub unit_spec_name: String,
+}
+
+/// Bounded, validated catalogue document plus the fields PP queries expose.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Catalog {
+    pub xml_lines: Vec<String>,
+    pub info: CatalogInfo,
+    pub entries: Vec<CatalogEntry>,
+}
+
+fn safe_file(dir: &Path, name: &str) -> Result<PathBuf, String> {
+    if name.is_empty()
+        || name.contains(['/', '\\'])
+        || Path::new(name).is_absolute()
+        || Path::new(name)
+            .components()
+            .any(|component| matches!(component, std::path::Component::ParentDir))
+    {
+        return Err("Specification filename must be a bare filename".to_string());
+    }
+    let canonical_dir = dir
+        .canonicalize()
+        .map_err(|error| format!("Specification directory is not accessible: {error}"))?;
+    let path = canonical_dir
+        .join(name)
+        .canonicalize()
+        .map_err(|_| format!("Specification file {name:?} does not exist"))?;
+    if !path.starts_with(&canonical_dir) || !path.is_file() {
+        return Err(format!("Specification file {name:?} does not exist"));
+    }
+    if path
+        .metadata()
+        .map(|metadata| metadata.len())
+        .unwrap_or(u64::MAX)
+        > MAX_SPEC_BYTES
+    {
+        return Err("Specification exceeds the size limit".to_string());
+    }
+    Ok(path)
+}
+
+fn read_xml_file(dir: &Path, name: &str) -> Result<String, String> {
+    let path = safe_file(dir, name)?;
+    let data = std::fs::read(&path).map_err(|error| format!("Cannot read {name:?}: {error}"))?;
+    let mut text = data.as_slice();
+    if let Some(rest) = text.strip_prefix(COPYRIGHT) {
+        text = rest
+            .strip_prefix(b"\r\n")
+            .or_else(|| rest.strip_prefix(b"\n"))
+            .unwrap_or(rest);
+    }
+    std::str::from_utf8(text)
+        .map(str::to_string)
+        .map_err(|_| format!("Malformed specification {name:?}: not UTF-8"))
+}
+
+fn child_text(node: roxmltree::Node<'_, '_>, name: &str) -> String {
+    node.children()
+        .find(|child| child.is_element() && child.tag_name().name() == name)
+        .and_then(|child| child.text())
+        .unwrap_or("")
+        .trim()
+        .to_string()
+}
+
+/// Load and validate the optional native-format `cbusunits.xml` catalogue.
+pub fn load_catalog(dir: &Path) -> Result<Catalog, String> {
+    let text = read_xml_file(dir, "cbusunits.xml")?;
+    let document = roxmltree::Document::parse(&text)
+        .map_err(|error| format!("Malformed catalogue: {error}"))?;
+    let root = document.root_element();
+    if root.tag_name().name() != "CBusUnits" {
+        return Err("cbusunits.xml is not a CBusUnits catalogue".to_string());
+    }
+    let info = CatalogInfo {
+        spec_version: child_text(root, "FileVersion"),
+        author: child_text(root, "Author"),
+        status: child_text(root, "Status"),
+        approval_date: child_text(root, "ApprovalDate"),
+    };
+    let mut entries = Vec::new();
+    for unit in root
+        .descendants()
+        .filter(|node| node.is_element() && node.tag_name().name() == "Unit")
+    {
+        let catalog_number = child_text(unit, "CatalogNumber");
+        let description = child_text(unit, "Description");
+        for revision in unit
+            .descendants()
+            .filter(|node| node.is_element() && node.tag_name().name() == "Revision")
+        {
+            entries.push(CatalogEntry {
+                catalog_number: catalog_number.clone(),
+                description: description.clone(),
+                unit_type: child_text(revision, "UnitType"),
+                min_version: child_text(revision, "MinVersion"),
+                max_version: child_text(revision, "MaxVersion"),
+                unit_spec_name: child_text(revision, "UnitSpecName"),
+            });
+        }
+    }
+    // Formatting indentation is not protocol data. Removing it prevents a
+    // configured document from injecting untagged lines into the TCP reply.
+    let mut fragments = text
+        .lines()
+        .map(str::trim)
+        .filter(|line| !line.is_empty())
+        .peekable();
+    let mut xml_lines = Vec::new();
+    if fragments
+        .peek()
+        .is_some_and(|line| line.starts_with("<?xml"))
+    {
+        xml_lines.push(fragments.next().expect("peeked declaration").to_string());
+    }
+    let body = fragments.collect::<String>();
+    if !body.is_empty() {
+        xml_lines.push(body);
+    }
+    Ok(Catalog {
+        xml_lines,
+        info,
+        entries,
+    })
+}
+
+fn version_parts(version: &str) -> Option<Vec<u32>> {
+    let parts = version
+        .trim()
+        .split('.')
+        .map(|part| part.parse::<u32>())
+        .collect::<Result<Vec<_>, _>>()
+        .ok()?;
+    (!parts.is_empty()).then_some(parts)
+}
+
+fn version_cmp(left: &[u32], right: &[u32]) -> std::cmp::Ordering {
+    let length = left.len().max(right.len());
+    (0..length)
+        .map(|index| {
+            left.get(index)
+                .copied()
+                .unwrap_or(0)
+                .cmp(&right.get(index).copied().unwrap_or(0))
+        })
+        .find(|ordering| !ordering.is_eq())
+        .unwrap_or(std::cmp::Ordering::Equal)
+}
+
+impl Catalog {
+    /// Catalogue rows matching one unit type and inclusive firmware range.
+    pub fn matching(&self, unit_type: &str, firmware: &str) -> Vec<&CatalogEntry> {
+        let Some(version) = version_parts(firmware) else {
+            return Vec::new();
+        };
+        let mut seen = HashSet::new();
+        self.entries
+            .iter()
+            .filter(|entry| entry.unit_type.eq_ignore_ascii_case(unit_type))
+            .filter(|entry| {
+                let (Some(minimum), Some(maximum)) = (
+                    version_parts(&entry.min_version),
+                    version_parts(&entry.max_version),
+                ) else {
+                    return false;
+                };
+                version_cmp(&version, &minimum).is_ge() && version_cmp(&version, &maximum).is_le()
+            })
+            .filter(|entry| seen.insert(entry.catalog_number.clone()))
+            .collect()
+    }
+}
+
+/// Load a selected specification and render its resolved parameter set.
+pub fn load_spec_document(dir: &Path, filename: &str) -> Result<String, String> {
+    if !filename.to_ascii_lowercase().ends_with(".xml") {
+        return Err("Unit specification filename must end in .xml".to_string());
+    }
+    safe_file(dir, filename)?;
+    let unit_type = &filename[..filename.len() - 4];
+    let params = load_spec(dir, unit_type)?;
+    let mut xml = String::from("<Parameters>");
+    for param in params {
+        xml.push_str("<Param>");
+        for (key, value) in param.document_fields {
+            xml.push('<');
+            xml.push_str(&key);
+            xml.push('>');
+            xml.push_str(&xml_escape(&value));
+            xml.push_str("</");
+            xml.push_str(&key);
+            xml.push('>');
+        }
+        xml.push_str("</Param>");
+    }
+    xml.push_str("</Parameters>");
+    Ok(xml)
+}
+
+fn xml_escape(text: &str) -> String {
+    text.replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
+        .replace('"', "&quot;")
+}
+
 /// One specification parameter: name plus ordered raw fields.
 ///
 /// Repeated fields use last-value-wins semantics while retaining the first
@@ -32,6 +256,8 @@ pub struct SpecParam {
     pub fields: Vec<(String, String)>,
     /// Selection tags declared by repeated `<Tag>` children.
     pub tags: Vec<String>,
+    /// All XML children in source order, including repeated `Tag` elements.
+    pub document_fields: Vec<(String, String)>,
 }
 
 /// Native C-Gate commits C-Bus 3 parameter changes after a successful write.
@@ -219,16 +445,18 @@ impl Loader<'_> {
             name: String::new(),
             fields: Vec::new(),
             tags: Vec::new(),
+            document_fields: Vec::new(),
         };
         let mut seen_name = false;
         let mut seen_kind = false;
         for child in element.children().filter(|n| n.is_element()) {
             let tag = child.tag_name().name().to_string();
+            let value: String = child.text().unwrap_or("").to_string();
+            param.document_fields.push((tag.clone(), value.clone()));
             if tag == "Tag" {
-                param.tags.push(child.text().unwrap_or("").to_string());
+                param.tags.push(value);
                 continue;
             }
-            let value: String = child.text().unwrap_or("").to_string();
             match tag.as_str() {
                 "Name" => {
                     if seen_name {
@@ -531,6 +759,16 @@ impl ParameterLayout {
             array_map,
             transfer,
         })
+    }
+
+    /// Logical byte range represented in PP session raw memory.
+    pub fn logical_range(&self) -> (usize, usize) {
+        match self.transfer {
+            ParameterTransfer::Recall { parameter, count } => (usize::from(parameter), count),
+            ParameterTransfer::Paged { address, count } => (address as usize, count),
+            ParameterTransfer::Memory { address, count }
+            | ParameterTransfer::GocMemory { address, count } => (address as usize + 256, count),
+        }
     }
 
     /// Decode one exact transport response to native PP value text.
@@ -857,8 +1095,9 @@ mod tests {
         );
         SpecParam {
             name: name.to_string(),
-            fields: values,
+            fields: values.clone(),
             tags: Vec::new(),
+            document_fields: values,
         }
     }
 

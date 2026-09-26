@@ -143,9 +143,13 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // Eleven local/session administration paths moved fail_closed_502 ->
     // local_database: PROJECT root/DIRFULL, DBGETJSON root and three NAC
     // projections, EVENT_CHANNEL LIST/SUB/UNSUB, and advisory LOCK/UNLOCK.
+    // Thirteen PP administrative/catalogue/session-memory paths and seven
+    // PROGRAMMER queue-metadata paths moved fail_closed_502 -> local_database.
+    // PP WRITE_PATCH and PROGRAMMER TRIGGER START remain fail-closed physical
+    // execution boundaries.
     assert_eq!(class_count(RoutingClass::Physical), 206);
-    assert_eq!(class_count(RoutingClass::LocalDatabase), 118);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 106);
+    assert_eq!(class_count(RoutingClass::LocalDatabase), 138);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 86);
     assert_eq!(class_count(RoutingClass::Obsolete400), 1);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here
@@ -153,6 +157,72 @@ fn matrix_class_counts_pin_the_routing_gap() {
     assert_eq!(class_count(RoutingClass::Rejected4xx), 0);
     let total: usize = counts.values().sum();
     assert_eq!(total, 431);
+}
+
+#[test]
+fn pp_administration_and_programmer_queue_retain_native_evidence_and_boundaries() {
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_pp_programmer.json"
+    ))
+    .expect("native PP/PROGRAMMER evidence must remain valid JSON");
+    assert_eq!(fixture["oracle"]["version"], "3.4.0.2001");
+    assert_eq!(
+        fixture["oracle"]["jar_sha256"],
+        "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+    );
+    assert_eq!(
+        fixture["native_shapes"]["raw_after_set"],
+        "316 RawData=0102030400000000"
+    );
+    assert_eq!(fixture["native_shapes"]["test_duration_seconds"], 3);
+    assert_eq!(
+        fixture["cmqttd_boundaries"]["programmer_start"],
+        "502; executing queued PP/DALI instructions needs an evidenced physical scheduler and is never simulated."
+    );
+
+    for path in [
+        "PP CANCEL_LOCK",
+        "PP CATALOG_INFO",
+        "PP DEBUG",
+        "PP GET_RAW_DATA",
+        "PP GET_UNIT_CATALOG",
+        "PP GET_UNIT_SPEC",
+        "PP LIST_CATALOG_NUMBERS",
+        "PP LIST_LOCK",
+        "PP LOAD_FROM_FILE",
+        "PP PATCH_VERSION",
+        "PP RELOAD_CATALOG",
+        "PP SET_RAW_DATA",
+        "PP UNITS",
+        "PROGRAMMER ADD_INSTRUCTION",
+        "PROGRAMMER CANCEL_INSTRUCTION",
+        "PROGRAMMER CREATE",
+        "PROGRAMMER DELETE",
+        "PROGRAMMER LIST",
+        "PROGRAMMER STATUS",
+        "PROGRAMMER TEST",
+    ] {
+        let entry = CAPABILITY_MATRIX
+            .iter()
+            .find(|entry| entry.path == path)
+            .unwrap_or_else(|| panic!("missing {path}"));
+        assert_eq!(entry.class, RoutingClass::LocalDatabase, "{path}");
+        assert!(
+            entry.evidence.contains("native_cgate_pp_programmer.json"),
+            "{path}"
+        );
+    }
+    for path in ["PP WRITE_PATCH", "PROGRAMMER TRIGGER"] {
+        let entry = CAPABILITY_MATRIX
+            .iter()
+            .find(|entry| entry.path == path)
+            .unwrap_or_else(|| panic!("missing {path}"));
+        assert_eq!(entry.class, RoutingClass::FailClosed502, "{path}");
+        assert!(
+            entry.evidence.contains("never") || entry.evidence.contains("physical"),
+            "{path}"
+        );
+    }
 }
 
 #[test]

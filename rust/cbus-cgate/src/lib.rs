@@ -374,6 +374,20 @@ fn parameter_reply(tag: &str, mut values: Vec<String>) -> Response {
     }
 }
 
+/// Native command families often complete on the last data row instead of
+/// appending a 200. This is the status-generic form of `parameter_reply`.
+fn data_reply(tag: &str, code: u16, mut values: Vec<String>, empty: &str) -> Response {
+    let Some(last) = values.pop() else {
+        return err(tag, code, empty);
+    };
+    Response {
+        tag: tag.to_string(),
+        lines: values,
+        final_text: format!("{code} {last}"),
+        status: code,
+    }
+}
+
 fn err(tag: &str, code: u16, text: &str) -> Response {
     Response {
         tag: tag.to_string(),
@@ -429,6 +443,52 @@ fn dequote_value(raw: &str) -> String {
         }
     }
     out
+}
+
+/// Parse C-Gate whitespace tokens while retaining dequoted string arguments.
+/// PROGRAMMER CREATE is the maintained family that needs more than one quoted
+/// tail, so the general command dispatcher's whitespace view is insufficient.
+fn dequoted_arguments(body: &str) -> Result<Vec<String>, ()> {
+    let mut values = Vec::new();
+    let mut current = String::new();
+    let mut quoted = false;
+    let mut escaped = false;
+    let mut active = false;
+    for character in body.chars() {
+        if escaped {
+            current.push(character);
+            escaped = false;
+            active = true;
+            continue;
+        }
+        match character {
+            '\\' if quoted => {
+                escaped = true;
+                active = true;
+            }
+            '"' => {
+                quoted = !quoted;
+                active = true;
+            }
+            character if character.is_whitespace() && !quoted => {
+                if active {
+                    values.push(std::mem::take(&mut current));
+                    active = false;
+                }
+            }
+            _ => {
+                current.push(character);
+                active = true;
+            }
+        }
+    }
+    if quoted || escaped {
+        return Err(());
+    }
+    if active {
+        values.push(current);
+    }
+    Ok(values)
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -629,6 +689,64 @@ pub struct PpSession {
     pub params: HashMap<String, String>,
     /// Parameters changed since the last successful load or save.
     pub dirty: HashSet<String>,
+    /// Native PP's bounded session memory image. `None` is an unread byte
+    /// rendered as `??`; NEW/LOAD_FROM_FILE seed a concrete default image.
+    pub raw: Vec<Option<u8>>,
+    /// Baseline bytes loaded from the unit/source for DEBUG's `unit` row.
+    pub raw_unit: Vec<Option<u8>>,
+    /// Bytes altered through SET/SET_RAW_DATA since the last load.
+    pub raw_changed: HashSet<usize>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ProgrammerState {
+    Init,
+    Running,
+    Paused,
+    Stopped,
+    Error,
+}
+
+impl ProgrammerState {
+    fn as_str(self) -> &'static str {
+        match self {
+            Self::Init => "INIT",
+            Self::Running => "RUNNING",
+            Self::Paused => "PAUSED",
+            Self::Stopped => "STOPPED",
+            Self::Error => "ERROR",
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct ProgrammerInstruction {
+    id: u64,
+    kind: String,
+    arguments: Vec<String>,
+    priority: i32,
+    seconds: u64,
+    cancelled: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct Programmer {
+    name: String,
+    task_name: String,
+    task_route: String,
+    state: ProgrammerState,
+    instructions: Vec<ProgrammerInstruction>,
+    next_id: u64,
+}
+
+impl Programmer {
+    fn remaining_seconds(&self) -> u64 {
+        self.instructions
+            .iter()
+            .filter(|instruction| !instruction.cancelled)
+            .map(|instruction| instruction.seconds)
+            .sum()
+    }
 }
 
 /// One project network.
@@ -835,12 +953,22 @@ pub struct Server {
     locks: HashMap<String, String>,
     /// Open programming sessions (`PP START name lock`).
     sessions: HashMap<String, PpSession>,
+    /// Runtime-only native PROGRAMMER queues. C-Gate does not persist these
+    /// across daemon restart and neither does cmqttd.
+    programmers: HashMap<String, Programmer>,
+    /// Native C-Gate lists programmers in creation order. Keys are normalized
+    /// for its case-insensitive name matching while each record retains the
+    /// caller's spelling for JSON output.
+    programmer_order: Vec<String>,
     /// Optional unit-specification directory for catalogue-backed
     /// sessions (native C-Gate serves its catalogue the same way).
     unitspec_dir: Option<PathBuf>,
     /// Parsed specifications by unit type (`None` = absent/unreadable,
     /// cached so failing lookups are not re-parsed per command).
     spec_cache: HashMap<String, Option<Vec<unitspec::SpecParam>>>,
+    /// Optional parsed `cbusunits.xml`; failures are cached until the native
+    /// `PP RELOAD_CATALOG` invalidation command.
+    catalog_cache: Option<Result<unitspec::Catalog, String>>,
     /// Last successfully encoded command for application-family commands.
     application_state: HashMap<String, String>,
     /// Mutable CONFIG values (global keys and object-qualified keys).
@@ -893,8 +1021,11 @@ impl Server {
             db_levels: HashMap::new(),
             locks: HashMap::new(),
             sessions: HashMap::new(),
+            programmers: HashMap::new(),
+            programmer_order: Vec::new(),
             unitspec_dir: None,
             spec_cache: HashMap::new(),
+            catalog_cache: None,
             application_state: HashMap::new(),
             config_values: HashMap::new(),
             advisory_locks: std::collections::HashSet::new(),
@@ -930,6 +1061,58 @@ impl Server {
         self.spec_cache
             .insert(unit_type.to_string(), parsed.clone());
         parsed
+    }
+
+    fn catalog(&mut self) -> Result<unitspec::Catalog, String> {
+        if let Some(cached) = &self.catalog_cache {
+            return cached.clone();
+        }
+        let loaded = self
+            .unitspec_dir
+            .as_deref()
+            .ok_or_else(|| "Unit catalogue directory is not configured".to_string())
+            .and_then(unitspec::load_catalog);
+        self.catalog_cache = Some(loaded.clone());
+        loaded
+    }
+
+    fn pp_default_raw(
+        spec: &[unitspec::SpecParam],
+        values: &HashMap<String, String>,
+    ) -> Vec<Option<u8>> {
+        let mut raw = vec![Some(0); 2048];
+        for parameter in spec {
+            let Ok(layout) = unitspec::ParameterLayout::for_param(parameter) else {
+                continue;
+            };
+            let Some(value) = values
+                .get(&parameter.name)
+                .map(String::as_str)
+                .or_else(|| parameter.get("DefaultValue"))
+            else {
+                continue;
+            };
+            let (start, count) = layout.logical_range();
+            let Some(end) = start.checked_add(count) else {
+                continue;
+            };
+            if end > 65_536 {
+                continue;
+            }
+            if raw.len() < end {
+                raw.resize(end, Some(0));
+            }
+            let mut bytes = raw[start..end]
+                .iter()
+                .map(|value| value.unwrap_or(0))
+                .collect::<Vec<_>>();
+            if layout.encode_into(parameter, value, &mut bytes).is_ok() {
+                for (index, byte) in bytes.into_iter().enumerate() {
+                    raw[start + index] = Some(byte);
+                }
+            }
+        }
+        raw
     }
 
     /// Grant programming-lock rights (operator-provisioned handle).
@@ -1021,6 +1204,16 @@ impl Server {
         if words.is_empty() {
             return err(&cmd.tag, status::BAD_REQUEST, "400 Empty command");
         }
+        // These stateful families have command names in the generated manual
+        // registry too. Route them before that generic metadata dispatcher so
+        // the maintained native implementations cannot be shadowed by a
+        // placeholder manual response.
+        if starts_with(&upper, "PP") {
+            return self.programming(&cmd.tag, &words);
+        }
+        if starts_with(&upper, "PROGRAMMER") {
+            return self.programmer(&cmd.tag, &words, &cmd.body);
+        }
         if let Some(response) = self.handle_manual_command(&cmd.tag, &words, &cmd.body) {
             return response;
         }
@@ -1092,11 +1285,6 @@ impl Server {
             _ if starts_with(&upper, "CGL IMPORT") => self.cgl_import(&cmd.tag, &words),
             _ if starts_with(&upper, "CGL EXPORT") => self.cgl_export(&cmd.tag, &words),
             _ if starts_with(&upper, "DBCREATENET") => self.dbcreate_net(&cmd.tag, &words),
-            // Every PP verb needs programming-lock rights; Admin and
-            // Monitor roles never hold them (disjoint roles). Denied
-            // callers get 420 before any verb parsing, mirroring the
-            // observed native posture.
-            _ if starts_with(&upper, "PP") => self.programming(&cmd.tag, &words),
             _ if starts_with(&upper, "SCENE") => err(
                 &cmd.tag,
                 status::UNAUTHORIZED,
@@ -2307,6 +2495,7 @@ impl Server {
         }
         let op = words.get(1).map(|w| w.to_ascii_uppercase());
         match op.as_deref() {
+            None | Some("?") => Self::pp_help(tag),
             Some("LOCK") => self.pp_lock(tag, words),
             Some("UNLOCK") => self.pp_unlock(tag, words),
             Some("CANCEL_LOCK") => self.pp_cancel_lock(tag, words),
@@ -2325,29 +2514,779 @@ impl Server {
             Some("RESET_TO_DEFAULTS") => self.pp_reset(tag, words),
             Some("QUICKGET") => self.pp_quickget(tag, words),
             Some("COPY") => self.pp_copy(tag, words),
-            Some("LIST_CATALOG_NUMBERS") => {
-                // The mock holds no catalogue data: answer explicitly
-                // rather than fabricating an empty catalogue that callers
-                // would misread as a native rejection.
-                if words.len() != 4 {
-                    return err(
-                        tag,
-                        status::BAD_REQUEST,
-                        "400 PP LIST_CATALOG_NUMBERS requires a unit type and firmware",
-                    );
-                }
-                err(
-                    tag,
-                    status::BAD_REQUEST,
-                    "400 Catalogue data is not modeled by this mock",
-                )
-            }
+            Some("CATALOG_INFO") => self.pp_catalog_info(tag, words),
+            Some("DEBUG") => self.pp_debug(tag, words),
+            Some("GET_RAW_DATA") => self.pp_get_raw_data(tag, words),
+            Some("GET_UNIT_CATALOG") => self.pp_get_unit_catalog(tag, words),
+            Some("GET_UNIT_SPEC") => self.pp_get_unit_spec(tag, words),
+            Some("LIST_CATALOG_NUMBERS") => self.pp_list_catalog_numbers(tag, words),
+            Some("PATCH_VERSION") => self.pp_patch_version(tag),
+            Some("RELOAD_CATALOG") => self.pp_reload_catalog(tag, words),
+            Some("SET_RAW_DATA") => self.pp_set_raw_data(tag, words),
             _ => err(
                 tag,
                 status::BAD_REQUEST,
                 "400 PP verb is not emulated by this model",
             ),
         }
+    }
+
+    fn pp_help(tag: &str) -> Response {
+        const COMMANDS: &[&str] = &[
+            "? Help for these commands",
+            "CANCEL_LOCK - ",
+            "CATALOG_INFO - ",
+            "COPY - ",
+            "DEBUG - ",
+            "END - ",
+            "GET - ",
+            "GET_RAW_DATA - ",
+            "GET_UNIT_CATALOG - ",
+            "GET_UNIT_SPEC - ",
+            "INFO - ",
+            "LIST_CATALOG_NUMBERS - ",
+            "LIST_LOCK - ",
+            "LOAD - ",
+            "LOAD_FROM_FILE - ",
+            "LOCK - ",
+            "NEW - ",
+            "PATCH_VERSION - ",
+            "QUICKGET - ",
+            "RELOAD_CATALOG - ",
+            "RESET_TO_DEFAULTS - ",
+            "SAVE - ",
+            "SAVE_TO_SOURCE - ",
+            "SET - ",
+            "SET_RAW_DATA - ",
+            "START - ",
+            "UNITS - ",
+            "UNLOCK - ",
+            "WRITE_PATCH - ",
+        ];
+        let mut rows = vec!["Help: PP commands:".to_string()];
+        rows.extend(
+            COMMANDS
+                .iter()
+                .map(|command| format!("Help:  PP {command}")),
+        );
+        data_reply(tag, 101, rows, "Help: PP commands:")
+    }
+
+    fn pp_catalog_info(&mut self, tag: &str, _words: &[&str]) -> Response {
+        let catalog = match self.catalog() {
+            Ok(catalog) => catalog,
+            Err(error) => {
+                return err(
+                    tag,
+                    status::CONFLICT_STATE,
+                    &format!("408 Error retrieving catalog information: {error}"),
+                )
+            }
+        };
+        data_reply(
+            tag,
+            133,
+            vec![
+                format!("SpecVersion={}", catalog.info.spec_version),
+                format!("Author={}", catalog.info.author),
+                format!("Status={}", catalog.info.status),
+                format!("ApprovalDate={}", catalog.info.approval_date),
+            ],
+            "Catalogue metadata is empty",
+        )
+    }
+
+    fn pp_xml_reply(tag: &str, xml_lines: impl IntoIterator<Item = String>) -> Response {
+        let mut lines = vec!["343-Begin XML Snippet".to_string()];
+        lines.extend(xml_lines.into_iter().map(|line| format!("347-{line}")));
+        Response {
+            tag: tag.to_string(),
+            lines,
+            final_text: "344 End XML Snippet".to_string(),
+            status: 344,
+        }
+    }
+
+    fn pp_get_unit_catalog(&mut self, tag: &str, _words: &[&str]) -> Response {
+        match self.catalog() {
+            Ok(catalog) => Self::pp_xml_reply(tag, catalog.xml_lines),
+            Err(error) => err(
+                tag,
+                status::CONFLICT_STATE,
+                &format!("408 get unit catalog failed {error}"),
+            ),
+        }
+    }
+
+    fn pp_get_unit_spec(&mut self, tag: &str, words: &[&str]) -> Response {
+        if words.len() != 3 {
+            return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
+        }
+        let Some(dir) = self.unitspec_dir.as_deref() else {
+            return err(
+                tag,
+                status::CONFLICT_STATE,
+                "408 Unit catalogue is not configured",
+            );
+        };
+        match unitspec::load_spec_document(dir, words[2]) {
+            Ok(xml) => Self::pp_xml_reply(
+                tag,
+                [
+                    "<?xml version=\"1.0\" encoding=\"utf-8\"?>".to_string(),
+                    xml,
+                ],
+            ),
+            Err(_) => err(
+                tag,
+                status::CONFLICT_STATE,
+                &format!(
+                    "408 Operation failed: Unit spec file {} not found",
+                    words[2]
+                ),
+            ),
+        }
+    }
+
+    fn pp_list_catalog_numbers(&mut self, tag: &str, words: &[&str]) -> Response {
+        if words.len() != 4 {
+            return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
+        }
+        let catalog = match self.catalog() {
+            Ok(catalog) => catalog,
+            Err(error) => return err(tag, status::CONFLICT_STATE, &format!("408 {error}")),
+        };
+        let rows = catalog
+            .matching(words[2], words[3])
+            .into_iter()
+            .map(|entry| {
+                format!(
+                    "catalogNumber={} description={}",
+                    entry.catalog_number, entry.description
+                )
+            })
+            .collect::<Vec<_>>();
+        if rows.is_empty() {
+            err(
+                tag,
+                status::CONFLICT_STATE,
+                "408 No matching catalog numbers",
+            )
+        } else {
+            data_reply(tag, 133, rows, "No matching catalogue numbers")
+        }
+    }
+
+    fn pp_patch_version(&self, tag: &str) -> Response {
+        err(
+            tag,
+            status::CONFLICT_STATE,
+            "408 Operation failed: Exception reading patch set: com.clipsal.cgate.cbus.pp.patch.PatchException: Unable to load patch set: Patch set patchset.zip not Found",
+        )
+    }
+
+    fn pp_reload_catalog(&mut self, tag: &str, _words: &[&str]) -> Response {
+        self.spec_cache.clear();
+        self.catalog_cache = None;
+        ok(tag, vec![], "200 OK.")
+    }
+
+    fn pp_get_raw_data(&mut self, tag: &str, words: &[&str]) -> Response {
+        if words.len() != 5 {
+            return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
+        }
+        let (_, session) = match self.pp_admin_session(tag, words) {
+            Ok(session) => session,
+            Err(response) => return response,
+        };
+        let Ok(start) = words[3].parse::<usize>() else {
+            return err(tag, status::CONFLICT_STATE, "408 Invalid start address");
+        };
+        let Ok(count) = words[4].parse::<usize>() else {
+            return err(tag, status::CONFLICT_STATE, "408 Invalid byte count");
+        };
+        let Some(end) = start.checked_add(count) else {
+            return err(tag, status::CONFLICT_STATE, "408 Byte count out of range");
+        };
+        if start >= session.raw.len() {
+            return err(
+                tag,
+                status::CONFLICT_STATE,
+                "408 Start address out of range",
+            );
+        }
+        if count == 0 || end >= session.raw.len() {
+            return err(tag, status::CONFLICT_STATE, "408 Byte count out of range");
+        }
+        let data = session.raw[start..end]
+            .iter()
+            .map(|byte| byte.map_or_else(|| "??".to_string(), |byte| format!("{byte:02x}")))
+            .collect::<String>();
+        err(tag, 316, &format!("316 RawData={data}"))
+    }
+
+    fn pp_set_raw_data(&mut self, tag: &str, words: &[&str]) -> Response {
+        if words.len() != 5 {
+            return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
+        }
+        let (_, mut session) = match self.pp_admin_session(tag, words) {
+            Ok(session) => session,
+            Err(response) => return response,
+        };
+        let Ok(start) = words[3].parse::<usize>() else {
+            return err(tag, status::CONFLICT_STATE, "408 Invalid start address");
+        };
+        let hex = words[4];
+        if !hex.len().is_multiple_of(2) {
+            return err(
+                tag,
+                status::CONFLICT_STATE,
+                "408 Bad byte pairs (length not even)",
+            );
+        }
+        if !hex.bytes().all(|byte| byte.is_ascii_hexdigit()) {
+            return err(
+                tag,
+                status::CONFLICT_STATE,
+                "408 Bad byte string (invalid value)",
+            );
+        }
+        let data = (0..hex.len())
+            .step_by(2)
+            .map(|index| u8::from_str_radix(&hex[index..index + 2], 16))
+            .collect::<Result<Vec<_>, _>>()
+            .expect("hex was validated");
+        let Some(end) = start.checked_add(data.len()) else {
+            return err(tag, status::CONFLICT_STATE, "408 Byte count out of range");
+        };
+        if start >= session.raw.len() {
+            return err(
+                tag,
+                status::CONFLICT_STATE,
+                "408 Start address out of range",
+            );
+        }
+        if data.is_empty() || end >= session.raw.len() {
+            return err(tag, status::CONFLICT_STATE, "408 Byte count out of range");
+        }
+        for (offset, byte) in data.into_iter().enumerate() {
+            session.raw[start + offset] = Some(byte);
+            session.raw_changed.insert(start + offset);
+        }
+        if let Some(unit_type) = session.unit_type.clone() {
+            if let Some(spec) = self.spec_for(&unit_type) {
+                for parameter in spec {
+                    let Ok(layout) = unitspec::ParameterLayout::for_param(&parameter) else {
+                        continue;
+                    };
+                    let (parameter_start, count) = layout.logical_range();
+                    let parameter_end = parameter_start.saturating_add(count);
+                    if parameter_end <= start || parameter_start >= end {
+                        continue;
+                    }
+                    let Some(bytes) = session.raw.get(parameter_start..parameter_end) else {
+                        continue;
+                    };
+                    let Some(bytes) = bytes.iter().copied().collect::<Option<Vec<_>>>() else {
+                        continue;
+                    };
+                    if let Ok(value) = layout.decode(&parameter, &bytes) {
+                        session.params.insert(parameter.name.clone(), value);
+                        session.dirty.insert(parameter.name);
+                    }
+                }
+            }
+        }
+        self.pp_store(tag, session)
+    }
+
+    fn pp_debug(&mut self, tag: &str, words: &[&str]) -> Response {
+        if words.len() != 5 || !words[2].eq_ignore_ascii_case("mem") {
+            return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
+        }
+        let (_, session) = match self.pp_admin_session(tag, &[words[0], words[1], words[3]]) {
+            Ok(session) => session,
+            Err(response) => return response,
+        };
+        let address_text = words[4]
+            .strip_prefix("0x")
+            .or_else(|| words[4].strip_prefix('$'))
+            .unwrap_or(words[4]);
+        let Ok(start) = usize::from_str_radix(address_text, 16) else {
+            return err(tag, status::CONFLICT_STATE, "408 Bad address");
+        };
+        if start >= session.raw.len() {
+            return err(tag, status::CONFLICT_STATE, "408 Bad address");
+        };
+        let end = start.saturating_add(16).min(session.raw.len());
+        let cells = |values: Vec<String>| format!("{}|", values.join("|"));
+        let addresses = (start..end)
+            .map(|address| format!("{:02x}", address & 0xff))
+            .collect();
+        let current = session.raw[start..end]
+            .iter()
+            .map(|byte| byte.map_or_else(|| "??".to_string(), |byte| format!("{byte:02x}")))
+            .collect();
+        let unit = session.raw_unit[start..end]
+            .iter()
+            .map(|byte| byte.map_or_else(|| "??".to_string(), |byte| format!("{byte:02x}")))
+            .collect();
+        let changed = (start..end)
+            .map(|address| {
+                if session.raw_changed.contains(&address) {
+                    "ff"
+                } else {
+                    "00"
+                }
+                .to_string()
+            })
+            .collect();
+        let repeated = |value: &str| vec![value.to_string(); end - start];
+        data_reply(
+            tag,
+            199,
+            vec![
+                format!("--------|{}", cells(addresses)),
+                format!("    unit>{}", cells(unit)),
+                format!("  toLoad>{}", cells(repeated("nn"))),
+                format!("   valid>{}", cells(repeated("00"))),
+                format!(" current>{}", cells(current)),
+                format!("  change>{}", cells(changed)),
+                format!(" protect>{}", cells(repeated("00"))),
+                format!(" pmethod>{}", cells(repeated("00"))),
+                format!("endparam>{}", cells(repeated("nn"))),
+            ],
+            "",
+        )
+    }
+
+    fn programmer(&mut self, tag: &str, words: &[&str], body: &str) -> Response {
+        if !self.allow_programming
+            || matches!(self.access, AccessLevel::Admin | AccessLevel::Monitor)
+        {
+            return err(tag, status::ACCESS_DENIED, "420 Access denied");
+        }
+        let arguments = match dequoted_arguments(body) {
+            Ok(arguments) => arguments,
+            Err(()) => {
+                return err(
+                    tag,
+                    status::BAD_REQUEST,
+                    "400 Syntax Error: Invalid number of parameters",
+                )
+            }
+        };
+        let op = words.get(1).map(|word| word.to_ascii_uppercase());
+        match op.as_deref() {
+            None | Some("?") => Self::programmer_help(tag),
+            Some("CREATE") => self.programmer_create(tag, &arguments),
+            Some("DELETE") => self.programmer_delete(tag, &arguments),
+            Some("LIST") => self.programmer_list(tag, &arguments),
+            Some("STATUS") => self.programmer_status(tag, &arguments),
+            Some("TEST") => self.programmer_test(tag, &arguments),
+            Some("ADD_INSTRUCTION") => self.programmer_add(tag, &arguments),
+            Some("CANCEL_INSTRUCTION") => self.programmer_cancel(tag, &arguments),
+            Some("TRIGGER") => self.programmer_trigger(tag, &arguments),
+            _ => err(
+                tag,
+                status::BAD_REQUEST,
+                "400 PROGRAMMER verb is not emulated by this model",
+            ),
+        }
+    }
+
+    fn programmer_help(tag: &str) -> Response {
+        data_reply(
+            tag,
+            101,
+            vec![
+                "Help: PROGRAMMER commands:".to_string(),
+                "Help:  PROGRAMMER ? Help for these commands".to_string(),
+                "Help:  PROGRAMMER ADD_INSTRUCTION - Add instructions into programmer queue."
+                    .to_string(),
+                "Help:  PROGRAMMER CANCEL_INSTRUCTION - Cancels specified instruction in programmer queue."
+                    .to_string(),
+                "Help:  PROGRAMMER CREATE - Creates a mangeable programmer priority queue."
+                    .to_string(),
+                "Help:  PROGRAMMER DELETE - Deletes existing programmer.".to_string(),
+                "Help:  PROGRAMMER LIST - List of programmer available with short summary."
+                    .to_string(),
+                "Help:  PROGRAMMER STATUS - Display status info for programmer.".to_string(),
+                "Help:  PROGRAMMER TEST - Add test instruction into programmer queue."
+                    .to_string(),
+                "Help:  PROGRAMMER TRIGGER - Trigger state change for programmer.".to_string(),
+            ],
+            "Help: PROGRAMMER commands:",
+        )
+    }
+
+    fn programmer_key(name: &str) -> String {
+        name.to_lowercase()
+    }
+
+    fn programmer_not_found(tag: &str, name: &str) -> Response {
+        Response {
+            tag: tag.to_string(),
+            lines: vec!["451-programmer does not exist.".to_string()],
+            final_text: format!(
+                "400 Syntax Error: Invalid parameter for <programmer-name>: {name}"
+            ),
+            status: status::BAD_REQUEST,
+        }
+    }
+
+    fn programmer_create(&mut self, tag: &str, arguments: &[String]) -> Response {
+        if arguments.len() != 5 {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 Syntax Error: Invalid number of parameters",
+            );
+        }
+        let name = &arguments[2];
+        if name.is_empty() || arguments[3].is_empty() || arguments[4].is_empty() {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 Syntax Error: Invalid parameter",
+            );
+        }
+        let key = Self::programmer_key(name);
+        if self.programmers.contains_key(&key) {
+            return err(tag, 452, "452 unique programmer name required.");
+        }
+        self.programmers.insert(
+            key.clone(),
+            Programmer {
+                name: name.clone(),
+                task_name: arguments[3].clone(),
+                task_route: arguments[4].clone(),
+                state: ProgrammerState::Init,
+                instructions: Vec::new(),
+                next_id: 1,
+            },
+        );
+        self.programmer_order.push(key);
+        ok(tag, vec![], "200 OK: created")
+    }
+
+    fn programmer_delete(&mut self, tag: &str, arguments: &[String]) -> Response {
+        if arguments.len() != 3 {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 Syntax Error: Invalid number of parameters",
+            );
+        }
+        let key = Self::programmer_key(&arguments[2]);
+        if self.programmers.remove(&key).is_none() {
+            return err(tag, 451, "451 programmer does not exist.");
+        }
+        self.programmer_order.retain(|candidate| candidate != &key);
+        ok(tag, vec![], "200 OK: deleted")
+    }
+
+    fn programmer_summary(programmer: &Programmer) -> String {
+        format!(
+            "{{\"progName\":{},\"progState\":\"{}\",\"taskName\":{},\"taskRoute\":{},\"remainingSeconds\":{},\"queueCount\":{}}}",
+            serde_json::to_string(&programmer.name).expect("string JSON cannot fail"),
+            programmer.state.as_str(),
+            serde_json::to_string(&programmer.task_name).expect("string JSON cannot fail"),
+            serde_json::to_string(&programmer.task_route).expect("string JSON cannot fail"),
+            programmer.remaining_seconds(),
+            programmer.instructions.len(),
+        )
+    }
+
+    fn programmer_status_json(programmer: &Programmer) -> String {
+        format!(
+            "{{\"progState\":\"{}\",\"queueCount\":{},\"totalCount\":{},\"remainingSeconds\":{}}}",
+            programmer.state.as_str(),
+            programmer.instructions.len(),
+            programmer.instructions.len(),
+            programmer.remaining_seconds(),
+        )
+    }
+
+    fn programmer_json_reply(tag: &str, rows: Vec<String>) -> Response {
+        Response {
+            tag: tag.to_string(),
+            lines: rows.into_iter().map(|row| format!("130-{row}")).collect(),
+            final_text: "200 OK.".to_string(),
+            status: status::OK,
+        }
+    }
+
+    fn programmer_list(&self, tag: &str, arguments: &[String]) -> Response {
+        if arguments.len() != 2 {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 Syntax Error: Too many parameters",
+            );
+        }
+        if self.programmers.is_empty() {
+            return err(tag, 450, "450 no programmers registered.");
+        }
+        Self::programmer_json_reply(
+            tag,
+            self.programmer_order
+                .iter()
+                .filter_map(|name| self.programmers.get(name))
+                .map(Self::programmer_summary)
+                .collect(),
+        )
+    }
+
+    fn programmer_status(&self, tag: &str, arguments: &[String]) -> Response {
+        if arguments.len() != 3 {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 Syntax Error: Invalid number of parameters",
+            );
+        }
+        let Some(programmer) = self.programmers.get(&Self::programmer_key(&arguments[2])) else {
+            return Self::programmer_not_found(tag, &arguments[2]);
+        };
+        Self::programmer_json_reply(tag, vec![Self::programmer_status_json(programmer)])
+    }
+
+    fn programmer_queue(
+        programmer: &mut Programmer,
+        kind: String,
+        arguments: Vec<String>,
+        priority: i32,
+        seconds: u64,
+    ) -> u64 {
+        let id = programmer.next_id;
+        programmer.next_id += 1;
+        let instruction = ProgrammerInstruction {
+            id,
+            kind,
+            arguments,
+            priority,
+            seconds,
+            cancelled: false,
+        };
+        let position = programmer
+            .instructions
+            .iter()
+            .position(|queued| queued.priority > priority)
+            .unwrap_or(programmer.instructions.len());
+        programmer.instructions.insert(position, instruction);
+        id
+    }
+
+    fn programmer_test(&mut self, tag: &str, arguments: &[String]) -> Response {
+        if arguments.len() < 4 {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 Syntax Error: Invalid number of parameters",
+            );
+        }
+        let key = Self::programmer_key(&arguments[2]);
+        let Some(programmer) = self.programmers.get_mut(&key) else {
+            return Self::programmer_not_found(tag, &arguments[2]);
+        };
+        let id = Self::programmer_queue(
+            programmer,
+            "TEST".to_string(),
+            arguments[3..].to_vec(),
+            0,
+            3,
+        );
+        ok(tag, vec![], &format!("200 OK: id: {id}"))
+    }
+
+    fn programmer_add(&mut self, tag: &str, arguments: &[String]) -> Response {
+        if arguments.len() < 5 {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 Syntax Error: Invalid number of parameters",
+            );
+        }
+        let name = &arguments[2];
+        let key = Self::programmer_key(name);
+        if !self.programmers.contains_key(&key) {
+            return Self::programmer_not_found(tag, name);
+        }
+        let mut index = 3;
+        let mut priority = 0i32;
+        let priority_argument = arguments[index].to_ascii_uppercase();
+        if let Some(value) = priority_argument.strip_prefix("PRIORITY=") {
+            priority = match value {
+                "" | "DEFAULT" => 0,
+                "FIRST" => i32::MIN,
+                "LAST" => i32::MAX,
+                _ => match value.parse::<i32>() {
+                    Ok(priority) => priority,
+                    Err(_) => {
+                        return err(tag, status::BAD_REQUEST, "400 failed parse <priority-type>")
+                    }
+                },
+            };
+            index += 1;
+        }
+        let Some(kind) = arguments.get(index).map(|value| value.to_ascii_uppercase()) else {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 Syntax Error: Invalid number of parameters",
+            );
+        };
+        const TYPES: &[&str] = &[
+            "PP_COPY",
+            "PP_SAVE",
+            "PP_SET",
+            "PP_END",
+            "PP_UNLOCK",
+            "DALI_READ",
+            "DALI_PROGRAM",
+            "DALI",
+        ];
+        if !TYPES.contains(&kind.as_str()) {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                &format!("400 failed parse <instruction-type>: {kind}"),
+            );
+        }
+        let instruction_arguments = arguments.get(index + 1..).unwrap_or_default();
+        if instruction_arguments.is_empty() {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 Syntax Error: Invalid number of parameters",
+            );
+        }
+        let arity_ok = match kind.as_str() {
+            "PP_COPY" => instruction_arguments.len() >= 3,
+            "PP_SAVE" => instruction_arguments.len() >= 2,
+            "PP_SET" => instruction_arguments.len() >= 3,
+            "PP_END" | "PP_UNLOCK" | "DALI_READ" | "DALI_PROGRAM" => {
+                instruction_arguments.len() == 1
+            }
+            "DALI" => instruction_arguments.len() >= 2,
+            _ => unreachable!("instruction type was validated"),
+        };
+        if !arity_ok {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 Syntax Error: Invalid number of parameters",
+            );
+        }
+        let programmer = self
+            .programmers
+            .get_mut(&key)
+            .expect("programmer presence was checked before parsing");
+        if matches!(
+            programmer.state,
+            ProgrammerState::Stopped | ProgrammerState::Error
+        ) {
+            return err(tag, 402, "402 failed: programmer in unsupported state");
+        }
+        // Every native queued instruction uses mT's one-second default;
+        // PROGRAMMER TEST is the sole observed three-second instruction.
+        let seconds = 1;
+        let id = Self::programmer_queue(
+            programmer,
+            kind,
+            instruction_arguments.to_vec(),
+            priority,
+            seconds,
+        );
+        ok(tag, vec![], &format!("200 OK: id: {id}"))
+    }
+
+    fn programmer_cancel(&mut self, tag: &str, arguments: &[String]) -> Response {
+        if arguments.len() != 4 {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 Syntax Error: Invalid number of parameters",
+            );
+        }
+        let key = Self::programmer_key(&arguments[2]);
+        if !self.programmers.contains_key(&key) {
+            return Self::programmer_not_found(tag, &arguments[2]);
+        }
+        let Ok(id) = arguments[3].parse::<u64>() else {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                &format!(
+                    "400 Syntax Error: Invalid parameter for <instruction-id>: {}",
+                    arguments[3]
+                ),
+            );
+        };
+        let programmer = self
+            .programmers
+            .get_mut(&key)
+            .expect("programmer presence was checked before id parsing");
+        let Some(instruction) = programmer
+            .instructions
+            .iter_mut()
+            .find(|item| item.id == id)
+        else {
+            return err(tag, 402, "402 failed: command not found");
+        };
+        if instruction.cancelled {
+            return err(tag, 403, "403 failed: command state could not be changed");
+        }
+        instruction.cancelled = true;
+        ok(tag, vec![], "200 OK: cancelled")
+    }
+
+    fn programmer_trigger(&mut self, tag: &str, arguments: &[String]) -> Response {
+        if arguments.len() != 4 {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 Syntax Error: Invalid number of parameters",
+            );
+        }
+        let key = Self::programmer_key(&arguments[2]);
+        let Some(programmer) = self.programmers.get_mut(&key) else {
+            return Self::programmer_not_found(tag, &arguments[2]);
+        };
+        let trigger = arguments[3].to_ascii_uppercase();
+        if trigger == "START" {
+            return err(
+                tag,
+                502,
+                "502 Programmer execution backend is not implemented; queue remains unchanged",
+            );
+        }
+        let next = match (programmer.state, trigger.as_str()) {
+            (ProgrammerState::Init | ProgrammerState::Running, "PAUSE") => ProgrammerState::Paused,
+            (ProgrammerState::Paused, "RESUME") => ProgrammerState::Running,
+            (
+                ProgrammerState::Running | ProgrammerState::Paused | ProgrammerState::Stopped,
+                "STOP",
+            ) => ProgrammerState::Stopped,
+            (_, "ERROR") => ProgrammerState::Error,
+            (_, "PAUSE" | "RESUME" | "STOP") => {
+                return err(
+                    tag,
+                    status::BAD_REQUEST,
+                    "400 failed: unsupported programmer transition",
+                )
+            }
+            _ => {
+                return err(
+                    tag,
+                    status::BAD_REQUEST,
+                    &format!("400 failed parse <trigger-type>: {trigger}"),
+                )
+            }
+        };
+        programmer.state = next;
+        ok(tag, vec![], "200 OK: triggered")
     }
 
     /// Native `PP LOCK name address`.
@@ -2362,8 +3301,8 @@ impl Server {
         if self.locks.contains_key(words[2]) {
             return err(tag, status::CONFLICT_EXISTS, "409 Lock already held");
         }
-        self.locks
-            .insert(words[2].to_string(), words[3].to_string());
+        let address = self.pp_lock_address(words[3]);
+        self.locks.insert(words[2].to_string(), address);
         ok(tag, vec![], "200 OK")
     }
 
@@ -2387,13 +3326,31 @@ impl Server {
                 "400 PP CANCEL_LOCK requires an address",
             );
         }
+        let address = self.pp_lock_address(words[2]);
         let before = self.locks.len();
-        self.locks.retain(|_, addr| addr != words[2]);
-        ok(
-            tag,
-            vec![format!("cancelled={}", before - self.locks.len())],
-            "200 OK",
-        )
+        self.locks.retain(|_, candidate| candidate != &address);
+        if before == self.locks.len() {
+            err(tag, 427, "427 Cancel lock failed")
+        } else {
+            ok(tag, vec![], "200 OK")
+        }
+    }
+
+    fn pp_lock_address(&self, address: &str) -> String {
+        let (project, network) = split_network(address);
+        if network.parse::<u8>().is_err() {
+            return address.to_string();
+        }
+        let project = if project.is_empty() {
+            self.current.as_deref().unwrap_or("")
+        } else {
+            &project
+        };
+        if project.is_empty() {
+            address.to_string()
+        } else {
+            format!("//{project}/{network}")
+        }
     }
 
     /// Native `PP LIST_LOCK`.
@@ -2407,11 +3364,15 @@ impl Server {
         }
         let mut names: Vec<&String> = self.locks.keys().collect();
         names.sort();
-        let lines = names
+        let lines: Vec<String> = names
             .into_iter()
-            .map(|n| format!("lock={n} address={}", self.locks[n]))
+            .map(|name| format!("name={name} address={}", self.locks[name]))
             .collect();
-        ok(tag, lines, "200 OK")
+        if lines.is_empty() {
+            err(tag, 122, "122 no open locks")
+        } else {
+            data_reply(tag, 121, lines, "no open locks")
+        }
     }
 
     /// Native `PP UNITS`: sessions currently open (documented reading —
@@ -2422,8 +3383,23 @@ impl Server {
         }
         let mut names: Vec<&String> = self.sessions.keys().collect();
         names.sort();
-        let lines = names.into_iter().map(|n| format!("session={n}")).collect();
-        ok(tag, lines, "200 OK")
+        let lines: Vec<String> = names
+            .into_iter()
+            .map(|name| {
+                let address = self
+                    .sessions
+                    .get(name)
+                    .and_then(|session| self.locks.get(&session.lock))
+                    .map(String::as_str)
+                    .unwrap_or("null");
+                format!("name={name} address={address}")
+            })
+            .collect();
+        if lines.is_empty() {
+            err(tag, 122, "122 no open sessions")
+        } else {
+            data_reply(tag, 121, lines, "no open sessions")
+        }
     }
 
     /// Native `PP START name lock`.
@@ -2452,6 +3428,9 @@ impl Server {
                 catalog_number: None,
                 params: HashMap::new(),
                 dirty: HashSet::new(),
+                raw: vec![None; 2048],
+                raw_unit: vec![None; 2048],
+                raw_changed: HashSet::new(),
             },
         );
         ok(tag, vec![], "200 OK")
@@ -2488,6 +3467,24 @@ impl Server {
         }
     }
 
+    fn pp_admin_session(
+        &mut self,
+        tag: &str,
+        words: &[&str],
+    ) -> Result<(String, PpSession), Response> {
+        self.pp_session(tag, words).map_err(|response| {
+            if response.status == status::NOT_FOUND {
+                err(
+                    tag,
+                    status::CONFLICT_STATE,
+                    "408 Operation failed: Programming session not found",
+                )
+            } else {
+                response
+            }
+        })
+    }
+
     fn pp_store(&mut self, tag: &str, session: PpSession) -> Response {
         self.sessions.insert(session.name.clone(), session);
         ok(tag, vec![], "200 OK")
@@ -2502,7 +3499,7 @@ impl Server {
                 "400 PP NEW requires a session, unit type and firmware",
             );
         }
-        let (_, mut session) = match self.pp_session(tag, words) {
+        let (_, mut session) = match self.pp_admin_session(tag, words) {
             Ok(v) => v,
             Err(r) => return r,
         };
@@ -2525,8 +3522,13 @@ impl Server {
                         .or_insert_with(|| default.to_string());
                 }
             }
+            session.raw = Self::pp_default_raw(&spec, &session.params);
+        } else {
+            session.raw = vec![Some(0); 2048];
         }
+        session.raw_unit = vec![Some(0); session.raw.len()];
         session.dirty = session.params.keys().cloned().collect();
+        session.raw_changed = (0..session.raw.len()).collect();
         self.pp_store(tag, session)
     }
 
@@ -2549,6 +3551,9 @@ impl Server {
         session.unit_type = None;
         session.firmware = None;
         session.catalog_number = None;
+        session.raw = vec![None; 2048];
+        session.raw_unit = vec![None; 2048];
+        session.raw_changed.clear();
         // A `/db/` source seeds identity and values from the database
         // record; anything else loads unverified (documented limit).
         if let Some(path) = words[3].strip_prefix("/db") {
@@ -2607,14 +3612,17 @@ impl Server {
                                 .or_insert_with(|| default.to_string());
                         }
                     }
+                    session.raw = Self::pp_default_raw(&spec, &session.params);
+                    session.raw_unit = session.raw.clone();
+                    session.raw_changed.clear();
                 }
             }
         }
         self.pp_store(tag, session)
     }
 
-    /// Native `PP LOAD_FROM_FILE name filename`: no server files exist in
-    /// this model, so identity and values clear (documented limit).
+    /// Native `PP LOAD_FROM_FILE name filename`, restricted to the configured
+    /// unit-specification directory (never an arbitrary host path).
     fn pp_load_file(&mut self, tag: &str, words: &[&str]) -> Response {
         if words.len() != 4 || !valid_target(words[3]) {
             return err(
@@ -2623,15 +3631,46 @@ impl Server {
                 "400 PP LOAD_FROM_FILE requires a session and filename",
             );
         }
-        let (_, mut session) = match self.pp_session(tag, words) {
+        let (_, mut session) = match self.pp_admin_session(tag, words) {
             Ok(v) => v,
             Err(r) => return r,
         };
+        let Some(dir) = self.unitspec_dir.clone() else {
+            return err(
+                tag,
+                status::CONFLICT_STATE,
+                "408 Unit catalogue is not configured",
+            );
+        };
+        let filename = words[3];
+        if !filename.to_ascii_lowercase().ends_with(".xml") || filename.contains(['/', '\\']) {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 Invalid unit specification filename",
+            );
+        }
+        let unit_type = &filename[..filename.len() - 4];
+        let spec = match unitspec::load_spec(&dir, unit_type) {
+            Ok(spec) => spec,
+            Err(error) => return err(tag, status::CONFLICT_STATE, &format!("408 {error}")),
+        };
         session.source = None;
-        session.unit_type = None;
+        session.unit_type = Some(unit_type.to_string());
         session.firmware = None;
         session.catalog_number = None;
-        session.params.clear();
+        session.params = spec
+            .iter()
+            .filter_map(|parameter| {
+                parameter
+                    .get("DefaultValue")
+                    .map(|value| (parameter.name.clone(), value.to_string()))
+            })
+            .collect();
+        session.raw = Self::pp_default_raw(&spec, &session.params);
+        session.raw_unit = vec![Some(0); session.raw.len()];
+        session.raw_changed.clear();
+        session.dirty.clear();
         self.pp_store(tag, session)
     }
 
@@ -2711,6 +3750,8 @@ impl Server {
             return e;
         }
         session.dirty.clear();
+        session.raw_changed.clear();
+        session.raw_unit = session.raw.clone();
         self.push_event(format!("#e# pp save {}", session.name));
         self.pp_store(tag, session)
     }
@@ -2740,6 +3781,8 @@ impl Server {
             return e;
         }
         session.dirty.clear();
+        session.raw_changed.clear();
+        session.raw_unit = session.raw.clone();
         self.push_event(format!("#e# pp save {}", session.name));
         self.pp_store(tag, session)
     }
@@ -2789,10 +3832,34 @@ impl Server {
         // dequotes on store, so readback observes the raw value. The
         // remainder of the line after the parameter name is the value.
         let raw = words[4..].join(" ");
-        session
-            .params
-            .insert(words[3].to_string(), dequote_value(&raw));
+        let value = dequote_value(&raw);
+        session.params.insert(words[3].to_string(), value.clone());
         session.dirty.insert(words[3].to_string());
+        if let Some(unit_type) = session.unit_type.clone() {
+            if let Some(spec) = self.spec_for(&unit_type) {
+                if let Some(parameter) = spec.iter().find(|parameter| parameter.name == words[3]) {
+                    if let Ok(layout) = unitspec::ParameterLayout::for_param(parameter) {
+                        let (start, count) = layout.logical_range();
+                        if let Some(end) = start.checked_add(count).filter(|end| *end <= 65_536) {
+                            if session.raw.len() < end {
+                                session.raw.resize(end, Some(0));
+                                session.raw_unit.resize(end, None);
+                            }
+                            let mut bytes = session.raw[start..end]
+                                .iter()
+                                .map(|byte| byte.unwrap_or(0))
+                                .collect::<Vec<_>>();
+                            if layout.encode_into(parameter, &value, &mut bytes).is_ok() {
+                                for (offset, byte) in bytes.into_iter().enumerate() {
+                                    session.raw[start + offset] = Some(byte);
+                                    session.raw_changed.insert(start + offset);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
         self.pp_store(tag, session)
     }
 
@@ -2869,7 +3936,7 @@ impl Server {
         let mut xml = String::from("<Parameters>");
         for param in selected {
             xml.push_str("<Param>");
-            for (key, value) in &param.fields {
+            for (key, value) in &param.document_fields {
                 xml.push_str(&format!("<{key}>{}</{key}>", xml_escape(value)));
             }
             // Current staged value rides along for readback coherence.
@@ -2909,6 +3976,11 @@ impl Server {
                     })
                     .collect();
                 session.dirty = session.params.keys().cloned().collect();
+                session.raw = Self::pp_default_raw(&spec, &session.params);
+                if session.raw_unit.len() < session.raw.len() {
+                    session.raw_unit.resize(session.raw.len(), None);
+                }
+                session.raw_changed = (0..session.raw.len()).collect();
                 return self.pp_store(tag, session);
             }
         }
@@ -5253,7 +6325,7 @@ mod tests {
         assert_eq!(quick.final_text, "315 UnitName=LOUNGE");
         // Lock inventory and teardown.
         let locks = s.handle("[21] PP LIST_LOCK");
-        assert!(locks.lines.iter().any(|l| l.contains("lock=L1")));
+        assert_eq!(locks.final_text, "121 name=L1 address=//TEST/254");
         assert_eq!(s.handle("[22] PP END S1").status, 200);
         assert_eq!(s.handle("[23] PP END S2").status, 200);
         assert_eq!(s.handle("[24] PP UNLOCK L1").status, 200);
@@ -5942,5 +7014,223 @@ mod tests {
         assert_eq!(s.handle("[22] DBGET !abc123/OID").status, 401);
         assert_eq!(s.handle("[23] DBGETXML //TEST/254/56").status, 200);
         assert_eq!(s.handle("[24] ON //TEST/254/56 42").status, 400);
+    }
+
+    #[test]
+    fn pp_administration_and_raw_memory_match_retained_native_shapes() {
+        let mut server = Server::new(AccessLevel::Program).with_programming(true);
+        assert_eq!(
+            server.handle("[1] PP LIST_LOCK").final_text,
+            "122 no open locks"
+        );
+        assert_eq!(
+            server.handle("[2] PP UNITS").final_text,
+            "122 no open sessions"
+        );
+        assert_eq!(server.handle("[3] PP LOCK L //PPRAW/254").status, 200);
+        assert_eq!(
+            format_response(&server.handle("[4] PP LIST_LOCK")),
+            "[4] 121 name=L address=//PPRAW/254\n"
+        );
+        assert_eq!(server.handle("[5] PP START S L").status, 200);
+        assert_eq!(
+            format_response(&server.handle("[6] PP UNITS")),
+            "[6] 121 name=S address=//PPRAW/254\n"
+        );
+        assert_eq!(server.handle("[7] PP NEW S KEY1 1.2.67").status, 200);
+        assert_eq!(
+            format_response(&server.handle("[8] PP GET_RAW_DATA S 0 8")),
+            "[8] 316 RawData=0000000000000000\n"
+        );
+        assert_eq!(
+            server.handle("[9] PP SET_RAW_DATA S 0 01020304").status,
+            200
+        );
+        assert_eq!(
+            format_response(&server.handle("[10] PP GET_RAW_DATA S 0 8")),
+            "[10] 316 RawData=0102030400000000\n"
+        );
+        let debug = format_response(&server.handle("[11] PP DEBUG mem S 0"));
+        assert_eq!(debug.lines().count(), 9);
+        assert!(debug.contains("199---------|00|01|02|03|04|05|06|07|08|09|0a|0b|0c|0d|0e|0f|"));
+        assert!(debug.contains("199- current>01|02|03|04|00|00|00|00|00|00|00|00|00|00|00|00|"));
+        assert!(debug.contains("199 endparam>nn|nn|nn|nn|nn|nn|nn|nn|nn|nn|nn|nn|nn|nn|nn|nn|"));
+        assert_eq!(
+            server
+                .handle("[11a] PP GET_RAW_DATA S invalid 8")
+                .final_text,
+            "408 Invalid start address"
+        );
+        assert_eq!(
+            server.handle("[11b] PP SET_RAW_DATA S 0 123").final_text,
+            "408 Bad byte pairs (length not even)"
+        );
+        assert_eq!(server.handle("[12] PP CANCEL_LOCK //PPRAW/254").status, 200);
+        assert_eq!(
+            format_response(&server.handle("[13] PP UNITS")),
+            "[13] 121 name=S address=null\n"
+        );
+        assert_eq!(server.handle("[14] PP END S").status, 200);
+        assert_eq!(server.handle("[15] PP CANCEL_LOCK //PPRAW/254").status, 427);
+    }
+
+    #[test]
+    fn pp_catalogue_is_bounded_to_configured_directory() {
+        let dir = std::env::temp_dir().join(format!(
+            "cbus-cgate-pp-catalog-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .expect("clock")
+                .as_nanos()
+        ));
+        std::fs::create_dir_all(&dir).expect("create catalogue directory");
+        std::fs::write(
+            dir.join("cbusunits.xml"),
+            r#"<?xml version="1.0" encoding="utf-8"?>
+<CBusUnits><Units><Unit><Description>Test Unit</Description><CatalogNumber>TEST-1</CatalogNumber><FirmwareRevisions><Revision><UnitType>TEST</UnitType><MinVersion>1.0</MinVersion><MaxVersion>1.9.99</MaxVersion><UnitSpecName>TEST.xml</UnitSpecName></Revision></FirmwareRevisions></Unit></Units><FileVersion>1.0</FileVersion><Author>Fixture</Author><Status>Released</Status><ApprovalDate>Today</ApprovalDate></CBusUnits>"#,
+        )
+        .expect("write catalogue");
+        std::fs::write(
+            dir.join("TEST.xml"),
+            r#"<UnitSpecification><Parameters><Param><Name>First</Name><Type>int</Type><Address>$00</Address><DefaultValue>$01</DefaultValue></Param><Param><Name>Tenth</Name><Type>int</Type><Address>$09</Address><DefaultValue>$FF</DefaultValue></Param></Parameters></UnitSpecification>"#,
+        )
+        .expect("write spec");
+        let mut server = Server::new(AccessLevel::Program)
+            .with_programming(true)
+            .with_unitspec_dir(dir.clone());
+        let info = format_response(&server.handle("[1] PP CATALOG_INFO"));
+        assert_eq!(
+            info,
+            "[1] 133-SpecVersion=1.0\n[1] 133-Author=Fixture\n[1] 133-Status=Released\n[1] 133 ApprovalDate=Today\n"
+        );
+        assert_eq!(
+            format_response(&server.handle("[1a] PP GET_UNIT_CATALOG")),
+            "[1a] 343-Begin XML Snippet\n[1a] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n[1a] 347-<CBusUnits><Units><Unit><Description>Test Unit</Description><CatalogNumber>TEST-1</CatalogNumber><FirmwareRevisions><Revision><UnitType>TEST</UnitType><MinVersion>1.0</MinVersion><MaxVersion>1.9.99</MaxVersion><UnitSpecName>TEST.xml</UnitSpecName></Revision></FirmwareRevisions></Unit></Units><FileVersion>1.0</FileVersion><Author>Fixture</Author><Status>Released</Status><ApprovalDate>Today</ApprovalDate></CBusUnits>\n[1a] 344 End XML Snippet\n"
+        );
+        assert_eq!(
+            server.handle("[1b] PP PATCH_VERSION debug").final_text,
+            "408 Operation failed: Exception reading patch set: com.clipsal.cgate.cbus.pp.patch.PatchException: Unable to load patch set: Patch set patchset.zip not Found"
+        );
+        std::fs::write(
+            dir.join("cbusunits.xml"),
+            r#"<?xml version="1.0" encoding="utf-8"?>
+<CBusUnits><Units><Unit><Description>Test Unit</Description><CatalogNumber>TEST-1</CatalogNumber><FirmwareRevisions><Revision><UnitType>TEST</UnitType><MinVersion>1.0</MinVersion><MaxVersion>1.9.99</MaxVersion><UnitSpecName>TEST.xml</UnitSpecName></Revision></FirmwareRevisions></Unit></Units><FileVersion>2.0</FileVersion><Author>Fixture</Author><Status>Released</Status><ApprovalDate>Today</ApprovalDate></CBusUnits>"#,
+        )
+        .expect("replace catalogue");
+        assert!(format_response(&server.handle("[1c] PP CATALOG_INFO")).contains("SpecVersion=1.0"));
+        assert_eq!(server.handle("[1d] PP RELOAD_CATALOG ignored").status, 200);
+        assert!(format_response(&server.handle("[1e] PP CATALOG_INFO")).contains("SpecVersion=2.0"));
+        assert_eq!(
+            format_response(&server.handle("[2] PP LIST_CATALOG_NUMBERS TEST 1.2.3")),
+            "[2] 133 catalogNumber=TEST-1 description=Test Unit\n"
+        );
+        assert_eq!(
+            server
+                .handle("[2a] PP LIST_CATALOG_NUMBERS TEST 9.9")
+                .final_text,
+            "408 No matching catalog numbers"
+        );
+        let spec = format_response(&server.handle("[3] PP GET_UNIT_SPEC TEST.xml"));
+        assert!(spec.contains("343-Begin XML Snippet"));
+        assert!(spec.contains("347-<Parameters><Param><Name>First</Name>"));
+        assert_eq!(
+            server.handle("[4] PP GET_UNIT_SPEC ../TEST.xml").status,
+            408
+        );
+        assert_eq!(server.handle("[5] PP LOCK L //TEST/254").status, 200);
+        assert_eq!(server.handle("[6] PP START S L").status, 200);
+        assert_eq!(
+            server.handle("[7] PP LOAD_FROM_FILE S TEST.xml").status,
+            200
+        );
+        assert_eq!(
+            format_response(&server.handle("[8] PP GET_RAW_DATA S 0 16")),
+            "[8] 316 RawData=010000000000000000ff000000000000\n"
+        );
+        std::fs::remove_dir_all(dir).expect("remove catalogue directory");
+    }
+
+    #[test]
+    fn programmer_queue_matches_native_json_and_never_executes_start() {
+        let mut server = Server::new(AccessLevel::Program).with_programming(true);
+        assert_eq!(server.handle("[1] PROGRAMMER LIST").status, 450);
+        assert_eq!(
+            format_response(
+                &server.handle("[2] PROGRAMMER CREATE P \"Task Name\" \"Display Route\"")
+            ),
+            "[2] 200 OK: created\n"
+        );
+        assert_eq!(
+            format_response(&server.handle("[3] PROGRAMMER STATUS P")),
+            "[3] 130-{\"progState\":\"INIT\",\"queueCount\":0,\"totalCount\":0,\"remainingSeconds\":0}\n[3] 200 OK.\n"
+        );
+        assert_eq!(server.handle("[3a] PROGRAMMER STATUS p").status, 200);
+        assert_eq!(
+            server
+                .handle("[3b] PROGRAMMER CREATE p \"Other\" \"Route\"")
+                .status,
+            452
+        );
+        assert_eq!(
+            format_response(&server.handle("[3c] PROGRAMMER STATUS missing")),
+            "[3c] 451-programmer does not exist.\n[3c] 400 Syntax Error: Invalid parameter for <programmer-name>: missing\n"
+        );
+        assert_eq!(
+            server
+                .handle("[4] PROGRAMMER TEST P diagnostic payload")
+                .final_text,
+            "200 OK: id: 1"
+        );
+        assert_eq!(
+            server
+                .handle("[5] PROGRAMMER ADD_INSTRUCTION P PP_END S")
+                .final_text,
+            "200 OK: id: 2"
+        );
+        let queued = format_response(&server.handle("[6] PROGRAMMER STATUS P"));
+        assert!(queued.contains("\"queueCount\":2"));
+        assert!(queued.contains("\"remainingSeconds\":4"));
+        assert_eq!(
+            server
+                .handle("[7] PROGRAMMER CANCEL_INSTRUCTION P 1")
+                .status,
+            200
+        );
+        assert_eq!(
+            server
+                .handle("[8] PROGRAMMER CANCEL_INSTRUCTION P 2")
+                .status,
+            200
+        );
+        let cancelled = format_response(&server.handle("[9] PROGRAMMER STATUS P"));
+        assert!(cancelled.contains("\"queueCount\":2"));
+        assert!(cancelled.contains("\"remainingSeconds\":0"));
+        assert_eq!(server.handle("[10] PROGRAMMER TRIGGER P PAUSE").status, 200);
+        assert_eq!(
+            server.handle("[11] PROGRAMMER TRIGGER P RESUME").status,
+            200
+        );
+        let before = format_response(&server.handle("[12] PROGRAMMER STATUS P"));
+        assert_eq!(server.handle("[13] PROGRAMMER TRIGGER P START").status, 502);
+        let after = format_response(&server.handle("[14] PROGRAMMER STATUS P"));
+        assert_eq!(before.replace("[12]", "[x]"), after.replace("[14]", "[x]"));
+        assert_eq!(server.handle("[15] PROGRAMMER TRIGGER P STOP").status, 200);
+        assert_eq!(server.handle("[16] PROGRAMMER DELETE P").status, 200);
+    }
+
+    #[test]
+    fn pp_and_programmer_parent_help_match_native_registration_order() {
+        let mut server = Server::new(AccessLevel::Program).with_programming(true);
+        let pp = format_response(&server.handle("[1] PP"));
+        assert_eq!(pp.lines().count(), 30);
+        assert!(pp.starts_with("[1] 101-Help: PP commands:\n"));
+        assert!(pp.ends_with("[1] 101 Help:  PP WRITE_PATCH - \n"));
+        let programmer = format_response(&server.handle("[2] PROGRAMMER ?"));
+        assert_eq!(programmer.lines().count(), 10);
+        assert!(programmer.starts_with("[2] 101-Help: PROGRAMMER commands:\n"));
+        assert!(programmer.ends_with(
+            "[2] 101 Help:  PROGRAMMER TRIGGER - Trigger state change for programmer.\n"
+        ));
     }
 }

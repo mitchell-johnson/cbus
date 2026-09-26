@@ -1,0 +1,70 @@
+{
+  "oracle": {
+    "product": "C-Gate",
+    "version": "3.4.0.2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "method": "Disposable loopback daemon with a temporary project; NET LOAD DB was used for the PP session probe, no network was opened and no physical C-Bus endpoint was contacted.",
+    "captured_utc": "2026-09-26",
+    "full_probe_sha256": {
+      "catalog_and_programmer": "54aec1f7948e159bb81ed5045e7d4a3c2f81f174d4dadf86d3d1eddf67abfaf5",
+      "session_memory": "81802d278a99825b33eb305f57c504503c0b7b3d6f1008d2d79817265003c7fe"
+    }
+  },
+  "owned_bytecode": {
+    "PP_CANCEL_LOCK_lm": "61c0d812ad3a033960d5c16bc5fe5fa114ee4168433952c25ae7efc39c0332a5",
+    "PP_CATALOG_INFO_ln": "9138946d970be385082f2d24bc9aa11c5d157d46715e70b13132c7767290cb91",
+    "PP_DEBUG_lr": "3b5fb684c9c8b60179fd7f9721f1317b1a21f15f70547093f9ae7919ee5a27c3",
+    "PP_GET_RAW_DATA_lv": "6554a7fbec2adf0de5fb0bee95d9a50ac5cb35401d56cf2973b5c9239866a4d0",
+    "PP_GET_UNIT_CATALOG_lw": "3a3d35c238d98466299147edc177ec52188688f8ce2046c57400150a88b564db",
+    "PP_GET_UNIT_SPEC_lx": "7cfb42215dcbd4c4e8cf8a1ddc2296ffed9e153282ac8dead8f7e7b3cf2e7aec",
+    "PP_LIST_CATALOG_NUMBERS_lA": "e9b24533d33dc1c50e07f180c2eebfe4dd905eb32bb8b4e3b5c73020a640a605",
+    "PP_LIST_LOCK_lB": "d0eea1b2278b4970bde1c847357857222fe9440623204a98c41ddafad8adcc81",
+    "PP_LOAD_FROM_FILE_lD": "cd2128c6537e8f63a4aeac1fa741d92d9f2182b6aca3dd75a11654aff9452255",
+    "PP_PATCH_VERSION_lI": "ae02da9a119c589c1d28b1b35b2f1082a5b1d568fdd4ee57ccf2421059ab4f2c",
+    "PP_RELOAD_CATALOG_lK": "60fc0eb3f376c7448854e6479b718681d759900f6391daad4784c79d1775e814",
+    "PP_SET_RAW_DATA_lV": "bd9372464ff74be810fda69fe50a5c30c8d5b4dd89f4f678b3d4667bbf57c628",
+    "PP_UNITS_lZ": "4ae737ece5c945ca4c8bb3983c4e285366c26164a0d28d9fbbef5e8a7136bc0b",
+    "PP_WRITE_PATCH_mc": "bd236edb404dd6db287c9acae5680cd0ddcb9a94fa687553692c5b8940f0c257",
+    "PROGRAMMER_ADD_mu": "bcf4e539dbcc2832001571eb9653b3426ba50a4e291b30f753f52a8a977ece72",
+    "PROGRAMMER_CANCEL_mw": "6ab4359d0d5ed23e3b89bd6789b945f8f4f84ff17b87d292c83472c782b88ae6",
+    "PROGRAMMER_CREATE_my": "c3d3d684658d7a67c0a58521eebf7a5bea81f88a24241e1599b63ff3eefc7b0e",
+    "PROGRAMMER_DELETE_mz": "1564812fd3b32849623761f65113b57e693773c3f85fb328b9866507791349ff",
+    "PROGRAMMER_LIST_mA": "16fd2cfe277d535ade103f5d0ef41de937241b659e7480bf88d748f2253dbc64",
+    "PROGRAMMER_STATUS_mB": "95582a63af5ec55f5842a263208ebd446632d7a6d35513d501dce722543efdf0",
+    "PROGRAMMER_TEST_mC": "56138e979b4cde22fc08ad74bb54751873fe368523592fb270f4cacdc963cc62",
+    "PROGRAMMER_TRIGGER_mD": "b89d202c63b4a1dd80068877a0bfffa42475fe7f9a51e271b8a4cc03c5e8ba7a"
+  },
+  "native_shapes": {
+    "empty_lists": ["122 no open locks", "122 no open sessions", "450 no programmers registered."],
+    "lock_row": "121 name=L address=//PPRAW/254",
+    "session_row": "121 name=S address=//PPRAW/254",
+    "cancelled_session_row": "121 name=S address=null",
+    "raw_initial": "316 RawData=0000000000000000",
+    "raw_after_set": "316 RawData=0102030400000000",
+    "catalog_metadata": ["133-SpecVersion=1.0", "133-Author=Clipsal Integrated Systems", "133-Status=Released", "133 ApprovalDate=Wed Feb 25 11:11:11 CST 2009"],
+    "xml_envelope": ["343-Begin XML Snippet", "347-<?xml version=\"1.0\" encoding=\"utf-8\"?>", "347-<Parameters>...</Parameters>", "344 End XML Snippet"],
+    "programmer_create": "200 OK: created",
+    "programmer_empty_status": "{\"progState\":\"INIT\",\"queueCount\":0,\"totalCount\":0,\"remainingSeconds\":0}",
+    "test_duration_seconds": 3,
+    "queued_instruction_default_duration_seconds": 1,
+    "pp_end_duration_seconds": 1,
+    "cancel_preserves_queue_and_total_count": true,
+    "programmer_names_case_insensitive": true,
+    "programmer_list_order": "creation order",
+    "transitions_observed_without_execution": ["INIT->PAUSED", "PAUSED->RUNNING", "RUNNING->STOPPED"],
+    "instruction_types_from_owned_bytecode": ["PP_COPY", "PP_SAVE", "PP_SET", "PP_END", "PP_UNLOCK", "DALI_READ", "DALI_PROGRAM", "DALI"]
+  },
+  "sanitization": {
+    "vendor_catalog_xml_retained": false,
+    "vendor_unit_specs_retained": false,
+    "private_network_data_retained": false,
+    "retained_material": "Status codes, bounded response shapes, hashes, synthetic names and semantic observations only."
+  },
+  "cmqttd_boundaries": {
+    "catalog_source": "Only cbusunits.xml and bare .xml files under the configured unitspec directory; traversal and arbitrary host files are rejected.",
+    "queue_persistence": "Runtime only, matching the observed daemon lifecycle.",
+    "programmer_start": "502; executing queued PP/DALI instructions needs an evidenced physical scheduler and is never simulated.",
+    "write_patch": "502; patchset.zip and the proprietary physical patch executor were not present, so physical success is never simulated.",
+    "patch_version_without_patchset": "408 native-shaped missing patchset response."
+  }
+}

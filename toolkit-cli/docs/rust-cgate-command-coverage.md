@@ -23,7 +23,8 @@ project and repository lifecycle, database safe and unsafe verbs, CGL,
 network lifecycle and discovery, object reads and writes, XML and JSON
 envelopes, calculator, event subscriptions, application levels, labels,
 triggers, enables, named scenes, unit conversion, and PP locks/sessions,
-catalogue reads, raw data and patches. Legacy `GET`, `SHOW`, `DO`, `ON`, `OFF`,
+catalogue reads and raw data. Patch execution remains an explicit failure.
+Legacy `GET`, `SHOW`, `DO`, `ON`, `OFF`,
 `RAMP`, `TERMINATERAMP`, `REPORT`, `NEW`, `OID`, and macro `RUN` spellings are
 also implemented.
 
@@ -61,6 +62,18 @@ through Docker/NAT until address admission is explicitly changed; unmatched
 peers can still present a configured recovery token without gaining access to
 other commands first. These differences are pinned in
 `native_cgate_access.json` and the real-daemon `system_cgate_access.rs` test.
+
+The embedded cmqttd service also implements thirteen previously fail-closed PP
+administrative/catalogue/session-memory paths and seven PROGRAMMER queue
+metadata paths as bounded local operations. Catalogue and LOAD_FROM_FILE access
+is confined to `--cgate-unitspec`; raw memory belongs to an owned staged
+session; PROGRAMMER queues are runtime-only. `PROGRAMMER TRIGGER ... START`
+and `PP WRITE_PATCH` remain 502 because they require physical execution
+backends, while PATCH_VERSION reproduces the native missing-patchset 408. This
+moves the aggregate executable 431-path matrix from 118 to 138 local paths and
+from 106 to 86 fail-closed paths; physical remains 206 and obsolete remains 1. Retained
+evidence is in `rust/testdata/fixtures/native_cgate_pp_programmer.json`, with
+real-daemon coverage in `system_cgate_pp_programmer.rs`.
 
 Current verification is:
 

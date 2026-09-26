@@ -248,6 +248,14 @@ Programming sessions also implement specification-backed
 values, with no database or PCI write until the caller explicitly saves.
 Missing or malformed unit specifications fail unchanged.
 
+Local C-Gate compatibility now includes PP catalogue/spec queries, lock and
+session inventory/cancellation, staged raw-memory get/set/debug,
+`LOAD_FROM_FILE`, and runtime PROGRAMMER queue creation, inspection and
+cancellation. Catalogue files are confined to `--cgate-unitspec`, and these
+administrative operations send no PCI traffic. Queued execution and patching
+remain honest boundaries: `PROGRAMMER TRIGGER ... START` and `PP WRITE_PATCH`
+return 502 without changing state or claiming a device operation.
+
 The embedded service also supports native physical `LABEL KFIGET` and
 `LABEL KFISET`. The application token admits only a native
 `LabelSupportingApplication`; it is a scope/class gate and is not encoded into

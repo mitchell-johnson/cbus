@@ -1609,6 +1609,159 @@ async fn programming_ownership_and_unimplemented_hardware_are_enforced() {
 }
 
 #[tokio::test]
+async fn pp_admin_and_programmer_queue_are_local_owned_and_fail_closed_for_execution() {
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut owner = ClientState::default();
+    let mut other = ClientState::default();
+
+    assert_eq!(
+        service
+            .handle(&mut owner, "[1] PP LOCK L //HARNESS/254")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service.handle(&mut owner, "[2] PP START S L").await.status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut owner, "[3] PP NEW S KEY1 1.2.67")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut other, "[4] PP GET_RAW_DATA S 0 8")
+            .await
+            .status,
+        420
+    );
+    assert_eq!(
+        service
+            .handle(&mut other, "[5] PP DEBUG mem S 0")
+            .await
+            .status,
+        420
+    );
+    assert_eq!(
+        service
+            .handle(&mut owner, "[6] PP SET_RAW_DATA S 0 01020304")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut owner, "[7] PP GET_RAW_DATA S 0 8")
+            .await
+            .final_text,
+        "316 RawData=0102030400000000"
+    );
+
+    assert_eq!(
+        service
+            .handle(
+                &mut owner,
+                "[8] PROGRAMMER CREATE P \"Task Name\" \"Display Route\"",
+            )
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut owner, "[9] PROGRAMMER TEST P diagnostic payload")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut owner, "[10] PROGRAMMER ADD_INSTRUCTION P PP_END S")
+            .await
+            .status,
+        200
+    );
+    let before = service.handle(&mut owner, "[11] PROGRAMMER STATUS P").await;
+    assert!(before.lines[0].contains("\"remainingSeconds\":4"));
+    let start = service
+        .handle(&mut owner, "[12] PROGRAMMER TRIGGER P START")
+        .await;
+    assert_eq!(start.status, 502);
+    let after = service.handle(&mut owner, "[13] PROGRAMMER STATUS P").await;
+    assert_eq!(
+        before.lines, after.lines,
+        "START must not consume the queue"
+    );
+
+    assert!(
+        tokio::time::timeout(std::time::Duration::from_millis(25), remote.read_u8())
+            .await
+            .is_err(),
+        "local PP/PROGRAMMER administration wrote to the PCI"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn pp_admin_and_programmer_auth_classification_keeps_reads_open() {
+    for subcommand in [
+        "CANCEL_LOCK",
+        "LOAD_FROM_FILE",
+        "SET_RAW_DATA",
+        "RELOAD_CATALOG",
+    ] {
+        assert!(super::requires_programming_auth(
+            "PP",
+            subcommand,
+            &["PP".into(), subcommand.into()]
+        ));
+    }
+    for subcommand in [
+        "CATALOG_INFO",
+        "GET_RAW_DATA",
+        "GET_UNIT_CATALOG",
+        "GET_UNIT_SPEC",
+        "LIST_CATALOG_NUMBERS",
+        "LIST_LOCK",
+        "PATCH_VERSION",
+        "UNITS",
+    ] {
+        assert!(!super::requires_programming_auth(
+            "PP",
+            subcommand,
+            &["PP".into(), subcommand.into()]
+        ));
+    }
+    for subcommand in [
+        "CREATE",
+        "DELETE",
+        "ADD_INSTRUCTION",
+        "CANCEL_INSTRUCTION",
+        "TEST",
+        "TRIGGER",
+    ] {
+        assert!(super::requires_programming_auth(
+            "PROGRAMMER",
+            subcommand,
+            &["PROGRAMMER".into(), subcommand.into()]
+        ));
+    }
+    for subcommand in ["LIST", "STATUS"] {
+        assert!(!super::requires_programming_auth(
+            "PROGRAMMER",
+            subcommand,
+            &["PROGRAMMER".into(), subcommand.into()]
+        ));
+    }
+}
+
+#[tokio::test]
 async fn pp_reset_to_defaults_is_spec_backed_staged_and_persisted_only_by_save() {
     let path = state_path();
     let spec_dir = state_path().with_extension("unitspec");
@@ -2571,6 +2724,23 @@ async fn capabilities_report_observation_without_device_readback() {
     );
     assert_eq!(document["net_unravelunit_matchdb_duplicate_255"], true);
     assert_eq!(document["pp_reset_to_defaults"], true);
+    assert_eq!(document["pp_raw_session_memory"], true);
+    assert_eq!(
+        document["pp_catalog_scope"],
+        "configured-unitspec-directory-only"
+    );
+    assert_eq!(document["pp_write_patch"], false);
+    assert_eq!(
+        document["pp_local_administration"]
+            .as_array()
+            .unwrap()
+            .len(),
+        13
+    );
+    assert_eq!(document["programmer_queue"], true);
+    assert_eq!(document["programmer_execution"], false);
+    assert_eq!(document["programmer_runtime_persistence"], false);
+    assert_eq!(document["programmer_commands"].as_array().unwrap().len(), 8);
     assert_eq!(document["event_subscriptions"], true);
     assert_eq!(document["session_id"], true);
     assert_eq!(document["quit"], true);

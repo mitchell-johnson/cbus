@@ -940,6 +940,69 @@ connection. `QUIT` and `EXIT` flush `204 Closing connection.` before closing the
 stream. These operations are volatile and perform no PCI or persistent database
 I/O.
 
+### PP administration and PROGRAMMER queues
+
+cmqttd implements the maintained local PP administrative surface against the
+configured unit-specification directory and owned in-memory session:
+
+```text
+PP CATALOG_INFO
+PP GET_UNIT_CATALOG
+PP GET_UNIT_SPEC UNITTYPE.xml
+PP LIST_CATALOG_NUMBERS UNITTYPE FIRMWARE
+PP RELOAD_CATALOG
+PP LIST_LOCK
+PP UNITS
+PP CANCEL_LOCK //PROJECT/NETWORK
+PP LOAD_FROM_FILE SESSION UNITTYPE.xml
+PP GET_RAW_DATA SESSION DECIMAL_START DECIMAL_COUNT
+PP SET_RAW_DATA SESSION DECIMAL_START HEXBYTES
+PP DEBUG mem SESSION HEX_START
+PP PATCH_VERSION
+```
+
+`cbusunits.xml` and every selected `.xml` must be inside `--cgate-unitspec`;
+never pass or construct a host path. Catalogue/spec queries use native 133 and
+343/347/344 envelopes. `LIST_LOCK` and `UNITS` use 121 rows or an empty 122.
+Cancelling by address leaves an existing session visible at `address=null` so
+it can be ended cleanly. Raw data is staged session memory: `??` means unread,
+NEW and LOAD_FROM_FILE construct a concrete default image, SET_RAW_DATA accepts
+one even-length hex token, and DEBUG returns the native nine 199 rows. These
+operations do not touch the PCI. A later physical PP SAVE is a separate action.
+
+PATCH_VERSION deliberately returns the native missing-`patchset.zip` 408.
+`PP WRITE_PATCH` remains 502 because the proprietary patch parser and physical
+executor are absent. Do not interpret either response as firmware-patch
+support and never retry through another endpoint automatically.
+
+The runtime PROGRAMMER queue supports:
+
+```text
+PROGRAMMER CREATE NAME "TASK NAME" "DISPLAY ROUTE"
+PROGRAMMER LIST
+PROGRAMMER STATUS NAME
+PROGRAMMER TEST NAME TEXT...
+PROGRAMMER ADD_INSTRUCTION NAME [priority=FIRST|LAST|DEFAULT|INTEGER] TYPE ARGS...
+PROGRAMMER CANCEL_INSTRUCTION NAME ID
+PROGRAMMER TRIGGER NAME PAUSE|RESUME|STOP|ERROR
+PROGRAMMER DELETE NAME
+```
+
+Instruction TYPE is one of `PP_COPY`, `PP_SAVE`, `PP_SET`, `PP_END`,
+`PP_UNLOCK`, `DALI_READ`, `DALI_PROGRAM`, or `DALI`. LIST/STATUS return native
+status-130 JSON. Programmer names match case-insensitively and LIST preserves
+creation order. Cancellation retains queue/total count and removes its
+remaining duration. Queues are process-local and disappear on restart.
+`PROGRAMMER TRIGGER NAME START` is a specific 502 that leaves state and queue
+unchanged: cmqttd has no evidenced physical scheduler and must never simulate
+queued PP/DALI completion. With the optional LOGIN gate, PP mutations and
+PROGRAMMER create/delete/add/cancel/test/trigger require authentication;
+catalogue, inventory, LIST and STATUS reads remain open.
+
+Ground exact claims in
+`rust/testdata/fixtures/native_cgate_pp_programmer.json`; the real-daemon
+regression is `rust/cmqttd/tests/system_cgate_pp_programmer.rs`.
+
 `PP RESET_TO_DEFAULTS SESSION` replaces the loaded session values with exactly
 the `DefaultValue` fields from its decoded unit specification. The change is
 staged: it performs no PCI or database write until a later `PP SAVE` or
@@ -1022,6 +1085,12 @@ Programming sessions are lock-gated:
 ```
 
 Run with `--deny-programming` when testing access denial. Supply `--unitspec DIR` when catalogue-backed parameter schemas are required. Without vendor specifications, the model still supports the spec-free programming behavior allowed by the command.
+
+With a synthetic `cbusunits.xml` and specs in that directory, the mock exposes
+the same bounded CATALOG_INFO/GET_UNIT_CATALOG/GET_UNIT_SPEC/catalog-number,
+LOAD_FROM_FILE and raw-memory operations as cmqttd. Its PROGRAMMER queues are
+also runtime-only and refuse START with 502. Use only synthetic or privately
+owned catalogue data; the repository intentionally contains no vendor specs.
 
 ## Sessions and events
 

@@ -43,9 +43,10 @@ group/other-accessible file fails closed at startup before bind and before the
 state file is created. `CMQTT CAPABILITIES` reports `cgate_auth: false`
 dormant by default and `true` once armed. Armed, each connection needs either
 `LOGIN <token>` (200) or a Clipsal/Max `LOGIN <username> <password>` (211)
-before PP mutating verbs (`PP LOCK/LOAD/SAVE/...`;
-`PP GET/INFO/LIST` stay open), `PROJECT` lifecycle, `DB...` writes, `SET`,
-advisory `LOCK`/`UNLOCK`, `EVENT_CHANNEL SUB`/`UNSUB`,
+before PP mutating verbs (`PP LOCK/LOAD/SAVE/CANCEL_LOCK/LOAD_FROM_FILE/
+SET_RAW_DATA/RELOAD_CATALOG/...`; `PP GET/INFO/LIST` stay open), PROGRAMMER
+queue creation/deletion/add/cancel/test/trigger, `PROJECT` lifecycle, `DB...`
+writes, `SET`, advisory `LOCK`/`UNLOCK`, `EVENT_CHANNEL SUB`/`UNSUB`,
 `ACCESS ADD/DELETE/LOAD/SAVE` (ACCESS help and LIST stay open to a Clipsal or
 Max session), `CONFIG SET/LOAD/SAVE/OBSET/OBRESET` (CONFIG help, GET, INFO and OBGET stay
 open), `FILE UPLOAD/DELETE/MKDIR` (FILE help, DIR/LS, SHA256 and DOWNLOAD stay
@@ -135,6 +136,10 @@ explicitly unavailable.
 | `PORT` and `PORT LIST/IFLIST/CNISCAN/CNISCAN2/PROBE/REFRESH` | Complete maintained C-Gate 3.4 PORT family. Bare/`?` returns exact retained help. LIST reports local serial names without `/dev/` and marks cmqttd's selected serial `inuse`; IFLIST excludes loopback addresses. CNISCAN sends the exact four-byte legacy request from UDP 30718, accepts only 124-byte replies and optionally tests the little-endian advertised TCP port. CNISCAN2 runs that legacy scan and the retained variable CCP request from UDP 20050 with the native CRC, parameter set and five-second window, returning extended type/MAC/serial/unit 129 rows. PROBE accepts serial/socket/CNI/Wiser/EtherLite grammar, refuses the active cmqttd endpoint with 431, uses a separate temporary connection for the retained DC1/`@2104` echo-and-serial exchange, returns the filtered PCI serial text and closes it. Direct serial uses native software flow, modem control and six-rate PCI baud detection. EtherLite uses its native FAS heartbeat, unit inquiry, serial setup and framed byte stream. Native build 2001 makes REFRESH inapplicable because its port list is automatic; cmqttd returns the exact observed 408. LOGIN gates scans, probe and refresh. See `rust/testdata/fixtures/native_cgate_port.json`, `rust/testdata/vectors/cni_discovery.jsonl`, and `rust/cmqttd/tests/system_cgate_port.rs` |
 | `ACCESS ADD/DELETE/LIST/LOAD/SAVE`, `LOGIN`, `LOGOUT` | Complete maintained C-Gate 3.4 ACCESS grammar, exact parent/subcommand help, ordered levels from None through Max, case-sensitive user login, first-match duplicate users, role-filtered 135 LIST rows, 1-based filtered DELETE, and session-local elevation retained until LOGOUT. Active rows, admission mode, and named SAVE/LOAD snapshots commit atomically in `cmqttd-json`; snapshot names are bounded identities and never host paths. cmqttd deliberately stores only credential digests and prints `<redacted>` where native C-Gate exposes plaintext. It validates interface/remote names before mutation and returns non-mutating 408 for missing LOAD snapshots. Fresh and pre-ACCESS repositories admit Docker/NAT peers at Clipsal until an operator adds, deletes, or loads interface/remote policy. Thereafter an unmatched non-loopback peer gets 421 without a recovery token; with the token configured it gets a restricted LOGIN/LOGOUT-only session so the token can repair policy. Loopback retains a Clipsal recovery path. With the recovery-token gate armed, ADD/DELETE/LOAD/SAVE require either its one-token LOGIN or a Clipsal/Max ACCESS-user LOGIN from an admitted connection. The exact native per-handler level matrix for unrelated commands is not yet enforced; `access_global_command_level_matrix` reports false. See `rust/testdata/fixtures/native_cgate_access.json` and `rust/cmqttd/tests/system_cgate_access.rs` |
 | Database PP locks, sessions, get/set/info/new/load/save | Existing programming model with connection ownership; staged sessions and locks are discarded on disconnect/restart |
+| `PP CANCEL_LOCK/LIST_LOCK/UNITS`, `GET_RAW_DATA/SET_RAW_DATA/DEBUG`, `LOAD_FROM_FILE` | Native 121/122 inventory, address cancellation, bounded session memory and nine-row memory diagnostics. Raw edits and file loads change only an owned staged session. `LOAD_FROM_FILE` accepts one bare `.xml` filename under `--cgate-unitspec`; it cannot open an arbitrary host path. Cancelling a lock leaves its session visible with `address=null`, matching retained native behavior |
+| `PP CATALOG_INFO/GET_UNIT_CATALOG/GET_UNIT_SPEC/LIST_CATALOG_NUMBERS/RELOAD_CATALOG/PATCH_VERSION` | Native catalogue, XML and status envelopes over optional private `cbusunits.xml` and decoded unit specs under `--cgate-unitspec`. Firmware matching is inclusive and numeric. Reload invalidates the bounded parsed caches. With no proprietary `patchset.zip`, PATCH_VERSION returns the retained native 408 missing-patchset response; it does not imply patch support |
+| `PROGRAMMER CREATE/DELETE/LIST/STATUS/TEST/ADD_INSTRUCTION/CANCEL_INSTRUCTION/TRIGGER` | Runtime-only native queue metadata, case-insensitive names in creation order, quoted task fields, eight retained instruction types, priorities, instruction IDs, duration/count JSON and local PAUSE/RESUME/STOP/ERROR transitions. `TRIGGER ... START` returns a specific 502 and leaves state and queue unchanged because queued PP/DALI execution has no evidenced backend. Queues are discarded on restart |
+| `PP WRITE_PATCH` | Explicit 502 before mutation or PCI I/O. The proprietary patch-set parser and physical executor are unavailable, so cmqttd never simulates a successful device patch |
 | `PP RESET_TO_DEFAULTS` | Replaces one owned loaded session with exactly the `DefaultValue` fields in its parsed unit specification. The result remains staged until an explicit save; missing or malformed specifications return 408 unchanged, with no PCI access |
 | Physical PP LOAD and subsequent GET/INFO | Identifies the live unit, selects its privately installed decoded schema, recalls standard CAL parameters, explicit pages for `paged`/`ncc`, OEM memory, and GOC parameter-`0xFF` memory through the shared PCI, decodes int/long/bit/string/sixbit arrays and `ArrayMap`, applies tag selection, and commits the session only after every read succeeds |
 | Physical PP SAVE/SAVE_TO_SOURCE | Writes only dirty, tag-selected `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and `goc2` parameters with `none`/`checksum`/supported `lock` protection. Page-aware writes split at 256-byte boundaries; OEM methods use the selector/data path; GIU halts and resumes the unit; DALI observes the native settling interval; GOC methods use parameter `0xFF`, a big-endian address prefix, and their native block limits. The service validates the complete plan and live type/firmware first, preserves shared bits through pre-read/encode, requires source/parameter-matched acknowledgements, and reads every stored range back before success. Specifications containing the vendor `ncc` method are classified as C-Bus 3; after a changed save, the service runs native group-0 operation-4 EXECUTE/POLL until the NVM commit succeeds |
@@ -207,7 +212,8 @@ Runtime levels and physical presence are not persisted. The persistent data is
 cmqttd's own database format, not a Schneider SQLite database. Database PP
 editing does not program the corresponding physical unit. Optional
 `--cgate-unitspec DIR` supplies privately installed decoded vendor schemas for
-PP INFO, defaults and physical PP LOAD; no vendor specifications are distributed
+PP INFO, defaults, local catalogue/spec/raw-memory administration and physical
+PP LOAD; no vendor specifications are distributed
 in this repository. Docker automatically passes `/etc/cmqttd/unitspec` when that
 directory exists. Copying private specs into `cmqttd_config/unitspec/` includes
 them in a local image build while Git ignores the directory.
@@ -473,6 +479,16 @@ operation performs no PCI or database write; persistence or hardware transfer
 still requires the later explicit save command. Missing and malformed
 specifications return 408 and leave the session unchanged.
 
+The catalogue directory may also contain `cbusunits.xml`. `PP CATALOG_INFO`
+reads its four metadata fields, `GET_UNIT_CATALOG` returns its XML envelope,
+and `LIST_CATALOG_NUMBERS TYPE VERSION` filters its revision ranges. Unit-spec
+arguments are bare filenames, symlinks are resolved with directory containment
+rechecked, each file is capped at 8 MiB, and include traversal remains capped at
+128 files. `PP LOAD_FROM_FILE` initializes staged parameters and raw memory from
+declared defaults. `GET_RAW_DATA` renders unknown bytes as `??`; a new or
+file-loaded session has a concrete default image. These commands do not read or
+write a unit until a separate physical SAVE is issued.
+
 ## Outstanding replacement work
 
 The existing mock dispatches 431 command paths. That is **not** evidence that
@@ -480,7 +496,7 @@ all 431 have physical implementations in this service. `CMQTT CAPABILITIES`
 returns `full_cgate_compatibility: false`; unimplemented physical operations
 return 502. The enumerable gap tracker is the executable capability matrix in
 `cbus-cgate::capability_matrix` (pinned by `rust/cbus-cgate/tests/capability_matrix.rs`): 206
-physical, 118 local/session, 106 fail-closed 502, and 1 obsolete 400 over the
+physical, 138 local/session, 86 fail-closed 502, and 1 obsolete 400 over the
 431 inventoried paths, plus a separately asserted 6-row supplement for
 non-inventoried service commands. Full replacement still requires:
 
@@ -493,6 +509,13 @@ non-inventoried service commands. Full replacement still requires:
   I/O until their complete native model codec is evidenced. Physical success
   proves a correlated gateway/programming exchange, not downstream DALI-device
   state or persistence. See [the DALI guide](cgate-dali.md).
+
+- A physical `PP WRITE_PATCH` backend and PROGRAMMER scheduler. Local queue
+  construction, inspection, cancellation and non-executing state transitions
+  are implemented; `PROGRAMMER TRIGGER ... START` and `PP WRITE_PATCH` remain
+  502 so no physical completion can be invented. PATCH_VERSION only reports
+  the retained missing-`patchset.zip` 408 result.
+
 - Physical PP multi-range failure recovery, power-loss behavior, and hardware write acceptance for
   every programming method and unit family. LOAD has full decoded-catalogue
   layout coverage plus live KEYGL5 acceptance; SAVE audits every well-formed
@@ -556,6 +579,17 @@ non-inventoried service commands. Full replacement still requires:
   separately in `toolkit-cli/docs/implementation-status.md`.
 
 ## Tests
+
+`native_cgate_pp_programmer.json` retains sanitized status/JSON/XML shapes,
+owned class hashes, instruction types and the local-versus-physical boundary
+from the pinned C-Gate 3.4.0.2001 jar. The oracle used a disposable loopback
+daemon, loaded a temporary database network without opening it, and contacted
+no C-Bus endpoint. `system_cgate_pp_programmer.rs` drives the real cmqttd
+binary over TCP, exercises catalogue, raw-memory, lock/session and queue
+lifecycle, verifies START and WRITE_PATCH stay fail-closed, observes no
+administrative PCI traffic, sends MQTT through the same fake PCI afterward,
+and verifies that runtime locks, sessions and queues do not survive restart.
+No vendor catalogue/spec XML is retained in the fixture.
 
 `native_cgate_config.json` retains the complete 148-entry catalogue and exact
 help, grammar, scope, reset, LOAD/SAVE and no-current-project behavior from the

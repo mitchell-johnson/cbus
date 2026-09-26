@@ -1910,6 +1910,38 @@ impl Service {
             capabilities["edlt_widget_groups"] = serde_json::Value::Bool(true);
             capabilities["edlt_extended_firmware"] = serde_json::Value::Bool(true);
             capabilities["edlt_applications"] = serde_json::Value::Bool(true);
+            capabilities["pp_local_administration"] = serde_json::json!([
+                "cancel_lock",
+                "catalog_info",
+                "debug",
+                "get_raw_data",
+                "get_unit_catalog",
+                "get_unit_spec",
+                "list_catalog_numbers",
+                "list_lock",
+                "load_from_file",
+                "patch_version",
+                "reload_catalog",
+                "set_raw_data",
+                "units"
+            ]);
+            capabilities["pp_catalog_scope"] =
+                serde_json::Value::String("configured-unitspec-directory-only".to_string());
+            capabilities["pp_raw_session_memory"] = serde_json::Value::Bool(true);
+            capabilities["pp_write_patch"] = serde_json::Value::Bool(false);
+            capabilities["programmer_queue"] = serde_json::Value::Bool(true);
+            capabilities["programmer_commands"] = serde_json::json!([
+                "add_instruction",
+                "cancel_instruction",
+                "create",
+                "delete",
+                "list",
+                "status",
+                "test",
+                "trigger"
+            ]);
+            capabilities["programmer_execution"] = serde_json::Value::Bool(false);
+            capabilities["programmer_runtime_persistence"] = serde_json::Value::Bool(false);
             capabilities["document_framing"] = serde_json::Value::Bool(true);
             capabilities["database_documents"] = serde_json::Value::Bool(false);
             capabilities["project_archive_restore"] =
@@ -2513,7 +2545,11 @@ impl Service {
             );
         }
         if verb == "PP" {
-            let name = words.get(2).copied().unwrap_or("");
+            let name = if sub == "DEBUG" {
+                words.get(3).copied().unwrap_or("")
+            } else {
+                words.get(2).copied().unwrap_or("")
+            };
             if model.sessions.contains_key(name) && !client.sessions.contains(name)
                 || model.locks.contains_key(name) && !client.locks.contains(name)
             {
@@ -2604,6 +2640,9 @@ impl Service {
                     }
                     "END" => {
                         client.sessions.remove(*name);
+                    }
+                    "CANCEL_LOCK" => {
+                        client.locks.retain(|lock| model.locks.contains_key(lock));
                     }
                     _ => {}
                 }
@@ -7546,6 +7585,7 @@ impl Service {
         }
 
         let mut params = HashMap::with_capacity(layouts.len());
+        let mut raw = vec![None; 2048];
         for (param, layout) in layouts {
             let data = match layout.transfer {
                 unitspec::ParameterTransfer::Recall { parameter, count } => {
@@ -7589,6 +7629,14 @@ impl Service {
                     &bytes[offset..offset + count]
                 }
             };
+            let (logical_start, logical_count) = layout.logical_range();
+            let logical_end = logical_start + logical_count;
+            if raw.len() < logical_end {
+                raw.resize(logical_end, None);
+            }
+            for (offset, byte) in data.iter().copied().enumerate() {
+                raw[logical_start + offset] = Some(byte);
+            }
             let value = match layout.decode(param, data) {
                 Ok(value) => value,
                 Err(error) => return err(tag, 502, &format!("502 {error}")),
@@ -7618,6 +7666,9 @@ impl Service {
         session.catalog_number = None;
         session.params = params;
         session.dirty.clear();
+        session.raw = raw.clone();
+        session.raw_unit = raw;
+        session.raw_changed.clear();
         ok(tag, vec![], "200 OK")
     }
 
@@ -8102,6 +8153,23 @@ impl Service {
         }
         session.source = Some(target);
         session.dirty.retain(|name| !cleared.contains(name));
+        for parameter in &spec {
+            if !cleared.contains(&parameter.name) {
+                continue;
+            }
+            if let Ok(layout) = unitspec::ParameterLayout::for_param(parameter) {
+                let (start, count) = layout.logical_range();
+                for address in start..start.saturating_add(count) {
+                    session.raw_changed.remove(&address);
+                    if address < session.raw.len() {
+                        if session.raw_unit.len() <= address {
+                            session.raw_unit.resize(address + 1, None);
+                        }
+                        session.raw_unit[address] = session.raw[address];
+                    }
+                }
+            }
+        }
         // Bare 200 covers the tag-selected subset only: tag-filtered params
         // stay dirty for a later matching-tags SAVE, discoverable via dirty.
         ok(tag, vec![], "200 OK")
@@ -10179,6 +10247,12 @@ fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
                 | "RESET"
                 | "RESET_TO_DEFAULTS"
                 | "COPY"
+                | "SET_RAW_DATA"
+                | "RELOAD_CATALOG"
+        ),
+        "PROGRAMMER" => matches!(
+            sub,
+            "CREATE" | "DELETE" | "ADD_INSTRUCTION" | "CANCEL_INSTRUCTION" | "TEST" | "TRIGGER"
         ),
         "PROJECT" => matches!(
             sub,
@@ -10358,10 +10432,47 @@ fn local_command(words: &[&str], upper: &[String], model: &Server) -> bool {
                 .and_then(|s| model.sessions.get(*s))
                 .and_then(|s| s.source.as_ref())
                 .is_some_and(|p| p.starts_with("/db/")),
-            "LOCK" | "UNLOCK" | "START" | "END" | "NEW" | "GET" | "SET" | "INFO"
-            | "RESET_TO_DEFAULTS" | "LIST" | "QUICKGET" | "COPY" => true,
+            ""
+            | "?"
+            | "LOCK"
+            | "UNLOCK"
+            | "CANCEL_LOCK"
+            | "LIST_LOCK"
+            | "UNITS"
+            | "START"
+            | "END"
+            | "NEW"
+            | "GET"
+            | "SET"
+            | "INFO"
+            | "DEBUG"
+            | "GET_RAW_DATA"
+            | "SET_RAW_DATA"
+            | "GET_UNIT_CATALOG"
+            | "GET_UNIT_SPEC"
+            | "CATALOG_INFO"
+            | "LIST_CATALOG_NUMBERS"
+            | "PATCH_VERSION"
+            | "RELOAD_CATALOG"
+            | "LOAD_FROM_FILE"
+            | "RESET_TO_DEFAULTS"
+            | "LIST"
+            | "QUICKGET"
+            | "COPY" => true,
             _ => false,
         },
+        "PROGRAMMER" => matches!(
+            sub,
+            "" | "?"
+                | "ADD_INSTRUCTION"
+                | "CANCEL_INSTRUCTION"
+                | "CREATE"
+                | "DELETE"
+                | "LIST"
+                | "STATUS"
+                | "TEST"
+                | "TRIGGER"
+        ),
         _ => false,
     }
 }
