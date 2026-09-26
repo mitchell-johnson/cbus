@@ -123,6 +123,17 @@ PP SAVE is attempted, and an uncertain reply must not be retried. Project/DLTP
 image-dependent dynamic facts fail closed. See
 `toolkit-cli/docs/edlt-parent-metadata.md`.
 
+Retained SceneManager edits have a separate automatic resolver with the same
+offline/native option shapes. It derives complete existing application/group
+lists, consumed trigger level sets and safe default-language action text. It
+does not create metadata; missing action levels remain missing. Native apply
+requires the exact source-network lock, closed/idle project networks and
+exclusive caller ownership, rechecks the XML and PP source, then performs one
+PP SAVE and verifies non-PP metadata preservation. Treat a lost save reply as
+uncertain and never retry it. Use manual `--metadata` for consumed
+DYNAMIC/FONT/ICON labels. See
+`toolkit-cli/docs/edlt-scene-metadata.md`.
+
 The lifecycle receipt names all five calculated CRC fields. Do not infer a
 missing calculation from `phases.crc`, because that changed-only view omits an
 already-correct stored CRC.

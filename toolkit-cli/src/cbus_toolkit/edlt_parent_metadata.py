@@ -131,6 +131,18 @@ def _default_language(network):
 
 
 @dataclass(frozen=True)
+class NativeLevelRecord:
+    application: int
+    group: int
+    address: int
+    oid: str
+    tag: str
+    dynamic_labels: tuple[tuple[str, str, bool], ...] | None
+    dynamic_labels_known: bool
+    shape: str
+
+
+@dataclass(frozen=True)
 class NativeGroupRecord:
     application: int
     address: int
@@ -138,6 +150,7 @@ class NativeGroupRecord:
     oid: str
     tag: str
     levels: tuple[int, ...]
+    level_records: tuple[NativeLevelRecord, ...]
     dynamic_images: tuple[bool, ...] | None
     dynamic_images_known: bool
     shape: str
@@ -170,11 +183,11 @@ class NativeEdltProjectSnapshot:
         return dict(self.values)
 
 
-def _tag_images(group, default_language):
-    """Derive image presence only when project/built-in image lookup is irrelevant."""
-    collections = _children(group, 'TagsDLT')
+def _dynamic_labels(node, default_language):
+    """Derive the four original DataStore rows when no image lookup is needed."""
+    collections = _children(node, 'TagsDLT')
     if len(collections) > 1:
-        raise ValueError('Native group contains duplicate TagsDLT collections')
+        raise ValueError('Native metadata contains duplicate TagsDLT collections')
     tags = [] if not collections else _children(collections[0], 'TagDLT')
     variants = {}
     for tag in tags:
@@ -187,19 +200,31 @@ def _tag_images(group, default_language):
             continue
         variant = int(flavour) - 1
         if variant in variants:
-            raise ValueError('Native group contains duplicate default-language TagDLT variants')
+            raise ValueError('Native metadata contains duplicate default-language TagDLT variants')
         tag_type = _field(tag, 'TagType')
-        _field(tag, 'TagValue')
+        tag_value = _field(tag, 'TagValue')
+        if len(tag_value) > 1024:
+            raise ValueError('Native TagDLT value exceeds 1024 characters')
         if tag_type not in ('', 'TEXT', 'DYNAMIC', 'FONT', 'ICON'):
             raise ValueError('Native TagDLT type is outside the admitted profile')
-        variants[variant] = tag_type
+        variants[variant] = (tag_type, tag_value)
     # InitialiseGroup always supplies four empty variants. TEXT and an empty
     # variant cannot have an Image. DYNAMIC/FONT depend on project image files;
     # ICON depends on Toolkit's local DLTP index, neither of which is present in
     # DBGETXML, so those states remain explicitly unknown.
-    if any(value in ('DYNAMIC', 'FONT', 'ICON') for value in variants.values()):
+    if any(value[0] in ('DYNAMIC', 'FONT', 'ICON')
+           for value in variants.values()):
         return None, False
-    return (False, False, False, False), True
+    return tuple((str(variant), variants.get(variant, ('', ''))[1], False)
+                 for variant in range(4)), True
+
+
+def _tag_images(group, default_language):
+    """Derive image presence only when project/built-in image lookup is irrelevant."""
+    labels, known = _dynamic_labels(group, default_language)
+    if not known:
+        return None, False
+    return tuple(row[2] for row in labels), True
 
 
 def _snapshot(text, unit_path, editor):
@@ -252,18 +277,26 @@ def _snapshot(text, unit_path, editor):
             if group_identity in identities:
                 raise ValueError('Native project metadata contains duplicate object identities')
             identities.add(group_identity); group_addresses.add(group_address)
-            level_addresses, level_ids = [], set()
+            level_records, level_ids = [], set()
             for level in _children(group, 'Level'):
                 level_address = _byte(_field(level, 'Address'), 'Level address')
                 level_identity = _oid(_field(level, 'OID'))
-                if level_address in level_addresses or level_identity in identities or level_identity in level_ids:
+                if (any(row.address == level_address for row in level_records)
+                        or level_identity in identities or level_identity in level_ids):
                     raise ValueError('Native group contains duplicate level address or identity')
                 identities.add(level_identity); level_ids.add(level_identity)
-                level_addresses.append(level_address)
+                labels, labels_known = _dynamic_labels(level, default_language)
+                level_records.append(NativeLevelRecord(
+                    address, group_address, level_address, level_identity,
+                    _field(level, 'TagName'), labels, labels_known,
+                    _json(_shape(level))))
+            level_records = tuple(sorted(level_records,
+                                         key=lambda row: row.address))
             images, known = _tag_images(group, default_language)
             groups.append(NativeGroupRecord(
                 address, group_address, group.tagName, group_identity,
-                _field(group, 'TagName'), tuple(sorted(level_addresses)),
+                _field(group, 'TagName'),
+                tuple(row.address for row in level_records), level_records,
                 images, known, _json(_shape(group))))
         applications.append(NativeApplicationRecord(
             address, identity, _field(application, 'TagName'),

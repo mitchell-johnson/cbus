@@ -4,8 +4,26 @@ import json
 from pathlib import Path
 
 
-def options(parser, *, state_only=False):
-    parser.add_argument('--metadata', type=Path, required=True, help='Scene Manager application and DynamicAll cache facts')
+def options(parser, *, state_only=False, surface='manual'):
+    if surface == 'offline':
+        source = parser.add_mutually_exclusive_group(required=True)
+        source.add_argument('--metadata', type=Path,
+                            help='Caller-supplied Scene Manager cache facts')
+        source.add_argument('--project-xml', type=Path,
+                            help='Exact native DBGETXML project snapshot used to derive cache facts')
+        parser.add_argument('--unit',
+                            help='Selected //PROJECT/network/p/unit; required with --project-xml')
+    elif surface == 'native':
+        source = parser.add_mutually_exclusive_group(required=True)
+        source.add_argument('--metadata', type=Path,
+                            help='Caller-supplied Scene Manager cache facts')
+        source.add_argument('--auto-metadata', action='store_true',
+                            help='Derive guarded scene metadata from the live project snapshot')
+        parser.add_argument('--exclusive-project', action='store_true',
+                            help='Declare exclusive closed-project use; required with --auto-metadata')
+    else:
+        parser.add_argument('--metadata', type=Path, required=True,
+                            help='Scene Manager application and DynamicAll cache facts')
     parser.add_argument('--operations', type=Path, required=True,
                         help='JSON array of up to 256 ordered scene operations; set-name-text allocates a static scene name')
     parser.add_argument('--validate', action='store_true', help='Run the original scene validation getters before preparing the save')
@@ -14,16 +32,24 @@ def options(parser, *, state_only=False):
                             help='Include available cached groups for a scene after the edit sequence')
 
 
-def settings(args):
+def operations(args):
     from .edlt_global_cli import read_json
-    from .edlt_scene_manager import EdltSceneManager, SceneManagerCache, MAX_OPERATIONS
-    cache = SceneManagerCache.from_dict(read_json(args.metadata, limit=16*1024*1024))
+    from .edlt_scene_manager import EdltSceneManager, MAX_OPERATIONS
     operations = read_json(args.operations, limit=512*1024)
     if not isinstance(operations, list) or len(operations) > MAX_OPERATIONS:
         raise ValueError('Scene operations must be an array of at most 256 entries')
     # Reject malformed operation fields before a native programming session.
-    operations = tuple(EdltSceneManager._operation(row) for row in operations)
-    return {'metadata': cache, 'operations': operations, 'validate': args.validate}
+    return tuple(EdltSceneManager._operation(row) for row in operations)
+
+
+def settings(args):
+    from .edlt_global_cli import read_json
+    from .edlt_scene_manager import SceneManagerCache
+    if args.metadata is None:
+        raise ValueError('Caller-supplied scene metadata is required without --auto-metadata')
+    cache = SceneManagerCache.from_dict(read_json(args.metadata, limit=16*1024*1024))
+    operations_value = operations(args)
+    return {'metadata': cache, 'operations': operations_value, 'validate': args.validate}
 
 
 class IncompleteSceneEdit(ValueError):
@@ -80,15 +106,46 @@ def editor(args):
 def offline(args, *, state_only=False):
     from .edlt_global_cli import read_parameters
     instance = editor(args)
-    values, configured = read_parameters(args.file), settings(args)
-    if not state_only: return instance.plan(values, **configured).as_dict(), 0
+    values = read_parameters(args.file)
+    if getattr(args, 'project_xml', None) is not None:
+        if args.unit is None:
+            raise ValueError('--unit is required with --project-xml')
+        from .edlt_parent_transaction_cli import read_project_xml
+        from .edlt_scene_metadata import (
+            plan_native_scene_metadata, resolve_native_scene_metadata,
+        )
+        operation_rows = operations(args)
+        text = read_project_xml(args.project_xml)
+        if not state_only:
+            return plan_native_scene_metadata(
+                text, args.unit, values, instance, operation_rows,
+                validate=args.validate).as_dict(), 0
+        resolved = resolve_native_scene_metadata(
+            text, args.unit, values, instance.engine, operation_rows)
+        configured = {'metadata': resolved.cache,
+                      'operations': resolved.operations,
+                      'validate': args.validate}
+        automatic = resolved.as_dict()
+    else:
+        if getattr(args, 'unit', None) is not None:
+            raise ValueError('--unit requires --project-xml')
+        configured = settings(args)
+        automatic = None
+    if not state_only:
+        return instance.plan(values, **configured).as_dict(), 0
     state, outcome, validation = instance.sequence(values, **configured)
     selected = tuple(args.list_groups)
     if len(selected) != len(set(selected)):
         raise ValueError('List each scene at most once for available groups')
     groups = {str(slot): [item.as_dict() for item in instance.engine.available_groups(state, scene=slot)]
               for slot in selected}
-    return {'format': 'cbus-edlt-scene-manager-cli-state-v1', 'state': state.as_dict(),
+    result = {'format': ('cbus-native-edlt-scene-metadata-state-v1'
+                         if automatic is not None
+                         else 'cbus-edlt-scene-manager-cli-state-v1'),
+            'state': state.as_dict(),
             'complete': outcome.complete, 'operation_results': [json.loads(row) for row in outcome.operation_results],
             'validation': None if validation is None else {key: value for key, value in validation.as_dict().items() if key != 'state'},
-            'available_groups': groups, 'saved': False, 'export_is_review_only': True}, 0
+            'available_groups': groups, 'saved': False, 'export_is_review_only': True}
+    if automatic is not None:
+        result['automatic_metadata'] = automatic
+    return result, 0

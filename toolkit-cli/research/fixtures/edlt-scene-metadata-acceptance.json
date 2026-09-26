@@ -1,0 +1,67 @@
+{
+  "format": "cbus-edlt-scene-metadata-acceptance-v1",
+  "date": "2026-09-26",
+  "profile": "KEYGL5 / 5055EDL / 5.5.00",
+  "scope": "automatic existing native-project metadata resolution and guarded retained SceneManager PP persistence",
+  "passed": true,
+  "evidence": {
+    "original_source_pinned": true,
+    "retained_original_scene_component_probes_reused": true,
+    "fresh_original_scene_form_for_this_slice": false,
+    "fresh_portable_native_command_simulation": true,
+    "fresh_schneider_cgate_transaction": false,
+    "physical_device": false
+  },
+  "portable_focused": {
+    "command": "PYTHONPATH=src:. .venv/bin/python -m pytest tests/test_edlt_scene_metadata.py tests/test_cli_edlt_scene_metadata.py -q -p no:cacheprovider",
+    "passed": 13,
+    "skipped": 0,
+    "subtests_passed": 28,
+    "seconds": 11.35,
+    "status": "passed"
+  },
+  "portable_regression": {
+    "command": "PYTHONPATH=src:. .venv/bin/python -m pytest tests/test_cli_edlt_scene_metadata.py tests/test_edlt_scene_metadata.py tests/test_cli_edlt_scene_manager.py tests/test_edlt_scene_manager.py tests/test_edlt_parent_metadata.py tests/test_cli_edlt_parent_metadata.py -q -x -p no:cacheprovider",
+    "passed": 48,
+    "skipped": 4,
+    "subtests_passed": 89,
+    "seconds": 34.38,
+    "status": "passed"
+  },
+  "portable_full": {
+    "command": "make check",
+    "passed": 2338,
+    "skipped": 259,
+    "subtests_passed": 18552,
+    "pytest_seconds": 654.83,
+    "wall_seconds": 655.48,
+    "status": "passed"
+  },
+  "rust_interop": {
+    "command": "make check-interop",
+    "passed": 14,
+    "skipped": 1,
+    "pytest_seconds": 12.06,
+    "wall_seconds": 36.14,
+    "status": "passed"
+  },
+  "failure_semantics": {
+    "exact_xml_and_pp_stale_rejection_before_mutation": true,
+    "ambiguous_native_metadata_rejected": true,
+    "scene_capacity_refused_before_mutation": true,
+    "connected_staging_rollback_verified": true,
+    "lost_pp_save_reply_reports_uncertainty": true,
+    "existing_non_pp_metadata_preserved_after_save": true,
+    "automatic_retries": 0,
+    "automatic_rollback_after_pp_save_attempt": false
+  },
+  "boundaries": [
+    "Only existing application, group and level records are resolved; no database metadata object is created or deleted.",
+    "DYNAMIC/FONT project-image and ICON DLTP image presence is not derivable from DBGETXML and is rejected when consumed.",
+    "Missing trigger groups and action levels follow the retained getter normalization; level creation is not implemented.",
+    "The earlier original model and bounded control evidence is reused; no fresh complete SceneManager form was executed.",
+    "No Schneider C-Gate project or physical unit was opened or programmed for this acceptance."
+  ],
+  "full_scene_manager_control_binding_verified": false,
+  "physical_device_verified": false
+}

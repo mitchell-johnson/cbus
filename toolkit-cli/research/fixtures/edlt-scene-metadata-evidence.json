@@ -1,0 +1,94 @@
+{
+  "format": "cbus-edlt-scene-metadata-evidence-v1",
+  "profile": {
+    "unit_type": "KEYGL5",
+    "catalog_number": "5055EDL",
+    "firmware": "5.5.00",
+    "toolkit": "1.18.0.2754"
+  },
+  "scope": "Existing application/group lists, trigger levels and safe default-language action labels consumed by one retained SceneManager transaction",
+  "original_sources": [
+    {
+      "path": "CBusLogicModel/CBusLogicModel/CBusNetwork.cs",
+      "sha256": "ddd65e5d34d94f3b0468f0db5a8468c0b6b5cdc50b8a49ca27b9f7331000d39c"
+    },
+    {
+      "path": "CBusLogicModel/CBusLogicModel/CBusApplication.cs",
+      "sha256": "669554fea6b53c01a2d0d0c1d7cf8c89cd76d68af0b7d2b11f3bb73a6bfe5933"
+    },
+    {
+      "path": "CBusLogicModel/CBusLogicModel.CBusObjects/CBusGroup.cs",
+      "sha256": "882ef659aa8114ee8d5a9f51c7d7d14cde7322f7da83a33853c9c6f49a3e7aa2"
+    },
+    {
+      "path": "CBusLogicModel/CBusLogicModel.CBusObjects/CBusLevel.cs",
+      "sha256": "4578b91fd17a688e99cdba16d7c9c1dcc983a88f156caca88e8b55a9ad8194e1"
+    },
+    {
+      "path": "CBusLogicModel/CBusLogicModel/TagDLT.cs",
+      "sha256": "ce6461d96e5017e91f4dc394a27796ff806da3bee12518113b8c2770a1132aa6"
+    },
+    {
+      "path": "CBusLogicModel/CBusLogicModel.Utilities/DataStore.cs",
+      "sha256": "d60cd2371e221a54774e6b8c35ce631975d0c2491e6b9e053d700810831f4f2b"
+    },
+    {
+      "path": "CBusLogicModel/CBusLogicModel.Units.EDLT/EDLTScene.cs",
+      "sha256": "91fb4aa7438f3ba911062902f022d9bbdc196bc6ce809ecf29cb2ff9bd514774"
+    },
+    {
+      "path": "eDLT/eDLT.Controls.SceneManagerControls/SceneManager.cs",
+      "sha256": "c2aa9a75cf7e128eba6cab952ddbdd45cb7e363b4128dc96ff15bd90adf9d72c"
+    }
+  ],
+  "original_methods": [
+    {
+      "method": "CBusApplication.ReadXmlData",
+      "establishes": "Stored groups are refreshed and the virtual address-255 <Unused> group is recreated in memory."
+    },
+    {
+      "method": "CBusGroup.ReadXmlData",
+      "establishes": "Default-language TagDLT variants and complete Level children populate group caches."
+    },
+    {
+      "method": "CBusLevel.PopulateDynamicAll",
+      "establishes": "Each action level exposes the default-language DynamicAll rows consumed by EDLTScene.ActionSelector."
+    },
+    {
+      "method": "TagDLT.PopulateImage",
+      "establishes": "DYNAMIC/FONT image presence depends on downloaded project images and ICON presence depends on Toolkit's local DLTP index."
+    },
+    {
+      "method": "EDLTScene.TriggerGroup and ActionSelector",
+      "establishes": "Missing trigger groups fall back to 255; missing actions normalize to -1; a valid action refreshes the selected level DynamicAll list."
+    },
+    {
+      "method": "SceneManager retained bindings",
+      "establishes": "The bounded original control probe covers initial binding, percent synchronization and copy/paste only."
+    }
+  ],
+  "implemented_boundary": {
+    "one_exact_dbgetxml_project_snapshot": true,
+    "profile_and_object_identity_guards": true,
+    "automatic_existing_metadata_resolution": true,
+    "complete_application_and_group_lists": true,
+    "complete_consumed_trigger_level_addresses": true,
+    "safe_default_language_dynamic_labels": true,
+    "project_image_dependent_labels_fail_closed": true,
+    "missing_application_or_group_creation": false,
+    "missing_level_creation": false,
+    "connected_staging_rollback": true,
+    "one_pp_save_with_post_save_metadata_preservation": true,
+    "no_retry_after_save_attempt": true
+  },
+  "evidence_boundaries": {
+    "original_source_inspected": true,
+    "retained_original_scene_component_probes": true,
+    "portable_native_project_simulation": true,
+    "fresh_original_scene_form_executed_for_this_slice": false,
+    "full_scene_manager_control_binding_verified": false,
+    "missing_metadata_add_dialog_executed": false,
+    "fresh_schneider_cgate_transaction_executed": false,
+    "physical_device_verified": false
+  }
+}

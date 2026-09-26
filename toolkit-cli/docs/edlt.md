@@ -256,6 +256,15 @@ snapshot. It can create missing applications and groups before the same parent
 transaction while preserving unrelated metadata. Image-dependent dynamic
 label facts remain outside the project XML and are rejected when consumed.
 
+The retained [SceneManager](edlt-scene-manager.md) has its own
+[automatic metadata resolver](edlt-scene-metadata.md) for existing objects.
+It builds complete application/group lists, trigger level-address facts and
+safe default-language action labels from the same exact project snapshot. It never
+creates an application, group or level; missing actions retain the original
+normalization behavior. Native apply rechecks the exact XML and PP source,
+uses connected staging rollback, performs one PP SAVE and verifies that all
+non-PP metadata was preserved.
+
 The native acceptance creates a unique marked project with an unopened CNI at
 `127.0.0.1:1`, loads a database-backed 5055EDL PP session and resets defaults.
 It configures an Off/On widget and a page-4 Dimmer, allocates the UTF-8 label

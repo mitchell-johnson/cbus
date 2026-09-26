@@ -830,9 +830,9 @@ def _edlt_scene_manager(args):
     return editor(args)
 
 
-def _edlt_scene_manager_options(parser, *, state_only=False):
+def _edlt_scene_manager_options(parser, *, state_only=False, surface="manual"):
     from .edlt_scene_manager_cli import options
-    options(parser, state_only=state_only)
+    options(parser, state_only=state_only, surface=surface)
 
 
 def _edlt_scene_manager_settings(args):
@@ -882,7 +882,7 @@ def _edlt_ordered_settings(args, kind):
 
 def _edlt_ordered_payload(error, args=None):
     result = {}
-    for name in ("edlt_applications_evidence", "edlt_corridor_evidence", "edlt_blank_evidence", "edlt_reset_evidence", "edlt_scene_manager_evidence", "edlt_scene_live_evidence"):
+    for name in ("edlt_applications_evidence", "edlt_corridor_evidence", "edlt_blank_evidence", "edlt_reset_evidence", "edlt_scene_manager_evidence", "edlt_scene_metadata_evidence", "edlt_scene_live_evidence"):
         evidence = getattr(error, name, None)
         if isinstance(evidence, dict): result[name] = evidence
     state = getattr(args, "_ordered_control_state", None)
@@ -1561,7 +1561,7 @@ def build_parser():
     scene_live_options(p)
     p = unops.add_parser("edlt-scene-manager", help="Apply an ordered retained eDLT Scene Manager sequence")
     p.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
-    _edlt_scene_manager_options(p)
+    _edlt_scene_manager_options(p, surface="native")
     for action, kind in (("edlt-applications", "applications"), ("edlt-corridor", "corridor")):
         p = unops.add_parser(action, help="Apply ordered KEYGL5 5.5.00 " + kind + " controls with explicit cache facts")
         p.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
@@ -1934,7 +1934,8 @@ def build_parser():
     for action in ("scene-manager-plan", "scene-manager-state"):
         p = eops.add_parser(action, help="Inspect or prepare an ordered retained Scene Manager sequence")
         p.add_argument("file", type=Path, help="Complete KEYGL5 5.5.00 / 5055EDL PP snapshot")
-        _edlt_scene_manager_options(p, state_only=action == "scene-manager-state")
+        _edlt_scene_manager_options(
+            p, state_only=action == "scene-manager-state", surface="offline")
     for action, kind in (("applications-plan", "applications"), ("corridor-plan", "corridor")):
         p = eops.add_parser(action)
         p.add_argument("file", type=Path, help="KEYGL5 5.5.00 / 5055EDL PP export or complete parameter mapping")
@@ -2743,6 +2744,41 @@ def _programming(args, client):
         raise ValueError("The eDLT widget workflows support database destinations only")
     if args.remote_action == "template-import" and destination and not destination.lower().startswith("/db//"):
         raise ValueError("The tested unit template workflow supports database destinations only")
+    if (args.remote_action == "edlt-scene-manager"
+            and getattr(args, "auto_metadata", False)):
+        if args.unit_type is not None or args.source is None:
+            raise ValueError("Automatic eDLT scene metadata requires an existing --source database unit")
+        if args.destination is not None:
+            raise ValueError("Automatic eDLT scene metadata saves only to its selected --source unit")
+        if not args.source.lower().startswith("/db//"):
+            raise ValueError("Automatic eDLT scene metadata requires /db//PROJECT/network/p/unit")
+        if not args.exclusive_project:
+            raise ValueError("Automatic eDLT scene metadata requires --exclusive-project")
+        from .edlt_parent_metadata import _unit_path
+        from .edlt_scene_manager_cli import operations as scene_operations
+        from .edlt_scene_metadata import NativeSceneMetadataTransaction
+        _unit, source_project, source_network, _address = _unit_path(args.source)
+        expected_lock = f"//{source_project}/{source_network}"
+        if args.lock_address != expected_lock:
+            raise ValueError(
+                "Automatic eDLT scene metadata requires --lock-address "
+                + expected_lock + " for the selected source network")
+        editor = _edlt_scene_manager(args)
+        manager = NativeSceneMetadataTransaction(client, editor)
+        plan = manager.plan(
+            args.source, operations=scene_operations(args),
+            validate=args.validate, exclusive_project=True)
+        if args.dry_run:
+            return {**plan.as_dict(), "applied": False, "saved": False}
+        result = manager.apply(plan).as_dict()
+        state = getattr(args, "_ordered_control_state", None)
+        if state is not None:
+            state.update(evidence={**result, "operation_completed": True},
+                         kind="scene_metadata")
+        return result
+    if (args.remote_action == "edlt-scene-manager"
+            and getattr(args, "exclusive_project", False)):
+        raise ValueError("--exclusive-project requires --auto-metadata")
     if (args.remote_action == "edlt-parent-transaction"
             and getattr(args, "auto_metadata", False)):
         if args.unit_type is not None or args.source is None:
@@ -3409,7 +3445,7 @@ def main(argv=None):
         result.update(routed_recall_error_payload(exc, args))
         result.update(routed_identify_error_payload(exc, args))
         result.update(project_repair_error_payload(exc, args))
-        for name in ("pci_mmi_observation", "pci_serial_observation", "pci_inventory_observation", "usb_dfu_evidence", "edlt_display_evidence", "edlt_mra_evidence", "edlt_general_evidence", "edlt_standby_evidence", "edlt_colours_evidence", "edlt_navigation_evidence", "edlt_quick_status_evidence", "edlt_activation_evidence", "edlt_page_control_evidence", "edlt_lifecycle_evidence", "edlt_parent_form_evidence", "edlt_parent_transaction_evidence", "edlt_parent_metadata_evidence", "edlt_restore_levels_evidence", "edlt_applications_evidence", "edlt_corridor_evidence", "edlt_blank_evidence", "edlt_reset_evidence", "edlt_scene_manager_evidence", "edlt_scene_live_evidence"):
+        for name in ("pci_mmi_observation", "pci_serial_observation", "pci_inventory_observation", "usb_dfu_evidence", "edlt_display_evidence", "edlt_mra_evidence", "edlt_general_evidence", "edlt_standby_evidence", "edlt_colours_evidence", "edlt_navigation_evidence", "edlt_quick_status_evidence", "edlt_activation_evidence", "edlt_page_control_evidence", "edlt_lifecycle_evidence", "edlt_parent_form_evidence", "edlt_parent_transaction_evidence", "edlt_parent_metadata_evidence", "edlt_restore_levels_evidence", "edlt_applications_evidence", "edlt_corridor_evidence", "edlt_blank_evidence", "edlt_reset_evidence", "edlt_scene_manager_evidence", "edlt_scene_metadata_evidence", "edlt_scene_live_evidence"):
             evidence = getattr(exc, name, None)
             if isinstance(evidence, dict):
                 result[name] = evidence

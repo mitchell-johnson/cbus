@@ -86,6 +86,11 @@ application/group/scene-level/static-label facts from one exact native project
 snapshot and plan missing database metadata before the retained multi-edit.
 See the [automatic parent metadata contract](toolkit-cli/docs/edlt-parent-metadata.md)
 for the closed-project guards and the non-atomic PP/project save boundary.
+The retained SceneManager can also derive complete existing application/group
+lists and safe Trigger action text directly from the same exact project
+snapshot. See [automatic SceneManager metadata](toolkit-cli/docs/edlt-scene-metadata.md);
+it performs a guarded PP-only save and deliberately does not invent missing
+groups or action levels.
 
 **Full Toolkit parity is not complete.** The feature ledger currently records 38 areas: 17 implemented, 19 in progress, and 2 pending. These categories are not a percentage of Toolkit functionality. Check the current machine-readable status with:
 

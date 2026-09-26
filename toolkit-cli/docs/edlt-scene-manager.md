@@ -63,6 +63,26 @@ cbus-toolkit cgate unit --lock-address //OWNED/254 --source /db//OWNED/254/p/20 
 
 The native command requires a database destination. Removing `--dry-run` stages, verifies and explicitly saves the requested complete result. The state command can successfully return `complete=false` for a capacity-stopped review. Plan and native commands reject that same partial result with its retained-state evidence and zero PP writes/SAVE attempts. JSON loaders reject duplicate keys, nonfinite numbers, unknown operation fields and oversized input before a programming session.
 
+When the native project snapshot is authoritative, the
+[automatic scene metadata](edlt-scene-metadata.md) path replaces the manual
+cache file:
+
+```sh
+cbus-toolkit edlt scene-manager-plan source.json \
+  --project-xml project.xml --unit //OWNED/254/p/20 \
+  --operations edits.json --validate
+cbus-toolkit cgate unit --lock-address //OWNED/254 \
+  --source /db//OWNED/254/p/20 --dry-run edlt-scene-manager \
+  --auto-metadata --exclusive-project --operations edits.json --validate
+```
+
+It resolves complete application/group lists, consumed trigger-level addresses
+and safe default-language action labels from one exact `DBGETXML` snapshot.
+It creates no application, group or level. Image-dependent action labels fail
+closed. Native apply rechecks the exact project and PP snapshot, uses the
+existing connected staging rollback, issues one PP SAVE, and verifies that all
+non-PP project metadata was preserved. A lost save reply is never retried.
+
 ## Declared cache
 
 `SceneManagerCache` wraps the existing `ApplicationCache` and adds per-level `DynamicAll` facts:
@@ -79,7 +99,7 @@ The native command requires a database destination. Removing `--dry-run` stages,
 }
 ```
 
-The abbreviated application cache above is illustrative, not a valid complete document. It uses `ApplicationCache`'s ordered group lists, explicit completeness and lifecycle presence/level facts. A missing required fact differs from an explicitly absent group, empty label list or missing action. Each dynamic label retains the observed DataStore string value, name and image-presence fields; image pixels and live label transports are outside this workflow. There are at most four labels per action and 8,192 action records. Cache facts are copied into immutable records and do not assert database existence or freshness. Updating cache contents after load is not currently an API operation.
+The abbreviated application cache above is illustrative, not a valid complete document. It uses `ApplicationCache`'s ordered group lists, explicit completeness and lifecycle presence/level facts. A missing required fact differs from an explicitly absent group, empty label list or missing action. Each dynamic label retains the observed DataStore string value, name and image-presence fields; image pixels and live label transports are outside this workflow. There are at most four labels per action and 8,192 action records. Cache facts are copied into immutable records and do not assert database existence or freshness. Updating cache contents after load is not currently an API operation. The automatic path supplies these records from one guarded project snapshot, but does not broaden the retained model into a complete WinForms binding claim.
 
 ## Capacity and validation
 

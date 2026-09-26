@@ -194,6 +194,24 @@ cbus-toolkit cgate unit --lock-address //PROJECT/254 \
   --metadata scene-cache.json --operations scene-operations.json
 ```
 
+To derive existing metadata from one exact native project snapshot:
+
+```sh
+cbus-toolkit edlt scene-manager-plan snapshot.json \
+  --project-xml project.xml --unit //PROJECT/254/p/20 \
+  --operations scene-operations.json
+cbus-toolkit cgate unit --lock-address //PROJECT/254 \
+  --source /db//PROJECT/254/p/20 --dry-run edlt-scene-manager \
+  --auto-metadata --exclusive-project --operations scene-operations.json
+```
+
+The automatic path requires all project networks closed and idle, creates no
+application/group/level, rejects consumed image-dependent labels, and performs
+only the existing PP edit. Removing `--dry-run` rechecks exact XML and PP,
+stages with connected rollback, issues one PP SAVE, and verifies non-PP
+metadata preservation. Never retry a lost or interrupted save reply. Use the
+manual cache path for facts obtained from project images or the DLTP index.
+
 Allocation is case-sensitive and ordered. It reuses the first exact text slot,
 otherwise chooses the highest whole-unit unreferenced slot. The selected
 scene's old reference is released before its new allocation; earlier
