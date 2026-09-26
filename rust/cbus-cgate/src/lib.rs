@@ -509,6 +509,12 @@ const ENVELOPE_CODES: [u16; 13] = [
 /// including user-controlled text such as project names — gains the reply
 /// status, so a project literally named `200-foo` can never spoof a code.
 fn has_status_prefix(line: &str) -> bool {
+    // C-Gate 3.4's AUDIO MUTE parser uniquely emits this 400 continuation and
+    // still completes with 200 after transmitting modes 8..=254. Keep this
+    // exact exception narrower than accepting arbitrary 400-prefixed payloads.
+    if line == "400-Syntax Error: Integer parameter is out of range : <mode>" {
+        return true;
+    }
     let b = line.as_bytes();
     if b.len() <= 4 || (b[3] != b'-' && b[3] != b' ') {
         return false;
@@ -5755,6 +5761,9 @@ mod tests {
         assert!(has_status_prefix("342-//T/254/p/20/UnitType=KEY1"));
         assert!(has_status_prefix("303-New Unit Found: address=5"));
         assert!(has_status_prefix("408-Operation failed: no unit"));
+        assert!(has_status_prefix(
+            "400-Syntax Error: Integer parameter is out of range : <mode>"
+        ));
         assert!(!has_status_prefix("200-foo"));
         assert!(!has_status_prefix("301 OID=x"));
         let mut s = Server::new(AccessLevel::Program);

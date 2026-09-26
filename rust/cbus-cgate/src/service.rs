@@ -7,6 +7,7 @@ use cbus_protocol::{
     packet::{Meta, Packet},
     sal::{
         aircon::AirconCommand,
+        audio::{AudioAddress, AudioCommand},
         label,
         security::{SecurityArmMode, SecurityCommand},
         Sal,
@@ -63,6 +64,30 @@ const SECURITY_HELP: &[&str] = &[
     "Help:  SECURITY REQUEST_ZONE_NAME - Request a zone name from the security device",
     "Help:  SECURITY STATUS_REQUEST - Send a status request to the security device",
     "Help:  SECURITY TAMPER - Raise or drop tamper status for the security device",
+];
+
+const AUDIO_HELP: &[&str] = &[
+    "Help: AUDIO commands:",
+    "Help:  AUDIO ? Help for these commands",
+    "Help:  AUDIO CURRENT_FEED - Send a Current Feed command",
+    "Help:  AUDIO DYNAMIC_1 - Send a Dynamic 1 command",
+    "Help:  AUDIO DYNAMIC_2 - Send a Dynamic 2 command",
+    "Help:  AUDIO HIGH_PRIORITY - Send a High Priority command",
+    "Help:  AUDIO MUTE - Send a Mute command",
+    "Help:  AUDIO NEXT_FEED - Send a Next Feed command",
+    "Help:  AUDIO NEXT_LANGUAGE - Send a Next Language command",
+    "Help:  AUDIO OFF - Send an Off command",
+    "Help:  AUDIO ON - Send an On command",
+    "Help:  AUDIO OUTPUT_COMMON_CONTROL - Send an Output Common Control command",
+    "Help:  AUDIO OUTPUT_DEVICE_STATUS_REQUEST - Send an Output Device Status Request command",
+    "Help:  AUDIO OUTPUT_ERROR_CODE - Send an Output Error Code command",
+    "Help:  AUDIO PREVIOUS_FEED - Send a Previous Feed command",
+    "Help:  AUDIO RAMP - Send a Ramp command",
+    "Help:  AUDIO REQUEST_CURRENT_FEED - Send a Request Current Feed command",
+    "Help:  AUDIO SET_FEED - Send a Set Feed command",
+    "Help:  AUDIO TERMINATERAMP - Send a Terminate Ramp command",
+    "Help:  AUDIO ZONE_DESCRIPTOR_REQUEST - Send a Zone Descriptor Request command",
+    "Help:  AUDIO ZONE_FEED_LABEL_REQUEST - Send a Zone Feed Label Request command",
 ];
 
 /// Default bound for the TLS pre-handshake accept (matches the existing
@@ -496,6 +521,26 @@ impl Service {
                     status.event_arguments()
                 ));
             }
+            CBusEvent::AudioCommand { source, command } => {
+                let source = source.unwrap_or(0);
+                let _ = self.events.send(format!(
+                    "#e# audio {} //{}/{}/205 {} sourceUnit={source}",
+                    command.event_name(),
+                    self.project,
+                    self.network,
+                    command.event_arguments()
+                ));
+            }
+            CBusEvent::AudioEvent { source, event } => {
+                let source = source.unwrap_or(0);
+                let _ = self.events.send(format!(
+                    "#e# audio {} //{}/{}/205 {} sourceUnit={source}",
+                    event.event_name(),
+                    self.project,
+                    self.network,
+                    event.event_arguments()
+                ));
+            }
             CBusEvent::SecurityCommand { source, command } => {
                 self.send_security_event(
                     command.event_name(),
@@ -866,6 +911,56 @@ impl Service {
             ]);
             capabilities["aircon_event_fanout"] = serde_json::Value::Bool(true);
             capabilities["aircon_mqtt_state"] = serde_json::Value::Bool(false);
+            capabilities["audio_control"] = serde_json::Value::Bool(true);
+            capabilities["audio_application"] = serde_json::Value::from(205);
+            capabilities["audio_delivery_semantics"] =
+                serde_json::Value::String("pci-confirmed-broadcast".to_string());
+            capabilities["audio_commands"] = serde_json::json!([
+                "current_feed",
+                "dynamic_1",
+                "dynamic_2",
+                "high_priority",
+                "mute",
+                "next_feed",
+                "next_language",
+                "off",
+                "on",
+                "output_common_control",
+                "output_device_status_request",
+                "output_error_code",
+                "previous_feed",
+                "ramp",
+                "request_current_feed",
+                "set_feed",
+                "terminateramp",
+                "zone_descriptor_request",
+                "zone_feed_label_request"
+            ]);
+            capabilities["audio_events"] = serde_json::json!([
+                "current_feed",
+                "dynamic_1",
+                "dynamic_2",
+                "high_priority",
+                "mute",
+                "next_feed",
+                "next_language",
+                "off",
+                "on",
+                "output_common_control",
+                "output_device_status_request",
+                "output_error_code",
+                "previous_feed",
+                "ramp",
+                "request_current_feed",
+                "set_feed",
+                "terminateramp",
+                "zone_descriptor_request",
+                "zone_feed_label_request",
+                "label",
+                "load_icon"
+            ]);
+            capabilities["audio_event_fanout"] = serde_json::Value::Bool(true);
+            capabilities["audio_mqtt_state"] = serde_json::Value::Bool(false);
             capabilities["security_control"] = serde_json::Value::Bool(true);
             capabilities["security_application"] = serde_json::Value::from(208);
             capabilities["security_delivery_semantics"] =
@@ -924,6 +1019,15 @@ impl Service {
                 return err(tag, 400, "400 Syntax Error.");
             }
             return self.aircon(tag, &words, sub).await;
+        }
+        if verb == "AUDIO" {
+            if words.len() == 1 || (words.len() == 2 && words[1] == "?") {
+                return audio_help(tag);
+            }
+            if !is_audio_subcommand(sub) {
+                return err(tag, 400, "400 Syntax Error.");
+            }
+            return self.audio(tag, &words, sub).await;
         }
         if verb == "SECURITY" {
             if words.len() == 1 || (words.len() == 2 && words[1] == "?") {
@@ -3442,6 +3546,292 @@ impl Service {
             "Air-Conditioning delivery",
         )
         .await
+    }
+
+    async fn audio(&self, tag: &str, words: &[&str], sub: &str) -> Response {
+        if words.len() < 3 {
+            return err(
+                tag,
+                400,
+                "400 Syntax Error: Missing parameter : <application>",
+            );
+        }
+        let target = words[2];
+        let Some(application) = self.application_path(target) else {
+            let reason = if target.starts_with("//") && target != "?" {
+                "Object not found"
+            } else {
+                "Network not found"
+            };
+            return err(
+                tag,
+                401,
+                &format!("401 Bad object or device ID: {target} ({reason})"),
+            );
+        };
+        if application != 205 {
+            return err(
+                tag,
+                402,
+                &format!("402 Operation not supported by: {target}"),
+            );
+        }
+        let z_form = words
+            .get(3)
+            .is_some_and(|value| value.eq_ignore_ascii_case("Z"));
+        let expected = match sub {
+            "CURRENT_FEED" | "SET_FEED" => {
+                if z_form {
+                    6
+                } else {
+                    7
+                }
+            }
+            "DYNAMIC_1"
+            | "DYNAMIC_2"
+            | "NEXT_FEED"
+            | "NEXT_LANGUAGE"
+            | "PREVIOUS_FEED"
+            | "REQUEST_CURRENT_FEED"
+            | "ZONE_DESCRIPTOR_REQUEST"
+            | "ZONE_FEED_LABEL_REQUEST" => 5,
+            "HIGH_PRIORITY" => 6,
+            "MUTE" => 6,
+            "OFF" | "ON" | "TERMINATERAMP" | "OUTPUT_ERROR_CODE" => {
+                if z_form && sub != "OUTPUT_ERROR_CODE" {
+                    5
+                } else {
+                    6
+                }
+            }
+            "OUTPUT_COMMON_CONTROL" | "OUTPUT_DEVICE_STATUS_REQUEST" => {
+                if words.len() == 3 {
+                    3
+                } else {
+                    4
+                }
+            }
+            "RAMP" => {
+                if z_form {
+                    7
+                } else {
+                    8
+                }
+            }
+            _ => return err(tag, 400, "400 Syntax Error."),
+        };
+        if words.len() < expected {
+            // Native C-Gate validates a supplied multiplexer before reporting a
+            // later missing argument (captured as `AUDIO ON 254/205 X 0`).
+            // Keep this deliberately limited to the evidenced prefix rather
+            // than guessing validation precedence for other partial forms.
+            if words.len() > 3
+                && !z_form
+                && !matches!(
+                    sub,
+                    "OUTPUT_COMMON_CONTROL" | "OUTPUT_DEVICE_STATUS_REQUEST"
+                )
+            {
+                if let Err(response) =
+                    parse_audio_bounded(tag, words[3], "multiplexer", 0, 2, target)
+                {
+                    return response;
+                }
+            }
+            return err(
+                tag,
+                400,
+                &format!(
+                    "400 Syntax Error: Missing parameter : <{}>",
+                    audio_missing_parameter(sub, words)
+                ),
+            );
+        }
+        if words.len() > expected {
+            return err(tag, 400, "400 Syntax Error: Too many parameters");
+        }
+        if sub == "OUTPUT_ERROR_CODE" && z_form {
+            return err(tag, 400, "400 Syntax Error: Too many parameters");
+        }
+
+        let coded = matches!(
+            sub,
+            "CURRENT_FEED"
+                | "OFF"
+                | "ON"
+                | "OUTPUT_ERROR_CODE"
+                | "RAMP"
+                | "SET_FEED"
+                | "TERMINATERAMP"
+        );
+        let address = if matches!(
+            sub,
+            "HIGH_PRIORITY" | "OUTPUT_COMMON_CONTROL" | "OUTPUT_DEVICE_STATUS_REQUEST"
+        ) {
+            None
+        } else {
+            let code_parameter = match sub {
+                "CURRENT_FEED" | "SET_FEED" => "feed",
+                "OUTPUT_ERROR_CODE" => "error code",
+                _ => "function code",
+            };
+            match parse_audio_address(tag, words, coded, code_parameter) {
+                Ok(address) => Some(address),
+                Err(response) => return response,
+            }
+        };
+        let value_index =
+            |zone_index: usize, z_index: usize| if z_form { z_index } else { zone_index };
+        let mut native_warning = None;
+        let command = match sub {
+            "CURRENT_FEED" => AudioCommand::CurrentFeed {
+                address: address.unwrap(),
+                gain: match parse_audio_bounded(tag, words[value_index(6, 5)], "gain", 0, 4, target)
+                {
+                    Ok(value) => value,
+                    Err(response) => return response,
+                },
+            },
+            "DYNAMIC_1" => AudioCommand::Dynamic1 {
+                address: address.unwrap(),
+            },
+            "DYNAMIC_2" => AudioCommand::Dynamic2 {
+                address: address.unwrap(),
+            },
+            "HIGH_PRIORITY" => AudioCommand::HighPriority {
+                multiplexer: match parse_audio_bounded(tag, words[3], "multiplexer", 0, 2, target) {
+                    Ok(value) => value,
+                    Err(response) => return response,
+                },
+                level: match parse_audio_bounded(tag, words[4], "level", 0, 255, target) {
+                    Ok(value) => value,
+                    Err(response) => return response,
+                },
+                feed: match parse_audio_bounded(tag, words[5], "feed", 0, 7, target) {
+                    Ok(value) => value,
+                    Err(response) => return response,
+                },
+            },
+            "MUTE" => {
+                let mode = match parse_audio_integer(tag, words[5], "mode") {
+                    Ok(value) if (0..=7).contains(&value) || value == 255 => value as u8,
+                    Ok(value @ 8..=254) => {
+                        native_warning = Some(
+                            "400-Syntax Error: Integer parameter is out of range : <mode>"
+                                .to_string(),
+                        );
+                        value as u8
+                    }
+                    Ok(_) => {
+                        return err(
+                            tag,
+                            400,
+                            "400 Syntax Error: Integer parameter is out of range : <mode>",
+                        )
+                    }
+                    Err(response) => return response,
+                };
+                AudioCommand::Mute {
+                    address: address.unwrap(),
+                    mode,
+                }
+            }
+            "NEXT_FEED" => AudioCommand::NextFeed {
+                address: address.unwrap(),
+            },
+            "NEXT_LANGUAGE" => AudioCommand::NextLanguage {
+                address: address.unwrap(),
+            },
+            "OFF" => AudioCommand::Off {
+                address: address.unwrap(),
+            },
+            "ON" => AudioCommand::On {
+                address: address.unwrap(),
+            },
+            "OUTPUT_COMMON_CONTROL" => AudioCommand::OutputCommonControl {
+                control: match parse_audio_sentinel(tag, words.get(3).copied(), "control code") {
+                    Ok(value) => value,
+                    Err(response) => return response,
+                },
+            },
+            "OUTPUT_DEVICE_STATUS_REQUEST" => AudioCommand::OutputDeviceStatusRequest {
+                parameter: match parse_audio_sentinel(tag, words.get(3).copied(), "parameter") {
+                    Ok(value) => value,
+                    Err(response) => return response,
+                },
+            },
+            "OUTPUT_ERROR_CODE" => AudioCommand::OutputErrorCode {
+                address: address.unwrap(),
+            },
+            "PREVIOUS_FEED" => AudioCommand::PreviousFeed {
+                address: address.unwrap(),
+            },
+            "RAMP" => AudioCommand::Ramp {
+                address: address.unwrap(),
+                level: match parse_audio_bounded(
+                    tag,
+                    words[value_index(6, 5)],
+                    "level",
+                    0,
+                    255,
+                    target,
+                ) {
+                    Ok(value) => value,
+                    Err(response) => return response,
+                },
+                rate: match parse_audio_bounded(
+                    tag,
+                    words[value_index(7, 6)],
+                    "rate",
+                    0,
+                    15,
+                    target,
+                ) {
+                    Ok(value) => value,
+                    Err(response) => return response,
+                },
+            },
+            "REQUEST_CURRENT_FEED" => AudioCommand::RequestCurrentFeed {
+                address: address.unwrap(),
+            },
+            "SET_FEED" => AudioCommand::SetFeed {
+                address: address.unwrap(),
+                option: match parse_audio_bounded(
+                    tag,
+                    words[value_index(6, 5)],
+                    "option",
+                    0,
+                    1,
+                    target,
+                ) {
+                    Ok(value) => value,
+                    Err(response) => return response,
+                },
+            },
+            "TERMINATERAMP" => AudioCommand::TerminateRamp {
+                address: address.unwrap(),
+            },
+            "ZONE_DESCRIPTOR_REQUEST" => AudioCommand::ZoneDescriptorRequest {
+                address: address.unwrap(),
+            },
+            "ZONE_FEED_LABEL_REQUEST" => AudioCommand::ZoneFeedLabelRequest {
+                address: address.unwrap(),
+            },
+            _ => unreachable!(),
+        };
+        let _commands = self.commands.lock().await;
+        let response = if let Some(warning) = native_warning {
+            Response {
+                tag: tag.to_string(),
+                lines: vec![warning],
+                final_text: "200 OK.".to_string(),
+                status: 200,
+            }
+        } else {
+            ok(tag, vec![], "200 OK.")
+        };
+        self.send_application(tag, Sal::AudioCommand(command), response, "Audio delivery")
+            .await
     }
 
     async fn security(&self, tag: &str, words: &[&str], sub: &str) -> Response {
@@ -6236,6 +6626,182 @@ fn is_aircon_subcommand(sub: &str) -> bool {
     )
 }
 
+fn is_audio_subcommand(sub: &str) -> bool {
+    matches!(
+        sub,
+        "CURRENT_FEED"
+            | "DYNAMIC_1"
+            | "DYNAMIC_2"
+            | "HIGH_PRIORITY"
+            | "MUTE"
+            | "NEXT_FEED"
+            | "NEXT_LANGUAGE"
+            | "OFF"
+            | "ON"
+            | "OUTPUT_COMMON_CONTROL"
+            | "OUTPUT_DEVICE_STATUS_REQUEST"
+            | "OUTPUT_ERROR_CODE"
+            | "PREVIOUS_FEED"
+            | "RAMP"
+            | "REQUEST_CURRENT_FEED"
+            | "SET_FEED"
+            | "TERMINATERAMP"
+            | "ZONE_DESCRIPTOR_REQUEST"
+            | "ZONE_FEED_LABEL_REQUEST"
+    )
+}
+
+fn audio_help(tag: &str) -> Response {
+    let mut rows = AUDIO_HELP
+        .iter()
+        .map(|row| (*row).to_string())
+        .collect::<Vec<_>>();
+    let final_text = format!("101 {}", rows.pop().expect("AUDIO help is nonempty"));
+    Response {
+        tag: tag.to_string(),
+        lines: rows,
+        final_text,
+        status: 101,
+    }
+}
+
+fn parse_audio_integer(tag: &str, value: &str, parameter: &str) -> Result<i32, Response> {
+    let parsed = value
+        .strip_prefix('$')
+        .map_or_else(|| value.parse::<i32>(), |hex| i32::from_str_radix(hex, 16));
+    parsed.map_err(|_| {
+        err(
+            tag,
+            400,
+            &format!("400 Syntax Error: Invalid integer parameter : <{parameter}>"),
+        )
+    })
+}
+
+fn parse_audio_bounded(
+    tag: &str,
+    value: &str,
+    parameter: &str,
+    minimum: i32,
+    maximum: i32,
+    _target: &str,
+) -> Result<u8, Response> {
+    match parse_audio_integer(tag, value, parameter)? {
+        parsed if (minimum..=maximum).contains(&parsed) => Ok(parsed as u8),
+        _ => Err(err(
+            tag,
+            400,
+            &format!("400 Syntax Error: Integer parameter is out of range : <{parameter}>"),
+        )),
+    }
+}
+
+fn parse_audio_sentinel(tag: &str, value: Option<&str>, parameter: &str) -> Result<u8, Response> {
+    let Some(value) = value else {
+        return Ok(255);
+    };
+    match parse_audio_integer(tag, value, parameter)? {
+        -1 => Ok(255),
+        0 => Ok(0),
+        _ => Err(err(
+            tag,
+            400,
+            &format!("400 Syntax Error: Integer parameter is out of range : <{parameter}>"),
+        )),
+    }
+}
+
+fn audio_missing_parameter(sub: &str, words: &[&str]) -> &'static str {
+    let z_form = words
+        .get(3)
+        .is_some_and(|value| value.eq_ignore_ascii_case("Z"));
+    let parameters: &[&str] = match sub {
+        "CURRENT_FEED" => {
+            if z_form {
+                &["multiplexer", "zone code", "gain"]
+            } else {
+                &["multiplexer", "zone", "feed", "gain"]
+            }
+        }
+        "DYNAMIC_1"
+        | "DYNAMIC_2"
+        | "NEXT_FEED"
+        | "NEXT_LANGUAGE"
+        | "PREVIOUS_FEED"
+        | "REQUEST_CURRENT_FEED"
+        | "ZONE_DESCRIPTOR_REQUEST"
+        | "ZONE_FEED_LABEL_REQUEST" => {
+            if z_form {
+                &["multiplexer", "zone code"]
+            } else {
+                &["multiplexer", "zone"]
+            }
+        }
+        "HIGH_PRIORITY" => &["multiplexer", "level", "feed"],
+        "MUTE" => {
+            if z_form {
+                &["multiplexer", "zone code", "mode"]
+            } else {
+                &["multiplexer", "zone", "mode"]
+            }
+        }
+        "OFF" | "ON" | "TERMINATERAMP" => {
+            if z_form {
+                &["multiplexer", "zone code"]
+            } else {
+                &["multiplexer", "zone", "function code"]
+            }
+        }
+        "OUTPUT_ERROR_CODE" => &["multiplexer", "zone", "error code"],
+        "RAMP" => {
+            if z_form {
+                &["multiplexer", "zone code", "level", "rate"]
+            } else {
+                &["multiplexer", "zone", "function code", "level", "rate"]
+            }
+        }
+        "SET_FEED" => {
+            if z_form {
+                &["multiplexer", "zone code", "option"]
+            } else {
+                &["multiplexer", "zone", "feed", "option"]
+            }
+        }
+        _ => &["parameter"],
+    };
+    parameters
+        .get(words.len().saturating_sub(3))
+        .copied()
+        .unwrap_or("parameter")
+}
+
+fn parse_audio_address(
+    tag: &str,
+    words: &[&str],
+    coded: bool,
+    code_parameter: &str,
+) -> Result<AudioAddress, Response> {
+    let target = words[2];
+    if words[3].eq_ignore_ascii_case("Z") {
+        return parse_audio_bounded(tag, words[4], "zone code", 0, 255, target)
+            .map(AudioAddress::Function);
+    }
+    let multiplexer = parse_audio_bounded(tag, words[3], "multiplexer", 0, 2, target)?;
+    let zone = parse_audio_bounded(tag, words[4], "zone", 0, 7, target)?;
+    let function = if coded {
+        parse_audio_bounded(tag, words[5], code_parameter, 0, 7, target)?
+    } else {
+        0
+    };
+    AudioAddress::zone(multiplexer, zone, function).map_err(|_| {
+        err(
+            tag,
+            400,
+            "400 Syntax Error: Integer parameter is out of range : <audio address>",
+        )
+    })
+}
+
 fn aircon_help(tag: &str) -> Response {
     let mut rows = AIRCON_HELP
         .iter()
@@ -6435,6 +7001,9 @@ fn parse_aircon_boolean(tag: &str, value: &str, parameter: &str) -> Result<bool,
 /// - The ten state-changing AIRCON subcommands. HVAC control has no MQTT
 ///   equivalent in cmqttd. REFRESH is a read/state request and remains open,
 ///   as do the parent help endpoint and unknown syntax.
+/// - The thirteen state-changing AUDIO subcommands. Audio control has no MQTT
+///   equivalent in cmqttd. The six request/report forms remain open, as do
+///   the parent help endpoint and unknown syntax.
 /// - Security ARM/TAMPER/RAISE_ALARM/EMULATE_KEYPAD/DISPLAY_MESSAGE. These
 ///   controls have no MQTT equivalent. STATUS_REQUEST, REQUEST_ZONE_NAME,
 ///   parent help and unknown syntax remain open.
@@ -6448,6 +7017,18 @@ fn parse_aircon_boolean(tag: &str, value: &str, parameter: &str) -> Result<bool,
 fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
     match verb {
         "AIRCON" => is_aircon_subcommand(sub) && sub != "REFRESH",
+        "AUDIO" => {
+            is_audio_subcommand(sub)
+                && !matches!(
+                    sub,
+                    "CURRENT_FEED"
+                        | "OUTPUT_DEVICE_STATUS_REQUEST"
+                        | "OUTPUT_ERROR_CODE"
+                        | "REQUEST_CURRENT_FEED"
+                        | "ZONE_DESCRIPTOR_REQUEST"
+                        | "ZONE_FEED_LABEL_REQUEST"
+                )
+        }
         "SECURITY" => {
             is_security_subcommand(sub) && !matches!(sub, "STATUS_REQUEST" | "REQUEST_ZONE_NAME")
         }

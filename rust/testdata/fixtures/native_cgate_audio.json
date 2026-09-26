@@ -1,0 +1,120 @@
+{
+  "format": "native-cgate-audio-evidence-v1",
+  "oracle": {
+    "product": "C-Gate",
+    "version": "3.4.0.2001",
+    "build": "20241023-0011",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "full_capture_sha256": "6495a214349da1dbeafcfb5f4d36a878a5cf1113053ed05fd8bc96376a272773"
+  },
+  "scope": "Captured from an isolated owned C-Gate 3.4 daemon and random-loopback PCISimulator. No house, Docker, or live C-Bus network was used. Payloads exclude checksum and confirmation code.",
+  "help": [
+    "Help: AUDIO commands:",
+    "Help:  AUDIO ? Help for these commands",
+    "Help:  AUDIO CURRENT_FEED - Send a Current Feed command",
+    "Help:  AUDIO DYNAMIC_1 - Send a Dynamic 1 command",
+    "Help:  AUDIO DYNAMIC_2 - Send a Dynamic 2 command",
+    "Help:  AUDIO HIGH_PRIORITY - Send a High Priority command",
+    "Help:  AUDIO MUTE - Send a Mute command",
+    "Help:  AUDIO NEXT_FEED - Send a Next Feed command",
+    "Help:  AUDIO NEXT_LANGUAGE - Send a Next Language command",
+    "Help:  AUDIO OFF - Send an Off command",
+    "Help:  AUDIO ON - Send an On command",
+    "Help:  AUDIO OUTPUT_COMMON_CONTROL - Send an Output Common Control command",
+    "Help:  AUDIO OUTPUT_DEVICE_STATUS_REQUEST - Send an Output Device Status Request command",
+    "Help:  AUDIO OUTPUT_ERROR_CODE - Send an Output Error Code command",
+    "Help:  AUDIO PREVIOUS_FEED - Send a Previous Feed command",
+    "Help:  AUDIO RAMP - Send a Ramp command",
+    "Help:  AUDIO REQUEST_CURRENT_FEED - Send a Request Current Feed command",
+    "Help:  AUDIO SET_FEED - Send a Set Feed command",
+    "Help:  AUDIO TERMINATERAMP - Send a Terminate Ramp command",
+    "Help:  AUDIO ZONE_DESCRIPTOR_REQUEST - Send a Zone Descriptor Request command",
+    "Help:  AUDIO ZONE_FEED_LABEL_REQUEST - Send a Zone Feed Label Request command"
+  ],
+  "commands": [
+    {"command":"AUDIO CURRENT_FEED 254/205 2 7 7 4","response":"200 OK.","payload_hex":"05CD0022E8BF"},
+    {"command":"AUDIO DYNAMIC_1 254/205 2 7","response":"200 OK.","payload_hex":"05CD0002BE00"},
+    {"command":"AUDIO DYNAMIC_2 254/205 2 7","response":"200 OK.","payload_hex":"05CD0002BEFF"},
+    {"command":"AUDIO HIGH_PRIORITY 254/205 2 255 7","response":"200 OK.","payload_hex":"05CD003AC2FF"},
+    {"command":"AUDIO MUTE 254/205 2 7 7","response":"200 OK.","payload_hex":"05CD0002BD07"},
+    {"command":"AUDIO NEXT_FEED 254/205 2 7","response":"200 OK.","payload_hex":"05CD0002BE02"},
+    {"command":"AUDIO NEXT_LANGUAGE 254/205 2 7","response":"200 OK.","payload_hex":"05CD0002BE11"},
+    {"command":"AUDIO OFF 254/205 2 7 7","response":"200 OK.","payload_hex":"05CD0001BF"},
+    {"command":"AUDIO ON 254/205 Z 255","response":"200 OK.","payload_hex":"05CD0079FF"},
+    {"command":"AUDIO OUTPUT_COMMON_CONTROL 254/205 0","response":"200 OK.","payload_hex":"05CD0002E500"},
+    {"command":"AUDIO OUTPUT_DEVICE_STATUS_REQUEST 254/205 0","response":"200 OK.","payload_hex":"05CD0002E300"},
+    {"command":"AUDIO OUTPUT_ERROR_CODE 254/205 2 7 7","response":"200 OK.","payload_hex":"05CD0002E6BF"},
+    {"command":"AUDIO PREVIOUS_FEED 254/205 2 7","response":"200 OK.","payload_hex":"05CD0002BE05"},
+    {"command":"AUDIO RAMP 254/205 2 7 7 255 15","response":"200 OK.","payload_hex":"05CD007ABFFF"},
+    {"command":"AUDIO REQUEST_CURRENT_FEED 254/205 Z 255","response":"200 OK.","payload_hex":"05CD0002E7F8"},
+    {"command":"AUDIO SET_FEED 254/205 2 7 7 1","response":"200 OK.","payload_hex":"05CD000AE9BF"},
+    {"command":"AUDIO TERMINATERAMP 254/205 2 7 7","response":"200 OK.","payload_hex":"05CD0009BF"},
+    {"command":"AUDIO ZONE_DESCRIPTOR_REQUEST 254/205 Z 255","response":"200 OK.","payload_hex":"05CD0002E0F8"},
+    {"command":"AUDIO ZONE_FEED_LABEL_REQUEST 254/205 Z 255","response":"200 OK.","payload_hex":"05CD0002E2F8"}
+  ],
+  "validated_boundaries": {
+    "application": "Audio application 205 (0xCD); decimal, $CD, lowercase z, own fully-qualified path, and $ numeric arguments accepted",
+    "multiplexer": "0..2",
+    "zone": "0..7",
+    "function_feed_error": "0..7 for mux form; Z function 0..255",
+    "gain": "0..4",
+    "level": "0..255",
+    "ramp_rate": "0..15",
+    "feed_option": "0..1",
+    "mute": "0..7 and 255 are clean successes; 8..254 transmit with a 400 continuation followed by 200 OK",
+    "output_error_code": "native accepts 0..7 despite manual 0..1",
+    "output_sentinel": "omitted or -1 OUTPUT_COMMON_CONTROL and OUTPUT_DEVICE_STATUS_REQUEST values transmit FF and return 200"
+  },
+  "negative_examples": [
+    {"command":"AUDIO ON","response":"400 Syntax Error: Missing parameter : <application>"},
+    {"command":"AUDIO ON 254/205 Z","response":"400 Syntax Error: Missing parameter : <zone code>"},
+    {"command":"AUDIO ON 254/205 3 0 0","response":"400 Syntax Error: Integer parameter is out of range : <multiplexer>"},
+    {"command":"AUDIO CURRENT_FEED 254/205 0 0 0 5","response":"400 Syntax Error: Integer parameter is out of range : <gain>"},
+    {"command":"AUDIO HIGH_PRIORITY 254/205 Z 0 0","response":"400 Syntax Error: Invalid integer parameter : <multiplexer>"},
+    {"command":"AUDIO OUTPUT_ERROR_CODE 254/205 Z 0 0","response":"400 Syntax Error: Too many parameters"},
+    {"command":"AUDIO SET_FEED 254/205 0 0 0 2","response":"400 Syntax Error: Integer parameter is out of range : <option>"},
+    {"command":"AUDIO CURRENT_FEED ?","response":"401 Bad object or device ID: ? (Network not found)"}
+  ],
+  "inbound_decoder": {
+    "source_unit": 4,
+    "recognized_commands": ["current_feed","dynamic_1","dynamic_2","high_priority","mute","next_feed","next_language","off","on","output_common_control","output_device_status_request","output_error_code","previous_feed","ramp","request_current_feed","set_feed","terminateramp","zone_descriptor_request","zone_feed_label_request"],
+    "command_events": [
+      {"body_hex":"0504CD0022E8BF","event":"current_feed multiplexer=2 zone=7 feed=7 gain=4 sourceUnit=4"},
+      {"body_hex":"0504CD00025600","event":"dynamic_1 multiplexer=1 zone=2 sourceUnit=4"},
+      {"body_hex":"0504CD000256FF","event":"dynamic_2 multiplexer=1 zone=2 sourceUnit=4"},
+      {"body_hex":"0504CD003AC2FF","event":"high_priority multiplexer=2 level=255 feed=7 sourceUnit=4"},
+      {"body_hex":"0504CD00025507","event":"mute multiplexer=1 zone=2 mutefunction=7 sourceUnit=4"},
+      {"body_hex":"0504CD00025602","event":"next_feed multiplexer=1 zone=2 sourceUnit=4"},
+      {"body_hex":"0504CD00025611","event":"next_language multiplexer=1 zone=2 sourceUnit=4"},
+      {"body_hex":"0504CD000157","event":"off multiplexer=1 zone=2 functioncode=7 sourceUnit=4"},
+      {"body_hex":"0504CD007957","event":"on multiplexer=1 zone=2 functioncode=7 sourceUnit=4"},
+      {"body_hex":"0504CD0002E500","event":"output_common_control parameter=0 sourceUnit=4"},
+      {"body_hex":"0504CD0002E300","event":"output_device_status_request parameter=0 sourceUnit=4"},
+      {"body_hex":"0504CD0002E657","event":"output_error_code multiplexer=1 zone=2 error=7 sourceUnit=4"},
+      {"body_hex":"0504CD00025605","event":"previous_feed multiplexer=1 zone=2 sourceUnit=4"},
+      {"body_hex":"0504CD007A57FF","event":"ramp multiplexer=1 zone=2 functioncode=7 level=255 ramprate=15 sourceUnit=4"},
+      {"body_hex":"0504CD0002E750","event":"request_current_feed multiplexer=1 zone=2 sourceUnit=4"},
+      {"body_hex":"0504CD000AE957","event":"set_feed multiplexer=1 zone=2 feed=7 option=1 sourceUnit=4"},
+      {"body_hex":"0504CD000957","event":"terminateramp multiplexer=1 zone=2 functioncode=7 sourceUnit=4"},
+      {"body_hex":"0504CD0002E050","event":"zone_descriptor_request multiplexer=1 zone=2 sourceUnit=4"},
+      {"body_hex":"0504CD0002E250","event":"zone_feed_label_request multiplexer=1 zone=2 sourceUnit=4"}
+    ],
+    "z_transform_events": [
+      {"body_hex":"0504CD0002C600","event":"dynamic_1 multiplexer=Z function=198 sourceUnit=4"},
+      {"body_hex":"0504CD0002C5FF","event":"mute multiplexer=Z function=197 mutefunction=255 sourceUnit=4"}
+    ],
+    "z_transform": "dynamic/feed/language force low bits 6, mute forces 5, request operations clear the low three bits",
+    "ramp_overlap": "RAMP decodes only for group 0..191; 192..194 decode HIGH_PRIORITY, 232 CURRENT_FEED, 233 SET_FEED, and other Z values emit no Audio event"
+  },
+  "label_load_icon_evidence_gap": {
+    "manual": "label and load_icon are advertised as event-only Audio operations",
+    "native_result": "valid A0..BF label and icon frames produced no event; C0 Unicode was logged as unknown SAL",
+    "cause": "retained decoder compares a byte-length field with hexadecimal character length, so the standard label branch cannot succeed",
+    "cmqttd_behavior": "cbus-protocol decodes the intended retained A0 layout and cmqttd can fan it out as an explicit repair; this exceeds observed C-Gate 3.4.0.2001 behavior and is not claimed as byte-for-byte native event parity"
+  },
+  "delivery_semantics": {
+    "native": "C-Gate returned 200 before PCI confirmation; deliberate NAK and NET CLOSE probes still returned 200",
+    "cmqttd": "returns success only after correlated confirmation on the active PCI generation; NAK, timeout, closure, or reconnect fail closed"
+  },
+  "routing_boundary": "No routed Audio write was evidenced. cmqttd accepts only its bound direct application and fails closed for other paths."
+}

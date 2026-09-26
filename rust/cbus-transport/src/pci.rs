@@ -12,6 +12,7 @@ use cbus_protocol::packet::{Meta, Packet};
 use cbus_protocol::report::StatusReport;
 use cbus_protocol::sal::{
     aircon::{AirconCommand, AirconStatus},
+    audio::{AudioCommand, AudioEvent},
     security::{SecurityCommand, SecurityEvent},
     Sal,
 };
@@ -104,6 +105,20 @@ pub enum CBusEvent {
         source: Option<u8>,
         /// Fully decoded status/report payload.
         status: AirconStatus,
+    },
+    /// One Audio command observed on the shared PCI receive stream.
+    AudioCommand {
+        /// Source unit address (`None` when the source byte was 0).
+        source: Option<u8>,
+        /// Fully decoded command payload.
+        command: AudioCommand,
+    },
+    /// One Audio-only label or icon event observed on the receive stream.
+    AudioEvent {
+        /// Source unit address (`None` when the source byte was 0).
+        source: Option<u8>,
+        /// Fully decoded event payload.
+        event: AudioEvent,
     },
     /// One Security command observed on the shared PCI receive stream.
     SecurityCommand {
@@ -1020,6 +1035,13 @@ impl PciClient {
                             source: src,
                             status,
                         }),
+                        Sal::AudioCommand(command) => Some(CBusEvent::AudioCommand {
+                            source: src,
+                            command,
+                        }),
+                        Sal::AudioEvent(event) => {
+                            Some(CBusEvent::AudioEvent { source: src, event })
+                        }
                         Sal::SecurityCommand(command) => Some(CBusEvent::SecurityCommand {
                             source: src,
                             command,
@@ -1367,6 +1389,7 @@ fn classify(cmd: &Packet, conf: Option<u8>) -> (Priority, ResponseKind) {
         matches!(
             s,
             Sal::Aircon(_)
+                | Sal::AudioCommand(_)
                 | Sal::SecurityCommand(_)
                 | Sal::LightingOn { .. }
                 | Sal::LightingOff { .. }

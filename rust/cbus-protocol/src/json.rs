@@ -4,6 +4,7 @@ use crate::cal::Cal;
 use crate::packet::{Meta, Packet};
 use crate::report::StatusReport;
 use crate::sal::aircon::{AirconCommand, AirconStatus};
+use crate::sal::audio::{AudioAddress, AudioCommand, AudioEvent};
 use crate::sal::security::{SecurityArmMode, SecurityCommand, SecurityEvent};
 use crate::sal::Sal;
 use serde_json::{json, Map, Value};
@@ -15,6 +16,8 @@ pub fn sal_to_json(s: &Sal) -> Value {
     match s {
         Sal::Aircon(command) => aircon_to_json(command),
         Sal::AirconStatus(status) => aircon_status_to_json(status),
+        Sal::AudioCommand(command) => audio_command_to_json(command),
+        Sal::AudioEvent(event) => audio_event_to_json(event),
         Sal::SecurityCommand(command) => security_command_to_json(command),
         Sal::SecurityEvent(event) => security_event_to_json(event),
         Sal::LightingRamp {
@@ -91,6 +94,108 @@ pub fn sal_to_json(s: &Sal) -> Value {
         } => json!({"sal": "dynamic_label", "application": application,
                     "payload_hex": hex::encode(payload)}),
     }
+}
+
+fn insert_audio_address(object: &mut Map<String, Value>, address: AudioAddress) {
+    match address {
+        AudioAddress::Zone {
+            multiplexer,
+            zone,
+            function,
+        } => {
+            object.insert("multiplexer".into(), json!(multiplexer));
+            object.insert("zone".into(), json!(zone));
+            object.insert("function".into(), json!(function));
+        }
+        AudioAddress::Function(function) => {
+            object.insert("multiplexer".into(), json!("Z"));
+            object.insert("function".into(), json!(function));
+        }
+    }
+}
+
+fn audio_command_to_json(command: &AudioCommand) -> Value {
+    let mut value = json!({"sal":"audio", "command":command.event_name()});
+    let object = value.as_object_mut().expect("object");
+    match command {
+        AudioCommand::CurrentFeed { address, gain } => {
+            insert_audio_address(object, *address);
+            object.insert("gain".into(), json!(gain));
+        }
+        AudioCommand::Dynamic1 { address }
+        | AudioCommand::Dynamic2 { address }
+        | AudioCommand::NextFeed { address }
+        | AudioCommand::NextLanguage { address }
+        | AudioCommand::Off { address }
+        | AudioCommand::On { address }
+        | AudioCommand::OutputErrorCode { address }
+        | AudioCommand::PreviousFeed { address }
+        | AudioCommand::RequestCurrentFeed { address }
+        | AudioCommand::TerminateRamp { address }
+        | AudioCommand::ZoneDescriptorRequest { address }
+        | AudioCommand::ZoneFeedLabelRequest { address } => insert_audio_address(object, *address),
+        AudioCommand::HighPriority {
+            multiplexer,
+            level,
+            feed,
+        } => {
+            object.insert("multiplexer".into(), json!(multiplexer));
+            object.insert("level".into(), json!(level));
+            object.insert("feed".into(), json!(feed));
+        }
+        AudioCommand::Mute { address, mode } => {
+            insert_audio_address(object, *address);
+            object.insert("mode".into(), json!(mode));
+        }
+        AudioCommand::OutputCommonControl { control } => {
+            object.insert("control".into(), json!(control));
+        }
+        AudioCommand::OutputDeviceStatusRequest { parameter } => {
+            object.insert("parameter".into(), json!(parameter));
+        }
+        AudioCommand::Ramp {
+            address,
+            level,
+            rate,
+        } => {
+            insert_audio_address(object, *address);
+            object.insert("level".into(), json!(level));
+            object.insert("rate".into(), json!(rate));
+        }
+        AudioCommand::SetFeed { address, option } => {
+            insert_audio_address(object, *address);
+            object.insert("option".into(), json!(option));
+        }
+    }
+    value
+}
+
+fn audio_event_to_json(event: &AudioEvent) -> Value {
+    let mut value = json!({"sal":"audio_event", "event":event.event_name()});
+    let object = value.as_object_mut().expect("object");
+    match event {
+        AudioEvent::Label {
+            address,
+            options,
+            language,
+            bytes,
+        } => {
+            insert_audio_address(object, *address);
+            object.insert("options".into(), json!(options));
+            object.insert("language".into(), json!(language));
+            object.insert("bytes_hex".into(), json!(hex::encode(bytes)));
+        }
+        AudioEvent::LoadIcon {
+            address,
+            options,
+            bytes,
+        } => {
+            insert_audio_address(object, *address);
+            object.insert("options".into(), json!(options));
+            object.insert("bytes_hex".into(), json!(hex::encode(bytes)));
+        }
+    }
+    value
 }
 
 fn security_command_to_json(command: &SecurityCommand) -> Value {
@@ -679,6 +784,8 @@ pub fn sal_from_json(d: &Value) -> Result<Sal, JErr> {
     match get_str(d, "sal")? {
         "aircon" => aircon_from_json(d).map(Sal::Aircon),
         "aircon_status" => aircon_status_from_json(d).map(Sal::AirconStatus),
+        "audio" => audio_command_from_json(d).map(Sal::AudioCommand),
+        "audio_event" => audio_event_from_json(d).map(Sal::AudioEvent),
         "security" => security_command_from_json(d).map(Sal::SecurityCommand),
         "security_event" => security_event_from_json(d).map(Sal::SecurityEvent),
         "lighting_on" => Ok(Sal::LightingOn {
@@ -752,6 +859,110 @@ pub fn sal_from_json(d: &Value) -> Result<Sal, JErr> {
         }),
         other => Err(format!("unhandled SAL json: {other}")),
     }
+}
+
+fn audio_address_from_json(d: &Value) -> Result<AudioAddress, JErr> {
+    if d.get("multiplexer").and_then(Value::as_str) == Some("Z") {
+        return Ok(AudioAddress::Function(get_u8(d, "function")?));
+    }
+    AudioAddress::zone(
+        get_u8(d, "multiplexer")?,
+        get_u8(d, "zone")?,
+        get_u8(d, "function")?,
+    )
+    .map_err(|error| error.to_string())
+}
+
+fn get_hex(d: &Value, key: &str) -> Result<Vec<u8>, JErr> {
+    hex::decode(get_str(d, key)?).map_err(|error| format!("invalid field {key}: {error}"))
+}
+
+fn audio_command_from_json(d: &Value) -> Result<AudioCommand, JErr> {
+    let address = || audio_address_from_json(d);
+    Ok(match get_str(d, "command")? {
+        "current_feed" => AudioCommand::CurrentFeed {
+            address: address()?,
+            gain: get_u8(d, "gain")?,
+        },
+        "dynamic_1" => AudioCommand::Dynamic1 {
+            address: address()?,
+        },
+        "dynamic_2" => AudioCommand::Dynamic2 {
+            address: address()?,
+        },
+        "high_priority" => AudioCommand::HighPriority {
+            multiplexer: get_u8(d, "multiplexer")?,
+            level: get_u8(d, "level")?,
+            feed: get_u8(d, "feed")?,
+        },
+        "mute" => AudioCommand::Mute {
+            address: address()?,
+            mode: get_u8(d, "mode")?,
+        },
+        "next_feed" => AudioCommand::NextFeed {
+            address: address()?,
+        },
+        "next_language" => AudioCommand::NextLanguage {
+            address: address()?,
+        },
+        "off" => AudioCommand::Off {
+            address: address()?,
+        },
+        "on" => AudioCommand::On {
+            address: address()?,
+        },
+        "output_common_control" => AudioCommand::OutputCommonControl {
+            control: get_u8(d, "control")?,
+        },
+        "output_device_status_request" => AudioCommand::OutputDeviceStatusRequest {
+            parameter: get_u8(d, "parameter")?,
+        },
+        "output_error_code" => AudioCommand::OutputErrorCode {
+            address: address()?,
+        },
+        "previous_feed" => AudioCommand::PreviousFeed {
+            address: address()?,
+        },
+        "ramp" => AudioCommand::Ramp {
+            address: address()?,
+            level: get_u8(d, "level")?,
+            rate: get_u8(d, "rate")?,
+        },
+        "request_current_feed" => AudioCommand::RequestCurrentFeed {
+            address: address()?,
+        },
+        "set_feed" => AudioCommand::SetFeed {
+            address: address()?,
+            option: get_u8(d, "option")?,
+        },
+        "terminateramp" => AudioCommand::TerminateRamp {
+            address: address()?,
+        },
+        "zone_descriptor_request" => AudioCommand::ZoneDescriptorRequest {
+            address: address()?,
+        },
+        "zone_feed_label_request" => AudioCommand::ZoneFeedLabelRequest {
+            address: address()?,
+        },
+        command => return Err(format!("unhandled Audio command: {command}")),
+    })
+}
+
+fn audio_event_from_json(d: &Value) -> Result<AudioEvent, JErr> {
+    Ok(match get_str(d, "event")? {
+        "label" => AudioEvent::Label {
+            address: audio_address_from_json(d)?,
+            options: get_u8(d, "options")?,
+            language: get_u8(d, "language")?,
+            bytes: get_hex(d, "bytes_hex")?,
+        },
+        "load_icon" => AudioEvent::LoadIcon {
+            address: audio_address_from_json(d)?,
+            options: get_u8(d, "options")?,
+            bytes: get_hex(d, "bytes_hex")?,
+        },
+        event => return Err(format!("unhandled Audio event: {event}")),
+    })
 }
 
 fn security_command_from_json(d: &Value) -> Result<SecurityCommand, JErr> {

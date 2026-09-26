@@ -91,7 +91,7 @@ fn main() {
 fn check_vector(fname: &str, v: &Value) -> Result<(), String> {
     match fname {
         "decode_from_pci.jsonl" | "decode_to_pci.jsonl" => check_decode(v),
-        "encode.jsonl" | "aircon.jsonl" | "security.jsonl" => check_encode(v),
+        "encode.jsonl" | "aircon.jsonl" | "audio.jsonl" | "security.jsonl" => check_encode(v),
         "checksum.jsonl" => check_checksum(v),
         "ramp_rates.jsonl" => check_ramp(v),
         "mqtt_topics.jsonl" => check_topic(v),

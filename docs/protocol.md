@@ -2,7 +2,7 @@
 
 ## C-Bus packets
 
-`cbus-protocol` models point-to-multipoint, point-to-point, routed point-to-point-to-multipoint, device-management, reset, confirmation, error, and special packet forms. It includes CAL identify, recall, reply, and extended messages; lighting, Air-Conditioning, Security, clock, enable, temperature, and status-request SALs; binary and Manchester status reports; checksum helpers; ramp-rate conversion; and stable packet JSON.
+`cbus-protocol` models point-to-multipoint, point-to-point, routed point-to-point-to-multipoint, device-management, reset, confirmation, error, and special packet forms. It includes CAL identify, recall, reply, and extended messages; lighting, Air-Conditioning, Audio, Security, clock, enable, temperature, and status-request SALs; binary and Manchester status reports; checksum helpers; ramp-rate conversion; and stable packet JSON.
 
 Air-Conditioning application `0xAC` has typed encode/decode coverage for the
 eleven commands registered by C-Gate 3.4: refresh, ward off/on, zone HVAC and
@@ -17,6 +17,18 @@ plant output levels. They have canonical `aircon_status` JSON and remain typed
 transport events while a command confirmation is pending. Application dispatch
 handles extended humidity schedule opcode `0xA9` before the generic dynamic
 label prefix. Unknown opcodes, reserved bits and malformed ranges fail closed.
+
+Audio application `0xCD` has typed encode/decode coverage for all 19 C-Gate
+3.4 commands, both native address forms, and the retained rate-family opcode
+overlaps. Canonical JSON uses `audio` for commands and `audio_event` for the
+intended standard-label observations. Exact command and observation bytes are
+in `rust/testdata/vectors/audio.jsonl`; the isolated C-Gate capture, boundary
+grammar, Z-function transformations, and native label/icon decoder defect are
+in `rust/testdata/fixtures/native_cgate_audio.json`. C-Gate 3.4.0.2001 silently
+drops valid standard Audio label/icon frames because its decoder compares a
+byte count with a hexadecimal character count. The Rust decoder implements
+the intended retained A0 layout as an explicit repair and does not accept C0
+Unicode as native Audio traffic.
 
 Security application `0xD0` has typed encode/decode coverage for all seven
 C-Gate 3.4 commands and every native event opcode from `0x80` through `0x98`.

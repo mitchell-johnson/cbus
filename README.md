@@ -136,6 +136,9 @@ cbus-toolkit cgate --host 127.0.0.1 --timeout 120 edlt-widget-groups //PROJECT/2
 cbus-toolkit cgate --host 127.0.0.1 label cache-clear //PROJECT/254/56 5 --key 2
 cbus-toolkit cgate --host 127.0.0.1 exec 'AIRCON ?'
 cbus-toolkit cgate --host 127.0.0.1 exec 'AIRCON SET_ZONE_HVAC_MODE //PROJECT/254/172 1 0,1 3 0 1 0 1 255 230 64'
+cbus-toolkit cgate --host 127.0.0.1 exec 'AUDIO ?'
+cbus-toolkit cgate --host 127.0.0.1 exec 'AUDIO REQUEST_CURRENT_FEED //PROJECT/254/205 1 2'
+cbus-toolkit cgate --host 127.0.0.1 exec 'AUDIO SET_FEED //PROJECT/254/205 1 2 4 0'
 cbus-toolkit cgate --host 127.0.0.1 exec 'SECURITY ?'
 cbus-toolkit cgate --host 127.0.0.1 exec 'SECURITY STATUS_REQUEST //PROJECT/254/208 1'
 cbus-toolkit cgate --host 127.0.0.1 exec 'SECURITY ARM //PROJECT/254/208 away'
@@ -229,6 +232,20 @@ establish controller acceptance or the resulting HVAC state. Incoming AIRCON
 reports are available to C-Gate event clients; cmqttd does not expose an MQTT
 HVAC state schema.
 
+`AUDIO ?` lists all 19 maintained C-Gate 3.4 Audio commands for application
+205. Both multiplexer/zone and `Z function` forms use the retained wire
+encoding, including native low-bit transformations and the native 0..7 error
+code range. Read/report requests remain open under the optional LOGIN gate;
+amplifier, feed, ramp, mute and common-control operations require `LOGIN` when
+the gate is armed. Success requires a correlated confirmation on the current
+PCI generation. Routed Audio writes remain fail closed because no retained
+routed-write capture exists. Incoming Audio command traffic reaches C-Gate
+event clients. C-Gate 3.4 advertises Audio `label` and `load_icon` events, but
+the retained build silently drops valid standard frames because of a decoder
+length bug; cmqttd decodes the intended retained A0 layout as an explicit
+repair and does not claim byte-for-byte native event behavior for those two
+events. No MQTT Audio state schema is invented.
+
 `SECURITY ?` lists all seven maintained C-Gate 3.4 Security commands for
 application 208 on the configured direct network. `STATUS_REQUEST` and
 `REQUEST_ZONE_NAME` remain open under the optional LOGIN gate; arm, tamper,
@@ -238,7 +255,49 @@ not establish alarm-panel acceptance or resulting state. Incoming Security
 events, zone names and packed status reports reach C-Gate event clients.
 cmqttd publishes no invented MQTT alarm-panel state.
 
-**Full C-Gate replacement is the target, not the current completion claim.** Hardware-backed lighting, all eleven maintained AIRCON/HVAC commands and all seven maintained SECURITY commands on the configured direct network, C-Gate `DO` object methods for lighting, direct and bridged read-only synchronization, guarded KEYGL5 FactoryDefault, persistent named-scene record/playback, Trigger Control, Enable Control, clock, Temperature Broadcast, native text/icon/Unicode/dynamic-bitmap label commands, standard label-cache clear, eDLT dynamic-label clear, complete-coverage `NET PINGU`, identity-populating `NET SYNC`, five-pass general `NET SYNCNEW`, shared-interface read-only `NET PROJECT_IDENTIFY`, verified physical `NET SET_PROJECT_IDENTIFY` parameter-35 writes, duplicate-aware `NET CHECKUNIT`, guarded physical unit readdressing, the bounded two-unit `NET UNRAVELUNIT ... 255 MATCHDB` workflow, unit identity, schema-driven physical `PP LOAD`, verified physical `PP SAVE` for `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and `goc2` parameters, extended-memory access, live observations, and persistent database operations are implemented while MQTT continues on the same CNI connection. `DBNETWORKPATH` resolves native compact and OID routes, and `NET PINGU`, `NET SYNC`, general `NET SYNCNEW`, `DO ... SYNC`, and `NET CHECKUNIT` support source routes through one to six bridges with strict Reply Network correlation and per-network volatile caches. Direct targeted `NET SYNCNEW` also runs the three native duplicate challenges. AIRCON and SECURITY success means the broadcast received a positive PCI confirmation; physical controller or alarm-panel acceptance and resulting state have not been validated. Routed AIRCON, routed SECURITY, routed writes, routed OEM eDLT metadata, routed targeted `SYNCNEW`, and bridged commissioning mutations remain unavailable. When `--cgate-auth-file` is configured, log in before an AIRCON or SECURITY mutation. `NET SYNCNEW` and `NET SET_PROJECT_IDENTIFY` update the volatile physical cache and do not create persistent project units. The unravel backend requires exactly two known serials at address 255, two unique empty database destinations, and a direct network; broader unravel cases remain unavailable. FactoryDefault acceptance proves the one-shot unit ACK but does not yet prove post-reset readback, reboot, retained address or persistence. Scene recording captures observed lighting levels on the configured network; playback sends confirmed zero-time ramps and requests physical readback. Direct and page-aware lock-protected fields and unit readdressing use the native one-use challenge phase; GIU uses native halt/store/resume, GOC-family programming uses its address-prefixed parameter-`0xFF` transport, and changed C-Bus 3 saves complete the native Save-to-NVM EXECUTE/POLL sequence before reporting success. Physical programming requires privately installed decoded unit specifications. Unsupported protection modes return explicit errors instead of simulated success. See the [supported operations and remaining work](docs/cmqttd-cgate.md).
+**Full C-Gate replacement is the target, not the current completion claim.**
+Hardware-backed lighting, all eleven maintained AIRCON/HVAC commands, all 19
+maintained AUDIO commands and all seven maintained SECURITY commands on the
+configured direct network are implemented. The same endpoint implements
+C-Gate `DO` object methods for lighting, direct and bridged read-only
+synchronization, guarded KEYGL5 FactoryDefault, persistent named-scene
+record/playback, Trigger Control, Enable Control, clock, Temperature Broadcast,
+native text/icon/Unicode/dynamic-bitmap label commands, standard label-cache
+clear, eDLT dynamic-label clear, complete-coverage `NET PINGU`,
+identity-populating `NET SYNC`, five-pass general `NET SYNCNEW`,
+shared-interface read-only `NET PROJECT_IDENTIFY`, verified physical
+`NET SET_PROJECT_IDENTIFY` parameter-35 writes, duplicate-aware
+`NET CHECKUNIT`, guarded physical unit readdressing, the bounded two-unit
+`NET UNRAVELUNIT ... 255 MATCHDB` workflow, unit identity, schema-driven
+physical `PP LOAD`, verified physical `PP SAVE` for `direct`, `edlt`, `paged`,
+`ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and `goc2` parameters,
+extended-memory access, live observations, and persistent database operations
+while MQTT continues on the same CNI connection. `DBNETWORKPATH` resolves
+native compact and OID routes, and `NET PINGU`, `NET SYNC`, general
+`NET SYNCNEW`, `DO ... SYNC`, and `NET CHECKUNIT` support source routes through
+one to six bridges with strict Reply Network correlation and per-network
+volatile caches. Direct targeted `NET SYNCNEW` also runs the three native
+duplicate challenges. AIRCON, AUDIO and SECURITY success means the broadcast
+received a positive PCI confirmation; physical controller or alarm-panel
+acceptance and resulting state have not been validated. Routed AIRCON, AUDIO
+and SECURITY, routed writes, routed OEM eDLT metadata, routed targeted
+`SYNCNEW`, and bridged commissioning mutations remain unavailable. When
+`--cgate-auth-file` is configured, log in before an AIRCON, AUDIO or SECURITY
+mutation. `NET SYNCNEW` and `NET SET_PROJECT_IDENTIFY` update the volatile
+physical cache and do not create persistent project units. The unravel backend
+requires exactly two known serials at address 255, two unique empty database
+destinations, and a direct network; broader unravel cases remain unavailable.
+FactoryDefault acceptance proves the one-shot unit ACK but does not yet prove
+post-reset readback, reboot, retained address or persistence. Scene recording
+captures observed lighting levels on the configured network; playback sends
+confirmed zero-time ramps and requests physical readback. Direct and
+page-aware lock-protected fields and unit readdressing use the native one-use
+challenge phase; GIU uses native halt/store/resume, GOC-family programming uses
+its address-prefixed parameter-`0xFF` transport, and changed C-Bus 3 saves
+complete the native Save-to-NVM EXECUTE/POLL sequence before reporting success.
+Physical programming requires privately installed decoded unit specifications.
+Unsupported protection modes return explicit errors instead of simulated
+success. See the [supported operations and remaining work](docs/cmqttd-cgate.md).
 
 ## Development tools and simulation
 

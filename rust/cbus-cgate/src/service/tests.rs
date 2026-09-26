@@ -741,6 +741,272 @@ async fn observed_aircon_status_and_command_are_fanned_to_event_clients() {
 }
 
 #[tokio::test]
+async fn audio_help_validation_routing_and_auth_fail_before_pci_io() {
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    service
+        .set_auth_token_hash(crate::auth::sha256(b"audio-test-token"))
+        .unwrap();
+    let mut client = ClientState::default();
+
+    let help = service.handle(&mut client, "[h] AUDIO").await;
+    assert_eq!(help.status, 101);
+    let help = format_response(&help);
+    assert!(help.starts_with("[h] 101-Help: AUDIO commands:\n"));
+    assert!(help.ends_with(
+        "[h] 101 Help:  AUDIO ZONE_FEED_LABEL_REQUEST - Send a Zone Feed Label Request command\n"
+    ));
+
+    for request in [
+        "CURRENT_FEED",
+        "OUTPUT_DEVICE_STATUS_REQUEST",
+        "OUTPUT_ERROR_CODE",
+        "REQUEST_CURRENT_FEED",
+        "ZONE_DESCRIPTOR_REQUEST",
+        "ZONE_FEED_LABEL_REQUEST",
+    ] {
+        assert!(!super::requires_programming_auth(
+            "AUDIO",
+            request,
+            &["AUDIO".into(), request.into()]
+        ));
+    }
+    let locked = service
+        .handle(&mut client, "[locked] AUDIO ON 254/205 1 2 4")
+        .await;
+    assert_eq!(locked.final_text, "420 LOGIN required");
+
+    for (command, status) in [
+        ("AUDIO BOGUS", 400),
+        ("AUDIO ON 254/204 1 2 4", 420),
+        ("AUDIO REQUEST_CURRENT_FEED //OTHER/254/205 1 2", 401),
+        ("AUDIO REQUEST_CURRENT_FEED 254/204 1 2", 402),
+        ("AUDIO REQUEST_CURRENT_FEED 254/205 3 2", 400),
+        ("AUDIO REQUEST_CURRENT_FEED 254/205 1 8", 400),
+        ("AUDIO REQUEST_CURRENT_FEED 254/205 Z 256", 400),
+        ("AUDIO OUTPUT_DEVICE_STATUS_REQUEST 254/205 1", 400),
+        ("AUDIO CURRENT_FEED 254/205 1 2 4 5", 400),
+    ] {
+        let response = service.handle(&mut client, &format!("[v] {command}")).await;
+        assert_eq!(response.status, status, "{command}: {response:?}");
+    }
+    assert!(
+        tokio::time::timeout(std::time::Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err(),
+        "rejected AUDIO commands must not reach PCI"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn audio_native_error_envelopes_are_exact_and_make_no_pci_write() {
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut client = ClientState::default();
+    let cases = [
+        ("AUDIO BOGUS", "400 Syntax Error."),
+        (
+            "AUDIO ON",
+            "400 Syntax Error: Missing parameter : <application>",
+        ),
+        (
+            "AUDIO ON 254/205",
+            "400 Syntax Error: Missing parameter : <multiplexer>",
+        ),
+        (
+            "AUDIO ON 254/205 0 0",
+            "400 Syntax Error: Missing parameter : <function code>",
+        ),
+        (
+            "AUDIO ON 254/205 0 0 0 EXTRA",
+            "400 Syntax Error: Too many parameters",
+        ),
+        (
+            "AUDIO CURRENT_FEED ?",
+            "401 Bad object or device ID: ? (Network not found)",
+        ),
+        (
+            "AUDIO ON //OTHER/254/205 0 0 0",
+            "401 Bad object or device ID: //OTHER/254/205 (Object not found)",
+        ),
+        (
+            "AUDIO ON 253/205 0 0 0",
+            "401 Bad object or device ID: 253/205 (Network not found)",
+        ),
+        (
+            "AUDIO ON 254/204 0 0 0",
+            "402 Operation not supported by: 254/204",
+        ),
+        (
+            "AUDIO ON 254/205 X 0",
+            "400 Syntax Error: Invalid integer parameter : <multiplexer>",
+        ),
+        (
+            "AUDIO ON 254/205 Z",
+            "400 Syntax Error: Missing parameter : <zone code>",
+        ),
+        (
+            "AUDIO CURRENT_FEED 254/205 0 0 0 5",
+            "400 Syntax Error: Integer parameter is out of range : <gain>",
+        ),
+        (
+            "AUDIO OUTPUT_COMMON_CONTROL 254/205 1",
+            "400 Syntax Error: Integer parameter is out of range : <control code>",
+        ),
+        (
+            "AUDIO OUTPUT_ERROR_CODE 254/205 Z 0 0",
+            "400 Syntax Error: Too many parameters",
+        ),
+        (
+            "AUDIO MUTE 254/205 0 0 -1",
+            "400 Syntax Error: Integer parameter is out of range : <mode>",
+        ),
+        (
+            "AUDIO RAMP 254/205 0 0 0 0 16",
+            "400 Syntax Error: Integer parameter is out of range : <rate>",
+        ),
+        (
+            "AUDIO SET_FEED 254/205 Z 0 2",
+            "400 Syntax Error: Integer parameter is out of range : <option>",
+        ),
+    ];
+    for (index, (command, expected)) in cases.into_iter().enumerate() {
+        let response = service
+            .handle(&mut client, &format!("[error-{index}] {command}"))
+            .await;
+        assert_eq!(response.final_text, expected, "{command}");
+    }
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err(),
+        "invalid AUDIO forms must fail before PCI I/O"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn every_audio_command_uses_native_confirmed_sal() {
+    let path = state_path();
+    let (pci, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        let mut line = Vec::new();
+        remote_read.read_until(b'\r', &mut line).await.unwrap();
+    }
+    reset.await.unwrap().unwrap();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+
+    let cases = [
+        ("AUDIO CURRENT_FEED 254/205 1 2 4 4", "\\05CD0022E854"),
+        ("AUDIO DYNAMIC_1 254/205 1 2", "\\05CD00025600"),
+        ("AUDIO DYNAMIC_2 254/205 1 2", "\\05CD000256FF"),
+        ("AUDIO HIGH_PRIORITY 254/205 2 99 7", "\\05CD003AC263"),
+        ("AUDIO MUTE 254/205 1 2 1", "\\05CD00025501"),
+        ("AUDIO NEXT_FEED 254/205 1 2", "\\05CD00025602"),
+        ("AUDIO NEXT_LANGUAGE 254/205 1 2", "\\05CD00025611"),
+        ("AUDIO OFF 254/205 1 2 4", "\\05CD000154"),
+        ("AUDIO ON 254/205 Z 200", "\\05CD0079C8"),
+        ("AUDIO OUTPUT_COMMON_CONTROL 254/205 0", "\\05CD0002E500"),
+        (
+            "AUDIO OUTPUT_DEVICE_STATUS_REQUEST 254/205 0",
+            "\\05CD0002E300",
+        ),
+        ("AUDIO OUTPUT_ERROR_CODE 254/205 1 2 7", "\\05CD0002E657"),
+        ("AUDIO PREVIOUS_FEED 254/205 1 2", "\\05CD00025605"),
+        ("AUDIO RAMP 254/205 1 2 4 123 15", "\\05CD007A547B"),
+        ("AUDIO REQUEST_CURRENT_FEED 254/205 1 2", "\\05CD0002E750"),
+        ("AUDIO SET_FEED 254/205 1 2 4 1", "\\05CD000AE954"),
+        ("AUDIO TERMINATERAMP 254/205 1 2 4", "\\05CD000954"),
+        (
+            "AUDIO ZONE_DESCRIPTOR_REQUEST 254/205 1 2",
+            "\\05CD0002E050",
+        ),
+        (
+            "AUDIO ZONE_FEED_LABEL_REQUEST 254/205 1 2",
+            "\\05CD0002E250",
+        ),
+    ];
+    for (index, (command, expected)) in cases.into_iter().enumerate() {
+        let sending = tokio::spawn({
+            let service = service.clone();
+            let line = format!("[{index}] {command}");
+            async move { service.handle(&mut ClientState::default(), &line).await }
+        });
+        let mut frame = Vec::new();
+        remote_read.read_until(b'\r', &mut frame).await.unwrap();
+        assert!(
+            frame.starts_with(expected.as_bytes()),
+            "{command}: {frame:?}"
+        );
+        let confirmation = frame[frame.len() - 2];
+        remote_write.write_all(&[confirmation, b'.']).await.unwrap();
+        let response = sending.await.unwrap();
+        assert_eq!(response.final_text, "200 OK.", "{command}: {response:?}");
+    }
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn observed_audio_commands_labels_and_icons_are_fanned_to_event_clients() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut events = service.events.subscribe();
+    service
+        .observe(&CBusEvent::AudioCommand {
+            source: Some(4),
+            command: AudioCommand::CurrentFeed {
+                address: AudioAddress::zone(1, 2, 4).unwrap(),
+                gain: 3,
+            },
+        })
+        .await;
+    assert_eq!(
+        events.try_recv().unwrap(),
+        "#e# audio current_feed //HARNESS/254/205 1 2 4 3 sourceUnit=4"
+    );
+    service
+        .observe(&CBusEvent::AudioEvent {
+            source: None,
+            event: cbus_protocol::sal::audio::AudioEvent::Label {
+                address: AudioAddress::zone(1, 1, 4).unwrap(),
+                options: 32,
+                language: 1,
+                bytes: b"EDLT".to_vec(),
+            },
+        })
+        .await;
+    assert_eq!(
+        events.try_recv().unwrap(),
+        "#e# audio label //HARNESS/254/205 1 1 4 0 1 1 45444C54 sourceUnit=0"
+    );
+    service
+        .observe(&CBusEvent::AudioEvent {
+            source: Some(5),
+            event: cbus_protocol::sal::audio::AudioEvent::LoadIcon {
+                address: AudioAddress::zone(1, 1, 4).unwrap(),
+                options: 68,
+                bytes: vec![1, 2, 3],
+            },
+        })
+        .await;
+    assert_eq!(
+        events.try_recv().unwrap(),
+        "#e# audio load_icon //HARNESS/254/205 1 1 4 68 2 010203 sourceUnit=5"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn security_invalid_forms_fail_before_io_and_mutations_require_auth() {
     let path = state_path();
     let (pci, mut remote) = pci();
@@ -895,6 +1161,54 @@ async fn confirmed_application_on_retired_pci_generation_fails_closed() {
 }
 
 #[tokio::test]
+async fn confirmed_audio_on_retired_pci_generation_fails_closed() {
+    let path = state_path();
+    let (old_pci, old_remote) = pci();
+    let (old_read, mut old_write) = tokio::io::split(old_remote);
+    let mut old_read = BufReader::new(old_read);
+    let reset = tokio::spawn({
+        let pci = old_pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        let mut line = Vec::new();
+        old_read.read_until(b'\r', &mut line).await.unwrap();
+    }
+    reset.await.unwrap().unwrap();
+    let service = Service::new(&fixture(), None, path.clone(), old_pci, None).unwrap();
+    let command = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[g] AUDIO REQUEST_CURRENT_FEED 254/205 1 2",
+                )
+                .await
+        }
+    });
+    let mut frame = Vec::new();
+    old_read.read_until(b'\r', &mut frame).await.unwrap();
+    assert!(frame.starts_with(b"\\05CD0002E750"), "{frame:?}");
+    let confirmation = frame[frame.len() - 2];
+    let (replacement, _replacement_remote) = pci();
+    tokio::time::timeout(Duration::from_secs(2), service.set_pci(replacement))
+        .await
+        .expect("set_pci must complete");
+    old_write.write_all(&[confirmation, b'.']).await.unwrap();
+    let response = tokio::time::timeout(Duration::from_secs(2), command)
+        .await
+        .expect("retired generation command must complete")
+        .unwrap();
+    assert_eq!(response.status, 502, "{response:?}");
+    assert_eq!(
+        response.final_text,
+        "502 Audio delivery failed: PCI connection generation changed"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn database_survives_restart_but_live_state_and_sessions_do_not() {
     let path = state_path();
     let (pci, _remote) = pci();
@@ -1023,19 +1337,21 @@ async fn programming_ownership_and_unimplemented_hardware_are_enforced() {
             .status,
         408
     );
-    for command in [
-        "AUDIO PLAY //HARNESS/254/192 1",
-        "PP WRITE_PATCH S anything",
-    ] {
-        assert_eq!(
-            service
-                .handle(&mut first, &format!("[5] {command}"))
-                .await
-                .status,
-            502,
-            "{command}"
-        );
-    }
+    assert_eq!(
+        service
+            .handle(&mut first, "[5] AUDIO PLAY //HARNESS/254/192 1")
+            .await
+            .status,
+        400,
+        "the implemented AUDIO family retains native unknown-subcommand syntax"
+    );
+    assert_eq!(
+        service
+            .handle(&mut first, "[5] PP WRITE_PATCH S anything")
+            .await
+            .status,
+        502
+    );
     assert_eq!(
         service
             .handle(&mut first, "[5] SET //HARNESS/254/p/5 Address 5")

@@ -24,6 +24,17 @@ does not publish an invented MQTT HVAC state model. A successful command proves
 PCI-confirmed broadcast delivery only; controller acceptance, resulting state,
 physical persistence and bridged routing remain outside the retained evidence.
 
+The endpoint also implements all 19 maintained C-Gate 3.4 AUDIO commands for
+application 205 on the configured direct network. Strict grammar and exact SAL
+come from an isolated native 3.4 oracle. Commands use the shared PCI
+confirmation lane and the active-generation success guard; routed writes fail
+closed. Incoming command SAL remains typed on the event fanout. The A0
+label/load-icon decoder is an explicit repair for an evidenced native defect
+that suppresses its advertised events, so it is not native fanout parity.
+cmqttd defines no MQTT Audio state. A successful command proves
+PCI-confirmed broadcast delivery only; audio-controller acceptance, resulting
+state and physical persistence remain outside the retained evidence.
+
 The same endpoint implements all seven maintained C-Gate 3.4 SECURITY
 commands for application 208 on the configured direct network. They use the
 shared PCI confirmation lane and reject malformed modes, escapes, message
@@ -61,7 +72,7 @@ Toolkit modules live under `toolkit-cli/src/cbus_toolkit/`; its tests are under 
 
 | Crate | Responsibility |
 | --- | --- |
-| `cbus-protocol` | Typed C-Bus packets, CAL, SAL (including Air-Conditioning and Security), reports, checksums, encoding, decoding, and stable JSON |
+| `cbus-protocol` | Typed C-Bus packets, CAL, SAL (including Air-Conditioning, Audio and Security), reports, checksums, encoding, decoding, and stable JSON |
 | `cbus-transport` | TCP/serial framing, PCI initialization, confirmations, retries, reconnection, and flow control |
 | `cbus-mqtt` | MQTT topics and payloads, Home Assistant discovery, and CBZ/XML project metadata |
 | `cmqttd` | Runtime orchestration between transport and MQTT |
@@ -76,7 +87,7 @@ Put new behavior in its owning crate. Avoid embedding byte-level rules in a bina
 
 ## Protocol behavior
 
-The protocol crate covers point-to-multipoint, point-to-point, device-management, install-MMI status, reset, confirmation, error, and special packets. CAL support includes identify, recall, reply, NAK, standard label-cache clear, and extended execute, poll, status reply, and legacy extended messages. SAL support includes lighting, Air-Conditioning commands and reports, Trigger Control, clock, Enable Control, temperature, dynamic labels, status requests and install-MMI requests. Strict decoding rejects malformed input; lenient decoding retains compatibility behavior for imperfect frames. Install-MMI response decoding is enabled only during its active transaction because its wire header is ambiguous with priority-three addressed traffic.
+The protocol crate covers point-to-multipoint, point-to-point, device-management, install-MMI status, reset, confirmation, error, and special packets. CAL support includes identify, recall, reply, NAK, standard label-cache clear, and extended execute, poll, status reply, and legacy extended messages. SAL support includes lighting, Air-Conditioning commands and reports, all maintained Audio commands plus label/load-icon events, Security, Trigger Control, clock, Enable Control, temperature, dynamic labels, status requests and install-MMI requests. Strict decoding rejects malformed input; lenient decoding retains compatibility behavior for imperfect frames. Install-MMI response decoding is enabled only during its active transaction because its wire header is ambiguous with priority-three addressed traffic.
 
 The transport reassembles bounded byte streams, initializes the PCI, assigns confirmation codes, retries unconfirmed frames, and gives interactive commands priority over background status sweeps. It supports TCP CNI and serial PCI connections.
 
@@ -120,10 +131,10 @@ Supported project inputs are a one-file `.cbz` zip archive or bare project XML. 
 
 ## Test data and evidence
 
-- `rust/testdata/vectors/` contains JSONL cases for checksums, frame encode/decode, native AIRCON and SECURITY commands/reports, native label-cache clear, ramp rates, MQTT topics, Home Assistant discovery, and strict selected-serial plan interchange.
-- `rust/testdata/fixtures/` contains small non-production project and behavior fixtures, including sanitized disposable-native evidence for AIRCON, SECURITY and project copy/delete behavior.
+- `rust/testdata/vectors/` contains JSONL cases for checksums, frame encode/decode, native AIRCON, AUDIO and SECURITY commands/events, native label-cache clear, ramp rates, MQTT topics, Home Assistant discovery, and strict selected-serial plan interchange.
+- `rust/testdata/fixtures/` contains small non-production project and behavior fixtures, including sanitized disposable-native evidence for AIRCON, AUDIO, SECURITY and project copy/delete behavior.
 - `cbus-golden-tests` generates a named test per committed vector.
-- `cmqttd` system tests run the real daemon against an in-process MQTT broker and scripted PCI, including AIRCON and SECURITY command/report, correlation, authentication and MQTT-continuity coverage plus dedicated continuity checks after project administration.
+- `cmqttd` system tests run the real daemon against an in-process MQTT broker and scripted PCI, including AIRCON, AUDIO and SECURITY command/event, correlation, authentication and MQTT-continuity coverage plus dedicated continuity checks after project administration.
 - `cgate-mock` integration tests cover framing, state, sessions, event fanout, here-documents, inventory reachability, and programming access.
 - `toolkit-cli/tests/test_rust_cgate_interop.py` drives the Rust mock using the production Python C-Gate client and typed workflows.
 

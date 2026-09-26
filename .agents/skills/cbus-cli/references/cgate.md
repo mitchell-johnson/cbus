@@ -103,6 +103,74 @@ authentication, pre-I/O rejection, and MQTT continuity. A transport regression
 pins that a report does not consume the pending command confirmation. No live
 HVAC acceptance has been performed.
 
+### Audio commands
+
+cmqttd implements every maintained C-Gate 3.4 `AUDIO` subcommand for Audio
+application 205 (`$CD`) on its configured direct network. Start with `AUDIO ?`
+to retrieve the native-shaped command list. Use `APP` as either
+`NETWORK/205` or `//PROJECT/NETWORK/205`:
+
+```text
+AUDIO CURRENT_FEED APP MUX ZONE FEED GAIN
+AUDIO DYNAMIC_1 APP MUX ZONE
+AUDIO DYNAMIC_2 APP MUX ZONE
+AUDIO HIGH_PRIORITY APP MUX LEVEL FEED
+AUDIO MUTE APP MUX ZONE MODE
+AUDIO NEXT_FEED APP MUX ZONE
+AUDIO NEXT_LANGUAGE APP MUX ZONE
+AUDIO OFF APP MUX ZONE FUNCTION
+AUDIO ON APP MUX ZONE FUNCTION
+AUDIO OUTPUT_COMMON_CONTROL APP [CONTROL]
+AUDIO OUTPUT_DEVICE_STATUS_REQUEST APP [PARAMETER]
+AUDIO OUTPUT_ERROR_CODE APP MUX ZONE ERROR
+AUDIO PREVIOUS_FEED APP MUX ZONE
+AUDIO RAMP APP MUX ZONE FUNCTION LEVEL RATE
+AUDIO REQUEST_CURRENT_FEED APP MUX ZONE
+AUDIO SET_FEED APP MUX ZONE FEED OPTION
+AUDIO TERMINATERAMP APP MUX ZONE FUNCTION
+AUDIO ZONE_DESCRIPTOR_REQUEST APP MUX ZONE
+AUDIO ZONE_FEED_LABEL_REQUEST APP MUX ZONE
+```
+
+Except for `HIGH_PRIORITY`, `OUTPUT_COMMON_CONTROL`,
+`OUTPUT_DEVICE_STATUS_REQUEST`, and `OUTPUT_ERROR_CODE`, replace the address
+columns with `Z FUNCTION` to use native Z addressing. `MUX` is 0–2, `ZONE`
+and feed/function/error values are 0–7, gain is 0–4, level is 0–255, ramp rate
+is 0–15 and set-feed option is 0–1. All numeric fields accept decimal or
+`$`-prefixed hexadecimal. The encoder preserves native low-bit masking for
+dynamic/feed/language, mute and request operations. Z ramp values at or above
+192 can collide with other native Audio opcodes on decode; command acceptance
+does not imply round-trip identity.
+
+Native 3.4 accepts mute modes 0–7 and 255. Modes 8–254 are also transmitted
+but produce the native mixed 400 continuation followed by final 200; `-1` and
+256 fail before I/O. An omitted or `-1` output-common-control or
+output-device-status parameter encodes `FF`; only explicit zero is otherwise
+accepted. Output error codes span 0–7 despite the older manual's narrower
+description. Preserve these cases when generating commands or interpreting
+responses.
+
+All valid commands wait for the correlated PCI confirmation on the active
+connection generation. A 200 proves interface delivery only, not
+audio-controller acceptance or resulting state. Routed Audio writes fail
+closed. When LOGIN is armed, authenticate for the thirteen state-changing
+forms; current-feed, output status/error, request-current-feed and the two zone
+metadata requests remain open.
+
+Incoming Audio command SAL is decoded and fanned out to `EVENT ON` clients.
+cmqttd also decodes evidenced A0 label/load-icon fields as an explicit repair:
+the maintained native C-Gate advertises these events but suppresses every valid
+frame because of an impossible byte-length versus hex-character-length check.
+Do not describe that repair as native event parity. There is no Audio MQTT
+state contract. `CMQTT CAPABILITIES` exposes `audio_commands`, `audio_events`,
+confirmed-broadcast delivery, event fanout and `audio_mqtt_state: false`.
+Ground wire behavior in `rust/testdata/fixtures/native_cgate_audio.json` and
+`rust/testdata/vectors/audio.jsonl`; the real-daemon
+`system_cgate_audio.rs` test covers all commands, grammar, authentication,
+confirmation recovery, event fanout and MQTT continuity with fake PCI. A
+service regression also replaces the PCI while an Audio confirmation is
+pending and rejects the retired generation's eventual success.
+
 ### Security commands
 
 cmqttd implements the complete maintained C-Gate 3.4 SECURITY family for
