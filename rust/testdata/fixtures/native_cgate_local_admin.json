@@ -1,0 +1,129 @@
+{
+  "schema": "native-cgate-local-admin-evidence-v1",
+  "captured_at": "2026-09-26",
+  "oracle": {
+    "product": "Schneider Electric C-Gate",
+    "version": "3.4.0 build 2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "runtime": "Temurin Java 11",
+    "transport": "owned disposable child bound only to reserved IPv4 loopback ports",
+    "live_cbus_endpoint": false,
+    "site_project_used": false,
+    "cleanup_complete": true
+  },
+  "class_sha256": {
+    "com/clipsal/cgate/tag/DBGetJSONCommand.class": "6ae550477cf76cdc178945f2c4785843448e80f7928c81aded6e9a4cba8ed0fa",
+    "com/clipsal/cgate/nac/NacObjectListCommand.class": "eae8cc669ba61dbf8f0fd06bd7245aeab50230750fbbe05236227daa01801d4a",
+    "com/clipsal/cgate/nac/NacRoutingTableCommand.class": "20a3e4246b8c31e0690ff40d7548f6efb9decaddfeeab44b8621fb102386c729",
+    "com/clipsal/cgate/nac/NacTagMapCommand.class": "d19c22147dad89bf1842d61f027910507ea3711149d126998fe2b55f3574aabb",
+    "com/clipsal/cgate/cbus/event_channel/EventChannelCommandSet.class": "14303e855911e323c6d4b5f5414fc1f0ff2cd348f0e202ff69209dec40bc1268",
+    "kp.class": "384e87b19c6f7222e3cd301a9186321b8f15054cd936eca2250948f70c4e3884",
+    "kq.class": "76b5d97ab2709caceb59a93e75deeb26e13e958ebd0f8938b59a6d198063e6f9",
+    "kr.class": "69fe8b076cf60a8d1b1731983c808bf6c9d6b88d614b6968762898178dd0fccf",
+    "oS.class": "d0747dbcf5e236847c0cfa99652346a9f8ecd4de6407be257e2347f56a56245a",
+    "ph.class": "faaa47f52e28df849f4033965e430189e938ba64fd9e2416b0f37a3e9ead4df2"
+  },
+  "project": {
+    "help": [
+      "101-Help: PROJECT commands:",
+      "101-Help:  PROJECT ? Help for these commands",
+      "101-Help:  PROJECT ARCHIVE - Save a project as an archive",
+      "101-Help:  PROJECT CLOSE - Close a project on the server",
+      "101-Help:  PROJECT COPY - Copy a project to a new project",
+      "101-Help:  PROJECT DELETE - Delete a project",
+      "101-Help:  PROJECT DIR - Return a list of available projects in the current repository or all the respositories.",
+      "101-Help:  PROJECT DIRFULL - Return a list of available projects on the C-Gate Server",
+      "101-Help:  PROJECT LIST - Return a list of loaded projects on the C-Gate Server",
+      "101-Help:  PROJECT LOAD - Load a project from disk",
+      "101-Help:  PROJECT NEW - Create a new blank project",
+      "101-Help:  PROJECT RENAME - Rename a project",
+      "101-Help:  PROJECT REPAIR - Repair a project",
+      "101-Help:  PROJECT RESTORE - Restore a project from an archive",
+      "101-Help:  PROJECT SAVE - Save a project to disk",
+      "101-Help:  PROJECT START - Start a project",
+      "101-Help:  PROJECT STOP - Stop a project",
+      "101 Help:  PROJECT USE - Set the current project to be used by this command session"
+    ],
+    "dirfull_empty": "124 no projects found",
+    "dirfull_saved_project": "123 project=\"TEST\" desc=\"TEST\"",
+    "repository_note": "PROJECT NEW alone is not in DIRFULL; PROJECT SAVE makes the repository row visible. cmqttd's atomic JSON repository persists every modeled project immediately."
+  },
+  "dbgetjson": {
+    "help": [
+      "101-Help: DBGETJSON commands:",
+      "101-Help:  DBGETJSON ? Help for these commands",
+      "101-Help:  DBGETJSON NAC_OBJECTS_LIST - ",
+      "101-Help:  DBGETJSON NAC_ROUTING_TABLE - ",
+      "101 Help:  DBGETJSON NAC_TAGMAP - "
+    ],
+    "synthetic_unit": "//TEST/254/p/1",
+    "nac_objects_list_without_definition": [
+      "346 []"
+    ],
+    "nac_objects_list_yes_without_definition": [
+      "346 []"
+    ],
+    "nac_routing_table_without_definition": [
+      "345-Begin of JSON",
+      "346-[]",
+      "347 End of JSON"
+    ],
+    "nac_tagmap_empty_local_network": [
+      "345-Begin of JSON",
+      "346-[{\"address\":\"0\",\"cbustagmap\":{\"network\":\"Local\"}}]",
+      "347 End of JSON"
+    ],
+    "decompiled_scope": {
+      "object_list_optional_second_argument": "consumed; only case-sensitive yes enables extended output",
+      "object_list_missing_nac_definition": "one final 346 [] row without 345/347 framing",
+      "routing_and_tagmap": "345 Begin of JSON, 346 JSON document, 347 End of JSON"
+    }
+  },
+  "event_channel": {
+    "help": [
+      "101-Help: EVENT_CHANNEL commands:",
+      "101-Help:  EVENT_CHANNEL ? Help for these commands",
+      "101-Help:  EVENT_CHANNEL LIST - List of subscribe-able event channel types",
+      "101-Help:  EVENT_CHANNEL SUB - Subscribe to event channel specified",
+      "101 Help:  EVENT_CHANNEL UNSUB - Unsubscribe from event channel specified"
+    ],
+    "list": [
+      "130-{\"name\":\"deploy-queue.updated-entries\",\"description\":\"notifies when one or more <programmer> is inserted or removed from queue. (normal operation not notified).\"}",
+      "130-{\"name\":\"deploy-queue.debug\",\"description\":\"notifies debug messages from deploy queue\"}",
+      "130-{\"name\":\"deploy-queue.started\",\"description\":\"notifies when a <programmer> becomes active on deploy queue\"}",
+      "130-{\"name\":\"deploy-queue.ended\",\"description\":\"notifies when a <programmer> failed or completed\"}",
+      "200 OK."
+    ],
+    "sub_added": "200 OK: added",
+    "sub_repeat": "201 Service ready: already subscribed",
+    "unsub_removed": "200 OK: removed",
+    "unsub_repeat": "201 Service ready: already unsubscribed",
+    "invalid": [
+      "451-channel does not exist.",
+      "400 Syntax Error: Invalid parameter for <channel-type>: invalid"
+    ]
+  },
+  "advisory_locks": {
+    "native_help": {
+      "lock": [
+        "Syntax:  LOCK <object>",
+        "Sets an advisory lock on this object. If a lock is set, then",
+        "you must assume that the object is likely to be modified by the",
+        "holder of the lock.  Locks are released when sessions end, or after",
+        "a LOGIN command or with the use of UNLOCK."
+      ],
+      "unlock": [
+        "Syntax:  UNLOCK <object>",
+        "Releases an advisory lock on this object."
+      ]
+    },
+    "decompiled_responses": {
+      "locked": "225 <object-signature>: Locked.",
+      "already_locked": "425 <object-signature>: Already locked by:<owner>",
+      "unlocked": "226 <object-signature>: Unlocked.",
+      "unlock_failed": "426 <object-signature>: Unlock failed."
+    },
+    "lifecycle": "ownership is the command AccessContext; native help and object lock implementation release at session end, LOGIN, or UNLOCK",
+    "runtime_probe_boundary": "The disposable synthetic CNI never opened, so direct LOCK/UNLOCK probes correctly returned 401 Network not found. Success/status evidence comes from pinned oS/ph bytecode, not invented runtime output."
+  }
+}

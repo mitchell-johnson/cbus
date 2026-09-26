@@ -231,7 +231,14 @@ status reads and schema-backed writes with mandatory readback. It retains a
 bounded current-connection history of incoming and confirmed outgoing dynamic
 label traffic for Toolkit CLI inspection. Command connections also implement
 native-shaped `SESSION_ID` enumeration and one-shot tags, the `EVENTS` alias,
-and `QUIT`/`EXIT` reply-before-close behavior.
+and `QUIT`/`EXIT` reply-before-close behavior. It also exposes the exact
+four-channel `EVENT_CHANNEL` catalogue with connection-local SUB/UNSUB state,
+session-owned advisory `LOCK`/`UNLOCK`, the native `PROJECT` help and
+`PROJECT DIRFULL` repository view, and the three read-only `DBGETJSON` NAC
+projections. cmqttd does not retain vendor NAC object-list definitions, so its
+object and routing JSON are explicitly empty; TAGMAP covers the durable local
+network, application, group and level tags. Query `CMQTT CAPABILITIES` before
+depending on that bounded JSON scope.
 
 Programming sessions also implement specification-backed
 `PP RESET_TO_DEFAULTS`: declared defaults replace only the staged session
@@ -361,7 +368,9 @@ maintained `PORT` discovery, host enumeration, refresh, and probe family is
 implemented independently of the shared MQTT connection. The same endpoint
 implements C-Gate ACCESS ADD/DELETE/LIST/LOAD/SAVE with durable digest-only
 credentials and sandboxed snapshots, the complete CONFIG and FILE families
-over local durable compatibility state, and C-Gate
+over local durable compatibility state, local project/NAC JSON inventory,
+deploy-queue event-channel subscriptions and session-owned advisory locks,
+and C-Gate
 `DO` object methods for lighting, direct and bridged read-only synchronization,
 guarded KEYGL5 FactoryDefault, persistent named-scene record/playback, Trigger Control,
 Enable Control, clock, Temperature Broadcast, native text/icon/Unicode/dynamic-bitmap

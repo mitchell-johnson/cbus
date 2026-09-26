@@ -142,9 +142,12 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // The six DALI group roots moved fail_closed_502 -> local_database to
     // serve the exact retained help envelopes. The other sixty specialised
     // DALI leaves remain explicitly fail closed.
+    // Eleven local/session administration paths moved fail_closed_502 ->
+    // local_database: PROJECT root/DIRFULL, DBGETJSON root and three NAC
+    // projections, EVENT_CHANNEL LIST/SUB/UNSUB, and advisory LOCK/UNLOCK.
     assert_eq!(class_count(RoutingClass::Physical), 165);
-    assert_eq!(class_count(RoutingClass::LocalDatabase), 88);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 177);
+    assert_eq!(class_count(RoutingClass::LocalDatabase), 99);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 166);
     assert_eq!(class_count(RoutingClass::Obsolete400), 1);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here
@@ -185,6 +188,50 @@ fn access_rows_retain_native_roles_persistence_and_safety_repair_evidence() {
             entry.path
         );
     }
+}
+
+#[test]
+fn local_admin_rows_retain_native_oracle_and_boundary_evidence() {
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_local_admin.json"
+    ))
+    .expect("native local-admin evidence must remain valid JSON");
+    assert_eq!(fixture["oracle"]["version"], "3.4.0 build 2001");
+    assert_eq!(
+        fixture["oracle"]["jar_sha256"],
+        "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+    );
+    assert_eq!(fixture["oracle"]["live_cbus_endpoint"], false);
+    assert_eq!(fixture["oracle"]["cleanup_complete"], true);
+    assert_eq!(fixture["project"]["help"].as_array().unwrap().len(), 18);
+    assert_eq!(
+        fixture["project"]["dirfull_saved_project"],
+        "123 project=\"TEST\" desc=\"TEST\""
+    );
+    assert_eq!(
+        fixture["dbgetjson"]["nac_objects_list_without_definition"],
+        serde_json::json!(["346 []"])
+    );
+    assert_eq!(
+        fixture["dbgetjson"]["nac_routing_table_without_definition"],
+        serde_json::json!(["345-Begin of JSON", "346-[]", "347 End of JSON"])
+    );
+    assert_eq!(
+        fixture["event_channel"]["list"].as_array().unwrap().len(),
+        5
+    );
+    assert_eq!(
+        fixture["event_channel"]["sub_repeat"],
+        "201 Service ready: already subscribed"
+    );
+    assert_eq!(
+        fixture["advisory_locks"]["decompiled_responses"]["unlock_failed"],
+        "426 <object-signature>: Unlock failed."
+    );
+    assert!(fixture["advisory_locks"]["runtime_probe_boundary"]
+        .as_str()
+        .unwrap()
+        .contains("401 Network not found"));
 }
 
 #[test]

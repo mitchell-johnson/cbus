@@ -8645,3 +8645,339 @@ fn config_no_current_project_preserves_native_load_save_mixed_statuses() {
         assert_eq!(response.final_text, expected_final, "{body}");
     }
 }
+
+#[tokio::test]
+async fn local_admin_help_project_and_nac_json_match_native_envelopes() {
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut client = ClientState::default();
+
+    let project_help = service.handle(&mut client, "[project] PROJECT").await;
+    assert_eq!(project_help.status, 101);
+    assert_eq!(project_help.lines.len(), 17);
+    assert_eq!(project_help.lines[0], "Help: PROJECT commands:");
+    assert_eq!(
+        project_help.final_text,
+        "101 Help:  PROJECT USE - Set the current project to be used by this command session"
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[dir] PROJECT DIRFULL")
+            .await
+            .final_text,
+        "123 project=\"HARNESS\" desc=\"HARNESS\""
+    );
+
+    let help = service.handle(&mut client, "[json-help] DBGETJSON").await;
+    assert_eq!(help.lines.len(), 4);
+    assert_eq!(help.final_text, "101 Help:  DBGETJSON NAC_TAGMAP - ");
+    assert_eq!(
+        format_response(
+            &service
+                .handle(
+                    &mut client,
+                    "[objects] DBGETJSON NAC_OBJECTS_LIST //HARNESS/254/p/5 yes",
+                )
+                .await,
+        ),
+        "[objects] 346 []\n"
+    );
+    assert_eq!(
+        format_response(
+            &service
+                .handle(
+                    &mut client,
+                    "[routing] DBGETJSON NAC_ROUTING_TABLE //HARNESS/254/p/5",
+                )
+                .await,
+        ),
+        "[routing] 345-Begin of JSON\n[routing] 346-[]\n[routing] 347 End of JSON\n"
+    );
+    let tagmap = service
+        .handle(&mut client, "[tags] DBGETJSON NAC_TAGMAP //HARNESS/254/p/5")
+        .await;
+    assert_eq!(tagmap.status, 347);
+    assert_eq!(tagmap.lines[0], "345-Begin of JSON");
+    let document: serde_json::Value =
+        serde_json::from_str(tagmap.lines[1].strip_prefix("346-").unwrap()).unwrap();
+    assert_eq!(document[0]["address"], "0");
+    assert_eq!(document[0]["cbustagmap"]["network"], "Harness Network");
+    assert_eq!(document[1]["address"], "0/48");
+    assert_eq!(document[1]["cbustagmap"]["application"], "Lighting 48");
+    assert!(document.as_array().unwrap().iter().any(|row| {
+        row["address"] == "0/56/10"
+            && row["cbustagmap"]["group"] == "Lounge"
+            && row["cbustagmap"]["levels"] == serde_json::json!([])
+    }));
+    assert_eq!(tagmap.final_text, "347 End of JSON");
+
+    let missing = service
+        .handle(
+            &mut client,
+            "[missing] DBGETJSON NAC_TAGMAP //HARNESS/254/p/99",
+        )
+        .await;
+    assert_eq!(missing.status, 401);
+    assert!(missing.final_text.ends_with("(Unit not found)"));
+    let caps = service
+        .handle(&mut client, "[caps] CMQTT CAPABILITIES")
+        .await;
+    let caps: serde_json::Value = serde_json::from_str(&caps.lines[0]).unwrap();
+    assert_eq!(caps["project_dirfull"], true);
+    assert_eq!(caps["database_json_nac_object_definitions"], false);
+    assert_eq!(
+        caps["database_json_tagmap_scope"],
+        "network-application-group-level-tags"
+    );
+    assert!(
+        tokio::time::timeout(Duration::from_millis(10), remote.read_u8())
+            .await
+            .is_err(),
+        "local project and JSON reads must not write to PCI"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn event_channel_catalog_and_subscriptions_are_connection_local() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut first = ClientState::default();
+    let mut second = ClientState::default();
+
+    let help = service.handle(&mut first, "[help] EVENT_CHANNEL").await;
+    assert_eq!(help.status, 101);
+    assert_eq!(
+        help.final_text,
+        "101 Help:  EVENT_CHANNEL UNSUB - Unsubscribe from event channel specified"
+    );
+    let list = service
+        .handle(&mut first, "[list] EVENT_CHANNEL LIST")
+        .await;
+    let wire = format_response(&list);
+    assert!(wire.starts_with("[list] 130-{\"name\":\"deploy-queue.updated-entries\""));
+    assert!(wire.ends_with("[list] 200 OK.\n"));
+
+    assert_eq!(
+        service
+            .handle(
+                &mut first,
+                "[sub] EVENT_CHANNEL SUB deploy-queue.updated-entries",
+            )
+            .await
+            .final_text,
+        "200 OK: added"
+    );
+    assert_eq!(
+        service
+            .handle(
+                &mut first,
+                "[again] EVENT_CHANNEL SUB deploy-queue.updated-entries",
+            )
+            .await
+            .final_text,
+        "201 Service ready: already subscribed"
+    );
+    assert_eq!(
+        service
+            .handle(
+                &mut second,
+                "[other] EVENT_CHANNEL SUB deploy-queue.updated-entries",
+            )
+            .await
+            .final_text,
+        "200 OK: added"
+    );
+    assert_eq!(
+        service
+            .handle(
+                &mut first,
+                "[unsub] EVENT_CHANNEL UNSUB deploy-queue.updated-entries",
+            )
+            .await
+            .final_text,
+        "200 OK: removed"
+    );
+    let invalid = service
+        .handle(&mut first, "[bad] EVENT_CHANNEL SUB invalid")
+        .await;
+    assert_eq!(invalid.lines, ["451-channel does not exist."]);
+    assert_eq!(
+        format_response(&invalid),
+        "[bad] 451-channel does not exist.\n[bad] 400 Syntax Error: Invalid parameter for <channel-type>: invalid\n"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn advisory_locks_enforce_ownership_and_logout_release() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut first = ClientState::default();
+    let mut second = ClientState::default();
+    let object = "//HARNESS/254/p/5";
+
+    let locked = service
+        .handle(&mut first, &format!("[lock] LOCK {object}"))
+        .await;
+    assert_eq!(locked.final_text, format!("225 {object}: Locked."));
+    let conflicted = service
+        .handle(&mut second, &format!("[conflict] LOCK {object}"))
+        .await;
+    assert_eq!(conflicted.status, 425);
+    assert_eq!(
+        conflicted.final_text,
+        format!("425 {object}: Already locked by:direct1")
+    );
+    assert_eq!(
+        service
+            .handle(&mut second, &format!("[wrong] UNLOCK {object}"))
+            .await
+            .final_text,
+        format!("426 {object}: Unlock failed.")
+    );
+    assert_eq!(
+        service.handle(&mut first, "[query] LOGIN").await.status,
+        210,
+        "LOGIN query must retain locks"
+    );
+    assert_eq!(
+        service
+            .handle(&mut second, &format!("[still] LOCK {object}"))
+            .await
+            .status,
+        425
+    );
+    assert_eq!(
+        service.handle(&mut first, "[logout] LOGOUT").await.status,
+        211
+    );
+    assert_eq!(
+        service
+            .handle(&mut second, &format!("[after] LOCK {object}"))
+            .await
+            .status,
+        225
+    );
+    assert_eq!(
+        service
+            .handle(&mut second, &format!("[unlock] UNLOCK {object}"))
+            .await
+            .final_text,
+        format!("226 {object}: Unlocked.")
+    );
+    assert_eq!(
+        service
+            .handle(&mut first, "[missing] LOCK //HARNESS/254/p/99")
+            .await
+            .status,
+        401
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn advisory_locks_are_released_when_real_command_connection_ends() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let address = listener.local_addr().unwrap();
+    let server = tokio::spawn(service.clone().serve(listener));
+    let (mut first_reader, mut first_writer) = connect_command_session(address).await;
+    let (mut second_reader, mut second_writer) = connect_command_session(address).await;
+    let object = "//HARNESS/254/p/5";
+
+    assert_eq!(
+        command_lines(
+            &mut first_reader,
+            &mut first_writer,
+            "lock",
+            &format!("LOCK {object}"),
+        )
+        .await,
+        [format!("[lock] 225 {object}: Locked.")]
+    );
+    assert_eq!(
+        command_lines(
+            &mut second_reader,
+            &mut second_writer,
+            "blocked",
+            &format!("LOCK {object}"),
+        )
+        .await,
+        [format!("[blocked] 425 {object}: Already locked by:cmd3")]
+    );
+    drop(first_writer);
+    drop(first_reader);
+    tokio::time::timeout(Duration::from_secs(2), async {
+        loop {
+            if service.advisory_locks.lock().await.is_empty() {
+                break;
+            }
+            tokio::task::yield_now().await;
+        }
+    })
+    .await
+    .unwrap();
+    assert_eq!(
+        command_lines(
+            &mut second_reader,
+            &mut second_writer,
+            "retry",
+            &format!("LOCK {object}"),
+        )
+        .await,
+        [format!("[retry] 225 {object}: Locked.")]
+    );
+    server.abort();
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn armed_auth_gate_protects_event_mutations_and_advisory_locks() {
+    let (service, path) = authed_service();
+    let mut client = ClientState::default();
+    assert_eq!(
+        service
+            .handle(&mut client, "[list] EVENT_CHANNEL LIST")
+            .await
+            .status,
+        200
+    );
+    for command in [
+        "EVENT_CHANNEL SUB deploy-queue.debug",
+        "LOCK //HARNESS/254/p/5",
+        "UNLOCK //HARNESS/254/p/5",
+    ] {
+        assert_eq!(
+            service
+                .handle(&mut client, &format!("[blocked] {command}"))
+                .await
+                .final_text,
+            "420 LOGIN required",
+            "{command}"
+        );
+    }
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                &format!("[login] LOGIN {}", std::str::from_utf8(AUTH_TOKEN).unwrap()),
+            )
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[lock] LOCK //HARNESS/254/p/5")
+            .await
+            .status,
+        225
+    );
+    std::fs::remove_file(path).unwrap();
+}

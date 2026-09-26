@@ -835,6 +835,27 @@ read-only repository descriptor, and explicit `cgl_import: false` /
 while `full_cgate_compatibility` remains false until every remaining backend and
 acceptance requirement is complete.
 
+For read-only local inventory, bare `PROJECT` returns the retained command
+help and `PROJECT DIRFULL` returns native 123 project/description rows from the
+atomic cmqttd repository. `DBGETJSON NAC_OBJECTS_LIST UNIT`,
+`NAC_ROUTING_TABLE UNIT`, and `NAC_TAGMAP UNIT` require an existing durable
+unit. cmqttd does not retain vendor NACObjectList definitions, so the first two
+documents are explicitly empty; TAGMAP contains the modeled local network,
+supported applications, groups and levels. Check
+`database_json_nac_object_definitions` and `database_json_tagmap_scope` in
+`CMQTT CAPABILITIES`; never describe these documents as physical discovery.
+
+`EVENT_CHANNEL LIST` returns the four native deploy-queue channel types.
+SUB/UNSUB is per command connection, returns native added/already/removed
+status, and needs LOGIN when the optional gate is armed. Subscription state
+does not prove that an unsupported queue operation can emit an event.
+Advisory `LOCK OBJECT` and `UNLOCK OBJECT` are also connection-owned local
+state. They resolve durable objects, conflict across sessions, and are released
+on successful credential-changing LOGIN, LOGOUT, disconnect, or owning
+UNLOCK. They are distinct from `PP LOCK` and never touch the C-Bus network.
+Native evidence is in
+`rust/testdata/fixtures/native_cgate_local_admin.json`.
+
 For local project administration, `PROJECT ARCHIVE NAME cmqttd:KEY` stores a
 database snapshot under an opaque key inside `--cgate-state`; it does not open
 the key as a path. `PROJECT RESTORE NAME cmqttd:KEY` restores the modeled

@@ -104,6 +104,62 @@ const ACCESS_SAVE_HELP: &[&str] = &[
     "Help:  given by the access-control-file parameter is used.",
 ];
 
+const PROJECT_HELP: &[&str] = &[
+    "Help: PROJECT commands:",
+    "Help:  PROJECT ? Help for these commands",
+    "Help:  PROJECT ARCHIVE - Save a project as an archive",
+    "Help:  PROJECT CLOSE - Close a project on the server",
+    "Help:  PROJECT COPY - Copy a project to a new project",
+    "Help:  PROJECT DELETE - Delete a project",
+    "Help:  PROJECT DIR - Return a list of available projects in the current repository or all the respositories.",
+    "Help:  PROJECT DIRFULL - Return a list of available projects on the C-Gate Server",
+    "Help:  PROJECT LIST - Return a list of loaded projects on the C-Gate Server",
+    "Help:  PROJECT LOAD - Load a project from disk",
+    "Help:  PROJECT NEW - Create a new blank project",
+    "Help:  PROJECT RENAME - Rename a project",
+    "Help:  PROJECT REPAIR - Repair a project",
+    "Help:  PROJECT RESTORE - Restore a project from an archive",
+    "Help:  PROJECT SAVE - Save a project to disk",
+    "Help:  PROJECT START - Start a project",
+    "Help:  PROJECT STOP - Stop a project",
+    "Help:  PROJECT USE - Set the current project to be used by this command session",
+];
+
+const DBGETJSON_HELP: &[&str] = &[
+    "Help: DBGETJSON commands:",
+    "Help:  DBGETJSON ? Help for these commands",
+    "Help:  DBGETJSON NAC_OBJECTS_LIST - ",
+    "Help:  DBGETJSON NAC_ROUTING_TABLE - ",
+    "Help:  DBGETJSON NAC_TAGMAP - ",
+];
+
+const EVENT_CHANNEL_HELP: &[&str] = &[
+    "Help: EVENT_CHANNEL commands:",
+    "Help:  EVENT_CHANNEL ? Help for these commands",
+    "Help:  EVENT_CHANNEL LIST - List of subscribe-able event channel types",
+    "Help:  EVENT_CHANNEL SUB - Subscribe to event channel specified",
+    "Help:  EVENT_CHANNEL UNSUB - Unsubscribe from event channel specified",
+];
+
+const EVENT_CHANNELS: &[(&str, &str)] = &[
+    (
+        "deploy-queue.updated-entries",
+        "notifies when one or more <programmer> is inserted or removed from queue. (normal operation not notified).",
+    ),
+    (
+        "deploy-queue.debug",
+        "notifies debug messages from deploy queue",
+    ),
+    (
+        "deploy-queue.started",
+        "notifies when a <programmer> becomes active on deploy queue",
+    ),
+    (
+        "deploy-queue.ended",
+        "notifies when a <programmer> failed or completed",
+    ),
+];
+
 const AIRCON_HELP: &[&str] = &[
     "Help: AIRCON commands:",
     "Help:  AIRCON ? Help for these commands",
@@ -367,6 +423,18 @@ pub struct ClientState {
     /// Native-style command-session identifier assigned by the TCP/TLS
     /// listener. Direct `Service::handle` callers have no command session.
     command_session: Option<u64>,
+    /// Session-local subscriptions to the four native deploy-queue event
+    /// channels. The catalogue is fixed by C-Gate 3.4; delivery is populated
+    /// only by implemented queue operations, never synthetic bus events.
+    event_channels: HashSet<String>,
+    /// Canonical objects locked by this connection. This index makes cleanup
+    /// exact on disconnect, LOGIN and LOGOUT without scanning another
+    /// connection's locks.
+    advisory_locks: HashSet<String>,
+    /// Direct `Service::handle` callers have no command-session id. Allocate
+    /// one disjoint high-range owner lazily so their locks still conflict
+    /// correctly during unit and embedded use.
+    advisory_identity: Option<u64>,
     /// Session-local mutation flag for the optional recovery-token gate.
     /// A correct one-token recovery LOGIN or a Clipsal/Max native user LOGIN
     /// sets it; LOGOUT or a failed gated login clears it. It is never
@@ -402,6 +470,10 @@ pub struct Service {
     observed_labels: Mutex<ObservedLabels>,
     measurement_state: Mutex<HashMap<(u8, u8), Option<MeasurementObservation>>>,
     command_sessions: Mutex<CommandSessions>,
+    /// Native advisory LOCK/UNLOCK ownership, separate from PP locks and from
+    /// the durable database. Entries are released at session boundaries.
+    advisory_locks: Mutex<HashMap<String, u64>>,
+    next_advisory_identity: AtomicU64,
     // Serialize command intents without preventing readback/event processing.
     commands: Mutex<()>,
     /// SHA-256 digest of the optional recovery LOGIN token. `None` (unset)
@@ -440,6 +512,40 @@ struct CommandSession {
     origin: String,
     connected_at: String,
     tag: Option<String>,
+}
+
+#[derive(Serialize)]
+struct NacTagRow {
+    address: String,
+    cbustagmap: NacTagMap,
+}
+
+#[derive(Serialize)]
+struct NacTagMap {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    node: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    group: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    network: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    subgroup: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    application: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    levels: Option<Vec<NacLevelRow>>,
+}
+
+#[derive(Serialize)]
+struct NacLevelRow {
+    value: u8,
+    text: String,
+}
+
+#[derive(Serialize)]
+struct EventChannelDescriptor<'a> {
+    name: &'a str,
+    description: &'a str,
 }
 
 /// Live command sessions are endpoint state, not durable C-Gate database
@@ -1232,6 +1338,8 @@ impl Service {
             observed_labels: Mutex::new(ObservedLabels::default()),
             measurement_state: Mutex::new(HashMap::new()),
             command_sessions: Mutex::new(CommandSessions::default()),
+            advisory_locks: Mutex::new(HashMap::new()),
+            next_advisory_identity: AtomicU64::new(1),
             commands: Mutex::new(()),
             auth_token_hash: OnceLock::new(),
             port_endpoint: OnceLock::new(),
@@ -1733,6 +1841,26 @@ impl Service {
         if verb == "PORT" {
             return crate::port::handle(tag, &words, self.port_endpoint.get()).await;
         }
+        if verb == "PROJECT" && (words.len() == 1 || (words.len() == 2 && words[1] == "?")) {
+            return command_help(tag, PROJECT_HELP);
+        }
+        if verb == "PROJECT" && sub == "DIRFULL" {
+            return self.project_dirfull(tag, &words).await;
+        }
+        if verb == "DBGETJSON" {
+            if words.len() == 1 || (words.len() == 2 && words[1] == "?") {
+                return command_help(tag, DBGETJSON_HELP);
+            }
+            return self.dbgetjson(client, tag, &words, &upper).await;
+        }
+        if verb == "EVENT_CHANNEL" {
+            return self.event_channel(client, tag, &words, &upper);
+        }
+        if matches!(verb, "LOCK" | "UNLOCK") {
+            return self
+                .advisory_lock(client, tag, &words, verb == "LOCK")
+                .await;
+        }
         if verb == "CMQTT" && sub == "CAPABILITIES" && words.len() == 2 {
             let mut capabilities = serde_json::json!({"service":"cmqttd", "physical_bus":true,
                 "full_cgate_compatibility":false, "memory_read":true, "memory_write":true,
@@ -1784,6 +1912,21 @@ impl Service {
                 serde_json::Value::String("cmqttd-internal".to_string());
             capabilities["repository_list"] = serde_json::Value::Bool(true);
             capabilities["repository_type"] = serde_json::Value::String("cmqttd-json".to_string());
+            capabilities["project_dirfull"] = serde_json::Value::Bool(true);
+            capabilities["database_json_commands"] =
+                serde_json::json!(["nac_objects_list", "nac_routing_table", "nac_tagmap"]);
+            capabilities["database_json_nac_object_definitions"] = serde_json::Value::Bool(false);
+            capabilities["database_json_tagmap_scope"] =
+                serde_json::Value::String("network-application-group-level-tags".to_string());
+            capabilities["event_channel_catalog"] = serde_json::json!([
+                "deploy-queue.updated-entries",
+                "deploy-queue.debug",
+                "deploy-queue.started",
+                "deploy-queue.ended"
+            ]);
+            capabilities["event_channel_session_subscriptions"] = serde_json::Value::Bool(true);
+            capabilities["advisory_locks"] =
+                serde_json::Value::String("session-scoped-durable-database-objects".to_string());
             capabilities["config_commands"] = serde_json::json!([
                 "get", "info", "load", "obget", "obreset", "obset", "save", "set"
             ]);
@@ -2568,23 +2711,23 @@ impl Service {
         let help_topic = upper.first().is_some_and(|word| word == "HELP");
         if help_topic {
             if words.len() == 2 {
-                return access_help(tag, ACCESS_HELP);
+                return command_help(tag, ACCESS_HELP);
             }
             if words.len() != 3 {
                 return err(tag, 400, "400 HELP takes one optional topic");
             }
             return match upper[2].as_str() {
-                "ADD" => access_help(tag, ACCESS_ADD_HELP),
-                "DELETE" => access_help(tag, ACCESS_DELETE_HELP),
-                "LIST" => access_help(tag, ACCESS_LIST_HELP),
-                "LOAD" => access_help(tag, ACCESS_LOAD_HELP),
-                "SAVE" => access_help(tag, ACCESS_SAVE_HELP),
+                "ADD" => command_help(tag, ACCESS_ADD_HELP),
+                "DELETE" => command_help(tag, ACCESS_DELETE_HELP),
+                "LIST" => command_help(tag, ACCESS_LIST_HELP),
+                "LOAD" => command_help(tag, ACCESS_LOAD_HELP),
+                "SAVE" => command_help(tag, ACCESS_SAVE_HELP),
                 _ => err(tag, 404, "404 Help topic not found"),
             };
         }
 
         if words.len() == 1 || (words.len() == 2 && words[1] == "?") {
-            return access_help(tag, ACCESS_HELP);
+            return command_help(tag, ACCESS_HELP);
         }
         let sub = upper.get(1).map(String::as_str).unwrap_or("");
         match sub {
@@ -2839,6 +2982,238 @@ impl Service {
         }
     }
 
+    /// Native `PROJECT DIRFULL` over cmqttd's atomic repository. Unlike the
+    /// vendor daemon there is no loaded-versus-on-disk split: every project
+    /// in this model is already durable, so every row is available and loaded.
+    async fn project_dirfull(&self, tag: &str, words: &[&str]) -> Response {
+        if words.len() != 2 {
+            return err(tag, 400, "400 Syntax Error.");
+        }
+        let model = self.model.lock().await;
+        let mut projects = model.projects.keys().cloned().collect::<Vec<_>>();
+        projects.sort();
+        let mut rows = projects
+            .into_iter()
+            .map(|name| format!("project=\"{name}\" desc=\"{name}\""))
+            .collect::<Vec<_>>();
+        let Some(last) = rows.pop() else {
+            return Response {
+                tag: tag.to_string(),
+                lines: Vec::new(),
+                final_text: "124 no projects found".to_string(),
+                status: 124,
+            };
+        };
+        Response {
+            tag: tag.to_string(),
+            lines: rows,
+            final_text: format!("123 {last}"),
+            status: 123,
+        }
+    }
+
+    /// Read the three NAC JSON projections retained by C-Gate 3.4. cmqttd's
+    /// project importer does not yet retain NACObjectList definitions, so the
+    /// object and routing projections are exactly empty. NAC_TAGMAP is built
+    /// from the durable network/application/group/level tag database.
+    async fn dbgetjson(
+        &self,
+        client: &ClientState,
+        tag: &str,
+        words: &[&str],
+        upper: &[String],
+    ) -> Response {
+        let sub = upper.get(1).map(String::as_str).unwrap_or("");
+        let valid_arity = match sub {
+            "NAC_OBJECTS_LIST" => matches!(words.len(), 3 | 4),
+            "NAC_ROUTING_TABLE" | "NAC_TAGMAP" => words.len() == 3,
+            _ => false,
+        };
+        if !valid_arity {
+            return err(tag, 400, "400 Syntax Error.");
+        }
+        let model = self.model.lock().await;
+        let (project_name, network_address, _) =
+            match resolve_database_unit(&model, client.current.as_deref(), words[2]) {
+                Ok(unit) => unit,
+                Err(reason) => return err(tag, reason.0, &reason.1),
+            };
+        match sub {
+            "NAC_OBJECTS_LIST" => Response {
+                tag: tag.to_string(),
+                lines: Vec::new(),
+                final_text: "346 []".to_string(),
+                status: 346,
+            },
+            "NAC_ROUTING_TABLE" => json_document(tag, "[]".to_string()),
+            "NAC_TAGMAP" => {
+                let Some(project) = model.projects.get(&project_name) else {
+                    return err(tag, 500, "500 Unable to get the project information.");
+                };
+                let Some(network) = project.networks.get(&network_address) else {
+                    return err(
+                        tag,
+                        401,
+                        "401 Error occurred when getting the local network information.",
+                    );
+                };
+                let rows = nac_tagmap_rows(&model, &project_name, network_address, &network.name);
+                match serde_json::to_string(&rows) {
+                    Ok(json) => json_document(tag, json),
+                    Err(error) => {
+                        tracing::error!("NAC tag-map JSON serialization failed: {error}");
+                        err(tag, 500, "500 Error occurred when generating JSON message.")
+                    }
+                }
+            }
+            _ => unreachable!("validated DBGETJSON subcommand"),
+        }
+    }
+
+    /// Fixed native deploy-queue event-channel catalogue and per-connection
+    /// subscription state. Queue operations may publish these channels; this
+    /// endpoint never invents notifications for unsupported operations.
+    fn event_channel(
+        &self,
+        client: &mut ClientState,
+        tag: &str,
+        words: &[&str],
+        upper: &[String],
+    ) -> Response {
+        if words.len() == 1 || (words.len() == 2 && words[1] == "?") {
+            return command_help(tag, EVENT_CHANNEL_HELP);
+        }
+        let sub = upper.get(1).map(String::as_str).unwrap_or("");
+        if sub == "LIST" && words.len() == 2 {
+            let lines = EVENT_CHANNELS
+                .iter()
+                .map(|(name, description)| {
+                    format!(
+                        "130-{}",
+                        serde_json::to_string(&EventChannelDescriptor { name, description })
+                            .expect("static event-channel strings serialize")
+                    )
+                })
+                .collect();
+            return Response {
+                tag: tag.to_string(),
+                lines,
+                final_text: "200 OK.".to_string(),
+                status: 200,
+            };
+        }
+        if !matches!(sub, "SUB" | "UNSUB") || words.len() != 3 {
+            return err(tag, 400, "400 Syntax Error.");
+        }
+        let channel = words[2];
+        if !EVENT_CHANNELS.iter().any(|(name, _)| *name == channel) {
+            return Response {
+                tag: tag.to_string(),
+                lines: vec!["451-channel does not exist.".to_string()],
+                final_text: format!(
+                    "400 Syntax Error: Invalid parameter for <channel-type>: {channel}"
+                ),
+                status: 400,
+            };
+        }
+        if sub == "SUB" {
+            if client.event_channels.insert(channel.to_string()) {
+                ok(tag, vec![], "200 OK: added")
+            } else {
+                Response {
+                    tag: tag.to_string(),
+                    lines: Vec::new(),
+                    final_text: "201 Service ready: already subscribed".to_string(),
+                    status: 201,
+                }
+            }
+        } else if client.event_channels.remove(channel) {
+            ok(tag, vec![], "200 OK: removed")
+        } else {
+            Response {
+                tag: tag.to_string(),
+                lines: Vec::new(),
+                final_text: "201 Service ready: already unsubscribed".to_string(),
+                status: 201,
+            }
+        }
+    }
+
+    async fn advisory_lock(
+        &self,
+        client: &mut ClientState,
+        tag: &str,
+        words: &[&str],
+        lock: bool,
+    ) -> Response {
+        if words.len() != 2 {
+            return err(tag, 400, "400 Syntax Error.");
+        }
+        let canonical = {
+            let model = self.model.lock().await;
+            match resolve_advisory_object(&model, client.current.as_deref(), words[1]) {
+                Ok(canonical) => canonical,
+                Err((status, text)) => return err(tag, status, &text),
+            }
+        };
+        let owner = *client.advisory_identity.get_or_insert_with(|| {
+            client.command_session.unwrap_or_else(|| {
+                u64::MAX - self.next_advisory_identity.fetch_add(1, Ordering::Relaxed)
+            })
+        });
+        let mut locks = self.advisory_locks.lock().await;
+        if lock {
+            if let Some(existing) = locks.get(&canonical) {
+                return Response {
+                    tag: tag.to_string(),
+                    lines: Vec::new(),
+                    final_text: format!(
+                        "425 {canonical}: Already locked by:{}",
+                        advisory_owner_name(*existing)
+                    ),
+                    status: 425,
+                };
+            }
+            locks.insert(canonical.clone(), owner);
+            client.advisory_locks.insert(canonical.clone());
+            Response {
+                tag: tag.to_string(),
+                lines: Vec::new(),
+                final_text: format!("225 {canonical}: Locked."),
+                status: 225,
+            }
+        } else if locks.get(&canonical) == Some(&owner) {
+            locks.remove(&canonical);
+            client.advisory_locks.remove(&canonical);
+            Response {
+                tag: tag.to_string(),
+                lines: Vec::new(),
+                final_text: format!("226 {canonical}: Unlocked."),
+                status: 226,
+            }
+        } else {
+            Response {
+                tag: tag.to_string(),
+                lines: Vec::new(),
+                final_text: format!("426 {canonical}: Unlock failed."),
+                status: 426,
+            }
+        }
+    }
+
+    async fn release_advisory_locks(&self, client: &mut ClientState) {
+        let Some(owner) = client.advisory_identity else {
+            client.advisory_locks.clear();
+            return;
+        };
+        let mut locks = self.advisory_locks.lock().await;
+        for object in client.advisory_locks.drain() {
+            if locks.get(&object) == Some(&owner) {
+                locks.remove(&object);
+            }
+        }
+    }
+
     /// Native C-Gate command-session inspection. The registry is populated
     /// only by real TCP/TLS connections, remains independent of project and
     /// PCI state, and is discarded when the connection ends.
@@ -2914,6 +3289,7 @@ impl Service {
     /// logs, events, replies, LIST output or persisted plaintext.
     async fn session_auth(&self, client: &mut ClientState, tag: &str, words: &[&str]) -> Response {
         if words[0].eq_ignore_ascii_case("LOGOUT") {
+            self.release_advisory_locks(client).await;
             client.authenticated = false;
             let model = self.model.lock().await;
             let level = connection_access_level(&model, client);
@@ -2949,6 +3325,7 @@ impl Service {
             };
             let candidate = auth::sha256(words[1].as_bytes());
             if auth::constant_time_eq(&candidate, expected) {
+                self.release_advisory_locks(client).await;
                 client.authenticated = true;
                 client.access_level = Some(CgateAccessLevel::Max);
                 client.recovery_only = false;
@@ -2985,6 +3362,7 @@ impl Service {
             client.login_attempts = client.login_attempts.saturating_add(1);
             return err(tag, 422, "422 Username and Password do not match.");
         };
+        self.release_advisory_locks(client).await;
         client.access_level = Some(level);
         client.recovery_only = false;
         client.authenticated = level.can_manage_access();
@@ -8549,6 +8927,7 @@ impl Service {
             .await
             .sessions
             .remove(&command_session);
+        self.release_advisory_locks(&mut client).await;
         let mut model = self.model.lock().await;
         for name in client.sessions {
             model.sessions.remove(&name);
@@ -9410,7 +9789,7 @@ fn parse_aircon_boolean(tag: &str, value: &str, parameter: &str) -> Result<bool,
 ///
 /// NET LOAD/SAVE need no entry: the local_command NET arm admits only
 /// LIST|LIST_ALL|STATE, so they already fail closed with 502.
-fn access_help(tag: &str, rows: &[&str]) -> Response {
+fn command_help(tag: &str, rows: &[&str]) -> Response {
     let mut rows = rows
         .iter()
         .map(|row| (*row).to_string())
@@ -9421,6 +9800,248 @@ fn access_help(tag: &str, rows: &[&str]) -> Response {
         lines: rows,
         final_text: format!("101 {final_text}"),
         status: 101,
+    }
+}
+
+fn json_document(tag: &str, json: String) -> Response {
+    Response {
+        tag: tag.to_string(),
+        lines: vec!["345-Begin of JSON".to_string(), format!("346-{json}")],
+        final_text: "347 End of JSON".to_string(),
+        status: 347,
+    }
+}
+
+fn resolve_database_unit(
+    model: &Server,
+    current: Option<&str>,
+    address: &str,
+) -> Result<(String, u8, u8), (u16, String)> {
+    let canonical = if address.starts_with("//") {
+        address.to_string()
+    } else {
+        let Some(project) = current else {
+            return Err((
+                401,
+                format!("401 Bad object or device ID: {address} (Project not found)"),
+            ));
+        };
+        format!("//{project}/{}", address.trim_start_matches('/'))
+    };
+    if canonical.trim_start_matches('/').split('/').count() != 4 {
+        return Err((400, "400 Syntax Error.".to_string()));
+    }
+    let Some((project, network, unit)) = Server::split_unit(&canonical) else {
+        return Err((400, "400 Syntax Error.".to_string()));
+    };
+    let Some(network_model) = model
+        .projects
+        .get(&project)
+        .and_then(|project| project.networks.get(&network))
+    else {
+        return Err((
+            401,
+            format!("401 Bad object or device ID: {address} (Network not found)"),
+        ));
+    };
+    if !network_model.units.contains_key(&unit) {
+        return Err((
+            401,
+            format!("401 Bad object or device ID: {address} (Unit not found)"),
+        ));
+    }
+    Ok((project, network, unit))
+}
+
+fn nac_application_supported(application: u8) -> bool {
+    (48..=127).contains(&application) || matches!(application, 202 | 203 | 206 | 228 | 238)
+}
+
+fn nac_tagmap_rows(
+    model: &Server,
+    project: &str,
+    network: u8,
+    network_name: &str,
+) -> Vec<NacTagRow> {
+    let mut rows = vec![NacTagRow {
+        address: "0".to_string(),
+        cbustagmap: NacTagMap {
+            node: None,
+            group: None,
+            network: Some(network_name.to_string()),
+            subgroup: None,
+            application: None,
+            levels: None,
+        },
+    }];
+    let prefix = format!("//{project}/{network}/");
+    let mut applications = BTreeMap::<u8, String>::new();
+    let mut groups = BTreeMap::<(u8, u8), String>::new();
+    for (path, value) in &model.db_fields {
+        let Some(relative) = path
+            .strip_prefix(&prefix)
+            .and_then(|path| path.strip_suffix("/TagName"))
+        else {
+            continue;
+        };
+        let parts = relative.split('/').collect::<Vec<_>>();
+        match parts.as_slice() {
+            [application] => {
+                if let Ok(application) = application.parse::<u8>() {
+                    if nac_application_supported(application) {
+                        applications.insert(application, value.clone());
+                    }
+                }
+            }
+            [application, group] => {
+                if let (Ok(application), Ok(group)) =
+                    (application.parse::<u8>(), group.parse::<u8>())
+                {
+                    if nac_application_supported(application) {
+                        groups.insert((application, group), value.clone());
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+    for (application, name) in &applications {
+        rows.push(NacTagRow {
+            address: format!("0/{application}"),
+            cbustagmap: NacTagMap {
+                node: None,
+                group: None,
+                network: Some(network_name.to_string()),
+                subgroup: None,
+                application: Some(name.clone()),
+                levels: None,
+            },
+        });
+    }
+    for ((application, group), name) in groups {
+        let parent = format!("//{project}/{network}/{application}/{group}");
+        let mut levels = model
+            .db_levels
+            .values()
+            .filter(|level| level.parent == parent)
+            .map(|level| NacLevelRow {
+                value: level.address,
+                text: level.tag.clone(),
+            })
+            .collect::<Vec<_>>();
+        levels.sort_by_key(|level| level.value);
+        rows.push(NacTagRow {
+            address: format!("0/{application}/{group}"),
+            cbustagmap: NacTagMap {
+                node: None,
+                group: Some(name),
+                network: Some(network_name.to_string()),
+                subgroup: None,
+                application: applications.get(&application).cloned(),
+                levels: Some(levels),
+            },
+        });
+    }
+    rows.sort_by(|left, right| {
+        let left_parts = left.address.split('/').count();
+        let right_parts = right.address.split('/').count();
+        left_parts
+            .cmp(&right_parts)
+            .then_with(|| compare_nac_address(&left.address, &right.address))
+    });
+    rows
+}
+
+fn compare_nac_address(left: &str, right: &str) -> std::cmp::Ordering {
+    left.split('/')
+        .filter_map(|part| part.parse::<u16>().ok())
+        .cmp(right.split('/').filter_map(|part| part.parse::<u16>().ok()))
+}
+
+fn resolve_advisory_object(
+    model: &Server,
+    current: Option<&str>,
+    address: &str,
+) -> Result<String, (u16, String)> {
+    if address.is_empty() || address.chars().any(char::is_whitespace) {
+        return Err((400, "400 Syntax Error.".to_string()));
+    }
+    if let Some(oid) = address.strip_prefix('!') {
+        let Some(project_name) = current else {
+            return Err((401, format!("401 {address} (Object not found)")));
+        };
+        if let Some(project) = model.projects.get(project_name) {
+            for (network_address, network) in &project.networks {
+                if network.oid == oid {
+                    return Ok(format!("//{project_name}/{network_address}"));
+                }
+                if let Some((unit_address, _)) =
+                    network.units.iter().find(|(_, unit)| unit.oid == oid)
+                {
+                    return Ok(format!(
+                        "//{project_name}/{network_address}/p/{unit_address}"
+                    ));
+                }
+            }
+        }
+        if model.known_oids.contains(oid) && model.oid_in_current_project(oid) {
+            return Ok(address.to_string());
+        }
+        return Err((401, format!("401 {address} (Object not found)")));
+    }
+    let canonical = if address.starts_with("//") {
+        address.to_string()
+    } else {
+        let Some(project) = current else {
+            return Err((401, format!("401 {address} (Project not found)")));
+        };
+        format!("//{project}/{}", address.trim_start_matches('/'))
+    };
+    let parts = canonical
+        .trim_start_matches('/')
+        .split('/')
+        .collect::<Vec<_>>();
+    let exists = match parts.as_slice() {
+        [project] => model.projects.contains_key(*project),
+        [project, network] => network.parse::<u8>().ok().is_some_and(|network| {
+            model
+                .projects
+                .get(*project)
+                .is_some_and(|project| project.networks.contains_key(&network))
+        }),
+        [project, network, kind, unit] if kind.eq_ignore_ascii_case("p") => {
+            match (network.parse::<u8>(), unit.parse::<u8>()) {
+                (Ok(network), Ok(unit)) => model
+                    .projects
+                    .get(*project)
+                    .and_then(|project| project.networks.get(&network))
+                    .is_some_and(|network| network.units.contains_key(&unit)),
+                _ => false,
+            }
+        }
+        _ => {
+            model.objects.contains(&canonical)
+                || model.db_fields.contains_key(&canonical)
+                || model
+                    .db_fields
+                    .keys()
+                    .any(|path| path.starts_with(&format!("{canonical}/")))
+                || model
+                    .db_levels
+                    .values()
+                    .any(|level| level.parent == canonical)
+        }
+    };
+    exists
+        .then_some(canonical)
+        .ok_or_else(|| (401, format!("401 {address} (Object not found)")))
+}
+
+fn advisory_owner_name(owner: u64) -> String {
+    if owner > u64::MAX / 2 {
+        format!("direct{}", u64::MAX - owner)
+    } else {
+        format!("cmd{owner}")
     }
 }
 
@@ -9559,6 +10180,8 @@ fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
                 | "RESTORE"
                 | "REPAIR"
         ),
+        "EVENT_CHANNEL" => matches!(sub, "SUB" | "UNSUB"),
+        "LOCK" | "UNLOCK" => true,
         "CGL" => sub == "IMPORT",
         "REPOSITORY" => sub == "USE",
         "SET" => true,
