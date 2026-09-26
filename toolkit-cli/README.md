@@ -1,11 +1,12 @@
 # Python C-Bus Toolkit CLI
 
 This is an implementation in progress targeting **Toolkit 1.18.0.2754 with
-C-Gate 3.4.0.2001**. It does **not yet provide 100% Toolkit parity**. Run
-`cbus-toolkit coverage --require-complete` to check the remaining work; it
-deliberately exits nonzero until the feature census and acceptance tests are
-complete. A command transport or a simulator passing its own tests does not
-establish Toolkit equivalence.
+C-Gate 3.4.0.2001**. It does **not yet provide 100% Toolkit parity**. The
+current ledger has **38 areas: 17 implemented, 19 in progress and 2 pending**,
+and `census_complete` is `false`. Run
+`cbus-toolkit coverage --require-complete` to inspect the machine-readable
+ledger; it deliberately exits nonzero while the census or acceptance work is
+unfinished.
 
 See [completed functions and outstanding work](docs/implementation-status.md)
 for the current status of all 38 feature areas, detailed eDLT functions,
@@ -13,11 +14,23 @@ accepted test checkpoints and the remaining implementation plan.
 
 For supported physical operations without Windows, connect this CLI to the
 [C-Gate service embedded in cmqttd](../docs/cmqttd-cgate.md). MQTT and CLI
-requests share one CNI connection. Inventory live KEYGL5 eDLT stored strings
-and widget labels with `cbus-toolkit cgate --host 127.0.0.1 --timeout 120
-edlt-labels --network //PROJECT/254`. The result distinguishes verified static
-text from transient network-wide label observations and unread device caches.
-The embedded service is not yet a full C-Gate replacement.
+requests share one CNI connection. `cgate exec` and `cgate run` can send any
+command exposed by the selected C-Gate service, while the typed commands in
+this CLI implement the guarded Toolkit workflows documented here. Raw command
+reachability does not establish typed workflow, native C-Gate, Toolkit GUI or
+hardware parity.
+
+For KEYGL5 eDLTs, `cgate edlt-labels` reads the supported live label image and
+`cgate edlt-label-audit` creates or checks serial-bound baselines that also
+include the cached 44-byte `WidgetGroups` mapping. The audit distinguishes
+verified static configuration from transient network-wide label observations
+and unread device caches; see [the eDLT label acceptance workflow](docs/edlt-label-audit.md).
+
+The 27 September 2026 source-tree gate passed **2,379 tests**, skipped **275
+provisioning-gated tests**, and passed **18,561 subtests**. The interoperability
+gate passed **14 tests** and skipped one test requiring external vendor unit
+specifications. These results have no failures, but the skips and unfinished
+ledger still prevent a completion claim.
 
 ## Install and run
 
@@ -265,8 +278,12 @@ later command requires an explicit new connection.
 TLS verifies certificates and accepts an explicit client certificate.
 Verified mutual TLS has been tested against the exact native server with
 operator-managed certificates; see [TLS setup and acceptance](docs/native-tls.md).
-Raw C-Gate and PCI commands perform their requested operations; their presence
-does not imply that every Toolkit workflow is implemented or tested.
+`cgate exec` and `cgate run` expose the selected server's raw command surface;
+they are escape hatches for commands without a typed wrapper. They do not add
+Toolkit workflow guards, prove the server's native semantics, or make an
+unimplemented Toolkit feature complete. Raw PCI commands have the same
+boundary: they perform the requested transport operation without establishing
+device or end-to-end workflow equivalence.
 
 Native C-Gate 3 project and unit editing:
 
@@ -1831,6 +1848,21 @@ explicit because native C-Gate string writes depend on its JVM charset.
 
 ## Tests and independent oracle
 
+The current Python 3.13 source-tree gates are:
+
+```sh
+cd toolkit-cli
+make check
+make check-interop
+```
+
+On 27 September 2026, `make check` completed with **2,379 passed, 275 skipped
+and 18,561 passing subtests**. `make check-interop` completed with **14 passed
+and one skipped** because the external vendor unit-specification tree was not
+provisioned. The skipped tests cover explicit vendor, Windows, native-service
+or hardware provisions; an offline pass is not a zero-skip wheel or hardware
+acceptance.
+
 ```sh
 PYTHONPATH=toolkit-cli/src python3 -m unittest discover -s toolkit-cli/tests -v
 python3 toolkit-cli/research/oracle.py start
@@ -1890,8 +1922,8 @@ See the report for the exact test list and [original oracle adapters](docs/origi
 for backend scope. These tests cover the implemented behavior; they do not
 establish complete Toolkit or physical-device parity.
 
-Later changes have separate passing acceptance on both Python versions and are
-outside that frozen wheel:
+The retained focused checkpoints below were recorded outside that frozen
+wheel; each linked record identifies its runtime, source scope and date:
 
 - [Configuration CRC](docs/edlt-crc.md): 21 tests, including 65,588 fresh original CRC results per run.
 - [Percentage conversion](docs/edlt-percentage.md), [bounded parent composition](docs/edlt-parent-form.md), [ordered parent transaction](docs/edlt-parent-transaction.md), [automatic parent metadata](docs/edlt-parent-metadata.md) and [automatic SceneManager metadata](docs/edlt-scene-metadata.md): pure conversion and CLI acceptance, standalone original Windows 12- and 528-case captures, 14 portable Measurement/Percentage lifecycle composition tests, 38 portable parent-transaction tests across 14 admitted configurable widget panels and nine direct parent/settings operations plus two optional native gates, 19 portable parent-metadata/CLI cases plus one optional native gate, and 32 portable SceneManager-metadata/CLI cases plus one optional native gate. Applications/Corridor cache dialogs, Blank/Reset parent composition, the complete original parent/SceneManager dialogs and combined Schneider C-Gate/physical acceptance remain outstanding.
@@ -1935,10 +1967,13 @@ used by Toolkit. It does not connect to a physical C-Bus network by itself.
 The vendor Java runtime is needed for C-Gate operations, while offline project
 and schema operations run in Python.
 
-Remaining acceptance work includes full Toolkit-to-CLI comparisons, device
-memory encoding and transfer, all firmware/unit combinations, CGL and label
-workflows, sensor/eDLT settings, diagnostics, firmware updates and hardware
-behavior. See [capabilities.json](src/cbus_toolkit/capabilities.json).
-The current [implementation status](docs/implementation-status.md) separates
-completed functions, development drafts and outstanding work in every area.
-The full source/topic census is in [toolkit-surface.md](docs/toolkit-surface.md).
+Remaining work is tracked in three acceptance layers: finish the executable
+Toolkit surface census and map each workflow to the ledger; compare remaining
+controls, error paths and device/firmware variations with independent Toolkit
+behavior; and verify real device, network, persistence, recovery, USB and
+firmware effects across the supported hardware profiles. The detailed eDLT,
+unit-family, topology and diagnostic gaps are listed in the current
+[implementation status](docs/implementation-status.md). The source/topic
+census is in [toolkit-surface.md](docs/toolkit-surface.md), and
+[capabilities.json](src/cbus_toolkit/capabilities.json) is the completion gate's
+machine-readable input.
