@@ -180,6 +180,23 @@ network-wide and recipient-unverified traffic ring, never a per-device result.
 Unit-shaped `CMQTT LABELS` requests are compatibility aliases for the same
 ring. Physical dynamic-label cache readback remains unavailable and false.
 
+Create or compare a deterministic static-label acceptance baseline with:
+
+```sh
+cbus-toolkit cgate --host 127.0.0.1 --timeout 120 \
+  edlt-label-audit //PROJECT/254 --write-baseline labels.json
+cbus-toolkit cgate --host 127.0.0.1 --timeout 120 \
+  edlt-label-audit //PROJECT/254 --baseline labels.json --mode configuration
+```
+
+The audit joins stable, serial-bound memory images with each unit's 44-byte
+`WidgetGroups` mapping from the same initial synchronization. `exact` compares
+the complete physical-image digest, `configuration` the decoded label-bearing
+records, and `labels` the text/reference/placement view; identity and mapping
+changes fail all modes. Incomplete reads return nonzero and cannot create a
+baseline. Dynamic-label observations are retained only as diagnostics and do
+not enter fingerprints. See `toolkit-cli/docs/edlt-label-audit.md`.
+
 ### Retained eDLT scene names
 
 For a KEYGL5 / 5055EDL 5.5.00 database unit, put ordered SceneManager

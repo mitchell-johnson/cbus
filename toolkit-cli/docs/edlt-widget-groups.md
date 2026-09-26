@@ -58,3 +58,9 @@ Use `CMQTT CAPABILITIES` to confirm `edlt_widget_groups: true` before depending
 on this service extension. A missing property, unsupported device, failed
 synchronization, non-success response, or malformed response is an error; the
 CLI emits error JSON on stderr and no success document on stdout.
+
+The network-wide [`edlt-label-audit`](edlt-label-audit.md) uses a stricter
+composition of this reader. It performs the fresh label/identity inventory
+first and consumes each unit's `WidgetGroups` property from that same initial
+sync, without running the standalone command's second sync. A missing or
+malformed mapping makes the audit incomplete and prevents baseline creation.

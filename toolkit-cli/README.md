@@ -1681,6 +1681,28 @@ fail with no metadata read or stale property, and reconnect invalidates an
 in-flight snapshot.
 See [the strict response contract](docs/edlt-widget-groups.md).
 
+Create a serial-bound label baseline, or compare a later fresh read after
+commissioning or programming, with the joined network audit:
+
+```sh
+cbus-toolkit cgate --host 127.0.0.1 --timeout 120 \
+  edlt-label-audit //PROJECT/254 --write-baseline edlt-labels.json
+cbus-toolkit cgate --host 127.0.0.1 --timeout 120 \
+  edlt-label-audit //PROJECT/254 --baseline edlt-labels.json \
+  --mode configuration
+```
+
+The audit uses the inventory's one physical synchronization, then consumes each
+unit's cached 44-byte `WidgetGroups` mapping without a second sync. Baselines
+require every selected image, physical serial and mapping to be complete; files
+are created exclusively and are checked for fingerprint tampering when loaded.
+`exact` compares all 9,216 physical bytes, `configuration` compares decoded
+label-bearing records and `labels` compares label text/references/placement.
+All three include physical identity and `WidgetGroups`. Added or removed units
+fail every mode. Dynamic-label traffic stays in the diagnostic receipt and is
+excluded from the baseline because it is incomplete and recipient-unverified.
+See [the eDLT label acceptance workflow](docs/edlt-label-audit.md).
+
 cmqttd also exposes the native physical KFI commands through raw C-Gate
 execution:
 

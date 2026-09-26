@@ -122,7 +122,20 @@ def read_edlt_widget_groups(client, address: str) -> EdltWidgetGroups:
     address = unit_path(address)
     network = address.rsplit("/p/", 1)[0]
     sync_command = f"NET SYNC {network}"
-    get_command = f"GET {address} WidgetGroups"
     _require_sync(client.command(sync_command))
+    return read_cached_edlt_widget_groups(client, address, sync_command=sync_command)
+
+
+def read_cached_edlt_widget_groups(
+    client, address: str, *, sync_command: str = "prior network inventory sync"
+) -> EdltWidgetGroups:
+    """Consume WidgetGroups after a caller-owned successful network sync.
+
+    This form is used by the network label audit so every unit comes from the
+    same initial synchronization. It performs no hidden retry or second sync.
+    """
+    address = unit_path(address)
+    network = address.rsplit("/p/", 1)[0]
+    get_command = f"GET {address} WidgetGroups"
     values = _parse_values(client.command(get_command), address)
     return EdltWidgetGroups(address, network, values, sync_command, get_command)

@@ -11,6 +11,7 @@ current supported operations and remaining C-Gate replacement work. Query
 ```sh
 cbus-toolkit cgate --host 127.0.0.1 --timeout 120 edlt-labels --network //PROJECT/254
 cbus-toolkit cgate --host 127.0.0.1 --timeout 30 edlt-labels //PROJECT/254/p/UNIT
+cbus-toolkit cgate --host 127.0.0.1 --timeout 120 edlt-label-audit //PROJECT/254 --baseline labels.json --mode configuration
 ```
 
 Treat the shared PCI generation as the ownership boundary for volatile C-Gate
@@ -47,6 +48,14 @@ the same network ring. The nested observation document's `complete: false` and
 `device_readback: false` distinguish it from an inventory of a display's
 pre-existing cache. `CMQTT LABELS`, `UNIT READMEM` and `UNIT IDENTIFY` are
 cmqttd extensions.
+
+`edlt-label-audit` adds one cached `WidgetGroups` getter per successful unit and
+creates or compares a deterministic baseline. It reuses the inventory's initial
+network synchronization, requires stable serial evidence and excludes transient
+dynamic-label observations. Exact/configuration/labels modes separate complete
+physical-image drift from decoded configuration and human-facing label drift.
+See `toolkit-cli/docs/edlt-label-audit.md`.
+
 A 502 response is a missing backend or failed device operation; never replace
 it with saved project data and describe that as a live result.
 

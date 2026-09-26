@@ -1253,6 +1253,29 @@ def build_parser():
     label_scope = p.add_mutually_exclusive_group(required=True)
     label_scope.add_argument("address", nargs="?", help="Fully qualified physical unit, e.g. //PROJECT/254/p/5")
     label_scope.add_argument("--network", help="Freshly discover and read every supported eDLT on //PROJECT/NETWORK")
+    from .edlt_label_audit import COMPARISON_MODES
+    p = cgops.add_parser(
+        "edlt-label-audit",
+        help="Capture and compare a verified network eDLT label baseline through cmqttd",
+    )
+    p.add_argument("network", help="Fully qualified physical network, e.g. //PROJECT/254")
+    p.add_argument(
+        "--mode",
+        choices=COMPARISON_MODES,
+        default="configuration",
+        help="Required match strength when --baseline is supplied",
+    )
+    baseline = p.add_mutually_exclusive_group()
+    baseline.add_argument(
+        "--baseline",
+        type=Path,
+        help="Compare the fresh read with this prior baseline",
+    )
+    baseline.add_argument(
+        "--write-baseline",
+        type=Path,
+        help="Create a new baseline after a complete fresh read; never overwrites",
+    )
     from .edlt_widget_groups import unit_path as edlt_widget_groups_path
     p = cgops.add_parser(
         "edlt-widget-groups",
@@ -2179,7 +2202,7 @@ def _cgate(args):
                     if line.strip() and not line.lstrip().startswith(("#", "//"))]
         if not commands:
             raise ValueError("Command file is empty")
-    elif args.action not in ("project", "database", "unit", "cgl", "network", "label", "conversion", "events", "trigger", "enable", "scene", "address", "serials", "edlt-labels", "edlt-widget-groups"):
+    elif args.action not in ("project", "database", "unit", "cgl", "network", "label", "conversion", "events", "trigger", "enable", "scene", "address", "serials", "edlt-labels", "edlt-label-audit", "edlt-widget-groups"):
         tokens = ["TERMINATERAMP" if args.action == "stop" else args.action.upper(), args.address]
         if args.action == "get":
             tokens.append(args.attribute)
@@ -2192,6 +2215,12 @@ def _cgate(args):
         commands = [" ".join(tokens)]
     else:
         commands = []
+    edlt_audit_expected = None
+    if args.action == "edlt-label-audit" and args.baseline is not None:
+        # Reject malformed or tampered evidence before opening a server
+        # connection or performing the network-wide synchronization.
+        from .edlt_label_audit import load_baseline
+        edlt_audit_expected = load_baseline(args.baseline)
     from .edlt_control_cli import connection_guard
     with connection_guard(args), CGateClient(args.host, args.port or (20123 if args.tls else 20023),
                      timeout=args.timeout, ssl_context=context) as client:
@@ -2201,6 +2230,22 @@ def _cgate(args):
                 result = edlt_label_inventory(client, args.network)
                 return result, int(not result["complete"])
             return edlt_labels(client, args.address), 0
+        if args.action == "edlt-label-audit":
+            from .edlt_label_audit import (
+                capture_label_audit,
+                write_baseline,
+            )
+            result = capture_label_audit(
+                client, args.network, expected=edlt_audit_expected, mode=args.mode
+            )
+            if args.write_baseline is not None:
+                if result["baseline"] is None:
+                    raise ValueError(
+                        "An incomplete live read cannot be written as an eDLT label baseline"
+                    )
+                write_baseline(args.write_baseline, result["baseline"])
+                result["baseline_written"] = str(args.write_baseline)
+            return result, int(not result["accepted"])
         if args.action == "edlt-widget-groups":
             from .edlt_widget_groups import read_edlt_widget_groups
             return read_edlt_widget_groups(client, args.address).as_dict(), 0

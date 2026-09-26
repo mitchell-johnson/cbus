@@ -29,6 +29,20 @@ rust/target/release/cbus-tools dump-labels --pretty 2 project.cbz > labels.json
 
 Confirm the selected network name before passing the project to `cmqttd`. Avoid committing the source project or derived site metadata.
 
+## Baseline live eDLT labels
+
+1. Confirm cmqttd owns the intended CNI and its embedded C-Gate listener.
+2. Run `edlt-labels --network` first if you only need a partial diagnostic inventory.
+3. Run `edlt-label-audit //PROJECT/NETWORK --write-baseline PATH` only when every supported unit can be freshly identified and read. The path must not exist.
+4. Preserve the baseline outside the repository when it contains site labels.
+5. After commissioning or a controlled programming operation, use `--baseline PATH --mode configuration`. Use `exact` only when every physical byte must remain identical, or `labels` when human-facing text/reference drift is the acceptance boundary.
+6. Inspect added, removed and changed units before replacing any operator-held baseline.
+
+The audit reuses one initial network synchronization and reads units
+sequentially. Dynamic-label SAL observations remain diagnostic traffic and do
+not enter the baseline. A passing result does not establish an atomic network
+snapshot, display rendering, power-cycle persistence or dynamic-cache readback.
+
 ## Test a PCI/CNI client locally
 
 Start the simulator in one process:
