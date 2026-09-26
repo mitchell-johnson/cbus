@@ -981,7 +981,8 @@ controls, `SHORTMESSAGE SEND`, and `EREPORT MESSAGE` while reads,
 `SHORTMESSAGE REFRESH`, the Telephony last-number request, and
 other bus control stay open; failures answer `420 LOGIN required` / `420 LOGIN failed` (malformed
 `LOGIN` with no token is 400 and also clears the flag), never `401`.
-Not native `access.txt` parity; loopback-only first slice;
+This is not exact native `access.txt` handler/access-level parity, and TLS client
+identity is not mapped into ACCESS rows;
 `named_scenes: true` denotes hardware-backed named-scene playback,
 and `do_methods: ["factorydefault", "lighting", "sync", "unravel"]` denotes the physical object-method aliases,
 `network_clocks: true` denotes IDENTIFY16 inspection plus schema-backed target
