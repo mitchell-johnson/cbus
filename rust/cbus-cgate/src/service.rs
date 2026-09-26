@@ -338,8 +338,10 @@ struct Database {
     version: u32,
     projects: HashMap<String, Project>,
     db_fields: HashMap<String, String>,
-    objects: HashSet<String>,
-    known_oids: HashSet<String>,
+    // Persist unordered server sets in lexical order so an otherwise
+    // unchanged database is byte-stable across save/restart cycles.
+    objects: std::collections::BTreeSet<String>,
+    known_oids: std::collections::BTreeSet<String>,
     db_levels: HashMap<String, DbLevel>,
     #[serde(default)]
     db_pending: HashMap<String, crate::DbPendingObject>,
@@ -381,8 +383,8 @@ impl Database {
             version: 1,
             projects,
             db_fields: s.db_fields.clone(),
-            objects: s.objects.clone(),
-            known_oids: s.known_oids.clone(),
+            objects: s.objects.iter().cloned().collect(),
+            known_oids: s.known_oids.iter().cloned().collect(),
             db_levels: s.db_levels.clone(),
             db_pending: s.db_pending.clone(),
             config_values: s.config_values.clone(),
@@ -402,7 +404,7 @@ impl Database {
         if self.version != 1 {
             return Err(io::Error::other("unsupported C-Gate database version"));
         }
-        let mut used_oids = self.known_oids.clone();
+        let mut used_oids = self.known_oids.iter().cloned().collect::<HashSet<_>>();
         for project in self.projects.values().chain(self.database_files.values()) {
             for network in project.networks.values() {
                 if !network.oid.is_empty() {
@@ -437,7 +439,7 @@ impl Database {
         }
         s.projects = self.projects;
         s.db_fields = self.db_fields;
-        s.objects = self.objects;
+        s.objects = self.objects.into_iter().collect();
         // Network OIDs are first-class database identities. Legacy state did
         // not list them in known_oids, so use the union assembled above for
         // both migrated and already-populated network records.
