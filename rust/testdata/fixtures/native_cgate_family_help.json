@@ -1,0 +1,418 @@
+{
+  "format": "native-cgate-family-help-v1",
+  "oracle": {
+    "product": "C-Gate",
+    "version": "3.4.0.2001",
+    "build": "20241023-0011",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+  },
+  "scope": "Disposable no-project C-Gate bound to loopback through a private Docker port. No PCI, CNI, project, or house endpoint was configured. Bare, question-mark, and HELP forms returned identical rows for every family.",
+  "families": [
+    {
+      "family": "CLOCK",
+      "root": [
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help: CLOCK commands:"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  CLOCK ? Help for these commands"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  CLOCK DATE - Set or get the date for this network"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  CLOCK REQUEST_REFRESH - Send a REQUEST REFRESH command on a network"
+        },
+        {
+          "code": 101,
+          "continuation": false,
+          "text": "Help:  CLOCK TIME - Set or get the time for this network"
+        }
+      ]
+    },
+    {
+      "family": "ENABLE",
+      "root": [
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help: ENABLE commands:"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  ENABLE ? Help for these commands"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  ENABLE LABEL - Send label information for this application"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  ENABLE REMOVE - Remove any reference to this network variable"
+        },
+        {
+          "code": 101,
+          "continuation": false,
+          "text": "Help:  ENABLE SET - Set an enable variable to the given value"
+        }
+      ]
+    },
+    {
+      "family": "LIGHTING",
+      "root": [
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help: LIGHTING commands:"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  LIGHTING ? Help for these commands"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  LIGHTING LABEL - Send label information for this application"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  LIGHTING OFF - "
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  LIGHTING ON - "
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  LIGHTING RAMP - "
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  LIGHTING TERMINATERAMP - "
+        },
+        {
+          "code": 101,
+          "continuation": false,
+          "text": "Help:  LIGHTING UNICODELABEL - "
+        }
+      ]
+    },
+    {
+      "family": "TEMPERATURE",
+      "root": [
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help: TEMPERATURE commands:"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  TEMPERATURE ? Help for these commands"
+        },
+        {
+          "code": 101,
+          "continuation": false,
+          "text": "Help:  TEMPERATURE BROADCAST - Broadcast a temperature value to the given temperature group"
+        }
+      ]
+    },
+    {
+      "family": "TRIGGER",
+      "root": [
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help: TRIGGER commands:"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  TRIGGER ? Help for these commands"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  TRIGGER EVENT - Send a trigger event command to the network"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  TRIGGER INDICATORKILL - Send a trigger indicator-kill command to the network"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  TRIGGER LABEL - Send label information for this application"
+        },
+        {
+          "code": 101,
+          "continuation": false,
+          "text": "Help:  TRIGGER UNICODELABEL - "
+        }
+      ]
+    },
+    {
+      "family": "SHORTMESSAGE",
+      "root": [
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help: SHORTMESSAGE commands:"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  SHORTMESSAGE ? Help for these commands"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  SHORTMESSAGE REFRESH - Transmit the information message on the given service class as soon as possible"
+        },
+        {
+          "code": 101,
+          "continuation": false,
+          "text": "Help:  SHORTMESSAGE SEND - Send a short message"
+        }
+      ]
+    },
+    {
+      "family": "EREPORT",
+      "root": [
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help: EREPORT commands:"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  EREPORT ? Help for these commands"
+        },
+        {
+          "code": 101,
+          "continuation": false,
+          "text": "Help:  EREPORT MESSAGE - Send an error reporting event"
+        }
+      ]
+    },
+    {
+      "family": "TEST_SPAM",
+      "root": [
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help: TEST_SPAM commands:"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  TEST_SPAM ? Help for these commands"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  TEST_SPAM EREPORT - Generate random error reporting messages on a network"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  TEST_SPAM LIGHTING - Generate random lighting messages on a network"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  TEST_SPAM LIST - List active generation sessions."
+        },
+        {
+          "code": 101,
+          "continuation": false,
+          "text": "Help:  TEST_SPAM STOP - Stop an active generation session."
+        }
+      ]
+    },
+    {
+      "family": "CGL",
+      "root": [
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help: CGL commands:"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  CGL ? Help for these commands"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  CGL EXPORT - Export a project to CGL format"
+        },
+        {
+          "code": 101,
+          "continuation": false,
+          "text": "Help:  CGL IMPORT - Import to a project from CGL"
+        }
+      ]
+    },
+    {
+      "family": "TRANSFORM",
+      "root": [
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help: TRANSFORM commands:"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  TRANSFORM ? Help for these commands"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  TRANSFORM MIGRATE_SQL - Migrate a SQLite (DB) Project file to the latest Schema version"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  TRANSFORM PROJECT - Transform a Project database using a transform (XSLT script)"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  TRANSFORM SQL_TO_XML - Transform a SQLite (DB) Project file to an XML Project file"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  TRANSFORM SQL_TO_XML_CGATE2 - Transform a SQLite (DB) Project file to an cgate2 XML Project file, converted project file should not include any tags introduced in cgate3 "
+        },
+        {
+          "code": 101,
+          "continuation": false,
+          "text": "Help:  TRANSFORM XML_TO_SQL - Transform an XML Project file to a SQLite (DB) Project file"
+        }
+      ]
+    },
+    {
+      "family": "IDENTIFY",
+      "root": [
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help: IDENTIFY commands:"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  IDENTIFY ? Help for these commands"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  IDENTIFY OFF - "
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  IDENTIFY ON - "
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  IDENTIFY RAMP - "
+        },
+        {
+          "code": 101,
+          "continuation": false,
+          "text": "Help:  IDENTIFY TERMINATERAMP - "
+        }
+      ]
+    },
+    {
+      "family": "APPLICATIONS",
+      "root": [
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help: APPLICATIONS commands:"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  APPLICATIONS ? Help for these commands"
+        },
+        {
+          "code": 101,
+          "continuation": false,
+          "text": "Help:  APPLICATIONS GET_CATALOG - Get the Application Catalog file as XML"
+        }
+      ]
+    },
+    {
+      "family": "CALCULATOR",
+      "root": [
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help: CALCULATOR commands:"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  CALCULATOR ? Help for these commands"
+        },
+        {
+          "code": 101,
+          "continuation": false,
+          "text": "Help:  CALCULATOR TEST - Run the calculator for this network"
+        }
+      ]
+    },
+    {
+      "family": "REPOSITORY",
+      "root": [
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help: REPOSITORY commands:"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  REPOSITORY ? Help for these commands"
+        },
+        {
+          "code": 101,
+          "continuation": true,
+          "text": "Help:  REPOSITORY LIST - Return a list of project repositories on the C-Gate Server"
+        },
+        {
+          "code": 101,
+          "continuation": false,
+          "text": "Help:  REPOSITORY USE - Set the current project repository to be used by this command session"
+        }
+      ]
+    }
+  ],
+  "source_probe_sha256": "5cfa17a5ad559e96f993e111c00d6e0ddaef33cd6d34fb5c9f7d68326138a219"
+}

@@ -82,11 +82,19 @@ before mutation. RETRY remains an explicit 502 because native retry
 reinitializes and executes the task group. Implemented transitions publish the
 retained `updated-entries`, `started`, and `ended` envelopes only to sessions
 subscribed through EVENT_CHANNEL; `debug` is silent without a real worker.
-This moves three rows from fail-closed to local, for an aggregate **206
-physical, 141 local/session, 83 fail-closed, and 1 obsolete** across 431 paths.
 Exact sanitized evidence is in
 `rust/testdata/fixtures/native_cgate_deploy_queue.json`; the real-daemon test
 also verifies zero queue PCI traffic, restart volatility and MQTT continuity.
+
+Fourteen family roots now reproduce the exact retained C-Gate 3.4 help
+envelopes for bare, literal `?`, and `HELP` forms. Nine of those roots are in
+the 431-path inventory (`CGL`, `CLOCK`, `ENABLE`, `EREPORT`, `LIGHTING`,
+`SHORTMESSAGE`, `TEMPERATURE`, `TEST_SPAM`, and `TRIGGER`). The other five
+parent roots are pinned in the separate supplement. These local help endpoints
+do not change any child command's capability class. Together with the NET and
+deploy-queue tranches, the matrix now contains **208 physical, 159
+local/session, 62 fail-closed, and 2 obsolete paths**. Evidence is in
+`rust/testdata/fixtures/native_cgate_family_help.json`.
 
 Current verification is:
 

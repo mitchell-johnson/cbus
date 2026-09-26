@@ -154,9 +154,10 @@ fn matrix_class_counts_pin_the_routing_gap() {
     // mutation. RETRY remains fail-closed because it would re-execute work.
     // NET lifecycle adds two exact physical paths, nine local catalogue/help
     // paths and one native-obsolete path, moving twelve rows out of 502.
+    // Nine retained family-help roots move fail_closed_502 -> local_database.
     assert_eq!(class_count(RoutingClass::Physical), 208);
-    assert_eq!(class_count(RoutingClass::LocalDatabase), 150);
-    assert_eq!(class_count(RoutingClass::FailClosed502), 71);
+    assert_eq!(class_count(RoutingClass::LocalDatabase), 159);
+    assert_eq!(class_count(RoutingClass::FailClosed502), 62);
     assert_eq!(class_count(RoutingClass::Obsolete400), 2);
     // Rejected4xx is empty by construction today (arity-gated 4xx readings
     // share paths with other classes); the emptiness itself is pinned here
@@ -976,7 +977,20 @@ fn supplement_pins_non_inventoried_service_commands() {
         .iter()
         .map(|entry| (entry.path, entry.class))
         .collect();
-    assert_eq!(supplement.len(), 6, "supplement list must stay 6 entries");
+    assert_eq!(supplement.len(), 11, "supplement list must stay 11 entries");
+    for path in [
+        "APPLICATIONS",
+        "CALCULATOR",
+        "IDENTIFY",
+        "REPOSITORY",
+        "TRANSFORM",
+    ] {
+        assert_eq!(
+            supplement.get(path),
+            Some(&RoutingClass::LocalDatabase),
+            "{path} parent help is local"
+        );
+    }
     assert_eq!(
         supplement.get("CMQTT CAPABILITIES"),
         Some(&RoutingClass::LocalDatabase)

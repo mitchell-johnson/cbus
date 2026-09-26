@@ -4,6 +4,7 @@
 use super::*;
 mod dali;
 mod dali_specialized;
+mod family_help;
 mod net_lifecycle;
 use crate::access::{credential_digest_for, AccessEntry, CgateAccessLevel};
 use crate::auth;
@@ -1892,6 +1893,9 @@ impl Service {
         if let Some(response) = net_lifecycle::help(tag, &words, &upper) {
             return response;
         }
+        if let Some(response) = family_help::response(tag, &words, &upper) {
+            return response;
+        }
         if verb == "PORT" {
             return crate::port::handle(tag, &words, self.port_endpoint.get()).await;
         }
@@ -2066,6 +2070,22 @@ impl Service {
             capabilities["access_global_command_level_matrix"] = serde_json::Value::Bool(false);
             capabilities["cgl_import"] = serde_json::Value::Bool(false);
             capabilities["cgl_export"] = serde_json::Value::Bool(false);
+            capabilities["native_family_help_roots"] = serde_json::json!([
+                "applications",
+                "calculator",
+                "cgl",
+                "clock",
+                "enable",
+                "ereport",
+                "identify",
+                "lighting",
+                "repository",
+                "shortmessage",
+                "temperature",
+                "test_spam",
+                "transform",
+                "trigger"
+            ]);
             capabilities["bridged_read_only_discovery"] = serde_json::Value::Bool(true);
             capabilities["bridged_syncnew_general"] = serde_json::Value::Bool(true);
             capabilities["bridged_read_only_commands"] = serde_json::json!([

@@ -109,3 +109,86 @@ async fn administrative_documents_and_mqtt_share_the_running_daemon() {
     drop(sys);
     std::fs::remove_file(state).unwrap();
 }
+
+#[tokio::test]
+async fn native_family_help_is_exact_over_tcp_and_keeps_mqtt_live() {
+    let evidence: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_family_help.json"
+    ))
+    .unwrap();
+    let state = cbus_test_support::proc::temp_path("cgate-family-help.json");
+    let mut sys = start_with(Options {
+        extra: vec![
+            "--cgate-bind".into(),
+            "127.0.0.1:0".into(),
+            "--cgate-state".into(),
+            state.to_string_lossy().into_owned(),
+        ],
+        ..Default::default()
+    })
+    .await;
+    wait_started(&sys).await;
+    require(STARTUP, "C-Gate listener", || {
+        sys.daemon.stderr().contains("C-Gate service listening on ")
+    })
+    .await;
+    let address = sys
+        .daemon
+        .stderr()
+        .lines()
+        .find_map(|line| line.split_once("C-Gate service listening on "))
+        .map(|(_, address)| address.trim().to_string())
+        .unwrap();
+    let stream = TcpStream::connect(address).await.unwrap();
+    let (reader, mut writer) = stream.into_split();
+    let mut reader = BufReader::new(reader);
+    let mut greeting = String::new();
+    reader.read_line(&mut greeting).await.unwrap();
+    assert_eq!(greeting, "201 cmqttd C-Gate service ready\r\n");
+
+    let mut id = 0_u32;
+    for family in evidence["families"].as_array().unwrap() {
+        let name = family["family"].as_str().unwrap();
+        for text in [
+            name.to_string(),
+            format!("{name} ?"),
+            format!("HELP {name}"),
+        ] {
+            id += 1;
+            let tag = id.to_string();
+            let expected = family["root"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|row| {
+                    format!(
+                        "[{tag}] 101{}{}",
+                        if row["continuation"].as_bool().unwrap() {
+                            '-'
+                        } else {
+                            ' '
+                        },
+                        row["text"].as_str().unwrap()
+                    )
+                })
+                .collect::<Vec<_>>();
+            assert_eq!(
+                command(&mut reader, &mut writer, &tag, &text).await,
+                expected,
+                "{text}"
+            );
+        }
+    }
+
+    let payload = "053800790149";
+    let before = sys.pci.count_payload(payload);
+    sys.broker
+        .inject("homeassistant/light/cbus_1/set", br#"{"state":"ON"}"#);
+    require(COMMAND_DRAIN, "MQTT after family help", || {
+        sys.pci.count_payload(payload) > before
+    })
+    .await;
+    assert!(sys.daemon.is_running());
+    drop(sys);
+    std::fs::remove_file(state).unwrap();
+}

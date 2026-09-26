@@ -94,6 +94,55 @@ fn pci() -> (Arc<PciClient>, tokio::io::DuplexStream) {
     (PciClient::new(Box::new(rd), Box::new(wr), tx), remote)
 }
 
+#[tokio::test]
+async fn retained_family_help_roots_match_native_fixture_for_all_three_forms() {
+    let evidence: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../testdata/fixtures/native_cgate_family_help.json"
+    ))
+    .unwrap();
+    let path = state_path();
+    let (pci_client, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+
+    for family in evidence["families"].as_array().unwrap() {
+        let name = family["family"].as_str().unwrap();
+        let rows = family["root"].as_array().unwrap();
+        let texts = rows
+            .iter()
+            .map(|row| row["text"].as_str().unwrap().to_string())
+            .collect::<Vec<_>>();
+        assert!(rows[..rows.len() - 1]
+            .iter()
+            .all(|row| row["code"] == 101 && row["continuation"] == true));
+        assert_eq!(rows.last().unwrap()["code"], 101);
+        assert_eq!(rows.last().unwrap()["continuation"], false);
+
+        let mut replies = Vec::new();
+        for (suffix, command) in [
+            ("root", name.to_string()),
+            ("question", format!("{name} ?")),
+            ("help", format!("HELP {name}")),
+        ] {
+            let response = service
+                .handle(&mut client, &format!("[{name}-{suffix}] {command}"))
+                .await;
+            assert_eq!(response.status, 101, "{command}");
+            assert_eq!(response.lines, texts[..texts.len() - 1], "{command}");
+            assert_eq!(
+                response.final_text,
+                format!("101 {}", texts.last().unwrap()),
+                "{command}"
+            );
+            replies.push((response.lines, response.final_text));
+        }
+        assert_eq!(replies[0], replies[1], "{name} root versus question mark");
+        assert_eq!(replies[0], replies[2], "{name} root versus HELP");
+    }
+
+    std::fs::remove_file(path).unwrap();
+}
+
 async fn connect_command_session(
     address: std::net::SocketAddr,
 ) -> (
@@ -3349,6 +3398,25 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["file_host_filesystem"], false);
     assert_eq!(document["cgl_import"], false);
     assert_eq!(document["cgl_export"], false);
+    assert_eq!(
+        document["native_family_help_roots"],
+        serde_json::json!([
+            "applications",
+            "calculator",
+            "cgl",
+            "clock",
+            "enable",
+            "ereport",
+            "identify",
+            "lighting",
+            "repository",
+            "shortmessage",
+            "temperature",
+            "test_spam",
+            "transform",
+            "trigger"
+        ])
+    );
     assert_eq!(
         document["do_methods"],
         serde_json::json!(["factorydefault", "lighting", "sync"])

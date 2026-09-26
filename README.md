@@ -389,6 +389,13 @@ until their full model codec is evidenced, so `dali_full_compatibility` remains
 false. There is no invented DALI MQTT state contract. See the
 [DALI command guide](docs/cgate-dali.md).
 
+Command discovery also matches the retained parent envelopes for fourteen
+application and administration families, including `CLOCK`, `LIGHTING`,
+`TRIGGER`, `SHORTMESSAGE`, `CGL`, and `TRANSFORM`. Bare, literal `?`, and
+`HELP` forms are local and do not touch the C-Bus network. Each listed child
+still follows its own capability classification; showing native help does not
+turn an unsupported child operation into a simulated success.
+
 **Full C-Gate replacement is the target, not the current completion claim.**
 Hardware-backed lighting, all eleven maintained AIRCON/HVAC commands, all 19 maintained
 AUDIO commands, all seven maintained SECURITY commands, the complete maintained

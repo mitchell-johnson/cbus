@@ -987,6 +987,13 @@ it is not Schneider SQLite, XML `file`, or `db` storage. Do not issue
 it does not support the operation, and no repair transaction is established
 for `cmqttd-json`.
 
+The service has exact retained parent help for `APPLICATIONS`, `CALCULATOR`,
+`CGL`, `CLOCK`, `ENABLE`, `EREPORT`, `IDENTIFY`, `LIGHTING`, `REPOSITORY`,
+`SHORTMESSAGE`, `TEMPERATURE`, `TEST_SPAM`, `TRANSFORM`, and `TRIGGER`.
+The bare, literal `?`, and `HELP` forms are equivalent and perform no PCI I/O.
+Do not infer child support from a help listing: consult `CMQTT CAPABILITIES`
+and the executable capability matrix for the individual child path.
+
 cmqttd recognizes `[tag] COMMAND << DELIMITER`, followed by a body and the exact
 delimiter on its own line. It limits individual lines to 1 MiB and the document
 to 16 MiB, drains an oversized body before returning tagged 400, and closes
