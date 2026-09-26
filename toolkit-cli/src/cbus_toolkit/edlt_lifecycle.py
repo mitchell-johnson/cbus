@@ -672,7 +672,8 @@ class EdltLifecycle:
             loaded, original=original, after_load=after_load, values=values,
             blank=blank, reset=reset)
 
-    def _prepare_composed_save(self, loaded, after_controls):
+    def _prepare_composed_save(self, loaded, after_controls, *,
+                               _mra_globals=None):
         """Run one terminal save projection over validated bound controls.
 
         This private composition point exists so a bounded parent-form editor
@@ -681,13 +682,20 @@ class EdltLifecycle:
         is deliberately not a general PP override API.
         """
         self._validate_loaded(loaded)
+        if _mra_globals is not None:
+            if (type(_mra_globals) is not tuple or len(_mra_globals) != 2):
+                raise EdltError(
+                    'Internal composed MRA globals must be a two-value tuple')
+            _int(_mra_globals[0], 'Composed MRA multiplexer', 1, 4)
+            _int(_mra_globals[1], 'Composed MRA zone', 1, 8)
         values = self.snapshot(after_controls)
         return self._prepare_save_values(
             loaded, original=loaded.expected, after_load=loaded.after_load,
-            values=values, composition=True)
+            values=values, composition=True, mra_globals=_mra_globals)
 
     def _prepare_save_values(self, loaded, *, original, after_load, values,
-                             blank=None, reset=None, composition=False):
+                             blank=None, reset=None, composition=False,
+                             mra_globals=None):
         values = dict(values)
         def reset_type(widget, wanted):
             key = _field(widget)
@@ -703,8 +711,12 @@ class EdltLifecycle:
         values['SceneCount']=(8,); values['SceneBucket']=tuple(bucket.ljust(232,b'\xff'))
         for index,pointer in enumerate(pointers,1): values[f'Scene{index}StartAddress']=(pointer,)
         first_mra=loaded.mra.source_widget
-        if first_mra is not None:
-            upper=(loaded.mra.multiplexer << 6) | (loaded.mra.zone << 3)
+        effective_mra_globals = (None if first_mra is None else
+            (loaded.mra.multiplexer + 1, loaded.mra.zone + 1))
+        if mra_globals is not None:
+            effective_mra_globals = mra_globals
+        if effective_mra_globals is not None:
+            upper=((effective_mra_globals[0] - 1) << 6) | ((effective_mra_globals[1] - 1) << 3)
             for widget in range(1,22):
                 if values[_field(widget)][0] in (7,8,9): values[_field(widget,1)]=((values[_field(widget,1)][0]&7)|upper,)
         last=21
@@ -730,6 +742,12 @@ class EdltLifecycle:
             evidence['terminal_normalization_passes'] = 1
             evidence['terminal_crc_passes'] = 1
             evidence['crc_fields_calculated'] = list(calculated_crcs)
+            if mra_globals is not None:
+                evidence['mra_effective_globals'] = {
+                    'multiplexer': effective_mra_globals[0],
+                    'zone': effective_mra_globals[1],
+                }
+                evidence['mra_composition_override'] = True
         if blank is not None:
             evidence['blank_transition'] = blank.as_dict()
         if reset is not None:

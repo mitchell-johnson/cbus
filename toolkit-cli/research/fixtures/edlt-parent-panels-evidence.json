@@ -6,7 +6,7 @@
     "firmware": "5.5.00",
     "toolkit": "1.18.0.2754"
   },
-  "scope": "Ordered composition of 11 admitted configurable non-MRA widget panels and eight direct parent settings panels through one retained parent transaction; Blank and Reset remain separate lifecycle actions",
+  "scope": "Ordered composition of 14 admitted configurable widget panels and nine direct parent/settings operations through one retained parent transaction; Blank and Reset remain separate lifecycle actions",
   "original_sources": [
     {
       "path": "eDLT/eDLT/FrmBaseUnit.cs",
@@ -122,6 +122,11 @@
       "establishes": "Timer panel/model"
     },
     {
+      "path": "research/fixtures/edlt-mra-acceptance.json",
+      "sha256": "fcffed315e282e95e0e49cc34f94221abd3a145b5b1b42805c3e36fd742f0090",
+      "establishes": "MRA Zone Control, Source Select, Source Control and shared global model behavior"
+    },
+    {
       "path": "research/fixtures/edlt-activation-acceptance.json",
       "sha256": "8068efb4b81215e6e584636f26eb298e7349df9b8fa57ae96a4cce8fe9396b53",
       "establishes": "activation controls"
@@ -189,7 +194,10 @@
       "scene",
       "shutter",
       "time-date",
-      "timer"
+      "timer",
+      "zone-control",
+      "source-select",
+      "source-control"
     ],
     "settings_operations": [
       "activation",
@@ -199,7 +207,8 @@
       "colours",
       "navigation",
       "quick-status",
-      "page-control"
+      "page-control",
+      "mra-globals"
     ],
     "ordered_dependency_validation": true,
     "distinct_full_record_ownership": true,
@@ -210,10 +219,11 @@
     "one_terminal_five_crc_projection": true,
     "one_verified_parameter_write_pass": true,
     "one_database_save_after_verified_apply": true,
-    "unrelated_project_unit_and_pp_state_preserved": true
+    "unrelated_project_unit_and_pp_state_preserved": true,
+    "mra_complete_record_and_distributed_bit_ownership": true,
+    "stored_standby_and_raw3_mra_preservation": true
   },
   "remaining_boundary": {
-    "mra_panel_composition": false,
     "applications_and_corridor_cache_dialog_composition": false,
     "blank_and_reset_dialog_composition": false,
     "scene_manager_dialog_binding": false,
@@ -221,6 +231,7 @@
     "original_multi_panel_sequence_executed": false,
     "native_database_extended_multi_panel_sequence_executed": false,
     "winforms_focus_caret_and_modal_dialog_behavior_verified": false,
-    "physical_device_verified": false
+    "physical_device_verified": false,
+    "mra_original_parent_multi_edit_execution": false
   }
 }

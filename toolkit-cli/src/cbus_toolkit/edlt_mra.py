@@ -197,15 +197,21 @@ class EdltMRAWidget:
         return StaticTextAllocation(allocation.index, allocation.text, False, allocation.changes, used)
 
     def _finish(self, original, updates, widget=None, record=None, page_mode=None, source=None,
-                multiplexer=None, zone=None):
+                multiplexer=None, zone=None, *, _preserve_stored_multiplexer=False,
+                _preserve_stored_placement=False):
         if widget is None:
             # This only invokes the shared save normalization; no selected
             # defaults or macro getters are evaluated for a global-only edit.
-            widget = next(iter(_mra_records(updates)))
+            widget = next(iter(_mra_records(
+                updates, allow_stored_placement=_preserve_stored_placement)))
             record = _record(updates, widget)
         updates = self.common._place_record(updates, widget, record, normalize_mra=False)
         propagation = normalize_mra_globals(updates, source=original if source is None else source,
-                                            multiplexer=multiplexer, zone=zone)
+                                            multiplexer=multiplexer, zone=zone,
+                                            _preserve_stored_multiplexer=
+                                            _preserve_stored_multiplexer,
+                                            _preserve_stored_placement=
+                                            _preserve_stored_placement)
         updates.update(propagation.changes)
         if page_mode is not None:
             updates['NavWidgetType'] = (1 if page_mode == 'multiple' else 0,)
@@ -220,12 +226,14 @@ class EdltMRAWidget:
     def plan(self, current, *, page, position, kind, variant=None, multiplexer=None, zone=None,
              page_mode=None, key_mode=None, ramp_seconds=None, source1=None, source2=None,
              label_text=None, label_index=None, status_type=None, status_text=None, status_index=None,
-             on_icon=None, off_icon=None):
+             on_icon=None, off_icon=None, _parent_composition=False):
         options = dict(page=page, position=position, kind=kind, variant=variant, multiplexer=multiplexer,
                        zone=zone, page_mode=page_mode, key_mode=key_mode, ramp_seconds=ramp_seconds,
                        source1=source1, source2=source2, label_text=label_text, label_index=label_index,
                        status_type=status_type, status_text=status_text, status_index=status_index,
                        on_icon=on_icon, off_icon=off_icon)
+        if type(_parent_composition) is not bool:
+            raise EdltError('Internal parent-composition flag must be boolean')
         if not isinstance(kind, str) or kind not in MRA_WIDGET_TYPES:
             raise EdltError('kind must be zone-control/source-select/source-control')
         variants = MRA_VARIANTS[kind]
@@ -262,7 +270,10 @@ class EdltMRAWidget:
                     raise EdltError('Icon is not offered by the original Toolkit chooser')
         original = self.snapshot(current)
         self.common.static_references(original)
-        initial_globals = normalize_mra_globals(original, multiplexer=multiplexer, zone=zone)
+        normalize_mra_globals(
+            original, multiplexer=multiplexer, zone=zone,
+            _preserve_stored_multiplexer=_parent_composition,
+            _preserve_stored_placement=_parent_composition)
         nav = original['NavWidgetType'][0]
         if nav not in (0, 1, 255):
             raise EdltError('Unsupported navigation widget mode')
@@ -359,23 +370,32 @@ class EdltMRAWidget:
                         record[slot] = allocation.index
             allocations.append(allocation)
         updates, propagation = self._finish(original, updates, widget, record, page_mode,
-            multiplexer=initial_globals.multiplexer, zone=initial_globals.zone)
+            multiplexer=multiplexer, zone=zone,
+            _preserve_stored_multiplexer=_parent_composition,
+            _preserve_stored_placement=_parent_composition)
         changes = {name: value for name, value in updates.items() if value != original[name]}
         return MRAWidgetPlan('widget', kind, page, position, widget, page_mode, variant, key_mode,
             before, _record(updates, widget), updates[f'Widget{widget}RestoreLevel'][0], propagation,
             default_allocation, *allocations, macro_normalized, original, changes, options)
 
-    def plan_globals(self, current, *, multiplexer=None, zone=None):
+    def plan_globals(self, current, *, multiplexer=None, zone=None,
+                     _parent_composition=False):
         options = dict(multiplexer=multiplexer, zone=zone)
+        if type(_parent_composition) is not bool:
+            raise EdltError('Internal parent-composition flag must be boolean')
         original = self.snapshot(current)
         self.common.static_references(original)
-        if not _mra_records(original):
+        if not _mra_records(
+                original, allow_stored_placement=_parent_composition):
             raise EdltError('Create an MRA widget before storing distributed MRA globals')
         nav = original['NavWidgetType'][0]
         if nav not in (0, 1, 255):
             raise EdltError('Unsupported navigation widget mode')
         mode = 'multiple' if nav == 1 else 'single'
-        updates, propagation = self._finish(original, dict(original), multiplexer=multiplexer, zone=zone)
+        updates, propagation = self._finish(
+            original, dict(original), multiplexer=multiplexer, zone=zone,
+            _preserve_stored_multiplexer=_parent_composition,
+            _preserve_stored_placement=_parent_composition)
         changes = {name: value for name, value in updates.items() if value != original[name]}
         return MRAWidgetPlan('globals', None, None, None, None, mode, None, None, None, None, None,
                              propagation, None, None, None, False, original, changes, options)

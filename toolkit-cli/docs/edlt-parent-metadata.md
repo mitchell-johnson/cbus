@@ -97,6 +97,11 @@ Navigation, Quick Status and Page Control operations before the nested parent
 plan runs. This includes application 172 HVAC groups and application 203
 `NetVar` records. Scene widget operations select retained scenes, so their
 trigger/output dependencies remain owned by the retained scene load.
+MRA Zone Control, Source Select, Source Control and distributed global
+operations consume only unit PP records and static-text slots. They therefore
+add no application/group objects; the resolver still supplies all metadata
+consumed by the retained lifecycle and rejects a stale project snapshot in the
+same way as every other parent transaction.
 
 `CBusGroup.PopulateDynamicAll` always constructs four default-language
 variants. Empty and `TEXT` variants have no image, so their four false image

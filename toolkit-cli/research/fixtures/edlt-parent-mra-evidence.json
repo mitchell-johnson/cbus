@@ -1,0 +1,59 @@
+{
+  "format": "cbus-edlt-parent-mra-evidence-v1",
+  "profile": {
+    "unit_type": "KEYGL5",
+    "catalog_number": "5055EDL",
+    "firmware": "5.5.00",
+    "toolkit": "1.18.0.2754"
+  },
+  "scope": "Ordered parent composition of MRA Zone Control, Source Select, Source Control and distributed multiplexer/zone globals through one retained terminal save",
+  "retained_evidence": [
+    {
+      "path": "research/fixtures/edlt-mra-acceptance.json",
+      "sha256": "fcffed315e282e95e0e49cc34f94221abd3a145b5b1b42805c3e36fd742f0090",
+      "establishes": "Original and native component records, defaults, static allocation, all 24 UI global pairs and save/reload"
+    },
+    {
+      "path": "research/NativeEdltMRAProbe.cs",
+      "sha256": "77c571fdab22ddb44410448771b5c258792b94bdd3b6605ccf2c93ffc2d9842a",
+      "establishes": "Unchanged original MRA model behavior and pre-conversion first-widget global source"
+    },
+    {
+      "path": "research/NativeEdltNormalizationProbe.cs",
+      "sha256": "c17010830d2fb1d074905c7a4ec55cbbe1e4b180d5734b17d30e9ad1a5c016c8",
+      "establishes": "Original retained save behavior for stored standby MRA, raw multiplexer 3, replacement and earlier insertion"
+    },
+    {
+      "path": "research/fixtures/edlt-parent-form-evidence.json",
+      "sha256": "9e194f47a6dbcfd73ec6e83a91b63cb0bf9f55ef2b3181866b3c3eb2be2c046e",
+      "establishes": "Original parent initialization, selection binding and terminal save sequence"
+    },
+    {
+      "path": "research/fixtures/edlt-parent-transaction-evidence.json",
+      "sha256": "321ebf4d5f7b7927ede29948758d65562c75826dc45341c57bd058f630204408",
+      "establishes": "Bounded Python ordered composition, single retained save and uncertain-write contract"
+    }
+  ],
+  "ownership": {
+    "selected_widget_complete_record": true,
+    "selected_functional_restore_level": true,
+    "multiplexer_mask": "0xc0",
+    "zone_mask": "0x38",
+    "per_widget_status_mask_preserved": "0x07",
+    "global_components_have_single_ordered_owners": true,
+    "distributed_bits_enter_only_at_terminal_save": true
+  },
+  "evidence_boundary": {
+    "python_ordered_parent_composition": true,
+    "original_component_behavior": true,
+    "original_shared_save_normalization": true,
+    "original_parent_sequence_source_pinned": true,
+    "original_mra_multi_edit_parent_executed": false,
+    "native_disposable_parent_gate_optional": true,
+    "blank_reset_parent_composition": false,
+    "physical_audio_behavior_verified": false,
+    "audio_control_messages_sent": false,
+    "unsupported_winforms_state_inferred": false
+  },
+  "blank_reset_exclusion": "Blank consumes an issued retained-model transition and Reset constructs a fresh full model graph. Neither has retained evidence for chaining inside arbitrary ordered parent controls, so both remain separate workflows."
+}

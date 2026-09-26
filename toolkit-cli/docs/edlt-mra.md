@@ -2,6 +2,14 @@
 
 `EdltMRAWidget` implements Toolkit's Zone Control (type7), Source Select (type8), and Source Control (type9) editors for **KEYGL5 / 5055EDL / firmware5.5.00**. It edits a database programming session, verifies every parameter after applying a plan, and calculates the five original configuration CRCs. It does not send Audio Control messages, configure amplifiers or matrix switchers, or verify physical audio behavior.
 
+The [ordered parent transaction](edlt-parent-transaction.md) also exposes these
+as `zone-control`, `source-select` and `source-control` operations, plus an
+ordered `mra-globals` operation. That composition validates every selected
+record first, then enters the final multiplexer/zone pair through its single
+retained terminal save and five-CRC pass. It preserves stored standby MRA
+placements, raw multiplexer 3, each record's low three status bits and all
+unrelated bytes. See the parent contract for shared-bit ownership and ordering.
+
 The original model, UI option lists, icon chooser and native PP state are the evidence. This is a bounded device-editor implementation, not a claim of complete Toolkit or audio-system parity. The compact acceptance record is [edlt-mra-acceptance.json](../research/fixtures/edlt-mra-acceptance.json).
 
 ## Public API

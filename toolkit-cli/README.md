@@ -722,6 +722,9 @@ ordered operations in JSON and use the parent transaction workflow:
    "gain_value":"1.5","measurement_culture":"en-NZ"},
   {"op":"lighting","page":1,"position":2,"group":12,"mode":"dimmer",
    "ramp_seconds":20,"restore_level":99},
+  {"op":"source-control","page":1,"position":3,
+   "variant":"dynamic-1-and-2","label_text":"Audio"},
+  {"op":"mra-globals","multiplexer":2,"zone":4},
   {"op":"activation","wake_mode":"primary-event","group":42,
    "level_percent":"50"}
 ]
@@ -737,18 +740,22 @@ cbus-toolkit cgate unit --lock-address //TEST/254 \
 
 The JSON array contains two through 22 operations and must include a widget.
 It accepts Measurement, Lighting, Enable, Fan, HVAC, Multi Level, Room
-Courtesy, Scene, Shutter, Time/Date and Timer widgets, plus activation,
-General, Display, Standby, Colours, Navigation, Quick Status and Page Control.
+Courtesy, Scene, Shutter, Time/Date, Timer, MRA Zone Control, Source Select and
+Source Control widgets, plus activation, General, Display, Standby, Colours,
+Navigation, Quick Status, Page Control and distributed MRA globals.
 The planner rejects overlapping complete records, a duplicate settings owner,
 conflicting page modes, missing application/group evidence, mismatched dynamic
 text/icon metadata, duplicate JSON keys and unknown fields. Operation order is
 meaningful: Display can enable a later HVAC icon edit, Standby can enable later
-idle colour controls, and a two-slice Time/Date edit reserves both adjacent
+idle colour controls, a newly created MRA widget can precede `mra-globals`, and
+a two-slice Time/Date edit reserves both adjacent
 slots. It composes shared static allocation in order, preserves every unowned
 control byte, runs one terminal retained normalization and five-CRC projection,
 then uses one parameter-write/readback/rollback sequence and one database save
 on successful non-dry-run execution. The original component models have
-retained independent evidence. MRA and cache/dialog workflows, the complete
+retained independent evidence. MRA shared settings preserve the first existing
+pre-conversion record, stored standby placements, raw multiplexer 3, low
+status bits and unrelated bytes. Cache/dialog workflows, the complete
 original multi-panel WinForms sequence and physical behavior remain unverified. See
 [edlt-parent-transaction.md](docs/edlt-parent-transaction.md).
 
@@ -1865,7 +1872,7 @@ Later changes have separate passing acceptance on both Python versions and are
 outside that frozen wheel:
 
 - [Configuration CRC](docs/edlt-crc.md): 21 tests, including 65,588 fresh original CRC results per run.
-- [Percentage conversion](docs/edlt-percentage.md), [bounded parent composition](docs/edlt-parent-form.md), [ordered parent transaction](docs/edlt-parent-transaction.md), [automatic parent metadata](docs/edlt-parent-metadata.md) and [automatic SceneManager metadata](docs/edlt-scene-metadata.md): pure conversion and CLI acceptance, standalone original Windows 12- and 528-case captures, 14 portable Measurement/Percentage lifecycle composition tests, 29 portable parent-transaction tests across 11 admitted configurable non-MRA widget panels and eight direct-settings panels plus one optional native gate, 19 portable parent-metadata/CLI cases plus one optional native gate, and 32 portable SceneManager-metadata/CLI cases plus one optional native gate. MRA/cache/dialog composition, the complete original parent/SceneManager dialogs and combined Schneider C-Gate/physical acceptance remain outstanding.
+- [Percentage conversion](docs/edlt-percentage.md), [bounded parent composition](docs/edlt-parent-form.md), [ordered parent transaction](docs/edlt-parent-transaction.md), [automatic parent metadata](docs/edlt-parent-metadata.md) and [automatic SceneManager metadata](docs/edlt-scene-metadata.md): pure conversion and CLI acceptance, standalone original Windows 12- and 528-case captures, 14 portable Measurement/Percentage lifecycle composition tests, 38 portable parent-transaction tests across 14 admitted configurable widget panels and nine direct parent/settings operations plus two optional native gates, 19 portable parent-metadata/CLI cases plus one optional native gate, and 32 portable SceneManager-metadata/CLI cases plus one optional native gate. Applications/Corridor cache dialogs, Blank/Reset parent composition, the complete original parent/SceneManager dialogs and combined Schneider C-Gate/physical acceptance remain outstanding.
 - [About information](docs/toolkit-about.md): 16 tests, including 51 original instruction cases per run.
 - [Signed update metadata](docs/toolkit-update-metadata.md), [revocation stages](docs/toolkit-update-revocation.md) and [supplied-context registry conditions](docs/toolkit-update-registry-conditions.md): separate 56-, 53- and 78-test checkpoints with explicit trust and availability limits.
 - [PCI routing](docs/pci-routing.md), [incoming routing](docs/pci-incoming-routing.md), [routed RECALL](docs/pci-routed-recall.md) and [routed IDENTIFY](docs/pci-routed-identify.md): separate codec and transport checkpoints; IDENTIFY passes 104 tests with fresh original matcher comparisons and owned loopback exchanges.

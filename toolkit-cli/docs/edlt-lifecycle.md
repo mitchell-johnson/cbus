@@ -33,6 +33,14 @@ Loaded diagnostics retain the legacy plan-event ordering. Entries marked `before
 
 The state retains 21 widget identities with stored type and actual model family, a separate page-widget object, all eight scene identities, scene item references to shared immutable cache objects, original static text bytes and initialized MRA globals. A missing scene action remains the private `-1` value until save projects the original fallback. Two scenes sharing a source pointer remain distinct loaded objects; their items can share the same cached application/group object. Unsupported stored types retain their bytes while using `BlankData`.
 
+The bounded [ordered parent transaction](edlt-parent-transaction.md) has one
+private composition entrypoint for validated controls. When that transaction
+contains MRA operations, it supplies the final effective multiplexer/zone pair
+to this same terminal projection. The serializer applies only bits `0xf8` to
+every retained type 7/8/9 record, including stored standby placements, while
+preserving the low status bits and all other record bytes. Public
+`prepare_save` behavior and issued-state validation are unchanged.
+
 Static-label diagnostics decode valid UTF-8 only. Invalid text bytes are retained unchanged; the new diagnostic API does not claim to evaluate the original replacement-decoded string. No text setter, application edit, control binding or Corridor editor is added by this split. Existing preflight guards remain in force, including early rejection of a missing scene output group with `original_stage='before_save'`.
 
 ## Cache facts

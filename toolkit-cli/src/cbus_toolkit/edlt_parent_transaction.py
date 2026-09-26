@@ -22,6 +22,7 @@ from .edlt_general import EdltGeneralSettings
 from .edlt_hvac import EdltHVACTemperatureWidget
 from .edlt_lifecycle import EdltLifecycle, LifecycleCache, _delta, _error_text, _json
 from .edlt_measurement import EdltMeasurementWidget
+from .edlt_mra import EdltMRAWidget, MRA_WIDGET_TYPES
 from .edlt_multilevel import EdltMultiLevelWidget
 from .edlt_navigation import EdltNavigation
 from .edlt_page_control import EdltPageControl
@@ -112,14 +113,27 @@ QUICK_STATUS_OPTION_NAMES = (
     'middle_colour', 'high_colour',
 )
 PAGE_CONTROL_OPTION_NAMES = ('group',)
+MRA_COMMON_OPTION_NAMES = (
+    'page', 'position', 'variant', 'multiplexer', 'zone', 'page_mode',
+    'label_text', 'label_index', 'on_icon',
+)
+MRA_ZONE_OPTION_NAMES = MRA_COMMON_OPTION_NAMES + (
+    'key_mode', 'ramp_seconds', 'status_type', 'status_text', 'status_index',
+    'off_icon',
+)
+MRA_SOURCE_SELECT_OPTION_NAMES = MRA_COMMON_OPTION_NAMES + (
+    'source1', 'source2', 'status_text', 'status_index',
+)
+MRA_GLOBAL_OPTION_NAMES = ('multiplexer', 'zone')
 
 WIDGET_OPERATION_NAMES = (
     'measurement', 'lighting', 'enable', 'fan', 'hvac', 'multilevel',
     'room-courtesy', 'scene', 'shutter', 'time-date', 'timer',
+    'zone-control', 'source-select', 'source-control',
 )
 SETTING_OPERATION_NAMES = (
     'activation', 'general', 'display', 'standby', 'colours', 'navigation',
-    'quick-status', 'page-control',
+    'quick-status', 'page-control', 'mra-globals',
 )
 SUPPORTED_OPERATION_NAMES = WIDGET_OPERATION_NAMES + SETTING_OPERATION_NAMES
 
@@ -135,6 +149,9 @@ _OPERATION_SHAPES = {
     'shutter': (SHUTTER_OPTION_NAMES, ('page', 'position', 'group')),
     'time-date': (TIME_DATE_OPTION_NAMES, ('page', 'position')),
     'timer': (TIMER_OPTION_NAMES, ('page', 'position', 'group')),
+    'zone-control': (MRA_ZONE_OPTION_NAMES, ('page', 'position')),
+    'source-select': (MRA_SOURCE_SELECT_OPTION_NAMES, ('page', 'position')),
+    'source-control': (MRA_COMMON_OPTION_NAMES, ('page', 'position')),
     'activation': (ACTIVATION_OPTION_NAMES, ()),
     'general': (GENERAL_OPTION_NAMES, ()),
     'display': (DISPLAY_OPTION_NAMES, ()),
@@ -143,6 +160,7 @@ _OPERATION_SHAPES = {
     'navigation': (NAVIGATION_OPTION_NAMES, ()),
     'quick-status': (QUICK_STATUS_OPTION_NAMES, ()),
     'page-control': (PAGE_CONTROL_OPTION_NAMES, ()),
+    'mra-globals': (MRA_GLOBAL_OPTION_NAMES, ()),
 }
 
 _SETTING_FIELDS = {
@@ -171,6 +189,10 @@ PANEL_BINDING_SOURCES = {
     'display': 'FrmBaseUnit.cs', 'standby': 'FrmBaseUnit.cs',
     'colours': 'FrmBaseUnit.cs', 'quick-status': 'FrmBaseUnit.cs',
     'page-control': 'FrmBaseUnit.cs',
+    'zone-control': 'research/NativeEdltMRAProbe.cs',
+    'source-select': 'research/NativeEdltMRAProbe.cs',
+    'source-control': 'research/NativeEdltMRAProbe.cs',
+    'mra-globals': 'research/NativeEdltNormalizationProbe.cs',
 }
 CRC_FIELDS = (
     'OverallCRC', 'GlobalParameterCRC', 'WidgetsCRC', 'StaticTextCRC',
@@ -211,6 +233,10 @@ def _operation(value):
     if missing:
         raise EdltError(
             operation + ' operation requires: ' + ', '.join(sorted(missing)))
+    if operation == 'mra-globals' and not any(
+            value.get(name) is not None for name in MRA_GLOBAL_OPTION_NAMES):
+        raise EdltError(
+            'mra-globals operation requires multiplexer and/or zone')
     # A canonical key order makes plan identity independent of JSON key order.
     return {'op': operation, **{name: value[name] for name in allowed if name in value}}
 
@@ -357,7 +383,7 @@ class ParentTransactionPlan:
         final = {**self.expected, **self.changes}
         return {
             'format': 'cbus-edlt-parent-transaction-plan-v1',
-            'scope': ('ordered non-MRA widget panels and direct unit settings '
+            'scope': ('ordered widget panels and direct unit settings '
                       'through one retained parent save'),
             'unit_type': 'KEYGL5', 'catalog_number': '5055EDL',
             'firmware': '5.5.00',
@@ -427,6 +453,10 @@ class EdltParentTransaction:
             'standby': EdltStandby, 'colours': EdltColours,
             'navigation': EdltNavigation, 'quick-status': EdltQuickStatus,
             'page-control': EdltPageControl,
+            'zone-control': EdltMRAWidget,
+            'source-select': EdltMRAWidget,
+            'source-control': EdltMRAWidget,
+            'mra-globals': EdltMRAWidget,
         }
         spec, catalog_number, firmware = self._profile
         editor = classes[kind](
@@ -535,6 +565,11 @@ class EdltParentTransaction:
         setting_panels = set()
         metadata_dependencies = []
         validation_placement_projections = 0
+        mra_globals = None
+        mra_global_owners = {}
+        mra_source_widget = None
+        mra_source_captured = False
+        mra_operations = 0
         widget_editors = {
             'measurement': self.measurement_editor,
             'lighting': self.lighting_editor,
@@ -546,13 +581,29 @@ class EdltParentTransaction:
             options = {name: value for name, value in operation.items()
                        if name != 'op'}
             if kind in WIDGET_OPERATION_NAMES:
+                is_mra = kind in MRA_WIDGET_TYPES
+                if is_mra:
+                    for component in MRA_GLOBAL_OPTION_NAMES:
+                        if operation.get(component) is None:
+                            continue
+                        if component in mra_global_owners:
+                            raise EdltError(
+                                'Duplicate or conflicting MRA global ownership '
+                                f'for {component}: '
+                                f'{mra_global_owners[component]} and {owner}')
+                        mra_global_owners[component] = owner
                 candidate = _candidate_widget(operation, planning_values)
                 if candidate is not None and candidate in slots:
                     raise EdltError(
                         f'Duplicate widget byte ownership for widget{candidate}: '
                         f'{slots[candidate]} and {owner}')
                 editor = widget_editors.get(kind) or self._editor(kind)
-                widget_plan = editor.plan(planning_values, **options)
+                if is_mra:
+                    widget_plan = editor.plan(
+                        planning_values, kind=kind,
+                        _parent_composition=True, **options)
+                else:
+                    widget_plan = editor.plan(planning_values, **options)
                 widget = widget_plan.widget
                 if widget in slots:
                     raise EdltError(
@@ -635,9 +686,10 @@ class EdltParentTransaction:
                 # Standalone planners serialize their own selected record.  A
                 # normalized validation view lets the next distinct editor see
                 # that model without making it the transaction's terminal save.
-                planning_values = self.common._place_record(
-                    control_values, widget, widget_plan.record,
-                    normalize_mra=False)
+                for record_widget, record in records.items():
+                    planning_values = self.common._place_record(
+                        planning_values, record_widget, record,
+                        normalize_mra=False)
                 for record_widget in records:
                     if record_widget >= 6:
                         planning_values[f'Widget{record_widget}RestoreLevel'] = \
@@ -645,24 +697,85 @@ class EdltParentTransaction:
                 planning_values['NavWidgetType'] = control_values['NavWidgetType']
                 for parameter in (*allocations, *extra_fields):
                     planning_values[parameter] = control_values[parameter]
+                if is_mra:
+                    planning_values.update(widget_plan.propagation.changes)
+                    mra_globals = (
+                        widget_plan.propagation.multiplexer,
+                        widget_plan.propagation.zone,
+                    )
+                    if not mra_source_captured:
+                        mra_source_widget = widget_plan.propagation.source_widget
+                        mra_source_captured = True
+                    mra_operations += 1
                 validation_placement_projections += 1
                 selected.append((widget, kind))
                 document = widget_plan.as_dict()
+                panel_binding = {
+                    'selection_order': [
+                        'ShowWidget', 'BaseWidget.SetWidgetData',
+                        'BaseWidget.SetUpDataSource',
+                        'assign selected widget data source',
+                        'ResetBindings(false)',
+                    ],
+                    'source': PANEL_BINDING_SOURCES[kind],
+                    'standalone_dependency_validation_reused': True,
+                }
+                if is_mra:
+                    panel_binding[
+                        'original_mra_multi_edit_order_verified'] = False
                 document.update({
                     'operation': number,
                     'composition_role': 'validated bound-control projection',
                     'owned_parameters': sorted(claimed + list(allocations) +
                                                extra_fields),
                     'reserved_widget_slots': sorted(records),
+                    'parent_panel_binding': panel_binding,
+                    'standalone_changes_applied_directly': False,
+                })
+                results.append(_json(document))
+                continue
+
+            if kind == 'mra-globals':
+                for component in MRA_GLOBAL_OPTION_NAMES:
+                    if operation.get(component) is None:
+                        continue
+                    if component in mra_global_owners:
+                        raise EdltError(
+                            'Duplicate or conflicting MRA global ownership '
+                            f'for {component}: '
+                            f'{mra_global_owners[component]} and {owner}')
+                    mra_global_owners[component] = owner
+                global_plan = self._editor(kind).plan_globals(
+                    planning_values, _parent_composition=True, **options)
+                planning_values.update(global_plan.propagation.changes)
+                mra_globals = (
+                    global_plan.propagation.multiplexer,
+                    global_plan.propagation.zone,
+                )
+                if not mra_source_captured:
+                    mra_source_widget = global_plan.propagation.source_widget
+                    mra_source_captured = True
+                mra_operations += 1
+                document = global_plan.as_dict()
+                document.update({
+                    'operation': number,
+                    'composition_role':
+                        'ordered distributed MRA global constraint',
+                    'owned_parameters': [],
+                    'owned_bit_fields': [
+                        {
+                            'field': component,
+                            'mask': '0xc0' if component == 'multiplexer'
+                                    else '0x38',
+                            'owner': owner,
+                        }
+                        for component in MRA_GLOBAL_OPTION_NAMES
+                        if operation.get(component) is not None
+                    ],
                     'parent_panel_binding': {
-                        'selection_order': [
-                            'ShowWidget', 'BaseWidget.SetWidgetData',
-                            'BaseWidget.SetUpDataSource',
-                            'assign selected widget data source',
-                            'ResetBindings(false)',
-                        ],
                         'source': PANEL_BINDING_SOURCES[kind],
                         'standalone_dependency_validation_reused': True,
+                        'original_mra_multi_edit_order_verified': False,
                     },
                     'standalone_changes_applied_directly': False,
                 })
@@ -824,7 +937,7 @@ class EdltParentTransaction:
         # This is the transaction's sole terminal save normalization and CRC
         # pass.  Standalone editor plans above are validation projections only.
         lifecycle_plan = self.lifecycle._prepare_composed_save(
-            loaded, after_controls)
+            loaded, after_controls, _mra_globals=mra_globals)
         before_save = lifecycle_plan.before_save
         final = {**lifecycle_plan.expected, **lifecycle_plan.changes}
         lifecycle_document = lifecycle_plan.as_dict()
@@ -899,6 +1012,8 @@ class EdltParentTransaction:
                 'navigation_mode': navigation_mode,
                 'activation_operations': int(activation_seen),
                 'settings_panels': sorted(setting_panels),
+                'mra_operations': mra_operations,
+                'mra_global_components_owned': sorted(mra_global_owners),
                 'supported_operation_types': list(SUPPORTED_OPERATION_NAMES),
                 'duplicate_or_conflicting_byte_ownership_rejected': True,
                 'all_controls_validated_before_first_pp_write': True,
@@ -923,6 +1038,24 @@ class EdltParentTransaction:
                     for parameter, owner in sorted(owners.items())
                 ],
                 'navigation_is_one_reconciled_parent_constraint': True,
+                'mra_global_bits': {
+                    'active': mra_globals is not None,
+                    'multiplexer_mask': '0xc0',
+                    'zone_mask': '0x38',
+                    'status_mask_preserved': '0x07',
+                    'component_owners': [
+                        {'component': component,
+                         'owner': mra_global_owners[component]}
+                        for component in sorted(mra_global_owners)
+                    ],
+                    'pre_conversion_source_widget': mra_source_widget,
+                    'effective': None if mra_globals is None else {
+                        'multiplexer': mra_globals[0], 'zone': mra_globals[1],
+                    },
+                    'distributed_by_terminal_serializer':
+                        mra_globals is not None,
+                    'complete_selected_records_remain_operation_owned': True,
+                },
                 'crc_fields_owned_by_terminal_serializer': list(CRC_FIELDS),
             },
             'preservation': {
@@ -937,6 +1070,8 @@ class EdltParentTransaction:
                 ],
                 'retained_scene_models': True,
                 'retained_mra_source': True,
+                'stored_standby_mra_placements_preserved': True,
+                'mra_status_bits_and_unrelated_record_bytes_preserved': True,
                 'untouched_widget_and_parent_fields_preserved': True,
             },
             'source_evidence_fixture':
@@ -955,6 +1090,9 @@ class EdltParentTransaction:
             'write_order': list(lifecycle_plan.changes),
             'lifecycle': lifecycle_document,
         }
+        if mra_operations:
+            evidence['mra_parent_evidence_fixture'] = (
+                'research/fixtures/edlt-parent-mra-evidence.json')
         return ParentTransactionPlan(
             loaded.expected, loaded.after_load, after_controls, before_save,
             lifecycle_plan.changes, cache, operations, tuple(results),

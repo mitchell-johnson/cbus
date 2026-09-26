@@ -84,15 +84,20 @@ cbus-toolkit cgate unit --lock-address //PROJECT/254 \
 
 The array requires two through 22 operations and at least one widget. It
 accepts Measurement, Lighting, Enable, Fan, HVAC, Multi Level, Room Courtesy,
-Scene, Shutter, Time/Date and Timer widgets, plus activation, General, Display,
-Standby, Colours, Navigation, Quick Status and Page Control. Widget operations
+Scene, Shutter, Time/Date, Timer, MRA Zone Control, Source Select and Source
+Control widgets, plus activation, General, Display, Standby, Colours,
+Navigation, Quick Status, Page Control and distributed MRA globals. Widget operations
 use each standalone editor's exact option names; activation uses
 `level_percent` or `action`. Percentages must be quoted canonical fixed-point
 text. Overlapping complete records, a duplicate settings owner, conflicts with
 the second Time/Date slice, page-mode conflicts, missing group or effective
 dynamic-variant evidence, unknown fields and duplicate JSON keys fail before PP mutation.
-Order enabling dependencies before their consumers: Display before an HVAC
-icon edit and Standby before idle Colours controls.
+Order enabling dependencies before their consumers: Display before an HVAC or
+MRA icon edit, Standby before idle Colours controls, and a retained or newly
+created MRA widget before `mra-globals`. Multiplexer and zone have independent
+single owners. Omitted MRA globals come from the first existing record before
+type conversion; stored standby records and raw multiplexer3 remain supported
+inside this retained parent path.
 
 Inspect `operation_results`, `operation_metadata_dependencies`, `ownership`, `transaction_guards`,
 `preservation`, `execution_counts` and `write_order`. Successful non-dry-run
@@ -102,7 +107,7 @@ save. A save exception or interruption is never retried: inspect
 not confirmed and `save_outcome_uncertain=true` keeps the database outcome
 explicit. The plan has retained original evidence for each component, while
 `native_multi_edit_parent_form_executed=false` and physical behavior remains
-unverified. MRA, Applications/Corridor cache dialogs, Blank/Reset and
+unverified. Applications/Corridor cache dialogs, Blank/Reset and
 SceneManager binding remain separate workflows. See
 `toolkit-cli/docs/edlt-parent-transaction.md`.
 

@@ -1,9 +1,9 @@
 # eDLT ordered parent transaction
 
 `EdltParentTransaction` applies two through 22 ordered control operations to
-one **KEYGL5 / 5055EDL firmware 5.5.00** database snapshot. It now composes
-all 11 admitted configurable non-MRA widget panels and eight direct parent
-settings panels. Every operation is validated by its accepted standalone
+one **KEYGL5 / 5055EDL firmware 5.5.00** database snapshot. It composes
+14 configurable widget panels, including all three MRA models, plus nine
+direct parent/settings operations. Every operation is validated by its accepted standalone
 editor. The owned fields then enter one retained lifecycle state, one terminal
 `BeforeSavePPData` projection and one five-CRC projection.
 
@@ -108,6 +108,9 @@ fields are the public arguments of these existing editors:
 | `shutter` | `page`, `position`, `group` | Application, mode, presets, page mode and label/status type/index/text |
 | `time-date` | `page`, `position` | One/two slices, display, page mode and unit-wide date/time/leading-zero settings |
 | `timer` | `page`, `position`, `group` | Application, duration/levels/ramp, page mode and label/status type/index/text |
+| `zone-control` | `page`, `position` | MRA variant, multiplexer, zone, page mode, key mode, ramp, static label/status text or index and built-in on/off icons |
+| `source-select` | `page`, `position` | MRA variant, multiplexer, zone, page mode, absolute sources, static label/status text or index and built-in icon |
+| `source-control` | `page`, `position` | MRA variant, multiplexer, zone, page mode, static label text/index and built-in icon |
 | `activation` | None | Wake mode, group, `level_percent` or `action`, activation page and first-key behavior |
 | `general` | None | Key timings, status interval, Tools lock and power restore mode |
 | `display` | None | Large-text owner, big icons, Timer flash and Fan wrap |
@@ -116,6 +119,7 @@ fields are the public arguments of these existing editors:
 | `navigation` | None | Page mode/variant, temperature source, dynamic group and page names/indexes |
 | `quick-status` | None | Mode, group, thresholds and three colours |
 | `page-control` | None | Enable-application group or disabled value 255 |
+| `mra-globals` | At least one of `multiplexer` 1..3 or `zone` 1..8 | None |
 
 `level_percent` remains canonical fixed-point JSON text, not a JSON number. It
 uses the original `NumUpDownPercentage` arithmetic. The percentage is valid
@@ -133,6 +137,11 @@ Order also controls dependencies between panels. A `display` operation can
 enable big icons before a later HVAC icon edit. A `standby` operation can
 enable idle brightness/group controls before a later `colours` edit. A
 `navigation` operation establishes the page mode that later widgets must use.
+An MRA widget must exist before `mra-globals`; it may come from the retained
+snapshot or an earlier operation. Display must enable big icons before an MRA
+operation can set an explicit icon. Multiplexer and zone are independently
+owned shared components, so a second operation cannot explicitly own the same
+component. An operation that omits them consumes the effective retained values.
 Reversing these sequences fails when the earlier retained state does not make
 the dependent control editable. A two-slice Time/Date operation owns both
 adjacent 32-byte records, so another operation cannot target its second slot.
@@ -154,6 +163,15 @@ own the same fields. All widget/navigation operations must resolve to one page
 mode; an explicit conflict is rejected. `NavWidgetType` is written once as
 that reconciled parent constraint.
 
+MRA widget operations own the same complete selected record and restore byte.
+Their shared multiplexer bits (`0xc0`) and zone bits (`0x38`) are separate
+transaction constraints distributed by the terminal serializer to every
+stored type 7/8/9 record. The per-record status bits (`0x07`) remain intact.
+The first existing MRA record is read before converting a newly selected
+earlier widget, matching the retained original behavior. Stored standby MRA
+placements and the noncanonical stored raw multiplexer value 3 are accepted
+only inside this retained parent path and remain preserved when omitted.
+
 Every operation-introduced application/group reference must have explicit
 positive evidence in the caller cache before any write. This includes Enable
 application 203, HVAC application 172, selected primary/secondary widget
@@ -165,6 +183,9 @@ Dynamic Labels consumes the unique effective page indexes. The automatic
 metadata workflow derives safe empty/TEXT facts, rejects DYNAMIC/FONT/ICON dependencies
 that require project or DLTP files, and adds missing application/group objects
 in deterministic order.
+MRA record fields and its static text indexes consume no application/group or
+dynamic-label records. Automatic metadata still resolves every dependency
+required by the retained lifecycle; it does not invent Audio Control groups.
 
 New static text fields are claimed by the operation that allocated them.
 Duplicate or conflicting ownership of any claimed PP parameter is rejected
@@ -212,6 +233,13 @@ the prior PP readback confirmation, `saved=false`, `save_attempted=true`,
 Here `saved=false` means that persistence was not confirmed; it does not prove
 that the database remained unchanged.
 
+When MRA operations are present, the terminal projection uses their final
+effective pair instead of the originally loaded pair and performs one
+distributed upper-bit pass. This is the only point at which unselected MRA
+records change. The plan reports that constraint under
+`ownership.mra_global_bits`, including component owners, the pre-conversion
+source widget, masks and final effective values.
+
 ## Evidence boundary
 
 [`edlt-parent-transaction-evidence.json`](../research/fixtures/edlt-parent-transaction-evidence.json)
@@ -228,6 +256,13 @@ for:
   persistence; and
 - the standalone original percentage control and arithmetic.
 
+[`edlt-parent-mra-evidence.json`](../research/fixtures/edlt-parent-mra-evidence.json)
+additionally pins the original/native MRA component fixture, first-widget and
+stored-standby/raw-3 normalization probes, parent sequence and existing
+uncertain-write contract. The new tests execute the Python composition and an
+optional disposable native database save/reload; they do not claim that an
+operator performed this multi-edit sequence in the original WinForms form.
+
 The portable transaction tests freshly verify ordered differential records,
 shared allocation, duplicate ownership rejection, one terminal lifecycle/CRC
 call including a normalized source with unchanged CRC bytes, exact
@@ -237,10 +272,11 @@ write and database-save interruption evidence. An optional native test creates a
 unit, performs the multi-edit, saves once, closes, reloads and compares the
 complete PP state when `CBUS_CGATE_TEST_HOST` and `CBUS_UNITSPEC_DIR` are set.
 
-The parent transaction still excludes the three MRA widget panels, the
-Applications and Corridor cache-driven dialogs, Blank/Reset transitions and
-SceneManager editing. Those remain separate accepted workflows rather than
-operations in this transaction. The original full `FrmBaseUnit` and an
+The parent transaction still excludes the Applications and Corridor
+cache-driven dialogs, Blank/Reset transitions and SceneManager editing. Blank
+uses an issued retained-model transition and Reset constructs a fresh complete
+model graph; neither has evidence for chaining inside arbitrary ordered
+controls, so they remain separate workflows. The original full `FrmBaseUnit` and an
 original interactive multi-panel sequence have not been executed for this
 feature. Focus, caret, validation dialogs, rendering, operator timing,
 physical transfer and physical display/control behavior remain unverified.
@@ -254,6 +290,7 @@ Run the portable focused checks from `toolkit-cli/`:
 ```sh
 PYTHONPATH=src:. python3.13 -m unittest \
   tests.test_edlt_parent_panels \
+  tests.test_edlt_parent_mra \
   tests.test_edlt_parent_transaction \
   tests.test_cli_edlt_parent_transaction -v
 ```

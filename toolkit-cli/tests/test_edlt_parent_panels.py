@@ -431,7 +431,7 @@ class ExtendedParentPanelTests(unittest.TestCase):
                     hashlib.sha256((vendor / row['path']).read_bytes()).hexdigest(),
                     row['sha256'])
         remaining = document['remaining_boundary']
-        self.assertFalse(remaining['mra_panel_composition'])
+        self.assertFalse(remaining['mra_original_parent_multi_edit_execution'])
         self.assertFalse(remaining['original_full_parent_form_executed'])
         self.assertFalse(remaining['physical_device_verified'])
 

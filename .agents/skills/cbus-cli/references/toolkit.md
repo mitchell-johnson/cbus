@@ -102,16 +102,20 @@ an end-to-end execution of the original WinForms dialog. See
 For two or more supported KEYGL5 5.5.00 panel edits, use `edlt
 parent-transaction-plan` offline or database-unit `edlt-parent-transaction`.
 The ordered operations cover Measurement, Lighting, Enable, Fan, HVAC, Multi
-Level, Room Courtesy, Scene, Shutter, Time/Date, Timer, activation, General,
-Display, Standby, Colours, Navigation, Quick Status and Page Control. The
+Level, Room Courtesy, Scene, Shutter, Time/Date, Timer, MRA Zone Control,
+Source Select, Source Control, activation, General, Display, Standby, Colours,
+Navigation, Quick Status, Page Control and MRA globals. The
 transaction reconciles one page mode, rejects overlapping complete records or
 settings fields, reserves both Time/Date slices, validates application/group
 and effective dynamic-variant dependencies, composes shared text allocation in
 order and enters every validated control before one terminal lifecycle/CRC projection.
-Place Display before a dependent HVAC icon edit and Standby before dependent
-idle Colours controls. Review `operation_results`,
+Place Display before a dependent HVAC/MRA icon edit, Standby before dependent
+idle Colours controls and a retained/new MRA widget before `mra-globals`.
+Shared multiplexer and zone components each have one explicit owner; omitted
+values use the first existing pre-conversion MRA record. Review `operation_results`,
 `operation_metadata_dependencies`, `ownership`, `preservation` and
-`execution_counts`. MRA/cache/dialog workflows remain separate. The original
+`execution_counts`. Applications/Corridor cache dialogs and Blank/Reset remain
+separate. The original
 component evidence does not establish an executed original multi-panel form; see
 `toolkit-cli/docs/edlt-parent-transaction.md`.
 
