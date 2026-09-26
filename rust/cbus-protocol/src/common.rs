@@ -42,6 +42,8 @@ pub const APP_AIRCON: u8 = 0xac;
 pub const APP_SHORT_MESSAGE: u8 = 0xad;
 /// Audio application.
 pub const APP_AUDIO: u8 = 0xcd;
+/// Access Control application.
+pub const APP_ACCESS_CONTROL: u8 = 0xd5;
 /// Media Transport application.
 pub const APP_MEDIA_TRANSPORT: u8 = 0xc0;
 /// Error Reporting application.

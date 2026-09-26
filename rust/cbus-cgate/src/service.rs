@@ -8,6 +8,7 @@ mod dali;
 mod dali_specialized;
 pub(crate) mod family_help;
 mod net_lifecycle;
+mod transform;
 
 /// Stream an operator-supplied application catalogue with the native
 /// 343/347/344 XML-snippet envelope. The configured unit-specification
@@ -49,6 +50,7 @@ use cbus_protocol::{
     common::{APP_ERROR_REPORTING, APP_IDENTIFY, APP_MEDIA_TRANSPORT, APP_SHORT_MESSAGE},
     packet::{Meta, Packet},
     sal::{
+        accesscontrol::AccessControlMessage,
         aircon::AirconCommand,
         audio::{AudioAddress, AudioCommand},
         ereport::ErrorReportMessage,
@@ -516,6 +518,10 @@ pub struct ClientState {
     recovery_only: bool,
     local_address: Option<std::net::IpAddr>,
     remote_address: Option<std::net::IpAddr>,
+    /// A macro may not invoke another macro on the same command session.
+    macro_active: bool,
+    /// Critical operations require a second command on the same session.
+    shutdown_pending: bool,
 }
 
 /// One real, explicitly selected C-Bus network, shared with the MQTT gateway.
@@ -549,6 +555,30 @@ pub struct Service {
     /// Endpoint already owned by cmqttd. PORT PROBE must reject it instead
     /// of disrupting the daemon's shared PCI connection.
     port_endpoint: OnceLock<Endpoint>,
+    shutdown: broadcast::Sender<()>,
+    spam_sessions: Arc<Mutex<SpamSessions>>,
+    audit_log: Mutex<VecDeque<AuditRecord>>,
+}
+
+struct AuditRecord {
+    timestamp: i64,
+    command: String,
+}
+
+#[derive(Default)]
+struct SpamSessions {
+    next_id: u64,
+    sessions: BTreeMap<u64, SpamSession>,
+}
+
+struct SpamSession {
+    kind: &'static str,
+    network: u8,
+    interval_ms: u64,
+    maximum: Option<u64>,
+    current: Arc<AtomicU64>,
+    started: String,
+    cancel: tokio::sync::watch::Sender<bool>,
 }
 
 #[derive(Clone, Serialize)]
@@ -1394,6 +1424,7 @@ impl Service {
             })?;
         selected.state = NetworkState::Open;
         open_reachable_networks(&mut model, &project, network);
+        let shutdown = broadcast::channel(8).0;
         Ok(Arc::new(Self {
             dali_state: Mutex::new(dali_specialized::DaliState::from_server(&model, &project)),
             model: Mutex::new(model),
@@ -1412,6 +1443,9 @@ impl Service {
             commands: Mutex::new(()),
             auth_token_hash: OnceLock::new(),
             port_endpoint: OnceLock::new(),
+            shutdown,
+            spam_sessions: Arc::new(Mutex::new(SpamSessions::default())),
+            audit_log: Mutex::new(VecDeque::new()),
         }))
     }
 
@@ -1427,6 +1461,11 @@ impl Service {
     /// serial port in use and `PORT PROBE` cannot steal the active transport.
     pub fn set_port_endpoint(&self, endpoint: Endpoint) -> Result<(), Endpoint> {
         self.port_endpoint.set(endpoint)
+    }
+
+    /// Subscribe to a confirmed command-layer shutdown request.
+    pub fn subscribe_shutdown(&self) -> broadcast::Receiver<()> {
+        self.shutdown.subscribe()
     }
 
     /// Capture the current shared PCI and its replacement epoch atomically
@@ -1960,6 +1999,25 @@ impl Service {
         let tag = &cmd.tag;
         let verb = upper.first().map(String::as_str).unwrap_or("");
         let sub = upper.get(1).map(String::as_str).unwrap_or("");
+        {
+            let mut audit = self.audit_log.lock().await;
+            if audit.len() == 10_000 {
+                audit.pop_front();
+            }
+            let command = if verb == "LOGIN"
+                || (verb == "ACCESS"
+                    && sub == "ADD"
+                    && upper.get(2).is_some_and(|kind| kind == "USER"))
+            {
+                format!("{verb} <redacted>")
+            } else {
+                cmd.body.clone()
+            };
+            audit.push_back(AuditRecord {
+                timestamp: chrono::Utc::now().timestamp(),
+                command,
+            });
+        }
         // Untagged comment lines are consumed by connection_io before they
         // become commands. Once a client prefixes a command id, native C-Gate
         // treats either marker as command text and rejects it.
@@ -1999,6 +2057,9 @@ impl Service {
             && requires_programming_auth(verb, sub, &upper)
         {
             return err(tag, 420, "420 LOGIN required");
+        }
+        if verb == "SHUTDOWN" || verb == "CONFIRM" {
+            return self.shutdown_command(client, tag, &words, verb);
         }
         if let Some(response) = net_lifecycle::help(tag, &words, &upper) {
             return response;
@@ -2512,6 +2573,18 @@ impl Service {
         if verb == "FILE" {
             return self.file(tag, &cmd.body, None).await;
         }
+        if verb == "RUN" {
+            return self.run_macro(client, tag, &cmd.body).await;
+        }
+        if verb == "STOP" {
+            return self.stop_background(tag, &words).await;
+        }
+        if verb == "TEST_SPAM" {
+            return self.test_spam(tag, &words, &upper).await;
+        }
+        if verb == "LOG" && sub == "EXTRACT" {
+            return self.log_extract(tag, &cmd.body).await;
+        }
         if verb == "APPLICATIONS" && sub == "GET_CATALOG" {
             let model = self.model.lock().await;
             return applications_get_catalog(&model, tag, &words);
@@ -2591,8 +2664,20 @@ impl Service {
         if verb == "EREPORT" && sub == "MESSAGE" {
             return self.ereport(tag, &words).await;
         }
+        if matches!(verb, "ACCESSCONTROL" | "ACCESS_CONTROL") && matches!(sub, "CLOSE" | "LOCK") {
+            return self.access_control(tag, &words, sub).await;
+        }
         if verb == "REPOSITORY" && sub == "LIST" {
             return self.repository_list(tag, &words);
+        }
+        if verb == "REPOSITORY" && sub == "USE" {
+            return self.repository_use(tag, &words);
+        }
+        if verb == "PROJECT" && sub == "REPAIR" {
+            return self.project_repair(tag, &words).await;
+        }
+        if verb == "TRANSFORM" {
+            return self.transform(tag, &words).await;
         }
         if verb == "CMQTT" && sub == "LABELS" && words.len() == 3 {
             let address = words[2];
@@ -3404,6 +3489,448 @@ impl Service {
             final_text: format!("123 index=1 type=cmqttd-json path={path} current=yes"),
             status: 123,
         }
+    }
+
+    fn repository_use(&self, tag: &str, words: &[&str]) -> Response {
+        if words.len() != 3 {
+            return err(tag, 400, "400 Syntax Error.");
+        }
+        match words[2].parse::<u16>() {
+            Ok(1) => ok(tag, vec![], "200 OK."),
+            Ok(_) => err(tag, 408, "408 Operation failed: Repository not found"),
+            Err(_) => err(tag, 400, "400 Syntax Error."),
+        }
+    }
+
+    async fn project_repair(&self, tag: &str, words: &[&str]) -> Response {
+        if words.len() != 3 {
+            return err(tag, 400, "400 PROJECT REPAIR requires a name");
+        }
+        let mut model = self.model.lock().await;
+        if !model.projects.contains_key(words[2]) {
+            return err(tag, 404, "404 Project not found");
+        }
+        let before = model.clone();
+        let database = Database::from_server(&model);
+        let bytes = match serde_json::to_vec(&database) {
+            Ok(bytes) => bytes,
+            Err(error) => {
+                tracing::error!("C-Gate PROJECT REPAIR validation failed: {error}");
+                return err(tag, 500, "500 Project repair validation failed");
+            }
+        };
+        let verified = match serde_json::from_slice::<Database>(&bytes) {
+            Ok(database) => database,
+            Err(error) => {
+                tracing::error!("C-Gate PROJECT REPAIR round-trip failed: {error}");
+                return err(tag, 500, "500 Project repair validation failed");
+            }
+        };
+        let mut repaired = model.clone();
+        if let Err(error) = verified.restore(&mut repaired) {
+            tracing::error!("C-Gate PROJECT REPAIR restore failed: {error}");
+            return err(tag, 500, "500 Project repair validation failed");
+        }
+        preserve_physical_state(&before, &mut repaired);
+        if !repaired.projects.contains_key(words[2]) {
+            return err(tag, 500, "500 Project repair lost the target project");
+        }
+        if let Err(error) = Database::from_server(&repaired).save(&self.state_path) {
+            tracing::error!("C-Gate PROJECT REPAIR commit failed: {error}");
+            return err(
+                tag,
+                500,
+                "500 Project repair commit failed; change rolled back",
+            );
+        }
+        *model = repaired;
+        ok(tag, vec!["repaired=1".to_string()], "200 OK.")
+    }
+
+    /// Execute the repository transformation family against cmqttd's
+    /// controlled FILE namespace. The converter uses a real SQLite container
+    /// with an explicitly versioned cmqttd schema; no command path can resolve
+    /// a host filename. A failed conversion leaves both the in-memory and
+    /// durable repositories unchanged.
+    async fn transform(&self, tag: &str, words: &[&str]) -> Response {
+        // The default PROJECT transform is the cmqttd-json repair transaction.
+        // Native C-Gate dispatches this operation through its current
+        // repository backend; our backend is the atomic JSON repository.
+        if words
+            .get(1)
+            .is_some_and(|word| word.eq_ignore_ascii_case("PROJECT"))
+        {
+            let mut index = 2;
+            let test_only = words
+                .get(index)
+                .is_some_and(|word| word.eq_ignore_ascii_case("--test"));
+            if test_only {
+                index += 1;
+            }
+            if words.len() == index + 1 {
+                let Some(project) = words.get(index) else {
+                    return err(tag, 400, "400 Syntax Error: missing project name");
+                };
+                let exists = self.model.lock().await.projects.contains_key(*project);
+                if !exists {
+                    return err(tag, 404, "404 Project not found");
+                }
+                if test_only {
+                    return ok(tag, vec!["valid=1".to_string()], "200 OK.");
+                }
+                return self
+                    .project_repair(tag, &["PROJECT", "REPAIR", project])
+                    .await;
+            }
+        }
+
+        let mut model = self.model.lock().await;
+        let before = model.clone();
+        let before_db = Database::from_server(&model);
+        let response = transform::command(&mut model, tag, words);
+        if response.status >= 400 {
+            *model = before;
+            return response;
+        }
+        let after_db = Database::from_server(&model);
+        if before_db != after_db {
+            if let Err(error) = after_db.save(&self.state_path) {
+                *model = before;
+                tracing::error!("C-Gate TRANSFORM commit failed: {error}");
+                return err(tag, 500, "500 Database commit failed; change rolled back");
+            }
+        }
+        response
+    }
+
+    fn shutdown_command(
+        &self,
+        client: &mut ClientState,
+        tag: &str,
+        words: &[&str],
+        verb: &str,
+    ) -> Response {
+        if words.len() != 1 {
+            return err(tag, 400, &format!("400 {verb} takes no arguments"));
+        }
+        if verb == "SHUTDOWN" {
+            client.shutdown_pending = true;
+            return Response {
+                tag: tag.to_string(),
+                lines: Vec::new(),
+                final_text: "600 Critical operation. Type CONFIRM to continue.".to_string(),
+                status: 600,
+            };
+        }
+        if !client.shutdown_pending {
+            return err(tag, 408, "408 No operation awaiting confirmation");
+        }
+        client.shutdown_pending = false;
+        let _ = self.shutdown.send(());
+        Response {
+            tag: tag.to_string(),
+            lines: Vec::new(),
+            final_text: "206 Shutdown confirmed.".to_string(),
+            status: 206,
+        }
+    }
+
+    async fn run_macro(&self, client: &mut ClientState, tag: &str, body: &str) -> Response {
+        let args = crate::file::tokens(body);
+        if !(2..=3).contains(&args.len())
+            || args
+                .get(2)
+                .is_some_and(|argument| !argument.eq_ignore_ascii_case("QUIET"))
+        {
+            return err(tag, 400, "400 RUN requires a filename and optional QUIET");
+        }
+        if client.macro_active {
+            return err(tag, 412, "412 Macro loop detected");
+        }
+        let source = {
+            let model = self.model.lock().await;
+            match crate::file::read_bytes(&model, &args[1]) {
+                Ok(bytes) => match String::from_utf8(bytes) {
+                    Ok(source) => source,
+                    Err(_) => return err(tag, 413, "413 Macro file is not valid UTF-8"),
+                },
+                Err(_) => return err(tag, 413, &format!("413 {}", args[1])),
+            }
+        };
+        let quiet = args.len() == 3;
+        let mut output = if quiet {
+            Vec::new()
+        } else {
+            vec![format!("110-{}", args[1])]
+        };
+        client.macro_active = true;
+        for (index, source_line) in source.lines().enumerate() {
+            let command = source_line.trim();
+            if command.is_empty() || command.starts_with('#') || command.starts_with("//") {
+                continue;
+            }
+            if command
+                .split_whitespace()
+                .next()
+                .is_some_and(|word| word.eq_ignore_ascii_case("RUN"))
+            {
+                client.macro_active = false;
+                return err(tag, 412, "412 Macro loop detected");
+            }
+            if !quiet {
+                output.push(format!("112-{command}"));
+            }
+            let response =
+                Box::pin(self.handle(client, &format!("[macro-{}] {command}", index + 1))).await;
+            if response.status >= 400 {
+                client.macro_active = false;
+                return err(
+                    tag,
+                    410,
+                    &format!(
+                        "410 line number {} (command: {} response: {})",
+                        index + 1,
+                        command,
+                        response.final_text
+                    ),
+                );
+            }
+        }
+        client.macro_active = false;
+        if !quiet {
+            output.push(format!("111-{}", args[1]));
+        }
+        ok(tag, output, "200 OK.")
+    }
+
+    async fn stop_background(&self, tag: &str, words: &[&str]) -> Response {
+        if words.len() != 2 {
+            return err(tag, 400, "400 STOP requires a command id");
+        }
+        let Ok(id) = words[1].parse::<u64>() else {
+            return err(tag, 400, "400 Invalid command id");
+        };
+        let sessions = self.spam_sessions.lock().await;
+        let Some(session) = sessions.sessions.get(&id) else {
+            return err(tag, 408, "408 Command not found");
+        };
+        let _ = session.cancel.send(true);
+        Response {
+            tag: tag.to_string(),
+            lines: Vec::new(),
+            final_text: "207 Stopped.".to_string(),
+            status: 207,
+        }
+    }
+
+    async fn test_spam(&self, tag: &str, words: &[&str], upper: &[String]) -> Response {
+        let sub = upper.get(1).map(String::as_str).unwrap_or("");
+        match sub {
+            "LIST" if words.len() == 2 => {
+                let sessions = self.spam_sessions.lock().await;
+                if sessions.sessions.is_empty() {
+                    return Response {
+                        tag: tag.to_string(),
+                        lines: Vec::new(),
+                        final_text: "350 no active spam sessions.".to_string(),
+                        status: 350,
+                    };
+                }
+                let mut rows = sessions
+                    .sessions
+                    .iter()
+                    .map(|(id, session)| {
+                        format!(
+                            "id={id} type={} network=//{}/{} started={} interval={} max={} current={}",
+                            session.kind,
+                            self.project,
+                            session.network,
+                            session.started,
+                            session.interval_ms,
+                            session.maximum.unwrap_or(0),
+                            session.current.load(Ordering::Relaxed)
+                        )
+                    })
+                    .collect::<Vec<_>>();
+                let final_text = format!("300 {}", rows.pop().expect("nonempty sessions"));
+                Response {
+                    tag: tag.to_string(),
+                    lines: rows.into_iter().map(|row| format!("300-{row}")).collect(),
+                    final_text,
+                    status: 300,
+                }
+            }
+            "STOP" if (2..=3).contains(&words.len()) => {
+                let requested = match words.get(2) {
+                    Some(value) => match value.parse::<u64>() {
+                        Ok(value) => Some(value),
+                        Err(_) => return err(tag, 400, "400 Invalid session id"),
+                    },
+                    None => None,
+                };
+                let sessions = self.spam_sessions.lock().await;
+                let selected = sessions
+                    .sessions
+                    .iter()
+                    .filter(|(id, _)| requested.is_none_or(|requested| requested == **id))
+                    .map(|(id, session)| (*id, session.cancel.clone()))
+                    .collect::<Vec<_>>();
+                if selected.is_empty() {
+                    return err(
+                        tag,
+                        408,
+                        if requested.is_some() {
+                            "408 session not found."
+                        } else {
+                            "408 no active sessions."
+                        },
+                    );
+                }
+                let mut rows = Vec::new();
+                for (id, cancel) in selected {
+                    let _ = cancel.send(true);
+                    rows.push(format!("207-stopped session {id}"));
+                }
+                ok(tag, rows, "200 OK.")
+            }
+            "LIGHTING" | "EREPORT" if (4..=5).contains(&words.len()) => {
+                if !self.bound_network(words[2]) {
+                    return err(tag, 401, "401 Network not found");
+                }
+                let interval_ms = match words[3].parse::<u64>() {
+                    Ok(value) if value > 0 => value,
+                    _ => return err(tag, 405, "405 interval must be greater than zero"),
+                };
+                let maximum = match words.get(4) {
+                    Some(value) => match value.parse::<u64>() {
+                        Ok(value) if value > 0 => Some(value),
+                        _ => return err(tag, 405, "405 max must be greater than zero"),
+                    },
+                    None => None,
+                };
+                let kind = if sub == "LIGHTING" {
+                    "lighting"
+                } else {
+                    "ereport"
+                };
+                let (id, mut cancelled, current, sessions) = {
+                    let mut sessions = self.spam_sessions.lock().await;
+                    sessions.next_id = sessions.next_id.wrapping_add(1).max(1);
+                    let id = sessions.next_id;
+                    let (cancel, cancelled) = tokio::sync::watch::channel(false);
+                    let current = Arc::new(AtomicU64::new(0));
+                    sessions.sessions.insert(
+                        id,
+                        SpamSession {
+                            kind,
+                            network: self.network,
+                            interval_ms,
+                            maximum,
+                            current: current.clone(),
+                            started: Local::now().format("%Y%m%d-%H%M%S").to_string(),
+                            cancel,
+                        },
+                    );
+                    (id, cancelled, current, self.spam_sessions.clone())
+                };
+                let pci = self.pci.read().await.clone();
+                tokio::spawn(async move {
+                    let mut sequence = 0u64;
+                    loop {
+                        if *cancelled.borrow() {
+                            break;
+                        }
+                        sequence = sequence.wrapping_add(1);
+                        let pseudo = sequence
+                            .wrapping_mul(6_364_136_223_846_793_005)
+                            .wrapping_add(id);
+                        let sal = if kind == "lighting" {
+                            Sal::LightingRamp {
+                                application: 56,
+                                group_address: pseudo as u8,
+                                duration: 0,
+                                level: (pseudo >> 8) as u8,
+                            }
+                        } else {
+                            Sal::ErrorReport(ErrorReportMessage {
+                                message_type: 21,
+                                category: (pseudo & 0x03ff) as u16,
+                                most_recent: true,
+                                acknowledged: false,
+                                most_severe: true,
+                                severity: ((pseudo >> 10) & 7) as u8,
+                                unit: (pseudo >> 16) as u8,
+                                data1: (pseudo >> 24) as u8,
+                                data2: (pseudo >> 32) as u8,
+                            })
+                        };
+                        let packet = Packet::PointToMultipoint {
+                            meta: Meta::new(true, 0),
+                            application: sal.application(),
+                            sals: vec![sal],
+                        };
+                        if pci.send_confirmed_once(&packet).await.is_err() {
+                            break;
+                        }
+                        let sent = current.fetch_add(1, Ordering::Relaxed) + 1;
+                        if maximum.is_some_and(|maximum| sent >= maximum) {
+                            break;
+                        }
+                        tokio::select! {
+                            _ = tokio::time::sleep(Duration::from_millis(interval_ms)) => {}
+                            changed = cancelled.changed() => {
+                                if changed.is_err() || *cancelled.borrow() {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    sessions.lock().await.sessions.remove(&id);
+                });
+                ok(tag, vec![format!("301-id={id}")], "200 OK.")
+            }
+            _ => err(tag, 400, "400 Syntax Error."),
+        }
+    }
+
+    async fn log_extract(&self, tag: &str, body: &str) -> Response {
+        let args = crate::file::tokens(body);
+        if args.len() != 4 {
+            return err(
+                tag,
+                400,
+                "400 LOG EXTRACT requires days and destination path",
+            );
+        }
+        let days = match args[2].parse::<u32>() {
+            Ok(days) => days,
+            Err(_) => return err(tag, 400, "400 Invalid number of days"),
+        };
+        let cutoff = chrono::Utc::now().timestamp() - i64::from(days).saturating_mul(86_400);
+        let bytes = {
+            let audit = self.audit_log.lock().await;
+            audit
+                .iter()
+                .filter(|record| record.timestamp >= cutoff)
+                .map(|record| format!("{} {}\n", record.timestamp, record.command))
+                .collect::<String>()
+                .into_bytes()
+        };
+        let mut model = self.model.lock().await;
+        let before = model.clone();
+        if let Err(error) = crate::file::write_bytes(&mut model, &args[3], bytes) {
+            return err(tag, 408, &format!("408 Operation failed: {error}"));
+        }
+        if let Err(error) = Database::from_server(&model).save(&self.state_path) {
+            *model = before;
+            tracing::error!("C-Gate LOG EXTRACT commit failed: {error}");
+            return err(
+                tag,
+                500,
+                "500 Log extract commit failed; change rolled back",
+            );
+        }
+        ok(tag, vec![], "200 OK.")
     }
 
     /// Native `PROJECT DIRFULL` over cmqttd's atomic repository. Unlike the
@@ -7069,6 +7596,43 @@ impl Service {
             }),
             ok(tag, vec![], "200 OK."),
             "Error Reporting delivery",
+        )
+        .await
+    }
+
+    async fn access_control(&self, tag: &str, words: &[&str], sub: &str) -> Response {
+        if words.len() != 5 {
+            return err(
+                tag,
+                400,
+                "400 Syntax Error: ACCESSCONTROL CLOSE|LOCK <application> <zone> <point>",
+            );
+        }
+        let Some(application) = self.application_path(words[2]) else {
+            return err(tag, 401, "401 Access Control application not found");
+        };
+        if application != 213 {
+            return err(tag, 402, "402 Object is not an Access Control application");
+        }
+        let zone = match parse_application_integer(tag, words[3], "zone", 0, 255) {
+            Ok(value) => value as u8,
+            Err(response) => return response,
+        };
+        let point = match parse_application_integer(tag, words[4], "point", 0, 255) {
+            Ok(value) => value as u8,
+            Err(response) => return response,
+        };
+        let message = if sub == "CLOSE" {
+            AccessControlMessage::Close { zone, point }
+        } else {
+            AccessControlMessage::Lock { zone, point }
+        };
+        let _commands = self.commands.lock().await;
+        self.send_application_once(
+            tag,
+            Sal::AccessControl(message),
+            ok(tag, vec![], "200 OK."),
+            "Access Control delivery",
         )
         .await
     }
@@ -10920,6 +11484,10 @@ fn connection_access_level(model: &Server, client: &ClientState) -> CgateAccessL
 
 fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
     match verb {
+        "ACCESSCONTROL" | "ACCESS_CONTROL" => matches!(sub, "CLOSE" | "LOCK"),
+        "SHUTDOWN" | "CONFIRM" | "RUN" | "STOP" | "TEST_SPAM" => true,
+        "LOG" => sub == "EXTRACT",
+        "CONVERTUNIT" => sub == "CONVERT",
         "BROADCAST_EVENT" => true,
         "ACCESS" => matches!(sub, "ADD" | "DELETE" | "LOAD" | "SAVE"),
         "CONFIG" => matches!(sub, "SET" | "LOAD" | "SAVE" | "OBSET" | "OBRESET"),
@@ -11138,6 +11706,7 @@ fn local_command(words: &[&str], upper: &[String], model: &Server) -> bool {
         | "DBSETSAFE" | "DBSETXML" | "DBADDSAFE" | "DBCOPYSAFE" | "DBDELETE" | "DBVALIDATE"
         | "DBSAVE" | "DBLOAD" | "DBGETNET" | "DBGETAPP" | "DBGETGROUP" | "DBGETUNIT"
         | "DBCREATENET" | "DBCREATEAPP" | "DBCREATEGROUP" | "DBCREATEUNIT" => true,
+        "CONVERTUNIT" => matches!(sub, "CHECK" | "CONVERT"),
         "PROJECT" => matches!(
             sub,
             "LIST"

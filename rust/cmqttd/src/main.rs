@@ -189,6 +189,21 @@ async fn main() {
     });
     let (client, mut eventloop) = AsyncClient::new(mqtt_opts, 100);
     spawn_shutdown_handler(client.clone());
+    if let Some(service) = &cgate {
+        let mut shutdown = service.subscribe_shutdown();
+        let shutdown_client = client.clone();
+        tokio::spawn(async move {
+            if shutdown.recv().await.is_ok() {
+                // Let the command listener flush the native 206 reply before
+                // terminating the process, then drain MQTT in the same way as
+                // SIGINT/SIGTERM.
+                tokio::time::sleep(Duration::from_millis(100)).await;
+                tracing::info!("confirmed C-Gate SHUTDOWN received; disconnecting from MQTT");
+                flush_mqtt_before_exit(&shutdown_client).await;
+                std::process::exit(0);
+            }
+        });
+    }
     let gateway = Gateway::new(client.clone(), pci, labels, opts.no_clock);
 
     // timesync loop (every -T seconds); 0 disables

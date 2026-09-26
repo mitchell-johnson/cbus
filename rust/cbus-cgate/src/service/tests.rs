@@ -10352,3 +10352,325 @@ async fn legacy_database_local_subset_is_durable_and_never_touches_pci() {
     assert_eq!(persisted.final_text, "342 2/p/22/TagName=Legacy Unit");
     std::fs::remove_file(path).unwrap();
 }
+
+#[tokio::test]
+async fn administrative_runtime_commands_are_stateful_durable_and_redact_secrets() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+
+    assert_eq!(
+        service
+            .handle(&mut client, "[repo] REPOSITORY USE 1")
+            .await
+            .final_text,
+        "200 OK."
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[bad-repo] REPOSITORY USE 2")
+            .await
+            .status,
+        408
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[repair] PROJECT REPAIR HARNESS")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[check] CONVERTUNIT CHECK 1 //HARNESS/254/p/5 KEYGL5 5035TX",
+            )
+            .await
+            .final_text,
+        "200 yes"
+    );
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[convert] CONVERTUNIT CONVERT 1 //HARNESS/254/p/5 KEYE1 5031NMM",
+            )
+            .await
+            .status,
+        200
+    );
+
+    let uploaded = service
+        .handle_document(
+            &mut client,
+            "[upload] FILE UPLOAD macro.txt",
+            "Tk9PUApBUElWRVIK",
+        )
+        .await;
+    assert_eq!(uploaded.status, 200, "{uploaded:?}");
+    let run = service.handle(&mut client, "[run] RUN macro.txt").await;
+    assert_eq!(run.status, 200, "{run:?}");
+    assert_eq!(
+        run.lines,
+        ["110-macro.txt", "112-NOOP", "112-APIVER", "111-macro.txt"]
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[quiet] RUN macro.txt QUIET")
+            .await
+            .lines,
+        Vec::<String>::new()
+    );
+    assert_eq!(
+        service
+            .handle_document(
+                &mut client,
+                "[loop-upload] FILE UPLOAD loop.txt",
+                "UlVOIGxvb3AudHh0Cg==",
+            )
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[loop] RUN loop.txt")
+            .await
+            .status,
+        412
+    );
+
+    let _ = service
+        .handle(&mut client, "[login] LOGIN operator top-secret")
+        .await;
+    assert_eq!(
+        service
+            .handle(&mut client, "[extract] LOG EXTRACT 1 audit.log")
+            .await
+            .status,
+        200
+    );
+    let audit = {
+        let model = service.model.lock().await;
+        String::from_utf8(crate::file::read_bytes(&model, "audit.log").unwrap()).unwrap()
+    };
+    assert!(audit.contains("LOGIN <redacted>"));
+    assert!(!audit.contains("top-secret"));
+    assert!(audit.contains("PROJECT REPAIR HARNESS"));
+
+    let mut shutdown = service.subscribe_shutdown();
+    assert_eq!(
+        service
+            .handle(&mut client, "[premature] CONFIRM")
+            .await
+            .status,
+        408
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[shutdown] SHUTDOWN")
+            .await
+            .status,
+        600
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[confirm] CONFIRM")
+            .await
+            .status,
+        206
+    );
+    tokio::time::timeout(Duration::from_millis(100), shutdown.recv())
+        .await
+        .unwrap()
+        .unwrap();
+
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err(),
+        "administrative database commands must not write to PCI"
+    );
+    drop(service);
+
+    let (replacement, _replacement_remote) = pci();
+    let restarted = Service::new(&fixture(), None, path.clone(), replacement, None).unwrap();
+    assert_eq!(
+        restarted.model.lock().await.projects["HARNESS"].networks[&254].units[&5].unit_type,
+        "KEYE1"
+    );
+    assert_eq!(
+        restarted.model.lock().await.projects["HARNESS"].networks[&254].units[&5].fields
+            ["CatalogNumber"],
+        "5031NMM"
+    );
+    {
+        let model = restarted.model.lock().await;
+        assert!(crate::file::read_bytes(&model, "audit.log").is_ok());
+    }
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn access_control_close_and_lock_use_exact_once_native_frames() {
+    let path = state_path();
+    let (pci_client, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci_client.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        let mut line = Vec::new();
+        remote_read.read_until(b'\r', &mut line).await.unwrap();
+    }
+    reset.await.unwrap().unwrap();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+
+    for (command, expected) in [
+        (
+            "ACCESSCONTROL CLOSE //HARNESS/254/213 7 9",
+            b"\\05D50002070914".as_slice(),
+        ),
+        (
+            "ACCESS_CONTROL LOCK //HARNESS/254/213 7 9",
+            b"\\05D5000A07090C".as_slice(),
+        ),
+    ] {
+        let task = tokio::spawn({
+            let service = service.clone();
+            let command = command.to_string();
+            async move {
+                service
+                    .handle(
+                        &mut ClientState::default(),
+                        &format!("[access-control] {command}"),
+                    )
+                    .await
+            }
+        });
+        let mut frame = Vec::new();
+        remote_read.read_until(b'\r', &mut frame).await.unwrap();
+        assert!(frame.starts_with(expected), "{command}: {frame:?}");
+        let confirmation = frame[frame.len() - 2];
+        remote_write.write_all(&[confirmation, b'.']).await.unwrap();
+        assert_eq!(task.await.unwrap().status, 200, "{command}");
+    }
+
+    for command in [
+        "ACCESSCONTROL CLOSE //HARNESS/254/56 7 9",
+        "ACCESSCONTROL LOCK //HARNESS/254/213 256 9",
+    ] {
+        assert!(
+            service
+                .handle(&mut ClientState::default(), &format!("[bad] {command}"))
+                .await
+                .status
+                >= 400
+        );
+    }
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote_read.read_u8())
+            .await
+            .is_err(),
+        "invalid Access Control commands must fail before PCI I/O"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn test_spam_runs_lists_stops_and_removes_background_sessions() {
+    let path = state_path();
+    let (pci_client, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci_client.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        let mut line = Vec::new();
+        remote_read.read_until(b'\r', &mut line).await.unwrap();
+    }
+    reset.await.unwrap().unwrap();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+
+    let started = service
+        .handle(
+            &mut client,
+            "[lighting] TEST_SPAM LIGHTING //HARNESS/254 1 1",
+        )
+        .await;
+    assert_eq!(started.status, 200, "{started:?}");
+    assert!(started.lines[0].starts_with("301-id="));
+    let mut lighting = Vec::new();
+    remote_read.read_until(b'\r', &mut lighting).await.unwrap();
+    assert!(lighting.starts_with(b"\\0538"), "{lighting:?}");
+    remote_write
+        .write_all(&[lighting[lighting.len() - 2], b'.'])
+        .await
+        .unwrap();
+    tokio::time::timeout(Duration::from_millis(200), async {
+        loop {
+            if service
+                .handle(&mut client, "[list] TEST_SPAM LIST")
+                .await
+                .status
+                == 350
+            {
+                break;
+            }
+            tokio::task::yield_now().await;
+        }
+    })
+    .await
+    .unwrap();
+
+    let started = service
+        .handle(
+            &mut client,
+            "[ereport] TEST_SPAM EREPORT //HARNESS/254 60000",
+        )
+        .await;
+    let id = started.lines[0]
+        .strip_prefix("301-id=")
+        .unwrap()
+        .parse::<u64>()
+        .unwrap();
+    let listed = service
+        .handle(&mut client, "[list-active] TEST_SPAM LIST")
+        .await;
+    assert_eq!(listed.status, 300);
+    assert!(listed.final_text.contains("type=ereport"));
+    let mut ereport = Vec::new();
+    remote_read.read_until(b'\r', &mut ereport).await.unwrap();
+    assert!(ereport.starts_with(b"\\05CE"), "{ereport:?}");
+    let stopped = service
+        .handle(&mut client, &format!("[stop] TEST_SPAM STOP {id}"))
+        .await;
+    assert_eq!(stopped.status, 200, "{stopped:?}");
+    remote_write
+        .write_all(&[ereport[ereport.len() - 2], b'.'])
+        .await
+        .unwrap();
+    tokio::time::timeout(Duration::from_millis(200), async {
+        loop {
+            if service
+                .handle(&mut client, "[list-empty] TEST_SPAM LIST")
+                .await
+                .status
+                == 350
+            {
+                break;
+            }
+            tokio::task::yield_now().await;
+        }
+    })
+    .await
+    .unwrap();
+    std::fs::remove_file(path).unwrap();
+}

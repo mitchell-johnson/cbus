@@ -3,6 +3,7 @@
 use crate::cal::Cal;
 use crate::packet::{Meta, Packet};
 use crate::report::StatusReport;
+use crate::sal::accesscontrol::AccessControlMessage;
 use crate::sal::aircon::{AirconCommand, AirconStatus};
 use crate::sal::audio::{AudioAddress, AudioCommand, AudioEvent};
 use crate::sal::ereport::ErrorReportMessage;
@@ -23,6 +24,21 @@ use serde_json::{json, Map, Value};
 /// Canonical JSON for one SAL.
 pub fn sal_to_json(s: &Sal) -> Value {
     match s {
+        Sal::AccessControl(message) => {
+            let (kind, zone, point) = match *message {
+                AccessControlMessage::Close { zone, point } => ("close", zone, point),
+                AccessControlMessage::Lock { zone, point } => ("lock", zone, point),
+                AccessControlMessage::PointLeftOpen { zone, point } => {
+                    ("point_left_open", zone, point)
+                }
+                AccessControlMessage::PointForcedOpen { zone, point } => {
+                    ("point_forced_open", zone, point)
+                }
+                AccessControlMessage::PointClosed { zone, point } => ("point_closed", zone, point),
+                AccessControlMessage::ExitRequest { zone, point } => ("exit_request", zone, point),
+            };
+            json!({"sal":"access_control", "command":kind, "zone":zone, "point":point})
+        }
         Sal::Aircon(command) => aircon_to_json(command),
         Sal::AirconStatus(status) => aircon_status_to_json(status),
         Sal::AudioCommand(command) => audio_command_to_json(command),

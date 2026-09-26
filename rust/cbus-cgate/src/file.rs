@@ -524,7 +524,7 @@ fn remaining_dequoted(body: &str, count: usize) -> String {
     value
 }
 
-fn tokens(raw: &str) -> Vec<String> {
+pub(crate) fn tokens(raw: &str) -> Vec<String> {
     let mut values = Vec::new();
     let mut current = String::new();
     let mut quoted = false;
@@ -547,6 +547,49 @@ fn tokens(raw: &str) -> Vec<String> {
         values.push(current);
     }
     values
+}
+
+/// Read one regular file from the controlled virtual root.
+pub(crate) fn read_bytes(model: &Server, requested: &str) -> Result<Vec<u8>, String> {
+    let path = controlled_path(model, requested)?;
+    model
+        .file_store
+        .get(&path.key)
+        .filter(|_| !path.key.ends_with('/'))
+        .cloned()
+        .ok_or_else(|| format!("{} (No such file or directory)", virtual_name(&path)))
+}
+
+/// Atomically replace one regular file in the controlled virtual root.
+///
+/// The parent must already exist, matching `FILE UPLOAD`; replacement keeps
+/// the native `.0` backup in the same namespace.
+pub(crate) fn write_bytes(
+    model: &mut Server,
+    requested: &str,
+    bytes: Vec<u8>,
+) -> Result<(), String> {
+    let path = controlled_path(model, requested)?;
+    if path.key.is_empty() || path.key == path.root || directory_exists(model, &dir_key(&path.key))
+    {
+        return Err("Is a directory".to_string());
+    }
+    let parent = parent_dir(&path.key, &path.root);
+    if !directory_exists(model, &parent) {
+        return Err("No such file or directory".to_string());
+    }
+    let now = Utc::now().timestamp();
+    if let Some(previous) = model.file_store.remove(&path.key) {
+        let backup = format!("{}.0", path.key);
+        model.file_store.remove(&backup);
+        model.file_modified.remove(&backup);
+        model.file_store.insert(backup.clone(), previous);
+        let previous_modified = model.file_modified.remove(&path.key).unwrap_or(now);
+        model.file_modified.insert(backup, previous_modified);
+    }
+    model.file_store.insert(path.key.clone(), bytes);
+    model.file_modified.insert(path.key, now);
+    Ok(())
 }
 
 #[cfg(test)]

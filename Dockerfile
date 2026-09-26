@@ -6,7 +6,7 @@ COPY rust/ /build/
 RUN cargo build --release -p cmqttd -p cbus-tools -p cbus-simulator -p cbus-cgate
 
 FROM alpine:3.20 AS cmqttd
-RUN apk add --no-cache tzdata ca-certificates
+RUN apk add --no-cache tzdata ca-certificates sqlite-libs sqlite libxslt
 COPY COPYING COPYING.LESSER README.md entrypoint-cmqttd.sh /
 RUN sed -i 's/\r$//' /entrypoint-cmqttd.sh && chmod +x /entrypoint-cmqttd.sh
 COPY --from=builder /build/target/release/cmqttd /usr/local/bin/cmqttd

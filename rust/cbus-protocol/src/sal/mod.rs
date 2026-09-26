@@ -1,5 +1,6 @@
 //! Simple Application Language model and application dispatch.
 
+pub mod accesscontrol;
 pub mod aircon;
 pub mod audio;
 pub mod clock;
@@ -19,10 +20,10 @@ pub mod temperature;
 pub mod trigger;
 
 use crate::common::{
-    duration_to_ramp_rate, APP_AIRCON, APP_AUDIO, APP_CLOCK, APP_ENABLE, APP_ERROR_REPORTING,
-    APP_IDENTIFY, APP_LIGHTING_FIRST, APP_LIGHTING_LAST, APP_MEASUREMENT, APP_MEDIA_TRANSPORT,
-    APP_SECURITY, APP_SHORT_MESSAGE, APP_STATUS_REQUEST, APP_TELEPHONY, APP_TEMPERATURE,
-    APP_TRIGGER, CLOCK_ATTR_DATE, CLOCK_ATTR_TIME, CLOCK_REQUEST_REFRESH,
+    duration_to_ramp_rate, APP_ACCESS_CONTROL, APP_AIRCON, APP_AUDIO, APP_CLOCK, APP_ENABLE,
+    APP_ERROR_REPORTING, APP_IDENTIFY, APP_LIGHTING_FIRST, APP_LIGHTING_LAST, APP_MEASUREMENT,
+    APP_MEDIA_TRANSPORT, APP_SECURITY, APP_SHORT_MESSAGE, APP_STATUS_REQUEST, APP_TELEPHONY,
+    APP_TEMPERATURE, APP_TRIGGER, CLOCK_ATTR_DATE, CLOCK_ATTR_TIME, CLOCK_REQUEST_REFRESH,
     ENABLE_SET_NETWORK_VARIABLE, LIGHT_OFF, LIGHT_ON, LIGHT_TERMINATE_RAMP, TEMPERATURE_BROADCAST,
     TRIGGER_EVENT, TRIGGER_INDICATOR_KILL, TRIGGER_MAX, TRIGGER_MIN,
 };
@@ -32,6 +33,8 @@ use chrono::Datelike;
 /// A Smart Application Language message.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Sal {
+    /// An Access Control command or device event.
+    AccessControl(accesscontrol::AccessControlMessage),
     /// An Air-Conditioning application command.
     Aircon(aircon::AirconCommand),
     /// An Air-Conditioning device status/report.
@@ -178,6 +181,7 @@ impl Sal {
     /// Application byte this SAL belongs to.
     pub fn application(&self) -> u8 {
         match self {
+            Sal::AccessControl(_) => APP_ACCESS_CONTROL,
             Sal::Aircon(_) | Sal::AirconStatus(_) => APP_AIRCON,
             Sal::AudioCommand(_) | Sal::AudioEvent(_) => APP_AUDIO,
             Sal::SecurityCommand(_) | Sal::SecurityEvent(_) => APP_SECURITY,
@@ -210,6 +214,7 @@ impl Sal {
     /// Wire bytes of this SAL.
     pub fn encode(&self) -> Result<Vec<u8>, EncodeError> {
         match self {
+            Sal::AccessControl(message) => message.encode(),
             Sal::Aircon(command) => command.encode(),
             Sal::AirconStatus(status) => status.encode(),
             Sal::AudioCommand(command) => command.encode(),
@@ -403,6 +408,10 @@ pub fn decode_sals(app: u8, data: &[u8]) -> Result<Vec<Sal>, DecodeError> {
     if app == APP_ERROR_REPORTING {
         return ereport::decode_sals(data)
             .map(|messages| messages.into_iter().map(Sal::ErrorReport).collect());
+    }
+    if app == APP_ACCESS_CONTROL {
+        return accesscontrol::decode_sals(data)
+            .map(|messages| messages.into_iter().map(Sal::AccessControl).collect());
     }
     if data
         .first()
