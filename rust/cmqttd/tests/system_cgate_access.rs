@@ -363,6 +363,17 @@ async fn docker_proxy_peer_bootstraps_then_uses_token_only_recovery() {
             .await,
             ["420 LOGIN required"]
         );
+        for (tag, text) in [
+            ("event-query", "EVENT"),
+            ("event-on", "EVENT ON"),
+            ("events-mode", "EVENTS e5s1c1"),
+        ] {
+            assert_eq!(
+                command(&mut recovery_reader, &mut recovery_writer, tag, text).await,
+                ["420 LOGIN required"],
+                "restricted peer must not query or mutate its event subscription"
+            );
+        }
         assert_eq!(
             command(
                 &mut recovery_reader,
@@ -372,6 +383,17 @@ async fn docker_proxy_peer_bootstraps_then_uses_token_only_recovery() {
             )
             .await,
             ["200 OK"]
+        );
+        assert_eq!(
+            command(
+                &mut recovery_reader,
+                &mut recovery_writer,
+                "event-after",
+                "EVENT"
+            )
+            .await,
+            ["306 e0s0c0"],
+            "rejected subscription changes must leave the default mode intact"
         );
         assert_eq!(
             command(

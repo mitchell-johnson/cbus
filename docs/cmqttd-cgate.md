@@ -98,6 +98,10 @@ connection. When the recovery-token gate is armed it retains the established
 no attempt cap in this slice: the
 loopback bind plus high-entropy token makes online guessing infeasible, and
 a cap is follow-up work.
+An unmatched non-loopback peer in token-only recovery mode receives 420 for
+`EVENT`/`EVENTS` queries and setters until token login; a denied setter does
+not alter its connection-local subscription.
+
 `CGL IMPORT` and `REPOSITORY USE` are also denied before dispatch while
 unauthenticated. After LOGIN, CGL import may update only the bounded local CGL
 1.1 label model described below. Repository index 1 is an idempotent local
@@ -150,9 +154,9 @@ versioned portable container.
 
 | Operation | Backend and verification |
 | --- | --- |
-| Tagged/untagged commands, per-client project selection, `EVENT`/`EVENTS` subscriptions | TCP/TLS service; native `e0s0c0` connection default, 64 clients, 1 MiB command limit, bounded event queues and writer deadlines |
+| Tagged/untagged commands, per-client project selection, `EVENT`/`EVENTS` subscriptions | TCP/TLS service; native `e0s0c0` connection default, first-token case-insensitive mode parsing, 64 clients, 1 MiB command limit, bounded event queues and writer deadlines. Numeric status/config levels 0–9 are echoed; cmqttd currently treats their nonzero values as enabling those event categories, with native fanout above level one still unaccepted |
 | `BROADCAST_EVENT event-class [event-text]` | Local native-compatible event injection. In retained help, `SP` denotes the required whitespace before `event-class`, not a separate argument. Build 2001 accepts arbitrary event-class tokens and the minimal `BROADCAST_EVENT SP` form, where `SP` is the class and event text is empty; quoted text uses native mK dequoting. Success is exactly `200 OK.` and publishes `#e# YYYYMMDD-HHMMSS.mmm 703 cmdN - broadcast_event ...` to eligible EVENT subscribers; `703` is reporting level 3, so `e2...` filters it and `e3...` admits it. The minimal form retains the native trailing space. It performs no PCI or MQTT operation and is not persisted. The optional LOGIN gate protects it. Exact evidence is `rust/testdata/fixtures/native_cgate_broadcast_event.json`; mock, embedded-service and real-daemon tests cover fanout and timeouts |
-| `SESSION_ID`, `SESSION_ID ALL`, `SESSION_ID TAG`, `QUIT`/`EXIT` | Volatile command-session registry with odd `cmdN` identifiers, peer origin, local connection time, one-shot application tags and native 300 envelopes. A successful 204 shutdown reply is flushed before the connection closes; no project, database or PCI state is changed |
+| `SESSION_ID`, `SESSION_ID ALL`, `SESSION_ID TAG`, `QUIT`/`EXIT` | Volatile command-session registry with odd `cmdN` identifiers, peer origin, local connection time, one-shot application tags and native 300 envelopes. `QUIT`/`EXIT` ignore trailing words; a successful 204 shutdown reply is flushed before the connection closes. No project, database or PCI state is changed |
 | `EVENT_CHANNEL LIST/SUB/UNSUB` | Exact four-row C-Gate 3.4 deploy-queue channel catalogue and per-command-connection subscription state, including native 200/201/400/451 reply shapes. SUB and UNSUB require LOGIN when the optional gate is armed. Queue transitions publish untagged `updated-entries`, `started`, and `ended` JSON envelopes only to sessions subscribed to that channel, independently of `EVENT` mode. A first instruction fault publishes one structured cmqttd `debug` receipt with instruction identity, status and replay context; its content is explicitly not claimed as native diagnostic-string parity |
 | Advisory `LOCK OBJECT`, `UNLOCK OBJECT` | Resolves durable project/database objects and enforces command-session ownership with native 225/425/226/426 replies. Locks are volatile and released by successful credential-changing LOGIN, LOGOUT, disconnect, or owning UNLOCK. They are separate from PP locks, never persisted, and perform no PCI I/O |
 | Project list/use/load/save/new/close; database CRUD and database snapshots | Persistent JSON database; atomic replacement, restrictive permissions, failed-write rollback |
@@ -1092,6 +1096,9 @@ is claimed.
 rollback, session ownership, unsupported hardware rejection, fragmented command
 input during events, native-shaped command-session enumeration/tagging,
 `EVENTS` alias state, reply-before-close `QUIT`/`EXIT`, disconnect cleanup,
+first-token event parsing and the native session-local partial-mode effect after
+selected 408 replies in
+[`native_cgate_session_selectors.json`](../rust/testdata/fixtures/native_cgate_session_selectors.json),
 specification-backed staged reset success/failure/ownership/persistence,
 schema layout decoding and input bounds. The retained owned C-Gate 3.4.0.2001
 [session capture](../toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json)

@@ -642,3 +642,31 @@ fn tcp_event_modes_query_isolation_and_filtering() {
     let query = b.command("EVENT");
     assert_eq!(query.lines, vec!["306 e0s0c0".to_string()]);
 }
+
+#[test]
+fn tcp_native_event_selector_prefixes_partial_errors_and_quit_tail() {
+    let mock = Mock::spawn();
+    let mut session = mock.connect();
+    assert!(session.greeting().starts_with("201 "));
+    assert_eq!(session.command("EVENT e9s9c9").lines, ["200 OK."]);
+    assert_eq!(
+        session.command("EVENT e10s1c1").lines,
+        ["408 Operation failed: Bad mode string"]
+    );
+    assert_eq!(session.command("EVENT").lines, ["306 e1s9c9"]);
+    assert_eq!(
+        session.command("EVENT e5sAc1").lines,
+        ["408 Operation failed: Bad event level digit"]
+    );
+    assert_eq!(session.command("EVENTS").lines, ["306 e5s9c9"]);
+    assert_eq!(session.command("EVENT E5S2C2 trailing").lines, ["200 OK."]);
+    assert_eq!(session.command("EVENT").lines, ["306 e5s2c2"]);
+    assert_eq!(session.command("EVENT ON trailing").lines, ["200 OK."]);
+    assert_eq!(session.command("EVENTS").lines, ["306 e+s0c0"]);
+    assert_eq!(
+        session.command("EXIT trailing").lines,
+        ["204 Closing connection."]
+    );
+    let mut eof = String::new();
+    assert_eq!(session.reader.read_line(&mut eof).unwrap(), 0);
+}

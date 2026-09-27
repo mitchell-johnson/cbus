@@ -11,8 +11,8 @@
     "toolkit_executable_binary": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
     "toolkit_map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
     "feature_ledger": "79750e146f08911f5350e2a655f86ff0472a73b30e89cf969923ab737ceb85af",
-    "cgate_capability_matrix": "a943b9df5e3170845237a7beefad8b655ce1ea0379b005b313544d9bfa685fb9",
-    "cgate_contract_inventory": "7706aa7e128d3ef060eb31bcb4b7f9072c2a255801b45cb725abecfb0c8de0d4",
+    "cgate_capability_matrix": "45f79d47d5853e7577db6698f22626e99e5077ee1057ffcee19f6d9a70038527",
+    "cgate_contract_inventory": "5ec63ee23e0199713547e9d98bb7213a15f9cc03400f289becf06d0d4f0b25cf",
     "roadmap": "607285cae45ae079cc8eef97dae5ae590d7c87bbc5331e1c3a84797ac483cca8"
   },
   "evidence_bundle_sha256": "055dde83ff05aa7056c13761cac120604e1d89fc0c4c27275c28ceded39bde40",
@@ -142793,7 +142793,7 @@
       "source_id": "EVENT",
       "routing_class": "LocalDatabase",
       "contract_id": "cgate-contract:b3c5c91627ba8885",
-      "contract_sha256": "2b324cb11f549f6fad0c6545d2bf626173b63c6dbfb23c1457d3892f85bc043b",
+      "contract_sha256": "3ccd6d09927156a846062c7b10016c7b59dbeb96102eab463893704193683ad5",
       "contract_axes_sha256": "3e281abc5a9f59ffab75ed1ec6d54a3c8b5baaca2c85ee4981ec07ace800148f",
       "contract_axes": {
         "selector_grammar": {
@@ -172978,7 +172978,7 @@
       "source_id": "QUIT",
       "routing_class": "LocalDatabase",
       "contract_id": "cgate-contract:a872f67384948f79",
-      "contract_sha256": "b04943d6917de3a9da7e30023607e5e0751828e4ef5f05971642f02bd5981d42",
+      "contract_sha256": "46bcc15172d9958b17f79d343cbaf66ed1f22a6881879dab78cf9b4ac65aa63b",
       "contract_axes_sha256": "06d6c730781db1111d59a812d60442a0b07c9f90dcee500df84ee314519dc2ee",
       "contract_axes": {
         "selector_grammar": {

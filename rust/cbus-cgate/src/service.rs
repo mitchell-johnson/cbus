@@ -2362,15 +2362,11 @@ impl Service {
             return self.session_id(client, tag, &words, &upper).await;
         }
         if verb == "QUIT" || verb == "EXIT" {
-            return if words.len() == 1 {
-                Response {
-                    tag: tag.to_string(),
-                    lines: Vec::new(),
-                    final_text: "204 Closing connection.".to_string(),
-                    status: 204,
-                }
-            } else {
-                err(tag, 400, "400 Syntax Error.")
+            return Response {
+                tag: tag.to_string(),
+                lines: Vec::new(),
+                final_text: "204 Closing connection.".to_string(),
+                status: 204,
             };
         }
         if let Some(response) = family_help::response(tag, &words, &upper) {
@@ -13057,15 +13053,22 @@ impl Service {
                                 .is_some_and(|command| command.body.trim_start().starts_with('#'));
                         let close = parsed.as_ref().is_some_and(|c| {
                             let words: Vec<_> = c.body.split_whitespace().collect();
-                            words.len() == 1 && matches!(words[0].to_ascii_uppercase().as_str(), "QUIT" | "EXIT")
+                            words.first().is_some_and(|word| matches!(word.to_ascii_uppercase().as_str(), "QUIT" | "EXIT"))
                         });
                         let mut response = if let Some(c) = parsed.as_ref().filter(|c| c.body.split_whitespace().next().is_some_and(|w| w.eq_ignore_ascii_case("EVENT") || w.eq_ignore_ascii_case("EVENTS"))) {
                             let words: Vec<_> = c.body.split_whitespace().collect();
-                            if words.len() == 1 { Response {tag:c.tag.clone(), lines:vec![], final_text:format!("306 {}", mode), status:306} }
-                            else if words.len() == 2 {
-                                if let Some(new) = EventMode::parse(words[1]) { mode = new; ok(&c.tag, vec![], "200 OK.") }
-                                else { err(&c.tag, 400, "400 Invalid event mode") }
-                            } else { err(&c.tag, 400, "400 Invalid event command") }
+                            if client.recovery_only {
+                                // EVENT is handled here for connection-local mode state,
+                                // before `handle` applies the restricted-session gate.
+                                err(&c.tag, 420, "420 LOGIN required")
+                            }
+                            else if words.len() == 1 { Response {tag:c.tag.clone(), lines:vec![], final_text:format!("306 {}", mode), status:306} }
+                            else {
+                                match mode.apply_native(words[1]) {
+                                    Ok(()) => ok(&c.tag, vec![], "200 OK."),
+                                    Err(reason) => err(&c.tag, 408, &format!("408 Operation failed: {reason}")),
+                                }
+                            }
                         } else { self.handle(&mut client, &command).await };
                         // Retained C-Gate 3.4 has one oddity: a tagged hash
                         // marker is rejected with an untagged syntax error,

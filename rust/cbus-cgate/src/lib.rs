@@ -169,7 +169,7 @@ pub fn format_response(resp: &Response) -> String {
     out
 }
 
-/// C-Gate event subscription mode (`EVENT ON|OFF|e[+0-9]s[01]c[01]`,
+/// C-Gate event subscription mode (`EVENT ON|OFF|e[+0-9]s[0-9]c[0-9]`,
 /// manual 4.5.83).
 ///
 /// `ON` is `e+s0c0` and `OFF` is `e0s0c0`. The `e` level caps delivery
@@ -181,10 +181,10 @@ pub fn format_response(resp: &Response) -> String {
 pub struct EventMode {
     /// Event delivery: `+` (default levels) or maximum level 0–9.
     pub events: EventLevel,
-    /// Status-change (`#s#`) delivery.
-    pub status: bool,
-    /// Configuration-change (`#c#`) delivery.
-    pub config: bool,
+    /// Status-change (`#s#`) delivery level as echoed by the native server.
+    pub status: u8,
+    /// Configuration-change (`#c#`) delivery level as echoed by the native server.
+    pub config: u8,
 }
 
 /// Event-level selector of an `EVENT` mode.
@@ -200,39 +200,84 @@ impl EventMode {
     /// Native console default: `e+s0c0` (manual 4.5.83).
     pub const DEFAULT: Self = Self {
         events: EventLevel::Plus,
-        status: false,
-        config: false,
+        status: 0,
+        config: 0,
     };
 
     /// `OFF` is `e0s0c0`: nothing is delivered.
     pub const OFF: Self = Self {
         events: EventLevel::Capped(0),
-        status: false,
-        config: false,
+        status: 0,
+        config: 0,
     };
 
-    /// Parse `ON`, `OFF` or an `e[+0-9]s[01]c[01]` mode (the `e` form is
-    /// lowercase, mirroring `valid_event_mode`).
+    /// Parse one native event-mode word from the disabled baseline.
+    ///
+    /// Connection handlers should use [`Self::apply_native`] instead: the
+    /// original server commits each component before validating the next one.
+    /// An invalid later component can therefore change the current mode.
     pub fn parse(word: &str) -> Option<Self> {
+        let mut mode = Self::OFF;
+        mode.apply_native(word).ok()?;
+        Some(mode)
+    }
+
+    /// Apply C-Gate 3.4's first mode token, retaining partial mutations on
+    /// later syntax errors. Missing later components retain their old levels;
+    /// bytes after the third component are ignored by the native parser.
+    pub fn apply_native(&mut self, word: &str) -> Result<(), &'static str> {
         if word.eq_ignore_ascii_case("on") {
-            return Some(Self::DEFAULT);
+            *self = Self::DEFAULT;
+            return Ok(());
         }
         if word.eq_ignore_ascii_case("off") {
-            return Some(Self::OFF);
-        }
-        if !valid_event_mode(word) || word.len() != 6 {
-            return None;
+            *self = Self::OFF;
+            return Ok(());
         }
         let b = word.as_bytes();
-        Some(Self {
-            events: if b[1] == b'+' {
-                EventLevel::Plus
-            } else {
-                EventLevel::Capped(b[1] - b'0')
-            },
-            status: b[3] == b'1',
-            config: b[5] == b'1',
-        })
+        if !b
+            .first()
+            .is_some_and(|marker| marker.eq_ignore_ascii_case(&b'e'))
+        {
+            return Err("Bad mode string");
+        }
+        let Some(&event_level) = b.get(1) else {
+            return Ok(());
+        };
+        self.events = if event_level == b'+' {
+            EventLevel::Plus
+        } else if event_level.is_ascii_digit() {
+            EventLevel::Capped(event_level - b'0')
+        } else {
+            return Err("Bad event level digit");
+        };
+        let Some(&status_marker) = b.get(2) else {
+            return Ok(());
+        };
+        if !status_marker.eq_ignore_ascii_case(&b's') {
+            return Err("Bad mode string");
+        }
+        let Some(&status_level) = b.get(3) else {
+            return Ok(());
+        };
+        if !status_level.is_ascii_digit() {
+            return Err("Bad event level digit");
+        }
+        self.status = status_level - b'0';
+        let Some(&config_marker) = b.get(4) else {
+            return Ok(());
+        };
+        if !config_marker.eq_ignore_ascii_case(&b'c') {
+            return Err("Bad mode string");
+        }
+        let Some(&config_level) = b.get(5) else {
+            return Ok(());
+        };
+        if !config_level.is_ascii_digit() {
+            return Err("Bad event level digit");
+        }
+        self.config = config_level - b'0';
+        Ok(())
     }
 
     /// True when `OFF`-equivalent: no category can be delivered.
@@ -244,8 +289,8 @@ impl EventMode {
     pub fn delivers(&self, category: EventCategory) -> bool {
         match category {
             EventCategory::Event => !matches!(self.events, EventLevel::Capped(0)),
-            EventCategory::Status => self.status,
-            EventCategory::Config => self.config,
+            EventCategory::Status => self.status != 0,
+            EventCategory::Config => self.config != 0,
         }
     }
 
@@ -260,8 +305,8 @@ impl EventMode {
                 event_reporting_level(line).is_none_or(|level| level <= maximum)
             }
             (EventCategory::Event, EventLevel::Plus) => true,
-            (EventCategory::Status, _) => self.status,
-            (EventCategory::Config, _) => self.config,
+            (EventCategory::Status, _) => self.status != 0,
+            (EventCategory::Config, _) => self.config != 0,
         }
     }
 }
@@ -272,7 +317,7 @@ impl std::fmt::Display for EventMode {
             EventLevel::Plus => write!(f, "e+"),
             EventLevel::Capped(n) => write!(f, "e{n}"),
         }?;
-        write!(f, "s{}c{}", u8::from(self.status), u8::from(self.config))
+        write!(f, "s{}c{}", self.status, self.config)
     }
 }
 
@@ -324,21 +369,12 @@ pub fn event_reporting_level(line: &str) -> Option<u8> {
 
 /// True for accepted C-Gate event subscription modes.
 ///
-/// Accepts `ON`/`OFF` case-insensitively, otherwise the literal
-/// `e[+0-9]s[01]c[01]`
-/// shape (lowercase, six characters).
+/// Native C-Gate also accepts case-insensitive component markers, incomplete
+/// expressions and trailing mode-token characters. Use `apply_native` on an
+/// existing connection mode when its partial-error behavior matters.
 pub fn valid_event_mode(mode: &str) -> bool {
-    if mode.eq_ignore_ascii_case("on") || mode.eq_ignore_ascii_case("off") {
-        return true;
-    }
-    let b = mode.as_bytes();
-    b.len() == 6
-        && b[0] == b'e'
-        && (b[1] == b'+' || b[1].is_ascii_digit())
-        && b[2] == b's'
-        && (b[3] == b'0' || b[3] == b'1')
-        && b[4] == b'c'
-        && (b[5] == b'0' || b[5] == b'1')
+    let mut current = EventMode::OFF;
+    current.apply_native(mode).is_ok()
 }
 
 /// True for asynchronous event lines (never completes a command).
@@ -2094,9 +2130,13 @@ impl Server {
             }
             _ if starts_with(&upper, "GETSTATE") => self.getstate(&cmd.tag, &words),
             _ if starts_with(&upper, "LOGIN") => ok(&cmd.tag, vec![], "200 OK"),
-            _ if starts_with(&upper, "LOGOUT") || starts_with(&upper, "QUIT") => {
-                ok(&cmd.tag, vec![], "200 OK")
-            }
+            _ if starts_with(&upper, "LOGOUT") => ok(&cmd.tag, vec![], "200 OK"),
+            _ if starts_with(&upper, "QUIT") || starts_with(&upper, "EXIT") => Response {
+                tag: cmd.tag.clone(),
+                status: 204,
+                lines: vec![],
+                final_text: "204 Closing connection.".to_string(),
+            },
             _ => err(&cmd.tag, status::BAD_REQUEST, "400 Unknown command"),
         }
     }
@@ -6849,21 +6889,21 @@ impl Server {
         ok(tag, vec![], "200 OK")
     }
 
-    /// Native `EVENT ON|OFF|e[+0-9]s[01]c[01]`: accept a subscription.
+    /// Native `EVENT ON|OFF|e[+0-9]s[0-9]c[0-9]`: accept a subscription.
     ///
     /// Setting is stateless here (200 on any valid mode); the per-
     /// connection mode lives with the transport, which filters delivery
     /// and answers a bare `EVENT` query (`306 <mode>`) from session
     /// state — this shared model holds no per-connection modes.
     fn event_sub(&mut self, tag: &str, words: &[&str]) -> Response {
-        if words.len() != 2 || !valid_event_mode(words[1]) {
-            return err(
-                tag,
-                status::BAD_REQUEST,
-                "400 EVENT requires ON, OFF or e[+0-9]s[01]c[01]",
-            );
+        let Some(word) = words.get(1) else {
+            return err(tag, status::BAD_REQUEST, "400 EVENT requires a mode");
+        };
+        let mut mode = EventMode::OFF;
+        match mode.apply_native(word) {
+            Ok(()) => ok(tag, vec![], "200 OK."),
+            Err(reason) => err(tag, 408, &format!("408 Operation failed: {reason}")),
         }
-        ok(tag, vec![], "200 OK")
     }
 
     /// Native `GETSTATE address`: snapshot of an already loaded network.
@@ -10201,9 +10241,18 @@ mod tests {
         let mode = EventMode::parse("e5s1c1").expect("valid mode");
         assert_eq!(mode.to_string(), "e5s1c1");
         assert!(EventMode::parse("e5s1c1").is_some());
-        for bad in ["", "e", "e5s1c", "e5s1c12", "E5S1C1", "e+s2c1", "e+s1c"] {
+        for accepted in ["e", "e5s1c", "e5s1c12", "E5S1C1", "e+s2c1"] {
+            assert!(EventMode::parse(accepted).is_some(), "{accepted}");
+        }
+        for bad in ["", "e10s1c1", "e+sAc1", "bogus"] {
             assert!(EventMode::parse(bad).is_none(), "{bad}");
         }
+        let mut partial = EventMode::OFF;
+        assert_eq!(partial.apply_native("e9s9c9"), Ok(()));
+        assert_eq!(partial.apply_native("e10s1c1"), Err("Bad mode string"));
+        assert_eq!(partial.to_string(), "e1s9c9");
+        assert_eq!(partial.apply_native("e5sAc1"), Err("Bad event level digit"));
+        assert_eq!(partial.to_string(), "e5s9c9");
         assert!(EventMode::OFF.is_off());
         assert!(!EventMode::DEFAULT.is_off());
         // Delivery: unlevelled `#e#` lines pass any `e` but `e0`.
@@ -10594,16 +10643,19 @@ mod tests {
         assert!(valid_event_mode("OFF"));
         assert!(valid_event_mode("e8s1c1"));
         assert!(valid_event_mode("e+s0c1"));
+        assert!(valid_event_mode("e8s2c9"));
+        assert!(valid_event_mode("E8S1C1"));
+        assert!(valid_event_mode("e8s1c20"));
+        assert!(valid_event_mode("e8s1c"));
         assert!(!valid_event_mode("e10s1c1"));
-        assert!(!valid_event_mode("e8s2c0"));
-        assert!(!valid_event_mode("e8s1c2"));
-        assert!(!valid_event_mode("E8S1C1"));
+        assert!(!valid_event_mode("e8sAc0"));
         assert!(!valid_event_mode(""));
-        assert!(!valid_event_mode("e8s1c1 "));
         let mut s = Server::new(AccessLevel::Program);
         assert_eq!(s.handle("[1] EVENT e8s1c1").status, 200);
-        assert_eq!(s.handle("[2] EVENT bogus").status, 400);
+        assert_eq!(s.handle("[2] EVENT bogus").status, 408);
         assert_eq!(s.handle("[3] EVENT OFF").status, 200);
+        assert_eq!(s.handle("[4] EVENT ON trailing").status, 200);
+        assert_eq!(s.handle("[5] EXIT trailing").status, 204);
         // Subscription needs no programming rights, any role but Config.
         let mut m = Server::new(AccessLevel::Monitor);
         assert_eq!(m.handle("[1] EVENT e8s1c1").status, 200);

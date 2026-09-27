@@ -11,7 +11,7 @@
 //! holding an enabling `EVENT` subscription, which is what makes blocking
 //! `read_event()` streams and the two-client (writer + subscribed reader)
 //! flows work. Both paths filter by the connection's event mode
-//! (`EVENT ON|OFF|e[+0-9]s[01]c[01]`, manual 4.5.83; `ON` is `e+s0c0`,
+//! (`EVENT ON|OFF|e[+0-9]s[0-9]c[0-9]`, manual 4.5.83; `ON` is `e+s0c0`,
 //! `OFF` is `e0s0c0`, a bare `EVENT` reports `306 <mode>`); every event
 //! unlevelled model events pass any `e` but `e0`; native timestamped events
 //! such as `BROADCAST_EVENT` also honor their encoded reporting level.
@@ -299,6 +299,9 @@ async fn serve(stream: TcpStream, hub: Arc<Mutex<Hub>>) {
             hub.dispatch(id, |server| server.handle(&raw))
         };
         track_subscription(&hub, id, &head, &resp).await;
+        if resp.status == 204 {
+            break;
+        }
     }
     hub.lock().await.subs.remove(&id);
     // Dropping the last sender lets the writer drain the final reply.
@@ -314,12 +317,12 @@ async fn serve(stream: TcpStream, hub: Arc<Mutex<Hub>>) {
     }
 }
 
-/// Record an `EVENT`/`EVENTS` subscription change after a successful reply.
-///
-/// The server already validated the mode word (a 200 here means it
-/// parsed); the hub keeps the per-connection mode that filters delivery.
+/// Record the native incremental `EVENT`/`EVENTS` mode mutation. A rejected
+/// later component can still change earlier levels on this connection.
 async fn track_subscription(hub: &Arc<Mutex<Hub>>, id: u64, head: &str, resp: &Response) {
-    if resp.status >= 400 {
+    if resp.status != 200
+        && !(resp.status == 408 && resp.final_text.starts_with("408 Operation failed: Bad "))
+    {
         return;
     }
     let body = head
@@ -331,14 +334,12 @@ async fn track_subscription(hub: &Arc<Mutex<Hub>>, id: u64, head: &str, resp: &R
     let is_event = words
         .next()
         .is_some_and(|w| w.eq_ignore_ascii_case("EVENT") || w.eq_ignore_ascii_case("EVENTS"));
-    if is_event && words.clone().count() == 1 {
+    if is_event {
         if let Some(word) = words.next() {
-            if let Some(mode) = EventMode::parse(word) {
-                let mut hub = hub.lock().await;
-                if let Some(sub) = hub.subs.get_mut(&id) {
-                    sub.mode = mode;
-                    sub.subscribed = !mode.is_off();
-                }
+            let mut hub = hub.lock().await;
+            if let Some(sub) = hub.subs.get_mut(&id) {
+                let _ = sub.mode.apply_native(word);
+                sub.subscribed = !sub.mode.is_off();
             }
         }
     }

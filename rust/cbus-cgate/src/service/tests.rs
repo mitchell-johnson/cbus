@@ -5169,6 +5169,97 @@ async fn native_session_event_alias_and_quit_are_connection_local() {
 }
 
 #[tokio::test]
+async fn native_session_selector_matrix_matches_owned_cgate_capture() {
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../testdata/fixtures/native_cgate_session_selectors.json"
+    ))
+    .unwrap();
+    assert_eq!(
+        native["vendor_jar_sha256"],
+        "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+    );
+    assert_eq!(
+        native["java_sha256"],
+        "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4"
+    );
+    assert_eq!(native["physical_networks_opened"], false);
+    assert_eq!(native["captures"][0]["listeners_loopback_only"], true);
+    assert_eq!(native["captures"][0]["listener_count"], 6);
+    for capture in native["captures"].as_array().unwrap() {
+        assert!(
+            capture["cleanup"]["cleanup_complete"] == true || capture["cleanup_complete"] == true
+        );
+    }
+
+    async fn compare(
+        reader: &mut BufReader<tokio::net::tcp::OwnedReadHalf>,
+        writer: &mut tokio::net::tcp::OwnedWriteHalf,
+        case: &serde_json::Value,
+    ) {
+        let expected = if let Some(lines) = case["reply"].as_array() {
+            lines
+                .iter()
+                .map(|line| line.as_str().unwrap().to_string())
+                .collect::<Vec<_>>()
+        } else {
+            vec![case["reply"].as_str().unwrap().to_string()]
+        };
+        let tag = expected[0]
+            .strip_prefix('[')
+            .unwrap()
+            .split_once(']')
+            .unwrap()
+            .0;
+        let command = case["command"].as_str().unwrap();
+        assert_eq!(
+            command_lines(reader, writer, tag, command).await,
+            expected,
+            "{command}"
+        );
+        if case["eof_after_reply"] == true {
+            let mut eof = String::new();
+            assert_eq!(reader.read_line(&mut eof).await.unwrap(), 0, "{command}");
+        }
+    }
+
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let address = listener.local_addr().unwrap();
+    let server = tokio::spawn(service.serve(listener));
+
+    let matrix = native["captures"][0]["cases"].as_array().unwrap();
+    let (mut reader, mut writer) = connect_command_session(address).await;
+    for case in matrix.iter().filter(|case| case["connection"] == "a") {
+        compare(&mut reader, &mut writer, case).await;
+    }
+    for connection in ["b", "c", "d", "e"] {
+        let (mut reader, mut writer) = connect_command_session(address).await;
+        for case in matrix
+            .iter()
+            .filter(|case| case["connection"] == connection)
+        {
+            compare(&mut reader, &mut writer, case).await;
+        }
+    }
+    for trial in native["captures"][1]["trials"].as_array().unwrap() {
+        let (mut reader, mut writer) = connect_command_session(address).await;
+        for case in trial.as_array().unwrap() {
+            compare(&mut reader, &mut writer, case).await;
+        }
+    }
+    for trial in native["captures"][2]["cases"].as_array().unwrap() {
+        let (mut reader, mut writer) = connect_command_session(address).await;
+        for case in trial["entries"].as_array().unwrap() {
+            compare(&mut reader, &mut writer, case).await;
+        }
+    }
+    server.abort();
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn line_bound_is_enforced_before_newline() {
     let (mut tx, rx) = tokio::io::duplex(8192);
     let mut rd = BufReader::new(rx);

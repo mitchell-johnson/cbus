@@ -1,0 +1,603 @@
+{
+  "format": "native-cgate-session-selectors-v1",
+  "target": "C-Gate v3.4.0 build 2001",
+  "scope": "Owned temporary loopback-only native processes; no project or physical network",
+  "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+  "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+  "lifecycle_helper_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+  "physical_networks_opened": false,
+  "captures": [
+    {
+      "name": "session_matrix",
+      "source_report_sha256": "82fec1d5958cd00f8dfc2914995d7864d1701e4182ce5721441ec4c0dcd3beab",
+      "listener_count": 6,
+      "listeners_loopback_only": true,
+      "cases": [
+        {
+          "connection": "a",
+          "command": "EVENT",
+          "reply": [
+            "[a01] 306 e0s0c0"
+          ],
+          "status": 306
+        },
+        {
+          "connection": "a",
+          "command": "EVENT ON",
+          "reply": [
+            "[a02] 200 OK."
+          ],
+          "status": 200
+        },
+        {
+          "connection": "a",
+          "command": "EVENT",
+          "reply": [
+            "[a03] 306 e+s0c0"
+          ],
+          "status": 306
+        },
+        {
+          "connection": "a",
+          "command": "EVENT ON extra",
+          "reply": [
+            "[a04] 200 OK."
+          ],
+          "status": 200
+        },
+        {
+          "connection": "a",
+          "command": "EVENT",
+          "reply": [
+            "[a05] 306 e+s0c0"
+          ],
+          "status": 306
+        },
+        {
+          "connection": "a",
+          "command": "EVENT on",
+          "reply": [
+            "[a06] 200 OK."
+          ],
+          "status": 200
+        },
+        {
+          "connection": "a",
+          "command": "EVENT",
+          "reply": [
+            "[a07] 306 e+s0c0"
+          ],
+          "status": 306
+        },
+        {
+          "connection": "a",
+          "command": "EVENT OFF",
+          "reply": [
+            "[a08] 200 OK."
+          ],
+          "status": 200
+        },
+        {
+          "connection": "a",
+          "command": "EVENT",
+          "reply": [
+            "[a09] 306 e0s0c0"
+          ],
+          "status": 306
+        },
+        {
+          "connection": "a",
+          "command": "EVENT off",
+          "reply": [
+            "[a10] 200 OK."
+          ],
+          "status": 200
+        },
+        {
+          "connection": "a",
+          "command": "EVENT",
+          "reply": [
+            "[a11] 306 e0s0c0"
+          ],
+          "status": 306
+        },
+        {
+          "connection": "a",
+          "command": "EVENT e5s1c1",
+          "reply": [
+            "[a12] 200 OK."
+          ],
+          "status": 200
+        },
+        {
+          "connection": "a",
+          "command": "EVENT",
+          "reply": [
+            "[a13] 306 e5s1c1"
+          ],
+          "status": 306
+        },
+        {
+          "connection": "a",
+          "command": "EVENT E5S1C1",
+          "reply": [
+            "[a14] 200 OK."
+          ],
+          "status": 200
+        },
+        {
+          "connection": "a",
+          "command": "EVENT",
+          "reply": [
+            "[a15] 306 e5s1c1"
+          ],
+          "status": 306
+        },
+        {
+          "connection": "a",
+          "command": "EVENT e5S1C1",
+          "reply": [
+            "[a16] 200 OK."
+          ],
+          "status": 200
+        },
+        {
+          "connection": "a",
+          "command": "EVENT",
+          "reply": [
+            "[a17] 306 e5s1c1"
+          ],
+          "status": 306
+        },
+        {
+          "connection": "a",
+          "command": "EVENT e+s1c1",
+          "reply": [
+            "[a18] 200 OK."
+          ],
+          "status": 200
+        },
+        {
+          "connection": "a",
+          "command": "EVENT",
+          "reply": [
+            "[a19] 306 e+s1c1"
+          ],
+          "status": 306
+        },
+        {
+          "connection": "a",
+          "command": "EVENT e9s1c1",
+          "reply": [
+            "[a20] 200 OK."
+          ],
+          "status": 200
+        },
+        {
+          "connection": "a",
+          "command": "EVENT",
+          "reply": [
+            "[a21] 306 e9s1c1"
+          ],
+          "status": 306
+        },
+        {
+          "connection": "a",
+          "command": "EVENT e10s1c1",
+          "reply": [
+            "[a22] 408 Operation failed: Bad mode string"
+          ],
+          "status": 408
+        },
+        {
+          "connection": "a",
+          "command": "EVENT",
+          "reply": [
+            "[a23] 306 e1s1c1"
+          ],
+          "status": 306
+        },
+        {
+          "connection": "a",
+          "command": "EVENT e5s2c1",
+          "reply": [
+            "[a24] 200 OK."
+          ],
+          "status": 200
+        },
+        {
+          "connection": "a",
+          "command": "EVENT",
+          "reply": [
+            "[a25] 306 e5s2c1"
+          ],
+          "status": 306
+        },
+        {
+          "connection": "a",
+          "command": "EVENT e5s1c2",
+          "reply": [
+            "[a26] 200 OK."
+          ],
+          "status": 200
+        },
+        {
+          "connection": "a",
+          "command": "EVENT",
+          "reply": [
+            "[a27] 306 e5s1c2"
+          ],
+          "status": 306
+        },
+        {
+          "connection": "a",
+          "command": "EVENT e5s1c1 extra",
+          "reply": [
+            "[a28] 200 OK."
+          ],
+          "status": 200
+        },
+        {
+          "connection": "a",
+          "command": "EVENT",
+          "reply": [
+            "[a29] 306 e5s1c1"
+          ],
+          "status": 306
+        },
+        {
+          "connection": "a",
+          "command": "EVENTS on",
+          "reply": [
+            "[a30] 200 OK."
+          ],
+          "status": 200
+        },
+        {
+          "connection": "a",
+          "command": "EVENTS",
+          "reply": [
+            "[a31] 306 e+s0c0"
+          ],
+          "status": 306
+        },
+        {
+          "connection": "a",
+          "command": "EVENTS E5S1C1",
+          "reply": [
+            "[a32] 200 OK."
+          ],
+          "status": 200
+        },
+        {
+          "connection": "a",
+          "command": "EVENTS",
+          "reply": [
+            "[a33] 306 e5s1c1"
+          ],
+          "status": 306
+        },
+        {
+          "connection": "a",
+          "command": "EVENT e5s9c9",
+          "reply": [
+            "[a34] 200 OK."
+          ],
+          "status": 200
+        },
+        {
+          "connection": "a",
+          "command": "EVENT",
+          "reply": [
+            "[a35] 306 e5s9c9"
+          ],
+          "status": 306
+        },
+        {
+          "connection": "a",
+          "command": "EVENT e5sAc1",
+          "reply": [
+            "[a36] 408 Operation failed: Bad event level digit"
+          ],
+          "status": 408
+        },
+        {
+          "connection": "a",
+          "command": "EVENT",
+          "reply": [
+            "[a37] 306 e5s9c9"
+          ],
+          "status": 306
+        },
+        {
+          "connection": "a",
+          "command": "EVENT OFF extra",
+          "reply": [
+            "[a38] 200 OK."
+          ],
+          "status": 200
+        },
+        {
+          "connection": "a",
+          "command": "EVENT",
+          "reply": [
+            "[a39] 306 e0s0c0"
+          ],
+          "status": 306
+        },
+        {
+          "connection": "b",
+          "command": "QUIT extra",
+          "reply": [
+            "[b01] 204 Closing connection."
+          ],
+          "status": 204,
+          "eof_after_reply": true,
+          "post_reply_line": null
+        },
+        {
+          "connection": "c",
+          "command": "EXIT extra",
+          "reply": [
+            "[c01] 204 Closing connection."
+          ],
+          "status": 204,
+          "eof_after_reply": true,
+          "post_reply_line": null
+        },
+        {
+          "connection": "d",
+          "command": "QUIT",
+          "reply": [
+            "[d01] 204 Closing connection."
+          ],
+          "status": 204,
+          "eof_after_reply": true,
+          "post_reply_line": null
+        },
+        {
+          "connection": "e",
+          "command": "EXIT",
+          "reply": [
+            "[e01] 204 Closing connection."
+          ],
+          "status": 204,
+          "eof_after_reply": true,
+          "post_reply_line": null
+        }
+      ],
+      "cleanup": {
+        "process_exit_confirmed": true,
+        "reserved_sockets_closed": true,
+        "log_closed": true,
+        "work_removed": true,
+        "cleanup_complete": true,
+        "cleanup_errors": []
+      },
+      "normalization": {
+        "omitted_asynchronous_native_event_lines": 4,
+        "rule": "Retain only the exact tagged command reply; native asynchronous log events have variable timestamps and interleaving."
+      }
+    },
+    {
+      "name": "invalid_mode_repeat",
+      "source_report_sha256": "68eadf568d0ec7907313239da2b75c3d6dd7dbf276e01f37f52bef48247047c0",
+      "trials": [
+        [
+          {
+            "command": "EVENT e9s1c1",
+            "reply": [
+              "[t00] 200 OK."
+            ]
+          },
+          {
+            "command": "EVENT e10s1c1",
+            "reply": [
+              "[t01] 408 Operation failed: Bad mode string"
+            ]
+          },
+          {
+            "command": "EVENT",
+            "reply": [
+              "[t02] 306 e1s1c1"
+            ]
+          }
+        ],
+        [
+          {
+            "command": "EVENT e10s1c1",
+            "reply": [
+              "[t10] 408 Operation failed: Bad mode string"
+            ]
+          },
+          {
+            "command": "EVENT",
+            "reply": [
+              "[t11] 306 e1s0c0"
+            ]
+          }
+        ],
+        [
+          {
+            "command": "EVENT e5sAc1",
+            "reply": [
+              "[t20] 408 Operation failed: Bad event level digit"
+            ]
+          },
+          {
+            "command": "EVENT",
+            "reply": [
+              "[t21] 306 e5s0c0"
+            ]
+          }
+        ]
+      ],
+      "cleanup_complete": true,
+      "normalization": {
+        "omitted_asynchronous_native_event_lines": 2,
+        "rule": "Retain only the exact tagged command reply; native asynchronous log events have variable timestamps and interleaving."
+      }
+    },
+    {
+      "name": "event_error_boundaries",
+      "source_report_sha256": "d189a951a794490ea67ec0816bc137dd6806ea4248207da1ab94b3695d014d54",
+      "cases": [
+        {
+          "trial": "EVENT bogus",
+          "entries": [
+            {
+              "command": "EVENT bogus",
+              "reply": "[x0_0] 408 Operation failed: Bad mode string"
+            },
+            {
+              "command": "EVENT",
+              "reply": "[x0_1] 306 e0s0c0"
+            }
+          ]
+        },
+        {
+          "trial": "EVENT e",
+          "entries": [
+            {
+              "command": "EVENT e",
+              "reply": "[x1_0] 200 OK."
+            },
+            {
+              "command": "EVENT",
+              "reply": "[x1_1] 306 e0s0c0"
+            }
+          ]
+        },
+        {
+          "trial": "EVENT eAs1c1",
+          "entries": [
+            {
+              "command": "EVENT eAs1c1",
+              "reply": "[x2_0] 408 Operation failed: Bad event level digit"
+            },
+            {
+              "command": "EVENT",
+              "reply": "[x2_1] 306 e0s0c0"
+            }
+          ]
+        },
+        {
+          "trial": "EVENT e5s1c",
+          "entries": [
+            {
+              "command": "EVENT e5s1c",
+              "reply": "[x3_0] 200 OK."
+            },
+            {
+              "command": "EVENT",
+              "reply": "[x3_1] 306 e5s1c0"
+            }
+          ]
+        },
+        {
+          "trial": "EVENT e5x1c1",
+          "entries": [
+            {
+              "command": "EVENT e5x1c1",
+              "reply": "[x4_0] 408 Operation failed: Bad mode string"
+            },
+            {
+              "command": "EVENT",
+              "reply": "[x4_1] 306 e5s0c0"
+            }
+          ]
+        },
+        {
+          "trial": "EVENT e5sAc1",
+          "entries": [
+            {
+              "command": "EVENT e5sAc1",
+              "reply": "[x5_0] 408 Operation failed: Bad event level digit"
+            },
+            {
+              "command": "EVENT",
+              "reply": "[x5_1] 306 e5s0c0"
+            }
+          ]
+        },
+        {
+          "trial": "EVENT e5s1cA",
+          "entries": [
+            {
+              "command": "EVENT e5s1cA",
+              "reply": "[x6_0] 408 Operation failed: Bad event level digit"
+            },
+            {
+              "command": "EVENT",
+              "reply": "[x6_1] 306 e5s1c0"
+            }
+          ]
+        },
+        {
+          "trial": "EVENT e5s1c10",
+          "entries": [
+            {
+              "command": "EVENT e5s1c10",
+              "reply": "[x7_0] 200 OK."
+            },
+            {
+              "command": "EVENT",
+              "reply": "[x7_1] 306 e5s1c1"
+            }
+          ]
+        },
+        {
+          "trial": "EVENT E5S1C1",
+          "entries": [
+            {
+              "command": "EVENT E5S1C1",
+              "reply": "[x8_0] 200 OK."
+            },
+            {
+              "command": "EVENT",
+              "reply": "[x8_1] 306 e5s1c1"
+            }
+          ]
+        },
+        {
+          "trial": "EVENT e5s9c9",
+          "entries": [
+            {
+              "command": "EVENT e5s9c9",
+              "reply": "[x9_0] 200 OK."
+            },
+            {
+              "command": "EVENT",
+              "reply": "[x9_1] 306 e5s9c9"
+            }
+          ]
+        },
+        {
+          "trial": "EVENT e5s1c1 extra",
+          "entries": [
+            {
+              "command": "EVENT e5s1c1 extra",
+              "reply": "[x10_0] 200 OK."
+            },
+            {
+              "command": "EVENT",
+              "reply": "[x10_1] 306 e5s1c1"
+            }
+          ]
+        }
+      ],
+      "cleanup_complete": true,
+      "normalization": {
+        "omitted_asynchronous_native_event_lines": 0,
+        "rule": "Retain only the exact tagged command reply; native asynchronous log events have variable timestamps and interleaving."
+      }
+    }
+  ],
+  "limitations": [
+    "No TLS selector matrix",
+    "No access.txt role differential",
+    "No event-fanout test against native",
+    "No project, physical interface or Toolkit GUI workflow"
+  ]
+}

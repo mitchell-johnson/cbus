@@ -5,16 +5,16 @@
   "purpose": "Evidence-bounded per-path contracts; unresolved fields are explicit and route coverage is not functional acceptance.",
   "sources": {
     "capability_matrix": {
-      "sha256": "a943b9df5e3170845237a7beefad8b655ce1ea0379b005b313544d9bfa685fb9"
+      "sha256": "45f79d47d5853e7577db6698f22626e99e5077ee1057ffcee19f6d9a70038527"
     },
     "manual": {
       "sha256": "13801aef0bf7bbe4a80075a7e5b92c49c41be25666d9d32d8d27130ee660c4a7"
     },
     "service": {
-      "sha256": "38f76b0acd01c81b2647e05e32fd5d0b6646f2613f85442c862e7372c69bb1d1"
+      "sha256": "055ffb5ce5f9a29ca1662210dc0d0e11da2a536ef57d6971b6375fd859098ca6"
     },
     "event_mode": {
-      "sha256": "faaa23cf77ed430c4eca0b81faedeb6c60e400900e1739b7998706961d522924"
+      "sha256": "5dfd7ab32010000f284869d09f8c00bdeb0884c47e3160a53e46865c2742f025"
     },
     "authorization_policy": {
       "sha256": "a3f3ce920dee91f33e30a9c1a7f32ab8f2bb1c06f8d497db29523d470a227614"
@@ -46067,7 +46067,7 @@
       "id": "cgate-contract:b3c5c91627ba8885",
       "path": "EVENT",
       "inventory": "primary",
-      "routing_evidence": "Service::connection_io handles native EVENT/EVENTS query and set forms as per-connection subscription state, including event filtering, without PCI I/O.",
+      "routing_evidence": "Service::connection_io handles native EVENT/EVENTS query and first-token set forms as per-connection state. The incremental mode parser accepts case-insensitive e/s/c markers and numeric s/c digits, ignores trailing words, and retains earlier component mutations on a later 408; exact bounded responses are pinned by native_cgate_session_selectors.json. Event filtering performs no PCI I/O; native fanout semantics for status/config levels above one remain unaccepted.",
       "axes": {
         "selector_grammar": {
           "status": "partial",
@@ -46297,7 +46297,7 @@
         }
       },
       "axes_sha256": "3e281abc5a9f59ffab75ed1ec6d54a3c8b5baaca2c85ee4981ec07ace800148f",
-      "contract_sha256": "2b324cb11f549f6fad0c6545d2bf626173b63c6dbfb23c1457d3892f85bc043b"
+      "contract_sha256": "3ccd6d09927156a846062c7b10016c7b59dbeb96102eab463893704193683ad5"
     },
     {
       "id": "cgate-contract:87bbc16e0e8743db",
@@ -75517,7 +75517,7 @@
       "id": "cgate-contract:a872f67384948f79",
       "path": "QUIT",
       "inventory": "primary",
-      "routing_evidence": "Service::handle returns the native 204 envelope for QUIT/EXIT and Service::connection_io closes the command connection after flushing that reply, without PCI I/O.",
+      "routing_evidence": "Service::handle returns the native 204 envelope for QUIT/EXIT even with trailing words; Service::connection_io flushes it and closes the command connection without PCI I/O (native_cgate_session_selectors.json).",
       "axes": {
         "selector_grammar": {
           "status": "partial",
@@ -75740,7 +75740,7 @@
         }
       },
       "axes_sha256": "06d6c730781db1111d59a812d60442a0b07c9f90dcee500df84ee314519dc2ee",
-      "contract_sha256": "b04943d6917de3a9da7e30023607e5e0751828e4ef5f05971642f02bd5981d42"
+      "contract_sha256": "46bcc15172d9958b17f79d343cbaf66ed1f22a6881879dab78cf9b4ac65aa63b"
     },
     {
       "id": "cgate-contract:341d011ccd4fef4c",

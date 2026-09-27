@@ -210,7 +210,8 @@ deleting, or loading interface/remote policy makes address admission explicit;
 an unmatched non-loopback peer then receives native 421. When the independent
 recovery token is configured, that peer instead receives a restricted session:
 `LOGIN` can report None and `LOGIN TOKEN` can unlock it, while every command
-other than `LOGOUT` returns 420. A loopback Clipsal recovery path remains available.
+other than `LOGOUT` returns 420, including connection-local `EVENT`/`EVENTS`
+queries and setters. A loopback Clipsal recovery path remains available.
 The ACCESS family's Clipsal/Max boundary is enforced, but the exact native
 per-handler level table for unrelated commands is not. Check
 `access_global_command_level_matrix=false` before relying on role separation
@@ -1391,10 +1392,22 @@ Command connections also provide native-shaped `SESSION_ID`, `SESSION_ID ALL`
 and one-shot `SESSION_ID TAG` state, including live TCP/TLS peer and connection
 time fields. `EVENT` and its `EVENTS` alias default to `e0s0c0` on a new cmqttd
 connection. `QUIT` and `EXIT` flush `204 Closing connection.` before closing the
-stream. These operations are volatile and perform no PCI or persistent database
-I/O. The original C-Gate `SESSION_ID ALL` trace also lists its internal
-console session; cmqttd currently lists external TCP/TLS command sessions
-only. Treat that as an open compatibility difference, not accepted parity.
+stream, even when extra words follow the verb. These operations are volatile
+and perform no PCI or persistent database I/O. The original C-Gate
+`SESSION_ID ALL` trace also lists its internal console session; cmqttd
+currently lists external TCP/TLS command sessions only. Treat that as an open
+compatibility difference, not accepted parity. The native `EVENT`/`EVENTS`
+setter consumes its first mode token and ignores later words. `ON`/`OFF` and
+the `e`/`s`/`c` markers are case-insensitive; the three levels accept `+` for
+events and decimal digits 0–9 for the other positions. A bare query echoes the
+normalized mode. The parser applies each component as it reads it: an invalid
+later component returns 408 while retaining earlier changes on that connection.
+For example, from `e9s1c1`, `EVENT e10s1c1` returns 408 but leaves `e1s1c1`.
+The service reproduces this observed session-local behavior; no physical or
+persistent state changes. Native fanout for status/config levels above one and
+uncaptured malformed strings remain open. Exact tagged cases, repeat trials,
+normalization and pinned original hashes are in
+`rust/testdata/fixtures/native_cgate_session_selectors.json`.
 
 `BROADCAST_EVENT event-class [event-text]` is also local command traffic. In
 retained help, `SP` denotes the required whitespace before `event-class`; it is
@@ -1746,7 +1759,7 @@ intentionally contains no vendor specs.
 
 ## Sessions and events
 
-The server model is shared across TCP connections. Each connection keeps its own selected project and event mode. `EVENT ON`, `EVENT OFF`, or a detailed `e[+0-9]s[01]c[01]` mode controls delivery. Subscribed clients receive cross-client events; the originating client receives eligible command events in order before its reply.
+The server model is shared across TCP connections. Each connection keeps its own selected project and event mode. `EVENT ON`, `EVENT OFF`, or a detailed `e[+0-9]s[0-9]c[0-9]` mode controls delivery. Subscribed clients receive cross-client events; the originating client receives eligible command events in order before its reply. The mock keeps its documented `e+s0c0` initial mode, whereas an embedded cmqttd connection starts at native `e0s0c0`.
 
 `BROADCAST_EVENT` uses the native timestamped `703 cmdN - broadcast_event`
 envelope in both `cgate-mock` and cmqttd. It is a level-three event: `e2...`
