@@ -1228,6 +1228,8 @@ def build_parser():
     live_condition_options(commands)
     from .toolkit_update_bundle_cli import options as update_bundle_options
     update_bundle_options(commands)
+    from .toolkit_update_package_bundle_cli import options as package_bundle_options
+    package_bundle_options(commands)
     from .pci_routing_cli import options as routing_options
     routing_options(commands)
     from .toolkit_about_cli import options as about_options
@@ -3348,6 +3350,9 @@ def run(args):
     if args.area == "update-diagnostic-bundle":
         from .toolkit_update_bundle_cli import run as update_bundle_run
         return update_bundle_run(args)
+    if args.area == "update-package-bundle":
+        from .toolkit_update_package_bundle_cli import run as package_bundle_run
+        return package_bundle_run(args)
     if args.area == "pci-route":
         from .pci_routing_cli import run as routing_run
         return routing_run(args)

@@ -89,6 +89,12 @@ file with an explicitly selected raw-catalogue descriptor. It does not download
 the file or establish authenticity, publisher trust, applicability or
 installation permission.
 
+`update-package-bundle` reproduces that receipt and an exact-source
+`update-diagnostic-bundle` from their inputs, then reports a limited
+[catalogue-to-local-package link](toolkit-update-package-bundle.md) for one
+selected node and file. It remains offline and does not add publisher or
+installation trust.
+
 Evidence: [original vectors](../research/fixtures/toolkit-updates-vectors.json),
 [acceptance](../research/fixtures/toolkit-updates-acceptance.json).
 Primary vendor context: [Toolkit1.18 release](https://www.se.com/au/en/download/document/C-Bus_Toolkit_V1_18_0/)

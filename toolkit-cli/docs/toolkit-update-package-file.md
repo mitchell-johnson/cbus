@@ -58,6 +58,11 @@ SHA-256 digests for the exact catalogue source, normalized selected node, canoni
 node and observed package bytes, as well as the legacy SHA-1 comparison. It
 does not expose the local path or catalogue URL.
 
+To link this receipt to a separately generated diagnostic bundle for the same
+selected node and raw catalogue source, use
+[`update-package-bundle`](toolkit-update-package-bundle.md). It reproduces both
+reports and safely re-reads the local file before reporting that limited link.
+
 **A match is only a byte-to-descriptor relationship.** Catalogue SHA-1 alone is
 not sufficient for modern package authenticity, and neither the catalogue
 source nor its publisher identity is authenticated by this helper. The output

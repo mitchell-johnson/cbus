@@ -67,6 +67,11 @@ metadata, revocation, and condition stages passed, and the condition calculation
 produced a Boolean. A computed false condition remains a complete calculation;
 it is not an applicability decision.
 
+For one already-local package file, [`update-package-bundle`](toolkit-update-package-bundle.md)
+reproduces this bundle and its separate package-file receipt from the exact
+source files. Its source-to-package link remains visible independently of
+`diagnostics_complete`.
+
 A missing source, missing receipt, incomplete response, source hash mismatch,
 changed catalogue endpoint or installed version, same-ID cross-version node,
 unrelated revocation subject, or different condition model remains visible under

@@ -62,6 +62,14 @@ It does not fetch, authenticate, approve or execute an update. Inspect
 `toolkit-cli/docs/toolkit-update-package-file.md` before using its bounded
 file-input profile. The equivalent Python API is
 `cbus_toolkit.toolkit_update_package_file.inspect_update_package_file`.
+To link that receipt with the exact-source diagnostic bundle, run
+`update-package-bundle` with both generated reports, all four diagnostic
+reports and their four source files, the selected node/file IDs, and the
+already-present package path. It reproduces both reports and the safe-open
+file hash; a network-mounted path may involve filesystem network transport. See
+`toolkit-cli/docs/toolkit-update-package-bundle.md`. A source-to-package link
+can be true while a diagnostic stage is failed or unsupported. The joined
+completion then remains false.
 Windows uses a checked Win32 disk-file handle; POSIX uses
 no-follow/nonblocking/close-on-exec flags. An isolated SESU 3.0.7 oracle
 accepted a wrong digest when its security-dictionary folder key did not match
