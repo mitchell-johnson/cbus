@@ -89,6 +89,10 @@ missing IDs, orphaned scope items, resolved domains with unknown counts,
 unknown states, unknown ledger/work-item/evidence references, unsafe artifact paths,
 changed evidence bundles or record digests, changed source artifact hashes,
 substituted feature ledgers, unexplained skips and required skipped cases.
+Work-item references are checked against the packaged 59-ID authoritative roster,
+so a syntactically valid but unplanned ID is rejected. The exact parsed evidence
+object must equal the duplicate-key- and non-finite-safe parse of the digest-bound
+evidence bytes.
 Receipts also require explicit
 test IDs, environment identity, artifact roles and an exit code consistent
 with the result. Physical evidence must name a physical environment and stable
@@ -96,6 +100,13 @@ hardware references. Original-differential evidence must bind its Toolkit or
 C-Gate oracle by SHA-256. An accepted or not-applicable dimension requires
 evidence; an accepted dimension also requires a passed record naming that
 exact obligation and dimension.
+
+A scope record can use `nonfunctional_with_evidence` only when one of its
+`evidence_ids` names a passed receipt containing
+`scope_disposition_receipts: [{"scope_item_id": "...", "decision":
+"exclude_nonfunctional"}]` for that exact record. Failed, unrelated, orphaned,
+unknown or differently classified receipts cannot remove source material from
+the functional denominator.
 
 Evidence receipts identify the source revision, exact command, input/output
 artifact hashes, obligation IDs, acceptance dimensions, result and any

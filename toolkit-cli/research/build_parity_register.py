@@ -149,6 +149,17 @@ def build() -> tuple[dict, dict]:
     ledger_ids = {feature["id"] for feature in ledger["features"]}
     sys.path.insert(0, str(ROOT / "src"))
     from cbus_toolkit.device_dialogs import list_dialogs
+    from cbus_toolkit.parity import WORK_ITEM_IDS
+
+    roadmap_work_item_ids = {
+        work_item_id
+        for package_work_items in work_items.values()
+        for work_item_id in package_work_items
+    }
+    if roadmap_work_item_ids != WORK_ITEM_IDS:
+        raise ValueError(
+            "Roadmap work items differ from the authoritative parity roster"
+        )
 
     dialog_ledger = {
         row["dialog_id"]: row["ledger_id"] for row in list_dialogs()
@@ -390,6 +401,7 @@ def build() -> tuple[dict, dict]:
             "roadmap": digest(ROADMAP_PATH),
         },
         "evidence_bundle_sha256": sha256(evidence_raw).hexdigest(),
+        "work_item_ids": sorted(WORK_ITEM_IDS),
         "source_inventory": source_inventory,
         "scope_items": scope_items,
         "obligations": obligations,

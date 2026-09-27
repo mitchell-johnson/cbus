@@ -14,6 +14,98 @@ from research import acceptance
 
 
 class AcceptanceRunnerTests(unittest.TestCase):
+    @staticmethod
+    def successful_outcome(test_file='tests/test_fixture.py'):
+        return acceptance.PytestOutcome(
+            exit_code=0,
+            tests_run=1,
+            collected_by_file={test_file: 1},
+        )
+
+    def test_pytest_function_is_collected_and_executed(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            tests = root / 'tests'
+            tests.mkdir()
+            marker = root / 'executed'
+            module = tests / 'test_pytest_function_exec.py'
+            module.write_text(
+                'from pathlib import Path\n\n'
+                'def test_function_executes():\n'
+                f'    Path({str(marker)!r}).write_text("executed\\n")\n'
+            )
+            with patch.object(acceptance, 'ROOT', root):
+                outcome = acceptance.run_pytest([module], verbose=False)
+            self.assertTrue(outcome.was_successful())
+            self.assertEqual(outcome.tests_run, 1)
+            self.assertEqual(outcome.collected_by_file,
+                             {'tests/test_pytest_function_exec.py': 1})
+            self.assertEqual(outcome.uncollected_test_files, [])
+            self.assertEqual(marker.read_text(), 'executed\n')
+
+    def test_selected_nonempty_zero_collection_module_fails_closed(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            tests = root / 'tests'
+            tests.mkdir()
+            passing = tests / 'test_has_function.py'
+            passing.write_text('def test_passes():\n    assert True\n')
+            uncollected = tests / 'test_has_no_tests.py'
+            uncollected.write_text('SENTINEL = "nonempty module"\n')
+            with patch.object(acceptance, 'ROOT', root):
+                outcome = acceptance.run_pytest([passing, uncollected], verbose=False)
+            self.assertEqual(outcome.exit_code, 0)
+            self.assertEqual(outcome.tests_run, 1)
+            self.assertFalse(outcome.was_successful())
+            self.assertEqual(outcome.collected_by_file, {
+                'tests/test_has_function.py': 1,
+                'tests/test_has_no_tests.py': 0,
+            })
+            self.assertEqual(outcome.uncollected_test_files,
+                             ['tests/test_has_no_tests.py'])
+            self.assertEqual(outcome.errors, [{
+                'test': 'tests/test_has_no_tests.py',
+                'traceback': 'Selected nonempty test module collected zero tests',
+            }])
+
+    def test_acceptance_receipt_rejects_selected_zero_collection_module(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            tests = root / 'tests'
+            tests.mkdir()
+            (tests / 'test_fixture_pass.py').write_text(
+                'def test_pytest_function():\n    assert True\n'
+            )
+            (tests / 'test_fixture_empty.py').write_text(
+                'SENTINEL = "selected but has no tests"\n'
+            )
+            package = root / 'src/cbus_toolkit'
+            package.mkdir(parents=True)
+            (package / 'capabilities.json').write_text(
+                '{"census_complete":false,"features":[]}'
+            )
+            output = root / 'report.json'
+            arguments = ['acceptance', '--pattern', 'test_fixture_*.py',
+                         '--output', str(output)]
+            with patch.object(acceptance, 'ROOT', root), \
+                 patch.object(acceptance.resources, 'files', return_value=package), \
+                 patch.object(sys, 'path', list(sys.path)), \
+                 patch.object(sys, 'argv', arguments), \
+                 redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+                self.assertEqual(acceptance.main(), 1)
+            report = json.loads(output.read_text())
+            self.assertFalse(report['passed'])
+            self.assertFalse(report['test_success'])
+            self.assertEqual(report['tests_run'], 1)
+            self.assertEqual(report['errors'], 1)
+            self.assertEqual(report['pytest_exit_code'], 0)
+            self.assertEqual(report['uncollected_test_files'],
+                             ['tests/test_fixture_empty.py'])
+            self.assertEqual(report['collected_tests_by_file'], {
+                'tests/test_fixture_empty.py': 0,
+                'tests/test_fixture_pass.py': 1,
+            })
+
     def test_mock_binary_observation_requires_selected_test_and_explicit_executable(self):
         selected = [Path('tests/test_rust_cgate_interop.py')]
         with tempfile.TemporaryDirectory() as folder, patch.dict(os.environ, {}, clear=True):
@@ -46,10 +138,13 @@ class AcceptanceRunnerTests(unittest.TestCase):
             binary.write_bytes(b'before')
             binary.chmod(0o700)
             output = root / 'report.json'
-            suite = unittest.TestSuite([unittest.FunctionTestCase(lambda: binary.write_bytes(b'after'))])
+            def mutate_binary(*_args, **_kwargs):
+                binary.write_bytes(b'after')
+                return self.successful_outcome('tests/test_rust_cgate_interop.py')
+
             with patch.object(acceptance, 'ROOT', root), \
                  patch.object(acceptance.resources, 'files', return_value=package), \
-                 patch.object(unittest.defaultTestLoader, 'discover', return_value=suite), \
+                 patch.object(acceptance, 'run_pytest', side_effect=mutate_binary), \
                  patch.object(sys, 'path', list(sys.path)), \
                  patch.dict(os.environ, {'CBUS_CGATE_MOCK_BIN': str(binary)}), \
                  patch.object(sys, 'argv', ['acceptance', '--require-no-skips', '--output', str(output)]), \
@@ -82,10 +177,10 @@ class AcceptanceRunnerTests(unittest.TestCase):
                         {'id': 'toolkit-differential-acceptance', 'status': acceptance_status},
                         {'id': 'unit-hardware-acceptance', 'status': acceptance_status}]}
                     (package / 'capabilities.json').write_text(json.dumps(ledger))
-                    suite = unittest.TestSuite([unittest.FunctionTestCase(lambda: None)])
                     with patch.object(acceptance, 'ROOT', root), \
                          patch.object(acceptance.resources, 'files', return_value=package), \
-                         patch.object(unittest.defaultTestLoader, 'discover', return_value=suite), \
+                         patch.object(acceptance, 'run_pytest',
+                                      return_value=self.successful_outcome()), \
                          patch.object(sys, 'path', list(sys.path)), \
                          patch.object(sys, 'argv', ['acceptance', '--require-no-skips', '--output', str(output)]), \
                          redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
@@ -99,6 +194,10 @@ class AcceptanceRunnerTests(unittest.TestCase):
                     )
                     self.assertTrue(report['passed'])
                     self.assertEqual(report['tests_run'], 1)
+                    self.assertEqual(report['pytest_exit_code'], 0)
+                    self.assertEqual(report['collected_tests_by_file'],
+                                     {'tests/test_fixture.py': 1})
+                    self.assertEqual(report['uncollected_test_files'], [])
                     self.assertEqual(report['skipped'], [])
                     self.assertEqual(report['inputs_changed_during_run'], [])
 

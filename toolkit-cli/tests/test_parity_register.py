@@ -23,6 +23,7 @@ def fixture_documents() -> tuple[dict, dict, dict, bytes]:
     evidence_record = {
         "id": "evidence:one",
         "obligation_ids": ["obligation:one"],
+        "scope_disposition_receipts": [],
         "dimensions": list(parity.REQUIRED_DIMENSIONS),
         "result": "passed",
         "test_ids": ["tests/test_one.py::test_one"],
@@ -75,6 +76,7 @@ def fixture_documents() -> tuple[dict, dict, dict, bytes]:
         "census_complete": True,
         "source_digests": {"fixture": sha256(b"fixture").hexdigest()},
         "evidence_bundle_sha256": sha256(evidence_raw).hexdigest(),
+        "work_item_ids": sorted(parity.WORK_ITEM_IDS),
         "source_inventory": [
             {"id": "fixture", "scope_kind": "fixture", "count": 1, "resolved": True}
         ],
@@ -162,6 +164,46 @@ class ParityRegisterTests(unittest.TestCase):
                 ledger_raw=changed,
             )
 
+    def test_evidence_bytes_are_strictly_parsed_and_content_bound(self):
+        register, evidence, ledger, evidence_raw = fixture_documents()
+        self.assertTrue(
+            parity.evaluate(
+                register, evidence, ledger, evidence_raw=evidence_raw
+            )["complete"]
+        )
+
+        substituted_evidence = json.loads(json.dumps(evidence))
+        substituted_evidence["ignored_but_unbound"] = True
+        with self.assertRaisesRegex(
+            ValueError, "Parsed parity evidence differs from supplied evidence"
+        ):
+            parity.evaluate(
+                register,
+                substituted_evidence,
+                ledger,
+                evidence_raw=evidence_raw,
+            )
+
+        duplicate_raw = evidence_raw.replace(
+            b'"schema_version": 1,',
+            b'"schema_version": 1,\n  "schema_version": 1,',
+            1,
+        )
+        register["evidence_bundle_sha256"] = sha256(duplicate_raw).hexdigest()
+        with self.assertRaisesRegex(ValueError, "Duplicate JSON key"):
+            parity.evaluate(
+                register, evidence, ledger, evidence_raw=duplicate_raw
+            )
+
+        nonfinite_raw = (
+            evidence_raw.rstrip()[:-1] + b',\n  "ignored": NaN\n}\n'
+        )
+        register["evidence_bundle_sha256"] = sha256(nonfinite_raw).hexdigest()
+        with self.assertRaisesRegex(ValueError, "Non-finite JSON number"):
+            parity.evaluate(
+                register, evidence, ledger, evidence_raw=nonfinite_raw
+            )
+
     def test_complete_fixture_is_derived_from_obligations_and_evidence(self):
         register, evidence, ledger, evidence_raw = fixture_documents()
         with self.subTest("without source artifact verification"):
@@ -218,6 +260,132 @@ class ParityRegisterTests(unittest.TestCase):
                         ledger,
                         evidence_raw=evidence_raw,
                     )
+
+    def test_work_items_must_belong_to_the_authoritative_roster(self):
+        register, evidence, ledger, evidence_raw = fixture_documents()
+        register["obligations"][0]["work_item_ids"] = ["P0.99"]
+        with self.assertRaisesRegex(ValueError, "names unknown work items"):
+            parity.evaluate(
+                register, evidence, ledger, evidence_raw=evidence_raw
+            )
+
+        register, evidence, ledger, evidence_raw = fixture_documents()
+        register["work_item_ids"].append("P0.99")
+        with self.assertRaisesRegex(ValueError, "authoritative roster"):
+            parity.evaluate(
+                register, evidence, ledger, evidence_raw=evidence_raw
+            )
+
+    def test_nonfunctional_scope_requires_an_exact_passed_disposition_receipt(self):
+        def exclusion_fixture() -> tuple[dict, dict, dict, bytes]:
+            register, evidence, ledger, _ = fixture_documents()
+            scope_item = register["scope_items"][0]
+            scope_item["disposition"] = "nonfunctional_with_evidence"
+            scope_item["obligation_ids"] = []
+            scope_item["evidence_ids"] = ["evidence:one"]
+            evidence_record = evidence["records"][0]
+            evidence_record["scope_disposition_receipts"] = [
+                {
+                    "scope_item_id": "scope:one",
+                    "decision": parity.SCOPE_EXCLUSION_DECISION,
+                }
+            ]
+            evidence_record["record_sha256"] = record_digest(evidence_record)
+            raw = (json.dumps(evidence, indent=2) + "\n").encode()
+            register["evidence_bundle_sha256"] = sha256(raw).hexdigest()
+            return register, evidence, ledger, raw
+
+        register, evidence, ledger, evidence_raw = exclusion_fixture()
+        self.assertTrue(
+            parity.evaluate(
+                register, evidence, ledger, evidence_raw=evidence_raw
+            )["complete"]
+        )
+
+        register, evidence, ledger, _ = exclusion_fixture()
+        evidence["records"][0]["scope_disposition_receipts"] = []
+        evidence["records"][0]["record_sha256"] = record_digest(
+            evidence["records"][0]
+        )
+        evidence_raw = (json.dumps(evidence, indent=2) + "\n").encode()
+        register["evidence_bundle_sha256"] = sha256(evidence_raw).hexdigest()
+        with self.assertRaisesRegex(ValueError, "lacks matching passed evidence"):
+            parity.evaluate(
+                register, evidence, ledger, evidence_raw=evidence_raw
+            )
+
+        register, evidence, ledger, _ = exclusion_fixture()
+        evidence["records"][0]["scope_disposition_receipts"][0][
+            "scope_item_id"
+        ] = "scope:unrelated"
+        evidence["records"][0]["record_sha256"] = record_digest(
+            evidence["records"][0]
+        )
+        evidence_raw = (json.dumps(evidence, indent=2) + "\n").encode()
+        register["evidence_bundle_sha256"] = sha256(evidence_raw).hexdigest()
+        with self.assertRaisesRegex(ValueError, "lacks matching passed evidence"):
+            parity.evaluate(
+                register, evidence, ledger, evidence_raw=evidence_raw
+            )
+
+        register, evidence, ledger, _ = exclusion_fixture()
+        evidence["records"][0]["result"] = "failed"
+        evidence["records"][0]["exit_code"] = 1
+        evidence["records"][0]["record_sha256"] = record_digest(
+            evidence["records"][0]
+        )
+        register["obligations"][0]["acceptance"] = {
+            dimension: "blocked" for dimension in parity.REQUIRED_DIMENSIONS
+        }
+        evidence_raw = (json.dumps(evidence, indent=2) + "\n").encode()
+        register["evidence_bundle_sha256"] = sha256(evidence_raw).hexdigest()
+        with self.assertRaisesRegex(ValueError, "lacks matching passed evidence"):
+            parity.evaluate(
+                register, evidence, ledger, evidence_raw=evidence_raw
+            )
+
+    def test_scope_disposition_receipts_are_strict_and_reciprocal(self):
+        register, evidence, ledger, _ = fixture_documents()
+        evidence_record = evidence["records"][0]
+        evidence_record["scope_disposition_receipts"] = [
+            {
+                "scope_item_id": "scope:one",
+                "decision": "an_unrecognized_decision",
+            }
+        ]
+        evidence_record["record_sha256"] = record_digest(evidence_record)
+        evidence_raw = (json.dumps(evidence, indent=2) + "\n").encode()
+        register["evidence_bundle_sha256"] = sha256(evidence_raw).hexdigest()
+        with self.assertRaisesRegex(ValueError, "unknown exclusion decision"):
+            parity.evaluate(
+                register, evidence, ledger, evidence_raw=evidence_raw
+            )
+
+        register, evidence, ledger, _ = fixture_documents()
+        evidence_record = evidence["records"][0]
+        receipt = {
+            "scope_item_id": "scope:one",
+            "decision": parity.SCOPE_EXCLUSION_DECISION,
+        }
+        evidence_record["scope_disposition_receipts"] = [receipt, dict(receipt)]
+        evidence_record["record_sha256"] = record_digest(evidence_record)
+        evidence_raw = (json.dumps(evidence, indent=2) + "\n").encode()
+        register["evidence_bundle_sha256"] = sha256(evidence_raw).hexdigest()
+        with self.assertRaisesRegex(ValueError, "duplicate scope disposition"):
+            parity.evaluate(
+                register, evidence, ledger, evidence_raw=evidence_raw
+            )
+
+        register, evidence, ledger, _ = fixture_documents()
+        evidence_record = evidence["records"][0]
+        evidence_record["scope_disposition_receipts"] = [receipt]
+        evidence_record["record_sha256"] = record_digest(evidence_record)
+        evidence_raw = (json.dumps(evidence, indent=2) + "\n").encode()
+        register["evidence_bundle_sha256"] = sha256(evidence_raw).hexdigest()
+        with self.assertRaisesRegex(ValueError, "does not match.*disposition"):
+            parity.evaluate(
+                register, evidence, ledger, evidence_raw=evidence_raw
+            )
 
     def test_altered_bundle_record_and_artifact_are_rejected(self):
         register, evidence, ledger, evidence_raw = fixture_documents()

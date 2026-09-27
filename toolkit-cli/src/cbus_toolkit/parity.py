@@ -40,6 +40,70 @@ SCOPE_DISPOSITIONS = {
     "functional_obligation",
     "nonfunctional_with_evidence",
 }
+SCOPE_EXCLUSION_DECISION = "exclude_nonfunctional"
+WORK_ITEM_IDS = frozenset(
+    {
+        "P0.01",
+        "P0.02",
+        "P0.03",
+        "P0.04",
+        "P0.05",
+        "P1.01",
+        "P1.02",
+        "P1.03",
+        "P1.04",
+        "P1.05",
+        "P2.01",
+        "P2.02",
+        "P2.03",
+        "P2.04",
+        "P2.05",
+        "P3.01",
+        "P3.02",
+        "P3.03",
+        "P3.04",
+        "P3.05",
+        "P4.01",
+        "P4.02",
+        "P4.03",
+        "P4.04",
+        "P4.05",
+        "P5.01",
+        "P5.02",
+        "P5.03",
+        "P5.04",
+        "P5.05",
+        "P5.06",
+        "P5.07",
+        "P6.01",
+        "P6.02",
+        "P6.03",
+        "P6.04",
+        "P6.05",
+        "P6.06",
+        "P7.01",
+        "P7.02",
+        "P7.03",
+        "P7.04",
+        "P8.01",
+        "P8.02",
+        "P8.03",
+        "P8.04",
+        "P8.05",
+        "P9.01",
+        "P9.02",
+        "P9.03",
+        "P9.04",
+        "P10.01",
+        "P10.02",
+        "P10.03",
+        "P10.04",
+        "P11.01",
+        "P11.02",
+        "P11.03",
+        "P11.04",
+    }
+)
 REQUIRED_DIMENSIONS = (
     "nominal",
     "error",
@@ -132,7 +196,40 @@ def validate_evidence_bundle(
             raise ValueError(f"Duplicate evidence id: {evidence_id}")
         if record.get("result") not in EVIDENCE_RESULTS:
             raise ValueError(f"{evidence_id} has an unknown result")
-        _strings(record.get("obligation_ids"), field=f"{evidence_id}.obligation_ids", nonempty=True)
+        obligation_ids = _strings(
+            record.get("obligation_ids"), field=f"{evidence_id}.obligation_ids"
+        )
+        disposition_receipts = record.get("scope_disposition_receipts")
+        if not isinstance(disposition_receipts, list):
+            raise ValueError(
+                f"{evidence_id}.scope_disposition_receipts must be an array"
+            )
+        receipt_keys: set[tuple[str, str]] = set()
+        for receipt_index, receipt in enumerate(disposition_receipts):
+            receipt_context = (
+                f"{evidence_id}.scope_disposition_receipts[{receipt_index}]"
+            )
+            if not isinstance(receipt, dict) or set(receipt) != {
+                "scope_item_id",
+                "decision",
+            }:
+                raise ValueError(
+                    f"{receipt_context} must contain exactly scope_item_id and decision"
+                )
+            scope_item_id = receipt.get("scope_item_id")
+            decision = receipt.get("decision")
+            if not isinstance(scope_item_id, str) or not scope_item_id:
+                raise ValueError(f"{receipt_context} requires a nonempty scope_item_id")
+            if decision != SCOPE_EXCLUSION_DECISION:
+                raise ValueError(f"{receipt_context} has an unknown exclusion decision")
+            receipt_key = (scope_item_id, decision)
+            if receipt_key in receipt_keys:
+                raise ValueError(f"{evidence_id} has duplicate scope disposition receipts")
+            receipt_keys.add(receipt_key)
+        if not obligation_ids and not disposition_receipts:
+            raise ValueError(
+                f"{evidence_id} must bind an obligation or scope disposition"
+            )
         dimensions = _strings(
             record.get("dimensions"), field=f"{evidence_id}.dimensions", nonempty=True
         )
@@ -266,8 +363,14 @@ def validate_register(
     expected_bundle_digest = register.get("evidence_bundle_sha256")
     if not isinstance(expected_bundle_digest, str) or not SHA256_RE.fullmatch(expected_bundle_digest):
         raise ValueError("Parity register requires evidence_bundle_sha256")
-    if evidence_raw is not None and sha256(evidence_raw).hexdigest() != expected_bundle_digest:
-        raise ValueError("Parity evidence bundle digest changed")
+    if evidence_raw is not None:
+        parsed_evidence = parse_json_document(
+            evidence_raw, context="parity evidence bundle"
+        )
+        if parsed_evidence != evidence:
+            raise ValueError("Parsed parity evidence differs from supplied evidence")
+        if sha256(evidence_raw).hexdigest() != expected_bundle_digest:
+            raise ValueError("Parity evidence bundle digest changed")
     evidence_by_id = validate_evidence_bundle(evidence, artifact_root=artifact_root)
     if evidence["target"] != register["target"]:
         raise ValueError("Parity evidence target does not match register target")
@@ -277,6 +380,18 @@ def validate_register(
         raise ValueError("Feature ledger target does not match parity register target")
     if not isinstance(features, list):
         raise ValueError("Feature ledger requires a features array")
+    work_item_roster = _strings(
+        register.get("work_item_ids"),
+        field="Parity register work_item_ids",
+        nonempty=True,
+    )
+    if set(work_item_roster) != WORK_ITEM_IDS:
+        missing = sorted(WORK_ITEM_IDS - set(work_item_roster))
+        unknown = sorted(set(work_item_roster) - WORK_ITEM_IDS)
+        raise ValueError(
+            "Parity register work_item_ids differs from the authoritative roster "
+            f"(missing={missing}, unknown={unknown})"
+        )
     ledger_by_id: dict[str, dict[str, Any]] = {}
     for feature in features:
         if not isinstance(feature, dict) or not isinstance(feature.get("id"), str):
@@ -313,6 +428,12 @@ def validate_register(
         )
         if any(not re.fullmatch(r"P(?:1[01]|[0-9])\.\d{2}", item) for item in work_items):
             raise ValueError(f"{obligation_id} has an invalid work item id")
+        unknown_work_items = set(work_items) - set(work_item_roster)
+        if unknown_work_items:
+            raise ValueError(
+                f"{obligation_id} names unknown work items: "
+                f"{sorted(unknown_work_items)}"
+            )
         if obligation.get("definition_status") not in DEFINITION_STATES:
             raise ValueError(f"{obligation_id} has an unknown definition_status")
         if obligation.get("implementation_status") not in IMPLEMENTATION_STATES:
@@ -365,7 +486,7 @@ def validate_register(
     scope_items = register.get("scope_items")
     if not isinstance(scope_items, list):
         raise ValueError("Parity register requires a scope_items array")
-    scope_ids: set[str] = set()
+    scope_by_id: dict[str, dict[str, Any]] = {}
     scope_counts: Counter[str] = Counter()
     unresolved_scope = 0
     for index, item in enumerate(scope_items):
@@ -375,9 +496,9 @@ def validate_register(
         kind = item.get("kind")
         if not isinstance(item_id, str) or not item_id:
             raise ValueError(f"scope item {index} requires a nonempty id")
-        if item_id in scope_ids:
+        if item_id in scope_by_id:
             raise ValueError(f"Duplicate scope item id: {item_id}")
-        scope_ids.add(item_id)
+        scope_by_id[item_id] = item
         if not isinstance(kind, str) or not kind:
             raise ValueError(f"{item_id} requires a kind")
         if not isinstance(item.get("source_id"), str) or not item["source_id"]:
@@ -397,10 +518,42 @@ def validate_register(
         )
         if set(item_evidence) - set(evidence_by_id):
             raise ValueError(f"{item_id} names unknown evidence")
-        if item["disposition"] == "nonfunctional_with_evidence" and not item_evidence:
-            raise ValueError(f"{item_id} lacks evidence for its nonfunctional disposition")
+        if item["disposition"] == "nonfunctional_with_evidence":
+            has_passed_exclusion_receipt = any(
+                evidence_by_id[evidence_id]["result"] == "passed"
+                and {
+                    "scope_item_id": item_id,
+                    "decision": SCOPE_EXCLUSION_DECISION,
+                }
+                in evidence_by_id[evidence_id]["scope_disposition_receipts"]
+                for evidence_id in item_evidence
+            )
+            if not has_passed_exclusion_receipt:
+                raise ValueError(
+                    f"{item_id} lacks matching passed evidence for its "
+                    "nonfunctional disposition"
+                )
         if item["disposition"] in {"pending_analysis", "provisional_obligation"}:
             unresolved_scope += 1
+
+    for evidence_id, record in evidence_by_id.items():
+        for receipt in record["scope_disposition_receipts"]:
+            scope_item_id = receipt["scope_item_id"]
+            scope_item = scope_by_id.get(scope_item_id)
+            if scope_item is None:
+                raise ValueError(
+                    f"{evidence_id} names unknown scope item: {scope_item_id}"
+                )
+            if scope_item["disposition"] != "nonfunctional_with_evidence":
+                raise ValueError(
+                    f"{evidence_id} exclusion receipt does not match "
+                    f"{scope_item_id}'s disposition"
+                )
+            if evidence_id not in scope_item.get("evidence_ids", []):
+                raise ValueError(
+                    f"{evidence_id} exclusion receipt is not referenced by "
+                    f"{scope_item_id}"
+                )
 
     source_inventory = register.get("source_inventory")
     if not isinstance(source_inventory, list) or not source_inventory:

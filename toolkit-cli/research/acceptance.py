@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import argparse
+from contextlib import redirect_stdout
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 import hashlib
 from importlib import resources
@@ -14,10 +16,168 @@ import ssl
 import stat
 import sys
 import time
-import unittest
+
+import pytest
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def _relative_test_path(path: Path) -> str:
+    """Return a stable repository-relative test path for retained evidence."""
+    try:
+        return str(path.resolve().relative_to(ROOT.resolve()))
+    except ValueError:
+        return path.name
+
+
+def _sanitized_nodeid(nodeid: str) -> str:
+    """Keep pytest identities useful without retaining an absolute checkout."""
+    root = str(ROOT.resolve())
+    return nodeid.replace(root + os.sep, "").replace(root + "/", "")
+
+
+def _sanitized_detail(value: object) -> str:
+    """Remove the checkout and home paths from a retained pytest diagnostic."""
+    detail = str(value)
+    replacements = ((str(ROOT.resolve()), "<repository>"),
+                    (str(Path.home().resolve()), "<home>"))
+    for source, replacement in replacements:
+        if source:
+            detail = detail.replace(source, replacement)
+    return detail
+
+
+@dataclass
+class PytestOutcome:
+    """Structured pytest result used by the JSON acceptance receipt."""
+
+    exit_code: int
+    tests_run: int
+    failures: list[dict[str, str]] = field(default_factory=list)
+    errors: list[dict[str, str]] = field(default_factory=list)
+    skipped: list[dict[str, str]] = field(default_factory=list)
+    expected_failures: list[str] = field(default_factory=list)
+    unexpected_successes: list[str] = field(default_factory=list)
+    collected_by_file: dict[str, int] = field(default_factory=dict)
+    uncollected_test_files: list[str] = field(default_factory=list)
+
+    def was_successful(self) -> bool:
+        return (self.exit_code == int(pytest.ExitCode.OK) and not self.failures
+                and not self.errors and not self.unexpected_successes)
+
+
+class _AcceptancePlugin:
+    """Collect stable pytest outcomes without depending on terminal text."""
+
+    def __init__(self, selected: list[Path]):
+        self.selected = {path.resolve(): _relative_test_path(path) for path in selected}
+        self.collected_by_path = {path: 0 for path in self.selected}
+        self.nonempty = {path.resolve() for path in selected if path.stat().st_size}
+        self.nodeids: list[str] = []
+        self.failures: list[dict[str, str]] = []
+        self.errors: list[dict[str, str]] = []
+        self.skipped: list[dict[str, str]] = []
+        self.expected_failures: list[str] = []
+        self.unexpected_successes: list[str] = []
+        self._skipped_nodeids: set[str] = set()
+        self._expected_failure_nodeids: set[str] = set()
+        self._unexpected_success_nodeids: set[str] = set()
+
+    def pytest_collection_modifyitems(self, items):
+        for item in items:
+            nodeid = _sanitized_nodeid(item.nodeid)
+            self.nodeids.append(nodeid)
+            path = Path(str(item.path)).resolve()
+            if path in self.collected_by_path:
+                self.collected_by_path[path] += 1
+
+    def pytest_collectreport(self, report):
+        if report.failed:
+            self.errors.append({
+                "test": _sanitized_nodeid(report.nodeid),
+                "traceback": _sanitized_detail(report.longrepr),
+            })
+
+    def pytest_internalerror(self, excrepr):
+        self.errors.append({
+            "test": "pytest-internal-error",
+            "traceback": _sanitized_detail(excrepr),
+        })
+
+    def pytest_runtest_logreport(self, report):
+        nodeid = _sanitized_nodeid(report.nodeid)
+        was_xfail = getattr(report, "wasxfail", None)
+        if was_xfail is not None and report.skipped:
+            if nodeid not in self._expected_failure_nodeids:
+                self.expected_failures.append(nodeid)
+                self._expected_failure_nodeids.add(nodeid)
+            return
+        if was_xfail is not None and report.passed:
+            if nodeid not in self._unexpected_success_nodeids:
+                self.unexpected_successes.append(nodeid)
+                self._unexpected_success_nodeids.add(nodeid)
+            return
+        if report.skipped:
+            if nodeid not in self._skipped_nodeids:
+                reason = report.longrepr[-1] if isinstance(report.longrepr, tuple) else report.longrepr
+                self.skipped.append({"test": nodeid, "reason": _sanitized_detail(reason)})
+                self._skipped_nodeids.add(nodeid)
+            return
+        if not report.failed:
+            return
+        target = self.failures if report.when == "call" else self.errors
+        target.append({"test": nodeid, "traceback": _sanitized_detail(report.longrepr)})
+
+    def outcome(self, selected: list[Path], exit_code: int) -> PytestOutcome:
+        uncollected = []
+        for path in selected:
+            resolved = path.resolve()
+            if resolved in self.nonempty and self.collected_by_path.get(resolved, 0) == 0:
+                relative = self.selected[resolved]
+                uncollected.append(relative)
+                self.errors.append({
+                    "test": relative,
+                    "traceback": "Selected nonempty test module collected zero tests",
+                })
+        return PytestOutcome(
+            exit_code=exit_code,
+            tests_run=len(self.nodeids),
+            failures=self.failures,
+            errors=self.errors,
+            skipped=self.skipped,
+            expected_failures=self.expected_failures,
+            unexpected_successes=self.unexpected_successes,
+            collected_by_file={self.selected[path]: self.collected_by_path[path]
+                               for path in sorted(self.selected, key=lambda item: self.selected[item])},
+            uncollected_test_files=sorted(uncollected),
+        )
+
+
+def run_pytest(selected: list[Path], *, verbose: bool) -> PytestOutcome:
+    """Run exactly the selected modules and return a structured result.
+
+    Pytest is invoked in-process so imported package module hashes still describe
+    the code exercised by this acceptance process. Third-party plugin autoload is
+    disabled to keep the selected runner independent of the host environment.
+    """
+    plugin = _AcceptancePlugin(selected)
+    arguments = [str(path.resolve()) for path in selected]
+    arguments.extend(("-p", "no:cacheprovider", "--color=no", "--tb=short",
+                      "-vv" if verbose else "-q"))
+    previous_autoload = os.environ.get("PYTEST_DISABLE_PLUGIN_AUTOLOAD")
+    os.environ["PYTEST_DISABLE_PLUGIN_AUTOLOAD"] = "1"
+    try:
+        # The historical runner wrote test progress to stderr and reserved stdout
+        # for its machine-readable one-line summary.
+        with redirect_stdout(sys.stderr):
+            exit_code = int(pytest.main(arguments, plugins=[plugin]))
+    finally:
+        if previous_autoload is None:
+            os.environ.pop("PYTEST_DISABLE_PLUGIN_AUTOLOAD", None)
+        else:
+            os.environ["PYTEST_DISABLE_PLUGIN_AUTOLOAD"] = previous_autoload
+    return plugin.outcome(selected, exit_code)
 
 
 def hashes(paths):
@@ -84,7 +244,7 @@ def main():
     import cbus_toolkit
     started = datetime.now(timezone.utc).isoformat()
     start = time.monotonic()
-    selected = list((ROOT / "tests").glob(args.pattern))
+    selected = sorted(path for path in (ROOT / "tests").glob(args.pattern) if path.is_file())
     if not selected:
         parser.error("No test files match this pattern")
     inputs = input_files(args.pattern)
@@ -93,8 +253,7 @@ def main():
     # Support both discovered test modules and explicit tests.* helper imports
     # when this script runs from an isolated installed-wheel environment.
     sys.path.insert(0, str(ROOT))
-    suite = unittest.defaultTestLoader.discover(str(ROOT / "tests"), pattern=args.pattern)
-    result = unittest.TextTestRunner(stream=sys.stderr, verbosity=2 if args.verbose else 1).run(suite)
+    result = run_pytest(selected, verbose=args.verbose)
     binaries_after = test_binary_inputs(selected)
     binary_errors = sorted(name for name in binaries_before.keys() | binaries_after.keys()
                            if binaries_before.get(name) != binaries_after.get(name)
@@ -137,11 +296,16 @@ def main():
         "duration_seconds": round(time.monotonic() - start, 3),
         "python": platform.python_version(), "openssl": ssl.OPENSSL_VERSION,
         "package_version": cbus_toolkit.__version__, "package_location": cbus_toolkit.__file__,
-        "tests_run": result.testsRun, "failures": len(result.failures), "errors": len(result.errors),
-        "skipped": [{"test": test.id(), "reason": reason} for test, reason in result.skipped],
-        "expected_failures": len(result.expectedFailures), "unexpected_successes": len(result.unexpectedSuccesses),
-        "test_success": result.wasSuccessful(), "require_no_skips": args.require_no_skips,
-        "passed": result.wasSuccessful() and not result.expectedFailures and not changed and not added and not removed
+        "tests_run": result.tests_run, "failures": len(result.failures), "errors": len(result.errors),
+        "skipped": result.skipped,
+        "expected_failures": len(result.expected_failures),
+        "unexpected_successes": len(result.unexpected_successes),
+        "pytest_exit_code": result.exit_code,
+        "collected_tests_by_file": result.collected_by_file,
+        "uncollected_test_files": result.uncollected_test_files,
+        "test_success": result.was_successful(), "require_no_skips": args.require_no_skips,
+        "passed": result.was_successful() and not result.expected_failures
+                  and not result.unexpected_successes and not changed and not added and not removed
                   and not binary_errors
                   and (not args.require_no_skips or not result.skipped),
         "toolkit_parity_complete": complete,
@@ -171,7 +335,7 @@ def main():
         "imported_package_module_sha256": {name: hashlib.sha256(Path(module.__file__).read_bytes()).hexdigest()
             for name, module in sorted(sys.modules.items()) if name.startswith("cbus_toolkit")
             and getattr(module, "__file__", "").endswith(".py") and Path(module.__file__).is_file()},
-        "failed_tests": [{"test": test.id(), "traceback": detail} for test, detail in result.failures + result.errors],
+        "failed_tests": result.failures + result.errors,
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2) + "\n")
