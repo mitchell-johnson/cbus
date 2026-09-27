@@ -12,13 +12,13 @@
     "toolkit_map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
     "feature_ledger": "79750e146f08911f5350e2a655f86ff0472a73b30e89cf969923ab737ceb85af",
     "cgate_capability_matrix": "f87c6e3575fa34f265f2aec2178c899596a653918a98a7a59f5077e038e11886",
-    "cgate_contract_inventory": "ee7ca8ef18aba43b11395666d44c2a981979853db97fd400ec1ad6e890cd5f22",
+    "cgate_contract_inventory": "d256bb1f96358138a0e8762f5bd8ead489e28bbdb9f4e3cc7b63100374c4da62",
     "cgate_session_native_acceptance": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f",
     "functional_obligation_pilot": "36a05e9c7573d099970cd797bbba7c010da09c7e192f57d366956d7454ca0b19",
-    "cgate_session_differential_cmqttd": "40208930c4f8f3bdc3e5012102e7792f4a7a1453f7869e648d71f797c70348bb",
+    "cgate_session_differential_cmqttd": "bbcd48ad67bd6221a3cf8fc2dec11cdc21761ae65d89378882f675b73b9c3076",
     "roadmap": "e216be63829d38e460e81fdb1643ef12db8a7b3188c20f20564ecbd08804a97c"
   },
-  "evidence_bundle_sha256": "247568d31628ce536ab8a56b3798cfcc89773236a03b56339b9b2a44ae332708",
+  "evidence_bundle_sha256": "9c1a0c81b63331b42d90887121c34169cc90cff835422f859fcd753e1967f7ab",
   "work_item_ids": [
     "P0.01",
     "P0.02",
