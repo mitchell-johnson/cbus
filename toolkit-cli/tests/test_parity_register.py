@@ -44,6 +44,11 @@ def fixture_documents() -> tuple[dict, dict, dict, bytes]:
         "exit_code": 0,
         "artifacts": [
             {
+                "role": "input",
+                "path": "oracle.txt",
+                "sha256": sha256(b"fixture original").hexdigest(),
+            },
+            {
                 "role": "report",
                 "path": "result.txt",
                 "sha256": sha256(artifact).hexdigest(),
@@ -183,6 +188,20 @@ class ParityRegisterTests(unittest.TestCase):
             ],
             {"unresolved": 442},
         )
+
+    def test_packaged_evidence_artifacts_match_source_checkout(self):
+        register, evidence, ledger, evidence_raw, contracts, contract_raw, ledger_raw = packaged_documents()
+        report = parity.evaluate(
+            register,
+            evidence,
+            ledger,
+            evidence_raw=evidence_raw,
+            ledger_raw=ledger_raw,
+            cgate_contract_inventory=contracts,
+            cgate_contract_raw=contract_raw,
+            artifact_root=ROOT,
+        )
+        self.assertEqual(report["evidence_records"], len(evidence["records"]))
 
     def test_session_function_pilot_has_only_scoped_differential_evidence(self):
         register, evidence, _, _, _, _, _ = packaged_documents()
@@ -526,6 +545,7 @@ class ParityRegisterTests(unittest.TestCase):
             import tempfile
 
             with tempfile.TemporaryDirectory() as folder:
+                Path(folder, "oracle.txt").write_bytes(b"fixture original")
                 Path(folder, "result.txt").write_bytes(b"accepted result\n")
                 report = parity.evaluate(
                     register,
@@ -713,6 +733,7 @@ class ParityRegisterTests(unittest.TestCase):
         import tempfile
 
         with tempfile.TemporaryDirectory() as folder:
+            Path(folder, "oracle.txt").write_bytes(b"fixture original")
             Path(folder, "result.txt").write_bytes(b"different\n")
             with self.assertRaisesRegex(ValueError, "artifact digest changed"):
                 parity.evaluate(
@@ -722,6 +743,52 @@ class ParityRegisterTests(unittest.TestCase):
                     evidence_raw=evidence_raw,
                     artifact_root=Path(folder),
                 )
+
+    def test_passed_evidence_requires_result_and_bound_oracle_artifacts(self):
+        def changed_case(mutate, expected):
+            register, evidence, ledger, _ = fixture_documents()
+            record = evidence["records"][0]
+            mutate(record)
+            record["record_sha256"] = record_digest(record)
+            raw = (json.dumps(evidence, indent=2) + "\n").encode()
+            register["evidence_bundle_sha256"] = sha256(raw).hexdigest()
+            with self.assertRaisesRegex(ValueError, expected):
+                parity.evaluate(register, evidence, ledger, evidence_raw=raw)
+
+        changed_case(
+            lambda record: record["artifacts"].pop(),
+            "passed evidence requires an output or report artifact",
+        )
+        changed_case(
+            lambda record: record["oracle"].update(
+                artifact_sha256=sha256(b"unrelated oracle").hexdigest()
+            ),
+            "oracle digest requires a matching input artifact",
+        )
+        changed_case(
+            lambda record: record["artifacts"][0].update(
+                sha256=sha256(b"unrelated input").hexdigest()
+            ),
+            "oracle digest requires a matching input artifact",
+        )
+
+    def test_skipped_cases_cannot_be_duplicated_or_claimed_executed(self):
+        def changed_case(skips, expected):
+            register, evidence, ledger, _ = fixture_documents()
+            record = evidence["records"][0]
+            record["skips"] = skips
+            record["record_sha256"] = record_digest(record)
+            raw = (json.dumps(evidence, indent=2) + "\n").encode()
+            register["evidence_bundle_sha256"] = sha256(raw).hexdigest()
+            with self.assertRaisesRegex(ValueError, expected):
+                parity.evaluate(register, evidence, ledger, evidence_raw=raw)
+
+        optional = {"case_id": "optional", "reason": "fixture unavailable", "required": False}
+        changed_case([optional, dict(optional)], "duplicate skipped case IDs")
+        changed_case(
+            [{**optional, "case_id": "tests/test_one.py::test_one"}],
+            "claims a skipped test as executed",
+        )
 
     def test_required_and_unexplained_skips_are_rejected(self):
         register, evidence, ledger, _ = fixture_documents()

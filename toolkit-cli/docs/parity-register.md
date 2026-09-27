@@ -130,7 +130,13 @@ object must equal the duplicate-key- and non-finite-safe parse of the digest-bou
 evidence bytes.
 Receipts also require explicit
 test IDs, environment identity, artifact roles and an exit code consistent
-with the result. Physical evidence must name a physical environment and stable
+with the result. A passed record must attach an output or report artifact, not
+just its inputs. An original-differential oracle hash must match an attached
+input artifact. Skipped case IDs must be unique and cannot also appear among
+the executed test IDs. The source-checkout validator reopens and hashes every
+attached artifact; the installed-wheel `coverage` command validates packaged
+receipt structure and digests but cannot reopen research artifacts that are
+not shipped in the wheel. Physical evidence must name a physical environment and stable
 hardware references. Original-differential evidence must bind its Toolkit or
 C-Gate oracle by SHA-256. An accepted or not-applicable dimension requires
 evidence; an accepted dimension also requires a passed record naming that

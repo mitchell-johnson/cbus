@@ -517,6 +517,8 @@ def validate_evidence_bundle(
         if not isinstance(artifacts, list) or not artifacts:
             raise ValueError(f"{evidence_id} requires at least one artifact")
         artifact_paths: set[str] = set()
+        artifact_roles: set[str] = set()
+        input_digests: set[str] = set()
         for artifact_index, artifact in enumerate(artifacts):
             if not isinstance(artifact, dict):
                 raise ValueError(f"{evidence_id}.artifacts[{artifact_index}] must be an object")
@@ -524,6 +526,7 @@ def validate_evidence_bundle(
             digest = artifact.get("sha256")
             if artifact.get("role") not in ARTIFACT_ROLES:
                 raise ValueError(f"{evidence_id} artifact has an unknown role")
+            artifact_roles.add(artifact["role"])
             if not isinstance(path, str) or not path or Path(path).is_absolute() or ".." in Path(path).parts:
                 raise ValueError(f"{evidence_id} has an unsafe artifact path")
             if path in artifact_paths:
@@ -531,6 +534,8 @@ def validate_evidence_bundle(
             artifact_paths.add(path)
             if not isinstance(digest, str) or not SHA256_RE.fullmatch(digest):
                 raise ValueError(f"{evidence_id} artifact requires a lowercase SHA-256")
+            if artifact["role"] == "input":
+                input_digests.add(digest)
             if artifact_root is not None:
                 candidate = (artifact_root / path).resolve()
                 root = artifact_root.resolve()
@@ -540,14 +545,25 @@ def validate_evidence_bundle(
                     raise ValueError(f"{evidence_id} artifact is missing: {path}")
                 if sha256(candidate.read_bytes()).hexdigest() != digest:
                     raise ValueError(f"{evidence_id} artifact digest changed: {path}")
+        if record["result"] == "passed" and not artifact_roles.intersection({"output", "report"}):
+            raise ValueError(f"{evidence_id} passed evidence requires an output or report artifact")
+        if "original_differential" in dimensions and oracle_digest not in input_digests:
+            raise ValueError(f"{evidence_id} oracle digest requires a matching input artifact")
         skips = record.get("skips")
         if not isinstance(skips, list):
             raise ValueError(f"{evidence_id}.skips must be an array")
+        skipped_cases: set[str] = set()
         for skip_index, skip in enumerate(skips):
             if not isinstance(skip, dict):
                 raise ValueError(f"{evidence_id}.skips[{skip_index}] must be an object")
             if not isinstance(skip.get("case_id"), str) or not skip["case_id"]:
                 raise ValueError(f"{evidence_id} has an unexplained skip without case_id")
+            case_id = skip["case_id"]
+            if case_id in skipped_cases:
+                raise ValueError(f"{evidence_id} has duplicate skipped case IDs")
+            if case_id in test_ids:
+                raise ValueError(f"{evidence_id} claims a skipped test as executed")
+            skipped_cases.add(case_id)
             if not isinstance(skip.get("reason"), str) or not skip["reason"].strip():
                 raise ValueError(f"{evidence_id} has an unexplained skip without reason")
             if skip.get("required") is not False:
