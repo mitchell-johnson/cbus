@@ -1,8 +1,8 @@
-{"mode":"e0s0c0","line":"#s# broadcast_event SP class payload","deliver":false,"basis":"native-loopback"}
-{"mode":"e0s1c0","line":"#s# broadcast_event SP class payload","deliver":true,"basis":"native-loopback"}
-{"mode":"e0s2c0","line":"#s# broadcast_event SP class payload","deliver":true,"basis":"native-loopback"}
-{"mode":"e0s9c0","line":"#s# broadcast_event SP class payload","deliver":true,"basis":"native-loopback"}
-{"mode":"e0s0c0","line":"#c# model-change","deliver":false,"basis":"pinned-bytecode"}
-{"mode":"e0s0c1","line":"#c# model-change","deliver":true,"basis":"pinned-bytecode"}
-{"mode":"e0s0c2","line":"#c# model-change","deliver":true,"basis":"pinned-bytecode"}
-{"mode":"e0s0c9","line":"#c# model-change","deliver":true,"basis":"pinned-bytecode"}
+{"id":"cgate-fanout-status-off","mode":"e0s0c0","line":"#s# broadcast_event SP class payload","deliver":false,"basis":"native-loopback"}
+{"id":"cgate-fanout-status-one","mode":"e0s1c0","line":"#s# broadcast_event SP class payload","deliver":true,"basis":"native-loopback"}
+{"id":"cgate-fanout-status-two","mode":"e0s2c0","line":"#s# broadcast_event SP class payload","deliver":true,"basis":"native-loopback"}
+{"id":"cgate-fanout-status-nine","mode":"e0s9c0","line":"#s# broadcast_event SP class payload","deliver":true,"basis":"native-loopback"}
+{"id":"cgate-fanout-config-off","mode":"e0s0c0","line":"#c# model-change","deliver":false,"basis":"pinned-bytecode"}
+{"id":"cgate-fanout-config-one","mode":"e0s0c1","line":"#c# model-change","deliver":true,"basis":"pinned-bytecode"}
+{"id":"cgate-fanout-config-two","mode":"e0s0c2","line":"#c# model-change","deliver":true,"basis":"pinned-bytecode"}
+{"id":"cgate-fanout-config-nine","mode":"e0s0c9","line":"#c# model-change","deliver":true,"basis":"pinned-bytecode"}

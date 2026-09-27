@@ -106,11 +106,16 @@ The server prints the actual listener address, which is useful with port `0` in 
 
 ## cbus-vector-check
 
-Run the committed compatibility vectors outside the Rust test harness:
+Run a supported committed compatibility suite outside the Rust test harness:
 
 ```sh
-cbus-vector-check rust/testdata/vectors
 cbus-vector-check rust/testdata/vectors --file encode.jsonl
+cbus-vector-check rust/testdata/vectors --file cgate_event_fanout.jsonl
 ```
 
-The command exits successfully only when it processes at least one vector and all processed vectors pass.
+The event-fanout suite checks four native-observed status filters and four
+config filters inferred from the pinned C-Gate bytecode. It does not claim a
+captured native config-change trigger. The command succeeds only when it
+processes at least one vector and all selected vectors pass. Directory-wide
+mode also reads suites without standalone handlers and reports them as failures;
+use `--file` for a supported suite.

@@ -245,6 +245,7 @@ dependencies = [
 name = "cbus-vector-check"
 version = "0.1.0"
 dependencies = [
+ "cbus-cgate",
  "cbus-mqtt",
  "cbus-protocol",
  "hex",

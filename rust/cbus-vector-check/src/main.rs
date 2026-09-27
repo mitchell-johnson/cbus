@@ -109,8 +109,41 @@ fn check_vector(fname: &str, v: &Value) -> Result<(), String> {
         "ha_discovery.jsonl" => check_ha(v),
         "kfi.jsonl" => check_kfi(v),
         "cni_discovery.jsonl" => check_cni_discovery(v),
+        "cgate_event_fanout.jsonl" => check_cgate_event_fanout(v),
         _ => Err(format!("unimplemented suite {fname}")),
     }
+}
+
+fn check_cgate_event_fanout(v: &Value) -> Result<(), String> {
+    // These rows encode two different evidence levels. Status was observed
+    // through native loopback; config is inferred from the pinned BA/BG
+    // bytecode and must never be reported as a native trigger capture.
+    let id = need_str(v, "id")?;
+    let mode_text = need_str(v, "mode")?;
+    let line = need_str(v, "line")?;
+    let basis = need_str(v, "basis")?;
+    let expected_basis = if line.starts_with("#s# ") {
+        "native-loopback"
+    } else if line.starts_with("#c# ") {
+        "pinned-bytecode"
+    } else {
+        return Err(format!("{id}: expected a status or config event line"));
+    };
+    if basis != expected_basis {
+        return Err(format!(
+            "{id}: {basis:?} provenance cannot support a {expected_basis} row"
+        ));
+    }
+    let mode = cbus_cgate::EventMode::parse(mode_text)
+        .ok_or_else(|| format!("{id}: invalid EVENT mode {mode_text:?}"))?;
+    let expected = need_bool(v, "deliver")?;
+    let actual = mode.delivers_line(line);
+    if actual != expected {
+        return Err(format!(
+            "{id}: EVENT {mode_text} delivered {actual}, expected {expected} for {line:?}"
+        ));
+    }
+    Ok(())
 }
 
 fn need_str<'a>(v: &'a Value, k: &str) -> Result<&'a str, String> {
@@ -490,4 +523,45 @@ fn check_topic(v: &Value) -> Result<(), String> {
 
 fn check_ha(v: &Value) -> Result<(), String> {
     cbus_mqtt::vector_check::check_ha(v)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::check_vector;
+
+    #[test]
+    fn cgate_event_fanout_vectors_check_status_and_config_with_distinct_evidence() {
+        let rows = include_str!("../../testdata/vectors/cgate_event_fanout.jsonl");
+        let mut seen_status = 0;
+        let mut seen_config = 0;
+        for row in rows.lines() {
+            let value: serde_json::Value = serde_json::from_str(row).unwrap();
+            check_vector("cgate_event_fanout.jsonl", &value).unwrap();
+            match value["basis"].as_str().unwrap() {
+                "native-loopback" => seen_status += 1,
+                "pinned-bytecode" => seen_config += 1,
+                other => panic!("unexpected evidence basis {other}"),
+            }
+        }
+        assert_eq!((seen_status, seen_config), (4, 4));
+    }
+
+    #[test]
+    fn cgate_event_fanout_rejects_false_config_observation_and_wrong_expectation() {
+        let mut config = serde_json::json!({
+            "id": "config-provenance",
+            "mode": "e0s0c1",
+            "line": "#c# model-change",
+            "deliver": true,
+            "basis": "native-loopback"
+        });
+        assert!(check_vector("cgate_event_fanout.jsonl", &config)
+            .unwrap_err()
+            .contains("provenance"));
+        config["basis"] = "pinned-bytecode".into();
+        config["deliver"] = false.into();
+        assert!(check_vector("cgate_event_fanout.jsonl", &config)
+            .unwrap_err()
+            .contains("expected false"));
+    }
 }
