@@ -51,7 +51,10 @@ is a source-linkage diagnostic, not publisher trust or update availability.
 For `update-condition-live`, use `--expected-user-sid` with the complete known
 Windows SID to require the intended HKCU user before any registry request. A
 mismatch fails before observation and does not switch users. Check
-`observer_evidence.user_context`; SID agreement is not proof of an interactive
+`observer_evidence.user_context`: explicit SID admission requires agreement with
+the independently queried primary process token as well as the worker-ready SID.
+Token query uncertainty fails closed; thread impersonation is not attested.
+SID agreement is not proof of an interactive
 desktop session or original Toolkit wrapper parity.
 
 `update-package-file --catalogue-response raw-catalogue.json --node-id ID

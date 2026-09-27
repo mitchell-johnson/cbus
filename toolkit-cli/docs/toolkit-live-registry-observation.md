@@ -34,27 +34,48 @@ validates a canonical revision-one SID with bounded unsigned components without
 Windows calls. The CLI rejects an invalid SID before opening its input files.
 
 After verifying the launched worker's PID, nonce, runtime, provider and executable,
-the host compares the SID in the worker's existing ready frame with the required
-SID. A mismatch fails the session before publishing the first registry request;
-there is no retry, alternate hive, impersonation or automatic user switch. The
-usual owned-process cleanup still runs and preserves the original mismatch error.
-This prevents a LocalSystem worker from silently evaluating a named user's HKCU.
+the host independently queries the worker's primary process token through the
+original CPython Windows `Popen` handle. It checks the handle's PID and liveness
+before and after `OpenProcessToken(TOKEN_QUERY)` / `GetTokenInformation(TokenUser)`.
+It never reopens a process by PID. The fixed-size result buffer must contain the
+complete SID before any pointer is dereferenced, and the token handle is closed
+on success and failure. The borrowed process handle remains owned by `Popen`.
+These are standard [Windows token-query APIs](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-openprocesstoken).
 
-The observer evidence's `user_context` records the required and observed SIDs and
-`sid_requirement_satisfied`. That field is null when no requirement was supplied
-or no valid ready SID was observed. Matching the requirement establishes only
-that comparison against the worker-reported SID, not independent token attestation:
-`interactive_user_context_verified` remains false. It does not
-prove a desktop login, token elevation, the identity of the person selecting the
-SID, or original Toolkit lazy-wrapper compatibility. With the option omitted,
-the existing process-user behavior remains, including LocalSystem if that is the
-worker's user. The authored C# worker and ready-frame format are unchanged.
+The OS token SID, worker-ready SID and requested SID must agree before the first
+registry request is published. Access denial, missing handle support, exited
+worker, malformed results, mismatch and token-close failure reject the session.
+There is no fallback to self-reported identity, retry, alternate hive,
+impersonation or automatic user switch. Owned-worker cleanup retains the first
+failure. No token handle, privileges or credentials are exported.
 
-Portable tests cover malformed and oversized SID components, explicit CLI
-forwarding, matching and omitted requirements, a mismatched LocalSystem SID with
-zero registry requests, rejection of retry, and owned-child cleanup while retaining
-the first error. These are synthetic transport tests, not a new Windows run.
-Interactive-user/native-wrapper, culture and repeated-read acceptance remain open.
+The observer evidence's `user_context` separates `observed_user_sid` (worker
+ready record) from `process_token_user_sid` (OS query) and
+`process_token_user_verified`. `sid_requirement_satisfied` is null when no
+requirement was supplied or no valid ready SID was observed; otherwise it is
+true only when both sources match the requirement. The verification is an
+admission-time primary-token observation, not continuing token monitoring.
+Threads can impersonate independently: `interactive_user_context_verified`
+and host-attestation claims remain false. This does not prove a desktop login,
+thread-token identity, elevation, the identity of the person selecting the SID,
+or original Toolkit lazy-wrapper compatibility. With the option omitted, no
+OS token query is added and existing process-user behavior remains. The C# worker
+and ready-frame format are unchanged.
+
+Portable tests cover malformed SID inputs, mocked Win32 pointer/length bounds,
+PID/liveness disagreement, denied APIs, cleanup errors, and a forged ready SID
+that disagrees with the OS token. These tests are separate from native Windows
+acceptance. Interactive-user/native-wrapper, culture and repeated-read acceptance
+remain open.
+
+A [sanitized native smoke receipt](../research/experiments/2026-09-28/registry-primary-token-native-smoke.json)
+binds the tested source hashes and private outputs. On Windows 11 ARM64 with
+Python 3.13.14 AMD64 and the pinned x86 Framework worker, matching LocalSystem
+SID completed successfully, a wrong required SID failed before any query, and
+an already-terminated owned process handle was rejected. The synthetic HKCU
+fixture was unchanged and removed; no owned processes remained. The disposable
+VM was stopped and its original networking restored. This is primary-token
+acceptance under LocalSystem, not interactive-user acceptance.
 
 The wrapper uses the existing condition parser and successful condition-name
 cache. In `A AND A AND B`, where A and B refer to the same registry value, A is
