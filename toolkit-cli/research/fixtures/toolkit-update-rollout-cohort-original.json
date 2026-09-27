@@ -1,0 +1,40 @@
+{
+  "format": "cbus-toolkit-original-sesu-rollout-cohort-v1",
+  "capture_date_utc": "2026-09-28",
+  "runtime": "disposable Windows 11 x86 CLR process; original installed SESU 3.0.7 assembly",
+  "sesubrick_dad_sha256": "21a6b2fb74d9b308d22c740ca0a1d887d80a067cccc03f59e4dd1bbb6c9c4b0c",
+  "original_helper_token": "0x0600012C",
+  "original_helper_rva": "0x5190",
+  "original_helper_il_sha256": "f6dd553c61e7af5a6d216422a6040102de46330e1bc7dad3dc7259f25bfead56",
+  "owned_probe_source_sha256": "00927e24ae50837c2bb29dd736ee07a054b40e15bbe27c4146554181bd7bc5e5",
+  "owned_probe_x86_sha256": "6064d71faae62b20cc9a31a1286addf443ddce10e8bdfc3b63df245debd3a011",
+  "original_stdout_sha256": "e976b692fd9da50f9857977202a71b73a9954d2dc1de72ee2a22b9c100e9a595",
+  "original_stdout_line_count": 19,
+  "original_case_count": 17,
+  "default_ipv4_routes_at_capture": 0,
+  "default_ipv6_routes_at_capture": 0,
+  "original_stderr_bytes": 0,
+  "supported_rows": [
+    {"case": "equal-zero", "visibility": 0, "stored_cohort": "0", "original_return": false},
+    {"case": "above-zero", "visibility": 1, "stored_cohort": "0", "original_return": true},
+    {"case": "equal-middle", "visibility": 41, "stored_cohort": "41", "original_return": false},
+    {"case": "above-middle", "visibility": 42, "stored_cohort": "41", "original_return": true},
+    {"case": "equal-high", "visibility": 99, "stored_cohort": "99", "original_return": false},
+    {"case": "seed-equal-after-persistence", "visibility": 87, "stored_cohort": "87", "original_return": false},
+    {"case": "seed-above-after-persistence", "visibility": 88, "stored_cohort": "87", "original_return": true}
+  ],
+  "observed_outside_profile": [
+    {"case": "key-absent", "visibility": 42, "original_return": false},
+    {"case": "above-high-direct-helper", "visibility": 100, "stored_cohort": "99", "original_return": true},
+    {"case": "stored-hundred", "visibility": 99, "stored_cohort": "100", "original_return": false},
+    {"case": "invalid-text", "visibility": 42, "stored_cohort": "bad", "original_return": false},
+    {"case": "integer-overflow", "visibility": 42, "stored_cohort": "2147483648", "original_return": false},
+    {"case": "signed-plus", "visibility": 42, "stored_cohort": "+41", "original_return": true},
+    {"case": "surrounding-spaces", "visibility": 42, "stored_cohort": " 41 ", "original_return": true},
+    {"case": "dword-cohort", "visibility": 42, "stored_cohort": 41, "original_return": true}
+  ],
+  "missing_entry_seed": {"sampled_cohort": 87, "persisted_as_decimal_string": true, "visibility": 0, "original_return": false},
+  "stored_minus_one_sentinel": {"initial_value": "-1", "replacement_cohort": 87, "persisted_as_decimal_string": true, "visibility": 0, "original_return": false},
+  "owned_registry_key_removed": true,
+  "scope": "One original helper called by an owned offline reflection probe; not the updater constructor, network, source trust, or installer"
+}

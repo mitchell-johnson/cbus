@@ -103,6 +103,15 @@ first matching file selection without fallback. A passing supplied-context
 preflight does not establish original metadata validation, current publisher
 trust, machine applicability, rollout, version ordering or install permission.
 
+`update-rollout-cohort` separately compares a selected node's 0–99 visibility
+with an explicitly supplied, already-stored 0–99 cohort. Its
+[finite rollout profile](toolkit-update-rollout-cohort.md) reproduces the
+original strict-greater-than gate for that input subset and records exact
+catalogue/selected-node digests. It does not read the host registry, seed or
+persist a cohort, or compose an update-availability decision. The
+[17-case original-helper fixture](../research/fixtures/toolkit-update-rollout-cohort-original.json)
+also records the stateful branches that remain outside this command.
+
 Evidence: [original vectors](../research/fixtures/toolkit-updates-vectors.json),
 [acceptance](../research/fixtures/toolkit-updates-acceptance.json).
 Primary vendor context: [Toolkit1.18 release](https://www.se.com/au/en/download/document/C-Bus_Toolkit_V1_18_0/)

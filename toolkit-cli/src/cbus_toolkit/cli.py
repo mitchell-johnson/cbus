@@ -1232,6 +1232,8 @@ def build_parser():
     package_bundle_options(commands)
     from .toolkit_update_applicability_cli import options as applicability_options
     applicability_options(commands)
+    from .toolkit_update_rollout_cli import options as rollout_cohort_options
+    rollout_cohort_options(commands)
     from .pci_routing_cli import options as routing_options
     routing_options(commands)
     from .toolkit_about_cli import options as about_options
@@ -3358,6 +3360,9 @@ def run(args):
     if args.area == "update-applicability-preflight":
         from .toolkit_update_applicability_cli import run as applicability_run
         return applicability_run(args)
+    if args.area == "update-rollout-cohort":
+        from .toolkit_update_rollout_cli import run as rollout_cohort_run
+        return rollout_cohort_run(args)
     if args.area == "pci-route":
         from .pci_routing_cli import run as routing_run
         return routing_run(args)

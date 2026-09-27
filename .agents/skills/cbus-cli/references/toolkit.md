@@ -48,6 +48,15 @@ With report files alone it retains independent
 hashes but exits nonzero and marks the links unverified. Its successful result
 is a source-linkage diagnostic, not publisher trust or update availability.
 
+`update-rollout-cohort --catalogue-response RAW.json --node-id ID
+--stored-cohort 41` evaluates one original strict-greater-than visibility gate
+using an explicitly supplied stored 0–99 cohort. It binds the decision to the
+exact raw response and selected node digests, but does not read HKCU, generate
+or persist a cohort, or determine whether this machine should receive an
+update. Consult `toolkit-cli/docs/toolkit-update-rollout-cohort.md` before
+composing it with applicability or metadata diagnostics; independent reports
+do not by themselves establish one trusted update workflow.
+
 For `update-condition-live`, use `--expected-user-sid` with the complete known
 Windows SID to require the intended HKCU user before any registry request. A
 mismatch fails before observation and does not switch users. Check
