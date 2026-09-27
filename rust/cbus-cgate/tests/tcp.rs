@@ -88,6 +88,7 @@ impl Session {
     fn greeting(&mut self) -> String {
         let mut line = String::new();
         self.reader.read_line(&mut line).unwrap();
+        assert!(line.ends_with("\r\n"), "native C-Gate greeting delimiter");
         line.trim().to_string()
     }
 
@@ -119,6 +120,7 @@ impl Session {
         let status = loop {
             let mut line = String::new();
             self.reader.read_line(&mut line).unwrap();
+            assert!(line.ends_with("\r\n"), "native C-Gate reply delimiter");
             let line = line.trim_end_matches(['\r', '\n']).to_string();
             // Event shape, never tag: reuse the library matcher so the
             // timestamped and overflow forms stay covered here too.
@@ -199,8 +201,14 @@ fn tcp_session_id_matches_native_loopback_profile() {
     let b_port = b.writer.local_addr().unwrap().port();
 
     let check_all = |lines: &[String], tagged: bool| {
-        assert_eq!(lines.len(), 2);
-        for (row, (session, port)) in lines.iter().zip([("cmd3", a_port), ("cmd5", b_port)]) {
+        assert_eq!(lines.len(), 3);
+        let console_stamp = lines[0]
+            .strip_prefix("300-sessionID=cmd1 origin=internal from=")
+            .and_then(|line| line.strip_suffix(" tag=Console"))
+            .expect("native internal Console row");
+        chrono::NaiveDateTime::parse_from_str(console_stamp, "%Y%m%d-%H%M%S")
+            .expect("console connection time");
+        for (row, (session, port)) in lines[1..].iter().zip([("cmd3", a_port), ("cmd5", b_port)]) {
             let expected = if session == "cmd3" {
                 format!("300-sessionID={session} origin=/127.0.0.1:{port} from=")
             } else {
@@ -239,13 +247,14 @@ fn tcp_session_id_matches_native_loopback_profile() {
     let mut remaining = Vec::new();
     for _ in 0..40 {
         remaining = a.command("SESSION_ID ALL").lines;
-        if remaining.len() == 1 {
+        if remaining.len() == 2 {
             break;
         }
         std::thread::sleep(Duration::from_millis(25));
     }
-    assert_eq!(remaining.len(), 1, "a closed peer must leave the listing");
-    assert!(remaining[0].starts_with("300 sessionID=cmd3 origin=/127.0.0.1:"));
+    assert_eq!(remaining.len(), 2, "a closed peer must leave the listing");
+    assert!(remaining[0].starts_with("300-sessionID=cmd1 origin=internal from="));
+    assert!(remaining[1].starts_with("300 sessionID=cmd3 origin=/127.0.0.1:"));
 }
 
 #[test]

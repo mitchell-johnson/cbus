@@ -17,12 +17,13 @@ differential = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(differential)
 
 
-def test_native_capture_canonicalizes_only_three_internal_console_rows():
+def test_native_capture_preserves_three_internal_console_rows():
     native = differential.validate_native()
-    canonical, excluded = differential.canonicalize(native["cases"][:9], native=True)
+    canonical, console_rows = differential.canonicalize(native["cases"][:9])
     assert len(canonical) == 9
-    assert len(excluded) == 3
+    assert len(console_rows) == 3
     assert canonical[2] == [
+        "300-sessionID=<internal-console> origin=internal from=<time-console> tag=Console",
         "300-sessionID=<a> origin=/127.0.0.1:<port-a> from=<time-a>",
         "300 sessionID=<b> origin=/127.0.0.1:<port-b> from=<time-b>",
     ]
@@ -33,13 +34,52 @@ def test_unexpected_internal_row_is_not_filtered():
     cases = deepcopy(differential.validate_native()["cases"][:9])
     cases[2]["reply"][0] = cases[2]["reply"][0].replace("tag=Console", "tag=Other")
     with pytest.raises(ValueError, match="unexpected external row"):
-        differential.canonicalize(cases, native=True)
+        differential.canonicalize(cases)
+
+
+def test_missing_rust_console_row_fails_complete_comparison():
+    cases = deepcopy(differential.validate_native()["cases"][:9])
+    cases[2]["reply"].pop(0)
+    with pytest.raises(ValueError, match="exactly three internal Console rows"):
+        differential.canonicalize(cases)
+
+
+def test_inconsistent_rust_console_timestamp_is_rejected():
+    cases = deepcopy(differential.validate_native()["cases"][:9])
+    cases[4]["reply"][0] = cases[4]["reply"][0].replace(
+        "from=20260925-211912", "from=20260925-211913"
+    )
+    with pytest.raises(ValueError, match="Console connection time changed"):
+        differential.canonicalize(cases)
 
 
 def test_client_tag_echo_must_match_exactly():
-    stream = io.BytesIO(b"[wrong] 300 sessionID=cmd3\n")
+    stream = io.BytesIO(b"[wrong] 300 sessionID=cmd3\r\n")
     with pytest.raises(ValueError, match="did not echo client-assigned tag"):
         differential.read_reply(stream, "requested")
+
+
+def test_rust_reply_must_use_native_crlf():
+    stream = io.BytesIO(b"[requested] 300 sessionID=cmd3\n")
+    with pytest.raises(ValueError, match="native CRLF framing"):
+        differential.read_reply(stream, "requested")
+
+
+def test_connected_server_with_wrong_greeting_is_behavior_failure(tmp_path, monkeypatch):
+    binary = tmp_path / "mock"
+    binary.write_bytes(b"binary")
+    binary.chmod(0o755)
+
+    def bad_greeting(_binary):
+        raise differential.ProbeGreetingError("Rust greeting does not use native CRLF framing")
+
+    monkeypatch.setattr(differential, "probe", bad_greeting)
+    receipt, code = differential.run(binary, "current-build")
+    assert code == 1
+    assert receipt["result"] == "failed"
+    assert receipt["greeting_result"] == "failed"
+    assert receipt["executed"] == 0
+    assert receipt["skipped"] == 9
 
 
 def test_stale_native_capture_fails_before_probe(tmp_path, monkeypatch):
@@ -171,8 +211,9 @@ def test_pre_fix_receipt_is_red_without_skipped_cases():
     )
     assert (receipt["result"], receipt["executed"], receipt["passed"],
             receipt["failed"], receipt["skipped"]) == ("failed", 9, 0, 9, 0)
-    with pytest.raises(ValueError, match="source fingerprint is stale"):
+    with pytest.raises(ValueError, match="receipt format changed"):
         differential.validate_passed_receipt(receipt)
+    receipt["format"] = "cgate-session-differential-v2"
     receipt["source_fingerprint"] = differential.source_fingerprint()
     with pytest.raises(ValueError, match="lacks exact current Rust artifact hash"):
         differential.validate_passed_receipt(receipt)

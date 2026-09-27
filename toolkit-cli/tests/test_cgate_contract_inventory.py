@@ -118,7 +118,7 @@ def test_resolved_subaxes_are_exactly_counted_without_acceptance_inflation() -> 
                 "maximum": None,
                 "trailing_words": "ignored_by_native_and_endpoint",
             },
-            "read_all_live_external_tcp_tls_sessions_only",
+            "read_all_open_sessions_including_internal_console",
         ),
         ("SESSION_ID TAG", {"minimum": 1, "maximum": None}, "set_calling_tag_once"),
         (
@@ -148,10 +148,7 @@ def test_native_session_contracts_are_bounded_and_preserve_open_axes(
     if path == "SESSION_ID ALL":
         assert axes["target_forms"]["subaxes"]["address_shape"]["value"][
             "scope"
-        ] == {
-            "native": "all_open_command_sessions_including_internal_console",
-            "endpoint": "live_external_tcp_tls_sessions_only",
-        }
+        ] == "all_open_command_sessions_including_internal_console"
     state_effect = axes["effects_routing"]["subaxes"]["state_effect"]
     assert state_effect["status"] == "resolved"
     assert effect in state_effect["value"].values()

@@ -598,10 +598,7 @@ def apply_native_session_contract(path: str, axes: dict[str, dict]) -> None:
     )
     targets = axes["target_forms"]["subaxes"]
     target_scope: object = (
-        {
-            "native": "all_open_command_sessions_including_internal_console",
-            "endpoint": "live_external_tcp_tls_sessions_only",
-        }
+        "all_open_command_sessions_including_internal_console"
         if path == "SESSION_ID ALL"
         else "calling_command_session"
     )
@@ -649,8 +646,7 @@ def apply_native_session_contract(path: str, axes: dict[str, dict]) -> None:
             "endpoint_audit_log": "append_command_record",
         },
         "SESSION_ID ALL": {
-            "native_registry": "read_all_open_sessions_including_internal_console",
-            "endpoint_registry": "read_all_live_external_tcp_tls_sessions_only",
+            "command_session_registry": "read_all_open_sessions_including_internal_console",
             "endpoint_audit_log": "append_command_record",
         },
         "SESSION_ID TAG": {
