@@ -13,7 +13,10 @@
 #                       (fails on missing provision or any skipped test)
 #   make check-hardware strict private-manifest hardware gate
 #   make check-interop  Python-to-Rust interop against cgate-mock and cmqttd
-#                       (rebuilds both binaries before exercising their servers)
+#                       (rebuilds both binaries, runs the native SESSION_ID
+#                       differential, then exercises both server suites)
+#   make check-session-differential
+#                       nine original-vs-Rust SESSION_ID cases on each binary
 #   make check-wheel    build a fresh wheel, install it with every supported
 #                       extra in an isolated Python 3.13 venv, and run the
 #                       full offline suite without importing from src/
@@ -85,7 +88,15 @@ check-cmqtt-interop: compile
 		tests/test_cmqtt_interop.py tests/test_cmqtt_programming_methods_interop.py \
 		-q -p no:cacheprovider $(CMQTT_INTEROP_PYTEST_EXTRA)
 
-check-interop: build-interop
+check-session-differential: build-interop
+	$(PY) research/cgate_session_differential.py \
+		--mock-bin "$(CGATE_MOCK_BIN)" \
+		--output research/runtime/cgate-session-differential-mock.json
+	PYTHONPATH=src:research $(PY) research/run_cgate_session_cmqttd_differential.py \
+		--cmqttd-bin "$(CMQTTD_BIN)" \
+		--output research/runtime/cgate-session-differential-cmqttd.json
+
+check-interop: check-session-differential
 	$(MAKE) check-cgate-interop
 	$(MAKE) check-cmqtt-interop
 
@@ -109,5 +120,6 @@ compile:
 	$(PY) -m compileall -q src/cbus_toolkit
 
 .PHONY: check check-offline check-native check-hardware build-interop \
+	check-session-differential \
 	check-cgate-interop check-cmqtt-interop check-interop check-wheel \
 	check-parity-register coverage require-complete compile

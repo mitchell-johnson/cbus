@@ -14,10 +14,11 @@
     "cgate_capability_matrix": "f87c6e3575fa34f265f2aec2178c899596a653918a98a7a59f5077e038e11886",
     "cgate_contract_inventory": "e3ba27d8be0bc1543959d1b195c8d51f04dd10ab86ce2b827afc1929124b4533",
     "cgate_session_native_acceptance": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f",
-    "functional_obligation_pilot": "9620b12e0d64a2548fc1561fbb25cd76d1e4b09ef6e839c0dc75ff3f58c4854a",
+    "functional_obligation_pilot": "d3877866b034e9edfae8892a00c75e8f1e7d1b2f21c321151679a16f5704e670",
+    "cgate_session_differential_cmqttd": "3c4f34dd47f3232ceb2c49dadc245bca4aff36e1a937093b195a3900b073ba65",
     "roadmap": "e216be63829d38e460e81fdb1643ef12db8a7b3188c20f20564ecbd08804a97c"
   },
-  "evidence_bundle_sha256": "055dde83ff05aa7056c13761cac120604e1d89fc0c4c27275c28ceded39bde40",
+  "evidence_bundle_sha256": "aea0fc895df7c513e337a3b99a3ca5143c015f13881e2fdf536f7e1f6656176c",
   "work_item_ids": [
     "P0.01",
     "P0.02",
@@ -330819,7 +330820,7 @@
       },
       "definition_status": "defined",
       "implementation_status": "in_progress",
-      "implementation_basis": "in_progress: the Rust command-session test covers the observed forms, but the path's authorization and response-event contract remains partial",
+      "implementation_basis": "in_progress: cmqttd and cgate-mock implement the observed loopback query, but authorization and response-event variants remain partial",
       "implementation": {
         "owner": "rust/cbus-cgate/src/service.rs#Service::handle",
         "cli_entry_point": "cbus-toolkit cgate run <command-file>",
@@ -330851,17 +330852,19 @@
         "research/experiments/2026-09-25/cgate-session-native-acceptance.json#cases",
         "rust/cbus-cgate/src/service.rs#Service::handle"
       ],
-      "differential_gap": "The owned native trace is retained, but this scoped obligation has no passed current-artifact differential receipt.",
+      "differential_gap": "The retained native capture stores response payloads without client-tag prefixes; the differential validates Rust tag echo separately, while native tag-prefix capture remains outside this receipt.",
       "acceptance": {
         "nominal": "unassessed",
         "error": "unassessed",
         "invalid_input": "unassessed",
         "profile_variation": "unassessed",
-        "original_differential": "unassessed",
+        "original_differential": "accepted",
         "physical": "unassessed",
         "persistence_recovery": "unassessed"
       },
-      "evidence_ids": []
+      "evidence_ids": [
+        "evidence:cgate-session-id-loopback-differential-v1"
+      ]
     },
     {
       "id": "cgate-function:session-id-all",
@@ -330901,7 +330904,7 @@
       },
       "definition_status": "defined",
       "implementation_status": "in_progress",
-      "implementation_basis": "in_progress: the Rust command-session test checks listing and disconnect removal, but volatile fields and access-policy variants still need acceptance",
+      "implementation_basis": "in_progress: cmqttd and cgate-mock list live external sessions and remove closed peers, but access-policy variants remain open",
       "implementation": {
         "owner": "rust/cbus-cgate/src/service.rs#Service::handle",
         "cli_entry_point": "cbus-toolkit cgate run <command-file>",
@@ -330933,17 +330936,19 @@
         "research/experiments/2026-09-25/cgate-session-native-acceptance.json#cases",
         "rust/cbus-cgate/src/service.rs#Service::handle"
       ],
-      "differential_gap": "The owned native ALL trace also reports an internal Console cmd1 row; the Rust test currently asserts only external sessions. This original difference and the lack of a passed current-artifact receipt keep differential acceptance unassessed.",
+      "differential_gap": "The native ALL trace also reports an internal Console cmd1 row. The external-session differential excludes that exact row and records it; full unfiltered ALL parity remains open.",
       "acceptance": {
         "nominal": "unassessed",
         "error": "unassessed",
         "invalid_input": "unassessed",
         "profile_variation": "unassessed",
-        "original_differential": "unassessed",
+        "original_differential": "accepted",
         "physical": "unassessed",
         "persistence_recovery": "unassessed"
       },
-      "evidence_ids": []
+      "evidence_ids": [
+        "evidence:cgate-session-id-loopback-differential-v1"
+      ]
     },
     {
       "id": "cgate-function:session-id-tag",
@@ -330987,7 +330992,7 @@
       },
       "definition_status": "defined",
       "implementation_status": "in_progress",
-      "implementation_basis": "in_progress: the Rust command-session test covers one-shot assignment and errors, but other authorization and selector variants remain open",
+      "implementation_basis": "in_progress: cmqttd and cgate-mock cover one-shot assignment and observed errors, but other authorization and selector variants remain open",
       "implementation": {
         "owner": "rust/cbus-cgate/src/service.rs#Service::handle",
         "cli_entry_point": "cbus-toolkit cgate run <command-file>",
@@ -331005,7 +331010,7 @@
           "ACCESS/LOGIN policy variants"
         ]
       },
-      "outcome": "A connected loopback client can assign one tag to its own command session, preserving interior spaces; a second assignment returns 408 and a missing tag returns 400 without replacing the first tag.",
+      "outcome": "A connected loopback client can assign one tag to its own command session, with native command whitespace collapsed to single spaces; a second assignment returns 408 and a missing tag returns 400 without replacing the first tag.",
       "preconditions": [
         "C-Gate 3.4.0.2001 command connection",
         "owned loopback listener with no project or physical network"
@@ -331020,17 +331025,19 @@
         "research/experiments/2026-09-25/cgate-session-native-acceptance.json#cases",
         "rust/cbus-cgate/src/service.rs#Service::handle"
       ],
-      "differential_gap": "The owned native trace is retained, but this scoped obligation has no passed current-artifact differential receipt.",
+      "differential_gap": "The scoped differential covers observed whitespace, reassignment and missing-tag cases; tag length, quoting and ACCESS/LOGIN variants remain open.",
       "acceptance": {
         "nominal": "unassessed",
         "error": "unassessed",
         "invalid_input": "unassessed",
         "profile_variation": "unassessed",
-        "original_differential": "unassessed",
+        "original_differential": "accepted",
         "physical": "unassessed",
         "persistence_recovery": "unassessed"
       },
-      "evidence_ids": []
+      "evidence_ids": [
+        "evidence:cgate-session-id-loopback-differential-v1"
+      ]
     }
   ]
 }

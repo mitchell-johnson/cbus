@@ -39,6 +39,10 @@ PYTHONPATH=src .venv/bin/python research/run_cgate_session_cmqttd_differential.p
   --output research/runtime/cgate-session-differential-cmqttd.json
 ```
 
+`make check-session-differential` rebuilds both Rust binaries and requires
+both nine-case comparisons to pass. `make check-interop` includes that target
+before the broader Python-to-Rust interop suites.
+
 Both runners use ephemeral `127.0.0.1` listeners and two live command
 connections. Each required case receives a stable ID, a client-assigned wire
 tag and a terminal reply; no case is silently skipped. Missing startup
@@ -63,17 +67,21 @@ the receipt; any other extra row fails. The external rows retain their
 pre-fix mock artifact and its red nine-case receipt are retained as
 `research/fixtures/cgate-session-differential-pre-fix.json`. A new accepted
 receipt must name the exact rebuilt binary SHA-256 and match the source
-fingerprint over the C-Gate crate, its manifests, lockfile, runner and
-interaction tests. For `cmqttd`, its source and manifest are included too.
+fingerprint over the C-Gate crate, manifests, lockfile, runner, parity
+builder/validator and interaction tests. For `cmqttd`, its source and
+manifest are included too.
 Source or native-capture changes invalidate a prior receipt; regenerate it
 before crediting original-differential acceptance.
 
 The retained pre-fix mock SHA-256 is
 `1dbc9c1c041da90993e407c68131c49748dd3435cacd8b6d9dcecfe78c1fb242`:
-0 passed, 9 failed, 0 skipped. The corrected mock artifact is
-`36e838cbba224824d71e8793f2b8d700361bc68987f2fc6ee61488055183b4fa`:
+0 passed, 9 failed, 0 skipped. That red receipt's top-level
+`source_revision` names the comparison runner; its separate
+`rust_artifact.source_revision` names the pre-fix worktree HEAD, with the
+build-provenance limit stated in the receipt. The corrected mock artifact is
+`c39a24c27749c627807a82452ba219281d933b053e49034f99bedbeae5290aad`:
 9 passed, 0 failed/skipped. Independently, the offline cmqttd artifact is
-`8824155c170eb590f616bded7653ffceb5e639d1c57946c0e0675f302a8e9ade`:
+`50694bcf914b6fdb803ce46e8e7c5758061c6906ae70de47cb0ee2c2eeb0f53f`:
 9 passed, 0 failed/skipped. Each sanitized receipt identifies its artifact,
 source revision and source-file hashes. These hashes belong to those exact
 local builds; a later build needs a new receipt.
