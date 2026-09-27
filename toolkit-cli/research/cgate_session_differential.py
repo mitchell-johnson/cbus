@@ -19,6 +19,7 @@ import shlex
 import socket
 import subprocess
 import sys
+import tomllib
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -45,6 +46,8 @@ INTERNAL_RE = re.compile(
 )
 STATUS_RE = re.compile(r"^[0-9]{3}[ -]")
 LISTEN_RE = re.compile(r"^cgate-mock listening on 127\.0\.0\.1:([0-9]+)$")
+RUST_INCLUDE_RE = re.compile(r'include(?:_str|_bytes)?!\s*\(\s*"([^"]+)"')
+RUST_INCLUDE_CALL_RE = re.compile(r"include(?:_str|_bytes)?!\s*\(")
 
 
 class ProbeBehaviorError(Exception):
@@ -58,21 +61,81 @@ def digest(path: Path) -> str:
     return sha256(path.read_bytes()).hexdigest()
 
 
-def source_fingerprint(*, daemon: bool = False) -> dict[str, str]:
-    """Conservatively invalidate receipts after any C-Gate crate source edit."""
-    paths = sorted((ROOT / "rust/cbus-cgate/src").rglob("*.rs"))
-    paths += [ROOT / "rust/Cargo.toml", ROOT / "rust/cbus-cgate/Cargo.toml",
-              ROOT / "rust/cbus-cgate/tests/tcp.rs"]
+def rust_source_paths(*, daemon: bool = False) -> set[Path]:
+    """Find the in-workspace crate source closure used by either Rust server.
+
+    Include target-specific and test-only path dependencies conservatively so
+    changes to a crate that participates in the validation build cannot leave
+    an older accepted receipt looking current.
+    """
+    workspace = ROOT / "rust"
+    workspace_root = workspace.resolve()
+    workspace_manifest = tomllib.loads((workspace / "Cargo.toml").read_text(encoding="utf-8"))
+    workspace_dependencies = workspace_manifest.get("workspace", {}).get("dependencies", {})
+    pending = [workspace / "cbus-cgate"]
     if daemon:
-        paths += sorted((ROOT / "rust/cmqttd/src").rglob("*.rs"))
-        paths += [ROOT / "rust/cmqttd/Cargo.toml", ROOT / "rust/cbus-cgate/src/service/tests.rs",
-                  ROOT / "toolkit-cli/research/run_cgate_session_cmqttd_differential.py"]
-    paths += [ROOT / "rust/Cargo.lock", PILOT, Path(__file__).resolve(),
-              ROOT / "toolkit-cli/tests/test_cgate_session_differential.py",
-              ROOT / "toolkit-cli/research/build_parity_register.py",
-              ROOT / "toolkit-cli/src/cbus_toolkit/parity.py",
-              ROOT / "toolkit-cli/tests/test_parity_register.py"]
-    return {str(path.relative_to(ROOT)): digest(path) for path in paths}
+        pending.append(workspace / "cmqttd")
+    seen: set[Path] = set()
+    paths: set[Path] = set()
+    while pending:
+        crate = pending.pop().resolve()
+        if not crate.is_relative_to(workspace_root):
+            raise ValueError(f"Rust path dependency escapes the workspace: {crate}")
+        if crate in seen:
+            continue
+        seen.add(crate)
+        manifest = crate / "Cargo.toml"
+        if not manifest.resolve().is_relative_to(workspace_root):
+            raise ValueError(f"Rust manifest escapes the workspace: {manifest}")
+        data = tomllib.loads(manifest.read_text(encoding="utf-8"))
+        paths.add(manifest)
+        source_files = {path for path in (crate / "src").rglob("*") if path.is_file()}
+        build_script = crate / "build.rs"
+        if build_script.is_file():
+            source_files.add(build_script)
+        for source in source_files:
+            if not source.resolve().is_relative_to(workspace_root):
+                raise ValueError(f"Rust source escapes the workspace: {source}")
+        paths.update(source_files)
+        for source in (path for path in source_files if path.suffix == ".rs"):
+            code = source.read_text(encoding="utf-8")
+            includes = RUST_INCLUDE_RE.findall(code)
+            if len(includes) != len(RUST_INCLUDE_CALL_RE.findall(code)):
+                raise ValueError(f"Rust source has a nonliteral include: {source}")
+            for include in includes:
+                asset = (source.parent / include).resolve()
+                if not asset.is_relative_to(workspace_root) or not asset.is_file():
+                    raise ValueError(f"Rust include is missing or outside the workspace: {asset}")
+                paths.add(asset)
+        dependency_tables = [data.get(kind, {}) for kind in
+                             ("dependencies", "build-dependencies", "dev-dependencies")]
+        for target in data.get("target", {}).values():
+            dependency_tables.extend(target.get(kind, {}) for kind in
+                                     ("dependencies", "build-dependencies", "dev-dependencies"))
+        for dependencies in dependency_tables:
+            for name, specification in dependencies.items():
+                if isinstance(specification, dict) and specification.get("workspace") is True:
+                    specification = workspace_dependencies.get(name)
+                if isinstance(specification, dict) and isinstance(specification.get("path"), str):
+                    pending.append(crate / specification["path"])
+    return paths
+
+
+def source_fingerprint(*, daemon: bool = False) -> dict[str, str]:
+    """Invalidate receipts after a server or transitive Rust crate source edit."""
+    paths = rust_source_paths(daemon=daemon)
+    paths.update([ROOT / "rust/Cargo.toml", ROOT / "rust/cbus-cgate/tests/tcp.rs"])
+    if daemon:
+        paths.add(ROOT / "toolkit-cli/research/run_cgate_session_cmqttd_differential.py")
+    paths.update([ROOT / "rust/Cargo.lock", PILOT, Path(__file__).resolve(),
+                  ROOT / "toolkit-cli/tests/test_cgate_session_differential.py",
+                  ROOT / "toolkit-cli/research/build_parity_register.py",
+                  ROOT / "toolkit-cli/src/cbus_toolkit/parity.py",
+                  ROOT / "toolkit-cli/tests/test_parity_register.py"])
+    for path in paths:
+        if not path.resolve().is_relative_to(ROOT):
+            raise ValueError(f"SESSION_ID fingerprint input escapes the repository: {path}")
+    return {path.relative_to(ROOT).as_posix(): digest(path) for path in sorted(paths)}
 
 
 def validate_native() -> dict:
@@ -250,8 +313,8 @@ def run(binary: Path, provenance: str, endpoint_port: int | None = None) -> tupl
         "format": "cgate-session-differential-v1",
         "scope": "nine SESSION_ID cases on two owned IPv4 loopback command connections",
         "obligation_ids": sorted({item[3] for item in CASE_SPECS}),
-        "native_capture": {"path": str(NATIVE.relative_to(ROOT)), "sha256": digest(NATIVE)},
-        "pilot_manifest": {"path": str(PILOT.relative_to(ROOT)), "sha256": digest(PILOT)},
+        "native_capture": {"path": NATIVE.relative_to(ROOT).as_posix(), "sha256": digest(NATIVE)},
+        "pilot_manifest": {"path": PILOT.relative_to(ROOT).as_posix(), "sha256": digest(PILOT)},
         "vendor_jar_sha256": json.loads(PILOT.read_text(encoding="utf-8"))["native_oracle"]["vendor_jar_sha256"],
         "rust_artifact": {"path": str(binary), "sha256": digest(binary) if binary.is_file() else None,
                           "provenance": provenance},
@@ -338,9 +401,9 @@ def validate_passed_receipt(receipt: dict) -> None:
     if not re.fullmatch(r"[0-9a-f]{40}", receipt.get("source_revision", "")):
         raise ValueError("SESSION_ID differential lacks a source revision")
     if receipt.get("native_capture") != {
-        "path": str(NATIVE.relative_to(ROOT)), "sha256": digest(NATIVE)
+        "path": NATIVE.relative_to(ROOT).as_posix(), "sha256": digest(NATIVE)
     } or receipt.get("pilot_manifest") != {
-        "path": str(PILOT.relative_to(ROOT)), "sha256": digest(PILOT)
+        "path": PILOT.relative_to(ROOT).as_posix(), "sha256": digest(PILOT)
     }:
         raise ValueError("SESSION_ID differential oracle or manifest hash changed")
     if receipt.get("vendor_jar_sha256") != json.loads(PILOT.read_text(encoding="utf-8"))["native_oracle"]["vendor_jar_sha256"]:

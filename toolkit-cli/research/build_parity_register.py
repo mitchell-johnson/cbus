@@ -510,7 +510,7 @@ def session_differential_evidence() -> dict:
             },
             {
                 "role": "report",
-                "path": str(SESSION_DIFFERENTIAL_PATH.relative_to(ROOT)),
+                "path": SESSION_DIFFERENTIAL_PATH.relative_to(ROOT).as_posix(),
                 "sha256": digest(SESSION_DIFFERENTIAL_PATH),
             },
         ],

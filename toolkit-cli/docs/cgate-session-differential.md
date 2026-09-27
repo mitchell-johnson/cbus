@@ -67,10 +67,13 @@ the receipt; any other extra row fails. The external rows retain their
 pre-fix mock artifact and its red nine-case receipt are retained as
 `research/fixtures/cgate-session-differential-pre-fix.json`. A new accepted
 receipt must name the exact rebuilt binary SHA-256 and match the source
-fingerprint over the C-Gate crate, manifests, lockfile, runner, parity
-builder/validator and interaction tests. For `cmqttd`, its source and
-manifest are included too.
-Source or native-capture changes invalidate a prior receipt; regenerate it
+fingerprint over the C-Gate crate and every transitive in-workspace path
+dependency's source and manifest. The daemon receipt also includes `cmqttd`
+and its MQTT/test-support dependencies. Literal in-workspace Rust `include!`,
+`include_str!` and `include_bytes!` assets are hashed, including the retained
+DALI help fixture compiled into both servers. The workspace manifest, lockfile,
+runner, parity builder/validator and interaction tests are also included.
+Changes to these sources or the native capture invalidate a prior receipt; regenerate it
 before crediting original-differential acceptance.
 
 The retained pre-fix mock SHA-256 is

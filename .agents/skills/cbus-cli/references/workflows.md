@@ -181,8 +181,10 @@ missing provision or any skipped selected test.
 For Toolkit changes, create `toolkit-cli/.venv` with Python 3.13 and the
 `test,research,serial,usb` extras, then run `make check`,
 `make check-interop`, and `make check-wheel` from `toolkit-cli/`.
-`check-interop` builds and requires both `cgate-mock` and `cmqttd`; the focused
-interop targets fail when their selected binary is missing. Native and physical
+`check-interop` builds and requires both `cgate-mock` and `cmqttd`, runs the
+nine-case original C-Gate `SESSION_ID` differential on both servers, then runs
+both Python interop suites. The focused interop targets fail when their selected
+binary is missing. Native and physical
 release acceptance are separate strict provisioned gates described in
 `docs/testing.md`; they reject skips and must not be inferred from offline CI.
 Use `make require-complete` or invoke
