@@ -2322,6 +2322,35 @@ async fn armed_auth_gate_covers_mutations_but_not_help() {
         assert_eq!(response.status, 101, "{line}: {response:?}");
         assert_eq!(response.final_text, final_text, "{line}");
     }
+    let mut restricted = ClientState {
+        recovery_only: true,
+        ..ClientState::default()
+    };
+    assert_eq!(
+        service
+            .handle(&mut restricted, "[restricted] CGL IMPORT ?")
+            .await
+            .final_text,
+        "420 LOGIN required"
+    );
+    let mut monitor = ClientState {
+        access_level: Some(CgateAccessLevel::Monitor),
+        ..ClientState::default()
+    };
+    assert_eq!(
+        service
+            .handle(&mut monitor, "[role] CGL EXPORT ?")
+            .await
+            .final_text,
+        "420 Access denied."
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[import] CGL IMPORT HARNESS")
+            .await
+            .final_text,
+        "420 LOGIN required"
+    );
     assert!(!super::requires_programming_auth(
         "AIRCON",
         "REFRESH",

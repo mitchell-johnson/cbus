@@ -2409,8 +2409,13 @@ impl Service {
                 status: 204,
             };
         }
+        // A family-help leaf such as `CGL IMPORT ?` is not an import. Keep
+        // it readable without the optional mutation token, but still apply
+        // any native ACCESS floor below before returning the help response.
+        let family_help = family_help::response(tag, &words, &upper);
         if self.auth_token_hash.get().is_some()
             && !client.authenticated
+            && family_help.is_none()
             && requires_programming_auth(verb, sub, &upper)
         {
             return err(tag, 420, "420 LOGIN required");
@@ -2420,7 +2425,7 @@ impl Service {
                 return err(tag, 420, "420 Access denied.");
             }
         }
-        if let Some(response) = family_help::response(tag, &words, &upper) {
+        if let Some(response) = family_help {
             return response;
         }
         if verb == "SESSION_ID" {
