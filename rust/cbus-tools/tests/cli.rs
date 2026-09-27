@@ -208,7 +208,7 @@ fn cni_scan_reports_each_route_without_inventing_absence() {
         &[
             "cni-scan",
             "--probe",
-            "127.0.0.1@255.255.255.255",
+            "127.0.0.1@127.0.0.2",
             "--probe",
             "127.0.0.1@127.0.0.1",
             "--listen-port",
@@ -224,6 +224,7 @@ fn cni_scan_reports_each_route_without_inventing_absence() {
     let report: Value = serde_json::from_str(&out).unwrap();
     assert_eq!(report["format"], "cbus-cni-multi-discovery-v1");
     assert_eq!(report["probe_count"], 2);
+    assert_eq!(report["probes"][0]["outcome"], "no_reply_by_deadline");
     assert_eq!(report["probes"][1]["outcome"], "devices_observed");
     assert_eq!(
         report["probes"][1]["observation"]["devices"][0]["endpoint"],
