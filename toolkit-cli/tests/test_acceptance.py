@@ -306,6 +306,52 @@ class AcceptanceRunnerTests(unittest.TestCase):
                     self.assertEqual(report['skipped'], [])
                     self.assertEqual(report['inputs_changed_during_run'], [])
 
+    def test_acceptance_rejects_substituted_cgate_contract_inventory(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root / 'tests').mkdir()
+            (root / 'tests/test_fixture.py').write_text(
+                '# Synthetic passing acceptance selection.\n'
+            )
+            package = root / 'src/cbus_toolkit'
+            package.mkdir(parents=True)
+            real_package = Path(__file__).resolve().parents[1] / 'src/cbus_toolkit'
+            for name in (
+                'capabilities.json',
+                'parity-obligations.json',
+                'parity-evidence.json',
+                'cgate-contract-inventory.json',
+            ):
+                (package / name).write_bytes((real_package / name).read_bytes())
+            contract = package / 'cgate-contract-inventory.json'
+            changed = contract.read_bytes().replace(
+                b'Evidence-bounded per-path contracts',
+                b'Evidence-changed per-path contracts',
+                1,
+            )
+            self.assertNotEqual(changed, contract.read_bytes())
+            contract.write_bytes(changed)
+            output = root / 'report.json'
+            with patch.object(acceptance, 'ROOT', root), \
+                 patch.object(acceptance.resources, 'files', return_value=package), \
+                 patch.object(
+                     acceptance,
+                     'run_pytest',
+                     return_value=self.successful_outcome(),
+                 ), \
+                 patch.object(sys, 'path', list(sys.path)), \
+                 patch.object(
+                     sys,
+                     'argv',
+                     ['acceptance', '--require-no-skips', '--output', str(output)],
+                 ), \
+                 redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+                with self.assertRaisesRegex(
+                    ValueError, 'contract inventory digest changed'
+                ):
+                    acceptance.main()
+            self.assertFalse(output.exists())
+
 
 if __name__ == '__main__':
     unittest.main()

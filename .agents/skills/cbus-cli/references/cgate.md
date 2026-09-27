@@ -16,6 +16,15 @@ non-obsolete paths have a primary route. This does not make
 formats, device/topology/timing behavior, and broad hardware acceptance remain
 separate boundaries.
 
+For machine-readable per-path scope, inspect
+`toolkit-cli/src/cbus_toolkit/cgate-contract-inventory.json`. It covers the 431
+primary and 11 supplement paths with selector, session, target, authorization,
+response/event, effect/routing and implementation/acceptance axes. A resolved
+routing or LOGIN-gate subaxis is not path acceptance. Preserve every
+`unresolved` reason, regenerate it with
+`toolkit-cli/research/build_cgate_contract_inventory.py`, then regenerate the
+parity register; do not hand-edit either generated JSON file.
+
 ```sh
 cbus-toolkit cgate --host 127.0.0.1 --timeout 120 edlt-labels --network //PROJECT/254
 cbus-toolkit cgate --host 127.0.0.1 --timeout 30 edlt-labels //PROJECT/254/p/UNIT

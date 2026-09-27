@@ -50,6 +50,7 @@ check-offline: compile check-parity-register
 		$(PYTEST_EXTRA)
 
 check-parity-register:
+	$(PY) research/build_cgate_contract_inventory.py --check
 	$(PY) research/build_parity_register.py --check
 
 check-native: compile

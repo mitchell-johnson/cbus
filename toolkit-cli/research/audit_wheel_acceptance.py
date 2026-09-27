@@ -61,10 +61,12 @@ def audit(snapshot, report_paths, *, python_versions=('3.13',)):
         parity_resources = {
             'cbus_toolkit/parity-obligations.json',
             'cbus_toolkit/parity-evidence.json',
+            'cbus_toolkit/cgate-contract-inventory.json',
         }
         if parity_resources <= set(names):
             register_raw = wheel.read('cbus_toolkit/parity-obligations.json')
             evidence_raw = wheel.read('cbus_toolkit/parity-evidence.json')
+            cgate_contract_raw = wheel.read('cbus_toolkit/cgate-contract-inventory.json')
             parity_progress = parity_model.evaluate(
                 parity_model.parse_json_document(
                     register_raw, context='wheel parity-obligations.json'
@@ -75,6 +77,11 @@ def audit(snapshot, report_paths, *, python_versions=('3.13',)):
                 ledger,
                 evidence_raw=evidence_raw,
                 ledger_raw=ledger_raw,
+                cgate_contract_inventory=parity_model.parse_json_document(
+                    cgate_contract_raw,
+                    context='wheel cgate-contract-inventory.json',
+                ),
+                cgate_contract_raw=cgate_contract_raw,
             )
             parity = bool(parity_progress['complete'])
         else:

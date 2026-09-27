@@ -150,7 +150,11 @@ Completion is now derived from the packaged [functional parity register](toolkit
 which accounts for 22,156 committed source-surface records, including 412
 parsed Toolkit forms, 10,102 executable controls and 1,892 event bindings, but
 keeps functional percentages unavailable until they are resolved into a
-complete denominator.
+complete denominator. Its generated C-Gate contract inventory maps all 431
+primary and 11 supplement paths across selector, session, target,
+authorization, response/event, effect/routing and acceptance axes. Unresolved
+subaxes stay explicit and prevent routed command coverage from being reported
+as full compatibility.
 The [completed functions and outstanding work](toolkit-cli/docs/implementation-status.md)
 describe supported profiles, test evidence, and remaining work. The
 [Toolkit CLI guide](toolkit-cli/README.md) contains detailed command examples.

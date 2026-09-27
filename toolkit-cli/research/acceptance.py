@@ -329,12 +329,17 @@ def main():
 
         register_raw = package.joinpath(parity.REGISTER_RESOURCE).read_bytes()
         evidence_raw = package.joinpath(parity.EVIDENCE_RESOURCE).read_bytes()
+        cgate_contract_raw = package.joinpath(parity.CGATE_CONTRACT_RESOURCE).read_bytes()
         progress = parity.evaluate(
             parity.parse_json_document(register_raw, context=parity.REGISTER_RESOURCE),
             parity.parse_json_document(evidence_raw, context=parity.EVIDENCE_RESOURCE),
             ledger,
             evidence_raw=evidence_raw,
             ledger_raw=ledger_raw,
+            cgate_contract_inventory=parity.parse_json_document(
+                cgate_contract_raw, context=parity.CGATE_CONTRACT_RESOURCE
+            ),
+            cgate_contract_raw=cgate_contract_raw,
         )
     except FileNotFoundError:
         # Historical/minimal acceptance fixtures predate the evidence register.

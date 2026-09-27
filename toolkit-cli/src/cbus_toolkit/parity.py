@@ -20,6 +20,7 @@ from typing import Any
 
 REGISTER_RESOURCE = "parity-obligations.json"
 EVIDENCE_RESOURCE = "parity-evidence.json"
+CGATE_CONTRACT_RESOURCE = "cgate-contract-inventory.json"
 SHA256_RE = re.compile(r"[0-9a-f]{64}\Z")
 REVISION_RE = re.compile(r"[0-9a-f]{40}\Z")
 IMPLEMENTATION_STATES = {"pending", "in_progress", "implemented"}
@@ -114,6 +115,23 @@ REQUIRED_DIMENSIONS = (
     "physical",
     "persistence_recovery",
 )
+CGATE_CONTRACT_AXIS_SCHEMA = {
+    "selector_grammar": ("command_path", "argument_arity", "value_domains"),
+    "session_states": ("connection", "recovery_mode", "selection_and_locks"),
+    "target_forms": ("address_shape", "route_shape"),
+    "authorization": ("connection_policy", "programming_gate", "handler_roles"),
+    "response_event_envelopes": (
+        "tag_and_completion_framing",
+        "command_envelope",
+        "event_fanout",
+    ),
+    "effects_routing": ("routing_class", "physical_io_boundary", "state_effect"),
+    "implementation_acceptance": (
+        "endpoint_route",
+        "native_obsolescence",
+        "functional_acceptance",
+    ),
+}
 
 
 def _reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
@@ -181,6 +199,173 @@ def _canonical_record_digest(record: dict[str, Any]) -> str:
         content, ensure_ascii=False, sort_keys=True, separators=(",", ":")
     ).encode("utf-8")
     return sha256(encoded).hexdigest()
+
+
+def _canonical_object_digest(value: dict[str, Any]) -> str:
+    encoded = json.dumps(
+        value, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")
+    return sha256(encoded).hexdigest()
+
+
+def _validate_contract_axes(
+    axes: Any, *, context: str
+) -> tuple[dict[str, str], dict[str, str]]:
+    if not isinstance(axes, dict) or set(axes) != set(CGATE_CONTRACT_AXIS_SCHEMA):
+        raise ValueError(f"{context} must define the exact C-Gate contract axes")
+    axis_status: dict[str, str] = {}
+    subaxis_status: dict[str, str] = {}
+    for axis_name, subaxis_names in CGATE_CONTRACT_AXIS_SCHEMA.items():
+        axis = axes[axis_name]
+        if not isinstance(axis, dict) or set(axis) != {"status", "subaxes"}:
+            raise ValueError(f"{context}.{axis_name} has an invalid axis")
+        subaxes = axis["subaxes"]
+        if not isinstance(subaxes, dict) or tuple(subaxes) != subaxis_names:
+            raise ValueError(f"{context}.{axis_name} has invalid subaxes")
+        resolved_count = 0
+        for subaxis_name, subaxis in subaxes.items():
+            subaxis_context = f"{context}.{axis_name}.{subaxis_name}"
+            if not isinstance(subaxis, dict) or subaxis.get("status") not in {
+                "resolved",
+                "unresolved",
+            }:
+                raise ValueError(f"{subaxis_context} has an invalid status")
+            refs = _strings(
+                subaxis.get("source_refs"),
+                field=f"{subaxis_context}.source_refs",
+                nonempty=True,
+            )
+            if any(not ref.strip() for ref in refs):
+                raise ValueError(f"{subaxis_context} has an empty source reference")
+            if subaxis["status"] == "resolved":
+                resolved_count += 1
+                if "value" not in subaxis or "reason" in subaxis:
+                    raise ValueError(f"{subaxis_context} lacks a resolved value")
+            elif (
+                not isinstance(subaxis.get("reason"), str)
+                or not subaxis["reason"].strip()
+                or "value" in subaxis
+            ):
+                raise ValueError(f"{subaxis_context} lacks an unresolved reason")
+            subaxis_status[f"{axis_name}.{subaxis_name}"] = subaxis["status"]
+        expected_status = (
+            "resolved"
+            if resolved_count == len(subaxes)
+            else "unresolved"
+            if resolved_count == 0
+            else "partial"
+        )
+        if axis.get("status") != expected_status:
+            raise ValueError(f"{context}.{axis_name} aggregate status changed")
+        axis_status[axis_name] = expected_status
+    return axis_status, subaxis_status
+
+
+def validate_cgate_contract_inventory(
+    inventory: dict[str, Any], *, raw: bytes | None = None
+) -> dict[str, dict[str, Any]]:
+    if raw is not None:
+        parsed = parse_json_document(raw, context=CGATE_CONTRACT_RESOURCE)
+        if parsed != inventory:
+            raise ValueError("Parsed C-Gate contract inventory differs from supplied inventory")
+    if inventory.get("schema_version") != 1:
+        raise ValueError("C-Gate contract inventory requires schema_version 1")
+    if inventory.get("axis_schema") != {
+        key: list(value) for key, value in CGATE_CONTRACT_AXIS_SCHEMA.items()
+    }:
+        raise ValueError("C-Gate contract inventory axis schema changed")
+    if not isinstance(inventory.get("inventory_version"), str) or not inventory[
+        "inventory_version"
+    ]:
+        raise ValueError("C-Gate contract inventory requires inventory_version")
+    sources = inventory.get("sources")
+    if not isinstance(sources, dict) or not sources:
+        raise ValueError("C-Gate contract inventory requires sources")
+    for source_name, source in sources.items():
+        if (
+            not isinstance(source_name, str)
+            or not source_name
+            or not isinstance(source, dict)
+            or set(source) != {"sha256"}
+            or not isinstance(source["sha256"], str)
+            or not SHA256_RE.fullmatch(source["sha256"])
+        ):
+            raise ValueError(f"C-Gate contract source is invalid: {source_name!r}")
+    contracts = inventory.get("contracts")
+    if not isinstance(contracts, list) or len(contracts) != 442:
+        raise ValueError("C-Gate contract inventory requires exactly 442 contracts")
+    by_id: dict[str, dict[str, Any]] = {}
+    paths: set[str] = set()
+    inventory_counts: Counter[str] = Counter()
+    axis_counts: dict[str, Counter[str]] = {
+        axis_name: Counter() for axis_name in CGATE_CONTRACT_AXIS_SCHEMA
+    }
+    subaxis_counts: dict[str, Counter[str]] = {
+        f"{axis_name}.{subaxis_name}": Counter()
+        for axis_name, subaxis_names in CGATE_CONTRACT_AXIS_SCHEMA.items()
+        for subaxis_name in subaxis_names
+    }
+    for index, contract in enumerate(contracts):
+        context = f"C-Gate contract {index}"
+        if not isinstance(contract, dict):
+            raise ValueError(f"{context} must be an object")
+        contract_id = contract.get("id")
+        path = contract.get("path")
+        if not isinstance(contract_id, str) or not contract_id:
+            raise ValueError(f"{context} requires an id")
+        if contract_id in by_id:
+            raise ValueError(f"Duplicate C-Gate contract id: {contract_id}")
+        if not isinstance(path, str) or not path or path in paths:
+            raise ValueError(f"{context} has an invalid or duplicate path")
+        paths.add(path)
+        inventory_kind = contract.get("inventory")
+        if inventory_kind not in {"primary", "supplement"}:
+            raise ValueError(f"{contract_id} has an invalid inventory kind")
+        inventory_counts[inventory_kind] += 1
+        if (
+            not isinstance(contract.get("routing_evidence"), str)
+            or not contract["routing_evidence"].strip()
+        ):
+            raise ValueError(f"{contract_id} requires routing evidence")
+        axes = contract.get("axes")
+        if contract.get("axes_sha256") != _canonical_object_digest(axes):
+            raise ValueError(f"{contract_id} axes digest changed")
+        unsigned = {
+            key: value for key, value in contract.items() if key != "contract_sha256"
+        }
+        if contract.get("contract_sha256") != _canonical_object_digest(unsigned):
+            raise ValueError(f"{contract_id} contract digest changed")
+        statuses, substatuses = _validate_contract_axes(axes, context=contract_id)
+        for name, status in statuses.items():
+            axis_counts[name][status] += 1
+        for name, status in substatuses.items():
+            subaxis_counts[name][status] += 1
+        by_id[contract_id] = contract
+    counts = inventory.get("counts")
+    expected_fixed = {
+        "paths": 442,
+        "primary_paths": 431,
+        "supplement_paths": 11,
+        "declarative_argument_arities": 70,
+        "public_help_syntax_hashes": 209,
+    }
+    if not isinstance(counts, dict) or any(
+        counts.get(key) != value for key, value in expected_fixed.items()
+    ):
+        raise ValueError("C-Gate contract inventory fixed counts changed")
+    if inventory_counts != Counter({"primary": 431, "supplement": 11}):
+        raise ValueError("C-Gate contract inventory path classes changed")
+    expected_axis_counts = {
+        key: dict(sorted(value.items())) for key, value in axis_counts.items()
+    }
+    expected_subaxis_counts = {
+        key: dict(sorted(value.items())) for key, value in subaxis_counts.items()
+    }
+    if counts.get("axis_status") != expected_axis_counts:
+        raise ValueError("C-Gate contract inventory axis counts changed")
+    if counts.get("subaxis_status") != expected_subaxis_counts:
+        raise ValueError("C-Gate contract inventory subaxis counts changed")
+    return by_id
 
 
 def validate_evidence_bundle(
@@ -345,6 +530,8 @@ def validate_register(
     *,
     evidence_raw: bytes | None = None,
     ledger_raw: bytes | None = None,
+    cgate_contract_inventory: dict[str, Any] | None = None,
+    cgate_contract_raw: bytes | None = None,
     artifact_root: Path | None = None,
 ) -> dict[str, Any]:
     if register.get("schema_version") != 1:
@@ -363,6 +550,24 @@ def validate_register(
             raise ValueError("Parity register has an invalid source digest name")
         if not isinstance(source_digest, str) or not SHA256_RE.fullmatch(source_digest):
             raise ValueError(f"Parity source {source_name} requires a lowercase SHA-256")
+    cgate_contracts_by_id: dict[str, dict[str, Any]] | None = None
+    if (
+        "cgate_contract_inventory" in source_digests
+        and cgate_contract_inventory is None
+    ):
+        raise ValueError("C-Gate contract inventory is required by this parity register")
+    if cgate_contract_inventory is not None:
+        cgate_contracts_by_id = validate_cgate_contract_inventory(
+            cgate_contract_inventory, raw=cgate_contract_raw
+        )
+        if cgate_contract_raw is None:
+            raise ValueError("C-Gate contract inventory bytes are required")
+        if sha256(cgate_contract_raw).hexdigest() != source_digests.get(
+            "cgate_contract_inventory"
+        ):
+            raise ValueError("Parity C-Gate contract inventory digest changed")
+    elif cgate_contract_raw is not None:
+        raise ValueError("C-Gate contract inventory object is required with its bytes")
     if ledger_raw is not None:
         parsed_ledger = parse_json_document(ledger_raw, context="feature ledger")
         if parsed_ledger != ledger:
@@ -498,6 +703,15 @@ def validate_register(
     scope_by_id: dict[str, dict[str, Any]] = {}
     scope_counts: Counter[str] = Counter()
     unresolved_scope = 0
+    cgate_contract_ids: set[str] = set()
+    cgate_axis_counts: dict[str, Counter[str]] = {
+        axis_name: Counter() for axis_name in CGATE_CONTRACT_AXIS_SCHEMA
+    }
+    cgate_subaxis_counts: dict[str, Counter[str]] = {
+        f"{axis_name}.{subaxis_name}": Counter()
+        for axis_name, subaxis_names in CGATE_CONTRACT_AXIS_SCHEMA.items()
+        for subaxis_name in subaxis_names
+    }
     for index, item in enumerate(scope_items):
         if not isinstance(item, dict):
             raise ValueError(f"scope item {index} must be an object")
@@ -513,6 +727,55 @@ def validate_register(
         if not isinstance(item.get("source_id"), str) or not item["source_id"]:
             raise ValueError(f"{item_id} requires a source_id")
         scope_counts[kind] += 1
+        if kind in {"cgate_primary_path", "cgate_supplement_path"}:
+            contract_id = item.get("contract_id")
+            if not isinstance(contract_id, str) or not contract_id:
+                raise ValueError(f"{item_id} requires a C-Gate contract id")
+            if contract_id in cgate_contract_ids:
+                raise ValueError(f"Duplicate scoped C-Gate contract id: {contract_id}")
+            cgate_contract_ids.add(contract_id)
+            contract_digest = item.get("contract_sha256")
+            axes_digest = item.get("contract_axes_sha256")
+            if (
+                not isinstance(contract_digest, str)
+                or not SHA256_RE.fullmatch(contract_digest)
+                or not isinstance(axes_digest, str)
+                or not SHA256_RE.fullmatch(axes_digest)
+            ):
+                raise ValueError(f"{item_id} requires C-Gate contract digests")
+            axes = item.get("contract_axes")
+            if axes_digest != _canonical_object_digest(axes):
+                raise ValueError(f"{item_id} C-Gate contract axes digest changed")
+            statuses, substatuses = _validate_contract_axes(
+                axes, context=f"{item_id}.contract_axes"
+            )
+            for name, status in statuses.items():
+                cgate_axis_counts[name][status] += 1
+            for name, status in substatuses.items():
+                cgate_subaxis_counts[name][status] += 1
+            routing_class = item.get("routing_class")
+            if (
+                axes["effects_routing"]["subaxes"]["routing_class"].get("value")
+                != routing_class
+            ):
+                raise ValueError(f"{item_id} routing class differs from its contract")
+            if cgate_contracts_by_id is not None:
+                contract = cgate_contracts_by_id.get(contract_id)
+                if contract is None:
+                    raise ValueError(f"{item_id} names unknown C-Gate contract")
+                expected_kind = (
+                    "primary" if kind == "cgate_primary_path" else "supplement"
+                )
+                if (
+                    contract["path"] != item["source_id"]
+                    or contract["inventory"] != expected_kind
+                    or contract["contract_sha256"] != contract_digest
+                    or contract["axes_sha256"] != axes_digest
+                    or contract["axes"] != axes
+                ):
+                    raise ValueError(
+                        f"{item_id} differs from packaged C-Gate contract inventory"
+                    )
         if item.get("disposition") not in SCOPE_DISPOSITIONS:
             raise ValueError(f"{item_id} has an unknown disposition")
         item_obligations = _strings(
@@ -545,6 +808,11 @@ def validate_register(
         if item["disposition"] in {"pending_analysis", "provisional_obligation"}:
             unresolved_scope += 1
 
+    if cgate_contracts_by_id is not None and cgate_contract_ids != set(
+        cgate_contracts_by_id
+    ):
+        raise ValueError("Scoped C-Gate contracts differ from packaged inventory")
+
     for evidence_id, record in evidence_by_id.items():
         for receipt in record["scope_disposition_receipts"]:
             scope_item_id = receipt["scope_item_id"]
@@ -567,6 +835,12 @@ def validate_register(
     source_inventory = register.get("source_inventory")
     if not isinstance(source_inventory, list) or not source_inventory:
         raise ValueError("Parity register requires source_inventory")
+    expected_cgate_axis_counts = {
+        key: dict(sorted(value.items())) for key, value in cgate_axis_counts.items()
+    }
+    expected_cgate_subaxis_counts = {
+        key: dict(sorted(value.items())) for key, value in cgate_subaxis_counts.items()
+    }
     domain_ids: set[str] = set()
     unresolved_domains: list[str] = []
     for domain in source_inventory:
@@ -593,6 +867,27 @@ def validate_register(
                 raise ValueError(
                     f"{domain_id} count mismatch: {scope_counts[kind]} != {expected}"
                 )
+        if domain_id == "cgate_selector_state_effect_contracts":
+            if expected != len(cgate_contract_ids):
+                raise ValueError("C-Gate contract domain count differs from scoped contracts")
+            version = domain.get("contract_inventory_version")
+            if not isinstance(version, str) or not version:
+                raise ValueError("C-Gate contract domain requires an inventory version")
+            if cgate_contract_inventory is not None and version != cgate_contract_inventory.get(
+                "inventory_version"
+            ):
+                raise ValueError("C-Gate contract inventory version changed")
+            if domain.get("axis_status") != expected_cgate_axis_counts:
+                raise ValueError("C-Gate contract domain axis counts changed")
+            if domain.get("subaxis_status") != expected_cgate_subaxis_counts:
+                raise ValueError("C-Gate contract domain subaxis counts changed")
+            if domain["resolved"] and any(
+                states != {"resolved": expected}
+                for states in expected_cgate_axis_counts.values()
+            ):
+                raise ValueError(
+                    "C-Gate contract domain cannot resolve while contract axes remain partial or unresolved"
+                )
         if not domain["resolved"]:
             unresolved_domains.append(domain_id)
     if register["census_complete"] and (unresolved_scope or unresolved_domains):
@@ -606,6 +901,11 @@ def validate_register(
         "unresolved_scope_items": unresolved_scope,
         "unresolved_domains": unresolved_domains,
         "source_inventory": source_inventory,
+        "cgate_contracts": {
+            "paths": len(cgate_contract_ids),
+            "axis_status": expected_cgate_axis_counts,
+            "subaxis_status": expected_cgate_subaxis_counts,
+        },
     }
 
 
@@ -616,6 +916,8 @@ def evaluate(
     *,
     evidence_raw: bytes | None = None,
     ledger_raw: bytes | None = None,
+    cgate_contract_inventory: dict[str, Any] | None = None,
+    cgate_contract_raw: bytes | None = None,
     artifact_root: Path | None = None,
 ) -> dict[str, Any]:
     validated = validate_register(
@@ -624,6 +926,8 @@ def evaluate(
         ledger,
         evidence_raw=evidence_raw,
         ledger_raw=ledger_raw,
+        cgate_contract_inventory=cgate_contract_inventory,
+        cgate_contract_raw=cgate_contract_raw,
         artifact_root=artifact_root,
     )
     obligations = list(validated["obligations_by_id"].values())
@@ -720,6 +1024,7 @@ def evaluate(
             "by_kind": validated["scope_counts"],
             "unresolved": validated["unresolved_scope_items"],
         },
+        "cgate_contracts": validated["cgate_contracts"],
         "unresolved_domains": validated["unresolved_domains"],
         "source_inventory": {
             "total_domains": len(validated["source_inventory"]),
@@ -734,19 +1039,30 @@ def evaluate(
     }
 
 
-def load_packaged_documents() -> tuple[dict[str, Any], dict[str, Any], bytes]:
+def load_packaged_documents() -> tuple[
+    dict[str, Any], dict[str, Any], bytes, dict[str, Any], bytes
+]:
     package = files("cbus_toolkit")
     register_raw = package.joinpath(REGISTER_RESOURCE).read_bytes()
     evidence_raw = package.joinpath(EVIDENCE_RESOURCE).read_bytes()
+    cgate_contract_raw = package.joinpath(CGATE_CONTRACT_RESOURCE).read_bytes()
     return (
         parse_json_document(register_raw, context=REGISTER_RESOURCE),
         parse_json_document(evidence_raw, context=EVIDENCE_RESOURCE),
         evidence_raw,
+        parse_json_document(cgate_contract_raw, context=CGATE_CONTRACT_RESOURCE),
+        cgate_contract_raw,
     )
 
 
 def evaluate_packaged(ledger: dict[str, Any]) -> dict[str, Any]:
-    register, evidence, evidence_raw = load_packaged_documents()
+    (
+        register,
+        evidence,
+        evidence_raw,
+        cgate_contract_inventory,
+        cgate_contract_raw,
+    ) = load_packaged_documents()
     ledger_raw = files("cbus_toolkit").joinpath("capabilities.json").read_bytes()
     packaged_ledger = parse_json_document(ledger_raw, context="capabilities.json")
     if packaged_ledger != ledger:
@@ -757,4 +1073,6 @@ def evaluate_packaged(ledger: dict[str, Any]) -> dict[str, Any]:
         ledger,
         evidence_raw=evidence_raw,
         ledger_raw=ledger_raw,
+        cgate_contract_inventory=cgate_contract_inventory,
+        cgate_contract_raw=cgate_contract_raw,
     )

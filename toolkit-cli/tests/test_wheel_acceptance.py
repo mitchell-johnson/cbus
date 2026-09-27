@@ -145,6 +145,52 @@ class WheelAcceptanceAuditTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, 'Report parity differs'):
                     self.run_audit()
 
+    def test_wheel_cannot_substitute_the_cgate_contract_inventory(self):
+        package = Path(__file__).resolve().parents[1] / 'src/cbus_toolkit'
+        resource_names = (
+            'capabilities.json',
+            'parity-obligations.json',
+            'parity-evidence.json',
+            'cgate-contract-inventory.json',
+        )
+        wheel_path = self.root / 'fixture.whl'
+        with zipfile.ZipFile(wheel_path) as wheel:
+            entries = {entry: wheel.read(entry) for entry in wheel.namelist()}
+        for resource_name in resource_names:
+            raw = (package / resource_name).read_bytes()
+            snapshot_name = f'src/cbus_toolkit/{resource_name}'
+            value = self.add_snapshot_input(snapshot_name, raw)
+            self.report['input_sha256'][snapshot_name] = value
+            entries[f'cbus_toolkit/{resource_name}'] = raw
+        with zipfile.ZipFile(wheel_path, 'w') as wheel:
+            for entry, contents in entries.items():
+                wheel.writestr(entry, contents)
+        manifest_path = self.root / 'snapshot.json'
+        manifest = json.loads(manifest_path.read_text())
+        manifest['wheel_sha256'] = hashlib.sha256(wheel_path.read_bytes()).hexdigest()
+        manifest['package_files'] = sorted(entries)
+        manifest_path.write_text(json.dumps(manifest))
+        self.assertFalse(self.run_audit()['toolkit_parity_complete'])
+
+        contract_name = 'src/cbus_toolkit/cgate-contract-inventory.json'
+        changed = (self.root / contract_name).read_bytes().replace(
+            b'Evidence-bounded per-path contracts',
+            b'Evidence-changed per-path contracts',
+            1,
+        )
+        self.assertNotEqual(changed, (self.root / contract_name).read_bytes())
+        (self.root / contract_name).write_bytes(changed)
+        entries['cbus_toolkit/cgate-contract-inventory.json'] = changed
+        with zipfile.ZipFile(wheel_path, 'w') as wheel:
+            for entry, contents in entries.items():
+                wheel.writestr(entry, contents)
+        manifest = json.loads(manifest_path.read_text())
+        manifest['input_sha256'][contract_name] = hashlib.sha256(changed).hexdigest()
+        manifest['wheel_sha256'] = hashlib.sha256(wheel_path.read_bytes()).hexdigest()
+        manifest_path.write_text(json.dumps(manifest))
+        with self.assertRaisesRegex(ValueError, 'contract inventory digest changed'):
+            self.run_audit()
+
     def test_incomplete_failed_or_different_report_is_rejected(self):
         mutations = [('passed', False), ('failures', 1), ('expected_failures', 1), ('skipped', ['fixture']),
                      ('require_no_skips', False), ('tests_run', 0), ('test_files', []), ('input_sha256', {}),

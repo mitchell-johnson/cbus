@@ -320,9 +320,11 @@ The target cannot be reduced to the equipment installed in one house.
 | Applicability | Version-specific proof for every not-applicable dimension or native-absent function; hardware unavailable is `blocked`, not not-applicable |
 | Provenance | Source and release artifact hashes, original artifact hashes, exact command, result, skips/failures, and invalidation rules |
 
-These fields are a **schema requirement for P0**, not a claim that a complete
-obligation register or its validator already exists. Preserve the current
-ledger and six-slot matrix as historical evidence when adding this finer map.
+These fields are the **schema requirement for P0**. The packaged provisional
+register and validator now enforce the record structure, while the complete
+deduplicated obligation set and its acceptance evidence remain unfinished.
+Preserve the current ledger and six-slot matrix as historical evidence while
+finishing this finer map.
 
 Publish three separate ratios after the census is accepted:
 
@@ -771,6 +773,25 @@ profiles. The output therefore keeps
 `denominator_ready=false`, all functional percentages `null`, zero obligations
 accepted, and the completion gate red. P0.01–P0.05 stay open until those
 records are deduplicated, fully specified and backed by current evidence.
+
+P0.02 now also has a deterministic, packaged contract inventory for all 431
+primary and 11 supplement C-Gate paths. Every record contains structured
+selector, session, target, authorization, response/event, effect/routing and
+implementation/acceptance axes, with a source reference and reason on every
+unresolved subaxis. The generator binds the routing matrix, manual declarations,
+production endpoint and exact authorization-policy function by SHA-256; the
+parity register and installed-wheel auditor bind the generated inventory and
+each scoped row by digest. This resolves path identity, connection/recovery
+state, routing/I/O class and implementation-route status for all 442 paths,
+plus 398 path-level programming-gate decisions. The separate handler-role
+subaxis is resolved as minimum `Program` for all five TELEPHONY leaves, so
+those five paths now have fully resolved authorization axes. It retains 70
+model arities as unresolved known facts pending production-parser
+reconciliation. Target forms, value domains, 44 argument-dependent
+programming-gate decisions, handler roles on the other 437 paths, most exact
+response/event envelopes and 438 command-specific effect contracts remain
+open, and no path has functional acceptance evidence. P0.02 and issue #14
+therefore remain open.
 
 ### Blockers to remove early
 

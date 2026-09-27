@@ -21,8 +21,11 @@ REPOSITORY = ROOT.parent
 PACKAGE = ROOT / "src" / "cbus_toolkit"
 SURFACE_PATH = ROOT / "docs" / "toolkit-surface.json"
 EXECUTABLE_SURFACE_PATH = ROOT / "docs" / "toolkit-executable-surface.json"
+CGATE_CONTRACT_PATH = PACKAGE / "cgate-contract-inventory.json"
 LEDGER_PATH = PACKAGE / "capabilities.json"
 MATRIX_PATH = REPOSITORY / "rust" / "cbus-cgate" / "src" / "capability_matrix.rs"
+MANUAL_PATH = REPOSITORY / "rust" / "cbus-cgate" / "src" / "manual.rs"
+SERVICE_PATH = REPOSITORY / "rust" / "cbus-cgate" / "src" / "service.rs"
 ROADMAP_PATH = REPOSITORY / "docs" / "parity-review-and-roadmap.md"
 REGISTER_PATH = PACKAGE / "parity-obligations.json"
 EVIDENCE_PATH = PACKAGE / "parity-evidence.json"
@@ -106,6 +109,159 @@ def capability_paths() -> tuple[list[dict], list[dict]]:
     return primary, supplement
 
 
+def canonical_digest(value: dict) -> str:
+    return sha256(
+        json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+
+
+def authorization_policy_digest() -> str:
+    text = SERVICE_PATH.read_text(encoding="utf-8")
+    start = text.index("fn requires_programming_auth(")
+    end = text.index("\nfn local_command(", start)
+    return sha256(text[start:end].encode()).hexdigest()
+
+
+def cgate_contract_inventory(
+    primary_paths: list[dict], supplement_paths: list[dict]
+) -> dict:
+    inventory = load_json(CGATE_CONTRACT_PATH)
+    if inventory.get("schema_version") != 1:
+        raise ValueError("C-Gate contract inventory requires schema_version 1")
+    axis_schema = inventory.get("axis_schema")
+    expected_axis_schema = {
+        "selector_grammar": ["command_path", "argument_arity", "value_domains"],
+        "session_states": ["connection", "recovery_mode", "selection_and_locks"],
+        "target_forms": ["address_shape", "route_shape"],
+        "authorization": ["connection_policy", "programming_gate", "handler_roles"],
+        "response_event_envelopes": [
+            "tag_and_completion_framing",
+            "command_envelope",
+            "event_fanout",
+        ],
+        "effects_routing": ["routing_class", "physical_io_boundary", "state_effect"],
+        "implementation_acceptance": [
+            "endpoint_route",
+            "native_obsolescence",
+            "functional_acceptance",
+        ],
+    }
+    if axis_schema != expected_axis_schema:
+        raise ValueError("C-Gate contract inventory axis schema changed")
+    sources = inventory.get("sources")
+    expected_sources = {
+        "capability_matrix": digest(MATRIX_PATH),
+        "manual": digest(MANUAL_PATH),
+        "service": digest(SERVICE_PATH),
+        "authorization_policy": authorization_policy_digest(),
+        "toolkit_surface": digest(SURFACE_PATH),
+    }
+    if not isinstance(sources, dict):
+        raise ValueError("C-Gate contract inventory requires sources")
+    for source_name, source_digest in expected_sources.items():
+        if sources.get(source_name) != {"sha256": source_digest}:
+            raise ValueError(f"C-Gate contract source changed: {source_name}")
+    contracts = inventory.get("contracts")
+    if not isinstance(contracts, list) or len(contracts) != 442:
+        raise ValueError("C-Gate contract inventory requires exactly 442 contracts")
+    matrix_rows = {
+        row["path"]: (kind, row)
+        for kind, paths in (("primary", primary_paths), ("supplement", supplement_paths))
+        for row in paths
+    }
+    contract_by_path: dict[str, dict] = {}
+    axis_counts: dict[str, dict[str, int]] = {
+        axis_name: {} for axis_name in expected_axis_schema
+    }
+    subaxis_counts: dict[str, dict[str, int]] = {}
+    for contract in contracts:
+        if not isinstance(contract, dict):
+            raise ValueError("Every C-Gate contract must be an object")
+        path = contract.get("path")
+        if not isinstance(path, str) or path not in matrix_rows:
+            raise ValueError(f"C-Gate contract has unknown path: {path!r}")
+        if path in contract_by_path:
+            raise ValueError(f"Duplicate C-Gate contract path: {path}")
+        kind, matrix_row = matrix_rows[path]
+        if contract.get("inventory") != kind:
+            raise ValueError(f"C-Gate contract inventory class changed: {path}")
+        if contract.get("routing_evidence") != matrix_row["routing_evidence"]:
+            raise ValueError(f"C-Gate routing evidence changed: {path}")
+        expected_id = f"cgate-contract:{sha256(path.encode()).hexdigest()[:16]}"
+        if contract.get("id") != expected_id:
+            raise ValueError(f"C-Gate contract id changed: {path}")
+        axes = contract.get("axes")
+        if not isinstance(axes, dict) or set(axes) != set(expected_axis_schema):
+            raise ValueError(f"C-Gate contract axes changed: {path}")
+        if contract.get("axes_sha256") != canonical_digest(axes):
+            raise ValueError(f"C-Gate contract axes digest changed: {path}")
+        unsigned = {key: value for key, value in contract.items() if key != "contract_sha256"}
+        if contract.get("contract_sha256") != canonical_digest(unsigned):
+            raise ValueError(f"C-Gate contract digest changed: {path}")
+        for axis_name, subaxis_names in expected_axis_schema.items():
+            axis = axes[axis_name]
+            if not isinstance(axis, dict) or set(axis) != {"status", "subaxes"}:
+                raise ValueError(f"{path}.{axis_name} has an invalid axis")
+            subaxes = axis["subaxes"]
+            if not isinstance(subaxes, dict) or list(subaxes) != subaxis_names:
+                raise ValueError(f"{path}.{axis_name} has invalid subaxes")
+            resolved_count = 0
+            for subaxis_name, subaxis in subaxes.items():
+                if not isinstance(subaxis, dict) or subaxis.get("status") not in {
+                    "resolved",
+                    "unresolved",
+                }:
+                    raise ValueError(f"{path}.{axis_name}.{subaxis_name} has invalid status")
+                refs = subaxis.get("source_refs")
+                if (
+                    not isinstance(refs, list)
+                    or not refs
+                    or not all(isinstance(ref, str) and ref for ref in refs)
+                    or len(refs) != len(set(refs))
+                ):
+                    raise ValueError(f"{path}.{axis_name}.{subaxis_name} has invalid source refs")
+                if subaxis["status"] == "resolved":
+                    resolved_count += 1
+                    if "value" not in subaxis or "reason" in subaxis:
+                        raise ValueError(f"{path}.{axis_name}.{subaxis_name} lacks a resolved value")
+                elif not isinstance(subaxis.get("reason"), str) or not subaxis["reason"].strip():
+                    raise ValueError(f"{path}.{axis_name}.{subaxis_name} lacks an unresolved reason")
+                key = f"{axis_name}.{subaxis_name}"
+                counts = subaxis_counts.setdefault(key, {})
+                counts[subaxis["status"]] = counts.get(subaxis["status"], 0) + 1
+            expected_status = (
+                "resolved"
+                if resolved_count == len(subaxes)
+                else "unresolved"
+                if resolved_count == 0
+                else "partial"
+            )
+            if axis["status"] != expected_status:
+                raise ValueError(f"{path}.{axis_name} aggregate status changed")
+            counts = axis_counts[axis_name]
+            counts[expected_status] = counts.get(expected_status, 0) + 1
+        contract_by_path[path] = contract
+    if set(contract_by_path) != set(matrix_rows):
+        raise ValueError("C-Gate contract paths differ from the capability matrix")
+    counts = inventory.get("counts")
+    expected_counts = {
+        "paths": 442,
+        "primary_paths": 431,
+        "supplement_paths": 11,
+        "declarative_argument_arities": 70,
+        "public_help_syntax_hashes": 209,
+        "axis_status": {
+            key: dict(sorted(value.items())) for key, value in axis_counts.items()
+        },
+        "subaxis_status": {
+            key: dict(sorted(value.items())) for key, value in subaxis_counts.items()
+        },
+    }
+    if counts != expected_counts:
+        raise ValueError("C-Gate contract inventory counts changed")
+    return inventory
+
+
 def executable_surface() -> dict:
     surface = load_json(EXECUTABLE_SURFACE_PATH)
     if surface.get("schema_version") != 1:
@@ -165,6 +321,10 @@ def build() -> tuple[dict, dict]:
         row["dialog_id"]: row["ledger_id"] for row in list_dialogs()
     }
     primary_paths, supplement_paths = capability_paths()
+    cgate_contracts = cgate_contract_inventory(primary_paths, supplement_paths)
+    contract_by_path = {
+        contract["path"]: contract for contract in cgate_contracts["contracts"]
+    }
     scope_items: list[dict] = []
 
     def obligation_ids(ledger_targets: list[str] | tuple[str, ...]) -> list[str]:
@@ -258,21 +418,17 @@ def build() -> tuple[dict, dict]:
     for kind, paths in (("cgate_primary_path", primary_paths), ("cgate_supplement_path", supplement_paths)):
         for row in paths:
             path_id = sha256(row["path"].encode("utf-8")).hexdigest()[:16]
+            contract = contract_by_path[row["path"]]
             scope_items.append(
                 {
                     "id": f"scope:{kind}:{path_id}",
                     "kind": kind,
                     "source_id": row["path"],
                     "routing_class": row["routing_class"],
-                    "contract_status": "primary_path_only",
-                    "contract_axes": {
-                        "selectors": "unresolved",
-                        "session_states": "unresolved",
-                        "target_forms": "unresolved",
-                        "authorization": "unresolved",
-                        "response_event_envelopes": "unresolved",
-                        "effects": "routing_class_only",
-                    },
+                    "contract_id": contract["id"],
+                    "contract_sha256": contract["contract_sha256"],
+                    "contract_axes_sha256": contract["axes_sha256"],
+                    "contract_axes": contract["axes"],
                     "obligation_ids": obligation_ids(["cgate-command-transport"]),
                     "disposition": "provisional_obligation",
                 }
@@ -376,7 +532,14 @@ def build() -> tuple[dict, dict]:
         {"id": "executable_controls", "scope_kind": "executable_control", "count": by_kind["executable_control"], "resolved": False},
         {"id": "executable_event_bindings", "scope_kind": "executable_event", "count": by_kind["executable_event"], "resolved": False},
         {"id": "undocumented_toolkit_branches", "count": None, "resolved": False},
-        {"id": "cgate_selector_state_effect_contracts", "count": by_kind["cgate_primary_path"] + by_kind["cgate_supplement_path"], "resolved": False},
+        {
+            "id": "cgate_selector_state_effect_contracts",
+            "count": by_kind["cgate_primary_path"] + by_kind["cgate_supplement_path"],
+            "resolved": False,
+            "contract_inventory_version": cgate_contracts["inventory_version"],
+            "axis_status": cgate_contracts["counts"]["axis_status"],
+            "subaxis_status": cgate_contracts["counts"]["subaxis_status"],
+        },
         {"id": "catalogue_device_firmware_profiles", "count": surface["counts"]["catalogue_firmware_revisions"], "resolved": False},
     ]
     evidence = {
@@ -388,7 +551,7 @@ def build() -> tuple[dict, dict]:
     register = {
         "schema_version": 1,
         "target": ledger["target"],
-        "denominator_version": "provisional-2026-09-27.2",
+        "denominator_version": "provisional-2026-09-27.3",
         "census_complete": False,
         "purpose": "Provisional exhaustive source accounting; not yet a deduplicated functional denominator or acceptance claim.",
         "source_digests": {
@@ -398,6 +561,7 @@ def build() -> tuple[dict, dict]:
             "toolkit_map": executable["sources"]["map"]["sha256"],
             "feature_ledger": digest(LEDGER_PATH),
             "cgate_capability_matrix": digest(MATRIX_PATH),
+            "cgate_contract_inventory": digest(CGATE_CONTRACT_PATH),
             "roadmap": digest(ROADMAP_PATH),
         },
         "evidence_bundle_sha256": sha256(evidence_raw).hexdigest(),

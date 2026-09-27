@@ -134,12 +134,48 @@ class ParityRegisterTests(unittest.TestCase):
         self.assertEqual(report["source_inventory"]["total_domains"], 15)
         self.assertEqual(report["source_inventory"]["resolved_domains"], 0)
         self.assertEqual(report["evidence_records"], 0)
+        self.assertEqual(report["cgate_contracts"]["paths"], 442)
+        self.assertEqual(
+            report["cgate_contracts"]["subaxis_status"][
+                "selector_grammar.argument_arity"
+            ],
+            {"unresolved": 442},
+        )
+        self.assertEqual(
+            report["cgate_contracts"]["subaxis_status"][
+                "implementation_acceptance.functional_acceptance"
+            ],
+            {"unresolved": 442},
+        )
 
     def test_packaged_register_rejects_a_substituted_feature_ledger(self):
         ledger = json.loads((ROOT / "src/cbus_toolkit/capabilities.json").read_text())
         ledger["features"][0]["status"] = "pending"
         with self.assertRaisesRegex(ValueError, "differs from packaged"):
             parity.evaluate_packaged(ledger)
+
+    def test_cgate_contract_domain_cannot_resolve_with_partial_axes(self):
+        register, evidence, evidence_raw, contracts, contract_raw = (
+            parity.load_packaged_documents()
+        )
+        ledger_raw = (ROOT / "src/cbus_toolkit/capabilities.json").read_bytes()
+        ledger = parity.parse_json_document(ledger_raw, context="capabilities.json")
+        domain = next(
+            item
+            for item in register["source_inventory"]
+            if item["id"] == "cgate_selector_state_effect_contracts"
+        )
+        domain["resolved"] = True
+        with self.assertRaisesRegex(ValueError, "contract axes remain partial or unresolved"):
+            parity.validate_register(
+                register,
+                evidence,
+                ledger,
+                evidence_raw=evidence_raw,
+                ledger_raw=ledger_raw,
+                cgate_contract_inventory=contracts,
+                cgate_contract_raw=contract_raw,
+            )
 
     def test_feature_ledger_bytes_are_strictly_parsed_and_digest_bound(self):
         register, evidence, ledger, evidence_raw = fixture_documents()

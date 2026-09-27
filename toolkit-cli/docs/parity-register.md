@@ -41,6 +41,13 @@ firmware domains. Until that finishes, `denominator_ready` and
 - `src/cbus_toolkit/parity-evidence.json` contains evidence receipts. It starts
   empty because a historical path or test filename is not acceptance evidence.
 - `src/cbus_toolkit/parity.py` validates both documents and derives progress.
+- `src/cbus_toolkit/cgate-contract-inventory.json` contains one versioned,
+  digest-bound contract record for each of the 431 primary and 11 supplement
+  C-Gate paths.
+- `research/build_cgate_contract_inventory.py` derives that inventory from the
+  Rust routing matrix, declarative application arities, endpoint authorization
+  policy and public-help syntax hashes. It records unknown selector/state
+  fields explicitly instead of deriving them from a command name.
 - `research/build_parity_register.py` regenerates the provisional register
   deterministically from the committed documentation/executable surface
   censuses, feature ledger, Rust capability matrix and parity roadmap.
@@ -54,6 +61,7 @@ firmware domains. Until that finishes, `denominator_ready` and
 Run:
 
 ```sh
+PYTHONPATH=src python3 research/build_cgate_contract_inventory.py --check
 PYTHONPATH=src python3 research/build_parity_register.py --check
 cbus-toolkit coverage --require-complete
 ```
@@ -119,13 +127,46 @@ runs. `research/audit_wheel_acceptance.py` recomputes it from the wheel's own
 register and evidence bundle. Historical wheels without these files remain
 auditable but can never report full parity.
 
+## C-Gate contract expansion
+
+Every maintained C-Gate path now has the same seven structured axes: selector
+grammar, session states, target forms, authorization, response/event
+envelopes, effects/routing, and implementation/acceptance. Each axis is split
+into named subaxes with a `resolved` value or an `unresolved` reason and source
+references. An aggregate axis is `resolved` only when all of its subaxes are
+resolved. The inventory binds every row and its axes by SHA-256, binds the
+source files and the exact `requires_programming_auth` function, and is copied
+into the parity register by contract ID and digest. The packaged validator
+rejects altered rows, source-inventory substitution, count drift and a scope
+row that no longer matches its packaged contract.
+
+The current inventory resolves the command path for all 442 paths, connection
+and recovery-mode behavior for all 442, peer access policy for all 442, and the
+optional programming LOGIN gate for 398. Forty-four programming-gate rows
+remain invocation-dependent. The independent native ACCESS role is now
+resolved for all five TELEPHONY leaves as minimum `Program`, including
+`RECALL_LAST_NUMBER_REQUEST`; that read-like leaf remains outside the optional
+operation-based LOGIN gate. Those five paths therefore have a fully resolved
+authorization axis. Seventy declarative model arities are retained as known
+inputs but remain unresolved until each is reconciled with the production
+service parser. The inventory also resolves response framing for all 442, the
+complete tagged/untagged envelopes for the two comment forms, routing and
+physical-I/O boundaries for all 442, and endpoint route plus
+native-obsolescence status for all 442. All 442 functional-acceptance and arity
+subaxes remain unresolved, as do every normalized value domain, every target
+form, and the command-specific state/effect contracts for 438 paths. The two
+comment forms have fully resolved response axes; the comments and two
+native-obsolete commands have fully resolved effect axes. These are
+contract-census facts, not acceptance evidence.
+
 ## Current result
 
 The current register has 39 provisional umbrella obligations, zero accepted
 obligations and zero evidence receipts. All 22,156 source records and 15
 source domains remain unresolved. Executable forms, controls and event
-bindings are now counted, while their functional deduplication, undocumented
-Toolkit branches, selector/state/effect expansion and catalogue firmware
-profiles remain open. The legacy ledger still reports 18 implemented, 19 in
+bindings are now counted. C-Gate paths have a deterministic per-axis contract
+inventory, while the unresolved subaxes above, functional deduplication,
+undocumented Toolkit branches and catalogue firmware profiles remain open.
+The legacy ledger still reports 18 implemented, 19 in
 progress and 2 pending rows, or 46.15% of category labels. That value is
 explicitly marked as not being a functionality estimate.
