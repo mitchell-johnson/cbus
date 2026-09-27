@@ -193,7 +193,10 @@ Within the routed physical PP selector, `direct`, page-aware `paged`/`ncc`, OEM
 Reply-Network-correlated selectors, reads, writes, and verification. The
 `direct`, `paged`, and `ncc` lock paths require the exact one-byte Reply Network
 challenge and PCI confirmation before their exact-once tagged STORE and
-complete routed readback. C-Bus 3 Save-to-NVM remains separately gated. This
+complete routed readback. A changed `ncc` session then performs the routed
+C-Bus 3 Save-to-NVM EXECUTE/POLL sequence with exact route, unit, group and
+operation correlation. Its availability is advertised separately as
+`physical_pp_routed_nvm_commit`. This
 narrows a selector boundary without changing the 431-path command inventory or
 the false full compatibility flag.
 
