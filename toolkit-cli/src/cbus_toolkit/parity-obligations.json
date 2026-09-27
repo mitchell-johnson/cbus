@@ -12,13 +12,13 @@
     "toolkit_map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
     "feature_ledger": "79750e146f08911f5350e2a655f86ff0472a73b30e89cf969923ab737ceb85af",
     "cgate_capability_matrix": "f87c6e3575fa34f265f2aec2178c899596a653918a98a7a59f5077e038e11886",
-    "cgate_contract_inventory": "e3ba27d8be0bc1543959d1b195c8d51f04dd10ab86ce2b827afc1929124b4533",
+    "cgate_contract_inventory": "9c9d63523d970f7f67eb3f099facffdc82146b9654636142c2df0ced5b45acca",
     "cgate_session_native_acceptance": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f",
-    "functional_obligation_pilot": "d3877866b034e9edfae8892a00c75e8f1e7d1b2f21c321151679a16f5704e670",
-    "cgate_session_differential_cmqttd": "59bfde2e0a975953caa5a27202575669a4f4ff9d49ead9275b9886b0425709c9",
+    "functional_obligation_pilot": "36a05e9c7573d099970cd797bbba7c010da09c7e192f57d366956d7454ca0b19",
+    "cgate_session_differential_cmqttd": "6412b5a0880adc56db6a4879d4b2a4d0c844b4e9fc2c987a712a8346c3f41d24",
     "roadmap": "e216be63829d38e460e81fdb1643ef12db8a7b3188c20f20564ecbd08804a97c"
   },
-  "evidence_bundle_sha256": "66274cb0e50176c677d030682b4a63a25eda543912bb6c4ad78cd0b804535f6f",
+  "evidence_bundle_sha256": "325a8b37cfc118476c1a10c99432b5de26537c6291c4e7924499448184ce5a87",
   "work_item_ids": [
     "P0.01",
     "P0.02",
@@ -176794,8 +176794,8 @@
       "source_id": "SESSION_ID ALL",
       "routing_class": "LocalDatabase",
       "contract_id": "cgate-contract:c11c2667484965c5",
-      "contract_sha256": "2897a930c6a39b568870b85cac9d5d077ae9f2711c2a9212971790663c29c4c5",
-      "contract_axes_sha256": "f2264ebb3792e0977cc1bb9098856dbd17586e22b00cff985f7bdd4fa922af17",
+      "contract_sha256": "ca7fa12124c8cc99330d0ef1dc8abbd584466655c74478b85fd32d868c9e8d3d",
+      "contract_axes_sha256": "97ba3966e5b2bb55f78474f4efe9a0de47aa45e76b57842ffbdf0614829ac192",
       "contract_axes": {
         "selector_grammar": {
           "status": "resolved",
@@ -176874,10 +176874,7 @@
               "status": "resolved",
               "value": {
                 "cbus_address_argument": false,
-                "scope": {
-                  "native": "all_open_command_sessions_including_internal_console",
-                  "endpoint": "live_external_tcp_tls_sessions_only"
-                }
+                "scope": "all_open_command_sessions_including_internal_console"
               },
               "source_refs": [
                 "toolkit-cli/docs/toolkit-surface.json#cgate:SESSION_ID ALL",
@@ -176976,8 +176973,7 @@
             "state_effect": {
               "status": "resolved",
               "value": {
-                "native_registry": "read_all_open_sessions_including_internal_console",
-                "endpoint_registry": "read_all_live_external_tcp_tls_sessions_only",
+                "command_session_registry": "read_all_open_sessions_including_internal_console",
                 "endpoint_audit_log": "append_command_record"
               },
               "source_refs": [
@@ -328552,7 +328548,7 @@
       "source_scope_item_id": "scope:cgate_primary_path:c11c2667484965c5",
       "source_id": "SESSION_ID ALL",
       "contract_id": "cgate-contract:c11c2667484965c5",
-      "contract_sha256": "2897a930c6a39b568870b85cac9d5d077ae9f2711c2a9212971790663c29c4c5",
+      "contract_sha256": "ca7fa12124c8cc99330d0ef1dc8abbd584466655c74478b85fd32d868c9e8d3d",
       "definition_status": "provisional",
       "implementation_status": "in_progress",
       "implementation_basis": "route_reachable_contract_incomplete",
@@ -330886,7 +330882,7 @@
         "syntax_sha256": "c11c2667484965c55fe135362c17fe0829b80772e704ba572c8332f0e8b12cdf"
       },
       "contract_id": "cgate-contract:c11c2667484965c5",
-      "contract_sha256": "2897a930c6a39b568870b85cac9d5d077ae9f2711c2a9212971790663c29c4c5",
+      "contract_sha256": "ca7fa12124c8cc99330d0ef1dc8abbd584466655c74478b85fd32d868c9e8d3d",
       "native_oracle": {
         "path": "research/experiments/2026-09-25/cgate-session-native-acceptance.json",
         "sha256": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f",
@@ -330904,7 +330900,7 @@
       },
       "definition_status": "defined",
       "implementation_status": "in_progress",
-      "implementation_basis": "in_progress: cmqttd and cgate-mock list live external sessions and remove closed peers, but access-policy variants remain open",
+      "implementation_basis": "in_progress: cmqttd and cgate-mock list the native-shaped internal Console row and live external sessions, and remove closed peers, but access-policy variants remain open",
       "implementation": {
         "owner": "rust/cbus-cgate/src/service.rs#Service::handle",
         "cli_entry_point": "cbus-toolkit cgate run <command-file>",
@@ -330922,7 +330918,7 @@
           "ACCESS/LOGIN policy variants"
         ]
       },
-      "outcome": "A connected loopback client can list live external command sessions in 300 continuation framing with origin, connection time and optional one-shot tag; trailing words are ignored in the observed profile.",
+      "outcome": "A connected loopback client can list the internal Console and live external command sessions in 300 continuation framing with origin, connection time and optional one-shot tag; trailing words are ignored in the observed profile.",
       "preconditions": [
         "C-Gate 3.4.0.2001 command connection",
         "owned loopback listener with no project or physical network"
@@ -330936,7 +330932,7 @@
         "research/experiments/2026-09-25/cgate-session-native-acceptance.json#cases",
         "rust/cbus-cgate/src/service.rs#Service::handle"
       ],
-      "differential_gap": "The native ALL trace also reports an internal Console cmd1 row. The external-session differential excludes that exact row and records it; full unfiltered ALL parity remains open.",
+      "differential_gap": "The scoped payload differential now requires the internal Console cmd1 row and CRLF; native tagged-wire equivalence and broader access-policy or session variants remain open.",
       "acceptance": {
         "nominal": "unassessed",
         "error": "unassessed",
