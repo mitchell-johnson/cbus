@@ -2771,7 +2771,7 @@ impl Service {
             capabilities["bridged_project_identity_write"] = serde_json::Value::Bool(true);
             capabilities["physical_application_routed_control"] = serde_json::Value::Bool(true);
             capabilities["physical_application_routed_families"] =
-                serde_json::json!(["lighting", "trigger", "enable-set"]);
+                serde_json::json!(["lighting", "trigger", "enable-set", "network-management"]);
             capabilities["physical_application_routed_commands"] = serde_json::json!([
                 "ON",
                 "OFF",
@@ -2785,7 +2785,12 @@ impl Service {
                 "DO lighting",
                 "TRIGGER EVENT",
                 "TRIGGER INDICATORKILL",
-                "ENABLE SET"
+                "ENABLE SET",
+                "NET LEARN",
+                "NETWORK LOCATE UNIT",
+                "NETWORK LOCATE APP",
+                "NETWORK LOCATE GROUP",
+                "NETWORK LOCATE SERIAL"
             ]);
             capabilities["physical_application_routed_delivery_semantics"] =
                 serde_json::Value::String(
@@ -2799,6 +2804,8 @@ impl Service {
                 "DO lighting",
                 "TRIGGER",
                 "ENABLE SET",
+                "NET LEARN",
+                "NETWORK LOCATE",
                 "NET SET_PROJECT_IDENTIFY",
                 "PP SAVE",
                 "PP SAVE_TO_SOURCE"
@@ -2821,6 +2828,11 @@ impl Service {
                 serde_json::Value::String("cmqttd-internal".to_string());
             capabilities["net_learn"] = serde_json::Value::Bool(true);
             capabilities["network_locate"] = serde_json::Value::Bool(true);
+            capabilities["network_management_routed"] = serde_json::Value::Bool(true);
+            capabilities["network_management_routed_selectors"] =
+                serde_json::json!(["learn", "unit", "application", "group", "serial"]);
+            capabilities["network_management_routed_max_hops"] = serde_json::Value::from(6);
+            capabilities["network_management_routed_readback"] = serde_json::Value::Bool(false);
             capabilities["network_management_delivery_semantics"] =
                 serde_json::Value::String("pci-confirmed-exactly-once-no-replay".to_string());
             capabilities["net_lifecycle_commands"] =

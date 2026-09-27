@@ -24,9 +24,10 @@ boundaries so clients do not mistake database inventory for fresh bus evidence.
 The command endpoint also maintains a durable runtime NET catalogue, separate
 from the imported tag database and live PCI ownership. CREATE, DELETE, FLUSH,
 LOAD, RENAME and SAVE are local atomic-repository operations; DB and FILE
-snapshots stay inside `cmqttd-json`. Direct NET LEARN and NETWORK LOCATE enter
-the same serialized PCI command lane as other application writes, transmit
-exactly once, wait for correlated confirmation and apply the generation guard.
+snapshots stay inside `cmqttd-json`. NET LEARN and NETWORK LOCATE use the
+configured direct network or a topology-resolved one-to-six-bridge PPM route,
+enter the same serialized PCI command lane as other application writes,
+transmit exactly once, wait for correlated confirmation and apply the generation guard.
 They publish no MQTT state, so broker lighting paths keep using the same reader
 and writer unchanged. OPEN/CLOSE and PROJECT START/STOP update runtime state and
 clear volatile caches while retaining that shared connection. Direct-network

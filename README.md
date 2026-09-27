@@ -598,9 +598,10 @@ See the [supported operations and remaining work](docs/cmqttd-cgate.md).
 The NET runtime catalogue is separate from the imported tag database, matching
 C-Gate's lifecycle boundary. Its active definitions and `DB`/`FILE` snapshots
 are atomic `cmqttd-json` state; `FILE` is an internal snapshot and never opens a
-caller-selected host path. `NET LEARN` and `NETWORK LOCATE` support only the
-configured direct shared PCI, send exact SAL once, wait for its correlated
-confirmation, and never replay an uncertain write. `NET OPEN`/`NET CLOSE` and
+caller-selected host path. `NET LEARN` and all four `NETWORK LOCATE` selectors
+use the configured direct shared PCI or a topology-resolved one-to-six-bridge
+PPM route, send one exact SAL frame, wait only for its correlated confirmation,
+and never replay an uncertain write or invent remote readback. `NET OPEN`/`NET CLOSE` and
 `PROJECT START`/`PROJECT STOP` change runtime state and clear volatile caches
 without disconnecting cmqttd's shared PCI or MQTT. Direct `NET UNRAVEL`,
 `NET UNRAVELUNIT`, and `DO ... UNRAVEL` use a complete known-serial inventory,

@@ -332,6 +332,54 @@ fn parse_mode(value: &str) -> Option<u8> {
 }
 
 impl Service {
+    /// Deliver one network-management SAL to a bound imported network.
+    ///
+    /// The direct path retains the existing command-lane behavior. A remote
+    /// imported network reuses the topology-proven one-to-six-bridge PPM
+    /// envelope and the transport's non-replaying confirmation allocation.
+    /// There is no application-level response or status readback contract for
+    /// either command, so a successful response proves only that the active
+    /// shared PCI confirmed the one transmitted frame.
+    async fn send_network_management_once(
+        &self,
+        tag: &str,
+        target_network: u8,
+        sal: Sal,
+        operation: &str,
+    ) -> Response {
+        if target_network == self.network {
+            return self
+                .send_application_once(tag, sal, ok(tag, vec![], "200 OK."), operation)
+                .await;
+        }
+
+        let route = match self.route_to_network(target_network).await {
+            Ok(route) => route,
+            Err(error) => {
+                return err(
+                    tag,
+                    408,
+                    &format!("408 Physical network-management route unavailable: {error}"),
+                )
+            }
+        };
+        let (generation, pci) = self.current_pci_epoch().await;
+        if let Err(error) = pci
+            .send_routed_application_confirmed_once(&route, sal)
+            .await
+        {
+            return err(tag, 502, &format!("502 {operation} failed: {error}"));
+        }
+        let Some(_commit_guard) = self.pci_commit_guard(generation, &pci).await else {
+            return err(
+                tag,
+                408,
+                &format!("408 {operation} invalidated by PCI reconnect"),
+            );
+        };
+        ok(tag, vec![], "200 OK.")
+    }
+
     pub(super) async fn net_lifecycle(
         &self,
         client: &ClientState,
@@ -890,29 +938,23 @@ impl Service {
             );
         }
         let current = current_project(self, client);
-        let direct = {
+        let target_network = {
             let model = self.model.lock().await;
-            network_definition(&model, words[2], &current)
-                .ok()
-                .is_some_and(|(project, definition)| {
-                    project == self.project && definition.bound_network == Some(self.network)
-                })
+            match network_definition(&model, words[2], &current) {
+                Ok((project, definition)) if project == self.project => definition.bound_network,
+                _ => None,
+            }
         };
-        if !direct {
+        let Some(target_network) = target_network else {
             return err(
                 tag,
                 502,
-                "502 NET LEARN requires the directly bound shared PCI network",
+                "502 NET LEARN requires a bound network in the configured project",
             );
-        }
+        };
         let _commands = self.commands.lock().await;
-        self.send_application_once(
-            tag,
-            Sal::LearnMode(command),
-            ok(tag, vec![], "200 OK."),
-            "NET LEARN",
-        )
-        .await
+        self.send_network_management_once(tag, target_network, Sal::LearnMode(command), "NET LEARN")
+            .await
     }
 
     pub(super) async fn network_locate(
@@ -946,26 +988,28 @@ impl Service {
                 &format!("402 Operation not supported by: {}", words[2]),
             );
         }
-        let direct = {
+        let target_network = {
             let model = self.model.lock().await;
-            catalog(&model, &project)
-                .ok()
-                .and_then(|definitions| {
-                    definitions
-                        .into_iter()
-                        .find(|definition| definition.name == network_name)
-                })
-                .is_some_and(|definition| {
-                    project == self.project && definition.bound_network == Some(self.network)
-                })
+            if project != self.project {
+                None
+            } else {
+                catalog(&model, &project)
+                    .ok()
+                    .and_then(|definitions| {
+                        definitions
+                            .into_iter()
+                            .find(|definition| definition.name == network_name)
+                    })
+                    .and_then(|definition| definition.bound_network)
+            }
         };
-        if !direct {
+        let Some(target_network) = target_network else {
             return err(
                 tag,
                 502,
-                "502 NETWORK LOCATE requires the directly bound shared PCI network",
+                "502 NETWORK LOCATE requires a bound network in the configured project",
             );
-        }
+        };
         let selector = words[3].to_ascii_uppercase();
         let command = match selector.as_str() {
             "UNIT" if words.len() == 6 => match (parse_byte(words[4]), parse_mode(words[5])) {
@@ -1013,10 +1057,10 @@ impl Service {
             return err(tag, 400, "400 Syntax Error.");
         }
         let _commands = self.commands.lock().await;
-        self.send_application_once(
+        self.send_network_management_once(
             tag,
+            target_network,
             Sal::NetworkLocate(command),
-            ok(tag, vec![], "200 OK."),
             "NETWORK LOCATE",
         )
         .await

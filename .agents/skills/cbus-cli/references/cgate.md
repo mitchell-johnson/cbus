@@ -793,7 +793,8 @@ is not silently read or changed. A missing explicit project returns native 401.
 With `--cgate-auth-file`, CREATE, DELETE, FLUSH, LOAD, RENAME, and SAVE require
 LOGIN; LIST and help remain open.
 
-The two physical forms use the configured direct shared PCI:
+The two physical forms use the configured shared PCI, directly or through a
+topology-resolved one-to-six-bridge route:
 
 ```text
 NET LEARN //PROJECT/254 56 1 1
@@ -808,8 +809,9 @@ LEARN accepts grades 1, 2, and 128–131. LOCATE requires application 208 and
 supports OFF, ON, or a byte mode. Both operations serialize through the shared
 command lane, send their exact SAL once, wait for correlated PCI confirmation,
 reject a stale PCI generation, and never replay an uncertain write. A 200
-proves delivery to the interface, not unit action. Foreign, unbound, or routed
-definitions fail before I/O. Neither family has an MQTT state schema; incoming
+proves delivery to the interface, not unit action. Foreign, unbound, or
+unroutable definitions fail before I/O. Routed delivery uses one PPM/SAL frame
+and does not invent an application reply or remote status readback. Neither family has an MQTT state schema; incoming
 frames are C-Gate events and ordinary MQTT lighting remains independent.
 
 `NET STATE_INTERVAL` always returns the retained obsolete 400. `NET OPEN` and
@@ -823,7 +825,9 @@ Ground assertions in
 `rust/testdata/vectors/network_management.jsonl`, and the daemon regression in
 `rust/cmqttd/tests/system_cgate_net_lifecycle.rs`. `CMQTT CAPABILITIES` exposes
 `net_catalog_commands`, `net_catalog_storage`, `net_catalog_file_storage`,
-`net_learn`, `network_locate`, `network_management_delivery_semantics`,
+`net_learn`, `network_locate`, `network_management_routed`,
+`network_management_routed_selectors`, `network_management_routed_max_hops`,
+`network_management_routed_readback`, `network_management_delivery_semantics`,
 `net_open_close_preserves_mqtt`, `project_runtime_start_stop`,
 `net_unravel_direct_safe_planner`, `topology_explore_physical`, and the now-empty
 `net_lifecycle_fail_closed` list.

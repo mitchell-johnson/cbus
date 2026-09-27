@@ -4896,6 +4896,8 @@ async fn capabilities_report_observation_without_device_readback() {
             "DO lighting",
             "TRIGGER",
             "ENABLE SET",
+            "NET LEARN",
+            "NETWORK LOCATE",
             "NET SET_PROJECT_IDENTIFY",
             "PP SAVE",
             "PP SAVE_TO_SOURCE"
@@ -4904,7 +4906,7 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["physical_application_routed_control"], true);
     assert_eq!(
         document["physical_application_routed_families"],
-        serde_json::json!(["lighting", "trigger", "enable-set"])
+        serde_json::json!(["lighting", "trigger", "enable-set", "network-management"])
     );
     assert_eq!(
         document["physical_application_routed_delivery_semantics"],
@@ -4915,6 +4917,13 @@ async fn capabilities_report_observation_without_device_readback() {
         "target-network-only"
     );
     assert_eq!(document["physical_application_routed_readback"], false);
+    assert_eq!(document["network_management_routed"], true);
+    assert_eq!(document["network_management_routed_max_hops"], 6);
+    assert_eq!(document["network_management_routed_readback"], false);
+    assert_eq!(
+        document["network_management_routed_selectors"],
+        serde_json::json!(["learn", "unit", "application", "group", "serial"])
+    );
     assert_eq!(document["bridged_network_max_hops"], 6);
     assert_eq!(
         document["bridged_read_only_commands"],
@@ -9790,6 +9799,131 @@ async fn bridged_standard_application_control_is_exact_once_and_target_scoped() 
         None,
         "the replacement generation's invalidation must not be overwritten"
     );
+
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn bridged_network_management_is_exact_once_route_correlated_and_generation_guarded() {
+    let path = state_path();
+    let xml = topology_fixture().replace(
+        "</Project>",
+        r#"<Network oid="network-252">
+        <TagName>Unroutable</TagName><Address>252</Address>
+        <Interface><InterfaceType>Bridge</InterfaceType><InterfaceAddress>253/p/252</InterfaceAddress></Interface>
+        </Network></Project>"#,
+    );
+    let (pci_client, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci_client.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        database_pci_line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+
+    let service = Service::new(&xml, None, path.clone(), pci_client, None).unwrap();
+    let cases = [
+        (
+            "learn",
+            "NET LEARN //TOPO/253 56 1 1",
+            b"\\03FD0938030101FEBC".as_slice(),
+        ),
+        (
+            "locate-unit",
+            "NETWORK LOCATE //TOPO/253/208 UNIT 1 ON",
+            b"\\03FD09D013FF010113".as_slice(),
+        ),
+        (
+            "locate-application",
+            "NETWORK LOCATE //TOPO/253/208 APP 56 2",
+            b"\\03FD09D01338FF02DB".as_slice(),
+        ),
+        (
+            "locate-group",
+            "NETWORK LOCATE //TOPO/253/208 GROUP 56 1 OFF",
+            b"\\03FD09D013380100DB".as_slice(),
+        ),
+        (
+            "locate-serial",
+            "NETWORK LOCATE //TOPO/253/208 SERIAL 1 12345.67 255",
+            b"\\03FD09D0160103039043FF38".as_slice(),
+        ),
+    ];
+
+    for (index, (tag, command, expected)) in cases.into_iter().enumerate() {
+        let pending = tokio::spawn({
+            let service = service.clone();
+            let command = command.to_string();
+            async move {
+                service
+                    .handle(&mut ClientState::default(), &format!("[{tag}] {command}"))
+                    .await
+            }
+        });
+        let request = database_pci_line(&mut remote_read).await;
+        assert_eq!(&request[..request.len() - 2], expected, "{command}");
+        let code = request[request.len() - 2];
+        if index == 0 {
+            let wrong = if code == b'z' { b'y' } else { b'z' };
+            remote_write.write_all(&[wrong, b'.']).await.unwrap();
+            routed_pci_reply(&mut remote_write, &[252], 4, &[0x82, 1, 0]).await;
+            tokio::task::yield_now().await;
+            assert!(
+                !pending.is_finished(),
+                "unrelated confirmation or Reply Network completed {command}"
+            );
+        }
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+        let response = pending.await.unwrap();
+        assert_eq!(response.status, 200, "{command}: {response:?}");
+    }
+
+    for command in [
+        "NET LEARN //TOPO/252 56 1 1",
+        "NETWORK LOCATE //TOPO/252/208 UNIT 1 ON",
+        "NET LEARN //OTHER/253 56 1 1",
+    ] {
+        let response = service
+            .handle(
+                &mut ClientState::default(),
+                &format!("[unroutable] {command}"),
+            )
+            .await;
+        assert!(
+            matches!(response.status, 408 | 502),
+            "{command}: {response:?}"
+        );
+        assert!(
+            tokio::time::timeout(Duration::from_millis(20), remote_read.read_u8())
+                .await
+                .is_err(),
+            "unsupported network-management route wrote to PCI: {command}"
+        );
+    }
+
+    let stale = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[stale-net-management] NETWORK LOCATE //TOPO/253/208 UNIT 2 ON",
+                )
+                .await
+        }
+    });
+    let request = database_pci_line(&mut remote_read).await;
+    let code = request[request.len() - 2];
+    let (replacement, _replacement_remote) = pci();
+    service.set_pci(replacement).await;
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    let response = stale.await.unwrap();
+    assert_eq!(response.status, 408, "{response:?}");
+    assert!(response.final_text.contains("invalidated by PCI reconnect"));
 
     std::fs::remove_file(path).unwrap();
 }
