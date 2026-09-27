@@ -15,7 +15,8 @@
 use cbus_protocol::cal::Cal;
 use cbus_protocol::packet::Packet;
 use cbus_transport::apply::{
-    apply_plan, attempt_identity_path, load_recovery, ApplyError, ApplyOnce, ApplyOptions,
+    apply_plan, attempt_identity_path, attempt_identity_path_in_store, load_recovery, ApplyError,
+    ApplyOnce, ApplyOptions,
 };
 use cbus_transport::plan::validate_plan_document;
 use cbus_transport::verify::VerifyOutcome;
@@ -54,8 +55,16 @@ fn durable_identity_normalizes_plan_json_and_is_directory_scoped() {
     let one = attempt_identity_path(&raw, &first.join("one.json")).unwrap();
     let equivalent = attempt_identity_path(&pretty, &first.join("two.json")).unwrap();
     let elsewhere = attempt_identity_path(&raw, &second.join("one.json")).unwrap();
+    let shared_from_first =
+        attempt_identity_path_in_store(&raw, &first.join("one.json"), &second).unwrap();
+    let shared_from_other =
+        attempt_identity_path_in_store(&pretty, &second.join("two.json"), &second).unwrap();
     assert_eq!(one, equivalent, "equivalent plan must share one identity");
     assert_ne!(one, elsewhere, "directory is an explicit identity scope");
+    assert_eq!(
+        shared_from_first, shared_from_other,
+        "a shared store must deduplicate across journal directories"
+    );
     assert!(one
         .file_name()
         .unwrap()

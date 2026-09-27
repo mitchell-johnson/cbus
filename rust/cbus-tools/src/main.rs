@@ -5,7 +5,8 @@ use cbus_protocol::decode::decode_packet;
 use cbus_protocol::json::packet_to_json;
 use cbus_protocol::packet::Packet;
 use cbus_transport::apply::{
-    attempt_identity_path, load_recovery, ApplyError, ApplyOnce, ApplyOptions,
+    attempt_identity_path, attempt_identity_path_in_store, load_recovery, ApplyError, ApplyOnce,
+    ApplyOptions,
 };
 use cbus_transport::conn::Endpoint;
 use cbus_transport::inventory::InventoryOptions;
@@ -142,10 +143,11 @@ enum Command {
     /// observations. The exact one-shot send and its bounded receipt capture
     /// use the same PCI connection as those observations. The journal is
     /// recovery evidence that also carries the embedded plan. An additional
-    /// canonical-plan attempt marker is reserved beside the journal before
-    /// any send. Preserve both files. A new journal name in that directory
-    /// cannot replay the same plan, even after this process exits; a different
-    /// directory or competing controller is outside this scoped guard.
+    /// canonical-plan attempt marker is reserved beside the journal by
+    /// default, or in --attempt-store when specified. Preserve both files.
+    /// Cooperating processes using one shared store refuse the same plan
+    /// across different journal directories. Independent controllers remain
+    /// outside this cooperative guard.
     SerialApply {
         /// Direct PCI endpoint as numeric IP:PORT (bracket IPv6); must equal
         /// the plan endpoint and be exclusively available to this command
@@ -157,6 +159,10 @@ enum Command {
         /// New recovery journal file; must not exist (checked before connecting)
         #[arg(long)]
         journal: PathBuf,
+        /// Existing shared directory for durable attempt identities across
+        /// different recovery-journal directories (must be preserved)
+        #[arg(long)]
+        attempt_store: Option<PathBuf>,
         /// Per-observation deadline in seconds, in (0, 3600]
         #[arg(long, default_value_t = 300.0)]
         timeout: f64,
@@ -243,10 +249,17 @@ fn main() {
             pci,
             plan,
             journal,
+            attempt_store,
             timeout,
         } => {
             let rt = tokio::runtime::Runtime::new().unwrap();
-            match rt.block_on(serial_apply_cmd(&pci, &plan, &journal, timeout)) {
+            match rt.block_on(serial_apply_cmd(
+                &pci,
+                &plan,
+                &journal,
+                attempt_store.as_deref(),
+                timeout,
+            )) {
                 Ok(code) => std::process::exit(code),
                 Err(e) => {
                     eprintln!("error: {e}");
@@ -973,6 +986,7 @@ async fn serial_apply_cmd(
     pci: &str,
     plan_path: &Path,
     journal_path: &Path,
+    attempt_store: Option<&Path>,
     timeout: f64,
 ) -> Result<i32, String> {
     let (raw, plan, total_deadline) = load_plan_for_cli(plan_path, pci, timeout)?;
@@ -992,7 +1006,11 @@ async fn serial_apply_cmd(
             ));
         }
     }
-    let attempt_path = attempt_identity_path(&raw, journal_path).map_err(|e| e.to_string())?;
+    let attempt_path = match attempt_store {
+        Some(store) => attempt_identity_path_in_store(&raw, journal_path, store),
+        None => attempt_identity_path(&raw, journal_path),
+    }
+    .map_err(|e| e.to_string())?;
     match std::fs::symlink_metadata(&attempt_path) {
         Ok(_) => {
             return Err(format!(
@@ -1023,6 +1041,7 @@ async fn serial_apply_cmd(
             ApplyOptions {
                 verify: verify_options(total_deadline),
                 durable_attempt_identity: true,
+                attempt_store,
             },
         )
         .await

@@ -74,11 +74,13 @@
 //! is not persisted, retains one canonical document per journaled intent for
 //! the process lifetime, and treats non-equivalent canonical plan values as
 //! distinct. Across processes or restarts, the CLI additionally reserves a
-//! durable SHA-256 plan identity beside the operator-selected journal. This
+//! durable SHA-256 plan identity. By default it lives beside the journal and
 //! prevents a cooperative caller using that directory from replaying an
-//! identical canonical plan with a different journal name. It is deliberately
-//! scoped to that directory: another directory, deleted marker, or competing
-//! controller is not globally deduplicated. Library callers opt in via
+//! identical canonical plan with a different journal name. Callers can choose one
+//! shared durable store via [`ApplyOptions::attempt_store`], so different
+//! journal directories still contend for the same canonical plan marker.
+//! Deleted markers, different stores, changed plans, and independent
+//! controllers are not globally deduplicated. Library callers opt in via
 //! [`ApplyOptions::durable_attempt_identity`]. Every created
 //! apply journal records
 //! `send_intent_recorded` and conservative `send_attempted=true` before the
@@ -112,14 +114,20 @@ const ATTEMPT_FORMAT: &str = "cbus-selected-serial-attempt-v1";
 
 /// Tunables for [`apply_plan`].
 #[derive(Debug, Clone, Copy, Default)]
-pub struct ApplyOptions {
+pub struct ApplyOptions<'a> {
     /// Caller bounds used independently for the fresh-before and post-send
     /// observations, replacing plan timing for both reads.
     pub verify: VerifyOptions,
-    /// Reserve a durable canonical-plan marker in the journal's existing
-    /// parent directory before any address send. The CLI always enables this;
-    /// library callers must opt in and retain the marker for recovery.
+    /// Reserve a durable canonical-plan marker before any address send. It
+    /// lives in the journal's existing parent directory unless `attempt_store`
+    /// selects a shared directory. The CLI always enables this; library
+    /// callers must opt in and retain the marker for recovery.
     pub durable_attempt_identity: bool,
+    /// Optional existing shared directory for the durable attempt marker.
+    /// Cooperating processes must use the same resolved directory. The
+    /// recovery journal remains at `recovery_path`. Requires
+    /// `durable_attempt_identity`; otherwise apply refuses before PCI I/O.
+    pub attempt_store: Option<&'a Path>,
 }
 
 /// Successful apply: one exact send completed and the fresh observation
@@ -388,7 +396,7 @@ fn attempt_id(fingerprint: &[u8]) -> String {
     hex::encode(digest(&SHA256, fingerprint).as_ref())
 }
 
-fn identity_path(fingerprint: &[u8], recovery_path: &Path) -> Result<PathBuf, ApplyError> {
+fn resolved_recovery_path(recovery_path: &Path) -> Result<PathBuf, ApplyError> {
     let file_name = recovery_path.file_name().ok_or_else(|| {
         ApplyError::Journal("attempt identity: recovery path must name a file".to_string())
     })?;
@@ -408,11 +416,38 @@ fn identity_path(fingerprint: &[u8], recovery_path: &Path) -> Result<PathBuf, Ap
             directory.display()
         )));
     }
+    Ok(directory.join(file_name))
+}
+
+fn identity_path(
+    fingerprint: &[u8],
+    recovery_path: &Path,
+    attempt_store: Option<&Path>,
+) -> Result<PathBuf, ApplyError> {
+    let resolved_journal = resolved_recovery_path(recovery_path)?;
+    let directory = match attempt_store {
+        Some(store) => fs::canonicalize(store).map_err(|error| {
+            ApplyError::Journal(format!(
+                "attempt identity: cannot resolve shared store {}: {error}",
+                store.display()
+            ))
+        })?,
+        None => resolved_journal
+            .parent()
+            .expect("resolved journal has a parent")
+            .to_path_buf(),
+    };
+    if !directory.is_dir() {
+        return Err(ApplyError::Journal(format!(
+            "attempt identity: shared store is not a directory: {}",
+            directory.display()
+        )));
+    }
     let path = directory.join(format!(
         ".cbus-selected-serial-attempt-sha256-{}.json",
         attempt_id(fingerprint)
     ));
-    if directory.join(file_name) == path {
+    if resolved_journal == path {
         return Err(ApplyError::Journal(
             "attempt identity: recovery journal must not use the identity path".to_string(),
         ));
@@ -429,7 +464,26 @@ fn identity_path(fingerprint: &[u8], recovery_path: &Path) -> Result<PathBuf, Ap
 pub fn attempt_identity_path(raw_plan: &[u8], recovery_path: &Path) -> Result<PathBuf, ApplyError> {
     let (_, value) = validate_plan_document_with_value(raw_plan)
         .map_err(|error| ApplyError::Plan(error.to_string()))?;
-    identity_path(&canonical_plan_fingerprint(&value), recovery_path)
+    identity_path(&canonical_plan_fingerprint(&value), recovery_path, None)
+}
+
+/// Canonical plan marker path in an existing operator-selected shared store.
+///
+/// The same validated plan and resolved store produce one exclusive marker
+/// even when cooperating callers use different recovery-journal directories.
+/// This is a local/shared-filesystem guard, not external-controller exclusion.
+pub fn attempt_identity_path_in_store(
+    raw_plan: &[u8],
+    recovery_path: &Path,
+    attempt_store: &Path,
+) -> Result<PathBuf, ApplyError> {
+    let (_, value) = validate_plan_document_with_value(raw_plan)
+        .map_err(|error| ApplyError::Plan(error.to_string()))?;
+    identity_path(
+        &canonical_plan_fingerprint(&value),
+        recovery_path,
+        Some(attempt_store),
+    )
 }
 
 fn refuse_existing_identity(path: &Path) -> Result<(), ApplyError> {
@@ -454,15 +508,18 @@ fn reserve_attempt_identity(
 ) -> Result<(), ApplyError> {
     let mut marker = RecoveryJournal::new(path)
         .map_err(|error| ApplyError::Journal(format!("attempt identity: {error}")))?;
-    let journal = recovery_path
-        .file_name()
-        .expect("identity_path checked recovery filename");
+    let journal = resolved_recovery_path(recovery_path)?;
+    let scope = if journal.parent() == path.parent() {
+        "resolved_journal_directory"
+    } else {
+        "operator_selected_attempt_store"
+    };
     let record = json!({
         "format": ATTEMPT_FORMAT,
         "operation": "apply",
         "attempt_id": format!("sha256:{}", attempt_id(fingerprint)),
-        "scope": "resolved_journal_directory",
-        "journal": path.parent().expect("identity path has a parent").join(journal).to_string_lossy(),
+        "scope": scope,
+        "journal": journal.to_string_lossy(),
         "plan": plan,
         "send_may_have_occurred": true,
         "read_only_recovery_only": true,
@@ -557,7 +614,7 @@ impl ApplyOnce {
         &self,
         pci: &PciClient,
         recovery_path: &Path,
-        options: ApplyOptions,
+        options: ApplyOptions<'_>,
     ) -> Result<ApplySuccess, ApplyError> {
         if self
             .applied
@@ -632,8 +689,10 @@ pub fn load_recovery(journal_path: &Path) -> Result<RecoveryRecord, ApplyError> 
                     )));
                 }
             }
-            if document.get("scope") != Some(&Value::from("resolved_journal_directory"))
-                || !document.get("journal").is_some_and(Value::is_string)
+            if !matches!(
+                document.get("scope").and_then(Value::as_str),
+                Some("resolved_journal_directory" | "operator_selected_attempt_store")
+            ) || !document.get("journal").is_some_and(Value::is_string)
             {
                 return Err(ApplyError::Journal(
                     "recovery ambiguous: invalid attempt marker scope or journal".to_string(),
@@ -715,17 +774,22 @@ pub async fn apply_plan(
     raw_plan: &[u8],
     pci: &PciClient,
     recovery_path: &Path,
-    options: ApplyOptions,
+    options: ApplyOptions<'_>,
 ) -> Result<ApplySuccess, ApplyError> {
     // No I/O yet: a rejection here is Plan and implies no journal and no send.
     let (plan, plan_value) = validate_plan_document_with_value(raw_plan)
         .map_err(|error| ApplyError::Plan(error.to_string()))?;
     let fingerprint = canonical_plan_fingerprint(&plan_value);
-    // The durable identity is scoped to the resolved journal directory. An
-    // existing path (including a symlink or corrupt record) fails closed
-    // before connecting through this API's PCI client or observing the bus.
+    // The durable identity is scoped to the resolved journal directory or
+    // explicit shared store. An existing path (including a symlink or corrupt
+    // record) fails closed before this API observes the bus.
+    if options.attempt_store.is_some() && !options.durable_attempt_identity {
+        return Err(ApplyError::Journal(
+            "attempt identity: shared store requires durable_attempt_identity".to_string(),
+        ));
+    }
     let identity = if options.durable_attempt_identity {
-        let path = identity_path(&fingerprint, recovery_path)?;
+        let path = identity_path(&fingerprint, recovery_path, options.attempt_store)?;
         refuse_existing_identity(&path)?;
         Some(path)
     } else {

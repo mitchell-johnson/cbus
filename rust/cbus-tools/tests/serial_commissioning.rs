@@ -708,6 +708,40 @@ fn serial_apply_uses_exact_checksummed_request_on_one_connection() {
 }
 
 #[test]
+fn serial_apply_refuses_missing_shared_store_before_connect() {
+    let dead = closed_port();
+    let plan = plan_file_for_port(dead, "apply-missing-store.json");
+    let journal = temp_path("apply-missing-store-journal.json");
+    let store = temp_path("apply-missing-store-directory");
+    assert!(!store.exists());
+    let addr = format!("127.0.0.1:{dead}");
+    let (status, out, err) = run(
+        BIN,
+        &[
+            "serial-apply",
+            "--pci",
+            &addr,
+            "--plan",
+            plan.to_str().unwrap(),
+            "--journal",
+            journal.to_str().unwrap(),
+            "--attempt-store",
+            store.to_str().unwrap(),
+        ],
+    );
+    assert_eq!(
+        status.code(),
+        Some(1),
+        "missing store must fail: {out} {err}"
+    );
+    assert!(err.contains("cannot resolve shared store"), "{err}");
+    assert!(!err.contains("connect"), "must fail before PCI: {err}");
+    assert!(out.trim().is_empty());
+    assert!(!journal.exists());
+    std::fs::remove_file(plan).unwrap();
+}
+
+#[test]
 fn serial_apply_refuses_existing_journal_before_connect() {
     let plan_port = closed_port();
     let plan = plan_file_for_port(plan_port, "apply-exists.json");
@@ -979,6 +1013,113 @@ fn serial_verify_from_journal_observes_expected_change() {
     assert_eq!(v["journal"], journal.to_str().unwrap(), "{v}");
     std::fs::remove_file(&journal).ok();
     remove_reported_attempt_marker(&apply_out);
+}
+
+#[test]
+fn shared_attempt_store_refuses_cross_directory_replay_after_process_exit() {
+    let port = spawn_persistent_phased_peer(PeerScript {
+        states: pre_move_states(),
+        probes: vec![(16, vec![serial_c()]), (255, vec![serial_a(), serial_b()])],
+        option: Some(5),
+        address_checksum: Some(false),
+        address_receipt: true,
+        post_states: Some(post_move_states()),
+        post_probes: Some(vec![
+            (6, vec![serial_a()]),
+            (16, vec![serial_c()]),
+            (255, vec![serial_b()]),
+        ]),
+    });
+    let plan = plan_file_for_port(port, "shared-attempt-plan.json");
+    let root = temp_path("shared-attempt-root");
+    let first_dir = root.join("first");
+    let second_dir = root.join("second");
+    let store = root.join("attempts");
+    for path in [&first_dir, &second_dir, &store] {
+        std::fs::create_dir_all(path).unwrap();
+    }
+    let first = first_dir.join("attempt.json");
+    let second = second_dir.join("attempt.json");
+    let addr = format!("127.0.0.1:{port}");
+    let (status, out, err) = run(
+        BIN,
+        &[
+            "serial-apply",
+            "--pci",
+            &addr,
+            "--plan",
+            plan.to_str().unwrap(),
+            "--journal",
+            first.to_str().unwrap(),
+            "--attempt-store",
+            store.to_str().unwrap(),
+            "--timeout",
+            "30",
+        ],
+    );
+    assert!(status.success(), "first apply must succeed: {out} {err}");
+    let evidence: Value = serde_json::from_str(out.trim()).unwrap();
+    let marker = PathBuf::from(evidence["attempt_identity"].as_str().unwrap());
+    assert_eq!(
+        marker.parent(),
+        Some(std::fs::canonicalize(&store).unwrap().as_path())
+    );
+    let marker_value: Value = serde_json::from_slice(&std::fs::read(&marker).unwrap()).unwrap();
+    assert_eq!(marker_value["scope"], "operator_selected_attempt_store");
+    assert_eq!(
+        marker_value["journal"],
+        std::fs::canonicalize(&first_dir)
+            .unwrap()
+            .join("attempt.json")
+            .to_str()
+            .unwrap()
+    );
+
+    // A restarted process in a different recovery directory must refuse
+    // before opening PCI, even if the first main journal is gone. The shared
+    // marker remains usable for read-only recovery.
+    std::fs::remove_file(&first).unwrap();
+    let (status, out, err) = run(
+        BIN,
+        &[
+            "serial-apply",
+            "--pci",
+            &addr,
+            "--plan",
+            plan.to_str().unwrap(),
+            "--journal",
+            second.to_str().unwrap(),
+            "--attempt-store",
+            store.to_str().unwrap(),
+            "--timeout",
+            "30",
+        ],
+    );
+    assert_eq!(status.code(), Some(1), "replay must fail: {out} {err}");
+    assert!(err.contains("attempt identity already exists"), "{err}");
+    assert!(!err.contains("connect"), "must refuse before PCI: {err}");
+    assert!(out.trim().is_empty());
+    assert!(!second.exists());
+
+    let (status, out, err) = run(
+        BIN,
+        &[
+            "serial-verify",
+            "--pci",
+            &addr,
+            "--journal",
+            marker.to_str().unwrap(),
+            "--timeout",
+            "30",
+        ],
+    );
+    assert!(status.success(), "shared marker recovery: {out} {err}");
+    let verification: Value = serde_json::from_str(out.trim()).unwrap();
+    assert_eq!(verification["outcome"], "observed_expected_change");
+
+    std::fs::remove_file(&marker).unwrap();
+    std::fs::remove_file(&plan).unwrap();
+    std::fs::remove_dir_all(&root).unwrap();
 }
 
 #[test]
