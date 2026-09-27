@@ -24,6 +24,38 @@ exit 0; incomplete, failed or unsupported evaluation exits 1. An interruption
 exits 130 and retains partial evaluation, observation and cleanup evidence.
 Input files are read as bounded ordinary files before observer construction.
 
+## Explicit HKCU user admission
+
+Use `--expected-user-sid S-1-5-21-...` when the intended Windows user's exact SID
+is known. The API equivalent is
+`WindowsConditionRegistry(..., expected_user_sid="S-1-5-21-...")`.
+The placeholder above is not valid input: supply the complete SID. The constructor
+validates a canonical revision-one SID with bounded unsigned components without
+Windows calls. The CLI rejects an invalid SID before opening its input files.
+
+After verifying the launched worker's PID, nonce, runtime, provider and executable,
+the host compares the SID in the worker's existing ready frame with the required
+SID. A mismatch fails the session before publishing the first registry request;
+there is no retry, alternate hive, impersonation or automatic user switch. The
+usual owned-process cleanup still runs and preserves the original mismatch error.
+This prevents a LocalSystem worker from silently evaluating a named user's HKCU.
+
+The observer evidence's `user_context` records the required and observed SIDs and
+`sid_requirement_satisfied`. That field is null when no requirement was supplied
+or no valid ready SID was observed. Matching the requirement establishes only
+that comparison against the worker-reported SID, not independent token attestation:
+`interactive_user_context_verified` remains false. It does not
+prove a desktop login, token elevation, the identity of the person selecting the
+SID, or original Toolkit lazy-wrapper compatibility. With the option omitted,
+the existing process-user behavior remains, including LocalSystem if that is the
+worker's user. The authored C# worker and ready-frame format are unchanged.
+
+Portable tests cover malformed and oversized SID components, explicit CLI
+forwarding, matching and omitted requirements, a mismatched LocalSystem SID with
+zero registry requests, rejection of retry, and owned-child cleanup while retaining
+the first error. These are synthetic transport tests, not a new Windows run.
+Interactive-user/native-wrapper, culture and repeated-read acceptance remain open.
+
 The wrapper uses the existing condition parser and successful condition-name
 cache. In `A AND A AND B`, where A and B refer to the same registry value, A is
 read once, the second A uses its cached result, and B reads again. B therefore

@@ -68,6 +68,20 @@ class LiveConditionsCLITests(unittest.TestCase):
                 self.assertEqual([Path(arguments[index]).read_bytes() for index in (2, 4, 6)], sources)
                 factory.assert_called_once()
 
+    def test_explicit_user_sid_is_forwarded_and_invalid_sid_precedes_file_reads(self):
+        sid = 'S-1-5-21-123-456-789-1001'
+        with tempfile.TemporaryDirectory() as directory:
+            arguments = self.files(directory)
+            observer = StubObserver(0)
+            value, factory = self.invoke(arguments + ['--expected-user-sid', sid], observer)
+            self.assertEqual(factory.call_args.kwargs['expected_user_sid'], sid)
+            self.assertTrue(value['evaluation_completed'])
+            with patch.object(helper, '_read', side_effect=AssertionError('No file reads')):
+                value, factory = self.invoke(arguments + ['--expected-user-sid', 'not-a-sid'],
+                                             StubObserver(0), expected=1)
+            factory.assert_not_called()
+            self.assertEqual(value['type'], 'ValueError')
+
     def test_scope_and_regular_file_admission_precede_observer_construction(self):
         with tempfile.TemporaryDirectory() as directory:
             arguments = self.files(directory)

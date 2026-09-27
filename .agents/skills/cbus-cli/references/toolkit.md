@@ -48,6 +48,12 @@ With report files alone it retains independent
 hashes but exits nonzero and marks the links unverified. Its successful result
 is a source-linkage diagnostic, not publisher trust or update availability.
 
+For `update-condition-live`, use `--expected-user-sid` with the complete known
+Windows SID to require the intended HKCU user before any registry request. A
+mismatch fails before observation and does not switch users. Check
+`observer_evidence.user_context`; SID agreement is not proof of an interactive
+desktop session or original Toolkit wrapper parity.
+
 `update-package-file --catalogue-response raw-catalogue.json --node-id ID
 --file-id ID --package-path local-package.exe` compares one already-local
 regular file with the selected untrusted SESU size and SHA-1 descriptor. A

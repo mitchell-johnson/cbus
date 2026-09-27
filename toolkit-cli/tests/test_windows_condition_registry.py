@@ -31,6 +31,75 @@ def observer(**kwargs):
     return subject.WindowsConditionRegistry(compiler_path=subject.COMPILER, scope=scope(), **kwargs)
 
 
+class RegistryUserContextTests(unittest.TestCase):
+    SID = 'S-1-5-21-123-456-789-1001'
+
+    def ready(self, instance, sid):
+        instance._nonce = 'a' * 32
+        instance._helper_hash = 'b' * 64
+        instance._directory = Path('/unused-owned-transport-test')
+        instance._process = Mock(pid=4321)
+        instance._process.poll.return_value = None
+        executable = str(instance._directory / 'RegistryWorker.exe')
+        fields = ['READY1', instance._nonce, '4321', '4', subject._b64(subject.RUNTIME),
+                  subject.RUNTIME_SHA256, subject.RUNTIME_MVID, '060000f3', subject.PROVIDER_IL_SHA256,
+                  subject._b64(executable), instance._helper_hash, subject._b64(sid)]
+        return instance._ready('\t'.join(fields), executable)
+
+    def test_expected_sid_is_validated_without_process_or_registry_access(self):
+        for invalid in ('', 'user', 's-1-5-18', 'S-01-5-18', 'S-1-05-18',
+                        'S-1-5-018', 'S-1-5', 'S-1-5-4294967296',
+                        'S-1-281474976710656-1', 'S-1-5' + '-1' * 16,
+                        True, 1):
+            with self.subTest(invalid=invalid), patch.object(subject.subprocess, 'Popen') as process:
+                with self.assertRaises(ValueError):
+                    observer(expected_user_sid=invalid)
+                process.assert_not_called()
+        self.assertEqual(subject.validate_user_sid('S-1-281474976710655-4294967295'),
+                         'S-1-281474976710655-4294967295')
+
+    def test_matching_sid_is_admission_not_interactive_user_attestation(self):
+        instance = observer(expected_user_sid=self.SID)
+        proof = self.ready(instance, self.SID)
+        self.assertEqual(proof['user_sid'], self.SID)
+        context = instance._remember().as_dict()['user_context']
+        self.assertEqual(context, {'expected_user_sid': self.SID, 'observed_user_sid': self.SID,
+                                  'sid_requirement_satisfied': True,
+                                  'interactive_user_context_verified': False})
+        instance = observer()
+        self.ready(instance, 'S-1-5-18')
+        context = instance._remember().as_dict()['user_context']
+        self.assertIsNone(context['sid_requirement_satisfied'])
+        self.assertFalse(context['interactive_user_context_verified'])
+
+    def test_wrong_user_stops_before_any_query_and_retains_cleanup_evidence(self):
+        instance = observer(expected_user_sid=self.SID)
+        def start():
+            instance._proof = self.ready(instance, 'S-1-5-18')
+        with patch.object(instance, '_start', side_effect=start), \
+             patch.object(subject, '_publish') as publish:
+            with self.assertRaisesRegex(ValueError, 'required HKCU user context') as caught:
+                instance.read(QUERY)
+            publish.assert_not_called()
+            with self.assertRaisesRegex(ValueError, 'closed or failed'):
+                instance.read(QUERY)
+            context = instance.last_report.as_dict()['user_context']
+            self.assertFalse(context['sid_requirement_satisfied'])
+            self.assertEqual(context['observed_user_sid'], 'S-1-5-18')
+            self.assertFalse(instance._records[0]['request_published'])
+            self.assertIsNone(instance._proof)
+            with patch.object(subject, '_read', side_effect=[
+                    'b' * 64, subject.COMPILER_SHA256, subject.RUNTIME_SHA256]):
+                with self.assertRaises(ValueError) as cleanup:
+                    instance.close()
+            self.assertIs(cleanup.exception, caught.exception)
+            publish.assert_not_called()
+        instance._process.kill.assert_called_once_with()
+        instance._process.wait.assert_called_once_with(timeout=5.0)
+        self.assertTrue(instance.last_report.as_dict()['closed'])
+        self.assertFalse(instance.last_report.as_dict()['capture_completed'])
+
+
 class RegistryScopeAndCaptureTests(unittest.TestCase):
     def test_scope_validation_is_inert_and_duplicate_identities_are_rejected(self):
         with patch.object(subject.WindowsConditionRegistry, '_start') as start:

@@ -8,7 +8,8 @@ from pathlib import Path
 from .toolkit_live_update_conditions import LiveConditionReport, ToolkitLiveUpdateConditions
 from .toolkit_update_conditions import MAX_JSON_BYTES
 from .toolkit_update_metadata_cli import _read
-from .windows_condition_registry import COMPILER, RegistryReadScope, WindowsConditionRegistry
+from .windows_condition_registry import (COMPILER, RegistryReadScope, WindowsConditionRegistry,
+                                         validate_user_sid)
 
 
 EVIDENCE = 'toolkit_live_update_conditions_evidence'
@@ -23,6 +24,8 @@ def options(commands):
         help='Explicit unverified context-v1 file facts (maximum 128 KiB)')
     command.add_argument('--registry-scope', type=Path, required=True,
         help='Exact registry read-scope-v1 JSON with one to eight unique HKCU queries')
+    command.add_argument('--expected-user-sid',
+        help='Require this exact Windows user SID before any HKCU query; does not switch users')
     command.add_argument('--compiler', type=Path, default=Path(COMPILER),
         help='Captured x86 .NET Framework compiler path')
     command.add_argument('--workspace-parent', type=Path,
@@ -50,6 +53,9 @@ def run(args):
     args._live_condition_completed = False
     if args.area != 'update-condition-live':
         raise ValueError('Unsupported live condition command')
+    expected_user_sid = getattr(args, 'expected_user_sid', None)
+    if expected_user_sid is not None:
+        validate_user_sid(expected_user_sid)
     conditions = _read(args.file, MAX_JSON_BYTES)
     context = _read(args.file_context, MAX_JSON_BYTES)
     scope_bytes = _read(args.registry_scope, MAX_JSON_BYTES)
@@ -57,7 +63,8 @@ def run(args):
     args._live_condition_source = source
     scope = RegistryReadScope.from_json(scope_bytes)
     observer = WindowsConditionRegistry(compiler_path=args.compiler, scope=scope,
-        workspace_parent=args.workspace_parent, timeout=args.timeout)
+        workspace_parent=args.workspace_parent, timeout=args.timeout,
+        expected_user_sid=expected_user_sid)
     args._live_condition_observer = observer
     wrapper = ToolkitLiveUpdateConditions(observer)
     args._live_condition_wrapper = wrapper

@@ -34,6 +34,18 @@ PROVIDER_IL_SHA256 = 'c0363d229d83fb9ca8d8c88ef77816bbd3971cec725fafb68ef96d1486
 MAX_FRAME = 16384
 
 
+def validate_user_sid(value):
+    """Admit a canonical revision-one SID without consulting Windows or a user database."""
+    if (type(value) is not str or len(value) > 256
+            or re.fullmatch(r'S-1-(?:0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*)){1,15}',
+                            value, re.ASCII) is None):
+        raise ValueError('Expected a canonical revision-one Windows user SID')
+    numbers = [int(part) for part in value.split('-')[2:]]
+    if numbers[0] >= 1 << 48 or any(part >= 1 << 32 for part in numbers[1:]):
+        raise ValueError('Windows user SID components exceed their unsigned bounds')
+    return value
+
+
 def _query(value):
     if type(value) is not dict or set(value) != {'path', 'entry', 'default'}:
         _unsupported('A registry query requires exactly path, entry and default')
@@ -236,11 +248,14 @@ class WindowsConditionRegistry:
     it never changes registry keys. The initial profile requires the captured
     Framework compiler/runtime bytes, not merely a compatible version number.
     """
-    def __init__(self, *, compiler_path, scope: RegistryReadScope, workspace_parent=None, timeout=60.0):
+    def __init__(self, *, compiler_path, scope: RegistryReadScope, workspace_parent=None, timeout=60.0,
+                 expected_user_sid=None):
         if type(scope) is not RegistryReadScope:
             raise ValueError('An exact RegistryReadScope is required')
         if type(timeout) not in (int, float) or not 0 < timeout <= 60:
             raise ValueError('Registry session timeout must be in (0, 60] seconds')
+        self._expected_user_sid = None if expected_user_sid is None else validate_user_sid(expected_user_sid)
+        self._observed_user_sid = None
         self._scope = scope._keys()
         self._compiler = os.fspath(compiler_path)
         self._parent = None if workspace_parent is None else os.fspath(workspace_parent)
@@ -256,6 +271,13 @@ class WindowsConditionRegistry:
             'capture_completed': completed, 'atomic_machine_snapshot': False,
             'registry_provider_identity_verified': self._proof is not None,
             'provider_proof': self._proof, 'observations': self._records,
+            'user_context': {
+                'expected_user_sid': self._expected_user_sid,
+                'observed_user_sid': self._observed_user_sid,
+                'sid_requirement_satisfied': (None if self._expected_user_sid is None
+                    or self._observed_user_sid is None else self._expected_user_sid == self._observed_user_sid),
+                'interactive_user_context_verified': False,
+            },
             'cleanup': self._cleanup, 'closed': self._closed,
             'artifact_directory': None if self._directory is None else str(self._directory),
             'registry_writes_performed': False, 'network_accessed': False,
@@ -345,8 +367,10 @@ class WindowsConditionRegistry:
                 or fields[10] != self._helper_hash):
             raise ValueError('Registry worker/runtime identity correlation failed')
         sid = _unb64(fields[11], 256)
-        if re.fullmatch(r'S-1-[0-9]+(?:-[0-9]+){1,15}', sid, re.ASCII) is None:
-            raise ValueError('Registry worker SID is malformed')
+        validate_user_sid(sid)
+        self._observed_user_sid = sid
+        if self._expected_user_sid is not None and sid != self._expected_user_sid:
+            raise ValueError('Registry worker user SID does not match the required HKCU user context')
         return {'worker_pid': self._process.pid, 'nonce': self._nonce, 'pointer_size': 4,
             'runtime_path': RUNTIME, 'runtime_sha256': RUNTIME_SHA256, 'runtime_mvid': RUNTIME_MVID,
             'method_token': '060000f3', 'method_il_sha256': PROVIDER_IL_SHA256,
