@@ -26,7 +26,10 @@ async fn command(
     let mut reply = Vec::new();
     loop {
         let mut line = String::new();
-        assert_ne!(reader.read_line(&mut line).await.unwrap(), 0);
+        assert_ne!(
+            read_cgate_nontrace_into(reader, &mut line).await.unwrap(),
+            0
+        );
         let line = line.trim_end_matches(['\r', '\n']).to_string();
         let payload = line.strip_prefix(&prefix).expect("tagged C-Gate reply");
         let complete = payload.as_bytes().get(3) == Some(&b' ');
@@ -243,7 +246,7 @@ async fn aircon_native_family_is_confirmed_authenticated_and_keeps_mqtt_live() {
     sys.pci
         .inject(&pci_wire(&[5, 4, 0xac, 0, 5, 1, 7, 3, 1, 0]));
     let mut event = String::new();
-    tokio::time::timeout(STARTUP, reader.read_line(&mut event))
+    tokio::time::timeout(STARTUP, read_cgate_nontrace_into(&mut reader, &mut event))
         .await
         .unwrap()
         .unwrap();

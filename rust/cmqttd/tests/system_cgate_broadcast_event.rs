@@ -45,7 +45,7 @@ async fn command(
     let mut reply = Vec::new();
     loop {
         let mut line = String::new();
-        tokio::time::timeout(STARTUP, reader.read_line(&mut line))
+        tokio::time::timeout(STARTUP, read_cgate_nontrace_into(reader, &mut line))
             .await
             .unwrap_or_else(|_| panic!("command timed out: {text}"))
             .unwrap();
@@ -164,10 +164,13 @@ async fn broadcast_event_fans_out_without_pci_or_mqtt_disruption() {
         ["200 OK."]
     );
     let mut event = String::new();
-    tokio::time::timeout(STARTUP, event_reader.read_line(&mut event))
-        .await
-        .expect("minimal BROADCAST_EVENT timed out")
-        .unwrap();
+    tokio::time::timeout(
+        STARTUP,
+        read_cgate_nontrace_into(&mut event_reader, &mut event),
+    )
+    .await
+    .expect("minimal BROADCAST_EVENT timed out")
+    .unwrap();
     assert_broadcast_event(event.trim_end_matches(['\r', '\n']), 3, "SP ");
     let mut status = String::new();
     tokio::time::timeout(STARTUP, status_reader.read_line(&mut status))
@@ -187,10 +190,13 @@ async fn broadcast_event_fans_out_without_pci_or_mqtt_disruption() {
         ["200 OK."]
     );
     event.clear();
-    tokio::time::timeout(STARTUP, event_reader.read_line(&mut event))
-        .await
-        .expect("payload BROADCAST_EVENT timed out")
-        .unwrap();
+    tokio::time::timeout(
+        STARTUP,
+        read_cgate_nontrace_into(&mut event_reader, &mut event),
+    )
+    .await
+    .expect("payload BROADCAST_EVENT timed out")
+    .unwrap();
     assert_broadcast_event(
         event.trim_end_matches(['\r', '\n']),
         3,

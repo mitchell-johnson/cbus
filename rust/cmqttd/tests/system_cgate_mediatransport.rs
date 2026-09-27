@@ -27,7 +27,10 @@ async fn command(
     let mut reply = Vec::new();
     loop {
         let mut line = String::new();
-        assert_ne!(reader.read_line(&mut line).await.unwrap(), 0);
+        assert_ne!(
+            read_cgate_nontrace_into(reader, &mut line).await.unwrap(),
+            0
+        );
         let line = line.trim_end_matches(['\r', '\n']).to_string();
         let payload = line
             .strip_prefix(&prefix)
@@ -293,7 +296,7 @@ async fn mediatransport_native_family_is_confirmed_authenticated_and_keeps_mqtt_
         5, 4, 0xc0, 0, 0xc6, 2, 0x14, b'i', b'P', b'o', b'd',
     ]));
     let mut event = String::new();
-    tokio::time::timeout(STARTUP, reader.read_line(&mut event))
+    tokio::time::timeout(STARTUP, read_cgate_nontrace_into(&mut reader, &mut event))
         .await
         .unwrap()
         .unwrap();
@@ -306,7 +309,7 @@ async fn mediatransport_native_family_is_confirmed_authenticated_and_keeps_mqtt_
     sys.pci
         .inject(&pci_wire(&[5, 4, 0xc0, 0, 0x83, 2, 0x30, b'A']));
     event.clear();
-    tokio::time::timeout(STARTUP, reader.read_line(&mut event))
+    tokio::time::timeout(STARTUP, read_cgate_nontrace_into(&mut reader, &mut event))
         .await
         .unwrap()
         .unwrap();

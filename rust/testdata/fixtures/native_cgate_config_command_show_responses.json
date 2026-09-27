@@ -1,0 +1,487 @@
+{
+  "format": "native-cgate-config-command-show-responses-v1",
+  "captured_at": "2026-09-27T23:54:12.063541+00:00",
+  "oracle": {
+    "product": "Schneider Electric C-Gate",
+    "version": "3.4.0.2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "transport": "fresh owned Java 11 children; IPv4 loopback command/event listeners; no C-Bus endpoint",
+    "cleanup_default": {
+      "listener_ownership_verified": true,
+      "cleanup_complete": true,
+      "process_exit_confirmed": true,
+      "work_removed": true,
+      "server_log_sha256": "b930137ef8321c6fb37dacf88244f2ebcebd030c6924383dab65e99220194f7a"
+    },
+    "cleanup_no": {
+      "listener_ownership_verified": true,
+      "cleanup_complete": true,
+      "process_exit_confirmed": true,
+      "work_removed": true,
+      "server_log_sha256": "0ec61d28ff2ce26d1d75c26edc8f2347c6f3e2ed34367b8615f206106e1a300a"
+    },
+    "cleanup_yes": {
+      "listener_ownership_verified": true,
+      "cleanup_complete": true,
+      "process_exit_confirmed": true,
+      "work_removed": true,
+      "server_log_sha256": "e1cb828bc048f34918701b81befa68db09301f5517e40568bbb29596ce4b8cdc"
+    },
+    "cleanup_self": {
+      "listener_ownership_verified": true,
+      "cleanup_complete": true,
+      "process_exit_confirmed": true,
+      "work_removed": true,
+      "server_log_sha256": "4106f49a687d28c4560d0eee86198fa295e83f038bdcd0bb351a70d8f546fc10"
+    }
+  },
+  "capture_script_sha256": "a8976cfd4a4b8dd6f0d87694a638fdcdbcf97eddd166cb72e89925874c0a3f32",
+  "local_cgate_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+  "method": "A fresh child starts with the native default yes, SETs no, and saves the owned global config. A second fresh child starts with no, SETs yes and reads it back without restarting. A third fresh child starts with yes. Each command uses a separate producer and e9s9c9 subscriber; 761 and 766 events are checked against exact command and response rows. A fourth fresh child checks same-socket delivery: EVENT enable receives its own 766 but not 761, then NOOP produces one 761, its reply and one 766. The relative order of 761 and the reply is scheduler-dependent in two owned runs; 766 followed the reply in both. Timestamps and generated session IDs are shape-validated then normalized. All four children and listeners are closed and removed before the fixture is retained.",
+  "cases": {
+    "startup_default": [
+      {
+        "command": "NOOP",
+        "response": [
+          "[before] 200 OK."
+        ],
+        "events": [
+          {
+            "event_code": 761,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Command: [before] NOOP"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [before] 200 OK."
+          }
+        ]
+      },
+      {
+        "command": "CONFIG INFO command.show-responses",
+        "response": [
+          "[info] 304-parameter=command.show-responses",
+          "[info] 304-value=yes",
+          "[info] 304-description=produce an event for each response to a command",
+          "[info] 304-defaultValue=yes",
+          "[info] 304-scope=global",
+          "[info] 304 effective=restart"
+        ],
+        "events": [
+          {
+            "event_code": 761,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Command: [info] CONFIG INFO command.show-responses"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [info] 304-parameter=command.show-responses"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [info] 304-value=yes"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [info] 304-description=produce an event for each response to a command"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [info] 304-defaultValue=yes"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [info] 304-scope=global"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [info] 304 effective=restart"
+          }
+        ]
+      },
+      {
+        "command": "CONFIG INFO allow-fast-start",
+        "response": [
+          "[info-network] 304-parameter=allow-fast-start",
+          "[info-network] 304-value=no",
+          "[info-network] 304-description=Allow networks to use database for fast startup",
+          "[info-network] 304-defaultValue=no",
+          "[info-network] 304-scope=network",
+          "[info-network] 304 effective=closeopen"
+        ],
+        "events": [
+          {
+            "event_code": 761,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Command: [info-network] CONFIG INFO allow-fast-start"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [info-network] 304-parameter=allow-fast-start"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [info-network] 304-value=no"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [info-network] 304-description=Allow networks to use database for fast startup"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [info-network] 304-defaultValue=no"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [info-network] 304-scope=network"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [info-network] 304 effective=closeopen"
+          }
+        ]
+      },
+      {
+        "command": "CONFIG SET command.show-responses no",
+        "response": [
+          "[set-no] 200 OK."
+        ],
+        "events": [
+          {
+            "event_code": 761,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Command: [set-no] CONFIG SET command.show-responses no"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [set-no] 200 OK."
+          }
+        ]
+      },
+      {
+        "command": "NOOP",
+        "response": [
+          "[after-set] 200 OK."
+        ],
+        "events": [
+          {
+            "event_code": 761,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Command: [after-set] NOOP"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [after-set] 200 OK."
+          }
+        ]
+      },
+      {
+        "command": "CONFIG SAVE global",
+        "response": [
+          "[save] 200 OK."
+        ],
+        "events": [
+          {
+            "event_code": 761,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Command: [save] CONFIG SAVE global"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [save] 200 OK."
+          }
+        ]
+      }
+    ],
+    "startup_no": [
+      {
+        "command": "NOOP",
+        "response": [
+          "[after-restart] 200 OK."
+        ],
+        "events": [
+          {
+            "event_code": 761,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Command: [after-restart] NOOP"
+          }
+        ]
+      },
+      {
+        "command": "CONFIG INFO command.show-responses",
+        "response": [
+          "[info-no] 304-parameter=command.show-responses",
+          "[info-no] 304-value=no",
+          "[info-no] 304-description=produce an event for each response to a command",
+          "[info-no] 304-defaultValue=yes",
+          "[info-no] 304-scope=global",
+          "[info-no] 304 effective=restart"
+        ],
+        "events": [
+          {
+            "event_code": 761,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Command: [info-no] CONFIG INFO command.show-responses"
+          }
+        ]
+      },
+      {
+        "command": "CONFIG SET no-such-parameter yes",
+        "response": [
+          "[invalid] 408 Operation failed: config parameter not found"
+        ],
+        "events": [
+          {
+            "event_code": 761,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Command: [invalid] CONFIG SET no-such-parameter yes"
+          }
+        ]
+      },
+      {
+        "command": "CONFIG SET command.show-responses yes",
+        "response": [
+          "[set-yes] 200 OK."
+        ],
+        "events": [
+          {
+            "event_code": 761,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Command: [set-yes] CONFIG SET command.show-responses yes"
+          }
+        ]
+      },
+      {
+        "command": "CONFIG GET command.show-responses",
+        "response": [
+          "[read-yes] 303 command.show-responses=yes"
+        ],
+        "events": [
+          {
+            "event_code": 761,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Command: [read-yes] CONFIG GET command.show-responses"
+          }
+        ]
+      },
+      {
+        "command": "NOOP",
+        "response": [
+          "[before-next-restart] 200 OK."
+        ],
+        "events": [
+          {
+            "event_code": 761,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Command: [before-next-restart] NOOP"
+          }
+        ]
+      }
+    ],
+    "startup_yes": [
+      {
+        "command": "NOOP",
+        "response": [
+          "[after-second-restart] 200 OK."
+        ],
+        "events": [
+          {
+            "event_code": 761,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Command: [after-second-restart] NOOP"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [after-second-restart] 200 OK."
+          }
+        ]
+      },
+      {
+        "command": "CONFIG INFO command.show-responses",
+        "response": [
+          "[info-yes] 304-parameter=command.show-responses",
+          "[info-yes] 304-value=yes",
+          "[info-yes] 304-description=produce an event for each response to a command",
+          "[info-yes] 304-defaultValue=yes",
+          "[info-yes] 304-scope=global",
+          "[info-yes] 304 effective=restart"
+        ],
+        "events": [
+          {
+            "event_code": 761,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Command: [info-yes] CONFIG INFO command.show-responses"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [info-yes] 304-parameter=command.show-responses"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [info-yes] 304-value=yes"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [info-yes] 304-description=produce an event for each response to a command"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [info-yes] 304-defaultValue=yes"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [info-yes] 304-scope=global"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [info-yes] 304 effective=restart"
+          }
+        ]
+      },
+      {
+        "command": "CONFIG INFO allow-fast-start",
+        "response": [
+          "[info-network-yes] 304-parameter=allow-fast-start",
+          "[info-network-yes] 304-value=no",
+          "[info-network-yes] 304-description=Allow networks to use database for fast startup",
+          "[info-network-yes] 304-defaultValue=no",
+          "[info-network-yes] 304-scope=network",
+          "[info-network-yes] 304 effective=closeopen"
+        ],
+        "events": [
+          {
+            "event_code": 761,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Command: [info-network-yes] CONFIG INFO allow-fast-start"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [info-network-yes] 304-parameter=allow-fast-start"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [info-network-yes] 304-value=no"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [info-network-yes] 304-description=Allow networks to use database for fast startup"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [info-network-yes] 304-defaultValue=no"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [info-network-yes] 304-scope=network"
+          },
+          {
+            "event_code": 766,
+            "session_id": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "message": "Response: [info-network-yes] 304 effective=closeopen"
+          }
+        ]
+      }
+    ],
+    "self_subscribed": {
+      "subscribe_reply": "[subscribe] 200 OK.",
+      "post_subscribe": [
+        {
+          "event_code": 766,
+          "session_id": "cmd<owned-session>",
+          "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+          "message": "Response: [subscribe] 200 OK."
+        }
+      ],
+      "self_noop_order": [
+        {
+          "reply": "[self] 200 OK."
+        },
+        {
+          "event_code": 761,
+          "session_id": "cmd<owned-session>",
+          "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+          "message": "Command: [self] NOOP"
+        },
+        {
+          "event_code": 766,
+          "session_id": "cmd<owned-session>",
+          "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+          "message": "Response: [self] 200 OK."
+        }
+      ]
+    }
+  }
+}

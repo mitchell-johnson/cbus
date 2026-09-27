@@ -881,6 +881,46 @@ fn assert_native_command_time_event(line: &str, session: u64, command_id: &str) 
     assert_eq!(crate::event_reporting_level(line), Some(7));
 }
 
+async fn next_command_trace_event(events: &mut tokio::sync::broadcast::Receiver<String>) -> String {
+    tokio::time::timeout(Duration::from_secs(1), events.recv())
+        .await
+        .expect("command event timed out")
+        .expect("command event channel closed")
+}
+
+async fn assert_native_command_trace(
+    events: &mut tokio::sync::broadcast::Receiver<String>,
+    session: u64,
+    command: &str,
+    response: &[&str],
+    timed_tag: Option<&str>,
+) {
+    let command_event = next_command_trace_event(events).await;
+    let body = command_event.strip_prefix("#e# ").expect("event marker");
+    let (timestamp, payload) = body.split_once(" 761 ").expect("native 761 envelope");
+    chrono::NaiveDateTime::parse_from_str(timestamp, "%Y%m%d-%H%M%S%.3f").unwrap();
+    assert_eq!(payload, format!("cmd{session} - Command: {command}"));
+    assert_eq!(crate::event_reporting_level(&command_event), Some(1));
+    for expected in response {
+        let event = next_command_trace_event(events).await;
+        let body = event.strip_prefix("#e# ").expect("event marker");
+        let (timestamp, payload) = body.split_once(" 766 ").expect("native 766 envelope");
+        chrono::NaiveDateTime::parse_from_str(timestamp, "%Y%m%d-%H%M%S%.3f").unwrap();
+        assert_eq!(payload, format!("cmd{session} - Response: {expected}"));
+        assert_eq!(crate::event_reporting_level(&event), Some(6));
+    }
+    if let Some(tag) = timed_tag {
+        assert_native_command_time_event(&next_command_trace_event(events).await, session, tag);
+    } else {
+        assert!(
+            tokio::time::timeout(Duration::from_millis(30), events.recv())
+                .await
+                .is_err(),
+            "unexpected command timing event"
+        );
+    }
+}
+
 #[tokio::test]
 async fn retained_family_help_roots_match_native_fixture_for_all_three_forms() {
     let evidence: serde_json::Value = serde_json::from_str(include_str!(
@@ -15337,11 +15377,7 @@ async fn config_command_show_time_activates_only_after_restart_and_preserves_run
         command_lines(&mut reader, &mut writer, "before", "NOOP").await,
         ["[before] 200 OK"]
     );
-    assert!(
-        tokio::time::timeout(Duration::from_millis(30), events.recv())
-            .await
-            .is_err()
-    );
+    assert_native_command_trace(&mut events, 3, "[before] NOOP", &["[before] 200 OK"], None).await;
     assert_eq!(
         command_lines(
             &mut reader,
@@ -15352,6 +15388,14 @@ async fn config_command_show_time_activates_only_after_restart_and_preserves_run
         .await,
         ["[set] 200 OK."]
     );
+    assert_native_command_trace(
+        &mut events,
+        3,
+        "[set] CONFIG SET command.show-time yes",
+        &["[set] 200 OK."],
+        None,
+    )
+    .await;
     assert_eq!(
         command_lines(
             &mut reader,
@@ -15362,15 +15406,26 @@ async fn config_command_show_time_activates_only_after_restart_and_preserves_run
         .await,
         ["[read] 303 command.show-time=yes"]
     );
+    assert_native_command_trace(
+        &mut events,
+        3,
+        "[read] CONFIG GET command.show-time",
+        &["[read] 303 command.show-time=yes"],
+        None,
+    )
+    .await;
     assert_eq!(
         command_lines(&mut reader, &mut writer, "still-off", "NOOP").await,
         ["[still-off] 200 OK"]
     );
-    assert!(
-        tokio::time::timeout(Duration::from_millis(30), events.recv())
-            .await
-            .is_err()
-    );
+    assert_native_command_trace(
+        &mut events,
+        3,
+        "[still-off] NOOP",
+        &["[still-off] 200 OK"],
+        None,
+    )
+    .await;
     assert!(
         tokio::time::timeout(Duration::from_millis(30), remote.read_u8())
             .await
@@ -15392,11 +15447,7 @@ async fn config_command_show_time_activates_only_after_restart_and_preserves_run
         command_lines(&mut reader, &mut writer, "on", "NOOP").await,
         ["[on] 200 OK"]
     );
-    let event = tokio::time::timeout(Duration::from_secs(1), events.recv())
-        .await
-        .unwrap()
-        .unwrap();
-    assert_native_command_time_event(&event, 3, "on");
+    assert_native_command_trace(&mut events, 3, "[on] NOOP", &["[on] 200 OK"], Some("on")).await;
 
     assert_eq!(
         command_lines(
@@ -15408,7 +15459,14 @@ async fn config_command_show_time_activates_only_after_restart_and_preserves_run
         .await,
         ["[bad] 408 Operation failed: config parameter not found"]
     );
-    assert_native_command_time_event(&events.recv().await.unwrap(), 3, "bad");
+    assert_native_command_trace(
+        &mut events,
+        3,
+        "[bad] CONFIG SET no-such-parameter yes",
+        &["[bad] 408 Operation failed: config parameter not found"],
+        Some("bad"),
+    )
+    .await;
     assert_eq!(
         command_lines(
             &mut reader,
@@ -15419,12 +15477,26 @@ async fn config_command_show_time_activates_only_after_restart_and_preserves_run
         .await,
         ["[unset] 200 OK."]
     );
-    assert_native_command_time_event(&events.recv().await.unwrap(), 3, "unset");
+    assert_native_command_trace(
+        &mut events,
+        3,
+        "[unset] CONFIG SET command.show-time no",
+        &["[unset] 200 OK."],
+        Some("unset"),
+    )
+    .await;
     assert_eq!(
         command_lines(&mut reader, &mut writer, "still-on", "NOOP").await,
         ["[still-on] 200 OK"]
     );
-    assert_native_command_time_event(&events.recv().await.unwrap(), 3, "still-on");
+    assert_native_command_trace(
+        &mut events,
+        3,
+        "[still-on] NOOP",
+        &["[still-on] 200 OK"],
+        Some("still-on"),
+    )
+    .await;
     drop(reader);
     drop(writer);
     server.abort();
@@ -15441,8 +15513,85 @@ async fn config_command_show_time_activates_only_after_restart_and_preserves_run
         command_lines(&mut reader, &mut writer, "off", "NOOP").await,
         ["[off] 200 OK"]
     );
+    assert_native_command_trace(&mut events, 3, "[off] NOOP", &["[off] 200 OK"], None).await;
+    drop(reader);
+    drop(writer);
+    server.abort();
+    drop(service);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn config_command_show_responses_uses_native_multiline_events_and_restart_boundary() {
+    let evidence: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../testdata/fixtures/native_cgate_config_command_show_responses.json"
+    ))
+    .unwrap();
+    let native_info = evidence["cases"]["startup_default"][2]["response"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|row| row.as_str().unwrap().replace("[info-network]", "[multi]"))
+        .collect::<Vec<_>>();
+    let native_info = native_info.iter().map(String::as_str).collect::<Vec<_>>();
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut events = service.events.subscribe();
+    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let address = listener.local_addr().unwrap();
+    let server = tokio::spawn(service.clone().serve(listener));
+    let (mut reader, mut writer) = connect_command_session(address).await;
+    assert_eq!(
+        command_lines(
+            &mut reader,
+            &mut writer,
+            "multi",
+            "CONFIG INFO allow-fast-start"
+        )
+        .await,
+        native_info
+    );
+    assert_native_command_trace(
+        &mut events,
+        3,
+        "[multi] CONFIG INFO allow-fast-start",
+        &native_info,
+        None,
+    )
+    .await;
+    assert_eq!(
+        command_lines(
+            &mut reader,
+            &mut writer,
+            "disable",
+            "CONFIG SET command.show-responses no"
+        )
+        .await,
+        ["[disable] 200 OK."]
+    );
+    assert_native_command_trace(
+        &mut events,
+        3,
+        "[disable] CONFIG SET command.show-responses no",
+        &["[disable] 200 OK."],
+        None,
+    )
+    .await;
+    assert_eq!(
+        command_lines(&mut reader, &mut writer, "still-on", "NOOP").await,
+        ["[still-on] 200 OK"]
+    );
+    assert_native_command_trace(
+        &mut events,
+        3,
+        "[still-on] NOOP",
+        &["[still-on] 200 OK"],
+        None,
+    )
+    .await;
     assert!(
-        tokio::time::timeout(Duration::from_millis(30), events.recv())
+        tokio::time::timeout(Duration::from_millis(30), remote.read_u8())
             .await
             .is_err()
     );
@@ -15450,7 +15599,163 @@ async fn config_command_show_time_activates_only_after_restart_and_preserves_run
     drop(writer);
     server.abort();
     drop(service);
+
+    let (pci_client, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut events = service.events.subscribe();
+    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let address = listener.local_addr().unwrap();
+    let server = tokio::spawn(service.clone().serve(listener));
+    let (mut reader, mut writer) = connect_command_session(address).await;
+    assert_eq!(
+        command_lines(&mut reader, &mut writer, "off", "NOOP").await,
+        ["[off] 200 OK"]
+    );
+    assert_native_command_trace(&mut events, 3, "[off] NOOP", &[], None).await;
+    assert_eq!(
+        command_lines(
+            &mut reader,
+            &mut writer,
+            "bad",
+            "CONFIG SET no-such-parameter yes"
+        )
+        .await,
+        ["[bad] 408 Operation failed: config parameter not found"]
+    );
+    assert_native_command_trace(
+        &mut events,
+        3,
+        "[bad] CONFIG SET no-such-parameter yes",
+        &[],
+        None,
+    )
+    .await;
+    assert_eq!(
+        command_lines(
+            &mut reader,
+            &mut writer,
+            "enable",
+            "CONFIG SET command.show-responses yes"
+        )
+        .await,
+        ["[enable] 200 OK."]
+    );
+    assert_native_command_trace(
+        &mut events,
+        3,
+        "[enable] CONFIG SET command.show-responses yes",
+        &[],
+        None,
+    )
+    .await;
+    assert_eq!(
+        command_lines(
+            &mut reader,
+            &mut writer,
+            "read",
+            "CONFIG GET command.show-responses"
+        )
+        .await,
+        ["[read] 303 command.show-responses=yes"]
+    );
+    assert_native_command_trace(
+        &mut events,
+        3,
+        "[read] CONFIG GET command.show-responses",
+        &[],
+        None,
+    )
+    .await;
+    drop(reader);
+    drop(writer);
+    server.abort();
+    drop(service);
+
+    let (pci_client, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut events = service.events.subscribe();
+    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let address = listener.local_addr().unwrap();
+    let server = tokio::spawn(service.clone().serve(listener));
+    let (mut reader, mut writer) = connect_command_session(address).await;
+    assert_eq!(
+        command_lines(&mut reader, &mut writer, "restarted", "NOOP").await,
+        ["[restarted] 200 OK"]
+    );
+    assert_native_command_trace(
+        &mut events,
+        3,
+        "[restarted] NOOP",
+        &["[restarted] 200 OK"],
+        None,
+    )
+    .await;
+    drop(reader);
+    drop(writer);
+    server.abort();
+    drop(service);
     std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn config_command_trace_delivers_once_to_its_own_event_subscriber() {
+    let path = state_path();
+    let (pci_client, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let address = listener.local_addr().unwrap();
+    let server = tokio::spawn(service.clone().serve(listener));
+    let (mut reader, mut writer) = connect_command_session(address).await;
+    assert_eq!(
+        command_lines(&mut reader, &mut writer, "subscribe", "EVENT e9s0c0").await,
+        ["[subscribe] 200 OK."]
+    );
+    let mut line = String::new();
+    reader.read_line(&mut line).await.unwrap();
+    assert!(line.contains(" 766 cmd3 - Response: [subscribe] 200 OK."));
+    writer.write_all(b"[self] NOOP\r\n").await.unwrap();
+    line.clear();
+    reader.read_line(&mut line).await.unwrap();
+    assert!(line.contains(" 761 cmd3 - Command: [self] NOOP"));
+    line.clear();
+    reader.read_line(&mut line).await.unwrap();
+    assert_eq!(line, "[self] 200 OK\r\n");
+    line.clear();
+    reader.read_line(&mut line).await.unwrap();
+    assert!(line.contains(" 766 cmd3 - Response: [self] 200 OK"));
+    assert!(
+        tokio::time::timeout(Duration::from_millis(30), reader.read_line(&mut line))
+            .await
+            .is_err(),
+        "own broadcast copy duplicated a command event"
+    );
+    drop(reader);
+    drop(writer);
+    server.abort();
+    drop(service);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn config_command_trace_redacts_credentials() {
+    for command in [
+        "[login] LOGIN private-value",
+        "[add] ACCESS ADD user private-value Program",
+        "[config] CONFIG SET secure.keystore-password private-value",
+        "[read] CONFIG GET secure.keystore-password",
+    ] {
+        assert!(command_has_credential(command));
+        let redacted = redact_command_event(command);
+        assert!(redacted.contains("<redacted command>"));
+        assert!(!redacted.contains("private-value"));
+    }
+    assert_eq!(
+        redact_command_event("[login] LOGIN private-value"),
+        "[login] <redacted command>"
+    );
+    assert!(!command_has_credential(
+        "[plain] CONFIG SET command.show-responses no"
+    ));
 }
 
 #[tokio::test]

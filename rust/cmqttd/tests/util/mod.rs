@@ -11,6 +11,7 @@ use serde_json::Value;
 use std::path::PathBuf;
 use std::sync::OnceLock;
 use std::time::Duration;
+use tokio::io::{AsyncBufRead, AsyncBufReadExt};
 
 pub use cbus_test_support::wait::require;
 
@@ -25,6 +26,35 @@ pub const STARTUP: Duration = Duration::from_secs(20);
 /// over queued status-sweep traffic in the flow controller, so this is
 /// normally sub-second (condition-polled: tests only pay it on failure).
 pub const COMMAND_DRAIN: Duration = Duration::from_secs(60);
+
+/// The CONFIG restart effects add native 761/766/767 command trace events to
+/// an enabled EVENT stream. Application tests read past those independently
+/// covered traces so their next assertion still targets the injected SAL.
+pub async fn read_cgate_nontrace_into<R: AsyncBufRead + Unpin>(
+    reader: &mut R,
+    line: &mut String,
+) -> std::io::Result<usize> {
+    loop {
+        line.clear();
+        let read = reader.read_line(line).await?;
+        if read == 0 || !is_cgate_command_trace(line) {
+            return Ok(read);
+        }
+    }
+}
+
+fn is_cgate_command_trace(line: &str) -> bool {
+    let mut words = line.split_whitespace();
+    words.next() == Some("#e#")
+        && words.next().is_some()
+        && matches!(words.next(), Some("761" | "766" | "767"))
+        && words.next().is_some_and(|session| {
+            session.strip_prefix("cmd").is_some_and(|number| {
+                !number.is_empty() && number.bytes().all(|byte| byte.is_ascii_digit())
+            })
+        })
+        && words.next() == Some("-")
+}
 
 pub fn testdata_dir() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../testdata")

@@ -1,8 +1,9 @@
 //! Native C-Gate 3.4 configuration catalogue and bounded state helpers.
 //!
 //! The metadata below is retained from the pinned 3.4.0.2001 daemon. It does
-//! not by itself establish runtime effects. The one implemented restart effect,
-//! `command.show-time`, has separate loopback oracle evidence.
+//! not by itself establish runtime effects. The implemented restart effects,
+//! `command.show-responses` and `command.show-time`, have separate loopback
+//! oracle evidence.
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum ConfigScope {

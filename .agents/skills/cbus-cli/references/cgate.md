@@ -166,24 +166,31 @@ while cmqttd returns 408 so clients do not hang.
 CONFIG state is command compatibility data in cmqttd's atomic JSON repository.
 `LOAD` and `SAVE` retain native response ordering but use bounded internal
 snapshots; a supplied filename is only an identity and is never opened on the
-host. The one implemented effect is global `command.show-time=yes`: after the
-next cmqttd restart, completed command replies emit native-shaped level-7
-`767 cmdN - commandId=<tag> time=<milliseconds>` events to eligible C-Gate
-subscribers. `no` disables them after another restart. GET reflects SET/LOAD
-immediately, while the current listener retains its startup setting. All
-other catalogue values remain stored data and do not reconfigure the listener,
-PCI, MQTT, loggers, or filesystem. With the optional LOGIN gate armed, SET,
+host. Two global restart effects are implemented. The listener emits native
+level-1 `761 cmdN - Command: ...` entries and, when its startup
+`command.show-responses` value is `yes` (the native default), a level-6 `766`
+entry for each reply line, including multiline replies and errors. Setting it
+to `no` suppresses only the `766` entries after the next restart. A startup
+`command.show-time=yes` also emits level-7
+`767 cmdN - commandId=<tag> time=<milliseconds>` after completed replies.
+GET reflects SET/LOAD immediately, while the current listener retains both
+startup settings. C-Gate event entries redact credential-bearing commands and
+their response payloads; native C-Gate may expose those bytes. All other
+catalogue values remain stored data and do not reconfigure the listener, PCI,
+MQTT, loggers, or filesystem. With the optional LOGIN gate armed, SET,
 LOAD, SAVE, OBSET and OBRESET require authentication; help, GET, INFO and
 OBGET remain open. CONFIG performs no PCI I/O and must not be described as
 physical C-Bus state.
 
 `CMQTT CAPABILITIES` publishes the exact command list, catalogue/wildcard
 counts, `config_persistence="cmqttd-json"`,
-`config_runtime_reconfiguration=false`, `config_restart_effects=["command.show-time"]`,
+`config_runtime_reconfiguration=false`,
+`config_restart_effects=["command.show-responses","command.show-time"]`,
 and the OBGET repair flag. Ground native claims in
 [`native_cgate_config.json`](../../../../rust/testdata/fixtures/native_cgate_config.json)
-and the separate owned restart capture
-[`native_cgate_config_command_show_time.json`](../../../../rust/testdata/fixtures/native_cgate_config_command_show_time.json).
+and the separate owned restart captures
+[`native_cgate_config_command_show_time.json`](../../../../rust/testdata/fixtures/native_cgate_config_command_show_time.json)
+and [`native_cgate_config_command_show_responses.json`](../../../../rust/testdata/fixtures/native_cgate_config_command_show_responses.json).
 The real-daemon `system_cgate_config.rs` regression checks TCP framing, LOGIN,
 scope/snapshot durability across restart, zero CONFIG PCI frames and MQTT
 continuity. The fixture's oracle was the pinned C-Gate 3.4.0.2001 jar in a

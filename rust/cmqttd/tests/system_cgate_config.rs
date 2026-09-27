@@ -92,6 +92,13 @@ async fn config_native_family_is_scoped_authenticated_durable_and_keeps_mqtt_liv
     let mut sys = start_with(options(&state, &token)).await;
     wait_started(&sys).await;
     let (mut reader, mut writer) = connect(&sys).await;
+    let capabilities = command(&mut reader, &mut writer, "caps", "CMQTT CAPABILITIES").await;
+    let capabilities: serde_json::Value =
+        serde_json::from_str(capabilities[0].strip_prefix("200-").unwrap()).unwrap();
+    assert_eq!(
+        capabilities["config_restart_effects"],
+        serde_json::json!(["command.show-responses", "command.show-time"])
+    );
 
     assert_eq!(
         command(&mut reader, &mut writer, "help", "CONFIG ?").await,
@@ -218,6 +225,16 @@ async fn config_native_family_is_scoped_authenticated_durable_and_keeps_mqtt_liv
         .await,
         ["200 OK."]
     );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "hide-responses",
+            "CONFIG SET command.show-responses no",
+        )
+        .await,
+        ["200 OK."]
+    );
 
     drop(reader);
     drop(writer);
@@ -261,12 +278,16 @@ async fn config_native_family_is_scoped_authenticated_durable_and_keeps_mqtt_liv
         command(&mut reader, &mut writer, "timed", "NOOP").await,
         ["200 OK"]
     );
-    let timed = tokio::time::timeout(std::time::Duration::from_secs(2), async {
+    let (timed, trace) = tokio::time::timeout(std::time::Duration::from_secs(2), async {
+        let mut trace = Vec::new();
         loop {
             let mut line = String::new();
             event_reader.read_line(&mut line).await.unwrap();
+            if line.contains("Command: [timed]") || line.contains("Response: [timed]") {
+                trace.push(line.trim_end_matches(['\r', '\n']).to_string());
+            }
             if line.contains("commandId=timed time=") {
-                break line;
+                break (line, trace);
             }
         }
     })
@@ -281,8 +302,139 @@ async fn config_native_family_is_scoped_authenticated_durable_and_keeps_mqtt_liv
     chrono::NaiveDateTime::parse_from_str(timestamp, "%Y%m%d-%H%M%S%.3f").unwrap();
     let (_, milliseconds) = payload.split_once(" - commandId=timed time=").unwrap();
     milliseconds.parse::<u128>().unwrap();
+    assert_eq!(trace.len(), 1, "startup no suppresses 766 response events");
+    assert!(trace[0].contains(" 761 cmd"));
+    assert!(trace[0].ends_with(" - Command: [timed] NOOP"));
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "login-again",
+            &format!("LOGIN {TOKEN}")
+        )
+        .await,
+        ["200 OK"]
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "show-responses",
+            "CONFIG SET command.show-responses yes",
+        )
+        .await,
+        ["200 OK."]
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "read-responses",
+            "CONFIG GET command.show-responses",
+        )
+        .await,
+        ["303 command.show-responses=yes"]
+    );
     assert!(restarted.daemon.is_running());
+    drop(event_reader);
+    drop(event_writer);
+    drop(reader);
+    drop(writer);
     drop(restarted);
+
+    let mut enabled = start_with(options(&state, &token)).await;
+    wait_started(&enabled).await;
+    let (mut reader, mut writer) = connect(&enabled).await;
+    let (mut event_reader, mut event_writer) = connect(&enabled).await;
+    assert_eq!(
+        command(
+            &mut event_reader,
+            &mut event_writer,
+            "subscribe",
+            "EVENT e9s0c0"
+        )
+        .await,
+        ["200 OK."]
+    );
+    let info = command(
+        &mut reader,
+        &mut writer,
+        "multi",
+        "CONFIG INFO allow-fast-start",
+    )
+    .await;
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_config_command_show_responses.json"
+    ))
+    .unwrap();
+    let expected = native["cases"]["startup_default"][2]["response"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|row| {
+            row.as_str()
+                .unwrap()
+                .trim_start_matches("[info-network] ")
+                .to_string()
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(info, expected);
+    let trace = tokio::time::timeout(std::time::Duration::from_secs(2), async {
+        let mut trace = Vec::new();
+        while trace.len() < info.len() + 1 {
+            let mut line = String::new();
+            assert_ne!(event_reader.read_line(&mut line).await.unwrap(), 0);
+            if line.contains("Command: [multi]") || line.contains("Response: [multi]") {
+                trace.push(line.trim_end_matches(['\r', '\n']).to_string());
+            }
+        }
+        trace
+    })
+    .await
+    .expect("native 761/766 CONFIG trace did not arrive");
+    assert!(trace[0].contains(" 761 cmd"));
+    assert!(trace[0].ends_with(" - Command: [multi] CONFIG INFO allow-fast-start"));
+    for (event, response) in trace[1..].iter().zip(&info) {
+        assert!(event.contains(" 766 cmd"));
+        assert!(event.ends_with(&format!(" - Response: [multi] {response}")));
+    }
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "secret",
+            &format!("LOGIN {TOKEN}")
+        )
+        .await,
+        ["200 OK"]
+    );
+    let redacted = tokio::time::timeout(std::time::Duration::from_secs(2), async {
+        let mut redacted = Vec::new();
+        while redacted.len() < 2 {
+            let mut line = String::new();
+            assert_ne!(event_reader.read_line(&mut line).await.unwrap(), 0);
+            if line.contains("[secret] <redacted command>")
+                || line.contains(" - Response: <redacted>")
+            {
+                redacted.push(line);
+            }
+        }
+        redacted
+    })
+    .await
+    .expect("credential event redaction did not arrive");
+    assert!(redacted.iter().all(|line| !line.contains(TOKEN)));
+    let payload = "053800790149";
+    let before = enabled.pci.count_payload(payload);
+    enabled
+        .broker
+        .inject("homeassistant/light/cbus_1/set", br#"{"state":"ON"}"#);
+    require(COMMAND_DRAIN, "MQTT command after CONFIG restart", || {
+        enabled.pci.count_payload(payload) > before
+    })
+    .await;
+    assert!(enabled.daemon.is_running());
+    drop(enabled);
     std::fs::remove_file(state).unwrap();
     std::fs::remove_file(token).unwrap();
 }
