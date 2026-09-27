@@ -1221,9 +1221,13 @@ and Unit tree. `database_document_configured_network:
 that database replacement only while its configured address, interface type
 and interface address stay fixed; physical observations and live levels are
 preserved and `database_document_physical_io: false` remains authoritative.
-The complete Network and Unit contracts are separately retained, but an exact
-native combined replacement capture and private vendor XML/repository formats
-remain unavailable,
+The complete Network and Unit contracts are separately retained. One owned
+native combined Network/Application/Unit replacement capture pins the `301`
+root receipt, plain Unit readback, and a missing-`UnitName` `446` without
+mutation (`rust/testdata/fixtures/native_cgate_dbsetxml_combined.json`);
+other combined forms and private vendor XML/repository formats remain
+unverified.
+
 `project_archive_restore: "cmqttd-internal"` denotes durable snapshot keys in
 the cmqttd JSON repository (never vendor archive files). Internal snapshots
 retain complete typed-object extension metadata and Unit templates/PP ownership,
