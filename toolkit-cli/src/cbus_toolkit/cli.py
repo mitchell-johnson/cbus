@@ -112,6 +112,12 @@ def _positive(value):
     return result
 
 
+class _ExplicitCGateTimeout(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        namespace.timeout = values
+        namespace.cgate_timeout_explicit = True
+
+
 def _fields(values):
     result = {}
     for value in values or []:
@@ -1306,7 +1312,10 @@ def build_parser():
     cgate = commands.add_parser("cgate", help="Issue C-Gate commands using a persistent, correlated connection")
     cgate.add_argument("--host", default="127.0.0.1")
     cgate.add_argument("--port", type=int)
-    cgate.add_argument("--timeout", type=_positive, default=10.0)
+    cgate.set_defaults(cgate_timeout_explicit=False)
+    cgate.add_argument("--timeout", type=_positive, default=10.0,
+                       action=_ExplicitCGateTimeout,
+                       help="Per-command timeout in seconds (default: 10; 300 for network eDLT and serial refresh scans)")
     cgate.add_argument("--tls", action="store_true")
     cgate.add_argument("--ca", type=Path)
     cgate.add_argument("--cert", type=Path)
@@ -2281,9 +2290,23 @@ def _project(args):
     return {"file": p.save(args.output or args.file), "result": result}, 0
 
 
+def _cgate_timeout(args):
+    """Use a longer default only for scans that synchronize a whole network."""
+    if getattr(args, "cgate_timeout_explicit", False):
+        return args.timeout
+    if args.action == "edlt-label-audit" or (
+            args.action == "edlt-labels" and args.network is not None) or (
+            args.action == "serials" and (
+                args.remote_action == "refresh" or
+                (args.remote_action == "populate" and args.refresh))):
+        return 300.0
+    return 10.0
+
+
 def _cgate(args):
     import ssl
     from .cgate import CGateClient
+    timeout = _cgate_timeout(args)
     context = None
     if args.tls:
         if args.key and not args.cert:
@@ -2344,7 +2367,7 @@ def _cgate(args):
         edlt_audit_expected = load_baseline(args.baseline)
     from .edlt_control_cli import connection_guard
     with connection_guard(args), CGateClient(args.host, args.port or (20123 if args.tls else 20023),
-                     timeout=args.timeout, ssl_context=context) as client:
+                     timeout=timeout, ssl_context=context) as client:
         if args.action == "edlt-labels":
             from .cmqtt import edlt_label_inventory, edlt_labels
             if args.network is not None:

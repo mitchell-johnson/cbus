@@ -9,10 +9,14 @@ It can create an immutable baseline or compare a later fresh read with one.
 Create a baseline only after reviewing a complete read:
 
 ```sh
-cbus-toolkit cgate --host 127.0.0.1 --timeout 120 \
+cbus-toolkit cgate --host 127.0.0.1 \
   edlt-label-audit //PROJECT/254 \
   --write-baseline grenache-edlt-labels.json
 ```
+
+The audit defaults to a 300-second timeout per C-Gate command because its
+initial `NET SYNC` can take longer than the ordinary 10-second default. An
+explicit `cgate --timeout` overrides the audit default.
 
 The file is opened exclusively and is never replaced. An incomplete identity,
 memory, observation or `WidgetGroups` read produces the partial audit on stdout,
@@ -22,7 +26,7 @@ path after resolving the failure; do not erase prior acceptance evidence.
 Compare a later read with the saved state:
 
 ```sh
-cbus-toolkit cgate --host 127.0.0.1 --timeout 120 \
+cbus-toolkit cgate --host 127.0.0.1 \
   edlt-label-audit //PROJECT/254 \
   --baseline grenache-edlt-labels.json --mode configuration
 ```

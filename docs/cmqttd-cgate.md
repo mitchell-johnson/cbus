@@ -494,11 +494,16 @@ retained in the [native PROJECT_IDENTIFY acceptance](../toolkit-cli/research/exp
 ## Live label reads
 
 ```sh
-cbus-toolkit cgate --host 127.0.0.1 --timeout 120 \
+cbus-toolkit cgate --host 127.0.0.1 \
   edlt-labels --network //PROJECT/254
 cbus-toolkit cgate --host 127.0.0.1 --timeout 30 \
   edlt-labels //PROJECT/254/p/5
 ```
+
+The network inventory and `edlt-label-audit` use a 300-second per-command
+timeout by default to allow a full `NET SYNC`; an explicit `cgate --timeout`
+overrides this. Single-device label reads retain the 10-second default.
+`serials refresh` and `serials populate --refresh` share the longer default.
 
 The network form performs exactly one whole-network native serial refresh:
 `NET SYNC` followed by `NET CHECKUNIT`. A separate read-only `NET PINGU`

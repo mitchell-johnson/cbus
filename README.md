@@ -211,11 +211,11 @@ cbus-toolkit cgate --host 127.0.0.1 exec 'ACCESS LIST'
 cbus-toolkit cgate --host 127.0.0.1 exec 'ACCESS'
 cbus-toolkit cgate --host 127.0.0.1 --timeout 120 network sync-new //PROJECT/254 --unit 6
 cbus-toolkit cgate --host 127.0.0.1 network set-project //PROJECT/254 PROJECT
-cbus-toolkit cgate --host 127.0.0.1 --timeout 120 edlt-labels --network //PROJECT/254
+cbus-toolkit cgate --host 127.0.0.1 edlt-labels --network //PROJECT/254
 cbus-toolkit cgate --host 127.0.0.1 edlt-labels //PROJECT/254/p/5
 cbus-toolkit cgate --host 127.0.0.1 --timeout 120 edlt-widget-groups //PROJECT/254/p/5
-cbus-toolkit cgate --host 127.0.0.1 --timeout 120 edlt-label-audit //PROJECT/254 --write-baseline labels.json
-cbus-toolkit cgate --host 127.0.0.1 --timeout 120 edlt-label-audit //PROJECT/254 --baseline labels.json --mode configuration
+cbus-toolkit cgate --host 127.0.0.1 edlt-label-audit //PROJECT/254 --write-baseline labels.json
+cbus-toolkit cgate --host 127.0.0.1 edlt-label-audit //PROJECT/254 --baseline labels.json --mode configuration
 cbus-toolkit cgate --host 127.0.0.1 label cache-clear //PROJECT/254/56 5 --key 2
 cbus-toolkit cgate --host 127.0.0.1 exec 'AIRCON ?'
 cbus-toolkit cgate --host 127.0.0.1 exec 'AIRCON SET_ZONE_HVAC_MODE //PROJECT/254/172 1 0,1 3 0 1 0 1 255 230 64'
@@ -240,6 +240,11 @@ cbus-toolkit cgate --host 127.0.0.1 exec 'DALI ERROR_REPORTING STORE_OPTION //PR
 cbus-toolkit cgate --host 127.0.0.1 exec 'DALI GATEWAY PAGED_RECALL //PROJECT/254/p/20 521 1'
 cbus-toolkit cgate --host 127.0.0.1 exec 'DALI SESSION NEW commissioning'
 ```
+
+Network-wide eDLT label inventory, audit, `serials refresh`, and
+`serials populate --refresh` use a 300-second per-command timeout by default
+to allow the full `NET SYNC` to finish. An explicit `cgate --timeout` overrides
+it; other C-Gate commands retain the 10-second default.
 
 The embedded endpoint implements the complete maintained C-Gate 3.4 CONFIG,
 FILE, and ACCESS command families. CONFIG provides help, GET, INFO, SET, scoped

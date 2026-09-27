@@ -10,6 +10,13 @@ The methods read Address, Type, Version, SerialNumber and State individually. Th
 
 Refresh requires InterfaceState and TargetInterfaceState `running`, SyncState `idle`, AutoUnravel `no` and AutoUpdate `no`. The method checks these settings and rejects incompatible states; it does not change them. It sends `NET SYNC <network> fast`, followed by `NET CHECKUNIT <network> <addresses>` (or `*`).
 
+The CLI `cgate serials refresh` and `cgate serials populate --refresh` forms
+default to a 300-second timeout per C-Gate command because the full `NET SYNC`
+can exceed the ordinary 10-second default. This includes selected `--unit`
+addresses and population `--dry-run`: selection does not narrow the sync.
+Explicit `cgate --timeout` remains authoritative. `serials cached` and
+`serials populate` without `--refresh` retain the 10-second default.
+
 **Identity refresh has whole-network scope.** A selection limits the returned records and subsequent multiplicity checks, not the fast synchronization. AutoUnravel is excluded because native synchronization can automatically readdress conflicting units when that setting is enabled. AutoUpdate is excluded because it can populate the database during synchronization.
 
 Whole-network scope does not establish complete MMI address coverage. The original

@@ -469,14 +469,16 @@ refresh an already running network:
 
 ```sh
 cbus-toolkit cgate serials cached //TEST/254 > cached-units.json
-cbus-toolkit cgate --timeout 60 serials refresh //TEST/254 --unit 4 --unit 5 > scanned-units.json
+cbus-toolkit cgate serials refresh //TEST/254 --unit 4 --unit 5 > scanned-units.json
 cbus-toolkit cgate address inventory //TEST/254 > database-units.json
 cbus-toolkit unit-addressing match database-units.json scanned-units.json
 ```
 
 Refresh scans the entire network; `--unit` limits the reported addresses and
 duplicate-address checks. It requires automatic unraveling and updating to
-be disabled. Missing, invalid, duplicate or unreadable identities remain in
+be disabled. `serials refresh` defaults to a 300-second timeout per C-Gate
+command; explicit `cgate --timeout` overrides it. Missing, invalid, duplicate
+or unreadable identities remain in
 the JSON report and produce exit status 1. Comparing a native serial inventory
 automatically normalizes decimal-dot components and preserves incomplete
 source evidence. Add `--native-serials` for this comparison on plain arrays.
@@ -576,7 +578,9 @@ The supported types are KEYE1, KEYGL5 and PC_CNIED, with matching address,
 type and firmware. The operation rechecks the cache before each write, creates
 a project backup, verifies that only serial metadata changed, and saves the
 project. `--unit` selects database targets; `--refresh` explicitly refreshes
-the whole physical inventory first. See [serial-population.md](docs/serial-population.md).
+the whole physical inventory first and uses the same 300-second timeout
+default, including with `--dry-run`. Without `--refresh`, the ordinary
+10-second C-Gate default applies. See [serial-population.md](docs/serial-population.md).
 
 Network operations are explicit:
 
@@ -1787,9 +1791,14 @@ KEYGL5 5.5.00 profile on a direct network without opening a second CNI
 connection:
 
 ```sh
-cbus-toolkit cgate --host 127.0.0.1 --timeout 120 \
+cbus-toolkit cgate --host 127.0.0.1 \
   edlt-labels --network //PROJECT/254
 ```
+
+The network form uses a 300-second per-command timeout by default so its
+whole-network synchronization can finish. `cgate --timeout` explicitly
+overrides that value; the selected-device form retains the 10-second default.
+The serial refresh commands described above share the longer default.
 
 This form runs one whole-network serial refresh (`NET SYNC` followed by
 `NET CHECKUNIT`), classifies the fresh records and reads supported addresses in
@@ -1856,12 +1865,15 @@ Create a serial-bound label baseline, or compare a later fresh read after
 commissioning or programming, with the joined network audit:
 
 ```sh
-cbus-toolkit cgate --host 127.0.0.1 --timeout 120 \
+cbus-toolkit cgate --host 127.0.0.1 \
   edlt-label-audit //PROJECT/254 --write-baseline edlt-labels.json
-cbus-toolkit cgate --host 127.0.0.1 --timeout 120 \
+cbus-toolkit cgate --host 127.0.0.1 \
   edlt-label-audit //PROJECT/254 --baseline edlt-labels.json \
   --mode configuration
 ```
+
+The audit uses the same 300-second default for each C-Gate command and accepts
+an explicit `cgate --timeout` override.
 
 The audit uses the inventory's one physical synchronization, then consumes each
 unit's cached 44-byte `WidgetGroups` mapping without a second sync. Baselines
