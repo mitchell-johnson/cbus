@@ -361,8 +361,9 @@ class NativeXMLCSVSelection:
             'complete': True, 'unit_paths': list(self.unit_paths),
             'network_path': self.network_path,
             'project_path': self.project_path,
-            'unit_order': ('snapshot_document' if (self.network_path is not None
-                                                  or self.project_path is not None)
+            'unit_order': ('project_network_document_unit_address_ascending'
+                           if self.project_path is not None else
+                           'network_unit_address_ascending' if self.network_path is not None
                            else 'explicit_selection'),
             'xml_sha256': self.xml_sha256,
             'projections': [item.as_dict() for item in self.projections],
@@ -380,8 +381,11 @@ def project_native_xml_selection(text, *, unit_paths=None, network_path=None,
                                  project_path=None, columns):
     """Project an ordered selection, one network or every project network.
 
-    Network and project selections preserve XML document order. This composes
-    the admitted per-unit profiles; it does not infer Toolkit's manager enumeration order.
+    Network selections follow numeric unit address. The original network
+    constructor sets the report unit manager to custom address-ascending sort,
+    and AsCSV enumerates that manager by index. Project selection retains
+    network document order because Toolkit's report action selects one network.
+    This source-backed ordering does not establish full native runtime parity.
     Every selected unit must project successfully before a report is returned.
     """
     project_name = _selection_project(unit_paths=unit_paths, network_path=network_path,
@@ -407,7 +411,8 @@ def project_native_xml_selection(text, *, unit_paths=None, network_path=None,
             addresses = tuple(_byte(_field(unit, 'Address'), 'Unit address') for unit in units)
             if len(set(addresses)) != len(addresses):
                 raise ValueError('Native network contains duplicate unit addresses')
-            selected_paths.extend(f'//{project_name}/{address}/p/{unit}' for unit in addresses)
+            selected_paths.extend(f'//{project_name}/{address}/p/{unit}'
+                                  for unit in sorted(addresses))
         unit_paths = tuple(selected_paths)
 
     projections = []

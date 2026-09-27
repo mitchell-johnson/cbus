@@ -25,9 +25,9 @@ def options(commands):
     mode.add_argument('--native-xml-units', nargs='+', metavar='//PROJECT/NETWORK/p/UNIT',
                       help='Project admitted units from one native XML snapshot in the supplied order')
     mode.add_argument('--native-xml-network', metavar='//PROJECT/NETWORK',
-                      help='Project every unit in one native XML network, preserving document order')
+                      help='Project every unit in one native XML network by numeric unit address')
     mode.add_argument('--native-xml-project', metavar='//PROJECT',
-                      help='Project every unit across all snapshot networks in document order')
+                      help='Project all networks in snapshot order and units by numeric address')
     parser.add_argument('--columns', nargs='+', default=None, metavar='COLUMN',
                         help='all (default), or selected names: ' + ', '.join(COLUMNS) + '; output follows original order')
     _selection_options(parser)
@@ -41,9 +41,9 @@ def live_options(parser):
     mode.add_argument('--units', nargs='+', metavar='//PROJECT/NETWORK/p/UNIT',
                       help='Admitted units from one project snapshot in the supplied order')
     mode.add_argument('--network', metavar='//PROJECT/NETWORK',
-                      help='Every unit in one snapshot network, preserving document order')
+                      help='Every unit in one snapshot network by numeric unit address')
     mode.add_argument('--project', metavar='//PROJECT',
-                      help='Every unit across all project networks in snapshot document order')
+                      help='Every network in snapshot order, each with units by numeric address')
     parser.add_argument('--output', required=True, type=Path,
                         help='New CSV file; existing destinations are never overwritten')
     parser.add_argument('--columns', nargs='+', default=None, metavar='COLUMN',

@@ -42,8 +42,9 @@ Whole-project database CSV export is available offline with
 and live with `cgate database-csv --project //PROJECT --output new.csv`. It
 reads one project snapshot, includes every supported unit across its networks,
 and rejects unsupported or ambiguous units before creating a partial report.
-Rows follow XML document order; original Toolkit manager order remains
-unverified. See [CSV profiles and limits](docs/toolkit-database-csv.md).
+Rows follow snapshot network order and numeric unit-address order within each
+network. The per-network sort comes from pinned original Toolkit code; full
+interactive manager behavior remains unverified. See [CSV profiles and limits](docs/toolkit-database-csv.md).
 
 ## Install and run
 
@@ -281,11 +282,12 @@ slot remains primary and unavailable in the report. `cgate --host HOST database-
 with one read-only `DBGETXML` command and projects it in memory. Offline
 `--native-xml-units` and live `--units` export an explicit ordered selection;
 `--native-xml-network` and live `--network` export every unit in one network's
-snapshot document order. The selection may span networks within one project,
+numeric unit-address order. The selection may span networks within one project,
 uses one parsed snapshot and one live request, and rejects the entire export
 before exclusive output creation if any selected unit is missing, ambiguous or
-unsupported. This document order is explicit behavior; equivalence to the
-original Toolkit manager enumeration remains unverified. For the exact
+unsupported. The address sort is supported by the pinned original manager
+constructor/comparator and report call chain; full interactive enumeration
+remains unverified. For the exact
 captured missing-Area13 shape, `--apply-missing-area --backup-project BACKUP`
 backs up, creates, saves, reloads and verifies the group before export. The
 original 26-column form preference can be loaded with
@@ -2225,7 +2227,7 @@ wheel; each linked record identifies its runtime, source scope and date:
 - [About information](docs/toolkit-about.md): 16 tests, including 51 original instruction cases per run.
 - [Signed update metadata](docs/toolkit-update-metadata.md), [revocation stages](docs/toolkit-update-revocation.md), [supplied-context registry conditions](docs/toolkit-update-registry-conditions.md), [applicability preflight](docs/toolkit-update-applicability-preflight.md), [supplied-cohort rollout gate](docs/toolkit-update-rollout-cohort.md), [owned-registry rollout branch](docs/toolkit-update-rollout-owned-registry.md), [combined supplied-cohort applicability preflight](docs/toolkit-update-applicability-cohort-preflight.md), [linked diagnostic provenance](docs/toolkit-update-diagnostic-bundle.md) and [local package join](docs/toolkit-update-package-bundle.md): bounded diagnostics plus exact source-file and selected package-byte receipts, with explicit trust and availability limits.
 - [PCI routing](docs/pci-routing.md), [incoming routing](docs/pci-incoming-routing.md), [routed RECALL](docs/pci-routed-recall.md), [routed IDENTIFY](docs/pci-routed-identify.md) and [routed WRITE](docs/pci-routed-write.md): separate codec and transport checkpoints; all three commands accept project-resolved routes, while WRITE adds exact ACK path/tag matching and one-send mutation uncertainty evidence.
-- [Database CSV export](docs/toolkit-database-csv.md): 82 current core/CLI tests, two host Windows-adapter guards, five owned Windows tests and one owned C-Gate acceptance for captured values, exact saved column selection, cached-object projection, RELAY4/generic/KEYE1-3/DIMDN8/RELDN12/SENPIROA file/live native XML, explicit ordered multi-unit and network-document-order export from one shared snapshot/request with whole-selection rejection before output creation, KEYE per-block secondary-application associations, ordered repeated group associations, guarded Area13 persistence, portable UTF-8 and Toolkit-native Windows ACP output; the historical 23-test checkpoint includes 88 fresh original cases per run, while original Toolkit manager enumeration remains unverified.
+- [Database CSV export](docs/toolkit-database-csv.md): 82 earlier core/CLI tests, two host Windows-adapter guards, five owned Windows tests and one owned C-Gate acceptance for captured values, exact saved column selection, cached-object projection, RELAY4/generic/KEYE1-3/DIMDN8/RELDN12/SENPIROA file/live native XML, explicit ordered multi-unit and source-backed network-address-order export from one shared snapshot/request with whole-selection rejection before output creation, KEYE per-block secondary-application associations, ordered repeated group associations, guarded Area13 persistence, portable UTF-8 and Toolkit-native Windows ACP output; the historical 23-test checkpoint includes 88 fresh original cases per run, while original Toolkit manager enumeration remains unverified.
 - [Thermostat temperature conversions](docs/thermostat-temperature.md): 17 tests with 28,840 fresh original cases per run and separate original Windows arithmetic acceptance.
 - [Thermostat scheduling](docs/native-thermostat-schedule.md): 67 tests in the retained level-writer checkpoint; the composed unit/application/group/level workflow adds 18 current host tests and two retained owned-C-Gate cases with exact planning, backup, one target save/reload, opaque project-data preservation and explicit no-retry uncertainty evidence.
 

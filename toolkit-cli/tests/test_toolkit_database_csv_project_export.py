@@ -1,6 +1,7 @@
-"""Whole-project composition: explicit document order, no manager-order claim."""
+"""Whole-project composition with source-backed per-network manager sort."""
 import copy
 import hashlib
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
 import xml.etree.ElementTree as ET
@@ -15,6 +16,8 @@ from tests.test_toolkit_database_csv_native import native_xml, oid
 from tests import test_toolkit_database_csv_selection_export as selection_tests
 
 invoke = selection_tests.DatabaseCSVSelectionCLITests().invoke
+ORDER_FIXTURE = (Path(__file__).resolve().parents[1] / 'research' / 'fixtures' /
+                 'toolkit-database-csv-manager-order-synthetic.xml')
 
 
 def project_xml(*, unsupported=False, oids=False):
@@ -53,11 +56,53 @@ def test_project_keeps_network_document_order_and_secondary_associations():
     assert evidence['unit_paths'] == ['//CSVTEST/254/p/4', '//CSVTEST/1/p/4']
     assert evidence['project_path'] == '//CSVTEST'
     assert evidence['network_path'] is None
-    assert evidence['unit_order'] == 'snapshot_document'
+    assert evidence['unit_order'] == 'project_network_document_unit_address_ascending'
     assert evidence['original_manager_enumeration_verified'] is False
     assert evidence['native_database_mutated'] is False
     assert evidence['xml_sha256'] == hashlib.sha256(xml.encode()).hexdigest()
     assert all(item['xml_sha256'] == evidence['xml_sha256'] for item in evidence['projections'])
+
+
+def test_out_of_order_native_fixture_sorts_each_network_but_not_explicit_selection(tmp_path):
+    xml = ORDER_FIXTURE.read_text()
+    project = native.project_native_xml_selection(xml, project_path='//CSVTEST',
+                                                  columns=('address',))
+    assert project.unit_paths == ('//CSVTEST/254/p/4', '//CSVTEST/254/p/9',
+                                  '//CSVTEST/1/p/2', '//CSVTEST/1/p/7')
+    assert project.report.csv_text == 'Unit Address,\r\n4,\r\n9,\r\n2,\r\n7,\r\n\r\n'
+    assert project.as_dict()['original_manager_enumeration_verified'] is False
+    explicit = native.project_native_xml_selection(xml,
+        unit_paths=('//CSVTEST/1/p/7', '//CSVTEST/254/p/9', '//CSVTEST/1/p/2'),
+        columns=('address',))
+    assert explicit.report.csv_text == 'Unit Address,\r\n7,\r\n9,\r\n2,\r\n\r\n'
+    assert explicit.as_dict()['unit_order'] == 'explicit_selection'
+
+    for flags, expected, unit_order in (
+        (['--native-xml-network', '//CSVTEST/254'], b'Unit Address,\r\n4,\r\n9,\r\n\r\n',
+         'network_unit_address_ascending'),
+        (['--native-xml-project', '//CSVTEST'], b'Unit Address,\r\n4,\r\n9,\r\n2,\r\n7,\r\n\r\n',
+         'project_network_document_unit_address_ascending')):
+        output = tmp_path / ('network.csv' if '--native-xml-network' in flags else 'project.csv')
+        code, result = invoke(['toolkit-database-csv', ORDER_FIXTURE, *flags,
+                               '--columns', 'address', '--output', output])
+        assert code == 0, result
+        assert output.read_bytes() == expected
+        assert result['projection']['unit_order'] == unit_order
+        assert result['projection']['original_manager_enumeration_verified'] is False
+
+
+def test_out_of_order_fixture_duplicate_address_rejects_before_output(tmp_path):
+    root = ET.fromstring(ORDER_FIXTURE.read_bytes())
+    units = root.findall('Project/Network/Unit')
+    units[0].find('Address').text = '4'
+    source, output = tmp_path / 'duplicate.xml', tmp_path / 'should-not-exist.csv'
+    source.write_bytes(ET.tostring(root))
+    code, result = invoke(['toolkit-database-csv', source, '--native-xml-project',
+                           '//CSVTEST', '--columns', 'address', '--output', output])
+    assert code == 1
+    assert 'duplicate unit addresses' in result['error']['message']
+    assert result['toolkit_database_csv_evidence']['output_create_attempted'] is False
+    assert not output.exists()
 
 
 @pytest.mark.parametrize('networks', [0, 1, 2])

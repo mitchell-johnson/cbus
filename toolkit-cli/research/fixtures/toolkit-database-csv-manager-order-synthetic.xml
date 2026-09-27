@@ -1,0 +1,158 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Installation>
+  <Project>
+    <Address>CSVTEST</Address>
+    <Network>
+      <Address>254</Address>
+      <Application>
+        <TagName>Lighting</TagName>
+        <Address>56</Address>
+        <Group>
+          <TagName>Group1</TagName>
+          <Address>1</Address>
+        </Group>
+        <Group>
+          <TagName>Group2</TagName>
+          <Address>2</Address>
+        </Group>
+        <Group>
+          <TagName>Group3</TagName>
+          <Address>3</Address>
+        </Group>
+        <Group>
+          <TagName>Group4</TagName>
+          <Address>4</Address>
+        </Group>
+        <Group>
+          <TagName>Group5</TagName>
+          <Address>5</Address>
+        </Group>
+        <Group>
+          <TagName>Group6</TagName>
+          <Address>6</Address>
+        </Group>
+        <Group>
+          <TagName>Group7</TagName>
+          <Address>7</Address>
+        </Group>
+        <Group>
+          <TagName>Group8</TagName>
+          <Address>8</Address>
+        </Group>
+        <Group>
+          <TagName>Group12</TagName>
+          <Address>12</Address>
+        </Group>
+        <Group>
+          <TagName>Group13</TagName>
+          <Address>13</Address>
+        </Group>
+        <Group>
+          <TagName>&lt;Unused&gt;</TagName>
+          <Address>255</Address>
+        </Group>
+      </Application>
+      <Unit>
+        <TagName>Relay Nine</TagName>
+        <Address>9</Address>
+        <UnitType>RELAY4</UnitType>
+        <UnitName>NativeUnit</UnitName>
+        <SerialNumber>1.2.3</SerialNumber>
+        <FirmwareVersion>4.4</FirmwareVersion>
+        <CatalogNumber>OWNED</CatalogNumber>
+        <PP Name="Application" Value="0x38 0xff" />
+        <PP Name="AreaGroupAddress" Value="0xc" />
+        <PP Name="GroupAddress" Value="0x1 0x2 0x3 0x4 0x5 0x6 0x7 0x8 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff" />
+      </Unit>
+      <Unit>
+        <TagName>OwnedUnit</TagName>
+        <Address>4</Address>
+        <UnitType>RELAY4</UnitType>
+        <UnitName>NativeUnit</UnitName>
+        <SerialNumber>1.2.3</SerialNumber>
+        <FirmwareVersion>4.4</FirmwareVersion>
+        <CatalogNumber>OWNED</CatalogNumber>
+        <PP Name="Application" Value="0x38 0xff" />
+        <PP Name="AreaGroupAddress" Value="0xc" />
+        <PP Name="GroupAddress" Value="0x1 0x2 0x3 0x4 0x5 0x6 0x7 0x8 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff" />
+      </Unit>
+    </Network>
+    <Network>
+      <Address>1</Address>
+      <Application>
+        <TagName>Lighting</TagName>
+        <Address>56</Address>
+        <Group>
+          <TagName>Group1</TagName>
+          <Address>1</Address>
+        </Group>
+        <Group>
+          <TagName>Group2</TagName>
+          <Address>2</Address>
+        </Group>
+        <Group>
+          <TagName>Group3</TagName>
+          <Address>3</Address>
+        </Group>
+        <Group>
+          <TagName>Group4</TagName>
+          <Address>4</Address>
+        </Group>
+        <Group>
+          <TagName>Group5</TagName>
+          <Address>5</Address>
+        </Group>
+        <Group>
+          <TagName>Group6</TagName>
+          <Address>6</Address>
+        </Group>
+        <Group>
+          <TagName>Group7</TagName>
+          <Address>7</Address>
+        </Group>
+        <Group>
+          <TagName>Group8</TagName>
+          <Address>8</Address>
+        </Group>
+        <Group>
+          <TagName>Group12</TagName>
+          <Address>12</Address>
+        </Group>
+        <Group>
+          <TagName>Group13</TagName>
+          <Address>13</Address>
+        </Group>
+        <Group>
+          <TagName>&lt;Unused&gt;</TagName>
+          <Address>255</Address>
+        </Group>
+      </Application>
+      <Unit>
+        <TagName>Key Seven</TagName>
+        <Address>7</Address>
+        <UnitType>KEYE3</UnitType>
+        <UnitName>NativeUnit</UnitName>
+        <SerialNumber>1.2.3</SerialNumber>
+        <FirmwareVersion>2.5.00</FirmwareVersion>
+        <CatalogNumber>5031NMML</CatalogNumber>
+        <PP Name="Application" Value="0x38 0xff" />
+        <PP Name="AreaGroupAddress" Value="0xff" />
+        <PP Name="SecondApplicationBlocks" Value="0" />
+        <PP Name="GroupAddress" Value="0x1 0x2 0xff 0xff 0xff 0xff 0xff 0xff 0xff" />
+      </Unit>
+      <Unit>
+        <TagName>Key Two</TagName>
+        <Address>2</Address>
+        <UnitType>KEYE3</UnitType>
+        <UnitName>NativeUnit</UnitName>
+        <SerialNumber>1.2.3</SerialNumber>
+        <FirmwareVersion>2.5.00</FirmwareVersion>
+        <CatalogNumber>5031NMML</CatalogNumber>
+        <PP Name="Application" Value="0x38 0xff" />
+        <PP Name="AreaGroupAddress" Value="0xff" />
+        <PP Name="SecondApplicationBlocks" Value="0" />
+        <PP Name="GroupAddress" Value="0x1 0x2 0xff 0xff 0xff 0xff 0xff 0xff 0xff" />
+      </Unit>
+    </Network>
+  </Project>
+</Installation>

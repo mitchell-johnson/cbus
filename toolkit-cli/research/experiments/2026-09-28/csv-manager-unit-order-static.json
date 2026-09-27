@@ -1,0 +1,186 @@
+{
+  "base_revision": "c6edcdd58fe453c7ec35421fd0c40f1d74c14c38",
+  "focused_validation": {
+    "command": "PYTHONPATH=src:research:. python -m pytest tests/test_toolkit_database_csv_selection_export.py tests/test_toolkit_database_csv_project_export.py tests/test_toolkit_database_csv_project_interop.py -q -p no:cacheprovider -ra (with CBUS_CGATE_MOCK_BIN and CBUS_CMQTTD_BIN set to local Rust debug executables)",
+    "fixture_cases": "Project 4,9,2,7; network 4,9; explicit 7,9,2; duplicate address rejected atomically.",
+    "original_static_inspector": "Passed with pinned original EXE/MAP; negative swapped-input check rejects hash mismatch.",
+    "result": "57 passed, 34 subtests passed, 0 skipped in 2.38s"
+  },
+  "format": "cbus-toolkit-p8-02-csv-manager-order-receipt-v1",
+  "implemented_behavior": {
+    "duplicate_unit_address": "reject entire network/project export before output creation",
+    "explicit_selection": "caller-provided unit-path order",
+    "network_selection": "numeric ascending unit address within selected network",
+    "project_selection": "network XML document order, then numeric ascending unit address within each network; project network order is not claimed original-native"
+  },
+  "limits": [
+    "Original Toolkit GUI report was not executed with an out-of-order live or project unit manager.",
+    "Original source chain establishes network manager sort only; project network ordering remains synthetic CLI policy.",
+    "Secondary-application associations and unit profiles beyond admitted native XML families remain incomplete.",
+    "Any changed original binary, source implementation, or fixture invalidates the corresponding observation/test and requires revalidation."
+  ],
+  "observed_original": {
+    "format": "cbus-toolkit-csv-manager-order-static-v1",
+    "limit": "This verifies one pinned original source chain, not cold project loading, interactive Toolkit execution, project-wide network order, or physical devices.",
+    "method_spans": {
+      "CIS_TCBusObject.TCGateObjectManager.CustomSortAddressAsc": {
+        "bytes": 556,
+        "end": "0xf48488",
+        "sha256": "b5bd0358ec5d6c19a91107df4a3969458b4a7ad4f03bf43c61e1bf1508aec565",
+        "start": "0xf4825c"
+      },
+      "CIS_TCBusObject.TCGateObjectManager.SetSortStyleCustomAddressAsc": {
+        "bytes": 36,
+        "end": "0xf48874",
+        "sha256": "3330851a47529c9fc524358e61092edb4ad19601c69bfc38f4c7dc810b7d406b",
+        "start": "0xf48850"
+      },
+      "CIS_TCommonCBus.TCBUSUnitManager.AsCSV": {
+        "bytes": 1500,
+        "end": "0xf30c98",
+        "sha256": "5c50d7859b4651db79cee62c5c92219e9ca7388431fe6bd3b5d43572c9634d8a",
+        "start": "0xf306bc"
+      },
+      "CIS_TCommonCBus.TCBUSUnitManager.GetItem": {
+        "bytes": 36,
+        "end": "0xf2e0b0",
+        "sha256": "5be213223b99148af3b77d88550577c76601c4365e1b4626287b162828c028fd",
+        "start": "0xf2e08c"
+      },
+      "CIS_TCommonCBus.TCBusNetwork.InternalCreate": {
+        "bytes": 1728,
+        "end": "0xf2a070",
+        "sha256": "a36bfe4c44ea8cf2e3b6fbbdc60ba816885eea6547f19e6de22b8ba66a4f0912",
+        "start": "0xf299b0"
+      },
+      "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.Append": {
+        "bytes": 644,
+        "end": "0x7e8730",
+        "sha256": "efb8b52181bf7c3850a8692720016f9dd76b785be74c9d23e7b9e6947fca72f3",
+        "start": "0x7e84ac"
+      },
+      "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.SetSortStyle": {
+        "bytes": 56,
+        "end": "0x7e99b0",
+        "sha256": "db6638575da006b04c97fb19c7dd4bf8e108c5a6a60bd4ee1751a41ae457d19d",
+        "start": "0x7e9978"
+      },
+      "CIS_TfrmUnitsNode.TfrmUnitsNode.actProduceDocumentationExecute": {
+        "bytes": 772,
+        "end": "0xeb678c",
+        "sha256": "115ccc4b7eed6c1f95f594b1f7aec5d85acb7a047f1bc31c12e369945d88c5c7",
+        "start": "0xeb6488"
+      }
+    },
+    "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "original_executed": false,
+    "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "source_conclusion": "The selected network constructs its unit manager at +0xd8 with custom integer-address-ascending sort. The report action passes that manager to AsCSV, which enumerates GetItem indices.",
+    "verified_instructions": {
+      "0x7e859e": {
+        "mnemonic": "cmp",
+        "operands": "byte ptr [eax + 0x59], 0"
+      },
+      "0x7e85aa": {
+        "mnemonic": "call",
+        "operands": "0x7e9b30"
+      },
+      "0x7e85ce": {
+        "mnemonic": "call",
+        "operands": "0x643784"
+      },
+      "0x7e998a": {
+        "mnemonic": "mov",
+        "operands": "byte ptr [edx + 0x59], al"
+      },
+      "0x7e99a5": {
+        "mnemonic": "call",
+        "operands": "0x7e99b0"
+      },
+      "0xeb6587": {
+        "mnemonic": "mov",
+        "operands": "eax, dword ptr [eax + 0xd8]"
+      },
+      "0xeb6593": {
+        "mnemonic": "call",
+        "operands": "0xf306bc"
+      },
+      "0xf29a41": {
+        "mnemonic": "mov",
+        "operands": "eax, dword ptr [0xf21358]"
+      },
+      "0xf29a4e": {
+        "mnemonic": "mov",
+        "operands": "dword ptr [edx + 0xd8], eax"
+      },
+      "0xf29a7c": {
+        "mnemonic": "mov",
+        "operands": "eax, dword ptr [eax + 0xd8]"
+      },
+      "0xf29a82": {
+        "mnemonic": "call",
+        "operands": "0xf48850"
+      },
+      "0xf2e09e": {
+        "mnemonic": "call",
+        "operands": "0x7e8f74"
+      },
+      "0xf3074a": {
+        "mnemonic": "call",
+        "operands": "dword ptr [edx + 0x58]"
+      },
+      "0xf30774": {
+        "mnemonic": "call",
+        "operands": "0xf2e08c"
+      },
+      "0xf30bb8": {
+        "mnemonic": "inc",
+        "operands": "dword ptr [ebp - 0x10]"
+      },
+      "0xf30bbe": {
+        "mnemonic": "jne",
+        "operands": "0xf30761"
+      },
+      "0xf482a7": {
+        "mnemonic": "call",
+        "operands": "0xf47a10"
+      },
+      "0xf482b1": {
+        "mnemonic": "call",
+        "operands": "0xf47a10"
+      },
+      "0xf482b6": {
+        "mnemonic": "sub",
+        "operands": "ebx, eax"
+      },
+      "0xf482bb": {
+        "mnemonic": "mov",
+        "operands": "dword ptr [eax], ebx"
+      },
+      "0xf48860": {
+        "mnemonic": "mov",
+        "operands": "dword ptr [edx + 0x60], 0xf4825c"
+      },
+      "0xf48867": {
+        "mnemonic": "mov",
+        "operands": "dl, 3"
+      },
+      "0xf4886c": {
+        "mnemonic": "call",
+        "operands": "0x7e9978"
+      }
+    }
+  },
+  "original_binary_origin": "Owned Windows VM Toolkit 1.18 EXE and matching MAP transferred via UTM guest agent; binary and MAP are not committed.",
+  "retained_original_fixture": "toolkit-cli/research/fixtures/toolkit-database-csv-original-vectors.json manager-order case supplies cached manager units in order 7, 2, 9; it establishes serializer input-order preservation only.",
+  "source_sha256": {
+    "toolkit-cli/research/csv_manager_order_static.py": "e1614b600a19136a192527c3348afd1970038e2a6cbf954fc242f3a59ddc7efe",
+    "toolkit-cli/research/fixtures/toolkit-database-csv-manager-order-synthetic.xml": "c0c6c51d8b9e2505a26924bba2346fc49ff993249a1ab2530386e67c99deb83e",
+    "toolkit-cli/src/cbus_toolkit/toolkit_database_csv_cli.py": "333f1921e28720b57802c5aff9697ef5e4eacfbe447a0d422d1e4e87caefb6d6",
+    "toolkit-cli/src/cbus_toolkit/toolkit_database_csv_native.py": "a7078da2ea7d7b7a38bb3f9deb21d3e5cb0094833ee573e9fd1e2151ec4e595c",
+    "toolkit-cli/tests/test_toolkit_database_csv_project_export.py": "918553a91a87fd07d2f7b9640b273f571679a43992b6205e4c2acfe41386245c",
+    "toolkit-cli/tests/test_toolkit_database_csv_selection_export.py": "de5f21cee77d0e7eb0fcc175af62096b8dcf92c3aec502ae7ab58f0092bbf5c3"
+  },
+  "synthetic_fixture": "Out-of-order native XML has networks 254, 1 and units 9, 4 and 7, 2 respectively; no site data.",
+  "work_item": "P8.02 / GitHub issue #56"
+}

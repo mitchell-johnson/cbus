@@ -54,8 +54,10 @@ class NativeXMLCSVSelectionTests(unittest.TestCase):
             unit = copy.deepcopy(template)
             unit.find('Address').text = str(values['address'])
             network.append(unit)
+        paths = tuple('//CSVTEST/254/p/' + str(unit['address'])
+                      for unit in vector['input']['units'])
         result = native.project_native_xml_selection(ET.tostring(root, encoding='unicode'),
-            network_path='//CSVTEST/254', columns=('address',))
+            unit_paths=paths, columns=('address',))
         self.assertEqual(list(result.report.rows), vector['output'])
         self.assertEqual(result.report.utf8_bytes,
                          ('\r\n'.join(vector['output']) + '\r\n\r\n').encode())
@@ -64,16 +66,16 @@ class NativeXMLCSVSelectionTests(unittest.TestCase):
         xml = selection_xml()
         with patch.object(native, '_container', wraps=native._container) as parse:
             result = native.project_native_xml_selection(xml,
-                unit_paths=('//CSVTEST/254/p/4', '//CSVTEST/254/p/9'),
+                unit_paths=('//CSVTEST/254/p/9', '//CSVTEST/254/p/4'),
                 columns=('tag_name', 'address', 'group_7'))
         self.assertEqual(parse.call_count, 1)
         self.assertTrue(result.complete)
         self.assertEqual(result.report.csv_text,
             'Unit Address,Tag Name,Group 7,\r\n'
-            '4,OwnedUnit,<N/A>,\r\n9,"Key, ""Nine""",<Unused>,\r\n\r\n')
+            '9,"Key, ""Nine""",<Unused>,\r\n4,OwnedUnit,<N/A>,\r\n\r\n')
         self.assertEqual(result.report.unit_count, 2)
         evidence = result.as_dict()
-        self.assertEqual(evidence['unit_paths'], ['//CSVTEST/254/p/4', '//CSVTEST/254/p/9'])
+        self.assertEqual(evidence['unit_paths'], ['//CSVTEST/254/p/9', '//CSVTEST/254/p/4'])
         self.assertEqual(evidence['unit_order'], 'explicit_selection')
         self.assertEqual(evidence['xml_sha256'], hashlib.sha256(xml.encode()).hexdigest())
         self.assertFalse(evidence['native_database_mutated'])
@@ -81,14 +83,14 @@ class NativeXMLCSVSelectionTests(unittest.TestCase):
         self.assertTrue(all(item['xml_sha256'] == evidence['xml_sha256']
                             for item in evidence['projections']))
 
-    def test_network_keeps_snapshot_document_order_including_oidless_units(self):
+    def test_network_sorts_by_numeric_unit_address_including_oidless_units(self):
         result = native.loads_native_xml_selection(selection_xml(with_oids=False).encode(),
             network_path='//CSVTEST/254', columns=('address',))
-        self.assertEqual(result.report.rows, ('Unit Address,', '9,', '4,'))
-        self.assertEqual(result.as_dict()['unit_order'], 'snapshot_document')
+        self.assertEqual(result.report.rows, ('Unit Address,', '4,', '9,'))
+        self.assertEqual(result.as_dict()['unit_order'], 'network_unit_address_ascending')
         self.assertEqual(result.as_dict()['network_path'], '//CSVTEST/254')
         self.assertEqual([item.cached.unit.identity for item in result.projections],
-                         ['//CSVTEST/254/p/9', '//CSVTEST/254/p/4'])
+                         ['//CSVTEST/254/p/4', '//CSVTEST/254/p/9'])
 
     def test_empty_network_has_original_empty_report_header_and_blank_line(self):
         result = native.project_native_xml_selection(selection_xml(empty=True),
@@ -171,7 +173,7 @@ class DatabaseCSVSelectionCLITests(unittest.TestCase):
     def test_offline_explicit_selection_and_network_export_without_overwrite(self):
         for flags, expected in (
             (['--native-xml-units', '//CSVTEST/254/p/4', '//CSVTEST/254/p/9'], (4, 9)),
-            (['--native-xml-network', '//CSVTEST/254'], (9, 4))):
+            (['--native-xml-network', '//CSVTEST/254'], (4, 9))):
             with self.subTest(flags=flags), tempfile.TemporaryDirectory() as folder:
                 source, output = Path(folder) / 'project.xml', Path(folder) / 'report.csv'
                 source.write_text(selection_xml())
@@ -235,7 +237,7 @@ class DatabaseCSVSelectionCLITests(unittest.TestCase):
     def test_live_selection_and_network_use_one_project_snapshot(self):
         response = b'[1] 343-Begin XML snippet\r\n[1] 347-' + selection_xml().encode() + b'\r\n[1] 344 End XML snippet\r\n'
         for flags, expected in ((['--units', '//CSVTEST/254/p/4', '//CSVTEST/254/p/9'], (4, 9)),
-                                (['--network', '//CSVTEST/254'], (9, 4))):
+                                (['--network', '//CSVTEST/254'], (4, 9))):
             with self.subTest(flags=flags), tempfile.TemporaryDirectory() as folder:
                 output = Path(folder) / 'live.csv'
                 with peer([[response]]) as ((host, port), sent):

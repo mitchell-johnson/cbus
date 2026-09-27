@@ -364,8 +364,10 @@ For development, install `./toolkit-cli[test,research,serial,usb]`, then run `ma
 For a complete snapshot CSV selection, use `toolkit-database-csv project.xml
 --native-xml-project //PROJECT --output new.csv`, or `cgate database-csv
 --project //PROJECT --output new.csv` for one live DBGETXML snapshot. These
-include all networks and units in XML document order and reject the entire
+include networks in XML document order and units in numeric address order
+within each network, rejecting the entire
 export before output creation if any selected unit is unsupported or
 ambiguous. The admitted unit profiles and read-only missing-Area restriction
-remain; this is not verified original Toolkit manager enumeration. Use
+remain; the per-network sort is source-backed but full interactive original
+Toolkit manager enumeration is not yet verified. Use
 `--units`/`--native-xml-units` for an explicitly selected supported subset.
