@@ -12,9 +12,19 @@ PCI. The collector observes serials, not each duplicate node's firmware/type.
 not verified.** A matching receipt is never used as proof of movement.
 
 The caller must exclusively own the numeric-IP PCI endpoint and all commissioning
-activity for the entire sequence. Neither a TCP connection nor a process lock
-can establish that another PCI, C-Gate instance or commissioning process is
-inactive. This operational prerequisite is explicit; the API cannot detect it.
+activity for the entire sequence. Apply takes a nonblocking host-local advisory
+lease keyed by the canonical numeric IP and port before its fresh inventory,
+journal or address request. A second cooperating Toolkit process on the same
+host and endpoint fails before PCI I/O and can try again after the first exits.
+The OS releases the lease even after a process crash; the durable journal still
+requires read-only recovery and never authorizes replay. Plan and verify remain
+read-only and do not take this lease.
+
+The lease is a lock file in a private user directory under the host temporary
+directory. It cannot exclude a separate user, another computer, cmqttd, C-Gate
+or any controller that does not acquire the same lease. Neither a TCP connection
+nor this process lock establishes exclusive bus ownership. The caller must still
+control all commissioning activity outside cooperating Toolkit processes.
 
 ## CLI
 
@@ -98,11 +108,11 @@ Shorter explicit windows in synthetic tests are recorded as such; they do not
 replace the original wired two-second address response default.
 
 The overall deadline bounds the admitted transaction **after** pure input/plan
-validation and process-lock acquisition. It includes inventory, fresh local
+validation and process-lock and endpoint-lease acquisition. It includes inventory, fresh local
 checks, journal operations, send and verification. Every child is given that
 same absolute deadline; late child results retain evidence and prevent another
 request. File-system calls cannot be interrupted by a socket timeout, so a late
-file operation is detected before subsequent network admission. Lock wait and
+file operation is detected before subsequent network admission. Lock admission and
 plan-file parsing are outside the network transaction budget.
 
 ## Guards and protocol evidence
@@ -259,6 +269,10 @@ occupied targets, state3/cross-address ambiguity, missing MMI ranges, unexpected
 extra moves, no replay, durable-marker failures on both sides of replacement,
 post-send journal failure, deadlines and interruption preservation. Reader tests
 cover fixed windows, exact local literals and framing/count/checksum rejection.
+`tests/test_commissioning_lease.py` verifies interprocess refusal, independent
+endpoint admission, release after normal and abrupt process exit, reentry refusal
+and POSIX symlink rejection. The coordinator test verifies that lease contention
+opens no PCI socket, creates no journal and does not consume the one-shot apply.
 
 The generated focused report is
 [selected-serial-coordinator-acceptance.json](selected-serial-coordinator-acceptance.json).

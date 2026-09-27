@@ -35,6 +35,15 @@ Python 3.13 or newer is required. The base package has no external dependencies.
 
 Inspect each subcommand's `--help` and the matching feature document before constructing parameters. There is no universal `--dry-run`; use it only where the chosen workflow exposes it.
 
+For `serial-address apply`, the Toolkit CLI uses a nonblocking host-local advisory
+lease for the canonical numeric-IP endpoint during fresh preconditions, the
+single selected-serial request and journal finalization. Contending cooperating
+Toolkit processes fail before PCI I/O. This is not a bus-wide lock: maintain
+exclusive commissioning ownership against cmqttd, C-Gate, other hosts and other
+controllers. After an uncertain attempt, use `serial-address verify --recovery`
+for read-only recovery; never replay from the lease or journal alone. See
+`toolkit-cli/docs/pci-selected-serial.md` for the exact fixture and limits.
+
 `update-diagnostic-bundle` needs the four generated report files plus the exact
 raw catalogue response, revocation input, condition input, context input,
 metadata signer DER and revocation signer DER to

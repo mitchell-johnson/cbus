@@ -24,6 +24,7 @@ from .pci_local_options import PCILocalOptionsReader, parse_local_options
 from .pci_serial_address import _selected_serial, encode_serial_address
 from .pci_serial_address_transport import PCISerialAddressTransport
 from .pci_serials import PCISerialCollector
+from .commissioning_lease import EndpointLease
 
 
 MAX_PLAN_BYTES = 4 * 1024 * 1024
@@ -584,39 +585,43 @@ class SelectedSerialCoordinator:
         plan,value=self._validated_plan(plan)
         with self._lock:
             if self._apply_used: raise RuntimeError('A coordinator cannot apply twice; use read-only verify after an attempt')
-            self._apply_used=True
             evidence=self._base('apply',plan);journal=None
             try:
-                deadline=time.monotonic()+self.settings['overall_timeout']
-                before=self._before(evidence,deadline)
-                original=_inventory_proof(value['before'],value['endpoint'],self.local_unit,self.command_checksum)
-                _same(before,original,'Fresh complete inventory')
-                _expected(before,value['serial'],value['destination'],self.expected_local_serial,self.local_unit)
-                # Prepare the pure child before durably marking a possible send.
-                transport=self._transport()
-                if time.monotonic()>=deadline: raise TimeoutError('Overall deadline reached before journal creation')
-                evidence['state']='preconditions_checked';journal=self._new_journal(recovery_path)
-                evidence['journal']={'path':str(journal.path)};journal.write(evidence)
-                evidence['state']='write_attempted';evidence['attempt_recorded']=True
-                journal.write(evidence)  # If durable attempt marking fails, no co is invoked.
-                evidence['attempt_durability_verified']=True
-                self._phase(evidence,'exchange',transport,'send_serial_address',deadline,value['serial'],value['destination'])
-                exchange=evidence['exchange'];evidence['send_attempted']=exchange['send_attempted']
-                evidence['receipt_matches_request']=exchange['retained_receipt_matches_request']
-                evidence['state']='receipt_collected'
-                if (exchange['errors'] or not exchange['capture_complete'] or not exchange['connection_closed'] or
-                        exchange['receipt']['errors'] or exchange['receipt']['pending_hex']):
-                    raise SelectedSerialUncertain('Address request outcome is uncertain; no replay or follow-up I/O was attempted')
-                journal.write(evidence)
-                self._phase(evidence,'after',self._inventory(),'collect_inventory',deadline)
-                evidence['state']='after_observed';self._classify(evidence,value)
-                journal.write(evidence)
-                evidence['journal']={'path':str(journal.path),'last_update':dict(journal.last_update),'failed':False}
-                result=SelectedSerialResult(_json(evidence,MAX_JOURNAL_BYTES))
-                final_evidence=result.as_dict()
-                if time.monotonic()>=deadline: raise TimeoutError('Overall deadline reached during recovery journal/result finalization')
-                self.last_result=result;self.last_evidence=final_evidence
-                return result
+                # This host-local lease covers both the second inventory and
+                # the durable attempt/result journal. Contention cannot burn a
+                # coordinator attempt, create a journal or open a PCI socket.
+                with EndpointLease(self.host,self.port):
+                    self._apply_used=True
+                    deadline=time.monotonic()+self.settings['overall_timeout']
+                    before=self._before(evidence,deadline)
+                    original=_inventory_proof(value['before'],value['endpoint'],self.local_unit,self.command_checksum)
+                    _same(before,original,'Fresh complete inventory')
+                    _expected(before,value['serial'],value['destination'],self.expected_local_serial,self.local_unit)
+                    # Prepare the pure child before durably marking a possible send.
+                    transport=self._transport()
+                    if time.monotonic()>=deadline: raise TimeoutError('Overall deadline reached before journal creation')
+                    evidence['state']='preconditions_checked';journal=self._new_journal(recovery_path)
+                    evidence['journal']={'path':str(journal.path)};journal.write(evidence)
+                    evidence['state']='write_attempted';evidence['attempt_recorded']=True
+                    journal.write(evidence)  # If durable attempt marking fails, no co is invoked.
+                    evidence['attempt_durability_verified']=True
+                    self._phase(evidence,'exchange',transport,'send_serial_address',deadline,value['serial'],value['destination'])
+                    exchange=evidence['exchange'];evidence['send_attempted']=exchange['send_attempted']
+                    evidence['receipt_matches_request']=exchange['retained_receipt_matches_request']
+                    evidence['state']='receipt_collected'
+                    if (exchange['errors'] or not exchange['capture_complete'] or not exchange['connection_closed'] or
+                            exchange['receipt']['errors'] or exchange['receipt']['pending_hex']):
+                        raise SelectedSerialUncertain('Address request outcome is uncertain; no replay or follow-up I/O was attempted')
+                    journal.write(evidence)
+                    self._phase(evidence,'after',self._inventory(),'collect_inventory',deadline)
+                    evidence['state']='after_observed';self._classify(evidence,value)
+                    journal.write(evidence)
+                    evidence['journal']={'path':str(journal.path),'last_update':dict(journal.last_update),'failed':False}
+                    result=SelectedSerialResult(_json(evidence,MAX_JOURNAL_BYTES))
+                    final_evidence=result.as_dict()
+                    if time.monotonic()>=deadline: raise TimeoutError('Overall deadline reached during recovery journal/result finalization')
+                    self.last_result=result;self.last_evidence=final_evidence
+                    return result
             except BaseException as error:
                 self._error(error,evidence,journal)
                 raise

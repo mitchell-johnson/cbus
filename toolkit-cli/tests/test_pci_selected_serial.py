@@ -10,6 +10,7 @@ import unittest
 from unittest.mock import patch
 
 from cbus_toolkit import pci_selected_serial as implementation
+from cbus_toolkit.commissioning_lease import EndpointLease, EndpointLeaseBusy
 from cbus_toolkit.pci_selected_serial import SelectedSerialCoordinator, SelectedSerialPlan, SelectedSerialUncertain, _Journal
 from cbus_toolkit.pci_serial_address_transport import SerialAddressExchange
 from cbus_toolkit.pci_serial_address import decode_serial_address_receipt
@@ -51,6 +52,21 @@ def exchange(*, errors=(), capture=True, received=RECEIPT_A, attempted=True):
 
 
 class SelectedSerialTests(unittest.TestCase):
+    def test_cooperating_endpoint_contention_refuses_before_io_or_journal(self):
+        initial=successful_responses()+[b'g.'+BARE_PCI,OPTIONS]
+        with tempfile.TemporaryDirectory() as tmp,conversation(initial) as (endpoint,state):
+            subject=manager(endpoint);plan=subject.plan(A,6)
+            path=Path(tmp)/'journal.json'
+            baseline=list(state['requests'])
+            with EndpointLease(*endpoint):
+                with self.assertRaises(EndpointLeaseBusy) as caught:
+                    subject.apply(plan,recovery_path=path)
+            self.assertEqual(state['requests'],baseline)
+            self.assertFalse(path.exists())
+            self.assertFalse(subject._apply_used)
+            self.assertEqual(caught.exception.selected_serial_evidence['outcome'],'preconditions_failed')
+            self.assertFalse(caught.exception.selected_serial_evidence['transport_invoked'])
+
     def test_independent_literal_peer_full_sequence_and_recovery_do_not_replay(self):
         initial=successful_responses()+[b'g.'+BARE_PCI,OPTIONS]
         responses=initial+initial+[RECEIPT_A]+after_responses()+after_responses()
