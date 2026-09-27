@@ -46,12 +46,24 @@ to its derived directed broadcast. Use
 named adapters. The JSON plan shows the selected interface, local bind,
 netmask, derived destination and reported broadcast, plus skipped addresses
 and their reasons. Scan results attach that adapter record to each per-route
-observation. `adapter` identifies the OS record used to plan a route;
-`egress_interface_verified=false` means the socket is not pinned to that
-adapter and the actual outbound interface was not observed. Overlapping
-subnets can route multiple planned probes through one interface. Interface
+observation. Before sending, automatic mode binds the socket to the named
+adapter with the OS option (`IP_BOUND_IF` on macOS, `SO_BINDTODEVICE` on Linux,
+or `IP_UNICAST_IF` on Windows), reads that option back, and fails that probe
+if either step fails. Each successful observation includes
+`egress_interface_constraint` with the name, index, mechanism and confirmed
+readback. The per-probe and whole-scan `egress_interface_constraint_applied`
+flags distinguish a constrained send from a transport error. Explicit
+`--probe` routes still use their supplied source address without an interface
+name. `egress_interface_verified=false` remains accurate: neither CLI captures
+the physical outbound packet or proves delivery on that adapter. Interface
 status and address lists are separate OS observations, so the snapshot is not
 atomic; a route may change before or during scanning.
+
+On 2026-09-28, both CLIs completed a one-second automatic scan restricted to
+the host's `en0` adapter with an ephemeral local UDP port. Each reported one
+device, a successful `IP_BOUND_IF` option readback, and one complete probe.
+Only this address-free summary is retained in the repository; the scan does
+not establish physical egress, device identity or absence on other adapters.
 
 Only operational, non-loopback, non-point-to-point IPv4 addresses with a
 contiguous netmask and a usable directed broadcast are selected. Inconsistent

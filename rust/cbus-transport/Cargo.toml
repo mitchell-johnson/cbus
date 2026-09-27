@@ -13,6 +13,7 @@ chrono = { workspace = true }
 serde_json = { workspace = true, features = ["float_roundtrip"] }
 hex = { workspace = true }
 ring = "0.17"
+libc = "0.2"
 
 [dev-dependencies]
 proptest = { workspace = true }

@@ -27,6 +27,7 @@ pub(crate) struct ScanArgs {
 #[derive(Clone, Debug)]
 struct Candidate {
     name: String,
+    index: Option<u32>,
     up: bool,
     point_to_point: bool,
     ipv4: Option<(Ipv4Addr, Ipv4Addr, Option<Ipv4Addr>)>,
@@ -35,6 +36,8 @@ struct Candidate {
 #[derive(Clone, Debug, Serialize)]
 struct AdapterRoute {
     interface: String,
+    #[serde(skip)]
+    index: u32,
     bind: Ipv4Addr,
     destination: Ipv4Addr,
     netmask: Ipv4Addr,
@@ -56,6 +59,7 @@ fn host_candidates() -> Result<Vec<Candidate>, String> {
             };
             Candidate {
                 name: interface.name,
+                index: interface.index,
                 up,
                 point_to_point,
                 ipv4,
@@ -161,6 +165,7 @@ fn plan_adapters(
             }
             selected.push(AdapterRoute {
                 interface: name.clone(),
+                index: entry.index.unwrap_or(0),
                 bind: ip,
                 destination,
                 netmask,
@@ -262,15 +267,18 @@ pub(crate) async fn scan(args: ScanArgs) -> Result<Value, String> {
     }
     let mut observations = Vec::new();
     for (index, (bind, destination)) in routes.iter().enumerate() {
-        let mut probe = match crate::cni_discover_report(
-            *bind,
-            args.listen_port,
-            *destination,
-            args.discovery_port,
-            args.timeout,
-            args.max_datagrams,
-            args.include_hidden,
-        )
+        let mut probe = match crate::cni_discover_report(crate::CniDiscoveryRequest {
+            bind: *bind,
+            listen_port: args.listen_port,
+            destination: *destination,
+            discovery_port: args.discovery_port,
+            timeout: args.timeout,
+            max_datagrams: args.max_datagrams,
+            include_hidden: args.include_hidden,
+            interface: plan
+                .as_ref()
+                .map(|(adapters, _)| (adapters[index].interface.as_str(), adapters[index].index)),
+        })
         .await
         {
             Ok(observation) => {
@@ -306,6 +314,10 @@ pub(crate) async fn scan(args: ScanArgs) -> Result<Value, String> {
         };
         if let Some((adapters, _)) = &plan {
             probe["adapter"] = json!(adapters[index]);
+            probe["egress_interface_constraint_applied"] = json!(
+                probe["observation"]["egress_interface_constraint"]["option_readback_matches"]
+                    == true
+            );
         }
         observations.push(probe);
     }
@@ -325,6 +337,10 @@ pub(crate) async fn scan(args: ScanArgs) -> Result<Value, String> {
     if let Some((_, plan)) = plan {
         report["automatic_adapter_enumeration"] = json!(true);
         report["adapter_enumeration"] = plan;
+        report["egress_interface_constraint_applied"] =
+            json!(report["probes"].as_array().is_some_and(|probes| probes
+                .iter()
+                .all(|probe| probe["egress_interface_constraint_applied"] == true)));
         report["egress_interface_verified"] = json!(false);
     }
     Ok(report)
@@ -337,6 +353,7 @@ mod tests {
     fn candidate(name: &str, ip: Ipv4Addr, netmask: Ipv4Addr) -> Candidate {
         Candidate {
             name: name.into(),
+            index: Some(42),
             up: true,
             point_to_point: false,
             ipv4: Some((ip, netmask, None)),

@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 import socket
+import struct
 import subprocess
 import sys
 import threading
@@ -12,6 +13,7 @@ from cbus_toolkit.cni_discovery import (
     DISCOVERY_QUERY,
     decode_discovery_reply,
     discover_cni,
+    _pin_discovery_interface,
     plan_host_cni_probes,
     scan_cni,
     scan_host_cni,
@@ -77,6 +79,77 @@ def responder(payloads):
 
 
 class CniDiscoveryTransportTests(unittest.TestCase):
+    def test_interface_pin_uses_os_option_and_checks_readback(self):
+        class Peer:
+            def __init__(self, readback):
+                self.readback = readback
+                self.set_calls = []
+
+            def setsockopt(self, *args):
+                self.set_calls.append(args)
+
+            def getsockopt(self, *_args):
+                return self.readback
+
+        cases = [
+            ("darwin", 25, 42, 42, "IP_BOUND_IF"),
+            ("linux", getattr(socket, "SO_BINDTODEVICE", 25), b"en0\0", b"en0\0", "SO_BINDTODEVICE"),
+            ("win32", 31, struct.pack("!I", 42), struct.pack("=I", 42), "IP_UNICAST_IF"),
+        ]
+        for platform, option, expected_set, readback, mechanism in cases:
+            with self.subTest(platform=platform):
+                peer = Peer(readback)
+                result = _pin_discovery_interface(
+                    peer, "en0", platform=platform, if_nametoindex=lambda _name: 42)
+                self.assertEqual(peer.set_calls[0][1:], (option, expected_set))
+                self.assertEqual(result["mechanism"], mechanism)
+                self.assertTrue(result["option_readback_matches"])
+                self.assertFalse(result["physical_egress_observed"])
+
+        with self.assertRaisesRegex(OSError, "readback did not match"):
+            _pin_discovery_interface(Peer(43), "en0", platform="darwin",
+                                     if_nametoindex=lambda _name: 42)
+        with self.assertRaisesRegex(OSError, "four-byte index"):
+            _pin_discovery_interface(Peer(b"\x00"), "en0", platform="win32",
+                                     if_nametoindex=lambda _name: 42)
+        with self.assertRaisesRegex(OSError, "unsupported"):
+            _pin_discovery_interface(Peer(42), "en0", platform="unknown",
+                                     if_nametoindex=lambda _name: 42)
+
+    def test_interface_pin_failure_does_not_send_query(self):
+        class Peer:
+            def __init__(self):
+                self.closed = False
+                self.sent = False
+
+            def setsockopt(self, *_args):
+                raise OSError("interface option rejected")
+
+            def sendto(self, *_args):
+                self.sent = True
+
+            def close(self):
+                self.closed = True
+
+        peer = Peer()
+        with patch("cbus_toolkit.cni_discovery._pin_discovery_interface", side_effect=OSError("pin failed")):
+            with self.assertRaisesRegex(OSError, "pin failed"):
+                discover_cni(interface="en0", socket_factory=lambda *_args: peer)
+        self.assertTrue(peer.closed)
+        self.assertFalse(peer.sent)
+
+    @unittest.skipUnless(sys.platform == "darwin", "macOS loopback pinning acceptance")
+    def test_macos_loopback_interface_pin_receives_reply(self):
+        address, thread, errors = responder((CNI2,))
+        report = discover_cni(
+            interface="lo0", bind="127.0.0.1", listen_port=0,
+            destination=address[0], discovery_port=address[1], timeout=0.2)
+        thread.join(2)
+        self.assertEqual(errors, [])
+        self.assertEqual(len(report["devices"]), 1)
+        self.assertEqual(report["egress_interface_constraint"]["mechanism"], "IP_BOUND_IF")
+        self.assertTrue(report["egress_interface_constraint"]["option_readback_matches"])
+
     def test_bounded_collection_deduplicates_and_retains_rejections(self):
         address, thread, errors = responder((CNI2, CNI2, HIDDEN, b"noise"))
         report = discover_cni(bind="127.0.0.1", listen_port=0,
@@ -287,10 +360,13 @@ class CniHostAdapterTests(unittest.TestCase):
 
         def discover(**options):
             requests.append((options["bind"], options["destination"]))
+            self.assertEqual(options["interface"],
+                             "alan" if options["bind"] == "10.2.2.10" else "zlan")
             if options["bind"] == "10.2.2.10":
                 raise OSError("adapter route unavailable")
             return {"collection_complete": True, "devices": [{"endpoint": "192.168.10.2:10001"}],
-                    "malformed": [], "hidden_ignored": 0}
+                    "malformed": [], "hidden_ignored": 0,
+                    "egress_interface_constraint": {"option_readback_matches": True}}
 
         report = scan_host_cni(net_if_addrs=addrs, net_if_stats=stats,
                                discover=discover, timeout=0.1)
@@ -304,6 +380,9 @@ class CniHostAdapterTests(unittest.TestCase):
         self.assertFalse(report["absence_proven"])
         self.assertTrue(report["automatic_adapter_enumeration"])
         self.assertFalse(report["egress_interface_verified"])
+        self.assertFalse(report["egress_interface_constraint_applied"])
+        self.assertEqual([probe["egress_interface_constraint_applied"]
+                          for probe in report["probes"]], [False, True])
 
     def test_requested_adapter_and_invalid_inventory_fail_before_probe(self):
         addrs, stats = self.providers()

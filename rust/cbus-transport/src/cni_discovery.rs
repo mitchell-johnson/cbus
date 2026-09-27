@@ -8,6 +8,182 @@ use std::time::Duration;
 use tokio::net::UdpSocket;
 use tokio::time::{timeout_at, Instant};
 
+/// OS socket option confirmed by readback before an automatic adapter probe.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct InterfaceConstraint {
+    /// OS interface index checked against the selected name before sending.
+    pub index: u32,
+    /// The socket option set and read back for this operating system.
+    pub mechanism: &'static str,
+}
+
+fn pin_discovery_interface(
+    socket: &UdpSocket,
+    name: &str,
+    index: u32,
+) -> Result<InterfaceConstraint, String> {
+    if name.is_empty() || name.as_bytes().contains(&0) || index == 0 {
+        return Err("CNI interface name or index is invalid".into());
+    }
+    #[cfg(any(target_os = "macos", target_os = "linux"))]
+    {
+        use std::ffi::CString;
+        use std::os::fd::AsRawFd;
+
+        let name = CString::new(name).map_err(|_| "CNI interface name contains NUL")?;
+        // The planner's interface index is a snapshot. Confirm it still names
+        // the selected adapter immediately before constraining the socket.
+        let current = unsafe { libc::if_nametoindex(name.as_ptr()) };
+        if current == 0 || current != index {
+            return Err("CNI interface index changed after route planning".into());
+        }
+        let fd = socket.as_raw_fd();
+        #[cfg(target_os = "macos")]
+        {
+            let size = std::mem::size_of::<u32>() as libc::socklen_t;
+            let set = unsafe {
+                libc::setsockopt(
+                    fd,
+                    libc::IPPROTO_IP,
+                    libc::IP_BOUND_IF,
+                    (&index as *const u32).cast(),
+                    size,
+                )
+            };
+            if set != 0 {
+                return Err(format!(
+                    "Unable to pin CNI interface: {}",
+                    std::io::Error::last_os_error()
+                ));
+            }
+            let mut actual = 0u32;
+            let mut read_size = size;
+            let get = unsafe {
+                libc::getsockopt(
+                    fd,
+                    libc::IPPROTO_IP,
+                    libc::IP_BOUND_IF,
+                    (&mut actual as *mut u32).cast(),
+                    &mut read_size,
+                )
+            };
+            if get != 0 || read_size != size || actual != index {
+                return Err("CNI IP_BOUND_IF readback did not match selected adapter".into());
+            }
+            return Ok(InterfaceConstraint {
+                index,
+                mechanism: "IP_BOUND_IF",
+            });
+        }
+        #[cfg(target_os = "linux")]
+        {
+            let bytes = name.as_bytes_with_nul();
+            if bytes.len() > libc::IFNAMSIZ {
+                return Err("CNI Linux interface name exceeds IFNAMSIZ".into());
+            }
+            let set = unsafe {
+                libc::setsockopt(
+                    fd,
+                    libc::SOL_SOCKET,
+                    libc::SO_BINDTODEVICE,
+                    bytes.as_ptr().cast(),
+                    bytes.len() as libc::socklen_t,
+                )
+            };
+            if set != 0 {
+                return Err(format!(
+                    "Unable to pin CNI interface: {}",
+                    std::io::Error::last_os_error()
+                ));
+            }
+            let mut actual = [0u8; libc::IFNAMSIZ];
+            let mut read_size = actual.len() as libc::socklen_t;
+            let get = unsafe {
+                libc::getsockopt(
+                    fd,
+                    libc::SOL_SOCKET,
+                    libc::SO_BINDTODEVICE,
+                    actual.as_mut_ptr().cast(),
+                    &mut read_size,
+                )
+            };
+            if get != 0
+                || read_size as usize > actual.len()
+                || actual[..read_size as usize].split(|byte| *byte == 0).next()
+                    != Some(name.as_bytes())
+            {
+                return Err("CNI SO_BINDTODEVICE readback did not match selected adapter".into());
+            }
+            return Ok(InterfaceConstraint {
+                index,
+                mechanism: "SO_BINDTODEVICE",
+            });
+        }
+    }
+    #[cfg(windows)]
+    {
+        use std::os::windows::io::AsRawSocket;
+
+        #[link(name = "ws2_32")]
+        extern "system" {
+            fn setsockopt(
+                socket: usize,
+                level: i32,
+                option: i32,
+                value: *const i8,
+                len: i32,
+            ) -> i32;
+            fn getsockopt(
+                socket: usize,
+                level: i32,
+                option: i32,
+                value: *mut i8,
+                len: *mut i32,
+            ) -> i32;
+            #[link_name = "WSAGetLastError"]
+            fn wsa_get_last_error() -> i32;
+        }
+        const IPPROTO_IP: i32 = 0;
+        const IP_UNICAST_IF: i32 = 31;
+        let raw = socket.as_raw_socket() as usize;
+        let network_index = index.to_be_bytes();
+        let set = unsafe {
+            setsockopt(
+                raw,
+                IPPROTO_IP,
+                IP_UNICAST_IF,
+                network_index.as_ptr().cast(),
+                4,
+            )
+        };
+        if set != 0 {
+            return Err(format!("Unable to pin CNI interface: Winsock {}", unsafe {
+                wsa_get_last_error()
+            }));
+        }
+        let mut actual = 0u32;
+        let mut size = 4i32;
+        let get = unsafe {
+            getsockopt(
+                raw,
+                IPPROTO_IP,
+                IP_UNICAST_IF,
+                (&mut actual as *mut u32).cast(),
+                &mut size,
+            )
+        };
+        if get != 0 || size != 4 || actual != index {
+            return Err("CNI IP_UNICAST_IF readback did not match selected adapter".into());
+        }
+        return Ok(InterfaceConstraint {
+            index,
+            mechanism: "IP_UNICAST_IF",
+        });
+    }
+    #[allow(unreachable_code)]
+    Err("CNI interface pinning is unsupported on this OS".into())
+}
+
 /// Hard bound for a single discovery run.
 pub const MAX_DISCOVERY_DATAGRAMS: usize = 4_096;
 /// Keep malformed evidence bounded even when a peer sends a maximal UDP datagram.
@@ -83,6 +259,24 @@ pub struct DiscoveryReport {
 /// deadline or datagram bound.  This operation does not open a CNI TCP
 /// connection or prove that an unobserved interface is absent.
 pub async fn discover(config: &DiscoveryConfig) -> Result<DiscoveryReport, String> {
+    discover_inner(config, None).await.map(|(report, _)| report)
+}
+
+/// Discover through one named, indexed OS adapter. Any pin or readback error
+/// fails before the query is sent, with no unconstrained fallback.
+pub async fn discover_on_interface(
+    config: &DiscoveryConfig,
+    name: &str,
+    index: u32,
+) -> Result<(DiscoveryReport, InterfaceConstraint), String> {
+    let (report, constraint) = discover_inner(config, Some((name, index))).await?;
+    Ok((report, constraint.expect("interface was requested")))
+}
+
+async fn discover_inner(
+    config: &DiscoveryConfig,
+    interface: Option<(&str, u32)>,
+) -> Result<(DiscoveryReport, Option<InterfaceConstraint>), String> {
     if config.timeout.is_zero() || config.timeout > Duration::from_secs(300) {
         return Err("CNI discovery timeout must be in (0, 300] seconds".to_string());
     }
@@ -98,6 +292,9 @@ pub async fn discover(config: &DiscoveryConfig) -> Result<DiscoveryReport, Strin
     let socket = UdpSocket::bind(config.bind)
         .await
         .map_err(|error| format!("Unable to bind CNI discovery socket: {error}"))?;
+    let constraint = interface
+        .map(|(name, index)| pin_discovery_interface(&socket, name, index))
+        .transpose()?;
     socket
         .set_broadcast(true)
         .map_err(|error| format!("Unable to enable CNI discovery broadcast: {error}"))?;
@@ -198,22 +395,95 @@ pub async fn discover(config: &DiscoveryConfig) -> Result<DiscoveryReport, Strin
             &right.error,
         ))
     });
-    Ok(DiscoveryReport {
-        local,
-        destination: config.destination,
-        devices,
-        malformed,
-        duplicates_ignored,
-        hidden_ignored,
-        datagrams_received,
-        collection_complete,
-    })
+    Ok((
+        DiscoveryReport {
+            local,
+            destination: config.destination,
+            devices,
+            malformed,
+            duplicates_ignored,
+            hidden_ignored,
+            datagrams_received,
+            collection_complete,
+        },
+        constraint,
+    ))
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use std::net::Ipv4Addr;
+
+    #[tokio::test]
+    async fn invalid_interface_pin_fails_before_query_send() {
+        let peer = UdpSocket::bind((Ipv4Addr::LOCALHOST, 0)).await.unwrap();
+        let destination = match peer.local_addr().unwrap() {
+            SocketAddr::V4(value) => value,
+            SocketAddr::V6(_) => unreachable!(),
+        };
+        let config = DiscoveryConfig {
+            bind: SocketAddrV4::new(Ipv4Addr::LOCALHOST, 0),
+            destination,
+            timeout: Duration::from_millis(50),
+            max_datagrams: 1,
+            include_hidden: false,
+        };
+        assert!(discover_on_interface(&config, "invalid", 0)
+            .await
+            .unwrap_err()
+            .contains("invalid"));
+        let mut buffer = [0u8; 64];
+        assert!(
+            tokio::time::timeout(Duration::from_millis(25), peer.recv_from(&mut buffer))
+                .await
+                .is_err()
+        );
+    }
+
+    #[cfg(target_os = "macos")]
+    #[tokio::test]
+    async fn macos_loopback_interface_pin_receives_reply() {
+        use std::ffi::CString;
+
+        let name = CString::new("lo0").unwrap();
+        let index = unsafe { libc::if_nametoindex(name.as_ptr()) };
+        assert_ne!(index, 0);
+        let peer = UdpSocket::bind((Ipv4Addr::LOCALHOST, 0)).await.unwrap();
+        let destination = match peer.local_addr().unwrap() {
+            SocketAddr::V4(value) => value,
+            SocketAddr::V6(_) => unreachable!(),
+        };
+        let responder = tokio::spawn(async move {
+            let mut query = [0u8; 64];
+            let (size, source) = peer.recv_from(&mut query).await.unwrap();
+            assert_eq!(&query[..size], DISCOVERY_QUERY);
+            peer.send_to(
+                &hex::decode("cb81000020e8f5528101000101810b00022711811d000101800100028c26")
+                    .unwrap(),
+                source,
+            )
+            .await
+            .unwrap();
+        });
+        let (report, constraint) = discover_on_interface(
+            &DiscoveryConfig {
+                bind: SocketAddrV4::new(Ipv4Addr::LOCALHOST, 0),
+                destination,
+                timeout: Duration::from_millis(100),
+                max_datagrams: 16,
+                include_hidden: false,
+            },
+            "lo0",
+            index,
+        )
+        .await
+        .unwrap();
+        responder.await.unwrap();
+        assert_eq!(constraint.mechanism, "IP_BOUND_IF");
+        assert_eq!(constraint.index, index);
+        assert_eq!(report.devices.len(), 1);
+    }
 
     #[tokio::test]
     async fn local_peer_exercises_dedup_hidden_and_malformed_boundaries() {

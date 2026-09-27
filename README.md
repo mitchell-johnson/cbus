@@ -96,8 +96,9 @@ adapters or subnets, `cbus-toolkit interface scan-cni --probe
 LOCAL_IP@SUBNET_BROADCAST` records each chosen route independently. Install the
 CLI's optional `network` extra to use `scan-cni --auto-adapters --plan-only`
 for an OS-derived route preview, followed by `scan-cni --auto-adapters` to
-query the derived routes. The reported adapter is planning provenance; actual
-packet egress is unverified. A zero-reply result does not prove that no
+query the derived routes. Automatic mode constrains each socket to its named
+adapter and confirms the OS setting before sending; the report records this
+constraint. Physical packet egress remains unobserved. A zero-reply result does not prove that no
 interface exists. `cbus-tools cni-scan` supports explicit and OS-derived
 multi-route scans with the same bounded result envelope; `cni-discover` exposes
 the single-route wire codec and JSON boundary;

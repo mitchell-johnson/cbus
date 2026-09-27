@@ -235,6 +235,7 @@ dependencies = [
  "cbus-protocol",
  "chrono",
  "hex",
+ "libc",
  "proptest",
  "ring",
  "serde_json",

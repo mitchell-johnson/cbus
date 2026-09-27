@@ -11,6 +11,8 @@ from dataclasses import dataclass
 import hashlib
 import ipaddress
 import socket
+import struct
+import sys
 import time
 
 
@@ -22,6 +24,58 @@ MAX_DISCOVERY_PROBES = 16
 MAX_DISCOVERY_SCAN_SECONDS = 300
 MAX_MALFORMED_RAW_PREFIX = 64
 MAX_ENUMERATED_INTERFACES = 256
+
+
+def _pin_discovery_interface(peer, name, *, platform=sys.platform,
+                             if_nametoindex=socket.if_nametoindex):
+    """Constrain an IPv4 UDP socket to an OS interface before sending.
+
+    The option and readback are checked independently of the local source-IP
+    bind. A failed option never falls back to an unconstrained broadcast.
+    This proves the OS socket constraint, not physical transmission on a wire.
+    """
+    if type(name) is not str or not name or "\0" in name:
+        raise ValueError("CNI interface name must be nonempty text without NUL")
+    try:
+        index = if_nametoindex(name)
+    except OSError as error:
+        raise OSError(f"CNI interface index unavailable for {name}: {error}") from error
+    if type(index) is not int or not 0 < index < 2 ** 32:
+        raise OSError(f"CNI interface index for {name} is outside the supported IPv4 range")
+    if platform == "darwin":
+        # Darwin netinet/in.h: IP_BOUND_IF=25; Python does not export it.
+        option = getattr(socket, "IP_BOUND_IF", 25)
+        peer.setsockopt(socket.IPPROTO_IP, option, index)
+        applied = peer.getsockopt(socket.IPPROTO_IP, option)
+        mechanism = "IP_BOUND_IF"
+    elif platform.startswith("linux"):
+        option = getattr(socket, "SO_BINDTODEVICE", 25)
+        try:
+            encoded = name.encode("utf-8", "surrogateescape")
+        except UnicodeError as error:
+            raise OSError("CNI Linux interface name cannot be encoded") from error
+        if len(encoded) > 15:
+            raise OSError("CNI Linux interface name exceeds IFNAMSIZ")
+        peer.setsockopt(socket.SOL_SOCKET, option, encoded + b"\0")
+        applied = peer.getsockopt(socket.SOL_SOCKET, option, 16).split(b"\0", 1)[0]
+        applied = name if applied == encoded else None
+        mechanism = "SO_BINDTODEVICE"
+    elif platform == "win32":
+        # Winsock IP_UNICAST_IF takes a network-order interface index; GET is
+        # documented to return a host-order DWORD. Python may omit the symbol.
+        option = getattr(socket, "IP_UNICAST_IF", 31)
+        peer.setsockopt(socket.IPPROTO_IP, option, struct.pack("!I", index))
+        readback = peer.getsockopt(socket.IPPROTO_IP, option, 4)
+        if type(readback) is not bytes or len(readback) != 4:
+            raise OSError("CNI IP_UNICAST_IF readback is not a four-byte index")
+        applied = struct.unpack("=I", readback)[0]
+        mechanism = "IP_UNICAST_IF"
+    else:
+        raise OSError(f"CNI interface pinning is unsupported on {platform}")
+    if applied != index and applied != name:
+        raise OSError(f"CNI interface binding readback did not match {name}")
+    return {"interface": name, "index": index, "mechanism": mechanism,
+            "option_readback_matches": True, "physical_egress_observed": False}
 
 
 @dataclass(frozen=True)
@@ -127,7 +181,7 @@ def _probe(value):
 def discover_cni(*, bind="0.0.0.0", listen_port=DISCOVERY_PORT,
                  destination="255.255.255.255", discovery_port=DISCOVERY_PORT,
                  timeout=2.0, max_datagrams=256, include_hidden=False,
-                 socket_factory=socket.socket, clock=time.monotonic):
+                 interface=None, socket_factory=socket.socket, clock=time.monotonic):
     """Send one query and collect bounded replies through a monotonic deadline.
 
     The returned endpoint uses the UDP source address and the advertised TCP
@@ -142,6 +196,9 @@ def discover_cni(*, bind="0.0.0.0", listen_port=DISCOVERY_PORT,
     max_datagrams = _max_datagrams(max_datagrams)
     if not isinstance(include_hidden, bool):
         raise ValueError("CNI discovery include_hidden must be a boolean")
+    if interface is not None and (type(interface) is not str or not interface
+                                  or "\0" in interface):
+        raise ValueError("CNI interface name must be nonempty text without NUL")
     peer = socket_factory(socket.AF_INET, socket.SOCK_DGRAM)
     devices = []
     malformed = []
@@ -149,6 +206,8 @@ def discover_cni(*, bind="0.0.0.0", listen_port=DISCOVERY_PORT,
     duplicates = hidden = received = 0
     complete = True
     try:
+        constraint = (_pin_discovery_interface(peer, interface)
+                      if interface is not None else None)
         peer.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         peer.bind((bind, listen_port))
         local_address, local_port = peer.getsockname()[:2]
@@ -207,7 +266,7 @@ def discover_cni(*, bind="0.0.0.0", listen_port=DISCOVERY_PORT,
         malformed.sort(key=lambda item: (
             item["source"], item["raw_hex"], item["error"],
         ))
-        return {
+        result = {
             "format": "cbus-cni-discovery-v1",
             "query_hex": DISCOVERY_QUERY.hex(),
             "query_sent_once": True,
@@ -228,6 +287,9 @@ def discover_cni(*, bind="0.0.0.0", listen_port=DISCOVERY_PORT,
                 "identity authenticity or physical-network validation"
             ),
         }
+        if constraint is not None:
+            result["egress_interface_constraint"] = constraint
+        return result
     finally:
         peer.close()
 
@@ -442,13 +504,25 @@ def scan_host_cni(*, interfaces=None, net_if_addrs=None, net_if_stats=None,
     plan = plan_host_cni_probes(
         interfaces=interfaces, net_if_addrs=net_if_addrs, net_if_stats=net_if_stats,
     )
+    by_route = {(item["bind"], item["destination"]): item["interface"]
+                for item in plan["selected"]}
+
+    def pinned_discover(**options):
+        name = by_route[(options["bind"], options["destination"])]
+        return discover(interface=name, **options)
+
     report = scan_cni(
         [item["bind"] + "@" + item["destination"] for item in plan["selected"]],
-        discover=discover, **scan_options,
+        discover=pinned_discover, **scan_options,
     )
     for probe, adapter in zip(report["probes"], plan["selected"], strict=True):
         probe["adapter"] = adapter
+        constraint = (probe["observation"] or {}).get("egress_interface_constraint")
+        probe["egress_interface_constraint_applied"] = bool(
+            constraint and constraint.get("option_readback_matches"))
     report["automatic_adapter_enumeration"] = True
     report["adapter_enumeration"] = plan
+    report["egress_interface_constraint_applied"] = all(
+        probe["egress_interface_constraint_applied"] for probe in report["probes"])
     report["egress_interface_verified"] = False
     return report

@@ -346,7 +346,7 @@ async fn cni_discover_cmd(
     max_datagrams: usize,
     include_hidden: bool,
 ) -> Result<(), String> {
-    let report = cni_discover_report(
+    let report = cni_discover_report(CniDiscoveryRequest {
         bind,
         listen_port,
         destination,
@@ -354,7 +354,8 @@ async fn cni_discover_cmd(
         timeout,
         max_datagrams,
         include_hidden,
-    )
+        interface: None,
+    })
     .await?;
     println!(
         "{}",
@@ -364,7 +365,7 @@ async fn cni_discover_cmd(
     Ok(())
 }
 
-async fn cni_discover_report(
+struct CniDiscoveryRequest<'a> {
     bind: Ipv4Addr,
     listen_port: u16,
     destination: Ipv4Addr,
@@ -372,20 +373,29 @@ async fn cni_discover_report(
     timeout: f64,
     max_datagrams: usize,
     include_hidden: bool,
-) -> Result<Value, String> {
-    use cbus_transport::cni_discovery::{discover, DiscoveryConfig};
+    interface: Option<(&'a str, u32)>,
+}
 
-    if !timeout.is_finite() || timeout <= 0.0 || timeout > 300.0 {
+async fn cni_discover_report(request: CniDiscoveryRequest<'_>) -> Result<Value, String> {
+    use cbus_transport::cni_discovery::{discover, discover_on_interface, DiscoveryConfig};
+
+    if !request.timeout.is_finite() || request.timeout <= 0.0 || request.timeout > 300.0 {
         return Err("CNI discovery timeout must be finite and in (0, 300]".to_string());
     }
-    let report = discover(&DiscoveryConfig {
-        bind: SocketAddrV4::new(bind, listen_port),
-        destination: SocketAddrV4::new(destination, discovery_port),
-        timeout: Duration::from_secs_f64(timeout),
-        max_datagrams,
-        include_hidden,
-    })
-    .await?;
+    let config = DiscoveryConfig {
+        bind: SocketAddrV4::new(request.bind, request.listen_port),
+        destination: SocketAddrV4::new(request.destination, request.discovery_port),
+        timeout: Duration::from_secs_f64(request.timeout),
+        max_datagrams: request.max_datagrams,
+        include_hidden: request.include_hidden,
+    };
+    let (report, constraint) = match request.interface {
+        Some((name, index)) => {
+            let (report, constraint) = discover_on_interface(&config, name, index).await?;
+            (report, Some((name, constraint)))
+        }
+        None => (discover(&config).await?, None),
+    };
     let devices = report
         .devices
         .iter()
@@ -419,7 +429,7 @@ async fn cni_discover_report(
             })
         })
         .collect::<Vec<_>>();
-    Ok(json!({
+    let mut result = json!({
         "format": "cbus-cni-discovery-v1",
         "query_hex": hex::encode(cbus_protocol::cni_discovery::DISCOVERY_QUERY),
         "query_sent_once": true,
@@ -436,7 +446,17 @@ async fn cni_discover_report(
         "tcp_connection_opened": false,
         "absence_proven": false,
         "scope": "Captured fixed-layout IPv4 UDP discovery; no TCP reachability, ownership, identity authenticity or physical-network validation",
-    }))
+    });
+    if let Some((name, constraint)) = constraint {
+        result["egress_interface_constraint"] = json!({
+            "interface": name,
+            "index": constraint.index,
+            "mechanism": constraint.mechanism,
+            "option_readback_matches": true,
+            "physical_egress_observed": false,
+        });
+    }
+    Ok(result)
 }
 
 // ------------------------------------------------------------------ decode
