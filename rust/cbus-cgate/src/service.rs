@@ -2489,6 +2489,16 @@ impl Service {
             );
             capabilities["physical_pp_routed_state_scope"] =
                 serde_json::Value::String("owned-session-target-network".to_string());
+            capabilities["unit_readdress_routed"] = serde_json::Value::Bool(true);
+            capabilities["unit_readdress_routed_max_hops"] = serde_json::Value::from(6);
+            capabilities["unit_readdress_routed_delivery_semantics"] = serde_json::Value::String(
+                "reply-network-route-source-destination-ack-correlated-exactly-once-no-replay"
+                    .to_string(),
+            );
+            capabilities["unit_readdress_routed_state_scope"] =
+                serde_json::Value::String("target-network-volatile-cache-only".to_string());
+            capabilities["unit_readdress_routed_physical_persistence_verified"] =
+                serde_json::Value::Bool(false);
             capabilities["full_cgate_command_path_coverage"] = serde_json::Value::Bool(
                 inventory_paths == 431 && fail_closed_paths == 0 && rejected_paths == 0,
             );
@@ -2916,6 +2926,7 @@ impl Service {
                 "NET UNRAVEL",
                 "NET UNRAVELUNIT",
                 "DO UNRAVEL",
+                "SET Address",
                 "PP SAVE",
                 "PP SAVE_TO_SOURCE"
             ]);
@@ -7181,7 +7192,7 @@ impl Service {
         let Some((project, network, source)) = Server::split_unit(words[1]) else {
             return err(tag, 400, "400 Invalid source path");
         };
-        if project != self.project || network != self.network {
+        if project != self.project {
             return err(tag, 404, "404 Network is not connected to this service");
         }
         let Ok(destination) = words[3].parse::<u8>() else {
@@ -7191,8 +7202,25 @@ impl Service {
             return err(tag, 400, "400 Invalid destination address");
         }
 
-        let pci = self.pci.read().await.clone();
-        let source_replies = match pci.identify_all(source, 4).await {
+        // Resolve every bridge before the first read. An absent, ambiguous or
+        // over-depth topology therefore cannot lead to a protected write on a
+        // guessed network.
+        let route = match self.route_to_network(network).await {
+            Ok(route) => route,
+            Err(error) => {
+                return err(
+                    tag,
+                    408,
+                    &format!("408 Physical network route unavailable: {error}"),
+                )
+            }
+        };
+        let (generation, pci) = self.current_pci_epoch().await;
+        let source_replies = match if route.is_empty() {
+            pci.identify_all(source, 4).await
+        } else {
+            pci.identify_all_routed(&route, source, 4).await
+        } {
             Ok(replies) => replies,
             Err(error) => {
                 return err(
@@ -7207,7 +7235,11 @@ impl Service {
             1 => {}
             _ => return err(tag, 409, "409 Source address contains multiple units"),
         }
-        let destination_replies = match pci.identify_all(destination, 4).await {
+        let destination_replies = match if route.is_empty() {
+            pci.identify_all(destination, 4).await
+        } else {
+            pci.identify_all_routed(&route, destination, 4).await
+        } {
             Ok(replies) => replies,
             Err(error) => {
                 return err(
@@ -7220,7 +7252,12 @@ impl Service {
         if !destination_replies.is_empty() {
             return err(tag, 409, "409 Destination occupied");
         }
-        if let Err(error) = pci.readdress_unit(source, destination).await {
+        let result = if route.is_empty() {
+            pci.readdress_unit(source, destination).await
+        } else {
+            pci.readdress_unit_routed(&route, source, destination).await
+        };
+        if let Err(error) = result {
             let code = if error.to_string().contains("unit rejected") {
                 409
             } else {
@@ -7229,6 +7266,9 @@ impl Service {
             return err(tag, code, &format!("{code} Readdress failed: {error}"));
         }
 
+        let Some(_commit_guard) = self.pci_commit_guard(generation, &pci).await else {
+            return err(tag, 408, "408 Readdress invalidated by PCI reconnect");
+        };
         let destination_path = format!("//{project}/{network}/p/{destination}");
         let mut model = self.model.lock().await;
         if let Some(physical) = model

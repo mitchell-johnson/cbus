@@ -224,7 +224,7 @@ versioned portable container.
 | NET CHECKUNIT | Active direct or one-to-six-bridge IDENTIFY4 collection through the native two-second quiet interval, with strict Reply Network correlation and native no-unit, single-unit, duplicate-unit and identity-error result forms; `*` expands from a fresh route-matched complete MMI |
 | NET CLOCKS | Reads physical IDENTIFY16 summaries for the synchronized inventory. Target counts and gateway recovery use decoded `ClockGenEnable` layouts, read-modify-write CAL stores and mandatory readback; native-style per-unit failures remain visible in `120` lines even with final status 200 |
 | `SET //PROJECT/NETWORK Retries 0` | Matches the owned native Toolkit-preparation exchange exactly: a ready network starts with `Retries=2`, the exact fully qualified zero form returns `200 OK: //PROJECT/NETWORK`, and subsequent `GET`/`SHOW` reads report zero. This setting is volatile and local: it sends no PCI command, emits no event, does not rewrite cmqttd's database, and resets to two after daemon restart or runtime clearing. Other non-`Address` scalar SET forms remain closed |
-| `SET //PROJECT/NETWORK/p/UNIT Address DESTINATION` | Physical unit readdressing through native C-Gate's protected parameter-`0x20` exchange. The service proves one source identity and an empty destination, obtains the one-use challenge, sends exactly one special address STORE, requires both PCI confirmation and the unit ACK from the destination, moves only the observed physical cache, and leaves the database address unchanged |
+| `SET //PROJECT/NETWORK/p/UNIT Address DESTINATION` | Protected physical unit readdressing on the configured network or a topology-resolved one-to-six-bridge target. The service resolves the whole route before I/O, proves exactly one route-correlated source identity and an empty destination, obtains the route/source/parameter-bound one-use challenge, sends one special address STORE with no replay, and requires both PCI confirmation and the exact destination-address ACK. Only the addressed network's observed physical cache moves after the PCI-generation guard; the database address is unchanged |
 | Unit identification | Source-correlated CAL replies from the physical unit |
 | OEM physical memory reads | Volatile 0x41 pointer selection plus segmented RECALL; no EEPROM writes |
 | KEYGL5 5.5.00 static strings and label references | Python reader checks physical identity, stable header and static-text CRC. Its network form runs one fresh serial refresh, selects supported records in numeric order, brackets each memory snapshot with physical IDENTIFY4, attaches the inventory identity only when both serials match, reads configurations sequentially and preserves mismatches as per-unit errors |
@@ -302,12 +302,21 @@ and resumed around its stores; DALI observes the native one-second settling
 interval. GOC methods use parameter `0xFF` with a big-endian address prefix and
 their native per-method limits. Factory and special parameters follow native
 behavior and are skipped by ordinary SAVE.
-Supported `lock` fields and physical unit readdressing use the native
+Supported direct `lock` fields and physical unit readdressing use the native
 unchecksummed, PCI-confirmed unlock and one-byte unit challenge reply after
-selecting the relevant page and before STORE. Readdressing uses the vendor's
-fixed `A3 20 4E <destination> <challenge>` form and recognizes its fixed success
-and rejection replies rather than treating them as ordinary variable-length CAL
-messages. All dirty parameters are encoded
+selecting the relevant page and before STORE. A topology-resolved routed form
+uses the same unlock CAL inside the checksummed one-to-six-bridge PTP envelope;
+the challenge must carry the exact Reply Network, source unit and parameter.
+Readdressing uses the vendor's fixed
+`A3 20 4E <destination> <challenge>` form and recognizes its fixed destination
+ACK and source NAK rather than treating them as ordinary variable-length CAL
+messages. The protected STORE is never replayed after an uncertain outcome.
+The retained direct request/ACK/NAK, routed challenge and Reply Network
+composition, exact one/six-bridge vectors, scripted acceptance and physical
+limits are recorded in
+[`native_cgate_routed_unit_readdress.json`](../rust/testdata/fixtures/native_cgate_routed_unit_readdress.json).
+There is no retained native routed readdress capture, live physical-bridge run
+or power-cycle persistence proof. All dirty parameters are encoded
 and physically pre-read before the first STORE. Each changed range is
 acknowledged and read back. For a C-Bus 3 specification, a changed save then
 sends `E3 81 00 04`, polls with `E3 82 00 04` at 500 ms intervals, and returns
@@ -758,7 +767,9 @@ non-inventoried service commands. Full replacement still requires:
   `NET CHECKUNIT` are implemented with route-isolated caches. KEYGL5 firmware,
   applications and WidgetGroups enrichment, standard/eDLT label-cache clearing,
   KFI transactions and FactoryDefault now retain exact routed correlation and
-  target-network cache scope. Unit readdressing remains a separate routed gap.
+  target-network cache scope. Protected unit readdressing also supports the
+  configured network and topology-resolved one-to-six-bridge targets with
+  route-correlated source/destination guards and exact-once STORE semantics.
   Routed PPM application commands
   cover standard Lighting (applications 48–95), Trigger (202), Enable SET
   (203), dynamic labels, Clock, Temperature, named-scene actions, and every

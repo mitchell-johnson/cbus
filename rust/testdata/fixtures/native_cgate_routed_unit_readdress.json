@@ -1,0 +1,51 @@
+{
+  "schema": "cmqttd.native-cgate-routed-unit-readdress-evidence/v1",
+  "date": "2026-09-27",
+  "scope": "Evidence-bound composition of the retained native direct protected unit-address exchange with the retained one-to-six-bridge source-route and Reply Network grammar; no live physical bridge, routed native command capture or site data",
+  "grounding": [
+    {
+      "evidence": "testdata/vectors/decode_to_pci.jsonl#tp-0106-cgate-protected-unit-readdress",
+      "finding": "The literal native direct mutation is CAL A3 20 4E <destination> <one-use challenge> to the source unit. It is unchecksummed on the direct network and carries a separately allocated PCI confirmation byte."
+    },
+    {
+      "evidence": "testdata/vectors/decode_from_pci.jsonl#fp-cgate-readdress-ack and #fp-cgate-readdress-nak",
+      "finding": "Native direct success is the exact parameter-0x20/data-0x4E ACK from the destination address; definitive rejection is the fixed ReaddressNak from the source address."
+    },
+    {
+      "evidence": "testdata/vectors/encode.jsonl#en-cmqttd-routed-pp-unlock-one-bridge and #en-cmqttd-routed-pp-unlock-six-bridges",
+      "finding": "The same parameter-0x20 unlock used by readdress has an already accepted one-to-six-bridge encoding, and its one-byte challenge is bound to the exact Reply Network and remote source unit."
+    },
+    {
+      "evidence": "toolkit-cli/research/fixtures/pci-routed-recall-original-vectors.json and pci-routed-identify-original-vectors.json",
+      "finding": "Retained original receiver matrices establish one-through-six Reply Network parsing and rejection of first-bridge, remaining-route, remote-unit and CAL-selector mismatches."
+    },
+    {
+      "evidence": "toolkit-cli/research/experiments/2026-09-26/cgate-bridged-topology-native-acceptance.json",
+      "finding": "The retained native topology evidence pins database bridge resolution and the one-to-six source-route bound used before any physical request."
+    }
+  ],
+  "claimed_behavior": [
+    "SET //PROJECT/NETWORK/p/SOURCE Address DESTINATION resolves the complete topology before I/O and supports the configured direct network or one through six bridges.",
+    "The service requires exactly one route-correlated IDENTIFY4 source reply and no destination reply before requesting the challenge.",
+    "The challenge must be one byte from the exact route, source unit and parameter 0x20. The protected address STORE is sent exactly once and never registered for replay.",
+    "Success requires the allocated positive PCI confirmation plus the exact Reply Network, destination unit and fixed parameter-0x20/data-0x4E ACK. A definitive NAK must match the route and old source.",
+    "Only the target network's volatile physical cache and move event commit after the captured PCI-generation guard; the persistent database address remains unchanged."
+  ],
+  "wire_vectors": [
+    "en-cmqttd-routed-unit-readdress-one-bridge",
+    "en-cmqttd-routed-unit-readdress-six-bridges",
+    "fp-cmqttd-routed-unit-readdress-ack-one-bridge",
+    "fp-cmqttd-routed-unit-readdress-ack-six-bridges"
+  ],
+  "acceptance": [
+    "Transport tests pin literal one- and six-bridge requests, exact challenge/route/source/destination/ACK matching, and zero replay after a lost mutation confirmation.",
+    "Service tests prove routed duplicate guards, reject neighbouring Reply Network receipts and commit only the addressed network cache while leaving its database unit address unchanged.",
+    "A real cmqttd daemon test completes the one-bridge scripted exchange through the shared simulated PCI and observes one protected STORE."
+  ],
+  "limits": [
+    "There is no retained native wire capture or original command execution for routed unit readdress. The routed request is a bounded protocol composition of the literal native direct CAL with separately retained native source-route and Reply Network semantics; this does not claim GUI or native C-Gate routed-command parity.",
+    "No physical bridge or remote unit completed the mutation in acceptance. The exact scripted ACK proves protocol correlation, not physical execution.",
+    "The destination ACK is the retained native completion boundary. cmqttd does not add an invented post-write parameter readback or claim nonvolatile address persistence, reboot survival or power-cycle survival.",
+    "A lost confirmation or receipt is outcome-uncertain, retires the programming lane and is never replayed automatically."
+  ]
+}

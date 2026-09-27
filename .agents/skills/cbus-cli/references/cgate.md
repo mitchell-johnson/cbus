@@ -946,10 +946,18 @@ proves acceptance only; reset values, reboot, retained address, rendering and
 persistence require separate verification. When the optional LOGIN gate is
 armed, this destructive method requires authentication.
 It also implements guarded scalar `SET //PROJECT/NETWORK/p/UNIT Address DEST`
-against the physical bus. That command proves one source and an empty
-destination, uses the native parameter-`0x20` one-use challenge, sends the
-special address STORE once, requires the destination ACK, and deliberately
-leaves the database unit address unchanged for the Toolkit workflow to verify.
+against the configured physical network or a topology-resolved one-to-six-
+bridge target. The complete route is required before I/O. Exact direct or Reply
+Network IDENTIFY4 collection proves one source and an empty destination; the
+native parameter-`0x20` challenge must match that route and source. The special
+address STORE is sent once without replay and completes only with its allocated
+PCI confirmation plus the exact destination-address ACK. The captured PCI
+generation gates a target-network-only volatile-cache/event commit, while the
+database unit address remains unchanged for the Toolkit workflow to verify.
+[`native_cgate_routed_unit_readdress.json`](../../../../rust/testdata/fixtures/native_cgate_routed_unit_readdress.json)
+records the direct native bytes, routed envelope composition, exact one/six-hop
+vectors and the lack of a native routed capture, live bridge run or physical
+persistence proof.
 `NET UNRAVEL //PROJECT/NETWORK [MATCHDB]` and `NET UNRAVELUNIT
 //PROJECT/NETWORK UNITS [MATCHDB]` use one direct or topology-resolved
 one-to-six-bridge planner. It takes a complete route-correlated MMI and
@@ -1087,7 +1095,10 @@ This is distinct from the read-only interface discovery performed by
 `NET PROJECT_IDENTIFY`. The selected C-Gate class path, retained original route
 matrices, exact one/six-bridge vectors, and hardware boundary are recorded in
 [`native_cgate_routed_project_identity.json`](../../../../rust/testdata/fixtures/native_cgate_routed_project_identity.json).
-Query `CMQTT CAPABILITIES`; `unit_readdress: true` denotes the readdress path and
+Query `CMQTT CAPABILITIES`; `unit_readdress: true` denotes the direct readdress
+path. `unit_readdress_routed: true`, `unit_readdress_routed_max_hops: 6`, and
+the delivery/state/persistence fields denote the bounded routed protocol
+composition and its volatile acceptance boundary. `physical_pp_save_cbus3_nvm: true` denotes the NVM commit path,
 `physical_pp_save_cbus3_nvm: true` denotes the NVM commit path,
 `dynamic_labels: true` denotes the label sender,
 `dynamic_label_observation: true` denotes the volatile network-wide observed

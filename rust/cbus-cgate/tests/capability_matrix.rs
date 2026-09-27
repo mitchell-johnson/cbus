@@ -1180,6 +1180,25 @@ fn physical_unravel_paths_pin_preflight_and_exact_once_evidence() {
 }
 
 #[test]
+fn physical_set_pins_routed_readdress_receipts_and_persistence_boundary() {
+    let row = CAPABILITY_MATRIX
+        .iter()
+        .find(|entry| entry.path == "SET")
+        .expect("SET capability row");
+    assert_eq!(row.class, RoutingClass::Physical);
+    for evidence in [
+        "one-to-six-bridge",
+        "source/destination duplicate guards",
+        "destination ACK",
+        "target-network-only",
+        "never changes the database address",
+        "native_cgate_routed_unit_readdress.json",
+    ] {
+        assert!(row.evidence.contains(evidence), "missing {evidence:?}");
+    }
+}
+
+#[test]
 fn obsolete_pins_native_net_commands() {
     let obsolete: BTreeSet<&str> = CAPABILITY_MATRIX
         .iter()

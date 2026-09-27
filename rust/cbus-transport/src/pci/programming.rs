@@ -43,7 +43,7 @@ fn programming_reply_matches(
     unit: u8,
 ) -> bool {
     if bridges.is_empty() {
-        !bridged && meta.source_address == Some(unit)
+        !bridged && hops.is_empty() && meta.source_address == Some(unit)
     } else {
         bridged
             && meta.source_address == bridges.first().copied()
@@ -3154,11 +3154,36 @@ impl PciClient {
         Ok(code)
     }
 
-    /// Readdress one unit using native C-Gate's protected parameter-0x20
-    /// challenge exchange. The operation is sent exactly once and completes
-    /// only after both PCI delivery confirmation and the unit's address-store
-    /// ACK have been received.
+    /// Readdress one direct-network unit using native C-Gate's protected
+    /// parameter-0x20 challenge exchange. The operation is sent exactly once
+    /// and completes only after both PCI delivery confirmation and the unit's
+    /// address-store ACK have been received.
     pub async fn readdress_unit(&self, source: u8, destination: u8) -> Result<()> {
+        self.readdress_unit_with_route(source, destination, ProgrammingRoute::DirectUnchecksummed)
+            .await
+    }
+
+    /// Readdress one unit through an evidenced one-to-six-bridge source route.
+    /// The unlock challenge and final ACK/NAK must carry the exact Reply
+    /// Network and remote source/destination address. Neither mutation frame
+    /// is registered for replay after an uncertain result.
+    pub async fn readdress_unit_routed(
+        &self,
+        bridges: &[u8],
+        source: u8,
+        destination: u8,
+    ) -> Result<()> {
+        validate_bridge_route(bridges)?;
+        self.readdress_unit_with_route(source, destination, ProgrammingRoute::Routed(bridges))
+            .await
+    }
+
+    async fn readdress_unit_with_route(
+        &self,
+        source: u8,
+        destination: u8,
+        route: ProgrammingRoute<'_>,
+    ) -> Result<()> {
         if source == 0 || !(1..=254).contains(&destination) || source == destination {
             return Err(Error::new(
                 ErrorKind::InvalidInput,
@@ -3175,13 +3200,19 @@ impl PciClient {
             client: self,
             complete: false,
         };
-        let challenge = self.programming_unlock(source, 0x20).await?;
+        let challenge = self
+            .programming_unlock_with_route(source, 0x20, route)
+            .await?;
         let mut replies = self.packets.subscribe();
+        let (checksum, bridged, hops) = match route {
+            ProgrammingRoute::Routed(bridges) => (true, true, bridges.to_vec()),
+            _ => (false, false, Vec::new()),
+        };
         let packet = Packet::PointToPoint {
-            meta: Meta::new(false, 1),
+            meta: Meta::new(checksum, 1),
             unit_address: source,
-            bridged: false,
-            hops: vec![],
+            bridged,
+            hops,
             cals: vec![Cal::Readdress {
                 destination,
                 challenge,
@@ -3199,18 +3230,49 @@ impl PciClient {
                         }
                         confirmed = true;
                     }
-                    Ok(Some(Packet::PointToPoint { meta, cals, .. }))
-                        if meta.source_address == Some(destination)
-                            && cals
-                                == [Cal::Ack {
-                                    parameter: 0x20,
-                                    data: vec![0x4e],
-                                }] =>
+                    Ok(Some(Packet::PointToPoint {
+                        meta,
+                        unit_address,
+                        bridged,
+                        hops,
+                        cals,
+                    })) if match route {
+                        ProgrammingRoute::Routed(bridges) => programming_reply_matches(
+                            &meta,
+                            unit_address,
+                            bridged,
+                            &hops,
+                            bridges,
+                            destination,
+                        ),
+                        _ => {
+                            !bridged && hops.is_empty() && meta.source_address == Some(destination)
+                        }
+                    } && cals
+                        == [Cal::Ack {
+                            parameter: 0x20,
+                            data: vec![0x4e],
+                        }] =>
                     {
                         accepted = Some(true);
                     }
-                    Ok(Some(Packet::PointToPoint { meta, cals, .. }))
-                        if meta.source_address == Some(source) && cals == [Cal::ReaddressNak] =>
+                    Ok(Some(Packet::PointToPoint {
+                        meta,
+                        unit_address,
+                        bridged,
+                        hops,
+                        cals,
+                    })) if match route {
+                        ProgrammingRoute::Routed(bridges) => programming_reply_matches(
+                            &meta,
+                            unit_address,
+                            bridged,
+                            &hops,
+                            bridges,
+                            source,
+                        ),
+                        _ => !bridged && hops.is_empty() && meta.source_address == Some(source),
+                    } && cals == [Cal::ReaddressNak] =>
                     {
                         accepted = Some(false);
                     }
@@ -7157,6 +7219,95 @@ mod tests {
                 group: 1
             })
         ));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_readdress_one_and_six_bridge_receipts_are_strict() {
+        async fn run(
+            bridges: Vec<u8>,
+            expected_unlock: &'static [u8],
+            expected_store: &'static [u8],
+        ) {
+            let (pci, mut remote, _) = setup().await;
+            let operation_route = bridges.clone();
+            let worker = pci.clone();
+            let moving =
+                tokio::spawn(
+                    async move { worker.readdress_unit_routed(&operation_route, 4, 6).await },
+                );
+
+            let unlock = line(&mut remote).await;
+            assert_eq!(&unlock[..unlock.len() - 2], expected_unlock);
+            let unlock_code = unlock[unlock.len() - 2];
+            let mut wrong_route = bridges.clone();
+            wrong_route[0] = wrong_route[0].wrapping_sub(1);
+            direct_reply(&mut remote, 4, &[0x82, 0x20, 0x11]).await;
+            routed_reply(&mut remote, &wrong_route, 4, &[0x82, 0x20, 0x22]).await;
+            routed_reply(&mut remote, &bridges, 5, &[0x82, 0x20, 0x33]).await;
+            routed_reply(&mut remote, &bridges, 4, &[0x82, 0x21, 0x44]).await;
+            routed_reply(&mut remote, &bridges, 4, &[0x82, 0x20, 0x5a]).await;
+            remote
+                .get_mut()
+                .write_all(&[unlock_code, b'.'])
+                .await
+                .unwrap();
+
+            let store = line(&mut remote).await;
+            assert_eq!(&store[..store.len() - 2], expected_store);
+            let store_code = store[store.len() - 2];
+            direct_reply(&mut remote, 6, &[0x32, 0x20, 0x4e]).await;
+            routed_reply(&mut remote, &wrong_route, 6, &[0x32, 0x20, 0x4e]).await;
+            routed_reply(&mut remote, &bridges, 5, &[0x32, 0x20, 0x4e]).await;
+            routed_reply(&mut remote, &bridges, 6, &[0x32, 0x21, 0x4e]).await;
+            routed_reply(&mut remote, &bridges, 6, &[0x32, 0x20, 0x00]).await;
+            remote
+                .get_mut()
+                .write_all(&[store_code, b'.'])
+                .await
+                .unwrap();
+            tokio::task::yield_now().await;
+            assert!(
+                !moving.is_finished(),
+                "an unrelated Reply Network receipt completed readdress"
+            );
+            routed_reply(&mut remote, &bridges, 6, &[0x32, 0x20, 0x4e]).await;
+            moving.await.unwrap().unwrap();
+            assert!(pci.state.lock().unwrap().pending.is_empty());
+        }
+
+        run(vec![0xfd], b"\\46FD090411207F", b"\\46FD0904A3204E065A3F").await;
+        run(
+            vec![0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xf9],
+            b"\\46FA36FBFCFDFEF90411206A",
+            b"\\46FA36FBFCFDFEF904A3204E065A2A",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn lost_routed_readdress_confirmation_is_never_replayed() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let moving = tokio::spawn(async move { worker.readdress_unit_routed(&[0xfd], 4, 6).await });
+        assert_eq!(line(&mut remote).await, b"\\46FD090411207Fh\r");
+        routed_reply(&mut remote, &[0xfd], 4, &[0x82, 0x20, 0x5a]).await;
+        remote.get_mut().write_all(b"h.\r\n").await.unwrap();
+        assert_eq!(line(&mut remote).await, b"\\46FD0904A3204E065A3Fi\r");
+        routed_reply(&mut remote, &[0xfd], 6, &[0x32, 0x20, 0x4e]).await;
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(5),
+            "uncertain routed readdress STORE was replayed",
+        )
+        .await;
+        tokio::time::advance(Duration::from_secs(6)).await;
+        tokio::task::yield_now().await;
+        assert_eq!(
+            moving.await.unwrap().unwrap_err().kind(),
+            ErrorKind::TimedOut
+        );
+        assert!(pci.programming_fault.load(Ordering::Acquire));
+        assert!(pci.state.lock().unwrap().pending.is_empty());
     }
 
     #[tokio::test(start_paused = true)]

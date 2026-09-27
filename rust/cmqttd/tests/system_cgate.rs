@@ -223,6 +223,11 @@ async fn bridged_pingu_keeps_mqtt_live_and_plain_tcp_fault_is_clean() {
     assert!(capabilities
         .contains("\"physical_pp_routed_save_protection\":[\"none\",\"checksum\",\"lock\"]"));
     assert!(capabilities.contains("\"physical_pp_routed_lock\":true"));
+    assert!(capabilities.contains("\"unit_readdress_routed\":true"));
+    assert!(capabilities.contains("\"unit_readdress_routed_max_hops\":6"));
+    assert!(capabilities.contains(
+        "\"unit_readdress_routed_delivery_semantics\":\"reply-network-route-source-destination-ack-correlated-exactly-once-no-replay\""
+    ));
     assert!(capabilities.contains("\"physical_application_routed_control\":true"));
     assert!(capabilities.contains("\"dynamic_labels_routed\":true"));
     assert!(capabilities.contains("\"clock_control_routed\":true"));
@@ -2218,6 +2223,121 @@ async fn physical_readdress_runs_once_through_real_daemon_and_shared_pci() {
     assert_eq!(sys.pci.connections(), 1);
     drop(sys);
     std::fs::remove_file(state).unwrap();
+}
+
+#[tokio::test]
+async fn routed_physical_readdress_runs_once_through_real_daemon() {
+    let state = cbus_test_support::proc::temp_path("routed-physical-readdress-cgate.json");
+    let project = cbus_test_support::proc::temp_path("routed-physical-readdress-project.xml");
+    std::fs::write(
+        &project,
+        r#"<Installation><Project oid="project-topology"><TagName>TOPO</TagName>
+        <Network oid="network-254"><TagName>Local</TagName><Address>254</Address>
+          <Interface><InterfaceType>CNI</InterfaceType><InterfaceAddress>127.0.0.1:10001</InterfaceAddress></Interface>
+          <Unit oid="pci"><Address>16</Address><UnitType>PC_CNI2</UnitType></Unit>
+          <Unit oid="near"><Address>253</Address><UnitType>BRIDGE2N</UnitType></Unit>
+        </Network>
+        <Network oid="network-253"><TagName>Remote</TagName><Address>253</Address>
+          <Interface><InterfaceType>Bridge</InterfaceType><InterfaceAddress>254/p/253</InterfaceAddress></Interface>
+          <Unit oid="target"><Address>4</Address><UnitType>KEYE1</UnitType><SerialNumber>101136.1558</SerialNumber></Unit>
+          <Unit oid="far"><Address>254</Address><UnitType>BRIDGE2N</UnitType></Unit>
+        </Network></Project></Installation>"#,
+    )
+    .unwrap();
+    let sys = start_with(Options {
+        project: false,
+        extra: vec![
+            "-P".into(),
+            project.to_string_lossy().into_owned(),
+            "--cgate-bind".into(),
+            "127.0.0.1:0".into(),
+            "--cgate-state".into(),
+            state.to_string_lossy().into_owned(),
+        ],
+        ..Default::default()
+    })
+    .await;
+    wait_started(&sys).await;
+    require(STARTUP, "C-Gate listener", || {
+        sys.daemon.stderr().contains("C-Gate service listening on ")
+    })
+    .await;
+    let address = sys
+        .daemon
+        .stderr()
+        .lines()
+        .find_map(|line| {
+            line.split_once("C-Gate service listening on ")
+                .map(|row| row.1.trim())
+        })
+        .unwrap()
+        .to_string();
+    let stream = TcpStream::connect(address).await.unwrap();
+    let (reader, mut writer) = stream.into_split();
+    let mut reader = BufReader::new(reader);
+    let mut greeting = String::new();
+    reader.read_line(&mut greeting).await.unwrap();
+    assert!(greeting.starts_with("201 "));
+
+    async fn wait_for_payload(sys: &System, description: &str, prefix: &str) {
+        require(COMMAND_DRAIN, description, || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload.starts_with(prefix))
+        })
+        .await;
+    }
+
+    let command = async {
+        writer
+            .write_all(b"[44] SET //TOPO/253/p/4 Address 6\r\n")
+            .await
+            .unwrap();
+        let mut response = String::new();
+        reader.read_line(&mut response).await.unwrap();
+        response
+    };
+    let bus = async {
+        wait_for_payload(&sys, "routed readdress source identity", "46FD09042104").await;
+        let mut identity = vec![0x8d, 4];
+        identity.extend_from_slice(&serial_identity("101136.1558", 4));
+        sys.pci.inject(&routed_reply(&[253], 4, &identity));
+
+        wait_for_payload(&sys, "routed readdress empty destination", "46FD09062104").await;
+        wait_for_payload(&sys, "routed readdress unlock", "46FD090411207F").await;
+        sys.pci
+            .inject(&routed_reply(&[252], 4, &[0x82, 0x20, 0x11]));
+        sys.pci
+            .inject(&routed_reply(&[253], 4, &[0x82, 0x20, 0x5a]));
+
+        wait_for_payload(
+            &sys,
+            "routed protected address STORE",
+            "46FD0904A3204E065A3F",
+        )
+        .await;
+        sys.pci
+            .inject(&routed_reply(&[252], 6, &[0x32, 0x20, 0x4e]));
+        sys.pci
+            .inject(&routed_reply(&[253], 4, &[0x32, 0x20, 0x4e]));
+        sys.pci
+            .inject(&routed_reply(&[253], 6, &[0x32, 0x20, 0x4e]));
+    };
+    let (response, ()) = tokio::join!(command, bus);
+    assert!(
+        response.contains("[44] 200 OK: //TOPO/253/p/6"),
+        "{response:?}"
+    );
+    assert_eq!(
+        sys.pci.count_payload("46FD0904A3204E065A3F"),
+        1,
+        "protected address STORE must be exact-once"
+    );
+    assert_eq!(sys.pci.connections(), 1);
+    drop(sys);
+    std::fs::remove_file(state).unwrap();
+    std::fs::remove_file(project).unwrap();
 }
 
 #[tokio::test]

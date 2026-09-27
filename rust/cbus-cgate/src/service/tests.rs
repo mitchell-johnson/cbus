@@ -4148,6 +4148,253 @@ async fn physical_readdress_is_guarded_acknowledged_and_keeps_database_address()
     std::fs::remove_file(path).unwrap();
 }
 
+#[tokio::test(start_paused = true)]
+async fn routed_physical_readdress_commits_only_the_target_network() {
+    async fn line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+
+    let path = state_path();
+    let (pci_client, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci_client.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+
+    let service = Service::new(&topology_fixture(), None, path.clone(), pci_client, None).unwrap();
+    {
+        let mut model = service.model.lock().await;
+        let project = model.projects.get_mut("TOPO").unwrap();
+        let local = project.networks.get_mut(&254).unwrap();
+        local.physical.insert(16, local.units[&16].clone());
+        let remote = project.networks.get_mut(&253).unwrap();
+        remote.physical.insert(4, remote.units[&4].clone());
+    }
+    let mut events = service.events.subscribe();
+    let moving = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[route] SET //TOPO/253/p/4 Address 6",
+                )
+                .await
+        }
+    });
+
+    let source = line(&mut remote_read).await;
+    assert!(source.starts_with(b"\\46FD09042104"), "{source:?}");
+    let source_code = source[source.len() - 2];
+    let serial = [
+        0x38, 0xff, 0xff, 0xff, 0xff, 0x18, 0xb1, 0x06, 0x16, 0xa2, 0x00, 0x04,
+    ];
+    let mut identify = vec![0x8d, 4];
+    identify.extend_from_slice(&serial);
+    routed_pci_reply(&mut remote_write, &[253], 4, &identify).await;
+    remote_write.write_all(&[source_code, b'.']).await.unwrap();
+    tokio::time::advance(Duration::from_secs(2)).await;
+    tokio::task::yield_now().await;
+
+    let destination = line(&mut remote_read).await;
+    assert!(
+        destination.starts_with(b"\\46FD09062104"),
+        "{destination:?}"
+    );
+    let destination_code = destination[destination.len() - 2];
+    remote_write
+        .write_all(&[destination_code, b'.'])
+        .await
+        .unwrap();
+    tokio::time::advance(Duration::from_secs(2)).await;
+    tokio::task::yield_now().await;
+
+    let unlock = line(&mut remote_read).await;
+    assert_eq!(&unlock[..unlock.len() - 2], b"\\46FD090411207F");
+    let unlock_code = unlock[unlock.len() - 2];
+    routed_pci_reply(&mut remote_write, &[252], 4, &[0x82, 0x20, 0x11]).await;
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0x82, 0x20, 0x5a]).await;
+    remote_write.write_all(&[unlock_code, b'.']).await.unwrap();
+
+    let store = line(&mut remote_read).await;
+    assert_eq!(&store[..store.len() - 2], b"\\46FD0904A3204E065A3F");
+    let store_code = store[store.len() - 2];
+    routed_pci_reply(&mut remote_write, &[252], 6, &[0x32, 0x20, 0x4e]).await;
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0x32, 0x20, 0x4e]).await;
+    remote_write.write_all(&[store_code, b'.']).await.unwrap();
+    tokio::task::yield_now().await;
+    assert!(
+        !moving.is_finished(),
+        "wrong route or old source completed readdress"
+    );
+    routed_pci_reply(&mut remote_write, &[253], 6, &[0x32, 0x20, 0x4e]).await;
+
+    let response = moving.await.unwrap();
+    assert_eq!(response.status, 200, "{response:?}");
+    assert_eq!(response.final_text, "200 OK: //TOPO/253/p/6");
+    assert_eq!(events.recv().await.unwrap(), "#e# unit moved 4 6");
+    let model = service.model.lock().await;
+    let project = &model.projects["TOPO"];
+    assert_eq!(
+        project.networks[&254]
+            .physical
+            .keys()
+            .copied()
+            .collect::<Vec<_>>(),
+        [16]
+    );
+    assert!(project.networks[&253].units.contains_key(&4));
+    assert!(!project.networks[&253].units.contains_key(&6));
+    assert!(!project.networks[&253].physical.contains_key(&4));
+    assert_eq!(project.networks[&253].physical[&6].address, 6);
+    drop(model);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test(start_paused = true)]
+async fn routed_physical_readdress_reconnect_rejects_stale_commit() {
+    async fn line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+
+    let path = state_path();
+    let (pci_client, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci_client.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+    let service = Service::new(&topology_fixture(), None, path.clone(), pci_client, None).unwrap();
+    {
+        let mut model = service.model.lock().await;
+        let remote = model
+            .projects
+            .get_mut("TOPO")
+            .unwrap()
+            .networks
+            .get_mut(&253)
+            .unwrap();
+        remote.physical.insert(4, remote.units[&4].clone());
+    }
+    let mut events = service.events.subscribe();
+    let moving = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[stale] SET //TOPO/253/p/4 Address 6",
+                )
+                .await
+        }
+    });
+
+    let source = line(&mut remote_read).await;
+    let source_code = source[source.len() - 2];
+    let mut identify = vec![0x8d, 4];
+    identify.extend_from_slice(&[
+        0x38, 0xff, 0xff, 0xff, 0xff, 0x18, 0xb1, 0x06, 0x16, 0xa2, 0x00, 0x04,
+    ]);
+    routed_pci_reply(&mut remote_write, &[253], 4, &identify).await;
+    remote_write.write_all(&[source_code, b'.']).await.unwrap();
+    tokio::time::advance(Duration::from_secs(2)).await;
+    tokio::task::yield_now().await;
+
+    let destination = line(&mut remote_read).await;
+    let destination_code = destination[destination.len() - 2];
+    remote_write
+        .write_all(&[destination_code, b'.'])
+        .await
+        .unwrap();
+    tokio::time::advance(Duration::from_secs(2)).await;
+    tokio::task::yield_now().await;
+
+    let unlock = line(&mut remote_read).await;
+    let unlock_code = unlock[unlock.len() - 2];
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0x82, 0x20, 0x5a]).await;
+    remote_write.write_all(&[unlock_code, b'.']).await.unwrap();
+    let store = line(&mut remote_read).await;
+    let store_code = store[store.len() - 2];
+
+    // Force set_pci to advance the generation after the physical STORE has
+    // started but before the old task can enter its cache/event commit.
+    let model_guard = service.model.lock().await;
+    let (replacement, _replacement_remote) = pci();
+    let replacing = tokio::spawn({
+        let service = service.clone();
+        async move { service.set_pci(replacement).await }
+    });
+    for _ in 0..100 {
+        if service.pci_generation.load(Ordering::Acquire) == 1 {
+            break;
+        }
+        tokio::task::yield_now().await;
+    }
+    assert_eq!(service.pci_generation.load(Ordering::Acquire), 1);
+    routed_pci_reply(&mut remote_write, &[253], 6, &[0x32, 0x20, 0x4e]).await;
+    remote_write.write_all(&[store_code, b'.']).await.unwrap();
+    tokio::task::yield_now().await;
+    drop(model_guard);
+    replacing.await.unwrap();
+
+    let response = moving.await.unwrap();
+    assert_eq!(response.status, 408, "{response:?}");
+    assert_eq!(
+        response.final_text,
+        "408 Readdress invalidated by PCI reconnect"
+    );
+    assert!(events.try_recv().is_err(), "stale move event escaped");
+    assert!(
+        service.model.lock().await.projects["TOPO"].networks[&253]
+            .physical
+            .is_empty(),
+        "the old generation repopulated the replacement cache"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn routed_physical_readdress_requires_topology_before_pci_io() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&topology_fixture(), None, path.clone(), pci_client, None).unwrap();
+    let response = service
+        .handle(
+            &mut ClientState::default(),
+            "[missing] SET //TOPO/252/p/4 Address 6",
+        )
+        .await;
+    assert_eq!(response.status, 408, "{response:?}");
+    assert!(
+        response
+            .final_text
+            .contains("Physical network route unavailable"),
+        "{response:?}"
+    );
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err(),
+        "unresolved readdress route performed PCI I/O"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
 #[test]
 fn physical_identity_fields_decode_without_inventing_unknown_serials() {
     assert_eq!(identity_text(b"KEYGL5  ", "type").unwrap(), "KEYGL5");
@@ -5022,6 +5269,21 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["network_syncnew"], true);
     assert_eq!(document["network_project_identify"], true);
     assert_eq!(document["network_set_project_identify"], true);
+    assert_eq!(document["unit_readdress"], true);
+    assert_eq!(document["unit_readdress_routed"], true);
+    assert_eq!(document["unit_readdress_routed_max_hops"], 6);
+    assert_eq!(
+        document["unit_readdress_routed_delivery_semantics"],
+        "reply-network-route-source-destination-ack-correlated-exactly-once-no-replay"
+    );
+    assert_eq!(
+        document["unit_readdress_routed_state_scope"],
+        "target-network-volatile-cache-only"
+    );
+    assert_eq!(
+        document["unit_readdress_routed_physical_persistence_verified"],
+        false
+    );
     assert_eq!(document["bridged_read_only_discovery"], true);
     assert_eq!(document["bridged_syncnew_general"], true);
     assert_eq!(document["bridged_project_identity_write"], true);
@@ -5054,6 +5316,7 @@ async fn capabilities_report_observation_without_device_readback() {
             "NET UNRAVEL",
             "NET UNRAVELUNIT",
             "DO UNRAVEL",
+            "SET Address",
             "PP SAVE",
             "PP SAVE_TO_SOURCE"
         ])
