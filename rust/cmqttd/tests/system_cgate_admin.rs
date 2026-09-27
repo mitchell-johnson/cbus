@@ -164,6 +164,27 @@ async fn administrative_documents_and_mqtt_share_the_running_daemon() {
             .contains("200 OK")
     );
 
+    // wait_started only covers PCI initialization and the MQTT subscription.
+    // The configured startup sweep is asynchronous, so establish the physical
+    // baseline only after its codeless requests have reached the fake PCI.
+    let sweep = configured_sweep();
+    require(STARTUP, "configured status sweep before DBSETXML", || {
+        sys.pci
+            .payloads()
+            .iter()
+            .filter(|payload| is_status_request(payload))
+            .count()
+            >= sweep.len()
+    })
+    .await;
+    let observed_sweep: Vec<String> = sys
+        .pci
+        .payloads()
+        .into_iter()
+        .filter(|payload| is_status_request(payload))
+        .take(sweep.len())
+        .collect();
+    assert_eq!(observed_sweep, sweep);
     let before_network_document = sys.pci.payloads();
     let network = concat!(
         "<Network xmlns:x=\"urn:system-topology\"><OID>53000000-0000-4000-8000-000000000001</OID>",
