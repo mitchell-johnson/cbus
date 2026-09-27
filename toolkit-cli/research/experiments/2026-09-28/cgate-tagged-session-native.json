@@ -1,0 +1,160 @@
+{
+  "format": "cbus-cgate-tagged-session-native-envelope-v1",
+  "source_base_revision": "aa61fb089e0bdc5290a40755a04be9e01ce7730f",
+  "work_item": "P0.05 / issue #17",
+  "target": "C-Gate 3.4.0.2001",
+  "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+  "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+  "raw_capture_sha256": "ebaae11e21e5d56e9d061907edb775ce681054619b13a0b8e2513b98f5c45afd",
+  "private_capture_driver_sha256": "3c530d725ad8d3793d71e81dd5f91960389a9db023f8bb5ce1d43205a868b477",
+  "lifecycle_helper": {
+    "path": "research/local_cgate.py",
+    "sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111"
+  },
+  "normalization": {
+    "external_session_ids": "<session:a> and <session:b>, consistent across all responses",
+    "client_ports": "<port:a> and <port:b> in IPv4 loopback origins",
+    "timestamps": "<timestamp:console>, <timestamp:a>, <timestamp:b>; role identities retained, actual equality across roles not asserted",
+    "preserved": [
+      "client request/response tags",
+      "status codes",
+      "status continuation/final separators",
+      "CRLF line endings",
+      "internal cmd1 Console row",
+      "label text and failure messages"
+    ]
+  },
+  "scope": {
+    "two_owned_ipv4_command_sessions": true,
+    "all_six_listeners_owned_and_loopback": true,
+    "projects_adopted": false,
+    "physical_networks_opened": false,
+    "server_differential_updated": false,
+    "all_prefix_forms_or_concurrency_proven": false
+  },
+  "cleanup": {
+    "process_exit_confirmed": true,
+    "work_removed": true,
+    "reserved_sockets_closed": true,
+    "log_closed": true,
+    "cleanup_complete": true
+  },
+  "greetings": {
+    "a": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0\r\n",
+    "b": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0\r\n"
+  },
+  "cases": [
+    {
+      "connection": "a",
+      "client_tag": "501",
+      "command": "SESSION_ID",
+      "request": "[501] SESSION_ID\r\n",
+      "response_lines": [
+        "[501] 300 sessionID=<session:a>\r\n"
+      ]
+    },
+    {
+      "connection": "b",
+      "client_tag": "601",
+      "command": "SESSION_ID",
+      "request": "[601] SESSION_ID\r\n",
+      "response_lines": [
+        "[601] 300 sessionID=<session:b>\r\n"
+      ]
+    },
+    {
+      "connection": "a",
+      "client_tag": "502",
+      "command": "SESSION_ID ALL",
+      "request": "[502] SESSION_ID ALL\r\n",
+      "response_lines": [
+        "[502] 300-sessionID=cmd1 origin=internal from=<timestamp:console> tag=Console\r\n",
+        "[502] 300-sessionID=<session:a> origin=/127.0.0.1:<port:a> from=<timestamp:a>\r\n",
+        "[502] 300 sessionID=<session:b> origin=/127.0.0.1:<port:b> from=<timestamp:b>\r\n"
+      ]
+    },
+    {
+      "connection": "a",
+      "client_tag": "503",
+      "command": "SESSION_ID TAG native-a",
+      "request": "[503] SESSION_ID TAG native-a\r\n",
+      "response_lines": [
+        "[503] 200 OK.\r\n"
+      ]
+    },
+    {
+      "connection": "b",
+      "client_tag": "602",
+      "command": "SESSION_ID TAG native-b",
+      "request": "[602] SESSION_ID TAG native-b\r\n",
+      "response_lines": [
+        "[602] 200 OK.\r\n"
+      ]
+    },
+    {
+      "connection": "a",
+      "client_tag": "504",
+      "command": "SESSION_ID ALL",
+      "request": "[504] SESSION_ID ALL\r\n",
+      "response_lines": [
+        "[504] 300-sessionID=cmd1 origin=internal from=<timestamp:console> tag=Console\r\n",
+        "[504] 300-sessionID=<session:a> origin=/127.0.0.1:<port:a> from=<timestamp:a> tag=native-a\r\n",
+        "[504] 300 sessionID=<session:b> origin=/127.0.0.1:<port:b> from=<timestamp:b> tag=native-b\r\n"
+      ]
+    },
+    {
+      "connection": "b",
+      "client_tag": "603",
+      "command": "SESSION_ID ALL",
+      "request": "[603] SESSION_ID ALL\r\n",
+      "response_lines": [
+        "[603] 300-sessionID=cmd1 origin=internal from=<timestamp:console> tag=Console\r\n",
+        "[603] 300-sessionID=<session:a> origin=/127.0.0.1:<port:a> from=<timestamp:a> tag=native-a\r\n",
+        "[603] 300 sessionID=<session:b> origin=/127.0.0.1:<port:b> from=<timestamp:b> tag=native-b\r\n"
+      ]
+    },
+    {
+      "connection": "a",
+      "client_tag": "505",
+      "command": "SESSION_ID TAG replacement-a",
+      "request": "[505] SESSION_ID TAG replacement-a\r\n",
+      "response_lines": [
+        "[505] 408 Operation failed: tag name has already been set\r\n"
+      ]
+    },
+    {
+      "connection": "b",
+      "client_tag": "604",
+      "command": "SESSION_ID ALL",
+      "request": "[604] SESSION_ID ALL\r\n",
+      "response_lines": [
+        "[604] 300-sessionID=cmd1 origin=internal from=<timestamp:console> tag=Console\r\n",
+        "[604] 300-sessionID=<session:a> origin=/127.0.0.1:<port:a> from=<timestamp:a> tag=native-a\r\n",
+        "[604] 300 sessionID=<session:b> origin=/127.0.0.1:<port:b> from=<timestamp:b> tag=native-b\r\n"
+      ]
+    },
+    {
+      "connection": "a",
+      "client_tag": "506",
+      "command": "SESSION_ID TAG",
+      "request": "[506] SESSION_ID TAG\r\n",
+      "response_lines": [
+        "[506] 400 Syntax Error: tag name not supplied\r\n"
+      ]
+    },
+    {
+      "connection": "b",
+      "client_tag": "605",
+      "command": "SESSION_ID",
+      "request": "[605] SESSION_ID\r\n",
+      "response_lines": [
+        "[605] 300 sessionID=<session:b>\r\n"
+      ]
+    }
+  ],
+  "invalidation": [
+    "Changed original JAR or Java runtime hash",
+    "Changed capture boundary, normalization, command sequence or session topology",
+    "Extending these numeric prefixes to malformed/other prefix forms or concurrent requests without new original evidence"
+  ]
+}

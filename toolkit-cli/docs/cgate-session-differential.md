@@ -57,8 +57,11 @@ the corresponding live loopback peer port, a well-formed stable connection
 time, the exact tag text and the original continuation or terminal status
 separator. It then substitutes only the variable IDs, ports and times. It
 checks that every Rust reply echoes its supplied client tag. The original
-capture stores tag-stripped response payloads, so the native tag-prefix wire
-behavior remains a separate capture gap.
+capture stores tag-stripped response payloads. The separate
+[full-envelope native capture](cgate-tagged-session-native.md) now preserves
+the original client prefixes, status separators, CRLF and internal Console
+row. That envelope is captured but not yet required by this differential;
+the existing comparator still uses the earlier payload-only capture.
 
 Native `SESSION_ID ALL` additionally lists an internal `cmd1` Console row.
 The runner excludes only that exact native row and records each exclusion in
