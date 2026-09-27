@@ -51,7 +51,9 @@ coverage:
 
 check-interop: compile
 	cd $(RUST_DIR) && cargo build -p cbus-cgate -p cmqttd
-	$(VENV)/bin/python -m pytest tests/test_rust_cgate_interop.py tests/test_cmqtt_interop.py -q -p no:cacheprovider
+	$(VENV)/bin/python -m pytest tests/test_rust_cgate_interop.py \
+		tests/test_cmqtt_interop.py tests/test_cmqtt_programming_methods_interop.py \
+		-q -p no:cacheprovider
 
 check-wheel:
 	@tmp=$$(mktemp -d); trap 'rm -rf "$$tmp"' EXIT; \

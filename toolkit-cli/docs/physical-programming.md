@@ -102,12 +102,19 @@ preflight), uncertain save handling, fresh-read mismatch, and zero replay.
 order through the production socket client.
 `tests/test_cmqtt_interop.py` drives a direct-method physical write and fresh
 reload through the production Python CLI, real cmqttd, and an independent
-synthetic PCI.
+synthetic PCI. `tests/test_cmqtt_programming_methods_interop.py` extends that
+real product boundary through a one-bridge route for all ten methods. Its
+independent Python peer checks the literal route, unit, parameter, tag and
+count, injects valid wrong-route, wrong-unit and stale parameter/tag frames
+before each matching response, and verifies the final memory bytes after the
+CLI's fresh reload. Separate cases reject an over-count correlated read before
+any save and drop the PCI connection after one STORE to prove the mutation is
+reported uncertain and never replayed.
 
-The other nine method transports and routed correlation are Rust-owned. Their
-machine-readable roster and scripted boundary are in
+The machine-readable method roster and lower Rust scripted boundary are in
 `rust/testdata/fixtures/native_cgate_routed_pp_methods.json`; protection is in
 `native_cgate_routed_pp_protection.json`, and the exact C-Bus 3 nonvolatile
 sequence is retained in the [routed NVM commit fixture](../../rust/testdata/fixtures/native_cgate_routed_nvm_commit.json).
-Those fixtures explicitly do not
-claim a live bridge, power-cycle persistence, or broad hardware acceptance.
+The Python and Rust peers are scripted transports. They explicitly do not
+claim a live bridge, power-cycle persistence, original Toolkit execution, or
+broad device and firmware acceptance.
