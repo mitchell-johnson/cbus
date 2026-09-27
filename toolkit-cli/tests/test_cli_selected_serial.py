@@ -12,6 +12,7 @@ import unittest
 from unittest.mock import patch
 
 from cbus_toolkit import cli
+from cbus_toolkit.commissioning_lease import EndpointLease
 from cbus_toolkit.pci_selected_serial import SelectedSerialCoordinator, SelectedSerialPlan
 from cbus_toolkit.pci_serial_address_transport import PCISerialAddressTransport
 from cbus_toolkit.simulator_duplicate_addressing import SerialAddressFixture, SerialAddressFault
@@ -52,6 +53,20 @@ class SelectedSerialCLITests(unittest.TestCase):
         self.assertEqual(actual,status,output.getvalue()+error.getvalue())
         self.assertFalse(output.getvalue() and error.getvalue())
         return json.loads(output.getvalue() or error.getvalue())
+
+    def test_subprocess_apply_refuses_contended_endpoint_before_io(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/'plan.json';journal=Path(tmp)/'journal.json';sim=fixture()
+            with sim.running() as endpoint:
+                path.write_text(json.dumps(manager(endpoint).plan(A,6).as_dict()))
+                before=list(requests(sim))
+                with EndpointLease(*endpoint):
+                    result=self.subprocess_cli('serial-address','apply',path,'--recovery',journal,status=1)
+                self.assertEqual(result['type'],'EndpointLeaseBusy')
+                self.assertEqual(result['selected_serial_evidence']['outcome'],'preconditions_failed')
+                self.assertFalse(result['selected_serial_evidence']['transport_invoked'])
+                self.assertEqual(requests(sim),before)
+                self.assertFalse(journal.exists())
 
     def test_literal_subprocess_sequence_exports_exact_plan_and_verifies_without_replay(self):
         before=successful_responses()+[b'g.'+BARE_PCI,OPTIONS]

@@ -271,8 +271,9 @@ post-send journal failure, deadlines and interruption preservation. Reader tests
 cover fixed windows, exact local literals and framing/count/checksum rejection.
 `tests/test_commissioning_lease.py` verifies interprocess refusal, independent
 endpoint admission, release after normal and abrupt process exit, reentry refusal
-and POSIX symlink rejection. The coordinator test verifies that lease contention
-opens no PCI socket, creates no journal and does not consume the one-shot apply.
+and POSIX symlink rejection. Coordinator and actual CLI subprocess tests verify
+that lease contention opens no PCI socket, creates no journal and does not
+consume the one-shot apply.
 
 The generated focused report is
 [selected-serial-coordinator-acceptance.json](selected-serial-coordinator-acceptance.json).
