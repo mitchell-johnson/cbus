@@ -2841,6 +2841,87 @@ async fn telephony_help_errors_and_auth_are_native_and_fail_before_io() {
 }
 
 #[tokio::test]
+async fn telephony_probed_role_responses_resolve_absent_target_without_pci() {
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../testdata/fixtures/native_cgate_authorization_probe.json"
+    ))
+    .unwrap();
+    assert_eq!(native["oracle"]["cleanup_complete"], true);
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let before = std::fs::read(&path).unwrap();
+    for (subcommand, native_command) in [
+        ("CLEAR_DIVERSION", "TELEPHONY CLEAR_DIVERSION 254/224"),
+        (
+            "RECALL_LAST_NUMBER_REQUEST",
+            "TELEPHONY RECALL_LAST_NUMBER_REQUEST 254/224 out",
+        ),
+    ] {
+        let command = native_command.replace("254/224", "253/224");
+        for (role, current) in [
+            (CgateAccessLevel::Monitor, None),
+            (CgateAccessLevel::Operate, None),
+            (CgateAccessLevel::Admin, Some("HARNESS".to_string())),
+        ] {
+            let mut client = ClientState {
+                current,
+                access_level: Some(role),
+                ..ClientState::default()
+            };
+            let reply = service
+                .handle(&mut client, &format!("[role] {command}"))
+                .await;
+            let native_reply = native["roles"][role.name()]["responses"][native_command]
+                .as_str()
+                .unwrap()
+                .replace("254/224", "253/224");
+            assert_eq!(reply.final_text, native_reply, "{subcommand} at {role:?}");
+        }
+    }
+    // Resolving the known configured network must still deny physical
+    // delivery below Program, regardless of whether the project is selected.
+    for role in [CgateAccessLevel::Operate, CgateAccessLevel::Admin] {
+        let mut client = ClientState {
+            access_level: Some(role),
+            ..ClientState::default()
+        };
+        for command in [
+            "TELEPHONY CLEAR_DIVERSION 254/224",
+            "TELEPHONY RECALL_LAST_NUMBER_REQUEST 254/224 out",
+        ] {
+            assert_eq!(
+                service
+                    .handle(&mut client, &format!("[known] {command}"))
+                    .await
+                    .final_text,
+                "420 Access denied."
+            );
+        }
+    }
+    // Unprobed forms keep their established Program gate and response.
+    let mut client = ClientState {
+        access_level: Some(CgateAccessLevel::Operate),
+        ..ClientState::default()
+    };
+    assert_eq!(
+        service
+            .handle(&mut client, "[other] TELEPHONY DIVERT 253/224 123")
+            .await
+            .final_text,
+        "420 Access denied: TELEPHONY (Program access required)"
+    );
+    assert_eq!(std::fs::read(&path).unwrap(), before);
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err(),
+        "denied and absent TELEPHONY targets must not write PCI"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn observed_telephony_commands_and_events_use_native_fanout() {
     let path = state_path();
     let (pci, _remote) = pci();

@@ -455,9 +455,14 @@ async fn telephony_access_level_is_per_session_and_denies_before_pci() {
         .map(|(_, payload)| sys.pci.count_payload(&checksummed(payload)))
         .collect::<Vec<_>>();
     for (index, (text, _)) in commands.iter().enumerate() {
+        let denied = if matches!(index, 0 | 3) {
+            "420 Access denied."
+        } else {
+            "420 Access denied: TELEPHONY (Program access required)"
+        };
         assert_eq!(
             command(&mut low_reader, &mut low_writer, &index.to_string(), text).await,
-            ["420 Access denied: TELEPHONY (Program access required)"],
+            [denied],
             "{text}"
         );
     }
@@ -482,7 +487,7 @@ async fn telephony_access_level_is_per_session_and_denies_before_pci() {
             "TELEPHONY RECALL_LAST_NUMBER_REQUEST 254/224 out"
         )
         .await,
-        ["420 Access denied: TELEPHONY (Program access required)"]
+        ["420 Access denied."]
     );
     assert_eq!(
         sys.pci.count_payload(&checksummed("05E0000A8101")),
@@ -536,7 +541,7 @@ async fn telephony_access_level_is_per_session_and_denies_before_pci() {
             "TELEPHONY RECALL_LAST_NUMBER_REQUEST 254/224 out"
         )
         .await,
-        ["420 Access denied: TELEPHONY (Program access required)"]
+        ["420 Access denied."]
     );
     assert_eq!(sys.pci.count_payload(&recall), before + 1);
 

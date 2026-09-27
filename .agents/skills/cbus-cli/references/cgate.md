@@ -616,6 +616,11 @@ call state, diversion persistence or readback. With LOGIN armed,
 authentication. Incoming commands and `line_on_hook`, `line_off_hook`,
 `dial_out_failure`, `dial_in_failure`, `ringing`, `last_number`, and
 `internet_connection_request_made` events fan out to `EVENT ON` clients.
+The owned native ACCESS probe returned 401 for missing clear-diversion and
+last-number-request targets at Operate and Admin, after 420 at Monitor.
+cmqttd reproduces that response order for those two complete forms and keeps
+Program authorization before any physical send. The probe does not establish
+whether an existing Telephony target can be controlled below Program.
 The retained decoder has a formatting quirk for line-off-hook and last-number
 events: it inserts a separator before a number only when that number is longer
 than one byte, so single-byte values appear as `out data1` or `in1`. Preserve

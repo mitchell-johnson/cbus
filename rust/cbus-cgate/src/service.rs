@@ -3389,10 +3389,24 @@ impl Service {
             if !is_telephony_subcommand(sub) {
                 return err(tag, 400, "400 Syntax Error.");
             }
-            // All five native TELEPHONY handlers declare Program access,
-            // including RECALL_LAST_NUMBER_REQUEST.  The optional recovery
-            // token's operation-based gate is separate from ACCESS roles.
-            if self.ensure_access_level(client).await < CgateAccessLevel::Program {
+            // The native role probe reaches missing-object resolution at
+            // Operate for these two complete forms, although successful
+            // physical delivery below Program has not been established.
+            // Preserve the Program gate for any target that could exist.
+            let probed = matches!(sub, "CLEAR_DIVERSION" | "RECALL_LAST_NUMBER_REQUEST");
+            let level = self.ensure_access_level(client).await;
+            if level < CgateAccessLevel::Program {
+                if probed && level >= CgateAccessLevel::Operate {
+                    if let Some(response) = self
+                        .telephony_missing_target_before_access(client, tag, &words, sub)
+                        .await
+                    {
+                        return response;
+                    }
+                }
+                if probed {
+                    return err(tag, 420, "420 Access denied.");
+                }
                 return err(
                     tag,
                     420,
@@ -8472,6 +8486,51 @@ impl Service {
             false,
         )
         .await
+    }
+
+    /// Native role probes resolve these two absent application targets before
+    /// the later Program gate. Only the probed, complete forms are admitted
+    /// here; an existing target still requires Program before any PCI I/O.
+    async fn telephony_missing_target_before_access(
+        &self,
+        client: &ClientState,
+        tag: &str,
+        words: &[&str],
+        sub: &str,
+    ) -> Option<Response> {
+        let complete = match sub {
+            "CLEAR_DIVERSION" => words.len() == 3,
+            "RECALL_LAST_NUMBER_REQUEST" => {
+                words.len() == 4 && matches!(words[3].to_ascii_lowercase().as_str(), "in" | "out")
+            }
+            _ => false,
+        };
+        if !complete {
+            return None;
+        }
+        let target = words[2];
+        let (network, application) = self.addressed_application(target)?;
+        if application != 224 {
+            return None;
+        }
+        let model = self.model.lock().await;
+        if model
+            .projects
+            .get(&self.project)
+            .is_some_and(|project| project.networks.contains_key(&network))
+        {
+            return None;
+        }
+        let reason = if client.current.as_deref() == Some(self.project.as_str()) {
+            "Network not found"
+        } else {
+            "Object not found"
+        };
+        Some(err(
+            tag,
+            401,
+            &format!("401 Bad object or device ID: {target} ({reason})"),
+        ))
     }
 
     async fn telephony(&self, tag: &str, words: &[&str], sub: &str) -> Response {
