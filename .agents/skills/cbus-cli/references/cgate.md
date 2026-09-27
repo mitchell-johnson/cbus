@@ -1238,7 +1238,7 @@ unverified.
 
 `project_archive_restore: "cmqttd-internal"` denotes durable snapshot keys in
 the cmqttd JSON repository (never vendor archive files). Internal snapshots
-retain complete typed-object extension metadata and Unit templates/PP ownership,
+retain modeled typed-object metadata and Unit templates/PP ownership, with the captured unknown namespaced Unit root attribute and direct child omitted on DBSETXML as pinned by the offline native direct/combined Unit oracle,
 `project_rename_secondary: true` denotes rename support except for the running
 hardware-bound project,
 `project_copy: "cmqttd-internal"` denotes an OID-preserving durable copy inside
@@ -1401,8 +1401,7 @@ after a tagged 400 if EOF arrives before the delimiter. `CGL IMPORT` accepts
 only the bounded CGL 1.1 model above. `DBSETXML` accepts scalar-field documents
 and a complete typed `Unit` at an existing selected-project unit path. The Unit
 form atomically replaces the durable local record, can change its unique address
-or OID, returns `301 OID=...`, and supplies XML readback with unknown markup
-preserved and current modeled fields projected. It performs no physical I/O.
+or OID, returns `301 OID=...`, and supplies XML readback with modeled fields projected. The captured unknown namespaced Unit root attribute/direct child are accepted then omitted, as in the offline original direct/combined Unit oracle; nested markup under an unnamespaced child remains a separately tested mock preservation contract. It performs no physical I/O.
 Other complete typed families and vendor repository/XML formats are not
 implemented.
 

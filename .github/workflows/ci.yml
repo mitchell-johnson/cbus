@@ -53,6 +53,10 @@ jobs:
         working-directory: toolkit-cli
         run: make check-tagged-session-differential
 
+      - name: Original direct and combined Unit XML mapper differential on both Rust servers
+        working-directory: toolkit-cli
+        run: make check-dbsetxml-unit-differential
+
       - name: Toolkit offline suite
         working-directory: toolkit-cli
         run: >-
@@ -129,6 +133,8 @@ jobs:
             toolkit-cli/research/runtime/cgate-session-differential-cmqttd.json
             toolkit-cli/research/runtime/cgate-tagged-session-differential-mock.json
             toolkit-cli/research/runtime/cgate-tagged-session-differential-cmqttd.json
+            toolkit-cli/research/runtime/cgate-dbsetxml-unit-differential-mock.json
+            toolkit-cli/research/runtime/cgate-dbsetxml-unit-differential-cmqttd.json
 
   toolkit-wheel:
     name: Toolkit isolated installed wheel

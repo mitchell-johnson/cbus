@@ -210,12 +210,13 @@ async fn administrative_documents_and_mqtt_share_the_running_daemon() {
         "[15] 301 OID=53000000-0000-4000-8000-000000000001\r\n"
     );
     let network_unit = command(&mut reader, &mut writer, "16", "DBGETXML //HARNESS/254/p/5").await;
-    assert!(network_unit
+    assert!(!network_unit
         .iter()
         .any(|line| line.contains("xmlns:x=\"urn:system-topology\"")));
-    assert!(network_unit
+    assert!(!network_unit
         .iter()
         .any(|line| line.contains("<x:Opaque>yes</x:Opaque>")));
+    assert!(network_unit.iter().any(|line| line.contains("<!--kept-->")));
     assert_eq!(sys.pci.payloads(), before_network_document);
 
     writer

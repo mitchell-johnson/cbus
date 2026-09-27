@@ -2023,7 +2023,7 @@ fn document_store_mirror_import_and_rejects() {
 }
 
 #[test]
-fn dbsetxml_replaces_typed_unit_atomically_and_preserves_opaque_metadata() {
+fn dbsetxml_replaces_typed_unit_and_selectively_preserves_nested_opaque_metadata() {
     let mut server = Server::new(AccessLevel::Program);
     assert_eq!(server.handle("[1] PROJECT NEW TEST").status, 200);
     assert_eq!(
@@ -2066,7 +2066,7 @@ fn dbsetxml_replaces_typed_unit_atomically_and_preserves_opaque_metadata() {
         .unwrap()
         .to_string();
     let replacement = format!(
-        "<Unit xmlns:x=\"urn:test\" x:mode=\"kept\"><OID>{oid}</OID><Address>21</Address><TagName>Moved</TagName><UnitType>KEYE1</UnitType><UnitName>Moved</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><CatalogNumber>5031N</CatalogNumber><SerialNumber>00100700.3526</SerialNumber><!--keep--><x:TagName x:source=\"vendor\">Opaque name</x:TagName><x:PP Name=\"opaque\" Value=\"vendor\"/><Description>A &amp; B<x:Opaque order=\"1\"><x:Nested>yes</x:Nested></x:Opaque></Description><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>"
+        "<Unit xmlns:x=\"urn:test\" xmlns:y=\"urn:test\" xmlns:t=\"urn:types\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" x:mode=\"kept\" y:unused=\"yes\"><OID>{oid}</OID><Address>21</Address><TagName>Moved</TagName><UnitType>KEYE1</UnitType><UnitName>Moved</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><CatalogNumber>5031N</CatalogNumber><SerialNumber>00100700.3526</SerialNumber><!--keep--><x:TagName x:source=\"vendor\">Opaque name</x:TagName><x:PP Name=\"opaque\" Value=\"vendor\"/><Description>A &amp; B<x:Opaque order=\"1\" xsi:type=\"t:Widget\"><x:Nested>yes</x:Nested></x:Opaque></Description><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>"
     );
     let replaced = server.handle_document("[6] DBSETXML //TEST/254/p/20", &replacement);
     assert_eq!(replaced.status, 301, "{replaced:?}");
@@ -2074,16 +2074,19 @@ fn dbsetxml_replaces_typed_unit_atomically_and_preserves_opaque_metadata() {
     assert_eq!(server.handle("[7] DBGETXML //TEST/254/p/20").status, 401);
     let moved = server.handle("[8] DBGETXML //TEST/254/p/21");
     let moved_xml = moved.lines[0].strip_prefix("347-").unwrap();
-    assert!(moved_xml.contains("x:mode=\"kept\""), "{moved_xml}");
+    assert!(!moved_xml.contains("x:mode=\"kept\""), "{moved_xml}");
+    assert!(!moved_xml.contains("y:unused=\"yes\""), "{moved_xml}");
+    assert!(moved_xml.contains("xmlns:x=\"urn:test\""), "{moved_xml}");
+    assert!(!moved_xml.contains("xmlns:y=\"urn:test\""), "{moved_xml}");
+    assert!(moved_xml.contains("xmlns:t=\"urn:types\""), "{moved_xml}");
+    assert!(
+        moved_xml.contains("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""),
+        "{moved_xml}"
+    );
+    assert!(moved_xml.contains("xsi:type=\"t:Widget\""), "{moved_xml}");
     assert!(moved_xml.contains("<!--keep-->"), "{moved_xml}");
-    assert!(
-        moved_xml.contains("<x:TagName x:source=\"vendor\">Opaque name</x:TagName>"),
-        "{moved_xml}"
-    );
-    assert!(
-        moved_xml.contains("<x:PP Name=\"opaque\" Value=\"vendor\"/>"),
-        "{moved_xml}"
-    );
+    assert!(!moved_xml.contains("<x:TagName"), "{moved_xml}");
+    assert!(!moved_xml.contains("<x:PP"), "{moved_xml}");
     assert!(
         moved_xml.contains("<x:Nested>yes</x:Nested>"),
         "{moved_xml}"
@@ -2099,8 +2102,8 @@ fn dbsetxml_replaces_typed_unit_atomically_and_preserves_opaque_metadata() {
     let updated = server.handle("[10] DBGETXML //TEST/254/p/21");
     let updated_xml = updated.lines[0].strip_prefix("347-").unwrap();
     assert!(updated_xml.contains("<PP Name=\"UnitAddress\" Value=\"22\"/>"));
-    assert!(updated_xml.contains("<x:TagName x:source=\"vendor\">Opaque name</x:TagName>"));
-    assert!(updated_xml.contains("<x:PP Name=\"opaque\" Value=\"vendor\"/>"));
+    assert!(!updated_xml.contains("<x:TagName"));
+    assert!(!updated_xml.contains("<x:PP"));
     assert!(updated_xml.contains("<x:Nested>yes</x:Nested>"));
 
     // Unit copies receive fresh identities while retaining the complete
@@ -2113,7 +2116,7 @@ fn dbsetxml_replaces_typed_unit_atomically_and_preserves_opaque_metadata() {
     );
     let copied = server.handle("[10b] DBGETXML //TEST/254/p/23");
     let copied_xml = copied.lines[0].strip_prefix("347-").unwrap();
-    assert!(copied_xml.contains("x:mode=\"kept\""), "{copied_xml}");
+    assert!(!copied_xml.contains("x:mode=\"kept\""), "{copied_xml}");
     assert!(copied_xml.contains("<Address>23</Address>"), "{copied_xml}");
     assert!(
         copied_xml.contains("<TagName>Copied</TagName>"),
@@ -2148,7 +2151,7 @@ fn dbsetxml_replaces_typed_unit_atomically_and_preserves_opaque_metadata() {
     let source_after_copy_edit = source_after_copy_edit.lines[0]
         .strip_prefix("347-")
         .unwrap();
-    assert!(source_after_copy_edit.contains("x:mode=\"kept\""));
+    assert!(!source_after_copy_edit.contains("x:mode="));
     assert!(source_after_copy_edit.contains("<TagName>Moved</TagName>"));
     assert!(!source_after_copy_edit.contains("Copy only"));
     assert_eq!(
@@ -2157,11 +2160,11 @@ fn dbsetxml_replaces_typed_unit_atomically_and_preserves_opaque_metadata() {
     );
     assert_eq!(server.handle("[10i] PROJECT USE RENAMED").status, 200);
     let renamed = server.handle("[10j] DBGETXML //RENAMED/254/p/21");
-    assert!(renamed.lines[0].contains("x:mode=\"copy\""));
+    assert!(!renamed.lines[0].contains("x:mode="));
     assert!(renamed.lines[0].contains("<TagName>Copy only</TagName>"));
     assert_eq!(server.handle("[10k] PROJECT USE TEST").status, 200);
     assert_eq!(server.handle("[10l] PROJECT DELETE RENAMED").status, 200);
-    assert!(server.handle("[10m] DBGETXML //TEST/254/p/21").lines[0].contains("x:mode=\"kept\""));
+    assert!(!server.handle("[10m] DBGETXML //TEST/254/p/21").lines[0].contains("x:mode="));
 
     assert_eq!(
         server
@@ -2219,7 +2222,7 @@ fn dbsetxml_replaces_typed_unit_atomically_and_preserves_opaque_metadata() {
     assert_eq!(server.handle("[19] PROJECT USE REST").status, 200);
     let restored = server.handle("[20] DBGETXML //REST/254/p/21");
     assert_eq!(restored.status, 200);
-    assert!(restored.lines[0].contains("x:mode=\"kept\""));
+    assert!(!restored.lines[0].contains("x:mode="));
     assert!(restored.lines[0].contains("<x:Nested>yes</x:Nested>"));
     assert!(restored.lines[0].contains("<PP Name=\"UnitAddress\" Value=\"22\"/>"));
 }
@@ -2474,11 +2477,11 @@ fn dbsetxml_replaces_evidenced_typed_database_trees_atomically() {
     assert!(network.lines[0].contains("<Unit"));
     let unit = server.handle("[23a] DBGETXML //XMLT/253/p/20");
     assert_eq!(unit.status, 200, "{unit:?}");
-    assert!(unit.lines[0].contains("xmlns:x=\"urn:topology\""));
-    assert!(unit.lines[0].contains("x:source=\"submitted\""));
+    assert!(!unit.lines[0].contains("xmlns:x=\"urn:topology\""));
+    assert!(!unit.lines[0].contains("x:source=\"submitted\""));
     assert!(unit.lines[0].contains("<!--unit-comment-->"));
     assert!(unit.lines[0].contains("<?unit retained?>"));
-    assert!(unit.lines[0].contains("<x:Opaque>yes</x:Opaque>"));
+    assert!(!unit.lines[0].contains("<x:Opaque>yes</x:Opaque>"));
     assert!(unit.lines[0].contains("<PP Name=\"UnitAddress\" Value=\"20\"/>"));
     let before = network.lines[0].clone();
     let unsupported = format!(
@@ -2498,8 +2501,8 @@ fn dbsetxml_replaces_evidenced_typed_database_trees_atomically() {
         .contains("30000000-0000-4000-8000-000000000002"));
     let copied_unit = server.handle("[29a] DBGETXML //XMLR/253/p/20");
     assert_eq!(copied_unit.status, 200, "{copied_unit:?}");
-    assert!(copied_unit.lines[0].contains("x:source=\"submitted\""));
-    assert!(copied_unit.lines[0].contains("<x:Opaque>yes</x:Opaque>"));
+    assert!(!copied_unit.lines[0].contains("x:source=\"submitted\""));
+    assert!(!copied_unit.lines[0].contains("<x:Opaque>yes</x:Opaque>"));
     assert_eq!(server.handle("[30] PROJECT DELETE XMLR").status, 200);
     assert_eq!(server.handle("[31] PROJECT USE XMLT").status, 200);
     assert_eq!(
@@ -2624,18 +2627,15 @@ fn dbsetxml_network_unit_topology_is_atomic_conflict_checked_and_retires_omissio
     );
     let unit = server.handle("[12] DBGETXML //MIXED/254/p/21");
     assert_eq!(unit.status, 200, "{unit:?}");
-    for expected in [
-        "xmlns:x=\"urn:mixed\"",
-        "x:vendor=\"kept\"",
-        "<!--inside-->",
-        "<x:Data>opaque</x:Data>",
-        "<PP Name=\"UnitAddress\" Value=\"0x15\"/>",
-    ] {
+    for expected in ["<!--inside-->", "<PP Name=\"UnitAddress\" Value=\"0x15\"/>"] {
         assert!(
             unit.lines[0].contains(expected),
             "missing {expected}: {unit:?}"
         );
     }
+    assert!(!unit.lines[0].contains("x:vendor=\"kept\""));
+    assert!(!unit.lines[0].contains("<x:Data>opaque</x:Data>"));
+    assert!(!unit.lines[0].contains("xmlns:x=\"urn:mixed\""));
     let before = server.handle("[13] DBGETXML //MIXED/254").lines[0].clone();
 
     let duplicate_address = replacement.replace(
@@ -2920,6 +2920,227 @@ fn dbsetxml_combined_network_unit_matches_native_build_2001_capture() {
                 .unwrap()
         )
     );
+}
+
+#[test]
+fn dbsetxml_direct_and_combined_unit_namespace_mapper_matches_native_vm() {
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_dbsetxml_unit_vm.json"
+    ))
+    .unwrap();
+    assert_eq!(native["format"], "native-cgate-dbsetxml-unit-vm-fixture-v1");
+    assert_eq!(native["default_route_count"], 0);
+    let cases = native["cases"].as_array().unwrap();
+    assert_eq!(cases.len(), 21);
+
+    let mut server = Server::new(AccessLevel::Program).with_programming(true);
+    assert_eq!(server.handle("[1] PROJECT NEW XUNIT").status, 200);
+    assert_eq!(server.handle("[2] PROJECT USE XUNIT").status, 200);
+    assert_eq!(
+        server
+            .handle("[3] DBCREATENET 254 Local Cni 127.0.0.1:1")
+            .status,
+        200
+    );
+    let initial = server.handle("[4] DBGETXML //XUNIT/254");
+    let initial_xml = initial.lines[0].strip_prefix("347-").unwrap();
+    let initial_document = roxmltree::Document::parse(initial_xml).unwrap();
+    let network_oid = initial_document
+        .root_element()
+        .children()
+        .find(|child| child.has_tag_name("OID"))
+        .unwrap()
+        .text()
+        .unwrap();
+    let interface_oid = initial_document
+        .descendants()
+        .find(|child| child.has_tag_name("Interface"))
+        .unwrap()
+        .children()
+        .find(|child| child.has_tag_name("OID"))
+        .unwrap()
+        .text()
+        .unwrap();
+    let native_network_oid = native["network_oid"].as_str().unwrap();
+    let native_interface_oid = native["interface_oid"].as_str().unwrap();
+    let document = |tag: usize| {
+        let request = cases[tag - 800]["request"].as_str().unwrap();
+        assert!(request.starts_with(&format!("[{tag}] DBSETXML ")));
+        request
+            .split("\r\n")
+            .nth(1)
+            .unwrap()
+            .replace(native_network_oid, network_oid)
+            .replace(native_interface_oid, interface_oid)
+    };
+    let expected_xml = |tag: usize| {
+        let row = cases[tag - 800]["response_lines"][2].as_str().unwrap();
+        row.strip_prefix(&format!("[{tag}] 347-"))
+            .unwrap()
+            .trim_end_matches("\r\n")
+            .replace(native_network_oid, network_oid)
+            .replace(native_interface_oid, interface_oid)
+    };
+    let initial_replacement = server.handle_document("[808] DBSETXML //XUNIT/254", &document(808));
+    assert_eq!(initial_replacement.status, 301, "{initial_replacement:?}");
+    assert_eq!(
+        initial_replacement.final_text,
+        format!("301 OID={network_oid}")
+    );
+    assert_eq!(
+        server.handle("[809] DBGETXML //XUNIT/254/p/20").lines,
+        [format!("347-{}", expected_xml(809))]
+    );
+
+    for (set_tag, read_tag, network_read) in [
+        (810, 811, Some(812)),
+        (813, 814, Some(815)),
+        (816, 817, None),
+        (818, 819, None),
+    ] {
+        let target = if set_tag < 816 {
+            "//XUNIT/254/p/20"
+        } else {
+            "//XUNIT/254"
+        };
+        let accepted = server.handle_document(
+            &format!("[{set_tag}] DBSETXML {target}"),
+            &document(set_tag),
+        );
+        assert_eq!(accepted.status, 301, "{set_tag}: {accepted:?}");
+        let submitted_oid = if set_tag < 816 {
+            "11111111-1111-4111-8111-111111111111"
+        } else {
+            network_oid
+        };
+        assert_eq!(accepted.final_text, format!("301 OID={submitted_oid}"));
+        assert_eq!(
+            server
+                .handle(&format!("[{read_tag}] DBGETXML //XUNIT/254/p/20"))
+                .lines,
+            [format!("347-{}", expected_xml(read_tag))],
+            "{set_tag} -> {read_tag}"
+        );
+        if let Some(network_tag) = network_read {
+            assert_eq!(
+                server
+                    .handle(&format!("[{network_tag}] DBGETXML //XUNIT/254"))
+                    .lines,
+                [format!("347-{}", expected_xml(network_tag))]
+            );
+        }
+    }
+}
+
+#[test]
+fn dbsetxml_combined_network_root_keeps_prefix_used_by_nested_unit_markup() {
+    let mut server = Server::new(AccessLevel::Program);
+    assert_eq!(server.handle("[1] PROJECT NEW NSNEST").status, 200);
+    assert_eq!(
+        server
+            .handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:1")
+            .status,
+        200
+    );
+    let network = server.handle("[3] DBGETXML //NSNEST/254");
+    let xml = network.lines[0].strip_prefix("347-").unwrap();
+    let parsed = roxmltree::Document::parse(xml).unwrap();
+    let network_oid = parsed
+        .root_element()
+        .children()
+        .find(|node| node.has_tag_name("OID"))
+        .and_then(|node| node.text())
+        .unwrap();
+    let interface_oid = parsed
+        .descendants()
+        .find(|node| node.has_tag_name("Interface"))
+        .unwrap()
+        .children()
+        .find(|node| node.has_tag_name("OID"))
+        .and_then(|node| node.text())
+        .unwrap();
+    let submitted = format!(
+        "<Network xmlns:x=\"urn:same\" xmlns:y=\"urn:same\" xmlns:z=\"urn:application\"><OID>{network_oid}</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>{interface_oid}</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Unit y:discard=\"yes\"><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Bedroom</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><Description><x:Nested>kept</x:Nested></Description><y:Discard>gone</y:Discard></Unit><Application z:revision=\"retained\"><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application></Network>"
+    );
+    let response = server.handle_document("[4] DBSETXML //NSNEST/254", &submitted);
+    assert_eq!(response.status, 301, "{response:?}");
+    let unit = server.handle("[5] DBGETXML //NSNEST/254/p/20");
+    assert_eq!(unit.status, 200, "{unit:?}");
+    let unit_xml = unit.lines[0].strip_prefix("347-").unwrap();
+    assert!(unit_xml.contains("xmlns:x=\"urn:same\""), "{unit_xml}");
+    assert!(unit_xml.contains("<x:Nested>kept</x:Nested>"), "{unit_xml}");
+    assert!(!unit_xml.contains("xmlns:y=\"urn:same\""), "{unit_xml}");
+    assert!(!unit_xml.contains("<y:Discard>"), "{unit_xml}");
+    let network = server.handle("[6] DBGETXML //NSNEST/254");
+    let network_xml = network.lines[0].strip_prefix("347-").unwrap();
+    let root_opening = network_xml.split_once('>').unwrap().0;
+    assert!(
+        root_opening.contains("xmlns:x=\"urn:same\""),
+        "{network_xml}"
+    );
+    assert!(
+        root_opening.contains("xmlns:z=\"urn:application\""),
+        "{network_xml}"
+    );
+    assert!(
+        network_xml.contains("z:revision=\"retained\""),
+        "{network_xml}"
+    );
+    assert!(
+        !root_opening.contains("xmlns:y=\"urn:same\""),
+        "{network_xml}"
+    );
+    roxmltree::Document::parse(network_xml).unwrap();
+}
+
+#[test]
+fn dbsetxml_network_retains_prefix_inside_opaque_extension_unit() {
+    let mut server = Server::new(AccessLevel::Program);
+    assert_eq!(server.handle("[1] PROJECT NEW NSOPAQUE").status, 200);
+    assert_eq!(
+        server
+            .handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:1")
+            .status,
+        200
+    );
+    let network = server.handle("[3] DBGETXML //NSOPAQUE/254");
+    let xml = network.lines[0].strip_prefix("347-").unwrap();
+    let parsed = roxmltree::Document::parse(xml).unwrap();
+    let network_oid = parsed
+        .root_element()
+        .children()
+        .find(|node| node.has_tag_name("OID"))
+        .and_then(|node| node.text())
+        .unwrap();
+    let interface_oid = parsed
+        .descendants()
+        .find(|node| node.has_tag_name("Interface"))
+        .unwrap()
+        .children()
+        .find(|node| node.has_tag_name("OID"))
+        .and_then(|node| node.text())
+        .unwrap();
+    let submitted = format!(
+        "<Network xmlns:v=\"urn:extension\" xmlns:x=\"urn:extension-data\" xmlns:t=\"urn:types\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><OID>{network_oid}</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>{interface_oid}</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><v:Extension><Unit><x:Data xsi:type=\"t:Widget\">opaque</x:Data></Unit></v:Extension></Network>"
+    );
+    let response = server.handle_document("[4] DBSETXML //NSOPAQUE/254", &submitted);
+    assert_eq!(response.status, 301, "{response:?}");
+    let network = server.handle("[5] DBGETXML //NSOPAQUE/254");
+    let xml = network.lines[0].strip_prefix("347-").unwrap();
+    assert!(xml.contains("xmlns:v=\"urn:extension\""), "{xml}");
+    assert!(xml.contains("xmlns:x=\"urn:extension-data\""), "{xml}");
+    assert!(xml.contains("xmlns:t=\"urn:types\""), "{xml}");
+    assert!(
+        xml.contains("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""),
+        "{xml}"
+    );
+    assert!(
+        xml.contains(
+            "<v:Extension><Unit><x:Data xsi:type=\"t:Widget\">opaque</x:Data></Unit></v:Extension>"
+        ),
+        "{xml}"
+    );
+    roxmltree::Document::parse(xml).unwrap();
 }
 
 #[test]

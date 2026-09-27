@@ -57,8 +57,8 @@ not a claim about every descendant class or stateful live Network. The earlier
 separately pins missing-`UnitName` validation and preservation on failure.
 
 These cases do not establish broad namespace, comment or processing-instruction
-handling, all Unit fields, all combined-tree forms, physical-device behavior,
-or parity of either Rust server with the original mapper. In particular, the
-original's observed omission of these two unknown namespaced additions should
-be assessed against Rust's modeled extension-retention policy before any
-exact XML parity claim. No runtime behavior was changed by this capture.
+handling, all Unit fields, all combined-tree forms or physical-device behavior.
+A later [direct-Unit original capture and scoped Rust differential](native-cgate-dbsetxml-unit-mapper-vm.md)
+establish the same two unknown namespaced additions are omitted on direct
+Unit readback and pins 12/12 Unit mapper results plus 2/2 full combined Network readbacks for each Rust server. The XML TCP
+envelopes still differ; neither capture establishes broad wire or XML parity.

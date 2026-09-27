@@ -547,7 +547,7 @@ class RustInteropTests(unittest.TestCase):
             "DBSETXML //TEST/254/p/20/UnitName", "LOUNGE\n")
         self.assertEqual(stored.code, 200)
 
-    def test_typed_unit_document_round_trip_preserves_unknown_markup(self):
+    def test_typed_unit_document_drops_direct_extensions_and_preserves_nested_markup(self):
         from cbus_toolkit.native import NativeDatabase
         from cbus_toolkit.programming import xml_text
 
@@ -567,8 +567,9 @@ class RustInteropTests(unittest.TestCase):
             f"<OID>{oid}</OID><Address>21</Address><TagName>Moved</TagName>"
             "<UnitType>KEYE1</UnitType><UnitName>Moved</UnitName>"
             "<FirmwareVersion>1.2.67</FirmwareVersion>"
-            '<!--opaque-comment--><x:Opaque order="1"><x:Nested>yes</x:Nested>'
-            '</x:Opaque><PP Name="UnitAddress" Value="21"/></Unit>'
+            '<!--opaque-comment--><Description><x:Opaque order="1">'
+            '<x:Nested>yes</x:Nested></x:Opaque></Description>'
+            '<PP Name="UnitAddress" Value="21"/></Unit>'
         )
         with self.assertRaises(CGateError) as refused:
             self.client.command_document(
@@ -582,19 +583,19 @@ class RustInteropTests(unittest.TestCase):
         self.assertEqual(replaced.final, f"301 OID={oid}")
 
         moved = xml_text(database.get("//TEST/254/p/21", xml=True))
-        self.assertIn('x:mode="preserve"', moved)
+        self.assertNotIn('x:mode="preserve"', moved)
+        self.assertIn('xmlns:x="urn:interop"', moved)
         self.assertIn("<!--opaque-comment-->", moved)
         self.assertIn("<x:Nested>yes</x:Nested>", moved)
         self.assertIn('<PP Name="UnitAddress" Value="21"/>', moved)
 
-        # Later modeled changes are projected through the accepted template;
-        # its opaque namespace, nested element and comment remain intact.
+        # Later modeled changes keep the nested mock template and comment.
         database.set("//TEST/254/p/21/TagName", "Projected")
         database.set("//TEST/254/p/21/UnitAddress", "22")
         projected = xml_text(database.get("//TEST/254/p/21", xml=True))
         self.assertIn("<TagName>Projected</TagName>", projected)
         self.assertIn('<PP Name="UnitAddress" Value="22"/>', projected)
-        self.assertIn('x:mode="preserve"', projected)
+        self.assertNotIn('x:mode="preserve"', projected)
         self.assertIn("<!--opaque-comment-->", projected)
         self.assertIn("<x:Nested>yes</x:Nested>", projected)
 

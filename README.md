@@ -66,7 +66,7 @@ cbus-toolkit project inspect demo.cbz
 cbus-toolkit project export demo.cbz demo.xml --format xml
 ```
 
-Project editing preserves unknown XML and opaque programming fields. Use `--output` on an edit to write a separate copy. Native C-Gate 3 SQLite projects are managed through `cbus-toolkit cgate project` instead of the offline XML/CBZ editor.
+Project editing preserves unknown XML and opaque programming fields. Use `--output` on an edit to write a separate copy. Native C-Gate 3 SQLite projects are managed through `cbus-toolkit cgate project` instead of the offline XML/CBZ editor. The C-Gate `DBSETXML` mapper has its own compatibility boundary: the [original direct/combined Unit evidence](toolkit-cli/docs/native-cgate-dbsetxml-unit-mapper-vm.md) shows that the two captured unknown namespaced Unit additions are accepted but omitted on readback.
 
 ### Connect to C-Gate
 

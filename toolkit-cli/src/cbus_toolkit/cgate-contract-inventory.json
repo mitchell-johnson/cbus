@@ -5,7 +5,7 @@
   "purpose": "Evidence-bounded per-path contracts; unresolved fields are explicit and route coverage is not functional acceptance.",
   "sources": {
     "capability_matrix": {
-      "sha256": "f87c6e3575fa34f265f2aec2178c899596a653918a98a7a59f5077e038e11886"
+      "sha256": "62e23d49422cbe27a1232d6580d6104ece99c684c64a8a1a3c93ed72aca8550f"
     },
     "manual": {
       "sha256": "fdf01acf8dd3eb037c469732e4cbf36cbaef7ca19612fd9ffedebc196248758c"
@@ -14,7 +14,7 @@
       "sha256": "5ba42e8403df937880c75bdf890e68fc9df4d3f5c4ccd50edf3160272262f1b2"
     },
     "event_mode": {
-      "sha256": "8821377d31743bcd9265aa9509c12e2070531cee191fddc916659ba78740413c"
+      "sha256": "27face805e313e670d37f9b5b278431f0b3ba871e85121f1cff0a29f2f11c946"
     },
     "authorization_policy": {
       "sha256": "a3f3ce920dee91f33e30a9c1a7f32ab8f2bb1c06f8d497db29523d470a227614"
@@ -42656,7 +42656,7 @@
       "id": "cgate-contract:4e1f41fe90d80336",
       "path": "DBSETXML",
       "inventory": "primary",
-      "routing_evidence": "Server::handle_document supports scalar-field documents plus complete typed Unit, Level, NetVar, Group, Application and Network/Interface replacement. Complete forms validate the whole submitted tree, selected-project path/OID target, required Unit scalars/PP ownership, unique subtree OIDs, and sibling application/unit addresses on a cloned model before one commit; return the 301 submitted-root OID receipt; retire omitted/replaced descendants; preserve extension markup; and survive copy/rename/delete/archive/restart. Service::handle_document persists atomically with rollback and no PCI I/O. The configured live Network admits same-address replacements only while its interface type/address binding remains unchanged; observed physical/state/level data remain runtime-owned. An owned native C-Gate 3.4.0 build 2001 combined Network/Application/Unit replacement captures the 301 receipt, Application-before-Unit readback, schema-ordered plain Unit fields, and 446 validation for missing UnitName with previous state preserved (native_cgate_dbsetxml_combined.json; cgate_dbsetxml.jsonl; dbsetxml_combined_network_unit_matches_native_build_2001_capture). The broader typed-tree and extension behavior remains separately tested (native_cgate_legacy_database.json; dbsetxml_replaces_evidenced_typed_database_trees_atomically; dbsetxml_network_unit_topology_is_atomic_conflict_checked_and_retires_omissions; configured_network_dbsetxml_replaces_database_topology_without_rebinding_or_pci_io; typed_container_dbsetxml_is_durable_atomic_and_never_reaches_pci; tcp_complete_typed_dbsetxml_returns_root_oid_and_exact_readback; test_typed_container_document_replaces_complete_subtree).",
+      "routing_evidence": "Server::handle_document supports scalar-field documents plus complete typed Unit, Level, NetVar, Group, Application and Network/Interface replacement. Complete forms validate the whole submitted tree, selected-project path/OID target, required Unit scalars/PP ownership, unique subtree OIDs, and sibling application/unit addresses on a cloned model before one commit; return the 301 submitted-root OID receipt; retire omitted/replaced descendants; preserve supported nested opaque markup while omitting the captured unknown namespaced Unit root attribute and direct child as observed in original direct/combined Unit cases; and survive copy/rename/delete/archive/restart. Service::handle_document persists atomically with rollback and no PCI I/O. The configured live Network admits same-address replacements only while its interface type/address binding remains unchanged; observed physical/state/level data remain runtime-owned. An owned native C-Gate 3.4.0 build 2001 combined Network/Application/Unit replacement captures the 301 receipt, Application-before-Unit readback, schema-ordered plain Unit fields, and 446 validation for missing UnitName with previous state preserved (native_cgate_dbsetxml_combined.json; cgate_dbsetxml.jsonl; dbsetxml_combined_network_unit_matches_native_build_2001_capture). The broader typed-tree and extension behavior remains separately tested (native_cgate_legacy_database.json; dbsetxml_replaces_evidenced_typed_database_trees_atomically; dbsetxml_network_unit_topology_is_atomic_conflict_checked_and_retires_omissions; configured_network_dbsetxml_replaces_database_topology_without_rebinding_or_pci_io; typed_container_dbsetxml_is_durable_atomic_and_never_reaches_pci; tcp_complete_typed_dbsetxml_returns_root_oid_and_exact_readback; test_typed_container_document_replaces_complete_subtree).",
       "axes": {
         "selector_grammar": {
           "status": "partial",
@@ -42819,7 +42819,7 @@
                 "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
               ],
               "known": {
-                "routing_evidence": "Server::handle_document supports scalar-field documents plus complete typed Unit, Level, NetVar, Group, Application and Network/Interface replacement. Complete forms validate the whole submitted tree, selected-project path/OID target, required Unit scalars/PP ownership, unique subtree OIDs, and sibling application/unit addresses on a cloned model before one commit; return the 301 submitted-root OID receipt; retire omitted/replaced descendants; preserve extension markup; and survive copy/rename/delete/archive/restart. Service::handle_document persists atomically with rollback and no PCI I/O. The configured live Network admits same-address replacements only while its interface type/address binding remains unchanged; observed physical/state/level data remain runtime-owned. An owned native C-Gate 3.4.0 build 2001 combined Network/Application/Unit replacement captures the 301 receipt, Application-before-Unit readback, schema-ordered plain Unit fields, and 446 validation for missing UnitName with previous state preserved (native_cgate_dbsetxml_combined.json; cgate_dbsetxml.jsonl; dbsetxml_combined_network_unit_matches_native_build_2001_capture). The broader typed-tree and extension behavior remains separately tested (native_cgate_legacy_database.json; dbsetxml_replaces_evidenced_typed_database_trees_atomically; dbsetxml_network_unit_topology_is_atomic_conflict_checked_and_retires_omissions; configured_network_dbsetxml_replaces_database_topology_without_rebinding_or_pci_io; typed_container_dbsetxml_is_durable_atomic_and_never_reaches_pci; tcp_complete_typed_dbsetxml_returns_root_oid_and_exact_readback; test_typed_container_document_replaces_complete_subtree)."
+                "routing_evidence": "Server::handle_document supports scalar-field documents plus complete typed Unit, Level, NetVar, Group, Application and Network/Interface replacement. Complete forms validate the whole submitted tree, selected-project path/OID target, required Unit scalars/PP ownership, unique subtree OIDs, and sibling application/unit addresses on a cloned model before one commit; return the 301 submitted-root OID receipt; retire omitted/replaced descendants; preserve supported nested opaque markup while omitting the captured unknown namespaced Unit root attribute and direct child as observed in original direct/combined Unit cases; and survive copy/rename/delete/archive/restart. Service::handle_document persists atomically with rollback and no PCI I/O. The configured live Network admits same-address replacements only while its interface type/address binding remains unchanged; observed physical/state/level data remain runtime-owned. An owned native C-Gate 3.4.0 build 2001 combined Network/Application/Unit replacement captures the 301 receipt, Application-before-Unit readback, schema-ordered plain Unit fields, and 446 validation for missing UnitName with previous state preserved (native_cgate_dbsetxml_combined.json; cgate_dbsetxml.jsonl; dbsetxml_combined_network_unit_matches_native_build_2001_capture). The broader typed-tree and extension behavior remains separately tested (native_cgate_legacy_database.json; dbsetxml_replaces_evidenced_typed_database_trees_atomically; dbsetxml_network_unit_topology_is_atomic_conflict_checked_and_retires_omissions; configured_network_dbsetxml_replaces_database_topology_without_rebinding_or_pci_io; typed_container_dbsetxml_is_durable_atomic_and_never_reaches_pci; tcp_complete_typed_dbsetxml_returns_root_oid_and_exact_readback; test_typed_container_document_replaces_complete_subtree)."
               }
             }
           }
@@ -42851,8 +42851,8 @@
           }
         }
       },
-      "axes_sha256": "51f33c0793ee7d2d80f772b6501340ac68e4326e5ba94968ba0588852e4a71e7",
-      "contract_sha256": "6cbf4af96f6eb80cca3d929481106a2afd6406f8716976a50eeb8449c2567da1"
+      "axes_sha256": "495bc96bfc29b1a17891f0dfb2cc7a9a1734999128b460f8bca0d4b34479ee3c",
+      "contract_sha256": "498e9e9e88157e5751e8d3d88aba2e4389cc0bff25e3ef486bde6db5d27b2d03"
     },
     {
       "id": "cgate-contract:bc9c12fa9f1b7148",

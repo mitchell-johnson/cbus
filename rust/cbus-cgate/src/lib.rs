@@ -592,6 +592,75 @@ fn opening_has_attribute(opening: &str, wanted: &str) -> bool {
     opening_attribute_value_range(opening, wanted).is_some()
 }
 
+fn opening_attribute_span(opening: &str, wanted: &str) -> Option<std::ops::Range<usize>> {
+    let value = opening_attribute_value_range(opening, wanted)?;
+    let name_start = opening[..value.start].rfind(wanted)?;
+    let leading_space =
+        opening[..name_start].rfind(|character: char| !character.is_ascii_whitespace())? + 1;
+    Some(leading_space..value.end + 1)
+}
+
+fn xml_name_uses_prefix(raw_name: &str, prefix: &str) -> bool {
+    raw_name
+        .strip_prefix('<')
+        .unwrap_or(raw_name)
+        .strip_prefix(prefix)
+        .is_some_and(|rest| rest.starts_with(':'))
+}
+
+fn xml_element_uses_prefix(node: roxmltree::Node<'_, '_>, source: &str, prefix: &str) -> bool {
+    source
+        .get(node.range())
+        .is_some_and(|fragment| xml_name_uses_prefix(fragment, prefix))
+}
+
+fn xml_attribute_uses_prefix(
+    attribute: roxmltree::Attribute<'_, '_>,
+    source: &str,
+    prefix: &str,
+) -> bool {
+    source
+        .get(attribute.range())
+        .is_some_and(|fragment| xml_name_uses_prefix(fragment, prefix))
+}
+
+fn xml_attribute_value_uses_prefix(attribute: roxmltree::Attribute<'_, '_>, prefix: &str) -> bool {
+    // XML namespace bindings can also be referenced as QNames in values,
+    // notably xsi:type="t:Widget". Preserve those bindings conservatively
+    // for every retained attribute value with a QName-shaped token.
+    attribute.value().split_ascii_whitespace().any(|token| {
+        token
+            .strip_prefix(prefix)
+            .is_some_and(|rest| rest.starts_with(':') && rest.len() > 1)
+    })
+}
+
+fn xml_subtree_uses_prefix(node: roxmltree::Node<'_, '_>, source: &str, prefix: &str) -> bool {
+    node.descendants()
+        .filter(roxmltree::Node::is_element)
+        .any(|element| {
+            xml_element_uses_prefix(element, source, prefix)
+                || element.attributes().any(|attribute| {
+                    xml_attribute_uses_prefix(attribute, source, prefix)
+                        || xml_attribute_value_uses_prefix(attribute, prefix)
+                })
+        })
+}
+
+fn prune_unused_inherited_bindings(
+    extras: &mut DbXmlExtras,
+    node: roxmltree::Node<'_, '_>,
+    source: &str,
+) {
+    let opening = source
+        .get(node.range())
+        .and_then(|fragment| xml_open_tag_end(fragment, 0).map(|end| &fragment[..=end]));
+    extras.namespaces.retain(|prefix, _| {
+        opening.is_some_and(|opening| opening_has_attribute(opening, &format!("xmlns:{prefix}")))
+            || xml_subtree_uses_prefix(node, source, prefix)
+    });
+}
+
 /// Update only one modeled XML attribute, retaining unrelated attributes,
 /// nested extension elements, and their original namespace bindings.
 fn xml_replace_opening_attribute(fragment: &str, name: &str, value: &str) -> Option<String> {
@@ -770,21 +839,116 @@ fn parse_db_xml_interface(
             return Err(format!("DBSETXML Interface has an invalid {name}"));
         }
     }
+    let mut extras = parse_db_xml_extras(node, source);
+    // Interface is parsed only below Network. A declaration inherited solely
+    // from an ignored Unit extension does not appear on native readback.
+    prune_unused_inherited_bindings(&mut extras, node, source);
     Ok(ParsedDbXmlInterface {
         oid,
         interface_type,
         interface_address,
-        extras: parse_db_xml_extras(node, source),
+        extras,
     })
 }
 
 /// Parse one complete Unit embedded in a DBSETXML document.
 ///
 /// A Unit keeps its own XML template because its schema contains the open
-/// ended PP catalogue and vendor extension markup.  When a Unit inherits a
-/// namespace declaration from the Network root, materialize that declaration
-/// on the stored Unit root so the isolated template remains well-formed on a
-/// later DBGETXML projection.
+/// ended PP catalogue and nested opaque markup. The original mapper accepts
+/// but omits unknown namespaced attributes on the Unit root and unknown direct
+/// namespaced Unit children, both for a direct Unit replacement and a Unit
+/// embedded in a complete Network replacement. Other template content remains
+/// available for the separately modeled projection cases.
+fn db_xml_unit_template(node: roxmltree::Node<'_, '_>, source: &str) -> Result<String, String> {
+    let mut fragment = xml_fragment_with_inherited_namespaces(node, source)?;
+    let parsed = roxmltree::Document::parse(&fragment)
+        .map_err(|_| "detached Unit XML fragment is not well-formed".to_string())?;
+    let root = parsed.root_element();
+    let mut ignored = root
+        .attributes()
+        .filter(|attribute| {
+            attribute
+                .namespace()
+                .is_some_and(|uri| uri != roxmltree::NS_XML_URI)
+        })
+        .map(|attribute| attribute.range())
+        .collect::<Vec<_>>();
+    ignored.extend(
+        root.children()
+            .filter(|child| child.is_element() && child.tag_name().namespace().is_some())
+            .map(|child| child.range()),
+    );
+    ignored.sort_by_key(|range| std::cmp::Reverse(range.start));
+    for range in ignored {
+        fragment.replace_range(range, "");
+    }
+    let normalized = roxmltree::Document::parse(&fragment)
+        .map_err(|_| "normalized Unit XML fragment is not well-formed".to_string())?;
+    let open_end = xml_open_tag_end(&fragment, 0)
+        .ok_or_else(|| "normalized Unit opening tag is invalid".to_string())?;
+    let opening = &fragment[..=open_end];
+    let mut unused_bindings = normalized
+        .root_element()
+        .namespaces()
+        .filter(|namespace| namespace.name().is_some_and(|prefix| prefix != "xml"))
+        .filter(|namespace| {
+            let prefix = namespace.name().expect("filtered prefixed namespace");
+            !normalized
+                .descendants()
+                .filter(roxmltree::Node::is_element)
+                .any(|element| {
+                    xml_element_uses_prefix(element, &fragment, prefix)
+                        || element.attributes().any(|attribute| {
+                            xml_attribute_uses_prefix(attribute, &fragment, prefix)
+                                || xml_attribute_value_uses_prefix(attribute, prefix)
+                        })
+                })
+        })
+        .filter_map(|namespace| {
+            opening_attribute_span(opening, &format!("xmlns:{}", namespace.name()?))
+        })
+        .collect::<Vec<_>>();
+    unused_bindings.sort_by_key(|range| std::cmp::Reverse(range.start));
+    for range in unused_bindings {
+        fragment.replace_range(range, "");
+    }
+    roxmltree::Document::parse(&fragment)
+        .map_err(|_| "normalized Unit XML fragment is not well-formed".to_string())?;
+    Ok(fragment)
+}
+
+/// A Network declaration may be omitted only when every lexical use of its
+/// prefix belonged to a Unit extension that the observed mapper discarded.
+/// Inspect the source prefix, not its URI: two aliases can name one URI.
+fn network_retains_prefix(node: roxmltree::Node<'_, '_>, source: &str, prefix: &str) -> bool {
+    node.descendants()
+        .filter(roxmltree::Node::is_element)
+        .any(|element| {
+            let ignored_child = element.ancestors().any(|ancestor| {
+                ancestor.tag_name().namespace().is_some()
+                    && ancestor.parent().is_some_and(|parent| {
+                        parent.is_element()
+                            && parent.tag_name().name() == "Unit"
+                            && parent.tag_name().namespace().is_none()
+                            && parent.parent() == Some(node)
+                    })
+            });
+            if ignored_child {
+                return false;
+            }
+            xml_element_uses_prefix(element, source, prefix)
+                || element.attributes().any(|attribute| {
+                    let ignored_unit_attribute = element.tag_name().name() == "Unit"
+                        && element.tag_name().namespace().is_none()
+                        && element.parent() == Some(node)
+                        && attribute.namespace().is_some();
+                    !ignored_unit_attribute
+                        && (xml_attribute_uses_prefix(attribute, source, prefix)
+                            || xml_attribute_value_uses_prefix(attribute, prefix))
+                })
+        })
+}
+
 fn parse_db_xml_unit(
     node: roxmltree::Node<'_, '_>,
     source: &str,
@@ -901,7 +1065,7 @@ fn parse_db_xml_unit(
         }
     }
 
-    let document = xml_fragment_with_inherited_namespaces(node, source)?;
+    let document = db_xml_unit_template(node, source)?;
 
     scalars.remove("OID");
     scalars.remove("Address");
@@ -980,9 +1144,16 @@ fn parse_db_xml_object(
         }
         match (kind, name) {
             (DbXmlKind::Group | DbXmlKind::NetVar, "Level")
-            | (DbXmlKind::Application, "Group" | "NetVar")
-            | (DbXmlKind::Network, "Application") => {
+            | (DbXmlKind::Application, "Group" | "NetVar") => {
                 children.push(parse_db_xml_object(child, source)?);
+            }
+            (DbXmlKind::Network, "Application") => {
+                let mut application = parse_db_xml_object(child, source)?;
+                // Only trim unused bindings inherited from this Network;
+                // explicit Application declarations and real nested prefix
+                // uses retain the existing extension round-trip contract.
+                prune_unused_inherited_bindings(&mut application.extras, child, source);
+                children.push(application);
             }
             (DbXmlKind::Network, "Interface") => {
                 if interface.is_some() {
@@ -1034,6 +1205,12 @@ fn parse_db_xml_object(
             ));
         }
     }
+    let mut extras = parse_db_xml_extras(node, source);
+    if kind == DbXmlKind::Network {
+        extras
+            .namespaces
+            .retain(|prefix, _| network_retains_prefix(node, source, prefix));
+    }
     Ok(ParsedDbXmlObject {
         kind,
         oid,
@@ -1043,7 +1220,7 @@ fn parse_db_xml_object(
         interface,
         units,
         children,
-        extras: parse_db_xml_extras(node, source),
+        extras,
     })
 }
 

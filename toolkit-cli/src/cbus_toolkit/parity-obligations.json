@@ -11,14 +11,14 @@
     "toolkit_executable_binary": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
     "toolkit_map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
     "feature_ledger": "79750e146f08911f5350e2a655f86ff0472a73b30e89cf969923ab737ceb85af",
-    "cgate_capability_matrix": "f87c6e3575fa34f265f2aec2178c899596a653918a98a7a59f5077e038e11886",
-    "cgate_contract_inventory": "d256bb1f96358138a0e8762f5bd8ead489e28bbdb9f4e3cc7b63100374c4da62",
+    "cgate_capability_matrix": "62e23d49422cbe27a1232d6580d6104ece99c684c64a8a1a3c93ed72aca8550f",
+    "cgate_contract_inventory": "966c612c6a08c98a06aa4d62ce8740b95b8858cfb8ef7d9dd5f79a56a195662d",
     "cgate_session_native_acceptance": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f",
     "functional_obligation_pilot": "36a05e9c7573d099970cd797bbba7c010da09c7e192f57d366956d7454ca0b19",
-    "cgate_session_differential_cmqttd": "bbcd48ad67bd6221a3cf8fc2dec11cdc21761ae65d89378882f675b73b9c3076",
+    "cgate_session_differential_cmqttd": "50f99232c51d7dc9d92048de7cff94bea528a9c7a3b108d30c931537c87280e2",
     "roadmap": "e216be63829d38e460e81fdb1643ef12db8a7b3188c20f20564ecbd08804a97c"
   },
-  "evidence_bundle_sha256": "9c1a0c81b63331b42d90887121c34169cc90cff835422f859fcd753e1967f7ab",
+  "evidence_bundle_sha256": "0fcc5e2519e31e2a33fe62e59cf0c2bd217d4a0d7a64aaf0b36e2796deff7665",
   "work_item_ids": [
     "P0.01",
     "P0.02",
@@ -139537,8 +139537,8 @@
       "source_id": "DBSETXML",
       "routing_class": "LocalDatabase",
       "contract_id": "cgate-contract:4e1f41fe90d80336",
-      "contract_sha256": "6cbf4af96f6eb80cca3d929481106a2afd6406f8716976a50eeb8449c2567da1",
-      "contract_axes_sha256": "51f33c0793ee7d2d80f772b6501340ac68e4326e5ba94968ba0588852e4a71e7",
+      "contract_sha256": "498e9e9e88157e5751e8d3d88aba2e4389cc0bff25e3ef486bde6db5d27b2d03",
+      "contract_axes_sha256": "495bc96bfc29b1a17891f0dfb2cc7a9a1734999128b460f8bca0d4b34479ee3c",
       "contract_axes": {
         "selector_grammar": {
           "status": "partial",
@@ -139701,7 +139701,7 @@
                 "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
               ],
               "known": {
-                "routing_evidence": "Server::handle_document supports scalar-field documents plus complete typed Unit, Level, NetVar, Group, Application and Network/Interface replacement. Complete forms validate the whole submitted tree, selected-project path/OID target, required Unit scalars/PP ownership, unique subtree OIDs, and sibling application/unit addresses on a cloned model before one commit; return the 301 submitted-root OID receipt; retire omitted/replaced descendants; preserve extension markup; and survive copy/rename/delete/archive/restart. Service::handle_document persists atomically with rollback and no PCI I/O. The configured live Network admits same-address replacements only while its interface type/address binding remains unchanged; observed physical/state/level data remain runtime-owned. An owned native C-Gate 3.4.0 build 2001 combined Network/Application/Unit replacement captures the 301 receipt, Application-before-Unit readback, schema-ordered plain Unit fields, and 446 validation for missing UnitName with previous state preserved (native_cgate_dbsetxml_combined.json; cgate_dbsetxml.jsonl; dbsetxml_combined_network_unit_matches_native_build_2001_capture). The broader typed-tree and extension behavior remains separately tested (native_cgate_legacy_database.json; dbsetxml_replaces_evidenced_typed_database_trees_atomically; dbsetxml_network_unit_topology_is_atomic_conflict_checked_and_retires_omissions; configured_network_dbsetxml_replaces_database_topology_without_rebinding_or_pci_io; typed_container_dbsetxml_is_durable_atomic_and_never_reaches_pci; tcp_complete_typed_dbsetxml_returns_root_oid_and_exact_readback; test_typed_container_document_replaces_complete_subtree)."
+                "routing_evidence": "Server::handle_document supports scalar-field documents plus complete typed Unit, Level, NetVar, Group, Application and Network/Interface replacement. Complete forms validate the whole submitted tree, selected-project path/OID target, required Unit scalars/PP ownership, unique subtree OIDs, and sibling application/unit addresses on a cloned model before one commit; return the 301 submitted-root OID receipt; retire omitted/replaced descendants; preserve supported nested opaque markup while omitting the captured unknown namespaced Unit root attribute and direct child as observed in original direct/combined Unit cases; and survive copy/rename/delete/archive/restart. Service::handle_document persists atomically with rollback and no PCI I/O. The configured live Network admits same-address replacements only while its interface type/address binding remains unchanged; observed physical/state/level data remain runtime-owned. An owned native C-Gate 3.4.0 build 2001 combined Network/Application/Unit replacement captures the 301 receipt, Application-before-Unit readback, schema-ordered plain Unit fields, and 446 validation for missing UnitName with previous state preserved (native_cgate_dbsetxml_combined.json; cgate_dbsetxml.jsonl; dbsetxml_combined_network_unit_matches_native_build_2001_capture). The broader typed-tree and extension behavior remains separately tested (native_cgate_legacy_database.json; dbsetxml_replaces_evidenced_typed_database_trees_atomically; dbsetxml_network_unit_topology_is_atomic_conflict_checked_and_retires_omissions; configured_network_dbsetxml_replaces_database_topology_without_rebinding_or_pci_io; typed_container_dbsetxml_is_durable_atomic_and_never_reaches_pci; tcp_complete_typed_dbsetxml_returns_root_oid_and_exact_readback; test_typed_container_document_replaces_complete_subtree)."
               }
             }
           }
@@ -320268,7 +320268,7 @@
       "source_scope_item_id": "scope:cgate_primary_path:4e1f41fe90d80336",
       "source_id": "DBSETXML",
       "contract_id": "cgate-contract:4e1f41fe90d80336",
-      "contract_sha256": "6cbf4af96f6eb80cca3d929481106a2afd6406f8716976a50eeb8449c2567da1",
+      "contract_sha256": "498e9e9e88157e5751e8d3d88aba2e4389cc0bff25e3ef486bde6db5d27b2d03",
       "definition_status": "provisional",
       "implementation_status": "in_progress",
       "implementation_basis": "route_reachable_contract_incomplete",

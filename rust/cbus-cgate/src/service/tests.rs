@@ -14331,10 +14331,10 @@ async fn configured_network_dbsetxml_replaces_database_topology_without_rebindin
         .handle(&mut client, "[unit] DBGETXML //HARNESS/254/p/6")
         .await;
     assert_eq!(unit_xml.status, 200, "{unit_xml:?}");
-    assert!(unit_xml.lines[0].contains("xmlns:x=\"urn:configured\""));
-    assert!(unit_xml.lines[0].contains("x:source=\"document\""));
+    assert!(!unit_xml.lines[0].contains("xmlns:x=\"urn:configured\""));
+    assert!(!unit_xml.lines[0].contains("x:source=\"document\""));
     assert!(unit_xml.lines[0].contains("<!--unit-->"));
-    assert!(unit_xml.lines[0].contains("<x:Opaque>kept</x:Opaque>"));
+    assert!(!unit_xml.lines[0].contains("<x:Opaque>kept</x:Opaque>"));
     let persisted = std::fs::read(&path).unwrap();
 
     let changed_binding = document.replace(
@@ -14400,7 +14400,7 @@ async fn configured_network_dbsetxml_replaces_database_topology_without_rebindin
         .await;
     assert_eq!(restarted_unit.status, 200, "{restarted_unit:?}");
     assert!(restarted_unit.lines[0].contains("<TagName>Replacement eDLT</TagName>"));
-    assert!(restarted_unit.lines[0].contains("<x:Opaque>kept</x:Opaque>"));
+    assert!(!restarted_unit.lines[0].contains("<x:Opaque>kept</x:Opaque>"));
     assert!(
         restarted.model.lock().await.projects["HARNESS"].networks[&254]
             .physical
