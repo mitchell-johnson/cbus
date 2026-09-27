@@ -534,6 +534,9 @@ not verified, they are never assigned to one of the selected devices, and they
 reset on reconnect. The report therefore keeps `observations_complete=false`
 and `device_dynamic_label_cache_readback=false`; C-Bus exposes no evidenced
 query that inventories a display's pre-existing dynamic-label cache.
+The [Toolkit 1.18 / C-Gate 3.4 source and loopback investigation](../toolkit-cli/docs/edlt-dynamic-cache-boundary.md)
+records why this release-specific native readback operation is absent; it does
+not establish a universal firmware limitation.
 
 Physical string slots can retain old bytes after a shortened string's null
 terminator. The reader reports whether the stored CRC matches the physical

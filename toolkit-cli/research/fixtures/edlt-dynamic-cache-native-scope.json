@@ -1,0 +1,112 @@
+{
+  "claim": "No supported operation in this exact native C-Gate label command family inventories an eDLT's pre-existing dynamic-label cache; this does not prove absence of undocumented firmware protocols.",
+  "format": "cbus-edlt-dynamic-cache-native-scope-v1",
+  "invalidation": [
+    "Different Toolkit executable or C-Gate jar hash",
+    "New native LABEL subcommand or device-cache request in a later release",
+    "Independent physical protocol evidence of device-cache enumeration",
+    "A change that reports observed SAL traffic as complete or device readback"
+  ],
+  "owned_loopback_oracle": {
+    "backend": "fresh owned C-Gate child; six loopback listeners verified; no project/CNI/device",
+    "cleanup_complete": true,
+    "help_label": [
+      "101-Help: LABEL commands:",
+      "101-Help:  LABEL ? Help for these commands",
+      "101-Help:  LABEL CLEAR - Clear DLT Labelling on a unit",
+      "101-Help:  LABEL CLEAREDLT - ",
+      "101-Help:  LABEL KFIGET - Retrieve Key Function Indicators from a DLT Labelling unit",
+      "101 Help:  LABEL KFISET - Set Key Function Indicators on a DLT Labelling unit"
+    ],
+    "help_star_lines": 211,
+    "label_query_commands": {
+      "LABEL CACHE //NO_SUCH/254/p/5": [
+        "400 Syntax Error."
+      ],
+      "LABEL GET //NO_SUCH/254/p/5": [
+        "400 Syntax Error."
+      ],
+      "LABEL INVENTORY //NO_SUCH/254/p/5": [
+        "400 Syntax Error."
+      ],
+      "LABEL READ //NO_SUCH/254/p/5": [
+        "400 Syntax Error."
+      ]
+    },
+    "label_query_help": {
+      "HELP LABEL CACHE": [
+        "400 Syntax Error."
+      ],
+      "HELP LABEL GET": [
+        "400 Syntax Error."
+      ],
+      "HELP LABEL INVENTORY": [
+        "400 Syntax Error."
+      ],
+      "HELP LABEL READ": [
+        "400 Syntax Error."
+      ]
+    },
+    "label_question": [
+      "101-Help: LABEL commands:",
+      "101-Help:  LABEL ? Help for these commands",
+      "101-Help:  LABEL CLEAR - Clear DLT Labelling on a unit",
+      "101-Help:  LABEL CLEAREDLT - ",
+      "101-Help:  LABEL KFIGET - Retrieve Key Function Indicators from a DLT Labelling unit",
+      "101 Help:  LABEL KFISET - Set Key Function Indicators on a DLT Labelling unit"
+    ],
+    "raw_command_capture_sha256": "4c29ec800aef3c289fb272da87ffe20f45fca282d248654002445dda3569e721",
+    "raw_help_capture_sha256": "60e80107817495039004006a0249272eda53edd03cf610aaafdc641733cda15f",
+    "read_only": true
+  },
+  "retained_full_help_census": {
+    "help_star_response_lines": 211,
+    "maintained_path_count": 431,
+    "path": "research/fixtures/native-cgate-help-differential-acceptance.json",
+    "sha256": "c8645c25686c43ee86360334694bcc3efbbaf83490aadb48afc25ac7457e1c4f",
+    "target_profile": "target_cgate_3_4"
+  },
+  "scope_id": "P6.05-CGATE3402001-TOOLKIT118-NATIVE-LABEL-CACHE",
+  "static_bytecode": {
+    "class_sha256": "f5871ca2e007efc5d2273e1282411c02f7f70848b3b36c44e93a38744817d3b7",
+    "constructor_code_sha256": "0480c0507b2e6b4786427962628d03bb67c994f2f7111714ff59fc8ed407599c",
+    "edlt_class": "com/clipsal/cgate/cbus/dev/CBusEdlt.class",
+    "edlt_class_sha256": "6d9733794c5228700d00525f6c173ce4af6e4f11ed9ddc1c3a0673e73a492094",
+    "label_primary_class": "com/clipsal/cgate/cbus/label/LabelPrimaryCommand.class",
+    "registered_command_count": 4,
+    "registered_subcommands": {
+      "clear": "kx",
+      "clearedlt": "ky",
+      "kfiget": "kz",
+      "kfiset": "kA"
+    }
+  },
+  "supported_boundary": {
+    "cmqtt_observed_traffic_is_device_readback": false,
+    "native_label_cache_inventory": false,
+    "observed_traffic_complete": false,
+    "physical_firmware_protocol_absence_proven": false,
+    "separate_supported_reads": [
+      "KEYGL5 5.5.00 static text/widget physical memory",
+      "bounded current-connection network-wide dynamic-label SAL observations",
+      "KFI byte values via LABEL KFIGET"
+    ],
+    "toolkit_cli_device_readback": false
+  },
+  "target": {
+    "cgate_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "cgate_version": "3.4.0.2001",
+    "java11_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "toolkit_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "toolkit_version": "1.18.0.2754"
+  },
+  "toolkit_bytecode": {
+    "edlt_dll_sha256": "75bc741234b52a168a4838fee305c309d3909571d2711f7580216b46b028e8d3",
+    "frm_clear_labels_il_sha256": "6ed4945061aee74a96d2702cccd73fd137f45e80b4daa3afb681c42ac5026522",
+    "frm_edit_labels_il_sha256": "cd59aefbc4abced3f76f78263a5828ee3b18c6fcae412b142533dad7f083f1d9",
+    "label_editor_dll_sha256": "508fa63db112a3ec07bf3cf834b41a0f26da3b0e7a428bc288bff0ec433a073b",
+    "label_editor_send_il_sha256": "ac0379eb45c64e6f5db61b4c79987e756bf7e9bb77bf4ecc36ac053b8d73af6e",
+    "observed_flow": "FrmBaseUnit.btnEditLabels_Click opens the label editor; LabelsMain.SendLabels sends existing project labels. FrmBaseUnit.btnClearLabel_Click calls ClearEdltLabel and checks acceptance; neither path reports device cache contents."
+  },
+  "work_item": "P6.05"
+}

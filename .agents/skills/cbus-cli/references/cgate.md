@@ -1062,6 +1062,12 @@ read leaves earlier values from the same sequence fresh, invalidates the failed
 and all later unrefreshed values, and does not fail an otherwise valid identity
 SYNC. The programming lane remains faulted until reconnect and no request is
 replayed. `WidgetGroups` is static mapping, not dynamic-label cache readback.
+
+The [pinned Toolkit 1.18 / C-Gate 3.4 investigation](../../../../toolkit-cli/docs/edlt-dynamic-cache-boundary.md)
+records the four native `LABEL` subcommands, bytecode hashes and owned
+loopback rejections of candidate cache getters. Keep this conclusion scoped
+to those exact releases; observed SAL remains incomplete and recipient-unverified.
+
 State three and addresses with zero or multiple raw IDENTIFY4 replies receive no
 metadata traffic and expose no stale metadata. Multiple raw
 replies include repeated identical known replies and mixed known/unknown

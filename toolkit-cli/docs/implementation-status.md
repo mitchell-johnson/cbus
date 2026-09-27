@@ -268,7 +268,10 @@ once at network scope and keeps the resulting bounded SAL observations separate
 from every device. They are transient, network-wide, recipient-unverified and
 always incomplete. Unit-shaped `CMQTT LABELS` requests are compatibility aliases
 for that same network ring; they do not prove which display received traffic.
-Physical dynamic-label cache readback remains unimplemented and false. See
+Physical dynamic-label cache readback remains unimplemented and false. The
+[pinned native 1.18/3.4 investigation](edlt-dynamic-cache-boundary.md) found no
+exposed operation to enumerate a device's pre-existing cache; it does not
+claim that undocumented firmware protocols are impossible. See also the
 [service implementation and remaining work](../../docs/cmqttd-cgate.md).
 
 The typed `cgate edlt-widget-groups //PROJECT/NETWORK/p/UNIT` command consumes

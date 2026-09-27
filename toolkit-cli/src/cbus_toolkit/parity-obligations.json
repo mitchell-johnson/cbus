@@ -13,7 +13,7 @@
     "feature_ledger": "79750e146f08911f5350e2a655f86ff0472a73b30e89cf969923ab737ceb85af",
     "cgate_capability_matrix": "45f79d47d5853e7577db6698f22626e99e5077ee1057ffcee19f6d9a70038527",
     "cgate_contract_inventory": "08aa9b8aef84299d850225ebd8e0cbef721d581c9cdd215ab242af99df8866c0",
-    "roadmap": "607285cae45ae079cc8eef97dae5ae590d7c87bbc5331e1c3a84797ac483cca8"
+    "roadmap": "bfab32b227fc11d9959716ef2707a6f56f9f273219fa9cd53447afef0e47ab4f"
   },
   "evidence_bundle_sha256": "055dde83ff05aa7056c13761cac120604e1d89fc0c4c27275c28ceded39bde40",
   "work_item_ids": [
