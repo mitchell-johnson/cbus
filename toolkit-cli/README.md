@@ -32,11 +32,10 @@ include the cached 44-byte `WidgetGroups` mapping. The audit distinguishes
 verified static configuration from transient network-wide label observations
 and unread device caches; see [the eDLT label acceptance workflow](docs/edlt-label-audit.md).
 
-The 27 September 2026 source-tree and isolated installed-wheel gates each
-passed **2,477 tests**, skipped **265 provisioning-gated tests**, and passed
-**19,488 subtests**. The interoperability gate passed **17 tests** and skipped
-one test requiring external vendor unit specifications. These results have no
-failures, but the skips and unfinished ledger still prevent a completion claim.
+Run the source, installed-wheel and interoperability gates below for results
+from the current revision. CI retains JUnit reports with the executed tests and
+provisioning skips; those reports are separate from the evidence-derived parity
+decision.
 
 ## Install and run
 
@@ -1986,15 +1985,14 @@ job installs the wheel into a fresh environment and rejects any import from
 `src/`. JUnit artifacts retain the executed and skipped cases. Provisioned
 native and physical-hardware release jobs are manual and fail on missing
 provision or any skip; see the repository [test strategy](../docs/testing.md).
-`make require-complete` is the enforcing ledger gate and remains nonzero until
+`make require-complete` is the enforcing parity gate and remains nonzero until
 the full census, implementation and acceptance requirements are complete.
 
-On 27 September 2026, `make check` and the isolated `make check-wheel` each
-completed with **2,477 passed, 265 skipped and 19,488 passing subtests**.
-`make check-interop` completed with **17 passed and one skipped** because the
-external vendor unit-specification tree was not provisioned. The skipped tests
-cover explicit vendor, Windows, native-service or hardware provisions; an
-offline wheel pass is not zero-skip native or hardware acceptance.
+The source and wheel suites report explicit vendor, Windows, native-service
+and hardware provisioning skips when those facilities are absent. An offline
+pass does not establish native or physical acceptance. See the current CI
+artifacts and [test strategy](../docs/testing.md) for exact counts and gate
+scope.
 
 ```sh
 PYTHONPATH=toolkit-cli/src python3 -m unittest discover -s toolkit-cli/tests -v
