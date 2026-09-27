@@ -9,22 +9,50 @@ from cbus_toolkit.toolkit_update_bundle import (
     compose_update_diagnostic_bundle,
 )
 from cbus_toolkit.toolkit_update_conditions import STAGES as CONDITION_STAGES
-from cbus_toolkit.toolkit_update_metadata import STAGES as METADATA_STAGES
+from cbus_toolkit.toolkit_update_metadata import (
+    STAGES as METADATA_STAGES,
+    _canonical as canonical_metadata_node,
+    select_node,
+)
 from cbus_toolkit.toolkit_update_revocation import STAGES as REVOCATION_STAGES
+from cbus_toolkit.toolkit_updates import _candidate
 
 
 NODE = "435e4274-3bcf-4f3e-a67a-3008278c539c"
 CERTIFICATE = "A" * 40
-CATALOGUE_BODY = b'{"data":[{"nodeId":"' + NODE.encode() + b'"}]}'
-SELECTED_NODE = b'{"nodeId":"selected"}'
-REVOCATION_DATA = b'{"id":"' + CERTIFICATE.encode() + b'"}'
 CONDITION_MODEL = {"expression": "true", "conditions": {}}
-CONDITION_INPUT = b'{"expression":"true","conditions":{}}'
-CONTEXT_INPUT = b'{"format":"cbus-toolkit-condition-context-v1"}'
 
 
 def encode(value):
     return json.dumps(value, separators=(",", ":"), sort_keys=True).encode()
+
+
+CATALOGUE_NODE = {
+    "nodeId": NODE,
+    "nodeName": "Toolkit 1.19.0",
+    "data": {"type": "PackageData", "clientConditionData": CONDITION_MODEL},
+    "files": [],
+    "signatures": {},
+}
+CATALOGUE_BODY = encode({
+    "success": True,
+    "statusCode": 200,
+    "message": "OK",
+    "data": [CATALOGUE_NODE],
+})
+SELECTED_NODE = select_node(CATALOGUE_BODY, node_id=NODE)
+REVOCATION_DATA = encode({"id": CERTIFICATE})
+CONDITION_INPUT = encode(CONDITION_MODEL)
+CONTEXT_INPUT = encode({"format": "cbus-toolkit-condition-context-v1", "culture": "invariant", "files": []})
+
+
+def source_documents():
+    return {
+        "catalogue_response": CATALOGUE_BODY,
+        "revocation_input": REVOCATION_DATA,
+        "conditions_input": CONDITION_INPUT,
+        "context_input": CONTEXT_INPUT,
+    }
 
 
 def stage_rows(names, status="passed"):
@@ -37,14 +65,8 @@ def reports(*, condition=True):
     revocation_digest = hashlib.sha256(REVOCATION_DATA).hexdigest()
     conditions_digest = hashlib.sha256(CONDITION_INPUT).hexdigest()
     context_digest = hashlib.sha256(CONTEXT_INPUT).hexdigest()
-    canonical_node = {
-        "nodeId": NODE,
-        "data": {"clientConditionData": CONDITION_MODEL},
-    }
     metadata_stages = stage_rows(METADATA_STAGES)
-    metadata_stages[0]["canonical_utf8"] = json.dumps(
-        canonical_node, separators=(",", ":"), sort_keys=True
-    )
+    metadata_stages[0]["canonical_utf8"] = canonical_metadata_node(CATALOGUE_NODE).decode()
     revocation_stages = stage_rows(REVOCATION_STAGES)
     revocation_stages[0]["canonical_utf8"] = json.dumps(
         {
@@ -63,11 +85,20 @@ def reports(*, condition=True):
             "http": {
                 "complete": True,
                 "body_complete": True,
+                "status": 200,
                 "body_sha256": body_digest,
+                "headers": [],
+                "body_bytes_retained": len(CATALOGUE_BODY),
+                "bytes_received": len(CATALOGUE_BODY),
+                "request_attempted": True,
+                "error": None,
+                "cleanup": [],
+                "end_to_end_deadline_bounded": False,
             },
-            "candidates": [
-                {"node_id": NODE, "name": "Toolkit 1.19.0", "version": None}
-            ],
+            "body_success": True,
+            "body_status": 200,
+            "body_message": "OK",
+            "candidates": [_candidate(CATALOGUE_NODE).as_dict()],
             "metadata_signature_verified": False,
             "applicability_verified": False,
             "updates_available": None,
@@ -114,6 +145,7 @@ def reports(*, condition=True):
             "context_sha256": context_digest,
             "raw_typed_data": CONDITION_MODEL,
             "stages": stage_rows(CONDITION_STAGES),
+            "supplied_context": json.loads(CONTEXT_INPUT),
             "condition_result_under_supplied_context": condition,
             "package_applicability_evaluated": False,
             "publisher_trust_evaluated": False,
@@ -134,13 +166,18 @@ def encoded_reports(values=None):
     return {name: encode(value) for name, value in values.items()}
 
 
-def compose(raw):
+def compose(raw, *, sources=None):
+    sources = source_documents() if sources is None else sources
     return compose_update_diagnostic_bundle(
         raw["catalogue"],
         raw["metadata"],
         raw["revocation"],
         raw["conditions"],
         node_id=NODE,
+        catalogue_response_bytes=sources.get("catalogue_response"),
+        revocation_input_bytes=sources.get("revocation_input"),
+        conditions_input_bytes=sources.get("conditions_input"),
+        context_input_bytes=sources.get("context_input"),
     )
 
 
@@ -161,6 +198,11 @@ class UpdateDiagnosticBundleTests(unittest.TestCase):
             result["input_sha256"],
             {name: hashlib.sha256(value).hexdigest() for name, value in raw.items()},
         )
+        self.assertEqual(
+            result["source_sha256"],
+            {name: hashlib.sha256(value).hexdigest() for name, value in source_documents().items()},
+        )
+        self.assertEqual(result["format"], "cbus-toolkit-update-diagnostic-bundle-v3")
         self.assertIsNone(result["updates_available"])
         for field in (
             "publisher_trust_evaluated",
@@ -197,6 +239,109 @@ class UpdateDiagnosticBundleTests(unittest.TestCase):
             result["input_sha256"]["metadata"],
             hashlib.sha256(raw["metadata"]).hexdigest(),
         )
+
+    def test_report_only_provenance_cannot_claim_linked_completion(self):
+        result = compose(encoded_reports(), sources={}).as_dict()
+        self.assertFalse(result["diagnostics_complete"])
+        self.assertEqual(
+            {name: link["linked"] for name, link in result["links"].items()},
+            {"catalogue_metadata": False, "metadata_conditions": False, "metadata_revocation": False},
+        )
+        self.assertTrue(all(value is None for value in result["source_sha256"].values()))
+
+    def test_same_id_different_source_node_cannot_borrow_metadata_receipt(self):
+        changed_node = copy.deepcopy(CATALOGUE_NODE)
+        changed_node["nodeName"] = "Toolkit 1.20.0"
+        changed_body = encode({"success": True, "statusCode": 200, "message": "OK", "data": [changed_node]})
+        values = reports()
+        digest = hashlib.sha256(changed_body).hexdigest()
+        values["catalogue"]["http"]["body_sha256"] = digest
+        values["catalogue"]["candidates"] = [_candidate(changed_node).as_dict()]
+        values["metadata"]["source"]["file_sha256"] = digest
+        source = source_documents()
+        source["catalogue_response"] = changed_body
+        result = compose(encoded_reports(values), sources=source).as_dict()
+        self.assertFalse(result["diagnostics_complete"])
+        self.assertTrue(result["links"]["catalogue_metadata"]["catalogue_source_matches"])
+        self.assertFalse(result["links"]["catalogue_metadata"]["selected_node_matches_source"])
+
+    def test_catalogue_summary_and_canonical_stage_must_match_source(self):
+        values = reports()
+        values["catalogue"]["candidates"][0]["name"] = "Substituted summary"
+        result = compose(encoded_reports(values)).as_dict()
+        self.assertFalse(result["links"]["catalogue_metadata"]["catalogue_source_matches"])
+        values = reports()
+        canonical = json.loads(values["metadata"]["stages"][0]["canonical_utf8"])
+        canonical["nodeName"] = "Substituted canonical node"
+        values["metadata"]["stages"][0]["canonical_utf8"] = encode(canonical).decode()
+        result = compose(encoded_reports(values)).as_dict()
+        self.assertFalse(result["links"]["catalogue_metadata"]["canonical_node_matches_source"])
+
+    def test_catalogue_status_and_message_receipts_must_match_source(self):
+        for field, value in (("body_status", 503), ("body_message", "different")):
+            values = reports()
+            values["catalogue"][field] = value
+            with self.subTest(field=field):
+                result = compose(encoded_reports(values)).as_dict()
+                self.assertFalse(result["links"]["catalogue_metadata"]["catalogue_source_matches"])
+        values = reports()
+        values["catalogue"]["http"]["status"] = 503
+        result = compose(encoded_reports(values)).as_dict()
+        self.assertFalse(result["links"]["catalogue_metadata"]["linked"])
+        source = source_documents()
+        body = json.loads(CATALOGUE_BODY)
+        body["message"] = None
+        source["catalogue_response"] = encode(body)
+        values = reports()
+        values["catalogue"]["body_message"] = None
+        values["catalogue"]["http"]["body_sha256"] = hashlib.sha256(source["catalogue_response"]).hexdigest()
+        values["catalogue"]["http"]["body_bytes_retained"] = len(source["catalogue_response"])
+        values["catalogue"]["http"]["bytes_received"] = len(source["catalogue_response"])
+        values["metadata"]["source"]["file_sha256"] = values["catalogue"]["http"]["body_sha256"]
+        result = compose(encoded_reports(values), sources=source).as_dict()
+        self.assertFalse(result["diagnostics_complete"])
+        self.assertFalse(result["links"]["catalogue_metadata"]["catalogue_source_matches"])
+
+    def test_contradictory_catalogue_http_receipt_cannot_link(self):
+        for field, value in (
+            ("error", {"stage": "response_body", "type": "IncompleteRead", "message": "truncated"}),
+            ("error", "missing"),
+            ("request_attempted", False),
+            ("body_bytes_retained", 1),
+            ("bytes_received", 1),
+            ("cleanup", [{"resource": "response", "attempted": True,
+                          "succeeded": False, "error": {"type": "OSError"}}]),
+        ):
+            values = reports()
+            if value == "missing":
+                del values["catalogue"]["http"][field]
+            else:
+                values["catalogue"]["http"][field] = value
+            with self.subTest(field=field, value=value):
+                result = compose(encoded_reports(values)).as_dict()
+                self.assertFalse(result["diagnostics_complete"])
+                self.assertFalse(result["links"]["catalogue_metadata"]["linked"])
+                self.assertEqual(
+                    result["links"]["catalogue_metadata"]["reason"],
+                    "catalogue HTTP body receipt is incomplete",
+                )
+
+    def test_substituted_source_bytes_and_duplicate_source_keys_fail_closed(self):
+        source = source_documents()
+        source["catalogue_response"] = encode({**json.loads(CATALOGUE_BODY), "message": "different"})
+        result = compose(encoded_reports(), sources=source).as_dict()
+        self.assertFalse(result["links"]["catalogue_metadata"]["catalogue_source_matches"])
+        source["catalogue_response"] = CATALOGUE_BODY.replace(b'"success":true', b'"success":true,"success":true', 1)
+        with self.assertRaisesRegex(UpdateBundleError, "Duplicate JSON key"):
+            compose(encoded_reports(), sources=source)
+
+    def test_duplicate_selected_identity_in_raw_response_is_rejected(self):
+        source = source_documents()
+        response = json.loads(CATALOGUE_BODY)
+        response["data"].append({**CATALOGUE_NODE, "nodeName": "Toolkit 1.20.0"})
+        source["catalogue_response"] = encode(response)
+        with self.assertRaisesRegex(UpdateBundleError, "ambiguous repeated node_id"):
+            compose(encoded_reports(), sources=source)
 
     def test_duplicate_json_keys_are_rejected_before_schema_validation(self):
         raw = encoded_reports()
@@ -250,6 +395,21 @@ class UpdateDiagnosticBundleTests(unittest.TestCase):
         self.assertFalse(link["subject_identifier_matches"])
         self.assertTrue(link["claimed_lists_match_canonical"])
 
+    def test_revocation_response_selection_is_bound_to_exact_source(self):
+        response = encode({"success": True, "statusCode": 200, "data": json.loads(REVOCATION_DATA)})
+        values = reports()
+        values["revocation"]["source"].update({
+            "file_sha256": hashlib.sha256(response).hexdigest(),
+            "selection": "normalized-data-from-raw-response",
+            "selected_data_representation": "normalized UTF-8 JSON; not an original byte slice",
+        })
+        source = source_documents()
+        source["revocation_input"] = response
+        self.assertTrue(compose(encoded_reports(values), sources=source).complete)
+        source["revocation_input"] = encode({"success": True, "statusCode": 200, "data": {"id": "B" * 40}})
+        result = compose(encoded_reports(values), sources=source).as_dict()
+        self.assertFalse(result["links"]["metadata_revocation"]["revocation_source_matches"])
+
     def test_revocation_claims_cannot_differ_from_evaluated_canonical_input(self):
         values = reports()
         values["revocation"]["claimed_lists"]["id"] = "B" * 40
@@ -270,6 +430,21 @@ class UpdateDiagnosticBundleTests(unittest.TestCase):
         self.assertFalse(result["diagnostics_complete"])
         self.assertFalse(link["linked"])
         self.assertFalse(link["condition_model_matches"])
+
+    def test_condition_and_context_reports_are_bound_to_source_contents(self):
+        values = reports()
+        source = source_documents()
+        different_context = encode({"format": "cbus-toolkit-condition-context-v1", "culture": "invariant", "files": ["other"]})
+        digest = hashlib.sha256(different_context).hexdigest()
+        values["conditions"]["context_sha256"] = digest
+        values["conditions"]["source"]["context_file_sha256"] = digest
+        source["context_input"] = different_context
+        result = compose(encoded_reports(values), sources=source).as_dict()
+        self.assertFalse(result["links"]["metadata_conditions"]["condition_sources_match"])
+        source = source_documents()
+        source["conditions_input"] = encode({"expression": "false", "conditions": {}})
+        result = compose(encoded_reports(), sources=source).as_dict()
+        self.assertFalse(result["links"]["metadata_conditions"]["condition_sources_match"])
 
     def test_missing_condition_receipt_keeps_linked_completion_false(self):
         values = reports()

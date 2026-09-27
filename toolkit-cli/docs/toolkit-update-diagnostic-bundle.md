@@ -1,9 +1,11 @@
 # Linked update diagnostic provenance
 
 `update-diagnostic-bundle` composes four already-generated diagnostic reports
-for one catalogue node. It reads the exact bytes of each report and parses those
-bytes internally. There is no separate parsed-object argument, so bytes recorded
-in `input_sha256` are the same bytes whose fields were validated.
+for one catalogue node. It reads and parses the exact bytes of each report. To
+establish cross-report links, also supply the exact source documents used to
+generate them. Report-only input remains useful as independent provenance, but
+its links and `diagnostics_complete` stay false: matching hashes written in two
+reports do not prove that either report describes the source bytes.
 
 ```sh
 cbus-toolkit update-diagnostic-bundle \
@@ -11,6 +13,10 @@ cbus-toolkit update-diagnostic-bundle \
   --metadata metadata-report.json \
   --revocation revocation-report.json \
   --conditions condition-report.json \
+  --catalogue-response raw-catalogue-response.json \
+  --revocation-input raw-revocation-input.json \
+  --conditions-input raw-condition-data.json \
+  --context-input supplied-context.json \
   --node-id 435e4274-3bcf-4f3e-a67a-3008278c539c
 ```
 
@@ -18,43 +24,58 @@ The input files are outputs from `update-catalogue`,
 `update-metadata-stages`, `update-revocation-stages`, and
 `update-condition-stages`. The metadata command must have selected its node from
 the complete raw catalogue response with `--node-id`; its source-file digest is
-then compared with `catalogue.http.body_sha256`. The displayed catalogue summary
-does not contain enough signed node fields to recreate that raw response.
+then compared with `catalogue.http.body_sha256` and the supplied raw response.
+`--revocation-input` is the same complete data file or raw API response selected
+by `update-revocation-stages`; the bundle uses that report's selection mode.
+`--conditions-input` and `--context-input` are the two exact files passed to
+`update-condition-stages`. Each source file is read as a bounded regular file.
 
 ## Proven links
 
-The v2 bundle reports three links independently:
+The v3 bundle reports three links independently:
 
 - `catalogue_metadata` requires a complete catalogue HTTP body receipt, one
   unambiguous candidate ID, a metadata source receipt for that exact response,
-  the selected-node input digest, and the same node ID in the metadata
-  canonicalization result.
+  exact candidate summaries derived from its raw nodes, the selected-node input
+  digest, and canonical metadata reconstructed from the selected raw node. The
+  HTTP receipt must report an attempted request, consistent received and retained
+  byte counts, no error, and successful cleanup before it can be linked. The
+  response message must have the same bounded text shape accepted by the
+  catalogue reader.
 - `metadata_conditions` requires the condition and context exact-file receipts
-  to agree with the evaluator's input digests. The condition evaluator's decoded
-  model must equal `clientConditionData` in the selected metadata node.
-- `metadata_revocation` requires a self-consistent revocation source receipt and
-  equality between the revocation-list subject ID and the metadata certificate
-  thumbprint. This equality associates the standalone list report with the
-  supplied metadata certificate. It does not prove a complete or current
-  revocation result.
+  to agree with the evaluator's input digests and the supplied source bytes.
+  The report's decoded condition and context models must match those sources;
+  the condition model must equal `clientConditionData` in the selected metadata
+  node.
+- `metadata_revocation` requires the exact revocation source file to match its
+  receipt, the selected revocation data and its reconstructed canonical list.
+  The list subject ID must equal the metadata certificate thumbprint. This
+  associates the standalone list report with the *reported* metadata
+  certificate; the bundle does not re-read the certificate or prove complete or
+  current revocation status.
 
 `diagnostics_complete` is true only when all three links hold, all retained
 metadata, revocation, and condition stages passed, and the condition calculation
 produced a Boolean. A computed false condition remains a complete calculation;
 it is not an applicability decision.
 
-A missing receipt, an incomplete source, a source hash mismatch, unrelated
-revocation subject, or different condition model remains visible under `links`
-and keeps `diagnostics_complete` false. Duplicate JSON keys, duplicate candidate
-IDs (including same-ID version variants), malformed stage sets, and forged trust
-or availability claims are rejected. Reports are limited to 2 MiB each and use
-the same bounded, finite-number, unique-key JSON decoder as the metadata tools.
+A missing source, missing receipt, incomplete response, source hash mismatch,
+same-ID cross-version node, unrelated revocation subject, or different condition
+model remains visible under `links` and keeps `diagnostics_complete` false.
+Duplicate JSON keys, duplicate candidate IDs, malformed stage sets, and forged
+trust or availability claims are rejected. Reports and catalogue/revocation
+sources are limited to 2 MiB each; condition and context sources to 128 KiB each.
+All JSON uses a bounded, finite-number, unique-key decoder. `input_sha256`
+records report-file digests and `source_sha256` records source-file digests, with
+null for omitted sources.
 
 ## Claim boundary
 
 This command performs no network, registry, certificate-store, download,
 browser, or installer operation. A complete bundle means only that these
-bounded diagnostic reports are internally linked. It does not establish:
+bounded diagnostic reports are linked to their supplied source documents. Stage
+assertions are retained from the input reports, not replayed by this composer.
+It does not establish:
 
 - publisher identity or certificate-chain trust;
 - complete or current revocation status;
@@ -69,10 +90,13 @@ an error object.
 
 ## Acceptance
 
-The focused API and public CLI tests cover valid linked input, a false computed
-condition, exact report hashes, substituted report bytes, duplicate keys,
-same-ID/different-version candidates, catalogue-source mismatch, missing
-metadata and condition receipts, unrelated revocation and condition reports,
+The focused API and public CLI tests cover valid source-linked and report-only
+input, a false computed condition, exact report and source hashes, substituted
+report or source bytes, duplicate keys, same-ID/different-version nodes,
+catalogue summary/canonical mismatch, missing metadata and condition receipts,
+contradictory HTTP error/count/cleanup receipts, invalid response messages,
+raw revocation response
+selection, unrelated revocation and condition reports,
 failed stages, and forged trust/availability flags. These are portable offline
 tests; they do not add native Windows, publisher-trust, network, or installer
 evidence.

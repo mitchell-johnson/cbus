@@ -35,6 +35,12 @@ Python 3.13 or newer is required. The base package has no external dependencies.
 
 Inspect each subcommand's `--help` and the matching feature document before constructing parameters. There is no universal `--dry-run`; use it only where the chosen workflow exposes it.
 
+`update-diagnostic-bundle` needs the four generated report files plus the exact
+raw catalogue response, revocation input, condition input and context input to
+establish linked completion. With report files alone it retains independent
+hashes but exits nonzero and marks the links unverified. Its successful result
+is a source-linkage diagnostic, not publisher trust or update availability.
+
 `pci routed-write` supports either literal bridge/reply bytes or a typed legacy
 XML/CBZ route. The typed form takes `--project-file`, `--source-network`,
 `--target-network`, and the global `--local-unit`; it binds the file digest and

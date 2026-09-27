@@ -5,14 +5,14 @@
   "census_complete": false,
   "purpose": "Provisional exhaustive source accounting; not yet a deduplicated functional denominator or acceptance claim.",
   "source_digests": {
-    "toolkit_surface": "9c780d3e245e7fb6fa1fa25cd5504a0920cfe481a1a59c01ef6f6918e45cbe1c",
+    "toolkit_surface": "2cd1dd61f80a34ff14aebcfb44e131aa0ab738856a5073342bc3aac5a3494401",
     "unindexed_help_review": "dcf9d5fa20ec98d321372c4099dea6c320f881fab1322de91cbb997d69808e80",
     "toolkit_executable_surface": "f9fe2111679495b920deb4ce095fe3d6cc9693d7f478835d5f19d01977617af2",
     "toolkit_executable_binary": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
     "toolkit_map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
     "feature_ledger": "79750e146f08911f5350e2a655f86ff0472a73b30e89cf969923ab737ceb85af",
     "cgate_capability_matrix": "45f79d47d5853e7577db6698f22626e99e5077ee1057ffcee19f6d9a70038527",
-    "cgate_contract_inventory": "5ec63ee23e0199713547e9d98bb7213a15f9cc03400f289becf06d0d4f0b25cf",
+    "cgate_contract_inventory": "08aa9b8aef84299d850225ebd8e0cbef721d581c9cdd215ab242af99df8866c0",
     "roadmap": "607285cae45ae079cc8eef97dae5ae590d7c87bbc5331e1c3a84797ac483cca8"
   },
   "evidence_bundle_sha256": "055dde83ff05aa7056c13761cac120604e1d89fc0c4c27275c28ceded39bde40",

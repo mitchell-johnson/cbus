@@ -6,11 +6,12 @@ import sys
 import tempfile
 import unittest
 
-from tests.test_toolkit_update_bundle import NODE, encode, reports
+from tests.test_toolkit_update_bundle import NODE, encode, reports, source_documents
 
 
 class UpdateDiagnosticBundleCLITests(unittest.TestCase):
-    def run_bundle(self, values, *, status=0, raw_override=None):
+    def run_bundle(self, values, *, status=0, raw_override=None,
+                   source_override=None, include_sources=True):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             paths = {}
@@ -18,8 +19,7 @@ class UpdateDiagnosticBundleCLITests(unittest.TestCase):
                 path = root / (name + ".json")
                 path.write_bytes((raw_override or {}).get(name, encode(value)))
                 paths[name] = path
-            process = subprocess.run(
-                [
+            command = [
                     sys.executable,
                     "-m",
                     "cbus_toolkit",
@@ -34,7 +34,14 @@ class UpdateDiagnosticBundleCLITests(unittest.TestCase):
                     str(paths["conditions"]),
                     "--node-id",
                     NODE,
-                ],
+                ]
+            if include_sources:
+                for name, value in source_documents().items():
+                    path = root / (name + ".json")
+                    path.write_bytes((source_override or {}).get(name, value))
+                    command.extend(("--" + name.replace("_", "-"), str(path)))
+            process = subprocess.run(
+                command,
                 text=True,
                 capture_output=True,
                 timeout=30,
@@ -47,6 +54,23 @@ class UpdateDiagnosticBundleCLITests(unittest.TestCase):
         self.assertTrue(result["diagnostics_complete"])
         self.assertIsNone(result["updates_available"])
         self.assertFalse(result["install_permitted"])
+
+    def test_report_only_public_bundle_retains_unverified_provenance(self):
+        result = self.run_bundle(reports(), status=1, include_sources=False)
+        self.assertFalse(result["diagnostics_complete"])
+        self.assertEqual(result["links"]["catalogue_metadata"]["reason"],
+                         "raw catalogue response was not supplied")
+
+    def test_substituted_catalogue_source_is_public_nonzero_evidence(self):
+        source = source_documents()
+        body = json.loads(source["catalogue_response"])
+        body["data"][0]["nodeName"] = "Toolkit 1.20.0"
+        result = self.run_bundle(
+            reports(), status=1,
+            source_override={"catalogue_response": encode(body)},
+        )
+        self.assertFalse(result["diagnostics_complete"])
+        self.assertFalse(result["links"]["catalogue_metadata"]["catalogue_source_matches"])
 
     def test_unrelated_revocation_is_public_nonzero_evidence(self):
         values = reports()

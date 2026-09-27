@@ -16087,9 +16087,9 @@
     },
     {
       "path": "tests/test_cli_toolkit_update_bundle.py",
-      "bytes": 2929,
-      "sha256": "0232216a595bc47ea9785d9af49851cb22d4b96752e00d2d661b97479b8ad201",
-      "test_definitions": 3,
+      "bytes": 4213,
+      "sha256": "580a2e4f7b20e939efa545fda9abc3f8ffc748b07e46984b4d8731ac6f3f91de",
+      "test_definitions": 5,
       "status": "source_present_results_not_imported"
     },
     {
@@ -17032,9 +17032,9 @@
     },
     {
       "path": "tests/test_parity_register.py",
-      "bytes": 25060,
-      "sha256": "bffa3b3a8353c40b370c93db1169d43b1a8e6d690bb323935e871bf88f9b18ab",
-      "test_definitions": 18,
+      "bytes": 26806,
+      "sha256": "f03259e1cc4f5f2c6919424b2eccd588f8e4f5e85ba67bbc28c17f76507918ae",
+      "test_definitions": 19,
       "status": "source_present_results_not_imported"
     },
     {
@@ -17585,9 +17585,9 @@
     },
     {
       "path": "tests/test_toolkit_update_bundle.py",
-      "bytes": 12172,
-      "sha256": "8fc9836286389523844450c52325e638f417c45bc7c30facb7fed727eacaebd4",
-      "test_definitions": 13,
+      "bytes": 21587,
+      "sha256": "0a01db20738f9a64e75e6667f597f0c6284461a49f4a7826d050c696ee315680",
+      "test_definitions": 22,
       "status": "source_present_results_not_imported"
     },
     {
