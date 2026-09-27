@@ -1585,6 +1585,17 @@ decoded direct schema, preserving neighbouring bits and requiring physical
 readback. Inspect the response lines because native behavior can report a
 per-unit failure before final status 200.
 
+### Native HELP census
+
+For original-runtime census work, the Toolkit repository retains a HELP-only
+431-path differential between the existing owned Windows guest service
+(C-Gate 2.11.10 build 3342) and the target C-Gate 3.4.0 build 2001 oracle. Use
+[`native-cgate-help-differential.md`](../../../../toolkit-cli/docs/native-cgate-help-differential.md)
+and `research/native_cgate_help_census.py`. The capture sends only
+`HELP <path>` and `HELP *`; it does not establish Toolkit GUI execution,
+command access at another login level, routed delivery, mutation, persistence
+or any strict-ledger slot.
+
 ## General objects and inventory trees
 
 The embedded cmqttd endpoint consumes untagged `#` and `//` command-file

@@ -139,6 +139,13 @@ These functions have implementation and focused evidence for **KEYGL5 / 5055EDL 
 
 Research captures below explain the remaining work. The scheduling and supplied-registry integrations now have the focused acceptance listed above; these captures do not establish a new complete acceptance run. Authored probe snapshots are under [research/experiments/2026-09-15](../research/experiments/2026-09-15/README.md); proprietary binaries, large raw runs and VM output remain outside Git.
 
+The [native C-Gate HELP differential](native-cgate-help-differential.md) now
+retains exact HELP-only responses for all 431 maintained command paths from the
+existing Windows guest C-Gate 2.11.10 profile and the target C-Gate 3.4.0 build
+2001 oracle. It pins Toolkit 1.18.0.2754 in the guest, but found no running
+Toolkit GUI process. This is executable command-census evidence only: it adds
+zero strict differential slots and does not change a ledger status.
+
 | Research stream | Completed observation | Next concrete work |
 | --- | --- | --- |
 | Thermostat scheduling | Original inner CreateLevels: 12 cases plus two extra-address cases. Original selection predicates and outer workflow each cover 12 cases. The native API/CLI pass the 67-test dual-Python checkpoint. A further 12-case original AfterLoad capture reaches 71,832 approved instruction entries and feeds the offline planner. The native composition command now connects one exact PC_TSA project/unit snapshot to an explicit application/group/level plan, backup, one target save/reload and whole-project preservation verification. | Compare native collection order and original service factories; implement remaining settings and verify physical behavior. The failed first adapter and trace-only AfterLoad attempts remain preserved. |

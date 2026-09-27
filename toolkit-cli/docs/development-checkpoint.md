@@ -62,3 +62,11 @@ The remaining work has three separate acceptance layers:
 The concrete implementation gaps include wireless learn/join and gateway mapping, broader relay/dimmer and sensor profiles, barcode-driven commissioning, project/topology documentation and print/image export, remaining navigation and controller-integration workflows, eDLT cache/dialog/full-form behavior, project-image-dependent labels, dynamic-label cache readback, and the untested device/firmware variants called out in the ledger tables.
 
 After those gaps are integrated, build a fresh Python 3.13 wheel and rerun every required native gate with no skips. Retain failed runs and focused evidence separately so a broad pass never erases a known platform, server or hardware limitation.
+
+The 27 September [native C-Gate HELP differential](native-cgate-help-differential.md)
+adds a bounded runtime census for all 431 maintained paths. It compares the
+existing Windows guest's C-Gate 2.11.10 build 3342 with the target C-Gate 3.4.0
+build 2001 and records every exact reply. The staged Toolkit executable was
+hash-pinned, but no Toolkit GUI process was running. The capture therefore
+does not satisfy a workflow, persistence, device-profile or hardware slot and
+made no ledger promotion.
