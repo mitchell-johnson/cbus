@@ -1,9 +1,9 @@
 """Bounded SESU rollout helper with an explicitly owned registry provider.
 
-The original static registry key and entry names are not established by the
-retained probe: it redirected both before invoking the helper. This module
-therefore never selects the updater's registry location. Its Windows adapter
-is restricted to a CLI-owned scratch subtree in HKCU Registry32.
+The retained direct-helper probe redirected both registry names before
+invocation. A separate source-bound derivation now identifies the original
+fields, but this module still never selects that updater location. Its Windows
+adapter is restricted to a CLI-owned scratch subtree in HKCU Registry32.
 """
 from __future__ import annotations
 
@@ -96,7 +96,7 @@ class RegistryRolloutDecision:
             "visibility_in_percent": self.visibility_in_percent,
             "status": self.status,
             "reason": self.reason,
-            "registry_view": "HKCU Registry32 owned scratch subtree; original static key/entry unverified",
+            "registry_view": "HKCU Registry32 owned scratch subtree; not the original updater key",
             "registry_provider_identity_verified": False,
             "registry_backend_provenance": "caller-injected provider; the CLI selects its guarded Windows adapter",
             "registry_accessed": self.read_attempted,

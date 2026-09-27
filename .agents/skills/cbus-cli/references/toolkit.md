@@ -65,6 +65,16 @@ update. Consult `toolkit-cli/docs/toolkit-update-rollout-cohort.md` before
 composing it with applicability or metadata diagnostics; independent reports
 do not by themselves establish one trusted update workflow.
 
+`update-rollout-current-user --source-assembly SesuBrick.DAD.dll
+--expected-source-sha256 PINNED_SHA256 --expected-user-sid SID` is a separate
+read-only Windows HKCU Registry32 observation. It requires the exact pinned
+SESU 3.0.7 DLL and current process user SID before reading the original key;
+missing/sentinel/unsupported values cannot become a usable cohort and it
+never samples or writes. Read
+`toolkit-cli/docs/toolkit-update-rollout-current-user.md` for the exact path,
+source evidence, accepted interactive missing-entry read and remaining
+numeric-cohort boundary.
+
 `update-applicability-cohort-preflight --catalogue-response RAW.json --node-id
 ID --platform windows_x86_64 --at-utc ...Z --stored-cohort 41` evaluates the
 captured empty-condition date/file/media/URI path and 0–99 rollout gate on the
@@ -332,9 +342,10 @@ Read the repository's `toolkit-cli/docs/implementation-status.md` for supported 
 
 `update-rollout-owned-registry` is a Windows-only SESU diagnostic against an
 explicit CLI-owned HKCU Registry32 scratch namespace. It can sample and write
-one cohort in that namespace. The original updater's static key and entry
-names remain unpinned, so this command does not read the user's updater
-cohort or establish update applicability. See
+one cohort in that namespace. The original updater's static key and entry are
+separately source-pinned, but this command still addresses only its owned
+scratch key; it does not read the user's updater cohort or establish update
+applicability. See
 `toolkit-cli/docs/toolkit-update-rollout-owned-registry.md` before using it.
 
 For development, install `./toolkit-cli[test,research,serial,usb]`, then run `make check` and `make check-interop` from `toolkit-cli/`. Native/vendor/hardware tests require explicit environment gates; report skips separately from passes.

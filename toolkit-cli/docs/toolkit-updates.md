@@ -112,6 +112,15 @@ persist a cohort, or compose an update-availability decision. The
 [17-case original-helper fixture](../research/fixtures/toolkit-update-rollout-cohort-original.json)
 also records the stateful branches that remain outside this command.
 
+`update-rollout-owned-registry` exercises those read, sample and persistence
+branches only under a caller-named CLI-owned HKCU Registry32 scratch key; its
+[owned-key contract](toolkit-update-rollout-owned-registry.md) does not claim
+the cohort belongs to the updater. `update-rollout-current-user` separately
+performs a [read-only observation](toolkit-update-rollout-current-user.md) of
+the original key and entry proved by the pinned SESU DLL, after verifying the
+exact assembly hash and intended process user SID. It does not sample, write,
+compare a catalogue candidate or determine update availability.
+
 `update-applicability-cohort-preflight` applies the earlier captured
 date/file/media/URI gates and this 0–99 cohort comparison to the same selected
 source node. Its [combined finite profile](toolkit-update-applicability-cohort-preflight.md)

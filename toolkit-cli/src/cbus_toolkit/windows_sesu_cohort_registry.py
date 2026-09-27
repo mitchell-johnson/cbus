@@ -1,7 +1,8 @@
 """Explicitly owned HKCU Registry32 storage for SESU rollout branch studies.
 
 This adapter cannot address the vendor updater's registry location. The
-retained original probe changed both of its static names before invocation.
+retained direct-helper probe changed both static names before invocation;
+their separately proven original values do not alter this owned-key boundary.
 """
 from __future__ import annotations
 

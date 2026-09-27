@@ -1,0 +1,69 @@
+{
+  "format": "cbus-toolkit-original-sesu-registry-identity-v1",
+  "capture_date_utc": "2026-09-28",
+  "original_assembly": {
+    "name": "SesuBrick.DAD.dll",
+    "size": 69704,
+    "sha256": "21a6b2fb74d9b308d22c740ca0a1d887d80a067cccc03f59e4dd1bbb6c9c4b0c",
+    "type": "SchneiderElectric.SesuBrick.DAD.MultiPlatformUpdate"
+  },
+  "static_derivation": {
+    "initializer_token": "0x060000E9",
+    "initializer_il_sha256": "c7edbffd24f038bd24f7074857798073553319b26d14dd62a527c7503c208952",
+    "key_field_token": "0x0400004B",
+    "entry_field_token": "0x0400004C",
+    "key_getter_token": "0x0600009F",
+    "key_getter_il_sha256": "345d1ea5202becb10ab827093b111f202814a309da971345f4e5cf917e210368",
+    "entry_getter_token": "0x060000A0",
+    "entry_getter_il_sha256": "0dfe027f267b3cdcfee6dcf2cf5d2c22ab7c4fe06d7471aa339d0b21630ccbc6",
+    "decoder_token": "0x0600000A",
+    "decoder_il_sha256": "4016a9ea6ea9b025271ea78add159ee68cc942b7a74e2795b984140a80e0e932",
+    "field_rva": "0x6000",
+    "field_file_offset": 16896,
+    "field_bytes": 9105,
+    "field_sha256": "315677be6c1ae4099f70792b7fe19d06414442870e98c06fe0b236ec73f7fb47",
+    "decode": "UTF-8 byte at global blob index i = encrypted_byte XOR (i & 255) XOR 170",
+    "key_slice": {"offset": 8997, "length": 54, "cipher_sha256": "6deb6b1b498a19ab2f922e4d0ab8c066a2420128756f64a453ee0a4bbda090ae", "decoded_sha256": "57f0f52acb8adad9b03f0c9a5e37e699bbed6a1ec17fce771af177fe6ac412fb"},
+    "entry_slice": {"offset": 9051, "length": 29, "cipher_sha256": "545ea33f8a399b97544dd94c7000e564b487435dbff28f3288981401cbe9e270", "decoded_sha256": "20e7024bae28f143fadcc7233135f69e7d711a23f196a84a49cf087c50354364"}
+  },
+  "identity": {
+    "hive": "HKCU",
+    "view": "Registry32",
+    "key": "Software\\Schneider Electric\\Software Update\\Persistent",
+    "entry": "VisibilityExpectedGreaterThan"
+  },
+  "native_reflection": {
+    "runtime": "disposable Windows 11 guest, x86 PowerShell/Framework, LocalSystem process",
+    "owned_probe_source_sha256": "9e269c2e6887c7d821c060c9bdb953cfebdfa314e0e9979e6ea1695a46fbc8a6",
+    "private_receipt_sha256": "d285d06c3334c5936ee3294791c277c1e56079c8be23d1486852da1616e4885b",
+    "field_values_match_static_derivation": true,
+    "method_il_hashes_match": true,
+    "process_bitness": 32,
+    "registry_read_attempted": false,
+    "registry_write_attempted": false
+  },
+  "interactive_current_user_read": {
+    "runtime": "disposable Windows 11 guest, Mitchell interactive session 1, Python 3.13.14 ARM64",
+    "installed_wheel_sha256": "9b05fc3d3c6fbc06c5dc5e8c02f197d366655639f3d4717f58806cf88c62c1f5",
+    "private_receipt_sha256": "b2511565ff5a4a008347ad999b9815283f5a5078d7ecc2ad41e3a6d1e78ceb47",
+    "source_assembly_verified": true,
+    "user_sid_verified": true,
+    "read_state": "entry_absent",
+    "status": "unsupported",
+    "exit_code": 2,
+    "before_independent_read_state": "entry_absent",
+    "after_independent_read_state": "entry_absent",
+    "registry_read_attempted": true,
+    "registry_write_attempted": false,
+    "cohort_generated": false,
+    "cohort_persisted": false,
+    "rollout_gate_evaluated": false,
+    "owned_temporary_paths_removed": 24,
+    "owned_temporary_paths_remaining": 0
+  },
+  "limits": [
+    "The native reflection ran as LocalSystem. A separate interactive-user CLI read verified only an absent entry; no numeric current-user cohort was observed.",
+    "No original updater constructor, rollout helper, update selection, HTTP, download, or installer was invoked by the identity probe.",
+    "The current-user CLI path is read-only and does not model original random sampling or persistence."
+  ]
+}

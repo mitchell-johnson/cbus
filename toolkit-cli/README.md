@@ -166,10 +166,18 @@ raw-catalogue.json --node-id ID --owned-namespace my-rollout-study
 persistence branch under an explicitly owned HKCU Registry32 scratch key.
 It also reports existing and absent-key outcomes with typed reads. The
 [owned-key contract](docs/toolkit-update-rollout-owned-registry.md) explains
-the key scope, exact receipts and remaining boundary: the retained probe
-redirected the original updater's static key/entry names, so this command
-does not attest to its current user's actual updater cohort or enable an
+the key scope, exact receipts and remaining boundary: this command is tied
+to its scratch key, so it does not attest to the current user's actual updater
+cohort or enable an
 installation.
+
+On Windows, `update-rollout-current-user --source-assembly SesuBrick.DAD.dll
+--expected-source-sha256 21a6b2fb74d9b308d22c740ca0a1d887d80a067cccc03f59e4dd1bbb6c9c4b0c
+--expected-user-sid SID` separately reads the pinned original SESU cohort
+entry in this CLI process user's HKCU Registry32 view. The
+[read-only contract](docs/toolkit-update-rollout-current-user.md) explains the
+source/SID guards, supported values and missing/sentinel branches. It makes
+no catalogue, trust, availability or installation decision.
 
 `update-applicability-cohort-preflight --catalogue-response raw-catalogue.json
 --node-id ID --platform windows_x86_64 --at-utc ...Z --stored-cohort 41`
