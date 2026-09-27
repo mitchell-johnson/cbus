@@ -218,7 +218,7 @@ versioned portable container.
 | `DO //PROJECT/NETWORK/p/UNIT FactoryDefault` | Sends native `A4 FF 43 B2 B2` exactly once for a database-classified KEYGL5 on the configured network or a topology-resolved one-to-six-bridge target and reports the 202 receipt separately from post-reset defaults, reboot, address retention and persistence |
 | NET PINGU and GET network Units | Actual direct or one-to-six-bridge installation MMI using cmqttd's negotiated PCI checksum mode. Routed requests use native PPM source routing and exact-once transmission; only the matching Reply Network can contribute blocks. Both forms require positive confirmation and contiguous coverage of all addresses 0–255, replace only the addressed network's volatile cache, and report native sorted `302-Units=` output |
 | NET PROJECT_IDENTIFY | Runs the native interface-rooted read-only discovery on cmqttd's configured shared PCI/CNI: one complete installation MMI, all nonzero states counted, address zero skipped, and level-zero IDENTIFY1/IDENTIFY2/parameter-33 discovery followed by a source-correlated six-byte parameter-35 recall from the first readable unit. It returns native `305 Project=NAME UnitCount=N` (or `Project=null`) without changing a project or physical cache. The interface type is case-insensitive and its address must exactly match the imported shared interface; another valid interface returns 502 instead of opening a second connection |
-| NET SYNC and cached unit getters | Uses the configured direct-interface hint or BASIC discovery, then performs complete direct or one-to-six-bridge MMI and confirmed IDENTIFY1/2 plus bounded IDENTIFY4 for every present address. Routed replies must match the first bridge, remaining Reply Network and replying unit; other routes and direct replies are ignored. The addressed network cache is replaced atomically and its sync/duplicate events carry that network address. Direct KEYGL5 metadata retains the configured/fresh type, non-error MMI and unique known-serial guards before the captured OEM `0xFB`, applications and `0xFA` sequence. The first failed optional enrichment stops that sequence without replay and names its unit, field and cause. A definitive failure that leaves the connection healthy adds `300-MetadataWarning=unit <address> <field>: <cause>` to the successful identity-sync response. An incomplete exchange retires the entire PCI generation, returns a field-specific 408 and discards the staged snapshot. Those source-only OEM reads are not route-proven and therefore remain disabled for bridged networks. Cached `GET` issues no bus I/O and `Version` remains IDENTIFY2. Reconnect or transport loss clears every network's volatile presence/level cache, invalidates an in-flight snapshot before commit, returns 408, and emits no false sync-ok |
+| NET SYNC and cached unit getters | Uses the configured direct-interface hint or BASIC discovery, then performs complete direct or one-to-six-bridge MMI and confirmed IDENTIFY1/2 plus bounded IDENTIFY4 for every present address. Routed replies must match the first bridge, remaining Reply Network and replying unit; other routes and direct replies are ignored. The addressed network cache is replaced atomically and its sync/duplicate events carry that network address. Eligible KEYGL5 metadata retains the configured/fresh type, non-error MMI and unique known-serial guards before the captured `0xFB`, applications and `0xFA` sequence. Direct targets use the OEM route; bridged targets require exact Reply Network/unit/selector-tag/parameter/count correlation. The first failed optional enrichment stops that sequence without replay and names its unit, field and cause. A definitive failure that leaves the connection healthy adds `300-MetadataWarning=unit <address> <field>: <cause>` to the successful identity-sync response. An incomplete exchange retires the entire PCI generation, returns a field-specific 408 and discards the staged snapshot. Cached `GET` issues no bus I/O and `Version` remains IDENTIFY2. Reconnect or transport loss clears every network's volatile presence/level cache, invalidates an in-flight snapshot before commit, returns 408, and emits no false sync-ok |
 | NET SYNCNEW | Five complete MMI passes for direct and one-to-six-bridge networks. General routed discovery accepts only route-matched IDENTIFY1/2/4 replies. Direct and routed targeted modes reject an address already in the model, run the native three duplicate challenges, then read IDENTIFY1/2/4. A routed challenge accepts only the selected Reply Network, unit and parameter, requires positive PCI confirmation plus the bounded quiet window, and is never replayed; an incomplete exchange retires that PCI generation. Every result is staged, then only the addressed network's volatile cache and events are updated after a shared-PCI generation check. All forms retain native progress/result codes without creating database units. The routed target path is pinned by classfile, SIUG, exact scripted-wire and real-daemon evidence; no native routed-target completion capture or live physical-bridge acceptance is claimed |
 | NET SET_PROJECT_IDENTIFY | Uppercases and packs the 1–8 character native six-bit value, obtains a fresh complete MMI on the resolved direct or one-to-six-bridge network, and selects the first unit in non-error present state one or two that supplies route-correlated IDENTIFY1 data plus exactly one valid known IDENTIFY4 serial in a complete quiet window. It sends parameter-35 STORE once with fixed tag `0x46`, accepts only the exact unit/parameter/tag acknowledgement from the selected Reply Network, and requires exact direct or routed RECALL readback before returning 200. A direct reply or neighbouring route cannot complete a bridged operation. MMI state three, multiple serial replies, unknown serials, and malformed identities are skipped; a failed or uncertain STORE/readback invalidates only that target network's older cached `ProjectName`. The verified result or same-generation invalidation is committed only while the captured shared PCI generation is still current. An uncertain exchange retires that generation without replay. The database is not changed; no live physical-bridge or power-cycle acceptance is claimed |
 | NET CHECKUNIT | Active direct or one-to-six-bridge IDENTIFY4 collection through the native two-second quiet interval, with strict Reply Network correlation and native no-unit, single-unit, duplicate-unit and identity-error result forms; `*` expands from a fresh route-matched complete MMI |
@@ -230,12 +230,14 @@ versioned portable container.
 | KEYGL5 5.5.00 static strings and label references | Python reader checks physical identity, stable header and static-text CRC. Its network form runs one fresh serial refresh, selects supported records in numeric order, brackets each memory snapshot with physical IDENTIFY4, attaches the inventory identity only when both serials match, reads configurations sequentially and preserves mismatches as per-unit errors |
 
 Retained CBusEdlt classfile bytecode fixes the KEYGL5 order as `0xFB` firmware,
-OEM applications, then `0xFA` WidgetGroups. The firmware request is one
-OEM-routed `RECALL 0xFB 9`; decoding stops at the first NUL. The application
-read sends one OEM selector STORE for address 16 (`41 10 00`) and one
-parameter-1 RECALL of two bytes. WidgetGroups is one OEM-routed `RECALL 0xFA
-44`. Responses must match source, selector tag or parameter, and exact total
-length. No phase is replayed. A missing response faults the programming lane
+applications, then `0xFA` WidgetGroups. Direct targets use the OEM route;
+bridged targets use the database-resolved one-to-six-bridge point-to-point
+route. The firmware request is one `RECALL 0xFB 9`; decoding stops at the first
+NUL. The application read sends one volatile selector STORE for address 16
+(`41 10 00`) and one parameter-1 RECALL of two bytes. WidgetGroups is one
+`RECALL 0xFA 44`. Responses must match the direct source or exact Reply
+Network/remote unit, selector tag or parameter, and total length. No phase is
+replayed. A missing response faults the programming lane
 until reconnect because a late untagged CAL response cannot be safely
 attributed. These properties are optional for overall identity synchronization:
 `NET SYNC` may still return 200, earlier values confirmed in the same sequence
@@ -243,15 +245,17 @@ remain fresh, and the failed value plus every later unrefreshed value is removed
 instead of serving stale data. The database `FirmwareVersion` remains
 persistent and separate from this volatile physical getter. `CMQTT
 CAPABILITIES` reports `"edlt_extended_firmware": true`,
-`"edlt_applications": true`, and `"edlt_widget_groups": true`. The 44-byte
+`"edlt_applications": true`, `"edlt_widget_groups": true`, and the routed
+field/max-hop/delivery contract under `"edlt_sync_metadata_routed"`. The 44-byte
 mapping is not a query of dynamic-label cache contents, rendering, labels or
 persistence.
 
 The optional sequence runs only for non-error present MMI state one or two and
 exactly one raw IDENTIFY4 reply carrying a known serial. Live direct-network
-evidence includes healthy, uniquely identified units in both states; the complete
+evidence includes healthy, uniquely identified units in both states; routed
+scripted evidence covers exact one/six-bridge frames and reply isolation. The complete
 IDENTIFY4 reply window is the independent uniqueness guard. State three is a
-native error flag and does not receive these source-address-only reads, nor do
+native error flag and does not receive these metadata reads, nor do
 addresses with zero or multiple raw replies. Multiple includes repeated identical
 known replies and mixed known/unknown replies; neither shape is collapsed into
 metadata eligibility. This
@@ -259,6 +263,11 @@ prevents one unit's response, or fragments from colliding units, from being
 reported as another unit's metadata. The final cache commit is also bound to
 the same connected PCI generation; reconnect invalidation wins over an older
 in-flight synchronization.
+
+The routed implementation is a bounded composition documented in
+[`native_cgate_routed_edlt_metadata.json`](../rust/testdata/fixtures/native_cgate_routed_edlt_metadata.json).
+It pins exact one/six-bridge requests and scripted route isolation without
+claiming a native bridged capture or live remote-device acceptance.
 
 Runtime levels and physical presence are not persisted. The persistent data is
 cmqttd's own database format, not a Schneider SQLite database. Database PP
@@ -745,9 +754,11 @@ non-inventoried service commands. Full replacement still requires:
   is scripted and does not establish live bridge delivery or device persistence.
   Direct and one-to-six-bridge `NET PINGU`, `NET SYNC` identity population,
   general and targeted `NET SYNCNEW`, `DO ... SYNC`, and duplicate-aware
-  `NET CHECKUNIT` are implemented with route-isolated caches. Bridged OEM eDLT
-  metadata, unit readdressing, standard/eDLT label-cache clearing, and KFI
-  transactions remain fail-closed before I/O. Routed PPM application commands
+  `NET CHECKUNIT` are implemented with route-isolated caches. KEYGL5 firmware,
+  applications and WidgetGroups enrichment, standard/eDLT label-cache clearing,
+  KFI transactions and FactoryDefault now retain exact routed correlation and
+  target-network cache scope. Unit readdressing remains a separate routed gap.
+  Routed PPM application commands
   cover standard Lighting (applications 48–95), Trigger (202), Enable SET
   (203), dynamic labels, Clock, Temperature, named-scene actions, and every
   maintained specialist family. Routed application commands

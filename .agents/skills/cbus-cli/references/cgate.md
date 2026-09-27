@@ -1009,26 +1009,33 @@ Repeated identical known replies and mixed known/unknown replies are ineligible,
 while the live serial cache retains its distinct-known-serial representation.
 Eligible units follow retained CBusEdlt
 classfile order:
-OEM-routed parameter `0xFB` length 9 becomes the NUL-terminated volatile
-`FirmwareVersion`; an OEM address-16 selector plus parameter-1 length-2 recall
-becomes decimal `Application` and `Application2`; OEM-routed parameter `0xFA`
+parameter `0xFB` length 9 becomes the NUL-terminated volatile
+`FirmwareVersion`; an address-16 selector plus parameter-1 length-2 recall
+becomes decimal `Application` and `Application2`; parameter `0xFA`
 length 44 becomes opaque decimal-CSV `WidgetGroups`. `Version` remains the separate
 IDENTIFY2 value and the persistent database `FirmwareVersion` is unchanged.
+Direct targets use the captured OEM route; topology-resolved targets through
+one to six bridges use the same CAL payloads in a point-to-point source route.
 Read the properties with `GET //PROJECT/NETWORK/p/UNIT PROPERTY`; these cached
 `300` getters issue no bus I/O. Every request is exact-once and responses must
-match source, selector tag or parameter, and total length. A failed optional
+match the direct source or exact Reply Network/remote unit, selector tag or
+parameter, and total length. A failed optional
 read leaves earlier values from the same sequence fresh, invalidates the failed
 and all later unrefreshed values, and does not fail an otherwise valid identity
 SYNC. The programming lane remains faulted until reconnect and no request is
 replayed. `WidgetGroups` is static mapping, not dynamic-label cache readback.
 State three and addresses with zero or multiple raw IDENTIFY4 replies receive no
-source-address-only metadata traffic and expose no stale metadata. Multiple raw
+metadata traffic and expose no stale metadata. Multiple raw
 replies include repeated identical known replies and mixed known/unknown
 replies. Reconnect or transport loss invalidates an in-flight snapshot before
 commit and returns 408 without a sync-ok event. Routed synchronization updates
 only the addressed network's volatile cache and emits that network in sync and
-duplicate events. Direct-network OEM KEYGL5 metadata reads have no proven
-Reply Network form and are skipped on bridged networks.
+duplicate events. Routed metadata is a bounded composition of the retained
+direct payload/order and the proven point-to-point Reply Network contract; do
+not describe it as a native remote capture or live physical-bridge result.
+The exact one/six-bridge requests, scripted correlation and evidence boundary
+are recorded in
+`rust/testdata/fixtures/native_cgate_routed_edlt_metadata.json`.
 CHECKUNIT actively collects direct or route-correlated IDENTIFY4
 replies through the native two-second quiet interval; it does not infer duplicate count from the
 two-bit MMI state. Use `GET //PROJECT/NETWORK Units` and unit `Type`, `Version`,
@@ -1099,6 +1106,8 @@ firmware readback during KEYGL5 NET SYNC,
 Application/Application2 readback,
 `edlt_widget_groups: true` denotes the bounded KEYGL5 static mapping populated
 by NET SYNC,
+`edlt_sync_metadata_routed: true` plus its fields/max-hop/delivery entries
+denotes route-correlated firmware, applications and WidgetGroups enrichment,
 `cgate_auth: true` denotes the armed opt-in LOGIN gate (`false` dormant
 default): with `--cgate-auth-file` configured, each connection needs
 `LOGIN <token>` before programming verbs, AIRCON mutations, Security control

@@ -2537,6 +2537,18 @@ impl Service {
             capabilities["edlt_widget_groups"] = serde_json::Value::Bool(true);
             capabilities["edlt_extended_firmware"] = serde_json::Value::Bool(true);
             capabilities["edlt_applications"] = serde_json::Value::Bool(true);
+            capabilities["edlt_sync_metadata_routed"] = serde_json::Value::Bool(true);
+            capabilities["edlt_sync_metadata_routed_fields"] = serde_json::json!([
+                "FirmwareVersion",
+                "Application",
+                "Application2",
+                "WidgetGroups"
+            ]);
+            capabilities["edlt_sync_metadata_routed_max_hops"] = serde_json::Value::from(6);
+            capabilities["edlt_sync_metadata_routed_delivery_semantics"] =
+                serde_json::Value::String(
+                    "reply-network-unit-parameter-tag-count-correlated-exactly-once".to_string(),
+                );
             capabilities["pp_local_administration"] = serde_json::json!([
                 "cancel_lock",
                 "catalog_info",
@@ -5760,25 +5772,33 @@ impl Service {
         // exposed as one device's metadata.
         let mut metadata_warnings = Vec::new();
         'metadata: for identity in &mut identities {
-            if route.is_empty()
-                && identity.unit_type.eq_ignore_ascii_case("KEYGL5")
+            if identity.unit_type.eq_ignore_ascii_case("KEYGL5")
                 && configured_keygl5.contains(&identity.address)
                 && mmi_state_is_present_non_error(identity.mmi_state)
                 && identity.has_exactly_one_known_serial_reply
             {
-                identity.extended_firmware =
-                    match pci.read_edlt_extended_firmware(identity.address).await {
-                        Ok(value) => Some(value),
-                        Err(error) => {
-                            metadata_warnings.push((
-                                identity.address,
-                                "FirmwareVersion",
-                                error.to_string(),
-                            ));
-                            break 'metadata;
-                        }
-                    };
-                identity.applications = match pci.read_edlt_applications(identity.address).await {
+                identity.extended_firmware = match if route.is_empty() {
+                    pci.read_edlt_extended_firmware(identity.address).await
+                } else {
+                    pci.read_edlt_extended_firmware_routed(&route, identity.address)
+                        .await
+                } {
+                    Ok(value) => Some(value),
+                    Err(error) => {
+                        metadata_warnings.push((
+                            identity.address,
+                            "FirmwareVersion",
+                            error.to_string(),
+                        ));
+                        break 'metadata;
+                    }
+                };
+                identity.applications = match if route.is_empty() {
+                    pci.read_edlt_applications(identity.address).await
+                } else {
+                    pci.read_edlt_applications_routed(&route, identity.address)
+                        .await
+                } {
                     Ok(value) => Some(value),
                     Err(error) => {
                         metadata_warnings.push((
@@ -5789,7 +5809,12 @@ impl Service {
                         break 'metadata;
                     }
                 };
-                identity.widget_groups = match pci.read_edlt_widget_groups(identity.address).await {
+                identity.widget_groups = match if route.is_empty() {
+                    pci.read_edlt_widget_groups(identity.address).await
+                } else {
+                    pci.read_edlt_widget_groups_routed(&route, identity.address)
+                        .await
+                } {
                     Ok(value) => Some(value),
                     Err(error) => {
                         metadata_warnings.push((

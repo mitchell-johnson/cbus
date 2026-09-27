@@ -2294,6 +2294,33 @@ impl PciClient {
     /// selects its address; the only WRITE is the volatile 0x41 selector.
     /// Logical unit-spec addresses >=256 map to physical address = logical-256.
     pub async fn read_memory(&self, unit: u8, address: u32, length: usize) -> Result<Vec<u8>> {
+        self.read_memory_with_route(unit, address, length, ProgrammingRoute::Oem)
+            .await
+    }
+
+    /// Read a bounded OEM physical-memory range through a one-to-six bridge
+    /// source route. Both the volatile selector acknowledgement and every
+    /// recall fragment must match the Reply Network, remote unit, parameter,
+    /// expected tag and total byte count.
+    pub async fn read_memory_routed(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+        address: u32,
+        length: usize,
+    ) -> Result<Vec<u8>> {
+        validate_bridge_route(bridges)?;
+        self.read_memory_with_route(unit, address, length, ProgrammingRoute::Routed(bridges))
+            .await
+    }
+
+    async fn read_memory_with_route(
+        &self,
+        unit: u8,
+        address: u32,
+        length: usize,
+        route: ProgrammingRoute<'_>,
+    ) -> Result<Vec<u8>> {
         if length == 0 || length > 65536 || address.checked_add(length as u32).is_none() {
             return Err(Error::new(
                 ErrorKind::InvalidInput,
@@ -2326,7 +2353,7 @@ impl PciClient {
                 0,
                 0,
                 Some(0x41),
-                ProgrammingRoute::Oem,
+                route,
             )
             .await
             .map_err(|error| {
@@ -2345,7 +2372,7 @@ impl PciClient {
                     1,
                     usize::from(count),
                     None,
-                    ProgrammingRoute::Oem,
+                    route,
                 )
                 .await
                 .map_err(|error| {
@@ -2559,12 +2586,29 @@ impl PciClient {
     /// and total length; an incomplete exchange faults the programming lane
     /// until reconnect.
     pub async fn read_edlt_widget_groups(&self, unit: u8) -> Result<String> {
+        self.read_edlt_widget_groups_with_route(unit, ProgrammingRoute::Oem)
+            .await
+    }
+
+    /// Read the KEYGL5 widget-group mapping through a one-to-six bridge
+    /// source route with exact Reply Network/unit/parameter/length matching.
+    pub async fn read_edlt_widget_groups_routed(&self, bridges: &[u8], unit: u8) -> Result<String> {
+        validate_bridge_route(bridges)?;
+        self.read_edlt_widget_groups_with_route(unit, ProgrammingRoute::Routed(bridges))
+            .await
+    }
+
+    async fn read_edlt_widget_groups_with_route(
+        &self,
+        unit: u8,
+        route: ProgrammingRoute<'_>,
+    ) -> Result<String> {
         let data = self
             .recall_parameter_with_route(
                 unit,
                 cbus_protocol::edlt_widget_groups::PARAMETER,
                 cbus_protocol::edlt_widget_groups::LENGTH,
-                ProgrammingRoute::Oem,
+                route,
             )
             .await?;
         cbus_protocol::edlt_widget_groups::decode_reply(&data)
@@ -2578,12 +2622,33 @@ impl PciClient {
     /// IDENTIFY2 version string. The request is exact-once and an incomplete
     /// exchange faults the programming lane until reconnect.
     pub async fn read_edlt_extended_firmware(&self, unit: u8) -> Result<String> {
+        self.read_edlt_extended_firmware_with_route(unit, ProgrammingRoute::Oem)
+            .await
+    }
+
+    /// Read the KEYGL5 extended firmware through a one-to-six bridge source
+    /// route with exact Reply Network/unit/parameter/length matching.
+    pub async fn read_edlt_extended_firmware_routed(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+    ) -> Result<String> {
+        validate_bridge_route(bridges)?;
+        self.read_edlt_extended_firmware_with_route(unit, ProgrammingRoute::Routed(bridges))
+            .await
+    }
+
+    async fn read_edlt_extended_firmware_with_route(
+        &self,
+        unit: u8,
+        route: ProgrammingRoute<'_>,
+    ) -> Result<String> {
         let data = self
             .recall_parameter_with_route(
                 unit,
                 cbus_protocol::edlt_sync_metadata::FIRMWARE_PARAMETER,
                 cbus_protocol::edlt_sync_metadata::FIRMWARE_LENGTH,
-                ProgrammingRoute::Oem,
+                route,
             )
             .await?;
         cbus_protocol::edlt_sync_metadata::decode_firmware(&data)
@@ -2597,11 +2662,28 @@ impl PciClient {
     /// source, selector-tag, parameter, and total-length correlation and
     /// faults the programming lane after any incomplete phase.
     pub async fn read_edlt_applications(&self, unit: u8) -> Result<[u8; 2]> {
+        self.read_edlt_applications_with_route(unit, &[]).await
+    }
+
+    /// Read the KEYGL5 primary and secondary applications through a
+    /// one-to-six bridge source route. The volatile address selector and
+    /// two-byte read must both carry the exact Reply Network and remote unit.
+    pub async fn read_edlt_applications_routed(&self, bridges: &[u8], unit: u8) -> Result<[u8; 2]> {
+        validate_bridge_route(bridges)?;
+        self.read_edlt_applications_with_route(unit, bridges).await
+    }
+
+    async fn read_edlt_applications_with_route(&self, unit: u8, bridges: &[u8]) -> Result<[u8; 2]> {
         let data = self
-            .read_memory(
+            .read_memory_with_route(
                 unit,
                 cbus_protocol::edlt_sync_metadata::APPLICATION_ADDRESS,
                 cbus_protocol::edlt_sync_metadata::APPLICATION_LENGTH,
+                if bridges.is_empty() {
+                    ProgrammingRoute::Oem
+                } else {
+                    ProgrammingRoute::Routed(bridges)
+                },
             )
             .await?;
         cbus_protocol::edlt_sync_metadata::decode_applications(&data)
@@ -5814,6 +5896,79 @@ mod tests {
         assert!(!read.is_finished());
         reply(&mut remote, 5, &[0x82, 1, 255]).await;
         assert_eq!(read.await.unwrap().unwrap(), [56, 255]);
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_edlt_metadata_correlates_one_and_six_bridge_reply_networks() {
+        let (pci, mut remote, _) = setup().await;
+        let one = [0xfd];
+
+        let worker = pci.clone();
+        let firmware =
+            tokio::spawn(async move { worker.read_edlt_extended_firmware_routed(&one, 5).await });
+        assert_eq!(line(&mut remote).await, b"\\46FD09051AFB0991\r");
+        direct_reply(&mut remote, 5, &[0x85, 0xfb, b'w', b'r', b'o', b'n']).await;
+        routed_reply(
+            &mut remote,
+            &[0xfc],
+            5,
+            &[0x85, 0xfb, b'w', b'r', b'o', b'n'],
+        )
+        .await;
+        routed_reply(&mut remote, &one, 5, &[0x85, 0xfb, b'0', b'1', b'.', b'0']).await;
+        routed_reply(
+            &mut remote,
+            &one,
+            5,
+            &[0x86, 0xfb, b'5', b'.', b'0', b'0', 0],
+        )
+        .await;
+        assert_eq!(firmware.await.unwrap().unwrap(), "01.05.00");
+
+        let worker = pci.clone();
+        let applications =
+            tokio::spawn(async move { worker.read_edlt_applications_routed(&one, 5).await });
+        assert_eq!(line(&mut remote).await, b"\\46FD0905A400411000BA\r");
+        direct_reply(&mut remote, 5, &[0x32, 0, 0x41]).await;
+        routed_reply(&mut remote, &[0xfc], 5, &[0x32, 0, 0x41]).await;
+        routed_reply(&mut remote, &one, 5, &[0x32, 0, 0x41]).await;
+        assert_eq!(line(&mut remote).await, b"\\46FD09051A010292\r");
+        routed_reply(&mut remote, &one, 4, &[0x82, 1, 99]).await;
+        routed_reply(&mut remote, &one, 5, &[0x82, 2, 88]).await;
+        routed_reply(&mut remote, &one, 5, &[0x82, 1, 56]).await;
+        routed_reply(&mut remote, &one, 5, &[0x82, 1, 255]).await;
+        assert_eq!(applications.await.unwrap().unwrap(), [56, 255]);
+
+        let six = [0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xf9];
+        let worker = pci.clone();
+        let groups =
+            tokio::spawn(async move { worker.read_edlt_widget_groups_routed(&six, 5).await });
+        assert_eq!(line(&mut remote).await, b"\\46FA36FBFCFDFEF9051AFA2C5A\r");
+        let values = (0..cbus_protocol::edlt_widget_groups::LENGTH as u8).collect::<Vec<_>>();
+        for chunk in values.chunks(16) {
+            let cal = Cal::Reply {
+                parameter: cbus_protocol::edlt_widget_groups::PARAMETER,
+                data: chunk.to_vec(),
+            }
+            .encode();
+            routed_reply(&mut remote, &six, 5, &cal).await;
+        }
+        assert_eq!(
+            groups.await.unwrap().unwrap(),
+            values
+                .iter()
+                .map(u8::to_string)
+                .collect::<Vec<_>>()
+                .join(",")
+        );
+
+        assert_eq!(
+            pci.read_edlt_widget_groups_routed(&[], 5)
+                .await
+                .unwrap_err()
+                .kind(),
+            ErrorKind::InvalidInput
+        );
     }
 
     #[tokio::test(start_paused = true)]

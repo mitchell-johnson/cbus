@@ -377,8 +377,10 @@ acknowledgement.
 must have non-error present MMI state one or two, exactly one raw IDENTIFY4
 reply carrying a known serial, and KEYGL5 types
 in both the configured database and fresh physical IDENTIFY1. Eligible units
-follow retained C-Gate classfile order over the OEM `09 00` route: parameter
-`0xFB` length 9 supplies the NUL-terminated `FirmwareVersion`, memory address
+follow retained C-Gate classfile order. Direct targets use the OEM `09 00`
+route; bridged targets use the database-resolved one-to-six-bridge point-to-point
+route and accept only the exact Reply Network. Parameter `0xFB` length 9
+supplies the NUL-terminated `FirmwareVersion`, memory address
 16 length 2 supplies decimal `Application` and `Application2`, and parameter
 `0xFA` length 44 supplies `WidgetGroups` as opaque comma-separated decimal
 bytes. `Version` remains the separate IDENTIFY2 value. Read the cached values
@@ -390,7 +392,8 @@ The synchronization leaves persistent configuration unchanged, but the OEM
 application read writes a volatile address-16 selector on the unit before its
 recall. The typed `edlt-widget-groups` command reports that distinction in its
 JSON evidence.
-Each physical request is exact-once and source/parameter/length correlated. An
+Each physical request is exact-once and source or Reply-Network/unit/parameter/
+selector-tag/length correlated. An
 optional failure does not fail an otherwise valid identity sync, but clears
 that value and every later unrefreshed value and faults the programming lane
 until reconnect. Ambiguous addresses receive no metadata traffic and expose no

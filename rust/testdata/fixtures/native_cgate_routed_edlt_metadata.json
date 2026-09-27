@@ -1,0 +1,60 @@
+{
+  "schema": "cmqttd.native-cgate-routed-edlt-metadata-evidence/v1",
+  "scope": "Topology-resolved KEYGL5 NET SYNC firmware, application and WidgetGroups enrichment",
+  "grounding": [
+    {
+      "evidence": "Retained CBusEdlt classfile order and direct OEM transport tests",
+      "finding": "Direct evidence establishes the eligibility guards, firmware then applications then WidgetGroups order, CAL payloads, selector tag, decoding and optional-failure invalidation behavior."
+    },
+    {
+      "evidence": "Routed standard CAL RECALL/STORE and Reply Network matcher tests",
+      "finding": "Existing point-to-point route evidence establishes one-to-six bridges and exact first-bridge, remaining-hop, remote-unit, parameter, tag and fragmented-count correlation."
+    }
+  ],
+  "composed_wire_cases": [
+    {
+      "id": "firmware-one-bridge",
+      "route": [253],
+      "unit": 5,
+      "wire": "\\46FD09051AFB0991"
+    },
+    {
+      "id": "application-selector-one-bridge",
+      "route": [253],
+      "unit": 5,
+      "wire": "\\46FD0905A400411000BA"
+    },
+    {
+      "id": "application-recall-one-bridge",
+      "route": [253],
+      "unit": 5,
+      "wire": "\\46FD09051A010292"
+    },
+    {
+      "id": "widget-groups-one-bridge",
+      "route": [253],
+      "unit": 5,
+      "wire": "\\46FD09051AFA2C6F"
+    },
+    {
+      "id": "widget-groups-six-bridge",
+      "route": [250, 251, 252, 253, 254, 249],
+      "unit": 5,
+      "wire": "\\46FA36FBFCFDFEF9051AFA2C5A"
+    }
+  ],
+  "claimed_behavior": [
+    "NET SYNC applies the same non-error MMI, configured/fresh KEYGL5 and unique known IDENTIFY4 guards on direct and routed networks.",
+    "FirmwareVersion, Application/Application2 and WidgetGroups are read in retained order and committed only to the addressed network on the captured PCI generation.",
+    "Direct and neighbouring-route responses cannot advance a routed selector or recall; incomplete optional reads retire the generation without replay."
+  ],
+  "acceptance": [
+    "Transport tests pin exact one/six-bridge wire bytes, route isolation, selector ACK correlation, fragmented recalls, decoding and invalid-route refusal.",
+    "Service tests pin complete routed MMI/identity preflight, all four cached metadata fields, target-network-only commit and the native NET SYNC envelope."
+  ],
+  "limits": [
+    "This is a bounded composition of separately retained direct eDLT behavior and routed standard-CAL behavior; no exact native bridged KEYGL5 capture is claimed.",
+    "No live bridge or remote KEYGL5 hardware acceptance, display behavior, persistence or power-cycle behavior is claimed.",
+    "WidgetGroups is a static mapping and does not read a display's pre-existing dynamic-label cache."
+  ]
+}

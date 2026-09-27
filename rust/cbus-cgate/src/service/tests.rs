@@ -979,6 +979,125 @@ async fn bridged_sync_populates_identity_rejects_cross_route_and_clears_on_recon
 }
 
 #[tokio::test(start_paused = true)]
+async fn bridged_sync_populates_route_correlated_edlt_metadata() {
+    async fn line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+
+    let xml = topology_fixture().replace(
+        r#"<Unit oid="remote-4"><Address>4</Address><UnitType>KEYE1</UnitType></Unit>"#,
+        r#"<Unit oid="remote-4"><Address>4</Address><UnitType>KEYE1</UnitType></Unit>
+        <Unit oid="remote-edlt-5"><Address>5</Address><TagName>Remote eDLT</TagName><UnitType>KEYGL5</UnitType><FirmwareVersion>5.5.00</FirmwareVersion></Unit>"#,
+    );
+    let path = state_path();
+    let (pci_client, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci_client.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+
+    let service = Service::new(&xml, None, path.clone(), pci_client, None).unwrap();
+    let command = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[edlt] NET SYNC //TOPO/253 fast 0",
+                )
+                .await
+        }
+    });
+
+    let request = line(&mut remote_read).await;
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    for (start, count) in [(0, 88), (88, 88), (176, 80)] {
+        remote_write
+            .write_all(&routed_mmi_block(&[253], start, count, &[(5, 1)]))
+            .await
+            .unwrap();
+    }
+
+    for (attribute, value) in [(1u8, b"KEYGL5".as_slice()), (2u8, b"5.5.00".as_slice())] {
+        let request = line(&mut remote_read).await;
+        let code = request[request.len() - 2];
+        let mut cal = vec![0x80 | (value.len() as u8 + 1), attribute];
+        cal.extend_from_slice(value);
+        routed_pci_reply(&mut remote_write, &[253], 5, &cal).await;
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+    }
+
+    let request = line(&mut remote_read).await;
+    let code = request[request.len() - 2];
+    let serial = [
+        0x38, 0xff, 0xff, 0xff, 0xff, 0x18, 0xb1, 0x06, 0x16, 0xa2, 0x00, 0x05,
+    ];
+    let mut cal = vec![0x8d, 4];
+    cal.extend_from_slice(&serial);
+    routed_pci_reply(&mut remote_write, &[253], 5, &cal).await;
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    tokio::time::advance(Duration::from_secs(2)).await;
+    tokio::task::yield_now().await;
+
+    assert_eq!(line(&mut remote_read).await, b"\\46FD09051AFB0991\r");
+    routed_pci_reply(
+        &mut remote_write,
+        &[253],
+        5,
+        &[0x85, 0xfb, b'0', b'1', b'.', b'0'],
+    )
+    .await;
+    routed_pci_reply(
+        &mut remote_write,
+        &[253],
+        5,
+        &[0x86, 0xfb, b'5', b'.', b'0', b'0', 0],
+    )
+    .await;
+
+    assert_eq!(line(&mut remote_read).await, b"\\46FD0905A400411000BA\r");
+    routed_pci_reply(&mut remote_write, &[253], 5, &[0x32, 0, 0x41]).await;
+    assert_eq!(line(&mut remote_read).await, b"\\46FD09051A010292\r");
+    routed_pci_reply(&mut remote_write, &[253], 5, &[0x83, 1, 56, 255]).await;
+
+    assert_eq!(line(&mut remote_read).await, b"\\46FD09051AFA2C6F\r");
+    let groups = (0..44u8).collect::<Vec<_>>();
+    for chunk in groups.chunks(16) {
+        let mut cal = vec![0x80 | (chunk.len() as u8 + 1), 0xfa];
+        cal.extend_from_slice(chunk);
+        routed_pci_reply(&mut remote_write, &[253], 5, &cal).await;
+    }
+
+    let response = command.await.unwrap();
+    assert_eq!(response.status, 200, "{response:?}");
+    let model = service.model.lock().await;
+    let unit = &model.projects["TOPO"].networks[&253].physical[&5];
+    assert_eq!(unit.unit_type, "KEYGL5");
+    assert_eq!(unit.fields["FirmwareVersion"], "01.05.00");
+    assert_eq!(unit.fields["Application"], "56");
+    assert_eq!(unit.fields["Application2"], "255");
+    assert_eq!(
+        unit.fields["WidgetGroups"],
+        groups
+            .iter()
+            .map(u8::to_string)
+            .collect::<Vec<_>>()
+            .join(",")
+    );
+    drop(model);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test(start_paused = true)]
 async fn bridged_syncnew_all_discovers_into_only_the_target_cache() {
     async fn line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
         let mut line = Vec::new();
@@ -4889,6 +5008,17 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["edlt_widget_groups"], true);
     assert_eq!(document["edlt_extended_firmware"], true);
     assert_eq!(document["edlt_applications"], true);
+    assert_eq!(document["edlt_sync_metadata_routed"], true);
+    assert_eq!(document["edlt_sync_metadata_routed_max_hops"], 6);
+    assert_eq!(
+        document["edlt_sync_metadata_routed_fields"],
+        serde_json::json!([
+            "FirmwareVersion",
+            "Application",
+            "Application2",
+            "WidgetGroups"
+        ])
+    );
     assert_eq!(document["network_syncnew"], true);
     assert_eq!(document["network_project_identify"], true);
     assert_eq!(document["network_set_project_identify"], true);
