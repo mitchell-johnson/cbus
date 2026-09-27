@@ -30,6 +30,20 @@ class CoverageRequireCompleteTests(unittest.TestCase):
         payload = json.loads(combined[start : end + 1])
         self.assertFalse(payload["complete"])
         self.assertFalse(payload["census_complete"])
+        progress = payload["progress"]
+        self.assertFalse(progress["complete"])
+        self.assertFalse(progress["denominator_ready"])
+        self.assertFalse(progress["functional_percent_available"])
+        self.assertIsNone(progress["obligations"]["implementation_percent"])
+        self.assertIsNone(progress["obligations"]["accepted_percent"])
+        self.assertEqual(progress["legacy_category_summary"]["implemented"], 18)
+        self.assertEqual(
+            progress["legacy_category_summary"]["implemented_percent"], 46.15
+        )
+        self.assertFalse(
+            progress["legacy_category_summary"]["functionality_estimate"]
+        )
+        self.assertGreater(progress["scope_items"]["unresolved"], 0)
         self.assertEqual(len(payload["features"]), 39)
         self.assertTrue(
             any(feature["status"] != "implemented" for feature in payload["features"])

@@ -16,7 +16,8 @@
 #   make check-wheel    build a fresh wheel, install it with every supported
 #                       extra in an isolated Python 3.13 venv, and run the
 #                       full offline suite without importing from src/
-#   make coverage       print the completion ledger gate status
+#   make check-parity-register  verify generated scope/evidence accounting
+#   make coverage       print the evidence-derived completion gate status
 #   make compile        byte-compile the package
 
 VENV = .venv
@@ -25,8 +26,11 @@ RUST_DIR = ../rust
 WHEEL_PY ?= python3.13
 export PYTHONPATH = src:tests
 
-check: compile
+check: compile check-parity-register
 	$(VENV)/bin/python -m pytest tests/ -q -p no:cacheprovider
+
+check-parity-register:
+	$(PY) research/build_parity_register.py --check
 
 check-native: compile
 	: $${CBUS_CGATE_JAVA:?Set CBUS_CGATE_JAVA to the owned JDK 11 java binary}
@@ -61,4 +65,4 @@ check-wheel:
 compile:
 	$(PY) -m compileall -q src/cbus_toolkit
 
-.PHONY: check check-native check-interop check-wheel coverage compile
+.PHONY: check check-native check-interop check-wheel check-parity-register coverage compile

@@ -4,9 +4,14 @@ This is an implementation in progress targeting **Toolkit 1.18.0.2754 with
 C-Gate 3.4.0.2001**. It does **not yet provide 100% Toolkit parity**. The
 current ledger has **39 areas: 18 implemented, 19 in progress and 2 pending**.
 The simple implemented-row ratio is **18/39 = 46.15%**; it is not an estimate
-of Toolkit functionality, and `census_complete` is `false`. Run
-`cbus-toolkit coverage --require-complete` to inspect the machine-readable
-ledger; it deliberately exits nonzero while the census or acceptance work is
+of Toolkit functionality. The new [functional parity register](docs/parity-register.md)
+accounts for 22,156 committed source-surface records. That inventory now
+includes 412 parsed Toolkit forms, 10,102 executable controls and 1,892 event
+bindings, but all remain provisional until P0 resolves them into a complete,
+deduplicated functional denominator.
+Run `cbus-toolkit coverage --require-complete` to inspect the evidence-derived
+status. Functional percentages are `null` while `denominator_ready` is false,
+and the command deliberately exits nonzero while census or acceptance work is
 unfinished.
 
 See [completed functions and outstanding work](docs/implementation-status.md)

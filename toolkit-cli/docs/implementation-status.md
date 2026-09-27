@@ -4,6 +4,15 @@ Updated **27 September 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.
 
 The Python implementation and CLI provide the functions listed below within their stated device, input and backend limits. **Complete Toolkit parity remains unfinished.** The feature ledger contains **39 areas: 18 implemented, 19 in progress and 2 pending**, and `census_complete` is `false`. The simple implemented-row ratio is **18/39 = 46.15%**; it is not an estimate of Toolkit functionality. An implemented category can still have outstanding Toolkit or hardware comparisons.
 
+The [functional parity register](parity-register.md) now owns the completion
+decision. Its current generated revision accounts for 22,156 source records,
+including 412 parsed Toolkit forms, 10,102 controls and 1,892 event bindings,
+and 39 provisional umbrella obligations, with zero accepted obligations and
+zero evidence receipts. Functional percentages remain unavailable until P0
+resolves the source records into a complete denominator. The installed-wheel acceptance
+runner and wheel auditor consume the same packaged register; historical wheels
+without it can never claim full parity.
+
 This page covers every area in [capabilities.json](../src/cbus_toolkit/capabilities.json), including completed functions inside unfinished areas. The [README](../README.md) gives command examples, and each linked feature document describes its accepted inputs and tests. The separate [surface census](toolkit-surface.md) inventories all 3,767 indexed help topics and 209 public C-Gate command blocks. `cgate exec` and `cgate run` can forward the selected service's raw command surface, but forwarding and the 56 mapped typed-wrapper candidates do not establish typed Toolkit workflow, native-server or hardware acceptance; topic and command acceptance in the census remains unassessed.
 
 The [27 September implementation review and path to 100%](../../docs/parity-review-and-roadmap.md)
@@ -179,7 +188,13 @@ The next acceptance work is the unfinished work itself:
 
 `cbus-toolkit coverage --require-complete` intentionally returns nonzero while this work remains. The **46.15%** implemented-row ratio is simple ledger arithmetic, not an estimated completion percentage; the executable-level functionality census and its acceptance mapping are still incomplete.
 
-Completion-gate note: the coverage predicate once required a `verified` status the ledger never issues (dead since the initial checkpoint); it now requires `census_complete` plus every ledger status `implemented` (`cli.py`). Parity burden stays in the ledger IDs themselves, including the two pending acceptance IDs in the table above, so no acceptance is bypassed. `census_complete` remains false and 21 IDs remain unfinished, hence nonzero. The pinned `test_coverage_cannot_claim_completion` guards the current nonzero behavior.
+Completion-gate note: `coverage` validates the packaged parity register and
+evidence bundle, then requires a complete census, defined and applicable
+functional obligations, implementation, and passed evidence for every required
+acceptance dimension. Historical ledger labels are reported separately and
+cannot make the gate pass. The census remains incomplete, all 39 obligations
+are provisional and none is accepted, so `--require-complete` returns nonzero.
+The parity-register and coverage tests guard this behavior.
 
 Disposable-server access: the owned C-Gate configuration defaults to `Program`, which denies the internal `PP LOCK`/`PP NEW` operations. The isolated thermostat unit probe successfully used an explicit `interface 127.0.0.1 Clipsal` grant in its own temporary `access.txt` before starting its own server. It completed seven saved/reloaded parameter cases with all listeners verified as loopback, no CNI connections, and process/storage cleanup confirmed ([retained evidence](../research/experiments/2026-09-24/thermostat-native-access.json)). This removes the earlier claim that an operator login is required for those disposable programming fixtures. Fixture topology and `CBUS_CGATE_SIMULATOR_HOST=127.0.0.1` still need correct provisioning for host-based native tests. The serials discovery timing issue remains open; no test was weakened.
 

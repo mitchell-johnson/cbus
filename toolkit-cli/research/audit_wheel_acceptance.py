@@ -13,6 +13,8 @@ from pathlib import Path, PurePosixPath
 import re
 import zipfile
 
+from cbus_toolkit import parity as parity_model
+
 
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -54,8 +56,32 @@ def audit(snapshot, report_paths, *, python_versions=('3.13',)):
                 'Wheel package file list differs from the snapshot')
         for name, expected in package_hashes.items():
             require(hashlib.sha256(wheel.read(name)).hexdigest() == expected, 'Wheel source differs: ' + name)
-        ledger = json.loads(wheel.read('cbus_toolkit/capabilities.json'))
-        parity = bool(ledger['census_complete'] and all(row['status'] == 'implemented' for row in ledger['features']))
+        ledger_raw = wheel.read('cbus_toolkit/capabilities.json')
+        ledger = json.loads(ledger_raw)
+        parity_resources = {
+            'cbus_toolkit/parity-obligations.json',
+            'cbus_toolkit/parity-evidence.json',
+        }
+        if parity_resources <= set(names):
+            register_raw = wheel.read('cbus_toolkit/parity-obligations.json')
+            evidence_raw = wheel.read('cbus_toolkit/parity-evidence.json')
+            parity_progress = parity_model.evaluate(
+                parity_model.parse_json_document(
+                    register_raw, context='wheel parity-obligations.json'
+                ),
+                parity_model.parse_json_document(
+                    evidence_raw, context='wheel parity-evidence.json'
+                ),
+                ledger,
+                evidence_raw=evidence_raw,
+                ledger_raw=ledger_raw,
+            )
+            parity = bool(parity_progress['complete'])
+        else:
+            # A historical wheel without the obligation/evidence register may
+            # still be audited, but it cannot establish complete parity.
+            parity_progress = None
+            parity = False
     # Snapshots may additionally pin direct documentation files. They are
     # verified above, but acceptance.input_files() does not execute/select them.
     # Keep this exclusion narrow: nested docs and other suffixes are not silently
@@ -95,6 +121,11 @@ def audit(snapshot, report_paths, *, python_versions=('3.13',)):
             require(report.get(name) == [], 'Nonempty or missing report field: ' + name)
         require(type(report.get('tests_run')) is int and report['tests_run'] > 0, 'No tests ran')
         require(report.get('toolkit_parity_complete') is parity, 'Report parity differs from the wheel capability ledger')
+        if parity_progress is not None and 'toolkit_parity_progress' in report:
+            require(
+                report['toolkit_parity_progress'] == parity_progress,
+                'Report parity progress differs from the wheel obligation register',
+            )
         require(report.get('test_files') == expected_tests, 'Report does not cover the full snapshot test suite')
         require(report.get('input_sha256') == expected_inputs, 'Report input hashes differ from the snapshot')
         require(all(report.get('enabled_native_gates', {}).get(name) is True for name in gates),

@@ -104,10 +104,10 @@ class WheelAcceptanceAuditTests(unittest.TestCase):
                 if versions is not None:
                     self.assertEqual(report['validated_python_versions'], versions)
 
-    def test_parity_requires_complete_census_and_every_implemented_acceptance_feature(self):
-        cases = [(False, 'implemented', False), (True, 'in_progress', False),
-                 (True, 'pending', False), (True, 'verified', False), (True, 'implemented', True)]
-        for census, acceptance_status, expected in cases:
+    def test_legacy_category_status_cannot_complete_parity_without_evidence_register(self):
+        cases = [(False, 'implemented'), (True, 'in_progress'),
+                 (True, 'pending'), (True, 'verified'), (True, 'implemented')]
+        for census, acceptance_status in cases:
             with self.subTest(census=census, acceptance_status=acceptance_status):
                 ledger = {'census_complete': census, 'features': [
                     {'id': 'project-storage', 'status': 'implemented'},
@@ -128,10 +128,10 @@ class WheelAcceptanceAuditTests(unittest.TestCase):
                 manifest = json.loads(manifest_path.read_text())
                 manifest['wheel_sha256'] = hashlib.sha256(wheel_path.read_bytes()).hexdigest()
                 manifest_path.write_text(json.dumps(manifest))
-                self.report['toolkit_parity_complete'] = expected
+                self.report['toolkit_parity_complete'] = False
                 result = self.run_audit()
-                self.assertIs(result['toolkit_parity_complete'], expected)
-                self.report['toolkit_parity_complete'] = not expected
+                self.assertIs(result['toolkit_parity_complete'], False)
+                self.report['toolkit_parity_complete'] = True
                 with self.assertRaisesRegex(ValueError, 'Report parity differs'):
                     self.run_audit()
 

@@ -145,7 +145,15 @@ physical acceptance remain outstanding.
 cbus-toolkit coverage --require-complete
 ```
 
-This intentionally returns exit status `1` while parity remains unfinished. The [completed functions and outstanding work](toolkit-cli/docs/implementation-status.md) describe supported profiles, test evidence, and remaining work. The [Toolkit CLI guide](toolkit-cli/README.md) contains detailed command examples.
+This intentionally returns exit status `1` while parity remains unfinished.
+Completion is now derived from the packaged [functional parity register](toolkit-cli/docs/parity-register.md),
+which accounts for 22,156 committed source-surface records, including 412
+parsed Toolkit forms, 10,102 executable controls and 1,892 event bindings, but
+keeps functional percentages unavailable until they are resolved into a
+complete denominator.
+The [completed functions and outstanding work](toolkit-cli/docs/implementation-status.md)
+describe supported profiles, test evidence, and remaining work. The
+[Toolkit CLI guide](toolkit-cli/README.md) contains detailed command examples.
 
 The [implementation review and path to full parity](docs/parity-review-and-roadmap.md)
 audits the current implementation and lays out 59 tracked work items across

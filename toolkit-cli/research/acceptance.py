@@ -107,10 +107,30 @@ def main():
                          if path not in selected)
     added_sources = sorted(str(path.relative_to(ROOT)) for path in (ROOT / "src/cbus_toolkit").glob("*.py")
                            if path not in inputs)
-    ledger = json.loads(resources.files("cbus_toolkit").joinpath("capabilities.json").read_text())
-    # The ledger's acceptance features must be implemented too; passing a test
-    # run alone does not satisfy those features or complete the source census.
-    complete = bool(ledger["census_complete"] and all(row["status"] == "implemented" for row in ledger["features"]))
+    package = resources.files("cbus_toolkit")
+    ledger_raw = package.joinpath("capabilities.json").read_bytes()
+    ledger = json.loads(ledger_raw)
+    try:
+        from cbus_toolkit import parity
+
+        register_raw = package.joinpath(parity.REGISTER_RESOURCE).read_bytes()
+        evidence_raw = package.joinpath(parity.EVIDENCE_RESOURCE).read_bytes()
+        progress = parity.evaluate(
+            parity.parse_json_document(register_raw, context=parity.REGISTER_RESOURCE),
+            parity.parse_json_document(evidence_raw, context=parity.EVIDENCE_RESOURCE),
+            ledger,
+            evidence_raw=evidence_raw,
+            ledger_raw=ledger_raw,
+        )
+    except FileNotFoundError:
+        # Historical/minimal acceptance fixtures predate the evidence register.
+        # They can remain auditable but can never claim parity completion.
+        progress = {
+            "complete": False,
+            "functional_percent_available": False,
+            "blockers": ["installed artifact has no parity obligation register"],
+        }
+    complete = bool(progress["complete"])
     report = {
         "format": "cbus-test-acceptance-v1", "started_at": started,
         "duration_seconds": round(time.monotonic() - start, 3),
@@ -124,6 +144,7 @@ def main():
                   and not binary_errors
                   and (not args.require_no_skips or not result.skipped),
         "toolkit_parity_complete": complete,
+        "toolkit_parity_progress": progress,
         "scope": "These selected acceptance tests do not establish full Toolkit functionality or physical-device parity.",
         "backend_selectors": {
             "CBUS_ORIGINAL_MODEL_BACKEND": os.environ.get("CBUS_ORIGINAL_MODEL_BACKEND", "docker"),

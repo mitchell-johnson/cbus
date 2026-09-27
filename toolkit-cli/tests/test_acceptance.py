@@ -65,9 +65,9 @@ class AcceptanceRunnerTests(unittest.TestCase):
             self.assertEqual(report['external_test_binaries_after']['CBUS_CGATE_MOCK_BIN']['sha256'],
                              hashlib.sha256(b'after').hexdigest())
 
-    def test_report_uses_census_and_implemented_status_including_acceptance_ids(self):
-        cases = [(False, 'implemented', False), (True, 'pending', False),
-                 (True, 'in_progress', False), (True, 'verified', False), (True, 'implemented', True)]
+    def test_report_never_infers_parity_from_legacy_category_status(self):
+        cases = [(False, 'implemented'), (True, 'pending'),
+                 (True, 'in_progress'), (True, 'verified'), (True, 'implemented')]
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             (root / 'tests').mkdir()
@@ -75,7 +75,7 @@ class AcceptanceRunnerTests(unittest.TestCase):
             package = root / 'src/cbus_toolkit'
             package.mkdir(parents=True)
             output = root / 'report.json'
-            for census, acceptance_status, expected in cases:
+            for census, acceptance_status in cases:
                 with self.subTest(census=census, acceptance_status=acceptance_status):
                     ledger = {'census_complete': census, 'features': [
                         {'id': 'project-storage', 'status': 'implemented'},
@@ -91,7 +91,12 @@ class AcceptanceRunnerTests(unittest.TestCase):
                          redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
                         self.assertEqual(acceptance.main(), 0)
                     report = json.loads(output.read_text())
-                    self.assertIs(report['toolkit_parity_complete'], expected)
+                    self.assertIs(report['toolkit_parity_complete'], False)
+                    self.assertFalse(report['toolkit_parity_progress']['complete'])
+                    self.assertIn(
+                        'no parity obligation register',
+                        report['toolkit_parity_progress']['blockers'][0],
+                    )
                     self.assertTrue(report['passed'])
                     self.assertEqual(report['tests_run'], 1)
                     self.assertEqual(report['skipped'], [])

@@ -3560,11 +3560,18 @@ def run(args):
         return {"parameter": args.parameter, "value": result}, int(not result["valid"])
     if args.area == "coverage":
         ledger = json.loads(files("cbus_toolkit").joinpath("capabilities.json").read_text())
-        # The ledger issues implemented/in_progress/pending (never "verified");
-        # parity burden lives in the ledger IDs themselves, including
-        # toolkit-differential-acceptance and unit-hardware-acceptance.
-        complete = ledger["census_complete"] and all(x["status"] == "implemented" for x in ledger["features"])
-        return {"complete": complete, **ledger}, int(args.require_complete and not complete)
+        from .parity import evaluate_packaged
+
+        progress = evaluate_packaged(ledger)
+        # The historical category ledger remains visible, but completion is
+        # derived from the versioned functional-obligation/evidence register.
+        # Until its census is complete, functional percentages remain null.
+        complete = progress["complete"]
+        return {
+            "complete": complete,
+            "progress": progress,
+            **ledger,
+        }, int(args.require_complete and not complete)
     raise ValueError("Unknown command area")
 
 
