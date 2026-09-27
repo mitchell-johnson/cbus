@@ -2064,8 +2064,9 @@ make check-wheel
 make require-complete
 ```
 
-CI runs the source-only selection, `cgate-mock` interop and real `cmqttd`
-interop as separate reported steps after building both Rust servers. A second
+CI runs the nine-case original C-Gate `SESSION_ID` differential on both fresh
+Rust servers, then the source-only selection, `cgate-mock` interop and real
+`cmqttd` interop as separate reported steps. A second
 job installs the wheel into a fresh environment and rejects any import from
 `src/`. JUnit artifacts retain the executed and skipped cases. Provisioned
 native and physical-hardware release jobs are manual and fail on missing

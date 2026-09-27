@@ -67,10 +67,13 @@ the receipt; any other extra row fails. The external rows retain their
 pre-fix mock artifact and its red nine-case receipt are retained as
 `research/fixtures/cgate-session-differential-pre-fix.json`. A new accepted
 receipt must name the exact rebuilt binary SHA-256 and match the source
-fingerprint over the C-Gate crate, manifests, lockfile, runner, parity
-builder/validator and interaction tests. For `cmqttd`, its source and
-manifest are included too.
-Source or native-capture changes invalidate a prior receipt; regenerate it
+fingerprint over the C-Gate crate and every transitive in-workspace path
+dependency's source and manifest. The daemon receipt also includes `cmqttd`
+and its MQTT/test-support dependencies. Literal in-workspace Rust `include!`,
+`include_str!` and `include_bytes!` assets are hashed, including the retained
+DALI help fixture compiled into both servers. The workspace manifest, lockfile,
+runner, parity builder/validator and interaction tests are also included.
+Changes to these sources or the native capture invalidate a prior receipt; regenerate it
 before crediting original-differential acceptance.
 
 The retained pre-fix mock SHA-256 is
@@ -78,10 +81,11 @@ The retained pre-fix mock SHA-256 is
 0 passed, 9 failed, 0 skipped. That red receipt's top-level
 `source_revision` names the comparison runner; its separate
 `rust_artifact.source_revision` names the pre-fix worktree HEAD, with the
-build-provenance limit stated in the receipt. The corrected mock artifact is
-`c39a24c27749c627807a82452ba219281d933b053e49034f99bedbeae5290aad`:
+build-provenance limit stated in the receipt. The corrected mock artifact
+rebuilt from source commit `7457ef0` is
+`509a75a70e3bcfa3aa904f6ec0918c88a6822419b4a6ce85d0d7da036c738360`:
 9 passed, 0 failed/skipped. Independently, the offline cmqttd artifact is
-`50694bcf914b6fdb803ce46e8e7c5758061c6906ae70de47cb0ee2c2eeb0f53f`:
+`b3bc5ad3ec4297c3ef675a4760af5257c5b528a6280fd121f97c60a26aaa2801`:
 9 passed, 0 failed/skipped. Each sanitized receipt identifies its artifact,
 source revision and source-file hashes. These hashes belong to those exact
 local builds; a later build needs a new receipt.

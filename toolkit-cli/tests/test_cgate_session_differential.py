@@ -64,6 +64,81 @@ def test_passed_receipt_rejects_missing_or_stale_source_binding():
         differential.validate_passed_receipt(partial)
 
 
+@pytest.mark.parametrize(
+    ("product", "source_name"),
+    [
+        ("cgate-mock", "rust/cbus-protocol/src/lib.rs"),
+        ("cgate-mock", "rust/cbus-transport/src/lib.rs"),
+        ("cmqttd", "rust/cbus-protocol/src/lib.rs"),
+        ("cmqttd", "rust/cbus-transport/src/lib.rs"),
+        ("cmqttd", "rust/cbus-mqtt/src/lib.rs"),
+        ("cmqttd", "rust/cbus-test-support/src/lib.rs"),
+        ("cmqttd", "rust/cbus-mqtt/Cargo.toml"),
+        ("cgate-mock", "rust/testdata/fixtures/native_cgate_dali_help.json"),
+    ],
+)
+def test_transitive_workspace_change_invalidates_passed_receipt(
+    product, source_name, monkeypatch
+):
+    fixture = ("cgate-session-differential-cmqttd.json" if product == "cmqttd"
+               else "cgate-session-differential-fixed.json")
+    receipt = json.loads((SCRIPT.parent / "fixtures" / fixture).read_text(encoding="utf-8"))
+    daemon = product == "cmqttd"
+    receipt["source_fingerprint"] = differential.source_fingerprint(daemon=daemon)
+    source = differential.ROOT / source_name
+    key = source.relative_to(differential.ROOT).as_posix()
+    assert key in receipt["source_fingerprint"]
+    differential.validate_passed_receipt(receipt)
+
+    original_digest = differential.digest
+    monkeypatch.setattr(
+        differential, "digest",
+        lambda path: "0" * 64 if path == source else original_digest(path),
+    )
+    with pytest.raises(ValueError, match="source fingerprint is stale"):
+        differential.validate_passed_receipt(receipt)
+
+
+@pytest.mark.parametrize(
+    ("include", "error"),
+    [
+        ('include_str!("missing.json")', "include is missing"),
+        ('include_str!(concat!("data", ".json"))', "nonliteral include"),
+    ],
+)
+def test_untracked_rust_include_fails_closed(tmp_path, monkeypatch, include, error):
+    workspace = tmp_path / "rust"
+    crate = workspace / "cbus-cgate"
+    (crate / "src").mkdir(parents=True)
+    (workspace / "Cargo.toml").write_text("[workspace]\n", encoding="utf-8")
+    (crate / "Cargo.toml").write_text("[package]\nname = 'cbus-cgate'\n", encoding="utf-8")
+    (crate / "src/main.rs").write_text(include, encoding="utf-8")
+    monkeypatch.setattr(differential, "ROOT", tmp_path)
+    with pytest.raises(ValueError, match=error):
+        differential.rust_source_paths()
+
+
+def test_rust_source_resolving_outside_workspace_fails_closed(tmp_path, monkeypatch):
+    workspace = tmp_path / "rust"
+    crate = workspace / "cbus-cgate"
+    (crate / "src").mkdir(parents=True)
+    (workspace / "Cargo.toml").write_text("[workspace]\n", encoding="utf-8")
+    (crate / "Cargo.toml").write_text("[package]\nname = 'cbus-cgate'\n", encoding="utf-8")
+    external = tmp_path / "external.rs"
+    external.write_text("fn external() {}\n", encoding="utf-8")
+    source = crate / "src/lib.rs"
+    source.write_text("fn source() {}\n", encoding="utf-8")
+    original_resolve = Path.resolve
+    monkeypatch.setattr(
+        Path, "resolve",
+        lambda path, *args, **kwargs: external if path == source
+        else original_resolve(path, *args, **kwargs),
+    )
+    monkeypatch.setattr(differential, "ROOT", tmp_path)
+    with pytest.raises(ValueError, match="source escapes the workspace"):
+        differential.rust_source_paths()
+
+
 def test_cmqttd_receipt_is_separate_and_fully_executed():
     receipt_path = SCRIPT.parent / "fixtures/cgate-session-differential-cmqttd.json"
     receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
@@ -96,5 +171,8 @@ def test_pre_fix_receipt_is_red_without_skipped_cases():
     )
     assert (receipt["result"], receipt["executed"], receipt["passed"],
             receipt["failed"], receipt["skipped"]) == ("failed", 9, 0, 9, 0)
+    with pytest.raises(ValueError, match="source fingerprint is stale"):
+        differential.validate_passed_receipt(receipt)
+    receipt["source_fingerprint"] = differential.source_fingerprint()
     with pytest.raises(ValueError, match="lacks exact current Rust artifact hash"):
         differential.validate_passed_receipt(receipt)
