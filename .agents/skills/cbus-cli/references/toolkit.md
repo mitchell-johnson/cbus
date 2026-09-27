@@ -25,7 +25,7 @@ Python 3.13 or newer is required. The base package has no external dependencies.
 | Invoke a stored KEYGL5 scene Trigger binding | `cgate edlt-scene-trigger` | One Trigger event through C-Gate; may reach every listener for the pair |
 | Inspect or change addressing and serials | `cgate address`, `serials` | C-Gate; profile and identity guards apply |
 | Direct CNI queries and commissioning | `pci`, `serial-address` | Explicit PCI/CNI endpoint |
-| Discover CNI2/Wiser endpoints | `interface discover-cni` | One bounded IPv4 UDP query; no TCP or C-Bus connection |
+| Discover CNI2/Wiser endpoints | `interface discover-cni`, `interface scan-cni --probe BIND@DEST`, `interface scan-cni --auto-adapters [--plan-only]` | Bounded IPv4 UDP queries; auto mode needs the optional `network` extra; plan-only sends no traffic; no TCP or C-Bus connection |
 | Inspect route bytes | `pci-route` | Offline |
 | Plan supported device settings | `keys`, `sensors`, `edlt`, `unit-conversion`, `unit-scenes` | Offline, with explicit inputs/specifications |
 | Edit scenes/templates or match serial inventories | `scene`, `unit-templates`, `unit-addressing` | Local files |

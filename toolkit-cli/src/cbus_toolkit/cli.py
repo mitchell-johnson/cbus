@@ -1271,10 +1271,17 @@ def build_parser():
     discover.add_argument("--include-hidden", action="store_true",
                           help="Include product-id 2 replies hidden by captured Toolkit behavior")
     scan = interface_ops.add_parser(
-        "scan-cni", help="Probe up to 16 explicit local-adapter and destination pairs"
+        "scan-cni", help="Probe explicit routes or active host IPv4 adapters"
     )
-    scan.add_argument("--probe", action="append", required=True, metavar="BIND_IPV4@DESTINATION_IPV4",
-                      help="One local IPv4 bind address and broadcast/unicast destination; repeat for each route")
+    scan_routes = scan.add_mutually_exclusive_group(required=True)
+    scan_routes.add_argument("--probe", action="append", metavar="BIND_IPV4@DESTINATION_IPV4",
+                             help="One local IPv4 bind address and broadcast/unicast destination; repeat for each route")
+    scan_routes.add_argument("--auto-adapters", action="store_true",
+                             help="Derive directed-broadcast routes from active IPv4 adapters; requires the network extra")
+    scan.add_argument("--interface", action="append", metavar="NAME",
+                      help="With --auto-adapters, restrict the scan to this adapter; repeat as needed")
+    scan.add_argument("--plan-only", action="store_true",
+                      help="With --auto-adapters, show derived routes without sending discovery traffic")
     scan.add_argument("--listen-port", type=int, default=20050,
                       help="Local UDP port for each sequential probe; 0 selects an ephemeral port")
     scan.add_argument("--discovery-port", type=int, default=20050)
@@ -3305,7 +3312,8 @@ def _memory(args):
 
 def run(args):
     if args.area == "interface":
-        from .cni_discovery import discover_cni, scan_cni
+        from .cni_discovery import (discover_cni, plan_host_cni_probes, scan_cni,
+                                    scan_host_cni)
         if args.action == "discover-cni":
             return discover_cni(
                 bind=args.bind,
@@ -3316,12 +3324,17 @@ def run(args):
                 max_datagrams=args.max_datagrams,
                 include_hidden=args.include_hidden,
             ), 0
-        return scan_cni(
-            args.probe, listen_port=args.listen_port,
+        if (args.interface or args.plan_only) and not args.auto_adapters:
+            raise ValueError("--interface and --plan-only require --auto-adapters")
+        scan_options = dict(listen_port=args.listen_port,
             discovery_port=args.discovery_port, timeout=args.timeout,
             max_datagrams=args.max_datagrams,
-            include_hidden=args.include_hidden,
-        ), 0
+            include_hidden=args.include_hidden)
+        if args.auto_adapters:
+            if args.plan_only:
+                return plan_host_cni_probes(interfaces=args.interface), 0
+            return scan_host_cni(interfaces=args.interface, **scan_options), 0
+        return scan_cni(args.probe, **scan_options), 0
     if args.area == "thermostat-temperature":
         from .thermostat_temperature_cli import run as run_thermostat_temperature
         return run_thermostat_temperature(args)

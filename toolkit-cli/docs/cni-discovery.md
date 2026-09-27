@@ -28,12 +28,41 @@ cbus-toolkit interface discover-cni \
 The Rust equivalent is `cbus-tools cni-discover` with the same options. Both
 commands emit `cbus-cni-discovery-v1` JSON and use the same wire vectors.
 
+## Scan active host adapters
+
+From the repository root, install the optional network extra to enumerate the
+host's IPv4 adapters:
+
+```sh
+python -m pip install -e './toolkit-cli[network]'
+cbus-toolkit interface scan-cni --auto-adapters --plan-only
+cbus-toolkit interface scan-cni --auto-adapters --timeout 2
+```
+
+The first command only prints a route plan and sends no packets. The second
+queries each admitted active adapter's directed broadcast address once. Use
+`--interface NAME` (repeatable) to restrict both planning and scanning to
+named adapters. The JSON plan shows the selected interface, local bind,
+netmask, derived destination and reported broadcast, plus skipped addresses
+and their reasons. Scan results attach that adapter record to each per-route
+observation. Interface status and address lists are separate OS observations,
+so the snapshot is not atomic; a route may change before or during scanning.
+
+Only operational, non-loopback, non-point-to-point IPv4 addresses with a
+contiguous netmask and a usable directed broadcast are selected. Inconsistent
+reported broadcast addresses are skipped. Enumeration is bounded to 256
+adapters and the existing 16-route/300-second scan limits; it fails before
+sending if there are too many eligible routes or a requested adapter has no
+usable route. The optional `psutil` package supplies the cross-platform OS
+adapter inventory. Automatic scanning does not claim that an unobserved CNI
+is absent. Host firewall, VLAN, routing and subnet boundaries still matter.
+
 ## Explicit multi-adapter and subnet scan
 
-`scan-cni` repeats the same captured query for each *explicit* local IPv4
-bind and destination pair. It does not enumerate the host's adapters or infer
-broadcast addresses. Use the broadcast destination appropriate to each
-selected subnet; a unicast destination is also accepted:
+`scan-cni --probe` repeats the same captured query for each *explicit* local
+IPv4 bind and destination pair. This mode does not enumerate the host's
+adapters or infer broadcast addresses. Use the broadcast destination
+appropriate to each selected subnet; a unicast destination is also accepted:
 
 ```sh
 cbus-toolkit interface scan-cni \
@@ -131,6 +160,13 @@ no-reply and device observations, malformed-only, hidden-only and capped
 results, a failed adapter followed by a successful later probe, all-route
 preflight, and CLI output. They use one-shot loopback UDP peers, not a native
 Toolkit run or physical interface acceptance.
+
+Injected adapter inventories test automatic route selection, adapter filters,
+malformed netmasks and broadcasts, an unavailable route followed by a valid
+one, and the no-I/O plan path. They are portable fixtures rather than Windows
+or physical-network acceptance. The Rust `cbus-tools cni-discover` command
+retains its single-route interface; automatic adapter enumeration is currently
+provided by the Python CLI.
 
 An operator-authorized read-only scan on 27 September 2026 sent one query from
 each of two active Mac adapters on the house subnet. Each route received one

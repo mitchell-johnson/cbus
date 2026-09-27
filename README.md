@@ -93,9 +93,12 @@ To find a CNI2 or Wiser endpoint first, run `cbus-toolkit interface
 discover-cni`. It sends one bounded IPv4 UDP query and reports the source
 address plus advertised TCP port without opening the interface. For several
 adapters or subnets, `cbus-toolkit interface scan-cni --probe
-LOCAL_IP@SUBNET_BROADCAST` records each chosen route independently. A
-zero-reply result does not prove that no interface exists. The Rust tools
-expose the same wire codec and JSON boundary as `cbus-tools cni-discover`;
+LOCAL_IP@SUBNET_BROADCAST` records each chosen route independently. Install the
+CLI's optional `network` extra to use `scan-cni --auto-adapters --plan-only`
+for an OS-derived route preview, followed by `scan-cni --auto-adapters` to
+query active IPv4 adapters. A zero-reply result does not prove that no
+interface exists. The Rust tools expose the same single-route wire codec and
+JSON boundary as `cbus-tools cni-discover`;
 see the [discovery contract](toolkit-cli/docs/cni-discovery.md).
 
 ### Toolkit compatibility and current status

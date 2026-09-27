@@ -21,6 +21,7 @@ MAX_DISCOVERY_DATAGRAMS = 4_096
 MAX_DISCOVERY_PROBES = 16
 MAX_DISCOVERY_SCAN_SECONDS = 300
 MAX_MALFORMED_RAW_PREFIX = 64
+MAX_ENUMERATED_INTERFACES = 256
 
 
 @dataclass(frozen=True)
@@ -306,3 +307,134 @@ def scan_cni(probes, *, listen_port=DISCOVERY_PORT,
         "ownership_checked": False,
         "tcp_connection_opened": False,
     }
+
+
+def plan_host_cni_probes(*, interfaces=None, net_if_addrs=None, net_if_stats=None):
+    """Derive directed-broadcast probes from one host adapter observation.
+
+    ``psutil`` is optional because the base CLI also supports explicit routes.
+    Injection keeps the route selection testable without querying a host or
+    sending discovery traffic. Interface status and addresses are separate,
+    non-atomic OS observations; the result is never an absence proof.
+    """
+    if interfaces is not None:
+        if (not isinstance(interfaces, (tuple, list)) or not interfaces
+                or any(type(name) is not str or not name for name in interfaces)
+                or len(set(interfaces)) != len(interfaces)):
+            raise ValueError("CNI adapter names must be a nonempty unique sequence")
+        requested = tuple(interfaces)
+    else:
+        requested = None
+    if (net_if_addrs is None) != (net_if_stats is None):
+        raise ValueError("CNI adapter address and status providers must be supplied together")
+    source = "injected_adapter_providers"
+    if net_if_addrs is None:
+        try:
+            import psutil
+        except ImportError as error:
+            raise RuntimeError(
+                "Automatic CNI adapter discovery requires cbus-toolkit-cli[network]"
+            ) from error
+        net_if_addrs, net_if_stats = psutil.net_if_addrs, psutil.net_if_stats
+        source = "psutil.net_if_addrs+net_if_stats"
+    addresses, statuses = net_if_addrs(), net_if_stats()
+    if not isinstance(addresses, dict) or not isinstance(statuses, dict):
+        raise ValueError("CNI adapter providers must return dictionaries")
+    if len(addresses) > MAX_ENUMERATED_INTERFACES:
+        raise ValueError("CNI host adapter inventory exceeds its bound")
+    if requested is not None:
+        missing = set(requested) - set(addresses)
+        if missing:
+            raise ValueError("CNI requested adapter is absent: " + sorted(missing)[0])
+    names = sorted(addresses) if requested is None else sorted(requested)
+    selected, skipped, seen = [], [], set()
+    for name in names:
+        if type(name) is not str or not name:
+            raise ValueError("CNI adapter inventory contains an invalid name")
+        status = statuses.get(name)
+        if status is None or not getattr(status, "isup", False):
+            skipped.append({"interface": name, "reason": "down_or_status_unavailable"})
+            continue
+        ipv4_found = False
+        for address in addresses[name]:
+            if getattr(address, "family", None) != socket.AF_INET:
+                continue
+            ipv4_found = True
+            try:
+                bind = ipaddress.IPv4Address(address.address)
+                netmask = ipaddress.IPv4Address(address.netmask)
+                network = ipaddress.IPv4Network((str(bind), str(netmask)), strict=False)
+            except (ValueError, TypeError, AttributeError):
+                skipped.append({"interface": name, "reason": "invalid_ipv4_or_netmask"})
+                continue
+            if (bind.is_loopback or bind.is_multicast or bind.is_unspecified
+                    or getattr(address, "ptp", None)):
+                skipped.append({"interface": name, "address": str(bind),
+                                "reason": "loopback_multicast_or_point_to_point"})
+                continue
+            if (not 1 <= network.prefixlen <= 30 or bind == network.network_address
+                    or bind == network.broadcast_address):
+                skipped.append({"interface": name, "address": str(bind),
+                                "reason": "no_usable_directed_broadcast"})
+                continue
+            destination = network.broadcast_address
+            os_broadcast = getattr(address, "broadcast", None)
+            if os_broadcast:
+                try:
+                    reported = ipaddress.IPv4Address(os_broadcast)
+                except (ValueError, TypeError):
+                    skipped.append({"interface": name, "address": str(bind),
+                                    "reason": "invalid_reported_broadcast"})
+                    continue
+                if reported not in (destination, ipaddress.IPv4Address("255.255.255.255")):
+                    skipped.append({"interface": name, "address": str(bind),
+                                    "reason": "reported_broadcast_mismatch"})
+                    continue
+            route = (str(bind), str(destination))
+            if route in seen:
+                skipped.append({"interface": name, "address": str(bind),
+                                "reason": "duplicate_route"})
+                continue
+            seen.add(route)
+            selected.append({"interface": name, "bind": route[0],
+                             "destination": route[1], "netmask": str(netmask),
+                             "prefix_length": network.prefixlen,
+                             "reported_broadcast": os_broadcast})
+        if not ipv4_found:
+            skipped.append({"interface": name, "reason": "no_ipv4_address"})
+    selected.sort(key=lambda item: (item["interface"], ipaddress.IPv4Address(item["bind"])))
+    if requested is not None:
+        missing_routes = set(requested) - {item["interface"] for item in selected}
+        if missing_routes:
+            raise ValueError("CNI requested adapter has no usable broadcast route: "
+                             + sorted(missing_routes)[0])
+    if not selected:
+        raise ValueError("No active broadcast-capable IPv4 adapter was found")
+    if len(selected) > MAX_DISCOVERY_PROBES:
+        raise ValueError(f"CNI automatic scan exceeds {MAX_DISCOVERY_PROBES} route limit")
+    return {
+        "source": source,
+        "requested_interfaces": None if requested is None else list(requested),
+        "selected": selected,
+        "skipped": skipped,
+        "probe_count": len(selected),
+        "network_state_snapshot_atomic": False,
+        "absence_proven": False,
+    }
+
+
+def scan_host_cni(*, interfaces=None, net_if_addrs=None, net_if_stats=None,
+                  discover=discover_cni, **scan_options):
+    """Scan every admitted host broadcast route; retain per-route outcomes."""
+    plan = plan_host_cni_probes(
+        interfaces=interfaces, net_if_addrs=net_if_addrs, net_if_stats=net_if_stats,
+    )
+    report = scan_cni(
+        [item["bind"] + "@" + item["destination"] for item in plan["selected"]],
+        discover=discover, **scan_options,
+    )
+    for probe, adapter in zip(report["probes"], plan["selected"], strict=True):
+        probe["adapter"] = adapter
+    report["automatic_adapter_enumeration"] = True
+    report["adapter_enumeration"] = plan
+    return report

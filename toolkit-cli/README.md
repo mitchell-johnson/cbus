@@ -81,8 +81,20 @@ is hidden by default to match the retained behavior; use `--include-hidden` to
 inspect it. A zero-result run does not prove absence. On hosts with several
 adapters, pass the numeric local address with `--bind`.
 
-To survey several chosen adapters or subnets in one run, pass one numeric
-local-address and destination pair per probe:
+To survey active host IPv4 adapters, install the optional `network` extra and
+inspect the planned routes before sending a query:
+
+```sh
+python -m pip install -e '.[network]'
+cbus-toolkit interface scan-cni --auto-adapters --plan-only
+cbus-toolkit interface scan-cni --auto-adapters --interface en0
+```
+
+`--interface` is optional and repeatable. The CLI derives directed broadcast
+routes from operational adapters, records skipped addresses and their reasons,
+and attaches the selected adapter to each probe result. To survey several
+chosen adapters or subnets manually, pass one numeric local-address and
+destination pair per probe:
 
 ```sh
 cbus-toolkit interface scan-cni \
@@ -94,8 +106,9 @@ Each route gets one query and its own result. The command accepts 1–16 unique
 routes with a total configured reply window of at most 300 seconds, and
 distinguishes devices, no reply by deadline, filtered packets, a datagram cap,
 and a transport error. It never infers absence, TCP reachability, or exclusive
-ownership. Adapter enumeration and native `PORT CNISCAN2` status checks remain
-separate work.
+ownership. Adapter discovery is a non-atomic OS snapshot; firewall, subnet
+and physical-interface acceptance and native `PORT CNISCAN2` status checks
+remain open.
 
 After reviewing a result, use its `endpoint` explicitly when creating a native
 network:

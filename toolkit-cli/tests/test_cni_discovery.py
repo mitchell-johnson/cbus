@@ -4,13 +4,17 @@ import socket
 import subprocess
 import sys
 import threading
+from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 from cbus_toolkit.cni_discovery import (
     DISCOVERY_QUERY,
     decode_discovery_reply,
     discover_cni,
+    plan_host_cni_probes,
     scan_cni,
+    scan_host_cni,
 )
 
 
@@ -243,7 +247,136 @@ class CniDiscoveryTransportTests(unittest.TestCase):
                      timeout=151, discover=forbidden)
 
 
+def adapter(address, netmask, *, broadcast=None, ptp=None, family=socket.AF_INET):
+    return SimpleNamespace(family=family, address=address, netmask=netmask,
+                           broadcast=broadcast, ptp=ptp)
+
+
+class CniHostAdapterTests(unittest.TestCase):
+    def providers(self):
+        addresses = {
+            "zlan": [adapter("192.168.10.20", "255.255.255.0",
+                             broadcast="192.168.10.255")],
+            "alan": [adapter("10.2.2.10", "255.255.254.0")],
+            "down": [adapter("10.8.1.4", "255.255.255.0")],
+            "loop": [adapter("127.0.0.1", "255.0.0.0")],
+            "vpn": [adapter("10.9.1.2", "255.255.255.0", ptp="10.9.1.1")],
+            "single": [adapter("172.16.1.4", "255.255.255.255")],
+        }
+        statuses = {name: SimpleNamespace(isup=name != "down") for name in addresses}
+        return lambda: addresses, lambda: statuses
+
+    def test_active_adapters_produce_deterministic_directed_broadcast_routes(self):
+        addrs, stats = self.providers()
+        plan = plan_host_cni_probes(net_if_addrs=addrs, net_if_stats=stats)
+        self.assertEqual([(item["interface"], item["bind"], item["destination"])
+                          for item in plan["selected"]], [
+            ("alan", "10.2.2.10", "10.2.3.255"),
+            ("zlan", "192.168.10.20", "192.168.10.255")])
+        self.assertEqual(plan["probe_count"], 2)
+        self.assertEqual({item["reason"] for item in plan["skipped"]}, {
+            "down_or_status_unavailable", "loopback_multicast_or_point_to_point",
+            "no_usable_directed_broadcast"})
+        self.assertFalse(plan["network_state_snapshot_atomic"])
+        self.assertFalse(plan["absence_proven"])
+
+    def test_auto_scan_preserves_per_adapter_failures_and_never_infers_absence(self):
+        addrs, stats = self.providers()
+        requests = []
+
+        def discover(**options):
+            requests.append((options["bind"], options["destination"]))
+            if options["bind"] == "10.2.2.10":
+                raise OSError("adapter route unavailable")
+            return {"collection_complete": True, "devices": [{"endpoint": "192.168.10.2:10001"}],
+                    "malformed": [], "hidden_ignored": 0}
+
+        report = scan_host_cni(net_if_addrs=addrs, net_if_stats=stats,
+                               discover=discover, timeout=0.1)
+        self.assertEqual(requests, [("10.2.2.10", "10.2.3.255"),
+                                    ("192.168.10.20", "192.168.10.255")])
+        self.assertEqual([item["outcome"] for item in report["probes"]],
+                         ["transport_error", "devices_observed"])
+        self.assertEqual([item["adapter"]["interface"] for item in report["probes"]],
+                         ["alan", "zlan"])
+        self.assertFalse(report["scan_complete"])
+        self.assertFalse(report["absence_proven"])
+        self.assertTrue(report["automatic_adapter_enumeration"])
+
+    def test_requested_adapter_and_invalid_inventory_fail_before_probe(self):
+        addrs, stats = self.providers()
+
+        def forbidden(**_options):
+            raise AssertionError("discovery must not start")
+
+        with self.assertRaisesRegex(ValueError, "no usable broadcast route"):
+            scan_host_cni(interfaces=["vpn"], net_if_addrs=addrs,
+                          net_if_stats=stats, discover=forbidden)
+        with self.assertRaisesRegex(ValueError, "is absent"):
+            scan_host_cni(interfaces=["missing"], net_if_addrs=addrs,
+                          net_if_stats=stats, discover=forbidden)
+        many = {f"en{i}": [adapter(f"10.1.{i}.2", "255.255.255.0")]
+                for i in range(17)}
+        many_stats = {name: SimpleNamespace(isup=True) for name in many}
+        with self.assertRaisesRegex(ValueError, "16 route limit"):
+            scan_host_cni(net_if_addrs=lambda: many,
+                          net_if_stats=lambda: many_stats, discover=forbidden)
+        with self.assertRaisesRegex(ValueError, "nonempty unique"):
+            plan_host_cni_probes(interfaces=["alan", "alan"],
+                                 net_if_addrs=addrs, net_if_stats=stats)
+
+    def test_invalid_broadcast_and_netmask_are_not_silently_probed(self):
+        addresses = {"bad": [adapter("10.0.1.10", "255.0.255.0"),
+                             adapter("10.0.1.10", "255.255.255.0",
+                                     broadcast="10.0.2.255")],
+                     "good": [adapter("192.0.2.10", "255.255.255.0")]}
+        statuses = {name: SimpleNamespace(isup=True) for name in addresses}
+        plan = plan_host_cni_probes(net_if_addrs=lambda: addresses,
+                                    net_if_stats=lambda: statuses)
+        self.assertEqual(plan["probe_count"], 1)
+        self.assertEqual([item["reason"] for item in plan["skipped"]],
+                         ["invalid_ipv4_or_netmask", "reported_broadcast_mismatch"])
+
+    def test_missing_optional_network_extra_reports_install_hint(self):
+        with patch.dict(sys.modules, {"psutil": None}):
+            with self.assertRaisesRegex(RuntimeError, "cbus-toolkit-cli\\[network\\]"):
+                plan_host_cni_probes()
+
+
 class CniDiscoveryCliTests(unittest.TestCase):
+    def test_auto_adapter_parser_dispatch_and_explicit_interface_guard(self):
+        from cbus_toolkit import cli
+
+        args = cli.build_parser().parse_args([
+            "interface", "scan-cni", "--auto-adapters", "--interface", "en0",
+            "--timeout", "0.2"])
+        with patch("cbus_toolkit.cni_discovery.scan_host_cni",
+                   return_value={"format": "cbus-cni-multi-discovery-v1"}) as scan:
+            report, status = cli.run(args)
+        self.assertEqual(status, 0)
+        self.assertEqual(report["format"], "cbus-cni-multi-discovery-v1")
+        self.assertEqual(scan.call_args.kwargs["interfaces"], ["en0"])
+        self.assertEqual(scan.call_args.kwargs["timeout"], 0.2)
+        explicit = cli.build_parser().parse_args([
+            "interface", "scan-cni", "--probe", "127.0.0.1@127.0.0.1",
+            "--interface", "en0"])
+        with self.assertRaisesRegex(ValueError, "require --auto-adapters"):
+            cli.run(explicit)
+
+    def test_auto_adapter_plan_only_never_starts_discovery(self):
+        from cbus_toolkit import cli
+
+        args = cli.build_parser().parse_args([
+            "interface", "scan-cni", "--auto-adapters", "--plan-only",
+            "--interface", "en0"])
+        with patch("cbus_toolkit.cni_discovery.plan_host_cni_probes",
+                   return_value={"probe_count": 1}) as plan, patch(
+                       "cbus_toolkit.cni_discovery.scan_host_cni") as scan:
+            report, status = cli.run(args)
+        self.assertEqual((report, status), ({"probe_count": 1}, 0))
+        self.assertEqual(plan.call_args.kwargs["interfaces"], ["en0"])
+        scan.assert_not_called()
+
     def test_cli_emits_machine_readable_endpoint_without_opening_tcp(self):
         address, thread, errors = responder((CNI2,))
         process = subprocess.run([
