@@ -1,0 +1,26 @@
+{
+  "oracle": {
+    "version": "3.4.0",
+    "build": 2001,
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "listener_ownership_verified": true,
+    "cleanup_complete": true
+  },
+  "probe": {
+    "isolation": "owned native C-Gate process; five loopback command sessions; no physical interface",
+    "command": "BROADCAST_EVENT SP class payload",
+    "reply": "200 OK.",
+    "status_subscriptions": [
+      { "mode": "e0s0c0", "status_line": null },
+      { "mode": "e0s1c0", "status_line": "#s# broadcast_event SP class payload" },
+      { "mode": "e0s2c0", "status_line": "#s# broadcast_event SP class payload" },
+      { "mode": "e0s9c0", "status_line": "#s# broadcast_event SP class payload" }
+    ]
+  },
+  "config_inference": {
+    "basis": "Pinned build-2001 bytecode: oN stores any nonzero c digit in BG.c and registers the sink with BA; BA fans config text to every sink via BG.c(String), without inspecting BG.c. The s path does the same through BL and is independently observed above.",
+    "mode_levels": [0, 1, 2, 9],
+    "native_config_event_trigger_observed": false
+  },
+  "compatibility_vector": "rust/testdata/vectors/cgate_event_fanout.jsonl"
+}

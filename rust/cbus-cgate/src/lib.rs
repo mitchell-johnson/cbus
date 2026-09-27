@@ -10262,6 +10262,17 @@ mod tests {
         assert!(!EventMode::DEFAULT.delivers(EventCategory::Config));
         assert!(mode.delivers(EventCategory::Status));
         assert!(mode.delivers(EventCategory::Config));
+        // The vector distinguishes native loopback status observation from
+        // the corresponding BA/BG bytecode inference for config fanout.
+        for line in include_str!("../../testdata/vectors/cgate_event_fanout.jsonl").lines() {
+            let row: serde_json::Value = serde_json::from_str(line).unwrap();
+            let selector = EventMode::parse(row["mode"].as_str().unwrap()).unwrap();
+            assert_eq!(
+                selector.delivers_line(row["line"].as_str().unwrap()),
+                row["deliver"].as_bool().unwrap(),
+                "{line}"
+            );
+        }
         // Categories use the default C-Gate event mapping.
         assert_eq!(event_category("#e# x"), EventCategory::Event);
         assert_eq!(event_category("#s# x"), EventCategory::Status);

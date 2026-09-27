@@ -1,0 +1,8 @@
+{"mode":"e0s0c0","line":"#s# broadcast_event SP class payload","deliver":false,"basis":"native-loopback"}
+{"mode":"e0s1c0","line":"#s# broadcast_event SP class payload","deliver":true,"basis":"native-loopback"}
+{"mode":"e0s2c0","line":"#s# broadcast_event SP class payload","deliver":true,"basis":"native-loopback"}
+{"mode":"e0s9c0","line":"#s# broadcast_event SP class payload","deliver":true,"basis":"native-loopback"}
+{"mode":"e0s0c0","line":"#c# model-change","deliver":false,"basis":"pinned-bytecode"}
+{"mode":"e0s0c1","line":"#c# model-change","deliver":true,"basis":"pinned-bytecode"}
+{"mode":"e0s0c2","line":"#c# model-change","deliver":true,"basis":"pinned-bytecode"}
+{"mode":"e0s0c9","line":"#c# model-change","deliver":true,"basis":"pinned-bytecode"}

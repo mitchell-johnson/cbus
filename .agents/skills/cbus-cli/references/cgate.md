@@ -1410,8 +1410,11 @@ normalized mode. The parser applies each component as it reads it: an invalid
 later component returns 408 while retaining earlier changes on that connection.
 For example, from `e9s1c1`, `EVENT e10s1c1` returns 408 but leaves `e1s1c1`.
 The service reproduces this observed session-local behavior; no physical or
-persistent state changes. Native fanout for status/config levels above one and
-uncaptured malformed strings remain open. Exact tagged cases, repeat trials,
+persistent state changes. Native loopback fanout confirms that `s1`, `s2` and
+`s9` all admit the same status line while `s0` blocks it. Pinned BA/BG bytecode
+shows all nonzero config digits use direct sink fanout, though a native
+config-change trigger has not yet been captured. Uncaptured malformed strings
+remain open. Exact tagged cases, repeat trials,
 normalization and pinned original hashes are in
 `rust/testdata/fixtures/native_cgate_session_selectors.json`.
 
@@ -1421,12 +1424,15 @@ not a separate argument. C-Gate 3.4 build 2001 accepts arbitrary event-class
 tokens, including the minimal `BROADCAST_EVENT SP` invocation where `SP` is the
 event class and the event text is empty. Quoted event text follows native mK
 dequoting for escaped spaces, quotes, and backslashes.
-cmqttd returns exact `200 OK.` and fans out
-`#e# YYYYMMDD-HHMMSS.mmm 703 cmdN - broadcast_event ...`; the minimal form has
-a trailing space. Code 703 is reporting level 3, so use `EVENT e3s0c0` or a
-higher event level. It sends no PCI packet, publishes no MQTT state, persists
-nothing, and requires LOGIN when the optional command gate is armed. See
-`rust/testdata/fixtures/native_cgate_broadcast_event.json`.
+cmqttd returns exact `200 OK.` and fans out both
+`#e# YYYYMMDD-HHMMSS.mmm 703 cmdN - broadcast_event ...` and an untimed
+`#s# broadcast_event ...` status line; the minimal form has a trailing space.
+Code 703 is reporting level 3, so use `EVENT e3s0c0` or a higher event level
+for the event. Any nonzero `s` level admits the status line. It sends no PCI
+packet, publishes no MQTT state, persists nothing, and requires LOGIN when the
+optional command gate is armed. See
+`rust/testdata/fixtures/native_cgate_broadcast_event.json` and
+`rust/testdata/fixtures/native_cgate_event_fanout.json`.
 
 ### PP administration and PROGRAMMER queues
 

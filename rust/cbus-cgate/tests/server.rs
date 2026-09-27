@@ -131,8 +131,9 @@ fn broadcast_event_matches_native_reply_help_payload_and_level() {
         assert!(response.lines.is_empty(), "{command}");
         assert_eq!(response.final_text, "200 OK.", "{command}");
         let events = server.drain_events();
-        assert_eq!(events.len(), 1, "{command}");
+        assert_eq!(events.len(), 2, "{command}");
         assert_broadcast_event(&events[0], 3, content);
+        assert_eq!(events[1], format!("#s# broadcast_event {content}"));
     }
 
     let level_three = cbus_cgate::EventMode::parse("e3s0c0").unwrap();

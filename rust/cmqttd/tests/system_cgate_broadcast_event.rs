@@ -1,5 +1,6 @@
 //! Real cmqttd process: BROADCAST_EVENT stays local to the command service,
-//! uses native timestamped 703 envelopes, and reaches only EVENT subscribers.
+//! uses native timestamped 703 and status-change envelopes, and reaches only
+//! subscribers whose EVENT category selectors admit each envelope.
 
 mod util;
 
@@ -101,6 +102,7 @@ async fn broadcast_event_fans_out_without_pci_or_mqtt_disruption() {
     // Producer connects first and therefore owns native session cmd3.
     let (mut producer_reader, mut producer_writer) = connect(&address).await;
     let (mut event_reader, mut event_writer) = connect(&address).await;
+    let (mut status_reader, mut status_writer) = connect(&address).await;
     assert_eq!(
         command(
             &mut producer_reader,
@@ -143,6 +145,16 @@ async fn broadcast_event_fans_out_without_pci_or_mqtt_disruption() {
     );
     assert_eq!(
         command(
+            &mut status_reader,
+            &mut status_writer,
+            "status",
+            "EVENT e0s2c0",
+        )
+        .await,
+        ["200 OK."]
+    );
+    assert_eq!(
+        command(
             &mut producer_reader,
             &mut producer_writer,
             "minimal",
@@ -157,6 +169,12 @@ async fn broadcast_event_fans_out_without_pci_or_mqtt_disruption() {
         .expect("minimal BROADCAST_EVENT timed out")
         .unwrap();
     assert_broadcast_event(event.trim_end_matches(['\r', '\n']), 3, "SP ");
+    let mut status = String::new();
+    tokio::time::timeout(STARTUP, status_reader.read_line(&mut status))
+        .await
+        .expect("minimal status change timed out")
+        .unwrap();
+    assert_eq!(status, "#s# broadcast_event SP \r\n");
 
     assert_eq!(
         command(
@@ -178,6 +196,12 @@ async fn broadcast_event_fans_out_without_pci_or_mqtt_disruption() {
         3,
         "XX class payload text",
     );
+    status.clear();
+    tokio::time::timeout(STARTUP, status_reader.read_line(&mut status))
+        .await
+        .expect("payload status change timed out")
+        .unwrap();
+    assert_eq!(status, "#s# broadcast_event XX class payload text\r\n");
 
     assert_eq!(
         command(&mut event_reader, &mut event_writer, "off", "EVENT OFF",).await,

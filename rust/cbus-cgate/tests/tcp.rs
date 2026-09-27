@@ -373,6 +373,56 @@ fn tcp_broadcast_event_uses_native_703_shape_and_subscription_level() {
 }
 
 #[test]
+fn tcp_broadcast_event_matches_native_status_fanout_matrix() {
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_event_fanout.json"
+    ))
+    .expect("native EVENT fanout fixture is valid JSON");
+    assert_eq!(
+        fixture["oracle"]["jar_sha256"],
+        "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+    );
+    assert_eq!(fixture["oracle"]["listener_ownership_verified"], true);
+    assert_eq!(fixture["oracle"]["cleanup_complete"], true);
+
+    let mock = Mock::spawn();
+    let mut producer = mock.connect();
+    assert!(producer.greeting().starts_with("201 "));
+    let mut subscribers = Vec::new();
+    for row in fixture["probe"]["status_subscriptions"]
+        .as_array()
+        .expect("status subscription rows")
+    {
+        let mut subscriber = mock.connect();
+        assert!(subscriber.greeting().starts_with("201 "));
+        let mode = row["mode"].as_str().expect("mode string");
+        assert_eq!(
+            subscriber.command(&format!("EVENT {mode}")).lines,
+            ["200 OK."]
+        );
+        subscribers.push(subscriber);
+    }
+
+    let command = fixture["probe"]["command"]
+        .as_str()
+        .expect("broadcast command");
+    let reply = producer.command(command);
+    assert_eq!(reply.lines, [fixture["probe"]["reply"].as_str().unwrap()]);
+    for (row, subscriber) in fixture["probe"]["status_subscriptions"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .zip(subscribers.iter_mut())
+    {
+        if let Some(line) = row["status_line"].as_str() {
+            assert_eq!(subscriber.read_event(), line);
+        } else {
+            subscriber.assert_silent_for(Duration::from_millis(100));
+        }
+    }
+}
+
+#[test]
 fn tcp_deny_programming_posture() {
     let mock = Mock::spawn_with(&["--bind", "127.0.0.1:0", "--deny-programming"]);
     let mut s = mock.connect();

@@ -1413,7 +1413,11 @@ impl Server {
             if words.len() < 2 {
                 return Some(err(tag, status::BAD_REQUEST, "400 Syntax Error."));
             }
-            self.push_event(self.broadcast_event_line(words[1], &remaining_dequoted(body, 2)));
+            let text = remaining_dequoted(body, 2);
+            self.push_event(self.broadcast_event_line(words[1], &text));
+            // Native C-Gate also sends this command to the status-change
+            // stream. Its status line has no timestamp or reporting code.
+            self.push_event(format!("#s# broadcast_event {} {text}", words[1]));
             return Some(ok(tag, vec![], "200 OK."));
         }
 
