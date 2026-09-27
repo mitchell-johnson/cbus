@@ -311,7 +311,7 @@ def build() -> tuple[dict, dict]:
     ledger_ids = {feature["id"] for feature in ledger["features"]}
     sys.path.insert(0, str(ROOT / "src"))
     from cbus_toolkit.device_dialogs import list_dialogs
-    from cbus_toolkit.parity import WORK_ITEM_IDS
+    from cbus_toolkit.parity import WORK_ITEM_IDS, cgate_path_obligation_id
 
     roadmap_work_item_ids = {
         work_item_id
@@ -331,6 +331,7 @@ def build() -> tuple[dict, dict]:
     contract_by_path = {
         contract["path"]: contract for contract in cgate_contracts["contracts"]
     }
+    cgate_path_scopes: list[tuple[dict, dict]] = []
     scope_items: list[dict] = []
 
     def obligation_ids(ledger_targets: list[str] | tuple[str, ...]) -> list[str]:
@@ -434,20 +435,23 @@ def build() -> tuple[dict, dict]:
         for row in paths:
             path_id = sha256(row["path"].encode("utf-8")).hexdigest()[:16]
             contract = contract_by_path[row["path"]]
-            scope_items.append(
-                {
-                    "id": f"scope:{kind}:{path_id}",
-                    "kind": kind,
-                    "source_id": row["path"],
-                    "routing_class": row["routing_class"],
-                    "contract_id": contract["id"],
-                    "contract_sha256": contract["contract_sha256"],
-                    "contract_axes_sha256": contract["axes_sha256"],
-                    "contract_axes": contract["axes"],
-                    "obligation_ids": obligation_ids(["cgate-command-transport"]),
-                    "disposition": "provisional_obligation",
-                }
-            )
+            scope = {
+                "id": f"scope:{kind}:{path_id}",
+                "kind": kind,
+                "source_id": row["path"],
+                "routing_class": row["routing_class"],
+                "contract_id": contract["id"],
+                "contract_sha256": contract["contract_sha256"],
+                "contract_axes_sha256": contract["axes_sha256"],
+                "contract_axes": contract["axes"],
+                "obligation_ids": [
+                    "ledger:cgate-command-transport",
+                    cgate_path_obligation_id(row["path"]),
+                ],
+                "disposition": "provisional_obligation",
+            }
+            scope_items.append(scope)
+            cgate_path_scopes.append((scope, contract))
     for resource in executable["resources"]:
         resource_name = resource["resource_name"]
         resource_key = sha256(resource_name.encode("utf-8")).hexdigest()[:16]
@@ -530,6 +534,54 @@ def build() -> tuple[dict, dict]:
             }
         )
 
+    cgate_work_items = next(
+        item["work_item_ids"]
+        for item in obligations
+        if item["id"] == "ledger:cgate-command-transport"
+    )
+    for scope, contract in cgate_path_scopes:
+        path = scope["source_id"]
+        obligations.append(
+            {
+                "id": cgate_path_obligation_id(path),
+                "kind": "cgate_path",
+                "ledger_id": "cgate-command-transport",
+                "work_item_ids": sorted(set(cgate_work_items) | {"P0.03"}),
+                "source_scope_item_id": scope["id"],
+                "source_id": path,
+                "contract_id": contract["id"],
+                "contract_sha256": contract["contract_sha256"],
+                "definition_status": "provisional",
+                # A dispatch route is not a complete selector/state/effect implementation.
+                "implementation_status": "in_progress",
+                "implementation_basis": "route_reachable_contract_incomplete",
+                "applicability_status": "unresolved",
+                "outcome": (
+                    f"Clients invoking {path} receive the specified responses, events, "
+                    "state changes and physical effects for every applicable selector "
+                    "and session state."
+                ),
+                "source_refs": [
+                    f"cgate-contract-inventory.json#{contract['id']}",
+                    f"capability_matrix.rs#{path}",
+                    "capabilities.json#cgate-command-transport",
+                ],
+                "acceptance": {
+                    dimension: "unassessed"
+                    for dimension in (
+                        "nominal",
+                        "error",
+                        "invalid_input",
+                        "profile_variation",
+                        "original_differential",
+                        "physical",
+                        "persistence_recovery",
+                    )
+                },
+                "evidence_ids": [],
+            }
+        )
+
     by_kind: dict[str, int] = {}
     for item in scope_items:
         by_kind[item["kind"]] = by_kind.get(item["kind"], 0) + 1
@@ -566,7 +618,7 @@ def build() -> tuple[dict, dict]:
     register = {
         "schema_version": 1,
         "target": ledger["target"],
-        "denominator_version": "provisional-2026-09-27.3",
+        "denominator_version": "provisional-2026-09-27.4",
         "census_complete": False,
         "purpose": "Provisional exhaustive source accounting; not yet a deduplicated functional denominator or acceptance claim.",
         "source_digests": {

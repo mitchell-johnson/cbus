@@ -94,6 +94,36 @@ def fixture_documents() -> tuple[dict, dict, dict, bytes]:
     return register, evidence, ledger, evidence_raw
 
 
+def packaged_documents() -> tuple[dict, dict, dict, bytes, dict, bytes, bytes]:
+    package = ROOT / "src/cbus_toolkit"
+    register = json.loads((package / "parity-obligations.json").read_bytes())
+    evidence_raw = (package / "parity-evidence.json").read_bytes()
+    contract_raw = (package / "cgate-contract-inventory.json").read_bytes()
+    ledger_raw = (package / "capabilities.json").read_bytes()
+    return (
+        register,
+        json.loads(evidence_raw),
+        json.loads(ledger_raw),
+        evidence_raw,
+        json.loads(contract_raw),
+        contract_raw,
+        ledger_raw,
+    )
+
+
+def evaluate_packaged_change(register: dict) -> dict:
+    _, evidence, ledger, evidence_raw, contracts, contract_raw, ledger_raw = packaged_documents()
+    return parity.evaluate(
+        register,
+        evidence,
+        ledger,
+        evidence_raw=evidence_raw,
+        ledger_raw=ledger_raw,
+        cgate_contract_inventory=contracts,
+        cgate_contract_raw=contract_raw,
+    )
+
+
 class ParityRegisterTests(unittest.TestCase):
     def test_packaged_register_accounts_for_all_committed_source_surfaces(self):
         ledger = json.loads((ROOT / "src/cbus_toolkit/capabilities.json").read_text())
@@ -106,7 +136,7 @@ class ParityRegisterTests(unittest.TestCase):
         self.assertIsNone(
             report["acceptance_by_dimension"]["original_differential"]["percent"]
         )
-        self.assertEqual(report["obligations"]["total"], 39)
+        self.assertEqual(report["obligations"]["total"], 481)
         self.assertEqual(report["obligations"]["defined"], 0)
         self.assertEqual(report["obligations"]["accepted"], 0)
         self.assertEqual(report["legacy_category_summary"]["implemented"], 18)
@@ -147,6 +177,89 @@ class ParityRegisterTests(unittest.TestCase):
             ],
             {"unresolved": 442},
         )
+
+    def test_cgate_paths_have_independent_source_bound_obligations(self):
+        register, _, _, _, contracts, _, _ = packaged_documents()
+        obligations = {
+            item["id"]: item
+            for item in register["obligations"]
+            if item.get("kind") == "cgate_path"
+        }
+        self.assertEqual(len(obligations), 442)
+        self.assertEqual(
+            {item["implementation_status"] for item in obligations.values()},
+            {"in_progress"},
+        )
+        for contract in contracts["contracts"]:
+            with self.subTest(path=contract["path"]):
+                obligation_id = parity.cgate_path_obligation_id(contract["path"])
+                obligation = obligations[obligation_id]
+                self.assertEqual(obligation["contract_id"], contract["id"])
+                self.assertEqual(obligation["contract_sha256"], contract["contract_sha256"])
+                self.assertEqual(obligation["ledger_id"], "cgate-command-transport")
+                self.assertEqual(obligation["definition_status"], "provisional")
+                self.assertEqual(obligation["applicability_status"], "unresolved")
+                self.assertEqual(obligation["acceptance"]["original_differential"], "unassessed")
+                self.assertEqual(obligation["acceptance"]["physical"], "unassessed")
+                self.assertIn("P0.03", obligation["work_item_ids"])
+
+    def test_cgate_path_mapping_rejects_missing_duplicate_and_orphaned_rows(self):
+        def first_path(register):
+            return next(
+                item for item in register["scope_items"]
+                if item["kind"] == "cgate_primary_path"
+            )
+
+        register, *_ = packaged_documents()
+        scope = first_path(register)
+        scope["obligation_ids"].remove(parity.cgate_path_obligation_id(scope["source_id"]))
+        with self.assertRaisesRegex(ValueError, "requires exactly its own C-Gate path obligation"):
+            evaluate_packaged_change(register)
+
+        register, *_ = packaged_documents()
+        scope = first_path(register)
+        specific_id = parity.cgate_path_obligation_id(scope["source_id"])
+        register["obligations"] = [
+            item for item in register["obligations"] if item["id"] != specific_id
+        ]
+        with self.assertRaisesRegex(ValueError, "names an unknown obligation"):
+            evaluate_packaged_change(register)
+
+        register, *_ = packaged_documents()
+        register["obligations"].append(
+            next(item for item in register["obligations"] if item.get("kind") == "cgate_path").copy()
+        )
+        with self.assertRaisesRegex(ValueError, "Duplicate obligation id"):
+            evaluate_packaged_change(register)
+
+        register, *_ = packaged_documents()
+        invented_path = "INVENTED SUBCOMMAND"
+        orphan = next(item for item in register["obligations"] if item.get("kind") == "cgate_path").copy()
+        orphan["id"] = parity.cgate_path_obligation_id(invented_path)
+        orphan["source_id"] = invented_path
+        orphan["contract_id"] = f"cgate-contract:{orphan['id'].removeprefix('cgate-path:')}"
+        register["obligations"].append(orphan)
+        with self.assertRaisesRegex(ValueError, "path obligations differ from packaged contracts"):
+            evaluate_packaged_change(register)
+
+    def test_cgate_path_ledger_contract_and_route_only_claims_are_guarded(self):
+        register, *_ = packaged_documents()
+        obligation = next(item for item in register["obligations"] if item.get("kind") == "cgate_path")
+        obligation["ledger_id"] = "toolkit-surface-census"
+        with self.assertRaisesRegex(ValueError, "incorrect broad-ledger mapping"):
+            evaluate_packaged_change(register)
+
+        register, *_ = packaged_documents()
+        obligation = next(item for item in register["obligations"] if item.get("kind") == "cgate_path")
+        obligation["contract_sha256"] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "differs from its source-bound C-Gate scope"):
+            evaluate_packaged_change(register)
+
+        register, *_ = packaged_documents()
+        obligation = next(item for item in register["obligations"] if item.get("kind") == "cgate_path")
+        obligation["implementation_status"] = "implemented"
+        with self.assertRaisesRegex(ValueError, "overstates route-only implementation"):
+            evaluate_packaged_change(register)
 
     def test_packaged_register_rejects_a_substituted_feature_ledger(self):
         ledger = json.loads((ROOT / "src/cbus_toolkit/capabilities.json").read_text())

@@ -7,11 +7,14 @@ The Python implementation and CLI provide the functions listed below within thei
 The [functional parity register](parity-register.md) now owns the completion
 decision. Its current generated revision accounts for 22,156 source records,
 including 412 parsed Toolkit forms, 10,102 controls and 1,892 event bindings,
-and 39 provisional umbrella obligations, with zero accepted obligations and
-zero evidence receipts. Functional percentages remain unavailable until P0
+and 39 provisional umbrella obligations plus 442 provisional C-Gate path
+obligations, with zero accepted obligations and zero evidence receipts. These
+overlapping records are not a deduplicated functional denominator. Functional
+percentages remain unavailable until P0
 resolves the source records into a complete denominator. Its packaged C-Gate
 contract inventory now gives every one of the 431 primary and 11 supplement
-paths seven digest-bound axes, while retaining unresolved selector, target,
+paths seven digest-bound axes and a one-to-one source-bound obligation, while
+retaining unresolved selector, target,
 response, effect and acceptance subaxes explicitly. The installed-wheel
 acceptance runner and wheel auditor consume the same packaged register and
 contract inventory; historical wheels without them can never claim full parity.
@@ -37,14 +40,14 @@ as evidence of functional completion.
 
 ## Test checkpoints
 
-The 27 September 2026 Python 3.13 source-tree `make check` and clean, isolated
-installed-wheel gate for the current tree each passed **2,477 tests**, skipped
-**265 provisioning-gated tests** and passed **19,488 subtests**, with no
-failures or errors. The wheel installed every supported extra without
-importing the source package. `make check-interop` passed **17 tests** and
-skipped one test because the external vendor unit-specification tree was not
-provisioned. These results do not replace zero-skip native C-Gate or
-physical-hardware acceptance.
+The 27 September 2026 Python 3.13 source-tree `make check` for the C-Gate path
+obligation slice passed **2,628 tests**, skipped **285 provisioning-gated
+tests**, and passed **20,031 subtests**, with no failures or errors.
+`make check-interop` passed **15 C-Gate tests**, skipped one vendor-spec test,
+and passed **5 cmqttd tests**. An earlier clean, isolated installed-wheel gate
+passed **2,477 tests**, skipped **265 provisioning-gated tests** and passed
+**19,488 subtests**; that wheel result predates this slice. These results do
+not replace zero-skip native C-Gate or physical-hardware acceptance.
 
 The last complete audited installed wheel is the 15 September 2026 snapshot: **1,725 tests on Python 3.13.14 and 1,725 on Python 3.10.20**, with no failures, errors or skips and all 14 required native gates enabled. Its exact sources, wheel and reports are recorded in [test-acceptance.json](test-acceptance.json). It predates later changes; Python 3.13 is now the only supported runtime.
 

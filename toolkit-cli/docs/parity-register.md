@@ -37,7 +37,9 @@ firmware domains. Until that finishes, `denominator_ready` and
 ## Files and regeneration
 
 - `src/cbus_toolkit/parity-obligations.json` contains the source inventory,
-  provisional scope mappings and obligation records.
+  provisional scope mappings and obligation records. It now contains one
+  source-bound provisional obligation for each of the 442 C-Gate paths in
+  addition to the 39 historical umbrella obligations.
 - `src/cbus_toolkit/parity-evidence.json` contains evidence receipts. It starts
   empty because a historical path or test filename is not acceptance evidence.
 - `src/cbus_toolkit/parity.py` validates both documents and derives progress.
@@ -113,6 +115,18 @@ C-Gate oracle by SHA-256. An accepted or not-applicable dimension requires
 evidence; an accepted dimension also requires a passed record naming that
 exact obligation and dimension.
 
+Each C-Gate path obligation has a stable `cgate-path:` ID derived from its
+command path, a `source_scope_item_id`, the exact packaged contract ID and
+digest, and an explicit mapping to the `cgate-command-transport` ledger row.
+The validator requires one and only one such obligation for each of the 431
+primary and 11 supplement path scope items; missing, duplicate, swapped and
+orphaned mappings fail. These path obligations keep implementation status,
+original-differential acceptance, physical acceptance and applicability in
+separate fields. All are currently provisional and `in_progress`: a reachable
+dispatch route is known, but complete selector/state/effect behavior is not
+accepted. Original and physical acceptance remain `unassessed`, applicability
+remains `unresolved`, and no evidence receipt is attributed to them.
+
 A scope record can use `nonfunctional_with_evidence` only when one of its
 `evidence_ids` names a passed receipt containing
 `scope_disposition_receipts: [{"scope_item_id": "...", "decision":
@@ -186,11 +200,14 @@ evidence.
 
 ## Current result
 
-The current register has 39 provisional umbrella obligations, zero accepted
-obligations and zero evidence receipts. All 22,156 source records and 15
+The current register has 39 provisional umbrella obligations plus 442
+provisional C-Gate path obligations, zero accepted obligations and zero
+evidence receipts. The 481 records overlap and are not a deduplicated
+functional denominator. All 22,156 source records and 15
 source domains remain unresolved. Executable forms, controls and event
 bindings are now counted. C-Gate paths have a deterministic per-axis contract
-inventory, while the unresolved subaxes above, functional deduplication,
+inventory and a one-to-one obligation mapping, while the unresolved subaxes
+above, functional deduplication,
 undocumented Toolkit branches and catalogue firmware profiles remain open.
 The legacy ledger still reports 18 implemented, 19 in
 progress and 2 pending rows, or 46.15% of category labels. That value is

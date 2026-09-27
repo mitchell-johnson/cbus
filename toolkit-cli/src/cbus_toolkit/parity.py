@@ -134,6 +134,11 @@ CGATE_CONTRACT_AXIS_SCHEMA = {
 }
 
 
+def cgate_path_obligation_id(path: str) -> str:
+    """Stable, version-independent identity for one maintained command path."""
+    return f"cgate-path:{sha256(path.encode('utf-8')).hexdigest()[:16]}"
+
+
 def _reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
     result: dict[str, Any] = {}
     for key, value in pairs:
@@ -621,6 +626,7 @@ def validate_register(
     if not isinstance(obligations, list) or not obligations:
         raise ValueError("Parity register requires a nonempty obligations array")
     obligations_by_id: dict[str, dict[str, Any]] = {}
+    cgate_path_obligations: dict[str, dict[str, Any]] = {}
     ledger_coverage: Counter[str] = Counter()
     for index, obligation in enumerate(obligations):
         context = f"obligation {index}"
@@ -634,6 +640,33 @@ def validate_register(
         ledger_id = obligation.get("ledger_id")
         if ledger_id not in ledger_by_id:
             raise ValueError(f"{obligation_id} names unknown ledger id: {ledger_id}")
+        is_cgate_path = (
+            obligation.get("kind") == "cgate_path"
+            or obligation_id.startswith("cgate-path:")
+        )
+        if is_cgate_path:
+            if obligation.get("kind") != "cgate_path":
+                raise ValueError(f"{obligation_id} requires cgate_path kind")
+            if ledger_id != "cgate-command-transport":
+                raise ValueError(f"{obligation_id} has an incorrect broad-ledger mapping")
+            path = obligation.get("source_id")
+            if not isinstance(path, str) or not path:
+                raise ValueError(f"{obligation_id} requires a C-Gate source path")
+            if obligation_id != cgate_path_obligation_id(path):
+                raise ValueError(f"{obligation_id} has an unstable C-Gate path id")
+            if not isinstance(obligation.get("source_scope_item_id"), str):
+                raise ValueError(f"{obligation_id} requires a source scope item id")
+            if obligation.get("contract_id") != f"cgate-contract:{obligation_id.removeprefix('cgate-path:')}":
+                raise ValueError(f"{obligation_id} has an incorrect C-Gate contract id")
+            if not isinstance(obligation.get("contract_sha256"), str) or not SHA256_RE.fullmatch(
+                obligation["contract_sha256"]
+            ):
+                raise ValueError(f"{obligation_id} requires a C-Gate contract digest")
+            if not isinstance(obligation.get("implementation_basis"), str) or not obligation[
+                "implementation_basis"
+            ].strip():
+                raise ValueError(f"{obligation_id} requires an implementation basis")
+            cgate_path_obligations[obligation_id] = obligation
         ledger_coverage[ledger_id] += 1
         work_items = _strings(
             obligation.get("work_item_ids"),
@@ -652,8 +685,14 @@ def validate_register(
             raise ValueError(f"{obligation_id} has an unknown definition_status")
         if obligation.get("implementation_status") not in IMPLEMENTATION_STATES:
             raise ValueError(f"{obligation_id} has an unknown implementation_status")
-        if obligation["implementation_status"] != ledger_by_id[ledger_id]["status"]:
+        if not is_cgate_path and obligation["implementation_status"] != ledger_by_id[ledger_id]["status"]:
             raise ValueError(f"{obligation_id} implementation status drifts from {ledger_id}")
+        if (
+            is_cgate_path
+            and obligation["implementation_basis"] == "route_reachable_contract_incomplete"
+            and obligation["implementation_status"] != "in_progress"
+        ):
+            raise ValueError(f"{obligation_id} overstates route-only implementation")
         if obligation.get("applicability_status") not in APPLICABILITY_STATES:
             raise ValueError(f"{obligation_id} has an unknown applicability_status")
         if not isinstance(obligation.get("outcome"), str) or not obligation["outcome"].strip():
@@ -783,6 +822,17 @@ def validate_register(
         )
         if set(item_obligations) - set(obligations_by_id):
             raise ValueError(f"{item_id} names an unknown obligation")
+        if kind in {"cgate_primary_path", "cgate_supplement_path"}:
+            expected_path_id = cgate_path_obligation_id(item["source_id"])
+            scoped_path_ids = [
+                obligation_id
+                for obligation_id in item_obligations
+                if obligation_id.startswith("cgate-path:")
+            ]
+            if scoped_path_ids != [expected_path_id]:
+                raise ValueError(f"{item_id} requires exactly its own C-Gate path obligation")
+            if "ledger:cgate-command-transport" not in item_obligations:
+                raise ValueError(f"{item_id} lacks its broad-ledger mapping")
         if item["disposition"] != "nonfunctional_with_evidence" and not item_obligations:
             raise ValueError(f"{item_id} has no mapped obligation")
         item_evidence = _strings(
@@ -812,6 +862,35 @@ def validate_register(
         cgate_contracts_by_id
     ):
         raise ValueError("Scoped C-Gate contracts differ from packaged inventory")
+    if cgate_contracts_by_id is None and cgate_path_obligations:
+        raise ValueError("C-Gate path obligations require a packaged contract inventory")
+    if cgate_contracts_by_id is not None:
+        expected_path_ids = {
+            cgate_path_obligation_id(contract["path"])
+            for contract in cgate_contracts_by_id.values()
+        }
+        if set(cgate_path_obligations) != expected_path_ids:
+            raise ValueError("C-Gate path obligations differ from packaged contracts")
+        for obligation_id, obligation in cgate_path_obligations.items():
+            contract = cgate_contracts_by_id.get(obligation["contract_id"])
+            if contract is None:
+                raise ValueError(f"{obligation_id} names an unknown C-Gate contract")
+            scope_kind = (
+                "cgate_primary_path"
+                if contract["inventory"] == "primary"
+                else "cgate_supplement_path"
+            )
+            expected_scope_id = f"scope:{scope_kind}:{obligation_id.removeprefix('cgate-path:')}"
+            scope = scope_by_id.get(expected_scope_id)
+            if (
+                obligation["source_id"] != contract["path"]
+                or obligation["contract_sha256"] != contract["contract_sha256"]
+                or obligation["source_scope_item_id"] != expected_scope_id
+                or scope is None
+                or obligation_id not in scope["obligation_ids"]
+                or scope["contract_id"] != contract["id"]
+            ):
+                raise ValueError(f"{obligation_id} differs from its source-bound C-Gate scope")
 
     for evidence_id, record in evidence_by_id.items():
         for receipt in record["scope_disposition_receipts"]:
