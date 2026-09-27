@@ -59,6 +59,19 @@ Native connections support TLS and client certificates. A live address such as `
 
 Successful operations emit JSON on stdout, operation errors emit JSON on stderr, and failures return nonzero. Argument usage errors can be plain argparse text. `--compact` is a global option before the command; event monitoring emits JSON lines. Preserve partial-operation evidence and do not replay uncertain writes automatically.
 
+The typed network learn/locate forms cover the six retained learn grades and
+all four retained locate selectors. They require fully qualified direct paths
+and return an interface-delivery receipt without claiming device action,
+readback or persistence. Use the exact range and no-replay boundary in
+[`network-learning-locate.md`](../../../../toolkit-cli/docs/network-learning-locate.md).
+Run them only against a C-Gate service with the intended direct physical
+network bound:
+
+```sh
+cbus-toolkit cgate network learn //PROJECT/254 56 init-relay 1
+cbus-toolkit cgate network locate //PROJECT/254/208 unit 1 ON
+```
+
 For supported classic UnitTemplate work, use `template-export` and
 `template-import` for XML files. Use database-unit `template-copy` to transfer
 the original 26-field template set directly between distinct matching

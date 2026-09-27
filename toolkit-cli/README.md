@@ -501,14 +501,31 @@ cbus-toolkit cgate --timeout 60 network sync //TEST/254 --fast
 cbus-toolkit cgate --timeout 120 network sync-new //TEST/254
 cbus-toolkit cgate --timeout 120 network sync-new //TEST/254 --unit 6
 cbus-toolkit cgate network set-project //TEST/254 TEST
+cbus-toolkit cgate network learn //TEST/254 56 init-relay 1
+cbus-toolkit cgate network learn //TEST/254 56 cancel 1
+cbus-toolkit cgate network locate //TEST/254/208 unit 1 ON
+cbus-toolkit cgate network locate //TEST/254/208 app 56 2
+cbus-toolkit cgate network locate //TEST/254/208 group 56 1 OFF
+cbus-toolkit cgate network locate //TEST/254/208 serial 1 12345.67 255
 cbus-toolkit cgate --timeout 120 network unravel //TEST/254 --unit 255 --match-database
 cbus-toolkit cgate network tree //TEST/254 --details
 cbus-toolkit cgate network close //TEST/254
 ```
 
 `wait-ready` observes native state without restarting operations. Against
-cmqttd, the shown unravel command has a bounded physical backend for exactly
-two known serials colliding at address 255 with two unique empty database
+the selected C-Gate service, the typed `learn` command admits the six retained
+grades (`init-relay`, `init-dim`, `cancel`, `exit-relay`, `exit-dim` and
+`exit-area`). Typed `locate` covers UNIT, APP, GROUP and SERIAL on an explicit
+Network Management application 208. Both require fully qualified direct paths,
+send one correlated command through `CgateClient` and never replay an uncertain
+write. Their JSON receipt reports interface delivery after an exact terminal
+200 while leaving device action, physical readback and persistence false. See
+[network learning and locate](docs/network-learning-locate.md) for the exact
+limits, retained vectors and server-side evidence. This checkpoint did not run
+the Toolkit GUI or a physical unit.
+
+Against cmqttd, the shown unravel command has a bounded physical backend for
+exactly two known serials colliding at address 255 with two unique empty database
 destinations on a direct network. It sends each selected-serial move once and
 accepts success only after complete before/after inventories and independent
 destination checks. Other unravel forms return 502. Native C-Gate retains its

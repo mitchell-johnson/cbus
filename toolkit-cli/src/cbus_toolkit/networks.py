@@ -1,12 +1,153 @@
 """Native network lifecycle and commissioning operations, invoked explicitly."""
 from __future__ import annotations
 
+from dataclasses import dataclass
+from enum import IntEnum
 import math
 import re
 import time
 
 from .native import _address, _project, _token
 from .programming import quote_value
+from .serials import parse_native_serial
+
+
+class LearnGrade(IntEnum):
+    """The six learn-mode grades retained by C-Gate 3.4 build 2001."""
+
+    INIT_RELAY = 1
+    INIT_DIM = 2
+    CANCEL = 128
+    EXIT_RELAY = 129
+    EXIT_DIM = 130
+    EXIT_AREA = 131
+
+    @property
+    def label(self):
+        return self.name.lower().replace("_", "-")
+
+    @property
+    def native_token(self):
+        return str(self.value) if self.value < 128 else f"${self.value:02X}"
+
+
+_LEARN_GRADES = {grade.label: grade for grade in LearnGrade}
+
+
+def _native_byte_text(value, label):
+    if not isinstance(value, str) or not value:
+        raise ValueError(f"{label} must be a byte or supported symbolic name")
+    try:
+        number = (int(value[1:], 16) if value.startswith("$")
+                  else int(value, 16 if value.lower().startswith("0x") else 10))
+    except ValueError as error:
+        raise ValueError(f"{label} must be a byte or supported symbolic name") from error
+    if not 0 <= number <= 255:
+        raise ValueError(f"{label} must be in 0..255")
+    return number
+
+
+def parse_learn_grade(value):
+    """Accept a typed name or exact native byte spelling for one known grade."""
+    if isinstance(value, LearnGrade):
+        return value
+    if type(value) is int:
+        number = value
+    elif isinstance(value, str) and value.lower().replace("_", "-") in _LEARN_GRADES:
+        return _LEARN_GRADES[value.lower().replace("_", "-")]
+    else:
+        number = _native_byte_text(value, "Learn grade")
+    try:
+        return LearnGrade(number)
+    except ValueError as error:
+        raise ValueError(
+            "Learn grade must be init-relay, init-dim, cancel, exit-relay, "
+            "exit-dim, exit-area, or its native value"
+        ) from error
+
+
+def parse_locate_mode(value):
+    """Return OFF/ON or an explicit native byte as a numeric mode."""
+    if type(value) is int:
+        if 0 <= value <= 255:
+            return value
+        raise ValueError("Locate mode must be in 0..255")
+    if isinstance(value, str):
+        if value.upper() == "OFF":
+            return 0
+        if value.upper() == "ON":
+            return 1
+    return _native_byte_text(value, "Locate mode")
+
+
+def _byte_value(value, label, *, maximum=255):
+    if type(value) is not int or not 0 <= value <= maximum:
+        raise ValueError(f"{label} must be an integer in 0..{maximum}")
+    return value
+
+
+def direct_network_path(value):
+    """Admit only the fully qualified direct-network shape retained by evidence."""
+    value = _token(value, "network address")
+    match = re.fullmatch(r"//([A-Za-z0-9_]{1,8})/([0-9]{1,3})", value)
+    if match is None or int(match[2]) > 255:
+        raise ValueError("Use a fully qualified network address such as //PROJECT/254")
+    return f"//{match[1]}/{int(match[2])}"
+
+
+def network_management_application_path(value):
+    """Admit the evidenced Network Management application 208 path."""
+    value = _token(value, "Network Management application")
+    match = re.fullmatch(r"//([A-Za-z0-9_]{1,8})/([0-9]{1,3})/([0-9]{1,3})", value)
+    if (match is None or int(match[2]) > 255 or int(match[3]) != 208):
+        raise ValueError(
+            "Use a fully qualified Network Management application such as //PROJECT/254/208"
+        )
+    return f"//{match[1]}/{int(match[2])}/208"
+
+
+def _mode_name(mode):
+    return "off" if mode == 0 else "on" if mode == 1 else "byte"
+
+
+def _mode_token(mode):
+    return "OFF" if mode == 0 else "ON" if mode == 1 else str(mode)
+
+
+@dataclass(frozen=True)
+class NetworkManagementReceipt:
+    """C-Gate acceptance without an invented unit-action or persistence claim."""
+
+    operation: str
+    network: str
+    carrier_application: int
+    selector: str
+    target: dict
+    mode: int | None
+    command: str
+    response: object
+
+    def as_dict(self):
+        return {
+            "format": "cbus-cgate-network-management-v1",
+            "operation": self.operation,
+            "network": self.network,
+            "carrier_application": self.carrier_application,
+            "selector": self.selector,
+            "target": dict(self.target),
+            "mode": (None if self.mode is None else {
+                "value": self.mode,
+                "name": _mode_name(self.mode),
+            }),
+            "native_command": self.command,
+            "cgate_accepted": True,
+            "interface_delivery_confirmed": True,
+            "device_action_verified": False,
+            "physical_state_readback": False,
+            "persistence_verified": False,
+            "automatic_replay": False,
+            "response": self.response,
+        }
 
 
 def _units(addresses):
@@ -97,6 +238,96 @@ class NativeNetworks:
 
     def discover(self, address):
         return self.client.command(f"NET PINGU {_token(address)}")
+
+    def _network_management(self, *, operation, network, carrier_application,
+                            selector, target, mode, command):
+        response = self.client.command(command)
+        if response.code != 200:
+            raise RuntimeError(f"{operation} did not complete: {response.final}")
+        return NetworkManagementReceipt(
+            operation=operation.lower().replace(" ", "-"),
+            network=network,
+            carrier_application=carrier_application,
+            selector=selector,
+            target=target,
+            mode=mode,
+            command=command,
+            response=response,
+        )
+
+    def learn(self, network, application, grade, group):
+        """Send one evidenced NET LEARN grade and report interface delivery."""
+        network = direct_network_path(network)
+        application = _byte_value(application, "Learn application")
+        group = _byte_value(group, "Learn group")
+        grade = parse_learn_grade(grade)
+        command = (
+            f"NET LEARN {network} {application} {grade.native_token} {group}"
+        )
+        return self._network_management(
+            operation="NET LEARN",
+            network=network,
+            carrier_application=application,
+            selector="learn-grade",
+            target={
+                "grade": grade.label,
+                "grade_value": grade.value,
+                "group": group,
+            },
+            mode=None,
+            command=command,
+        )
+
+    def _locate(self, application_path, selector, arguments, target, mode):
+        application_path = network_management_application_path(application_path)
+        mode = parse_locate_mode(mode)
+        network = application_path.rsplit("/", 1)[0]
+        command = " ".join((
+            "NETWORK", "LOCATE", application_path, selector,
+            *(str(argument) for argument in arguments), _mode_token(mode),
+        ))
+        return self._network_management(
+            operation="NETWORK LOCATE",
+            network=network,
+            carrier_application=208,
+            selector=selector.lower(),
+            target=target,
+            mode=mode,
+            command=command,
+        )
+
+    def locate_unit(self, application_path, unit, mode):
+        unit = _byte_value(unit, "Locate unit")
+        return self._locate(
+            application_path, "UNIT", (unit,), {"unit": unit}, mode,
+        )
+
+    def locate_application(self, application_path, application, mode):
+        application = _byte_value(
+            application, "Locate target application", maximum=254,
+        )
+        return self._locate(
+            application_path, "APP", (application,),
+            {"application": application}, mode,
+        )
+
+    def locate_group(self, application_path, application, group, mode):
+        application = _byte_value(
+            application, "Locate target application", maximum=254,
+        )
+        group = _byte_value(group, "Locate target group", maximum=254)
+        return self._locate(
+            application_path, "GROUP", (application, group),
+            {"application": application, "group": group}, mode,
+        )
+
+    def locate_serial(self, application_path, manufacturer, serial, mode):
+        manufacturer = _byte_value(manufacturer, "Locate manufacturer")
+        serial = parse_native_serial(serial).canonical
+        return self._locate(
+            application_path, "SERIAL", (manufacturer, serial),
+            {"manufacturer": manufacturer, "serial": serial}, mode,
+        )
 
     def check_units(self, address, units=None):
         return self.client.command(f"NET CHECKUNIT {_token(address)} {_units(units)}")

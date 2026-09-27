@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 from cbus_toolkit.cgate import CGateClient, CGateResponse
 from cbus_toolkit.native import NativeDatabase, NativeProjects
-from cbus_toolkit.networks import NativeNetworks
+from cbus_toolkit.networks import LearnGrade, NativeNetworks
 
 
 class Capture:
@@ -20,6 +20,122 @@ class Capture:
 
 
 class NetworksTests(unittest.TestCase):
+    def test_typed_learn_grades_emit_exact_native_commands(self):
+        client = Capture()
+        networks = NativeNetworks(client)
+        grades = (
+            ("init-relay", "1"),
+            ("init_dim", "2"),
+            ("cancel", "$80"),
+            (LearnGrade.EXIT_RELAY, "$81"),
+            (130, "$82"),
+            ("$83", "$83"),
+        )
+        receipts = [
+            networks.learn("//TEST/254", 56, grade, 1)
+            for grade, _token in grades
+        ]
+        self.assertEqual(
+            client.commands,
+            [
+                f"NET LEARN //TEST/254 56 {token} 1"
+                for _grade, token in grades
+            ],
+        )
+        receipt = receipts[2].as_dict()
+        self.assertEqual(receipt["format"], "cbus-cgate-network-management-v1")
+        self.assertEqual(receipt["operation"], "net-learn")
+        self.assertEqual(receipt["network"], "//TEST/254")
+        self.assertEqual(receipt["carrier_application"], 56)
+        self.assertEqual(receipt["selector"], "learn-grade")
+        self.assertEqual(
+            receipt["target"],
+            {"grade": "cancel", "grade_value": 128, "group": 1},
+        )
+        self.assertIsNone(receipt["mode"])
+        self.assertTrue(receipt["cgate_accepted"])
+        self.assertTrue(receipt["interface_delivery_confirmed"])
+        for field in (
+            "device_action_verified",
+            "physical_state_readback",
+            "persistence_verified",
+            "automatic_replay",
+        ):
+            self.assertFalse(receipt[field])
+
+    def test_all_typed_locate_selectors_emit_exact_native_commands(self):
+        client = Capture()
+        networks = NativeNetworks(client)
+        receipts = (
+            networks.locate_unit("//TEST/254/208", 1, "ON"),
+            networks.locate_application("//TEST/254/208", 56, 2),
+            networks.locate_group("//TEST/254/208", 56, 1, "OFF"),
+            networks.locate_serial("//TEST/254/208", 1, "12345.67", 255),
+        )
+        self.assertEqual(
+            client.commands,
+            [
+                "NETWORK LOCATE //TEST/254/208 UNIT 1 ON",
+                "NETWORK LOCATE //TEST/254/208 APP 56 2",
+                "NETWORK LOCATE //TEST/254/208 GROUP 56 1 OFF",
+                "NETWORK LOCATE //TEST/254/208 SERIAL 1 12345.67 255",
+            ],
+        )
+        self.assertEqual(
+            [receipt.as_dict()["selector"] for receipt in receipts],
+            ["unit", "app", "group", "serial"],
+        )
+        self.assertEqual(
+            [receipt.as_dict()["mode"] for receipt in receipts],
+            [
+                {"value": 1, "name": "on"},
+                {"value": 2, "name": "byte"},
+                {"value": 0, "name": "off"},
+                {"value": 255, "name": "byte"},
+            ],
+        )
+        self.assertEqual(
+            receipts[-1].as_dict()["target"],
+            {"manufacturer": 1, "serial": "12345.67"},
+        )
+        self.assertEqual(receipts[-1].as_dict()["carrier_application"], 208)
+
+    def test_network_management_invalid_values_refuse_before_command(self):
+        client = Capture()
+        networks = NativeNetworks(client)
+        calls = (
+            lambda: networks.learn("//TEST/254/208", 56, 1, 1),
+            lambda: networks.learn("//TEST/256", 56, 1, 1),
+            lambda: networks.learn("//TEST/254", True, 1, 1),
+            lambda: networks.learn("//TEST/254", 56, 3, 1),
+            lambda: networks.learn("//TEST/254", 56, 1, 256),
+            lambda: networks.locate_unit("//TEST/254/56", 1, "ON"),
+            lambda: networks.locate_unit("//TEST/254/208", True, "ON"),
+            lambda: networks.locate_unit("//TEST/254/208", 1, 256),
+            lambda: networks.locate_application("//TEST/254/208", 255, 1),
+            lambda: networks.locate_group("//TEST/254/208", 56, 255, 1),
+            lambda: networks.locate_serial("//TEST/254/208", True, "1.2", 1),
+            lambda: networks.locate_serial("//TEST/254/208", 1, "1048576.0", 1),
+            lambda: networks.locate_serial("//TEST/254/208", 1, "1.4096", 1),
+        )
+        for call in calls:
+            with self.assertRaises(ValueError):
+                call()
+        self.assertEqual(client.commands, [])
+
+    def test_network_management_requires_exact_200_receipt(self):
+        class Rejected(Capture):
+            def command(self, command):
+                self.commands.append(command)
+                return CGateResponse(
+                    ("202 Request accepted.",), "202 Request accepted.", 202,
+                )
+
+        client = Rejected()
+        with self.assertRaisesRegex(RuntimeError, "NET LEARN did not complete"):
+            NativeNetworks(client).learn("//TEST/254", 56, 1, 1)
+        self.assertEqual(client.commands, ["NET LEARN //TEST/254 56 1 1"])
+
     def test_commissioning_grammar_keeps_operations_explicit(self):
         client = Capture()
         n = NativeNetworks(client)

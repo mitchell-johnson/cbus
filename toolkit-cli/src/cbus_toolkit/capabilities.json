@@ -157,9 +157,13 @@
         "tests/test_pci_local_options.py",
         "tests/test_cli_selected_serial.py",
         "docs/pci-selected-serial.md",
-        "docs/selected-serial-coordinator-acceptance.json"
+        "docs/selected-serial-coordinator-acceptance.json",
+        "tests/test_cli_network_management.py",
+        "docs/network-learning-locate.md",
+        "../rust/testdata/vectors/network_management.jsonl",
+        "../rust/testdata/fixtures/native_cgate_net_lifecycle.json"
       ],
-      "limits": "Native C-Gate network and unit states are tested against an independent synthetic peer. Direct MMI requires contiguous coverage of all256 addresses and known local presence. Direct serial collection preserves duplicate replies and the native two-second quiet window. Full direct inventory reads serials between two complete MMI observations, preserves changed membership, duplicate/conflicting identities and partial failures, and enforces a total deadline. These sequential observations are non-atomic and cannot authorize mutation. A separate coordinator now resolves one explicitly selected serial from exactly two identities at255 in an exclusively owned fixture, after fresh inventory and local identity/options checks. General duplicate resolution, complete commissioning, routing and hardware compatibility remain pending."
+      "limits": "Native C-Gate network and unit states are tested against an independent synthetic peer. Typed C-Gate NET LEARN covers all six retained grades and NETWORK LOCATE covers UNIT, APP, GROUP and SERIAL with fully qualified direct/application-208 paths, exact canonical commands, terminal-200 receipts and no client replay after uncertain delivery. Shared retained vectors and Rust daemon gates own SAL encoding, direct-binding checks, PCI correlation, generation guards and server-side exact-once delivery. A receipt proves only the selected C-Gate service's interface-delivery contract; unit action, physical readback, persistence, fresh Toolkit GUI comparison and physical-device acceptance remain unverified. Direct MMI requires contiguous coverage of all256 addresses and known local presence. Direct serial collection preserves duplicate replies and the native two-second quiet window. Full direct inventory reads serials between two complete MMI observations, preserves changed membership, duplicate/conflicting identities and partial failures, and enforces a total deadline. These sequential observations are non-atomic and cannot authorize mutation. A separate coordinator now resolves one explicitly selected serial from exactly two identities at255 in an exclusively owned fixture, after fresh inventory and local identity/options checks. General duplicate resolution, complete commissioning, routing and hardware compatibility remain pending."
     },
     {
       "id": "all-unit-parameter-encoding",

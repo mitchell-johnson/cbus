@@ -812,6 +812,28 @@ unroutable definitions fail before I/O. Routed delivery uses one PPM/SAL frame
 and does not invent an application reply or remote status readback. Neither family has an MQTT state schema; incoming
 frames are C-Gate events and ordinary MQTT lighting remains independent.
 
+The Python CLI exposes only the retained typed forms:
+
+```sh
+cbus-toolkit cgate network learn //PROJECT/254 56 init-relay 1
+cbus-toolkit cgate network learn //PROJECT/254 56 cancel 1
+cbus-toolkit cgate network locate //PROJECT/254/208 unit 1 ON
+cbus-toolkit cgate network locate //PROJECT/254/208 app 56 2
+cbus-toolkit cgate network locate //PROJECT/254/208 group 56 1 OFF
+cbus-toolkit cgate network locate //PROJECT/254/208 serial 1 12345.67 255
+```
+
+`NativeNetworks.learn` admits exactly grades 1, 2 and 128–131, with symbolic
+names for all six. `locate_unit`, `locate_application`, `locate_group` and
+`locate_serial` cover every evidenced selector. Typed paths must be fully
+qualified and direct; locate requires application 208, APP/GROUP targets stop
+at 254, serials use bounded decimal-dot form, and modes are OFF, ON or a byte.
+An exact 200 returns `cbus-cgate-network-management-v1`, with C-Gate and
+interface delivery true and device action, physical readback, persistence and
+automatic replay false. Rejection or an incomplete reply produces no success
+receipt and `CgateClient` never replays the request. See
+[the typed CLI boundary](../../../../toolkit-cli/docs/network-learning-locate.md).
+
 `NET STATE_INTERVAL` always returns the retained obsolete 400. `NET OPEN` and
 `NET CLOSE` update bound runtime state without releasing cmqttd's shared PCI;
 `PROJECT START` and `PROJECT STOP` apply the same lifecycle across that project.

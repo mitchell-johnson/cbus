@@ -46,6 +46,53 @@ def _byte(value):
     return result
 
 
+def _non_ff_byte(value):
+    result = _byte(value)
+    if result == 255:
+        raise argparse.ArgumentTypeError("Application/group must be in 0..254")
+    return result
+
+
+def _learn_grade(value):
+    from .networks import parse_learn_grade
+    try:
+        return parse_learn_grade(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError(str(error)) from error
+
+
+def _locate_mode(value):
+    from .networks import parse_locate_mode
+    try:
+        return parse_locate_mode(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError(str(error)) from error
+
+
+def _direct_network(value):
+    from .networks import direct_network_path
+    try:
+        return direct_network_path(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError(str(error)) from error
+
+
+def _network_management_application(value):
+    from .networks import network_management_application_path
+    try:
+        return network_management_application_path(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError(str(error)) from error
+
+
+def _native_serial(value):
+    from .serials import parse_native_serial
+    try:
+        return parse_native_serial(value).canonical
+    except ValueError as error:
+        raise argparse.ArgumentTypeError(str(error)) from error
+
+
 def _label_application(value):
     from .labels import validate_label_application
     try:
@@ -1412,6 +1459,43 @@ def build_parser():
     netops = network.add_subparsers(dest="remote_action", required=True)
     p = netops.add_parser("list")
     p.add_argument("--project")
+    p = netops.add_parser(
+        "learn", help="Send one evidenced learn-mode grade on a direct network",
+    )
+    p.add_argument("address", type=_direct_network)
+    p.add_argument("application", type=_byte)
+    p.add_argument(
+        "grade",
+        type=_learn_grade,
+        help="init-relay, init-dim, cancel, exit-relay, exit-dim or exit-area",
+    )
+    p.add_argument("group", type=_byte)
+    locate = netops.add_parser(
+        "locate", help="Send one evidenced Network Management locate request",
+    )
+    locate.add_argument(
+        "address",
+        type=_network_management_application,
+        help="Fully qualified application 208, e.g. //TEST/254/208",
+    )
+    locate_selectors = locate.add_subparsers(dest="locate_selector", required=True)
+    p = locate_selectors.add_parser("unit")
+    p.add_argument("unit", type=_byte)
+    p.add_argument("mode", type=_locate_mode)
+    p = locate_selectors.add_parser("app")
+    p.add_argument("target_application", type=_non_ff_byte)
+    p.add_argument("mode", type=_locate_mode)
+    p = locate_selectors.add_parser("group")
+    p.add_argument("target_application", type=_non_ff_byte)
+    p.add_argument("group", type=_non_ff_byte)
+    p.add_argument("mode", type=_locate_mode)
+    p = locate_selectors.add_parser("serial")
+    p.add_argument("manufacturer", type=_byte)
+    p.add_argument(
+        "serial", type=_native_serial,
+        help="Native decimal-dot serial, e.g. 12345.67",
+    )
+    p.add_argument("mode", type=_locate_mode)
     for action in ("state", "open", "close", "sync", "sync-new", "discover", "check-units", "unravel", "clocks", "tree", "rename", "set-project", "wait-ready", "calculate"):
         p = netops.add_parser(action)
         p.add_argument("address")
@@ -2761,6 +2845,26 @@ def _network(args, client):
     action = args.remote_action
     if action == "list":
         return network.list(args.project)
+    if action == "learn":
+        return network.learn(
+            args.address, args.application, args.grade, args.group,
+        ).as_dict()
+    if action == "locate":
+        if args.locate_selector == "unit":
+            result = network.locate_unit(args.address, args.unit, args.mode)
+        elif args.locate_selector == "app":
+            result = network.locate_application(
+                args.address, args.target_application, args.mode,
+            )
+        elif args.locate_selector == "group":
+            result = network.locate_group(
+                args.address, args.target_application, args.group, args.mode,
+            )
+        else:
+            result = network.locate_serial(
+                args.address, args.manufacturer, args.serial, args.mode,
+            )
+        return result.as_dict()
     if action == "state":
         return {"state": network.state(args.address)}
     if action == "sync":
