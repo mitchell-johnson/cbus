@@ -21,7 +21,8 @@ class UpdatePackageBundleCLITests(unittest.TestCase):
             "package_receipt": encode(value["receipt"] if receipt is None else receipt),
         }
         for name, raw in content.items():
-            path = root / (name + ".json")
+            suffix = ".der" if name.endswith("certificate") else ".json"
+            path = root / (name + suffix)
             path.write_bytes(raw)
             files[name] = path
         command = [sys.executable, "-m", "cbus_toolkit", "update-package-bundle"]
@@ -29,6 +30,7 @@ class UpdatePackageBundleCLITests(unittest.TestCase):
             "catalogue", "metadata", "revocation", "conditions",
             "diagnostic_bundle", "package_receipt", "catalogue_response",
             "revocation_input", "conditions_input", "context_input",
+            "metadata_certificate", "revocation_signer_certificate",
         ):
             command.extend(("--" + name.replace("_", "-"), str(files[name])))
         command.extend((

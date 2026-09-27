@@ -1,9 +1,9 @@
 """Bind retained update diagnostics to their exact report files.
 
 This is a provenance composer, not an updater.  It parses the four exact
-report byte streams itself, verifies every currently provable cross-report
-receipt, and leaves trust, availability, download and installation decisions
-explicitly unevaluated.
+report byte streams itself, binds four JSON and two optional DER source byte
+streams to their producer receipts, and leaves trust, availability, download,
+and installation decisions explicitly unevaluated.
 """
 from __future__ import annotations
 
@@ -15,6 +15,7 @@ import re
 
 from .toolkit_update_conditions import MAX_JSON_BYTES, STAGES as CONDITION_STAGES
 from .toolkit_update_metadata import (
+    MAX_CERTIFICATE_BYTES,
     MAX_NODE_BYTES,
     STAGES as METADATA_STAGES,
     _canonical as canonical_metadata_node,
@@ -65,6 +66,36 @@ def _source(raw: bytes | None, name: str, limit: int) -> dict | None:
     if type(value) is not dict:
         raise UpdateBundleError(f"{name} source must be a JSON object")
     return value
+
+
+def _certificate_source(raw: bytes | None, name: str) -> bytes | None:
+    """Bound an exact DER source and reject a truncated/noncanonical outer SEQUENCE.
+
+    This deliberately does not parse X.509 or re-run the producer's signature
+    stages. It only prevents an arbitrary or truncated byte string from being
+    labelled as the certificate source in a provenance receipt.
+    """
+    if raw is None:
+        return None
+    if type(raw) is not bytes or not 4 <= len(raw) <= MAX_CERTIFICATE_BYTES:
+        raise UpdateBundleError(
+            f"{name} source must be DER bytes within {MAX_CERTIFICATE_BYTES} bytes"
+        )
+    if raw[0] != 0x30:
+        raise UpdateBundleError(f"{name} source must begin with a DER SEQUENCE")
+    first = raw[1]
+    if first < 0x80:
+        length, header = first, 2
+    else:
+        count = first & 0x7f
+        if count == 0 or count > 3 or len(raw) < 2 + count:
+            raise UpdateBundleError(f"{name} source has an invalid DER length")
+        length, header = int.from_bytes(raw[2:2 + count], "big"), 2 + count
+        if length < 0x80 or raw[2] == 0 or length < 1 << (8 * (count - 1)):
+            raise UpdateBundleError(f"{name} source has a noncanonical DER length")
+    if length == 0 or header + length != len(raw):
+        raise UpdateBundleError(f"{name} source has a truncated or trailing DER value")
+    return raw
 
 
 def _object(value, name: str) -> dict:
@@ -236,6 +267,8 @@ def compose_update_diagnostic_bundle(
     revocation_input_bytes: bytes | None = None,
     conditions_input_bytes: bytes | None = None,
     context_input_bytes: bytes | None = None,
+    metadata_certificate_bytes: bytes | None = None,
+    revocation_signer_certificate_bytes: bytes | None = None,
 ) -> UpdateDiagnosticBundle:
     """Compose one report from exact report and optional source files.
 
@@ -262,6 +295,8 @@ def compose_update_diagnostic_bundle(
         "revocation_input": revocation_input_bytes,
         "conditions_input": conditions_input_bytes,
         "context_input": context_input_bytes,
+        "metadata_certificate": metadata_certificate_bytes,
+        "revocation_signer_certificate": revocation_signer_certificate_bytes,
     }
     sources = {
         name: _source(
@@ -272,6 +307,11 @@ def compose_update_diagnostic_bundle(
             else MAX_NODE_BYTES,
         )
         for name, value in source_raw.items()
+        if name not in ("metadata_certificate", "revocation_signer_certificate")
+    }
+    certificate_sources = {
+        name: _certificate_source(source_raw[name], name)
+        for name in ("metadata_certificate", "revocation_signer_certificate")
     }
     catalogue = reports["catalogue"]
     metadata = reports["metadata"]
@@ -353,6 +393,19 @@ def compose_update_diagnostic_bundle(
         metadata.get("certificate_thumbprint_sha1"),
         "metadata.certificate_thumbprint_sha1",
     )
+    metadata_certificate_receipt_matches = False
+    if certificate_sources["metadata_certificate"] is not None:
+        try:
+            metadata_certificate_receipt_matches = (
+                _sha256(
+                    metadata.get("certificate_der_sha256"),
+                    "metadata.certificate_der_sha256",
+                ) == hashlib.sha256(metadata_certificate_bytes).hexdigest()
+                and metadata_thumbprint
+                == hashlib.sha1(metadata_certificate_bytes).hexdigest().upper()
+            )
+        except UpdateBundleError:
+            pass
     canonical_node = _canonical_object(metadata_rows)
     metadata_canonical_receipt_matches = _canonical_receipt_matches(metadata_rows)
     metadata_source = metadata.get("source")
@@ -533,6 +586,21 @@ def compose_update_diagnostic_bundle(
         revocation.get("input_revocation_sha256"),
         "revocation.input_revocation_sha256",
     )
+    revocation_signer_certificate_receipt_matches = False
+    if certificate_sources["revocation_signer_certificate"] is not None:
+        try:
+            revocation_signer_certificate_receipt_matches = (
+                _sha256(
+                    revocation.get("signer_certificate_der_sha256"),
+                    "revocation.signer_certificate_der_sha256",
+                ) == hashlib.sha256(revocation_signer_certificate_bytes).hexdigest()
+                and _thumbprint(
+                    revocation.get("signer_certificate_thumbprint_sha1"),
+                    "revocation.signer_certificate_thumbprint_sha1",
+                ) == hashlib.sha1(revocation_signer_certificate_bytes).hexdigest().upper()
+            )
+        except UpdateBundleError:
+            pass
     revocation_source = revocation.get("source")
     revocation_receipt = False
     revocation_source_sha256 = None
@@ -608,7 +676,9 @@ def compose_update_diagnostic_bundle(
         except (ValueError, TypeError, KeyError):
             pass
     metadata_revocation_linked = (
-        revocation_receipt
+        metadata_certificate_receipt_matches
+        and revocation_signer_certificate_receipt_matches
+        and revocation_receipt
         and revocation_source_matches
         and canonical_revocation_matches_source
         and revocation_canonical_receipt_matches
@@ -616,7 +686,15 @@ def compose_update_diagnostic_bundle(
         and subject_matches
     )
     metadata_revocation_reason = (
-        "revocation source bytes were not supplied"
+        "metadata certificate source bytes were not supplied"
+        if certificate_sources["metadata_certificate"] is None
+        else "metadata certificate digest or thumbprint does not match its exact source bytes"
+        if not metadata_certificate_receipt_matches
+        else "revocation signer certificate source bytes were not supplied"
+        if certificate_sources["revocation_signer_certificate"] is None
+        else "revocation signer certificate digest or thumbprint does not match its exact source bytes"
+        if not revocation_signer_certificate_receipt_matches
+        else "revocation source bytes were not supplied"
         if sources["revocation_input"] is None
         else "revocation source receipt is absent or inconsistent"
         if not revocation_receipt
@@ -659,6 +737,8 @@ def compose_update_diagnostic_bundle(
             revocation_source_matches=revocation_source_matches,
             canonical_revocation_matches_source=canonical_revocation_matches_source,
             canonical_digest_receipt_matches=revocation_canonical_receipt_matches,
+            metadata_certificate_receipt_matches=metadata_certificate_receipt_matches,
+            revocation_signer_certificate_receipt_matches=revocation_signer_certificate_receipt_matches,
             complete_revocation_status_evaluated=False,
         ),
     }
@@ -673,7 +753,7 @@ def compose_update_diagnostic_bundle(
         and type(condition_result) is bool
     )
     document = {
-        "format": "cbus-toolkit-update-diagnostic-bundle-v3",
+        "format": "cbus-toolkit-update-diagnostic-bundle-v4",
         "scope": "Exact-source-linked catalogue and offline diagnostic evidence for one selected node",
         "selected_node_id": node_id,
         "selected_node_sha256": selected_node_sha256,

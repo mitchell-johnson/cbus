@@ -12,7 +12,7 @@ from tests.test_toolkit_update_bundle import NODE, encode, reports, source_docum
 
 class UpdateDiagnosticBundleCLITests(unittest.TestCase):
     def run_bundle(self, values, *, status=0, raw_override=None,
-                   source_override=None, include_sources=True):
+                   source_override=None, include_sources=True, omit_sources=()):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             paths = {}
@@ -38,7 +38,10 @@ class UpdateDiagnosticBundleCLITests(unittest.TestCase):
                 ]
             if include_sources:
                 for name, value in source_documents().items():
-                    path = root / (name + ".json")
+                    if name in omit_sources:
+                        continue
+                    suffix = ".der" if name.endswith("certificate") else ".json"
+                    path = root / (name + suffix)
                     path.write_bytes((source_override or {}).get(name, value))
                     command.extend(("--" + name.replace("_", "-"), str(path)))
             process = subprocess.run(
@@ -73,6 +76,21 @@ class UpdateDiagnosticBundleCLITests(unittest.TestCase):
         self.assertFalse(result["diagnostics_complete"])
         self.assertEqual(result["links"]["catalogue_metadata"]["reason"],
                          "raw catalogue response was not supplied")
+
+    def test_public_missing_certificate_preserves_independent_links(self):
+        result = self.run_bundle(
+            reports(), status=1, omit_sources=("metadata_certificate",)
+        )
+        self.assertTrue(result["links"]["catalogue_metadata"]["linked"])
+        self.assertFalse(result["links"]["metadata_revocation"]["linked"])
+        self.assertFalse(result["diagnostics_complete"])
+
+    def test_public_malformed_certificate_is_input_error(self):
+        result = self.run_bundle(
+            reports(), status=1,
+            source_override={"metadata_certificate": b"not a DER certificate"},
+        )
+        self.assertIn("DER SEQUENCE", result["error"])
 
     def test_substituted_catalogue_source_is_public_nonzero_evidence(self):
         source = source_documents()

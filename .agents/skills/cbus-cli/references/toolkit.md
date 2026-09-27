@@ -36,7 +36,8 @@ Python 3.13 or newer is required. The base package has no external dependencies.
 Inspect each subcommand's `--help` and the matching feature document before constructing parameters. There is no universal `--dry-run`; use it only where the chosen workflow exposes it.
 
 `update-diagnostic-bundle` needs the four generated report files plus the exact
-raw catalogue response, revocation input, condition input and context input to
+raw catalogue response, revocation input, condition input, context input,
+metadata signer DER and revocation signer DER to
 establish linked completion. Candidate, condition and context models must match
 their decoded sources with JSON types preserved, including Boolean fields.
 The catalogue report's fixed endpoint and request digest must also agree with
@@ -44,9 +45,16 @@ its declared installed version; this is report consistency, not network attestat
 Metadata and revocation canonicalization rows must include hexadecimal and base64
 SHA-256 receipts matching their canonical UTF-8 bytes; missing or mismatched
 receipts keep the corresponding link and completion false.
+Each DER is bounded to 64 KiB and must match both its producer report's SHA-256
+and SHA-1 thumbprint; matching the revocation subject to a report-only
+thumbprint is insufficient. This binds exact certificate bytes, not publisher
+trust, full X.509 parsing or signature-stage replay.
 With report files alone it retains independent
 hashes but exits nonzero and marks the links unverified. Its successful result
 is a source-linkage diagnostic, not publisher trust or update availability.
+Pass the same two DER files alongside the four JSON sources to
+`update-package-bundle`; a previously complete v3 diagnostic receipt must be
+reproduced as v4 before its joined completion can succeed.
 
 `update-rollout-cohort --catalogue-response RAW.json --node-id ID
 --stored-cohort 41` evaluates one original strict-greater-than visibility gate

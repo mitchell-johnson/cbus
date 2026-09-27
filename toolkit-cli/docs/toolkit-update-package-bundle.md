@@ -7,8 +7,8 @@ bundle and package-file receipt with the reproduced results. A report cannot
 establish the link merely by repeating another report's hash.
 
 First produce `update-diagnostic-bundle` and `update-package-file` outputs from
-the same raw catalogue response. Keep their four diagnostic reports and four
-source files. Then run:
+the same raw catalogue response. Keep their four diagnostic reports, four JSON
+source files and both exact signer certificate DER files. Then run:
 
 ```sh
 cbus-toolkit update-package-bundle \
@@ -22,6 +22,8 @@ cbus-toolkit update-package-bundle \
   --revocation-input raw-revocation-input.json \
   --conditions-input raw-condition-data.json \
   --context-input supplied-context.json \
+  --metadata-certificate metadata-signer.der \
+  --revocation-signer-certificate revocation-signer.der \
   --node-id 'selected node ID' \
   --file-id 'selected file ID' \
   --package-path already-downloaded-package.exe
@@ -35,6 +37,10 @@ download or installer action. It does read every caller-supplied file path;
 on a network-mounted filesystem or UNC path that read may use network transport.
 `updater_network_request_initiated=false` does not attest to filesystem
 transport. The command does not print the package path or file URL.
+The certificate files are optional when preserving an incomplete diagnostic
+bundle; without both, `diagnostics_complete` and joined completion remain false.
+Their digests and thumbprints are checked against the metadata and revocation
+reports, without re-running signature stages or trusting the publisher.
 
 `links.source_package.linked` checks the source-to-file byte relationship independently: the
 package receipt must reproduce from the unique selected file descriptor and a

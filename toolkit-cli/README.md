@@ -203,9 +203,12 @@ observation](docs/toolkit-live-registry-observation.md).
 metadata-report.json --revocation revocation-report.json --conditions
 condition-report.json --catalogue-response raw-catalogue.json --revocation-input
 raw-revocation.json --conditions-input condition-data.json --context-input
-context.json --node-id ID` parses the exact report and source files. It links the
+context.json --metadata-certificate metadata-signer.der
+--revocation-signer-certificate revocation-signer.der --node-id ID` parses the
+exact report and source files. It links the
 selected metadata node to the catalogue response, its condition model, and the
-revocation subject. Report-only input, missing receipts, substituted bytes,
+revocation subject after matching both producer certificate digests and
+thumbprints to supplied DER. Report-only input, missing receipts, substituted bytes,
 ambiguous IDs, or unrelated reports keep linked completion false. The [provenance contract](docs/toolkit-update-diagnostic-bundle.md)
 does not turn those diagnostics into publisher trust, package applicability,
 update availability, a download, or an installation decision.

@@ -5,7 +5,7 @@ from pathlib import Path
 
 from .toolkit_update_bundle import MAX_REPORT_BYTES, compose_update_diagnostic_bundle
 from .toolkit_update_conditions import MAX_JSON_BYTES
-from .toolkit_update_metadata import validate_node_id
+from .toolkit_update_metadata import MAX_CERTIFICATE_BYTES, validate_node_id
 from .toolkit_update_metadata_cli import _read
 
 
@@ -30,6 +30,10 @@ def options(commands):
                          help="Exact ClientConditionData JSON used by the condition report")
     command.add_argument("--context-input", type=Path,
                          help="Exact supplied context JSON used by the condition report")
+    command.add_argument("--metadata-certificate", type=Path,
+                         help="Exact DER certificate used by the metadata-stage report")
+    command.add_argument("--revocation-signer-certificate", type=Path,
+                         help="Exact DER signer certificate used by the revocation-stage report")
 
 
 def run(args):
@@ -50,6 +54,8 @@ def run(args):
             ("revocation_input", args.revocation_input, MAX_REPORT_BYTES),
             ("conditions_input", args.conditions_input, MAX_JSON_BYTES),
             ("context_input", args.context_input, MAX_JSON_BYTES),
+            ("metadata_certificate", args.metadata_certificate, MAX_CERTIFICATE_BYTES),
+            ("revocation_signer_certificate", args.revocation_signer_certificate, MAX_CERTIFICATE_BYTES),
         )
     }
     result = compose_update_diagnostic_bundle(
@@ -62,5 +68,7 @@ def run(args):
         revocation_input_bytes=sources["revocation_input"],
         conditions_input_bytes=sources["conditions_input"],
         context_input_bytes=sources["context_input"],
+        metadata_certificate_bytes=sources["metadata_certificate"],
+        revocation_signer_certificate_bytes=sources["revocation_signer_certificate"],
     )
     return result.as_dict(), int(not result.complete)

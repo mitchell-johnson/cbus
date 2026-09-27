@@ -39,6 +39,8 @@ def compose_update_package_bundle(
     revocation_input_bytes: bytes,
     conditions_input_bytes: bytes,
     context_input_bytes: bytes,
+    metadata_certificate_bytes: bytes | None = None,
+    revocation_signer_certificate_bytes: bytes | None = None,
     node_id: str,
     file_id: str,
     package_path: str | os.PathLike[str],
@@ -59,6 +61,8 @@ def compose_update_package_bundle(
         revocation_input_bytes=revocation_input_bytes,
         conditions_input_bytes=conditions_input_bytes,
         context_input_bytes=context_input_bytes,
+        metadata_certificate_bytes=metadata_certificate_bytes,
+        revocation_signer_certificate_bytes=revocation_signer_certificate_bytes,
     ).as_dict()
     package = inspect_update_package_file(
         catalogue_response_bytes,

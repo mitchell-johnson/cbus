@@ -12,15 +12,23 @@ from cbus_toolkit.toolkit_update_bundle import (
 from cbus_toolkit.toolkit_update_conditions import STAGES as CONDITION_STAGES
 from cbus_toolkit.toolkit_update_metadata import (
     STAGES as METADATA_STAGES,
+    ToolkitUpdateMetadataStages,
     _canonical as canonical_metadata_node,
     select_node,
 )
-from cbus_toolkit.toolkit_update_revocation import STAGES as REVOCATION_STAGES
+from cbus_toolkit.toolkit_update_revocation import (
+    STAGES as REVOCATION_STAGES,
+    ToolkitUpdateRevocationStages,
+)
 from cbus_toolkit.toolkit_updates import CATALOGUE_URL, _candidate, catalogue_request
+from tests.test_toolkit_update_metadata import captured as captured_node, leaf, owned_der
+from tests.test_toolkit_update_revocation import captured as captured_revocation, signer
 
 
 NODE = "435e4274-3bcf-4f3e-a67a-3008278c539c"
-CERTIFICATE = "A" * 40
+METADATA_CERTIFICATE = owned_der()
+REVOCATION_SIGNER_CERTIFICATE = signer()
+CERTIFICATE = hashlib.sha1(METADATA_CERTIFICATE).hexdigest().upper()
 CONDITION_MODEL = {"expression": "true", "conditions": {}}
 
 
@@ -53,6 +61,8 @@ def source_documents():
         "revocation_input": REVOCATION_DATA,
         "conditions_input": CONDITION_INPUT,
         "context_input": CONTEXT_INPUT,
+        "metadata_certificate": METADATA_CERTIFICATE,
+        "revocation_signer_certificate": REVOCATION_SIGNER_CERTIFICATE,
     }
 
 
@@ -113,6 +123,7 @@ def reports(*, condition=True):
         "metadata": {
             "input_node_sha256": node_digest,
             "certificate_thumbprint_sha1": CERTIFICATE,
+            "certificate_der_sha256": hashlib.sha256(METADATA_CERTIFICATE).hexdigest(),
             "publisher_trust": {"status": "not_evaluated"},
             "revocation": {"status": "not_evaluated"},
             "applicability": {"status": "not_evaluated"},
@@ -129,6 +140,8 @@ def reports(*, condition=True):
         },
         "revocation": {
             "input_revocation_sha256": revocation_digest,
+            "signer_certificate_der_sha256": hashlib.sha256(REVOCATION_SIGNER_CERTIFICATE).hexdigest(),
+            "signer_certificate_thumbprint_sha1": hashlib.sha1(REVOCATION_SIGNER_CERTIFICATE).hexdigest().upper(),
             "publisher_trust": {"status": "not_evaluated"},
             "certificate_chain": {"status": "not_evaluated"},
             "complete_revocation_status": {"status": "not_evaluated"},
@@ -185,10 +198,70 @@ def compose(raw, *, sources=None):
         revocation_input_bytes=sources.get("revocation_input"),
         conditions_input_bytes=sources.get("conditions_input"),
         context_input_bytes=sources.get("context_input"),
+        metadata_certificate_bytes=sources.get("metadata_certificate"),
+        revocation_signer_certificate_bytes=sources.get("revocation_signer_certificate"),
     )
 
 
 class UpdateDiagnosticBundleTests(unittest.TestCase):
+    def test_captured_stage_reports_bind_their_actual_der_sources(self):
+        node = captured_node()
+        node_id = node["nodeId"]
+        body = encode({"success": True, "statusCode": 200, "message": "OK", "data": [node]})
+        selected = select_node(body, node_id=node_id)
+        revocation_data = encode(captured_revocation())
+        metadata = ToolkitUpdateMetadataStages().evaluate(
+            selected, certificate_der=leaf(), at_utc="2026-09-15T04:04:00.1234567Z"
+        ).as_dict()
+        revocation = ToolkitUpdateRevocationStages().evaluate(
+            revocation_data, signer_certificate_der=signer(),
+            at_utc="2026-09-15T04:04:00.1234567Z",
+        ).as_dict()
+        self.assertTrue(all(row["status"] == "passed" for row in metadata["stages"]))
+        self.assertTrue(all(row["status"] == "passed" for row in revocation["stages"]))
+        metadata["source"] = {
+            "file_sha256": hashlib.sha256(body).hexdigest(),
+            "selection": "unique-node-from-raw-catalogue-response",
+            "selected_node_id": node_id,
+            "selected_node_representation": "normalized UTF-8 JSON; not an original byte slice",
+            "selected_node_sha256": hashlib.sha256(selected).hexdigest(),
+        }
+        revocation["source"] = {
+            "file_sha256": hashlib.sha256(revocation_data).hexdigest(),
+            "selection": "complete-data-file",
+            "selected_data_representation": "original-input-bytes",
+            "selected_data_sha256": hashlib.sha256(revocation_data).hexdigest(),
+        }
+        values = reports()
+        values["metadata"] = metadata
+        values["revocation"] = revocation
+        values["catalogue"]["candidates"] = [_candidate(node).as_dict()]
+        values["catalogue"]["http"].update(
+            body_sha256=hashlib.sha256(body).hexdigest(),
+            bytes_received=len(body), body_bytes_retained=len(body),
+        )
+        conditions_data = encode(node["data"]["clientConditionData"])
+        values["conditions"]["raw_typed_data"] = json.loads(conditions_data)
+        values["conditions"]["conditions_sha256"] = hashlib.sha256(conditions_data).hexdigest()
+        values["conditions"]["source"]["conditions_file_sha256"] = hashlib.sha256(conditions_data).hexdigest()
+        raw = encoded_reports(values)
+        source = source_documents()
+        source.update(catalogue_response=body, revocation_input=revocation_data,
+                      conditions_input=conditions_data, metadata_certificate=leaf(),
+                      revocation_signer_certificate=signer())
+        result = compose_update_diagnostic_bundle(
+            raw["catalogue"], raw["metadata"], raw["revocation"], raw["conditions"],
+            node_id=node_id, catalogue_response_bytes=source["catalogue_response"],
+            revocation_input_bytes=source["revocation_input"],
+            conditions_input_bytes=source["conditions_input"],
+            context_input_bytes=source["context_input"],
+            metadata_certificate_bytes=source["metadata_certificate"],
+            revocation_signer_certificate_bytes=source["revocation_signer_certificate"],
+        ).as_dict()
+        self.assertTrue(result["diagnostics_complete"])
+        self.assertTrue(result["links"]["metadata_revocation"]["metadata_certificate_receipt_matches"])
+        self.assertTrue(result["links"]["metadata_revocation"]["revocation_signer_certificate_receipt_matches"])
+
     def test_valid_exact_reports_link_all_three_relationships(self):
         raw = encoded_reports()
         result = compose(raw).as_dict()
@@ -211,7 +284,7 @@ class UpdateDiagnosticBundleTests(unittest.TestCase):
         )
         self.assertTrue(result["links"]["catalogue_metadata"]["canonical_digest_receipt_matches"])
         self.assertTrue(result["links"]["metadata_revocation"]["canonical_digest_receipt_matches"])
-        self.assertEqual(result["format"], "cbus-toolkit-update-diagnostic-bundle-v3")
+        self.assertEqual(result["format"], "cbus-toolkit-update-diagnostic-bundle-v4")
         self.assertIsNone(result["updates_available"])
         for field in (
             "publisher_trust_evaluated",
@@ -291,6 +364,77 @@ class UpdateDiagnosticBundleTests(unittest.TestCase):
             {"catalogue_metadata": False, "metadata_conditions": False, "metadata_revocation": False},
         )
         self.assertTrue(all(value is None for value in result["source_sha256"].values()))
+
+    def test_certificate_sources_are_required_for_revocation_subject_link(self):
+        for omitted in ("metadata_certificate", "revocation_signer_certificate"):
+            with self.subTest(omitted=omitted):
+                sources = source_documents()
+                del sources[omitted]
+                result = compose(encoded_reports(), sources=sources).as_dict()
+                self.assertTrue(result["links"]["catalogue_metadata"]["linked"])
+                self.assertTrue(result["links"]["metadata_conditions"]["linked"])
+                link = result["links"]["metadata_revocation"]
+                self.assertFalse(link["linked"])
+                self.assertIn("certificate source bytes were not supplied", link["reason"])
+                self.assertIsNone(result["source_sha256"][omitted])
+                self.assertFalse(result["diagnostics_complete"])
+
+    def test_same_reported_subject_cannot_borrow_substituted_certificate_bytes(self):
+        # The two report subjects still match. Only the separately supplied
+        # exact certificate source changed; it must not inherit their link.
+        sources = source_documents()
+        sources["metadata_certificate"] = REVOCATION_SIGNER_CERTIFICATE
+        result = compose(encoded_reports(), sources=sources).as_dict()
+        link = result["links"]["metadata_revocation"]
+        self.assertTrue(link["subject_identifier_matches"])
+        self.assertFalse(link["metadata_certificate_receipt_matches"])
+        self.assertFalse(link["linked"])
+        self.assertIn("metadata certificate digest or thumbprint", link["reason"])
+
+        sources = source_documents()
+        sources["revocation_signer_certificate"] = METADATA_CERTIFICATE
+        result = compose(encoded_reports(), sources=sources).as_dict()
+        link = result["links"]["metadata_revocation"]
+        self.assertTrue(link["subject_identifier_matches"])
+        self.assertFalse(link["revocation_signer_certificate_receipt_matches"])
+        self.assertFalse(link["linked"])
+
+    def test_certificate_digest_and_thumbprint_receipts_both_match_exact_bytes(self):
+        for report, field in (
+            ("metadata", "certificate_der_sha256"),
+            ("metadata", "certificate_thumbprint_sha1"),
+            ("revocation", "signer_certificate_der_sha256"),
+            ("revocation", "signer_certificate_thumbprint_sha1"),
+        ):
+            for changed in ("0" * 64 if field.endswith("sha256") else "A" * 40, None):
+                with self.subTest(report=report, field=field, changed=changed):
+                    values = reports()
+                    if changed is None:
+                        del values[report][field]
+                    else:
+                        values[report][field] = changed
+                    if report == "metadata" and field == "certificate_thumbprint_sha1" and changed is None:
+                        with self.assertRaisesRegex(UpdateBundleError, "metadata.certificate_thumbprint_sha1"):
+                            compose(encoded_reports(values))
+                        continue
+                    result = compose(encoded_reports(values)).as_dict()
+                    self.assertFalse(result["links"]["metadata_revocation"]["linked"])
+                    self.assertFalse(result["diagnostics_complete"])
+
+    def test_malformed_or_oversize_certificate_source_is_rejected(self):
+        for name in ("metadata_certificate", "revocation_signer_certificate"):
+            original = source_documents()[name]
+            for bad in (
+                b"", b"not DER", original[:-1], original + b"\0",
+                b"\x30\x80\x00\x00", b"\x30\x81\x01\x00", b"\x30\x82\x01",
+                b"\x30\x82\xff\xff" + b"\0" * (65536 - 4),
+                original + b"\0" * (65537 - len(original)),
+            ):
+                with self.subTest(name=name, size=len(bad)):
+                    sources = source_documents()
+                    sources[name] = bad
+                    with self.assertRaisesRegex(UpdateBundleError, "DER"):
+                        compose(encoded_reports(), sources=sources)
 
     def test_same_id_different_source_node_cannot_borrow_metadata_receipt(self):
         changed_node = copy.deepcopy(CATALOGUE_NODE)

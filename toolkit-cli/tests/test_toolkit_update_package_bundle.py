@@ -71,6 +71,8 @@ def case(root: Path, *, version="1.19.0", package=PACKAGE,
         revocation_input_bytes=sources["revocation_input"],
         conditions_input_bytes=sources["conditions_input"],
         context_input_bytes=sources["context_input"],
+        metadata_certificate_bytes=sources["metadata_certificate"],
+        revocation_signer_certificate_bytes=sources["revocation_signer_certificate"],
     ).as_dict()
     receipt = inspect_update_package_file(
         source, node_id=NODE, file_id=FILE_ID, package_path=path,
@@ -91,6 +93,8 @@ def join(value, *, raw=None, sources=None, diagnostic=None, receipt=None, path=N
         revocation_input_bytes=sources["revocation_input"],
         conditions_input_bytes=sources["conditions_input"],
         context_input_bytes=sources["context_input"],
+        metadata_certificate_bytes=sources.get("metadata_certificate"),
+        revocation_signer_certificate_bytes=sources.get("revocation_signer_certificate"),
         node_id=NODE, file_id=FILE_ID, package_path=value["path"] if path is None else path,
     ).as_dict()
 
@@ -120,6 +124,17 @@ class UpdatePackageBundleTests(unittest.TestCase):
                     "updater_network_request_initiated"):
             self.assertFalse(result[key], key)
         self.assertIsNone(result["updates_available"])
+
+    def test_missing_certificate_breaks_joined_diagnostic_but_not_package_source(self):
+        value = case(self.root)
+        sources = dict(value["sources"])
+        del sources["metadata_certificate"]
+        result = join(value, sources=sources)
+        self.assertTrue(result["links"]["source_package"]["linked"])
+        self.assertFalse(result["links"]["diagnostic_package"]["linked"])
+        self.assertFalse(result["links"]["diagnostic_package"]["diagnostic_report_reproduced"])
+        self.assertFalse(result["diagnostics_complete"])
+        self.assertFalse(result["joined_diagnostics_complete"])
 
     def test_negative_metadata_stage_preserves_independent_package_link(self):
         value = case(self.root, metadata_status="failed")
@@ -157,6 +172,8 @@ class UpdatePackageBundleTests(unittest.TestCase):
             revocation_input_bytes=value["sources"]["revocation_input"],
             conditions_input_bytes=value["sources"]["conditions_input"],
             context_input_bytes=value["sources"]["context_input"],
+            metadata_certificate_bytes=value["sources"]["metadata_certificate"],
+            revocation_signer_certificate_bytes=value["sources"]["revocation_signer_certificate"],
         ).as_dict()
         result = join(value, raw=changed_raw, diagnostic=diagnostic)
         self.assertTrue(result["links"]["source_package"]["linked"])
@@ -260,5 +277,7 @@ class UpdatePackageBundleTests(unittest.TestCase):
                 revocation_input_bytes=value["sources"]["revocation_input"],
                 conditions_input_bytes=value["sources"]["conditions_input"],
                 context_input_bytes=value["sources"]["context_input"],
+                metadata_certificate_bytes=value["sources"]["metadata_certificate"],
+                revocation_signer_certificate_bytes=value["sources"]["revocation_signer_certificate"],
                 node_id=NODE, file_id=FILE_ID, package_path=value["path"],
             )
