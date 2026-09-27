@@ -301,17 +301,20 @@ class BlankedEdlt:
     base: LoadedEdlt
     slot: int
     type_changed: bool
+    before_controls: Mapping
     after_controls: Mapping
     widgets: tuple[LoadedWidget, ...]
     _origin: _LoadedOrigin = field(repr=False, compare=False)
 
     def __post_init__(self):
-        object.__setattr__(self, 'after_controls', MappingProxyType(dict(self.after_controls)))
+        for name in ('before_controls', 'after_controls'):
+            object.__setattr__(
+                self, name, MappingProxyType(dict(getattr(self, name))))
 
     def as_dict(self):
         return {'format': 'cbus-edlt-blanked-model-v1', 'phase': 'after_controls',
                 'operation': 'select Blank', 'slot': self.slot, 'type_changed': self.type_changed,
-                'after_controls_changes': _delta(self.base.after_load, self.after_controls),
+                'after_controls_changes': _delta(self.before_controls, self.after_controls),
                 'widgets': [widget.as_dict() for widget in self.widgets],
                 'scene_references_retained': True, 'static_references_retained': True,
                 'mra_globals_retained': self.base.mra.as_dict(),
@@ -634,6 +637,31 @@ class EdltLifecycle:
                 loaded._origin.reference() is not loaded):
             raise EdltError('Use an intact loaded model returned by this EdltLifecycle.load instance')
 
+    def _blank_widget(self, loaded, slot, before_controls, widgets):
+        """Issue one Blank receipt against an exact validated graph state."""
+        self._validate_loaded(loaded)
+        before_controls = self.snapshot(before_controls)
+        if (not isinstance(widgets, tuple) or len(widgets) != 21 or
+                any(type(widget) is not LoadedWidget
+                    for widget in widgets)):
+            raise EdltError('Blank selection requires 21 issued widget models')
+        _int(slot, 'Blank widget slot', 1, 21)
+        values = dict(before_controls)
+        changed = values[_field(slot)] != (0,)
+        if changed:
+            values[_field(slot)] = (0,)
+            if slot >= 6:
+                values[f'Widget{slot}RestoreLevel'] = (0,)
+            old = widgets[slot - 1]
+            widgets = (*widgets[:slot - 1],
+                       LoadedWidget(slot, old.original_type, 0, 'BlankData'),
+                       *widgets[slot:])
+        origin = _LoadedOrigin(self._loaded_owner)
+        result = BlankedEdlt(
+            loaded, slot, changed, before_controls, values, widgets, origin)
+        origin.reference = weakref.ref(result)
+        return result
+
     def blank_widget(self, loaded, slot):
         """Select Blank once, retaining the loaded scenes and cached MRA globals.
 
@@ -641,22 +669,31 @@ class EdltLifecycle:
         a position is visible; EdltBlankWidget supplies the bounded UI placement.
         """
         self._validate_loaded(loaded)
-        _int(slot, 'Blank widget slot', 1, 21)
-        values = dict(loaded.after_load)
-        changed = values[_field(slot)] != (0,)
-        widgets = loaded.widgets
-        if changed:
-            values[_field(slot)] = (0,)
-            if slot >= 6:
-                values[f'Widget{slot}RestoreLevel'] = (0,)
-            old = loaded.widgets[slot - 1]
-            widgets = (*loaded.widgets[:slot - 1],
-                       LoadedWidget(slot, old.original_type, 0, 'BlankData'),
-                       *loaded.widgets[slot:])
-        origin = _LoadedOrigin(self._loaded_owner)
-        result = BlankedEdlt(loaded, slot, changed, values, widgets, origin)
-        origin.reference = weakref.ref(result)
-        return result
+        return self._blank_widget(
+            loaded, slot, loaded.after_load, loaded.widgets)
+
+    def blank_reset_widget(self, reset, slot):
+        """Select Blank on the exact fresh graph issued by Reset.
+
+        Reset's control phase installs the Time/Date model in widget 10 after
+        the fresh load.  The receipt therefore starts from ``after_controls``
+        and the issued post-Reset widgets, rather than reconstructing either
+        state from raw PP bytes.
+        """
+        if (type(reset) is not ResetEdlt or
+                type(reset._origin) is not _LoadedOrigin or
+                reset._origin.owner is not self._loaded_owner or
+                reset._origin.reference is None or
+                reset._origin.reference() is not reset):
+            raise EdltError(
+                'Use an intact Reset transition returned by this '
+                'EdltLifecycle instance')
+        self._validate_loaded(reset.base)
+        self._validate_loaded(reset.fresh)
+        from .edlt_reset import _validate_context
+        _validate_context(self, reset.base, reset.context)
+        return self._blank_widget(
+            reset.fresh, slot, reset.after_controls, reset.widgets)
 
     def reset_unit_controls(self, loaded, *, reset_context):
         """Perform the narrow validated Reset action; no PP override interface."""
@@ -737,8 +774,13 @@ class EdltLifecycle:
             save_models = loaded
             original = loaded.expected
             after_load = loaded.after_load
+        blank_base = save_models
+        blank_before = (reset.after_controls if reset is not None else
+                        loaded.after_load)
         if (not isinstance(_blank_transitions, tuple) or any(
-                type(blank) is not BlankedEdlt or blank.base is not loaded or
+                type(blank) is not BlankedEdlt or
+                blank.base is not blank_base or
+                dict(blank.before_controls) != dict(blank_before) or
                 type(blank._origin) is not _LoadedOrigin or
                 blank._origin.owner is not self._loaded_owner or
                 blank._origin.reference is None or
@@ -746,7 +788,7 @@ class EdltLifecycle:
                 for blank in _blank_transitions)):
             raise EdltError(
                 'Internal composed Blank transitions must be intact receipts '
-                'for the retained loaded model')
+                'for the selected retained or fresh Reset graph')
         if _mra_globals is not None:
             if (type(_mra_globals) is not tuple or len(_mra_globals) != 2):
                 raise EdltError(

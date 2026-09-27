@@ -307,7 +307,8 @@ class ResolvedSceneMetadata:
 
 
 def resolve_native_scene_metadata(text, unit_path, values, engine, operations,
-                                  *, _projected_containers=()):
+                                  *, _projected_containers=(),
+                                  _projected_values=None):
     """Resolve one immutable SceneManager cache without native mutation."""
     if type(engine) is not EdltSceneManager:
         raise ValueError('Expected an EdltSceneManager engine')
@@ -324,9 +325,11 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations,
     operations = _normal_operations(engine, operations)
     unit_path, _project_name, _network, _unit = _unit_path(unit_path)
     snapshot = _snapshot(text, unit_path, engine)
-    supplied = engine.snapshot(values)
-    if supplied != snapshot.value_map():
+    source = engine.snapshot(values)
+    if source != snapshot.value_map():
         raise ValueError('PP snapshot differs from the selected native project unit')
+    supplied = (source if _projected_values is None else
+                engine.snapshot(_projected_values))
 
     requirements = engine.lifecycle.requirements(supplied).as_dict()
     applications = {row.address: row for row in snapshot.applications}

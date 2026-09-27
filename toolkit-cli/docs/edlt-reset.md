@@ -21,8 +21,10 @@ Inside the [automatic ordered parent metadata](edlt-parent-metadata.md)
 workflow, one exact DBGETXML snapshot can supply this cache and all 874 raw PP
 strings. That mode preserves exact `Value` spellings, requires every positive
 bound group to exist, and refuses missing/projected list objects. It does not
-recover Toolkit registry display/sort preferences and cannot be combined with
-automatic SceneManager metadata.
+recover Toolkit registry display/sort preferences. It may share one plan with
+automatic SceneManager metadata: Reset and any contiguous fresh-graph Blank
+operations are projected before the SceneManager resolver derives and creates
+only its Trigger application/group/action objects.
 
 Repeat `--dirty-parameter NAME` for parameters already marked changed in the declared local editor state. The default is an empty list. This is caller-supplied state, not a reconstruction of a prior Toolkit session. Unknown or duplicate names are rejected.
 
@@ -58,11 +60,12 @@ operation 1 when the source is an exact raw export and metadata is a complete
 `ResetEdlt`, treats its fresh graph as the baseline for later operations and
 defers the terminal BeforeSave/CRC work to one parent projection. Later panels
 may override Reset baseline fields; the plan reports those layered owners.
-Reset anywhere after operation 1, a second Reset, or Reset plus Blank is
-rejected before PP I/O. Reset+Blank remains refused because Blank’s retained
-receipt cannot bind to the fresh `ResetEdlt` graph. The parent path stages only
-the verified final PP image and does not claim that the original Reset control
-and later panels were operated interactively in one WinForms session.
+Reset anywhere after operation 1 or a second Reset is rejected before PP I/O.
+Blank may immediately follow Reset as a contiguous prefix; each receipt binds
+the issued fresh graph, and a later or interleaved Blank is rejected. The
+parent path stages only the verified final PP image and does not claim that the
+original Reset, Blank and later panels were operated interactively in one
+WinForms session.
 
 The selected tab matters. Widgets and General trigger the original mutating MultiPage getter after defaults, producing terminal NavWidgetType `0x0`. Standby and Colour retain `0xFF`. General also refreshes the 16 restore-level controls before Reset, which can change raw hexadecimal casing without changing the numeric value. The prior EnableLevelStore branch is recorded before defaults. The six active brightness/colour groups remain unchanged during the tested BeforeChange branch and are subsequently reset by their defaults.
 

@@ -116,11 +116,12 @@ explicit. The plan has retained original evidence for each component, while
 unverified. Applications/Corridor are admitted with a complete cache. Reset is
 also admitted only as operation 1 with that complete cache and exact raw PP
 strings; later operations bind to its fresh graph. The automatic resolver can
-derive existing ordered lists and raw strings from DBGETXML, but refuses
-missing list objects and any combination with automatic SceneManager metadata.
-Reset after the
-first position, duplicate Reset and Reset+Blank fail before PP I/O. Blank
-otherwise composes as a whole-slot retained selection. SceneManager can edit
+derive existing ordered lists and raw strings from DBGETXML, refuses missing
+list objects, and can combine that state with automatic SceneManager metadata.
+Reset after the first position and duplicate Reset fail before PP I/O. Blank
+otherwise composes as a whole-slot retained selection; immediately after
+Reset, a contiguous Blank prefix receives exact fresh-graph receipts and any
+later or interleaved Blank fails closed. SceneManager can edit
 the retained or Reset-fresh graph and shares the one terminal CRC/write/readback
 path; the automatic parent metadata resolver can establish its cache and exact
 Trigger application/group/action objects before the same parent PP save.

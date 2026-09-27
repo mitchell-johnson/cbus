@@ -110,7 +110,7 @@ class ParentBlankTests(unittest.TestCase):
         self.assertEqual(set(document['phases']['crc']), set(CRC_FIELDS))
         self.assertFalse(document['original_interactive_blank_reset_sequence_executed'])
 
-    def test_blank_overlap_placement_and_reset_combination_fail_before_io(self):
+    def test_blank_overlap_and_invalid_post_reset_order_fail_before_io(self):
         bad = (
             ({'op': 'blank', 'page': 1, 'position': 1}, measurement(1)),
             ({'op': 'blank', 'page': 1, 'position': 1},
@@ -132,10 +132,11 @@ class ParentBlankTests(unittest.TestCase):
                     {'op': 'blank', 'page': 1, 'position': 5},
                     measurement(1, page_mode='multiple'),
                 ))
-        with self.assertRaisesRegex(EdltError, 'fresh graph'):
+        with self.assertRaisesRegex(EdltError, 'immediately follow'):
             normalize_operations((
                 {'op': 'reset', 'active_tab': 'widgets',
                  'binding_variant': 'base-c3'},
+                measurement(1),
                 {'op': 'blank', 'page': 1, 'position': 1},
             ))
 
@@ -202,9 +203,10 @@ class ParentResetTests(unittest.TestCase):
             normalize_operations((measurement(), reset))
         with self.assertRaisesRegex(EdltError, 'only one reset'):
             normalize_operations((reset, reset))
-        with self.assertRaisesRegex(EdltError, 'fresh graph'):
-            normalize_operations((
-                reset, {'op': 'blank', 'page': 1, 'position': 1}))
+        self.assertEqual(
+            [row['op'] for row in normalize_operations((
+                reset, {'op': 'blank', 'page': 1, 'position': 5}))],
+            ['reset', 'blank'])
         with self.assertRaisesRegex(EdltError, 'application-cache'):
             self.editor.plan(
                 self.raw, metadata=self.metadata['lifecycle'],
@@ -246,6 +248,38 @@ class ParentResetTests(unittest.TestCase):
         self.assertTrue(result['verified'])
         writes = [name for name, _value in session.calls]
         self.assertEqual(len(writes), len(set(writes)))
+        self.assertEqual(self.editor.snapshot(session.values()),
+                         {**plan.expected, **plan.changes})
+
+    def test_reset_then_blank_binds_widget10_on_the_issued_fresh_graph(self):
+        operations = (
+            reset_operations()[0],
+            {'op': 'blank', 'page': 1, 'position': 5},
+            measurement(1),
+        )
+        plan = self.editor.plan(
+            self.raw, metadata=self.metadata, operations=operations)
+        document = plan.as_dict()
+        blank = document['operation_results'][1]
+        self.assertEqual(blank['format'], 'cbus-edlt-blanked-model-v1')
+        self.assertEqual(blank['slot'], 10)
+        self.assertTrue(blank['type_changed'])
+        self.assertTrue(blank['parent_panel_binding'][
+            'fresh_reset_graph_bound'])
+        self.assertEqual(plan.after_controls[_field(10)], (0,))
+        self.assertEqual(plan.after_controls['Widget10RestoreLevel'], (0,))
+        self.assertEqual(document['execution_counts'][
+            'fresh_reset_blank_transitions'], 1)
+        self.assertEqual(document['execution_counts'][
+            'retained_blank_transitions'], 0)
+        self.assertTrue(document['reused_fresh_reset_blank_transition'])
+        self.assertEqual(document['execution_counts'][
+            'terminal_normalization_passes'], 1)
+        self.assertEqual(document['execution_counts']['terminal_crc_passes'], 1)
+
+        session = self.session()
+        result = self.editor.apply(session, plan)
+        self.assertTrue(result['verified'])
         self.assertEqual(self.editor.snapshot(session.values()),
                          {**plan.expected, **plan.changes})
 

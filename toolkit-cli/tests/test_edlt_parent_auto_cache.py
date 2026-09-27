@@ -1,5 +1,6 @@
 """Automatic ordered ApplicationCache resolution for native parent edits."""
 from contextlib import nullcontext, redirect_stderr, redirect_stdout
+from dataclasses import replace
 import io
 import json
 import os
@@ -276,16 +277,52 @@ class ParentAutomaticResetCacheTests(unittest.TestCase):
         self.assertFalse(any(command.startswith('PROJECT ')
                              for command in self.client.commands))
 
-    def test_scene_manager_combination_remains_explicitly_refused(self):
-        requested = (*reset_operations(), {
+    def test_reset_raw_cache_combines_with_scene_manager_metadata(self):
+        corridor = fixture()
+        parameters = dict(self.spec.parameters)
+        names = (
+            'CorridorLinkingLinkGroup', 'CorridorLinkingOfficeGroup',
+            'CorridorLinkingCorridorGroup', 'CorridorLinkingCorridorTime',
+        )
+        if 'CorridorLinkingCorridorTime' not in parameters:
+            padding = next(name for name in parameters
+                           if name.startswith('OwnedPadding'))
+            del parameters[padding]
+        for name in names:
+            parameters[name] = corridor.parameters[name]
+        spec = replace(self.spec, parameters=parameters)
+        editor = EdltParentTransaction(spec)
+        raw = reset_source(spec)
+        source = editor.snapshot(raw)
+        client = MetadataClient(
+            spec, applications=_native_applications(reset_cache()))
+        client.values = dict(raw)
+        requested = (
+            reset_operations()[0],
+            {'op': 'blank', 'page': 1, 'position': 5},
+            {'op': 'applications', 'edits': []},
+            {'op': 'corridor', 'edits': []}, {
             'op': 'scene-manager',
             'operations': [{'op': 'get-trigger', 'scene': 1}],
-        })
-        with self.assertRaisesRegex(
-                ValueError, 'does not admit.*reset'):
-            plan_native_parent_metadata(
-                self.client.xml(), '//TEST/254/p/20', self.source,
-                self.editor, requested)
+        }, reset_operations()[1])
+        plan = plan_native_parent_metadata(
+            client.xml(), '//TEST/254/p/20', source,
+            editor, requested)
+        document = plan.as_dict()
+        ordered = document['automatic_ordered_application_cache']
+        self.assertEqual(ordered['operations'],
+                         ['reset', 'applications', 'corridor'])
+        self.assertTrue(ordered['combined_with_scene_manager_metadata'])
+        self.assertEqual(ordered['reset_raw_source'],
+                         'exact selected Unit PP Value attributes')
+        self.assertIsNotNone(document['automatic_scene_metadata'])
+        self.assertEqual(dict(plan.parent_plan.expected_raw), raw)
+        self.assertTrue(document['parent_transaction']['preservation'][
+            'fresh_reset_scene_models_edited'])
+        self.assertEqual(document['parent_transaction']['execution_counts'][
+            'fresh_reset_blank_transitions'], 1)
+        self.assertEqual(plan.parent_plan.after_controls[
+            'Widget10WidgetType'], (0,))
 
 
 class ParentAutomaticCacheNativeAcceptance(unittest.TestCase):

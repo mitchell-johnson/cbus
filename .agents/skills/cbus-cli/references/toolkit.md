@@ -137,9 +137,9 @@ Reset baseline. Applications, Corridor and Reset require the complete
 application cache; SceneManager requires the complete SceneManager cache. The
 automatic parent metadata resolver derives existing ordered DBGETXML lists and
 exact Unit PP strings for operation-1 Reset without projecting missing list
-objects. Its separate SceneManager branch derives that cache and creates exact
-Trigger application/group/action objects. Combining those automatic branches
-remains refused. The
+objects. It can project the validated ordered-list/Reset/contiguous-Blank
+state into the SceneManager branch, which creates only exact required Trigger
+application/group/action objects. The
 transaction reconciles one page mode, rejects overlapping complete records or
 settings fields, reserves both Time/Date slices, validates application/group
 and effective dynamic-variant dependencies, composes shared text allocation in
@@ -151,8 +151,10 @@ values use the first existing pre-conversion MRA record. Review `operation_resul
 `operation_metadata_dependencies`, `ownership`, `preservation` and
 `execution_counts`. Blank uses whole-slot ownership. Reset creates a fresh
 widget/scene graph before later operations and reports layered baseline
-overrides; Reset after operation 1, duplicate Reset and Reset+Blank fail
-closed. Applications must precede SceneManager, and SceneManager must precede
+overrides; Reset after operation 1 and duplicate Reset fail closed. Blank may
+form only the contiguous prefix after Reset, where it binds an exact issued
+fresh-graph receipt; a later Blank fails closed. Applications must precede
+SceneManager, and SceneManager must precede
 every Scene widget so final graph dependencies are validated. The original
 component evidence does not establish an executed original multi-panel form; see
 `toolkit-cli/docs/edlt-parent-transaction.md`.

@@ -11,13 +11,13 @@ applications and groups are planned in deterministic address order. The same
 parent transaction then performs its one load, ordered control phase, terminal
 normalization and five-CRC projection.
 
-Applications, Corridor and operation-1 Reset are admitted when every required
-list object already exists in that snapshot. The resolver supplies their
-complete ordered `ApplicationCache`; Reset additionally consumes all 874 exact
-`PP Value` strings from the selected Unit record. No list object is projected,
-because DBGETXML does not establish where a newly created item would appear in
-the original controls. A parent `scene-manager` operation is also admitted on
-the separate graph-creation branch. That branch reuses the exact
+Applications, Corridor and operation-1 Reset are admitted when every object
+required by their list contract already exists in that snapshot. The resolver
+supplies their complete ordered `ApplicationCache`; Reset additionally consumes
+all 874 exact `PP Value` strings from the selected Unit record. Those list
+requirements are never projected, because DBGETXML does not establish where a
+new item would appear in the original controls. A parent `scene-manager`
+operation can share that plan. It reuses the exact
 [automatic SceneManager metadata](edlt-scene-metadata.md) contract to build a
 complete ordered application/group/action-label cache and to project a missing
 Trigger Control application, exact trigger groups and exact action levels. The
@@ -94,11 +94,12 @@ Every Reset complete-list application and positive bound control group must
 already exist. Missing or ambiguous objects fail before backup; the resolver
 never turns an absent Reset control group into a creation. Later operations
 are resolved against the issued fresh Reset graph, including ordered
-Primary/Secondary application edits. Automatic Applications, Corridor or Reset
-cannot currently share a plan with automatic SceneManager metadata: that
-branch projects a new graph/list inventory, while no captured evidence
-establishes the resulting list placement or Reset-fresh metadata graph. Use a
-separately established caller cache for such a combination.
+Primary/Secondary application edits. Automatic Applications, Corridor and
+Reset may share the plan with automatic SceneManager metadata. The ordered
+list stays a source-ordered database view; exact SceneManager Trigger
+creations are appended to the projected cache before the one PP stage. Blank
+operations immediately after Reset are projected from its issued post-control
+fresh graph before SceneManager dependencies are resolved.
 
 The original `EDLTUnit.AfterLoadPPData` resolves the primary application,
 loads `StaticTextString0` through `StaticTextString63`, loads scenes and
@@ -137,11 +138,13 @@ Navigation, Quick Status and Page Control operations before the nested parent
 plan runs. This includes application 172 HVAC groups and application 203
 `NetVar` records. Scene widget operations after SceneManager derive their
 trigger and dynamic-image dependencies from the final issued graph. Duplicate
-graph ownership, reversing that order, an incomplete 64-item capacity prefix,
-or combining automatic SceneManager metadata with Applications, Corridor or
-Reset fails before backup or PP I/O. Without SceneManager, Applications,
-Corridor and operation-1 Reset use the complete non-projecting database-view
-cache described above.
+graph ownership, reversing that order, or an incomplete 64-item capacity prefix
+fails before backup or PP I/O. With or without SceneManager, Applications,
+Corridor and operation-1 Reset retain the complete non-projecting
+database-view requirements described above. Objects independently required by
+another admitted parent operation or by SceneManager may carry exact creation
+receipts into the pre-PP cache; the list operations themselves never authorize
+those projections.
 MRA Zone Control, Source Select, Source Control and distributed global
 operations consume only unit PP records and static-text slots. They therefore
 add no application/group objects; the resolver still supplies all metadata
@@ -201,9 +204,10 @@ pins the inspected Toolkit 1.18 source hashes and the exact original methods
 that establish application/group auto-resolution, virtual group 255, level and
 TagDLT population, and static-label load ordering. Portable tests use a native
 command-shaped project simulator to verify planning, preservation, mixed
-parent/scene creation, one PP save, save/reload, rollback and lost-reply
-evidence. It also verifies Applications/Corridor list order, exact Reset raw
-strings, positive-control refusal and the non-projecting save boundary.
+parent/scene creation, combined ordered-list/Reset/Blank/SceneManager state,
+one PP save, save/reload, rollback and lost-reply evidence. It also verifies
+Applications/Corridor list order, exact Reset raw strings, positive-control
+refusal and the non-projecting ordered-list boundary.
 Optional native gates require an explicitly provisioned disposable closed
 project. The ordered-cache gate accepts a reviewed operation JSON file:
 

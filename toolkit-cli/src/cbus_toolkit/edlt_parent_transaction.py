@@ -293,11 +293,13 @@ def normalize_operations(operations):
         raise EdltError(
             'Reset must be operation 1 because it replaces the retained '
             'widget and scene graph')
-    if resets and any(value['op'] == 'blank' for value in result):
-        raise EdltError(
-            'Reset and Blank cannot share one parent transaction: Reset '
-            'creates a fresh graph, while the retained Blank receipt accepts '
-            'only the original loaded graph')
+    if resets:
+        blanks = tuple(index for index, value in enumerate(result)
+                       if value['op'] == 'blank')
+        if blanks and blanks != tuple(range(1, 1 + len(blanks))):
+            raise EdltError(
+                'Blank operations after Reset must immediately follow '
+                'operation 1 so every receipt binds the issued fresh graph')
     if not (resets or any(value['op'] in WIDGET_OPERATION_NAMES
                           for value in result) or
             any(value['op'] == 'scene-manager' for value in result)):
@@ -448,9 +450,9 @@ class ParentTransactionPlan:
         final = {**self.expected, **self.changes}
         return {
             'format': 'cbus-edlt-parent-transaction-plan-v1',
-            'scope': ('ordered retained Blank/widget/settings controls and '
-                      'an optional operation-1 Reset baseline through one '
-                      'parent save'),
+            'scope': ('ordered retained or Reset-fresh Blank/widget/settings '
+                      'controls and an optional operation-1 Reset baseline '
+                      'through one parent save'),
             'unit_type': 'KEYGL5', 'catalog_number': '5055EDL',
             'firmware': '5.5.00',
             'operations': [dict(value) for value in self.operations],
@@ -853,7 +855,9 @@ class EdltParentTransaction:
                     raise EdltError(
                         'Conflicting page-mode ownership: ' + navigation_mode +
                         ' and ' + mode)
-                transition = self.lifecycle.blank_widget(loaded, slot)
+                transition = (self.lifecycle.blank_reset_widget(
+                    reset_transition, slot) if reset_transition is not None
+                    else self.lifecycle.blank_widget(loaded, slot))
                 blank_transitions.append(transition)
                 slots[slot] = owner
                 claimed = [_field(slot, offset) for offset in range(32)]
@@ -862,7 +866,7 @@ class EdltParentTransaction:
                 self._claim(owners, claimed, owner)
                 transition_delta = {
                     name: value for name, value in transition.after_controls.items()
-                    if value != loaded.after_load[name]
+                    if value != transition.before_controls[name]
                 }
                 control_values.update(transition_delta)
                 planning_values.update(transition_delta)
@@ -873,13 +877,21 @@ class EdltParentTransaction:
                     'page': options['page'],
                     'position': options['position'],
                     'composition_role':
-                        'retained Blank selection with whole-slot reservation',
+                        ('fresh Reset-graph Blank selection with whole-slot '
+                         'reservation' if reset_transition is not None else
+                         'retained Blank selection with whole-slot reservation'),
                     'owned_parameters': sorted(claimed),
                     'mutated_parameters': sorted(transition_delta),
                     'reserved_widget_slots': [slot],
                     'parent_panel_binding': {
                         'source': PANEL_BINDING_SOURCES[kind],
-                        'retained_blank_transition_reused': True,
+                        'blank_transition_reused': True,
+                        'retained_blank_transition_reused':
+                            reset_transition is None,
+                        'fresh_reset_blank_transition_reused':
+                            reset_transition is not None,
+                        'fresh_reset_graph_bound':
+                            reset_transition is not None,
                         'placement_filter_reused': True,
                     },
                     'standalone_changes_applied_directly': False,
@@ -1388,7 +1400,8 @@ class EdltParentTransaction:
                 'reset_operations': int(reset_transition is not None),
                 'scene_manager_operations': int(scene_manager_seen),
                 'reset_must_be_first': True,
-                'reset_blank_combination_refused': True,
+                'reset_blank_combination_refused': False,
+                'reset_blank_requires_contiguous_post_reset_prefix': True,
                 'single_scene_graph_owner': True,
                 'applications_must_precede_scene_manager': True,
                 'scene_manager_must_precede_scene_widgets': True,
@@ -1404,7 +1417,13 @@ class EdltParentTransaction:
                 'retained_load_models': 1,
                 'reset_fresh_model_loads': int(reset_transition is not None),
                 'reset_graph_replacements': int(reset_transition is not None),
-                'retained_blank_transitions': len(blank_transitions),
+                'blank_transitions': len(blank_transitions),
+                'retained_blank_transitions': (
+                    len(blank_transitions)
+                    if reset_transition is None else 0),
+                'fresh_reset_blank_transitions': (
+                    len(blank_transitions)
+                    if reset_transition is not None else 0),
                 'retained_scene_manager_projections':
                     int(scene_manager_composition is not None),
                 'standalone_validation_placement_projections':
@@ -1498,7 +1517,11 @@ class EdltParentTransaction:
             'reused_original_measurement_probe': True,
             'reused_original_lighting_probe': True,
             'reused_original_percentage_control_probe': True,
-            'reused_retained_blank_transition': bool(blank_transitions),
+            'reused_blank_transition': bool(blank_transitions),
+            'reused_retained_blank_transition': (
+                bool(blank_transitions) and reset_transition is None),
+            'reused_fresh_reset_blank_transition': (
+                bool(blank_transitions) and reset_transition is not None),
             'reused_retained_reset_transition': reset_transition is not None,
             'reused_retained_scene_manager':
                 scene_manager_composition is not None,

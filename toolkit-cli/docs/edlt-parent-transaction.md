@@ -138,10 +138,15 @@ the exact raw `PP Value` strings in the selected Unit record so its
 spelling-sensitive control phases can be replayed canonically. This automatic
 list branch never projects a missing application or group and reports that its
 `formatted_display` values are a deterministic TagName database view, because
-Toolkit registry display/sort preferences are absent from DBGETXML. A plan
-that combines this automatic list/Reset branch with automatic SceneManager
-metadata remains refused before PP I/O.
-The separate automatic `scene-manager` branch uses the existing exact
+Toolkit registry display/sort preferences are absent from DBGETXML. The same
+plan may combine that list/Reset contract with automatic SceneManager
+metadata. Existing ordered-list requirements still refuse missing objects;
+objects carrying independent creation receipts from another admitted parent
+operation or SceneManager are appended to the projected cache before PP
+staging. Evidence keeps
+`ordered_list_requirements_project_missing_objects=false` separate from
+`operation_owned_creations_enter_cache_before_pp_staging`.
+The automatic `scene-manager` branch uses the existing exact
 SceneManager resolver and projects a missing
 Trigger Control application, exact trigger groups and exact action levels with
 Address=Value and four blank variants. Those objects join ordinary parent
@@ -241,15 +246,15 @@ first operation because the accepted `ResetEdlt` transition discards the old
 21 widget and eight scene objects and supplies a genuinely fresh graph. Later
 operations bind to that fresh graph and become the final owner of any field
 they override. The plan lists the Reset baseline fields and every later
-override separately. Reset and Blank in the same transaction are rejected:
-the retained Blank receipt accepts `LoadedEdlt`, while the accepted Reset path
-has already replaced it with `ResetEdlt`. This is an executable graph-identity
-boundary, not an inferred UI restriction.
+override separately. Blank can follow Reset only in the contiguous operation
+prefix immediately after operation 1. The lifecycle issues each Blank receipt
+against `ResetEdlt.fresh` plus the exact post-Reset control state, including
+the Time/Date model installed at widget 10. A later Blank is rejected because
+an intervening panel would make that receipt's graph state ambiguous.
 
-SceneManager may follow Reset and then edits the issued fresh eight-scene
-graph. It may also compose with retained Blank because their receipts own
-disjoint graph and widget fields. Reset+Blank remains refused for the Blank
-identity reason above.
+SceneManager may follow Reset and its contiguous Blank prefix, then edits the
+issued fresh eight-scene graph. It may also compose with retained Blank because
+their receipts own disjoint graph and widget fields.
 
 The source-pinned Lighting selection branch is `ShowWidget` →
 `BaseWidget.SetWidgetData` → base data-source setup → assign the selected
@@ -407,12 +412,12 @@ complete PP state when `CBUS_CGATE_TEST_HOST` and `CBUS_UNITSPEC_DIR` are set.
 
 Blank and Reset reuse their separately captured original/native placement,
 raw-phase, model-identity and persistence evidence. The focused parent tests
-verify Blank plus another widget, Reset-first plus a later widget, exact raw
+verify Blank plus another widget, Reset-first plus a fresh-graph Blank and a
+later widget, exact raw
 canonical replay, reverse rollback to the raw source, one terminal CRC pass,
 one database save and no replay after a lost save reply. They do not turn those
 separate component captures into an original interactive Blank/Reset plus
-multi-panel execution. Reset+Blank remains the explicit fresh-graph refusal
-described above. SceneManager composition reuses the retained model vectors,
+multi-panel execution. SceneManager composition reuses the retained model vectors,
 static allocator, 64-item CRC behavior and native persistence acceptance from
 `edlt-retained-scene-editing`. The focused parent tests cover retained and
 fresh Reset graphs, Blank, ordering, cache refusal, one terminal pass and one

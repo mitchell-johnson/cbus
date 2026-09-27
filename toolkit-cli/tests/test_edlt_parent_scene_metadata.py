@@ -117,7 +117,7 @@ class ParentSceneMetadataTests(unittest.TestCase):
         self.assertFalse(any(command.startswith(('DBADD', 'PROJECT '))
                              for command in self.client.commands))
 
-    def test_graph_capacity_owner_order_and_unmerged_contracts_fail_closed(self):
+    def test_graph_capacity_owner_and_order_contracts_fail_closed(self):
         partial = (*capacity_operations(),
                    op('add-groups', 2, groups=[64]))
         with self.assertRaisesRegex(ValueError, 'partial scene graphs'):
@@ -131,14 +131,52 @@ class ParentSceneMetadataTests(unittest.TestCase):
                 {'op': 'scene', 'page': 1, 'position': 1, 'scene': 1},
                 scene_manager(op('get-trigger')),
             ))
-        with self.assertRaisesRegex(ValueError,
-                                    'separate cache/raw contract.*applications'):
-            self.offline((
-                {'op': 'applications', 'edits': []},
-                scene_manager(op('get-trigger')),
-            ))
         self.assertFalse(any(command.startswith(('DBADD', 'PROJECT ', 'PP '))
                              for command in self.client.commands))
+
+    def test_ordered_lists_and_scene_metadata_share_one_automatic_cache(self):
+        group = self.client.applications[202]['groups'][42]
+        saved = self.client.saved_applications[202]['groups'][42]
+        for row in (group, saved):
+            row['levels'] = tuple(level for level in row['levels']
+                                  if level != 2)
+            row['level_tags'].pop(2)
+        requested = (
+            {'op': 'applications', 'edits': []},
+            scene_manager(*operations('sync')),
+            measurement(),
+        )
+        plan = self.offline(requested)
+        document = plan.as_dict()
+        ordered = document['automatic_ordered_application_cache']
+        self.assertEqual(ordered['operations'], ['applications'])
+        self.assertTrue(ordered['combined_with_scene_manager_metadata'])
+        self.assertTrue(ordered[
+            'scene_manager_creations_enter_cache_before_pp_staging'])
+        self.assertTrue(ordered[
+            'operation_owned_creations_enter_cache_before_pp_staging'])
+        self.assertFalse(ordered[
+            'ordered_list_requirements_project_missing_objects'])
+        self.assertEqual(
+            [(row['kind'], row.get('group'), row['address'])
+             for row in document['planned_creations']],
+            [('Level', 42, 2)])
+        self.assertEqual(
+            [row['format'] for row in document['parent_transaction'][
+                'operation_results']],
+            ['cbus-edlt-applications-plan-v1',
+             'cbus-edlt-parent-scene-manager-operation-v1',
+             'cbus-edlt-measurement-plan-v1'])
+
+        manager, _session = self.manager()
+        native = manager.plan(
+            '//TEST/254/p/20', operations=requested,
+            exclusive_project=True)
+        result = manager.apply(native, backup_project='COMBINED').as_dict()
+        self.assertTrue(result['persistence_verified'])
+        self.assertEqual(result['metadata_objects_created'], 1)
+        self.assertEqual(self.client.commands.count('PP SAVE'), 1)
+        self.assertEqual(self.client.commands.count('PROJECT SAVE TEST'), 2)
 
     def test_stale_ambiguous_and_image_dependent_sources_fail_closed(self):
         stale = dict(self.values)
@@ -189,9 +227,13 @@ class ParentSceneMetadataTests(unittest.TestCase):
 
     def test_pre_save_rollback_and_lost_save_uncertainty_do_not_retry(self):
         self.remove_scene_and_lighting_metadata()
+        combined = (
+            {'op': 'applications', 'edits': []},
+            *parent_operations(),
+        )
         manager, session = self.manager()
         plan = manager.plan(
-            '//TEST/254/p/20', operations=parent_operations(),
+            '//TEST/254/p/20', operations=combined,
             exclusive_project=True)
         session.failure = 'SceneBucket'
         with self.assertRaises(NativeEdltParentError) as caught:
@@ -207,7 +249,7 @@ class ParentSceneMetadataTests(unittest.TestCase):
         self.remove_scene_and_lighting_metadata()
         manager, session = self.manager()
         plan = manager.plan(
-            '//TEST/254/p/20', operations=parent_operations(),
+            '//TEST/254/p/20', operations=combined,
             exclusive_project=True)
         session.save_error = RuntimeError('PP SAVE reply lost')
         with self.assertRaises(NativeEdltParentError) as caught:
@@ -266,19 +308,25 @@ class ParentSceneMetadataCLITests(unittest.TestCase):
         self.assertEqual(actual, status, stdout.getvalue() + stderr.getvalue())
         return json.loads(stdout.getvalue() or stderr.getvalue())
 
-    def files(self, root):
+    def files(self, root, operations=None):
         values = Path(root) / 'values.json'
         project = Path(root) / 'project.xml'
         rows = Path(root) / 'operations.json'
         values.write_text(json.dumps(self.case.values), encoding='utf-8')
         project.write_text(self.client.xml(), encoding='utf-8')
-        rows.write_text(json.dumps(parent_operations()), encoding='utf-8')
+        rows.write_text(json.dumps(
+            parent_operations() if operations is None else operations),
+            encoding='utf-8')
         return values, project, rows
 
     def test_offline_and_native_cli_use_the_combined_scene_parent_manager(self):
         self.case.remove_scene_and_lighting_metadata()
+        combined = (
+            {'op': 'applications', 'edits': []},
+            *parent_operations(),
+        )
         with tempfile.TemporaryDirectory() as root:
-            values, project, rows = self.files(root)
+            values, project, rows = self.files(root, combined)
             with patch.object(cli, '_edlt_parent_transaction',
                               return_value=self.editor), patch(
                     'cbus_toolkit.cgate.CGateClient',
@@ -290,6 +338,8 @@ class ParentSceneMetadataCLITests(unittest.TestCase):
                 ])
             self.assertEqual(preview['automatic_scene_metadata']['format'],
                              'cbus-native-edlt-scene-cache-v3')
+            self.assertTrue(preview['automatic_ordered_application_cache'][
+                'combined_with_scene_manager_metadata'])
             self.assertEqual(len(preview['planned_creations']), 5)
 
             session = NativeSession(self.case.spec, self.client)

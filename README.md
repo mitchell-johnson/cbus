@@ -128,13 +128,13 @@ workflow. The ordered parent transaction can consume one complete
 caller-supplied SceneManager cache, edit the retained or Reset-fresh scene
 graph, and share its final PP/CRC/save path with widget/settings operations.
 Its automatic project resolver also composes the exact SceneManager metadata
-contract: missing Trigger application, group and action objects join ordinary
-parent metadata creation before the same one PP staging/save path.
-The automatic resolver refuses only a combined
-Applications/Corridor/Reset-and-SceneManager plan, because projected list
-placement and the Reset-fresh metadata graph are not evidenced. Reset+Blank
-fresh-graph binding, registry display/sort preferences,
-complete original combined
+contract with Applications, Corridor and operation-1 Reset: existing list
+objects retain DBGETXML child order, exact Reset PP strings feed the fresh
+graph, and missing Trigger groups/actions join ordinary parent metadata
+creation before the same one PP staging/save path. A contiguous Blank prefix
+immediately after Reset binds engine-issued receipts to that fresh graph.
+Missing objects required by the ordered list/Reset contract, registry
+display/sort preferences, complete original combined
 parent/SceneManager controls, original interactive Reset/multi-panel execution and
 physical acceptance remain outstanding.
 

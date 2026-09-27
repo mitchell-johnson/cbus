@@ -31,8 +31,8 @@ from .edlt_application_cache import (
 )
 from .edlt_lifecycle import FORMAT, LifecycleCache, LifecycleGroup
 from .edlt_parent_transaction import (
-    EdltParentTransaction, _DYNAMIC_FIELD_OFFSETS, _candidate_widget,
-    normalize_operations,
+    EdltParentTransaction, _DYNAMIC_FIELD_OFFSETS, _SETTING_FIELDS,
+    _candidate_widget, normalize_operations,
 )
 from .native import NativeDatabase, NativeProjects, _project
 from .native_thermostat_schedule import _shape
@@ -554,14 +554,19 @@ class NativeEdltParentPlan:
         ordered_operations = tuple(
             row['op'] for row in self.operations
             if row['op'] in ('applications', 'corridor', 'reset'))
+        ordered_application_cache = (
+            self.cache.application_cache
+            if hasattr(self.cache, 'application_cache') else self.cache)
         ordered_cache = None
-        if (ordered_operations and isinstance(self.cache, ApplicationCache)
-                and self.scene_metadata is None):
+        if (ordered_operations and
+                isinstance(ordered_application_cache, ApplicationCache)):
             ordered_cache = {
                 'operations': list(ordered_operations),
-                'applications_complete': self.cache.applications_complete,
+                'applications_complete':
+                    ordered_application_cache.applications_complete,
                 'group_lists_complete': [
-                    row.application for row in self.cache.group_lists
+                    row.application
+                    for row in ordered_application_cache.group_lists
                     if row.complete
                 ],
                 'inventory_order_source':
@@ -569,6 +574,13 @@ class NativeEdltParentPlan:
                 'display_projection': 'exact TagName database view',
                 'toolkit_registry_display_and_sort_preferences_observed': False,
                 'projected_list_objects_admitted': False,
+                'scene_manager_creations_enter_cache_before_pp_staging': bool(
+                    self.scene_metadata is not None and self.creations),
+                'operation_owned_creations_enter_cache_before_pp_staging':
+                    bool(self.creations),
+                'ordered_list_requirements_project_missing_objects': False,
+                'combined_with_scene_manager_metadata':
+                    self.scene_metadata is not None,
                 'reset_raw_source': (
                     'exact selected Unit PP Value attributes'
                     if self.parent_plan.expected_raw is not None else None),
@@ -702,14 +714,19 @@ def _accumulate_operation_groups(values, operations, required_apps,
 
 def _complete_application_cache(snapshot, required_apps, requirement_rows,
                                 *, required_existing=(),
-                                required_group_lists=()):
+                                required_group_lists=(), projection=None):
     """Resolve one complete database-view cache without projecting objects.
 
     ``TagName`` and XML child order are exact database facts.  Toolkit's
     registry-backed formatted-display and sorting preferences are not present
     in DBGETXML, so the cache deliberately uses a deterministic TagName view.
     """
+    if projection is not None and type(projection) is not ApplicationCache:
+        raise ValueError('Projected ordered cache must be an ApplicationCache')
     applications = {row.address: row for row in snapshot.applications}
+    projected_applications = (
+        set() if projection is None else
+        set(projection.lifecycle.applications) - set(applications))
     required_existing = set(required_existing)
     required_group_lists = set(required_group_lists)
     required = (set(required_apps) | required_group_lists
@@ -717,7 +734,16 @@ def _complete_application_cache(snapshot, required_apps, requirement_rows,
     if 255 in required:
         raise ValueError(
             'Application255 is virtual and has no derivable native list')
-    missing = sorted(required - set(applications))
+    # A list/Reset requirement itself never authorizes object projection.
+    # Exact objects carrying SceneManager/parent creation receipts may enter
+    # the pre-PP cache, but a missing application whose full list is consumed
+    # by Reset still fails closed.
+    missing_lists = sorted(required_group_lists - set(applications))
+    if missing_lists:
+        raise ValueError(
+            'Complete ordered application cache cannot project missing '
+            'applications: ' + ', '.join(map(str, missing_lists)))
+    missing = sorted(required - set(applications) - projected_applications)
     if missing:
         raise ValueError(
             'Complete ordered application cache cannot project missing '
@@ -725,15 +751,42 @@ def _complete_application_cache(snapshot, required_apps, requirement_rows,
 
     facts = []
     for (application, group), requirement in sorted(requirement_rows.items()):
-        if application not in applications:
+        projected_fact = (None if projection is None else
+                          projection.lifecycle.find(application, group))
+        if application not in applications and application not in projected_applications:
             raise ValueError(
                 'Required native application is absent: ' + str(application))
         if group == 255:
             facts.append(LifecycleGroup(
                 application, 255, True, (False,) * 4, True, ()))
             continue
-        record = next((row for row in applications[application].groups
-                       if row.address == group), None)
+        application_record = applications.get(application)
+        record = (None if application_record is None else next(
+            (row for row in application_record.groups
+             if row.address == group), None))
+        if record is None and projected_fact is not None and projected_fact.exists:
+            if (application, group) in required_existing:
+                raise ValueError(
+                    'Reset does not infer a missing bound control group: '
+                    f'application {application} group {group}')
+            consumed = requirement.get('facts', {})
+            needs_images = bool(consumed.get('dynamic_images_if_present'))
+            if needs_images and not projected_fact.dynamic_images_known:
+                raise ValueError(
+                    'Consumed projected dynamic image metadata is unknown: '
+                    f'application {application} group {group}')
+            levels = (projected_fact.levels
+                      if consumed.get('complete_levels_if_present') else None)
+            if (consumed.get('complete_levels_if_present') and
+                    levels is None):
+                raise ValueError(
+                    'Projected group lacks complete action levels: '
+                    f'application {application} group {group}')
+            facts.append(LifecycleGroup(
+                application, group, True,
+                projected_fact.dynamic_images if needs_images else None,
+                needs_images, levels))
+            continue
         if record is None:
             if (application, group) in required_existing:
                 raise ValueError(
@@ -779,27 +832,36 @@ def _complete_application_cache(snapshot, required_apps, requirement_rows,
             'Complete ordered application cache exceeds 512 consumed group '
             'facts')
 
-    application_order = tuple(row.address for row in snapshot.applications)
+    application_order = (
+        tuple(row.address for row in snapshot.applications)
+        if projection is None else projection.lifecycle.applications)
     lifecycle = LifecycleCache(application_order, facts)
-    displays = tuple(CachedDisplay(row.address, row.tag, row.tag)
-                     for row in snapshot.applications)
+    displays = (
+        tuple(CachedDisplay(row.address, row.tag, row.tag)
+              for row in snapshot.applications)
+        if projection is None else projection.applications)
     virtual = {
         row.application for row in facts
         if row.group == 255 and row.exists
     }
     group_lists = []
     count = 0
-    for application in snapshot.applications:
-        groups = [CachedDisplay(row.address, row.tag, row.tag)
-                  for row in application.groups]
-        if application.address in virtual:
+    for address in application_order:
+        application = applications.get(address)
+        projected_list = (None if projection is None else
+                          projection.find_group_list(address))
+        groups = (
+            [CachedDisplay(row.address, row.tag, row.tag)
+             for row in application.groups]
+            if projected_list is None else list(projected_list.groups))
+        if address in virtual and not any(row.address == 255 for row in groups):
             groups.append(CachedDisplay(255, '<Unused>', '<Unused>'))
         count += len(groups)
         if count > 4096:
             raise ValueError(
                 'Complete ordered application cache exceeds 4096 groups')
         group_lists.append(CachedGroupList(
-            application.address, True, tuple(groups)))
+            address, True, tuple(groups)))
     return ApplicationCache(
         lifecycle, True, displays, tuple(group_lists))
 
@@ -818,25 +880,82 @@ def _reset_requirements(snapshot, editor, operations):
     return document, control_groups, frozenset(document['complete_group_lists'])
 
 
-def _plan_parent_scene_metadata(text, unit_path, supplied, editor, operations,
-                                snapshot, requirements, *, networks=()):
-    """Compose the exact SceneManager resolver with parent dependencies."""
-    from .edlt_scene_manager import SceneManagerCache
-    from .edlt_scene_metadata import (
-        SceneContainerCreation, SceneLevelCreation,
-        resolve_native_scene_metadata,
-    )
+def _project_ordered_scene_source(editor, operations, values, cache):
+    """Project the evidenced pre-SceneManager list/Reset controls.
 
-    unsupported = sorted({
-        row['op'] for row in operations
-        if row['op'] in ('applications', 'corridor', 'reset')
-    })
-    if unsupported:
-        raise ValueError(
-            'Automatic parent SceneManager metadata does not admit the '
-            'separate cache/raw contract for: ' + ', '.join(unsupported))
-    scene_operation = next(
-        row for row in operations if row['op'] == 'scene-manager')
+    The parent transaction performs the authoritative projection again.  This
+    helper supplies only the exact numeric state needed by the retained scene
+    metadata resolver, without issuing a second save or accepting a caller PP
+    overlay.
+    """
+    projected = dict(editor.snapshot(values))
+    for operation in operations:
+        kind = operation['op']
+        if kind == 'scene-manager':
+            break
+        if kind == 'reset':
+            # The caller already supplied ResetEdlt.after_controls.
+            continue
+        if kind == 'blank':
+            slot = _candidate_widget(operation, projected)
+            if slot is None:
+                raise ValueError(
+                    'Automatic Reset/Blank metadata could not resolve the '
+                    'fresh graph placement')
+            projected[_pp_field(slot)] = (0,)
+            if slot >= 6:
+                projected[f'Widget{slot}RestoreLevel'] = (0,)
+            continue
+        if kind == 'applications':
+            plan = editor._editor(kind).plan(
+                projected, cache=cache, edits=operation['edits'])
+            after = dict(plan.after_controls)
+            fields = list(_SETTING_FIELDS[kind])
+            fields.extend(
+                name for name in after
+                if (name.startswith('Widget') and
+                    name.endswith('WidgetByteValue1') and
+                    after[name] != projected[name]))
+            for name in fields:
+                projected[name] = after[name]
+    return editor.snapshot(projected)
+
+
+def _merge_application_cache(primary, supplement):
+    """Merge exact lifecycle facts while retaining the primary ordered lists."""
+    facts = {
+        (row.application, row.group): row
+        for row in primary.lifecycle.groups
+    }
+    for row in supplement.lifecycle.groups:
+        key = (row.application, row.group)
+        existing = facts.get(key)
+        if (existing is not None and existing.levels is not None and
+                row.levels is not None and
+                set(row.levels) <= set(existing.levels)):
+            # The SceneManager resolver may append exact planned action levels
+            # to the source list.  The ordered cache is a pre-creation view;
+            # retain the projected superset while merging its other facts.
+            row = LifecycleGroup(
+                row.application, row.group, row.exists,
+                row.dynamic_images, row.dynamic_images_known,
+                existing.levels)
+        facts[key] = _merge_lifecycle_fact(facts.get(key), row)
+    if len(facts) > 512:
+        raise ValueError('Resolved combined eDLT parent cache exceeds 512 group facts')
+    applications = tuple(dict.fromkeys((
+        *primary.lifecycle.applications,
+        *supplement.lifecycle.applications,
+    )))
+    lifecycle = LifecycleCache(
+        applications, tuple(facts[key] for key in sorted(facts)))
+    return ApplicationCache(
+        lifecycle, primary.applications_complete, primary.applications,
+        primary.group_lists)
+
+
+def _parent_container_projection(snapshot, requirements, values, operations):
+    """Derive deterministic non-Level creation receipts for parent controls."""
     required_apps = {
         row['application'] for row in requirements['applications']
     }
@@ -848,7 +967,7 @@ def _plan_parent_scene_metadata(text, unit_path, supplied, editor, operations,
         group_reasons.setdefault(key, []).extend(row['facts']['exists'])
     operation_images = {}
     for application, group, reason, needs_images in _operation_groups(
-            supplied, operations):
+            values, operations):
         required_apps.add(application)
         group_reasons.setdefault((application, group), []).append(reason)
         if needs_images:
@@ -856,14 +975,14 @@ def _plan_parent_scene_metadata(text, unit_path, supplied, editor, operations,
                 reason)
 
     applications = {row.address: row for row in snapshot.applications}
-    outer_creations = []
+    creations = []
     for address in sorted(required_apps):
         if address == 255:
             raise ValueError(
                 'Application255 is virtual and cannot satisfy parent metadata')
         # The retained SceneManager resolver owns Trigger Control creation.
         if address not in applications and address != 202:
-            outer_creations.append(MetadataCreation(
+            creations.append(MetadataCreation(
                 'Application', address, address,
                 APPLICATION_NAMES.get(address, 'Application ' + str(address))))
     for (application, group), reasons in sorted(group_reasons.items()):
@@ -890,26 +1009,136 @@ def _plan_parent_scene_metadata(text, unit_path, supplied, editor, operations,
                 'which is outside the bounded parent metadata transaction: '
                 f'application {application} group {group}')
         kind = 'NetVar' if application == 203 else 'Group'
-        outer_creations.append(MetadataCreation(
+        creations.append(MetadataCreation(
             kind, application, group, 'Group ' + str(group),
             safe_blank_variants=True,
             reasons=tuple(dict.fromkeys(reasons))))
+    return (tuple(creations), operation_images, group_reasons,
+            requirement_rows)
 
-    projected = tuple(
-        SceneContainerCreation(
-            row.kind, row.application, row.address, row.name, row.reasons)
-        for row in outer_creations
+
+def _plan_parent_scene_metadata(text, unit_path, supplied, editor, operations,
+                                snapshot, requirements, *, networks=()):
+    """Compose the exact SceneManager resolver with parent dependencies."""
+    from .edlt_scene_manager import SceneManagerCache
+    from .edlt_scene_metadata import (
+        SceneContainerCreation, SceneLevelCreation,
+        resolve_native_scene_metadata,
     )
-    scene_engine = editor._editor('scene-manager')
-    resolved = resolve_native_scene_metadata(
-        text, unit_path, supplied, scene_engine,
-        scene_operation['operations'], _projected_containers=projected)
-    if resolved.snapshot != snapshot:
-        raise ValueError(
-            'Parent and SceneManager metadata snapshots do not identify the '
-            'same native project state')
 
-    state = scene_engine.load(supplied, metadata=resolved.cache)
+    scene_operation = next(
+        row for row in operations if row['op'] == 'scene-manager')
+    scene_engine = editor._editor('scene-manager')
+
+    def resolve_projection(source, source_requirements):
+        outer, images, reasons, rows = _parent_container_projection(
+            snapshot, source_requirements, source, operations)
+        projected = tuple(
+            SceneContainerCreation(
+                row.kind, row.application, row.address, row.name, row.reasons)
+            for row in outer
+        )
+        outcome = resolve_native_scene_metadata(
+            text, unit_path, supplied, scene_engine,
+            scene_operation['operations'], _projected_containers=projected,
+            _projected_values=source)
+        if outcome.snapshot != snapshot:
+            raise ValueError(
+                'Parent and SceneManager metadata snapshots do not identify '
+                'the same native project state')
+        return outcome, outer, images, reasons, rows
+
+    resolved, outer_creations, operation_images, group_reasons, \
+        requirement_rows = resolve_projection(supplied, requirements)
+    ordered_operations = tuple(
+        row['op'] for row in operations
+        if row['op'] in ('applications', 'corridor', 'reset'))
+    ordered_cache = None
+    parent_input = supplied
+    scene_source = supplied
+    if ordered_operations:
+        ordered_apps = set()
+        ordered_requirements = {}
+        _accumulate_requirements(
+            requirements, ordered_apps, ordered_requirements)
+        reset_requirements, control_groups, complete_group_lists = \
+            _reset_requirements(snapshot, editor, operations)
+        if reset_requirements is not None:
+            _accumulate_requirements(
+                reset_requirements['initial_load'], ordered_apps,
+                ordered_requirements)
+            _accumulate_requirements(
+                reset_requirements['fresh_reset_load'], ordered_apps,
+                ordered_requirements)
+        ordered_cache = _complete_application_cache(
+            snapshot, ordered_apps, ordered_requirements,
+            required_existing=control_groups,
+            required_group_lists=complete_group_lists,
+            projection=resolved.cache.application_cache)
+        if reset_requirements is not None:
+            reset = operations[0]
+            options = {
+                name: value for name, value in reset.items()
+                if name != 'op'
+            }
+            options.setdefault('dirty_parameters', ())
+            _raw, _dirty, _prepared, transition = \
+                editor._editor('reset').prepare_unit_reset(
+                    snapshot.raw_map(), metadata=ordered_cache, **options)
+            scene_source = dict(transition.after_controls)
+            parent_input = snapshot.raw_map()
+        ordered_base_source = scene_source
+        scene_source = _project_ordered_scene_source(
+            editor, operations, ordered_base_source, ordered_cache)
+
+        # Re-resolve the lifecycle facts after Applications and fresh-graph
+        # Blank projection, then admit only objects with exact parent/scene
+        # creation receipts into the pre-PP cache.
+        _accumulate_requirements(
+            editor.lifecycle.requirements(scene_source).as_dict(),
+            ordered_apps, ordered_requirements)
+        dependency_operations = tuple(
+            row for row in operations if row['op'] != 'scene-manager')
+        _accumulate_operation_groups(
+            scene_source, dependency_operations, ordered_apps,
+            ordered_requirements)
+        projected_requirements = editor.lifecycle.requirements(
+            scene_source).as_dict()
+        resolved, outer_creations, operation_images, group_reasons, \
+            requirement_rows = resolve_projection(
+                scene_source, projected_requirements)
+        ordered_cache = _complete_application_cache(
+            snapshot, ordered_apps, ordered_requirements,
+            required_existing=control_groups,
+            required_group_lists=complete_group_lists,
+            projection=resolved.cache.application_cache)
+        stable_source = _project_ordered_scene_source(
+            editor, operations, ordered_base_source, ordered_cache)
+        if stable_source != scene_source:
+            # One deterministic fixed-point retry admits metadata-dependent
+            # application displays without allowing an unbounded projection.
+            projected_requirements = editor.lifecycle.requirements(
+                stable_source).as_dict()
+            resolved, outer_creations, operation_images, group_reasons, \
+                requirement_rows = resolve_projection(
+                    stable_source, projected_requirements)
+            ordered_cache = _complete_application_cache(
+                snapshot, ordered_apps, ordered_requirements,
+                required_existing=control_groups,
+                required_group_lists=complete_group_lists,
+                projection=resolved.cache.application_cache)
+            if _project_ordered_scene_source(
+                    editor, operations, ordered_base_source,
+                    ordered_cache) != stable_source:
+                raise ValueError(
+                    'Automatic combined parent metadata did not reach a '
+                    'stable pre-SceneManager state')
+        scene_source = stable_source
+
+    applications = {row.address: row for row in snapshot.applications}
+    required_apps = set(resolved.cache.application_cache.lifecycle.applications)
+
+    state = scene_engine.load(scene_source, metadata=resolved.cache)
     outcome = scene_engine.edit(
         state, operations=scene_operation['operations'])
     if not outcome.complete:
@@ -917,7 +1146,7 @@ def _plan_parent_scene_metadata(text, unit_path, supplied, editor, operations,
             'SceneManager capacity stopped the nested edit; partial scene '
             'graphs cannot enter automatic parent metadata')
     composition = scene_engine.prepare_composition(outcome.state)
-    dependency_values = {**supplied, **composition.fields}
+    dependency_values = {**scene_source, **composition.fields}
 
     # Scene widgets after SceneManager must consume the final trigger graph.
     for application, group, reason, needs_images in _operation_groups(
@@ -987,6 +1216,9 @@ def _plan_parent_scene_metadata(text, unit_path, supplied, editor, operations,
         lifecycle, scene_application_cache.applications_complete,
         scene_application_cache.applications,
         scene_application_cache.group_lists)
+    if ordered_cache is not None:
+        application_cache = _merge_application_cache(
+            application_cache, ordered_cache)
     cache = SceneManagerCache(application_cache, resolved.cache.level_labels)
 
     scene_creations = []
@@ -1017,7 +1249,7 @@ def _plan_parent_scene_metadata(text, unit_path, supplied, editor, operations,
         raise ValueError('Automatic parent metadata projected duplicate objects')
     if len(creations) > 512:
         raise ValueError('eDLT parent scene metadata plan exceeds 512 creations')
-    parent = editor.plan(supplied, metadata=cache, operations=operations)
+    parent = editor.plan(parent_input, metadata=cache, operations=operations)
     return NativeEdltParentPlan(
         unit_path, text, snapshot, tuple(networks), operations, cache,
         creations, parent, _json(requirements), _static_labels(supplied),

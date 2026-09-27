@@ -792,8 +792,10 @@ resolver and can create missing Trigger application/group/action objects in
 deterministic dependency order. Reset also requires exact raw PP strings; the
 automatic branch reads all 874 selected Unit PP `Value` attributes. Its fresh
 21-widget/eight-scene graph becomes the baseline
-for later operations. Reset after operation 1, duplicate Reset and Reset+Blank
-are rejected before PP I/O.
+for later operations. Reset after operation 1 and duplicate Reset are rejected
+before PP I/O. Blank may follow Reset only as a contiguous prefix: each Blank
+receipt binds the issued fresh graph and any later or interleaved Blank fails
+before PP I/O.
 The planner rejects overlapping complete records, a duplicate settings owner,
 conflicting page modes, missing application/group evidence, mismatched dynamic
 text/icon metadata, duplicate JSON keys and unknown fields. Operation order is
@@ -844,8 +846,10 @@ retries an uncertain save. DYNAMIC/FONT/ICON image facts that depend on project
 files or Toolkit's DLTP index fail closed. See
 [edlt-parent-metadata.md](docs/edlt-parent-metadata.md).
 This automatic path accepts existing Applications/Corridor lists and
-operation-1 Reset raw state. It refuses missing/projected list objects and any
-combination of those operations with automatic SceneManager metadata.
+operation-1 Reset raw state. It refuses missing/projected list objects. In one
+combined plan it projects ordered list, Reset and contiguous fresh-graph Blank
+state before the SceneManager resolver creates only its required Trigger
+application/group/action objects.
 
 Time/Date widgets support standby and functional positions, with unit-wide
 date formats, time formats and leading zeroes:
@@ -1098,8 +1102,10 @@ and dirty state. Fifty-five tests pass on both Python versions, including four
 fresh original/native cases per version, all 874 parameters, five CRCs and
 save/reload checks. The ordered parent transaction accepts Reset only as
 operation 1 with the same exact raw/application-cache contract, then binds
-later operations to its fresh graph before one terminal save. Reset+Blank,
-full interactive form initialization and physical reset remain unverified.
+later operations to its fresh graph before one terminal save. Contiguous Blank
+operations immediately after Reset use fresh-graph receipts. The original
+interactive Reset-plus-Blank form, full form initialization and physical reset
+remain unverified.
 
 Copy selected eDLT global categories to existing database units:
 
@@ -1988,7 +1994,7 @@ The retained focused checkpoints below were recorded outside that frozen
 wheel; each linked record identifies its runtime, source scope and date:
 
 - [Configuration CRC](docs/edlt-crc.md): 21 tests, including 65,588 fresh original CRC results per run.
-- [Percentage conversion](docs/edlt-percentage.md), [bounded parent composition](docs/edlt-parent-form.md), [ordered parent transaction](docs/edlt-parent-transaction.md), [automatic parent metadata](docs/edlt-parent-metadata.md) and [automatic SceneManager metadata](docs/edlt-scene-metadata.md): pure conversion and CLI acceptance, standalone original Windows 12- and 528-case captures, 14 portable Measurement/Percentage lifecycle composition tests, 59 portable parent-transaction tests across 15 widget operations, eleven direct parent/settings operations, one retained SceneManager sequence and operation-1 Reset plus two optional native gates, 36 portable parent-metadata/CLI cases plus three optional native gates, and 32 portable SceneManager-metadata/CLI cases plus one optional native gate. Automatic parent metadata resolves existing Applications/Corridor lists and exact Reset raw strings, while its separate SceneManager branch reuses the exact Trigger application/group/action creator before one parent PP save. Reset+Blank graph binding, automatic list-plus-SceneManager metadata, registry display/sort preferences, the complete original parent/SceneManager dialogs and combined Schneider C-Gate/physical acceptance remain outstanding.
+- [Percentage conversion](docs/edlt-percentage.md), [bounded parent composition](docs/edlt-parent-form.md), [ordered parent transaction](docs/edlt-parent-transaction.md), [automatic parent metadata](docs/edlt-parent-metadata.md) and [automatic SceneManager metadata](docs/edlt-scene-metadata.md): pure conversion and CLI acceptance, standalone original Windows 12- and 528-case captures, and portable focused coverage for all declared operations. Automatic parent metadata resolves existing Applications/Corridor lists and exact Reset raw strings, accepts contiguous fresh-graph Blank operations, and composes those results with the exact Trigger application/group/action creator before one parent PP save. Toolkit registry display/sort preferences, the original interactive Reset-plus-Blank and complete parent/SceneManager dialogs, project/DLTP images, and combined Schneider C-Gate/physical acceptance remain outstanding. Current exact test totals are reported by the repository test run rather than treated as a static capability claim.
 - [About information](docs/toolkit-about.md): 16 tests, including 51 original instruction cases per run.
 - [Signed update metadata](docs/toolkit-update-metadata.md), [revocation stages](docs/toolkit-update-revocation.md) and [supplied-context registry conditions](docs/toolkit-update-registry-conditions.md): separate 56-, 53- and 78-test checkpoints with explicit trust and availability limits.
 - [PCI routing](docs/pci-routing.md), [incoming routing](docs/pci-incoming-routing.md), [routed RECALL](docs/pci-routed-recall.md) and [routed IDENTIFY](docs/pci-routed-identify.md): separate codec and transport checkpoints; IDENTIFY passes 104 tests with fresh original matcher comparisons and owned loopback exchanges.
