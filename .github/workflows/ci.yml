@@ -57,6 +57,10 @@ jobs:
         working-directory: toolkit-cli
         run: make check-dbsetxml-unit-differential
 
+      - name: Native DBGETXML wire framing on both Rust servers
+        working-directory: toolkit-cli
+        run: make check-dbgetxml-wire-interop
+
       - name: Toolkit offline suite
         working-directory: toolkit-cli
         run: >-
