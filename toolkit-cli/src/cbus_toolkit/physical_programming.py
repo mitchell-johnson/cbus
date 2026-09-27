@@ -344,8 +344,10 @@ def _preflight(client: CommandClient, method: str, *, saving: bool) -> dict[str,
                     "save_attempted": False,
                     "automatic_write_retries": 0,
                 })
-        # NCC is the C-Bus 3 method.  A confirmed STORE/readback is not a
-        # nonvolatile save unless this separate capability is present.
+        # Refuse an explicitly selected NCC save before physical LOAD when the
+        # separate nonvolatile path is unavailable.  The later complete-schema
+        # check applies the same capability to another selected method when the
+        # decoded unit specification contains any NCC parameter.
         if method == "ncc" and document.get("physical_pp_routed_nvm_commit") is not True:
             raise PhysicalProgrammingError(
                 "Routed NCC Save-to-NVM is unavailable on this cmqttd build",

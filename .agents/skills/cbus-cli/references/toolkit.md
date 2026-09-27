@@ -71,8 +71,9 @@ It preflights `CMQTT CAPABILITIES`, validates every selected parameter against
 LOAD for readback. Current methods are `direct`, `paged`, `ncc`, `edlt`, `giu`,
 `sgiu`, `dali`, `goc`, `gocbyt`, and `goc2`. Never replay an uncertain save.
 Treat fresh readback as in-run device verification, not power-cycle persistence
-or broad hardware acceptance. Routed NCC apply requires the separate NVM
-capability. See `toolkit-cli/docs/physical-programming.md`.
+or broad hardware acceptance. Saving any decoded unit specification that
+contains an NCC parameter requires the separate NVM capability, even when the
+selected edit uses another method. See `toolkit-cli/docs/physical-programming.md`.
 
 Successful operations emit JSON on stdout, operation errors emit JSON on stderr, and failures return nonzero. Argument usage errors can be plain argparse text. `--compact` is a global option before the command; event monitoring emits JSON lines. Preserve partial-operation evidence and do not replay uncertain writes automatically.
 
