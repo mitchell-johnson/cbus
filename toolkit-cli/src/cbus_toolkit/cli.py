@@ -1236,6 +1236,8 @@ def build_parser():
     applicability_cohort_options(commands)
     from .toolkit_update_rollout_cli import options as rollout_cohort_options
     rollout_cohort_options(commands)
+    from .toolkit_update_rollout_registry_cli import options as rollout_registry_options
+    rollout_registry_options(commands)
     from .pci_routing_cli import options as routing_options
     routing_options(commands)
     from .toolkit_about_cli import options as about_options
@@ -3368,6 +3370,9 @@ def run(args):
     if args.area == "update-rollout-cohort":
         from .toolkit_update_rollout_cli import run as rollout_cohort_run
         return rollout_cohort_run(args)
+    if args.area == "update-rollout-owned-registry":
+        from .toolkit_update_rollout_registry_cli import run as rollout_registry_run
+        return rollout_registry_run(args)
     if args.area == "pci-route":
         from .pci_routing_cli import run as routing_run
         return routing_run(args)

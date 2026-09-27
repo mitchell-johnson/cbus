@@ -330,4 +330,11 @@ Target: Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001. Full Toolkit parity is unfinish
 
 Read the repository's `toolkit-cli/docs/implementation-status.md` for supported functions/profiles and outstanding work, and `toolkit-cli/README.md` for detailed examples. Source is in `toolkit-cli/src/cbus_toolkit/`; tests and retained acceptance evidence are part of this application.
 
+`update-rollout-owned-registry` is a Windows-only SESU diagnostic against an
+explicit CLI-owned HKCU Registry32 scratch namespace. It can sample and write
+one cohort in that namespace. The original updater's static key and entry
+names remain unpinned, so this command does not read the user's updater
+cohort or establish update applicability. See
+`toolkit-cli/docs/toolkit-update-rollout-owned-registry.md` before using it.
+
 For development, install `./toolkit-cli[test,research,serial,usb]`, then run `make check` and `make check-interop` from `toolkit-cli/`. Native/vendor/hardware tests require explicit environment gates; report skips separately from passes.
