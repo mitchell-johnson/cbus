@@ -1,4 +1,5 @@
 """Public CLI coverage for exact-file update diagnostic composition."""
+import hashlib
 import json
 from pathlib import Path
 import subprocess
@@ -71,6 +72,38 @@ class UpdateDiagnosticBundleCLITests(unittest.TestCase):
         )
         self.assertFalse(result["diagnostics_complete"])
         self.assertFalse(result["links"]["catalogue_metadata"]["catalogue_source_matches"])
+
+    def test_equal_boolean_and_integer_candidate_does_not_link(self):
+        values = reports()
+        values["catalogue"]["candidates"][0]["metadata_signature_present"] = 0
+        result = self.run_bundle(values, status=1)
+        self.assertFalse(result["diagnostics_complete"])
+        self.assertFalse(result["links"]["catalogue_metadata"]["catalogue_source_matches"])
+
+    def test_equal_boolean_and_integer_context_fact_does_not_link(self):
+        values = reports()
+        source = source_documents()
+        context = {
+            "format": "cbus-toolkit-condition-context-v1",
+            "culture": "invariant-ascii",
+            "files": [{"path": "C:/test", "exists": True}],
+        }
+        source["context_input"] = encode(context)
+        digest = hashlib.sha256(source["context_input"]).hexdigest()
+        values["conditions"]["context_sha256"] = digest
+        values["conditions"]["source"]["context_file_sha256"] = digest
+        values["conditions"]["supplied_context"] = context
+        values["conditions"]["supplied_context"]["files"][0]["exists"] = 1
+        result = self.run_bundle(values, status=1, source_override=source)
+        self.assertFalse(result["diagnostics_complete"])
+        self.assertFalse(result["links"]["metadata_conditions"]["condition_sources_match"])
+
+    def test_changed_installed_version_does_not_link(self):
+        values = reports()
+        values["catalogue"]["installed_version"] = "1.19.0.2754"
+        result = self.run_bundle(values, status=1)
+        self.assertFalse(result["diagnostics_complete"])
+        self.assertFalse(result["links"]["catalogue_metadata"]["request_receipt_matches"])
 
     def test_unrelated_revocation_is_public_nonzero_evidence(self):
         values = reports()

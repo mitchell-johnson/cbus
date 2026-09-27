@@ -15,7 +15,7 @@ from cbus_toolkit.toolkit_update_metadata import (
     select_node,
 )
 from cbus_toolkit.toolkit_update_revocation import STAGES as REVOCATION_STAGES
-from cbus_toolkit.toolkit_updates import _candidate
+from cbus_toolkit.toolkit_updates import CATALOGUE_URL, _candidate, catalogue_request
 
 
 NODE = "435e4274-3bcf-4f3e-a67a-3008278c539c"
@@ -82,6 +82,8 @@ def reports(*, condition=True):
             "complete": True,
             "error": None,
             "installed_version": "1.18.0.2754",
+            "endpoint": CATALOGUE_URL,
+            "request_sha256": hashlib.sha256(catalogue_request("1.18.0.2754")).hexdigest(),
             "http": {
                 "complete": True,
                 "body_complete": True,
@@ -277,6 +279,19 @@ class UpdateDiagnosticBundleTests(unittest.TestCase):
         result = compose(encoded_reports(values)).as_dict()
         self.assertFalse(result["links"]["catalogue_metadata"]["canonical_node_matches_source"])
 
+    def test_catalogue_candidate_boolean_cannot_be_replaced_by_equal_json_number(self):
+        for field, value in (
+            ("metadata_signature_present", 0),
+            ("metadata_signature_verified", 0.0),
+            ("applicability_verified", 0),
+        ):
+            values = reports()
+            values["catalogue"]["candidates"][0][field] = value
+            with self.subTest(field=field, value=value):
+                result = compose(encoded_reports(values)).as_dict()
+                self.assertFalse(result["diagnostics_complete"])
+                self.assertFalse(result["links"]["catalogue_metadata"]["catalogue_source_matches"])
+
     def test_catalogue_status_and_message_receipts_must_match_source(self):
         for field, value in (("body_status", 503), ("body_message", "different")):
             values = reports()
@@ -325,6 +340,43 @@ class UpdateDiagnosticBundleTests(unittest.TestCase):
                     result["links"]["catalogue_metadata"]["reason"],
                     "catalogue HTTP body receipt is incomplete",
                 )
+
+    def test_catalogue_request_and_endpoint_receipt_bind_installed_version(self):
+        for field, value in (
+            ("installed_version", "1.19.0.2754"),
+            ("installed_version", 1),
+            ("request_sha256", "f" * 64),
+            ("endpoint", "https://unrelated.invalid/collections/PackageData/list"),
+        ):
+            values = reports()
+            values["catalogue"][field] = value
+            with self.subTest(field=field, value=value):
+                result = compose(encoded_reports(values)).as_dict()
+                link = result["links"]["catalogue_metadata"]
+                self.assertFalse(result["diagnostics_complete"])
+                self.assertFalse(link["request_receipt_matches"])
+                self.assertEqual(
+                    link["reason"],
+                    "catalogue request or endpoint receipt does not match the installed version",
+                )
+        for field in ("request_sha256", "endpoint"):
+            values = reports()
+            del values["catalogue"][field]
+            with self.subTest(missing=field):
+                result = compose(encoded_reports(values)).as_dict()
+                self.assertFalse(result["diagnostics_complete"])
+                self.assertFalse(result["links"]["catalogue_metadata"]["request_receipt_matches"])
+
+    def test_alternate_declared_installed_version_with_its_request_receipt_is_allowed(self):
+        values = reports()
+        values["catalogue"]["installed_version"] = "1.17.0.0"
+        values["catalogue"]["request_sha256"] = hashlib.sha256(
+            catalogue_request("1.17.0.0")
+        ).hexdigest()
+        result = compose(encoded_reports(values)).as_dict()
+        self.assertTrue(result["diagnostics_complete"])
+        self.assertTrue(result["links"]["catalogue_metadata"]["request_receipt_matches"])
+        self.assertFalse(result["version_comparison_performed"])
 
     def test_substituted_source_bytes_and_duplicate_source_keys_fail_closed(self):
         source = source_documents()
@@ -444,6 +496,25 @@ class UpdateDiagnosticBundleTests(unittest.TestCase):
         source = source_documents()
         source["conditions_input"] = encode({"expression": "false", "conditions": {}})
         result = compose(encoded_reports(), sources=source).as_dict()
+        self.assertFalse(result["links"]["metadata_conditions"]["condition_sources_match"])
+
+    def test_context_boolean_cannot_be_replaced_by_equal_json_number(self):
+        values = reports()
+        source = source_documents()
+        context = {
+            "format": "cbus-toolkit-condition-context-v1",
+            "culture": "invariant-ascii",
+            "files": [{"path": "C:/test", "exists": True}],
+        }
+        source["context_input"] = encode(context)
+        digest = hashlib.sha256(source["context_input"]).hexdigest()
+        values["conditions"]["context_sha256"] = digest
+        values["conditions"]["source"]["context_file_sha256"] = digest
+        values["conditions"]["supplied_context"] = copy.deepcopy(context)
+        self.assertTrue(compose(encoded_reports(values), sources=source).complete)
+        values["conditions"]["supplied_context"]["files"][0]["exists"] = 1
+        result = compose(encoded_reports(values), sources=source).as_dict()
+        self.assertFalse(result["diagnostics_complete"])
         self.assertFalse(result["links"]["metadata_conditions"]["condition_sources_match"])
 
     def test_missing_condition_receipt_keeps_linked_completion_false(self):

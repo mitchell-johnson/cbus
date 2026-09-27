@@ -25,7 +25,7 @@ from .toolkit_update_revocation import (
     _canonical as canonical_revocation_data,
     select_revocation_data,
 )
-from .toolkit_updates import _candidate
+from .toolkit_updates import CATALOGUE_URL, _candidate, catalogue_request
 
 
 MAX_REPORT_BYTES = MAX_NODE_BYTES
@@ -117,6 +117,26 @@ def _unevaluated(report: dict, field: str, name: str):
 
 def _link(linked: bool, reason: str, **details):
     return {"linked": linked, "reason": None if linked else reason, **details}
+
+
+def _same_json(left, right) -> bool:
+    """Compare decoded JSON without Python's Boolean/number equivalence.
+
+    The unique-key bounded decoder has already checked both trees.  Ordinary
+    dict/list equality would accept ``false == 0`` or ``true == 1`` inside a
+    source-linked report even though those are different JSON values.
+    """
+    if type(left) is not type(right):
+        return False
+    if type(left) is dict:
+        return left.keys() == right.keys() and all(
+            _same_json(value, right[key]) for key, value in left.items()
+        )
+    if type(left) is list:
+        return len(left) == len(right) and all(
+            _same_json(a, b) for a, b in zip(left, right, strict=True)
+        )
+    return left == right
 
 
 def _canonical_object(stage_rows: dict):
@@ -282,12 +302,28 @@ def compose_update_diagnostic_bundle(
         http_complete = _complete_http_receipt(
             http, source_raw["catalogue_response"]
         )
-    catalogue_receipt_complete = (
+    catalogue_http_receipt_complete = (
         catalogue_complete
         and "error" in catalogue
         and catalogue.get("error") is None
         and http_complete
         and catalogue_body_sha256 is not None
+    )
+    catalogue_request_receipt_matches = False
+    try:
+        installed_version = catalogue.get("installed_version")
+        request_sha256 = _sha256(
+            catalogue.get("request_sha256"), "catalogue.request_sha256"
+        )
+        catalogue_request_receipt_matches = (
+            catalogue.get("endpoint") == CATALOGUE_URL
+            and request_sha256
+            == hashlib.sha256(catalogue_request(installed_version)).hexdigest()
+        )
+    except (UpdateBundleError, ValueError):
+        pass
+    catalogue_receipt_complete = (
+        catalogue_http_receipt_complete and catalogue_request_receipt_matches
     )
 
     metadata_status, metadata_rows = _stages(
@@ -356,7 +392,7 @@ def compose_update_diagnostic_bundle(
                     and "\0" not in response["message"]
                     and catalogue.get("body_message") == response.get("message")
                     and hashlib.sha256(catalogue_response_bytes).hexdigest() == catalogue_body_sha256
-                    and source_candidates == candidates
+                    and _same_json(source_candidates, candidates)
                 )
                 selected_bytes = select_node(catalogue_response_bytes, node_id=node_id)
                 selected_node_matches_source = (
@@ -384,7 +420,9 @@ def compose_update_diagnostic_bundle(
         "raw catalogue response was not supplied"
         if response is None
         else "catalogue HTTP body receipt is incomplete"
-        if not catalogue_receipt_complete
+        if not catalogue_http_receipt_complete
+        else "catalogue request or endpoint receipt does not match the installed version"
+        if not catalogue_request_receipt_matches
         else "metadata source receipt is absent or incomplete"
         if not metadata_source_receipt
         else "metadata source hash does not match the catalogue response body"
@@ -438,7 +476,7 @@ def compose_update_diagnostic_bundle(
         metadata_conditions = canonical_node["data"].get("clientConditionData")
     condition_model_matches = (
         metadata_conditions is not None
-        and conditions.get("raw_typed_data") == metadata_conditions
+        and _same_json(conditions.get("raw_typed_data"), metadata_conditions)
     )
     condition_sources_match = (
         sources["conditions_input"] is not None
@@ -447,8 +485,8 @@ def compose_update_diagnostic_bundle(
         == conditions.get("conditions_sha256")
         and hashlib.sha256(context_input_bytes).hexdigest()
         == conditions.get("context_sha256")
-        and sources["conditions_input"] == conditions.get("raw_typed_data")
-        and sources["context_input"] == conditions.get("supplied_context")
+        and _same_json(sources["conditions_input"], conditions.get("raw_typed_data"))
+        and _same_json(sources["context_input"], conditions.get("supplied_context"))
     )
     metadata_conditions_linked = (
         condition_receipts_match and condition_model_matches and condition_sources_match
@@ -520,10 +558,14 @@ def compose_update_diagnostic_bundle(
             claimed_lists_match_canonical = (
                 canonical_revocation is not None
                 and canonical_revocation.get("id") == claimed_lists.get("id")
-                and canonical_revocation.get("revokedCertificates")
-                == claimed_lists.get("revoked_certificates")
-                and canonical_revocation.get("revokedSignatures")
-                == claimed_lists.get("revoked_signatures")
+                and _same_json(
+                    canonical_revocation.get("revokedCertificates"),
+                    claimed_lists.get("revoked_certificates"),
+                )
+                and _same_json(
+                    canonical_revocation.get("revokedSignatures"),
+                    claimed_lists.get("revoked_signatures"),
+                )
             )
         except UpdateBundleError:
             subject_matches = False
@@ -570,6 +612,7 @@ def compose_update_diagnostic_bundle(
             catalogue_metadata_linked,
             catalogue_metadata_reason,
             catalogue_body_sha256=catalogue_body_sha256,
+            request_receipt_matches=catalogue_request_receipt_matches,
             metadata_source_sha256=metadata_source_sha256,
             canonical_node_id_matches=canonical_identity_matches,
             catalogue_source_matches=catalogue_source_matches,

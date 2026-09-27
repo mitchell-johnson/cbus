@@ -38,15 +38,19 @@ The v3 bundle reports three links independently:
   unambiguous candidate ID, a metadata source receipt for that exact response,
   exact candidate summaries derived from its raw nodes, the selected-node input
   digest, and canonical metadata reconstructed from the selected raw node. The
-  HTTP receipt must report an attempted request, consistent received and retained
-  byte counts, no error, and successful cleanup before it can be linked. The
-  response message must have the same bounded text shape accepted by the
-  catalogue reader.
+  report's fixed catalogue endpoint and request digest must agree with the
+  deterministic request for its declared installed version. This checks the
+  report's internal request context; it does not attest to an actual network
+  destination or request. The HTTP receipt must report an attempted request,
+  consistent received and retained byte counts, no error, and successful cleanup
+  before it can be linked. The response message must have the same bounded text
+  shape accepted by the catalogue reader.
 - `metadata_conditions` requires the condition and context exact-file receipts
   to agree with the evaluator's input digests and the supplied source bytes.
   The report's decoded condition and context models must match those sources;
   the condition model must equal `clientConditionData` in the selected metadata
-  node.
+  node. Decoded JSON comparisons preserve types: a reported `1` cannot stand
+  in for source `true`, even though Python normally compares those values equal.
 - `metadata_revocation` requires the exact revocation source file to match its
   receipt, the selected revocation data and its reconstructed canonical list.
   The list subject ID must equal the metadata certificate thumbprint. This
@@ -60,11 +64,14 @@ produced a Boolean. A computed false condition remains a complete calculation;
 it is not an applicability decision.
 
 A missing source, missing receipt, incomplete response, source hash mismatch,
-same-ID cross-version node, unrelated revocation subject, or different condition
-model remains visible under `links` and keeps `diagnostics_complete` false.
+changed catalogue endpoint or installed version, same-ID cross-version node,
+unrelated revocation subject, or different condition model remains visible under
+`links` and keeps `diagnostics_complete` false.
 Duplicate JSON keys, duplicate candidate IDs, malformed stage sets, and forged
-trust or availability claims are rejected. Reports and catalogue/revocation
-sources are limited to 2 MiB each; condition and context sources to 128 KiB each.
+trust or availability claims are rejected. Candidate summaries also require
+type-exact decoded JSON agreement with the catalogue source, including Boolean
+flags. Reports and catalogue/revocation sources are limited to 2 MiB each;
+condition and context sources to 128 KiB each.
 All JSON uses a bounded, finite-number, unique-key decoder. `input_sha256`
 records report-file digests and `source_sha256` records source-file digests, with
 null for omitted sources.
@@ -93,10 +100,11 @@ an error object.
 The focused API and public CLI tests cover valid source-linked and report-only
 input, a false computed condition, exact report and source hashes, substituted
 report or source bytes, duplicate keys, same-ID/different-version nodes,
-catalogue summary/canonical mismatch, missing metadata and condition receipts,
+catalogue summary/canonical/request/endpoint mismatch, missing metadata and
+condition receipts,
 contradictory HTTP error/count/cleanup receipts, invalid response messages,
-raw revocation response
-selection, unrelated revocation and condition reports,
+raw revocation response selection, Boolean/number substitutions in candidate
+and context reports, unrelated revocation and condition reports,
 failed stages, and forged trust/availability flags. These are portable offline
 tests; they do not add native Windows, publisher-trust, network, or installer
 evidence.

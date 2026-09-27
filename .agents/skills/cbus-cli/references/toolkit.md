@@ -37,7 +37,11 @@ Inspect each subcommand's `--help` and the matching feature document before cons
 
 `update-diagnostic-bundle` needs the four generated report files plus the exact
 raw catalogue response, revocation input, condition input and context input to
-establish linked completion. With report files alone it retains independent
+establish linked completion. Candidate, condition and context models must match
+their decoded sources with JSON types preserved, including Boolean fields.
+The catalogue report's fixed endpoint and request digest must also agree with
+its declared installed version; this is report consistency, not network attestation.
+With report files alone it retains independent
 hashes but exits nonzero and marks the links unverified. Its successful result
 is a source-linkage diagnostic, not publisher trust or update availability.
 
