@@ -8,6 +8,7 @@ from .commissioning_route import (
     assert_fresh_project,
     plan_commissioning_route,
     project_sha256,
+    read_project_snapshot,
 )
 from .pci import WriteCAL
 from .pci_routing import RoutedCALCommand
@@ -100,10 +101,7 @@ def run(args):
                 raise ValueError("Typed routed-write requires --source-network and --target-network")
             if args.bridge or args.expected_destination is not None or args.expected_route:
                 raise ValueError("Typed routed-write does not accept raw route expectation options")
-            try:
-                snapshot = args.project_file.read_bytes()
-            except OSError as error:
-                raise ValueError(f"Unable to read project file: {error}") from error
+            snapshot = read_project_snapshot(args.project_file)
             digest = project_sha256(snapshot)
             if args.project_sha256 is not None and args.project_sha256 != digest:
                 raise ValueError(

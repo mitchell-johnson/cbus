@@ -24,7 +24,9 @@ The project must contain the selected target unit and an unambiguous connected
 route. A Bridge network declares its parent as
 `PARENT/p/INTERFACE_UNIT`. In the retained C-Gate convention the emitted route
 byte is the far-side network address, and the source side must contain a
-`BRIDGE2N` unit at that conventional address. CNI and Serial are the admitted
+`BRIDGE2N` unit at that conventional address. The child `INTERFACE_UNIT` must
+name that same far-side network address; a contradictory saved link is refused.
+CNI and Serial are the admitted
 root interfaces. Cycles, disconnected roots, malformed parent references,
 duplicate addresses, absent or non-`BRIDGE2N` transitions, unsupported roots,
 and routes deeper than six bridges fail before socket I/O.
@@ -36,7 +38,7 @@ attachment from saved topology.
 The result includes `route_plan`, with the source and target networks, target
 unit and type, outbound bridge bytes, independent ACK path, and SHA-256 of the
 complete project file. `--project-sha256` can pin that digest. The CLI hashes
-the file before parsing, detects a replacement during planning, and rechecks
+one regular file of at most 128 MiB before parsing, detects a replacement during planning, and rechecks
 the exact bytes immediately before the one-shot transport handoff. A mismatch
 is a stale-topology refusal and sends nothing. The hash binds the file; it does
 not prove that the saved topology matches currently connected hardware.

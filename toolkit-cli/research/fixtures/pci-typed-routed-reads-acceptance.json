@@ -6,7 +6,7 @@
   "runtime": "CPython 3.13.14 on macOS",
   "command": "PYTHONPATH=src:tests .venv/bin/python -m pytest tests/test_commissioning_route.py tests/test_cli_pci_typed_reads.py tests/test_pci_routed_recall.py tests/test_cli_pci_routed_recall.py tests/test_pci_routed_identify.py tests/test_cli_pci_routed_identify.py tests/test_pci_routed_write.py tests/test_cli_pci_routed_write.py -q -p no:cacheprovider -ra",
   "result": {
-    "tests_passed": 78,
+    "tests_passed": 79,
     "subtests_passed": 261,
     "failed": 0,
     "skipped": 0
@@ -24,15 +24,18 @@
     "a checksum-valid neighbouring Reply Network does not complete the typed read",
     "changed project bytes during planning or at handoff refuse before a socket exists",
     "hash mismatch, missing target and mixed raw/typed options refuse before socket I/O",
-    "raw routed RECALL, IDENTIFY and WRITE regressions remain passing"
+    "raw routed RECALL, IDENTIFY and WRITE regressions remain passing",
+    "a saved Bridge InterfaceAddress that names a different interface unit from the far-side network is rejected before I/O",
+    "typed project reads and handoff freshness accept bounded regular files and reject oversized files, FIFOs and devices before transport I/O"
   ],
   "source_sha256": {
-    "src/cbus_toolkit/commissioning_route.py": "6139179cffc76f80e3cf3f53160020dae58bf718ff3503a87dc177366a10151c",
-    "src/cbus_toolkit/pci_routed_read_topology.py": "1e0fa1058c4897d799fd767a161be564136cca7a76811c08048aa463b2b0a314",
-    "src/cbus_toolkit/pci_routed_recall_cli.py": "7fbf2e6ad640d54f3ccc394f58f4a37c108575cb476003f72fc606134157c556",
+    "src/cbus_toolkit/commissioning_route.py": "98cf1389bac1fe2d2db2883bda6c64c677b2e5a7277bc247febc2d51ebbb65e0",
     "src/cbus_toolkit/pci_routed_identify_cli.py": "e55639c4fe1a01470d256baeba0ca9c9e9ae5d8e97e071e722efa345c433838f",
-    "tests/test_commissioning_route.py": "c35c1f0fcb82058937862f0ed5bec13819e25e5bbaa56dc985202a9625c8b12d",
-    "tests/test_cli_pci_typed_reads.py": "0407d6d1bf264b8e0c093ec1a0e3382d5ec6553c0fe4b80e5014ec254e8a3016"
+    "src/cbus_toolkit/pci_routed_read_topology.py": "acc7e54d4cd76efa3999fc742c5a8b590e1b83183d0b9cdcbaf32eef4d33d448",
+    "src/cbus_toolkit/pci_routed_recall_cli.py": "7fbf2e6ad640d54f3ccc394f58f4a37c108575cb476003f72fc606134157c556",
+    "src/cbus_toolkit/pci_routed_write_cli.py": "d82cf122ef2f59fce00fa51be1c3b9ca50bfaa5577ef114e1d60522aba02430f",
+    "tests/test_cli_pci_typed_reads.py": "0407d6d1bf264b8e0c093ec1a0e3382d5ec6553c0fe4b80e5014ec254e8a3016",
+    "tests/test_commissioning_route.py": "ab23166458b668690c74fda162675184261a9d726d78ea1b3fafc3b019705de5"
   },
   "limits": [
     "Saved-project topology and literal loopback replies do not prove current bridge wiring, selected endpoint ownership or device origin.",

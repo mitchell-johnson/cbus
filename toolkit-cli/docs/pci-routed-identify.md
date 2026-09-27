@@ -31,6 +31,8 @@ cbus-toolkit pci --host 127.0.0.1 --port 10001 --local-unit 16 routed-identify \
 
 This mode requires a CNI/Serial source, exact target unit and unambiguous connected topology with at most six supported bridges. It derives the independent Reply Network expectation. `--project-sha256` can pin the complete file; parsing and transport handoff each check for substitution or change before any socket opens. Its route-plan receipt does not authenticate live topology, device origin or physical delivery. Raw and typed route options cannot be mixed.
 
+Typed project input must be a regular file of at most 128 MiB; FIFOs and devices are rejected before opening a transport. Its Bridge interface unit must match the conventional far-side network byte, as described in the shared [route planner](pci-routed-write.md).
+
 `expected_count=None` (omit `--expected-count`) accepts any supported wire count from0 through30. A supplied count must match exactly; Boolean values are not integer counts. A valid zero-data REPLY returns `b''`. Attributes and route entries are literal bytes. No parameter-specific typed getter, unit-class schema, legacy eight-to-seven-byte compatibility conversion or short-form matcher is used.
 
 Raw outgoing and incoming routes are independent declarations; typed routes are independently derived from one saved project snapshot. The expected outer source, destination and complete route must match. The terminal incoming path byte must equal the requested unit, an additional consistency policy for this all-bridge profile. Raw unit0 retains direct/programming ambiguity. A typed plan resolves the **saved** logical network only; neither mode proves cached object identity, authenticated device origin, physical delivery or causal freshness.

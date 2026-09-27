@@ -1,5 +1,6 @@
 """Pure route planning from legacy project topology; no endpoint is opened."""
 from io import BytesIO
+import os
 from pathlib import Path
 import tempfile
 from zipfile import ZIP_DEFLATED, ZipFile
@@ -10,8 +11,9 @@ from cbus_toolkit.commissioning_route import (
     assert_fresh_project,
     plan_commissioning_route,
     project_sha256,
+    read_project_snapshot,
 )
-from cbus_toolkit.project import ProjectDocument, ProjectError
+from cbus_toolkit.project import MAX_DOCUMENT_BYTES, ProjectDocument, ProjectError
 
 
 def network(address, interface_type, interface_address, *, units=()):
@@ -180,6 +182,13 @@ def test_missing_malformed_and_unsupported_transitions_fail_before_a_plan():
         ),
         (
             [
+                network(254, "CNI", "owned", units=((253, "BRIDGE2N"), (252, "BRIDGE2N"))),
+                network(253, "Bridge", "254/p/252", units=((5, "KEYGL5"),)),
+            ],
+            "requires its far-side network address",
+        ),
+        (
+            [
                 network(254, "CNI", "owned", units=((253, "BRIDGE2N"),)),
                 network(253, "Bridge", "bad", units=((5, "KEYGL5"),)),
             ],
@@ -234,6 +243,27 @@ def test_stale_snapshot_is_rejected_and_recovery_uses_fresh_bytes():
         path.unlink()
         with pytest.raises(ProjectError, match="Unable to re-read"):
             assert_fresh_project(path, result.project_sha256)
+
+
+def test_snapshot_reader_rejects_oversize_and_nonregular_sources_before_read():
+    raw, _ = line()
+    with tempfile.TemporaryDirectory() as directory:
+        path = Path(directory) / "house.xml"
+        path.write_bytes(raw)
+        assert read_project_snapshot(path) == raw
+        with path.open("wb") as stream:
+            stream.truncate(MAX_DOCUMENT_BYTES + 1)
+        with pytest.raises(ProjectError, match="configured size limit"):
+            read_project_snapshot(path)
+        with pytest.raises(ProjectError, match="Unable to re-read.*size limit"):
+            assert_fresh_project(path, project_sha256(raw))
+        path.unlink()
+        if hasattr(os, "mkfifo"):
+            os.mkfifo(path)
+            with pytest.raises(ProjectError, match="regular file"):
+                read_project_snapshot(path)
+            with pytest.raises(ProjectError, match="Unable to re-read.*regular file"):
+                assert_fresh_project(path, project_sha256(raw))
 
 
 def test_cbz_plan_parses_the_exact_bytes_bound_by_the_digest():

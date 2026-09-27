@@ -14,12 +14,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import hashlib
+import os
 from pathlib import Path
 import re
+import stat
 from xml.dom import Node, minidom
 
 from .pci_routed_recall import RoutedReplyPath
-from .project import ProjectDocument, ProjectError
+from .project import MAX_DOCUMENT_BYTES, ProjectDocument, ProjectError
 
 
 MAX_BRIDGES = 6
@@ -157,6 +159,31 @@ def project_sha256(payload: bytes) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
+def read_project_snapshot(path: Path) -> bytes:
+    """Read one bounded regular-file snapshot without opening a FIFO or device."""
+    if not isinstance(path, Path):
+        raise TypeError("project path must be a pathlib.Path")
+    try:
+        before = path.stat()
+        if not stat.S_ISREG(before.st_mode):
+            raise ProjectError("Project snapshot must be a regular file")
+        if before.st_size > MAX_DOCUMENT_BYTES:
+            raise ProjectError("Project file exceeds the configured size limit")
+        flags = os.O_RDONLY | getattr(os, "O_NONBLOCK", 0) | getattr(os, "O_CLOEXEC", 0)
+        with os.fdopen(os.open(path, flags), "rb") as stream:
+            opened = os.fstat(stream.fileno())
+            if not stat.S_ISREG(opened.st_mode):
+                raise ProjectError("Project snapshot must be a regular file")
+            if opened.st_size > MAX_DOCUMENT_BYTES:
+                raise ProjectError("Project file exceeds the configured size limit")
+            payload = stream.read(MAX_DOCUMENT_BYTES + 1)
+    except OSError as error:
+        raise ProjectError(f"Unable to read project snapshot: {error}") from error
+    if len(payload) > MAX_DOCUMENT_BYTES:
+        raise ProjectError("Project file exceeds the configured size limit")
+    return payload
+
+
 def assert_fresh_project(path: Path, expected_sha256: str) -> None:
     """Reject a missing, substituted, or changed project snapshot."""
     if not isinstance(path, Path):
@@ -164,8 +191,8 @@ def assert_fresh_project(path: Path, expected_sha256: str) -> None:
     if not _SHA256.fullmatch(expected_sha256):
         raise ValueError("expected project SHA-256 is invalid")
     try:
-        payload = path.read_bytes()
-    except OSError as error:
+        payload = read_project_snapshot(path)
+    except ProjectError as error:
         raise ProjectError(f"Unable to re-read project snapshot: {error}") from error
     actual = project_sha256(payload)
     if actual != expected_sha256:
@@ -230,10 +257,15 @@ def _parent(network: _Network, networks: dict[int, _Network]) -> int | None:
             f"Network {network.address} has malformed Bridge InterfaceAddress"
         )
     parent = _decimal_byte(parts[0], f"Network {network.address} Bridge parent")
-    _decimal_byte(parts[2], f"Network {network.address} Bridge interface unit")
+    interface_unit = _decimal_byte(parts[2], f"Network {network.address} Bridge interface unit")
     if parts[1].casefold() != "p" or parent == network.address:
         raise ProjectError(
             f"Network {network.address} has inconsistent Bridge InterfaceAddress"
+        )
+    if interface_unit != network.address:
+        raise ProjectError(
+            f"Network {network.address} Bridge InterfaceAddress names unit {interface_unit}; "
+            "the supported conventional route requires its far-side network address"
         )
     if parent not in networks:
         raise ProjectError(
