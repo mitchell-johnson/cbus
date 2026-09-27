@@ -68,7 +68,16 @@ literal sentinel outcomes from a disposable offline Windows guest. Its
 registry key and entry fields** before each call. Neither its sanitized
 fixture nor the accessible local source records their original values. This
 adapter therefore addresses only its owned scratch key. Native execution of
-this new Python adapter on Windows, exact current-user updater key identity,
+this Python adapter passed six guarded branch checks in a disposable Windows
+11 ARM64 guest under the UTM guest agent's **LocalSystem** HKCU. The run used
+the official Python 3.13.14 ARM64 embeddable package after SHA-256 verification;
+it checked absent key, missing entry with sampled write/readback, existing
+string, literal sentinel with sampled write/readback, malformed string and
+unsupported high-bit DWORD. The owned registry key and temporary runtime were
+removed, and the guest's two default routes remained present. The exact
+[native acceptance receipt and scripts](../research/experiments/2026-09-28/sesu-owned-registry/native-system-acceptance.json)
+record the source hashes and limits. The interactive user's HKCU was **not**
+tested. Exact current-user updater key identity, a packaged Windows CLI run,
 the original sample sequence and exception behavior, concurrent registry
 modification, nonempty conditions, complete applicability and update trust
 remain open in [issue #62](https://github.com/mitchell-johnson/cbus/issues/62).

@@ -1,0 +1,48 @@
+{
+  "date_local": "2026-09-28",
+  "format": "cbus-sesu-owned-registry-native-system-acceptance-v1",
+  "limits": "This establishes the exact native adapter/API branches under a disposable SYSTEM HKCU scratch key only. It does not establish the Toolkit interactive user account, original updater static key/entry names, installer/update trust, or native command-line packaging.",
+  "observed": {
+    "branches": {
+      "entry_absent_seed": "passed",
+      "existing_reg_sz": "passed",
+      "high_bit_dword": "unsupported",
+      "key_absent": "failed",
+      "literal_sentinel_seed": "failed",
+      "malformed_reg_sz": "failed"
+    },
+    "default_route_count_after": 2,
+    "default_route_count_before": 2,
+    "guest_agent_account": "NT AUTHORITY\\SYSTEM",
+    "guest_runtime_script_receipt_removal_confirmed_by_independent_file_pull": true,
+    "original_updater_registry_accessed": false,
+    "owned_registry_key_cleanup_confirmed": true,
+    "process_exit_code": 0,
+    "runtime_bundle_cleanup_confirmed": true,
+    "sampled_cohort_readback_checked": true,
+    "typed_read_branches_checked": true
+  },
+  "python_runtime": {
+    "architecture": "Windows ARM64 embeddable package",
+    "installation": "Unpacked only in disposable owned guest directory, then removed",
+    "official_url": "https://www.python.org/ftp/python/3.13.14/python-3.13.14-embed-arm64.zip",
+    "sha256": "8b5bfc935a24b55c17410aa0b21016ebeee225c96addf008d1d3cd83ff52eb43",
+    "sha256_matches_python_org_release_page": true,
+    "version": "3.13.14"
+  },
+  "result": "passed",
+  "scope": "Native execution of the product Python owned-registry adapter/API under UTM guest-agent LocalSystem HKCU Registry32. The interactive user and original updater key were not accessed.",
+  "source": {
+    "modules_sha256": {
+      "toolkit_update_metadata.py": "dcfa5990ca9f1ea8fb88e128edc2089f1045cc1b70c8f35314d84c80b4802b3f",
+      "toolkit_update_rollout.py": "da1e918cf361cfe378f6b27a151a05fce6733529d46d3b622f3379d8f7cbf8a8",
+      "toolkit_update_rollout_registry.py": "c4bff1b23fe47e598a5af3e5e418ea7febd5d8511673f3ef078c7e9dbba808cb",
+      "windows_sesu_cohort_registry.py": "3d20fef879c6e5e9b1832b53d5813455b69bcf46ceb4b71be971d844aefee800"
+    },
+    "native_accept_script_sha256": "53353116237b0f0ce935fcd3b33b43113524e65a6e3937eeca61dc8462acb59d",
+    "native_runner_script_sha256": "10e9969f08fa66052eda638d200bdb4bb2a6ad8ecb37dff8f7190d2fbbdcfc61",
+    "source_json_sha256": "864d45462ce1793f997a1eb2362e6c05c075e226dbdaf46c4b8fbb4e9149ae5e",
+    "source_recipe": "From research/fixtures/toolkit-update-metadata-vectors.json raw_catalogue_json: set first node data.visibilityInPercent=42, encode compact UTF-8 JSON with ensure_ascii=False.",
+    "transferred_bundle_sha256": "908317924639c23d6f02ba33eb410be2155556ab837d9f8ca239adb80b5e20e8"
+  }
+}
