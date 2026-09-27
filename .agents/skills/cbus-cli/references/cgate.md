@@ -1399,11 +1399,16 @@ delimiter on its own line. It limits individual lines to 1 MiB and the document
 to 16 MiB, drains an oversized body before returning tagged 400, and closes
 after a tagged 400 if EOF arrives before the delimiter. `CGL IMPORT` accepts
 only the bounded CGL 1.1 model above. `DBSETXML` accepts scalar-field documents
-and a complete typed `Unit` at an existing selected-project unit path. The Unit
-form atomically replaces the durable local record, can change its unique address
-or OID, returns `301 OID=...`, and supplies XML readback with modeled fields projected. The captured unknown namespaced Unit root attribute/direct child are accepted then omitted, as in the offline original direct/combined Unit oracle; nested markup under an unnamespaced child remains a separately tested mock preservation contract. It performs no physical I/O.
-Other complete typed families and vendor repository/XML formats are not
-implemented.
+and complete typed `Unit`, `Level`, `NetVar`, `Group`, `Application` and
+`Network`/`Interface` replacements, including a Network with complete Unit and
+Application children. It validates the selected-project target, required
+fields and sibling identities before one durable database replacement, returns
+`301 OID=...` for the submitted root, and performs no physical I/O. The
+captured unknown namespaced Unit root attribute and direct child are accepted
+then omitted on readback in both direct and combined original cases. Nested
+markup under an unnamespaced Unit child remains a separately tested mock
+preservation contract. Broader XML variants and private Schneider repository
+formats remain unverified.
 
 Command connections also provide native-shaped `SESSION_ID`, `SESSION_ID ALL`
 and one-shot `SESSION_ID TAG` state, including live TCP/TLS peer and connection

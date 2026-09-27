@@ -216,8 +216,10 @@ physical inventory, live levels, network state and retries remain runtime
 owned. A move or interface rebinding returns 408 after staged validation and
 before persistence. One owned native C-Gate 3.4.0.2001 combined
 Network/Application/Unit capture pins the root-OID receipt, plain Unit
-readback order and missing-UnitName validation. Other combined forms,
-extension/namespace behavior and private vendor formats remain unverified.
+readback order and missing-UnitName validation. The captured direct and
+combined Unit cases establish omission of two unknown namespaced additions on
+readback; broader combined forms, namespace variants and private vendor
+formats remain unverified.
 `REPOSITORY USE 1` is an idempotent
 selection of cmqttd's only repository, and `PROJECT REPAIR` performs an atomic
 JSON serialize/parse/restore validation while preserving runtime caches. All
