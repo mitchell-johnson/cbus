@@ -20,6 +20,14 @@ Start with the [first delivery batch](#first-delivery-batch), follow the
 when the work is finished. Reaching 90% is an optional progress checkpoint,
 not an exit condition or a reason to stop implementing the remaining scope.
 
+Each work item below links to its GitHub issue in the [parity backlog](https://github.com/mitchell-johnson/cbus/issues?q=is%3Aissue%20is%3Aopen%20label%3Aparity).
+The earlier umbrella issues [#10](https://github.com/mitchell-johnson/cbus/issues/10),
+[#11](https://github.com/mitchell-johnson/cbus/issues/11) and
+[#12](https://github.com/mitchell-johnson/cbus/issues/12) retain the historical
+implementation and acceptance evidence; their replacement by individual tasks
+does not close any outstanding functionality. GitHub carries each task's current
+status; the unchecked boxes here record the migration baseline.
+
 ## Assessment
 
 The repository contains substantial working products: the Python Toolkit CLI
@@ -366,21 +374,21 @@ outstanding acceptance work.
 **Owns:** Python coverage/census tooling and shared compatibility records.
 **Depends on:** the existing inventories; can start immediately.
 
-- [ ] **P0.01** — Walk all 3,767 topics and six unindexed HTML files, all 118 dialog candidates,
+- [ ] **P0.01** ([#13](https://github.com/mitchell-johnson/cbus/issues/13)) — Walk all 3,767 topics and six unindexed HTML files, all 118 dialog candidates,
   menus, toolbars and executable controls. Resolve the 179 macro-reference
   leaves and implicit/undocumented branches. Deduplicate documentation while
   keeping genuinely different workflow/profile behavior distinct.
-- [ ] **P0.02** — Expand 431 C-Gate primary paths into valid selectors, states, target forms,
+- [ ] **P0.02** ([#14](https://github.com/mitchell-johnson/cbus/issues/14)) — Expand 431 C-Gate primary paths into valid selectors, states, target forms,
   authorization levels, response/event envelopes and effects. Reconcile the
   209 documentation blocks with manual/bytecode inventories without adding
   their counts together.
-- [ ] **P0.03** — Produce an obligation record with independent fields for implementation,
+- [ ] **P0.03** ([#15](https://github.com/mitchell-johnson/cbus/issues/15)) — Produce an obligation record with independent fields for implementation,
   original differential acceptance, physical acceptance and applicability.
   Map every obligation to its broad ledger row; preserve the 39-row history.
-- [ ] **P0.04** — Define workflow-level completion criteria before changing statuses. Publish
+- [ ] **P0.04** ([#16](https://github.com/mitchell-johnson/cbus/issues/16)) — Define workflow-level completion criteria before changing statuses. Publish
   separate percentages using a fixed, reviewed denominator; report unknown
   scope explicitly and version the denominator when discoveries add work.
-- [ ] **P0.05** — Derive completion from evidence records and executable tests. Reject missing
+- [ ] **P0.05** ([#17](https://github.com/mitchell-johnson/cbus/issues/17)) — Derive completion from evidence records and executable tests. Reject missing
   IDs, duplicate IDs, unknown states, missing evidence, altered hashes and
   unexplained skips. A file's existence is insufficient acceptance.
 
@@ -395,20 +403,20 @@ have been counted.
 **Owns:** research runners, acceptance fixtures and CI/release infrastructure.
 **Depends on:** P0 IDs; infrastructure work runs in parallel with the census.
 
-- [ ] **P1.01** — Pin Toolkit EXE/DLLs, target C-Gate, JVM, decoded specifications and updater
+- [ ] **P1.01** ([#18](https://github.com/mitchell-johnson/cbus/issues/18)) — Pin Toolkit EXE/DLLs, target C-Gate, JVM, decoded specifications and updater
   artifacts by hash. Use owned disposable native services and isolated Windows
   profiles/projects. Preserve vendor binaries privately.
-- [ ] **P1.02** — Provision authorized Windows access for new GUI and worker captures. Existing
+- [ ] **P1.02** ([#19](https://github.com/mitchell-johnson/cbus/issues/19)) — Provision authorized Windows access for new GUI and worker captures. Existing
   retained fixtures and host-native acceptance can continue while that
   environment is unavailable.
-- [ ] **P1.03** — Capture original inputs, raw output, event order, PP bytes and save/close/load
+- [ ] **P1.03** ([#20](https://github.com/mitchell-johnson/cbus/issues/20)) — Capture original inputs, raw output, event order, PP bytes and save/close/load
   outcomes for one complete workflow at a time. Do not join unrelated fragment
   tests into an end-to-end original result.
-- [ ] **P1.04** — Define hardware fixtures by type, catalogue, firmware, serial hash, topology,
+- [ ] **P1.04** ([#21](https://github.com/mitchell-johnson/cbus/issues/21)) — Define hardware fixtures by type, catalogue, firmware, serial hash, topology,
   protection and instrumented observable effect. Obtain representative relay,
   dimmer, classic/Neo/DLT/eDLT, sensor, thermostat, DALI, wireless and specialist
   application devices, plus USB/bootloader and bridge test setups as required.
-- [ ] **P1.05** — Build cmqttd in the Python CI job; run both interop suites, isolated-wheel
+- [ ] **P1.05** ([#22](https://github.com/mitchell-johnson/cbus/issues/22)) — Build cmqttd in the Python CI job; run both interop suites, isolated-wheel
   tests, and separate provisioned native/hardware jobs. Record the actual
   executed tests and skips instead of inferring them from a green job.
 
@@ -422,18 +430,18 @@ historical evidence, not acceptance of newer code.
 **Owns:** `cbus-cgate`, project/file adapters, Python native clients.
 **Depends on:** P0 command cases and P1 native oracle.
 
-- [ ] **P2.01** — Implement Schneider repository/archive/import/export formats and version
+- [ ] **P2.01** ([#23](https://github.com/mitchell-johnson/cbus/issues/23)) — Implement Schneider repository/archive/import/export formats and version
   transitions; prove bidirectional interchange with native C-Gate and Toolkit.
   Preserve unknown metadata, OIDs and references across copy/rename/restore.
-- [ ] **P2.02** — Capture combined Network/Unit/Application DBSETXML replacement, including
+- [ ] **P2.02** ([#24](https://github.com/mitchell-johnson/cbus/issues/24)) — Capture combined Network/Unit/Application DBSETXML replacement, including
   namespaces, comments, conflicts, omitted fields and lifecycle persistence.
-- [ ] **P2.03** — Complete CGL metadata/controller semantics and multi-network route behavior;
+- [ ] **P2.03** ([#25](https://github.com/mitchell-johnson/cbus/issues/25)) — Complete CGL metadata/controller semantics and multi-network route behavior;
   distinguish importing a label graph from programming a controller.
-- [ ] **P2.04** — Implement per-handler access levels and login/logout transitions. Capture
+- [ ] **P2.04** ([#26](https://github.com/mitchell-johnson/cbus/issues/26)) — Implement per-handler access levels and login/logout transitions. Capture
   native certificate admission and its relationship to ACCESS/LOGIN; implement
   identity mapping only if the target native behavior requires it. Cover denied operations before mutation,
   concurrent sessions, reconnect and persisted admission rules.
-- [ ] **P2.05** — Implement meaningful CONFIG runtime/restart effects and exact native FILE,
+- [ ] **P2.05** ([#27](https://github.com/mitchell-johnson/cbus/issues/27)) — Implement meaningful CONFIG runtime/restart effects and exact native FILE,
   REPOSITORY and server lifecycle behavior within the supported deployment
   model. Document intentional secure deviations explicitly.
 
@@ -448,20 +456,20 @@ physical packages and the final audit also pass.
 **Owns:** `cbus-protocol`, `cbus-transport`, `cbus-cgate`, typed Python PCI/network
 and addressing workflows. **Depends on:** P1; native state contracts from P2.
 
-- [ ] **P3.01** — Integrate and independently validate routed WRITE alongside RECALL/IDENTIFY.
+- [ ] **P3.01** ([#28](https://github.com/mitchell-johnson/cbus/issues/28)) — Integrate and independently validate routed WRITE alongside RECALL/IDENTIFY.
   Resolve logical topology in typed workflows rather than require operators
   to infer raw Reply Network paths for ordinary commissioning.
-- [ ] **P3.02** — Cover discovery/setup across interfaces/adapters/subnets and the supported
+- [ ] **P3.02** ([#29](https://github.com/mitchell-johnson/cbus/issues/29)) — Cover discovery/setup across interfaces/adapters/subnets and the supported
   serial, CNI, Wiser, bridge and wireless gateways. Distinguish absence from
   timeout, incomplete scan and unreachable ownership.
-- [ ] **P3.03** — Complete arbitrary supported duplicate sets, occupied-address displacement
+- [ ] **P3.03** ([#30](https://github.com/mitchell-johnson/cbus/issues/30)) — Complete arbitrary supported duplicate sets, occupied-address displacement
   cycles, selected-serial and database matching, second-interface commissioning,
   and unknown-serial behavior as actually implemented by the native system.
-- [ ] **P3.04** — Add durable plan/attempt/recovery identities, independent pre/post inventory,
+- [ ] **P3.04** ([#31](https://github.com/mitchell-johnson/cbus/issues/31)) — Add durable plan/attempt/recovery identities, independent pre/post inventory,
   interrupted-process recovery and explicit handling of competing controllers.
   Existing process-local fingerprints must not be presented as global
   cross-process deduplication.
-- [ ] **P3.05** — Reconcile physical identity/address changes with the database through explicit
+- [ ] **P3.05** ([#32](https://github.com/mitchell-johnson/cbus/issues/32)) — Reconcile physical identity/address changes with the database through explicit
   transactions, preserving serial/OID/reference identity and partial outcomes.
 
 **Exit:** direct and supported one-to-six-bridge workflows pass nominal,
@@ -474,18 +482,18 @@ unchanged. No uncertain move is automatically replayed.
 **Owns:** Rust programming transport/service and Python `physical-pp`.
 **Depends on:** P1 and P3; can build direct-method cases before routed completion.
 
-- [ ] **P4.01** — Add real CLI → cmqttd → independent PCI integration for all ten methods:
+- [ ] **P4.01** ([#33](https://github.com/mitchell-johnson/cbus/issues/33)) — Add real CLI → cmqttd → independent PCI integration for all ten methods:
   `direct`, `paged`, `ncc`, `edlt`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, `goc2`.
-- [ ] **P4.02** — Exercise every applicable `none`/`checksum`/`lock` combination, page and block
+- [ ] **P4.02** ([#34](https://github.com/mitchell-johnson/cbus/issues/34)) — Exercise every applicable `none`/`checksum`/`lock` combination, page and block
   boundary, changed/unchanged range, tags, factory/special field and NVM commit.
   Define supported combinations from original specifications rather than assume
   a full Cartesian product exists.
-- [ ] **P4.03** — Interrupt each multi-range save before/after send, ACK, readback and NVM
+- [ ] **P4.03** ([#35](https://github.com/mitchell-johnson/cbus/issues/35)) — Interrupt each multi-range save before/after send, ACK, readback and NVM
   commit. Persist sufficient evidence to inspect and recover after a process or
   power failure; verify no stale confirmation completes a new generation.
-- [ ] **P4.04** — Verify field preservation and real-unit readback, then power-cycle reload.
+- [ ] **P4.04** ([#36](https://github.com/mitchell-johnson/cbus/issues/36)) — Verify field preservation and real-unit readback, then power-cycle reload.
   Compare fresh originals for the same method/profile transaction.
-- [ ] **P4.05** — Keep MQTT receipt/state fanout and C-Gate events operating throughout long
+- [ ] **P4.05** ([#37](https://github.com/mitchell-johnson/cbus/issues/37)) — Keep MQTT receipt/state fanout and C-Gate events operating throughout long
   programming; verify pacing, queues, reconnect and no fabricated state.
 
 **Exit:** each admitted method/profile/protection/route combination has an
@@ -497,23 +505,23 @@ readback and power-cycle persistence are separate recorded observations.
 **Owns:** Python device modules, schemas and native adapters; Rust transfer from
 P4. **Depends on:** P0 controls, P1 oracle, P4 for physical closure.
 
-- [ ] **P5.01** — Build a control-to-parameter/action table for all 118 dialog candidates and
+- [ ] **P5.01** ([#38](https://github.com/mitchell-johnson/cbus/issues/38)) — Build a control-to-parameter/action table for all 118 dialog candidates and
   their real firmware variants. Reuse logic only after equivalence is proved.
-- [ ] **P5.02** — Finish classic/Neo and other key/auxiliary/IR input families: custom macros,
+- [ ] **P5.02** ([#39](https://github.com/mitchell-johnson/cbus/issues/39)) — Finish classic/Neo and other key/auxiliary/IR input families: custom macros,
   timers, indicators, secondary applications, scene bindings and power-up
   behavior beyond the current 18 presets.
-- [ ] **P5.03** — Finish relay/dimmer/occupancy-controller logic, interlocks and other
+- [ ] **P5.03** ([#40](https://github.com/mitchell-johnson/cbus/issues/40)) — Finish relay/dimmer/occupancy-controller logic, interlocks and other
   controller-owned settings. External logic-code editors remain a separate
   handoff contract where original evidence proves that boundary.
-- [ ] **P5.04** — Expand the SENPILL subset to the other sensor dialogs: PIR/lux/temperature/
+- [ ] **P5.04** ([#41](https://github.com/mitchell-johnson/cbus/issues/41)) — Expand the SENPILL subset to the other sensor dialogs: PIR/lux/temperature/
   current, calibration/sensitivity, IR, corridor/join, broadcast/maintenance,
   macro and output interactions.
-- [ ] **P5.05** — Complete thermostat settings, zones, schedules, inherited loading and service
+- [ ] **P5.05** ([#42](https://github.com/mitchell-johnson/cbus/issues/42)) — Complete thermostat settings, zones, schedules, inherited loading and service
   factories, metadata/order behavior and physical timing effects.
-- [ ] **P5.06** — Complete unit copy/convert/reset and vendor template exchange across every
+- [ ] **P5.06** ([#43](https://github.com/mitchell-johnson/cbus/issues/43)) — Complete unit copy/convert/reset and vendor template exchange across every
   native-supported pair/profile; preserve destination-specific identity and
   unsupported fields. Unicode Description support is file metadata only.
-- [ ] **P5.07** — Finish wireless learn/join, addressing and gateway mapping.
+- [ ] **P5.07** ([#44](https://github.com/mitchell-johnson/cbus/issues/44)) — Finish wireless learn/join, addressing and gateway mapping.
 
 **Exit:** every admitted dialog control and workflow has positive, invalid,
 boundary, roundtrip and unrelated-value-preservation evidence against the
@@ -525,23 +533,23 @@ not close a device editor.
 **Owns:** Python eDLT/DLT models and cmqttd eDLT backends. **Depends on:** P1,
 P3/P4; runs alongside P5 with separate device ownership.
 
-- [ ] **P6.01** — Complete original parent initialization, asynchronous loading, control
+- [ ] **P6.01** ([#45](https://github.com/mitchell-johnson/cbus/issues/45)) — Complete original parent initialization, asynchronous loading, control
   bindings, event/validation/save order, interactive Add dialogs, and supported
   Reset/Blank/SceneManager histories. Verify component composition against an
   actual combined original workflow.
-- [ ] **P6.02** — Resolve registry display/sort preferences and project/DLTP image-dependent
+- [ ] **P6.02** ([#46](https://github.com/mitchell-johnson/cbus/issues/46)) — Resolve registry display/sort preferences and project/DLTP image-dependent
   dynamic-label data. Preserve capacities, reference identities, labels and
   existing per-unit differences during bulk/global programming.
-- [ ] **P6.03** — Implement the legacy Saturn/Neo/Decorator DLT variants and remaining eDLT
+- [ ] **P6.03** ([#47](https://github.com/mitchell-johnson/cbus/issues/47)) — Implement the legacy Saturn/Neo/Decorator DLT variants and remaining eDLT
   firmware revisions; do not extrapolate KEYGL5 5.5.00 evidence to them.
-- [ ] **P6.04** — Complete scene learning/capture/broadcast/trigger, timers, MRA/audio, wake,
+- [ ] **P6.04** ([#48](https://github.com/mitchell-johnson/cbus/issues/48)) — Complete scene learning/capture/broadcast/trigger, timers, MRA/audio, wake,
   navigation, buttons, rendering, brightness, reset and recovery on devices.
-- [ ] **P6.05** — Investigate a native operation for pre-existing dynamic-label cache contents.
+- [ ] **P6.05** ([#49](https://github.com/mitchell-johnson/cbus/issues/49)) — Investigate a native operation for pre-existing dynamic-label cache contents.
   If one exists, implement and physically verify it. If the selected native
   release exposes none, retain version/profile-specific proof of absence and
   document the limitation; observed traffic must never become device-cache
   readback. This determination resolves scope, not a guessed protocol.
-- [ ] **P6.06** — Validate static/dynamic labels after programming, disconnect, restart and
+- [ ] **P6.06** ([#50](https://github.com/mitchell-johnson/cbus/issues/50)) — Validate static/dynamic labels after programming, disconnect, restart and
   power cycle, with serial-bound before/after identity and external display
   observations where needed.
 
@@ -555,19 +563,19 @@ cannot alone close this package.
 **Owns:** Rust application/DALI transport, C-Gate service, Python typed workflows.
 **Depends on:** P1–P4 and device-specific data from P5/P6.
 
-- [ ] **P7.01** — Retain the native DALI conditional remediation/allocation contract and typed
+- [ ] **P7.01** ([#51](https://github.com/mitchell-johnson/cbus/issues/51)) — Retain the native DALI conditional remediation/allocation contract and typed
   deployment write order. Implement `COND_QUICK`, `COND_EXTENDED`,
   `RESCAN_FAULT`, and typed `DALI_ONLY`/`FULL` deployment, including combined
   extended/typed state, per-field readback and interrupted reconciliation.
-- [ ] **P7.02** — Complete remaining resident scene/macro/label functions and their native
+- [ ] **P7.02** ([#52](https://github.com/mitchell-johnson/cbus/issues/52)) — Complete remaining resident scene/macro/label functions and their native
   selector behavior; distinguish native named-scene rejections from supported
   alternative scene-file workflows.
-- [ ] **P7.03** — Verify controller action and supported readback for AIRCON/HVAC, Audio/MRA,
+- [ ] **P7.03** ([#53](https://github.com/mitchell-johnson/cbus/issues/53)) — Verify controller action and supported readback for AIRCON/HVAC, Audio/MRA,
   Security, Measurement, Media Transport, Telephony, Identify, Short Message,
   Error Reporting and Access Control. Retain wire-only semantics where the
   protocol truly offers no acknowledgement, with independent effect evidence
   for acceptance rather than fabricated online readback.
-- [ ] **P7.04** — Validate command/event ordering, physical source identity and MQTT coexistence
+- [ ] **P7.04** ([#54](https://github.com/mitchell-johnson/cbus/issues/54)) — Validate command/event ordering, physical source identity and MQTT coexistence
   on direct and bridged routes. Document repaired native encoders explicitly.
 
 **Exit:** every required selector reaches its correct native-equivalent result;
@@ -579,18 +587,18 @@ are demonstrated, not inferred from PCI confirmation.
 **Owns:** Python project/native/CSV/report interfaces and matching Rust database
 behavior. **Depends on:** P0/P1 and P2 where native formats are involved.
 
-- [ ] **P8.01** — Complete repair behavior across native-supported versions/encodings and
+- [ ] **P8.01** ([#55](https://github.com/mitchell-johnson/cbus/issues/55)) — Complete repair behavior across native-supported versions/encodings and
   failure classes; preserve evidence for native-rejected domains rather than
   invent general corrupt-database recovery.
-- [ ] **P8.02** — Finish original report-manager enumeration, remaining unit associations,
+- [ ] **P8.02** ([#56](https://github.com/mitchell-johnson/cbus/issues/56)) — Finish original report-manager enumeration, remaining unit associations,
   secondary applications, whole-project export and encoding/column behavior.
   Native XML document order alone does not prove Toolkit manager order.
-- [ ] **P8.03** — Implement project/database documentation, print/image export and topology
+- [ ] **P8.03** ([#57](https://github.com/mitchell-johnson/cbus/issues/57)) — Implement project/database documentation, print/image export and topology
   navigation with comparable native outputs and reference integrity.
-- [ ] **P8.04** — Resolve scanner input formats, duplicate/invalid scans and selection/creation
+- [ ] **P8.04** ([#58](https://github.com/mitchell-johnson/cbus/issues/58)) — Resolve scanner input formats, duplicate/invalid scans and selection/creation
   effects. Implement PICED/controller handoff and roundtrip boundaries that
   belong to Toolkit.
-- [ ] **P8.05** — Finish diagnostics/recovery decisions beyond the calculator and sequential
+- [ ] **P8.05** ([#59](https://github.com/mitchell-johnson/cbus/issues/59)) — Finish diagnostics/recovery decisions beyond the calculator and sequential
   PINGU/CHECKUNIT/CLOCKS draft. Establish actual electrical measurements and
   clock/burden effects where the native workflow depends on them.
 
@@ -603,13 +611,13 @@ exchange remains intact after each workflow.
 **Owns:** Python preferences, Windows workers, metadata/trust/update modules.
 **Depends on:** P1; independent of most physical C-Bus work.
 
-- [ ] **P9.01** — Fix R2 before integrating the diagnostic bundle.
-- [ ] **P9.02** — Validate all preference runtime effects and interactive-user registry
+- [ ] **P9.01** ([#60](https://github.com/mitchell-johnson/cbus/issues/60)) — Fix R2 before integrating the diagnostic bundle.
+- [ ] **P9.02** ([#61](https://github.com/mitchell-johnson/cbus/issues/61)) — Validate all preference runtime effects and interactive-user registry
   behavior, including the original lazy wrapper, culture and repeated reads.
-- [ ] **P9.03** — Bind catalogue, signed metadata, revocation, conditions and package bytes to
+- [ ] **P9.03** ([#62](https://github.com/mitchell-johnson/cbus/issues/62)) — Bind catalogue, signed metadata, revocation, conditions and package bytes to
   one source/version. Implement the actual publisher chain/current trust,
   applicability, version comparison and rollout policy from original evidence.
-- [ ] **P9.04** — Implement verified download, selection, install/open and restart/result
+- [ ] **P9.04** ([#63](https://github.com/mitchell-johnson/cbus/issues/63)) — Implement verified download, selection, install/open and restart/result
   reporting where those are Toolkit-owned functions. Retain failures and
   recovery; do not infer availability from a valid signature alone.
 
@@ -623,16 +631,16 @@ exact source and policy it depends on.
 **Owns:** Python firmware/USB and Rust WRITE_PATCH/PROGRAMMER/DEPLOY_QUEUE.
 **Depends on:** P1 hardware/artifacts and P4 recovery infrastructure.
 
-- [ ] **P10.01** — Implement actual vendor container/payload/patch catalogue and authenticity
+- [ ] **P10.01** ([#64](https://github.com/mitchell-johnson/cbus/issues/64)) — Implement actual vendor container/payload/patch catalogue and authenticity
   rules, version compatibility, external-address semantics and NCC paths where
   exposed by the target products. An explicit custom manifest is not native
   `patchset.zip` interoperability.
-- [ ] **P10.02** — Validate device selection, USB claim/configuration/alternate interfaces,
+- [ ] **P10.02** ([#65](https://github.com/mitchell-johnson/cbus/issues/65)) — Validate device selection, USB claim/configuration/alternate interfaces,
   erase/program/verify, reset/re-enumeration and resulting firmware identity.
-- [ ] **P10.03** — Exercise wrong image, interrupted erase/write/verify, lost USB, process crash,
+- [ ] **P10.03** ([#66](https://github.com/mitchell-johnson/cbus/issues/66)) — Exercise wrong image, interrupted erase/write/verify, lost USB, process crash,
   power loss, bootloader recovery and explicit resume/retry. Retain failures;
   prove recovery on disposable supported devices before wider use.
-- [ ] **P10.04** — Verify native programmer/deploy queue lifetime across restart, cancellation,
+- [ ] **P10.04** ([#67](https://github.com/mitchell-johnson/cbus/issues/67)) — Verify native programmer/deploy queue lifetime across restart, cancellation,
   partial outcomes and explicit retry. Preserve native volatility where
   established; retain separate durable recovery evidence for uncertain
   physical operations.
@@ -647,19 +655,19 @@ passes remain development evidence.
 **Owns:** all components; independent reviewer/release verifier.
 **Depends on:** P0–P10; acceptance collection occurs throughout, not only here.
 
-- [ ] **P11.01** — Close every functional obligation, original differential slot and applicable
+- [ ] **P11.01** ([#68](https://github.com/mitchell-johnson/cbus/issues/68)) — Close every functional obligation, original differential slot and applicable
   hardware case with current-artifact evidence. Resolve every documented
   deviation and every required skip. Re-run affected native evidence after code
   changes instead of carrying old pass flags forward.
-- [ ] **P11.02** — Run all Rust gates, Python source checks, both interop servers, fresh wheel,
+- [ ] **P11.02** ([#69](https://github.com/mitchell-johnson/cbus/issues/69)) — Run all Rust gates, Python source checks, both interop servers, fresh wheel,
   provisioned native/Windows and hardware matrices. Preserve exact revisions,
   hashes, commands and failure history.
-- [ ] **P11.03** — Build a clean Docker image; validate project/state migration and rollback,
+- [ ] **P11.03** ([#70](https://github.com/mitchell-johnson/cbus/issues/70)) — Build a clean Docker image; validate project/state migration and rollback,
   MQTT discovery/commands/state, C-Gate interoperability, long PP activity,
   broker/CNI reconnect and event fanout together. Restore test loads to their
   exact original state.
-- [ ] **P11.04** — Update README, status, per-feature docs, AI skill/reference material and
-  issues #10/#11/#12 from validated evidence. Derive `census_complete=true`,
+- [ ] **P11.04** ([#71](https://github.com/mitchell-johnson/cbus/issues/71)) — Update README, status, per-feature docs, AI skill/reference material and
+  the replacement work item issues from validated evidence. Derive `census_complete=true`,
   completed feature/acceptance rows and the full-parity predicate from those
   records; expose a full C-Gate capability claim only when its entire scope
   passes the same release audit.
