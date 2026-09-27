@@ -551,6 +551,27 @@ class PhysicalProgramming:
                 lock_name=lock_name,
             ) as session:
                 schema = _schema(session.info("*"))
+                # cmqttd follows native C-Gate's unit-family boundary here:
+                # the presence of any NCC parameter marks the complete decoded
+                # specification as requiring the C-Bus 3 Save-to-NVM phase.
+                # This remains true when a tag/method-selected SAVE changes only
+                # a direct or paged parameter.  Refuse before the first PP SET
+                # when that separately advertised completion path is absent.
+                if (
+                    saving
+                    and any(item.program_method == "ncc" for item in schema.values())
+                    and capabilities.get("physical_pp_routed_nvm_commit") is not True
+                ):
+                    evidence.update({
+                        "phase": "save-capability-preflight",
+                        "complete": False,
+                        "physical_load_completed": True,
+                    })
+                    raise PhysicalProgrammingError(
+                        "Physical unit specification requires routed C-Bus 3 "
+                        "Save-to-NVM, which is unavailable on this cmqttd build",
+                        evidence,
+                    )
                 selected = self._selected_schema(
                     schema, method, (item.parameter for item in edit_rows)
                 )

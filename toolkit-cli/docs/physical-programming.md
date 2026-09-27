@@ -79,9 +79,13 @@ server state have been independently inspected. A confirmed save followed by a
 fresh-read mismatch reports `saved=true` and
 `fresh_physical_readback_verified=false`; it also is not replayed.
 
-Routed NCC writes additionally require
-`physical_pp_routed_nvm_commit=true`. Inspection and dry-run remain available
-when that separate Save-to-NVM capability is absent. The output always keeps
+An apply against a decoded unit specification containing any NCC parameter
+additionally requires `physical_pp_routed_nvm_commit=true`, even when the
+selected edit uses another method. cmqttd's native boundary is unit-wide: after
+any confirmed change in that C-Bus 3 specification it performs the separate
+Save-to-NVM sequence. The client checks the complete schema after physical LOAD
+and refuses before the first `PP SET` when that capability is absent. Inspection
+and dry-run remain available without it. The output always keeps
 `power_cycle_persistence_verified=false`,
 `original_toolkit_workflow_executed=false`, and
 `hardware_method_matrix_accepted=false`. A fresh PP reload proves the selected

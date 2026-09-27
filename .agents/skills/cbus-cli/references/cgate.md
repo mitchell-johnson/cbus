@@ -751,8 +751,11 @@ checks the selected `ProgramMethod` from `PP INFO *`, stages and reads back all
 edits, sends one SAVE/SAVE_TO_SOURCE, then opens a distinct PP session and LOADs
 the physical destination again. Schema-aware comparison accepts numeric
 presentation changes such as `0x00` to `0x0`; a schema or value difference is a
-failed verification. No state-changing command is replayed. NCC apply requires
-`physical_pp_routed_nvm_commit=true`; inspect and dry-run do not. See
+failed verification. No state-changing command is replayed. Apply to any unit
+specification containing an NCC parameter requires
+`physical_pp_routed_nvm_commit=true`, including another method selected by tags;
+the client learns that unit-wide requirement through physical LOAD/INFO and
+refuses before PP SET. Inspect and dry-run do not require it. See
 `toolkit-cli/docs/physical-programming.md` and keep its live-bridge,
 device-matrix, Toolkit-workflow, and power-cycle exclusions in every report.
 

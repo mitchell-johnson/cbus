@@ -354,6 +354,24 @@ class PhysicalProgrammingTests(unittest.TestCase):
             )
         self.assertEqual(service.commands, ["CMQTT CAPABILITIES"])
 
+        # cmqttd's native boundary is specification-wide: a device family with
+        # any NCC parameter performs Save-to-NVM after another tagged method
+        # changes too.  The client learns that only after PP LOAD/INFO, but must
+        # still refuse before the first staged mutation.
+        service = PhysicalService(nvm=False)
+        with self.assertRaisesRegex(
+            PhysicalProgrammingError, "specification requires routed C-Bus 3"
+        ) as caught:
+            PhysicalProgramming(service, operation_id="directnvm").apply(
+                "//TEST/253/p/4", [("Value_direct", "2")], method="direct"
+            )
+        self.assertEqual(
+            caught.exception.evidence["phase"], "save-capability-preflight"
+        )
+        self.assertTrue(caught.exception.evidence["physical_load_completed"])
+        self.assertFalse(any(command.startswith("PP SET ") for command in service.commands))
+        self.assertFalse(any("PP SAVE" in command for command in service.commands))
+
     def test_rust_evidence_roster_matches_python_workflow(self):
         fixture = Path(__file__).resolve().parents[2] / "rust/testdata/fixtures/native_cgate_routed_pp_methods.json"
         document = json.loads(fixture.read_text(encoding="utf-8"))
