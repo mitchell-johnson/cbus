@@ -65,8 +65,8 @@ The [17-case original fixture](../research/fixtures/toolkit-update-rollout-cohor
 includes absent-key, present decimal/DWORD, malformed, missing-entry and
 literal sentinel outcomes from a disposable offline Windows guest. Its
 [probe](../research/NativeSesuRolloutProbe.cs) **overwrote both original static
-registry key and entry fields** before each call. Neither its sanitized
-fixture did not establish their original values. A later
+registry key and entry fields** before each call. Neither that probe nor its
+sanitized fixture established their original values. A later
 [source-bound static and native reflection derivation](toolkit-update-rollout-current-user.md)
 identified the original key and entry; this adapter still addresses only its
 owned scratch key and does not source-bind them. Native execution of

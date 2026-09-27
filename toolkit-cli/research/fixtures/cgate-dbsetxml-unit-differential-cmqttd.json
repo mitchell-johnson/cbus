@@ -12,12 +12,12 @@
   },
   "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
   "binary": {
-    "path": "/private/tmp/cbus-parity-foundation-20260927/rust/target/debug/cmqttd",
-    "sha256": "1c7526a673a387102bc4a19feee6abf11069b1ad85ead8bc6ba0f740f39e3857"
+    "path": "/private/tmp/cbus-824-receipt-target/debug/cmqttd",
+    "sha256": "6c637f3d7244399ebf3b9ce9d1485188c470185f75e151973b3ed9019eb7b600"
   },
-  "source_revision": "3455db31c6a44258e41c4e33ea8110f117208cad",
+  "source_revision": "824119d3838f3f72204d4a85a83d623e5e08794a",
   "source_fingerprint": {
-    ".github/workflows/ci.yml": "6e52fe12c65d6368168f1309e5d4e42491ab01d03766a89150ed0123864a39ff",
+    ".github/workflows/ci.yml": "899188a907fb0a214c98155de93ee50909d18458941b79928f7ec9a3a8fd8db0",
     "rust/Cargo.lock": "b9777fa1ce9e2cc17ce021844acf04ee1d0b949e14dafef02263da3e16d9cddc",
     "rust/Cargo.toml": "94a27eaadadeb233c09fb3fb65980d26cbfdb13df8f69c4573e5244f904c8e99",
     "rust/cbus-cgate/Cargo.toml": "bf4f90d80eebf9c478ff9cd1be8a25a698e5a3989f70e58f98e25b2a8db2e28a",
@@ -537,5 +537,5 @@
   "wire_equal": 12,
   "combined_network_passed": 2,
   "result": "passed",
-  "command": "/Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python research/cgate_dbsetxml_unit_differential.py --mock-bin /private/tmp/cbus-parity-foundation-20260927/rust/target/debug/cgate-mock --cmqttd-bin /private/tmp/cbus-parity-foundation-20260927/rust/target/debug/cmqttd --output-dir research/runtime"
+  "command": "/opt/homebrew/opt/python@3.13/bin/python3.13 research/cgate_dbsetxml_unit_differential.py --mock-bin /private/tmp/cbus-824-receipt-target/debug/cgate-mock --cmqttd-bin /private/tmp/cbus-824-receipt-target/debug/cmqttd --output-dir research/fixtures"
 }
