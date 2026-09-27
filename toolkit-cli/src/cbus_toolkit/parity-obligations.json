@@ -5,13 +5,14 @@
   "census_complete": false,
   "purpose": "Provisional exhaustive source accounting; not yet a deduplicated functional denominator or acceptance claim.",
   "source_digests": {
-    "toolkit_surface": "f655995ff9c0bb559f116dd53dddc2564798855a77b979dcd82d93bcf37bbdc4",
+    "toolkit_surface": "2be3b80dd3524b2d947a86836f272f2ef3740817de8c14ba39838b4fe85477d5",
+    "unindexed_help_review": "dcf9d5fa20ec98d321372c4099dea6c320f881fab1322de91cbb997d69808e80",
     "toolkit_executable_surface": "f9fe2111679495b920deb4ce095fe3d6cc9693d7f478835d5f19d01977617af2",
     "toolkit_executable_binary": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
     "toolkit_map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
     "feature_ledger": "79750e146f08911f5350e2a655f86ff0472a73b30e89cf969923ab737ceb85af",
     "cgate_capability_matrix": "a943b9df5e3170845237a7beefad8b655ce1ea0379b005b313544d9bfa685fb9",
-    "cgate_contract_inventory": "6127e9046f3e95f28ced22ed5357cbf59cb458c5f2bf9a130c71a1b6018d3641",
+    "cgate_contract_inventory": "08c6b8e30591d5c6e7cacb41b71f399fbba2f9bd46984b862908120f838c6c6f",
     "roadmap": "27963d6939667c0eb933f638dc78a1a54ddd1aea29eb27bf1f79d6292898dc91"
   },
   "evidence_bundle_sha256": "055dde83ff05aa7056c13761cac120604e1d89fc0c4c27275c28ceded39bde40",
@@ -93554,8 +93555,13 @@
     {
       "id": "scope:unindexed:dhtml_toc_template.htm",
       "kind": "unindexed_html",
-      "source_id": "dhtml_toc_template.htm",
+      "source_id": "help-unindexed:dhtml_toc_template.htm",
       "source_sha256": "7aea2db73e94386e3ebd0101a0eb0b3892b3b6770a9bcf67902eb0dced0c884b",
+      "static_role": "help_navigation_template",
+      "review_status": "static_markup_reviewed_runtime_unassessed",
+      "source_path": "research/vendor/toolkit-help/dhtml_toc_template.htm",
+      "source_asset_sha256": "1d6242d1c5137932c2669baa4935ce1a1efeda9da509adb5506a849cfdc1d4a2",
+      "missing_html_targets": [],
       "obligation_ids": [
         "ledger:toolkit-surface-census"
       ],
@@ -93564,8 +93570,13 @@
     {
       "id": "scope:unindexed:html_frameset.htm",
       "kind": "unindexed_html",
-      "source_id": "html_frameset.htm",
+      "source_id": "help-unindexed:html_frameset.htm",
       "source_sha256": "143ea597950f2a1d59baee5c8a8efc7e1c2f526f969b8d473b0b1fff4cd4d9eb",
+      "static_role": "help_container_template",
+      "review_status": "static_markup_reviewed_runtime_unassessed",
+      "source_path": "research/vendor/toolkit-help/html_frameset.htm",
+      "source_asset_sha256": "1d6242d1c5137932c2669baa4935ce1a1efeda9da509adb5506a849cfdc1d4a2",
+      "missing_html_targets": [],
       "obligation_ids": [
         "ledger:toolkit-surface-census"
       ],
@@ -93574,8 +93585,13 @@
     {
       "id": "scope:unindexed:index_template.htm",
       "kind": "unindexed_html",
-      "source_id": "index_template.htm",
+      "source_id": "help-unindexed:index_template.htm",
       "source_sha256": "89691d756dea9db1cc846ab0ed1b1c55ac51dff3a709514ccde5b0dcca740b9b",
+      "static_role": "help_navigation_template",
+      "review_status": "static_markup_reviewed_runtime_unassessed",
+      "source_path": "research/vendor/toolkit-help/index_template.htm",
+      "source_asset_sha256": "1d6242d1c5137932c2669baa4935ce1a1efeda9da509adb5506a849cfdc1d4a2",
+      "missing_html_targets": [],
       "obligation_ids": [
         "ledger:toolkit-surface-census"
       ],
@@ -93584,8 +93600,15 @@
     {
       "id": "scope:unindexed:tab_index.htm",
       "kind": "unindexed_html",
-      "source_id": "tab_index.htm",
+      "source_id": "help-unindexed:tab_index.htm",
       "source_sha256": "2eb1c93fb8c4b9641fc554a280e074586b8f6c284f7cf127b660094f2194091f",
+      "static_role": "help_navigation_tab",
+      "review_status": "static_markup_reviewed_runtime_unassessed",
+      "source_path": "research/vendor/toolkit-help/tab_index.htm",
+      "source_asset_sha256": "e4aad3147d27aa1848091f9517562b5f2393fcad0b33d125ed9cabc6d3f6a202",
+      "missing_html_targets": [
+        "toc.htm"
+      ],
       "obligation_ids": [
         "ledger:toolkit-surface-census"
       ],
@@ -93594,8 +93617,16 @@
     {
       "id": "scope:unindexed:tab_toc.htm",
       "kind": "unindexed_html",
-      "source_id": "tab_toc.htm",
+      "source_id": "help-unindexed:tab_toc.htm",
       "source_sha256": "b3c6c2ef5729dc0618d0d717ecbd0a35dc879ed5a17ccc51978ea000fa47ded9",
+      "static_role": "help_navigation_tab",
+      "review_status": "static_markup_reviewed_runtime_unassessed",
+      "source_path": "research/vendor/toolkit-help/tab_toc.htm",
+      "source_asset_sha256": "6008c70a584084442b3dfe39db5b882b5d8ecd0917a5cf73268d63db124c7b6c",
+      "missing_html_targets": [
+        "indexpage.htm",
+        "toc.htm"
+      ],
       "obligation_ids": [
         "ledger:toolkit-surface-census"
       ],
@@ -93604,8 +93635,13 @@
     {
       "id": "scope:unindexed:toc_template.htm",
       "kind": "unindexed_html",
-      "source_id": "toc_template.htm",
+      "source_id": "help-unindexed:toc_template.htm",
       "source_sha256": "d51a40191f9486fb77f10099f18a948f3f17ae15042f01a309710a085e165dfb",
+      "static_role": "help_navigation_template",
+      "review_status": "static_markup_reviewed_runtime_unassessed",
+      "source_path": "research/vendor/toolkit-help/toc_template.htm",
+      "source_asset_sha256": "1d6242d1c5137932c2669baa4935ce1a1efeda9da509adb5506a849cfdc1d4a2",
+      "missing_html_targets": [],
       "obligation_ids": [
         "ledger:toolkit-surface-census"
       ],

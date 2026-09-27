@@ -27,11 +27,6 @@
       "path": "research/vendor/cgate/app/cgate.jar",
       "bytes": 3769295,
       "sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
-    },
-    {
-      "path": "research/vendor/toolkit/app/Toolkit Help.chm",
-      "bytes": 18739212,
-      "sha256": "a189775cc95c426d0c55218f82951f9701b328e65b5dacbcfea457ed410511ab"
     }
   ],
   "scope_rules": [
@@ -43,7 +38,8 @@
     "Typed wrapper candidates are manually reviewed mappings to existing Python symbols. Source presence is not behavioral verification.",
     "Every topic and public command starts unassessed. No test result is inferred from source files; no functional coverage percentage is computed.",
     "A complete parity claim also requires controls/branches in the executable, undocumented/internal commands, external tool boundaries, device/firmware variants and real bus effects beyond this documentation census.",
-    "Only short topic/heading names, product mentions, IDs, paths, line numbers and hashes are emitted. Vendor prose, images and command descriptions remain local."
+    "Only short topic/heading names, product mentions, IDs, paths, line numbers and hashes are emitted. Vendor prose, images and command descriptions remain local.",
+    "The six unindexed help-shell files have reviewed static roles and exact source hashes. Their referenced local assets are hash-bound, but runtime script behavior and missing generated HTML targets remain unassessed."
   ],
   "counts": {
     "indexed_topics": 3767,
@@ -12839,8 +12835,8 @@
         {
           "symbol": "NativeLabels.raw",
           "path": "src/cbus_toolkit/labels.py",
-          "line": 117,
-          "end_line": 121
+          "line": 145,
+          "end_line": 149
         }
       ],
       "acceptance_status": "unassessed",
@@ -12963,8 +12959,8 @@
         {
           "symbol": "_cgate",
           "path": "src/cbus_toolkit/cli.py",
-          "line": 1973,
-          "end_line": 2266
+          "line": 2284,
+          "end_line": 2624
         },
         {
           "symbol": "NativeSerials._get",
@@ -13086,8 +13082,8 @@
         {
           "symbol": "NativeLabels.raw",
           "path": "src/cbus_toolkit/labels.py",
-          "line": 117,
-          "end_line": 121
+          "line": 145,
+          "end_line": 149
         }
       ],
       "acceptance_status": "unassessed",
@@ -13109,8 +13105,8 @@
         {
           "symbol": "NativeLabels.unicode_raw",
           "path": "src/cbus_toolkit/labels.py",
-          "line": 150,
-          "end_line": 156
+          "line": 178,
+          "end_line": 184
         }
       ],
       "acceptance_status": "unassessed",
@@ -13580,8 +13576,8 @@
         {
           "symbol": "NativeNetworks.check_units",
           "path": "src/cbus_toolkit/networks.py",
-          "line": 80,
-          "end_line": 81
+          "line": 332,
+          "end_line": 333
         },
         {
           "symbol": "NativeSerials.refresh",
@@ -13609,8 +13605,8 @@
         {
           "symbol": "NativeNetworks.clocks",
           "path": "src/cbus_toolkit/networks.py",
-          "line": 89,
-          "end_line": 101
+          "line": 341,
+          "end_line": 353
         }
       ],
       "acceptance_status": "unassessed",
@@ -13632,8 +13628,8 @@
         {
           "symbol": "NativeNetworks.close",
           "path": "src/cbus_toolkit/networks.py",
-          "line": 65,
-          "end_line": 66
+          "line": 227,
+          "end_line": 228
         }
       ],
       "acceptance_status": "unassessed",
@@ -13719,8 +13715,8 @@
         {
           "symbol": "NativeNetworks.list",
           "path": "src/cbus_toolkit/networks.py",
-          "line": 24,
-          "end_line": 25
+          "line": 186,
+          "end_line": 187
         }
       ],
       "acceptance_status": "unassessed",
@@ -13742,8 +13738,8 @@
         {
           "symbol": "NativeNetworks.list",
           "path": "src/cbus_toolkit/networks.py",
-          "line": 24,
-          "end_line": 25
+          "line": 186,
+          "end_line": 187
         }
       ],
       "acceptance_status": "unassessed",
@@ -13788,8 +13784,8 @@
         {
           "symbol": "NativeNetworks.open",
           "path": "src/cbus_toolkit/networks.py",
-          "line": 62,
-          "end_line": 63
+          "line": 224,
+          "end_line": 225
         }
       ],
       "acceptance_status": "unassessed",
@@ -13811,8 +13807,8 @@
         {
           "symbol": "NativeNetworks.discover",
           "path": "src/cbus_toolkit/networks.py",
-          "line": 77,
-          "end_line": 78
+          "line": 239,
+          "end_line": 240
         }
       ],
       "acceptance_status": "unassessed",
@@ -13850,8 +13846,8 @@
         {
           "symbol": "NativeNetworks.rename",
           "path": "src/cbus_toolkit/networks.py",
-          "line": 112,
-          "end_line": 114
+          "line": 364,
+          "end_line": 366
         }
       ],
       "acceptance_status": "unassessed",
@@ -13889,8 +13885,8 @@
         {
           "symbol": "NativeNetworks.set_project_identity",
           "path": "src/cbus_toolkit/networks.py",
-          "line": 116,
-          "end_line": 117
+          "line": 368,
+          "end_line": 371
         }
       ],
       "acceptance_status": "unassessed",
@@ -13912,8 +13908,8 @@
         {
           "symbol": "NativeNetworks.synchronize",
           "path": "src/cbus_toolkit/networks.py",
-          "line": 68,
-          "end_line": 72
+          "line": 230,
+          "end_line": 234
         },
         {
           "symbol": "NativeSerials.refresh",
@@ -13941,8 +13937,8 @@
         {
           "symbol": "NativeNetworks.sync_new",
           "path": "src/cbus_toolkit/networks.py",
-          "line": 74,
-          "end_line": 75
+          "line": 236,
+          "end_line": 237
         }
       ],
       "acceptance_status": "unassessed",
@@ -13964,8 +13960,8 @@
         {
           "symbol": "NativeNetworks.unravel",
           "path": "src/cbus_toolkit/networks.py",
-          "line": 83,
-          "end_line": 87
+          "line": 335,
+          "end_line": 339
         }
       ],
       "acceptance_status": "unassessed",
@@ -13987,8 +13983,8 @@
         {
           "symbol": "NativeNetworks.unravel",
           "path": "src/cbus_toolkit/networks.py",
-          "line": 83,
-          "end_line": 87
+          "line": 335,
+          "end_line": 339
         }
       ],
       "acceptance_status": "unassessed",
@@ -14074,8 +14070,8 @@
         {
           "symbol": "_cgate",
           "path": "src/cbus_toolkit/cli.py",
-          "line": 1973,
-          "end_line": 2266
+          "line": 2284,
+          "end_line": 2624
         }
       ],
       "acceptance_status": "unassessed",
@@ -14113,8 +14109,8 @@
         {
           "symbol": "_cgate",
           "path": "src/cbus_toolkit/cli.py",
-          "line": 1973,
-          "end_line": 2266
+          "line": 2284,
+          "end_line": 2624
         }
       ],
       "acceptance_status": "unassessed",
@@ -14594,8 +14590,8 @@
         {
           "symbol": "_cgate",
           "path": "src/cbus_toolkit/cli.py",
-          "line": 1973,
-          "end_line": 2266
+          "line": 2284,
+          "end_line": 2624
         }
       ],
       "acceptance_status": "unassessed",
@@ -15094,8 +15090,8 @@
         {
           "symbol": "_cgate",
           "path": "src/cbus_toolkit/cli.py",
-          "line": 1973,
-          "end_line": 2266
+          "line": 2284,
+          "end_line": 2624
         }
       ],
       "acceptance_status": "unassessed",
@@ -15165,8 +15161,8 @@
         {
           "symbol": "NativeNetworks.tree",
           "path": "src/cbus_toolkit/networks.py",
-          "line": 103,
-          "end_line": 110
+          "line": 355,
+          "end_line": 362
         }
       ],
       "acceptance_status": "unassessed",
@@ -15188,8 +15184,8 @@
         {
           "symbol": "NativeNetworks.tree",
           "path": "src/cbus_toolkit/networks.py",
-          "line": 103,
-          "end_line": 110
+          "line": 355,
+          "end_line": 362
         }
       ],
       "acceptance_status": "unassessed",
@@ -15211,8 +15207,8 @@
         {
           "symbol": "NativeNetworks.tree",
           "path": "src/cbus_toolkit/networks.py",
-          "line": 103,
-          "end_line": 110
+          "line": 355,
+          "end_line": 362
         }
       ],
       "acceptance_status": "unassessed",
@@ -15273,8 +15269,8 @@
         {
           "symbol": "NativeLabels.raw",
           "path": "src/cbus_toolkit/labels.py",
-          "line": 117,
-          "end_line": 121
+          "line": 145,
+          "end_line": 149
         }
       ],
       "acceptance_status": "unassessed",
@@ -15296,8 +15292,8 @@
         {
           "symbol": "NativeLabels.unicode_raw",
           "path": "src/cbus_toolkit/labels.py",
-          "line": 150,
-          "end_line": 156
+          "line": 178,
+          "end_line": 184
         }
       ],
       "acceptance_status": "unassessed",
@@ -15324,8 +15320,8 @@
     "source": {
       "symbol": "_cgate",
       "path": "src/cbus_toolkit/cli.py",
-      "line": 1973,
-      "end_line": 2266
+      "line": 2284,
+      "end_line": 2624
     },
     "route": "cbus-toolkit cgate exec '<command>'",
     "status": "static_forwarding_route_present_not_command_acceptance"
@@ -15346,8 +15342,8 @@
       "source": {
         "symbol": "NativeNetworks.calculate",
         "path": "src/cbus_toolkit/networks.py",
-        "line": 119,
-        "end_line": 143
+        "line": 373,
+        "end_line": 397
       },
       "status": "wrapper_not_in_public_reference"
     },
@@ -15441,8 +15437,8 @@
     },
     {
       "path": "src/cbus_toolkit/cli.py",
-      "bytes": 184295,
-      "sha256": "3dd3d05625532dab068491960b8aed755982d8ad52ee0643e81abe65e212744a"
+      "bytes": 215475,
+      "sha256": "2ed0b45a2168cd89449b5b24b4a1c4a91f8a830d52fd8fffaa697c6366aa2d84"
     },
     {
       "path": "src/cbus_toolkit/conversion.py",
@@ -15461,8 +15457,8 @@
     },
     {
       "path": "src/cbus_toolkit/labels.py",
-      "bytes": 8636,
-      "sha256": "319dc087b2416b3feb15a8ba7178f5d6c6ab6dd2e87ecce99385e1e33177db61"
+      "bytes": 11292,
+      "sha256": "b24f212d60652ca258347d06128c4744718db01099bb0a5bb3496f47ca7e14ec"
     },
     {
       "path": "src/cbus_toolkit/native.py",
@@ -15471,8 +15467,8 @@
     },
     {
       "path": "src/cbus_toolkit/networks.py",
-      "bytes": 7164,
-      "sha256": "21ea820a8e2b94c708515c2b48258b22eb27131ebc61dfab6eca846d548e530e"
+      "bytes": 16313,
+      "sha256": "4c80c54931ea7f233a2fb8451580e9afbe0d68066fb63c1e542daaf8d20f7cc8"
     },
     {
       "path": "src/cbus_toolkit/physical_addressing.py",
@@ -15503,9 +15499,9 @@
   "test_source_inventory": [
     {
       "path": "tests/test_acceptance.py",
-      "bytes": 6084,
-      "sha256": "40637c1142aecd244454d2736128aec3a8de16085ec070c587d2c2624b15fb95",
-      "test_definitions": 3,
+      "bytes": 18181,
+      "sha256": "1d9d080112a7713d483e4591adfd18a12f7b0d2c00311fa6b2fb4b864394d565",
+      "test_definitions": 12,
       "status": "source_present_results_not_imported"
     },
     {
@@ -15523,6 +15519,13 @@
       "status": "source_present_results_not_imported"
     },
     {
+      "path": "tests/test_barcode_scanner.py",
+      "bytes": 2996,
+      "sha256": "b376b978e299f9b1d1487d17c312e9e284bc5604065a195d370be81ae7a30544",
+      "test_definitions": 9,
+      "status": "source_present_results_not_imported"
+    },
+    {
       "path": "tests/test_calculator.py",
       "bytes": 13635,
       "sha256": "c47089e10fbc3f190e148bc26229f6e97e519b42058287a5db71f750cae2a7e5",
@@ -15531,8 +15534,8 @@
     },
     {
       "path": "tests/test_cgate.py",
-      "bytes": 23660,
-      "sha256": "b4883d234bc76abd5cf3ad0fd2b427b8c5acbb37258d66db94c9b02ebf64a8b7",
+      "bytes": 23727,
+      "sha256": "2431376d22ff21599b40cf1052161bb36d32e7caf60355fd21c9166dec7f2232",
       "test_definitions": 30,
       "status": "source_present_results_not_imported"
     },
@@ -15544,10 +15547,24 @@
       "status": "source_present_results_not_imported"
     },
     {
+      "path": "tests/test_cgate_contract_inventory.py",
+      "bytes": 11162,
+      "sha256": "5464476e2bbbc65a1c673380af59b5fbd39966837a11392ad9aefbcbc60d5e1d",
+      "test_definitions": 10,
+      "status": "source_present_results_not_imported"
+    },
+    {
       "path": "tests/test_cgl.py",
       "bytes": 7056,
       "sha256": "22c9bf81ac9c99462f7184d6db580bbc7f76c53dbdc20f7b523244f5102d7b58",
       "test_definitions": 7,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_cgl_differential.py",
+      "bytes": 2042,
+      "sha256": "6b9cabdff8ab835dfd69aa7c6c799b837fc8e2a4ee873c161dc15843d587841b",
+      "test_definitions": 5,
       "status": "source_present_results_not_imported"
     },
     {
@@ -15559,9 +15576,9 @@
     },
     {
       "path": "tests/test_cli.py",
-      "bytes": 39955,
-      "sha256": "5e0048589ad015288bec5570efeb097d4ab970ad4de941671d92ee2bafff3313",
-      "test_definitions": 31,
+      "bytes": 41919,
+      "sha256": "95a2a7b5462b2c7c651d3089a5a8f2eb1fda71c79608f9a14c48b3cbeb45cfed",
+      "test_definitions": 33,
       "status": "source_present_results_not_imported"
     },
     {
@@ -15621,6 +15638,13 @@
       "status": "source_present_results_not_imported"
     },
     {
+      "path": "tests/test_cli_edlt_factory_default.py",
+      "bytes": 5191,
+      "sha256": "5947ab573ab21c55785918dd3318eee1257d102a9cd4c63bd291b83975d82ea4",
+      "test_definitions": 3,
+      "status": "source_present_results_not_imported"
+    },
+    {
       "path": "tests/test_cli_edlt_fan.py",
       "bytes": 6728,
       "sha256": "cda5b2de93a3e443928b6938b55705cfe43bca308d547ff6a3a78791201e0b6a",
@@ -15671,9 +15695,9 @@
     },
     {
       "path": "tests/test_cli_edlt_measurement.py",
-      "bytes": 15186,
-      "sha256": "1bb4eec4898b8515c911c18ab96de1359ba84cb088ace298c2a2ea1b77d25ef0",
-      "test_definitions": 3,
+      "bytes": 16598,
+      "sha256": "ded50d6ef8bd5cf7461001194fece364e03f640d805a2f48cfff66642d4046f8",
+      "test_definitions": 4,
       "status": "source_present_results_not_imported"
     },
     {
@@ -15716,6 +15740,27 @@
       "bytes": 8252,
       "sha256": "b1e4acdefb9166e7980d7d8ad863944597ed852d880379fa246afe11e090c3dd",
       "test_definitions": 3,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_cli_edlt_parent_form.py",
+      "bytes": 9642,
+      "sha256": "aef16b54ce3dda04d217d17f39e70f225043189d8d86a8e455fb7dabb7407700",
+      "test_definitions": 6,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_cli_edlt_parent_metadata.py",
+      "bytes": 7245,
+      "sha256": "09ca02067d30ece46c2bb05c633945d8361a0a0d02edf0c40b5d860f19a3bafb",
+      "test_definitions": 4,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_cli_edlt_parent_transaction.py",
+      "bytes": 14716,
+      "sha256": "f15faff469143f34f2efa22227bbcffb23dd9c681ae5f11abd68f8e63dfd631c",
+      "test_definitions": 9,
       "status": "source_present_results_not_imported"
     },
     {
@@ -15769,9 +15814,23 @@
     },
     {
       "path": "tests/test_cli_edlt_scene_manager.py",
-      "bytes": 12337,
-      "sha256": "12e8b442b9cb5e3227974f4bd98144a730f7cc2fb9bde74879ae7359883e0b53",
-      "test_definitions": 5,
+      "bytes": 14830,
+      "sha256": "704ba6e758a957f38786cded46ab8452bf52bcc3677de2341b7b2510b65e04bc",
+      "test_definitions": 7,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_cli_edlt_scene_metadata.py",
+      "bytes": 10000,
+      "sha256": "3f7ef8d60eafdd8a85c213f95a0206b8f601a2e22c51d3535eaeda33880e92c9",
+      "test_definitions": 6,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_cli_edlt_scene_trigger.py",
+      "bytes": 4586,
+      "sha256": "3f75e976420d3554fd40502da411e528ad956843063c33a0508da7a36aa115e6",
+      "test_definitions": 3,
       "status": "source_present_results_not_imported"
     },
     {
@@ -15810,6 +15869,13 @@
       "status": "source_present_results_not_imported"
     },
     {
+      "path": "tests/test_cli_edlt_widget_groups.py",
+      "bytes": 4655,
+      "sha256": "a3fedf7c66233ad182ebe0526bb149a92e0c4ed9384dc7c8c8c1f2a7af9abe95",
+      "test_definitions": 3,
+      "status": "source_present_results_not_imported"
+    },
+    {
       "path": "tests/test_cli_firmware.py",
       "bytes": 5970,
       "sha256": "e5a4cd4952a532cefa2b67013335338e6293ac94fc57e4f33fc2fed43042efa5",
@@ -15828,6 +15894,20 @@
       "bytes": 5473,
       "sha256": "d009f12a90986c423c81a5c95817eb08dc8be3807e40bc34043470fd4f05a2fb",
       "test_definitions": 3,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_cli_native_thermostat_scheduling.py",
+      "bytes": 7487,
+      "sha256": "4568bbd232feb769bff839e0e4793fca0b07b3f2613b435496d9eb32f038f3bd",
+      "test_definitions": 7,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_cli_network_management.py",
+      "bytes": 5215,
+      "sha256": "ea66873dccfca53d717b0ba486622eecb58e2232dbadfc669391fe0176e68c62",
+      "test_definitions": 4,
       "status": "source_present_results_not_imported"
     },
     {
@@ -15866,6 +15946,13 @@
       "status": "source_present_results_not_imported"
     },
     {
+      "path": "tests/test_cli_pci_routed_write.py",
+      "bytes": 9510,
+      "sha256": "e8e2bd31eba712378ebf73df5328fcac41737a0a40f449f8ec39282c9a0845fc",
+      "test_definitions": 8,
+      "status": "source_present_results_not_imported"
+    },
+    {
       "path": "tests/test_cli_pci_routing.py",
       "bytes": 5269,
       "sha256": "5bf21c1d0d4e38007a4efc269936bc02b1ffcd26b317df704c2a33371028bf1f",
@@ -15887,6 +15974,13 @@
       "status": "source_present_results_not_imported"
     },
     {
+      "path": "tests/test_cli_physical_programming.py",
+      "bytes": 6096,
+      "sha256": "1dcd28cb7295d022efe21ea3b3e96af589c061f89fa4efb876b5137a07fc15aa",
+      "test_definitions": 2,
+      "status": "source_present_results_not_imported"
+    },
+    {
       "path": "tests/test_cli_repositories.py",
       "bytes": 3709,
       "sha256": "e6f3da49b84c6abd788f9c6db06abf85fa3d253fd5cd17a3363d7151c80d7ef6",
@@ -15895,8 +15989,8 @@
     },
     {
       "path": "tests/test_cli_selected_serial.py",
-      "bytes": 17156,
-      "sha256": "fa3fa18e3485ed1888ad1f1e8c9fd195049757c03c7e9aaaca7ce5195d75ccf4",
+      "bytes": 17311,
+      "sha256": "0c737dbc61621314a45efee5cdf302a2e177bc983b541b018789ba5661156db6",
       "test_definitions": 9,
       "status": "source_present_results_not_imported"
     },
@@ -15937,9 +16031,9 @@
     },
     {
       "path": "tests/test_cli_thermostat_scheduling.py",
-      "bytes": 7429,
-      "sha256": "6c98c66865cbb5b5658ac85649bcd074fcf8bb1332928a073b936b3e4f0bdec6",
-      "test_definitions": 9,
+      "bytes": 11627,
+      "sha256": "fc5e141f25f89d9409c1f375fcb27719ebe503fae48648b0eb737b8525722049",
+      "test_definitions": 12,
       "status": "source_present_results_not_imported"
     },
     {
@@ -15958,9 +16052,16 @@
     },
     {
       "path": "tests/test_cli_toolkit_database_csv.py",
-      "bytes": 12091,
-      "sha256": "61a26b283ebba8cf91a39075b51746593834499ba11aa05fb86365df56380402",
-      "test_definitions": 10,
+      "bytes": 31082,
+      "sha256": "1867d4ec7a269f3f63b5e8ec899d4b3be2c99cda5741ad353eaab00a98d4b8df",
+      "test_definitions": 26,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_cli_toolkit_live_update_conditions.py",
+      "bytes": 8943,
+      "sha256": "6024d13a93e9da72b4c8d8963b082861a9bdaf9c0b656df63d36b23cf93137fa",
+      "test_definitions": 5,
       "status": "source_present_results_not_imported"
     },
     {
@@ -15982,6 +16083,13 @@
       "bytes": 5000,
       "sha256": "126eee7b74ea4e8af1b6d33547840f081bd63f0400119a4c533e151bdd31ccba",
       "test_definitions": 5,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_cli_toolkit_update_bundle.py",
+      "bytes": 2929,
+      "sha256": "0232216a595bc47ea9785d9af49851cb22d4b96752e00d2d661b97479b8ad201",
+      "test_definitions": 3,
       "status": "source_present_results_not_imported"
     },
     {
@@ -16021,9 +16129,9 @@
     },
     {
       "path": "tests/test_cli_unit_templates.py",
-      "bytes": 7905,
-      "sha256": "5609d246f1c21f4e9fca580955bea1ef4a47379a065821d4ca6f02ace688f954",
-      "test_definitions": 2,
+      "bytes": 12635,
+      "sha256": "f4dd2a34d1b484777d9e9079d8886f2b8e159adb9ad25a9766fb349fd8c21e45",
+      "test_definitions": 5,
       "status": "source_present_results_not_imported"
     },
     {
@@ -16055,10 +16163,87 @@
       "status": "source_present_results_not_imported"
     },
     {
+      "path": "tests/test_cmqtt.py",
+      "bytes": 9740,
+      "sha256": "55a10b5dae4fe6e010f6badd0cd940441eee8ace8a1e72521bc79770acba6d6e",
+      "test_definitions": 11,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_cmqtt_interop.py",
+      "bytes": 8438,
+      "sha256": "627c6fc838474e6cb40cb98a0e3f8eb3565d3a3daf8dd4fcaa6c44c71de75fc3",
+      "test_definitions": 2,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_cmqtt_inventory.py",
+      "bytes": 13053,
+      "sha256": "3fa818e30a9f65550891bd7c6257fd88cbf337c19114bfb8a2f1ae7b62ccd25a",
+      "test_definitions": 8,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_cmqtt_observed_bounds.py",
+      "bytes": 13303,
+      "sha256": "c38fa717874aad5cb4e54f86efd271e59113c0921521f79833a7c3b8334f6878",
+      "test_definitions": 26,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_cmqtt_programming_methods_interop.py",
+      "bytes": 21487,
+      "sha256": "ba61510cfb4fa0200a16b5ddec3dc882d08cc3ec913c742457a738e969f6ca31",
+      "test_definitions": 3,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_cmqtt_vectors.py",
+      "bytes": 5000,
+      "sha256": "773b18c9645ee28af6451e463e0efda87ddf7de441ab748b2c37951e6652659f",
+      "test_definitions": 2,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_cni_discovery.py",
+      "bytes": 14110,
+      "sha256": "771f7b4bb4f742375fe1677c285bdbc48e467d18fe53ebe305e4eae6b9be5b40",
+      "test_definitions": 13,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_commissioning_route.py",
+      "bytes": 8086,
+      "sha256": "26e3bfb8643f7592c0abd7aa2ca5d8d13c084db710f71e56330f27e4ff966069",
+      "test_definitions": 8,
+      "status": "source_present_results_not_imported"
+    },
+    {
       "path": "tests/test_conversion.py",
       "bytes": 7459,
       "sha256": "695e3933c57bb8b822b3942ee5ff7bae55df05d7f915b5124982a69b7cb4f42b",
       "test_definitions": 6,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_conversion_guard.py",
+      "bytes": 1589,
+      "sha256": "f4bfd9d13ead9cd8bb3624f8cd9030debe65b66fab93eeedc020df4516519e33",
+      "test_definitions": 4,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_coverage_require_complete.py",
+      "bytes": 2522,
+      "sha256": "bd492a3fceea39e46b448c264e88495b175f969c57cf86036e7ce764d9a84293",
+      "test_definitions": 1,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_device_dialogs.py",
+      "bytes": 14937,
+      "sha256": "aa74ea2a11cc2c0ad02433c8c262b0fb5d6ec4866d7fcf08105ca2f986e03a09",
+      "test_definitions": 13,
       "status": "source_present_results_not_imported"
     },
     {
@@ -16080,6 +16265,27 @@
       "bytes": 25385,
       "sha256": "e79a5090ee5b74e3106c9cca71901354c2818b8bbd286c303d37e13980535e8b",
       "test_definitions": 29,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_differential_matrix.py",
+      "bytes": 60982,
+      "sha256": "656ed160bd7100a275e8382ec23be2116a07c78616ed6261be0d203030ec6f8b",
+      "test_definitions": 17,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_dlt_variant_guard.py",
+      "bytes": 1224,
+      "sha256": "d60ba3a057ff1c7f3d38a95503f61f19a3d185de98c02b9e939393b4c21efb4d",
+      "test_definitions": 4,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_duplicate_resolution.py",
+      "bytes": 2052,
+      "sha256": "6f3a3c1741a3301b7704536fb79df0d891444e9150573923babb81cfdbe98fb4",
+      "test_definitions": 5,
       "status": "source_present_results_not_imported"
     },
     {
@@ -16202,6 +16408,13 @@
       "status": "source_present_results_not_imported"
     },
     {
+      "path": "tests/test_edlt_factory_default.py",
+      "bytes": 5761,
+      "sha256": "4e93b295d1186a5c7c31f3ea93b6469615b0981bb8734317f9894146f7618c6f",
+      "test_definitions": 4,
+      "status": "source_present_results_not_imported"
+    },
+    {
       "path": "tests/test_edlt_fan.py",
       "bytes": 23582,
       "sha256": "df41dae62853a930d92ca1b4d60331040b74f96423ea14cc3f8df4aa29edb6e4",
@@ -16251,6 +16464,13 @@
       "status": "source_present_results_not_imported"
     },
     {
+      "path": "tests/test_edlt_label_audit.py",
+      "bytes": 11711,
+      "sha256": "69805974bc732aaa171f638c2d0d38f8015241aadbcbfdad26505c06d47f6e2b",
+      "test_definitions": 13,
+      "status": "source_present_results_not_imported"
+    },
+    {
       "path": "tests/test_edlt_label_clear.py",
       "bytes": 14885,
       "sha256": "01f261f24884948a4ca04d4ef8ae59a1ce86397c966a83ab266e1becdf68fed2",
@@ -16273,9 +16493,16 @@
     },
     {
       "path": "tests/test_edlt_measurement.py",
-      "bytes": 26111,
-      "sha256": "ef92237886fca8ac75d7ae539bee60fd69999e003f1c8f8f1243880395efd162",
-      "test_definitions": 10,
+      "bytes": 29622,
+      "sha256": "176c36754c5a03bba4217df4279e5741629cf890d5cfede17ce21365841b23f5",
+      "test_definitions": 12,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_edlt_measurement_culture.py",
+      "bytes": 7600,
+      "sha256": "6fc73ebbcba1045ecd17a039934b5c3a945a643d7b317d451e5c9e41e4b85a31",
+      "test_definitions": 17,
       "status": "source_present_results_not_imported"
     },
     {
@@ -16332,6 +16559,76 @@
       "bytes": 18585,
       "sha256": "84ca08aaf27d0f05303f99a2b7614a2e0555364d4093bab331c9b2d2e78184f2",
       "test_definitions": 7,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_edlt_parent_auto_cache.py",
+      "bytes": 16283,
+      "sha256": "78edf920b5abcc5afbfab438924b8c72d14d9b90af223fd04be420b2f297ec00",
+      "test_definitions": 11,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_edlt_parent_blank_reset.py",
+      "bytes": 18785,
+      "sha256": "adbce1f88ea6a6e155b5bfc564737d5ce58e883a4fec2d79eff0fac00f24d6f4",
+      "test_definitions": 9,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_edlt_parent_cache_panels.py",
+      "bytes": 9880,
+      "sha256": "87ef4b12b44bf6f6382feaf4e8bc2553c5be827f199808cda7d3592ac0fd3fc6",
+      "test_definitions": 6,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_edlt_parent_form.py",
+      "bytes": 15662,
+      "sha256": "2966d3661cbe6f972ff32cb5f79d2778d5c1bab9b4921c6e77395c7fc9bc9f64",
+      "test_definitions": 9,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_edlt_parent_metadata.py",
+      "bytes": 28174,
+      "sha256": "122d285bdc7847f0060b4a412b09851704e2e5ea8251f71f18850f78c9346786",
+      "test_definitions": 14,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_edlt_parent_mra.py",
+      "bytes": 19040,
+      "sha256": "7d8eb220c1fae208775eda427ab613256bd069498ebb58a16bfcde837ef6fef3",
+      "test_definitions": 10,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_edlt_parent_panels.py",
+      "bytes": 21429,
+      "sha256": "6ed4b046d2c16547e1f12a14c25028cb21fd14d1510e146d223a2c4fcbaf24d0",
+      "test_definitions": 9,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_edlt_parent_scene_manager.py",
+      "bytes": 13876,
+      "sha256": "72c17f5425a1432ff1a2a63142583db2f9918b78ebf6c48254ac74b1cb32a9bd",
+      "test_definitions": 7,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_edlt_parent_scene_metadata.py",
+      "bytes": 17134,
+      "sha256": "e4cce55b0abb87fd394c1fb2878fe805299847a318634d85936b523f9121b65a",
+      "test_definitions": 9,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_edlt_parent_transaction.py",
+      "bytes": 19416,
+      "sha256": "70cc9060a1912a3837b06a7ed42bb23a856e0b652baf1b17b268b3296b26b37f",
+      "test_definitions": 12,
       "status": "source_present_results_not_imported"
     },
     {
@@ -16427,9 +16724,23 @@
     },
     {
       "path": "tests/test_edlt_scene_manager.py",
-      "bytes": 27683,
-      "sha256": "d9fb4d82af2b5747b1012080524ed047d91511a1a93942ee7573a9acb65e3cd9",
-      "test_definitions": 11,
+      "bytes": 33469,
+      "sha256": "82635a5708d39a2117c96fecbda1a0d31d5a995966ae99283d7a53b35bfdadfd",
+      "test_definitions": 14,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_edlt_scene_metadata.py",
+      "bytes": 41238,
+      "sha256": "8c5bbd97072d22f8b2ebaedbe2ff2d92bda7edab04c7af813b6b51c795a6754e",
+      "test_definitions": 27,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_edlt_scene_trigger.py",
+      "bytes": 8198,
+      "sha256": "894e25e4087bf0b185fc4a446c3bc1e8b6959be2ee7d66adb875630ecad57654",
+      "test_definitions": 6,
       "status": "source_present_results_not_imported"
     },
     {
@@ -16475,6 +16786,13 @@
       "status": "source_present_results_not_imported"
     },
     {
+      "path": "tests/test_edlt_widget_groups.py",
+      "bytes": 6415,
+      "sha256": "51e2d5e434ef6d720ecd35b6ec4a2520ec9ee89f2c556d1a08894c95e0d3f164",
+      "test_definitions": 5,
+      "status": "source_present_results_not_imported"
+    },
+    {
       "path": "tests/test_enable.py",
       "bytes": 12896,
       "sha256": "254a0b58f95130e5f13bcc4ecfed06e9fb58c744dc2d34551c2d3c54d113b1bb",
@@ -16482,10 +16800,31 @@
       "status": "source_present_results_not_imported"
     },
     {
+      "path": "tests/test_event_stream.py",
+      "bytes": 1927,
+      "sha256": "63efb9485d03525ba1120f76490a60220908b0a0d24e56b5914c518e63e30857",
+      "test_definitions": 6,
+      "status": "source_present_results_not_imported"
+    },
+    {
       "path": "tests/test_events.py",
       "bytes": 4153,
       "sha256": "a7db8cdb457b2868c9cf4b5e93995ed50e4a8efe56088df8a1a7579e2acecd81",
       "test_definitions": 5,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_evidence_audit.py",
+      "bytes": 1701,
+      "sha256": "ae053f71f86cc6462047e555e56dd5c42e9f07e9378434912ee854129618aff7",
+      "test_definitions": 3,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_executable_surface.py",
+      "bytes": 3392,
+      "sha256": "7a8853bc882234141de5f13ea690e6e036a3552a45f369a06d07475ccdff3e98",
+      "test_definitions": 3,
       "status": "source_present_results_not_imported"
     },
     {
@@ -16517,6 +16856,13 @@
       "status": "source_present_results_not_imported"
     },
     {
+      "path": "tests/test_form_save_order.py",
+      "bytes": 1663,
+      "sha256": "c9d49050b8795748b8249e1252e0a920e3879599a7efd5d002a54bdb9225496e",
+      "test_definitions": 5,
+      "status": "source_present_results_not_imported"
+    },
+    {
       "path": "tests/test_inventory.py",
       "bytes": 2240,
       "sha256": "fac20c7785e72b23ed5e425ae08f5b8e24748a0f5dc7680fab4a74c7dee846ea",
@@ -16524,10 +16870,17 @@
       "status": "source_present_results_not_imported"
     },
     {
+      "path": "tests/test_label_transfer_plan.py",
+      "bytes": 1440,
+      "sha256": "f65c6c2e4be52b284b39062c44560afc4125a85a5858c5bd8de5132c92a59909",
+      "test_definitions": 4,
+      "status": "source_present_results_not_imported"
+    },
+    {
       "path": "tests/test_labels.py",
-      "bytes": 13179,
-      "sha256": "ada235e2d627eb82e9b7b730521a26b5d046084429eb2ff0240c49280068fa77",
-      "test_definitions": 10,
+      "bytes": 16058,
+      "sha256": "e9148a9de1463ffae2bb6fea3157ed5848d33c6ba0e4fcdefae6773d6518c8de",
+      "test_definitions": 13,
       "status": "source_present_results_not_imported"
     },
     {
@@ -16566,10 +16919,24 @@
       "status": "source_present_results_not_imported"
     },
     {
+      "path": "tests/test_memory_fragment_acceptance.py",
+      "bytes": 6116,
+      "sha256": "ab146cdcf2ba26f644009b408716d18d190d6b23a888ca78e69ddf6eec599804",
+      "test_definitions": 2,
+      "status": "source_present_results_not_imported"
+    },
+    {
       "path": "tests/test_native.py",
       "bytes": 11888,
       "sha256": "649633e8f05233f0576fc57c7a2b7146057609c4f71f8a3c40f2ddfdfa8dc49b",
       "test_definitions": 9,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_native_cgate_help_census.py",
+      "bytes": 8773,
+      "sha256": "d55948e713f048da8b95b3088d03e60e88527fb4485c931d8b83bab0080ebd64",
+      "test_definitions": 7,
       "status": "source_present_results_not_imported"
     },
     {
@@ -16581,8 +16948,8 @@
     },
     {
       "path": "tests/test_native_global_programming.py",
-      "bytes": 26585,
-      "sha256": "2d5cdab7deb8bebf8bc196766499c953536ecee9d0f03c48b80b97a90d6bc68b",
+      "bytes": 26764,
+      "sha256": "7dcbca8e750f07be653132b05e3faeff77f53fe992deb7c9d9cea8855ec0848a",
       "test_definitions": 15,
       "status": "source_present_results_not_imported"
     },
@@ -16608,6 +16975,20 @@
       "status": "source_present_results_not_imported"
     },
     {
+      "path": "tests/test_native_thermostat_scheduling.py",
+      "bytes": 22576,
+      "sha256": "981f67548d174225e9aa182d34089c9406fc5e0e3c6a545a83a197b9dd431338",
+      "test_definitions": 11,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_native_thermostat_scheduling_integration.py",
+      "bytes": 9584,
+      "sha256": "8003a83f020f4cbdd869fd68503f28fb2eb0bf35733678305b4d5df89dc87ac4",
+      "test_definitions": 2,
+      "status": "source_present_results_not_imported"
+    },
+    {
       "path": "tests/test_native_tls.py",
       "bytes": 2690,
       "sha256": "c7d598f0246502bdfb0637cab1cb74974eecce4b96939807997c72eb9c76282b",
@@ -16616,9 +16997,9 @@
     },
     {
       "path": "tests/test_networks.py",
-      "bytes": 7555,
-      "sha256": "13f2aa2fd78e7eb293fdad78d6f2ec6406bed916e54d20a8aa9d4e81a2e22e11",
-      "test_definitions": 7,
+      "bytes": 12997,
+      "sha256": "6e991cdf8a683a63f60787a7d7a267b023e9148066c6d95e32b2bc8a91f82652",
+      "test_definitions": 11,
       "status": "source_present_results_not_imported"
     },
     {
@@ -16626,6 +17007,13 @@
       "bytes": 17084,
       "sha256": "26877fec719cdd89efc58c79de6967bdb52285de1825bbc9fa16ba20e8b3d7f2",
       "test_definitions": 14,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_original_artifact_provenance.py",
+      "bytes": 6158,
+      "sha256": "1fc96c71e30f98654078c5458586d1496ab4134eda4c24d9bcf64f23bf7b87b8",
+      "test_definitions": 6,
       "status": "source_present_results_not_imported"
     },
     {
@@ -16640,6 +17028,13 @@
       "bytes": 10738,
       "sha256": "97b326a27ec8bb4e7de5fc98517924b1f5ee9ff8e81b90a9f469e55993ff278d",
       "test_definitions": 8,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_parity_register.py",
+      "bytes": 25045,
+      "sha256": "d9ea77da0ad05d7fbb5df4d58c0ed7a5fb6913684db2bf75eb12e5a1f6c80c1a",
+      "test_definitions": 18,
       "status": "source_present_results_not_imported"
     },
     {
@@ -16672,8 +17067,8 @@
     },
     {
       "path": "tests/test_pci_inventory.py",
-      "bytes": 19629,
-      "sha256": "ff165fc2f13b6d468d94084a46495465d0ed33c09384eaf1410017c67b177dc8",
+      "bytes": 20427,
+      "sha256": "d905f414a9e1b990f7d83dca3079d0c764ef70aa6abd666194a804153f6e60ef",
       "test_definitions": 21,
       "status": "source_present_results_not_imported"
     },
@@ -16720,6 +17115,13 @@
       "status": "source_present_results_not_imported"
     },
     {
+      "path": "tests/test_pci_routed_write.py",
+      "bytes": 10192,
+      "sha256": "aafe8207bd3fcea6f1d92408ecd29ff0c2bc5222ab3fc23462a04b0f2355e37c",
+      "test_definitions": 8,
+      "status": "source_present_results_not_imported"
+    },
+    {
       "path": "tests/test_pci_routing.py",
       "bytes": 16018,
       "sha256": "384451ed74b5ea496f51bda451933db9b6fe5e4c6beef4115b065ffe8dac2e11",
@@ -16728,9 +17130,9 @@
     },
     {
       "path": "tests/test_pci_selected_serial.py",
-      "bytes": 28397,
-      "sha256": "e2d7dcf1b22e7d74695d5639b980030b78f2b50b916af4a74e29133bff18e63e",
-      "test_definitions": 19,
+      "bytes": 31087,
+      "sha256": "4f2ff51c3c9e4dff1de2552f4832205e7fcda7b5027ad2d50797f918500956bc",
+      "test_definitions": 21,
       "status": "source_present_results_not_imported"
     },
     {
@@ -16742,15 +17144,15 @@
     },
     {
       "path": "tests/test_pci_serial_address_transport.py",
-      "bytes": 21447,
-      "sha256": "1082e24e16c7fddbc74ee3a6e2dc57f93ea23dadf9952eff1ea9ad2a4d4029ee",
+      "bytes": 22503,
+      "sha256": "1ad27f108abe6d9682e8fac1143b389c17b683bb16b9aaa3545aee080cd8723f",
       "test_definitions": 20,
       "status": "source_present_results_not_imported"
     },
     {
       "path": "tests/test_pci_serials.py",
-      "bytes": 20422,
-      "sha256": "b3576a7a7ab3d95a94133540322b80d2c0efb355840a51fbc1d2974566b4feb9",
+      "bytes": 20740,
+      "sha256": "31218ed3c4fc355d21c4f5691cebcfccddb4ec61aed706eb796b0ffa9610719e",
       "test_definitions": 18,
       "status": "source_present_results_not_imported"
     },
@@ -16759,6 +17161,13 @@
       "bytes": 29370,
       "sha256": "2cd297672d3c7792d84a11636b6c191ad5125c3c2ea02e852edb2520e5035bea",
       "test_definitions": 15,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_physical_programming.py",
+      "bytes": 17866,
+      "sha256": "4327713b35ce826ffa8fa15f901585f87bf771444a28fb16c68f26347ab9e596",
+      "test_definitions": 12,
       "status": "source_present_results_not_imported"
     },
     {
@@ -16804,6 +17213,34 @@
       "status": "source_present_results_not_imported"
     },
     {
+      "path": "tests/test_recovery_journal.py",
+      "bytes": 2269,
+      "sha256": "24d8079af1c63b4f57a0d2ba6c459cd4d99ad67ec8f5536f578d97842e1583c9",
+      "test_definitions": 6,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_relay_dimmer_logic.py",
+      "bytes": 2307,
+      "sha256": "71c28d8db2f7e99789a0bb45129a20e95b4e9773593ae7b925b7c43c19a6b50f",
+      "test_definitions": 7,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_release_gate.py",
+      "bytes": 7955,
+      "sha256": "250aece6214f7431b02e60fc65f95e32b009b6358133ab5341dd71fb700e7239",
+      "test_definitions": 4,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_release_gate_integrity.py",
+      "bytes": 18748,
+      "sha256": "efae723407501aa1d7d136d61f2aa765d2dcdac1b869a68e74783aa632af7620",
+      "test_definitions": 15,
+      "status": "source_present_results_not_imported"
+    },
+    {
       "path": "tests/test_repositories.py",
       "bytes": 10417,
       "sha256": "42713d0a1f0d7569dafcff7b8665e739d8b7817c0c218ff4285935b639637c1e",
@@ -16812,9 +17249,30 @@
     },
     {
       "path": "tests/test_rust_cgate_interop.py",
-      "bytes": 27468,
-      "sha256": "5945a25fd769991250e1125211b15cb53a15a7735c7b68f11781ff4f1a22363a",
-      "test_definitions": 13,
+      "bytes": 34571,
+      "sha256": "8108f6f7eca916223e8d31acbc02b4111944cd1b8704c2e41637b5d4dd30cee9",
+      "test_definitions": 16,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_scan_topology.py",
+      "bytes": 6902,
+      "sha256": "fda7d5b49e1bb30428842e9fa86d5bfb24899f87fa272b2f01c3f70283a5e9bd",
+      "test_definitions": 16,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_scene_binding_plan.py",
+      "bytes": 1171,
+      "sha256": "ea9b75a0fd4db416450044b067233d2408e4a054e5bd6aa5d34f438411f6d0a9",
+      "test_definitions": 2,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_scene_sequence.py",
+      "bytes": 2085,
+      "sha256": "ae6a081613b6f7c21e1e615f0d33c35c60c65670da5725596e2e9f8f38d537dd",
+      "test_definitions": 4,
       "status": "source_present_results_not_imported"
     },
     {
@@ -16822,6 +17280,13 @@
       "bytes": 10832,
       "sha256": "6439821223ce93d4e4e2bea198160472c376a88dab2983f866db8cea20bfab71",
       "test_definitions": 16,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_sensor_threshold_guard.py",
+      "bytes": 1372,
+      "sha256": "1bb534a0c3f93c3bb8d85392769d78174b81609e0eb67793a5254e01267ba63e",
+      "test_definitions": 4,
       "status": "source_present_results_not_imported"
     },
     {
@@ -16847,9 +17312,9 @@
     },
     {
       "path": "tests/test_serials.py",
-      "bytes": 21398,
-      "sha256": "b103bd0ed14e5af31b10b7c497bda28a2996d51f061d37906f4e44d581c3b919",
-      "test_definitions": 19,
+      "bytes": 22333,
+      "sha256": "ebd41763ff0e3c2b69b9f8debf9f5961c720619be088031a7145dd1306578341",
+      "test_definitions": 20,
       "status": "source_present_results_not_imported"
     },
     {
@@ -16882,8 +17347,8 @@
     },
     {
       "path": "tests/test_simulator_duplicate_addressing.py",
-      "bytes": 29055,
-      "sha256": "8dda71edd6e11759dd33fb98936f83c87446dfe2eacd12a157a515a95b1772f6",
+      "bytes": 29057,
+      "sha256": "60a8f30d8a2ff7c8c839847c99a70ea9aa6cbef1d05bc99ff2d5770847a2cf28",
       "test_definitions": 19,
       "status": "source_present_results_not_imported"
     },
@@ -16916,6 +17381,27 @@
       "status": "source_present_results_not_imported"
     },
     {
+      "path": "tests/test_template_exchange.py",
+      "bytes": 2399,
+      "sha256": "6a2c99c3a55521816985269c737e6c9fd86f82278b04a4e228c18d36b078d363",
+      "test_definitions": 6,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_template_transaction.py",
+      "bytes": 11186,
+      "sha256": "63903a9a7ab6e4f8580267b47b47c74151a15b895d607129a98918d4da178cbf",
+      "test_definitions": 8,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_template_transaction_native.py",
+      "bytes": 7683,
+      "sha256": "ce3ac6d476edc851bac0ac77b5690ca540cb8907e24c2770efe051582719c925",
+      "test_definitions": 1,
+      "status": "source_present_results_not_imported"
+    },
+    {
       "path": "tests/test_thermostat_schedule_levels.py",
       "bytes": 14711,
       "sha256": "836b64da8365100aa236506289aa5c681cc3ff6c087a9cb3e63a3d42f848b5fe",
@@ -16927,6 +17413,13 @@
       "bytes": 20996,
       "sha256": "44cb79b6d5edad78d5f3073382c8902ed266862033483ddd8a83d819b5eef49a",
       "test_definitions": 20,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_thermostat_settings_guard.py",
+      "bytes": 1904,
+      "sha256": "7615eeefd9e71870d644baefeebe641e0a0287d59ad623c1d88f18e3c8be6a0f",
+      "test_definitions": 7,
       "status": "source_present_results_not_imported"
     },
     {
@@ -16944,6 +17437,20 @@
       "status": "source_present_results_not_imported"
     },
     {
+      "path": "tests/test_thermostat_unit_load.py",
+      "bytes": 4492,
+      "sha256": "c523d31121848216f0668d513919d1c07260cb99bdd949f450f09b72495366bd",
+      "test_definitions": 5,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_timer_duration_guard.py",
+      "bytes": 1074,
+      "sha256": "a92daa9742dbc7bfb7c6dff27d711582c3f6a9cc2c086760618647ba9f9fea43",
+      "test_definitions": 3,
+      "status": "source_present_results_not_imported"
+    },
+    {
       "path": "tests/test_toolkit_about.py",
       "bytes": 10265,
       "sha256": "97d6557cc41bc4184adda8e6ddb2b6a96242e8f2be64ac77ff25d4efd916277d",
@@ -16958,10 +17465,52 @@
       "status": "source_present_results_not_imported"
     },
     {
+      "path": "tests/test_toolkit_database_csv_area.py",
+      "bytes": 5009,
+      "sha256": "4acdbf33a2790fdede33353d28e6d4ee8c3d54f3373fe2ca377f3f886a362149",
+      "test_definitions": 3,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_toolkit_database_csv_area_native.py",
+      "bytes": 6098,
+      "sha256": "dc898dfe471c9a042f1ebadbf4b60219b43de7b6383923dc1555eab50788b01f",
+      "test_definitions": 1,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_toolkit_database_csv_native.py",
+      "bytes": 13539,
+      "sha256": "7fb3285f3706480ce38e2e974fd77f0d587d943df917d76f7c226f288ac553bf",
+      "test_definitions": 11,
+      "status": "source_present_results_not_imported"
+    },
+    {
       "path": "tests/test_toolkit_database_csv_original.py",
       "bytes": 4422,
       "sha256": "dd8f9f27ed6b895254bb36454c5d0143c7f848fc9c4373dc4a03d29e2fd37217",
       "test_definitions": 5,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_toolkit_database_csv_projection.py",
+      "bytes": 14301,
+      "sha256": "0f16dab69a9bad7e701ae474cc744824ca48c615e9fde27c56bf14fe78c9b291",
+      "test_definitions": 10,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_toolkit_database_csv_selection.py",
+      "bytes": 5190,
+      "sha256": "a9b1dd7b20adadbe7bcf44463c22e1fd681629ad2b1f75fd1b6298a439196ca4",
+      "test_definitions": 7,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_toolkit_database_csv_selection_export.py",
+      "bytes": 16192,
+      "sha256": "9a705456fecd1a28404ae331269b96b35bedc9c0393bbe3639a9896b4d515f87",
+      "test_definitions": 17,
       "status": "source_present_results_not_imported"
     },
     {
@@ -17028,6 +17577,20 @@
       "status": "source_present_results_not_imported"
     },
     {
+      "path": "tests/test_toolkit_unindexed_help.py",
+      "bytes": 6782,
+      "sha256": "0506a2b0e614c583112b1ae02858b46e6a79aa02e9d1bdd5e584b33e99949878",
+      "test_definitions": 6,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_toolkit_update_bundle.py",
+      "bytes": 12172,
+      "sha256": "8fc9836286389523844450c52325e638f417c45bc7c30facb7fed727eacaebd4",
+      "test_definitions": 13,
+      "status": "source_present_results_not_imported"
+    },
+    {
       "path": "tests/test_toolkit_update_conditions.py",
       "bytes": 14258,
       "sha256": "9bece53a8aff1f89c730a264de9962111d5861ebdd1dab6a8aadcd7279b477c7",
@@ -17070,6 +17633,20 @@
       "status": "source_present_results_not_imported"
     },
     {
+      "path": "tests/test_topology_navigation.py",
+      "bytes": 1199,
+      "sha256": "19554feba1eee775c3e1ee42d77e5aa6a05c355b168644fd62472cb1d0ddaf89",
+      "test_definitions": 4,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_trigger_binding_guard.py",
+      "bytes": 1205,
+      "sha256": "244f05e052673890e5821fff1bcd6a3386e0778d1f3a6d82cd2d4eff887c14d1",
+      "test_definitions": 3,
+      "status": "source_present_results_not_imported"
+    },
+    {
       "path": "tests/test_unit_templates.py",
       "bytes": 20886,
       "sha256": "cae417d9fbb292b2ac9d48885b85574af066e82a52812ff92300208188581778",
@@ -17106,9 +17683,9 @@
     },
     {
       "path": "tests/test_wheel_acceptance.py",
-      "bytes": 21429,
-      "sha256": "a6f4413bdf6071dfb64c2ae1063476151727e1076129a91ef0c749d3c26b615b",
-      "test_definitions": 17,
+      "bytes": 30123,
+      "sha256": "bd796f9ef723e98cd9ad2cbc16d9ab0e6f085b6550977b1cf6b326267adb93eb",
+      "test_definitions": 22,
       "status": "source_present_results_not_imported"
     },
     {
@@ -17123,6 +17700,20 @@
       "bytes": 13773,
       "sha256": "60efd2481a75cc2fd6c86ae98730b5e519f03f7c0356e3748e9c003cfb38e7f5",
       "test_definitions": 16,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_windows_csv_encoding.py",
+      "bytes": 2829,
+      "sha256": "e23c6125348f25a4d070f031854650bb36a04da62b727927a99b1af48cf5d746",
+      "test_definitions": 3,
+      "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_windows_csv_selection.py",
+      "bytes": 3835,
+      "sha256": "ad18ab13afeda290477d4212de001fb815155e273e27cdfafcb05203c8a4714d",
+      "test_definitions": 2,
       "status": "source_present_results_not_imported"
     },
     {
@@ -17152,6 +17743,13 @@
       "sha256": "79abab327a458505191afa9f4b4bd326c218da74d67a813912dedc4039ac3919",
       "test_definitions": 9,
       "status": "source_present_results_not_imported"
+    },
+    {
+      "path": "tests/test_wireless_commissioning.py",
+      "bytes": 2419,
+      "sha256": "88acafc19abb0e688cf892900cfe5841eaddbc7b49b3034d279188569870a3f3",
+      "test_definitions": 9,
+      "status": "source_present_results_not_imported"
     }
   ],
   "unindexed_html": [
@@ -17162,7 +17760,43 @@
       "headings": [],
       "anchors": [],
       "linked_topic_files": [],
-      "external_product_mentions": []
+      "external_product_mentions": [],
+      "id": "help-unindexed:dhtml_toc_template.htm",
+      "source_path": "research/vendor/toolkit-help/dhtml_toc_template.htm",
+      "bytes": 1353,
+      "reviewed_role": "help_navigation_template",
+      "review_status": "static_markup_reviewed_runtime_unassessed",
+      "markup": {
+        "anchor_elements": 0,
+        "script_elements": 3,
+        "inline_script_content": 0,
+        "inline_event_attributes": 0,
+        "form_controls": 0,
+        "frame_elements": 0
+      },
+      "asset_sources": [
+        {
+          "path": "research/vendor/toolkit-help/default.css",
+          "bytes": 1672,
+          "sha256": "23d455ad8acc70e26108ae7f2dd9e94a49c8e431809ba526181ae7fe79da6202"
+        },
+        {
+          "path": "research/vendor/toolkit-help/helpman_settings.js",
+          "bytes": 167,
+          "sha256": "a62ddeba486d0515ec6fd7b68342b48f6e0facad217e182eeb32def4bf496bb0"
+        },
+        {
+          "path": "research/vendor/toolkit-help/helpman_topicinit.js",
+          "bytes": 16513,
+          "sha256": "b5a99fa32e10a966e32616f348e52e6e4edfa59f29f95ea132e7ae0d3734d527"
+        },
+        {
+          "path": "research/vendor/toolkit-help/jquery.js",
+          "bytes": 91556,
+          "sha256": "d16d07a0353405fcec95f7efc50a2621bc7425f9a5e8895078396fb0dc460c4f"
+        }
+      ],
+      "missing_html_targets": []
     },
     {
       "file": "html_frameset.htm",
@@ -17171,7 +17805,43 @@
       "headings": [],
       "anchors": [],
       "linked_topic_files": [],
-      "external_product_mentions": []
+      "external_product_mentions": [],
+      "id": "help-unindexed:html_frameset.htm",
+      "source_path": "research/vendor/toolkit-help/html_frameset.htm",
+      "bytes": 918,
+      "reviewed_role": "help_container_template",
+      "review_status": "static_markup_reviewed_runtime_unassessed",
+      "markup": {
+        "anchor_elements": 0,
+        "script_elements": 3,
+        "inline_script_content": 0,
+        "inline_event_attributes": 0,
+        "form_controls": 0,
+        "frame_elements": 0
+      },
+      "asset_sources": [
+        {
+          "path": "research/vendor/toolkit-help/default.css",
+          "bytes": 1672,
+          "sha256": "23d455ad8acc70e26108ae7f2dd9e94a49c8e431809ba526181ae7fe79da6202"
+        },
+        {
+          "path": "research/vendor/toolkit-help/helpman_settings.js",
+          "bytes": 167,
+          "sha256": "a62ddeba486d0515ec6fd7b68342b48f6e0facad217e182eeb32def4bf496bb0"
+        },
+        {
+          "path": "research/vendor/toolkit-help/helpman_topicinit.js",
+          "bytes": 16513,
+          "sha256": "b5a99fa32e10a966e32616f348e52e6e4edfa59f29f95ea132e7ae0d3734d527"
+        },
+        {
+          "path": "research/vendor/toolkit-help/jquery.js",
+          "bytes": 91556,
+          "sha256": "d16d07a0353405fcec95f7efc50a2621bc7425f9a5e8895078396fb0dc460c4f"
+        }
+      ],
+      "missing_html_targets": []
     },
     {
       "file": "index_template.htm",
@@ -17180,7 +17850,43 @@
       "headings": [],
       "anchors": [],
       "linked_topic_files": [],
-      "external_product_mentions": []
+      "external_product_mentions": [],
+      "id": "help-unindexed:index_template.htm",
+      "source_path": "research/vendor/toolkit-help/index_template.htm",
+      "bytes": 1357,
+      "reviewed_role": "help_navigation_template",
+      "review_status": "static_markup_reviewed_runtime_unassessed",
+      "markup": {
+        "anchor_elements": 0,
+        "script_elements": 3,
+        "inline_script_content": 0,
+        "inline_event_attributes": 0,
+        "form_controls": 0,
+        "frame_elements": 0
+      },
+      "asset_sources": [
+        {
+          "path": "research/vendor/toolkit-help/default.css",
+          "bytes": 1672,
+          "sha256": "23d455ad8acc70e26108ae7f2dd9e94a49c8e431809ba526181ae7fe79da6202"
+        },
+        {
+          "path": "research/vendor/toolkit-help/helpman_settings.js",
+          "bytes": 167,
+          "sha256": "a62ddeba486d0515ec6fd7b68342b48f6e0facad217e182eeb32def4bf496bb0"
+        },
+        {
+          "path": "research/vendor/toolkit-help/helpman_topicinit.js",
+          "bytes": 16513,
+          "sha256": "b5a99fa32e10a966e32616f348e52e6e4edfa59f29f95ea132e7ae0d3734d527"
+        },
+        {
+          "path": "research/vendor/toolkit-help/jquery.js",
+          "bytes": 91556,
+          "sha256": "d16d07a0353405fcec95f7efc50a2621bc7425f9a5e8895078396fb0dc460c4f"
+        }
+      ],
+      "missing_html_targets": []
     },
     {
       "file": "tab_index.htm",
@@ -17191,7 +17897,60 @@
       "linked_topic_files": [
         "toc.htm"
       ],
-      "external_product_mentions": []
+      "external_product_mentions": [],
+      "id": "help-unindexed:tab_index.htm",
+      "source_path": "research/vendor/toolkit-help/tab_index.htm",
+      "bytes": 1795,
+      "reviewed_role": "help_navigation_tab",
+      "review_status": "static_markup_reviewed_runtime_unassessed",
+      "markup": {
+        "anchor_elements": 1,
+        "script_elements": 3,
+        "inline_script_content": 0,
+        "inline_event_attributes": 0,
+        "form_controls": 0,
+        "frame_elements": 0
+      },
+      "asset_sources": [
+        {
+          "path": "research/vendor/toolkit-help/contents2.gif",
+          "bytes": 1058,
+          "sha256": "16a55252636618858f3209f2e610ab7d3d858a55c078761eac2e75df93390150"
+        },
+        {
+          "path": "research/vendor/toolkit-help/default.css",
+          "bytes": 1672,
+          "sha256": "23d455ad8acc70e26108ae7f2dd9e94a49c8e431809ba526181ae7fe79da6202"
+        },
+        {
+          "path": "research/vendor/toolkit-help/helpman_settings.js",
+          "bytes": 167,
+          "sha256": "a62ddeba486d0515ec6fd7b68342b48f6e0facad217e182eeb32def4bf496bb0"
+        },
+        {
+          "path": "research/vendor/toolkit-help/helpman_topicinit.js",
+          "bytes": 16513,
+          "sha256": "b5a99fa32e10a966e32616f348e52e6e4edfa59f29f95ea132e7ae0d3734d527"
+        },
+        {
+          "path": "research/vendor/toolkit-help/index2.gif",
+          "bytes": 1008,
+          "sha256": "d051d74be71d84c63fafb50c838080f93c684e79532708db0bdb28010c8503de"
+        },
+        {
+          "path": "research/vendor/toolkit-help/jquery.js",
+          "bytes": 91556,
+          "sha256": "d16d07a0353405fcec95f7efc50a2621bc7425f9a5e8895078396fb0dc460c4f"
+        },
+        {
+          "path": "research/vendor/toolkit-help/tail.gif",
+          "bytes": 926,
+          "sha256": "3e6bfbb644c7c255d5da3759a9ba0e582c34e602b58d740323fa5c8294deef58"
+        }
+      ],
+      "missing_html_targets": [
+        "toc.htm"
+      ]
     },
     {
       "file": "tab_toc.htm",
@@ -17203,7 +17962,61 @@
         "indexpage.htm",
         "toc.htm"
       ],
-      "external_product_mentions": []
+      "external_product_mentions": [],
+      "id": "help-unindexed:tab_toc.htm",
+      "source_path": "research/vendor/toolkit-help/tab_toc.htm",
+      "bytes": 1826,
+      "reviewed_role": "help_navigation_tab",
+      "review_status": "static_markup_reviewed_runtime_unassessed",
+      "markup": {
+        "anchor_elements": 2,
+        "script_elements": 3,
+        "inline_script_content": 0,
+        "inline_event_attributes": 0,
+        "form_controls": 0,
+        "frame_elements": 0
+      },
+      "asset_sources": [
+        {
+          "path": "research/vendor/toolkit-help/contents1.gif",
+          "bytes": 1057,
+          "sha256": "14258fe37af9ab4143a7180f1f8b51819a06102faacdf4f2eaa95e1e9fcc9fb8"
+        },
+        {
+          "path": "research/vendor/toolkit-help/default.css",
+          "bytes": 1672,
+          "sha256": "23d455ad8acc70e26108ae7f2dd9e94a49c8e431809ba526181ae7fe79da6202"
+        },
+        {
+          "path": "research/vendor/toolkit-help/helpman_settings.js",
+          "bytes": 167,
+          "sha256": "a62ddeba486d0515ec6fd7b68342b48f6e0facad217e182eeb32def4bf496bb0"
+        },
+        {
+          "path": "research/vendor/toolkit-help/helpman_topicinit.js",
+          "bytes": 16513,
+          "sha256": "b5a99fa32e10a966e32616f348e52e6e4edfa59f29f95ea132e7ae0d3734d527"
+        },
+        {
+          "path": "research/vendor/toolkit-help/index1.gif",
+          "bytes": 1008,
+          "sha256": "901adf594b2e8196327657e7eb4072bb154e3a961427f3546e4c9c7754fc3d88"
+        },
+        {
+          "path": "research/vendor/toolkit-help/jquery.js",
+          "bytes": 91556,
+          "sha256": "d16d07a0353405fcec95f7efc50a2621bc7425f9a5e8895078396fb0dc460c4f"
+        },
+        {
+          "path": "research/vendor/toolkit-help/tail.gif",
+          "bytes": 926,
+          "sha256": "3e6bfbb644c7c255d5da3759a9ba0e582c34e602b58d740323fa5c8294deef58"
+        }
+      ],
+      "missing_html_targets": [
+        "indexpage.htm",
+        "toc.htm"
+      ]
     },
     {
       "file": "toc_template.htm",
@@ -17212,7 +18025,43 @@
       "headings": [],
       "anchors": [],
       "linked_topic_files": [],
-      "external_product_mentions": []
+      "external_product_mentions": [],
+      "id": "help-unindexed:toc_template.htm",
+      "source_path": "research/vendor/toolkit-help/toc_template.htm",
+      "bytes": 1355,
+      "reviewed_role": "help_navigation_template",
+      "review_status": "static_markup_reviewed_runtime_unassessed",
+      "markup": {
+        "anchor_elements": 0,
+        "script_elements": 3,
+        "inline_script_content": 0,
+        "inline_event_attributes": 0,
+        "form_controls": 0,
+        "frame_elements": 0
+      },
+      "asset_sources": [
+        {
+          "path": "research/vendor/toolkit-help/default.css",
+          "bytes": 1672,
+          "sha256": "23d455ad8acc70e26108ae7f2dd9e94a49c8e431809ba526181ae7fe79da6202"
+        },
+        {
+          "path": "research/vendor/toolkit-help/helpman_settings.js",
+          "bytes": 167,
+          "sha256": "a62ddeba486d0515ec6fd7b68342b48f6e0facad217e182eeb32def4bf496bb0"
+        },
+        {
+          "path": "research/vendor/toolkit-help/helpman_topicinit.js",
+          "bytes": 16513,
+          "sha256": "b5a99fa32e10a966e32616f348e52e6e4edfa59f29f95ea132e7ae0d3734d527"
+        },
+        {
+          "path": "research/vendor/toolkit-help/jquery.js",
+          "bytes": 91556,
+          "sha256": "d16d07a0353405fcec95f7efc50a2621bc7425f9a5e8895078396fb0dc460c4f"
+        }
+      ],
+      "missing_html_targets": []
     }
   ],
   "topics": [

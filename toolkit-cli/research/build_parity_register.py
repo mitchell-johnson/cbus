@@ -394,12 +394,21 @@ def build() -> tuple[dict, dict]:
             }
         )
     for row in surface["unindexed_html"]:
+        if row.get("id") != f"help-unindexed:{row['file']}":
+            raise ValueError(f"Unindexed Toolkit help ID changed: {row['file']}")
+        if row.get("review_status") != "static_markup_reviewed_runtime_unassessed":
+            raise ValueError(f"Unindexed Toolkit help review status changed: {row['file']}")
         scope_items.append(
             {
                 "id": f"scope:unindexed:{row['file']}",
                 "kind": "unindexed_html",
-                "source_id": row["file"],
+                "source_id": row["id"],
                 "source_sha256": row["sha256"],
+                "static_role": row["reviewed_role"],
+                "review_status": row["review_status"],
+                "source_path": row["source_path"],
+                "source_asset_sha256": canonical_digest(row["asset_sources"]),
+                "missing_html_targets": row["missing_html_targets"],
                 "obligation_ids": obligation_ids(["toolkit-surface-census"]),
                 "disposition": "pending_analysis",
             }
@@ -556,6 +565,9 @@ def build() -> tuple[dict, dict]:
         "purpose": "Provisional exhaustive source accounting; not yet a deduplicated functional denominator or acceptance claim.",
         "source_digests": {
             "toolkit_surface": digest(SURFACE_PATH),
+            "unindexed_help_review": sha256(
+                json.dumps(surface["unindexed_html"], ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            ).hexdigest(),
             "toolkit_executable_surface": digest(EXECUTABLE_SURFACE_PATH),
             "toolkit_executable_binary": executable["sources"]["executable"]["sha256"],
             "toolkit_map": executable["sources"]["map"]["sha256"],

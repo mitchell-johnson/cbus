@@ -26,6 +26,37 @@ ROOT = Path(__file__).resolve().parents[1]
 HARDWARE_ROOTS = ("739.htm", "740.htm", "13689.htm", "2901.htm", "5407.htm",
                   "16300.htm", "1056.htm", "693.htm", "1765.htm")
 
+# These six files are absent from Toolkit Help.hhc in the pinned 1.18 release.
+# The hashes bind the reviewed static classification to exact original bytes;
+# a changed or newly unindexed file must be reviewed rather than inherited.
+UNINDEXED_HELP_REVIEW = {
+    "dhtml_toc_template.htm": ("help_navigation_template", "7aea2db73e94386e3ebd0101a0eb0b3892b3b6770a9bcf67902eb0dced0c884b"),
+    "html_frameset.htm": ("help_container_template", "143ea597950f2a1d59baee5c8a8efc7e1c2f526f969b8d473b0b1fff4cd4d9eb"),
+    "index_template.htm": ("help_navigation_template", "89691d756dea9db1cc846ab0ed1b1c55ac51dff3a709514ccde5b0dcca740b9b"),
+    "tab_index.htm": ("help_navigation_tab", "2eb1c93fb8c4b9641fc554a280e074586b8f6c284f7cf127b660094f2194091f"),
+    "tab_toc.htm": ("help_navigation_tab", "b3c6c2ef5729dc0618d0d717ecbd0a35dc879ed5a17ccc51978ea000fa47ded9"),
+    "toc_template.htm": ("help_navigation_template", "d51a40191f9486fb77f10099f18a948f3f17ae15042f01a309710a085e165dfb"),
+}
+UNINDEXED_HELP_ASSET_REVIEW = {
+    "contents1.gif": "14258fe37af9ab4143a7180f1f8b51819a06102faacdf4f2eaa95e1e9fcc9fb8",
+    "contents2.gif": "16a55252636618858f3209f2e610ab7d3d858a55c078761eac2e75df93390150",
+    "default.css": "23d455ad8acc70e26108ae7f2dd9e94a49c8e431809ba526181ae7fe79da6202",
+    "helpman_settings.js": "a62ddeba486d0515ec6fd7b68342b48f6e0facad217e182eeb32def4bf496bb0",
+    "helpman_topicinit.js": "b5a99fa32e10a966e32616f348e52e6e4edfa59f29f95ea132e7ae0d3734d527",
+    "index1.gif": "901adf594b2e8196327657e7eb4072bb154e3a961427f3546e4c9c7754fc3d88",
+    "index2.gif": "d051d74be71d84c63fafb50c838080f93c684e79532708db0bdb28010c8503de",
+    "jquery.js": "d16d07a0353405fcec95f7efc50a2621bc7425f9a5e8895078396fb0dc460c4f",
+    "tail.gif": "3e6bfbb644c7c255d5da3759a9ba0e582c34e602b58d740323fa5c8294deef58",
+}
+UNINDEXED_HELP_MISSING_TARGETS = {
+    "dhtml_toc_template.htm": [],
+    "html_frameset.htm": [],
+    "index_template.htm": [],
+    "tab_index.htm": ["toc.htm"],
+    "tab_toc.htm": ["indexpage.htm", "toc.htm"],
+    "toc_template.htm": [],
+}
+
 # These are reviewed HHC roots, not guesses based on product terminology. The
 # generator fails if a selected root disappears. Families intentionally overlap.
 FAMILY_RULES = (
@@ -215,6 +246,109 @@ class PageParser(HTMLParser):
             self.buffer = []
 
 
+class HelpShellParser(HTMLParser):
+    """Count shell markup and named assets without copying vendor HTML or JS."""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.tags = Counter()
+        self.asset_names = set()
+        self.inline_event_attributes = 0
+        self.inline_script_content = 0
+        self.in_script = False
+
+    def handle_starttag(self, tag, attrs):
+        self.tags[tag] += 1
+        values = dict(attrs)
+        self.inline_event_attributes += sum(name.lower().startswith("on") for name, _ in attrs)
+        if tag == "script":
+            self.in_script = True
+        field = "src" if tag in {"script", "img"} else "href" if tag == "link" else None
+        if field and values.get(field):
+            reference = urlsplit(values[field])
+            name = unquote(reference.path)
+            if (reference.scheme or reference.netloc or reference.query or reference.fragment
+                    or not re.fullmatch(r"[A-Za-z0-9_.-]+", name)):
+                raise ValueError("Unindexed help shell has an unsafe asset reference")
+            self.asset_names.add(name)
+
+    def handle_startendtag(self, tag, attrs):
+        self.handle_starttag(tag, attrs)
+        if tag == "script":
+            self.in_script = False
+
+    def handle_data(self, data):
+        if self.in_script and data.strip():
+            self.inline_script_content += 1
+
+    def handle_endtag(self, tag):
+        if tag == "script":
+            self.in_script = False
+
+
+def inventory_unindexed_help(help_dir, pages, topic_ids, review=UNINDEXED_HELP_REVIEW,
+                             asset_review=UNINDEXED_HELP_ASSET_REVIEW,
+                             missing_review=UNINDEXED_HELP_MISSING_TARGETS):
+    """Inventory the pinned unindexed help shell and its local asset edges."""
+    names = {name for name in pages if "help:" + name not in topic_ids}
+    if names != set(review):
+        raise ValueError("Unindexed help files differ from the reviewed six-file set")
+    if names != set(missing_review):
+        raise ValueError("Unindexed help target review differs from source set")
+    rows = []
+    observed_asset_names = set()
+    for name in sorted(names):
+        role, reviewed_sha256 = review[name]
+        path = help_dir / name
+        data = path.read_bytes()
+        if digest(data) != reviewed_sha256 or pages[name]["sha256"] != reviewed_sha256:
+            raise ValueError("Unindexed help source changed: " + name)
+        parser = HelpShellParser()
+        parser.feed(data.decode("cp1252"))
+        parser.close()
+        markup = {
+            "anchor_elements": parser.tags["a"],
+            "script_elements": parser.tags["script"],
+            "inline_script_content": parser.inline_script_content,
+            "inline_event_attributes": parser.inline_event_attributes,
+            "form_controls": sum(parser.tags[tag] for tag in ("form", "input", "button", "select", "textarea")),
+            "frame_elements": parser.tags["frame"] + parser.tags["iframe"] + parser.tags["frameset"],
+        }
+        if markup["inline_script_content"] or markup["inline_event_attributes"] or markup["form_controls"]:
+            raise ValueError("Unindexed help shell markup needs renewed review: " + name)
+        assets = []
+        for asset_name in sorted(parser.asset_names):
+            observed_asset_names.add(asset_name)
+            if asset_name not in asset_review:
+                raise ValueError("Unindexed help shell has an unreviewed asset: " + asset_name)
+            asset_path = help_dir / asset_name
+            if not asset_path.is_file() or not asset_path.resolve().is_relative_to(help_dir.resolve()):
+                raise ValueError("Unindexed help shell asset is unavailable: " + asset_name)
+            asset_data = asset_path.read_bytes()
+            if digest(asset_data) != asset_review[asset_name]:
+                raise ValueError("Unindexed help shell asset changed: " + asset_name)
+            assets.append({"path": "research/vendor/toolkit-help/" + asset_name,
+                           "bytes": len(asset_data), "sha256": digest(asset_data)})
+        row = dict(pages[name])
+        row.update({
+            "id": "help-unindexed:" + name,
+            "source_path": "research/vendor/toolkit-help/" + name,
+            "bytes": len(data),
+            "reviewed_role": role,
+            "review_status": "static_markup_reviewed_runtime_unassessed",
+            "markup": markup,
+            "asset_sources": assets,
+            "missing_html_targets": sorted(target for target in row["linked_topic_files"]
+                                           if not (help_dir / target).is_file()),
+        })
+        if row["missing_html_targets"] != missing_review[name]:
+            raise ValueError("Unindexed help shell generated targets changed: " + name)
+        rows.append(row)
+    if observed_asset_names != set(asset_review):
+        raise ValueError("Unindexed help shell asset set changed")
+    return rows
+
+
 def parse_contents(path):
     parser = ContentsParser()
     parser.feed(path.read_text(encoding="cp1252"))
@@ -382,7 +516,7 @@ def build(help_dir, command_path):
                 extra_wrappers.append({"command": name, "source": ref,
                                        "status": "wrapper_not_in_public_reference"})
     raw_reference = source_symbols["src/cbus_toolkit/cli.py"]["_cgate"]
-    unindexed = [row for filename, row in pages.items() if "help:" + filename not in by_id]
+    unindexed = inventory_unindexed_help(help_dir, pages, by_id)
     branches = [{"topic_id": t["id"], "title": t["title"], "topic_count": len(descendants(t["id"]))}
                 for t in topics if t["parent_id"] is None]
     command_families = []
@@ -448,6 +582,7 @@ def build(help_dir, command_path):
             "Every topic and public command starts unassessed. No test result is inferred from source files; no functional coverage percentage is computed.",
             "A complete parity claim also requires controls/branches in the executable, undocumented/internal commands, external tool boundaries, device/firmware variants and real bus effects beyond this documentation census.",
             "Only short topic/heading names, product mentions, IDs, paths, line numbers and hashes are emitted. Vendor prose, images and command descriptions remain local.",
+            "The six unindexed help-shell files have reviewed static roles and exact source hashes. Their referenced local assets are hash-bound, but runtime script behavior and missing generated HTML targets remain unassessed.",
         ],
         "counts": {
             "indexed_topics": len(topics), "indexed_topic_files": len({t["file"] for t in topics}),
@@ -525,10 +660,17 @@ def markdown(data):
             "No acceptance results are imported into this ledger, so all topic and command acceptance states are `unassessed`.", "",
             "## Counting rules", ""]
     rows.extend("- " + text for text in data["scope_rules"])
-    rows.extend(["", "The " + str(counts["unindexed_html_files"]) + " HTML files outside the navigation are help-frame/index templates, "
-                 "not six additional established user functions. The JSON records their titles and hashes. "
+    rows.extend(["", "The " + str(counts["unindexed_html_files"]) + " HTML files outside the navigation are reviewed help-shell templates and tabs, "
+                 "not six additional established Toolkit functions. The JSON records stable IDs, exact source hashes, static markup counts, asset hashes and unresolved links. "
                  "Every indexed topic has its navigation ancestry, source file and contents line, HTML title, short headings, anchors, "
-                 "local topic links and source hash.", "", "## Main help branches", "",
+                 "local topic links and source hash.", "", "## Unindexed help shell", "",
+                 "This classification comes from the pinned HTML bytes. It does not execute the shared JavaScript assets or decide a functional exclusion. "
+                 "`toc.htm` and `indexpage.htm` are referenced by the tab pages but absent from the extracted HTML set; that runtime path remains unassessed.", "",
+                 "| Stable ID | Static role | Missing HTML targets |", "| --- | --- | --- |"])
+    rows.extend("| `" + row["id"] + "` | `" + row["reviewed_role"] + "` | " +
+                (", ".join("`" + name + "`" for name in row["missing_html_targets"]) or "—") + " |"
+                for row in data["unindexed_html"])
+    rows.extend(["", "## Main help branches", "",
                  "| Branch | Topics including branch |", "| --- | ---: |"])
     rows.extend("| " + link(r["topic_id"]) + " | " + str(r["topic_count"]) + " |" for r in data["top_level_navigation"])
     rows.extend(["", "## Toolkit navigation and menu", "", "These are the actual navigation-tree and main-menu help subtrees.", ""])
@@ -614,6 +756,46 @@ def validate(data):
         raise ValueError("Generator must not invent acceptance evidence")
     if any("help:" + row["file"] in ids for row in data["local_topic_link_validation"]["missing_targets"]):
         raise ValueError("Help HTML contains unresolved local topic links")
+    unindexed = data["unindexed_html"]
+    if {row.get("file") for row in unindexed} != set(UNINDEXED_HELP_REVIEW) or len(unindexed) != len(UNINDEXED_HELP_REVIEW):
+        raise ValueError("Unindexed help shell differs from reviewed six-file set")
+    if data["counts"]["unindexed_html_files"] != len(unindexed):
+        raise ValueError("Unindexed help shell count changed")
+    for row in unindexed:
+        name = row["file"]
+        role, reviewed_sha256 = UNINDEXED_HELP_REVIEW[name]
+        if (row.get("id") != "help-unindexed:" + name
+                or row.get("source_path") != "research/vendor/toolkit-help/" + name
+                or row.get("sha256") != reviewed_sha256
+                or row.get("reviewed_role") != role
+                or row.get("review_status") != "static_markup_reviewed_runtime_unassessed"):
+            raise ValueError("Unindexed help shell source or role changed: " + name)
+        if not isinstance(row.get("bytes"), int) or row["bytes"] <= 0:
+            raise ValueError("Unindexed help shell size is invalid: " + name)
+        assets = row.get("asset_sources")
+        if (not isinstance(assets, list)
+                or not all(isinstance(asset, dict) for asset in assets)
+                or len(assets) != len({asset.get("path") for asset in assets})):
+            raise ValueError("Unindexed help shell assets are invalid: " + name)
+        for asset in assets:
+            if (not isinstance(asset, dict)
+                    or not re.fullmatch(r"research/vendor/toolkit-help/[A-Za-z0-9_.-]+", asset.get("path", ""))
+                    or not isinstance(asset.get("bytes"), int) or asset["bytes"] <= 0
+                    or not re.fullmatch(r"[0-9a-f]{64}", asset.get("sha256", ""))):
+                raise ValueError("Unindexed help shell asset source is invalid: " + name)
+            if asset["sha256"] != UNINDEXED_HELP_ASSET_REVIEW.get(Path(asset["path"]).name):
+                raise ValueError("Unindexed help shell asset hash changed: " + name)
+        missing = row.get("missing_html_targets")
+        if (not isinstance(missing, list) or missing != sorted(set(missing))
+                or not set(missing).issubset(row["linked_topic_files"])
+                or missing != UNINDEXED_HELP_MISSING_TARGETS[name]):
+            raise ValueError("Unindexed help shell target evidence is invalid: " + name)
+        markup = row.get("markup")
+        if (not isinstance(markup, dict)
+                or markup.get("inline_script_content") != 0
+                or markup.get("inline_event_attributes") != 0
+                or markup.get("form_controls") != 0):
+            raise ValueError("Unindexed help shell static review changed: " + name)
 
 
 def self_test():

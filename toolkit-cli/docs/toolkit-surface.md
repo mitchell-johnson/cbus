@@ -15,8 +15,22 @@ The exact Toolkit help navigation contains **3767 topics** in **21 branches**. T
 - Every topic and public command starts unassessed. No test result is inferred from source files; no functional coverage percentage is computed.
 - A complete parity claim also requires controls/branches in the executable, undocumented/internal commands, external tool boundaries, device/firmware variants and real bus effects beyond this documentation census.
 - Only short topic/heading names, product mentions, IDs, paths, line numbers and hashes are emitted. Vendor prose, images and command descriptions remain local.
+- The six unindexed help-shell files have reviewed static roles and exact source hashes. Their referenced local assets are hash-bound, but runtime script behavior and missing generated HTML targets remain unassessed.
 
-The 6 HTML files outside the navigation are help-frame/index templates, not six additional established user functions. The JSON records their titles and hashes. Every indexed topic has its navigation ancestry, source file and contents line, HTML title, short headings, anchors, local topic links and source hash.
+The 6 HTML files outside the navigation are reviewed help-shell templates and tabs, not six additional established Toolkit functions. The JSON records stable IDs, exact source hashes, static markup counts, asset hashes and unresolved links. Every indexed topic has its navigation ancestry, source file and contents line, HTML title, short headings, anchors, local topic links and source hash.
+
+## Unindexed help shell
+
+This classification comes from the pinned HTML bytes. It does not execute the shared JavaScript assets or decide a functional exclusion. `toc.htm` and `indexpage.htm` are referenced by the tab pages but absent from the extracted HTML set; that runtime path remains unassessed.
+
+| Stable ID | Static role | Missing HTML targets |
+| --- | --- | --- |
+| `help-unindexed:dhtml_toc_template.htm` | `help_navigation_template` | — |
+| `help-unindexed:html_frameset.htm` | `help_container_template` | — |
+| `help-unindexed:index_template.htm` | `help_navigation_template` | — |
+| `help-unindexed:tab_index.htm` | `help_navigation_tab` | `toc.htm` |
+| `help-unindexed:tab_toc.htm` | `help_navigation_tab` | `indexpage.htm`, `toc.htm` |
+| `help-unindexed:toc_template.htm` | `help_navigation_template` | — |
 
 ## Main help branches
 
@@ -408,6 +422,5 @@ Source snapshots below make this census reproducible. Python source/test hashes 
 | [research/vendor/cgate/app/help/cmds.txt](../research/vendor/cgate/app/help/cmds.txt) | `8e2ee745875de77b1aef24bfeefc669761500ff493ec3d7e7b7c57318af492d3` |
 | [research/vendor/cgate/app/unitspec/cbusunits.xml](../research/vendor/cgate/app/unitspec/cbusunits.xml) | `c134c752fe4ef62a659c4480cd6702dffcc0096a59b4b0b336b5c383dbea6fe7` |
 | [research/vendor/cgate/app/cgate.jar](../research/vendor/cgate/app/cgate.jar) | `3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630` |
-| [research/vendor/toolkit/app/Toolkit Help.chm](../research/vendor/toolkit/app/Toolkit Help.chm) | `a189775cc95c426d0c55218f82951f9701b328e65b5dacbcfea457ed410511ab` |
 
 Historical backend observation: `PROJECT REPAIR` returned 408 for the repository selected in the [native project probe](native-project-acceptance.json). That probe records 3 rejected repair attempts. This is not a limitation established for every repository type or for the currently running service. The separate [project repair research](project-repair-native.md) distinguishes SQLite and XML repository behavior. [Portable XML repair](project-repair.md) has separate original-code, native-load and CLI file-boundary acceptance; these results do not change this documentation census's unassessed topic states.

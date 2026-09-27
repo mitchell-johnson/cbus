@@ -18,6 +18,16 @@ contract inventory; historical wheels without them can never claim full parity.
 
 This page covers every area in [capabilities.json](../src/cbus_toolkit/capabilities.json), including completed functions inside unfinished areas. The [README](../README.md) gives command examples, and each linked feature document describes its accepted inputs and tests. The separate [surface census](toolkit-surface.md) inventories all 3,767 indexed help topics and 209 public C-Gate command blocks. `cgate exec` and `cgate run` can forward the selected service's raw command surface, but forwarding and the 56 mapped typed-wrapper candidates do not establish typed Toolkit workflow, native-server or hardware acceptance; topic and command acceptance in the census remains unassessed.
 
+The six HTML files outside the help navigation now have stable `help-unindexed:`
+IDs, exact original-file hashes, reviewed static help-shell roles and hashes for
+their nine distinct local asset dependencies. Their markup contains no form
+controls, inline script bodies or inline event attributes. The two tab pages
+refer to `toc.htm` and `indexpage.htm`, which are absent from the extracted
+HTML set. Shared JavaScript runtime behavior, those generated targets and any
+functional exclusion remain unassessed; all six scope items stay open in the
+parity register. This narrows the documentation census without making a
+functionality percentage available.
+
 The [27 September implementation review and path to 100%](../../docs/parity-review-and-roadmap.md)
 maps all 39 rows to 59 tracked work items, a first delivery batch, dependencies
 and acceptance gates through 100%. Work item counts are not functionality
@@ -83,7 +93,7 @@ Other feature-specific acceptance, including Windows, native C-Gate, transport c
 | Native projects — `native-cgate3-projects` | Create/read/delete, save/reload, copy, archive, restore and rename native projects; ZIP/GZ/DB archives; read-only [repository discovery](repositories.md). Retained [native evidence](native-project-acceptance.json) currently records archive, restore and rename/readback behavior. | Retained native-result evidence for create/read/delete/save/reload/copy; full Toolkit workflow comparison and automatic repository switching. |
 | C-Gate transport — `cgate-command-transport` | TCP, verified TLS/mutual TLS, tagged responses, events, here documents, command batches, deadlines, partial errors and first-error preservation. [TLS](native-tls.md), [cleanup](cgate-cleanup.md). | Each command's effects and complete workflows require their own acceptance. |
 | Vendor catalogue inventory — `vendor-catalog-inventory` | Extract and enumerate the vendor catalogue, unit profiles and schemas. [Inventory](vendor-inventory.json). | Inventory is not acceptance of every profile or encoding. |
-| Documentation surface inventory — `toolkit-surface-census` | Indexed help hierarchy, command blocks, workflow families and implementation candidates. [Census](toolkit-surface.md). | Executable controls, undocumented behavior and independent per-function acceptance remain incomplete. |
+| Documentation surface inventory — `toolkit-surface-census` | Indexed help hierarchy, six source-bound unindexed help shells, command blocks, workflow families and implementation candidates. [Census](toolkit-surface.md). | Per-topic/control mapping, runtime help-shell behavior, undocumented behavior and independent per-function acceptance remain incomplete. |
 | Native unit defaults and database editing — `native-unit-defaults-and-database-editing` | Schema-backed programming sessions, large-memory unit creation, get/set/export/import snapshots, identity checks, saves and interruption cleanup. [Native unit examples](../README.md#c-gate-and-pci). | Missing vendor specifications; uncertain remote resource state after lost replies; physical transfer is separate. |
 | Classic key presets — `classic-key-presets` | Eighteen KEY1/KEY2/KEY4 presets with group/block/timer/recall settings and native raw-byte/save/reload checks. [Macros](macros.md). | Other keypad families, arbitrary custom macros and physical button behavior. |
 | Neo core presets — `neo-core-key-presets` | Eighteen presets on KEYE1/KEYM4/KEYA3/KEYB4 firmware 2.5.00, including indicators, secondary masks, timers, recalls and scene-bit clearing. [Extended macros](extended-macros.md). | Other firmware/profiles, custom macros and physical buttons. |
