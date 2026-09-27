@@ -94,6 +94,13 @@ the required acceptance dimensions: nominal behavior, error behavior, invalid
 input, profile variation, original Toolkit/C-Gate differential behavior,
 physical behavior, and persistence/recovery. A dimension can be marked not
 applicable only with matching passed evidence for that applicability decision.
+The passed receipt must include an `applicability_receipts` entry naming the
+exact obligation and dimension, `decision: not_applicable`, and a nonempty
+reason. A general passed test for the dimension cannot waive that dimension;
+duplicate entries within one evidence record, unreferenced decisions, and
+decisions contradicting the obligation state are rejected. A passed offline
+analysis may carry a decision without claiming that it exercised the physical
+or original-differential dimension.
 `coverage` reports accepted, not-applicable, blocked and unassessed counts for
 each dimension. Their percentages remain `null` until the denominator is
 complete, alongside the implementation and overall acceptance percentages.

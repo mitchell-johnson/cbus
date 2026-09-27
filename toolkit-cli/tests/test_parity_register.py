@@ -585,15 +585,115 @@ class ParityRegisterTests(unittest.TestCase):
                         changed_register, changed, ledger, evidence_raw=raw
                     )
 
-    def test_not_applicable_dimension_requires_matching_passed_evidence(self):
+    def test_not_applicable_dimension_requires_matching_passed_decision(self):
         register, evidence, ledger, evidence_raw = fixture_documents()
         register["obligations"][0]["acceptance"]["physical"] = "not_applicable"
         evidence["records"][0]["dimensions"].remove("physical")
         evidence["records"][0]["record_sha256"] = record_digest(evidence["records"][0])
         evidence_raw = (json.dumps(evidence, indent=2) + "\n").encode()
         register["evidence_bundle_sha256"] = sha256(evidence_raw).hexdigest()
-        with self.assertRaisesRegex(ValueError, "lacks matching passed evidence"):
+        with self.assertRaisesRegex(ValueError, "lacks a passed not-applicable decision"):
             parity.evaluate(register, evidence, ledger, evidence_raw=evidence_raw)
+
+    def test_not_applicable_requires_explicit_hash_bound_decision(self):
+        register, evidence, ledger, _ = fixture_documents()
+        register["obligations"][0]["acceptance"]["physical"] = "not_applicable"
+
+        def evaluate_current():
+            record = evidence["records"][0]
+            record["record_sha256"] = record_digest(record)
+            raw = (json.dumps(evidence, indent=2) + "\n").encode()
+            register["evidence_bundle_sha256"] = sha256(raw).hexdigest()
+            return parity.evaluate(register, evidence, ledger, evidence_raw=raw)
+
+        # A passed physical test is not a reason to remove a physical test
+        # obligation from the denominator.
+        with self.assertRaisesRegex(ValueError, "lacks a passed not-applicable decision"):
+            evaluate_current()
+
+        receipt = {
+            "obligation_id": "obligation:one",
+            "dimension": "physical",
+            "decision": "not_applicable",
+            "reason": "This fixture outcome has no physical side effect",
+        }
+        evidence["records"][0]["applicability_receipts"] = [receipt]
+        self.assertTrue(evaluate_current()["complete"])
+
+        for changed, expected in (
+            ({**receipt, "reason": " "}, "requires a reason"),
+            ({**receipt, "dimension": "error"}, "lacks a passed not-applicable decision"),
+            ({**receipt, "dimension": ["physical"]}, "not bound to this evidence"),
+            ({**receipt, "obligation_id": "unrelated"}, "not bound to this evidence"),
+            ({**receipt, "decision": "accepted"}, "unknown applicability decision"),
+        ):
+            evidence["records"][0]["applicability_receipts"] = [changed]
+            with self.subTest(expected=expected), self.assertRaisesRegex(ValueError, expected):
+                evaluate_current()
+
+        evidence["records"][0]["applicability_receipts"] = [receipt, dict(receipt)]
+        with self.assertRaisesRegex(ValueError, "duplicate applicability receipts"):
+            evaluate_current()
+
+        evidence["records"][0]["applicability_receipts"] = [receipt]
+        register["obligations"][0]["acceptance"]["physical"] = "accepted"
+        with self.assertRaisesRegex(ValueError, "applicability receipt differs"):
+            evaluate_current()
+
+    def test_offline_decision_only_receipt_can_exclude_physical_and_original(self):
+        register, evidence, ledger, _ = fixture_documents()
+        obligation = register["obligations"][0]
+        for dimension in ("physical", "original_differential"):
+            obligation["acceptance"][dimension] = "not_applicable"
+        exercised = evidence["records"][0]
+        exercised["dimensions"] = [
+            dimension for dimension in exercised["dimensions"]
+            if dimension not in {"physical", "original_differential"}
+        ]
+        exercised["environment"] = {"kind": "offline", "identity": "fixture process"}
+        del exercised["oracle"]
+        exercised["record_sha256"] = record_digest(exercised)
+
+        decision = json.loads(json.dumps(exercised))
+        decision["id"] = "evidence:applicability"
+        decision["dimensions"] = []
+        decision["test_ids"] = ["tests/test_applicability.py::test_no_physical_or_oracle"]
+        decision["command"] = "python -m pytest tests/test_applicability.py"
+        decision["applicability_receipts"] = [
+            {
+                "obligation_id": "obligation:one",
+                "dimension": dimension,
+                "decision": "not_applicable",
+                "reason": f"Static analysis excludes {dimension} for this fixture",
+            }
+            for dimension in ("physical", "original_differential")
+        ]
+        decision["record_sha256"] = record_digest(decision)
+        evidence["records"].append(decision)
+        obligation["evidence_ids"].append(decision["id"])
+
+        def evaluate_current():
+            decision["record_sha256"] = record_digest(decision)
+            raw = (json.dumps(evidence, indent=2) + "\n").encode()
+            register["evidence_bundle_sha256"] = sha256(raw).hexdigest()
+            return parity.evaluate(register, evidence, ledger, evidence_raw=raw)
+
+        self.assertTrue(evaluate_current()["complete"])
+        decision["result"] = "failed"
+        decision["exit_code"] = 1
+        with self.assertRaisesRegex(ValueError, "lacks a passed not-applicable decision"):
+            evaluate_current()
+        decision["result"] = "skipped"
+        with self.assertRaisesRegex(ValueError, "lacks a passed not-applicable decision"):
+            evaluate_current()
+        decision["result"] = "passed"
+        decision["exit_code"] = 0
+        decision["applicability_receipts"].pop()
+        with self.assertRaisesRegex(ValueError, "original_differential lacks a passed not-applicable decision"):
+            evaluate_current()
+        decision["applicability_receipts"] = []
+        with self.assertRaisesRegex(ValueError, "has no dimension or decision to evidence"):
+            evaluate_current()
 
     def test_sensitive_evidence_requires_physical_environment_and_original_oracle(self):
         register, evidence, ledger, _ = fixture_documents()
@@ -610,6 +710,12 @@ class ParityRegisterTests(unittest.TestCase):
         nonzero_pass = json.loads(json.dumps(evidence))
         nonzero_pass["records"][0]["exit_code"] = 1
         cases.append((nonzero_pass, "passed evidence requires exit_code 0"))
+        malformed_result = json.loads(json.dumps(evidence))
+        malformed_result["records"][0]["result"] = []
+        cases.append((malformed_result, "unknown result"))
+        malformed_environment = json.loads(json.dumps(evidence))
+        malformed_environment["records"][0]["environment"]["kind"] = []
+        cases.append((malformed_environment, "unknown environment kind"))
         for changed, expected in cases:
             changed["records"][0]["record_sha256"] = record_digest(
                 changed["records"][0]

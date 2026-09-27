@@ -393,7 +393,7 @@ def validate_evidence_bundle(
             raise ValueError(f"{context} requires a nonempty id")
         if evidence_id in by_id:
             raise ValueError(f"Duplicate evidence id: {evidence_id}")
-        if record.get("result") not in EVIDENCE_RESULTS:
+        if not isinstance(record.get("result"), str) or record["result"] not in EVIDENCE_RESULTS:
             raise ValueError(f"{evidence_id} has an unknown result")
         obligation_ids = _strings(
             record.get("obligation_ids"), field=f"{evidence_id}.obligation_ids"
@@ -430,13 +430,41 @@ def validate_evidence_bundle(
                 f"{evidence_id} must bind an obligation or scope disposition"
             )
         dimensions = _strings(
-            record.get("dimensions"), field=f"{evidence_id}.dimensions", nonempty=True
+            record.get("dimensions"), field=f"{evidence_id}.dimensions"
         )
         unknown_dimensions = set(dimensions) - set(REQUIRED_DIMENSIONS)
         if unknown_dimensions:
             raise ValueError(
                 f"{evidence_id} has unknown dimensions: {sorted(unknown_dimensions)}"
             )
+        applicability_receipts = record.get("applicability_receipts", [])
+        if not isinstance(applicability_receipts, list):
+            raise ValueError(f"{evidence_id}.applicability_receipts must be an array")
+        applicability_keys: set[tuple[str, str]] = set()
+        for receipt_index, receipt in enumerate(applicability_receipts):
+            receipt_context = f"{evidence_id}.applicability_receipts[{receipt_index}]"
+            if not isinstance(receipt, dict) or set(receipt) != {
+                "obligation_id", "dimension", "decision", "reason"
+            }:
+                raise ValueError(f"{receipt_context} has an invalid applicability receipt")
+            obligation_id, dimension = receipt["obligation_id"], receipt["dimension"]
+            if (
+                not isinstance(obligation_id, str)
+                or not isinstance(dimension, str)
+                or obligation_id not in obligation_ids
+                or dimension not in REQUIRED_DIMENSIONS
+            ):
+                raise ValueError(f"{receipt_context} is not bound to this evidence")
+            if receipt["decision"] != "not_applicable":
+                raise ValueError(f"{receipt_context} has an unknown applicability decision")
+            if not isinstance(receipt["reason"], str) or not receipt["reason"].strip():
+                raise ValueError(f"{receipt_context} requires a reason")
+            key = (obligation_id, dimension)
+            if key in applicability_keys:
+                raise ValueError(f"{evidence_id} has duplicate applicability receipts")
+            applicability_keys.add(key)
+        if not dimensions and not applicability_receipts and not disposition_receipts:
+            raise ValueError(f"{evidence_id} has no dimension or decision to evidence")
         test_ids = _strings(
             record.get("test_ids"), field=f"{evidence_id}.test_ids", nonempty=True
         )
@@ -446,7 +474,7 @@ def validate_evidence_bundle(
         if not isinstance(environment, dict):
             raise ValueError(f"{evidence_id} requires an environment")
         environment_kind = environment.get("kind")
-        if environment_kind not in EVIDENCE_ENVIRONMENTS:
+        if not isinstance(environment_kind, str) or environment_kind not in EVIDENCE_ENVIRONMENTS:
             raise ValueError(f"{evidence_id} has an unknown environment kind")
         if not isinstance(environment.get("identity"), str) or not environment["identity"].strip():
             raise ValueError(f"{evidence_id} requires an environment identity")
@@ -716,7 +744,7 @@ def validate_register(
                 raise ValueError(f"{obligation_id}.{dimension} has an unknown state")
             if state in {"accepted", "not_applicable"} and not evidence_ids:
                 raise ValueError(f"{obligation_id}.{dimension} requires evidence")
-            if state in {"accepted", "not_applicable"} and not any(
+            if state == "accepted" and not any(
                 evidence_by_id[evidence_id]["result"] == "passed"
                 and dimension in evidence_by_id[evidence_id]["dimensions"]
                 and obligation_id in evidence_by_id[evidence_id]["obligation_ids"]
@@ -725,7 +753,29 @@ def validate_register(
                 raise ValueError(
                     f"{obligation_id}.{dimension} lacks matching passed evidence"
                 )
+            if state == "not_applicable" and not any(
+                evidence_by_id[evidence_id]["result"] == "passed"
+                and receipt["obligation_id"] == obligation_id
+                and receipt["dimension"] == dimension
+                for evidence_id in evidence_ids
+                for receipt in evidence_by_id[evidence_id].get("applicability_receipts", [])
+            ):
+                raise ValueError(
+                    f"{obligation_id}.{dimension} lacks a passed not-applicable decision"
+                )
         obligations_by_id[obligation_id] = obligation
+    for evidence_id, record in evidence_by_id.items():
+        for receipt in record.get("applicability_receipts", []):
+            obligation_id, dimension = receipt["obligation_id"], receipt["dimension"]
+            obligation = obligations_by_id.get(obligation_id)
+            if obligation is None or evidence_id not in obligation["evidence_ids"]:
+                raise ValueError(
+                    f"{evidence_id} applicability receipt is not referenced by {obligation_id}"
+                )
+            if obligation["acceptance"][dimension] != "not_applicable":
+                raise ValueError(
+                    f"{evidence_id} applicability receipt differs from {obligation_id}.{dimension}"
+                )
     missing_ledger = set(ledger_by_id) - set(ledger_coverage)
     if missing_ledger:
         raise ValueError(f"Ledger rows without obligations: {sorted(missing_ledger)}")
