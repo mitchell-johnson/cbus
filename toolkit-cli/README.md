@@ -151,6 +151,15 @@ typed observations in LocalSystem HKCU; interactive Toolkit-user context and
 original lazy-wrapper comparison remain outstanding. See [live registry
 observation](docs/toolkit-live-registry-observation.md).
 
+`update-diagnostic-bundle --catalogue catalogue-report.json --metadata
+metadata-report.json --revocation revocation-report.json --conditions
+condition-report.json --node-id ID` parses the exact four report files and
+links the selected metadata node to the catalogue response, its condition model,
+and the revocation subject. Missing receipts, substituted bytes, ambiguous IDs,
+or unrelated reports keep linked completion false. The [provenance contract](docs/toolkit-update-diagnostic-bundle.md)
+does not turn those diagnostics into publisher trust, package applicability,
+update availability, a download, or an installation decision.
+
 `toolkit-about path/to/CBusToolkit.exe` reads an explicit executable and emits
 the original About text, using the current local year. `--year 2026` supplies
 a reproducible year; `--context captured-context.json` adds explicitly supplied
@@ -2042,7 +2051,7 @@ wheel; each linked record identifies its runtime, source scope and date:
 - [Configuration CRC](docs/edlt-crc.md): 21 tests, including 65,588 fresh original CRC results per run.
 - [Percentage conversion](docs/edlt-percentage.md), [bounded parent composition](docs/edlt-parent-form.md), [ordered parent transaction](docs/edlt-parent-transaction.md), [automatic parent metadata](docs/edlt-parent-metadata.md) and [automatic SceneManager metadata](docs/edlt-scene-metadata.md): pure conversion and CLI acceptance, standalone original Windows 12- and 528-case captures, and portable focused coverage for all declared operations. Automatic parent metadata resolves existing Applications/Corridor lists and exact Reset raw strings, accepts contiguous fresh-graph Blank operations, and composes those results with the exact Trigger application/group/action creator before one parent PP save. Toolkit registry display/sort preferences, the original interactive Reset-plus-Blank and complete parent/SceneManager dialogs, project/DLTP images, and combined Schneider C-Gate/physical acceptance remain outstanding. Current exact test totals are reported by the repository test run rather than treated as a static capability claim.
 - [About information](docs/toolkit-about.md): 16 tests, including 51 original instruction cases per run.
-- [Signed update metadata](docs/toolkit-update-metadata.md), [revocation stages](docs/toolkit-update-revocation.md) and [supplied-context registry conditions](docs/toolkit-update-registry-conditions.md): separate 56-, 53- and 78-test checkpoints with explicit trust and availability limits.
+- [Signed update metadata](docs/toolkit-update-metadata.md), [revocation stages](docs/toolkit-update-revocation.md), [supplied-context registry conditions](docs/toolkit-update-registry-conditions.md) and [linked diagnostic provenance](docs/toolkit-update-diagnostic-bundle.md): independent diagnostics plus exact-file cross-report receipts, with explicit trust and availability limits.
 - [PCI routing](docs/pci-routing.md), [incoming routing](docs/pci-incoming-routing.md), [routed RECALL](docs/pci-routed-recall.md), [routed IDENTIFY](docs/pci-routed-identify.md) and [routed WRITE](docs/pci-routed-write.md): separate codec and transport checkpoints; WRITE adds exact ACK path/tag matching and one-send mutation uncertainty evidence.
 - [Database CSV export](docs/toolkit-database-csv.md): 82 current core/CLI tests, two host Windows-adapter guards, five owned Windows tests and one owned C-Gate acceptance for captured values, exact saved column selection, cached-object projection, RELAY4/generic/KEYE1-3/DIMDN8/RELDN12/SENPIROA file/live native XML, explicit ordered multi-unit and network-document-order export from one shared snapshot/request with whole-selection rejection before output creation, KEYE per-block secondary-application associations, ordered repeated group associations, guarded Area13 persistence, portable UTF-8 and Toolkit-native Windows ACP output; the historical 23-test checkpoint includes 88 fresh original cases per run, while original Toolkit manager enumeration remains unverified.
 - [Thermostat temperature conversions](docs/thermostat-temperature.md): 17 tests with 28,840 fresh original cases per run and separate original Windows arithmetic acceptance.
