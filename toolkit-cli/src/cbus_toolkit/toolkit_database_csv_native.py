@@ -231,21 +231,28 @@ def _project_native_xml_unit(project, unit_path, *, columns, xml_sha256):
         group_addresses = group_values
         group_applications = (primary,) * len(group_addresses)
         area_address = 255
-    elif unit_type == 'SENPIROA' and firmware == '2.4.00':
+    elif unit_type in ('SENPIROA', 'SENPIRIA') and firmware == '2.4.00':
         app_values = _tokens(_parameter(unit, 'Application'), 'Application', count=2)
         group_values = _tokens(_parameter(unit, 'GroupAddress'), 'GroupAddress', count=8)
         area_values = _tokens(_parameter(unit, 'AreaGroupAddress'), 'AreaGroupAddress', count=1)
         secondary_blocks = _tokens(
             _parameter(unit, 'SecondApplicationBlocks'), 'SecondApplicationBlocks', count=1)
         primary_address, secondary_address = app_values
-        if secondary_address != 255 or secondary_blocks != (0,):
+        secondary_mask = secondary_blocks[0]
+        if unit_type == 'SENPIROA' and (secondary_address != 255 or secondary_mask):
             raise ValueError('Captured native SENPIROA profile requires an unused secondary application')
+        if unit_type == 'SENPIRIA' and secondary_address == 255 and secondary_mask:
+            raise ValueError('SENPIRIA secondary group blocks require a configured secondary application')
         if area_values != (255,):
-            raise ValueError('Captured native SENPIROA profile requires Area group 255')
+            raise ValueError('Captured native sensor profile requires Area group 255')
         primary = _one_by_address(network, 'Application', primary_address)
-        secondary = ''
+        secondary_node = (None if secondary_address == 255 else
+                          _one_by_address(network, 'Application', secondary_address))
+        secondary = '' if secondary_node is None else _field(secondary_node, 'TagName')
         group_addresses = group_values
-        group_applications = (primary,) * len(group_addresses)
+        group_applications = tuple(
+            secondary_node if secondary_mask & (1 << index) else primary
+            for index in range(len(group_addresses)))
         area_address = 255
     elif (unit_type == 'KEYGL5' and firmware == '5.5.00'
           and _field(unit, 'CatalogNumber') == '5055EDL'):
@@ -306,7 +313,7 @@ def _project_native_xml_unit(project, unit_path, *, columns, xml_sha256):
         group_applications = (primary,) * len(group_addresses)
         area_address = None
     else:
-        raise ValueError('Native XML projection supports only captured RELAY4 4.4, KEYE1/2/3 2.5.00, DIMDN8/RELDN12 2.7.00, SENPIROA 2.4.00, KEYGL5 5.5.00/5055EDL and OWNED_UNKNOWN 4.4 profiles')
+        raise ValueError('Native XML projection supports only captured RELAY4 4.4, KEYE1/2/3 2.5.00, DIMDN8/RELDN12 2.7.00, SENPIROA/SENPIRIA 2.4.00, KEYGL5 5.5.00/5055EDL and OWNED_UNKNOWN 4.4 profiles')
 
     groups = []
     application_groups = {}

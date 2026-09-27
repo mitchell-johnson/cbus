@@ -1,0 +1,101 @@
+{
+  "format": "cbus-toolkit-database-csv-senpiria-profile-review-v1",
+  "original_execution": false,
+  "original_inputs": {
+    "CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "source_method_spans": {
+    "CIS_TSENPIRSS.CIS_TSENPIRSS": {
+      "start": "0x1385328",
+      "end": "0x1385678",
+      "bytes_sha256": "e86cb1c541441cf3625bfb1dc74d77328292d348cd9d94a753d06ea81df93eec"
+    },
+    "CIS_TCBusST7SensorCGateAgent.CIS_TCBusST7SensorCGateAgent": {
+      "start": "0x138569c",
+      "end": "0x1385708",
+      "bytes_sha256": "50908f2a42730cf3117affb538fdb07b1835645132a8ba6d4602310193ea5c90"
+    },
+    "CIS_TCBusST7SensorCGateAgent.TCBusST7PIRSensorCGateAgent.AgentLoad": {
+      "start": "0xcf80a0",
+      "end": "0xcf80c4",
+      "bytes_sha256": "33a56cda921804f80251304886fd5038e66419302a9024c76c6053354c5821ee"
+    },
+    "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.AgentLoad": {
+      "start": "0xcf4cb8",
+      "end": "0xcf4dac",
+      "bytes_sha256": "4161570ed1f35a0d788eb97c90b51d0ec23610af54edce7edc979f7e5a846a15"
+    },
+    "CIS_TCBusNeoInputCGateAgent.TCBusNeoInputCGateAgent.AgentLoad": {
+      "start": "0xcebbe4",
+      "end": "0xcebc08",
+      "bytes_sha256": "fef6e4759e63a2ec8ae37192293a71e967c8e25df732737058e98196981badbb"
+    },
+    "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.LoadUnitGroupAddresses": {
+      "start": "0xcecbbc",
+      "end": "0xcecd78",
+      "bytes_sha256": "167b97485f5e93671a352756479f549d1cf1214dd6047bb0be7c4efc15bbb5bf"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.LoadGroups": {
+      "start": "0xcc7bf0",
+      "end": "0xcc7d04",
+      "bytes_sha256": "bfc5368eb3b13722627c3db492e2207adb7ca8a0009aec16528553f6c70ea941"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.GetBlockGroup": {
+      "start": "0xcc75e4",
+      "end": "0xcc76f8",
+      "bytes_sha256": "f9c7b8a5d2a5c8e45cdcc61562850251b8d4784595834885992d83e93a906263"
+    },
+    "CIS_TCBusInputUnit.TCBusInputUnit.GetAreaIfAvailable": {
+      "start": "0xc9d34c",
+      "end": "0xc9d42c",
+      "bytes_sha256": "e1ff3e49018b4ed286598e5d3cece5a75a63d745a953d455149a7beaf229fdbf"
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsInteractionGroup": {
+      "start": "0xd08700",
+      "end": "0xd0871c",
+      "bytes_sha256": "212ba930cc1f3ea5741181ed92b5b92ff25ffd8c692ee24b3b5a6f3d353cfa1a"
+    }
+  },
+  "registration": {
+    "unit_type": "SENPIRIA",
+    "firmware_min": "2.0.01",
+    "firmware_max": "9",
+    "selected_class": "TST7SENPIRSS",
+    "factory_callsite": "0x1385484",
+    "agent_class": "TCBusST7PIRSensorCGateAgent",
+    "agent_registration_initializer": "0x138569c"
+  },
+  "unit_vmt": {
+    "address": "0xcef310",
+    "area_getter": "0xc9d34c",
+    "interaction_predicate": "0xd08700",
+    "same_area_and_interaction_as_tst7senpiroa": true,
+    "functional_slot_comparison": "0x80..0x1cc: all inherited pointers identical; three class-specific key/virtual-key/indicator methods have identical first 20 bytes"
+  },
+  "agent_vmt": {
+    "address": "0xcf3e68",
+    "agent_load": "0xcf80a0",
+    "load_groups": "0xcc7bf0",
+    "secondary_application_lookup": "0xcb82b4",
+    "load_unit_group_addresses": "0xcecbbc"
+  },
+  "static_facts": {
+    "area": "The inherited input-unit getter resolves AreaGroupAddress in the primary application on each call.",
+    "groups": "The inherited core loader resolves ordered input-block groups and appends each non-nil group; the bounded fixture admits exactly eight stored slots.",
+    "secondary_application": "The inherited Neo loader reads SecondApplicationBlocks; the core block getter resolves masked slots in Application2 and the others in Application1.",
+    "interaction": "The inherited Neo predicate exposes zero-based slots 0 through 7; later report columns are unavailable."
+  },
+  "synthetic_fixture": {
+    "path": "research/fixtures/toolkit-database-csv-senpiria-synthetic.xml",
+    "sha256": "37e7e42614e2543ae9d8536182816ce952600a916e9cf060cf25ed60c35b4f0f",
+    "site_data": false
+  },
+  "limits": [
+    "Static original EXE/MAP analysis and synthetic projection only; the original GUI report was not run on this fixture.",
+    "Factory startup registration and cold native database loading were inferred from pinned source, not executed.",
+    "Only SENPIRIA firmware 2.4.00 with eight stored groups, existing Area255 and selected groups is admitted.",
+    "The read-only adapter rejects missing groups that the original create=true path may create.",
+    "No native C-Gate, CNI, database mutation or physical device was used."
+  ]
+}

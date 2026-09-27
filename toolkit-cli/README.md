@@ -283,12 +283,14 @@ selects fields. `--cached-projection` instead consumes the strict retained
 unit/group-cache schema and reproduces the 12 captured original class, Area,
 reference and missing-group outcomes before export. `--native-xml-unit
 //PROJECT/254/p/4` projects the admitted RELAY4, generic, KEYE1/2/3, DIMDN8,
-RELDN12 and SENPIROA read-only C-Gate XML shapes without manual cache transcription. KEYE
+RELDN12, SENPIROA and SENPIRIA read-only C-Gate XML shapes without manual cache transcription. KEYE
 firmware 2.5.00 retains all nine ordered group associations, including repeated
 unused slots and legacy records without OIDs. DIN firmware 2.7.00 retains all
 16 stored associations while applying the original 8-channel DIMDN8 and
-12-channel RELDN12 interaction limits. SENPIROA firmware 2.4.00 retains its
-eight ordered sensor associations and selects the registered ST7 class. KEYE
+12-channel RELDN12 interaction limits. SENPIROA and SENPIRIA firmware 2.4.00
+retain eight ordered sensor associations and select their registered ST7
+classes. SENPIRIA also resolves each masked block in its configured secondary
+application while Area remains in the primary application. KEYE
 secondary-application masks now resolve each first-eight block through its
 selected application, including distinct same-address groups; the ninth stored
 slot remains primary and unavailable in the report. `cgate --host HOST database-csv
@@ -2241,7 +2243,7 @@ wheel; each linked record identifies its runtime, source scope and date:
 - [About information](docs/toolkit-about.md): 16 tests, including 51 original instruction cases per run.
 - [Signed update metadata](docs/toolkit-update-metadata.md), [revocation stages](docs/toolkit-update-revocation.md), [supplied-context registry conditions](docs/toolkit-update-registry-conditions.md), [applicability preflight](docs/toolkit-update-applicability-preflight.md), [supplied-cohort rollout gate](docs/toolkit-update-rollout-cohort.md), [owned-registry rollout branch](docs/toolkit-update-rollout-owned-registry.md), [combined supplied-cohort applicability preflight](docs/toolkit-update-applicability-cohort-preflight.md), [linked diagnostic provenance](docs/toolkit-update-diagnostic-bundle.md) and [local package join](docs/toolkit-update-package-bundle.md): bounded diagnostics plus exact source-file and selected package-byte receipts, with explicit trust and availability limits.
 - [PCI routing](docs/pci-routing.md), [incoming routing](docs/pci-incoming-routing.md), [routed RECALL](docs/pci-routed-recall.md), [routed IDENTIFY](docs/pci-routed-identify.md) and [routed WRITE](docs/pci-routed-write.md): separate codec and transport checkpoints; all three commands accept project-resolved routes, while WRITE adds exact ACK path/tag matching and one-send mutation uncertainty evidence.
-- [Database CSV export](docs/toolkit-database-csv.md): 82 earlier core/CLI tests, two host Windows-adapter guards, five owned Windows tests and one owned C-Gate acceptance for captured values, exact saved column selection, cached-object projection, RELAY4/generic/KEYE1-3/DIMDN8/RELDN12/SENPIROA file/live native XML, explicit ordered multi-unit and source-backed network-address-order export from one shared snapshot/request with whole-selection rejection before output creation, KEYE per-block secondary-application associations, ordered repeated group associations, guarded Area13 persistence, portable UTF-8 and Toolkit-native Windows ACP output; the historical 23-test checkpoint includes 88 fresh original cases per run, while original Toolkit manager enumeration remains unverified.
+- [Database CSV export](docs/toolkit-database-csv.md): 82 earlier core/CLI tests, two host Windows-adapter guards, five owned Windows tests and one owned C-Gate acceptance for captured values, exact saved column selection, cached-object projection, RELAY4/generic/KEYE1-3/DIMDN8/RELDN12/SENPIROA/SENPIRIA file/live native XML, explicit ordered multi-unit and source-backed network-address-order export from one shared snapshot/request with whole-selection rejection before output creation, KEYE per-block secondary-application associations, ordered repeated group associations, guarded Area13 persistence, portable UTF-8 and Toolkit-native Windows ACP output; the historical 23-test checkpoint includes 88 fresh original cases per run, while original Toolkit manager enumeration remains unverified.
 - [Thermostat temperature conversions](docs/thermostat-temperature.md): 17 tests with 28,840 fresh original cases per run and separate original Windows arithmetic acceptance.
 - [Thermostat scheduling](docs/native-thermostat-schedule.md): 67 tests in the retained level-writer checkpoint; the composed unit/application/group/level workflow adds 18 current host tests and two retained owned-C-Gate cases with exact planning, backup, one target save/reload, opaque project-data preservation and explicit no-retry uncertainty evidence.
 
