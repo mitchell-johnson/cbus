@@ -1181,8 +1181,11 @@ controls, `SHORTMESSAGE SEND`, and `EREPORT MESSAGE` while reads,
 other bus control stay open; failures answer `420 LOGIN required` / `420 LOGIN failed` (malformed
 `LOGIN` with no token is 400 and also clears the flag), never `401`.
 This is not exact native `access.txt` handler/access-level parity.
-`access_native_handler_probe_levels` lists 31 command entry floors captured
-against owned C-Gate 3.4 at all nine ACCESS levels. These checks run before
+`access_native_handler_probe_levels` lists 89 command entry floors captured
+against owned C-Gate 3.4 at all nine ACCESS levels. The second capture adds
+58 project, database, network, file, repository, session and application
+invocations; `TRIGGER EVENT` and `EVENT_CHANNEL LIST` enter at Program, while
+`TREE`/`TREEXML` and `GETSTATE` enter at Monitor. These checks run before
 mutation or PCI dispatch, including `DBSETXML` documents; `EVENTS` follows the
 captured `EVENT` Monitor floor. `ACCESS` retains its Clipsal/Max family check.
 The remaining object-specific and command-level rules are unresolved, so
@@ -1193,8 +1196,10 @@ peer before the greeting, independently of ACCESS/LOGIN. In one owned native
 profile, a trusted certificate subject matching an Admin ACCESS username
 still began at the socket's Clipsal interface level; user LOGIN raised it, and
 LOGOUT or reconnect restored Clipsal. Other certificate-name rules remain
-unproven. See `rust/testdata/fixtures/native_cgate_authorization_probe.json`
-and `native_cgate_tls_authorization_probe.json`;
+unproven. See `rust/testdata/fixtures/native_cgate_authorization_probe.json`,
+`native_cgate_authorization_expansion_probe.json`, and
+`native_cgate_tls_authorization_probe.json`; the role probes establish handler
+entry thresholds for their exact invocations, not successful physical sends;
 `pci_generation`, `pci_connected`, and `programming_lane_state` expose the
 current shared transport generation. `reconnect-required` means an incomplete
 source-correlated programming exchange retired that generation; do not retry or

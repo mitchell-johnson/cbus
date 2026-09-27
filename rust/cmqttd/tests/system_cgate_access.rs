@@ -265,6 +265,25 @@ async fn access_family_is_redacted_sandboxed_durable_and_connection_safe() {
         );
         assert_eq!(caps["access_token_recovery_admission"], true);
         assert_eq!(caps["access_global_command_level_matrix"], false);
+        let floors = caps["access_native_handler_probe_levels"]
+            .as_array()
+            .unwrap();
+        assert_eq!(floors.len(), 89);
+        for (path, level) in [
+            ("TREE", "Monitor"),
+            ("PROJECT DIR", "Admin"),
+            ("TRIGGER EVENT", "Program"),
+            ("EVENT_CHANNEL LIST", "Program"),
+            ("EVENT_CHANNEL SUB", "Program"),
+            ("CGL IMPORT", "Program"),
+        ] {
+            assert!(
+                floors
+                    .iter()
+                    .any(|row| { row["path"] == path && row["minimum"] == level }),
+                "missing native handler floor {path}={level}"
+            );
+        }
 
         let frames_after = sys
             .pci

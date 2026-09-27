@@ -43,8 +43,8 @@ pub(crate) fn applications_get_catalog(model: &Server, tag: &str, words: &[&str]
     }
 }
 use crate::access::{
-    credential_digest_for, native_minimum_for, AccessEntry, CgateAccessLevel,
-    NATIVE_PROBED_COMMANDS,
+    credential_digest_for, native_minimum_for, native_probed_commands, AccessEntry,
+    CgateAccessLevel,
 };
 use crate::auth;
 use crate::config::{
@@ -2827,8 +2827,7 @@ impl Service {
             capabilities["access_token_recovery_admission"] = serde_json::Value::Bool(true);
             capabilities["access_global_command_level_matrix"] = serde_json::Value::Bool(false);
             capabilities["access_native_handler_probe_levels"] = serde_json::Value::Array(
-                NATIVE_PROBED_COMMANDS
-                    .iter()
+                native_probed_commands()
                     .map(|(path, level)| serde_json::json!({"path": path, "minimum": level.name()}))
                     .collect(),
             );

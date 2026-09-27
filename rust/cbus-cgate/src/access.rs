@@ -104,14 +104,84 @@ pub(crate) const NATIVE_PROBED_COMMANDS: &[(&str, CgateAccessLevel)] = &[
     ("PP LOCK", CgateAccessLevel::Clipsal),
 ];
 
+/// Additional independent 2026-09-28 native-role invocations. The retained
+/// fixture records all nine admitted roles for each path, including a useful
+/// non-420 handler response at the floor. Missing objects prevent bus I/O;
+/// they do not establish the access level for a later successful device send.
+pub(crate) const NATIVE_PROBED_ADDITIONAL_COMMANDS: &[(&str, CgateAccessLevel)] = &[
+    ("PROJECT DIR", CgateAccessLevel::Admin),
+    ("PROJECT DIRFULL", CgateAccessLevel::Admin),
+    ("PROJECT COPY", CgateAccessLevel::Admin),
+    ("PROJECT DELETE", CgateAccessLevel::Admin),
+    ("PROJECT LOAD", CgateAccessLevel::Admin),
+    ("PROJECT RENAME", CgateAccessLevel::Admin),
+    ("PROJECT REPAIR", CgateAccessLevel::Admin),
+    ("PROJECT SAVE", CgateAccessLevel::Admin),
+    ("PROJECT START", CgateAccessLevel::Admin),
+    ("PROJECT STOP", CgateAccessLevel::Admin),
+    ("CONFIG INFO", CgateAccessLevel::Admin),
+    ("CONFIG OBGET", CgateAccessLevel::Admin),
+    ("DBTAGLIST", CgateAccessLevel::Admin),
+    ("DBSAVE", CgateAccessLevel::Admin),
+    ("DBLOAD", CgateAccessLevel::Operate),
+    ("DBVALIDATE", CgateAccessLevel::Operate),
+    ("DBVERIFY", CgateAccessLevel::Admin),
+    ("DBNETWORKPATH", CgateAccessLevel::Admin),
+    ("DBSETSAFE", CgateAccessLevel::Operate),
+    ("DBUPDATE", CgateAccessLevel::Admin),
+    ("DBCOPY", CgateAccessLevel::Operate),
+    ("DBDELETE", CgateAccessLevel::Operate),
+    ("DBCREATE", CgateAccessLevel::Admin),
+    ("NET LIST_ALL", CgateAccessLevel::Program),
+    ("NET OPEN", CgateAccessLevel::Program),
+    ("NET CLOSE", CgateAccessLevel::Program),
+    ("NET SYNC", CgateAccessLevel::Program),
+    ("NET CLOCKS", CgateAccessLevel::Program),
+    ("NET CHECKUNIT", CgateAccessLevel::Program),
+    ("NET SET_PROJECT_IDENTIFY", CgateAccessLevel::Program),
+    ("PORT LIST", CgateAccessLevel::Program),
+    ("PORT IFLIST", CgateAccessLevel::Program),
+    ("TREE", CgateAccessLevel::Monitor),
+    ("TREEXML", CgateAccessLevel::Monitor),
+    ("TREEXMLDETAIL", CgateAccessLevel::Monitor),
+    ("SHOW OBJECTS", CgateAccessLevel::Monitor),
+    ("CGL IMPORT", CgateAccessLevel::Program),
+    ("DALI CATALOG LIST", CgateAccessLevel::Program),
+    ("FILE LS", CgateAccessLevel::Program),
+    ("FILE SHA256", CgateAccessLevel::Program),
+    ("REPOSITORY LIST", CgateAccessLevel::Admin),
+    ("REPOSITORY USE", CgateAccessLevel::Admin),
+    ("LOCK", CgateAccessLevel::Operate),
+    ("UNLOCK", CgateAccessLevel::Operate),
+    ("GETSTATE", CgateAccessLevel::Monitor),
+    ("SET", CgateAccessLevel::Operate),
+    ("DO", CgateAccessLevel::Operate),
+    ("LIGHTING RAMP", CgateAccessLevel::Operate),
+    ("TRIGGER EVENT", CgateAccessLevel::Program),
+    ("ENABLE SET", CgateAccessLevel::Operate),
+    ("CLOCK TIME", CgateAccessLevel::Operate),
+    ("TEMPERATURE BROADCAST", CgateAccessLevel::Operate),
+    ("MEDIATRANSPORT STATUS_REQUEST", CgateAccessLevel::Operate),
+    ("SHORTMESSAGE REFRESH", CgateAccessLevel::Operate),
+    ("SESSION_ID ALL", CgateAccessLevel::Operate),
+    ("EVENT_CHANNEL LIST", CgateAccessLevel::Program),
+    ("EVENT_CHANNEL SUB", CgateAccessLevel::Program),
+    ("EVENT_CHANNEL UNSUB", CgateAccessLevel::Program),
+];
+
+pub(crate) fn native_probed_commands(
+) -> impl Iterator<Item = &'static (&'static str, CgateAccessLevel)> {
+    NATIVE_PROBED_COMMANDS
+        .iter()
+        .chain(NATIVE_PROBED_ADDITIONAL_COMMANDS.iter())
+}
+
 /// Longest matching native-observed command path. The caller supplies
 /// uppercase whitespace-delimited words from the C-Gate parser.
 pub(crate) fn native_minimum_for(upper: &[String]) -> Option<CgateAccessLevel> {
     for len in (1..=upper.len().min(3)).rev() {
         let path = upper[..len].join(" ");
-        if let Some((_, level)) = NATIVE_PROBED_COMMANDS
-            .iter()
-            .find(|(candidate, _)| *candidate == path)
+        if let Some((_, level)) = native_probed_commands().find(|(candidate, _)| *candidate == path)
         {
             return Some(*level);
         }
@@ -311,5 +381,65 @@ mod tests {
             }
         }
         assert_eq!(native_minimum_for(&["UNPROBED".into()]), None);
+    }
+
+    #[test]
+    fn expanded_handler_floors_match_owned_native_role_responses() {
+        let evidence: serde_json::Value = serde_json::from_str(include_str!(
+            "../../testdata/fixtures/native_cgate_authorization_expansion_probe.json"
+        ))
+        .unwrap();
+        assert_eq!(
+            evidence["format"],
+            "native-cgate-authorization-expansion-v1"
+        );
+        assert_eq!(
+            evidence["oracle"]["jar_sha256"],
+            "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+        );
+        assert_eq!(evidence["oracle"]["listener_ownership_verified"], true);
+        assert_eq!(evidence["oracle"]["cleanup_complete"], true);
+        assert_eq!(evidence["oracle"]["process_exit_confirmed"], true);
+        assert_eq!(evidence["oracle"]["work_removed"], true);
+        assert_eq!(
+            evidence["capture_script_sha256"],
+            hex::encode(auth::sha256(include_bytes!(
+                "../research/native_authorization_matrix_expansion.py"
+            )))
+        );
+        assert_eq!(
+            evidence["local_cgate_harness_sha256"],
+            hex::encode(auth::sha256(include_bytes!(
+                "../../../toolkit-cli/research/local_cgate.py"
+            )))
+        );
+        let commands = evidence["commands"].as_array().unwrap();
+        assert_eq!(commands.len(), NATIVE_PROBED_ADDITIONAL_COMMANDS.len());
+        let roles = evidence["roles"].as_object().unwrap();
+        assert_eq!(roles.len(), 9);
+        for (path, minimum) in NATIVE_PROBED_ADDITIONAL_COMMANDS {
+            let matches = commands
+                .iter()
+                .filter_map(serde_json::Value::as_str)
+                .filter(|command| *command == *path || command.starts_with(&format!("{path} ")))
+                .collect::<Vec<_>>();
+            assert_eq!(matches.len(), 1, "native invocation for {path}");
+            let command = matches[0];
+            for (role, record) in roles {
+                let level = CgateAccessLevel::parse(role);
+                assert_eq!(record["query"], format!("210 Access level: {role}"));
+                let reply = record["responses"][command].as_str().unwrap();
+                assert_eq!(
+                    reply == "420 Access denied.",
+                    level < *minimum,
+                    "native {command} at {role}: {reply}"
+                );
+            }
+            let upper = command
+                .split_whitespace()
+                .map(str::to_ascii_uppercase)
+                .collect::<Vec<_>>();
+            assert_eq!(native_minimum_for(&upper), Some(*minimum));
+        }
     }
 }

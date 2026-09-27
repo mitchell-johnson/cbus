@@ -13288,7 +13288,7 @@ async fn auth_gate_dormant_exposes_native_login_and_leaves_programming_ungated()
 #[tokio::test]
 async fn native_handler_floors_isolate_sessions_and_survive_reconnect() {
     let path = state_path();
-    let (pci, _remote) = pci();
+    let (pci, mut remote) = pci();
     let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
     let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
     let address = listener.local_addr().unwrap();
@@ -13467,6 +13467,81 @@ async fn native_handler_floors_isolate_sessions_and_survive_reconnect() {
         ["[access-denied] 420 Access denied."]
     );
 
+    // Expanded native floors also apply on the socket path, before missing
+    // target resolution, event delivery or any physical command is issued.
+    assert_ne!(
+        command_lines(
+            &mut monitor_reader,
+            &mut monitor_writer,
+            "tree-admitted",
+            "TREE //MISSING",
+        )
+        .await
+        .last()
+        .unwrap(),
+        "[tree-admitted] 420 Access denied."
+    );
+    assert_eq!(
+        command_lines(
+            &mut operate_reader,
+            &mut operate_writer,
+            "project-dir-denied",
+            "PROJECT DIR",
+        )
+        .await,
+        ["[project-dir-denied] 420 Access denied."]
+    );
+    assert_eq!(
+        command_lines(
+            &mut admin_reader,
+            &mut admin_writer,
+            "trigger-denied",
+            "TRIGGER EVENT 254/202/1 1",
+        )
+        .await,
+        ["[trigger-denied] 420 Access denied."]
+    );
+    assert_eq!(
+        command_lines(
+            &mut admin_reader,
+            &mut admin_writer,
+            "channel-denied",
+            "EVENT_CHANNEL LIST",
+        )
+        .await,
+        ["[channel-denied] 420 Access denied."]
+    );
+    let (mut program_reader, mut program_writer) = connect_command_session(address).await;
+    assert_eq!(
+        command_lines(
+            &mut program_reader,
+            &mut program_writer,
+            "program-login",
+            "LOGIN program test-program-password",
+        )
+        .await,
+        ["[program-login] 211 Access level set to: Program"]
+    );
+    assert_ne!(
+        command_lines(
+            &mut program_reader,
+            &mut program_writer,
+            "channel-admitted",
+            "EVENT_CHANNEL LIST",
+        )
+        .await
+        .last()
+        .unwrap(),
+        "[channel-admitted] 420 Access denied."
+    );
+    let mut byte = [0];
+    assert!(
+        tokio::time::timeout(Duration::from_millis(10), remote.read(&mut byte))
+            .await
+            .is_err(),
+        "an authorization-only probe reached PCI"
+    );
+
     // A failed native user login retains the current role, while a successful
     // lower-role login and LOGOUT change only this command connection.
     assert_eq!(
@@ -13531,6 +13606,120 @@ async fn native_handler_floors_isolate_sessions_and_survive_reconnect() {
     );
 
     server.abort();
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn expanded_native_handler_floors_deny_before_dispatch_or_mutation() {
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let before = std::fs::read(&path).unwrap();
+    let mut events = service.events.subscribe();
+    let evidence: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../testdata/fixtures/native_cgate_authorization_expansion_probe.json"
+    ))
+    .unwrap();
+
+    for (path_name, minimum) in crate::access::NATIVE_PROBED_ADDITIONAL_COMMANDS {
+        let command = evidence["commands"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter_map(serde_json::Value::as_str)
+            .find(|command| *command == *path_name || command.starts_with(&format!("{path_name} ")))
+            .unwrap();
+        for level in [
+            CgateAccessLevel::None,
+            CgateAccessLevel::Connect,
+            CgateAccessLevel::Monitor,
+            CgateAccessLevel::Operate,
+            CgateAccessLevel::Admin,
+            CgateAccessLevel::Program,
+            CgateAccessLevel::Debug,
+            CgateAccessLevel::Clipsal,
+        ] {
+            if level >= *minimum {
+                continue;
+            }
+            let mut client = ClientState {
+                access_level: Some(level),
+                ..ClientState::default()
+            };
+            let reply = service
+                .handle(&mut client, &format!("[matrix] {command}"))
+                .await;
+            assert_eq!(
+                reply.final_text,
+                "420 Access denied.",
+                "{command} at {}: {reply:?}",
+                level.name()
+            );
+            assert_eq!(std::fs::read(&path).unwrap(), before, "{command}");
+            assert!(events.try_recv().is_err(), "{command} emitted an event");
+            let mut byte = [0];
+            assert!(
+                tokio::time::timeout(Duration::from_millis(1), remote.read(&mut byte))
+                    .await
+                    .is_err(),
+                "{command} reached PCI"
+            );
+        }
+    }
+
+    // Handler admission is distinct from its later syntax/object checks.
+    for (level, command) in [
+        (CgateAccessLevel::Monitor, "TREE //MISSING"),
+        (CgateAccessLevel::Operate, "LOCK //MISSING"),
+        (CgateAccessLevel::Admin, "PROJECT DIR"),
+        (CgateAccessLevel::Program, "CGL IMPORT ?"),
+    ] {
+        let mut client = ClientState {
+            access_level: Some(level),
+            ..ClientState::default()
+        };
+        let reply = service
+            .handle(&mut client, &format!("[admitted] {command}"))
+            .await;
+        assert_ne!(reply.final_text, "420 Access denied.", "{command}");
+    }
+
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn expanded_native_cgl_import_floor_denies_document_before_mutation() {
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let before = std::fs::read(&path).unwrap();
+    let mut events = service.events.subscribe();
+    let mut admin = ClientState {
+        access_level: Some(CgateAccessLevel::Admin),
+        ..ClientState::default()
+    };
+    let reply = service
+        .handle_document(&mut admin, "[import] CGL IMPORT HARNESS", "invalid-cgl")
+        .await;
+    assert_eq!(reply.final_text, "420 Access denied.");
+    assert_eq!(std::fs::read(&path).unwrap(), before);
+    assert!(events.try_recv().is_err());
+    let mut byte = [0];
+    assert!(
+        tokio::time::timeout(Duration::from_millis(10), remote.read(&mut byte))
+            .await
+            .is_err(),
+        "denied CGL import reached PCI"
+    );
+
+    let mut program = ClientState {
+        access_level: Some(CgateAccessLevel::Program),
+        ..ClientState::default()
+    };
+    let reply = service
+        .handle_document(&mut program, "[import] CGL IMPORT HARNESS", "invalid-cgl")
+        .await;
+    assert_ne!(reply.final_text, "420 Access denied.");
     std::fs::remove_file(path).unwrap();
 }
 
