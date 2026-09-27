@@ -22,7 +22,10 @@ class EndpointLeaseBusy(RuntimeError):
 
 def _directory() -> Path:
     identity = str(os.getuid()) if hasattr(os, "getuid") else "current-user"
-    path = Path(tempfile.gettempdir()) / ("cbus-toolkit-selected-serial-" + identity)
+    # A caller-controlled TMPDIR must not split cooperating POSIX processes
+    # into separate lock namespaces for the same physical host endpoint.
+    root = Path("/tmp") if os.name == "posix" else Path(tempfile.gettempdir())
+    path = root / ("cbus-toolkit-selected-serial-" + identity)
     try:
         path.mkdir(mode=0o700)
     except FileExistsError:

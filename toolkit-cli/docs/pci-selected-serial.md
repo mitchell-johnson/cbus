@@ -20,7 +20,8 @@ The OS releases the lease even after a process crash; the durable journal still
 requires read-only recovery and never authorizes replay. Plan and verify remain
 read-only and do not take this lease.
 
-The lease is a lock file in a private user directory under the host temporary
+The lease is a lock file in a private user directory under `/tmp` on POSIX
+systems, independent of `TMPDIR`; Windows uses the user's configured temporary
 directory. It cannot exclude a separate user, another computer, cmqttd, C-Gate
 or any controller that does not acquire the same lease. Neither a TCP connection
 nor this process lock establishes exclusive bus ownership. The caller must still

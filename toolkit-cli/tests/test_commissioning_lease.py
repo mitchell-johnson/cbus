@@ -17,7 +17,7 @@ HOST = "127.0.0.1"
 PORT = 49437
 
 
-def child_attempt(host: str, port: int) -> subprocess.CompletedProcess[str]:
+def child_attempt(host: str, port: int, *, env=None) -> subprocess.CompletedProcess[str]:
     code = (
         "from cbus_toolkit.commissioning_lease import EndpointLease, EndpointLeaseBusy\n"
         "try:\n"
@@ -29,7 +29,7 @@ def child_attempt(host: str, port: int) -> subprocess.CompletedProcess[str]:
     )
     return subprocess.run(
         [sys.executable, "-c", code, host, str(port)],
-        capture_output=True, text=True, timeout=10,
+        capture_output=True, text=True, timeout=10, env=env,
     )
 
 
@@ -67,6 +67,14 @@ class EndpointLeaseTests(unittest.TestCase):
         self.assertEqual((child.returncode, child.stdout.strip()), (0, "held"), child.stderr)
         with EndpointLease(HOST, PORT):
             pass
+
+    @unittest.skipIf(os.name != "posix", "Fixed /tmp lease namespace is POSIX-specific")
+    def test_changed_tmpdir_cannot_bypass_host_endpoint_lease(self):
+        with tempfile.TemporaryDirectory() as other_temp:
+            env = dict(os.environ, TMPDIR=other_temp, TMP=other_temp, TEMP=other_temp)
+            with EndpointLease(HOST, PORT):
+                blocked = child_attempt(HOST, PORT, env=env)
+                self.assertEqual((blocked.returncode, blocked.stdout.strip()), (17, "busy"), blocked.stderr)
 
     @unittest.skipIf(os.name == "nt", "No-follow filesystem check is POSIX-specific")
     def test_symlinked_lease_file_is_rejected(self):
