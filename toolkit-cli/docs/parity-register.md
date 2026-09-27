@@ -47,8 +47,9 @@ changes no provisional source count, and supplies no physical cache readback.
   provisional scope mappings and obligation records. It contains one
   source-bound provisional obligation for each of the 442 C-Gate paths, the
   39 historical umbrella obligations, and three scoped `SESSION_ID` functions.
-- `src/cbus_toolkit/parity-evidence.json` contains evidence receipts. It starts
-  empty because a historical path or test filename is not acceptance evidence.
+- `src/cbus_toolkit/parity-evidence.json` contains one scoped, source-bound
+  `SESSION_ID` original-differential receipt. Historical paths and test
+  filenames remain outside acceptance evidence.
 - `src/cbus_toolkit/parity.py` validates both documents and derives progress.
 - `src/cbus_toolkit/cgate-contract-inventory.json` contains one versioned,
   digest-bound contract record for each of the 431 primary and 11 supplement
@@ -62,6 +63,10 @@ changes no provisional source count, and supplies no physical cache readback.
   censuses, feature ledger, Rust capability matrix, parity roadmap and
   `research/functional-obligation-pilot.json`. The pilot manifest pins exact
   public-help syntax, path-contract and owned native-session capture hashes.
+- [The `SESSION_ID` differential](cgate-session-differential.md) retains a red
+  pre-fix mock receipt and separate green mock and production cmqttd receipts.
+  The builder checks the nine-case cmqttd receipt against the current source
+  fingerprint before crediting the three scoped functions.
 - `docs/toolkit-executable-surface.json` is the sanitized Toolkit 1.18.0
   executable inventory. It records names and hashes for 412 parsed Delphi form
   resources, 10,102 component/control instances and 1,892 event bindings.
@@ -147,10 +152,15 @@ The first reviewed functional pilot defines `cgate-function:session-id-query`,
 `cgate-function:session-id-all`, and `cgate-function:session-id-tag`. Each maps
 to the historical `cgate-command-transport` ledger row, one public-help syntax
 anchor and its own C-Gate path contract. The original C-Gate 3.4.0.2001
-loopback capture pins observed nominal and error commands, but it has not been
-converted into a passed current-artifact differential receipt. The three
-implementation statuses are independently `in_progress`; the broad path
-contracts remain provisional. Their physical behavior is a candidate for
+loopback capture pins observed nominal and error commands. A fresh cmqttd
+listener with synthetic PCI matched all nine scoped native response payloads,
+with zero skipped cases. The three `original_differential` dimensions are
+accepted only for that external IPv4 loopback profile. The native capture
+stored tag-stripped payloads: Rust client-tag echo was checked on the wire,
+but native tag-prefix framing remains outside this receipt. The native
+internal Console row is recorded and excluded only from the scoped external
+ALL comparison. The three implementation statuses remain `in_progress`; the
+broad path contracts remain provisional. Their physical behavior is a candidate for
 not-applicable because the observed native operations used no physical network,
 but `physical` stays `unassessed` and applicability stays `unresolved` until a
 passed, dimension-specific applicability receipt exists. TLS, non-loopback
@@ -233,7 +243,8 @@ evidence.
 
 The current register has 39 provisional umbrella obligations, 442 provisional
 C-Gate path obligations and three defined `SESSION_ID` functions, with zero
-accepted obligations and zero evidence receipts. The 484 records overlap and
+fully accepted obligations and one evidence receipt. That receipt accepts only
+the original-differential dimension of the three scoped functions. The 484 records overlap and
 are not a deduplicated functional denominator. All 22,156 source records and
 15 source domains remain unresolved. Executable forms, controls and event
 bindings are now counted. C-Gate paths have a deterministic per-axis contract

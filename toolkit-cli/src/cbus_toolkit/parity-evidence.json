@@ -1,5 +1,55 @@
 {
   "schema_version": 1,
   "target": "C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001",
-  "records": []
+  "records": [
+    {
+      "id": "evidence:cgate-session-id-loopback-differential-v1",
+      "obligation_ids": [
+        "cgate-function:session-id-all",
+        "cgate-function:session-id-query",
+        "cgate-function:session-id-tag"
+      ],
+      "scope_disposition_receipts": [],
+      "dimensions": [
+        "original_differential"
+      ],
+      "result": "passed",
+      "test_ids": [
+        "research/cgate_session_differential.py::session-query-a",
+        "research/cgate_session_differential.py::session-query-b",
+        "research/cgate_session_differential.py::session-all-initial",
+        "research/cgate_session_differential.py::session-tag-initial",
+        "research/cgate_session_differential.py::session-all-tagged",
+        "research/cgate_session_differential.py::session-tag-reassign",
+        "research/cgate_session_differential.py::session-tag-missing",
+        "research/cgate_session_differential.py::session-query-invalid",
+        "research/cgate_session_differential.py::session-all-trailing"
+      ],
+      "environment": {
+        "kind": "interop",
+        "identity": "owned cmqttd loopback listener, synthetic PCI, disposable project and held local broker"
+      },
+      "oracle": {
+        "target": "owned C-Gate 3.4.0.2001 native external command-session payload capture",
+        "artifact_sha256": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f"
+      },
+      "source_revision": "81e908009c212e7f0f0151c5b91cd163ea11e70c",
+      "command": "/Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python research/run_cgate_session_cmqttd_differential.py --cmqttd-bin /private/tmp/cbus-session-differential-bin-20260928/cmqttd-81e9080 --output research/fixtures/cgate-session-differential-cmqttd.json",
+      "exit_code": 0,
+      "artifacts": [
+        {
+          "role": "input",
+          "path": "research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+          "sha256": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f"
+        },
+        {
+          "role": "report",
+          "path": "research/fixtures/cgate-session-differential-cmqttd.json",
+          "sha256": "3c4f34dd47f3232ceb2c49dadc245bca4aff36e1a937093b195a3900b073ba65"
+        }
+      ],
+      "skips": [],
+      "record_sha256": "a8e0a36b6e5f75f1e80c1a484a91d61da4ed84706ba4714cbee20996010e9ab9"
+    }
+  ]
 }

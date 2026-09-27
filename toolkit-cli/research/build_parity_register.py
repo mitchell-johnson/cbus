@@ -34,6 +34,9 @@ NATIVE_SESSION_SOURCE_REF = (
     "research/experiments/2026-09-25/cgate-session-native-acceptance.json"
 )
 FUNCTIONAL_PILOT_PATH = ROOT / "research" / "functional-obligation-pilot.json"
+SESSION_DIFFERENTIAL_PATH = (
+    ROOT / "research" / "fixtures" / "cgate-session-differential-cmqttd.json"
+)
 ROADMAP_PATH = REPOSITORY / "docs" / "parity-review-and-roadmap.md"
 REGISTER_PATH = PACKAGE / "parity-obligations.json"
 EVIDENCE_PATH = PACKAGE / "parity-evidence.json"
@@ -459,6 +462,64 @@ def functional_pilot(surface: dict, contract_by_path: dict[str, dict]) -> list[d
     return obligations
 
 
+def session_differential_evidence() -> dict:
+    """Accept only a current, complete cmqttd-vs-original loopback receipt."""
+    from cbus_toolkit.parity import CGATE_SESSION_PILOT_IDS
+
+    sys.path.insert(0, str(ROOT / "research"))
+    from cgate_session_differential import validate_passed_receipt
+
+    if not SESSION_DIFFERENTIAL_PATH.is_file():
+        raise ValueError("Scoped cmqttd SESSION_ID differential receipt is missing")
+    receipt = load_json(SESSION_DIFFERENTIAL_PATH)
+    validate_passed_receipt(receipt)
+    if receipt["product"] != "cmqttd":
+        raise ValueError("Scoped SESSION_ID acceptance requires the cmqttd endpoint")
+    obligation_ids = sorted({row["obligation_id"] for row in receipt["cases"]})
+    if obligation_ids != sorted(CGATE_SESSION_PILOT_IDS.values()):
+        raise ValueError("Scoped SESSION_ID differential omitted a functional obligation")
+    command = receipt.get("command")
+    if not isinstance(command, str) or not command.strip():
+        raise ValueError("Scoped SESSION_ID differential lacks its exact command")
+    record = {
+        "id": "evidence:cgate-session-id-loopback-differential-v1",
+        "obligation_ids": obligation_ids,
+        "scope_disposition_receipts": [],
+        "dimensions": ["original_differential"],
+        "result": "passed",
+        "test_ids": [
+            f"research/cgate_session_differential.py::{row['id']}"
+            for row in receipt["cases"]
+        ],
+        "environment": {
+            "kind": "interop",
+            "identity": "owned cmqttd loopback listener, synthetic PCI, disposable project and held local broker",
+        },
+        "oracle": {
+            "target": "owned C-Gate 3.4.0.2001 native external command-session payload capture",
+            "artifact_sha256": digest(NATIVE_SESSION_PATH),
+        },
+        "source_revision": receipt["source_revision"],
+        "command": command,
+        "exit_code": 0,
+        "artifacts": [
+            {
+                "role": "input",
+                "path": NATIVE_SESSION_SOURCE_REF,
+                "sha256": digest(NATIVE_SESSION_PATH),
+            },
+            {
+                "role": "report",
+                "path": str(SESSION_DIFFERENTIAL_PATH.relative_to(ROOT)),
+                "sha256": digest(SESSION_DIFFERENTIAL_PATH),
+            },
+        ],
+        "skips": [],
+    }
+    record["record_sha256"] = canonical_digest(record)
+    return record
+
+
 def build() -> tuple[dict, dict]:
     surface = load_json(SURFACE_PATH)
     executable = executable_surface()
@@ -743,10 +804,14 @@ def build() -> tuple[dict, dict]:
             }
         )
 
+    session_evidence = session_differential_evidence()
     scope_by_id = {item["id"]: item for item in scope_items}
     for function in functional_pilot(surface, contract_by_path):
         for scope_id in function["source_scope_item_ids"]:
             scope_by_id[scope_id]["obligation_ids"].append(function["id"])
+        if function["id"] in session_evidence["obligation_ids"]:
+            function["acceptance"]["original_differential"] = "accepted"
+            function["evidence_ids"].append(session_evidence["id"])
         obligations.append(function)
 
     by_kind: dict[str, int] = {}
@@ -779,7 +844,7 @@ def build() -> tuple[dict, dict]:
     evidence = {
         "schema_version": 1,
         "target": ledger["target"],
-        "records": [],
+        "records": [session_evidence],
     }
     evidence_raw = (json.dumps(evidence, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
     register = {
@@ -801,6 +866,7 @@ def build() -> tuple[dict, dict]:
             "cgate_contract_inventory": digest(CGATE_CONTRACT_PATH),
             "cgate_session_native_acceptance": digest(NATIVE_SESSION_PATH),
             "functional_obligation_pilot": digest(FUNCTIONAL_PILOT_PATH),
+            "cgate_session_differential_cmqttd": digest(SESSION_DIFFERENTIAL_PATH),
             "roadmap": digest(ROADMAP_PATH),
         },
         "evidence_bundle_sha256": sha256(evidence_raw).hexdigest(),

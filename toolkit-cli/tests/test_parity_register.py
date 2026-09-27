@@ -166,7 +166,10 @@ class ParityRegisterTests(unittest.TestCase):
         self.assertEqual(report["scope_items"]["unresolved"], 22156)
         self.assertEqual(report["source_inventory"]["total_domains"], 15)
         self.assertEqual(report["source_inventory"]["resolved_domains"], 0)
-        self.assertEqual(report["evidence_records"], 0)
+        self.assertEqual(report["evidence_records"], 1)
+        self.assertEqual(
+            report["acceptance_by_dimension"]["original_differential"]["accepted"], 3
+        )
         self.assertEqual(report["cgate_contracts"]["paths"], 442)
         self.assertEqual(
             report["cgate_contracts"]["subaxis_status"][
@@ -181,9 +184,10 @@ class ParityRegisterTests(unittest.TestCase):
             {"unresolved": 442},
         )
 
-    def test_session_function_pilot_is_narrow_and_unaccepted(self):
+    def test_session_function_pilot_has_only_scoped_differential_evidence(self):
         register, evidence, _, _, _, _, _ = packaged_documents()
-        self.assertEqual(evidence["records"], [])
+        self.assertEqual(len(evidence["records"]), 1)
+        self.assertEqual(evidence["records"][0]["dimensions"], ["original_differential"])
         self.assertFalse(register["census_complete"])
         functions = {
             item["source_id"]: item
@@ -202,15 +206,41 @@ class ParityRegisterTests(unittest.TestCase):
                     obligation["applicability"]["physical_candidate"],
                     "not_applicable_pending_receipt",
                 )
+                self.assertEqual(obligation["acceptance"]["original_differential"], "accepted")
                 self.assertEqual(
-                    set(obligation["acceptance"].values()), {"unassessed"}
+                    {value for key, value in obligation["acceptance"].items()
+                     if key != "original_differential"}, {"unassessed"}
                 )
-                self.assertEqual(obligation["evidence_ids"], [])
+                self.assertEqual(obligation["evidence_ids"],
+                                 ["evidence:cgate-session-id-loopback-differential-v1"])
                 broad = next(
                     item for item in register["obligations"]
                     if item.get("kind") == "cgate_path" and item["source_id"] == path
                 )
                 self.assertEqual(broad["definition_status"], "provisional")
+
+    def test_session_differential_acceptance_rejects_missing_or_stale_receipt(self):
+        with TemporaryDirectory() as folder:
+            missing = Path(folder, "missing.json")
+            with patch.object(register_builder, "SESSION_DIFFERENTIAL_PATH", missing):
+                with self.assertRaisesRegex(ValueError, "receipt is missing"):
+                    register_builder.session_differential_evidence()
+
+            receipt = json.loads(register_builder.SESSION_DIFFERENTIAL_PATH.read_text())
+            receipt["source_fingerprint"]["rust/cbus-cgate/src/main.rs"] = "0" * 64
+            stale = Path(folder, "stale.json")
+            stale.write_text(json.dumps(receipt))
+            with patch.object(register_builder, "SESSION_DIFFERENTIAL_PATH", stale):
+                with self.assertRaisesRegex(ValueError, "source fingerprint is stale"):
+                    register_builder.session_differential_evidence()
+
+            receipt = json.loads(register_builder.SESSION_DIFFERENTIAL_PATH.read_text())
+            receipt["cases"][0]["result"] = "failed"
+            partial = Path(folder, "partial.json")
+            partial.write_text(json.dumps(receipt))
+            with patch.object(register_builder, "SESSION_DIFFERENTIAL_PATH", partial):
+                with self.assertRaisesRegex(ValueError, "case evidence changed"):
+                    register_builder.session_differential_evidence()
 
     def test_session_function_pilot_rejects_broken_packaged_anchors(self):
         def first_function(register):
@@ -246,7 +276,7 @@ class ParityRegisterTests(unittest.TestCase):
 
         register, *_ = packaged_documents()
         first_function(register)["acceptance"]["physical"] = "not_applicable"
-        with self.assertRaisesRegex(ValueError, "requires evidence"):
+        with self.assertRaisesRegex(ValueError, "lacks a passed not-applicable decision"):
             evaluate_packaged_change(register)
 
     def test_session_function_pilot_builder_rejects_stale_or_missing_original_sources(self):

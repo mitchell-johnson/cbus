@@ -45,6 +45,10 @@ jobs:
         working-directory: toolkit-cli
         run: make build-interop
 
+      - name: Original C-Gate SESSION_ID differential on both Rust servers
+        working-directory: toolkit-cli
+        run: make check-session-differential
+
       - name: Toolkit offline suite
         working-directory: toolkit-cli
         run: >-
@@ -117,6 +121,8 @@ jobs:
             ${{ runner.temp }}/cmqttd-interop.xml
             ${{ runner.temp }}/cmqttd-interop-trace.json
             ${{ runner.temp }}/cmqttd-interop-results.json
+            toolkit-cli/research/runtime/cgate-session-differential-mock.json
+            toolkit-cli/research/runtime/cgate-session-differential-cmqttd.json
 
   toolkit-wheel:
     name: Toolkit isolated installed wheel
