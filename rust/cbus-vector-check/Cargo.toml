@@ -10,3 +10,4 @@ cbus-protocol = { path = "../cbus-protocol" }
 cbus-mqtt = { path = "../cbus-mqtt" }
 serde_json = { workspace = true }
 hex = { workspace = true }
+roxmltree = { workspace = true }

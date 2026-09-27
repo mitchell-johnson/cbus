@@ -3,6 +3,7 @@
 //! prints `protocol-vectors: <passed>/<total> PASS|FAIL` as the last line.
 //! Exit code 0 iff all pass.
 
+use cbus_cgate::{AccessLevel, Response, Server};
 use cbus_protocol::common::{cbus_checksum, duration_to_ramp_rate, ramp_rate_to_duration};
 use cbus_protocol::decode::decode_packet;
 use cbus_protocol::json::{packet_from_json, packet_to_json, JsonObject};
@@ -63,7 +64,11 @@ fn main() {
                 Ok(()) => file_passed += 1,
                 Err(reason) => {
                     if printed < MAX_FAILURES_PRINTED {
-                        let id = v.get("id").and_then(Value::as_str).unwrap_or("?");
+                        let id = v
+                            .get("id")
+                            .or_else(|| v.get("name"))
+                            .and_then(Value::as_str)
+                            .unwrap_or("?");
                         println!("  FAIL {id}: {reason}");
                         printed += 1;
                     }
@@ -110,8 +115,177 @@ fn check_vector(fname: &str, v: &Value) -> Result<(), String> {
         "kfi.jsonl" => check_kfi(v),
         "cni_discovery.jsonl" => check_cni_discovery(v),
         "cgate_event_fanout.jsonl" => check_cgate_event_fanout(v),
+        "cgate_dbsetxml.jsonl" => check_cgate_dbsetxml(v),
         _ => Err(format!("unimplemented suite {fname}")),
     }
+}
+
+const DBSETXML_TYPED_TREE_SEED: &str =
+    include_str!("../../testdata/fixtures/cgate_dbsetxml_typed_tree_seed.xml");
+
+/// Exercise a real in-memory C-Gate database transaction. The five synthetic
+/// typed-tree rows start from a committed pre-state whose OIDs match their
+/// selected targets. The combined Network/Unit row starts from an empty
+/// network and compares against the separately captured native readback.
+fn check_cgate_dbsetxml(v: &Value) -> Result<(), String> {
+    let name = need_str(v, "name")?;
+    let setup = need_str(v, "setup")?;
+    let basis = need_str(v, "basis")?;
+    let target = need_str(v, "target")?;
+    let document = need_str(v, "document")?;
+    let expected_reply = need_str(v, "reply")?;
+    let readback_target = need_str(v, "readback_target")?;
+    let expected_readback = need_str(v, "readback")?;
+    if document.is_empty() || expected_readback.is_empty() || expected_reply.is_empty() {
+        return Err(format!(
+            "{name}: document, reply, and readback must be nonempty"
+        ));
+    }
+    if !matches!(setup, "typed-tree" | "native-network-unit") {
+        return Err(format!("{name}: unsupported DBSETXML setup {setup:?}"));
+    }
+    let expected_basis = if setup == "native-network-unit" {
+        "native-loopback"
+    } else {
+        "modeled-fixture"
+    };
+    if basis != expected_basis {
+        return Err(format!(
+            "{name}: {basis:?} provenance cannot support {setup:?} setup"
+        ));
+    }
+    if setup == "native-network-unit" {
+        let capture: Value = serde_json::from_str(include_str!(
+            "../../testdata/fixtures/native_cgate_dbsetxml_combined.json"
+        ))
+        .map_err(|error| format!("{name}: invalid committed native capture: {error}"))?;
+        if capture["schema"] != "native-cgate-dbsetxml-combined-v1"
+            || capture["oracle"]["version"] != "3.4.0 build 2001"
+            || capture["document"].as_str() != Some(document)
+            || capture["reply"].as_str() != Some(expected_reply)
+            || capture["network_readback"].as_str() != Some(expected_readback)
+        {
+            return Err(format!(
+                "{name}: native vector does not match the owned loopback capture"
+            ));
+        }
+    }
+
+    let parsed = roxmltree::Document::parse(document)
+        .map_err(|error| format!("{name}: invalid replacement XML: {error}"))?;
+    let new_oid = direct_xml_field(parsed.root_element(), "OID")
+        .ok_or_else(|| format!("{name}: replacement XML has no root OID"))?;
+    let expected_target = if setup == "typed-tree" {
+        format!("!{new_oid}")
+    } else {
+        "//XCOMB/254".to_string()
+    };
+    if readback_target != expected_target {
+        return Err(format!(
+            "{name}: readback target {readback_target:?} is not the replacement {expected_target:?}"
+        ));
+    }
+
+    let mut server = Server::new(AccessLevel::Program).with_programming(true);
+    expect_status(
+        name,
+        "PROJECT NEW",
+        server.handle("[seed] PROJECT NEW XCOMB"),
+        200,
+    )?;
+    expect_status(
+        name,
+        "DBCREATENET",
+        server.handle("[seed] DBCREATENET 254 Local Cni 127.0.0.1:1"),
+        200,
+    )?;
+    if setup == "typed-tree" {
+        let seed = roxmltree::Document::parse(DBSETXML_TYPED_TREE_SEED)
+            .map_err(|error| format!("{name}: invalid committed seed XML: {error}"))?;
+        let selected_oid = target
+            .strip_prefix('!')
+            .ok_or_else(|| format!("{name}: typed-tree target must be an OID"))?;
+        let selected = seed
+            .descendants()
+            .filter(|node| node.is_element())
+            .find(|node| direct_xml_field(*node, "OID") == Some(selected_oid))
+            .ok_or_else(|| format!("{name}: target OID is absent from committed seed"))?;
+        if selected.tag_name().name() != parsed.root_element().tag_name().name() {
+            return Err(format!(
+                "{name}: target type {} differs from replacement type {}",
+                selected.tag_name().name(),
+                parsed.root_element().tag_name().name()
+            ));
+        }
+        expect_status(
+            name,
+            "seed DBSETXML",
+            server.handle_document("[seed] DBSETXML //XCOMB/254", DBSETXML_TYPED_TREE_SEED),
+            301,
+        )?;
+    } else if target != "//XCOMB/254" {
+        return Err(format!(
+            "{name}: native-network-unit setup requires //XCOMB/254"
+        ));
+    }
+    expect_xml(
+        name,
+        "pre-state DBGETXML",
+        server.handle(&format!("[before] DBGETXML {target}")),
+    )?;
+
+    let write = server.handle_document(&format!("[write] DBSETXML {target}"), document);
+    if write.status != 301 || !write.lines.is_empty() || write.final_text != expected_reply {
+        return Err(format!(
+            "{name}: DBSETXML reply {:?} != {expected_reply:?}",
+            write
+        ));
+    }
+    let got = expect_xml(
+        name,
+        "replacement DBGETXML",
+        server.handle(&format!("[read] DBGETXML {readback_target}")),
+    )?;
+    if got != expected_readback {
+        return Err(format!(
+            "{name}: DBGETXML readback {got:?} != {expected_readback:?}"
+        ));
+    }
+    if setup == "typed-tree" {
+        let retired = server.handle(&format!("[retired] DBGETXML {target}"));
+        if retired.status != 401 {
+            return Err(format!(
+                "{name}: replaced target still resolves: {retired:?}"
+            ));
+        }
+    }
+    Ok(())
+}
+
+fn direct_xml_field<'a>(node: roxmltree::Node<'a, '_>, field: &str) -> Option<&'a str> {
+    node.children()
+        .find(|child| child.is_element() && child.tag_name().name() == field)
+        .and_then(|child| child.text())
+}
+
+fn expect_status(name: &str, step: &str, response: Response, status: u16) -> Result<(), String> {
+    if response.status != status {
+        return Err(format!("{name}: {step} failed: {response:?}"));
+    }
+    Ok(())
+}
+
+fn expect_xml(name: &str, step: &str, response: Response) -> Result<String, String> {
+    if response.status != 200 || response.final_text != "200 OK" || response.lines.len() != 1 {
+        return Err(format!(
+            "{name}: {step} was not one XML snippet: {response:?}"
+        ));
+    }
+    response.lines[0]
+        .strip_prefix("347-")
+        .filter(|body| !body.is_empty())
+        .map(str::to_owned)
+        .ok_or_else(|| format!("{name}: {step} had no nonempty 347 XML body"))
 }
 
 fn check_cgate_event_fanout(v: &Value) -> Result<(), String> {
@@ -527,7 +701,100 @@ fn check_ha(v: &Value) -> Result<(), String> {
 
 #[cfg(test)]
 mod tests {
-    use super::check_vector;
+    use super::{check_vector, expect_xml};
+    use cbus_cgate::Response;
+
+    fn dbsetxml_rows() -> Vec<serde_json::Value> {
+        include_str!("../../testdata/vectors/cgate_dbsetxml.jsonl")
+            .lines()
+            .map(|line| serde_json::from_str(line).unwrap())
+            .collect()
+    }
+
+    #[test]
+    fn cgate_dbsetxml_vectors_execute_all_six_transactions() {
+        let rows = dbsetxml_rows();
+        assert_eq!(rows.len(), 6);
+        let mut modeled = 0;
+        let mut native = 0;
+        for row in rows {
+            check_vector("cgate_dbsetxml.jsonl", &row).unwrap();
+            match row["basis"].as_str().unwrap() {
+                "modeled-fixture" => modeled += 1,
+                "native-loopback" => native += 1,
+                other => panic!("unexpected evidence basis {other}"),
+            }
+        }
+        assert_eq!((modeled, native), (5, 1));
+    }
+
+    #[test]
+    fn cgate_dbsetxml_rejects_missing_setup_and_changed_expected_output() {
+        let mut row = dbsetxml_rows().remove(0);
+        let original = row.clone();
+        row["target"] = "!00000000-0000-4000-8000-000000000099".into();
+        assert!(check_vector("cgate_dbsetxml.jsonl", &row)
+            .unwrap_err()
+            .contains("absent from committed seed"));
+
+        row = original.clone();
+        row["setup"] = "skip".into();
+        assert!(check_vector("cgate_dbsetxml.jsonl", &row)
+            .unwrap_err()
+            .contains("unsupported DBSETXML setup"));
+
+        row = original.clone();
+        row["basis"] = "native-loopback".into();
+        assert!(check_vector("cgate_dbsetxml.jsonl", &row)
+            .unwrap_err()
+            .contains("provenance"));
+
+        row = original.clone();
+        row["reply"] = "301 OID=wrong".into();
+        assert!(check_vector("cgate_dbsetxml.jsonl", &row)
+            .unwrap_err()
+            .contains("DBSETXML reply"));
+
+        row = original.clone();
+        row["readback"] = "<Level/>".into();
+        assert!(check_vector("cgate_dbsetxml.jsonl", &row)
+            .unwrap_err()
+            .contains("DBGETXML readback"));
+
+        row = original.clone();
+        row["readback"] = "".into();
+        assert!(check_vector("cgate_dbsetxml.jsonl", &row)
+            .unwrap_err()
+            .contains("must be nonempty"));
+
+        row = original;
+        row["document"] = "<Level>".into();
+        assert!(check_vector("cgate_dbsetxml.jsonl", &row)
+            .unwrap_err()
+            .contains("invalid replacement XML"));
+    }
+
+    #[test]
+    fn cgate_dbsetxml_rejects_empty_xml_response() {
+        let response = Response {
+            tag: "read".to_string(),
+            lines: Vec::new(),
+            final_text: "200 OK".to_string(),
+            status: 200,
+        };
+        assert!(expect_xml("empty", "DBGETXML", response)
+            .unwrap_err()
+            .contains("not one XML snippet"));
+    }
+
+    #[test]
+    fn cgate_dbsetxml_native_row_must_match_the_owned_capture() {
+        let mut row = dbsetxml_rows().remove(5);
+        row["readback"] = "<Network/>".into();
+        assert!(check_vector("cgate_dbsetxml.jsonl", &row)
+            .unwrap_err()
+            .contains("does not match the owned loopback capture"));
+    }
 
     #[test]
     fn cgate_event_fanout_vectors_check_status_and_config_with_distinct_evidence() {

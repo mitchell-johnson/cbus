@@ -111,6 +111,7 @@ Run a supported committed compatibility suite outside the Rust test harness:
 ```sh
 cbus-vector-check rust/testdata/vectors --file encode.jsonl
 cbus-vector-check rust/testdata/vectors --file cgate_event_fanout.jsonl
+cbus-vector-check rust/testdata/vectors --file cgate_dbsetxml.jsonl
 ```
 
 The event-fanout suite checks four native-observed status filters and four
@@ -119,3 +120,10 @@ captured native config-change trigger. The command succeeds only when it
 processes at least one vector and all selected vectors pass. Directory-wide
 mode also reads suites without standalone handlers and reports them as failures;
 use `--file` for a supported suite.
+
+The DBSETXML suite creates an explicit in-memory pre-state, performs each
+replacement through `cbus-cgate`, and checks the `301` receipt, exact
+`DBGETXML` readback, and old-OID retirement. Five typed-object expectations
+are modeled fixtures; the composed Network/Unit expectation is from an owned
+C-Gate 3.4.0.2001 loopback capture. This offline check does not exercise a
+running C-Gate or physical network.

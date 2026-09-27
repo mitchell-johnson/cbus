@@ -481,9 +481,13 @@ The default bind is `127.0.0.1:20033`. Port `0` chooses an ephemeral port and th
 ```sh
 rust/target/release/cbus-vector-check rust/testdata/vectors
 rust/target/release/cbus-vector-check rust/testdata/vectors --file checksum.jsonl
+rust/target/release/cbus-vector-check rust/testdata/vectors --file cgate_dbsetxml.jsonl
 ```
 
 The final line has the form `protocol-vectors: PASSED/TOTAL PASS|FAIL`. Exit code zero requires at least one processed vector and no failures.
+The DBSETXML suite runs six real in-memory C-Gate replacements and exact
+readbacks; five use a synthetic typed-tree pre-state and one uses an owned
+native combined Network/Unit readback. It does not contact a C-Gate listener.
 
 ## Docker
 

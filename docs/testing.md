@@ -119,7 +119,19 @@ Do not equate offline test success with complete Toolkit parity. Run `cbus-toolk
 
 ## Test data
 
-`rust/testdata/vectors/` contains JSONL compatibility vectors for checksums, frame encoding and decoding, ramp rates, MQTT topics, and Home Assistant discovery. The `cbus-golden-tests` build script generates a separately named Rust test for every vector so a failure identifies the exact case.
+`rust/testdata/vectors/` contains JSONL compatibility vectors for checksums,
+frame encoding and decoding, ramp rates, MQTT topics, Home Assistant discovery,
+and selected C-Gate behavior. The `cbus-golden-tests` build script generates a
+separately named Rust test for each vector in its supported protocol/MQTT suites.
+
+`cbus-vector-check rust/testdata/vectors --file cgate_dbsetxml.jsonl` separately
+executes six stateful DBSETXML transactions against `cbus-cgate`. The five
+typed-object rows use the committed synthetic pre-state in
+`cgate_dbsetxml_typed_tree_seed.xml`. The combined Network/Unit row requires
+the submitted XML, `301` receipt, and exact readback from the owned native
+C-Gate 3.4.0.2001 loopback fixture. The runner checks a nonempty pre-state,
+exact replacement receipt and XML readback, and old-OID retirement for typed
+rows.
 
 `rust/testdata/fixtures/` contains a small project XML and behavioral expectations used by CLI and full-system tests. These are test fixtures rather than production configuration.
 
