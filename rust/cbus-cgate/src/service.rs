@@ -48,7 +48,10 @@ use crate::config::{
     parameter as config_parameter, ConfigParameter, ConfigScope, CONFIG_HELP, CONFIG_PARAMETERS,
 };
 use cbus_protocol::{
-    common::{APP_ERROR_REPORTING, APP_IDENTIFY, APP_MEDIA_TRANSPORT, APP_SHORT_MESSAGE},
+    common::{
+        duration_to_ramp_rate, ramp_rate_to_duration, APP_ERROR_REPORTING, APP_IDENTIFY,
+        APP_MEDIA_TRANSPORT, APP_SHORT_MESSAGE,
+    },
     packet::{Meta, Packet},
     sal::{
         accesscontrol::AccessControlMessage,
@@ -12199,7 +12202,7 @@ impl Service {
         ok(tag, vec![], "200 OK")
     }
 
-    async fn lighting(&self, client: &ClientState, line: &str, tag: &str) -> Response {
+    async fn lighting(self: &Arc<Self>, client: &ClientState, line: &str, tag: &str) -> Response {
         let _commands = self.commands.lock().await;
         let (response, event) = {
             let mut staged = self.model.lock().await.clone();
@@ -12297,6 +12300,20 @@ impl Service {
             },
             _ => return err(tag, 502, "502 Unsupported lighting operation"),
         };
+        // A status request immediately after a timed ramp can report an
+        // intermediate level. Ask again after the encoded C-Bus ramp duration
+        // (which is snapped up to the native rate table), with a small margin
+        // for the final level to be available on the bus. Only a received
+        // report may populate the live cache.
+        let final_readback_delay = match &sal {
+            Sal::LightingRamp { duration, .. } if *duration > 0 => {
+                let rate = duration_to_ramp_rate(i64::from(*duration));
+                let snapped = ramp_rate_to_duration(rate)
+                    .expect("duration_to_ramp_rate always selects a native ramp rate");
+                Some(Duration::from_secs(u64::from(snapped)) + Duration::from_millis(500))
+            }
+            _ => None,
+        };
         let (pci_generation, pci) = self.current_pci_epoch().await;
         // The previous observation predates this command. Invalidate it before
         // sending so a report arriving ahead of the confirmation is retained.
@@ -12336,8 +12353,32 @@ impl Service {
                     // Queue the existing direct physical readback. There is no
                     // retained routed status-reply contract for these commands,
                     // so a bridged confirmation does not invent one.
+                    let service = Arc::clone(self);
                     tokio::spawn(async move {
+                        let final_at =
+                            final_readback_delay.map(|delay| tokio::time::Instant::now() + delay);
+                        let Some(generation_guard) =
+                            service.pci_commit_guard(pci_generation, &pci).await
+                        else {
+                            return;
+                        };
+                        // The flow controller may wait indefinitely for a
+                        // stalled CNI write. Do not hold the replacement gate
+                        // across it. A replacement racing after this check
+                        // can receive only this read-only request on the old
+                        // captured PCI, never a request on the new PCI.
+                        drop(generation_guard);
                         let _ = pci.request_status(group & 0xe0, app, true).await;
+                        if let Some(final_at) = final_at {
+                            tokio::time::sleep_until(final_at).await;
+                            let Some(generation_guard) =
+                                service.pci_commit_guard(pci_generation, &pci).await
+                            else {
+                                return;
+                            };
+                            drop(generation_guard);
+                            let _ = pci.request_status(group & 0xe0, app, true).await;
+                        }
                     });
                 }
                 response
@@ -12545,7 +12586,12 @@ impl Service {
         response
     }
 
-    async fn do_method(&self, client: &ClientState, tag: &str, words: &[&str]) -> Response {
+    async fn do_method(
+        self: &Arc<Self>,
+        client: &ClientState,
+        tag: &str,
+        words: &[&str],
+    ) -> Response {
         if words.len() < 3 {
             return err(tag, 400, "400 DO requires an object and method");
         }

@@ -1712,7 +1712,15 @@ declares them volatile. The real-daemon boundary is
 `rust/cmqttd/tests/system_cgate_general_tree.rs`.
 
 `DO //PROJECT/NETWORK/APPLICATION/GROUP ON|OFF|RAMP|TERMINATERAMP` uses the
-same confirmed SAL path as the corresponding lighting command. `DO
+same confirmed SAL path as the corresponding lighting command. On the direct
+network, a nonzero-duration RAMP schedules an additional physical level-status
+request after the table-snapped native duration plus 500 ms. A first status
+report can show an intermediate level; only a later received report can update
+the cached level to the physical result. The deferred request is skipped after
+an observed PCI replacement and never targets the replacement transport;
+reconnect racing just after the check may still receive that read-only request
+on the captured old PCI. Immediate ramps and routed commands do not schedule
+this additional readback. `DO
 //PROJECT/NETWORK SYNC` runs the same physical identity-populating direct or
 bridged read-only synchronization as `NET SYNC` and returns native `202 Done:
 object` framing.
