@@ -156,7 +156,12 @@ class SelectedSerialTests(unittest.TestCase):
     def test_options07_and_late_changed_local_identity_reject_before_co(self):
         sim=fixture(pci_options=b'\x07')
         with sim.running() as endpoint:
-            with self.assertRaisesRegex(ValueError,'05'):manager(endpoint).plan(A,6)
+            # The full wheel suite loads the host while this real TCP fixture
+            # is scheduled. Keep enough time to observe the whole 07 reply,
+            # so the assertion checks the value rejection rather than a
+            # scheduler-dependent incomplete capture.
+            with self.assertRaisesRegex(ValueError,'05'):
+                manager(endpoint,overall_timeout=8.,observation_timeout=3.,options_response_timeout=1.).plan(A,6)
             self.assertEqual(sim.co_operations,[])
         sim=fixture()
         with tempfile.TemporaryDirectory() as tmp,sim.running() as endpoint:
