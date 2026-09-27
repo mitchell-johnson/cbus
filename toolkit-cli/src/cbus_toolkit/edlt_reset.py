@@ -464,7 +464,16 @@ class EdltResetControls:
         origin.reference = weakref.ref(result)
         return result, state, phases
 
-    def plan(self, raw_parameters, *, metadata, active_tab, binding_variant, dirty_parameters=()):
+    def prepare_unit_reset(self, raw_parameters, *, metadata, active_tab,
+                           binding_variant, dirty_parameters=()):
+        """Issue the retained Reset transition without its terminal save.
+
+        The ordered parent transaction consumes this narrow preparation point
+        so later validated controls can bind to the genuinely fresh widget and
+        scene graph before one shared BeforeSave/CRC projection.  Returning the
+        engine-owned ``ResetEdlt`` receipt keeps all existing origin/context
+        guards in force; callers do not receive a PP overlay interface.
+        """
         raw = self.raw_input(raw_parameters)
         _choice(active_tab, ACTIVE_TABS, 'Active tab'); _choice(binding_variant, BINDING_VARIANTS, 'Binding variant')
         dirty = _dirty(dirty_parameters, self.spec.parameters)
@@ -472,6 +481,13 @@ class EdltResetControls:
         base = self.lifecycle.load(self.snapshot(_RawState(raw).raw()), metadata=cache.lifecycle)
         context = self._context(base, raw, cache, active_tab, binding_variant, dirty)
         edited = self.lifecycle.reset_unit_controls(base, reset_context=context)
+        return raw, dirty, cache, edited
+
+    def plan(self, raw_parameters, *, metadata, active_tab, binding_variant, dirty_parameters=()):
+        raw, dirty, cache, edited = self.prepare_unit_reset(
+            raw_parameters, metadata=metadata, active_tab=active_tab,
+            binding_variant=binding_variant,
+            dirty_parameters=dirty_parameters)
         phases = dict(edited.raw_phases)
         state = _RawState.from_phase(phases['after-reset'])
         saved = self.lifecycle.prepare_save(edited)
@@ -492,7 +508,7 @@ class EdltResetControls:
             'model_cycle_complete': True, 'reset_transition': edited.as_dict(),
             'raw_dirty_state_verified_scope': 'explicit loaded control context, not arbitrary prior Toolkit UI state',
             'reset_excluded_parameters': sorted(_EXCLUDED), 'new_widget_models': 21, 'new_scene_models': 8,
-            'source_model_families': [w.model_family for w in base.widgets],
+            'source_model_families': [w.model_family for w in edited.base.widgets],
             'terminal_navigation_raw': state.raw()['NavWidgetType'],
             'initial_requirements': self.requirements(raw, active_tab=active_tab, binding_variant=binding_variant).as_dict()}
         expected = self.snapshot(raw)

@@ -22,6 +22,13 @@ CMQTTD_PROJECT_FILE="/etc/cmqttd/project.cbz"
 # Optional private decoded C-Gate unit specifications
 CMQTTD_UNITSPEC_PATH="/etc/cmqttd/unitspec"
 
+# Optional C-Gate listener TLS and LOGIN material. Paths can be overridden
+# without placing certificate or credential contents in the environment.
+CMQTTD_CGATE_TLS_CERT_PATH="${CMQTTD_CGATE_TLS_CERT_PATH:-/etc/cmqttd/cgate-server.pem}"
+CMQTTD_CGATE_TLS_KEY_PATH="${CMQTTD_CGATE_TLS_KEY_PATH:-/etc/cmqttd/cgate-server.key}"
+CMQTTD_CGATE_TLS_CLIENT_CA_PATH="${CMQTTD_CGATE_TLS_CLIENT_CA_PATH:-/etc/cmqttd/cgate-client-ca.pem}"
+CMQTTD_CGATE_AUTH_PATH="${CMQTTD_CGATE_AUTH_PATH:-/etc/cmqttd/cgate-auth}"
+
 # Valid levels: DEBUG, INFO, WARNING, ERROR, CRITICAL
 # Use CMQTTD_VERBOSITY from environment, default to INFO if not set
 LOG_LEVEL="${CMQTTD_VERBOSITY:-INFO}"
@@ -108,6 +115,25 @@ if [ -n "${CMQTTD_CGATE_BIND}" ] && [ "${CMQTTD_CGATE_BIND}" != "off" ] && [ -e 
     set -- "$@" --cgate-bind "${CMQTTD_CGATE_BIND}" --cgate-state "${CMQTTD_CGATE_STATE:-/var/lib/cmqttd/cgate.json}"
     if [ -d "${CMQTTD_UNITSPEC_PATH}" ]; then
         set -- "$@" --cgate-unitspec "${CMQTTD_UNITSPEC_PATH}"
+    fi
+    if [ -e "${CMQTTD_CGATE_TLS_CERT_PATH}" ] || [ -e "${CMQTTD_CGATE_TLS_KEY_PATH}" ]; then
+        if [ ! -e "${CMQTTD_CGATE_TLS_CERT_PATH}" ] || [ ! -e "${CMQTTD_CGATE_TLS_KEY_PATH}" ]; then
+            echo "C-Gate TLS requires both ${CMQTTD_CGATE_TLS_CERT_PATH} and ${CMQTTD_CGATE_TLS_KEY_PATH}."
+            exit 1
+        fi
+        echo "Using TLS for the C-Gate listener."
+        set -- "$@" --cgate-tls-cert "${CMQTTD_CGATE_TLS_CERT_PATH}" --cgate-tls-key "${CMQTTD_CGATE_TLS_KEY_PATH}"
+        if [ -e "${CMQTTD_CGATE_TLS_CLIENT_CA_PATH}" ]; then
+            echo "Requiring C-Gate client certificates signed by ${CMQTTD_CGATE_TLS_CLIENT_CA_PATH}."
+            set -- "$@" --cgate-tls-client-ca "${CMQTTD_CGATE_TLS_CLIENT_CA_PATH}"
+        fi
+    elif [ -e "${CMQTTD_CGATE_TLS_CLIENT_CA_PATH}" ]; then
+        echo "C-Gate client CA requires a C-Gate TLS certificate and key."
+        exit 1
+    fi
+    if [ -e "${CMQTTD_CGATE_AUTH_PATH}" ]; then
+        echo "Using the C-Gate LOGIN credential at ${CMQTTD_CGATE_AUTH_PATH}."
+        set -- "$@" --cgate-auth-file "${CMQTTD_CGATE_AUTH_PATH}"
     fi
 fi
 exec cmqttd "$@"

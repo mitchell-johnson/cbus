@@ -2538,6 +2538,7 @@ impl Server {
             address,
             Network {
                 oid: oid.clone(),
+                interface_oid: super::fresh_oid(),
                 address,
                 name: words[2].to_string(),
                 iface_type: words[3].to_string(),
@@ -2796,6 +2797,7 @@ impl Server {
                 address,
                 Network {
                     oid: network_oid,
+                    interface_oid: self.issue_oid(),
                     address,
                     name: if old.name.is_empty() {
                         "[default]".to_string()
@@ -2984,7 +2986,9 @@ impl Server {
         self.pending_object(project, oid).is_some()
             || self.projects.get(project).is_some_and(|record| {
                 record.networks.values().any(|network| {
-                    network.oid == oid || network.units.values().any(|unit| unit.oid == oid)
+                    network.oid == oid
+                        || network.interface_oid == oid
+                        || network.units.values().any(|unit| unit.oid == oid)
                 })
             })
             || self.db_levels.values().any(|level| {
@@ -3136,6 +3140,7 @@ impl Server {
             }
             "Network" => {
                 let address = address.expect("required");
+                let interface_oid = self.issue_oid();
                 let record = self
                     .projects
                     .get_mut(project)
@@ -3147,6 +3152,7 @@ impl Server {
                     address,
                     Network {
                         oid: oid.to_string(),
+                        interface_oid,
                         address,
                         name: tag_name,
                         iface_type: object

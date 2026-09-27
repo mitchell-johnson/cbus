@@ -3,7 +3,7 @@
 Ledger/census + fresh-wheel + differential harness scaffolding only.
 
 This module does NOT claim Toolkit parity. It loads the authoritative
-38-area ledger in ``capabilities.json`` (``census_complete: false``) and
+39-area ledger in ``capabilities.json`` (``census_complete: false``) and
 exposes the differential matrix: every ledger area maps to workflow and
 negative-path slots that start ``unassessed``, except the eight attempted
 rows ``edlt-reset-controls``, ``edlt-retained-scene-editing``,
@@ -424,8 +424,8 @@ THERMOSTAT_CONFIGURATION_EVIDENCE_PATHS = [
 # below is applied unchanged. This row is the native-oracle evidence-kind
 # finding: 6,487 of 6,497 declared catalogue boundary configurations
 # compared with native C-Gate (616,722 successful parameter comparisons)
-# plus 161 of 163 distinct logical memory layouts exercised with changing
-# native values (322 passing change trials) -- large-scale differential
+# plus all 163 distinct logical memory layouts exercised with changing
+# native values (326 passing change trials) -- large-scale differential
 # evidence against a NATIVE oracle, not replayed ORIGINAL-Toolkit
 # executions. Values are read off the committed artifacts listed in
 # ALL_UNIT_PARAMETER_ENCODING_EVIDENCE_PATHS below:
@@ -441,13 +441,15 @@ THERMOSTAT_CONFIGURATION_EVIDENCE_PATHS = [
 #   alternative_failed 10. The 105 vendor-catalogue rejections and 10
 #   command limitations are native-oracle rejection observations, not
 #   replayed original error-identity vectors;
-# - memory layout corpus (docs/native-memory-acceptance.json): format
-#   cbus-native-memory-acceptance-v1, distinct_layouts 163, summary pass
-#   161 / unexercised 2 / passing_change_trials 322; the 2 unexercised
-#   layouts are single-bit little-endian DLT LabelFlavourLSB/MSB with no
-#   native token-addressable parameter name. Scope: "Changing-value
-#   differential acceptance of distinct logical memory layouts; not
-#   per-device, firmware or Toolkit workflow parity";
+# - command-addressable memory corpus (docs/native-memory-acceptance.json):
+#   format cbus-native-memory-acceptance-v1, distinct_layouts 163, summary
+#   pass 161 / unexercised 2 / passing_change_trials 322. The separate
+#   original-encoder supplement
+#   (docs/native-memory-fragment-acceptance.json) exercises the two
+#   internal-fragment-only, single-bit little-endian DLT
+#   LabelFlavourLSB/MSB layouts with four passing changing-value trials.
+#   Combined: all 163 layouts pass, with 326 changing-value trials. Neither
+#   scope establishes per-device, firmware or Toolkit workflow parity;
 # - catalogue scope (docs/catalog-acceptance-summary.json): "Offline
 #   native unit schema and Python session acceptance at selected
 #   catalogue firmware points", with a ``does_not_establish`` list
@@ -468,7 +470,7 @@ THERMOSTAT_CONFIGURATION_EVIDENCE_PATHS = [
 # self-referential alone). ``has_native_persistence`` is False (no
 # database save/close/load readback; native PP sessions are transient
 # programming contexts, not persistence). ``has_acceptance_record`` and
-# ``has_bounded_scope_note`` are True (two committed records bound the
+# ``has_bounded_scope_note`` are True (three committed records bound the
 # native-oracle claim and explicitly disclaim Toolkit-workflow parity) --
 # nominal still fails on the ``original_executions`` leg alone, which is
 # exactly the evidence-kind gap this audit documents (see the rubric-gap
@@ -488,9 +490,9 @@ ALL_UNIT_PARAMETER_ENCODING_EVIDENCE = {
     "boundary_workflow_comparisons": 552391,
     "boundary_alternative_comparisons": 64331,
     "distinct_layouts": 163,
-    "layouts_pass": 161,
-    "layouts_unexercised": 2,
-    "passing_change_trials": 322,
+    "layouts_pass": 163,
+    "layouts_unexercised": 0,
+    "passing_change_trials": 326,
     "has_replay_test": False,
     "has_native_persistence": False,
     "has_acceptance_record": True,
@@ -506,15 +508,20 @@ ALL_UNIT_PARAMETER_ENCODING_EVIDENCE = {
 # self-referential split: research/verify_catalog.py (gated native-oracle
 # runner) plus the offline tests/test_unitspec.py and
 # tests/test_memory.py (offline codec checks, self-referential alone) and
-# the two committed acceptance records (docs/catalog-acceptance-summary.json
+# the three committed acceptance records (docs/catalog-acceptance-summary.json
 # for the 6,497-case boundary workflow, docs/native-memory-acceptance.json
-# for the 163-layout corpus) are the audit trail;
+# for the 161 command-addressable layouts, and
+# docs/native-memory-fragment-acceptance.json for the two internal-fragment
+# layouts) are the audit trail;
 # docs/catalog-acceptance.md is the bounded-scope narrative.
 ALL_UNIT_PARAMETER_ENCODING_EVIDENCE_PATHS = [
     "tests/test_unitspec.py",
     "tests/test_memory.py",
+    "tests/test_memory_fragment_acceptance.py",
     "research/verify_catalog.py",
+    "research/verify_memory_fragments.py",
     "docs/native-memory-acceptance.json",
+    "docs/native-memory-fragment-acceptance.json",
     "docs/catalog-acceptance-summary.json",
     "docs/catalog-acceptance.md",
 ]

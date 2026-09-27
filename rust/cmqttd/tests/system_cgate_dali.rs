@@ -121,6 +121,56 @@ async fn dali_core_and_emergency_are_correlated_authenticated_and_keep_mqtt_live
     );
     assert_eq!(capability_json["dali_specialized_commands_fail_closed"], 0);
     assert_eq!(capability_json["dali_full_compatibility"], false);
+    assert_eq!(
+        capability_json["dali_session_typed_device_plans"],
+        "complete-read-only-extract"
+    );
+    assert_eq!(
+        capability_json["dali_session_typed_extract_plans"],
+        serde_json::json!([
+            "DALI_ONLY",
+            "FULL",
+            "REFRESH_STATUS_INFO",
+            "RETRIEVE_RECONCILE"
+        ])
+    );
+    assert_eq!(
+        capability_json["dali_session_typed_extract_plans_remaining"],
+        serde_json::json!(["COND_QUICK", "COND_EXTENDED", "RESCAN_FAULT"])
+    );
+    assert_eq!(
+        capability_json["dali_session_typed_extract_refusal_step"],
+        "ADDRESS_UNKNOWN"
+    );
+    assert_eq!(
+        capability_json["dali_session_typed_extract_safe_prefix_plans"],
+        serde_json::json!({
+            "COND_QUICK": ["POLL_FINISH_DISCOVER_KNOWN_FULL_INFO", "MISSING"],
+            "COND_EXTENDED": ["POLL_FINISH_DISCOVER_KNOWN_FULL_INFO", "MISSING"],
+            "RESCAN_FAULT": ["RESCAN", "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO", "MISSING"]
+        })
+    );
+    assert_eq!(
+        capability_json["dali_session_typed_extract_refusal_receipt"],
+        "mask-only-no-explicit-device-allocation"
+    );
+    assert_eq!(
+        capability_json["dali_session_typed_deploy_plans_remaining"],
+        serde_json::json!(["DALI_ONLY", "FULL"])
+    );
+    assert_eq!(
+        capability_json["dali_session_typed_deploy_preflight"],
+        "local-session-target-validation-before-io"
+    );
+    assert_eq!(
+        capability_json["dali_session_typed_deploy_refusal_missing"],
+        serde_json::json!([
+            "native-step-order",
+            "model-to-payload-ownership",
+            "per-field-readback-receipts",
+            "full-typed-ext-atomic-boundary"
+        ])
+    );
     assert_eq!(capability_json["dali_auto_poll_limit"], 10);
     assert_eq!(
         capability_json["dali_delivery_semantics"],

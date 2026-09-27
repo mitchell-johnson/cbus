@@ -547,6 +547,92 @@ class RustInteropTests(unittest.TestCase):
             "DBSETXML //TEST/254/p/20/UnitName", "LOUNGE\n")
         self.assertEqual(stored.code, 200)
 
+    def test_typed_unit_document_round_trip_preserves_unknown_markup(self):
+        from cbus_toolkit.native import NativeDatabase
+        from cbus_toolkit.programming import xml_text
+
+        self.client.command("PROJECT NEW TEST")
+        self.client.command("DBCREATENET 254 Local Cni 127.0.0.1:10001")
+        database = NativeDatabase(self.client)
+        database.add("//TEST/254", "unit", 20, "Original")
+        database.set("//TEST/254/p/20/UnitType", "KEYE1")
+        database.set("//TEST/254/p/20/FirmwareVersion", "1.2.67")
+        initial = xml_text(database.get("//TEST/254/p/20", xml=True))
+        match = re.search(r"<OID>([0-9a-fA-F-]{36})</OID>", initial)
+        self.assertIsNotNone(match)
+        oid = match.group(1)
+
+        replacement = (
+            '<Unit xmlns:x="urn:interop" x:mode="preserve">'
+            f"<OID>{oid}</OID><Address>21</Address><TagName>Moved</TagName>"
+            "<UnitType>KEYE1</UnitType><FirmwareVersion>1.2.67</FirmwareVersion>"
+            '<!--opaque-comment--><x:Opaque order="1"><x:Nested>yes</x:Nested>'
+            '</x:Opaque><PP Name="UnitAddress" Value="21"/></Unit>'
+        )
+        replaced = self.client.command_document(
+            "DBSETXML //TEST/254/p/20", replacement)
+        self.assertEqual(replaced.code, 301)
+        self.assertEqual(replaced.final, f"301 OID={oid}")
+
+        moved = xml_text(database.get("//TEST/254/p/21", xml=True))
+        self.assertIn('x:mode="preserve"', moved)
+        self.assertIn("<!--opaque-comment-->", moved)
+        self.assertIn("<x:Nested>yes</x:Nested>", moved)
+        self.assertIn('<PP Name="UnitAddress" Value="21"/>', moved)
+
+        # Later modeled changes are projected through the accepted template;
+        # its opaque namespace, nested element and comment remain intact.
+        database.set("//TEST/254/p/21/TagName", "Projected")
+        database.set("//TEST/254/p/21/UnitAddress", "22")
+        projected = xml_text(database.get("//TEST/254/p/21", xml=True))
+        self.assertIn("<TagName>Projected</TagName>", projected)
+        self.assertIn('<PP Name="UnitAddress" Value="22"/>', projected)
+        self.assertIn('x:mode="preserve"', projected)
+        self.assertIn("<!--opaque-comment-->", projected)
+        self.assertIn("<x:Nested>yes</x:Nested>", projected)
+
+    def test_typed_container_document_replaces_complete_subtree(self):
+        from cbus_toolkit.native import NativeDatabase
+        from cbus_toolkit.programming import xml_text
+
+        self.client.command("PROJECT NEW XMLT")
+        self.client.command("DBCREATENET 254 Local Cni 127.0.0.1:1")
+        added = self.client.command("DBADD 254 Application")
+        old_oid = added.final.rsplit("=", 1)[-1]
+        self.client.command(f"DBSET !{old_oid}/Address 56")
+        self.client.command(f"DBSET !{old_oid}/TagName Original")
+        replacement = (
+            '<Application xmlns:x="urn:interop" x:source="python">'
+            '<OID>60000000-0000-4000-8000-000000000001</OID>'
+            '<TagName>Moved</TagName><Address>58</Address>'
+            '<Group><OID>60000000-0000-4000-8000-000000000002</OID>'
+            '<TagName>Scenes</TagName><Address>10</Address>'
+            '<Level Value="128">'
+            '<OID>60000000-0000-4000-8000-000000000003</OID>'
+            '<TagName>Evening</TagName><Address>1</Address></Level></Group>'
+            '<!--kept--><x:Metadata>opaque</x:Metadata></Application>'
+        )
+        replaced = self.client.command_document(
+            f"DBSETXML !{old_oid}", replacement)
+        self.assertEqual(replaced.code, 301)
+        self.assertEqual(
+            replaced.final,
+            "301 OID=60000000-0000-4000-8000-000000000001")
+
+        database = NativeDatabase(self.client)
+        readback = xml_text(database.get("//XMLT/254/58", xml=True))
+        self.assertIn('<Application xmlns:x="urn:interop" x:source="python">',
+                      readback)
+        self.assertIn('<Level', readback)
+        self.assertIn('Value="128"', readback)
+        self.assertIn('<Address>1</Address>', readback)
+        self.assertIn('<!--kept-->', readback)
+        self.assertIn('<x:Metadata>opaque</x:Metadata>', readback)
+        with self.assertRaises(RuntimeError):
+            database.get("//XMLT/254/56", xml=True)
+        with self.assertRaises(RuntimeError):
+            self.client.command(f"DBGET !{old_oid}/OID")
+
     def test_named_trigger_event_resolves_through_level_xml(self):
         # End-to-end tag resolution with production wrappers only: create
         # and initialize a level (the wrapper performs the native 301 +

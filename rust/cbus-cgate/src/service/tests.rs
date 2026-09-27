@@ -4,7 +4,7 @@ use tokio::io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader};
 
 fn fixture() -> String {
     include_str!("../../../testdata/fixtures/project.xml").replace("</Network>",
-        "<Unit><Address>5</Address><TagName>Fixture eDLT</TagName><UnitType>KEYGL5</UnitType><FirmwareVersion>5.5.00</FirmwareVersion><PP Name=\"StaticTextString0\" Value=\"Fixture\"/></Unit></Network>")
+        "<Unit oid=\"00000000-0000-0000-0000-00000000000c\"><Address>5</Address><TagName>Fixture eDLT</TagName><UnitType>KEYGL5</UnitType><FirmwareVersion>5.5.00</FirmwareVersion><PP Name=\"StaticTextString0\" Value=\"Fixture\"/></Unit></Network>")
 }
 
 fn topology_fixture() -> String {
@@ -1075,28 +1075,199 @@ async fn bridged_syncnew_all_discovers_into_only_the_target_cache() {
     std::fs::remove_file(path).unwrap();
 }
 
-#[tokio::test]
-async fn bridged_syncnew_target_remains_fail_closed_before_bus_io() {
+#[tokio::test(start_paused = true)]
+async fn bridged_syncnew_target_runs_route_correlated_duplicate_and_identity_discovery() {
+    async fn line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+
     let path = state_path();
-    let (pci_client, mut remote) = pci();
+    let (pci_client, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci_client.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
     let service = Service::new(&topology_fixture(), None, path.clone(), pci_client, None).unwrap();
-    let response = service
-        .handle(
-            &mut ClientState::default(),
-            "[target] NET SYNCNEW //TOPO/253 5",
-        )
-        .await;
-    assert_eq!(response.status, 502, "{response:?}");
+    let mut events = service.events.subscribe();
+    let command = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[target] NET SYNCNEW //TOPO/253 5",
+                )
+                .await
+        }
+    });
+
+    for _ in 0..5 {
+        let request = line(&mut remote_read).await;
+        assert!(request.starts_with(b"\\03FD09FFFAFF00FF"), "{request:?}");
+        let code = request[request.len() - 2];
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+        for (start, count) in [(0, 88), (88, 88), (176, 80)] {
+            remote_write
+                .write_all(&routed_mmi_block(&[253], start, count, &[(5, 1)]))
+                .await
+                .unwrap();
+        }
+    }
+
+    for (attempt, expected) in [
+        (0u8, b"\\46FD090511801E".as_slice()),
+        (1u8, b"\\46FD090511811D".as_slice()),
+        (2u8, b"\\46FD090511821C".as_slice()),
+    ] {
+        let request = line(&mut remote_read).await;
+        assert_eq!(&request[..request.len() - 2], expected);
+        let code = request[request.len() - 2];
+        // A matching unit/parameter on the neighbouring route is ignored.
+        routed_pci_reply(&mut remote_write, &[252], 5, &[0x82, 0x80 + attempt, 0x22]).await;
+        routed_pci_reply(&mut remote_write, &[253], 5, &[0x82, 0x80 + attempt, 0x33]).await;
+        tokio::task::yield_now().await;
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+        tokio::time::advance(Duration::from_secs(2)).await;
+        tokio::task::yield_now().await;
+    }
+
+    for (attribute, value) in [(1u8, b"KEYE1".as_slice()), (2u8, b"1.2.30".as_slice())] {
+        let request = line(&mut remote_read).await;
+        assert!(
+            request.starts_with(format!("\\46FD090521{attribute:02X}").as_bytes()),
+            "{request:?}"
+        );
+        let code = request[request.len() - 2];
+        let mut cal = vec![0x80 | (value.len() as u8 + 1), attribute];
+        cal.extend_from_slice(value);
+        routed_pci_reply(&mut remote_write, &[252], 5, &cal).await;
+        routed_pci_reply(&mut remote_write, &[253], 5, &cal).await;
+        tokio::task::yield_now().await;
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+    }
+
+    let serial = [
+        0x38, 0xff, 0xff, 0xff, 0xff, 0x18, 0xb1, 0x06, 0x16, 0xa2, 0x00, 0x05,
+    ];
+    let request = line(&mut remote_read).await;
+    assert_eq!(&request[..request.len() - 2], b"\\46FD090521048A");
+    let code = request[request.len() - 2];
+    let mut cal = vec![0x8d, 4];
+    cal.extend_from_slice(&serial);
+    routed_pci_reply(&mut remote_write, &[253], 5, &cal).await;
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    tokio::time::advance(Duration::from_secs(2)).await;
+    tokio::task::yield_now().await;
+
+    let response = command.await.unwrap();
+    assert_eq!(response.status, 303, "{response:?}");
+    assert_eq!(response.lines.len(), 11, "{response:?}");
+    assert_eq!(response.lines[0], "120-completed MMI 1 of 5.");
+    assert_eq!(response.lines[4], "120-completed MMI 5 of 5.");
+    assert_eq!(response.lines[5], "120-unit found");
+    assert_eq!(response.lines[6], "120-duplicate test 1/3");
+    assert_eq!(response.lines[10], "120-identifying unit");
     assert_eq!(
         response.final_text,
-        "502 Routed NET SYNCNEW targeted discovery is not implemented"
+        "303 New Unit Found: address=5 type=KEYE1 version=1.2.30 serial=101136.1558"
     );
+    let model = service.model.lock().await;
+    let remote_network = &model.projects["TOPO"].networks[&253];
+    assert_eq!(remote_network.physical[&5].unit_type, "KEYE1");
+    assert_eq!(remote_network.physical[&5].firmware, "1.2.30");
+    assert_eq!(remote_network.physical[&5].serial, "101136.1558");
+    assert!(model.projects["TOPO"].networks[&254].physical.is_empty());
+    drop(model);
+    assert_eq!(events.recv().await.unwrap(), "#e# net 253 syncnew unit 5");
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test(start_paused = true)]
+async fn bridged_syncnew_target_lost_confirmation_retires_without_cache_or_event() {
+    async fn line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+
+    let path = state_path();
+    let (pci_client, remote) = pci();
+    let observed_pci = pci_client.clone();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci_client.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+    let service = Service::new(&topology_fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut events = service.events.subscribe();
+    let command = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[timeout] NET SYNCNEW //TOPO/253 5",
+                )
+                .await
+        }
+    });
+
+    for _ in 0..5 {
+        let request = line(&mut remote_read).await;
+        assert!(request.starts_with(b"\\03FD09FFFAFF00FF"), "{request:?}");
+        let code = request[request.len() - 2];
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+        for (start, count) in [(0, 88), (88, 88), (176, 80)] {
+            remote_write
+                .write_all(&routed_mmi_block(&[253], start, count, &[(5, 1)]))
+                .await
+                .unwrap();
+        }
+    }
+
+    let request = line(&mut remote_read).await;
+    assert_eq!(&request[..request.len() - 2], b"\\46FD090511801E");
+    // A matching reply is deliberately insufficient: the command's positive
+    // confirmation never arrives, so the exchange remains uncertain and the
+    // whole PCI generation must be retired rather than replayed or committed.
+    routed_pci_reply(&mut remote_write, &[253], 5, &[0x82, 0x80, 0x33]).await;
+    tokio::time::advance(Duration::from_secs(10)).await;
+    tokio::task::yield_now().await;
+
+    let response = command.await.unwrap();
+    assert_eq!(response.status, 408, "{response:?}");
+    assert_eq!(
+        response.final_text,
+        "408 Operation failed: Duplicate test failed:duplicate-address probe timed out"
+    );
+    assert_eq!(
+        observed_pci.programming_lane_state(),
+        ProgrammingLaneState::ReconnectRequired
+    );
+    assert!(!observed_pci.is_connected());
     assert!(
-        tokio::time::timeout(Duration::from_millis(25), remote.read_u8())
-            .await
-            .is_err(),
-        "an unevidenced routed duplicate challenge must fail before PCI I/O"
+        !service.model.lock().await.projects["TOPO"].networks[&253]
+            .physical
+            .contains_key(&5),
+        "an incomplete duplicate exchange must not commit the staged unit"
     );
+    assert!(matches!(
+        events.try_recv(),
+        Err(tokio::sync::broadcast::error::TryRecvError::Empty)
+    ));
     std::fs::remove_file(path).unwrap();
 }
 
@@ -1349,8 +1520,8 @@ async fn aircon_help_and_native_validation_fail_before_pci_io() {
 #[tokio::test]
 async fn armed_auth_gate_covers_mutations_but_not_help() {
     let path = state_path();
-    let (pci, _remote) = pci();
-    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let (pci_client, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
     service
         .set_auth_token_hash(crate::auth::sha256(b"aircon-test-token"))
         .unwrap();
@@ -4016,7 +4187,7 @@ async fn stale_lighting_epoch_cannot_invalidate_a_replacement_observation() {
         .await;
 
     assert!(service
-        .invalidate_level_for_epoch(generation, &old_pci, 56, 1)
+        .invalidate_level_for_epoch(generation, &old_pci, 254, 56, 1)
         .await
         .is_err());
     assert_eq!(
@@ -4688,6 +4859,9 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["cgate_fail_closed_paths"], 0);
     assert_eq!(document["cgate_obsolete_paths"], 2);
     assert_eq!(document["cgate_rejected_paths"], 0);
+    assert_eq!(document["pci_generation"], 0);
+    assert_eq!(document["pci_connected"], true);
+    assert_eq!(document["programming_lane_state"], "ready");
     assert_eq!(
         document["cgate_compatibility_limitations"]
             .as_array()
@@ -4714,6 +4888,33 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["network_set_project_identify"], true);
     assert_eq!(document["bridged_read_only_discovery"], true);
     assert_eq!(document["bridged_syncnew_general"], true);
+    assert_eq!(document["bridged_project_identity_write"], true);
+    assert_eq!(
+        document["bridged_mutation_commands"],
+        serde_json::json!([
+            "LIGHTING",
+            "DO lighting",
+            "TRIGGER",
+            "ENABLE SET",
+            "NET SET_PROJECT_IDENTIFY",
+            "PP SAVE",
+            "PP SAVE_TO_SOURCE"
+        ])
+    );
+    assert_eq!(document["physical_application_routed_control"], true);
+    assert_eq!(
+        document["physical_application_routed_families"],
+        serde_json::json!(["lighting", "trigger", "enable-set"])
+    );
+    assert_eq!(
+        document["physical_application_routed_delivery_semantics"],
+        "pci-confirmed-exactly-once-no-replay-no-device-readback"
+    );
+    assert_eq!(
+        document["physical_application_routed_state_scope"],
+        "target-network-only"
+    );
+    assert_eq!(document["physical_application_routed_readback"], false);
     assert_eq!(document["bridged_network_max_hops"], 6);
     assert_eq!(
         document["bridged_read_only_commands"],
@@ -4723,7 +4924,8 @@ async fn capabilities_report_observation_without_device_readback() {
             "NET SYNC",
             "NET SYNCNEW",
             "NET CHECKUNIT",
-            "DO SYNC"
+            "DO SYNC",
+            "PP LOAD"
         ])
     );
     assert_eq!(document["net_unravelunit_matchdb_duplicate_255"], true);
@@ -4734,6 +4936,22 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["topology_explore"], true);
     assert_eq!(document["net_lifecycle_fail_closed"], serde_json::json!([]));
     assert_eq!(document["pp_reset_to_defaults"], true);
+    assert_eq!(document["physical_pp_routed_load"], true);
+    assert_eq!(document["physical_pp_routed_save"], true);
+    assert_eq!(
+        document["physical_pp_routed_methods"],
+        serde_json::json!(["direct"])
+    );
+    assert_eq!(
+        document["physical_pp_routed_save_protection"],
+        serde_json::json!(["none", "checksum"])
+    );
+    assert_eq!(document["physical_pp_routed_lock"], false);
+    assert_eq!(document["physical_pp_routed_nvm_commit"], false);
+    assert_eq!(
+        document["physical_pp_routed_state_scope"],
+        "owned-session-target-network"
+    );
     assert_eq!(document["pp_raw_session_memory"], true);
     assert_eq!(
         document["pp_catalog_scope"],
@@ -4794,7 +5012,11 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["session_id"], true);
     assert_eq!(document["quit"], true);
     assert_eq!(document["document_framing"], true);
-    assert_eq!(document["database_documents"], false);
+    assert_eq!(document["database_documents"], true);
+    assert_eq!(
+        document["database_document_scope"],
+        serde_json::json!(["scalar-field", "typed-unit"])
+    );
     assert_eq!(
         document["legacy_database_local_commands"],
         serde_json::json!([
@@ -5407,13 +5629,13 @@ async fn physical_label_clear_matches_native_wire_and_confirmation_contract() {
         "{response:?}"
     );
     let mut unexpected = Vec::new();
+    let followup = tokio::time::timeout(
+        Duration::from_millis(1),
+        remote_read.read_until(b'\r', &mut unexpected),
+    )
+    .await;
     assert!(
-        tokio::time::timeout(
-            Duration::from_millis(1),
-            remote_read.read_until(b'\r', &mut unexpected)
-        )
-        .await
-        .is_err(),
+        unexpected.is_empty() && !matches!(followup, Ok(Ok(received)) if received != 0),
         "LABEL CLEAR must not replay after a missing confirmation: {unexpected:?}"
     );
 
@@ -6025,7 +6247,6 @@ async fn physical_pp_save_reports_partial_write_evidence_and_retains_dirty() {
         </Parameters></UnitSpecification>"#,
     )
     .unwrap();
-
     let (pci, remote) = pci();
     let (remote_read, mut remote_write) = tokio::io::split(remote);
     let mut remote_read = BufReader::new(remote_read);
@@ -6445,10 +6666,10 @@ async fn physical_pp_save_first_store_failure_reports_zero_confirmed_and_retains
     // stray write would appear on the wire promptly; a 750ms window is
     // generous enough to avoid flakes on a loaded machine while still
     // proving deterministically that the failure path emits nothing further.
+    let followup =
+        tokio::time::timeout(Duration::from_millis(750), pci_line(&mut remote_read)).await;
     assert!(
-        tokio::time::timeout(Duration::from_millis(750), pci_line(&mut remote_read))
-            .await
-            .is_err(),
+        followup.is_err() || followup.is_ok_and(|wire| wire.is_empty()),
         "no further wire bytes expected after definitive STORE failure"
     );
 
@@ -6615,10 +6836,10 @@ async fn physical_pp_save_counts_paged_write_toward_confirmed_total() {
     // any stray write would appear on the wire promptly; a 750ms window is
     // generous enough to avoid flakes on a loaded machine while still
     // proving deterministically that the failure path emits nothing further.
+    let followup =
+        tokio::time::timeout(Duration::from_millis(750), pci_line(&mut remote_read)).await;
     assert!(
-        tokio::time::timeout(Duration::from_millis(750), pci_line(&mut remote_read))
-            .await
-            .is_err(),
+        followup.is_err() || followup.is_ok_and(|wire| wire.is_empty()),
         "no further wire bytes expected after definitive paged STORE failure"
     );
 
@@ -6791,10 +7012,10 @@ async fn physical_pp_save_skips_unchanged_items_without_counting() {
     // appear on the wire promptly; a 750ms window is generous enough to
     // avoid flakes on a loaded machine while still proving deterministically
     // that the failure path emits nothing further.
+    let followup =
+        tokio::time::timeout(Duration::from_millis(750), pci_line(&mut remote_read)).await;
     assert!(
-        tokio::time::timeout(Duration::from_millis(750), pci_line(&mut remote_read))
-            .await
-            .is_err(),
+        followup.is_err() || followup.is_ok_and(|wire| wire.is_empty()),
         "no further wire bytes expected after definitive STORE failure"
     );
 
@@ -7640,7 +7861,7 @@ enum OptionalEdltFailure {
     WidgetGroups,
 }
 
-async fn run_partial_edlt_sync_failure(failure: OptionalEdltFailure) -> Unit {
+async fn run_partial_edlt_sync_timeout(failure: OptionalEdltFailure) {
     async fn line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
         let mut line = Vec::new();
         reader.read_until(b'\r', &mut line).await.unwrap();
@@ -7775,56 +7996,50 @@ async fn run_partial_edlt_sync_failure(failure: OptionalEdltFailure) -> Unit {
     tokio::task::yield_now().await;
 
     let response = syncing.await.unwrap();
-    assert_eq!(
-        response.status, 200,
-        "optional metadata failure: {response:?}"
+    assert_eq!(response.status, 408, "metadata timeout: {response:?}");
+    let failed_field = match failure {
+        OptionalEdltFailure::ApplicationRecall => "Application/Application2",
+        OptionalEdltFailure::WidgetGroups => "WidgetGroups",
+    };
+    assert!(
+        response.final_text.starts_with(&format!(
+            "408 Physical metadata synchronization failed at unit 5 {failed_field}: "
+        )),
+        "the caller must receive the exact failed unit and field: {response:?}"
     );
     assert!(
-        tokio::time::timeout(Duration::from_secs(1), line(&mut remote_read))
-            .await
-            .is_err(),
-        "a timed-out optional request must not replay or start a later request"
+        response.final_text.contains("timed out")
+            && response.final_text.ends_with("PCI generation retired"),
+        "the transport cause must remain visible: {response:?}"
     );
-    let snapshot =
-        service.model.lock().await.projects["HARNESS"].networks[&254].physical[&5].clone();
+    if let Ok(bytes) = tokio::time::timeout(Duration::from_secs(1), line(&mut remote_read)).await {
+        assert!(
+            bytes.is_empty(),
+            "a timed-out optional request replayed or started a later request: {bytes:?}"
+        );
+    }
+    assert!(
+        service.model.lock().await.projects["HARNESS"].networks[&254]
+            .physical
+            .is_empty(),
+        "a retired PCI generation must invalidate the complete staged snapshot"
+    );
+    let capabilities = service
+        .handle(&mut ClientState::default(), "[health] CMQTT CAPABILITIES")
+        .await;
+    let document: serde_json::Value = serde_json::from_str(&capabilities.lines[0]).unwrap();
+    assert_eq!(document["pci_connected"], false);
+    assert_eq!(
+        document["programming_lane_state"], "reconnect-required",
+        "operators must be able to distinguish a retired generation"
+    );
     std::fs::remove_file(path).unwrap();
-    snapshot
 }
 
 #[tokio::test(start_paused = true)]
-async fn physical_net_sync_retains_only_metadata_fresh_before_each_optional_failure() {
-    let application_failure =
-        run_partial_edlt_sync_failure(OptionalEdltFailure::ApplicationRecall).await;
-    assert_eq!(application_failure.field("Version"), "5.5.00");
-    assert_eq!(
-        application_failure.fields.get("FirmwareVersion"),
-        Some(&"02.00.00".to_string())
-    );
-    for field in ["Application", "Application2", "WidgetGroups"] {
-        assert!(
-            !application_failure.fields.contains_key(field),
-            "stale {field}: {application_failure:?}"
-        );
-    }
-
-    let widget_failure = run_partial_edlt_sync_failure(OptionalEdltFailure::WidgetGroups).await;
-    assert_eq!(widget_failure.field("Version"), "5.5.00");
-    assert_eq!(
-        widget_failure.fields.get("FirmwareVersion"),
-        Some(&"02.00.00".to_string())
-    );
-    assert_eq!(
-        widget_failure.fields.get("Application"),
-        Some(&"57".to_string())
-    );
-    assert_eq!(
-        widget_failure.fields.get("Application2"),
-        Some(&"202".to_string())
-    );
-    assert!(
-        !widget_failure.fields.contains_key("WidgetGroups"),
-        "stale WidgetGroups: {widget_failure:?}"
-    );
+async fn physical_net_sync_reports_metadata_timeout_and_discards_retired_generation() {
+    run_partial_edlt_sync_timeout(OptionalEdltFailure::ApplicationRecall).await;
+    run_partial_edlt_sync_timeout(OptionalEdltFailure::WidgetGroups).await;
 }
 
 #[tokio::test(start_paused = true)]
@@ -7932,9 +8147,13 @@ async fn physical_net_sync_reconnect_during_optional_metadata_does_not_commit_st
 
     let response = syncing.await.unwrap();
     assert_eq!(response.status, 408, "stale sync must fail: {response:?}");
-    assert_eq!(
-        response.final_text,
-        "408 Physical network synchronization invalidated by PCI reconnect"
+    assert!(
+        response.final_text.starts_with(
+            "408 Physical metadata synchronization failed at unit 5 FirmwareVersion:"
+        ) && response
+            .final_text
+            .ends_with("invalidated by PCI reconnect"),
+        "the original metadata failure and reconnect invalidation must both remain visible: {response:?}"
     );
     let model = service.model.lock().await;
     let network = &model.projects["HARNESS"].networks[&254];
@@ -9023,6 +9242,704 @@ async fn physical_project_identify_verifies_readback_and_reconnect_invalidates_c
 }
 
 #[tokio::test(start_paused = true)]
+async fn bridged_project_identity_store_is_route_correlated_and_updates_only_target_cache() {
+    let path = state_path();
+    let (pci_client, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci_client.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        database_pci_line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+
+    let service = Service::new(&topology_fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut events = service.events.subscribe();
+    let setting = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[rpi] NET SET_PROJECT_IDENTIFY //TOPO/253 TEST",
+                )
+                .await
+        }
+    });
+
+    let request = database_pci_line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\03FD09FFFAFF00FF"), "{request:?}");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    for (start, count) in [(0, 88), (88, 88), (176, 80)] {
+        remote_write
+            .write_all(&routed_mmi_block(&[253], start, count, &[(4, 1)]))
+            .await
+            .unwrap();
+    }
+
+    let request = database_pci_line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\46FD09042101"), "{request:?}");
+    let code = request[request.len() - 2];
+    database_pci_reply(&mut remote_write, 4, &[0x86, 1, b'B', b'A', b'D']).await;
+    routed_pci_reply(&mut remote_write, &[252], 4, &[0x86, 1, b'B', b'A', b'D']).await;
+    routed_pci_reply(
+        &mut remote_write,
+        &[253],
+        4,
+        &[0x86, 1, b'K', b'E', b'Y', b'E', b'1'],
+    )
+    .await;
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+
+    let request = database_pci_line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\46FD09042104"), "{request:?}");
+    let code = request[request.len() - 2];
+    let serial = [
+        0x8d, 4, 0x38, 0xff, 0xff, 0xff, 0xff, 0x18, 0xb1, 0x06, 0x16, 0xa2, 0x00, 0x05,
+    ];
+    database_pci_reply(&mut remote_write, 4, &serial).await;
+    routed_pci_reply(&mut remote_write, &[252], 4, &serial).await;
+    routed_pci_reply(&mut remote_write, &[253], 4, &serial).await;
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    tokio::time::advance(Duration::from_secs(2)).await;
+    tokio::task::yield_now().await;
+
+    assert_eq!(
+        database_pci_line(&mut remote_read).await,
+        b"\\46FD0904A82346CE4CB379E79ED4\r"
+    );
+    database_pci_reply(&mut remote_write, 4, &[0x32, 0x23, 0x46]).await;
+    routed_pci_reply(&mut remote_write, &[252], 4, &[0x32, 0x23, 0x46]).await;
+    routed_pci_reply(&mut remote_write, &[253], 5, &[0x32, 0x23, 0x46]).await;
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0x32, 0x23, 0x47]).await;
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0x32, 0x23, 0x46]).await;
+
+    assert_eq!(
+        database_pci_line(&mut remote_read).await,
+        b"\\46FD09041A23066D\r"
+    );
+    database_pci_reply(
+        &mut remote_write,
+        4,
+        &[0x87, 0x23, 0xce, 0x4c, 0xb3, 0x79, 0xe7, 0x9e],
+    )
+    .await;
+    routed_pci_reply(
+        &mut remote_write,
+        &[252],
+        4,
+        &[0x87, 0x23, 0xce, 0x4c, 0xb3, 0x79, 0xe7, 0x9e],
+    )
+    .await;
+    routed_pci_reply(
+        &mut remote_write,
+        &[253],
+        4,
+        &[0x87, 0x24, 0xce, 0x4c, 0xb3, 0x79, 0xe7, 0x9e],
+    )
+    .await;
+    routed_pci_reply(
+        &mut remote_write,
+        &[253],
+        4,
+        &[0x87, 0x23, 0xce, 0x4c, 0xb3, 0x79, 0xe7, 0x9e],
+    )
+    .await;
+
+    let response = setting.await.unwrap();
+    assert_eq!(response.status, 200, "{response:?}");
+    assert_eq!(response.final_text, "200 OK.");
+    let model = service.model.lock().await;
+    assert_eq!(
+        model.projects["TOPO"].networks[&253].physical[&4].fields["ProjectName"],
+        "TEST    "
+    );
+    assert!(model.projects["TOPO"].networks[&254].physical.is_empty());
+    drop(model);
+    assert!(
+        events.try_recv().is_err(),
+        "project identity mutation must not invent an event"
+    );
+
+    let property = service
+        .handle(
+            &mut ClientState::default(),
+            "[get-rpi] GET //TOPO/253/p/4 ProjectName",
+        )
+        .await;
+    assert_eq!(property.status, 300, "{property:?}");
+    assert!(property.final_text.ends_with("ProjectName=TEST    "));
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test(start_paused = true)]
+async fn bridged_pp_load_save_correlates_route_and_keeps_session_on_target_network() {
+    async fn answer_identity<R, W>(reader: &mut R, writer: &mut W, attribute: u8, value: &[u8])
+    where
+        R: tokio::io::AsyncBufRead + Unpin,
+        W: tokio::io::AsyncWrite + Unpin,
+    {
+        let request = database_pci_line(reader).await;
+        assert!(
+            request.starts_with(format!("\\46FD090421{attribute:02X}").as_bytes()),
+            "{request:?}"
+        );
+        let code = request[request.len() - 2];
+        let mut reply = vec![0x80 | (value.len() as u8 + 1), attribute];
+        reply.extend_from_slice(value);
+        database_pci_reply(writer, 4, &reply).await;
+        routed_pci_reply(writer, &[252], 4, &reply).await;
+        routed_pci_reply(writer, &[253], 5, &reply).await;
+        routed_pci_reply(writer, &[253], 4, &reply).await;
+        writer.write_all(&[code, b'.']).await.unwrap();
+    }
+
+    let path = state_path();
+    let spec_dir = state_path().with_extension("routed-pp-unitspec");
+    std::fs::create_dir_all(&spec_dir).unwrap();
+    std::fs::write(
+        spec_dir.join("TESTUNIT.xml"),
+        r#"<UnitSpecification><Parameters>
+        <Param><Name>Standard</Name><Type>int</Type><Address>$20</Address><ArraySize>2</ArraySize><ProgramMethod>direct</ProgramMethod><Protection>checksum</Protection><Tag>Core</Tag></Param>
+        <Param><Name>Paged</Name><Type>int</Type><Address>$120</Address><ProgramMethod>paged</ProgramMethod><Protection>none</Protection><Tag>Paged</Tag></Param>
+        </Parameters></UnitSpecification>"#,
+    )
+    .unwrap();
+    std::fs::write(
+        spec_dir.join("TESTNVM.xml"),
+        r#"<UnitSpecification><Parameters>
+        <Param><Name>Standard</Name><Type>int</Type><Address>$20</Address><ArraySize>2</ArraySize><ProgramMethod>direct</ProgramMethod><Protection>checksum</Protection><Tag>Core</Tag></Param>
+        <Param><Name>UnrelatedNcc</Name><Type>int</Type><Address>$120</Address><ProgramMethod>ncc</ProgramMethod><Protection>none</Protection><Tag>Other</Tag></Param>
+        </Parameters></UnitSpecification>"#,
+    )
+    .unwrap();
+    let (pci_client, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci_client.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        database_pci_line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+
+    let service = Service::new(
+        &topology_fixture(),
+        None,
+        path.clone(),
+        pci_client,
+        Some(spec_dir.clone()),
+    )
+    .unwrap();
+    let mut client = ClientState::default();
+    for command in [
+        "[pp-lock] PP LOCK REMOTE //TOPO/253",
+        "[pp-start] PP START S REMOTE",
+    ] {
+        let response = service.handle(&mut client, command).await;
+        assert_eq!(response.status, 200, "{command}: {response:?}");
+    }
+
+    let loading = tokio::spawn({
+        let service = service.clone();
+        let mut client = client.clone();
+        async move {
+            service
+                .handle(&mut client, "[pp-load] PP LOAD S //TOPO/253/p/4 Core")
+                .await
+        }
+    });
+    answer_identity(&mut remote_read, &mut remote_write, 1, b"TESTUNIT").await;
+    answer_identity(&mut remote_read, &mut remote_write, 2, b"1.2.03").await;
+    assert_eq!(
+        database_pci_line(&mut remote_read).await,
+        b"\\46FD09041A200274\r"
+    );
+    database_pci_reply(&mut remote_write, 4, &[0x83, 0x20, 0x99, 0x99]).await;
+    routed_pci_reply(&mut remote_write, &[252], 4, &[0x83, 0x20, 0xaa, 0xbb]).await;
+    routed_pci_reply(&mut remote_write, &[253], 5, &[0x83, 0x20, 0xcc, 0xdd]).await;
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0x83, 0x21, 0xee, 0xff]).await;
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0x83, 0x20, 0x12, 0x34]).await;
+    let loaded = loading.await.unwrap();
+    assert_eq!(loaded.status, 200, "{loaded:?}");
+    {
+        let model = service.model.lock().await;
+        let session = &model.sessions["S"];
+        assert_eq!(session.source.as_deref(), Some("//TOPO/253/p/4"));
+        assert_eq!(session.params["Standard"], "0x12 0x34");
+        assert!(model.projects["TOPO"].networks[&254].physical.is_empty());
+        assert!(model.projects["TOPO"].networks[&253].physical.is_empty());
+    }
+
+    assert_eq!(
+        service
+            .handle(&mut client, "[pp-set] PP SET S Standard 0x56 0x78")
+            .await
+            .status,
+        200
+    );
+    let saving = tokio::spawn({
+        let service = service.clone();
+        let mut client = client.clone();
+        async move {
+            service
+                .handle(&mut client, "[pp-save] PP SAVE_TO_SOURCE S")
+                .await
+        }
+    });
+    answer_identity(&mut remote_read, &mut remote_write, 1, b"TESTUNIT").await;
+    answer_identity(&mut remote_read, &mut remote_write, 2, b"1.2.03").await;
+    assert_eq!(
+        database_pci_line(&mut remote_read).await,
+        b"\\46FD09041A200274\r"
+    );
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0x83, 0x20, 0x12, 0x34]).await;
+    assert_eq!(
+        database_pci_line(&mut remote_read).await,
+        b"\\46FD0904A4200056781E\r"
+    );
+    routed_pci_reply(&mut remote_write, &[252], 4, &[0x32, 0x20, 0x00]).await;
+    routed_pci_reply(&mut remote_write, &[253], 5, &[0x32, 0x20, 0x00]).await;
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0x32, 0x21, 0x00]).await;
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0x32, 0x20, 0x01]).await;
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0x32, 0x20, 0x00]).await;
+    assert_eq!(
+        database_pci_line(&mut remote_read).await,
+        b"\\46FD09041A200274\r"
+    );
+    routed_pci_reply(&mut remote_write, &[252], 4, &[0x83, 0x20, 0x56, 0x78]).await;
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0x83, 0x20, 0x56, 0x78]).await;
+    let saved = saving.await.unwrap();
+    assert_eq!(saved.status, 200, "{saved:?}");
+    {
+        let model = service.model.lock().await;
+        let session = &model.sessions["S"];
+        assert!(session.dirty.is_empty());
+        assert_eq!(session.source.as_deref(), Some("//TOPO/253/p/4"));
+        assert!(model.projects["TOPO"].networks[&254].physical.is_empty());
+        assert!(model.projects["TOPO"].networks[&253].physical.is_empty());
+    }
+
+    for command in [
+        "[pp-start-unsupported] PP START U REMOTE",
+        "[pp-new-unsupported] PP NEW U TESTUNIT 1.2.03",
+        "[pp-set-unsupported] PP SET U Paged 0x42",
+    ] {
+        let response = service.handle(&mut client, command).await;
+        assert_eq!(response.status, 200, "{command}: {response:?}");
+    }
+    let unsupported = service
+        .handle(
+            &mut client,
+            "[pp-save-unsupported] PP SAVE U //TOPO/253/p/4 Paged",
+        )
+        .await;
+    assert_eq!(unsupported.status, 502, "{unsupported:?}");
+    assert_eq!(
+        unsupported.final_text,
+        "502 Routed PP SAVE supports direct CAL parameters with none/checksum protection only"
+    );
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote_read.read_u8())
+            .await
+            .is_err(),
+        "unsupported routed PP SAVE must fail before PCI I/O"
+    );
+
+    for command in [
+        "[pp-start-nvm] PP START N REMOTE",
+        "[pp-new-nvm] PP NEW N TESTNVM 1.2.03",
+        "[pp-set-nvm] PP SET N Standard 0x56 0x78",
+    ] {
+        let response = service.handle(&mut client, command).await;
+        assert_eq!(response.status, 200, "{command}: {response:?}");
+    }
+    let nvm_required = service
+        .handle(&mut client, "[pp-save-nvm] PP SAVE N //TOPO/253/p/4 Core")
+        .await;
+    assert_eq!(nvm_required.status, 502, "{nvm_required:?}");
+    assert_eq!(
+        nvm_required.final_text,
+        "502 Routed PP SAVE cannot write a specification that requires Save-to-NVM"
+    );
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote_read.read_u8())
+            .await
+            .is_err(),
+        "routed PP SAVE requiring NVM commit must fail before PCI I/O"
+    );
+
+    std::fs::remove_file(path).unwrap();
+    std::fs::remove_dir_all(spec_dir).unwrap();
+}
+
+#[tokio::test]
+async fn bridged_standard_application_control_is_exact_once_and_target_scoped() {
+    let path = state_path();
+    let xml = topology_fixture().replace(
+        "</Project>",
+        r#"<Network oid="network-252">
+        <TagName>Unroutable</TagName><Address>252</Address>
+        <Interface><InterfaceType>Bridge</InterfaceType><InterfaceAddress>253/p/252</InterfaceAddress></Interface>
+        </Network></Project>"#,
+    );
+    let (pci_client, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci_client.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        database_pci_line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+
+    let service = Service::new(&xml, None, path.clone(), pci_client, None).unwrap();
+    {
+        let mut model = service.model.lock().await;
+        let project = model.projects.get_mut("TOPO").unwrap();
+        project.networks.get_mut(&254).unwrap().levels =
+            HashMap::from([((56, 1), 11), ((202, 2), 12), ((203, 3), 13)]);
+        project.networks.get_mut(&253).unwrap().levels =
+            HashMap::from([((56, 1), 99), ((202, 2), 98), ((203, 3), 97)]);
+    }
+
+    let mut lighting_events = service.events.subscribe();
+    let lighting = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[routed-lighting] ON //TOPO/253/56/1",
+                )
+                .await
+        }
+    });
+    let request = database_pci_line(&mut remote_read).await;
+    assert_eq!(&request[..request.len() - 2], b"\\03FD0938790145");
+    let code = request[request.len() - 2];
+    let wrong = if code == b'z' { b'y' } else { b'z' };
+    remote_write.write_all(&[wrong, b'.']).await.unwrap();
+    routed_pci_reply(&mut remote_write, &[252], 4, &[0x82, 1, 0]).await;
+    tokio::task::yield_now().await;
+    assert!(!lighting.is_finished());
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    let response = lighting.await.unwrap();
+    assert_eq!(response.status, 200, "{response:?}");
+    assert_eq!(
+        lighting_events.recv().await.unwrap(),
+        "#e# lighting //TOPO/253/56/1 ON 255"
+    );
+    {
+        let model = service.model.lock().await;
+        assert_eq!(model.projects["TOPO"].networks[&254].levels[&(56, 1)], 11);
+        assert!(!model.projects["TOPO"].networks[&253]
+            .levels
+            .contains_key(&(56, 1)));
+    }
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote_read.read_u8())
+            .await
+            .is_err(),
+        "routed lighting must not invent a status-readback exchange"
+    );
+
+    let do_lighting = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[routed-do] DO //TOPO/253/56/1 OFF",
+                )
+                .await
+        }
+    });
+    let request = database_pci_line(&mut remote_read).await;
+    assert_eq!(&request[..request.len() - 2], b"\\03FD09380101BD");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    let response = do_lighting.await.unwrap();
+    assert_eq!(response.status, 202, "{response:?}");
+    assert_eq!(response.final_text, "202 Done: //TOPO/253/56/1");
+
+    let mut trigger_events = service.events.subscribe();
+    let trigger = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[routed-trigger] TRIGGER EVENT //TOPO/253/202/2 55",
+                )
+                .await
+        }
+    });
+    let request = database_pci_line(&mut remote_read).await;
+    assert_eq!(&request[..request.len() - 2], b"\\03FD09CA020237F2");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    let response = trigger.await.unwrap();
+    assert_eq!(response.status, 200, "{response:?}");
+    assert_eq!(
+        trigger_events.recv().await.unwrap(),
+        "#e# trigger //TOPO/253/202/2 event action=55 sourceUnit=0"
+    );
+    {
+        let model = service.model.lock().await;
+        assert_eq!(model.projects["TOPO"].networks[&254].levels[&(202, 2)], 12);
+        assert_eq!(model.projects["TOPO"].networks[&253].levels[&(202, 2)], 55);
+    }
+
+    let trigger_kill = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[routed-trigger-kill] TRIGGER INDICATORKILL //TOPO/253/202/2",
+                )
+                .await
+        }
+    });
+    let request = database_pci_line(&mut remote_read).await;
+    assert_eq!(&request[..request.len() - 2], b"\\03FD09CA090222");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    assert_eq!(trigger_kill.await.unwrap().status, 200);
+
+    let mut enable_events = service.events.subscribe();
+    let enable = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[routed-enable] ENABLE SET //TOPO/253/203/3 77",
+                )
+                .await
+        }
+    });
+    let request = database_pci_line(&mut remote_read).await;
+    assert_eq!(&request[..request.len() - 2], b"\\03FD09CB02034DDA");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    let response = enable.await.unwrap();
+    assert_eq!(response.status, 200, "{response:?}");
+    assert_eq!(
+        enable_events.recv().await.unwrap(),
+        "#e# enable //TOPO/253/203/3 set value=77 sourceUnit=0"
+    );
+    {
+        let model = service.model.lock().await;
+        assert_eq!(model.projects["TOPO"].networks[&254].levels[&(203, 3)], 13);
+        assert_eq!(model.projects["TOPO"].networks[&253].levels[&(203, 3)], 77);
+    }
+
+    for (command, status) in [
+        ("ON //TOPO/253/202/1", 400),
+        ("ON //TOPO/252/56/1", 408),
+        ("ENABLE SET //OTHER/253/203/3 1", 404),
+    ] {
+        let response = service
+            .handle(
+                &mut ClientState::default(),
+                &format!("[unsupported] {command}"),
+            )
+            .await;
+        assert_eq!(response.status, status, "{command}: {response:?}");
+        assert!(
+            tokio::time::timeout(Duration::from_millis(20), remote_read.read_u8())
+                .await
+                .is_err(),
+            "unsupported routed application command wrote to PCI: {command}"
+        );
+    }
+
+    let stale = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[stale] ENABLE SET //TOPO/253/203/3 88",
+                )
+                .await
+        }
+    });
+    let request = database_pci_line(&mut remote_read).await;
+    assert_eq!(&request[..request.len() - 2], b"\\03FD09CB020358CF");
+    let code = request[request.len() - 2];
+    let (replacement, _replacement_remote) = pci();
+    service.set_pci(replacement).await;
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    let response = stale.await.unwrap();
+    assert_eq!(response.status, 408, "{response:?}");
+    assert_eq!(
+        service.model.lock().await.projects["TOPO"].networks[&253]
+            .levels
+            .get(&(203, 3)),
+        None,
+        "the replacement generation's invalidation must not be overwritten"
+    );
+
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test(start_paused = true)]
+async fn bridged_project_identity_bad_readback_invalidates_only_target_without_replay() {
+    let path = state_path();
+    let (pci_client, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci_client.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        database_pci_line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+
+    let service = Service::new(
+        &topology_fixture(),
+        None,
+        path.clone(),
+        pci_client.clone(),
+        None,
+    )
+    .unwrap();
+    {
+        let mut model = service.model.lock().await;
+        let project = model.projects.get_mut("TOPO").unwrap();
+        project
+            .networks
+            .get_mut(&253)
+            .unwrap()
+            .physical
+            .entry(4)
+            .or_insert_with(|| Unit::blank(4, "KEYE1"))
+            .fields
+            .insert("ProjectName".to_string(), "OLD     ".to_string());
+        project
+            .networks
+            .get_mut(&254)
+            .unwrap()
+            .physical
+            .entry(7)
+            .or_insert_with(|| Unit::blank(7, "KEYE1"))
+            .fields
+            .insert("ProjectName".to_string(), "KEEP    ".to_string());
+    }
+
+    let setting = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[rpi-bad] NET SET_PROJECT_IDENTIFY //TOPO/253 TEST",
+                )
+                .await
+        }
+    });
+
+    let request = database_pci_line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\03FD09FFFAFF00FF"), "{request:?}");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    for (start, count) in [(0, 88), (88, 88), (176, 80)] {
+        remote_write
+            .write_all(&routed_mmi_block(&[253], start, count, &[(4, 1)]))
+            .await
+            .unwrap();
+    }
+
+    let request = database_pci_line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\46FD09042101"), "{request:?}");
+    let code = request[request.len() - 2];
+    routed_pci_reply(
+        &mut remote_write,
+        &[253],
+        4,
+        &[0x86, 1, b'K', b'E', b'Y', b'E', b'1'],
+    )
+    .await;
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+
+    let request = database_pci_line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\46FD09042104"), "{request:?}");
+    let code = request[request.len() - 2];
+    routed_pci_reply(
+        &mut remote_write,
+        &[253],
+        4,
+        &[
+            0x8d, 4, 0x38, 0xff, 0xff, 0xff, 0xff, 0x18, 0xb1, 0x06, 0x16, 0xa2, 0x00, 0x05,
+        ],
+    )
+    .await;
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    tokio::time::advance(Duration::from_secs(2)).await;
+    tokio::task::yield_now().await;
+
+    assert_eq!(
+        database_pci_line(&mut remote_read).await,
+        b"\\46FD0904A82346CE4CB379E79ED4\r"
+    );
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0x32, 0x23, 0x46]).await;
+    assert_eq!(
+        database_pci_line(&mut remote_read).await,
+        b"\\46FD09041A23066D\r"
+    );
+    routed_pci_reply(
+        &mut remote_write,
+        &[253],
+        4,
+        &[0x87, 0x23, 0, 0, 0, 0, 0, 0],
+    )
+    .await;
+
+    let response = setting.await.unwrap();
+    assert_eq!(response.status, 408, "{response:?}");
+    assert_eq!(
+        response.final_text,
+        "408 Operation failed: project name save failed - store to unit failed"
+    );
+    assert_eq!(
+        pci_client.programming_lane_state(),
+        cbus_transport::pci::ProgrammingLaneState::ReconnectRequired
+    );
+    let model = service.model.lock().await;
+    assert!(
+        !model.projects["TOPO"].networks[&253].physical[&4]
+            .fields
+            .contains_key("ProjectName"),
+        "uncertain routed readback must invalidate the target cache"
+    );
+    assert_eq!(
+        model.projects["TOPO"].networks[&254].physical[&7].fields["ProjectName"], "KEEP    ",
+        "target invalidation must not clear the root-network cache"
+    );
+    drop(model);
+    let trailing = tokio::time::timeout(Duration::from_millis(25), remote_read.read_u8()).await;
+    match trailing {
+        Err(_) => {}
+        Ok(Err(error)) if error.kind() == std::io::ErrorKind::UnexpectedEof => {}
+        other => panic!("uncertain routed STORE was replayed: {other:?}"),
+    }
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test(start_paused = true)]
 async fn physical_project_identify_fails_closed_before_store_and_on_bad_readback() {
     async fn pci_line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
         let mut line = Vec::new();
@@ -9084,10 +10001,10 @@ async fn physical_project_identify_fails_closed_before_store_and_on_bad_readback
             "[43a] NET SET_PROJECT_IDENTIFY //HARNESS/253 TEST",
         )
         .await;
-    assert_eq!(unbound.status, 502, "{unbound:?}");
+    assert_eq!(unbound.status, 408, "{unbound:?}");
     assert_eq!(
         unbound.final_text,
-        "502 Command requires a physical backend that is not implemented"
+        "408 Physical network route unavailable: networks do not share a bridge root"
     );
     assert!(
         tokio::time::timeout(Duration::from_millis(25), remote_read.read_u8())
@@ -10617,18 +11534,31 @@ async fn repository_list_is_one_exact_read_only_cmqttd_descriptor() {
 #[tokio::test]
 async fn document_semantics_validate_before_mutation_and_remain_authenticated() {
     let path = state_path();
-    let (pci, _remote) = pci();
-    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
-    let state_before = std::fs::read(&path).unwrap();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
     let mut client = ClientState::default();
+    let oid = service.model.lock().await.projects["HARNESS"].networks[&254].units[&5]
+        .oid
+        .clone();
+    let replacement = format!(
+        "<Unit source=\"service-test\"><OID>{oid}</OID><Address>5</Address><TagName>Document eDLT</TagName><UnitType>KEYGL5</UnitType><FirmwareVersion>5.5.00</FirmwareVersion><PP Name=\"StaticTextString0\" Value=\"Replaced\"/><Opaque><Nested>kept</Nested></Opaque></Unit>"
+    );
     let dbset = service
         .handle_document(
             &mut client,
             "[doc] DBSETXML //HARNESS/254/p/5",
-            "<Unit><Address>5</Address></Unit>\n",
+            &replacement,
         )
         .await;
-    assert_eq!(dbset.status, 502, "{dbset:?}");
+    assert_eq!(dbset.status, 301, "{dbset:?}");
+    assert_eq!(dbset.final_text, format!("301 OID={oid}"));
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err(),
+        "DBSETXML must not write to PCI"
+    );
+    let state_after = std::fs::read(&path).unwrap();
     let invalid = service
         .handle_document(&mut client, "[cgl] CGL IMPORT HARNESS", "opaque\n")
         .await;
@@ -10636,9 +11566,75 @@ async fn document_semantics_validate_before_mutation_and_remain_authenticated() 
     assert!(invalid.final_text.contains("Invalid CGL"));
     assert_eq!(
         service.model.lock().await.projects["HARNESS"].networks[&254].units[&5].fields["TagName"],
-        "Fixture eDLT"
+        "Document eDLT"
     );
-    assert_eq!(std::fs::read(&path).unwrap(), state_before);
+    assert_eq!(std::fs::read(&path).unwrap(), state_after);
+    let xml = service
+        .handle(&mut client, "[xml] DBGETXML //HARNESS/254/p/5")
+        .await;
+    assert!(xml.lines[0].contains("source=\"service-test\""));
+    assert!(xml.lines[0].contains("<Nested>kept</Nested>"));
+    drop(service);
+    let (restart_pci, _remote) = pci();
+    let restarted = Service::new(&fixture(), None, path.clone(), restart_pci, None).unwrap();
+    let restarted_xml = restarted
+        .handle(
+            &mut ClientState::default(),
+            "[restart] DBGETXML //HARNESS/254/p/5",
+        )
+        .await;
+    assert!(restarted_xml.lines[0].contains("<TagName>Document eDLT</TagName>"));
+    assert!(restarted_xml.lines[0].contains("<Nested>kept</Nested>"));
+    let mut archive_client = ClientState::default();
+    assert_eq!(
+        restarted
+            .handle(
+                &mut archive_client,
+                "[archive] PROJECT ARCHIVE HARNESS cmqttd:typed-unit",
+            )
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        restarted
+            .handle(
+                &mut archive_client,
+                "[restore] PROJECT RESTORE COPY cmqttd:typed-unit",
+            )
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        restarted
+            .handle(&mut archive_client, "[use-copy] PROJECT USE COPY")
+            .await
+            .status,
+        200
+    );
+    let restored_copy = restarted
+        .handle(&mut archive_client, "[copy-xml] DBGETXML //COPY/254/p/5")
+        .await;
+    assert!(restored_copy.lines[0].contains("source=\"service-test\""));
+    assert!(restored_copy.lines[0].contains("<Nested>kept</Nested>"));
+    drop(restarted);
+    let (second_restart_pci, _remote) = pci();
+    let second_restart =
+        Service::new(&fixture(), None, path.clone(), second_restart_pci, None).unwrap();
+    let mut copy_client = ClientState::default();
+    assert_eq!(
+        second_restart
+            .handle(&mut copy_client, "[select-copy] PROJECT USE COPY")
+            .await
+            .status,
+        200
+    );
+    let durable_copy = second_restart
+        .handle(&mut copy_client, "[durable-copy] DBGETXML //COPY/254/p/5")
+        .await;
+    assert!(durable_copy.lines[0].contains("source=\"service-test\""));
+    assert!(durable_copy.lines[0].contains("<Nested>kept</Nested>"));
 
     let (authed, auth_path) = authed_service();
     let mut authenticated = ClientState::default();
@@ -10662,16 +11658,22 @@ async fn document_semantics_validate_before_mutation_and_remain_authenticated() 
             .status,
         200
     );
+    let auth_oid = authed.model.lock().await.projects["HARNESS"].networks[&254].units[&5]
+        .oid
+        .clone();
+    let authenticated_replacement = format!(
+        "<Unit><OID>{auth_oid}</OID><Address>5</Address><TagName>Authenticated</TagName><UnitType>KEYGL5</UnitType><FirmwareVersion>5.5.00</FirmwareVersion></Unit>"
+    );
     assert_eq!(
         authed
             .handle_document(
                 &mut authenticated,
                 "[4] DBSETXML //HARNESS/254/p/5",
-                "opaque\n",
+                &authenticated_replacement,
             )
             .await
             .status,
-        502
+        301
     );
     assert_eq!(
         authed
@@ -10685,25 +11687,144 @@ async fn document_semantics_validate_before_mutation_and_remain_authenticated() 
 }
 
 #[tokio::test]
+async fn typed_container_dbsetxml_is_durable_atomic_and_never_reaches_pci() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    assert_eq!(
+        service
+            .handle(&mut client, "[1] PROJECT NEW XMLA")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[2] DBCREATENET 200 Auxiliary Cni 127.0.0.1:1")
+            .await
+            .status,
+        200
+    );
+    let created = service
+        .handle(&mut client, "[3] DBADD 200 Application")
+        .await;
+    let old_oid = created
+        .final_text
+        .strip_prefix("301 OID=")
+        .unwrap()
+        .to_string();
+    assert_eq!(
+        service
+            .handle(&mut client, &format!("[4] DBSET !{old_oid}/Address 56"),)
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                &format!("[5] DBSET !{old_oid}/TagName Original"),
+            )
+            .await
+            .status,
+        200
+    );
+    let document = concat!(
+        "<Application><OID>40000000-0000-4000-8000-000000000001</OID>",
+        "<TagName>Durable</TagName><Address>58</Address>",
+        "<Group><OID>40000000-0000-4000-8000-000000000002</OID>",
+        "<TagName>Scenes</TagName><Address>12</Address>",
+        "<Level Value=\"42\"><OID>40000000-0000-4000-8000-000000000003</OID>",
+        "<TagName>Low</TagName><Address>1</Address></Level></Group></Application>"
+    );
+    let replaced = service
+        .handle_document(&mut client, &format!("[6] DBSETXML !{old_oid}"), document)
+        .await;
+    assert_eq!(replaced.status, 301, "{replaced:?}");
+    assert_eq!(
+        replaced.final_text,
+        "301 OID=40000000-0000-4000-8000-000000000001"
+    );
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err(),
+        "typed DBSETXML must not write to PCI"
+    );
+    let persisted = std::fs::read(&path).unwrap();
+    let duplicate = document.replace(
+        "40000000-0000-4000-8000-000000000002",
+        "40000000-0000-4000-8000-000000000001",
+    );
+    assert!(
+        service
+            .handle_document(
+                &mut client,
+                "[7] DBSETXML !40000000-0000-4000-8000-000000000001",
+                &duplicate,
+            )
+            .await
+            .status
+            >= 400
+    );
+    assert_eq!(std::fs::read(&path).unwrap(), persisted);
+    drop(service);
+
+    let (restart_pci, _remote) = pci();
+    let restarted = Service::new(&fixture(), None, path.clone(), restart_pci, None).unwrap();
+    let mut restarted_client = ClientState::default();
+    assert_eq!(
+        restarted
+            .handle(&mut restarted_client, "[8] PROJECT USE XMLA")
+            .await
+            .status,
+        200
+    );
+    let readback = restarted
+        .handle(&mut restarted_client, "[9] DBGETXML //XMLA/200/58")
+        .await;
+    assert_eq!(readback.status, 200, "{readback:?}");
+    assert!(readback.lines[0].contains("<Level Value=\"42\">"));
+
+    // The configured network is a live endpoint identity and is refused
+    // before model mutation; secondary-project Network replacements remain
+    // available through the fully local path above.
+    let configured_oid = restarted.model.lock().await.projects["HARNESS"].networks[&254]
+        .oid
+        .clone();
+    let refused = restarted
+        .handle_document(
+            &mut ClientState::default(),
+            &format!("[10] DBSETXML !{configured_oid}"),
+            "<Network/>",
+        )
+        .await;
+    assert_eq!(refused.status, 408);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn tcp_here_documents_preserve_tags_drain_limits_and_close_on_truncation() {
     let path = state_path();
     let (pci, _remote) = pci();
     let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let oid = service.model.lock().await.projects["HARNESS"].networks[&254].units[&5]
+        .oid
+        .clone();
     let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
     let address = listener.local_addr().unwrap();
     let server = tokio::spawn(service.clone().serve(listener));
     let (mut reader, mut writer) = connect_command_session(address).await;
 
     writer
-        .write_all(b"[doc] DBSETXML //HARNESS/254/p/5 << END\r\n<Unit><Address>5</Address></Unit>\r\nEND\r\n")
+        .write_all(format!("[doc] DBSETXML //HARNESS/254/p/5 << END\r\n<Unit><OID>{oid}</OID><Address>5</Address><TagName>TCP eDLT</TagName><UnitType>KEYGL5</UnitType><FirmwareVersion>5.5.00</FirmwareVersion></Unit>\r\nEND\r\n").as_bytes())
         .await
         .unwrap();
     let mut reply = String::new();
     reader.read_line(&mut reply).await.unwrap();
-    assert_eq!(
-        reply,
-        "[doc] 502 Document command semantics are not implemented\r\n"
-    );
+    assert_eq!(reply, format!("[doc] 301 OID={oid}\r\n"));
     let readback = command_lines(
         &mut reader,
         &mut writer,
@@ -10711,7 +11832,7 @@ async fn tcp_here_documents_preserve_tags_drain_limits_and_close_on_truncation()
         "DBGET //HARNESS/254/p/5/TagName",
     )
     .await;
-    assert!(readback.iter().any(|line| line.contains("Fixture eDLT")));
+    assert!(readback.iter().any(|line| line.contains("TCP eDLT")));
 
     let mut oversized = Vec::with_capacity(MAX_LINE + 64);
     oversized.extend_from_slice(b"[large] DBSETXML //HARNESS/254/p/5/TagName << END\r\n");

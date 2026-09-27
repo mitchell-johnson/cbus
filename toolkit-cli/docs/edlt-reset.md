@@ -17,6 +17,13 @@ The initial navigation value must be 0 or 1. Supported initial stored widget typ
 
 Metadata uses the complete ordered [application cache](edlt-applications.md) envelope, including lifecycle facts. `requirements(raw, active_tab=..., binding_variant=...).as_dict()` reports exact required application/group lists and model facts without I/O. Bound control groups need positive, named cache entries; unknown and absent are distinct. The cache must include complete application and relevant group lists, including the reset defaults' dependencies. Populated level/dynamic-label facts follow the [lifecycle cache contract](edlt-lifecycle.md). No groups are created or fetched, and caller cache freshness is not verified.
 
+Inside the [automatic ordered parent metadata](edlt-parent-metadata.md)
+workflow, one exact DBGETXML snapshot can supply this cache and all 874 raw PP
+strings. That mode preserves exact `Value` spellings, requires every positive
+bound group to exist, and refuses missing/projected list objects. It does not
+recover Toolkit registry display/sort preferences and cannot be combined with
+automatic SceneManager metadata.
+
 Repeat `--dirty-parameter NAME` for parameters already marked changed in the declared local editor state. The default is an empty list. This is caller-supplied state, not a reconstruction of a prior Toolkit session. Unknown or duplicate names are rejected.
 
 ## Raw parameters and results
@@ -44,6 +51,18 @@ Plans expose input, load, binding, pre-reset, component, after-reset, before-sav
 Reset excludes UnitAddress, SerialNumber, Project, NetworkAddress and both configuration-version fields from its default assignment. Earlier AfterLoad normalization can still affect configuration values. UnitName is reset. Reset applies defaults in specification order, clears byte 1 of the old 21 widget objects, invokes the original fresh AfterLoad sequence, then selects Widget10 as single-slice Time/Date with byte 1 exactly `0x2`.
 
 The legitimate `EdltLifecycle.reset_unit_controls(loaded, reset_context=...)` transition issues a `ResetEdlt` receipt owned by that engine. It retains the original expected snapshot and the explicit raw/control context, while recording the original creation of 21 fresh widget models and eight fresh scene models. Terminal `prepare_save()` consumes the issued reset state; it does not perform another load. Copied, replaced, cross-editor and forged context receipts are rejected. Existing load/save and Blank transitions are unchanged.
+
+The ordered [parent transaction](edlt-parent-transaction.md) accepts Reset as
+operation 1 when the source is an exact raw export and metadata is a complete
+`cbus-edlt-application-cache-v1`. It consumes the same engine-owned
+`ResetEdlt`, treats its fresh graph as the baseline for later operations and
+defers the terminal BeforeSave/CRC work to one parent projection. Later panels
+may override Reset baseline fields; the plan reports those layered owners.
+Reset anywhere after operation 1, a second Reset, or Reset plus Blank is
+rejected before PP I/O. Reset+Blank remains refused because Blank’s retained
+receipt cannot bind to the fresh `ResetEdlt` graph. The parent path stages only
+the verified final PP image and does not claim that the original Reset control
+and later panels were operated interactively in one WinForms session.
 
 The selected tab matters. Widgets and General trigger the original mutating MultiPage getter after defaults, producing terminal NavWidgetType `0x0`. Standby and Colour retain `0xFF`. General also refreshes the 16 restore-level controls before Reset, which can change raw hexadecimal casing without changing the numeric value. The prior EnableLevelStore branch is recorded before defaults. The six active brightness/colour groups remain unchanged during the tested BeforeChange branch and are subsequently reset by their defaults.
 

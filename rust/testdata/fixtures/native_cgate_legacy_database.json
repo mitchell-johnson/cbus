@@ -14,7 +14,10 @@
   "raw_probe_sha256": [
     "9829876d60aeeb6a63e4633f03a99edcf34b59b858ee85194b2be78230064033",
     "91af663176dc409ab460a4defa8cd9d9235e02e7e00bcd0bc6702347e91bfd31",
-    "91995a80ffc97075a8525ca35c7d2828d5cacbb49ba24e8117585562f9d38357"
+    "91995a80ffc97075a8525ca35c7d2828d5cacbb49ba24e8117585562f9d38357",
+    "d4844a583bc13e469a95ef5108be3875c6daac3dc3673cf1980c2bfcc3ceff2b",
+    "34a2d29f92e8d949780c56d6a9f23bcfb5e4ea122a6f39197beac2f939f89da6",
+    "e668f0682c485b974b8f2222a579fdb72de937540ce95412b0520b1d8dfe9af1"
   ],
   "dbtaglist": {
     "selected_project_rows": [
@@ -66,6 +69,24 @@
     },
     "reference_behavior": "manual and command implementation require bridge references to travel with a successful readdress",
     "cmqttd_binding_boundary": "all network readdressing in the configured hardware project is rejected; secondary projects remain local and durable"
+  },
+  "dbsetxml_complete": {
+    "receipt": "every accepted complete object returns 301 OID=<submitted root OID>",
+    "replacement": "the addressed object and its complete submitted subtree replace the old object atomically; omitted descendants disappear and every replaced old OID returns 401",
+    "Level": "<Level Value=\"129\"><OID>uuid</OID><TagName>Moved</TagName><Address>3</Address></Level>",
+    "NetVar": "<NetVar><OID>uuid</OID><TagName>MovedVar</TagName><Address>9</Address><Level Value=\"77\"><OID>uuid</OID><TagName>Child</TagName><Address>1</Address></Level></NetVar>",
+    "Group": "<Group><OID>uuid</OID><TagName>MovedGroup</TagName><Address>12</Address><Level Value=\"129\"><OID>uuid</OID><TagName>MovedLevel</TagName><Address>3</Address></Level></Group>",
+    "Application": "<Application><OID>uuid</OID><TagName>MovedApp</TagName><Address>58</Address><Group>...</Group><NetVar>...</NetVar></Application>",
+    "Network": "<Network><OID>uuid</OID><TagName>MovedNet</TagName><Address>253</Address><NetworkNumber>253</NetworkNumber><Interface><OID>uuid</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application>...</Application></Network>",
+    "address_behavior": "Level, NetVar, Group, Application and Network roots move to the submitted Address; Network Address and NetworkNumber are equal in the observed replacement",
+    "subtree_identity": "submitted descendant OIDs may retain an old descendant identity or replace it; all submitted OIDs resolve after success and every omitted/replaced old descendant identity is retired",
+    "cmqttd_validation": "the complete document, selected target identity, all OIDs, child addresses and destination conflicts are checked on a staged clone before commit",
+    "unsupported_boundary": "the retained replacement probes do not include a Unit child inside a complete Network replacement, so cmqttd rejects that mixed subtree before mutation rather than infer lifecycle semantics",
+    "raw_probes": [
+      "raw-native-dbsetxml-level-probe-v1",
+      "raw-native-dbsetxml-netvar-probe-v1",
+      "raw-native-dbsetxml-container-probe-v1"
+    ]
   },
   "database_lifecycle": {
     "DBADD": {

@@ -19,7 +19,7 @@
 //! shared PCI operations. It explicitly rejects physical command families
 //! without a backend; the mock's command coverage is not hardware parity.
 
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet, VecDeque};
 use std::path::PathBuf;
 
 use chrono::{SecondsFormat, Utc};
@@ -463,6 +463,285 @@ fn xml_escape(text: &str) -> String {
         .replace('"', "&quot;")
 }
 
+/// Find a root element's `>` without treating one inside a quoted attribute
+/// as the end of the tag.
+fn xml_open_tag_end(text: &str, start: usize) -> Option<usize> {
+    let bytes = text.as_bytes();
+    let mut quote = None;
+    for (offset, byte) in bytes.get(start..)?.iter().copied().enumerate() {
+        match (quote, byte) {
+            (None, b'\'' | b'"') => quote = Some(byte),
+            (Some(active), current) if active == current => quote = None,
+            (None, b'>') => return Some(start + offset),
+            _ => {}
+        }
+    }
+    None
+}
+
+fn parse_db_xml_extras(node: roxmltree::Node<'_, '_>, source: &str) -> DbXmlExtras {
+    let namespaces = node
+        .namespaces()
+        .filter_map(|namespace| {
+            namespace
+                .name()
+                .filter(|prefix| *prefix != "xml")
+                .map(|prefix| (prefix.to_string(), namespace.uri().to_string()))
+        })
+        .collect();
+    let attributes = node
+        .attributes()
+        .filter_map(|attribute| {
+            let uri = attribute.namespace()?;
+            let prefix = node.lookup_prefix(uri)?;
+            Some((
+                format!("{prefix}:{}", attribute.name()),
+                attribute.value().to_string(),
+            ))
+        })
+        .collect();
+    let children = node
+        .children()
+        .filter(|child| {
+            child.is_comment()
+                || child.is_pi()
+                || child
+                    .tag_name()
+                    .namespace()
+                    .is_some_and(|namespace| !namespace.is_empty())
+        })
+        .filter_map(|child| source.get(child.range()).map(str::to_string))
+        .collect();
+    DbXmlExtras {
+        namespaces,
+        attributes,
+        children,
+    }
+}
+
+fn parse_db_xml_scalar(child: roxmltree::Node<'_, '_>, object: &str) -> Result<String, String> {
+    if child.attributes().len() != 0 || child.children().any(|node| node.is_element()) {
+        return Err(format!(
+            "DBSETXML {object} field {} must be text-only and have no attributes",
+            child.tag_name().name()
+        ));
+    }
+    Ok(child
+        .children()
+        .filter_map(|node| node.text())
+        .collect::<String>())
+}
+
+fn validate_db_xml_identity(
+    object: &str,
+    scalars: &HashMap<String, String>,
+) -> Result<(String, String, u8), String> {
+    for required in ["OID", "TagName", "Address"] {
+        if !scalars.contains_key(required) {
+            return Err(format!("DBSETXML {object} is missing {required}"));
+        }
+    }
+    let oid = scalars["OID"].clone();
+    if oid.trim() != oid || !valid_uuid(&oid) {
+        return Err(format!("DBSETXML {object} has an invalid OID"));
+    }
+    let tag = scalars["TagName"].clone();
+    if tag.is_empty() || tag.trim() != tag || tag.chars().any(char::is_control) {
+        return Err(format!("DBSETXML {object} has an invalid TagName"));
+    }
+    let address = scalars["Address"]
+        .parse::<u8>()
+        .map_err(|_| format!("DBSETXML {object} has an invalid Address"))?;
+    Ok((oid, tag, address))
+}
+
+fn parse_db_xml_interface(
+    node: roxmltree::Node<'_, '_>,
+    source: &str,
+) -> Result<ParsedDbXmlInterface, String> {
+    if node
+        .attributes()
+        .any(|attribute| attribute.namespace().is_none())
+    {
+        return Err("DBSETXML Interface has an unsupported attribute".to_string());
+    }
+    let mut scalars = HashMap::new();
+    for child in node.children().filter(roxmltree::Node::is_element) {
+        if child.tag_name().namespace().is_some() {
+            continue;
+        }
+        let name = child.tag_name().name();
+        if !matches!(name, "OID" | "InterfaceType" | "InterfaceAddress") {
+            return Err(format!(
+                "DBSETXML Interface contains unsupported element {name}"
+            ));
+        }
+        let value = parse_db_xml_scalar(child, "Interface")?;
+        if scalars.insert(name.to_string(), value).is_some() {
+            return Err(format!("DBSETXML Interface contains duplicate {name}"));
+        }
+    }
+    for required in ["OID", "InterfaceType", "InterfaceAddress"] {
+        if !scalars.contains_key(required) {
+            return Err(format!("DBSETXML Interface is missing {required}"));
+        }
+    }
+    let oid = scalars.remove("OID").expect("checked");
+    if oid.trim() != oid || !valid_uuid(&oid) {
+        return Err("DBSETXML Interface has an invalid OID".to_string());
+    }
+    let interface_type = scalars.remove("InterfaceType").expect("checked");
+    let interface_address = scalars.remove("InterfaceAddress").expect("checked");
+    for (name, value) in [
+        ("InterfaceType", &interface_type),
+        ("InterfaceAddress", &interface_address),
+    ] {
+        if value.is_empty() || value.trim() != value || value.chars().any(char::is_control) {
+            return Err(format!("DBSETXML Interface has an invalid {name}"));
+        }
+    }
+    Ok(ParsedDbXmlInterface {
+        oid,
+        interface_type,
+        interface_address,
+        extras: parse_db_xml_extras(node, source),
+    })
+}
+
+fn parse_db_xml_object(
+    node: roxmltree::Node<'_, '_>,
+    source: &str,
+) -> Result<ParsedDbXmlObject, String> {
+    if node.tag_name().namespace().is_some() {
+        return Err("DBSETXML complete object root must be unnamespaced".to_string());
+    }
+    let kind = match node.tag_name().name() {
+        "Level" => DbXmlKind::Level,
+        "NetVar" => DbXmlKind::NetVar,
+        "Group" => DbXmlKind::Group,
+        "Application" => DbXmlKind::Application,
+        "Network" => DbXmlKind::Network,
+        other => return Err(format!("DBSETXML unsupported complete object {other}")),
+    };
+    let mut value = None;
+    for attribute in node
+        .attributes()
+        .filter(|attribute| attribute.namespace().is_none())
+    {
+        if kind != DbXmlKind::Level || attribute.name() != "Value" || value.is_some() {
+            return Err(format!(
+                "DBSETXML {} has an unsupported attribute {}",
+                kind.element(),
+                attribute.name()
+            ));
+        }
+        value = Some(
+            attribute
+                .value()
+                .parse::<u8>()
+                .map_err(|_| "DBSETXML Level has an invalid Value".to_string())?,
+        );
+    }
+    if kind == DbXmlKind::Level && value.is_none() {
+        return Err("DBSETXML Level is missing Value".to_string());
+    }
+
+    let mut scalars = HashMap::new();
+    let mut children = Vec::new();
+    let mut interface = None;
+    for child in node.children().filter(roxmltree::Node::is_element) {
+        if child.tag_name().namespace().is_some() {
+            continue;
+        }
+        let name = child.tag_name().name();
+        if matches!(name, "OID" | "TagName" | "Address" | "NetworkNumber") {
+            if name == "NetworkNumber" && kind != DbXmlKind::Network {
+                return Err(format!(
+                    "DBSETXML {} contains unsupported element {name}",
+                    kind.element()
+                ));
+            }
+            let scalar = parse_db_xml_scalar(child, kind.element())?;
+            if scalars.insert(name.to_string(), scalar).is_some() {
+                return Err(format!(
+                    "DBSETXML {} contains duplicate {name}",
+                    kind.element()
+                ));
+            }
+            continue;
+        }
+        match (kind, name) {
+            (DbXmlKind::Group | DbXmlKind::NetVar, "Level")
+            | (DbXmlKind::Application, "Group" | "NetVar")
+            | (DbXmlKind::Network, "Application") => {
+                children.push(parse_db_xml_object(child, source)?);
+            }
+            (DbXmlKind::Network, "Interface") => {
+                if interface.is_some() {
+                    return Err("DBSETXML Network contains duplicate Interface".to_string());
+                }
+                interface = Some(parse_db_xml_interface(child, source)?);
+            }
+            (DbXmlKind::Network, "Unit") => {
+                return Err(
+                    "DBSETXML Network Unit subtrees lack retained native replacement evidence"
+                        .to_string(),
+                );
+            }
+            _ => {
+                return Err(format!(
+                    "DBSETXML {} contains unsupported element {name}",
+                    kind.element()
+                ));
+            }
+        }
+    }
+    let (oid, tag, address) = validate_db_xml_identity(kind.element(), &scalars)?;
+    if kind == DbXmlKind::Network {
+        let network_number = scalars
+            .get("NetworkNumber")
+            .ok_or_else(|| "DBSETXML Network is missing NetworkNumber".to_string())?
+            .parse::<u8>()
+            .map_err(|_| "DBSETXML Network has an invalid NetworkNumber".to_string())?;
+        if network_number != address {
+            return Err("DBSETXML Network Address and NetworkNumber differ".to_string());
+        }
+        if interface.is_none() {
+            return Err("DBSETXML Network is missing Interface".to_string());
+        }
+    }
+    let mut addresses = BTreeSet::new();
+    for child in &children {
+        if !addresses.insert(child.address) {
+            return Err(format!(
+                "DBSETXML {} contains duplicate child Address {}",
+                kind.element(),
+                child.address
+            ));
+        }
+    }
+    Ok(ParsedDbXmlObject {
+        kind,
+        oid,
+        tag,
+        address,
+        value,
+        interface,
+        children,
+        extras: parse_db_xml_extras(node, source),
+    })
+}
+
+fn db_xml_object_oids(object: &ParsedDbXmlObject, output: &mut Vec<String>) {
+    output.push(object.oid.clone());
+    if let Some(interface) = &object.interface {
+        output.push(interface.oid.clone());
+    }
+    for child in &object.children {
+        db_xml_object_oids(child, output);
+    }
+}
+
 /// Decode C-Gate mK quoting: `"a\ b\"c\\d"` to raw text.
 /// Only the three emitted escapes (`\\`, `\"`, `\ `) de-escape; any other
 /// backslash is preserved so hand-crafted input cannot lose backslashes.
@@ -859,6 +1138,12 @@ pub struct Network {
     /// Stable database object identity used by `DBNETWORKPATH` OID output.
     #[serde(default)]
     pub oid: String,
+    /// Stable identity of the nested native `<Interface>` record.
+    ///
+    /// Older cmqttd repositories predate complete Network XML support, so
+    /// restore allocates this field when it is absent.
+    #[serde(default)]
+    pub interface_oid: String,
     /// Network address.
     pub address: u8,
     /// Display name.
@@ -1045,6 +1330,72 @@ pub struct DbLevel {
     pub netvar: bool,
 }
 
+/// Namespaced XML extensions retained for a complete DBSETXML object.
+///
+/// C-Gate's modeled, unnamespaced fields remain authoritative. Namespace
+/// declarations, namespaced root attributes, comments and namespaced child
+/// elements are opaque metadata and are projected alongside current modeled
+/// values on later DBGETXML reads.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, Default)]
+pub struct DbXmlExtras {
+    /// Prefix-to-URI declarations needed by retained extension markup.
+    pub namespaces: BTreeMap<String, String>,
+    /// Qualified namespaced attributes on the modeled object root.
+    pub attributes: BTreeMap<String, String>,
+    /// Direct comments, processing instructions and namespaced child elements.
+    pub children: Vec<String>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum DbXmlKind {
+    Level,
+    NetVar,
+    Group,
+    Application,
+    Network,
+}
+
+impl DbXmlKind {
+    fn element(self) -> &'static str {
+        match self {
+            Self::Level => "Level",
+            Self::NetVar => "NetVar",
+            Self::Group => "Group",
+            Self::Application => "Application",
+            Self::Network => "Network",
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+struct ParsedDbXmlObject {
+    kind: DbXmlKind,
+    oid: String,
+    tag: String,
+    address: u8,
+    value: Option<u8>,
+    interface: Option<ParsedDbXmlInterface>,
+    children: Vec<ParsedDbXmlObject>,
+    extras: DbXmlExtras,
+}
+
+#[derive(Debug, Clone)]
+struct ParsedDbXmlInterface {
+    oid: String,
+    interface_type: String,
+    interface_address: String,
+    extras: DbXmlExtras,
+}
+
+#[derive(Debug, Clone)]
+struct DbXmlTarget {
+    project: String,
+    path: String,
+    parent: String,
+    kind: DbXmlKind,
+    oid: String,
+}
+
 /// A typed database object created without its compulsory address/name.
 ///
 /// Native `DBADD` and same-database `DBCOPY` deliberately create objects in
@@ -1089,6 +1440,20 @@ pub struct Server {
     max_events: usize,
     /// Opaque `DBSETSAFE`/`DBSETXML` field store by full path.
     db_fields: HashMap<String, String>,
+    /// Last accepted complete native Unit XML, keyed by selected project and
+    /// stable unit OID. Project copies retain OIDs, so both parts are needed
+    /// to keep later edits isolated to the selected copy.
+    /// Known scalar and PP values are projected from current model state on
+    /// read; unmodeled elements, attributes, comments and ordering remain in
+    /// this template so DBSETXML round trips do not discard metadata.
+    unit_documents: HashMap<String, String>,
+    /// Parameter names represented as top-level `<PP Name=... Value=.../>`
+    /// rows in each project-scoped unit document. A deterministic set keeps repository
+    /// serialization byte-stable across otherwise unchanged restarts.
+    unit_pp_fields: HashMap<String, BTreeSet<String>>,
+    /// Opaque namespaced metadata for complete non-Unit DBSETXML objects,
+    /// keyed by selected project and stable object OID.
+    db_xml_extras: HashMap<String, DbXmlExtras>,
     /// Objects created via `DBADDSAFE` (unit paths and level OID paths).
     objects: std::collections::HashSet<String>,
     /// OIDs issued for `Level`/`NetVar` creation, resolvable via `!oid/OID`.
@@ -1138,6 +1503,22 @@ pub struct Server {
     shutdown_pending: bool,
     /// Named in-memory database snapshots used by `DBSAVE`/`DBLOAD`.
     database_files: HashMap<String, Project>,
+    /// Complete typed Unit XML stored with each internal project snapshot,
+    /// keyed by snapshot name and unit OID. Project names are omitted so a
+    /// restore can choose a new destination name without losing metadata.
+    database_file_unit_documents: HashMap<String, HashMap<String, String>>,
+    /// `<PP>` field ownership stored alongside internal project snapshots.
+    database_file_unit_pp_fields: HashMap<String, HashMap<String, BTreeSet<String>>>,
+    /// Namespaced complete-object metadata stored with internal snapshots.
+    database_file_db_xml_extras: HashMap<String, HashMap<String, DbXmlExtras>>,
+    /// Project-scoped typed-object field rows stored with internal snapshots.
+    database_file_db_fields: HashMap<String, HashMap<String, String>>,
+    /// Project-scoped typed object path/OID membership stored with snapshots.
+    database_file_objects: HashMap<String, BTreeSet<String>>,
+    /// Level and NetVar records stored with internal project snapshots.
+    database_file_db_levels: HashMap<String, Vec<DbLevel>>,
+    /// Typed object identities and hierarchy stored with project snapshots.
+    database_file_db_pending: HashMap<String, Vec<DbPendingObject>>,
     /// Server-side files addressed by the private `FILE` command family.
     file_store: HashMap<String, Vec<u8>>,
     /// Unix modification seconds for virtual FILE entries. Kept separately
@@ -1182,6 +1563,9 @@ impl Server {
             events_lost: false,
             max_events: DEFAULT_MAX_EVENTS,
             db_fields: HashMap::new(),
+            unit_documents: HashMap::new(),
+            unit_pp_fields: HashMap::new(),
+            db_xml_extras: HashMap::new(),
             objects: std::collections::HashSet::new(),
             known_oids: std::collections::HashSet::new(),
             db_levels: HashMap::new(),
@@ -1201,6 +1585,13 @@ impl Server {
             scene_snapshots: HashMap::new(),
             shutdown_pending: false,
             database_files: HashMap::new(),
+            database_file_unit_documents: HashMap::new(),
+            database_file_unit_pp_fields: HashMap::new(),
+            database_file_db_xml_extras: HashMap::new(),
+            database_file_db_fields: HashMap::new(),
+            database_file_objects: HashMap::new(),
+            database_file_db_levels: HashMap::new(),
+            database_file_db_pending: HashMap::new(),
             file_store: HashMap::new(),
             file_modified: HashMap::new(),
             dali_saved_sessions: HashMap::new(),
@@ -1611,6 +2002,7 @@ impl Server {
         Self::reset_project_retries(&mut project);
         project.name = words[2].to_string();
         self.projects.insert(words[2].to_string(), project);
+        self.restore_unit_document_archive(words[3], words[2]);
         self.current = Some(words[2].to_string());
         ok(tag, vec![], "200 OK")
     }
@@ -1658,6 +2050,7 @@ impl Server {
             .values()
             .flat_map(|network| {
                 std::iter::once(network.oid.clone())
+                    .chain(std::iter::once(network.interface_oid.clone()))
                     .chain(network.units.values().map(|unit| unit.oid.clone()))
             })
             .collect();
@@ -1704,6 +2097,8 @@ impl Server {
         self.projects.insert(dst.to_string(), copy);
         // A copy duplicates database state, not just the project record.
         self.duplicate_prefix(&format!("//{src}"), &format!("//{dst}"));
+        self.duplicate_unit_document_project(src, dst);
+        self.duplicate_db_xml_extras_project(src, dst);
         self.push_event(format!("#e# project {src} copied to {dst}"));
         ok(tag, vec![], "200 OK.")
     }
@@ -1804,6 +2199,92 @@ impl Server {
         }
     }
 
+    fn unit_document_key(project: &str, oid: &str) -> String {
+        format!("{project}\u{1f}{oid}")
+    }
+
+    fn duplicate_unit_document_project(&mut self, source: &str, destination: &str) {
+        let prefix = format!("{source}\u{1f}");
+        let documents = self
+            .unit_documents
+            .iter()
+            .filter_map(|(key, value)| {
+                key.strip_prefix(&prefix)
+                    .map(|oid| (Self::unit_document_key(destination, oid), value.clone()))
+            })
+            .collect::<Vec<_>>();
+        self.unit_documents.extend(documents);
+        let pp_fields = self
+            .unit_pp_fields
+            .iter()
+            .filter_map(|(key, value)| {
+                key.strip_prefix(&prefix)
+                    .map(|oid| (Self::unit_document_key(destination, oid), value.clone()))
+            })
+            .collect::<Vec<_>>();
+        self.unit_pp_fields.extend(pp_fields);
+    }
+
+    fn duplicate_db_xml_extras_project(&mut self, source: &str, destination: &str) {
+        let prefix = format!("{source}\u{1f}");
+        let extras = self
+            .db_xml_extras
+            .iter()
+            .filter_map(|(key, value)| {
+                key.strip_prefix(&prefix)
+                    .map(|oid| (Self::unit_document_key(destination, oid), value.clone()))
+            })
+            .collect::<Vec<_>>();
+        self.db_xml_extras.extend(extras);
+    }
+
+    fn remap_unit_document_project(&mut self, source: &str, destination: &str) {
+        let prefix = format!("{source}\u{1f}");
+        let document_keys = self
+            .unit_documents
+            .keys()
+            .filter(|key| key.starts_with(&prefix))
+            .cloned()
+            .collect::<Vec<_>>();
+        for key in document_keys {
+            if let Some(value) = self.unit_documents.remove(&key) {
+                let oid = key.strip_prefix(&prefix).expect("matched prefix");
+                self.unit_documents
+                    .insert(Self::unit_document_key(destination, oid), value);
+            }
+        }
+        let pp_keys = self
+            .unit_pp_fields
+            .keys()
+            .filter(|key| key.starts_with(&prefix))
+            .cloned()
+            .collect::<Vec<_>>();
+        for key in pp_keys {
+            if let Some(value) = self.unit_pp_fields.remove(&key) {
+                let oid = key.strip_prefix(&prefix).expect("matched prefix");
+                self.unit_pp_fields
+                    .insert(Self::unit_document_key(destination, oid), value);
+            }
+        }
+    }
+
+    fn remap_db_xml_extras_project(&mut self, source: &str, destination: &str) {
+        let prefix = format!("{source}\u{1f}");
+        let keys = self
+            .db_xml_extras
+            .keys()
+            .filter(|key| key.starts_with(&prefix))
+            .cloned()
+            .collect::<Vec<_>>();
+        for key in keys {
+            if let Some(value) = self.db_xml_extras.remove(&key) {
+                let oid = key.strip_prefix(&prefix).expect("matched prefix");
+                self.db_xml_extras
+                    .insert(Self::unit_document_key(destination, oid), value);
+            }
+        }
+    }
+
     /// Remove all durable database records owned by one project while
     /// retaining shared OIDs that still belong to a native-style copy.
     fn delete_project_prefix(&mut self, project: &str, project_oids: HashSet<String>) {
@@ -1813,6 +2294,13 @@ impl Server {
             .retain(|key, _| key != &exact && !key.starts_with(&prefix));
         self.objects
             .retain(|key| key != &exact && !key.starts_with(&prefix));
+        let unit_prefix = format!("{project}\u{1f}");
+        self.unit_documents
+            .retain(|key, _| !key.starts_with(&unit_prefix));
+        self.unit_pp_fields
+            .retain(|key, _| !key.starts_with(&unit_prefix));
+        self.db_xml_extras
+            .retain(|key, _| !key.starts_with(&unit_prefix));
 
         let level_oids: HashSet<String> = self
             .db_levels
@@ -1840,7 +2328,9 @@ impl Server {
         for oid in removed_oids {
             let object_in_use = self.projects.values().any(|project| {
                 project.networks.values().any(|network| {
-                    network.oid == oid || network.units.values().any(|unit| unit.oid == oid)
+                    network.oid == oid
+                        || network.interface_oid == oid
+                        || network.units.values().any(|unit| unit.oid == oid)
                 })
             });
             let level_in_use = self.db_levels.values().any(|level| level.oid == oid);
@@ -1890,6 +2380,8 @@ impl Server {
         // Database keys travel with the project; otherwise field reads
         // under the new path miss while stale old-path entries leak.
         self.remap_prefix(&format!("//{src}"), &format!("//{dst}"));
+        self.remap_unit_document_project(src, dst);
+        self.remap_db_xml_extras_project(src, dst);
         self.push_event(format!("#e# project {dst} renamed"));
         ok(tag, vec![], "200 OK.")
     }
@@ -1926,7 +2418,9 @@ impl Server {
             return err(tag, status::NOT_FOUND, "404 Project not found");
         };
         Self::reset_project_retries(&mut project);
-        self.database_files.insert(words[3].to_string(), project);
+        let archive = words[3].to_string();
+        self.database_files.insert(archive.clone(), project);
+        self.archive_unit_documents(words[2], &archive);
         ok(tag, vec![], "200 OK.")
     }
 
@@ -1949,7 +2443,155 @@ impl Server {
         Self::reset_project_retries(&mut project);
         project.name = words[2].to_string();
         self.projects.insert(words[2].to_string(), project);
+        self.restore_unit_document_archive(words[3], words[2]);
         ok(tag, vec![], "200 OK.")
+    }
+
+    fn archive_unit_documents(&mut self, project: &str, archive: &str) {
+        let prefix = format!("{project}\u{1f}");
+        let documents = self
+            .unit_documents
+            .iter()
+            .filter_map(|(key, value)| {
+                key.strip_prefix(&prefix)
+                    .map(|oid| (oid.to_string(), value.clone()))
+            })
+            .collect();
+        let pp_fields = self
+            .unit_pp_fields
+            .iter()
+            .filter_map(|(key, value)| {
+                key.strip_prefix(&prefix)
+                    .map(|oid| (oid.to_string(), value.clone()))
+            })
+            .collect();
+        self.database_file_unit_documents
+            .insert(archive.to_string(), documents);
+        self.database_file_unit_pp_fields
+            .insert(archive.to_string(), pp_fields);
+        let extras = self
+            .db_xml_extras
+            .iter()
+            .filter_map(|(key, value)| {
+                key.strip_prefix(&prefix)
+                    .map(|oid| (oid.to_string(), value.clone()))
+            })
+            .collect();
+        self.database_file_db_xml_extras
+            .insert(archive.to_string(), extras);
+
+        let prefix = format!("//{project}");
+        let slash = format!("{prefix}/");
+        self.database_file_db_fields.insert(
+            archive.to_string(),
+            self.db_fields
+                .iter()
+                .filter(|(path, _)| *path == &prefix || path.starts_with(&slash))
+                .map(|(path, value)| (path.clone(), value.clone()))
+                .collect(),
+        );
+        let project_oids = self.active_db_oids(project);
+        self.database_file_objects.insert(
+            archive.to_string(),
+            self.objects
+                .iter()
+                .filter(|path| {
+                    *path == &prefix
+                        || path.starts_with(&slash)
+                        || path.starts_with(&format!("{prefix}-"))
+                        || path
+                            .strip_prefix('!')
+                            .is_some_and(|oid| project_oids.contains(oid))
+                })
+                .cloned()
+                .collect(),
+        );
+        self.database_file_db_levels.insert(
+            archive.to_string(),
+            self.db_levels
+                .values()
+                .filter(|level| level.parent == prefix || level.parent.starts_with(&slash))
+                .cloned()
+                .collect(),
+        );
+        self.database_file_db_pending.insert(
+            archive.to_string(),
+            self.db_pending
+                .values()
+                .filter(|object| object.project == project)
+                .cloned()
+                .collect(),
+        );
+    }
+
+    fn restore_unit_document_archive(&mut self, archive: &str, project: &str) {
+        let source = self
+            .database_files
+            .get(archive)
+            .map(|record| record.name.clone())
+            .unwrap_or_else(|| project.to_string());
+        let source_prefix = format!("//{source}");
+        let destination_prefix = format!("//{project}");
+        let remap = |path: &str| {
+            path.strip_prefix(&source_prefix)
+                .map(|suffix| format!("{destination_prefix}{suffix}"))
+                .unwrap_or_else(|| path.to_string())
+        };
+        if let Some(documents) = self.database_file_unit_documents.get(archive) {
+            self.unit_documents.extend(
+                documents
+                    .iter()
+                    .map(|(oid, value)| (Self::unit_document_key(project, oid), value.clone())),
+            );
+        }
+        if let Some(pp_fields) = self.database_file_unit_pp_fields.get(archive) {
+            self.unit_pp_fields.extend(
+                pp_fields
+                    .iter()
+                    .map(|(oid, value)| (Self::unit_document_key(project, oid), value.clone())),
+            );
+        }
+        if let Some(extras) = self.database_file_db_xml_extras.get(archive) {
+            self.db_xml_extras.extend(
+                extras
+                    .iter()
+                    .map(|(oid, value)| (Self::unit_document_key(project, oid), value.clone())),
+            );
+        }
+        if let Some(fields) = self.database_file_db_fields.get(archive) {
+            self.db_fields.extend(
+                fields
+                    .iter()
+                    .map(|(path, value)| (remap(path), value.clone())),
+            );
+        }
+        if let Some(objects) = self.database_file_objects.get(archive) {
+            self.objects.extend(objects.iter().map(|path| remap(path)));
+        }
+        if let Some(levels) = self.database_file_db_levels.get(archive) {
+            for mut level in levels.clone() {
+                level.parent = remap(&level.parent);
+                self.known_oids.insert(level.oid.clone());
+                let base = format!("{project}\u{1f}{}", level.oid);
+                let mut key = base.clone();
+                let mut suffix = 1_u64;
+                while self.db_levels.contains_key(&key) {
+                    key = format!("{base}#{suffix}");
+                    suffix += 1;
+                }
+                self.db_levels.insert(key, level);
+            }
+        }
+        if let Some(objects) = self.database_file_db_pending.get(archive) {
+            for mut object in objects.clone() {
+                object.project = project.to_string();
+                object.parent = remap(&object.parent);
+                object.path = object.path.as_deref().map(&remap);
+                self.known_oids.insert(object.oid.clone());
+                self.db_pending
+                    .insert(format!("{project}\u{1f}{}", object.oid), object);
+            }
+        }
     }
 
     /// Native `REPOSITORY LIST`: this mock models no server-side project
@@ -2052,6 +2694,7 @@ impl Server {
             net,
             Network {
                 oid: oid.clone(),
+                interface_oid: fresh_oid(),
                 address: net,
                 name: words[2].to_string(),
                 iface_type: words[3].to_string(),
@@ -2880,6 +3523,14 @@ impl Server {
             if xml && !rest.contains('/') {
                 if let Some(project) = self.current.as_deref() {
                     if let Some(object) = self.pending_object(project, rest) {
+                        if matches!(
+                            object.element.as_str(),
+                            "Level" | "NetVar" | "Group" | "Application"
+                        ) && object.path.is_some()
+                        {
+                            let document = self.pending_db_xml_document(project, object);
+                            return Self::db_xml_response(tag, document);
+                        }
                         let mut fields = object.fields.iter().collect::<Vec<_>>();
                         fields.sort_by_key(|(field, _)| *field);
                         let mut document = format!("<{}><OID>{}</OID>", object.element, object.oid);
@@ -2887,16 +3538,17 @@ impl Server {
                             document.push_str(&format!("<{name}>{}</{name}>", xml_escape(value)));
                         }
                         document.push_str(&format!("</{}>", object.element));
-                        return Response {
-                            tag: tag.to_string(),
-                            lines: vec![format!("347-{document}")],
-                            final_text: "200 OK".to_string(),
-                            status: status::OK,
-                        };
+                        return Self::db_xml_response(tag, document);
+                    }
+                    if let Some(network) = self.projects.get(project).and_then(|record| {
+                        record.networks.values().find(|network| network.oid == rest)
+                    }) {
+                        return self.network_xml(tag, project, network.address);
                     }
                 }
                 if let Some(level) = self.level(rest) {
-                    return Self::level_xml(tag, level);
+                    let project = self.current.as_deref().unwrap_or_default();
+                    return self.level_xml(tag, project, level);
                 }
                 return err(tag, status::ABSENT, "401 Object not found");
             }
@@ -2931,16 +3583,17 @@ impl Server {
             if parts.len() == 2 && Self::split_unit(path).is_none() {
                 return self.network_xml(tag, parts[0], net as u8);
             }
+            if parts.len() == 3 && Self::split_unit(path).is_none() {
+                return self.application_xml(tag, parts[0], path);
+            }
             if parts.len() == 4 && Self::split_unit(path).is_none() {
-                return self.group_xml(tag, path);
+                return self.group_xml(tag, parts[0], path);
             }
             let snippet = if let Some((_, _, addr)) = Self::split_unit(path) {
-                let name = proj.networks[&(net as u8)]
-                    .units
-                    .get(&addr)
-                    .map(|u| u.field("UnitName"))
-                    .unwrap_or_default();
-                format!("<Unit address=\"{addr}\" name=\"{}\"/>", xml_escape(&name))
+                let Some(unit) = proj.networks[&(net as u8)].units.get(&addr) else {
+                    return err(tag, status::ABSENT, "401 Unit not found");
+                };
+                self.unit_xml_document(parts[0], unit)
             } else {
                 format!("<Object path=\"{}\"/>", xml_escape(path))
             };
@@ -3020,31 +3673,329 @@ impl Server {
         else {
             return err(tag, status::ABSENT, "401 Network not found");
         };
-        let mut doc = format!(
-            "<Network><Address>{net}</Address><InterfaceType>{}</InterfaceType><InterfaceAddress>{}</InterfaceAddress>",
+        let mut doc = self.db_xml_open(proj_name, &network.oid, "Network", &[]);
+        doc.push_str(&format!(
+            "<OID>{}</OID><TagName>{}</TagName><Address>{net}</Address><NetworkNumber>{net}</NetworkNumber>",
+            xml_escape(&network.oid),
+            xml_escape(&network.name),
+        ));
+        doc.push_str(&self.db_xml_open(proj_name, &network.interface_oid, "Interface", &[]));
+        doc.push_str(&format!(
+            "<OID>{}</OID><InterfaceType>{}</InterfaceType><InterfaceAddress>{}</InterfaceAddress>",
+            xml_escape(&network.interface_oid),
             xml_escape(&network.iface_type),
             xml_escape(&network.iface_addr),
-        );
+        ));
+        self.append_db_xml_extensions(proj_name, &network.interface_oid, &mut doc);
+        doc.push_str("</Interface>");
         let mut addrs: Vec<u8> = network.units.keys().copied().collect();
         addrs.sort();
         for addr in addrs {
             let unit = &network.units[&addr];
-            doc.push_str(&format!(
-                "<Unit><Address>{addr}</Address><UnitType>{}</UnitType><FirmwareVersion>{}</FirmwareVersion><SerialNumber>{}</SerialNumber><UnitName>{}</UnitName><OID>{}</OID></Unit>",
-                xml_escape(&unit.field("UnitType")),
-                xml_escape(&unit.field("FirmwareVersion")),
-                xml_escape(&unit.field("SerialNumber")),
-                xml_escape(&unit.field("UnitName")),
-                xml_escape(&unit.oid),
-            ));
+            doc.push_str(&self.unit_xml_document(proj_name, unit));
         }
+        let network_path = format!("//{proj_name}/{net}");
+        for application in self.db_xml_children(proj_name, &network_path, &["Application"]) {
+            doc.push_str(&self.pending_db_xml_document(proj_name, application));
+        }
+        self.append_db_xml_extensions(proj_name, &network.oid, &mut doc);
         doc.push_str("</Network>");
+        Self::db_xml_response(tag, doc)
+    }
+
+    fn db_xml_response(tag: &str, document: String) -> Response {
         Response {
             tag: tag.to_string(),
-            lines: vec![format!("347-{doc}")],
+            lines: vec![format!("347-{document}")],
             final_text: "200 OK".to_string(),
             status: status::OK,
         }
+    }
+
+    fn db_xml_open(
+        &self,
+        project: &str,
+        oid: &str,
+        element: &str,
+        standard_attributes: &[(&str, String)],
+    ) -> String {
+        let extras = self
+            .db_xml_extras
+            .get(&Self::unit_document_key(project, oid));
+        let mut output = format!("<{element}");
+        if let Some(extras) = extras {
+            for (prefix, uri) in &extras.namespaces {
+                output.push_str(&format!(" xmlns:{prefix}=\"{}\"", xml_escape(uri)));
+            }
+        }
+        for (name, value) in standard_attributes {
+            output.push_str(&format!(" {name}=\"{}\"", xml_escape(value)));
+        }
+        if let Some(extras) = extras {
+            for (name, value) in &extras.attributes {
+                output.push_str(&format!(" {name}=\"{}\"", xml_escape(value)));
+            }
+        }
+        output.push('>');
+        output
+    }
+
+    fn append_db_xml_extensions(&self, project: &str, oid: &str, output: &mut String) {
+        if let Some(extras) = self
+            .db_xml_extras
+            .get(&Self::unit_document_key(project, oid))
+        {
+            for child in &extras.children {
+                output.push_str(child);
+            }
+        }
+    }
+
+    fn db_xml_children<'a>(
+        &'a self,
+        project: &str,
+        parent: &str,
+        elements: &[&str],
+    ) -> Vec<&'a DbPendingObject> {
+        let mut children = self
+            .db_pending
+            .values()
+            .filter(|object| {
+                object.project == project
+                    && elements.contains(&object.element.as_str())
+                    && object.path.as_ref().is_some_and(|path| {
+                        path.rsplit_once('/').map(|(value, _)| value) == Some(parent)
+                    })
+            })
+            .collect::<Vec<_>>();
+        children.sort_by_key(|object| {
+            object
+                .fields
+                .get("Address")
+                .and_then(|address| address.parse::<u8>().ok())
+                .unwrap_or_default()
+        });
+        children
+    }
+
+    fn pending_db_xml_document(&self, project: &str, object: &DbPendingObject) -> String {
+        let value = object
+            .fields
+            .get("Value")
+            .map(|value| vec![("Value", value.clone())])
+            .unwrap_or_default();
+        let attributes = if object.element == "Level" {
+            value.as_slice()
+        } else {
+            &[]
+        };
+        let mut output = self.db_xml_open(project, &object.oid, &object.element, attributes);
+        output.push_str(&format!(
+            "<OID>{}</OID><TagName>{}</TagName><Address>{}</Address>",
+            xml_escape(&object.oid),
+            xml_escape(
+                object
+                    .fields
+                    .get("TagName")
+                    .map(String::as_str)
+                    .unwrap_or("")
+            ),
+            xml_escape(
+                object
+                    .fields
+                    .get("Address")
+                    .map(String::as_str)
+                    .unwrap_or("")
+            ),
+        ));
+        if let Some(path) = object.path.as_deref() {
+            let children = match object.element.as_str() {
+                "Application" => self.db_xml_children(project, path, &["Group", "NetVar"]),
+                "Group" | "NetVar" => self.db_xml_children(project, path, &["Level"]),
+                _ => Vec::new(),
+            };
+            for child in children {
+                output.push_str(&self.pending_db_xml_document(project, child));
+            }
+            if matches!(object.element.as_str(), "Group" | "NetVar") {
+                let pending_oids = self
+                    .db_pending
+                    .values()
+                    .filter(|candidate| candidate.project == project)
+                    .map(|candidate| candidate.oid.as_str())
+                    .collect::<HashSet<_>>();
+                let mut legacy = self
+                    .db_levels
+                    .values()
+                    .filter(|level| {
+                        level.parent == path
+                            && !level.netvar
+                            && !pending_oids.contains(level.oid.as_str())
+                    })
+                    .collect::<Vec<_>>();
+                legacy.sort_by_key(|level| level.address);
+                for level in legacy {
+                    output.push_str(&self.level_xml_document(project, level));
+                }
+            }
+        }
+        self.append_db_xml_extensions(project, &object.oid, &mut output);
+        output.push_str(&format!("</{}>", object.element));
+        output
+    }
+
+    /// Project one durable Unit as native object XML. DBSETXML templates keep
+    /// unmodeled markup byte-for-byte; modeled scalar and PP values are
+    /// replaced from current state so later DBSET/PP SAVE operations cannot
+    /// leave the returned document stale.
+    fn unit_xml_document(&self, project: &str, unit: &Unit) -> String {
+        let document_key = Self::unit_document_key(project, &unit.oid);
+        let pp = self
+            .unit_pp_fields
+            .get(&document_key)
+            .cloned()
+            .unwrap_or_default();
+        let scalar = |name: &str| -> Option<String> {
+            if pp.contains(name) {
+                return None;
+            }
+            match name {
+                "OID" => Some(unit.oid.clone()),
+                "Address" => Some(unit.address.to_string()),
+                "TagName" => Some(
+                    unit.fields
+                        .get("TagName")
+                        .or_else(|| unit.fields.get("UnitName"))
+                        .cloned()
+                        .unwrap_or_default(),
+                ),
+                "UnitType" => Some(unit.field("UnitType")),
+                "FirmwareVersion" => Some(unit.field("FirmwareVersion")),
+                "CatalogNumber" => Some(unit.field("CatalogNumber")),
+                "SerialNumber" => Some(unit.field("SerialNumber")),
+                _ => unit.fields.get(name).cloned(),
+            }
+        };
+        let core = [
+            "OID",
+            "Address",
+            "TagName",
+            "UnitType",
+            "FirmwareVersion",
+            "CatalogNumber",
+            "SerialNumber",
+        ];
+        let append_missing =
+            |output: &mut String, seen_scalars: &BTreeSet<String>, seen_pp: &BTreeSet<String>| {
+                for name in core {
+                    if !seen_scalars.contains(name) {
+                        let value = scalar(name).unwrap_or_default();
+                        output.push_str(&format!("<{name}>{}</{name}>", xml_escape(&value)));
+                    }
+                }
+                let mut extra = unit
+                    .fields
+                    .keys()
+                    .filter(|name| {
+                        !core.contains(&name.as_str())
+                            && name.as_str() != "UnitName"
+                            && !pp.contains(*name)
+                            && !seen_scalars.contains(*name)
+                    })
+                    .collect::<Vec<_>>();
+                extra.sort();
+                for name in extra {
+                    output.push_str(&format!(
+                        "<{name}>{}</{name}>",
+                        xml_escape(&unit.fields[name])
+                    ));
+                }
+                for name in &pp {
+                    if !seen_pp.contains(name) {
+                        output.push_str(&format!(
+                            "<PP Name=\"{}\" Value=\"{}\"/>",
+                            xml_escape(name),
+                            xml_escape(unit.fields.get(name).map(String::as_str).unwrap_or(""))
+                        ));
+                    }
+                }
+            };
+
+        if let Some(template) = self.unit_documents.get(&document_key) {
+            if let Ok(document) = roxmltree::Document::parse(template) {
+                let root = document.root_element();
+                let range = root.range();
+                if root.tag_name().name() == "Unit" {
+                    if let Some(open_end) = xml_open_tag_end(template, range.start) {
+                        if let Some(relative_close) = template[open_end + 1..range.end].rfind("</")
+                        {
+                            let close = open_end + 1 + relative_close;
+                            let mut output = template[range.start..=open_end].to_string();
+                            let mut cursor = open_end + 1;
+                            let mut seen_scalars = BTreeSet::new();
+                            let mut seen_pp = BTreeSet::new();
+                            for child in root.children() {
+                                let child_range = child.range();
+                                if child_range.start < cursor || child_range.end > close {
+                                    continue;
+                                }
+                                output.push_str(&template[cursor..child_range.start]);
+                                if child.is_element()
+                                    && child.tag_name().namespace().is_none()
+                                    && child.tag_name().name() == "PP"
+                                {
+                                    if let Some(name) = child.attribute("Name") {
+                                        if pp.contains(name) {
+                                            output.push_str(&format!(
+                                                "<PP Name=\"{}\" Value=\"{}\"/>",
+                                                xml_escape(name),
+                                                xml_escape(
+                                                    unit.fields
+                                                        .get(name)
+                                                        .map(String::as_str)
+                                                        .unwrap_or(""),
+                                                )
+                                            ));
+                                            seen_pp.insert(name.to_string());
+                                        } else {
+                                            output.push_str(&template[child_range.clone()]);
+                                        }
+                                    } else {
+                                        output.push_str(&template[child_range.clone()]);
+                                    }
+                                } else if child.is_element()
+                                    && child.tag_name().namespace().is_none()
+                                    && !child.children().any(|node| node.is_element())
+                                {
+                                    let name = child.tag_name().name();
+                                    if let Some(value) = scalar(name) {
+                                        output.push_str(&format!(
+                                            "<{name}>{}</{name}>",
+                                            xml_escape(&value)
+                                        ));
+                                        seen_scalars.insert(name.to_string());
+                                    } else {
+                                        output.push_str(&template[child_range.clone()]);
+                                    }
+                                } else {
+                                    output.push_str(&template[child_range.clone()]);
+                                }
+                                cursor = child_range.end;
+                            }
+                            output.push_str(&template[cursor..close]);
+                            append_missing(&mut output, &seen_scalars, &seen_pp);
+                            output.push_str(&template[close..range.end]);
+                            return output;
+                        }
+                    }
+                }
+            }
+        }
+
+        let mut output = "<Unit>".to_string();
+        append_missing(&mut output, &BTreeSet::new(), &BTreeSet::new());
+        output.push_str("</Unit>");
+        output
     }
 
     /// Native group document for `DBGETXML //PROJECT/NET/APP/GROUP`.
@@ -3055,12 +4006,61 @@ impl Server {
     /// attribute (native NULL), which tag resolution rejects as having
     /// no valid byte value. The root is `NetVar` when every recorded row
     /// is a NetVar, else `Group`.
-    fn group_xml(&self, tag: &str, path: &str) -> Response {
+    fn application_xml(&self, tag: &str, project: &str, path: &str) -> Response {
+        let Some(object) = self.db_pending.values().find(|object| {
+            object.project == project
+                && object.element == "Application"
+                && object.path.as_deref() == Some(path)
+        }) else {
+            let parts = path.trim_start_matches('/').split('/').collect::<Vec<_>>();
+            let live_application = match parts.as_slice() {
+                [_, network, application] => network
+                    .parse::<u8>()
+                    .ok()
+                    .zip(application.parse::<u8>().ok())
+                    .is_some_and(|(network, application)| {
+                        self.projects
+                            .get(project)
+                            .and_then(|record| record.networks.get(&network))
+                            .is_some_and(|network| {
+                                network
+                                    .levels
+                                    .keys()
+                                    .any(|(candidate, _)| *candidate == application)
+                            })
+                    }),
+                _ => false,
+            };
+            if self.db_fields.contains_key(&format!("{path}/TagName"))
+                || self.objects.contains(path)
+                || live_application
+            {
+                return Self::db_xml_response(
+                    tag,
+                    format!("<Object path=\"{}\"/>", xml_escape(path)),
+                );
+            }
+            return err(tag, status::ABSENT, "401 Application not found");
+        };
+        Self::db_xml_response(tag, self.pending_db_xml_document(project, object))
+    }
+
+    fn group_xml(&self, tag: &str, project: &str, path: &str) -> Response {
+        if let Some(object) = self.db_pending.values().find(|object| {
+            object.project == project
+                && matches!(object.element.as_str(), "Group" | "NetVar")
+                && object.path.as_deref() == Some(path)
+        }) {
+            return Self::db_xml_response(tag, self.pending_db_xml_document(project, object));
+        }
         let mut rows: Vec<&DbLevel> = self
             .db_levels
             .values()
             .filter(|l| l.parent == path)
             .collect();
+        if rows.is_empty() && !self.db_fields.contains_key(&format!("{path}/TagName")) {
+            return err(tag, status::ABSENT, "401 Group not found");
+        }
         rows.sort_by_key(|l| (l.address, l.oid.clone()));
         let root = if !rows.is_empty() && rows.iter().all(|l| l.netvar) {
             "NetVar"
@@ -3069,47 +4069,43 @@ impl Server {
         };
         let mut doc = format!("<{root}>");
         for level in rows {
-            doc.push_str(&Self::level_row(level));
+            doc.push_str(&self.level_xml_document(project, level));
         }
         doc.push_str(&format!("</{root}>"));
-        Response {
-            tag: tag.to_string(),
-            lines: vec![format!("347-{doc}")],
-            final_text: "200 OK".to_string(),
-            status: status::OK,
-        }
+        Self::db_xml_response(tag, doc)
     }
 
     /// Native level document for `DBGETXML !oid`: the single evidenced
     /// row as the document root (`Level`; `NetVar` wrapping the row for
     /// NetVar records, whose kind probe must not read `Level`).
-    fn level_xml(tag: &str, level: &DbLevel) -> Response {
-        let row = Self::level_row(level);
+    fn level_xml(&self, tag: &str, project: &str, level: &DbLevel) -> Response {
+        let row = self.level_xml_document(project, level);
         let doc = if level.netvar {
             format!("<NetVar>{row}</NetVar>")
         } else {
             row
         };
-        Response {
-            tag: tag.to_string(),
-            lines: vec![format!("347-{doc}")],
-            final_text: "200 OK".to_string(),
-            status: status::OK,
-        }
+        Self::db_xml_response(tag, doc)
     }
 
     /// One evidenced `<Level>` row: `Value` attribute (absent while
     /// native NULL) plus `TagName` child. No other level fields are
     /// modeled, so none are emitted.
-    fn level_row(level: &DbLevel) -> String {
-        let value = level
+    fn level_xml_document(&self, project: &str, level: &DbLevel) -> String {
+        let attributes = level
             .value
-            .map(|v| format!(" Value=\"{v}\""))
+            .map(|value| vec![("Value", value.to_string())])
             .unwrap_or_default();
-        format!(
-            "<Level{value}><TagName>{}</TagName></Level>",
-            xml_escape(&level.tag)
-        )
+        let mut output = self.db_xml_open(project, &level.oid, "Level", &attributes);
+        output.push_str(&format!(
+            "<OID>{}</OID><TagName>{}</TagName><Address>{}</Address>",
+            xml_escape(&level.oid),
+            xml_escape(&level.tag),
+            level.address,
+        ));
+        self.append_db_xml_extensions(project, &level.oid, &mut output);
+        output.push_str("</Level>");
+        output
     }
 
     /// Native lighting verbs as sent by `SceneExecutor` and `NativeLabels`:
@@ -4861,6 +5857,11 @@ impl Server {
             self.db_fields
                 .insert(format!("{path}/{key}"), value.clone());
         }
+        let oid = unit.oid.clone();
+        self.unit_pp_fields
+            .entry(Self::unit_document_key(&proj_name, &oid))
+            .or_default()
+            .extend(session.params.keys().cloned());
         Ok(())
     }
 
@@ -5579,8 +6580,8 @@ impl Server {
 
     /// Handle a here-document command: the `COMMAND << DELIMITER` line plus
     /// the already-collected document body (delimiter line excluded).
-    /// Supports `DBSETXML path` (stores the document in the mock) and bounded
-    /// CGL 1.1 `CGL IMPORT project` label-graph documents.
+    /// Supports scalar and evidenced complete typed-object `DBSETXML path`
+    /// plus bounded CGL 1.1 `CGL IMPORT project` label-graph documents.
     pub fn handle_document(&mut self, line: &str, document: &str) -> Response {
         let cmd = match parse_command(line) {
             Ok(c) => c,
@@ -5613,6 +6614,29 @@ impl Server {
                     "400 DBSETXML requires a path",
                 );
             }
+            let parts = words[1]
+                .trim_start_matches('/')
+                .split('/')
+                .collect::<Vec<_>>();
+            if parts.len() == 4 && parts[2].eq_ignore_ascii_case("p") {
+                return self.dbsetxml_unit(tag_of(&cmd), words[1], document);
+            }
+            let typed_path = words[1].starts_with('!')
+                || matches!(parts.as_slice(), [_, network] if network.parse::<u8>().is_ok())
+                || matches!(parts.as_slice(), [_, network, application]
+                    if network.parse::<u8>().is_ok() && application.parse::<u8>().is_ok())
+                || matches!(parts.as_slice(), [_, network, application, group]
+                    if network.parse::<u8>().is_ok()
+                        && application.parse::<u8>().is_ok()
+                        && group.parse::<u8>().is_ok())
+                || matches!(parts.as_slice(), [_, network, application, group, level]
+                    if network.parse::<u8>().is_ok()
+                        && application.parse::<u8>().is_ok()
+                        && group.parse::<u8>().is_ok()
+                        && level.parse::<u8>().is_ok());
+            if typed_path {
+                return self.dbsetxml_typed(tag_of(&cmd), words[1], document);
+            }
             self.db_fields
                 .insert(words[1].to_string(), document.to_string());
             self.mirror_unit_field(words[1], document.trim_end_matches('\n'));
@@ -5626,6 +6650,784 @@ impl Server {
             status::BAD_REQUEST,
             "400 Command does not accept a document",
         )
+    }
+
+    /// Replace one complete database Unit from a bounded XML document.
+    ///
+    /// Native DBSETXML is an object replacement, not a PP transfer. The
+    /// document may therefore move the database address or replace its OID,
+    /// while the physical inventory remains untouched. Known scalar and PP
+    /// rows are decoded into the durable model. The original XML is retained
+    /// as a template so comments, namespaces and unmodeled nested metadata
+    /// survive later DBGETXML projections.
+    fn dbsetxml_unit(&mut self, tag: &str, path: &str, document: &str) -> Response {
+        if document.len() > 16 * 1024 * 1024 {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 DBSETXML document exceeds 16 MiB",
+            );
+        }
+        let upper = document.to_ascii_uppercase();
+        if upper.contains("<!DOCTYPE") || upper.contains("<!ENTITY") {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 DBSETXML does not accept DTD or entity declarations",
+            );
+        }
+        let parsed = match roxmltree::Document::parse(document) {
+            Ok(parsed) => parsed,
+            Err(error) => {
+                return err(
+                    tag,
+                    status::BAD_REQUEST,
+                    &format!("400 Invalid DBSETXML Unit XML: {error}"),
+                )
+            }
+        };
+        let root = parsed.root_element();
+        if root.tag_name().namespace().is_some() || root.tag_name().name() != "Unit" {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 DBSETXML complete object must have a Unit root",
+            );
+        }
+        let Some((project_name, network_address, old_address)) = Self::split_unit(path) else {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 DBSETXML requires a unit path",
+            );
+        };
+        if self.current.as_deref() != Some(project_name.as_str()) {
+            return err(tag, status::NOT_FOUND, "404 Project not selected");
+        }
+        let Some(old_unit) = self
+            .projects
+            .get(&project_name)
+            .and_then(|project| project.networks.get(&network_address))
+            .and_then(|network| network.units.get(&old_address))
+            .cloned()
+        else {
+            return err(tag, status::ABSENT, "401 Unit not found");
+        };
+
+        let mut scalars = HashMap::<String, String>::new();
+        let mut pp_fields = BTreeSet::<String>::new();
+        for child in root.children().filter(roxmltree::Node::is_element) {
+            // Namespaced children are vendor extensions. Their local name may
+            // deliberately collide with a modeled field, so retain them only
+            // in the opaque template and never let them satisfy or overwrite
+            // the native Unit schema.
+            if child.tag_name().namespace().is_some() {
+                continue;
+            }
+            let name = child.tag_name().name();
+            if name == "PP" {
+                if child.attributes().len() != 2
+                    || child.attribute("Name").is_none()
+                    || child.attribute("Value").is_none()
+                    || child.children().any(|node| node.is_element())
+                    || child
+                        .children()
+                        .filter_map(|node| node.text())
+                        .any(|text| !text.trim().is_empty())
+                {
+                    return err(
+                        tag,
+                        status::BAD_REQUEST,
+                        "400 DBSETXML PP requires exactly Name and Value attributes",
+                    );
+                }
+                let parameter = child.attribute("Name").unwrap_or_default();
+                let value = child.attribute("Value").unwrap_or_default();
+                if parameter.is_empty()
+                    || parameter.len() > 256
+                    || parameter.chars().any(char::is_control)
+                    || !pp_fields.insert(parameter.to_string())
+                {
+                    return err(
+                        tag,
+                        status::BAD_REQUEST,
+                        "400 DBSETXML contains an invalid or duplicate PP parameter",
+                    );
+                }
+                scalars.insert(parameter.to_string(), value.to_string());
+                continue;
+            }
+            // Nested unknown elements are retained opaquely in the template.
+            // Native scalar fields are direct text-only elements.
+            if child.children().any(|node| node.is_element()) {
+                continue;
+            }
+            let value = child
+                .children()
+                .filter_map(|node| node.text())
+                .collect::<String>();
+            let is_required = matches!(
+                name,
+                "OID" | "Address" | "TagName" | "UnitType" | "FirmwareVersion"
+            );
+            let is_standard = is_required || matches!(name, "CatalogNumber" | "SerialNumber");
+            if is_standard && child.attributes().len() != 0 {
+                return err(
+                    tag,
+                    status::BAD_REQUEST,
+                    "400 DBSETXML scalar Unit fields do not accept attributes",
+                );
+            }
+            if child.attributes().len() == 0 && scalars.insert(name.to_string(), value).is_some() {
+                return err(
+                    tag,
+                    status::BAD_REQUEST,
+                    "400 DBSETXML contains a duplicate scalar Unit field",
+                );
+            }
+        }
+        for required in ["OID", "Address", "TagName", "UnitType", "FirmwareVersion"] {
+            if !scalars.contains_key(required) {
+                return err(
+                    tag,
+                    status::BAD_REQUEST,
+                    &format!("400 DBSETXML Unit is missing {required}"),
+                );
+            }
+        }
+        let oid = scalars["OID"].clone();
+        if !valid_uuid(oid.trim()) || oid.trim() != oid {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 DBSETXML Unit has an invalid OID",
+            );
+        }
+        let Ok(new_address) = scalars["Address"].parse::<u8>() else {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 DBSETXML Unit has an invalid Address",
+            );
+        };
+        for required in ["TagName", "UnitType", "FirmwareVersion"] {
+            let value = &scalars[required];
+            if value.is_empty() || value.trim() != value || value.chars().any(char::is_control) {
+                return err(
+                    tag,
+                    status::BAD_REQUEST,
+                    &format!("400 DBSETXML Unit has an invalid {required}"),
+                );
+            }
+        }
+        let network = &self.projects[&project_name].networks[&network_address];
+        if new_address != old_address && network.units.contains_key(&new_address) {
+            return err(
+                tag,
+                status::CONFLICT_EXISTS,
+                "409 DBSETXML destination unit address already exists",
+            );
+        }
+        if oid != old_unit.oid && self.active_db_oids(&project_name).contains(&oid) {
+            return err(
+                tag,
+                status::CONFLICT_EXISTS,
+                "409 DBSETXML OID already exists in the selected project",
+            );
+        }
+
+        let mut fields = scalars;
+        fields.remove("OID");
+        fields.remove("Address");
+        let unit_type = fields.get("UnitType").cloned().unwrap_or_default();
+        let firmware = fields.get("FirmwareVersion").cloned().unwrap_or_default();
+        let serial = fields.get("SerialNumber").cloned().unwrap_or_default();
+        let new_unit = Unit {
+            address: new_address,
+            unit_type,
+            serial,
+            serial_alternates: Vec::new(),
+            firmware,
+            fields,
+            oid: oid.clone(),
+            created_by_new: old_unit.created_by_new,
+        };
+        let network = self
+            .projects
+            .get_mut(&project_name)
+            .and_then(|project| project.networks.get_mut(&network_address))
+            .expect("validated DBSETXML network");
+        network.units.remove(&old_address);
+        network.units.insert(new_address, new_unit.clone());
+        self.db_pending
+            .remove(&format!("{project_name}\u{1f}{}", old_unit.oid));
+        self.known_oids.insert(oid.clone());
+        let old_document_key = Self::unit_document_key(&project_name, &old_unit.oid);
+        let document_key = Self::unit_document_key(&project_name, &oid);
+        if old_document_key != document_key {
+            self.unit_documents.remove(&old_document_key);
+            self.unit_pp_fields.remove(&old_document_key);
+        }
+        self.unit_documents
+            .insert(document_key.clone(), document.to_string());
+        self.unit_pp_fields.insert(document_key, pp_fields);
+
+        let old_prefix = format!("//{project_name}/{network_address}/p/{old_address}");
+        let new_prefix = format!("//{project_name}/{network_address}/p/{new_address}");
+        self.db_fields.retain(|key, _| {
+            !(key == &old_prefix
+                || key.starts_with(&(old_prefix.clone() + "/"))
+                || key == &new_prefix
+                || key.starts_with(&(new_prefix.clone() + "/")))
+        });
+        for (name, value) in &new_unit.fields {
+            self.db_fields
+                .insert(format!("{new_prefix}/{name}"), value.clone());
+        }
+        self.objects.remove(&old_prefix);
+        self.objects.insert(new_prefix);
+        self.retire_inactive_db_oids(std::slice::from_ref(&old_unit.oid));
+        Response {
+            tag: tag.to_string(),
+            lines: Vec::new(),
+            final_text: format!("301 OID={oid}"),
+            status: 301,
+        }
+    }
+
+    /// Replace one evidenced complete Level, NetVar, Group, Application or
+    /// Network tree. Parsing, target resolution, collision checks and the
+    /// complete mutation run on a clone; the live model changes only after
+    /// every descendant has been accepted.
+    fn dbsetxml_typed(&mut self, tag: &str, path: &str, document: &str) -> Response {
+        if document.len() > 16 * 1024 * 1024 {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 DBSETXML document exceeds 16 MiB",
+            );
+        }
+        let upper = document.to_ascii_uppercase();
+        if upper.contains("<!DOCTYPE") || upper.contains("<!ENTITY") {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 DBSETXML does not accept DTD or entity declarations",
+            );
+        }
+        let parsed_document = match roxmltree::Document::parse(document) {
+            Ok(parsed) => parsed,
+            Err(error) => {
+                return err(
+                    tag,
+                    status::BAD_REQUEST,
+                    &format!("400 Invalid DBSETXML XML: {error}"),
+                )
+            }
+        };
+        let object = match parse_db_xml_object(parsed_document.root_element(), document) {
+            Ok(object) => object,
+            Err(error) => return err(tag, status::BAD_REQUEST, &format!("400 {error}")),
+        };
+        let target = match self.resolve_db_xml_target(path) {
+            Ok(target) => target,
+            Err((code, error)) => return err(tag, code, &format!("{code} {error}")),
+        };
+        if target.kind != object.kind {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                &format!(
+                    "400 DBSETXML {} document does not match {} target",
+                    object.kind.element(),
+                    target.kind.element()
+                ),
+            );
+        }
+        let mut staged = self.clone();
+        if let Err((code, error)) = staged.apply_db_xml_replacement(&target, &object) {
+            return err(tag, code, &format!("{code} {error}"));
+        }
+        let oid = object.oid.clone();
+        *self = staged;
+        Response {
+            tag: tag.to_string(),
+            lines: Vec::new(),
+            final_text: format!("301 OID={oid}"),
+            status: 301,
+        }
+    }
+
+    fn resolve_db_xml_target(&self, raw: &str) -> Result<DbXmlTarget, (u16, String)> {
+        let Some(project) = self.current.as_deref() else {
+            return Err((status::NOT_FOUND, "No project selected".to_string()));
+        };
+        let pending_target = |object: &DbPendingObject| -> Option<DbXmlTarget> {
+            let kind = match object.element.as_str() {
+                "Level" => DbXmlKind::Level,
+                "NetVar" => DbXmlKind::NetVar,
+                "Group" => DbXmlKind::Group,
+                "Application" => DbXmlKind::Application,
+                _ => return None,
+            };
+            let path = object.path.clone()?;
+            let parent = path
+                .rsplit_once('/')
+                .map(|(parent, _)| parent.to_string())?;
+            Some(DbXmlTarget {
+                project: project.to_string(),
+                path,
+                parent,
+                kind,
+                oid: object.oid.clone(),
+            })
+        };
+
+        if let Some(oid) = raw
+            .strip_prefix('!')
+            .and_then(|value| value.split('/').next())
+        {
+            if let Some(network) = self
+                .projects
+                .get(project)
+                .and_then(|record| record.networks.values().find(|network| network.oid == oid))
+            {
+                return Ok(DbXmlTarget {
+                    project: project.to_string(),
+                    path: format!("//{project}/{}", network.address),
+                    parent: format!("//{project}/Installation/Project"),
+                    kind: DbXmlKind::Network,
+                    oid: oid.to_string(),
+                });
+            }
+            if let Some(object) = self
+                .db_pending
+                .values()
+                .find(|object| object.project == project && object.oid == oid)
+            {
+                if let Some(target) = pending_target(object) {
+                    return Ok(target);
+                }
+            }
+            if let Some(level) = self.db_levels.values().find(|level| {
+                level.oid == oid
+                    && level.parent.starts_with(&format!("//{project}/"))
+                    && !level.netvar
+            }) {
+                return Ok(DbXmlTarget {
+                    project: project.to_string(),
+                    path: format!("{}/{}", level.parent, level.address),
+                    parent: level.parent.clone(),
+                    kind: DbXmlKind::Level,
+                    oid: level.oid.clone(),
+                });
+            }
+            return Err((status::ABSENT, "Object not found".to_string()));
+        }
+
+        let path = if raw.starts_with("//") {
+            raw.trim_end_matches('/').to_string()
+        } else {
+            format!("//{project}/{}", raw.trim_matches('/'))
+        };
+        let parts = path.trim_start_matches('/').split('/').collect::<Vec<_>>();
+        if parts.first().copied() != Some(project) {
+            return Err((status::NOT_FOUND, "Project not selected".to_string()));
+        }
+        match parts.as_slice() {
+            [_, network] => {
+                let network = network
+                    .parse::<u8>()
+                    .map_err(|_| (status::BAD_REQUEST, "Invalid network path".to_string()))?;
+                let record = self
+                    .projects
+                    .get(project)
+                    .and_then(|record| record.networks.get(&network))
+                    .ok_or_else(|| (status::ABSENT, "Network not found".to_string()))?;
+                Ok(DbXmlTarget {
+                    project: project.to_string(),
+                    path,
+                    parent: format!("//{project}/Installation/Project"),
+                    kind: DbXmlKind::Network,
+                    oid: record.oid.clone(),
+                })
+            }
+            [_, _, _] | [_, _, _, _] => self
+                .db_pending
+                .values()
+                .find(|object| object.project == project && object.path.as_deref() == Some(&path))
+                .and_then(pending_target)
+                .ok_or_else(|| {
+                    (
+                        status::ABSENT,
+                        "Typed object identity is not available".to_string(),
+                    )
+                }),
+            [_, _, _, _, _] => self
+                .db_levels
+                .values()
+                .find(|level| {
+                    !level.netvar && format!("{}/{}", level.parent, level.address) == path
+                })
+                .map(|level| DbXmlTarget {
+                    project: project.to_string(),
+                    path,
+                    parent: level.parent.clone(),
+                    kind: DbXmlKind::Level,
+                    oid: level.oid.clone(),
+                })
+                .ok_or_else(|| (status::ABSENT, "Level not found".to_string())),
+            _ => Err((
+                status::BAD_REQUEST,
+                "Invalid DBSETXML object path".to_string(),
+            )),
+        }
+    }
+
+    fn apply_db_xml_replacement(
+        &mut self,
+        target: &DbXmlTarget,
+        object: &ParsedDbXmlObject,
+    ) -> Result<(), (u16, String)> {
+        let old_oids = self.db_xml_subtree_oids(target);
+        let mut submitted_oids = Vec::new();
+        db_xml_object_oids(object, &mut submitted_oids);
+        let mut distinct = HashSet::new();
+        if submitted_oids
+            .iter()
+            .any(|oid| !distinct.insert(oid.clone()))
+        {
+            return Err((
+                status::CONFLICT_EXISTS,
+                "DBSETXML document contains duplicate OIDs".to_string(),
+            ));
+        }
+        let active = self.active_db_oids(&target.project);
+        if submitted_oids
+            .iter()
+            .any(|oid| active.contains(oid) && !old_oids.contains(oid))
+        {
+            return Err((
+                status::CONFLICT_EXISTS,
+                "DBSETXML OID already exists in the selected project".to_string(),
+            ));
+        }
+        let destination = if target.kind == DbXmlKind::Network {
+            format!("//{}/{}", target.project, object.address)
+        } else {
+            format!("{}/{}", target.parent, object.address)
+        };
+        if destination != target.path && self.database_address_exists(&destination) {
+            return Err((
+                status::CONFLICT_EXISTS,
+                "DBSETXML destination Address already exists".to_string(),
+            ));
+        }
+
+        let old_network = if target.kind == DbXmlKind::Network {
+            self.projects
+                .get(&target.project)
+                .and_then(|project| {
+                    target
+                        .path
+                        .rsplit_once('/')
+                        .and_then(|(_, address)| address.parse::<u8>().ok())
+                        .and_then(|address| project.networks.get(&address))
+                })
+                .cloned()
+        } else {
+            None
+        };
+        self.remove_db_xml_subtree(target, &old_oids);
+        if object.kind == DbXmlKind::Network {
+            self.insert_db_xml_network(&target.project, object, old_network.as_ref())?;
+        } else {
+            self.insert_db_xml_object(&target.project, &target.parent, object)?;
+        }
+        self.retire_inactive_db_oids(&old_oids.into_iter().collect::<Vec<_>>());
+        Ok(())
+    }
+
+    fn active_db_oids(&self, project: &str) -> HashSet<String> {
+        let mut output = HashSet::new();
+        if let Some(record) = self.projects.get(project) {
+            for network in record.networks.values() {
+                output.insert(network.oid.clone());
+                output.insert(network.interface_oid.clone());
+                output.extend(network.units.values().map(|unit| unit.oid.clone()));
+            }
+        }
+        output.extend(
+            self.db_pending
+                .values()
+                .filter(|object| object.project == project)
+                .map(|object| object.oid.clone()),
+        );
+        output.extend(
+            self.db_levels
+                .values()
+                .filter(|level| level.parent.starts_with(&format!("//{project}/")))
+                .map(|level| level.oid.clone()),
+        );
+        output
+    }
+
+    fn retire_inactive_db_oids(&mut self, candidates: &[String]) {
+        for oid in candidates {
+            let active = self.projects.values().any(|project| {
+                project.networks.values().any(|network| {
+                    network.oid == *oid
+                        || network.interface_oid == *oid
+                        || network.units.values().any(|unit| unit.oid == *oid)
+                })
+            }) || self.db_pending.values().any(|object| object.oid == *oid)
+                || self.db_levels.values().any(|level| level.oid == *oid);
+            if active {
+                continue;
+            }
+            self.known_oids.remove(oid);
+            self.objects.remove(&format!("!{oid}"));
+            let prefix = format!("!{oid}/");
+            self.db_fields
+                .retain(|path, _| path != &format!("!{oid}") && !path.starts_with(&prefix));
+        }
+    }
+
+    fn db_xml_subtree_oids(&self, target: &DbXmlTarget) -> HashSet<String> {
+        let slash = format!("{}/", target.path);
+        let mut output = HashSet::from([target.oid.clone()]);
+        output.extend(
+            self.db_pending
+                .values()
+                .filter(|object| {
+                    object.project == target.project
+                        && object
+                            .path
+                            .as_ref()
+                            .is_some_and(|path| path == &target.path || path.starts_with(&slash))
+                })
+                .map(|object| object.oid.clone()),
+        );
+        output.extend(
+            self.db_levels
+                .values()
+                .filter(|level| {
+                    let path = format!("{}/{}", level.parent, level.address);
+                    path == target.path || path.starts_with(&slash)
+                })
+                .map(|level| level.oid.clone()),
+        );
+        if target.kind == DbXmlKind::Network {
+            if let Some(network) = self.projects.get(&target.project).and_then(|project| {
+                target
+                    .path
+                    .rsplit_once('/')
+                    .and_then(|(_, address)| address.parse::<u8>().ok())
+                    .and_then(|address| project.networks.get(&address))
+            }) {
+                output.insert(network.interface_oid.clone());
+                output.extend(network.units.values().map(|unit| unit.oid.clone()));
+            }
+        }
+        output
+    }
+
+    fn remove_db_xml_subtree(&mut self, target: &DbXmlTarget, old_oids: &HashSet<String>) {
+        let slash = format!("{}/", target.path);
+        let dash = format!("{}-", target.path);
+        let removed_units = if target.kind == DbXmlKind::Network {
+            let address = target
+                .path
+                .rsplit_once('/')
+                .and_then(|(_, address)| address.parse::<u8>().ok());
+            address
+                .and_then(|address| {
+                    self.projects
+                        .get_mut(&target.project)
+                        .and_then(|project| project.networks.remove(&address))
+                })
+                .map(|network| network.units.into_values().collect::<Vec<_>>())
+                .unwrap_or_default()
+        } else {
+            Vec::new()
+        };
+        for unit in removed_units {
+            let key = Self::unit_document_key(&target.project, &unit.oid);
+            self.unit_documents.remove(&key);
+            self.unit_pp_fields.remove(&key);
+        }
+        self.db_fields.retain(|path, _| {
+            path != &target.path && !path.starts_with(&slash) && !path.starts_with(&dash)
+        });
+        self.objects.retain(|path| {
+            path != &target.path
+                && !path.starts_with(&slash)
+                && !path.starts_with(&dash)
+                && !path
+                    .strip_prefix('!')
+                    .is_some_and(|oid| old_oids.contains(oid))
+        });
+        self.db_pending.retain(|_, object| {
+            object.project != target.project
+                || !old_oids.contains(&object.oid)
+                    && !object
+                        .path
+                        .as_ref()
+                        .is_some_and(|path| path == &target.path || path.starts_with(&slash))
+        });
+        self.db_levels.retain(|_, level| {
+            let path = format!("{}/{}", level.parent, level.address);
+            !old_oids.contains(&level.oid) && path != target.path && !path.starts_with(&slash)
+        });
+        for oid in old_oids {
+            self.db_xml_extras
+                .remove(&Self::unit_document_key(&target.project, oid));
+        }
+    }
+
+    fn store_db_xml_extras(&mut self, project: &str, oid: &str, extras: &DbXmlExtras) {
+        let key = Self::unit_document_key(project, oid);
+        if extras == &DbXmlExtras::default() {
+            self.db_xml_extras.remove(&key);
+        } else {
+            self.db_xml_extras.insert(key, extras.clone());
+        }
+    }
+
+    fn insert_db_xml_object(
+        &mut self,
+        project: &str,
+        parent: &str,
+        object: &ParsedDbXmlObject,
+    ) -> Result<String, (u16, String)> {
+        let path = format!("{parent}/{}", object.address);
+        let mut fields = HashMap::from([
+            ("Address".to_string(), object.address.to_string()),
+            ("TagName".to_string(), object.tag.clone()),
+        ]);
+        if let Some(value) = object.value {
+            fields.insert("Value".to_string(), value.to_string());
+        }
+        let pending = DbPendingObject {
+            oid: object.oid.clone(),
+            project: project.to_string(),
+            parent: parent.to_string(),
+            element: object.kind.element().to_string(),
+            fields,
+            path: Some(path.clone()),
+        };
+        self.db_pending
+            .insert(format!("{project}\u{1f}{}", object.oid), pending);
+        self.known_oids.insert(object.oid.clone());
+        self.objects.insert(format!("!{}", object.oid));
+        self.objects.insert(path.clone());
+        self.db_fields
+            .insert(format!("{path}/TagName"), object.tag.clone());
+        self.store_db_xml_extras(project, &object.oid, &object.extras);
+
+        match object.kind {
+            DbXmlKind::Level => {
+                self.db_levels.insert(
+                    format!("{project}\u{1f}{}", object.oid),
+                    DbLevel {
+                        oid: object.oid.clone(),
+                        parent: parent.to_string(),
+                        address: object.address,
+                        tag: object.tag.clone(),
+                        value: object.value,
+                        netvar: false,
+                    },
+                );
+            }
+            DbXmlKind::NetVar => {
+                self.db_levels.insert(
+                    format!("{project}\u{1f}{}", object.oid),
+                    DbLevel {
+                        oid: object.oid.clone(),
+                        parent: parent.to_string(),
+                        address: object.address,
+                        tag: object.tag.clone(),
+                        value: None,
+                        netvar: true,
+                    },
+                );
+                for child in &object.children {
+                    self.insert_db_xml_object(project, &path, child)?;
+                }
+            }
+            DbXmlKind::Group => {
+                self.objects
+                    .insert(format!("{parent}-GROUP-{}", object.address));
+                for child in &object.children {
+                    self.insert_db_xml_object(project, &path, child)?;
+                }
+            }
+            DbXmlKind::Application => {
+                self.objects
+                    .insert(format!("{parent}-APPLICATION-{}", object.address));
+                for child in &object.children {
+                    self.insert_db_xml_object(project, &path, child)?;
+                }
+            }
+            DbXmlKind::Network => {
+                return Err((
+                    status::BAD_REQUEST,
+                    "Nested Network is unsupported".to_string(),
+                ));
+            }
+        }
+        Ok(path)
+    }
+
+    fn insert_db_xml_network(
+        &mut self,
+        project: &str,
+        object: &ParsedDbXmlObject,
+        previous: Option<&Network>,
+    ) -> Result<(), (u16, String)> {
+        let interface = object.interface.as_ref().ok_or_else(|| {
+            (
+                status::BAD_REQUEST,
+                "DBSETXML Network is missing Interface".to_string(),
+            )
+        })?;
+        let (state, retries, physical, levels) = previous
+            .map(|network| {
+                (
+                    network.state,
+                    network.retries,
+                    network.physical.clone(),
+                    network.levels.clone(),
+                )
+            })
+            .unwrap_or((NetworkState::Closed, 2, HashMap::new(), HashMap::new()));
+        let network = Network {
+            oid: object.oid.clone(),
+            interface_oid: interface.oid.clone(),
+            address: object.address,
+            name: object.tag.clone(),
+            iface_type: interface.interface_type.clone(),
+            iface_addr: interface.interface_address.clone(),
+            state,
+            retries,
+            units: HashMap::new(),
+            physical,
+            levels,
+        };
+        self.projects
+            .get_mut(project)
+            .ok_or_else(|| (status::NOT_FOUND, "Project not found".to_string()))?
+            .networks
+            .insert(object.address, network);
+        self.known_oids.insert(object.oid.clone());
+        self.known_oids.insert(interface.oid.clone());
+        self.store_db_xml_extras(project, &object.oid, &object.extras);
+        self.store_db_xml_extras(project, &interface.oid, &interface.extras);
+        let path = format!("//{project}/{}", object.address);
+        for child in &object.children {
+            self.insert_db_xml_object(project, &path, child)?;
+        }
+        Ok(())
     }
 
     /// Native `DBADDSAFE parent element address name`.
@@ -5758,6 +7560,9 @@ impl Server {
                 .and_then(|n| n.units.get(&src_addr))
                 .cloned();
             if let Some(mut unit) = snapshot {
+                let source_key = Self::unit_document_key(&proj_name, &unit.oid);
+                let source_document = self.unit_documents.get(&source_key).cloned();
+                let source_pp_fields = self.unit_pp_fields.get(&source_key).cloned();
                 let addr = addr as u8;
                 let proj = self.projects.get_mut(&proj_name).expect("network resolved");
                 let network = proj.networks.get_mut(&net).expect("network resolved");
@@ -5767,12 +7572,22 @@ impl Server {
                 unit.address = addr;
                 unit.fields
                     .insert("UnitName".to_string(), words[4].to_string());
+                unit.fields
+                    .insert("TagName".to_string(), words[4].to_string());
                 // A copy is a new database object with its own identity
                 // (no internal OID references exist to remap).
                 unit.oid = fresh_oid();
                 network.units.insert(addr, unit);
                 let oid = network.units[&addr].oid.clone();
-                self.known_oids.insert(oid);
+                self.known_oids.insert(oid.clone());
+                let destination_key = Self::unit_document_key(&proj_name, &oid);
+                if let Some(document) = source_document {
+                    self.unit_documents
+                        .insert(destination_key.clone(), document);
+                }
+                if let Some(pp_fields) = source_pp_fields {
+                    self.unit_pp_fields.insert(destination_key, pp_fields);
+                }
                 self.objects.insert(format!("{}-unit-{addr}", words[2]));
                 return ok(tag, vec![], "200 OK");
             }
@@ -6034,6 +7849,9 @@ impl Server {
                 .retain(|k, _| k != &target && !k.starts_with(&prefix));
             self.objects.remove(&target);
             if let Some(unit) = removed {
+                let document_key = Self::unit_document_key(&proj_name, &unit.oid);
+                self.unit_documents.remove(&document_key);
+                self.unit_pp_fields.remove(&document_key);
                 // Repository copies retain OIDs, so retire the identity only
                 // after the last project record using it is deleted.
                 let in_use = self.projects.values().any(|project| {
@@ -7849,6 +9667,15 @@ fn valid_target(token: &str) -> bool {
     !token.is_empty() && !token.contains('#')
 }
 
+/// Canonical UUID text used by native database object identities.
+fn valid_uuid(value: &str) -> bool {
+    value.len() == 36
+        && value.bytes().enumerate().all(|(index, byte)| match index {
+            8 | 13 | 18 | 23 => byte == b'-',
+            _ => byte.is_ascii_hexdigit(),
+        })
+}
+
 /// Decimal byte value.
 fn valid_byte(word: &str) -> bool {
     word.parse::<i64>().is_ok_and(|v| (0..=255).contains(&v))
@@ -7899,6 +9726,7 @@ mod tests {
     ) -> Network {
         Network {
             oid: format!("oid-{address}"),
+            interface_oid: format!("interface-oid-{address}"),
             address,
             name: format!("Network {address}"),
             iface_type: iface_type.to_string(),
@@ -8922,7 +10750,8 @@ mod tests {
             "<Address>254</Address>",
             "<InterfaceType>Cni</InterfaceType>",
             "<InterfaceAddress>127.0.0.1:10001</InterfaceAddress>",
-            "<Unit><Address>4</Address>",
+            "<Unit><OID>00000000-0000-0000-0000-",
+            "<Address>4</Address>",
             "<UnitType>KEYE1</UnitType>",
             "<FirmwareVersion>2.5.00</FirmwareVersion>",
             "<SerialNumber>101136.1558</SerialNumber>",
@@ -8947,14 +10776,14 @@ mod tests {
                 .status,
             200
         );
-        // Attribute values escape; the snippet stays well-formed.
+        // Element text escapes; the complete typed snippet stays well-formed.
         let xml = s.handle("[5] DBGETXML //TEST/254/p/4");
         let snippet = xml
             .lines
             .iter()
             .find(|l| l.starts_with("347-"))
             .expect("347 snippet");
-        assert!(snippet.contains("name=\"A&quot;B&amp;C&lt;D&gt;\""));
+        assert!(snippet.contains("<TagName>A&quot;B&amp;C&lt;D&gt;</TagName>"));
         // CHECKUNIT whole-network selection reports known units.
         let check = s.handle("[6] NET CHECKUNIT //TEST/254 *");
         assert_eq!(check.status, 200);
@@ -8970,7 +10799,8 @@ mod tests {
             .find(|l| l.starts_with("347-"))
             .expect("347 network");
         let oid = doc
-            .split_once("<OID>")
+            .split_once("<Unit>")
+            .and_then(|(_, unit)| unit.split_once("<OID>"))
             .and_then(|(_, rest)| rest.split_once("</OID>"))
             .map(|(id, _)| id.to_string())
             .expect("unit OID");

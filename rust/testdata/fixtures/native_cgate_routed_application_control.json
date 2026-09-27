@@ -1,0 +1,34 @@
+{
+  "schema": "cmqttd.native-cgate-routed-application-control-evidence/v1",
+  "scope": "Topology-resolved standard SAL control for Lighting, Trigger Control, and Enable Control",
+  "grounding": [
+    {
+      "evidence": "testdata/vectors/encode.jsonl#en-cgate-routed-pingu-one-bridge-native",
+      "finding": "The retained native C-Gate NET PINGU capture establishes the outbound point-to-point-to-multipoint source-route envelope: destination type 0x03, first bridge, 0x09 for one hop, then the target application and SAL bytes. Published C-Bus routing limits this envelope to one through six bridges."
+    },
+    {
+      "evidence": "testdata/vectors/encode.jsonl direct Lighting, Trigger, and Enable cases",
+      "finding": "The existing direct vectors establish the standard SAL payloads without changing their application, group, selector, variable, value, ramp-rate, or checksum rules. Routed support composes those retained payloads with the already implemented PPM source-route envelope."
+    },
+    {
+      "evidence": "cbus-protocol::Packet::PointToPointToMultipoint and cbus-transport confirmation allocation",
+      "finding": "The shared transport appends one independently allocated PCI confirmation character after the checksummed C-Bus packet. Routed application control uses the no-retry allocation and accepts only that exact character; unrelated direct traffic and Reply Network CAL packets continue through the shared reader."
+    }
+  ],
+  "claimed_behavior": [
+    "LIGHTING ON, OFF, RAMP, STOP/TERMINATERAMP and their bare or DO aliases use the retained standard Lighting SAL through a database-resolved one-to-six-bridge route.",
+    "TRIGGER EVENT and INDICATORKILL use the retained application-202 SAL through the same route envelope.",
+    "ENABLE SET uses the retained application-203 network-variable SAL through the same route envelope.",
+    "Every routed command is sent once, waits for its exact PCI confirmation, and generation-guards only target-network cache/event changes."
+  ],
+  "acceptance": [
+    "Six exact one/six-bridge encode vectors pin all three supported application families.",
+    "Transport regressions pin exact confirmation matching, invalid-route preflight, zero replay after a lost confirmation, and direct lighting fanout while a routed send is pending.",
+    "Service and real-daemon regressions pin command aliases, target-network-only cache changes, unsupported-route/application refusal before I/O, MQTT continuity, and one shared PCI connection."
+  ],
+  "limits": [
+    "A positive PCI confirmation proves interface acceptance only. No remote application-level acknowledgement, Reply Network SAL observation, lighting level readback, controller action, timing, or persistence is claimed.",
+    "Routed status requests are not issued because no retained remote status-reply contract is used by this slice.",
+    "Dynamic labels, named scenes, clocks, specialist applications, and Enable REMOVE are outside routed physical application control. ENABLE REMOVE remains a local saved-value operation."
+  ]
+}

@@ -6,6 +6,11 @@ composes those controls with one original model load/save cycle and calculates
 all five configuration CRCs. Native application stages database parameters;
 saving remains an explicit programming-session operation.
 
+The [automatic ordered parent metadata](edlt-parent-metadata.md) workflow can
+derive the complete existing primary-group list from DBGETXML child order. It
+does not project absent selections or claim Toolkit registry display/sort
+preferences. Standalone Corridor planning still requires a caller cache.
+
 ```python
 from cbus_toolkit.edlt_corridor import EdltCorridor, CorridorEdit
 

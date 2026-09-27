@@ -168,6 +168,15 @@ network cannot populate the requested network's cache. Exact native C-Gate and
 CBUS-SIUG forms are pinned in `testdata/vectors/encode.jsonl` and
 `decode_from_pci.jsonl`.
 
+The routed standard-application slice composes the existing Lighting, Trigger,
+and Enable SAL bytes with that PPM envelope. Its completion signal is the exact
+PCI confirmation appended outside the checksummed packet; Reply Network CAL
+traffic remains ordinary shared-reader fanout and is not treated as an
+application acknowledgement. A lost confirmation is never replayed. Exact
+one- and six-bridge cases are the `en-cmqttd-routed-application-*` vectors in
+`testdata/vectors/encode.jsonl`; they do not imply routed status readback or
+remote controller state.
+
 ## MQTT convention
 
 `cmqttd` publishes Home Assistant discovery and state under `homeassistant/light/` and `homeassistant/binary_sensor/` topic families. Incoming light `/set` payloads are parsed by `cbus-mqtt` and converted into C-Bus lighting commands. Project labels improve entity names; addresses provide deterministic fallback names.

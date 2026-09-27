@@ -70,7 +70,8 @@ def options(parser, *, surface='manual'):
         source = parser.add_mutually_exclusive_group(required=True)
         source.add_argument(
             '--metadata', type=Path,
-            help='Caller-supplied retained lifecycle cache JSON')
+            help=('Caller-supplied retained lifecycle, complete application '
+                  'or complete SceneManager cache JSON'))
         source.add_argument(
             '--project-xml', type=Path,
             help='Exact native DBGETXML project snapshot used to derive metadata')
@@ -80,7 +81,8 @@ def options(parser, *, surface='manual'):
         source = parser.add_mutually_exclusive_group(required=True)
         source.add_argument(
             '--metadata', type=Path,
-            help='Caller-supplied retained lifecycle cache JSON')
+            help=('Caller-supplied retained lifecycle, complete application '
+                  'or complete SceneManager cache JSON'))
         source.add_argument(
             '--auto-metadata', action='store_true',
             help='Derive and create guarded metadata from the live project snapshot')
@@ -93,10 +95,12 @@ def options(parser, *, surface='manual'):
     else:
         parser.add_argument(
             '--metadata', type=Path, required=True,
-            help='Caller-supplied retained lifecycle cache JSON')
+            help=('Caller-supplied retained lifecycle, complete application '
+                  'or complete SceneManager cache JSON'))
     parser.add_argument(
         '--operations', type=Path, required=True,
-        help=('JSON array of 2..22 ordered supported widget/settings '
+        help=('JSON array of 2..22 ordered supported widget/settings, one '
+              'SceneManager projection, or operation-1 Reset '
               'operations; see edlt-parent-transaction.md'))
 
 
@@ -121,12 +125,44 @@ def _read_operations(path, *, limit=256 * 1024):
 
 
 def settings(args):
-    from .cli import _edlt_lifecycle_metadata
     from .edlt_parent_transaction import normalize_operations
     return {
-        'metadata': _edlt_lifecycle_metadata(args.metadata),
+        'metadata': metadata(args.metadata),
         'operations': normalize_operations(_read_operations(args.operations)),
     }
+
+
+def metadata(path, *, limit=16 * 1024 * 1024):
+    """Read one bounded parent metadata contract without weakening JSON."""
+    from .edlt_application_cache import ApplicationCache
+    from .edlt_lifecycle import LifecycleCache
+    from .edlt_scene_manager import SceneManagerCache
+
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError('Duplicate key in parent transaction metadata: ' + key)
+            result[key] = value
+        return result
+
+    def nonfinite(value):
+        raise ValueError('Non-finite JSON number in parent transaction metadata: ' + value)
+
+    with path.open('rb') as source:
+        raw = source.read(limit + 1)
+    if len(raw) > limit:
+        raise ValueError('Parent transaction metadata exceeds 16 MiB')
+    document = json.loads(
+        raw, object_pairs_hook=unique, parse_constant=nonfinite)
+    if (isinstance(document, dict) and
+            document.get('format') == 'cbus-edlt-application-cache-v1'):
+        return ApplicationCache.from_dict(document)
+    if (isinstance(document, dict) and
+            document.get('format') ==
+            'cbus-edlt-scene-manager-cache-v1'):
+        return SceneManagerCache.from_dict(document)
+    return LifecycleCache.from_dict(document)
 
 
 def operations(args):

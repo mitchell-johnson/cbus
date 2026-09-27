@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 import socket
 import subprocess
+import sys
 import time
 
 import pytest
@@ -56,7 +57,7 @@ def test_real_cli_reads_all_edlt_labels_through_cmqttd(tmp_path):
                     assert process.poll() is None, output
                     time.sleep(.02)
                 assert port is not None, output
-                result = subprocess.run([str(ROOT/'toolkit-cli/.venv/bin/cbus-toolkit'), 'cgate',
+                result = subprocess.run([sys.executable, '-m', 'cbus_toolkit', 'cgate',
                     '--host', '127.0.0.1', '--port', port, '--timeout', '30',
                     'edlt-labels', '//TEST/254/p/5'], capture_output=True, text=True, timeout=120)
                 assert result.returncode == 0, result.stderr

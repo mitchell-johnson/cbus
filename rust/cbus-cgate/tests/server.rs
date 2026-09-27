@@ -512,21 +512,21 @@ fn level_lifecycle_group_xml_and_copy() {
     let oid = added.final_text.rsplit('=').next().unwrap().to_string();
     let doc = s.handle("[4] DBGETXML //TEST/254/56/1");
     assert_eq!(doc.status, 200);
+    let initial = format!(
+        "<Group><Level><OID>{oid}</OID><TagName>Evening</TagName><Address>1</Address></Level></Group>"
+    );
     assert!(
-        doc.lines
-            .iter()
-            .any(|l| l.contains("<Group><Level><TagName>Evening</TagName></Level></Group>")),
+        doc.lines.iter().any(|line| line.contains(&initial)),
         "{:?}",
         doc.lines
     );
     // The level document root reads `Level` for the copy kind probe.
     let single = s.handle(&format!("[5] DBGETXML !{oid}"));
     assert_eq!(single.status, 200);
+    let initial =
+        format!("<Level><OID>{oid}</OID><TagName>Evening</TagName><Address>1</Address></Level>");
     assert!(
-        single
-            .lines
-            .iter()
-            .any(|l| l.contains("<Level><TagName>Evening</TagName></Level>")),
+        single.lines.iter().any(|line| line.contains(&initial)),
         "{:?}",
         single.lines
     );
@@ -541,10 +541,11 @@ fn level_lifecycle_group_xml_and_copy() {
     let back = s.handle(&format!("[8] DBGET !{oid}/Value"));
     assert!(back.final_text.ends_with("=42"), "{}", back.final_text);
     let doc = s.handle("[9] DBGETXML //TEST/254/56/1");
+    let initialized = format!(
+        "<Level Value=\"42\"><OID>{oid}</OID><TagName>Evening</TagName><Address>1</Address></Level>"
+    );
     assert!(
-        doc.lines
-            .iter()
-            .any(|l| l.contains("<Level Value=\"42\"><TagName>Evening</TagName></Level>")),
+        doc.lines.iter().any(|line| line.contains(&initialized)),
         "{:?}",
         doc.lines
     );
@@ -559,11 +560,12 @@ fn level_lifecycle_group_xml_and_copy() {
     let copy_oid = copied.final_text.rsplit('=').next().unwrap().to_string();
     assert_ne!(copy_oid, oid);
     let doc = s.handle("[12] DBGETXML //TEST/254/56/1");
+    let rows = format!(
+        "<Level Value=\"42\"><OID>{oid}</OID><TagName>Evening</TagName><Address>1</Address></Level>\
+         <Level><OID>{copy_oid}</OID><TagName>Night</TagName><Address>2</Address></Level>"
+    );
     assert!(
-        doc.lines.iter().any(|l| l.contains(
-            "<Level Value=\"42\"><TagName>Evening</TagName></Level>\
-             <Level><TagName>Night</TagName></Level>"
-        )),
+        doc.lines.iter().any(|line| line.contains(&rows)),
         "{:?}",
         doc.lines
     );
@@ -571,10 +573,10 @@ fn level_lifecycle_group_xml_and_copy() {
     assert_eq!(s.handle(&format!("[13] DBDELETE !{oid}")).status, 200);
     assert_eq!(s.handle(&format!("[14] DBGET !{oid}/OID")).status, 401);
     let doc = s.handle("[15] DBGETXML //TEST/254/56/1");
+    let copied =
+        format!("<Level><OID>{copy_oid}</OID><TagName>Night</TagName><Address>2</Address></Level>");
     assert!(
-        doc.lines
-            .iter()
-            .any(|l| l.contains("<Level><TagName>Night</TagName></Level>")),
+        doc.lines.iter().any(|line| line.contains(&copied)),
         "{:?}",
         doc.lines
     );
@@ -596,12 +598,14 @@ fn level_netvar_document_and_rename_travel() {
     );
     let added = s.handle("[3] DBADDSAFE //TEST/254/201/1 NetVar 7 Gain");
     assert_eq!(added.status, 301);
+    let oid = added.final_text.rsplit('=').next().unwrap();
     let doc = s.handle("[4] DBGETXML //TEST/254/201/1");
     assert_eq!(doc.status, 200);
+    let expected = format!(
+        "<NetVar><Level><OID>{oid}</OID><TagName>Gain</TagName><Address>7</Address></Level></NetVar>"
+    );
     assert!(
-        doc.lines
-            .iter()
-            .any(|l| l.contains("<NetVar><Level><TagName>Gain</TagName></Level></NetVar>")),
+        doc.lines.iter().any(|line| line.contains(&expected)),
         "{:?}",
         doc.lines
     );
@@ -1030,20 +1034,23 @@ fn dbdelete_boundary_repeat_and_unselected() {
             200
         );
     }
-    // Capture unit 20's OID from the network document while it exists;
-    // deletion must retire it. Unit snippets carry no OID themselves.
+    // Capture unit 20's nested OID from the network document while it exists;
+    // deletion must retire it without accidentally selecting the root OID.
     let netdoc = s.handle("[6b] DBGETXML //TEST/254");
     assert_eq!(netdoc.status, 200);
-    let oid = netdoc
+    let document = netdoc
         .lines
         .iter()
         .chain(std::iter::once(&netdoc.final_text))
-        .find(|line| line.contains("<Address>20</Address>"))
-        .and_then(|line| {
-            let start = line.find("<OID>")? + "<OID>".len();
-            let end = line.find("</OID>")?;
-            Some(line[start..end].to_string())
-        })
+        .cloned()
+        .collect::<Vec<_>>()
+        .join("\n");
+    let oid = document
+        .split("<Unit>")
+        .find(|unit| unit.contains("<Address>20</Address>"))
+        .and_then(|unit| unit.split_once("<OID>"))
+        .and_then(|(_, value)| value.split_once("</OID>"))
+        .map(|(oid, _)| oid.to_string())
         .expect("network XML carries unit 20 with its OID");
     let resolved = s.handle(&format!("[6c] DBGET !{oid}/OID"));
     assert_eq!(resolved.status, 342);
@@ -1137,7 +1144,9 @@ fn dbcopy_unit_copy_fresh_identity_and_conflicts() {
         .lines
         .iter()
         .chain(std::iter::once(&doc.final_text))
-        .any(|line| line.contains("<Unit address=\"21\" name=\"Hall\"/>")));
+        .any(|line| {
+            line.contains("<Address>21</Address>") && line.contains("<TagName>Hall</TagName>")
+        }));
     let srcdoc = s.handle("[6b] DBGETXML //TEST/254/p/20");
     assert!(srcdoc
         .lines
@@ -1147,20 +1156,24 @@ fn dbcopy_unit_copy_fresh_identity_and_conflicts() {
     // Fresh identity: the two records resolve distinct OIDs.
     let netdoc = s.handle("[6c] DBGETXML //TEST/254");
     assert_eq!(netdoc.status, 200);
+    let network_xml = netdoc.lines[0].strip_prefix("347-").unwrap();
+    let network_document = roxmltree::Document::parse(network_xml).unwrap();
     let oid_of = |addr: u8| {
-        netdoc
-            .lines
-            .iter()
-            .chain(std::iter::once(&netdoc.final_text))
-            .find(|line| line.contains(&format!("<Address>{addr}</Address>")))
-            .and_then(|line| {
-                // The document can carry every unit on one line: search
-                // for the OID after this unit's own address anchor.
-                let anchor = line.find(&format!("<Address>{addr}</Address>"))?;
-                let after = &line[anchor..];
-                let start = after.find("<OID>")? + "<OID>".len();
-                let end = after.find("</OID>")?;
-                Some(after[start..end].to_string())
+        network_document
+            .descendants()
+            .filter(|node| node.has_tag_name("Unit"))
+            .find(|unit| {
+                unit.children()
+                    .find(|child| child.has_tag_name("Address"))
+                    .and_then(|child| child.text())
+                    .and_then(|text| text.parse::<u8>().ok())
+                    == Some(addr)
+            })
+            .and_then(|unit| {
+                unit.children()
+                    .find(|child| child.has_tag_name("OID"))
+                    .and_then(|child| child.text())
+                    .map(str::to_string)
             })
             .expect("network XML carries the unit with its OID")
     };
@@ -2006,6 +2019,492 @@ fn document_store_mirror_import_and_rejects() {
     let mut config = Server::new(AccessLevel::Config);
     let refused = config.handle_document("[1] DBSETXML //TEST/254/p/20/UnitName", "X");
     assert_eq!(refused.status, 421);
+}
+
+#[test]
+fn dbsetxml_replaces_typed_unit_atomically_and_preserves_opaque_metadata() {
+    let mut server = Server::new(AccessLevel::Program);
+    assert_eq!(server.handle("[1] PROJECT NEW TEST").status, 200);
+    assert_eq!(
+        server
+            .handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
+            .status,
+        200
+    );
+    assert_eq!(server.handle("[3] PROJECT USE TEST").status, 200);
+    assert_eq!(
+        server
+            .handle("[4] DBADDSAFE //TEST/254 Unit 20 Original")
+            .status,
+        200
+    );
+    for (tag, field, value) in [
+        ("type", "UnitType", "KEYE1"),
+        ("firmware", "FirmwareVersion", "1.2.67"),
+        ("catalogue", "CatalogNumber", "5031N"),
+        ("serial", "SerialNumber", "00100700.3526"),
+    ] {
+        assert_eq!(
+            server
+                .handle(&format!(
+                    "[{tag}] DBSETSAFE //TEST/254/p/20/{field} {value}"
+                ))
+                .status,
+            200
+        );
+    }
+    let initial = server.handle("[5] DBGETXML //TEST/254/p/20");
+    assert_eq!(initial.status, 200);
+    let initial_xml = initial.lines[0].strip_prefix("347-").unwrap();
+    let oid = roxmltree::Document::parse(initial_xml)
+        .unwrap()
+        .descendants()
+        .find(|node| node.has_tag_name("OID"))
+        .unwrap()
+        .text()
+        .unwrap()
+        .to_string();
+    let replacement = format!(
+        "<Unit xmlns:x=\"urn:test\" x:mode=\"kept\"><OID>{oid}</OID><Address>21</Address><TagName>Moved</TagName><UnitType>KEYE1</UnitType><FirmwareVersion>1.2.67</FirmwareVersion><CatalogNumber>5031N</CatalogNumber><SerialNumber>00100700.3526</SerialNumber><!--keep--><x:TagName x:source=\"vendor\">Opaque name</x:TagName><x:PP Name=\"opaque\" Value=\"vendor\"/><Description>A &amp; B<x:Opaque order=\"1\"><x:Nested>yes</x:Nested></x:Opaque></Description><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>"
+    );
+    let replaced = server.handle_document("[6] DBSETXML //TEST/254/p/20", &replacement);
+    assert_eq!(replaced.status, 301, "{replaced:?}");
+    assert_eq!(replaced.final_text, format!("301 OID={oid}"));
+    assert_eq!(server.handle("[7] DBGETXML //TEST/254/p/20").status, 401);
+    let moved = server.handle("[8] DBGETXML //TEST/254/p/21");
+    let moved_xml = moved.lines[0].strip_prefix("347-").unwrap();
+    assert!(moved_xml.contains("x:mode=\"kept\""), "{moved_xml}");
+    assert!(moved_xml.contains("<!--keep-->"), "{moved_xml}");
+    assert!(
+        moved_xml.contains("<x:TagName x:source=\"vendor\">Opaque name</x:TagName>"),
+        "{moved_xml}"
+    );
+    assert!(
+        moved_xml.contains("<x:PP Name=\"opaque\" Value=\"vendor\"/>"),
+        "{moved_xml}"
+    );
+    assert!(
+        moved_xml.contains("<x:Nested>yes</x:Nested>"),
+        "{moved_xml}"
+    );
+    assert!(moved_xml.contains("<PP Name=\"UnitAddress\" Value=\"21\"/>"));
+
+    assert_eq!(
+        server
+            .handle("[9] DBSETSAFE //TEST/254/p/21/UnitAddress 22")
+            .status,
+        200
+    );
+    let updated = server.handle("[10] DBGETXML //TEST/254/p/21");
+    let updated_xml = updated.lines[0].strip_prefix("347-").unwrap();
+    assert!(updated_xml.contains("<PP Name=\"UnitAddress\" Value=\"22\"/>"));
+    assert!(updated_xml.contains("<x:TagName x:source=\"vendor\">Opaque name</x:TagName>"));
+    assert!(updated_xml.contains("<x:PP Name=\"opaque\" Value=\"vendor\"/>"));
+    assert!(updated_xml.contains("<x:Nested>yes</x:Nested>"));
+
+    // Unit copies receive fresh identities while retaining the complete
+    // typed template; scalar and PP values are projected for the copy.
+    assert_eq!(
+        server
+            .handle("[10a] DBCOPYSAFE //TEST/254/p/21 //TEST/254 23 Copied")
+            .status,
+        200
+    );
+    let copied = server.handle("[10b] DBGETXML //TEST/254/p/23");
+    let copied_xml = copied.lines[0].strip_prefix("347-").unwrap();
+    assert!(copied_xml.contains("x:mode=\"kept\""), "{copied_xml}");
+    assert!(copied_xml.contains("<Address>23</Address>"), "{copied_xml}");
+    assert!(
+        copied_xml.contains("<TagName>Copied</TagName>"),
+        "{copied_xml}"
+    );
+    assert!(copied_xml.contains("<x:Nested>yes</x:Nested>"));
+    let copied_oid = roxmltree::Document::parse(copied_xml)
+        .unwrap()
+        .descendants()
+        .find(|node| node.has_tag_name("OID"))
+        .unwrap()
+        .text()
+        .unwrap()
+        .to_string();
+    assert_ne!(copied_oid, oid);
+
+    // Project copies retain OIDs, but their opaque document templates must
+    // diverge after a replacement in only one selected project.
+    assert_eq!(server.handle("[10c] PROJECT COPY TEST COPY").status, 200);
+    assert_eq!(server.handle("[10d] PROJECT USE COPY").status, 200);
+    let copy_replacement = replacement
+        .replace("x:mode=\"kept\"", "x:mode=\"copy\"")
+        .replace("<TagName>Moved</TagName>", "<TagName>Copy only</TagName>");
+    assert_eq!(
+        server
+            .handle_document("[10e] DBSETXML //COPY/254/p/21", &copy_replacement)
+            .status,
+        301
+    );
+    assert_eq!(server.handle("[10f] PROJECT USE TEST").status, 200);
+    let source_after_copy_edit = server.handle("[10g] DBGETXML //TEST/254/p/21");
+    let source_after_copy_edit = source_after_copy_edit.lines[0]
+        .strip_prefix("347-")
+        .unwrap();
+    assert!(source_after_copy_edit.contains("x:mode=\"kept\""));
+    assert!(source_after_copy_edit.contains("<TagName>Moved</TagName>"));
+    assert!(!source_after_copy_edit.contains("Copy only"));
+    assert_eq!(
+        server.handle("[10h] PROJECT RENAME COPY RENAMED").status,
+        200
+    );
+    assert_eq!(server.handle("[10i] PROJECT USE RENAMED").status, 200);
+    let renamed = server.handle("[10j] DBGETXML //RENAMED/254/p/21");
+    assert!(renamed.lines[0].contains("x:mode=\"copy\""));
+    assert!(renamed.lines[0].contains("<TagName>Copy only</TagName>"));
+    assert_eq!(server.handle("[10k] PROJECT USE TEST").status, 200);
+    assert_eq!(server.handle("[10l] PROJECT DELETE RENAMED").status, 200);
+    assert!(server.handle("[10m] DBGETXML //TEST/254/p/21").lines[0].contains("x:mode=\"kept\""));
+
+    assert_eq!(
+        server
+            .handle("[11] DBADDSAFE //TEST/254 Unit 22 Occupied")
+            .status,
+        200
+    );
+    let occupied = replacement.replace("<Address>21</Address>", "<Address>22</Address>");
+    assert_eq!(
+        server
+            .handle_document("[12] DBSETXML //TEST/254/p/21", &occupied)
+            .status,
+        409
+    );
+    assert_eq!(server.handle("[13] DBGETXML //TEST/254/p/21").status, 200);
+    assert_eq!(server.handle("[14] DBGETXML //TEST/254/p/22").status, 200);
+
+    for (tag, document) in [
+        ("root", "<Network/>"),
+        ("namespaced-root", "<x:Unit xmlns:x='urn:test'/>") ,
+        (
+            "namespaced-required",
+            "<Unit xmlns:x='urn:test'><x:OID>00000000-0000-0000-0000-000000000001</x:OID><Address>21</Address><TagName>X</TagName><UnitType>KEYE1</UnitType><FirmwareVersion>1.2.67</FirmwareVersion></Unit>",
+        ),
+        ("entity", "<!DOCTYPE Unit [<!ENTITY x 'y'>]><Unit>&x;</Unit>"),
+        (
+            "duplicate",
+            "<Unit><OID>00000000-0000-0000-0000-000000000001</OID><Address>21</Address><Address>22</Address><TagName>X</TagName><UnitType>KEYE1</UnitType><FirmwareVersion>1.2.67</FirmwareVersion></Unit>",
+        ),
+    ] {
+        assert!(
+            server
+                .handle_document(
+                    &format!("[{tag}] DBSETXML //TEST/254/p/21"),
+                    document
+                )
+                .status
+                >= 400
+        );
+    }
+    assert_eq!(server.handle("[15] DBGETXML //TEST/254/p/21").status, 200);
+    assert_eq!(
+        server
+            .handle("[16] PROJECT ARCHIVE TEST /tmp/typed-unit.arc")
+            .status,
+        200
+    );
+    assert_eq!(server.handle("[17] PROJECT DELETE TEST").status, 200);
+    assert_eq!(
+        server
+            .handle("[18] PROJECT RESTORE REST /tmp/typed-unit.arc")
+            .status,
+        200
+    );
+    assert_eq!(server.handle("[19] PROJECT USE REST").status, 200);
+    let restored = server.handle("[20] DBGETXML //REST/254/p/21");
+    assert_eq!(restored.status, 200);
+    assert!(restored.lines[0].contains("x:mode=\"kept\""));
+    assert!(restored.lines[0].contains("<x:Nested>yes</x:Nested>"));
+    assert!(restored.lines[0].contains("<PP Name=\"UnitAddress\" Value=\"22\"/>"));
+}
+
+#[test]
+fn dbsetxml_unit_enforces_project_wide_oid_uniqueness_and_retires_old_identity() {
+    fn first_oid(response: cbus_cgate::Response) -> String {
+        let xml = response.lines[0].strip_prefix("347-").unwrap();
+        roxmltree::Document::parse(xml)
+            .unwrap()
+            .descendants()
+            .find(|node| node.has_tag_name("OID"))
+            .unwrap()
+            .text()
+            .unwrap()
+            .to_string()
+    }
+
+    let mut server = Server::new(AccessLevel::Program);
+    assert_eq!(server.handle("[1] PROJECT NEW UOID").status, 200);
+    assert_eq!(
+        server
+            .handle("[2] DBCREATENET 254 Primary Cni loopback")
+            .status,
+        200
+    );
+    assert_eq!(
+        server
+            .handle("[3] DBCREATENET 253 Secondary Cni loopback")
+            .status,
+        200
+    );
+    assert_eq!(
+        server
+            .handle("[4] DBADDSAFE //UOID/254 Unit 20 Original")
+            .status,
+        200
+    );
+    for (field, value) in [("UnitType", "KEYE1"), ("FirmwareVersion", "1.2.67")] {
+        assert_eq!(
+            server
+                .handle(&format!("[set] DBSETSAFE //UOID/254/p/20/{field} {value}"))
+                .status,
+            200
+        );
+    }
+    let old_oid = first_oid(server.handle("[5] DBGETXML //UOID/254/p/20"));
+    let secondary = server.handle("[6] DBGETXML //UOID/253");
+    let secondary_xml = secondary.lines[0].strip_prefix("347-").unwrap();
+    let secondary_document = roxmltree::Document::parse(secondary_xml).unwrap();
+    let interface_oid = secondary_document
+        .descendants()
+        .find(|node| node.has_tag_name("Interface"))
+        .unwrap()
+        .children()
+        .find(|node| node.has_tag_name("OID"))
+        .unwrap()
+        .text()
+        .unwrap();
+    let collision = format!(
+        "<Unit><OID>{interface_oid}</OID><Address>20</Address><TagName>Collision</TagName><UnitType>KEYE1</UnitType><FirmwareVersion>1.2.67</FirmwareVersion></Unit>"
+    );
+    assert_eq!(
+        server
+            .handle_document("[7] DBSETXML //UOID/254/p/20", &collision)
+            .status,
+        409
+    );
+    assert_eq!(
+        first_oid(server.handle("[8] DBGETXML //UOID/254/p/20")),
+        old_oid
+    );
+
+    let replacement_oid = "80000000-0000-4000-8000-000000000001";
+    let replacement = format!(
+        "<Unit><OID>{replacement_oid}</OID><Address>20</Address><TagName>Replacement</TagName><UnitType>KEYE1</UnitType><FirmwareVersion>1.2.67</FirmwareVersion></Unit>"
+    );
+    assert_eq!(
+        server
+            .handle_document("[9] DBSETXML //UOID/254/p/20", &replacement)
+            .status,
+        301
+    );
+    assert_eq!(
+        server.handle(&format!("[10] DBGET !{old_oid}/OID")).status,
+        401
+    );
+    assert_eq!(
+        server
+            .handle(&format!("[11] DBGET !{replacement_oid}/OID"))
+            .status,
+        342
+    );
+}
+
+#[test]
+fn dbsetxml_replaces_evidenced_typed_database_trees_atomically() {
+    fn oid(response: &cbus_cgate::Response) -> String {
+        response
+            .final_text
+            .strip_prefix("301 OID=")
+            .expect("OID receipt")
+            .to_string()
+    }
+
+    let mut server = Server::new(AccessLevel::Program);
+    assert_eq!(server.handle("[1] PROJECT NEW XMLT").status, 200);
+    assert_eq!(
+        server
+            .handle("[2] DBCREATENET 254 Net Cni 127.0.0.1:1")
+            .status,
+        200
+    );
+    let network_xml = server.handle("[3] DBGETXML //XMLT/254").lines[0].clone();
+    let network_document =
+        roxmltree::Document::parse(network_xml.strip_prefix("347-").unwrap()).unwrap();
+    let network_oid = network_document
+        .root_element()
+        .children()
+        .find(|node| node.has_tag_name("OID"))
+        .unwrap()
+        .text()
+        .unwrap()
+        .to_string();
+    let interface_oid = network_document
+        .descendants()
+        .find(|node| node.has_tag_name("Interface"))
+        .unwrap()
+        .children()
+        .find(|node| node.has_tag_name("OID"))
+        .unwrap()
+        .text()
+        .unwrap()
+        .to_string();
+
+    let application_oid = oid(&server.handle("[4] DBADD 254 Application"));
+    assert_eq!(
+        server
+            .handle(&format!("[5] DBSET !{application_oid}/Address 56"))
+            .status,
+        200
+    );
+    assert_eq!(
+        server
+            .handle(&format!("[6] DBSET !{application_oid}/TagName Lighting"))
+            .status,
+        200
+    );
+    let occupied_oid = oid(&server.handle("[7] DBADD 254 Application"));
+    assert_eq!(
+        server
+            .handle(&format!("[8] DBSET !{occupied_oid}/Address 57"))
+            .status,
+        200
+    );
+    assert_eq!(
+        server
+            .handle(&format!("[9] DBSET !{occupied_oid}/TagName Occupied"))
+            .status,
+        200
+    );
+
+    let replacement = concat!(
+        "<Application xmlns:x=\"urn:test\" x:source=\"native\">",
+        "<OID>10000000-0000-4000-8000-000000000001</OID>",
+        "<TagName>Moved app</TagName><Address>58</Address>",
+        "<Group><OID>10000000-0000-4000-8000-000000000002</OID>",
+        "<TagName>Scenes</TagName><Address>10</Address>",
+        "<Level Value=\"129\"><OID>10000000-0000-4000-8000-000000000003</OID>",
+        "<TagName>Evening</TagName><Address>3</Address></Level></Group>",
+        "<NetVar><OID>10000000-0000-4000-8000-000000000004</OID>",
+        "<TagName>Variable</TagName><Address>11</Address>",
+        "<Level Value=\"77\"><OID>10000000-0000-4000-8000-000000000005</OID>",
+        "<TagName>Child</TagName><Address>1</Address></Level></NetVar>",
+        "<!--retained--><x:Metadata>opaque</x:Metadata></Application>"
+    );
+    let moved = server.handle_document(&format!("[10] DBSETXML !{application_oid}"), replacement);
+    assert_eq!(moved.status, 301, "{moved:?}");
+    assert_eq!(
+        moved.final_text,
+        "301 OID=10000000-0000-4000-8000-000000000001"
+    );
+    assert_eq!(server.handle("[11] DBGETXML //XMLT/254/56").status, 401);
+    let application = server.handle("[12] DBGETXML //XMLT/254/58");
+    let application = application.lines[0].strip_prefix("347-").unwrap();
+    assert!(application.contains("x:source=\"native\""), "{application}");
+    assert!(application.contains("<!--retained-->"), "{application}");
+    assert!(application.contains("<x:Metadata>opaque</x:Metadata>"));
+    assert!(application.contains("<NetVar"));
+    assert!(application.contains("<Level"));
+    assert!(application.contains("Value=\"129\""));
+    assert_eq!(
+        server
+            .handle(&format!("[13] DBGET !{application_oid}/OID"))
+            .status,
+        401
+    );
+
+    let occupied = replacement.replace("<Address>58</Address>", "<Address>57</Address>");
+    assert_eq!(
+        server
+            .handle_document(
+                "[14] DBSETXML !10000000-0000-4000-8000-000000000001",
+                &occupied,
+            )
+            .status,
+        409
+    );
+    assert_eq!(server.handle("[15] DBGETXML //XMLT/254/58").status, 200);
+
+    let group = concat!(
+        "<Group><OID>20000000-0000-4000-8000-000000000001</OID>",
+        "<TagName>Moved scenes</TagName><Address>12</Address>",
+        "<Level Value=\"130\"><OID>20000000-0000-4000-8000-000000000002</OID>",
+        "<TagName>Night</TagName><Address>4</Address></Level></Group>"
+    );
+    assert_eq!(
+        server
+            .handle_document("[16] DBSETXML !10000000-0000-4000-8000-000000000002", group,)
+            .status,
+        301
+    );
+    assert_eq!(server.handle("[17] DBGETXML //XMLT/254/58/10").status, 401);
+    let group = server.handle("[18] DBGETXML //XMLT/254/58/12");
+    assert!(group.lines[0].contains("<Address>4</Address>"));
+    assert_eq!(
+        server
+            .handle_document(
+                "[19] DBSETXML !20000000-0000-4000-8000-000000000002",
+                "<Level Value=\"131\"><OID>20000000-0000-4000-8000-000000000003</OID><TagName>Late</TagName><Address>5</Address></Level>",
+            )
+            .status,
+        301
+    );
+    let level = server.handle("[20] DBGETXML !20000000-0000-4000-8000-000000000003");
+    assert!(level.lines[0].contains("Value=\"131\""));
+    assert!(level.lines[0].contains("<Address>5</Address>"));
+
+    let network = format!(
+        "<Network><OID>30000000-0000-4000-8000-000000000001</OID><TagName>Moved network</TagName><Address>253</Address><NetworkNumber>253</NetworkNumber><Interface><OID>{interface_oid}</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:2</InterfaceAddress></Interface><Application><OID>30000000-0000-4000-8000-000000000002</OID><TagName>Lighting</TagName><Address>56</Address></Application></Network>"
+    );
+    assert_eq!(
+        server
+            .handle_document(&format!("[21] DBSETXML !{network_oid}"), &network)
+            .status,
+        301
+    );
+    assert_eq!(server.handle("[22] DBGETXML //XMLT/254").status, 401);
+    let network = server.handle("[23] DBGETXML //XMLT/253");
+    assert!(network.lines[0].contains("<NetworkNumber>253</NetworkNumber>"));
+    assert!(network.lines[0].contains("<Application"));
+    let before = network.lines[0].clone();
+    let unsupported = format!(
+        "<Network><OID>30000000-0000-4000-8000-000000000001</OID><TagName>Moved network</TagName><Address>253</Address><NetworkNumber>253</NetworkNumber><Interface><OID>{interface_oid}</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:2</InterfaceAddress></Interface><Unit/></Network>"
+    );
+    assert_eq!(
+        server
+            .handle_document("[24] DBSETXML //XMLT/253", &unsupported)
+            .status,
+        400
+    );
+    assert_eq!(server.handle("[25] DBGETXML //XMLT/253").lines[0], before);
+    assert_eq!(server.handle("[26] PROJECT COPY XMLT XMLC").status, 200);
+    assert_eq!(server.handle("[27] PROJECT RENAME XMLC XMLR").status, 200);
+    assert_eq!(server.handle("[28] PROJECT USE XMLR").status, 200);
+    assert!(server.handle("[29] DBGETXML //XMLR/253/56").lines[0]
+        .contains("30000000-0000-4000-8000-000000000002"));
+    assert_eq!(server.handle("[30] PROJECT DELETE XMLR").status, 200);
+    assert_eq!(server.handle("[31] PROJECT USE XMLT").status, 200);
+    assert_eq!(
+        server
+            .handle("[32] PROJECT ARCHIVE XMLT cmqttd:typed-xml")
+            .status,
+        200
+    );
+    assert_eq!(server.handle("[33] PROJECT DELETE XMLT").status, 200);
+    assert_eq!(
+        server
+            .handle("[34] PROJECT RESTORE XMLA cmqttd:typed-xml")
+            .status,
+        200
+    );
+    assert_eq!(server.handle("[35] PROJECT USE XMLA").status, 200);
+    let restored = server.handle("[36] DBGETXML //XMLA/253/56");
+    assert_eq!(restored.status, 200, "{restored:?}");
+    assert!(restored.lines[0].contains("30000000-0000-4000-8000-000000000002"));
 }
 
 #[test]

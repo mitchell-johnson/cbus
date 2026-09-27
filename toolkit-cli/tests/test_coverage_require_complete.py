@@ -30,7 +30,7 @@ class CoverageRequireCompleteTests(unittest.TestCase):
         payload = json.loads(combined[start : end + 1])
         self.assertFalse(payload["complete"])
         self.assertFalse(payload["census_complete"])
-        self.assertEqual(len(payload["features"]), 38)
+        self.assertEqual(len(payload["features"]), 39)
         self.assertTrue(
             any(feature["status"] != "implemented" for feature in payload["features"])
         )

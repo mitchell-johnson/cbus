@@ -12,7 +12,7 @@ audited 0/6 with all slots `unassessed`); every other slot stays
 
 ## Authoritative inputs
 
-- Feature ledger: `../src/cbus_toolkit/capabilities.json` — **38 areas**,
+- Feature ledger: `../src/cbus_toolkit/capabilities.json` — **39 areas**,
   `census_complete: false`. Statuses (`implemented` / `in_progress` /
   `pending`) describe implementation categories, not Toolkit parity. Two
   acceptance IDs remain `pending`: `toolkit-differential-acceptance` and
@@ -30,7 +30,7 @@ audited 0/6 with all slots `unassessed`); every other slot stays
 
 Implemented in `../src/cbus_toolkit/differential.py`:
 
-- One row per ledger area (38 rows), preserving the ledger `status`,
+- One row per ledger area (39 rows), preserving the ledger `status`,
   `limits`, and `evidence` fields verbatim.
 - Per row, three workflow slots (`nominal_workflow`, `error_path`,
   `device_firmware_variation`) and three negative-path slots
@@ -50,12 +50,12 @@ Implemented in `../src/cbus_toolkit/differential.py`:
   Thermostat row's thirty-one, the AllUnitParameterEncoding row's six,
   the PreferencesUpdate row's sixteen, the DatabaseReportExport row's
   twenty-two, and the SceneLive row's six committed paths.
-- Matrix summary: `ledger_areas: 38`, `accepted_areas: 0`,
+- Matrix summary: `ledger_areas: 39`, `accepted_areas: 0`,
   `complete: false`, `census_complete: false`.
 
 ## Honesty gates
 
-- `tests/test_differential_matrix.py` enumerates all 38 areas x
+- `tests/test_differential_matrix.py` enumerates all 39 areas x
   workflow/negative slots and asserts the exact state: only
   `edlt-reset-controls` / `nominal_workflow`,
   `edlt-retained-scene-editing` / `nominal_workflow`,
@@ -78,8 +78,9 @@ Implemented in `../src/cbus_toolkit/differential.py`:
   save each; AllUnitParameterEncoding: 6,497 selected / 6,487 verified
   (6,382 pass + 105 vendor-catalogue-rejected = 6,487; 10 command-limited
   excluded, 6,487 + 10 = 6,497 selected) /
-  616,722 comparisons (552,391 + 64,331) / 163 layouts with 161 pass + 2
-  unexercised / 322 change trials, and 0 original-Toolkit executions;
+  616,722 comparisons (552,391 + 64,331) / all 163 layouts passing across
+  the 161-layout command-addressable corpus and 2-layout fragment supplement
+  / 326 change trials, and 0 original-Toolkit executions;
   PreferencesUpdate: 12 original leaves + 12 witnesses / 47 records /
   11 supported + 1 excluded observations with 0 replayed calls / 107
   Int32 observations (76 + 31) / 2 runs x 78 tests / 0 replayed
@@ -582,12 +583,15 @@ with no provisioning. Gate runs here therefore rest on committed
     successful_parameter_comparisons 616722 = 552391 boundary_workflow +
     64331 boundary_alternative; per-run split pass 6382 +
     vendor_catalog_rejected 105 + vendor_command_limitation 10, with
-    6382 + 105 = 6487). 161 of 163 layouts verified
-    (`docs/native-memory-acceptance.json`: distinct_layouts 163,
-    summary pass 161 / unexercised 2 / passing_change_trials 322; the 2
-    unexercised layouts are single-bit little-endian DLT
-    LabelFlavourLSB/MSB with no native token-addressable parameter
-    name). But every comparison is OUR codec vs NATIVE C-Gate -- a
+    6382 + 105 = 6487). All 163 layouts are now verified. The primary
+    command-addressable corpus retains 161 pass / 2 unexercised / 322
+    passing change trials (`docs/native-memory-acceptance.json`); the
+    original-encoder supplement verifies the two single-bit little-endian
+    DLT LabelFlavourLSB/MSB layouts with four more passing trials
+    (`docs/native-memory-fragment-acceptance.json`). Those layouts have no
+    native token-addressable parameter name, so the supplement invokes the
+    original C-Gate encoder directly under a network-denied sandbox. But
+    every comparison is OUR codec vs NATIVE C-Gate -- a
     native oracle, not replayed original-Toolkit executions. Original
     executions: 0. The 105 + 10 native rejection classes are preserved
     native-oracle observations, not replayed original error-identity
@@ -607,18 +611,23 @@ with no provisioning. Gate runs here therefore rest on committed
     (physical device programming, all firmware values between
     endpoints, all possible parameter values, all Toolkit workflows,
     100 percent Toolkit parity) bounds the claim.
-  - "161 of 163 layouts, 322 change trials": verified.
-    `docs/native-memory-acceptance.json` (format
-    cbus-native-memory-acceptance-v1) shows distinct_layouts 163 with
-    163 cases, summary pass 161 / unexercised 2 / passing_change_trials
-    322. Scope: "Changing-value differential acceptance of distinct
-    logical memory layouts; not per-device, firmware or Toolkit
-    workflow parity."
+  - "All 163 layouts, 326 change trials": verified. The primary
+    `docs/native-memory-acceptance.json` record (format
+    cbus-native-memory-acceptance-v1) shows distinct_layouts 163 with 163
+    cases, summary pass 161 / unexercised 2 / passing_change_trials 322.
+    The supplement `docs/native-memory-fragment-acceptance.json` (format
+    cbus-native-memory-fragment-acceptance-v1) shows distinct_layouts 2 /
+    passing_layouts 2 / passing_change_trials 4 / failed_change_trials 0.
+    The supplement records network denied, no server or command service,
+    no physical I/O, unchanged inputs, and exact native/Python raw and
+    decoded values for every trial. Both records explicitly limit their
+    scope; neither establishes per-device, firmware or Toolkit workflow
+    parity.
   - Self-limit reconciliation: the catalogue scope ("Offline native
     unit schema and Python session acceptance at selected catalogue
     firmware points") plus the memory scope above plus the catalogue
     `does_not_establish` list jointly bound the area claim to
-    native-oracle encoding -- never to Toolkit-workflow parity. The two
+    native-oracle encoding -- never to Toolkit-workflow parity. The three
     records belong to the SAME ledger-area scope (unlike the
     thermostat row's disjoint sub-scopes), so the row-level
     `has_acceptance_record` / `has_bounded_scope_note` are True; the
@@ -680,16 +689,21 @@ with no provisioning. Gate runs here therefore rest on committed
   ### Offline gate posture (this env, AllUnitParameterEncoding row)
 
   `NativeMemoryTests` (requires `CBUS_CGATE_TEST_HOST` +
-  `CBUS_UNITSPEC_DIR`) and `VendorLayoutTests` (requires
-  `CBUS_UNITSPEC_DIR`) plus the `research/verify_catalog.py` runner
-  (requires a live native C-Gate) all SKIP offline in this env. The
-  offline-runnable suites -- `MemoryImageTests`, `MemoryCodecTests`,
-  and `UnitSpecTest` -- run here with no provisioning. Gate runs here
+  `CBUS_UNITSPEC_DIR`), `VendorLayoutTests` (requires
+  `CBUS_UNITSPEC_DIR`), the `research/verify_catalog.py` runner (requires
+  a live native C-Gate), and fresh `FreshFragmentAcceptanceTests` /
+  `research/verify_memory_fragments.py` execution (requires the pinned
+  C-Gate application, decrypted specs, Java 11 and macOS sandbox) all
+  SKIP offline in this env. The offline-runnable suites --
+  `MemoryImageTests`, `MemoryCodecTests`, `UnitSpecTest`, and the retained
+  fragment-evidence replay -- run here with no provisioning. Gate runs here
   therefore rest on committed artifacts plus the prior native runs
   recorded in `docs/catalog-acceptance-summary.json` (boundary_workflow
   selected/completed 6497, status complete) and
-  `docs/native-memory-acceptance.json` (163 cases, 161 pass) -- not on
-  live native re-execution.
+  `docs/native-memory-acceptance.json` (161 layouts / 322 trials) plus
+  `docs/native-memory-fragment-acceptance.json` (2 layouts / 4 trials),
+  for a combined 163 layouts / 326 trials -- not on live native
+  re-execution.
 
   ## The sixth attempted row: `preferences-and-update-workflow` (0/6)
 
@@ -860,16 +874,21 @@ with no provisioning. Gate runs here therefore rest on committed
   vendor re-execution.
 
   `NativeMemoryTests` (requires `CBUS_CGATE_TEST_HOST` +
-  `CBUS_UNITSPEC_DIR`) and `VendorLayoutTests` (requires
-  `CBUS_UNITSPEC_DIR`) plus the `research/verify_catalog.py` runner
-  (requires a live native C-Gate) all SKIP offline in this env. The
-  offline-runnable suites -- `MemoryImageTests`, `MemoryCodecTests`,
-  and `UnitSpecTest` -- run here with no provisioning. Gate runs here
+  `CBUS_UNITSPEC_DIR`), `VendorLayoutTests` (requires
+  `CBUS_UNITSPEC_DIR`), the `research/verify_catalog.py` runner (requires
+  a live native C-Gate), and fresh `FreshFragmentAcceptanceTests` /
+  `research/verify_memory_fragments.py` execution (requires the pinned
+  C-Gate application, decrypted specs, Java 11 and macOS sandbox) all
+  SKIP offline in this env. The offline-runnable suites --
+  `MemoryImageTests`, `MemoryCodecTests`, `UnitSpecTest`, and the retained
+  fragment-evidence replay -- run here with no provisioning. Gate runs here
   therefore rest on committed artifacts plus the prior native runs
   recorded in `docs/catalog-acceptance-summary.json` (boundary_workflow
   selected/completed 6497, status complete) and
-  `docs/native-memory-acceptance.json` (163 cases, 161 pass) -- not on
-  live native re-execution.
+  `docs/native-memory-acceptance.json` (161 layouts / 322 trials) plus
+  `docs/native-memory-fragment-acceptance.json` (2 layouts / 4 trials),
+  for a combined 163 layouts / 326 trials -- not on live native
+  re-execution.
 
   ## The seventh attempted row: `toolkit-database-report-export` (0/6)
 

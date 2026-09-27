@@ -82,10 +82,11 @@ cbus-toolkit cgate unit --lock-address //PROJECT/254 \
   --metadata lifecycle-cache.json --operations operations.json
 ```
 
-The array requires two through 22 operations and at least one widget. It
+The array requires two through 22 operations and at least one widget,
+SceneManager sequence or Reset. It
 accepts Measurement, Lighting, Enable, Fan, HVAC, Multi Level, Room Courtesy,
 Scene, Shutter, Time/Date, Timer, MRA Zone Control, Source Select and Source
-Control widgets, plus activation, General, Display, Standby, Colours,
+Control and Blank widgets, plus activation, General, Display, Standby, Colours,
 Navigation, Quick Status, Page Control and distributed MRA globals. Widget operations
 use each standalone editor's exact option names; activation uses
 `level_percent` or `action`. Percentages must be quoted canonical fixed-point
@@ -98,6 +99,11 @@ created MRA widget before `mra-globals`. Multiplexer and zone have independent
 single owners. Omitted MRA globals come from the first existing record before
 type conversion; stored standby records and raw multiplexer3 remain supported
 inside this retained parent path.
+One `scene-manager` operation accepts the standalone retained SceneManager's
+ordered nested operations and requires a complete
+`cbus-edlt-scene-manager-cache-v1`. Put Applications before SceneManager and
+SceneManager before every Scene widget. Incomplete capacity outcomes and a
+second scene-graph owner fail before PP mutation.
 
 Inspect `operation_results`, `operation_metadata_dependencies`, `ownership`, `transaction_guards`,
 `preservation`, `execution_counts` and `write_order`. Successful non-dry-run
@@ -107,8 +113,19 @@ save. A save exception or interruption is never retried: inspect
 not confirmed and `save_outcome_uncertain=true` keeps the database outcome
 explicit. The plan has retained original evidence for each component, while
 `native_multi_edit_parent_form_executed=false` and physical behavior remains
-unverified. Applications/Corridor cache dialogs, Blank/Reset and
-SceneManager binding remain separate workflows. See
+unverified. Applications/Corridor are admitted with a complete cache. Reset is
+also admitted only as operation 1 with that complete cache and exact raw PP
+strings; later operations bind to its fresh graph. The automatic resolver can
+derive existing ordered lists and raw strings from DBGETXML, but refuses
+missing list objects and any combination with automatic SceneManager metadata.
+Reset after the
+first position, duplicate Reset and Reset+Blank fail before PP I/O. Blank
+otherwise composes as a whole-slot retained selection. SceneManager can edit
+the retained or Reset-fresh graph and shares the one terminal CRC/write/readback
+path; the automatic parent metadata resolver can establish its cache and exact
+Trigger application/group/action objects before the same parent PP save.
+Complete original SceneManager/parent form binding
+remains outside this bounded composition. See
 `toolkit-cli/docs/edlt-parent-transaction.md`.
 
 Use `lifecycle.crc_fields_calculated` to confirm the single five-field CRC
@@ -132,13 +149,18 @@ The second requires an exact selected-network lock address, a closed project
 and exclusive caller ownership. Review
 `planned_creations`, `metadata_cache`, `static_labels` and the nested parent
 plan. Applying creates a backup, adds missing applications/groups for all
-admitted operations in address order, stages PP once, performs one PP SAVE and one target PROJECT SAVE, then
+admitted operations and exact SceneManager actions in dependency order, stages
+PP once, performs one PP SAVE and one target PROJECT SAVE, then
 reloads and verifies. These native operations have no shared atomic commit.
 Only a failure before PP SAVE is rolled back automatically. After either save
 starts, inspect `edlt_parent_metadata_evidence`; never retry an uncertain
 operation. Consumed DYNAMIC/FONT/ICON image facts fail closed because
 DBGETXML does not include project images or Toolkit's DLTP image index. See
 `toolkit-cli/docs/edlt-parent-metadata.md`.
+For Applications/Corridor/Reset, also inspect
+`automatic_ordered_application_cache`: XML child order and TagName are a
+database view; Toolkit registry display/sort preferences are unobserved and no
+missing list object is created.
 
 ### Native dynamic-label cache clear
 

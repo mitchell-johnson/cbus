@@ -69,7 +69,10 @@ use cbus_protocol::{
 };
 use cbus_transport::{
     conn::{self, Endpoint},
-    pci::{CBusEvent, GocProgramming, PatchApplyDisposition, PatchProgrammingBlock, PciClient},
+    pci::{
+        CBusEvent, GocProgramming, PatchApplyDisposition, PatchProgrammingBlock, PciClient,
+        ProgrammingLaneState,
+    },
 };
 use chrono::{Datelike, Local, NaiveDate, NaiveTime, Timelike};
 use serde::{Deserialize, Serialize};
@@ -339,6 +342,12 @@ struct Database {
     version: u32,
     projects: HashMap<String, Project>,
     db_fields: HashMap<String, String>,
+    #[serde(default)]
+    unit_documents: HashMap<String, String>,
+    #[serde(default)]
+    unit_pp_fields: HashMap<String, std::collections::BTreeSet<String>>,
+    #[serde(default)]
+    db_xml_extras: HashMap<String, crate::DbXmlExtras>,
     // Persist unordered server sets in lexical order so an otherwise
     // unchanged database is byte-stable across save/restart cycles.
     objects: std::collections::BTreeSet<String>,
@@ -349,6 +358,21 @@ struct Database {
     config_values: HashMap<String, String>,
     scene_snapshots: HashMap<String, Vec<(String, u8)>>,
     database_files: HashMap<String, Project>,
+    #[serde(default)]
+    database_file_unit_documents: HashMap<String, HashMap<String, String>>,
+    #[serde(default)]
+    database_file_unit_pp_fields:
+        HashMap<String, HashMap<String, std::collections::BTreeSet<String>>>,
+    #[serde(default)]
+    database_file_db_xml_extras: HashMap<String, HashMap<String, crate::DbXmlExtras>>,
+    #[serde(default)]
+    database_file_db_fields: HashMap<String, HashMap<String, String>>,
+    #[serde(default)]
+    database_file_objects: HashMap<String, std::collections::BTreeSet<String>>,
+    #[serde(default)]
+    database_file_db_levels: HashMap<String, Vec<DbLevel>>,
+    #[serde(default)]
+    database_file_db_pending: HashMap<String, Vec<crate::DbPendingObject>>,
     file_store: HashMap<String, Vec<u8>>,
     #[serde(default)]
     file_modified: HashMap<String, i64>,
@@ -384,6 +408,9 @@ impl Database {
             version: 1,
             projects,
             db_fields: s.db_fields.clone(),
+            unit_documents: s.unit_documents.clone(),
+            unit_pp_fields: s.unit_pp_fields.clone(),
+            db_xml_extras: s.db_xml_extras.clone(),
             objects: s.objects.iter().cloned().collect(),
             known_oids: s.known_oids.iter().cloned().collect(),
             db_levels: s.db_levels.clone(),
@@ -391,6 +418,13 @@ impl Database {
             config_values: s.config_values.clone(),
             scene_snapshots: s.scene_snapshots.clone(),
             database_files,
+            database_file_unit_documents: s.database_file_unit_documents.clone(),
+            database_file_unit_pp_fields: s.database_file_unit_pp_fields.clone(),
+            database_file_db_xml_extras: s.database_file_db_xml_extras.clone(),
+            database_file_db_fields: s.database_file_db_fields.clone(),
+            database_file_objects: s.database_file_objects.clone(),
+            database_file_db_levels: s.database_file_db_levels.clone(),
+            database_file_db_pending: s.database_file_db_pending.clone(),
             file_store: s.file_store.clone(),
             file_modified: s.file_modified.clone(),
             dali_saved_sessions: s.dali_saved_sessions.clone(),
@@ -405,21 +439,43 @@ impl Database {
         if self.version != 1 {
             return Err(io::Error::other("unsupported C-Gate database version"));
         }
+        let original_known_oids = self.known_oids.clone();
         let mut used_oids = self.known_oids.iter().cloned().collect::<HashSet<_>>();
         for project in self.projects.values().chain(self.database_files.values()) {
             for network in project.networks.values() {
                 if !network.oid.is_empty() {
                     used_oids.insert(network.oid.clone());
                 }
+                if !network.interface_oid.is_empty() {
+                    used_oids.insert(network.interface_oid.clone());
+                }
                 used_oids.extend(network.units.values().map(|unit| unit.oid.clone()));
             }
         }
         used_oids.extend(self.db_levels.values().map(|level| level.oid.clone()));
         used_oids.extend(self.db_pending.values().map(|object| object.oid.clone()));
+        used_oids.extend(
+            self.database_file_db_levels
+                .values()
+                .flatten()
+                .map(|level| level.oid.clone()),
+        );
+        used_oids.extend(
+            self.database_file_db_pending
+                .values()
+                .flatten()
+                .map(|object| object.oid.clone()),
+        );
         for oid in &used_oids {
             reserve_restored_oid(oid);
         }
-        let mut migrated_network_oids = false;
+        let mut migrated_network_oids = self.projects.values().any(|project| {
+            project.networks.values().any(|network| {
+                !network.oid.is_empty() && !original_known_oids.contains(&network.oid)
+                    || !network.interface_oid.is_empty()
+                        && !original_known_oids.contains(&network.interface_oid)
+            })
+        });
         for project in self
             .projects
             .values_mut()
@@ -436,10 +492,23 @@ impl Database {
                         }
                     }
                 }
+                if network.interface_oid.is_empty() {
+                    loop {
+                        let oid = fresh_oid();
+                        if used_oids.insert(oid.clone()) {
+                            network.interface_oid = oid;
+                            migrated_network_oids = true;
+                            break;
+                        }
+                    }
+                }
             }
         }
         s.projects = self.projects;
         s.db_fields = self.db_fields;
+        s.unit_documents = self.unit_documents;
+        s.unit_pp_fields = self.unit_pp_fields;
+        s.db_xml_extras = self.db_xml_extras;
         s.objects = self.objects.into_iter().collect();
         // Network OIDs are first-class database identities. Legacy state did
         // not list them in known_oids, so use the union assembled above for
@@ -450,6 +519,13 @@ impl Database {
         s.config_values = self.config_values;
         s.scene_snapshots = self.scene_snapshots;
         s.database_files = self.database_files;
+        s.database_file_unit_documents = self.database_file_unit_documents;
+        s.database_file_unit_pp_fields = self.database_file_unit_pp_fields;
+        s.database_file_db_xml_extras = self.database_file_db_xml_extras;
+        s.database_file_db_fields = self.database_file_db_fields;
+        s.database_file_objects = self.database_file_objects;
+        s.database_file_db_levels = self.database_file_db_levels;
+        s.database_file_db_pending = self.database_file_db_pending;
         s.file_store = self.file_store;
         s.file_modified = self.file_modified;
         s.dali_saved_sessions = self.dali_saved_sessions;
@@ -1718,10 +1794,31 @@ impl Service {
         current.then_some(generation_gate)
     }
 
+    /// Admit invalidation of data produced by one captured PCI generation.
+    ///
+    /// Unlike [`Self::pci_commit_guard`], this deliberately accepts the same
+    /// client after it has retired itself. An incomplete programming exchange
+    /// must be able to remove stale values before the connection manager has
+    /// installed the replacement, while an old task must never clear values
+    /// that belong to a newer generation.
+    async fn pci_invalidation_guard(
+        &self,
+        generation: u64,
+        pci: &Arc<PciClient>,
+    ) -> Option<tokio::sync::MutexGuard<'_, ()>> {
+        let generation_gate = self.pci_generation_gate.lock().await;
+        let current_pci = self.pci.read().await;
+        let current = self.pci_generation.load(Ordering::Acquire) == generation
+            && Arc::ptr_eq(&current_pci, pci);
+        drop(current_pci);
+        current.then_some(generation_gate)
+    }
+
     async fn invalidate_level_for_epoch(
         &self,
         generation: u64,
         pci: &Arc<PciClient>,
+        network: u8,
         application: u8,
         group: u8,
     ) -> Result<(), ()> {
@@ -1734,7 +1831,7 @@ impl Service {
             .await
             .projects
             .get_mut(&self.project)
-            .and_then(|project| project.networks.get_mut(&self.network))
+            .and_then(|project| project.networks.get_mut(&network))
         {
             network.levels.remove(&(application, group));
         }
@@ -2159,7 +2256,7 @@ impl Service {
         });
     }
 
-    fn bound_group(&self, address: &str) -> Option<(u8, u8)> {
+    fn addressed_group(&self, address: &str) -> Option<(u8, u8, u8)> {
         if address.starts_with('!') {
             return None;
         }
@@ -2170,7 +2267,14 @@ impl Service {
         let network = network.parse::<u8>().ok()?;
         let application = parse_application(application)?;
         let group = group.parse::<u8>().ok()?;
-        (*project == self.project && network == self.network).then_some((application, group))
+        (*project == self.project).then_some((network, application, group))
+    }
+
+    fn bound_group(&self, address: &str) -> Option<(u8, u8)> {
+        self.addressed_group(address)
+            .and_then(|(network, application, group)| {
+                (network == self.network).then_some((application, group))
+            })
     }
 
     fn bound_network(&self, address: &str) -> bool {
@@ -2368,6 +2472,21 @@ impl Service {
                 "cgate_auth":self.auth_token_hash.get().is_some()});
             // Keep the new flat flag out of the already recursion-deep json!
             // invocation while retaining one static capability document.
+            capabilities["physical_pp_routed_load"] = serde_json::Value::Bool(true);
+            capabilities["physical_pp_routed_save"] = serde_json::Value::Bool(true);
+            capabilities["physical_pp_routed_methods"] = serde_json::json!(["direct"]);
+            capabilities["physical_pp_routed_save_protection"] =
+                serde_json::json!(["none", "checksum"]);
+            capabilities["physical_pp_routed_unsupported_methods"] = serde_json::json!([
+                "dali", "edlt", "giu", "goc", "goc2", "gocbyt", "ncc", "paged", "sgiu"
+            ]);
+            capabilities["physical_pp_routed_lock"] = serde_json::Value::Bool(false);
+            capabilities["physical_pp_routed_nvm_commit"] = serde_json::Value::Bool(false);
+            capabilities["physical_pp_routed_delivery_semantics"] = serde_json::Value::String(
+                "reply-network-unit-parameter-tag-correlated-exactly-once-no-replay".to_string(),
+            );
+            capabilities["physical_pp_routed_state_scope"] =
+                serde_json::Value::String("owned-session-target-network".to_string());
             capabilities["full_cgate_command_path_coverage"] = serde_json::Value::Bool(
                 inventory_paths == 431 && fail_closed_paths == 0 && rejected_paths == 0,
             );
@@ -2378,11 +2497,19 @@ impl Service {
             capabilities["cgate_fail_closed_paths"] = serde_json::json!(fail_closed_paths);
             capabilities["cgate_obsolete_paths"] = serde_json::json!(obsolete_paths);
             capabilities["cgate_rejected_paths"] = serde_json::json!(rejected_paths);
+            let (runtime_generation, runtime_pci) = self.current_pci_epoch().await;
+            capabilities["pci_generation"] = serde_json::json!(runtime_generation);
+            capabilities["pci_connected"] = serde_json::json!(runtime_pci.is_connected());
+            capabilities["programming_lane_state"] =
+                serde_json::json!(match runtime_pci.programming_lane_state() {
+                    ProgrammingLaneState::Ready => "ready",
+                    ProgrammingLaneState::ReconnectRequired => "reconnect-required",
+                });
             capabilities["cgate_compatibility_limitations"] = serde_json::json!([
                 "vendor-patchset-zip",
                 "vendor-repository-archive-sqlite-xml-formats",
                 "typed-dali-session-selectors",
-                "routed-targeted-syncnew-and-mutations",
+                "remaining-routed-mutations",
                 "native-access-handler-and-tls-client-identity-matrix",
                 "device-family-topology-timing-power-cycle-hardware-acceptance"
             ]);
@@ -2486,7 +2613,9 @@ impl Service {
             capabilities["broadcast_event_fanout"] = serde_json::Value::Bool(true);
             capabilities["broadcast_event_persistence"] = serde_json::Value::Bool(false);
             capabilities["document_framing"] = serde_json::Value::Bool(true);
-            capabilities["database_documents"] = serde_json::Value::Bool(false);
+            capabilities["database_documents"] = serde_json::Value::Bool(true);
+            capabilities["database_document_scope"] =
+                serde_json::json!(["scalar-field", "typed-unit"]);
             capabilities["legacy_database_local_commands"] = serde_json::json!([
                 "dbadd",
                 "dbcopy",
@@ -2639,13 +2768,49 @@ impl Service {
             ]);
             capabilities["bridged_read_only_discovery"] = serde_json::Value::Bool(true);
             capabilities["bridged_syncnew_general"] = serde_json::Value::Bool(true);
+            capabilities["bridged_project_identity_write"] = serde_json::Value::Bool(true);
+            capabilities["physical_application_routed_control"] = serde_json::Value::Bool(true);
+            capabilities["physical_application_routed_families"] =
+                serde_json::json!(["lighting", "trigger", "enable-set"]);
+            capabilities["physical_application_routed_commands"] = serde_json::json!([
+                "ON",
+                "OFF",
+                "RAMP",
+                "TERMINATERAMP",
+                "LIGHTING ON",
+                "LIGHTING OFF",
+                "LIGHTING RAMP",
+                "LIGHTING STOP",
+                "LIGHTING TERMINATERAMP",
+                "DO lighting",
+                "TRIGGER EVENT",
+                "TRIGGER INDICATORKILL",
+                "ENABLE SET"
+            ]);
+            capabilities["physical_application_routed_delivery_semantics"] =
+                serde_json::Value::String(
+                    "pci-confirmed-exactly-once-no-replay-no-device-readback".to_string(),
+                );
+            capabilities["physical_application_routed_state_scope"] =
+                serde_json::Value::String("target-network-only".to_string());
+            capabilities["physical_application_routed_readback"] = serde_json::Value::Bool(false);
+            capabilities["bridged_mutation_commands"] = serde_json::json!([
+                "LIGHTING",
+                "DO lighting",
+                "TRIGGER",
+                "ENABLE SET",
+                "NET SET_PROJECT_IDENTIFY",
+                "PP SAVE",
+                "PP SAVE_TO_SOURCE"
+            ]);
             capabilities["bridged_read_only_commands"] = serde_json::json!([
                 "DBNETWORKPATH",
                 "NET PINGU",
                 "NET SYNC",
                 "NET SYNCNEW",
                 "NET CHECKUNIT",
-                "DO SYNC"
+                "DO SYNC",
+                "PP LOAD"
             ]);
             capabilities["bridged_network_max_hops"] = serde_json::Value::from(6);
             capabilities["net_catalog_commands"] =
@@ -2898,7 +3063,34 @@ impl Service {
             capabilities["dali_native_help_paths"] = serde_json::Value::from(128);
             capabilities["dali_session_ext_only"] = serde_json::Value::Bool(true);
             capabilities["dali_session_typed_device_plans"] =
-                serde_json::Value::String("fail-closed-before-io".to_string());
+                serde_json::Value::String("complete-read-only-extract".to_string());
+            capabilities["dali_session_typed_extract_plans"] = serde_json::json!([
+                "DALI_ONLY",
+                "FULL",
+                "REFRESH_STATUS_INFO",
+                "RETRIEVE_RECONCILE"
+            ]);
+            capabilities["dali_session_typed_extract_plans_remaining"] =
+                serde_json::json!(["COND_QUICK", "COND_EXTENDED", "RESCAN_FAULT"]);
+            capabilities["dali_session_typed_extract_safe_prefix_plans"] = serde_json::json!({
+                "COND_QUICK": ["POLL_FINISH_DISCOVER_KNOWN_FULL_INFO", "MISSING"],
+                "COND_EXTENDED": ["POLL_FINISH_DISCOVER_KNOWN_FULL_INFO", "MISSING"],
+                "RESCAN_FAULT": ["RESCAN", "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO", "MISSING"]
+            });
+            capabilities["dali_session_typed_extract_refusal_step"] =
+                serde_json::Value::String("ADDRESS_UNKNOWN".to_string());
+            capabilities["dali_session_typed_extract_refusal_receipt"] =
+                serde_json::Value::String("mask-only-no-explicit-device-allocation".to_string());
+            capabilities["dali_session_typed_deploy_plans_remaining"] =
+                serde_json::json!(["DALI_ONLY", "FULL"]);
+            capabilities["dali_session_typed_deploy_preflight"] =
+                serde_json::Value::String("local-session-target-validation-before-io".to_string());
+            capabilities["dali_session_typed_deploy_refusal_missing"] = serde_json::json!([
+                "native-step-order",
+                "model-to-payload-ownership",
+                "per-field-readback-receipts",
+                "full-typed-ext-atomic-boundary"
+            ]);
             return ok(tag, vec![capabilities.to_string()], "200 OK");
         }
         if verb == "HELP" && sub == "DALI" {
@@ -3584,9 +3776,10 @@ impl Service {
 
     /// Gate a C-Gate here-document after the connection has bounded and
     /// collected it. FILE UPLOAD consumes base64 into the durable virtual
-    /// root, and CGL IMPORT validates and atomically applies the bounded CGL
-    /// 1.1 database-label graph. Native DBSETXML typed-object replacement
-    /// remains fail-closed.
+    /// root, CGL IMPORT validates and atomically applies the bounded CGL 1.1
+    /// database-label graph, and DBSETXML atomically stores either one scalar
+    /// document or one evidenced complete typed-object replacement without
+    /// bus I/O.
     pub async fn handle_document(
         &self,
         client: &mut ClientState,
@@ -3611,6 +3804,54 @@ impl Service {
         }
         if verb == "FILE" {
             return self.file(tag, &cmd.body, Some(document)).await;
+        }
+        if verb == "DBSETXML" {
+            let mut model = self.model.lock().await;
+            model.current = client
+                .current
+                .clone()
+                .or_else(|| Some(self.project.clone()));
+            let target = words.get(1).copied().unwrap_or_default();
+            let configured_oid = model
+                .projects
+                .get(&self.project)
+                .and_then(|project| project.networks.get(&self.network))
+                .map(|network| network.oid.as_str());
+            let configured_path = format!("//{}/{}", self.project, self.network);
+            if model.current.as_deref() == Some(self.project.as_str())
+                && (target.trim_end_matches('/') == configured_path
+                    || target
+                        .strip_prefix('!')
+                        .and_then(|value| value.split('/').next())
+                        .is_some_and(|oid| configured_oid == Some(oid)))
+            {
+                return err(
+                    tag,
+                    408,
+                    "408 Operation failed: configured network identity is immutable",
+                );
+            }
+            let before = model.clone();
+            let before_db = Database::from_server(&model);
+            let response = model.handle_document(line, document);
+            if response.status >= 400 {
+                *model = before;
+                return response;
+            }
+            // A local document replacement never changes observed hardware,
+            // even though the compact mock mirrors scalar writes for its own
+            // deterministic single-process workflows.
+            preserve_physical_state(&before, &mut model);
+            let after_db = Database::from_server(&model);
+            if before_db != after_db {
+                if let Err(error) = after_db.save(&self.state_path) {
+                    *model = before;
+                    tracing::error!("C-Gate DBSETXML commit failed: {error}");
+                    return err(tag, 500, "500 Database commit failed; change rolled back");
+                }
+            }
+            client.current = model.current.clone();
+            return response;
         }
         if verb == "CGL" && sub == "IMPORT" {
             let mut model = self.model.lock().await;
@@ -3638,7 +3879,6 @@ impl Service {
             }
             return response;
         }
-        let _ = (line, document);
         err(
             tag,
             502,
@@ -5122,7 +5362,7 @@ impl Service {
                 .or_else(|| Some(self.project.clone()));
             return staged.handle(line);
         }
-        let validation = {
+        let mut validation = {
             let mut staged = self.model.lock().await.clone();
             staged.current = client
                 .current
@@ -5366,7 +5606,8 @@ impl Service {
         // multiple raw replies (including repeated known replies or mixed
         // known/unknown replies) remain ambiguous and must not be queried or
         // exposed as one device's metadata.
-        for identity in &mut identities {
+        let mut metadata_warnings = Vec::new();
+        'metadata: for identity in &mut identities {
             if route.is_empty()
                 && identity.unit_type.eq_ignore_ascii_case("KEYGL5")
                 && configured_keygl5.contains(&identity.address)
@@ -5374,11 +5615,45 @@ impl Service {
                 && identity.has_exactly_one_known_serial_reply
             {
                 identity.extended_firmware =
-                    pci.read_edlt_extended_firmware(identity.address).await.ok();
-                identity.applications = pci.read_edlt_applications(identity.address).await.ok();
-                identity.widget_groups = pci.read_edlt_widget_groups(identity.address).await.ok();
+                    match pci.read_edlt_extended_firmware(identity.address).await {
+                        Ok(value) => Some(value),
+                        Err(error) => {
+                            metadata_warnings.push((
+                                identity.address,
+                                "FirmwareVersion",
+                                error.to_string(),
+                            ));
+                            break 'metadata;
+                        }
+                    };
+                identity.applications = match pci.read_edlt_applications(identity.address).await {
+                    Ok(value) => Some(value),
+                    Err(error) => {
+                        metadata_warnings.push((
+                            identity.address,
+                            "Application/Application2",
+                            error.to_string(),
+                        ));
+                        break 'metadata;
+                    }
+                };
+                identity.widget_groups = match pci.read_edlt_widget_groups(identity.address).await {
+                    Ok(value) => Some(value),
+                    Err(error) => {
+                        metadata_warnings.push((
+                            identity.address,
+                            "WidgetGroups",
+                            error.to_string(),
+                        ));
+                        break 'metadata;
+                    }
+                };
             }
         }
+
+        let metadata_failure_detail = metadata_warnings
+            .first()
+            .map(|(address, field, error)| format!("unit {address} {field}: {error}"));
 
         // A reconnect or transport loss invalidates everything collected by
         // this command. Serialize the check with set_pci so a stale task can
@@ -5389,6 +5664,15 @@ impl Service {
         if self.pci_generation.load(Ordering::Acquire) != pci_generation
             || !Arc::ptr_eq(&current_pci, &pci)
         {
+            if let Some(detail) = metadata_failure_detail.as_deref() {
+                return err(
+                    tag,
+                    408,
+                    &format!(
+                        "408 Physical metadata synchronization failed at {detail}; invalidated by PCI reconnect"
+                    ),
+                );
+            }
             return err(
                 tag,
                 408,
@@ -5407,6 +5691,15 @@ impl Service {
             {
                 network.physical.clear();
                 network.state = NetworkState::Closed;
+            }
+            if let Some(detail) = metadata_failure_detail.as_deref() {
+                return err(
+                    tag,
+                    408,
+                    &format!(
+                        "408 Physical metadata synchronization failed at {detail}; PCI generation retired"
+                    ),
+                );
             }
             return err(
                 tag,
@@ -5462,6 +5755,15 @@ impl Service {
             network.state = NetworkState::Ok;
         }
         drop(model);
+        for (address, field, error) in metadata_warnings {
+            let detail = format!("unit {address} {field}: {error}");
+            validation
+                .lines
+                .push(format!("300-MetadataWarning={detail}"));
+            let _ = self.events.send(format!(
+                "#e# net {target} sync metadata failed {address} {field} {error}"
+            ));
+        }
         for event in duplicate_events {
             let _ = self.events.send(event);
         }
@@ -5508,16 +5810,6 @@ impl Service {
             unit.parse::<u8>()
                 .expect("the staged C-Gate model validated the unit address")
         });
-        // Native routed duplicate challenges have not been captured or
-        // published. The read-only whole-network form is evidenced; keep the
-        // optional targeted commissioning form closed before physical I/O.
-        if selected.is_some() && !route.is_empty() {
-            return err(
-                tag,
-                502,
-                "502 Routed NET SYNCNEW targeted discovery is not implemented",
-            );
-        }
 
         if let Some(address) = selected {
             let already_modeled = {
@@ -5595,7 +5887,12 @@ impl Service {
             statuses.push((120, "unit found".to_string()));
             for attempt in 0..3 {
                 statuses.push((120, format!("duplicate test {}/3", attempt + 1)));
-                let count = match pci.duplicate_address_probe(address, attempt).await {
+                let count = match if route.is_empty() {
+                    pci.duplicate_address_probe(address, attempt).await
+                } else {
+                    pci.duplicate_address_probe_routed(&route, address, attempt)
+                        .await
+                } {
                     Ok(count) => count,
                     Err(error) => {
                         statuses.push((408, format!("Duplicate test failed:{error}")));
@@ -5623,7 +5920,12 @@ impl Service {
             }
             statuses.push((120, "no duplicate found".to_string()));
             statuses.push((120, "identifying unit".to_string()));
-            match syncnew_identity(&pci, address).await {
+            let identity = if route.is_empty() {
+                syncnew_identity(&pci, address).await
+            } else {
+                syncnew_identity_routed(&pci, &route, address).await
+            };
+            match identity {
                 Ok(unit) => {
                     let detail = syncnew_unit_detail(&unit);
                     match self
@@ -5896,13 +6198,19 @@ impl Service {
         let Some(address) = words.get(2) else {
             return err(tag, 400, "400 NET SET_PROJECT_IDENTIFY requires a network");
         };
-        if !self.bound_network(address) {
-            return err(
-                tag,
-                502,
-                "502 Command requires a physical backend that is not implemented",
-            );
-        }
+        let Some(target) = self.addressed_network(address) else {
+            return err(tag, 400, "400 NET SET_PROJECT_IDENTIFY requires a network");
+        };
+        let route = match self.route_to_network(target).await {
+            Ok(route) => route,
+            Err(error) => {
+                return err(
+                    tag,
+                    408,
+                    &format!("408 Physical network route unavailable: {error}"),
+                );
+            }
+        };
         let identity = match parse_command(line)
             .ok()
             .and_then(|command| project_identity_argument(&command.body).ok())
@@ -5951,7 +6259,11 @@ impl Service {
                 &format!("408 Physical interface discovery failed: {error}"),
             );
         }
-        let states = match pci.install_mmi().await {
+        let states = match if route.is_empty() {
+            pci.install_mmi().await
+        } else {
+            pci.install_mmi_routed(&route).await
+        } {
             Ok(states) => states,
             Err(error) => {
                 return err(
@@ -5972,10 +6284,19 @@ impl Service {
                 continue;
             }
             let address = address as u8;
-            match pci.identify_first(address, 1).await {
+            let unit_type = if route.is_empty() {
+                pci.identify_first(address, 1).await
+            } else {
+                pci.identify_first_routed(&route, address, 1).await
+            };
+            match unit_type {
                 Ok(Some(unit_type)) => match identity_text(&unit_type, "unit type") {
                     Ok(unit_type) => {
-                        let serial_replies = match pci.identify_all(address, 4).await {
+                        let serial_replies = match if route.is_empty() {
+                            pci.identify_all(address, 4).await
+                        } else {
+                            pci.identify_all_routed(&route, address, 4).await
+                        } {
                             Ok(replies) => replies,
                             Err(error) => {
                                 return err(
@@ -6013,19 +6334,27 @@ impl Service {
                 "408 Operation failed: Can't find unit to set project name in",
             );
         };
-        if let Err(error) = pci.set_project_identity_verified(address, &encoded).await {
+        let stored = if route.is_empty() {
+            pci.set_project_identity_verified(address, &encoded).await
+        } else {
+            pci.set_project_identity_verified_routed(&route, address, &encoded)
+                .await
+        };
+        if let Err(error) = stored {
             // Once STORE has been admitted, a transport failure or mismatched
             // readback makes any previous cached value unsafe to serve. A
             // definitive NAK is also cleared conservatively; a later SYNC or
             // successful write may repopulate the volatile field.
-            let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
-                return err(
-                    tag,
-                    408,
-                    "408 Operation failed: PCI reconnected during project identity update",
-                );
-            };
-            self.clear_physical_project_name(address).await;
+            // A self-retired client is still the captured generation until
+            // set_pci installs its replacement. Invalidate under that weaker
+            // epoch guard, but never clear data that a newer generation may
+            // already have observed. set_pci itself clears the old cache when
+            // it wins this race.
+            if let Some(_invalidation_guard) =
+                self.pci_invalidation_guard(pci_generation, &pci).await
+            {
+                self.clear_physical_project_name(target, address).await;
+            }
             let detail = if error
                 .to_string()
                 .contains("unit rejected programming selector")
@@ -6055,7 +6384,7 @@ impl Service {
             .await
             .projects
             .get_mut(&self.project)
-            .and_then(|project| project.networks.get_mut(&self.network))
+            .and_then(|project| project.networks.get_mut(&target))
         {
             let unit = network
                 .physical
@@ -6071,14 +6400,14 @@ impl Service {
         validation
     }
 
-    async fn clear_physical_project_name(&self, address: u8) {
+    async fn clear_physical_project_name(&self, network: u8, address: u8) {
         if let Some(unit) = self
             .model
             .lock()
             .await
             .projects
             .get_mut(&self.project)
-            .and_then(|project| project.networks.get_mut(&self.network))
+            .and_then(|project| project.networks.get_mut(&network))
             .and_then(|network| network.physical.get_mut(&address))
         {
             unit.fields.remove("ProjectName");
@@ -8274,12 +8603,26 @@ impl Service {
         let Some(address) = words.get(2) else {
             return err(tag, 400, "400 Invalid Trigger Control address");
         };
-        let Some((application, group)) = self.bound_group(address) else {
+        let Some((network, application, group)) = self.addressed_group(address) else {
             return err(tag, 404, "404 Network is not connected to this service");
         };
         if application != 202 {
             return err(tag, 400, "400 Trigger Control application must be 202");
         }
+        let route = if network == self.network {
+            Vec::new()
+        } else {
+            match self.route_to_network(network).await {
+                Ok(route) => route,
+                Err(error) => {
+                    return err(
+                        tag,
+                        408,
+                        &format!("408 Physical application route unavailable: {error}"),
+                    )
+                }
+            }
+        };
         let (sal, selector) = if words[1].eq_ignore_ascii_case("EVENT") {
             let selector = words[3].parse::<u8>().expect("model validated selector");
             (
@@ -8297,13 +8640,19 @@ impl Service {
                 None,
             )
         };
-        let packet = Packet::PointToMultipoint {
-            meta: Meta::new(true, 0),
-            application,
-            sals: vec![sal],
-        };
         let (pci_generation, pci) = self.current_pci_epoch().await;
-        match pci.send_confirmed(&packet).await {
+        let delivered = if route.is_empty() {
+            pci.send_confirmed(&Packet::PointToMultipoint {
+                meta: Meta::new(true, 0),
+                application,
+                sals: vec![sal],
+            })
+            .await
+        } else {
+            pci.send_routed_application_confirmed_once(&route, sal)
+                .await
+        };
+        match delivered {
             Ok(()) => {
                 let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
                     return err(
@@ -8319,7 +8668,7 @@ impl Service {
                         .await
                         .projects
                         .get_mut(&self.project)
-                        .and_then(|p| p.networks.get_mut(&self.network))
+                        .and_then(|p| p.networks.get_mut(&network))
                     {
                         network.levels.insert((202, group), selector);
                     }
@@ -8766,7 +9115,7 @@ impl Service {
         let Some(address) = words.get(2) else {
             return err(tag, 400, "400 Invalid Enable Control address");
         };
-        let Some((application, variable)) = self.bound_group(address) else {
+        let Some((network, application, variable)) = self.addressed_group(address) else {
             return err(tag, 404, "404 Network is not connected to this service");
         };
         if application != 203 {
@@ -8777,14 +9126,35 @@ impl Service {
             // has no such file and preserves the live observed cache.
             return response;
         }
-        let value = words[3].parse::<u8>().expect("model validated value");
-        let packet = Packet::PointToMultipoint {
-            meta: Meta::new(true, 0),
-            application,
-            sals: vec![Sal::EnableSetNetworkVariable { variable, value }],
+        let route = if network == self.network {
+            Vec::new()
+        } else {
+            match self.route_to_network(network).await {
+                Ok(route) => route,
+                Err(error) => {
+                    return err(
+                        tag,
+                        408,
+                        &format!("408 Physical application route unavailable: {error}"),
+                    )
+                }
+            }
         };
+        let value = words[3].parse::<u8>().expect("model validated value");
         let (pci_generation, pci) = self.current_pci_epoch().await;
-        match pci.send_confirmed(&packet).await {
+        let sal = Sal::EnableSetNetworkVariable { variable, value };
+        let delivered = if route.is_empty() {
+            pci.send_confirmed(&Packet::PointToMultipoint {
+                meta: Meta::new(true, 0),
+                application,
+                sals: vec![sal],
+            })
+            .await
+        } else {
+            pci.send_routed_application_confirmed_once(&route, sal)
+                .await
+        };
+        match delivered {
             Ok(()) => {
                 let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
                     return err(tag, 408, "408 Enable delivery invalidated by PCI reconnect");
@@ -8795,7 +9165,7 @@ impl Service {
                     .await
                     .projects
                     .get_mut(&self.project)
-                    .and_then(|p| p.networks.get_mut(&self.network))
+                    .and_then(|p| p.networks.get_mut(&network))
                 {
                     network.levels.insert((203, variable), value);
                 }
@@ -10082,9 +10452,23 @@ impl Service {
         let Some((project, network, unit)) = Server::split_unit(words[3]) else {
             return err(tag, 400, "400 Invalid physical unit source");
         };
-        if project != self.project || network != self.network {
+        if project != self.project {
             return err(tag, 404, "404 Network is not connected to this service");
         }
+        let route = if network == self.network {
+            Vec::new()
+        } else {
+            match self.route_to_network(network).await {
+                Ok(route) => route,
+                Err(error) => {
+                    return err(
+                        tag,
+                        408,
+                        &format!("408 Physical network route unavailable: {error}"),
+                    )
+                }
+            }
+        };
         let (session_name, session_lock) = {
             let mut staged = self.model.lock().await.clone();
             staged.current = client
@@ -10109,7 +10493,7 @@ impl Service {
             let Some(lock_address) = staged.locks.get(&session.lock) else {
                 return err(tag, 409, "409 Lock not held");
             };
-            if !self.bound_network(lock_address) {
+            if self.addressed_network(lock_address) != Some(network) {
                 return err(
                     tag,
                     409,
@@ -10119,8 +10503,12 @@ impl Service {
             (session.name.clone(), session.lock.clone())
         };
 
-        let pci = self.pci.read().await.clone();
-        let unit_type = match pci.identify_first(unit, 1).await {
+        let (pci_generation, pci) = self.current_pci_epoch().await;
+        let unit_type = match if route.is_empty() {
+            pci.identify_first(unit, 1).await
+        } else {
+            pci.identify_first_routed_once(&route, unit, 1).await
+        } {
             Ok(Some(bytes)) => match identity_text(&bytes, "unit type") {
                 Ok(value) => value,
                 Err(error) => {
@@ -10140,7 +10528,11 @@ impl Service {
                 )
             }
         };
-        let firmware = match pci.identify_first(unit, 2).await {
+        let firmware = match if route.is_empty() {
+            pci.identify_first(unit, 2).await
+        } else {
+            pci.identify_first_routed_once(&route, unit, 2).await
+        } {
             Ok(Some(bytes)) => match identity_text(&bytes, "firmware version") {
                 Ok(value) => value,
                 Err(error) => {
@@ -10205,6 +10597,25 @@ impl Service {
                 Ok(layout) => layout,
                 Err(error) => return err(tag, 502, &format!("502 {error}")),
             };
+            if !route.is_empty() {
+                let mut method = param
+                    .get("ProgramMethod")
+                    .unwrap_or("")
+                    .trim()
+                    .to_ascii_lowercase();
+                if method.is_empty() {
+                    method = "direct".to_string();
+                }
+                if method != "direct"
+                    || !matches!(layout.transfer, unitspec::ParameterTransfer::Recall { .. })
+                {
+                    return err(
+                        tag,
+                        502,
+                        "502 Routed PP LOAD supports direct CAL parameters only",
+                    );
+                }
+            }
             match layout.transfer {
                 unitspec::ParameterTransfer::Recall { parameter, count } => {
                     recalls
@@ -10285,7 +10696,13 @@ impl Service {
         let mut ordered_recalls = recalls.into_iter().collect::<Vec<_>>();
         ordered_recalls.sort_unstable_by_key(|(parameter, _)| *parameter);
         for (parameter, count) in ordered_recalls {
-            match pci.recall_parameter(unit, parameter, count).await {
+            let result = if route.is_empty() {
+                pci.recall_parameter(unit, parameter, count).await
+            } else {
+                pci.recall_parameter_routed(&route, unit, parameter, count)
+                    .await
+            };
+            match result {
                 Ok(bytes) => {
                     recalled.insert(parameter, bytes);
                 }
@@ -10410,6 +10827,13 @@ impl Service {
             params.insert(param.name.clone(), value);
         }
 
+        let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
+            return err(
+                tag,
+                408,
+                "408 Physical PP load invalidated by PCI reconnect",
+            );
+        };
         let mut model = self.model.lock().await;
         let lock_held = model.locks.contains_key(&session_lock);
         let Some(session) = model.sessions.get_mut(&session_name) else {
@@ -10477,7 +10901,16 @@ impl Service {
         if (save_to_source && words.len() < 3) || (!save_to_source && words.len() < 4) {
             return err(tag, 400, "400 PP SAVE requires a session and destination");
         }
-        let (session_name, session_lock, target, expected_type, expected_firmware, params, dirty) = {
+        let (
+            session_name,
+            session_lock,
+            session_lock_address,
+            target,
+            expected_type,
+            expected_firmware,
+            params,
+            dirty,
+        ) = {
             let model = self.model.lock().await;
             let name = words[2];
             if model.sessions.contains_key(name) && !client.sessions.contains(name) {
@@ -10493,13 +10926,6 @@ impl Service {
             let Some(lock_address) = model.locks.get(&session.lock) else {
                 return err(tag, 409, "409 Lock not held");
             };
-            if !self.bound_network(lock_address) {
-                return err(
-                    tag,
-                    409,
-                    "409 Session lock does not cover the physical network",
-                );
-            }
             let target = if save_to_source {
                 let Some(source) = session.source.clone() else {
                     return err(tag, 408, "408 Session has no loaded source");
@@ -10517,6 +10943,7 @@ impl Service {
             (
                 session.name.clone(),
                 session.lock.clone(),
+                lock_address.clone(),
                 target,
                 unit_type,
                 firmware,
@@ -10527,9 +10954,30 @@ impl Service {
         let Some((project, network, unit)) = Server::split_unit(&target) else {
             return err(tag, 400, "400 Invalid physical unit destination");
         };
-        if project != self.project || network != self.network {
+        if project != self.project {
             return err(tag, 404, "404 Network is not connected to this service");
         }
+        if self.addressed_network(&session_lock_address) != Some(network) {
+            return err(
+                tag,
+                409,
+                "409 Session lock does not cover the physical network",
+            );
+        }
+        let route = if network == self.network {
+            Vec::new()
+        } else {
+            match self.route_to_network(network).await {
+                Ok(route) => route,
+                Err(error) => {
+                    return err(
+                        tag,
+                        408,
+                        &format!("408 Physical network route unavailable: {error}"),
+                    )
+                }
+            }
+        };
 
         let tag_start = if save_to_source { 3 } else { 4 };
         let tags = words[tag_start..]
@@ -10551,9 +10999,62 @@ impl Service {
                 }
             }
         };
-        let requires_nvm_commit = unitspec::requires_nvm_commit(&spec);
-        let pci = self.pci.read().await.clone();
-        let live_type = match pci.identify_first(unit, 1).await {
+        let spec_requires_nvm_commit = unitspec::requires_nvm_commit(&spec);
+        if !route.is_empty() {
+            let mut selected_write = false;
+            for param in spec.iter().filter(|param| dirty.contains(&param.name)) {
+                if !tags.is_empty()
+                    && !param
+                        .tags
+                        .iter()
+                        .any(|candidate| tags.contains(&candidate.to_ascii_lowercase()))
+                {
+                    continue;
+                }
+                let protection = param
+                    .get("Protection")
+                    .unwrap_or("none")
+                    .trim()
+                    .to_ascii_lowercase();
+                let mut method = param
+                    .get("ProgramMethod")
+                    .unwrap_or("")
+                    .trim()
+                    .to_ascii_lowercase();
+                if method.is_empty() {
+                    method = "direct".to_string();
+                }
+                let layout = match unitspec::ParameterLayout::for_param(param) {
+                    Ok(layout) => layout,
+                    Err(error) => return err(tag, 502, &format!("502 {error}")),
+                };
+                if method != "direct"
+                    || !matches!(layout.transfer, unitspec::ParameterTransfer::Recall { .. })
+                    || !matches!(protection.as_str(), "none" | "checksum")
+                {
+                    return err(
+                        tag,
+                        502,
+                        "502 Routed PP SAVE supports direct CAL parameters with none/checksum protection only",
+                    );
+                }
+                selected_write = true;
+            }
+            if selected_write && spec_requires_nvm_commit {
+                return err(
+                    tag,
+                    502,
+                    "502 Routed PP SAVE cannot write a specification that requires Save-to-NVM",
+                );
+            }
+        }
+        let requires_nvm_commit = route.is_empty() && spec_requires_nvm_commit;
+        let (pci_generation, pci) = self.current_pci_epoch().await;
+        let live_type = match if route.is_empty() {
+            pci.identify_first(unit, 1).await
+        } else {
+            pci.identify_first_routed_once(&route, unit, 1).await
+        } {
             Ok(Some(bytes)) => match identity_text(&bytes, "unit type") {
                 Ok(value) => value,
                 Err(error) => {
@@ -10573,7 +11074,11 @@ impl Service {
                 )
             }
         };
-        let live_firmware = match pci.identify_first(unit, 2).await {
+        let live_firmware = match if route.is_empty() {
+            pci.identify_first(unit, 2).await
+        } else {
+            pci.identify_first_routed_once(&route, unit, 2).await
+        } {
             Ok(Some(bytes)) => match identity_text(&bytes, "firmware version") {
                 Ok(value) => value,
                 Err(error) => {
@@ -10760,7 +11265,12 @@ impl Service {
             let count = (end - start) as usize;
             let original = match space {
                 Space::Standard if count <= u8::MAX as usize && end <= 256 => {
-                    pci.recall_parameter(unit, start as u8, count).await
+                    if route.is_empty() {
+                        pci.recall_parameter(unit, start as u8, count).await
+                    } else {
+                        pci.recall_parameter_routed(&route, unit, start as u8, count)
+                            .await
+                    }
                 }
                 Space::Standard => return err(tag, 502, "502 Standard PP save range is too large"),
                 Space::Paged => pci.recall_paged_parameter(unit, start, count).await,
@@ -10839,8 +11349,18 @@ impl Service {
                         .await
                 }
                 Space::Standard => {
-                    pci.store_parameter_verified(unit, item.start as u8, modified)
+                    if route.is_empty() {
+                        pci.store_parameter_verified(unit, item.start as u8, modified)
+                            .await
+                    } else {
+                        pci.store_parameter_verified_routed(
+                            &route,
+                            unit,
+                            item.start as u8,
+                            modified,
+                        )
                         .await
+                    }
                 }
                 Space::Paged => {
                     pci.store_paged_parameter_verified(unit, item.start, modified, item.locked)
@@ -10901,6 +11421,13 @@ impl Service {
             }
         }
 
+        let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
+            return err(
+                tag,
+                408,
+                "408 Physical PP save invalidated by PCI reconnect",
+            );
+        };
         let mut model = self.model.lock().await;
         let lock_held = model.locks.contains_key(&session_lock);
         let Some(session) = model.sessions.get_mut(&session_name) else {
@@ -10970,15 +11497,15 @@ impl Service {
                 } else {
                     None
                 };
-                if let Some((app, group)) = index
+                if let Some((network, app, group)) = index
                     .and_then(|i| parts.get(i))
                     .and_then(|a| staged.qualify_group(a))
-                    .and_then(|a| self.bound_group(&a))
+                    .and_then(|a| self.addressed_group(&a))
                 {
                     if let Some(net) = staged
                         .projects
                         .get_mut(&self.project)
-                        .and_then(|p| p.networks.get_mut(&self.network))
+                        .and_then(|p| p.networks.get_mut(&network))
                     {
                         net.levels.entry((app, group)).or_insert(0);
                     }
@@ -10998,12 +11525,26 @@ impl Service {
             return err(tag, 408, "408 No live group state available");
         };
         let words: Vec<_> = event.split_whitespace().collect();
-        let Some((app, group)) = self.bound_group(words[2]) else {
+        let Some((network, app, group)) = self.addressed_group(words[2]) else {
             return err(tag, 404, "404 Network is not connected to this service");
         };
         if !(48..=95).contains(&app) {
             return err(tag, 400, "400 Not a lighting application");
         }
+        let route = if network == self.network {
+            Vec::new()
+        } else {
+            match self.route_to_network(network).await {
+                Ok(route) => route,
+                Err(error) => {
+                    return err(
+                        tag,
+                        408,
+                        &format!("408 Physical application route unavailable: {error}"),
+                    )
+                }
+            }
+        };
         let sal = match words[3] {
             "ON" => Sal::LightingOn {
                 application: app,
@@ -11025,16 +11566,11 @@ impl Service {
             },
             _ => return err(tag, 502, "502 Unsupported lighting operation"),
         };
-        let packet = Packet::PointToMultipoint {
-            meta: Meta::new(true, 0),
-            application: app,
-            sals: vec![sal],
-        };
         let (pci_generation, pci) = self.current_pci_epoch().await;
         // The previous observation predates this command. Invalidate it before
         // sending so a report arriving ahead of the confirmation is retained.
         if self
-            .invalidate_level_for_epoch(pci_generation, &pci, app, group)
+            .invalidate_level_for_epoch(pci_generation, &pci, network, app, group)
             .await
             .is_err()
         {
@@ -11044,7 +11580,18 @@ impl Service {
                 "408 Lighting delivery invalidated by PCI reconnect",
             );
         }
-        match pci.send_confirmed(&packet).await {
+        let delivered = if route.is_empty() {
+            pci.send_confirmed(&Packet::PointToMultipoint {
+                meta: Meta::new(true, 0),
+                application: app,
+                sals: vec![sal],
+            })
+            .await
+        } else {
+            pci.send_routed_application_confirmed_once(&route, sal)
+                .await
+        };
+        match delivered {
             Ok(()) => {
                 let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
                     return err(
@@ -11054,10 +11601,14 @@ impl Service {
                     );
                 };
                 let _ = self.events.send(event);
-                // Queue physical readback through the existing background lane.
-                tokio::spawn(async move {
-                    let _ = pci.request_status(group & 0xe0, app, true).await;
-                });
+                if route.is_empty() {
+                    // Queue the existing direct physical readback. There is no
+                    // retained routed status-reply contract for these commands,
+                    // so a bridged confirmation does not invent one.
+                    tokio::spawn(async move {
+                        let _ = pci.request_status(group & 0xe0, app, true).await;
+                    });
+                }
                 response
             }
             Err(e) => err(tag, 502, &format!("502 Lighting delivery failed: {e}")),
@@ -11162,7 +11713,7 @@ impl Service {
         let mut status_blocks = HashSet::new();
         for (delivered, (address, application, group, level)) in actions.into_iter().enumerate() {
             if self
-                .invalidate_level_for_epoch(pci_generation, &pci, application, group)
+                .invalidate_level_for_epoch(pci_generation, &pci, self.network, application, group)
                 .await
                 .is_err()
             {
@@ -13818,11 +14369,17 @@ fn import_project(xml: &str, network_name: Option<&str>) -> io::Result<(Server, 
             .attribute("oid")
             .map(str::to_string)
             .unwrap_or_else(fresh_oid);
+        let interface_oid = interface
+            .and_then(|node| node.attribute("oid"))
+            .map(str::to_string)
+            .unwrap_or_else(fresh_oid);
         model.known_oids.insert(network_oid.clone());
+        model.known_oids.insert(interface_oid.clone());
         networks.insert(
             net,
             Network {
                 oid: network_oid,
+                interface_oid,
                 address: net,
                 name: field(node, "TagName"),
                 iface_type: interface

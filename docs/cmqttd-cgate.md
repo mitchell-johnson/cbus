@@ -16,6 +16,14 @@ path can contain selector-specific refusals and because private vendor formats,
 device/topology/timing behavior, and broad physical acceptance remain separate
 requirements.
 
+The same capability document reports live transport health as
+`pci_generation`, `pci_connected`, and `programming_lane_state` (`ready` or
+`reconnect-required`). An incomplete source-correlated programming exchange
+reports its unit/parameter and fragment progress, plus block/offset for
+fragmented memory reads, then permanently retires that generation and signals
+connection loss. cmqttd reconnects a fresh generation through its existing
+connection manager; it never replays, resumes, or reuses the partial snapshot.
+
 ## Start and connect
 
 ```sh
@@ -36,11 +44,14 @@ listens on `0.0.0.0:20023` on its private bridge network) and mounts the named
 `cmqttd_data` volume at `/var/lib/cmqttd`. `CMQTTD_CGATE_BIND=off` disables it.
 The command listener speaks plaintext by default and offers optional TLS
 transport via `--cgate-tls-cert`/`--cgate-tls-key` (both required together,
-and only alongside `--cgate-bind`); a TLS configuration failure exits before
-binding and before the state file is created. The TLS handshake times out
-after 10 s so a stalled client cannot hold a connection slot. TLS here is
-transport-only with no TLS client authentication, so keep the
-default loopback binding unless TLS termination is understood.
+and only alongside `--cgate-bind`). `--cgate-tls-client-ca <bundle.pem>` adds
+mandatory mutual TLS: a client without a certificate chaining to that bundle
+is rejected during the handshake before it receives a C-Gate greeting. A TLS
+configuration failure exits before binding and before the state file is
+created. The TLS handshake times out after 10 s so a stalled client cannot
+hold a connection slot. Certificate admission is separate from C-Gate
+ACCESS/LOGIN authorization; the certificate identity does not select an
+ACCESS row.
 MQTT's existing TLS/authentication options remain independent.
 
 The command listener implements native-shaped `LOGIN`, `LOGOUT`, and the full
@@ -158,7 +169,8 @@ versioned portable container.
 | `DBGETJSON NAC_OBJECTS_LIST/NAC_ROUTING_TABLE/NAC_TAGMAP` | Exact root help and native JSON envelopes over a validated durable unit. The importer does not retain vendor `NACObjectList` definitions, so object and routing projections are explicitly empty and `database_json_nac_object_definitions` is false. TAGMAP emits the durable local network, supported application, group and level tags available in cmqttd's model. These reads perform no PCI I/O; see `rust/testdata/fixtures/native_cgate_local_admin.json` |
 | `DBADD`; `DBCOPY`; `DBNEW`; `DBTAGLIST`; `DBSET`; secondary-project `DBRENAMENET`/`DBRENAMENETSAFE` | Selected-project local database lifecycle grounded in `rust/testdata/fixtures/native_cgate_legacy_database.json`. DBADD creates durable typed objects before compulsory fields exist; OID DBGET reports native nulls and DBSET atomically materializes the object after Address and TagName arrive. DBCOPY assigns fresh OIDs throughout the subtree, clears Address and TagName throughout a same-project copy, and retains them for a cross-project copy. DBNEW atomically leaves the selected Installation/Project blank while cmqttd retains its configured interface as a non-durable runtime shell. DBTAGLIST, unsafe DBSET and both network-rename spellings retain their selected-project, atomic-persistence and corruption-repair contracts. These local commands never send PCI traffic. |
 | `DBCREATE`; `DBUPDATE`; `DBVERIFY` | Physical database lifecycle over the configured shared CNI. Every operation first uses generation-guarded `NET SYNC`; an incomplete, disconnected or stale refresh fails before database mutation. DBCREATE replaces the selected tag database with fresh network/unit OIDs and `[default]` compulsory names where the network supplies none. DBUPDATE accepts a network or unit and optional exact `UnitDelete`, preserves existing OIDs and database names, updates physical identity, and removes absent database units only when requested. DBVERIFY compares database and physical presence plus nonblank type, firmware and serial identity, returning ordered 345 Difference rows and a counted final 408 or 200 when equal. Successful mutations commit atomically and survive restart. |
-| Here-document framing | TCP and TLS recognize native `COMMAND << DELIMITER` framing and apply the optional LOGIN gate. Lines are limited to 1 MiB and bodies to 16 MiB; an oversized body is drained to its delimiter and returns tagged 400 so the connection remains synchronized, while EOF before the delimiter returns tagged 400 and closes the connection. `CGL IMPORT` validates and atomically applies only the bounded CGL 1.1 label model above. `DBSETXML` remains explicit 502 because native typed-object replacement and its 301 OID receipt are not implemented merely by accepting framing |
+| `DBSETXML` | Scalar-field documents and complete `Unit`, `Level`, `NetVar`, `Group`, `Application`, and `Network`/`Interface` documents are supported. Complete forms validate the entire document, selected-project path/OID target, required fields, subtree OID uniqueness, and sibling address conflicts on a staged clone, then atomically replace the old subtree and return `301 OID=<submitted-root-oid>`. Modeled readback retains namespaced attributes/elements, comments, and processing instructions where feasible; state survives copy, rename, archive/restore, and restart with no PCI traffic. The configured live Network is immutable. A Network document containing `Unit` is rejected before mutation because the retained native replacement probes do not establish that mixed subtree contract; private Schneider XML/repository formats remain unsupported. |
+| Here-document framing | TCP and TLS recognize native `COMMAND << DELIMITER` framing and apply the optional LOGIN gate. Lines are limited to 1 MiB and bodies to 16 MiB; an oversized body is drained to its delimiter and returns tagged 400 so the connection remains synchronized, while EOF before the delimiter returns tagged 400 and closes the connection. `CGL IMPORT` validates and atomically applies only the bounded CGL 1.1 label model above. `DBSETXML` uses the same bounded transport for its scalar-field and evidenced complete typed-object scope. |
 | `DBNETWORKPATH` | Resolves Bridge `InterfaceAddress` topology using the standard far-side network-address convention, requires the corresponding source-network bridge unit, limits paths to six bridges, and returns native single-line `136` COMPACT or multi-line `137` network-OID results without PCI I/O. Returned OIDs resolve through `DBGET !oid/OID` in the selected project. The final `/p/<interface-unit>` component may differ from the child network; it validates as an interface address but does not replace the far-side route byte, and path discovery does not require that suffix unit to exist. Native zero-hop `START == END` requests return `408 ... No path found`; only a literal `COMPACT` selects compact output, while another mode token defaults to OID and later tokens are ignored |
 | `NET`, `NETWORK`, `TOPOLOGY`; `NET CREATE/DELETE/FLUSH/LIST/LOAD/RENAME/SAVE` | Exact retained build-2001 root/subcommand help and a runtime network-definition catalogue in the atomic `cmqttd-json` repository. CREATE accepts a bounded definition but never opens another interface. RENAME changes the runtime definition while preserving its immutable optional shared-PCI binding and does not rename the tag-database object. DELETE refuses an operating bound definition with native 468. FLUSH clears only volatile observations. SAVE/LOAD use internal `DB` or `FILE` snapshots; `FILE` is not a host path, and LOAD rejects duplicate names with the observed 408 before mutation. Their retained optional project token resolves the named project even when another project is selected; cross-project tests pin isolation and a missing project returns native 401. Mutations require LOGIN when armed and send no PCI traffic |
 | `NET LEARN`, `NETWORK LOCATE` | Exact retained learn-mode and locate-yourself SAL on the configured direct network. LEARN validates application, grades 1/2/128–131 and group, including its inner checksum. LOCATE supports UNIT, APP, GROUP and manufacturer/native-serial selectors with OFF/ON/byte modes on application 208. Each command enters the shared command lane, transmits once, waits for its correlated PCI confirmation, checks the active PCI generation, and never replays an uncertain outcome. A 200 proves interface delivery only. Unbound, foreign and routed definitions fail before I/O. Incoming frames fan out to C-Gate event clients and do not create MQTT state. See `rust/testdata/fixtures/native_cgate_net_lifecycle.json`, `rust/testdata/vectors/network_management.jsonl`, and `system_cgate_net_lifecycle.rs` |
@@ -178,14 +190,14 @@ versioned portable container.
 | `DEPLOY_QUEUE ADD/DELETE/DELETE_ALL/LIST/RETRY` | Dedicated runtime queue over PROGRAMMER task groups with retained help, 450/451/501/502 errors, TaskGroupSummary JSON field order/timestamps, ALL/PENDING/FAILED/COMPLETED bulk deletion, per-entry 120/501 rows, and all four event channels. ADD validates/registers an INIT task and acknowledges before asynchronous execution. The first instruction fault stops in ERROR and emits a structured cmqttd debug receipt before ended; this does not claim native diagnostic-string equivalence. RETRY admits only a queued STOPPED/ERROR task, refreshes the reinitialized timestamps/countdown and deliberately re-executes it. LIST, terminal DELETE and DELETE_ALL remain local. Queue state is never persisted. PP/DALI work uses the shared cmqttd CNI and preserves MQTT operation. See `rust/testdata/fixtures/native_cgate_deploy_queue.json` and `rust/cmqttd/tests/system_cgate_pp_programmer.rs` |
 | `PP WRITE_PATCH` | Physical execution from a strict operator-supplied `cmqttd.pp-patch/v1` manifest in the controlled FILE namespace. The retained unit/hex-version/optional-SIMULATE grammar selects by exact saved unit type, native case-sensitive lexical firmware range, optional catalogue and target patch version; cmqttd deliberately rejects a catalogue-constrained selector when saved catalogue metadata is absent. Blocks are 1–12 bytes, non-overlapping, wholly inside 114–241 or 247–254, for an effective maximum of 136 bytes. The patch-version parameter is native F2 (`0xF2`); target `FF` is reserved and may only be explicitly admitted as a current version for manual interrupted-write recovery. Before mutation cmqttd requires exactly one live type and firmware reply and checks the current patch-version byte. One programming lane then runs native 0x70 disable (`85:ffff`), temporary F2 version (`86:ff`), ordinary block STOREs with tag `73` and F7 STOREs with the returned unlock challenge, immediate readback, a distinct full verification pass, target F2 version, 0x70 enable (`85:9d40`) and final version readback. Already-target recovery is read-only when blocks/control match or repairs only enable when needed. A 200 reports full-pipeline, repaired-enable-only, or verified-read-only disposition. SIMULATE exposes a SHA-256; optional `EXPECT_SHA256=<64hex>` binds physical execution. Failed writes are never automatically retried and require reconnect. Proprietary Schneider `patchset.zip` ingestion remains unsupported and is reported by capabilities |
 | `PP RESET_TO_DEFAULTS` | Replaces one owned loaded session with exactly the `DefaultValue` fields in its parsed unit specification. The result remains staged until an explicit save; missing or malformed specifications return 408 unchanged, with no PCI access |
-| Physical PP LOAD and subsequent GET/INFO | Identifies the live unit, selects its privately installed decoded schema, recalls standard CAL parameters, explicit pages for `paged`/`ncc`, OEM memory, and GOC parameter-`0xFF` memory through the shared PCI, decodes int/long/bit/string/sixbit arrays and `ArrayMap`, applies tag selection, and commits the session only after every read succeeds |
-| Physical PP SAVE/SAVE_TO_SOURCE | Writes only dirty, tag-selected `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and `goc2` parameters with `none`/`checksum`/supported `lock` protection. Page-aware writes split at 256-byte boundaries; OEM methods use the selector/data path; GIU halts and resumes the unit; DALI observes the native settling interval; GOC methods use parameter `0xFF`, a big-endian address prefix, and their native block limits. The service validates the complete plan and live type/firmware first, preserves shared bits through pre-read/encode, requires source/parameter-matched acknowledgements, and reads every stored range back before success. Specifications containing the vendor `ncc` method are classified as C-Bus 3; after a changed save, the service runs native group-0 operation-4 EXECUTE/POLL until the NVM commit succeeds |
-| ON/OFF/RAMP/TERMINATERAMP and lighting variants | Actual shared PCI, negative confirmations return errors; successful delivery is distinct from observed physical brightness |
-| `DO` lighting methods, direct/bridged read-only `SYNC`, `UNRAVEL`, and KEYGL5 `FactoryDefault` | Lighting and synchronization aliases use their physical backends. Routed SYNC uses the same strict Reply Network correlation as `NET SYNC`. UNRAVEL uses the guarded direct-network planner described above and returns native `202 Done: object` framing. FactoryDefault sends the captured OEM control once, requires PCI confirmation plus the source-correlated unit ACK, clears stale observed-label traffic, and returns `202 Done: object` |
+| Physical PP LOAD and subsequent GET/INFO | Identifies the live unit, selects its privately installed decoded schema, recalls standard CAL parameters, explicit pages for `paged`/`ncc`, OEM memory, and GOC parameter-`0xFF` memory through the shared PCI, decodes int/long/bit/string/sixbit arrays and `ArrayMap`, applies tag selection, and commits the session only after every read succeeds. On a resolved one-to-six-bridge target, LOAD is limited to schema `direct` parameters backed by standard CAL RECALL. Every identity and parameter reply must match the exact Reply Network, unit, parameter and total count, and only the owned target-network session is updated on the captured PCI generation |
+| Physical PP SAVE/SAVE_TO_SOURCE | Direct-network behavior writes dirty, tag-selected `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and `goc2` parameters with `none`/`checksum`/supported `lock` protection. A resolved one-to-six-bridge target admits only standard-CAL `direct` parameters with `none` or `checksum` protection. Its pre-read, exact-once tagged STORE acknowledgement, and complete readback must match Reply Network, unit, parameter, tag, and count; an incomplete exchange is never replayed and the owned session commits only on the captured PCI generation. Routed `lock`, `paged`, `ncc`, `edlt`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, `goc2`, and Save-to-NVM refuse before physical identity or write I/O. Direct page-aware writes, OEM/GOC methods, unlocks, and C-Bus 3 NVM commit retain their existing behavior |
+| ON/OFF/RAMP/TERMINATERAMP and lighting variants | Actual shared PCI for the configured network and for a topology-resolved route through one to six bridges. Routed Lighting composes the retained standard SAL with the evidenced PPM source-route envelope, sends it exactly once, and accepts only its allocated PCI confirmation. It invalidates only the target network's older level on the captured PCI generation and deliberately issues no routed status request; confirmation is distinct from observed physical brightness or controller action |
+| `DO` lighting methods, direct/bridged read-only `SYNC`, `UNRAVEL`, and KEYGL5 `FactoryDefault` | Lighting aliases use the same direct or one-to-six-bridge exact-once physical backend and retain native `202 Done: object` framing. Routed SYNC uses the same strict Reply Network correlation as `NET SYNC`. UNRAVEL uses the guarded direct-network planner described above. FactoryDefault sends the captured OEM control once, requires PCI confirmation plus the source-correlated unit ACK, clears stale observed-label traffic, and returns `202 Done: object` |
 | GET group level | Real observed bus levels; unobserved levels return 408, never invented zero |
 | SCENE RECORD/PLAY | RECORD atomically persists the configured network's observed lighting levels under the named set/scene. PLAY sends a confirmed zero-time ramp for every stored level, invalidates the old cache under the sending PCI generation, and schedules physical status readback. Unknown scenes retain the native 401 response |
-| TRIGGER EVENT/INDICATORKILL | Actual Trigger Control SAL on application 202; incoming events update the live service cache and event stream. A confirmed command commits its state/event only while its sending PCI generation remains current |
-| ENABLE SET/REMOVE and GET | SET sends actual Enable Control SAL on application 203 and commits its state/event only while its sending PCI generation remains current; REMOVE follows C-Gate's server-side saved-value behavior; incoming values update the live cache |
+| TRIGGER EVENT/INDICATORKILL | Actual Trigger Control SAL on application 202 for the configured network or a topology-resolved one-to-six-bridge target. Routed commands are sent once, accept only the exact PCI confirmation, and commit the selector/event to only the target network on the captured generation. No application-level reply or remote device state is claimed |
+| ENABLE SET/REMOVE and GET | SET sends actual Enable Control SAL on application 203 directly or over a topology-resolved one-to-six-bridge route. Routed SET is exact-once, accepts only the exact PCI confirmation, and commits the value/event to only the target network on the captured generation. REMOVE follows C-Gate's local saved-value behavior and performs no routed physical operation; incoming values update the live cache |
 | CLOCK DATE/TIME/REQUEST_REFRESH | Actual Clock and Timekeeping SAL on application 223, including `SYSTEM` date/time resolution and observed-value queries. Confirmed date/time echoes are generation-bound |
 | TEMPERATURE BROADCAST | Actual Temperature Broadcast SAL on application 25 with decimal or `$19` addressing, native one-decimal input, range checks, quarter-degree wire conversion, incoming event delivery and generation-bound live caching |
 | `AIRCON` and all 11 subcommands | The bare and `?` forms return the captured native 101 help envelope. `REFRESH`, ward on/off, zone HVAC/humidity mode, and all HVAC/humidity upper/lower/setback limit commands encode the C-Gate 3.4 application-172 SAL exactly and wait for the correlated PCI confirmation. The parser preserves native ward, zone, mode, boolean, type, level, limit and auxiliary-level bounds, including duplicate/empty zone tokens and the native saturating plant type; invalid input performs no I/O. With the optional LOGIN gate armed, the ten state-changing subcommands require authentication and `REFRESH` stays open. Incoming schedule, plant status/level and zone measurement SALs fan out to event clients without completing a pending command; no MQTT HVAC state contract is claimed. A 200 proves only confirmed broadcast delivery to the PCI, not HVAC-controller acceptance or resulting state. Only the configured direct network is supported; bridged AIRCON routing remains unavailable. See `rust/testdata/fixtures/native_cgate_aircon.json` and `rust/testdata/vectors/aircon.jsonl` |
@@ -197,7 +209,7 @@ versioned portable container.
 | `EREPORT MESSAGE` | Accepts only direct application 206 and validates native message type or `RECENT`/`ERROR_REPORT`/`SEVERE`/`ACK`/`CLEAR` aliases, category 0..1023, three flags expressed as `y`/`n` or `1`/`0`, severity 0..7, unit 0..255, and optional data bytes 0..255 before I/O. The exact six-byte Error Reporting SAL is sent once and requires correlated PCI confirmation; LOGIN is required when armed. Incoming reports retain all fields and source unit on C-Gate event fanout. No MQTT Error Reporting state is invented, and bridged routing remains unavailable. See `rust/testdata/fixtures/native_cgate_remaining_applications.json`, `rust/testdata/vectors/ereport.jsonl`, and `system_cgate_remaining_applications.rs` |
 | `MEDIATRANSPORT` and all 21 subcommands | The bare and `?` forms return the captured native 101 help envelope. Playback, navigation, source-power, status/enumeration, total and category/selection/track name messages encode exact C-Gate 3.4 application-192 SAL and send exactly once and wait for correlated PCI confirmation. Native decimal, `0b`, `0x`, and `$` signed-integer grammar, range and reserved-operation checks, WNI values, enumeration size, quoted-name escapes, optional 11-byte text, and the captured non-ASCII-to-`FF` outbound quirk are checked before I/O. With LOGIN armed, `STATUS_REQUEST` and `ENUMERATE` stay open while controls and report injection require authentication. Incoming commands/reports preserve raw name bytes and fan out to event clients; no MQTT Media Transport state contract is claimed. Capabilities expose the `exactly-once-no-replay` policy. A 200 proves confirmed broadcast delivery on the active PCI generation, not player acceptance or state. Bridged routing remains unavailable. See `rust/testdata/fixtures/native_cgate_mediatransport.json` and `rust/testdata/vectors/mediatransport.jsonl` |
 | `TELEPHONY` and all 5 subcommands | The bare and `?` forms return the exact seven-line native help envelope. `CLEAR_DIVERSION`, `DIVERT`, `ISOLATE_SECONDARY_OUTLET`, `RECALL_LAST_NUMBER_REQUEST`, and `REJECT_INCOMING_CALL` encode exact C-Gate 3.4 application-224 SAL and wait for a correlated positive confirmation on the active PCI generation. Native arity, application, mode/direction and 1–16 Java-UTF-16-code-unit diversion bounds run before I/O; diversion is one literal whitespace token, with no quote or backslash decoding. The captured native malformed non-ASCII conversion is retained. With LOGIN armed, recall stays open and the four mutation forms require authentication. Incoming commands and native line/call/ringing/number/Internet-request events fan out without completing a pending confirmation. There is no MQTT Telephony state contract or durable call/diversion model. A 200 proves interface delivery only, not telephone-unit acceptance. Routed writes remain unavailable. See `rust/testdata/fixtures/native_cgate_telephony.json`, `rust/testdata/vectors/telephony.jsonl`, and `system_cgate_telephony.rs` |
-| `DALI` | All 128 maintained paths dispatch: 103 physical leaves and 25 local/help paths. Physical coverage is 48 core, 14 emergency, and 41 specialized gateway, error-reporting, measurement, or session leaves; the six group roots and 19 catalogue/session/gateway-view leaves are local. Core commands retain exact extended-CAL EXEC/POLL/CANCEL and bounded AUTO behavior with source-correlated replies. Specialized memory uses the shared PCI programming lane, page-bounded stores, readback verification, active-generation commits, and no replay after uncertain writes. Catalogue data lives under `%PROJECT%/dali_catalogue/devices/*.json` in the durable virtual FILE repository. Sessions are volatile except explicit gateway-keyed SAVE/LOAD snapshots in cmqttd-json. `EXT_ONLY` extraction/deployment is physical; typed-device session plans refuse before I/O until their complete model codec is evidenced. Mutations require LOGIN when armed. No MQTT DALI state is invented. See [the DALI guide](cgate-dali.md), `rust/testdata/fixtures/native_cgate_dali_help.json`, `rust/testdata/fixtures/native_cgate_dali_specialized.json`, `rust/testdata/vectors/dali.jsonl`, `system_cgate_dali.rs`, and `system_cgate_dali_specialized.rs` |
+| `DALI` | All 128 maintained paths dispatch: 103 physical leaves and 25 local/help paths. Physical coverage is 48 core, 14 emergency, and 41 specialized gateway, error-reporting, measurement, or session leaves; the six group roots and 19 catalogue/session/gateway-view leaves are local. Core commands retain exact extended-CAL EXEC/POLL/CANCEL and bounded AUTO behavior with source-correlated replies. Specialized memory uses the shared PCI programming lane, page-bounded stores, readback verification, active-generation commits, and no replay after uncertain writes. Catalogue data lives under `%PROJECT%/dali_catalogue/devices/*.json` in the durable virtual FILE repository. Sessions are volatile except explicit gateway-keyed SAVE/LOAD snapshots in cmqttd-json. `EXT_ONLY` extraction/deployment is physical. All four read-only typed extraction selectors are physical: `DALI_ONLY`, `FULL`, `REFRESH_STATUS_INFO`, and `RETRIEVE_RECONCILE`. They execute the exact retained plan, decode line masks, types, common/scene/status/emergency/LED/GTIN/serial fields and the `FULL` extended map, and atomically commit one snapshot on one PCI generation. `COND_QUICK`, `COND_EXTENDED`, and `RESCAN_FAULT` execute only their source-pinned non-remediating prefix, discard staged masks, and return 502 before `ADDRESS_UNKNOWN`; operation 2 has no allocation target/range bytes and its mask-only reply has no device-to-address receipt. Typed `DALI_ONLY`/`FULL` deployment validates its session, selection, range and gateway locally, then fails before I/O because the native ordered writes, model-field ownership, per-field readback receipts and `FULL` typed/extended atomic boundary are not retained. Mutations require LOGIN when armed. No MQTT DALI state is invented. See [the DALI guide](cgate-dali.md), `rust/testdata/fixtures/native_cgate_dali_help.json`, `rust/testdata/fixtures/native_cgate_dali_specialized.json`, `rust/testdata/vectors/dali.jsonl`, `system_cgate_dali.rs`, and `system_cgate_dali_specialized.rs` |
 | LIGHTING/TRIGGER/ENABLE LABEL and UNICODELABEL | Actual checksummed dynamic-label SAL on the selected application. Supports raw/text payloads, built-in icon references, language selection, native segmented UTF-8, and start/header/chunk/commit dynamic bitmap uploads. Every fragment requires positive PCI delivery confirmation; Enable Unicode and invalid native bounds fail before transmission |
 | Observed dynamic-label cache | Retains one network-wide ring of up to 4,096 exact incoming and confirmed outgoing label SAL payloads since the current connection, including source/direction and order. Outgoing append and standard/eDLT/FactoryDefault invalidation are committed only for the sending PCI generation, so an old completion cannot cross a reconnect boundary. `CMQTT LABELS` exposes the bounded observations with network scope and an unverified recipient; a unit-shaped request is a compatibility alias for the same ring. The Toolkit CLI assembles standard text/icons, Unicode, language selection and dynamic bitmaps while reporting incomplete transactions. This is explicitly not eDLT device-cache readback |
 | LABEL CLEAR | Sends native standard point-to-point label-cache controls for all keys (`A3 FF 00 27`) or one key 1–8 (`A4 FF 00 66 KEY`) to unit 0–255. It uses one generation-safe exact-once send and waits only for the correlated PCI confirmation; there is no unit ACK or device readback. Native C-Gate treats either confirmation outcome as completion, so success reports command acceptance without claiming cache erasure or persistence |
@@ -206,9 +218,9 @@ versioned portable container.
 | `DO //PROJECT/NETWORK/p/UNIT FactoryDefault` | Sends native `A4 FF 43 B2 B2` exactly once for a database-classified KEYGL5 and reports the 202 receipt separately from post-reset defaults, reboot, address retention and persistence |
 | NET PINGU and GET network Units | Actual direct or one-to-six-bridge installation MMI using cmqttd's negotiated PCI checksum mode. Routed requests use native PPM source routing and exact-once transmission; only the matching Reply Network can contribute blocks. Both forms require positive confirmation and contiguous coverage of all addresses 0–255, replace only the addressed network's volatile cache, and report native sorted `302-Units=` output |
 | NET PROJECT_IDENTIFY | Runs the native interface-rooted read-only discovery on cmqttd's configured shared PCI/CNI: one complete installation MMI, all nonzero states counted, address zero skipped, and level-zero IDENTIFY1/IDENTIFY2/parameter-33 discovery followed by a source-correlated six-byte parameter-35 recall from the first readable unit. It returns native `305 Project=NAME UnitCount=N` (or `Project=null`) without changing a project or physical cache. The interface type is case-insensitive and its address must exactly match the imported shared interface; another valid interface returns 502 instead of opening a second connection |
-| NET SYNC and cached unit getters | Uses the configured direct-interface hint or BASIC discovery, then performs complete direct or one-to-six-bridge MMI and confirmed IDENTIFY1/2 plus bounded IDENTIFY4 for every present address. Routed replies must match the first bridge, remaining Reply Network and replying unit; other routes and direct replies are ignored. The addressed network cache is replaced atomically and its sync/duplicate events carry that network address. Direct KEYGL5 metadata retains the configured/fresh type, non-error MMI and unique known-serial guards before the captured OEM `0xFB`, applications and `0xFA` sequence. Those source-only OEM reads are not route-proven and therefore remain disabled for bridged networks. Cached `GET` issues no bus I/O and `Version` remains IDENTIFY2. Reconnect or transport loss clears every network's volatile presence/level cache, invalidates an in-flight snapshot before commit, returns 408, and emits no false sync-ok |
-| NET SYNCNEW | Five complete MMI passes for direct networks and for the general form on one-to-six-bridge networks. General routed discovery accepts only route-matched IDENTIFY1/2/4 replies, stages every result, then updates only the addressed network's volatile cache after a shared-PCI generation check; reconnect-stale results and events are discarded. Direct targeted mode rejects an address already in the model, runs the native three duplicate challenges, and reads IDENTIFY1/2/4. Routed targeted mode returns 502 before PCI I/O because its duplicate-challenge completion is not evidenced. All admitted forms retain native progress/result codes without creating database units |
-| NET SET_PROJECT_IDENTIFY | Uppercases and packs the 1–8 character native six-bit value, obtains a fresh complete MMI, and selects the first unit in non-error present state one or two that supplies valid IDENTIFY1 data plus exactly one valid known IDENTIFY4 serial in a complete quiet window. It stores the six bytes at parameter 35 and requires an exact RECALL before returning 200. MMI state three, multiple serial replies, unknown serials, and malformed identities are skipped; a failed or uncertain STORE/readback invalidates any older cached `ProjectName`. The verified result or same-generation invalidation is committed only while the captured shared PCI is still current and connected. A reconnect returns 408, and the old operation cannot clear or repopulate the replacement generation's cache. The database is not changed |
+| NET SYNC and cached unit getters | Uses the configured direct-interface hint or BASIC discovery, then performs complete direct or one-to-six-bridge MMI and confirmed IDENTIFY1/2 plus bounded IDENTIFY4 for every present address. Routed replies must match the first bridge, remaining Reply Network and replying unit; other routes and direct replies are ignored. The addressed network cache is replaced atomically and its sync/duplicate events carry that network address. Direct KEYGL5 metadata retains the configured/fresh type, non-error MMI and unique known-serial guards before the captured OEM `0xFB`, applications and `0xFA` sequence. The first failed optional enrichment stops that sequence without replay and names its unit, field and cause. A definitive failure that leaves the connection healthy adds `300-MetadataWarning=unit <address> <field>: <cause>` to the successful identity-sync response. An incomplete exchange retires the entire PCI generation, returns a field-specific 408 and discards the staged snapshot. Those source-only OEM reads are not route-proven and therefore remain disabled for bridged networks. Cached `GET` issues no bus I/O and `Version` remains IDENTIFY2. Reconnect or transport loss clears every network's volatile presence/level cache, invalidates an in-flight snapshot before commit, returns 408, and emits no false sync-ok |
+| NET SYNCNEW | Five complete MMI passes for direct and one-to-six-bridge networks. General routed discovery accepts only route-matched IDENTIFY1/2/4 replies. Direct and routed targeted modes reject an address already in the model, run the native three duplicate challenges, then read IDENTIFY1/2/4. A routed challenge accepts only the selected Reply Network, unit and parameter, requires positive PCI confirmation plus the bounded quiet window, and is never replayed; an incomplete exchange retires that PCI generation. Every result is staged, then only the addressed network's volatile cache and events are updated after a shared-PCI generation check. All forms retain native progress/result codes without creating database units. The routed target path is pinned by classfile, SIUG, exact scripted-wire and real-daemon evidence; no native routed-target completion capture or live physical-bridge acceptance is claimed |
+| NET SET_PROJECT_IDENTIFY | Uppercases and packs the 1–8 character native six-bit value, obtains a fresh complete MMI on the resolved direct or one-to-six-bridge network, and selects the first unit in non-error present state one or two that supplies route-correlated IDENTIFY1 data plus exactly one valid known IDENTIFY4 serial in a complete quiet window. It sends parameter-35 STORE once with fixed tag `0x46`, accepts only the exact unit/parameter/tag acknowledgement from the selected Reply Network, and requires exact direct or routed RECALL readback before returning 200. A direct reply or neighbouring route cannot complete a bridged operation. MMI state three, multiple serial replies, unknown serials, and malformed identities are skipped; a failed or uncertain STORE/readback invalidates only that target network's older cached `ProjectName`. The verified result or same-generation invalidation is committed only while the captured shared PCI generation is still current. An uncertain exchange retires that generation without replay. The database is not changed; no live physical-bridge or power-cycle acceptance is claimed |
 | NET CHECKUNIT | Active direct or one-to-six-bridge IDENTIFY4 collection through the native two-second quiet interval, with strict Reply Network correlation and native no-unit, single-unit, duplicate-unit and identity-error result forms; `*` expands from a fresh route-matched complete MMI |
 | NET CLOCKS | Reads physical IDENTIFY16 summaries for the synchronized inventory. Target counts and gateway recovery use decoded `ClockGenEnable` layouts, read-modify-write CAL stores and mandatory readback; native-style per-unit failures remain visible in `120` lines even with final status 200 |
 | `SET //PROJECT/NETWORK Retries 0` | Matches the owned native Toolkit-preparation exchange exactly: a ready network starts with `Retries=2`, the exact fully qualified zero form returns `200 OK: //PROJECT/NETWORK`, and subsequent `GET`/`SHOW` reads report zero. This setting is volatile and local: it sends no PCI command, emits no event, does not rewrite cmqttd's database, and resets to two after daemon restart or runtime clearing. Other non-`Address` scalar SET forms remain closed |
@@ -267,6 +279,14 @@ Reads are bounded, coalesced, source-correlated and serialized with MQTT traffic
 Unknown schemas, unsupported layouts, incomplete replies and changed or ended
 sessions fail without replacing the previously staged values.
 
+For a database-resolved route through one to six bridges, physical LOAD uses
+the same `direct` CAL RECALL body inside the established source-route wrapper.
+The response must carry the exact Reply Network, remote unit, parameter and
+total byte count. Only standard recall-backed `direct` schema parameters are
+admitted; page-aware and OEM/GOC methods return 502. A successful load records
+the routed source in the owned session and changes no direct- or target-network
+physical cache.
+
 Physical SAVE uses captured tagged direct STORE for standard parameters, native
 page selection plus tagged STORE for `paged`/`ncc`, and the OEM `0x41` address
 selector plus tagged `0x42` STORE for eDLT/GIU/SGIU/DALI memory. GIU is halted
@@ -290,6 +310,12 @@ later transaction. MQTT remains active through the shared packet fanout. An
 unchanged or tag-filtered save issues no NVM command. A
 transport failure can still leave earlier independently acknowledged ranges
 written, so multi-range recovery and power-loss acceptance remain outstanding.
+Routed SAVE reuses only the standard tagged STORE subset: `direct` parameters
+with `none` or `checksum` protection. Its pre-read and readback are routed
+RECALLs, and every ACK additionally matches the STORE tag. Each STORE is sent
+once; a missing or malformed reply faults the programming lane until reconnect.
+Routed lock, page-aware, OEM/GOC and Save-to-NVM operations are rejected before
+physical identity or write I/O. `CMQTT CAPABILITIES` publishes this exact scope.
 
 Dynamic-label commands use the same syntax produced by `cbus-toolkit` for
 lighting applications 48–95, Trigger Control 202, and Enable Control 203.
@@ -374,18 +400,24 @@ The Toolkit typed wrapper applies the same checks, including Unicode folds
 whose uppercase result enters the six-bit repertoire, and emits mK quoting for
 spaces, quotes, and backslashes. cmqttd pads the decoded value to eight
 characters and stores the resulting six bytes in unit parameter 35 using
-C-Gate's fixed transaction tag `0x46`. Native C-Gate accepts the
-matching unit ACK; cmqttd then adds a direct RECALL as a deliberate verification
-step. Native C-Gate selects the first present unit it can identify; cmqttd also
+C-Gate's fixed transaction tag `0x46`. The resolved network may be direct or
+one through six bridges. Native C-Gate accepts the matching unit ACK; cmqttd
+then adds a direct or Reply-Network-correlated RECALL as a deliberate
+verification step. A routed ACK or readback must match the first bridge, every
+remaining hop, the selected unit, parameter 35, and fixed transaction tag; a
+direct or neighbouring-route reply is ignored. Native C-Gate selects the first
+present unit it can identify; cmqttd also
 requires non-error present MMI state one or two and exactly one valid known
-IDENTIFY4 reply over the complete bounded quiet window before STORE. Success updates only the volatile
-physical snapshot's `ProjectName` field by decoding the verified bytes,
+IDENTIFY4 reply over the complete bounded quiet window before STORE. Success updates only the
+target network's volatile physical snapshot `ProjectName` field by decoding the verified bytes,
 including the native `?`/space alias, with eight-character padding. A failed
 or uncertain STORE/readback removes an older cached `ProjectName` so GET cannot
-serve stale physical state. Both the verified cache update and failed-write
-invalidation are bound to the captured shared PCI generation, pointer, and
-connected state. A reconnect during the operation returns 408; the old
-operation cannot clear or repopulate the replacement generation's cache. It
+serve stale physical state. A verified cache update requires the captured PCI
+generation, pointer, and connected state. Failed-write invalidation may run
+after that same client retires itself, but only while its pointer and generation
+are still current; it cannot clear a replacement generation's cache. A
+reconnect during the operation returns 408, and the old operation cannot
+repopulate the replacement generation's cache. It
 does not rename, select, create, or persist a project. The separate
 `NET PROJECT_IDENTIFY TYPE@ADDRESS` command is read-only
 and interface-rooted, as in C-Gate 3.4: it runs one MMI, counts every nonzero
@@ -395,8 +427,12 @@ returns a single native `305 Project=NAME UnitCount=N` response and does not
 populate cmqttd's project cache. cmqttd accepts only the imported interface
 already used by MQTT; a different valid interface fails closed with 502 rather
 than creating a second transport. A valid SET target for another loaded
-network likewise fails closed instead of reporting a local success. The exact
-C-Gate 3.4 grammar, bytecode path and successful scripted wire exchange are
+network without a resolved bridge path likewise fails closed instead of
+reporting a local success. The selected native C-Gate class path, retained
+routed matcher evidence, exact one/six-bridge vectors, and acceptance boundary
+are recorded in
+[`native_cgate_routed_project_identity.json`](../rust/testdata/fixtures/native_cgate_routed_project_identity.json).
+The exact direct C-Gate 3.4 grammar, bytecode path and successful scripted wire exchange are
 retained in the [native PROJECT_IDENTIFY acceptance](../toolkit-cli/research/experiments/2026-09-26/cgate-project-identify-native-acceptance.json).
 
 ## Live label reads
@@ -624,12 +660,19 @@ non-inventoried service commands. Full replacement still requires:
 - DALI has no whole-path gap: all 60 specialized leaves now dispatch as 41
   physical and 19 local/session operations, in addition to the 62 physical
   core/emergency leaves and six help roots. The remaining boundary is inside
-  `SESSION EXTRACT` and `SESSION DEPLOY`: `EXT_ONLY` is implemented, while the
-  typed-device plans `DALI_ONLY`, `FULL`, `COND_QUICK`, `COND_EXTENDED`,
-  `RESCAN_FAULT`, `REFRESH_STATUS_INFO`, and `RETRIEVE_RECONCILE` refuse before
-  I/O until their complete native model codec is evidenced. Physical success
-  proves a correlated gateway/programming exchange, not downstream DALI-device
-  state or persistence. See [the DALI guide](cgate-dali.md).
+  `SESSION EXTRACT` and `SESSION DEPLOY`: `EXT_ONLY` is implemented for both,
+  and extraction implements every retained read-only typed plan:
+  `DALI_ONLY`, `FULL`, `REFRESH_STATUS_INFO`, and `RETRIEVE_RECONCILE`.
+  Extraction `COND_QUICK`, `COND_EXTENDED`, and `RESCAN_FAULT` run only their
+  retained non-remediating prefix, discard staged masks and return 502 before
+  `ADDRESS_UNKNOWN`; its no-payload request and mask-only response cannot prove
+  a device-to-address allocation. Deployment `DALI_ONLY` and `FULL` validate
+  the local session, target selection, range and gateway, then refuse before
+  I/O until their ordered writes, model-field ownership, per-field readback
+  receipts and combined typed/extended atomic boundary are retained. Physical
+  success proves a
+  correlated gateway/programming exchange, not downstream DALI-device state
+  or persistence. See [the DALI guide](cgate-dali.md).
 
 - Proprietary Schneider `patchset.zip` ingestion. The physical WRITE_PATCH
   protocol is implemented for the documented explicit manifest format, while
@@ -646,19 +689,25 @@ non-inventoried service commands. Full replacement still requires:
   carry the same confirmed-count evidence. Factory/special parameters clear
   silently without a write while tag-filtered parameters stay dirty for a later
   matching-tags SAVE; a bare 200 covers the tag-selected subset only.
-- Routed write/programming operations, general serial-address commissioning,
-  arbitrary second-interface commissioning, and the remaining commissioning state
-  transitions. The read-only interface-rooted `NET PROJECT_IDENTIFY` workflow
+- Remaining routed write/programming operations outside standard `direct` PP
+  LOAD, `none`/`checksum` PP SAVE, project-identity writes, and the standard
+  Lighting/Trigger/Enable SAL slice; general serial-address commissioning,
+  arbitrary second-interface commissioning; and the remaining commissioning
+  state transitions. The read-only interface-rooted `NET PROJECT_IDENTIFY` workflow
   is implemented for cmqttd's configured shared interface. The distinct physical
-  `NET SET_PROJECT_IDENTIFY` parameter-35 write is implemented with readback.
-  `NET SYNCNEW` is implemented for both direct forms and for general discovery
-  across one to six bridges: five merged installation MMI passes,
+  `NET SET_PROJECT_IDENTIFY` parameter-35 write is implemented for direct and
+  one-to-six-bridge networks with strict Reply Network correlation, one STORE,
+  verified readback, target-cache generation guards, and no replay after an
+  uncertain exchange.
+  `NET SYNCNEW` is implemented for both direct forms and for general or targeted
+  discovery across one to six bridges: five merged installation MMI passes,
   route-correlated IDENTIFY1/2/4, atomic target-network cache/event commit, and
-  native `120`/`303`/`408` response envelopes. The direct targeted form also
-  runs three exact CAL Unlock duplicate challenges. Routed targeted SYNCNEW
-  remains 502 before I/O because that challenge exchange has no retained
-  routed completion evidence. No admitted form adds a discovered unit to the
-  persistent project database.
+  native `120`/`303`/`408` response envelopes. Both targeted forms run three
+  exact CAL Unlock duplicate challenges. A routed challenge accepts only its
+  selected Reply Network, unit and parameter, requires positive confirmation
+  plus the bounded quiet window, and retires an incomplete generation without
+  replay. No admitted form adds a discovered unit to the persistent project
+  database.
   Direct-network `NET UNRAVEL`, arbitrary `NET UNRAVELUNIT` selections, and
   `DO ... UNRAVEL` use the complete-inventory safe planner described above.
   They split address 255 and larger duplicate sets into unique independently
@@ -666,12 +715,15 @@ non-inventoried service commands. Full replacement still requires:
   when the inventory or target plan is uncertain. Routed unravel remains outside
   this physical backend.
   Direct and one-to-six-bridge `NET PINGU`, `NET SYNC` identity population,
-  general `NET SYNCNEW`, `DO ... SYNC`, and duplicate-aware `NET CHECKUNIT`
-  are implemented with route-isolated caches. Bridged targeted SYNCNEW, OEM
-  eDLT metadata, readdressing, PP programming, clocks, labels and bus-control
-  mutations remain fail-closed.
+  general and targeted `NET SYNCNEW`, `DO ... SYNC`, and duplicate-aware
+  `NET CHECKUNIT` are implemented with route-isolated caches. Bridged OEM eDLT
+  metadata, readdressing, clocks, labels, named scenes and application families
+  other than standard Lighting (applications 48–95), Trigger (202), and Enable
+  SET (203) remain fail-closed before I/O. Routed standard application commands
+  use one PPM/SAL frame and exact PCI confirmation only; no Reply Network SAL,
+  device acceptance, controller state, or status-readback contract is claimed.
   Guarded direct-network single-unit physical readdressing is implemented.
-  `DO` lighting methods use the physical lighting backend, and `DO ... UNRAVEL`
+  `DO` lighting methods use the direct or routed physical lighting backend, and `DO ... UNRAVEL`
   uses the same generation-bound direct-network planner as NET.
   Direct-network clock inspection, target-count changes and gateway recovery are
   implemented for units whose decoded schema exposes a supported direct
@@ -692,7 +744,7 @@ non-inventoried service commands. Full replacement still requires:
   device acceptance and state readback remain unverified. Short Message SEND
   is a deliberate coherent repair of the retained native malformed encoder.
 - Schneider repository/archive formats, full vendor CGL metadata/controller
-  semantics, DBSETXML typed-object replacement, and exact native configuration,
+  semantics, DBSETXML Network documents containing Unit children, and exact native configuration,
   access, TLS, firmware, and deployment semantics. `REPOSITORY USE 1`,
   `PROJECT REPAIR`, all five portable TRANSFORM leaves, internal project
   snapshots, OID-preserving secondary-project copy/delete, the `cmqttd-json`
@@ -700,14 +752,18 @@ non-inventoried service commands. Full replacement still requires:
   TRANSFORM use a durable controlled namespace and the versioned
   `cmqttd-portable-project-v14` SQLite container; they deliberately reject
   arbitrary host paths and private Schneider schemas. CGL 1.1 import/export is
-  limited to the modeled label graph over known routes; DBSETXML remains a
-  selector-specific explicit 502 and no portable path is presented as general
-  vendor-file interoperability.
-  C-Gate TLS is transport-only: no TLS client authentication is performed and
-  no client certificates are requested. Physical `ACCESS_CONTROL CLOSE/LOCK`
-  is implemented for direct application 213, while TLS identities are not
-  mapped into ACCESS rows and the exact native per-handler access-level matrix
-  remains incomplete.
+  limited to the modeled label graph over known routes. DBSETXML provides
+  scalar-field writes and complete Unit, Level, NetVar, Group, Application and
+  Network/Interface replacement with a submitted-root 301 OID receipt in the
+  atomic local database. Retained typed state stays isolated across project
+  copies and follows copy, rename, delete and internal archive/restore. A
+  Network document containing Unit and private vendor XML formats remain
+  unsupported, and this bounded path is not general vendor-file interoperability.
+  C-Gate TLS supports optional mandatory client-certificate verification with
+  a private CA bundle. Physical `ACCESS_CONTROL CLOSE/LOCK` is implemented for
+  direct application 213, while certificate identities are not mapped into
+  ACCESS rows and the exact native per-handler access-level matrix remains
+  incomplete.
 - Command-by-command native interoperability and physical acceptance beyond
   the supported device profiles. Full Toolkit workflow parity remains tracked
   separately in `toolkit-cli/docs/implementation-status.md`.
@@ -731,9 +787,14 @@ value behavior; both network-rename grammars; and the observed native
 duplicate/non-numeric corruption defects. Unit and embedded-service tests pin
 the repaired pre-mutation refusals, bridge/path remapping, atomic restart
 persistence, configured-project boundary, incomplete and recursive OID objects,
-physical refresh/replace/update/verify behavior, and the absence of PCI traffic
-for local database operations. `system_cgate_database_lifecycle.rs` additionally
-pins real-daemon restart behavior.
+complete typed Unit, Level, NetVar, Group, Application and Network/Interface
+DBSETXML replacement and its 301 OID receipt, opaque XML preservation where
+modeled, physical refresh/replace/update/verify
+behavior, and the absence of PCI traffic for local database operations.
+`toolkit-cli/tests/test_rust_cgate_interop.py` drives Unit and
+Application/Group/Level forms through the production Python client.
+`system_cgate_admin.rs` repeats the typed subtree exchange through the running
+daemon; `system_cgate_database_lifecycle.rs` additionally pins restart behavior.
 
 `native_cgate_deploy_queue.json` retains all five command help/grammar paths,
 TaskGroupSummary field order, delete-type behavior, exact event JSON, owned
@@ -917,10 +978,24 @@ native smart-mode Reply Network decoding, forward/reverse `DBNETWORKPATH`,
 wrong-route rejection, per-network cache replacement, reconnect invalidation,
 and remote sync event addresses. A real `cmqttd` process is driven through its
 TCP C-Gate endpoint against the scripted PCI and in-process broker: remote
-PINGU and general SYNCNEW complete while direct-network lighting reaches MQTT,
-wrong-route MMI and identity replies are ignored, routed targeted SYNCNEW and a
-remote mutation emit no PCI frame, and loss of the single plain-TCP CNI
-produces the expected clean daemon shutdown.
+PINGU plus general and targeted SYNCNEW complete while direct-network lighting
+reaches MQTT. Wrong-route MMI, duplicate and identity replies are ignored, and
+the three routed duplicate challenges are emitted exactly once. Routed
+`NET SET_PROJECT_IDENTIFY` then performs one route-correlated STORE plus
+readback while another direct-network lighting observation reaches MQTT.
+The same daemon then sends exact one-bridge Lighting, `DO` Lighting, Trigger
+EVENT/INDICATORKILL, and Enable SET PPM/SAL frames once each; direct-network
+MQTT observations continue through the shared reader, and Enable caches remain
+separate by network. Unsupported application and unresolved-network forms emit
+no PCI frame. Loss of the single plain-TCP CNI produces the expected clean
+daemon shutdown. The
+[routed project-identity evidence](../rust/testdata/fixtures/native_cgate_routed_project_identity.json)
+records the selected native class path, retained route matrices, exact vectors,
+and the remaining physical-bridge boundary. The
+[routed application-control evidence](../rust/testdata/fixtures/native_cgate_routed_application_control.json)
+records the retained direct SAL and routed-envelope composition, exact
+one/six-bridge vectors, PCI-confirmation-only receipt, target-network state
+scope, and unsupported readback boundary.
 The retained [native topology acceptance](../toolkit-cli/research/experiments/2026-09-26/cgate-bridged-topology-native-acceptance.json)
 pins C-Gate 3.4.0_2001's forward/reverse COMPACT and OID database paths on
 disposable loopback endpoints, including the exact 408 result when the
@@ -929,12 +1004,13 @@ conventional bridge unit is absent and continued success after the distinct
 [`DBNETWORKPATH` grammar acceptance](../toolkit-cli/research/experiments/2026-09-26/cgate-dbnetworkpath-grammar-native-acceptance.json)
 pins zero-hop failure, default and unknown-mode OID output, ignored trailing
 tokens and exact missing-address responses on the same selected runtime. The
-companion [bridged general SYNCNEW evidence](../toolkit-cli/research/experiments/2026-09-26/cgate-bridged-syncnew-readonly-evidence.json)
-pins C-Gate 3.4's generic five-pass `CBusBridgeNetwork` classfile path and a
-selected-version one-hop MMI request. Published SIUG routing plus scripted
-reply tests supply the strict Reply Network success behavior. No physical
-bridge, routed targeted SYNCNEW, persistent native unit creation, or
-routed-write acceptance is claimed.
+companion [bridged SYNCNEW evidence](../toolkit-cli/research/experiments/2026-09-26/cgate-bridged-syncnew-readonly-evidence.json)
+pins C-Gate 3.4's generic five-pass `CBusBridgeNetwork` classfile path, its
+three optional-address duplicate commands and a selected-version one-hop MMI
+request. Published SIUG routing plus scripted reply tests supply the strict
+Reply Network success behavior. No physical bridge, retained native routed
+target completion, persistent native unit creation, or routed-write acceptance
+is claimed.
 `cbus-cgate` service tests cover durable reload, corrupt-file preservation,
 rollback, session ownership, unsupported hardware rejection, fragmented command
 input during events, native-shaped command-session enumeration/tagging,
@@ -945,12 +1021,17 @@ schema layout decoding and input bounds. The retained owned C-Gate 3.4.0.2001
 pins those statuses, envelopes, aliases and closure semantics on disposable
 loopback listeners with no project or physical network configured.
 The decoded vendor catalogue is optionally audited through `CBUS_UNITSPEC_DIR`.
-The real cmqttd system test performs physical PP LOAD and SAVE against a scripted
-PCI, checks standard and OEM values, dirty/tag selection, read-modify-write
+The real cmqttd system tests perform physical PP LOAD and SAVE against a scripted
+PCI, check standard and OEM values, dirty/tag selection, read-modify-write
 encoding, acknowledgements, readback, and the exact C-Bus 3 NVM commit sequence,
 and verifies that C-Gate and MQTT retain one PCI connection while lighting events
-continue through the same transport. The same test pins `DO` lighting methods to
-their physical SAL packets, exercises `DO ... SYNC`, and verifies the guarded
+continue through the same transport. The routed regression additionally checks
+one-bridge direct LOAD/SAVE, neighbour-route rejection, exact-once STORE,
+readback, target-session scope, and MQTT continuity; transport and golden-vector
+tests pin the one- and six-bridge bounds. The same test pins direct and routed
+`DO` lighting methods to their physical SAL packets, the routed Lighting,
+Trigger, and Enable exact-once slice, shared-reader MQTT continuity and
+target-only cache behavior. It exercises `DO ... SYNC` and verifies the guarded
 `DO ... UNRAVEL` physical planner. It also pins source-correlated
 IDENTIFY16 clock summaries and their native `120` response fields while MQTT
 shares the PCI. A separate real-daemon test verifies guarded physical

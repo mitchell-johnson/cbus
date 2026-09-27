@@ -13,7 +13,7 @@ The Rust workspace also provides protocol tools, a PCI simulator, and a C-Gate c
 
 | Product | Compatibility measure | Current state |
 | --- | --- | --- |
-| `cbus-toolkit` | Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001 workflow parity | The strict ledger has 38 areas: **17 implemented, 19 in progress, and 2 pending**. `coverage` reports `complete: false` and `census_complete: false`; the categories are not a percentage of Toolkit functionality. |
+| `cbus-toolkit` | Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001 workflow parity | The strict ledger has 39 areas: **18 implemented, 19 in progress, and 2 pending**. `coverage` reports `complete: false` and `census_complete: false`; the categories are not a percentage of Toolkit functionality. |
 | `cmqttd --cgate-bind` | Primary routing for the maintained C-Gate command inventory | **431 paths: 230 physical, 199 local/session, 0 blanket fail-closed 502, and 2 native-obsolete.** All 429 non-obsolete primary paths are routed and `full_cgate_command_path_coverage` is `true`. `full_cgate_compatibility` remains `false` because selector-specific, vendor-format, device/topology/timing, and physical-acceptance boundaries remain. |
 | `cgate-mock` | In-memory C-Gate command surface | All **431** maintained paths parse and dispatch with deterministic protocol-shaped behavior. It does not provide persistent vendor storage, physical C-Bus effects, or device timing. |
 
@@ -99,14 +99,20 @@ contract](toolkit-cli/docs/cni-discovery.md).
 
 The CLI targets **C-Bus Toolkit 1.18.0.2754 and C-Gate 3.4.0.2001**, with full Toolkit functionality as the goal. Implemented workflows include offline project editing, native project management, supported unit programming and addressing, keypad presets, scenes, CGL exchange, and substantial eDLT configuration. Device and firmware support is documented per workflow.
 
-For the bounded KEYGL5 5.5.00 parent transaction, the CLI composes 14 admitted
-configurable widget panels—Measurement, Lighting, Enable, Fan, HVAC, Multi
-Level, Room Courtesy, Scene, Shutter, Time/Date, Timer and all three MRA
-models—and the activation, General, Display, Standby, Colours, Navigation,
-Quick Status, Page Control and distributed MRA-global operations. It validates
+For the bounded KEYGL5 5.5.00 parent transaction, the CLI composes 15 admitted
+widget operations—Measurement, Lighting, Enable, Fan, HVAC, Multi Level, Room
+Courtesy, Scene, Shutter, Time/Date, Timer, all three MRA models and Blank—and
+the activation, General, Display, Standby, Colours, Navigation,
+Quick Status, Page Control, distributed MRA-global, Applications and Corridor
+operations. Reset may be operation 1, where its accepted fresh widget/scene
+graph becomes the baseline for later controls. Applications, Corridor and
+Reset use a complete ordered cache; callers may supply it, or the automatic
+resolver can derive existing DBGETXML lists and exact Reset PP strings without
+projecting missing list objects.
+The automatic metadata resolver validates
 ordered editability, complete byte and shared MRA-bit
 ownership and application/group/dynamic-label dependencies before one retained
-save. The CLI can derive those application/group/scene-level/dynamic-variant/
+terminal save. The CLI can derive those application/group/scene-level/dynamic-variant/
 static-label facts from one exact native project snapshot and plan missing
 database metadata before the retained multi-edit.
 See the [automatic parent metadata contract](toolkit-cli/docs/edlt-parent-metadata.md)
@@ -118,11 +124,21 @@ it plans and can create a missing Trigger Control application, exact trigger
 groups, and exact action levels with a retained project backup, then records
 the separate PP and project-save boundaries. Interactive blank Add dialogs,
 image-dependent labels, and complete form binding remain outside that bounded
-workflow. Applications/Corridor cache dialogs, Blank/Reset, SceneManager
-parent binding, original full-form execution and
+workflow. The ordered parent transaction can consume one complete
+caller-supplied SceneManager cache, edit the retained or Reset-fresh scene
+graph, and share its final PP/CRC/save path with widget/settings operations.
+Its automatic project resolver also composes the exact SceneManager metadata
+contract: missing Trigger application, group and action objects join ordinary
+parent metadata creation before the same one PP staging/save path.
+The automatic resolver refuses only a combined
+Applications/Corridor/Reset-and-SceneManager plan, because projected list
+placement and the Reset-fresh metadata graph are not evidenced. Reset+Blank
+fresh-graph binding, registry display/sort preferences,
+complete original combined
+parent/SceneManager controls, original interactive Reset/multi-panel execution and
 physical acceptance remain outstanding.
 
-**Full Toolkit parity is not complete.** The feature ledger currently records 38 areas: 17 implemented, 19 in progress, and 2 pending. These categories are not a percentage of Toolkit functionality. Check the current machine-readable status with:
+**Full Toolkit parity is not complete.** The feature ledger currently records 39 areas: 18 implemented, 19 in progress, and 2 pending. These categories are not a percentage of Toolkit functionality. Check the current machine-readable status with:
 
 ```sh
 cbus-toolkit coverage --require-complete
@@ -467,10 +483,22 @@ catalogue, gateway-view, and commissioning-session operations. Physical work
 uses the shared PCI, source or programming-reply correlation, reconnect
 generation guards, and no replay after an outcome-uncertain write. Paged
 stores are read back before success; saved sessions use cmqttd's atomic JSON
-repository. `EXT_ONLY` session extraction/deployment is physical. The retained
-typed `DALI_ONLY`/`FULL` plans and related extraction selectors fail before I/O
-until their full model codec is evidenced, so `dali_full_compatibility` remains
-false. There is no invented DALI MQTT state contract. See the
+repository. `EXT_ONLY` session extraction/deployment is physical. All four
+source-pinned read-only typed extraction plans are implemented:
+`DALI_ONLY`, `FULL`, `REFRESH_STATUS_INFO`, and `RETRIEVE_RECONCILE`. They
+decode line discovery masks, device types, common parameters, all 16 scenes,
+status, emergency, LED, GTIN, serial, and (for `FULL`) the complete extended
+map, then commit one atomic snapshot only after the complete plan succeeds on
+one PCI generation. `COND_QUICK`, `COND_EXTENDED`, and `RESCAN_FAULT` run only
+their retained non-remediating prefix, discard the staged masks, and stop
+before `ADDRESS_UNKNOWN` short-address assignment because its no-payload
+request and mask-only reply cannot prove a device-to-address allocation. Typed
+`DALI_ONLY`/`FULL` deployment validates the local session, selection, range,
+and gateway, then remains fail-closed before I/O because its ordered typed
+writes, per-field readback receipts, and combined `FULL` atomic boundary are
+not retained. Therefore
+`dali_full_compatibility` remains false. There is no invented DALI MQTT state
+contract. See the
 [DALI command guide](docs/cgate-dali.md).
 
 Command discovery also matches the retained parent envelopes for fourteen
@@ -541,16 +569,30 @@ replay an uncertain command automatically. Direct-network UNRAVEL handles the
 whole safe inventory plan, including address 255 and larger duplicate sets,
 with exact-once moves and a generation-bound final proof.
 
-Compatibility boundaries remain explicit. Routed mutations and some
+Compatibility boundaries remain explicit. `NET SET_PROJECT_IDENTIFY` supports
+direct and one-to-six-bridge targets with strict Reply Network correlation, one
+fixed-tag STORE, routed readback, generation-bound target-cache updates, and no
+automatic replay after uncertainty. Physical PP LOAD also supports routed
+standard `direct` schema parameters, and PP SAVE/SAVE_TO_SOURCE supports routed
+`direct` parameters with `none` or `checksum` protection using exact
+Reply-Network/unit/parameter/tag correlation and verified readback. Routed
+unlock, page-aware, OEM/GOC, and Save-to-NVM methods still refuse before I/O.
+Lighting ON/OFF/RAMP/STOP, their bare and `DO` aliases, Trigger EVENT/
+INDICATORKILL, and Enable SET use topology-resolved one-to-six-bridge standard
+SAL frames. Each routed application command is sent once and waits only for
+its exact PCI confirmation; it is never replayed, does not invent remote
+status readback, and changes or invalidates only the target network's live
+cache on the captured PCI generation. Other routed mutations and some
 selector-specific DALI session plans refuse before I/O; the private Schneider
 `patchset.zip`, repository/archive formats, and SQLite/XML schemas are not
 reconstructed; cmqttd transforms only its versioned portable SQLite container
 inside the controlled FILE namespace. Its ACCESS policy is a safer digest-only
-local model, TLS has no client-certificate identity mapping, and the exact
+local model, TLS can require a private-CA client certificate but does not map
+its identity into ACCESS rows, and the exact
 native per-handler access-level matrix is unfinished. Device-family coverage,
 unusual bridges and adapters, electrical/timing behavior, power-loss recovery,
 and hardware acceptance beyond the evidenced profiles still require validation.
-The Toolkit CLI's separate 17/19/2 workflow ledger remains incomplete.
+The Toolkit CLI's separate 18/19/2 workflow ledger remains incomplete.
 See the [supported operations and remaining work](docs/cmqttd-cgate.md).
 
 The NET runtime catalogue is separate from the imported tag database, matching
@@ -564,6 +606,9 @@ without disconnecting cmqttd's shared PCI or MQTT. Direct `NET UNRAVEL`,
 `NET UNRAVELUNIT`, and `DO ... UNRAVEL` use a complete known-serial inventory,
 preflight every unique empty destination, send selected-serial writes once, and
 verify the final inventory; routed or uncertain plans fail before mutation.
+Routed `NET SET_PROJECT_IDENTIFY` is the bounded exception: selection, STORE,
+and RECALL remain on the resolved one-to-six-bridge path, and only the target
+network's volatile `ProjectName` can commit on the captured PCI generation.
 `TOPOLOGY EXPLORE` reuses the active endpoint (including socket/CNI aliases) or
 opens each other supported descriptor transiently, reports physical MMI/project
 identity results, and closes temporary transports before returning.

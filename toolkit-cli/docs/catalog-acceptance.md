@@ -46,6 +46,43 @@ The full results remain in `research/runtime/catalog-boundaries.json`; the durab
 
 The initial census also found 110 snapshot-import failures caused by the vendor name `EEPROM Checksum`. The fixed wrapper obtains its actual native schema, accepts only an aligned scalar 8-bit integer for this fallback, stages the declared byte with `PP SET_RAW_DATA`, and checks native readback. A real regression changes the byte from `0x00` to `0x72`, verifies adjacent bytes, resets it, and imports the snapshot to restore it. These cases now pass rather than being silently skipped.
 
+## Complete logical-layout acceptance
+
+The command-addressable memory corpus exercises 161 of the 163 distinct
+logical layouts with two changing values each. The remaining two layouts are
+the eight-element, single-bit `LabelFlavourLSB` and `LabelFlavourMSB` arrays in
+the vendor's internal `I_DLTF.xml` fragment. C-Gate loads that fragment as an
+include, but it cannot expose the fragment itself as a valid `PP GET`/`PP SET`
+session, so the ordinary token-addressable runner records those two rows as
+unexercised.
+
+A separate bounded runner now invokes the original C-Gate 3.4 encoder class
+directly with the same signed fragment. It runs under a network-denied macOS
+sandbox, starts no C-Gate service, and performs no physical I/O. Four trials
+use `0xA5` and `0x5A` baselines plus opposite alternating arrays. The original
+encoder's raw bytes and decoded values exactly match the production Python
+codec for both bit offsets. Combined with the primary corpus, this verifies
+**all 163 layouts with 326 changing-value trials**. The retained result is
+[`native-memory-fragment-acceptance.json`](native-memory-fragment-acceptance.json),
+and its offline replay is `tests/test_memory_fragment_acceptance.py`.
+
+Reproduce the fragment run with the pinned original application, its matching
+decrypted specification directory, and an explicit Java 11 toolchain:
+
+```sh
+.venv/bin/python research/verify_memory_fragments.py \
+  --vendor /path/to/cgate/app \
+  --spec-dir /path/to/decrypted/unitspec \
+  --java /path/to/java11/bin/java \
+  --javac /path/to/java11/bin/javac \
+  --output research/runtime/native-memory-fragment.json
+```
+
+This closes the host-side logical-layout gap. It does not make the two
+fragment parameters token-addressable, execute the original Toolkit GUI, or
+establish device transfer, checksum, protection, rendering, or physical
+behavior.
+
 Reproduce from `toolkit-cli` with an explicitly selected disposable C-Gate server:
 
 ```sh

@@ -120,10 +120,8 @@ pub struct Options {
     pub cgate_unitspec: Option<std::path::PathBuf>,
 
     /// PEM certificate chain enabling TLS on the embedded C-Gate
-    /// listener; requires --cgate-tls-key (TLS has no client auth —
-    /// command-layer auth is only the opt-in --cgate-auth-file LOGIN
-    /// gate; keep the bind on loopback unless TLS termination is
-    /// understood)
+    /// listener; requires --cgate-tls-key. Add --cgate-tls-client-ca
+    /// to require a client certificate signed by a private CA.
     #[arg(long, requires = "cgate_bind", requires = "cgate_tls_key")]
     pub cgate_tls_cert: Option<std::path::PathBuf>,
 
@@ -131,6 +129,17 @@ pub struct Options {
     /// C-Gate listener; requires --cgate-tls-cert
     #[arg(long, requires = "cgate_bind", requires = "cgate_tls_cert")]
     pub cgate_tls_key: Option<std::path::PathBuf>,
+
+    /// PEM CA bundle used to authenticate C-Gate TLS client certificates.
+    /// When configured, clients without a valid certificate are rejected
+    /// during the TLS handshake before a C-Gate greeting is sent.
+    #[arg(
+        long,
+        requires = "cgate_bind",
+        requires = "cgate_tls_cert",
+        requires = "cgate_tls_key"
+    )]
+    pub cgate_tls_client_ca: Option<std::path::PathBuf>,
 
     /// Optional file holding a high-entropy C-Gate LOGIN token (first
     /// line, single whitespace-free token); arms the session-local LOGIN gate over programming verbs.
@@ -165,6 +174,7 @@ mod tests {
         let opts = Options::try_parse_from(base_args()).expect("parse");
         assert!(opts.cgate_tls_cert.is_none());
         assert!(opts.cgate_tls_key.is_none());
+        assert!(opts.cgate_tls_client_ca.is_none());
         assert!(opts.cgate_auth_file.is_none());
     }
 
@@ -194,6 +204,29 @@ mod tests {
         let opts = Options::try_parse_from(args).expect("parse");
         assert!(opts.cgate_tls_cert.is_some());
         assert!(opts.cgate_tls_key.is_some());
+    }
+
+    #[test]
+    fn cgate_tls_client_ca_requires_server_pair_and_parses_with_it() {
+        let mut incomplete = base_args();
+        incomplete.push("--cgate-tls-client-ca");
+        incomplete.push("ca.pem");
+        assert!(Options::try_parse_from(incomplete).is_err());
+
+        let mut args = base_args();
+        args.extend([
+            "--cgate-tls-cert",
+            "cert.pem",
+            "--cgate-tls-key",
+            "key.pem",
+            "--cgate-tls-client-ca",
+            "ca.pem",
+        ]);
+        let opts = Options::try_parse_from(args).expect("parse mTLS listener");
+        assert_eq!(
+            opts.cgate_tls_client_ca.as_deref(),
+            Some(std::path::Path::new("ca.pem"))
+        );
     }
 
     fn base_args_without_bind() -> Vec<&'static str> {

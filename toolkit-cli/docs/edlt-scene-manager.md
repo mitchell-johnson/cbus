@@ -4,6 +4,15 @@
 
 The implemented scope is `model`. The original WinForms SceneManager was separately exercised for baseline binding, percent-cell synchronization and copy into an empty scene. Those three observations do not establish complete panel initialization or all UI interactions. This model editor itself performs no live I/O. One-shot capture and broadcast are provided by the separate [scene live coordinator](edlt-scene-live.md), and [retained scene trigger invocation](edlt-scene-trigger.md) composes the resolved group/action pair with native Trigger Control. Full control timing, confirmation dialogs and physical execution verification remain excluded. Static scene-name allocation is a database PP edit restricted to this exact KEYGL5 / 5055EDL / 5.5.00 profile. [Automatic scene metadata](edlt-scene-metadata.md) is a separate outer transaction: it can create the exact missing Trigger Control application/group/action chain before applying this pure model plan without turning the model API itself into an I/O operation.
 
+The [ordered parent transaction](edlt-parent-transaction.md) can consume one
+nonempty SceneManager operation array with a complete caller-supplied
+SceneManager cache. It uses the scene-only `prepare_composition` receipt, then
+runs the parent's single terminal normalization, retained full-capacity CRC
+rule, PP staging, readback and database-save path. Applications must precede
+that operation and Scene widgets must follow it. The automatic parent metadata
+path deliberately refuses this case; it does not merge the separate action
+object creation transaction.
+
 ```python
 from cbus_toolkit.edlt_scene_manager import EdltSceneManager, SceneManagerCache
 
@@ -104,6 +113,13 @@ retried.
 ```
 
 The abbreviated application cache above is illustrative, not a valid complete document. It uses `ApplicationCache`'s ordered group lists, explicit completeness and lifecycle presence/level facts. A missing required fact differs from an explicitly absent group, empty label list or missing action. Each dynamic label retains the observed DataStore string value, name and image-presence fields; image pixels and live label transports are outside this workflow. There are at most four labels per action and 8,192 action records. Cache facts are copied into immutable records and do not assert database existence or freshness. Updating cache contents after load is not currently an API operation. The automatic path supplies these records from one guarded project snapshot, but does not broaden the retained model into a complete WinForms binding claim.
+
+The ordered parent transaction can consume this same exact resolver through
+its automatic metadata mode. It creates any required Trigger objects before
+the parent model is staged, then combines the retained scene changes with the
+other admitted widget/settings changes through the parent's single terminal PP
+readback and save. This composition does not add evidence for the original
+combined WinForms parent/SceneManager control lifecycle.
 
 ## Capacity and validation
 

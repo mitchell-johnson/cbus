@@ -6,9 +6,23 @@ firmware 5.5.00** database unit. It reads one exact native `DBGETXML` project
 snapshot and derives the applications, groups, dynamic-variant facts, complete
 scene-action address sets and 64 static-label records that the retained parent
 load and admitted operations consume.
-Missing applications and groups are planned in deterministic address order.
-The same parent transaction then performs its one load, ordered control phase,
-terminal normalization and five-CRC projection.
+For operations whose original contract only consumes address facts, missing
+applications and groups are planned in deterministic address order. The same
+parent transaction then performs its one load, ordered control phase, terminal
+normalization and five-CRC projection.
+
+Applications, Corridor and operation-1 Reset are admitted when every required
+list object already exists in that snapshot. The resolver supplies their
+complete ordered `ApplicationCache`; Reset additionally consumes all 874 exact
+`PP Value` strings from the selected Unit record. No list object is projected,
+because DBGETXML does not establish where a newly created item would appear in
+the original controls. A parent `scene-manager` operation is also admitted on
+the separate graph-creation branch. That branch reuses the exact
+[automatic SceneManager metadata](edlt-scene-metadata.md) contract to build a
+complete ordered application/group/action-label cache and to project a missing
+Trigger Control application, exact trigger groups and exact action levels. The
+resulting scene edit and every other admitted parent operation then share the
+parent transaction's one terminal PP staging/readback/save sequence.
 
 Preview with saved inputs and no connection:
 
@@ -24,9 +38,10 @@ project XML. This guard prevents an old PP export from being combined with a
 new application/group inventory. The returned
 `cbus-native-edlt-parent-metadata-plan-v1` document includes:
 
-- the project XML and canonical PP SHA-256 values;
+- the project XML, canonical PP and exact raw PP-string SHA-256 values;
 - the original lifecycle requirements and the derived projected cache;
-- every planned Application, Group or Enable `NetVar` creation;
+- every planned Application, Group, Enable `NetVar` or Trigger action `Level`
+  creation, including its deterministic dependency order;
 - a complete, indexed inventory of all 64 static-label slots;
 - the nested ordered parent transaction and its ownership/save phases; and
 - the native persistence and evidence boundaries.
@@ -64,6 +79,27 @@ PP names, application addresses, group addresses, level addresses and native
 object IDs must be unique. Object IDs must be canonical UUIDs. Ambiguity or a
 stale PP snapshot stops before backup or mutation.
 
+For Applications, Corridor and Reset, every Application and Group child is
+copied in its DBGETXML child order. Each cached `name` is the exact `TagName`.
+The automatic cache uses that same `TagName` as a deterministic
+`formatted_display` database view. Toolkit's address/hex display formatting,
+tag override and application/group sorting preferences live outside project
+XML, so this path does not claim the original visible list text or order under
+those registry settings. The plan reports
+`toolkit_registry_display_and_sort_preferences_observed=false`.
+
+Reset validates and retains the exact strings, including numeric casing and
+text padding, before constructing its initial and fresh lifecycle requirements.
+Every Reset complete-list application and positive bound control group must
+already exist. Missing or ambiguous objects fail before backup; the resolver
+never turns an absent Reset control group into a creation. Later operations
+are resolved against the issued fresh Reset graph, including ordered
+Primary/Secondary application edits. Automatic Applications, Corridor or Reset
+cannot currently share a plan with automatic SceneManager metadata: that
+branch projects a new graph/list inventory, while no captured evidence
+establishes the resulting list placement or Reset-fresh metadata graph. Use a
+separately established caller cache for such a combination.
+
 The original `EDLTUnit.AfterLoadPPData` resolves the primary application,
 loads `StaticTextString0` through `StaticTextString63`, loads scenes and
 widgets, constructs dependent group controls, and finishes with group checks.
@@ -78,15 +114,19 @@ deterministic subset of those callbacks:
 - missing ordinary groups use `Group N`;
 - application 203 groups are created as native `NetVar` records;
 - applications are created first by address, then groups by application and
-  address; and
+  address, then Trigger action levels by group and address; and
 - group 255 is the original in-memory `<Unused>` record and is never created
   in the database.
 
 Existing group level children supply the complete action-address set needed by
-retained scene loading. A missing consumed scene trigger group is rejected,
-because creating an empty group would discard its action while reproducing the
-original level auto-add would require a separate evidenced naming/value policy.
-This feature does not synthesize missing scene levels.
+retained scene loading. When `scene-manager` is present, its retained getter
+sequence projects missing application 202 as `Trigger Control`, exact trigger
+groups as `Group N`, and exact actions as `Action Selector N`. Each level uses
+Address=Value=N and four empty image-free variants, matching the separately
+accepted SceneManager resolver. The interactive blank-address Add dialogs,
+their first-free allocation and their `Level N` seed remain outside this path.
+A parent transaction without SceneManager retains the narrower behavior and
+does not invent a missing consumed scene level.
 The 64 static labels are PP arrays in the selected unit, not application/group
 objects. The parent transaction's existing allocator remains their only
 writer.
@@ -95,8 +135,13 @@ The operation resolver adds the exact groups introduced by Lighting, Enable,
 Fan, HVAC, Multi Level, Room Courtesy, Shutter, Timer, activation, Colours,
 Navigation, Quick Status and Page Control operations before the nested parent
 plan runs. This includes application 172 HVAC groups and application 203
-`NetVar` records. Scene widget operations select retained scenes, so their
-trigger/output dependencies remain owned by the retained scene load.
+`NetVar` records. Scene widget operations after SceneManager derive their
+trigger and dynamic-image dependencies from the final issued graph. Duplicate
+graph ownership, reversing that order, an incomplete 64-item capacity prefix,
+or combining automatic SceneManager metadata with Applications, Corridor or
+Reset fails before backup or PP I/O. Without SceneManager, Applications,
+Corridor and operation-1 Reset use the complete non-projecting database-view
+cache described above.
 MRA Zone Control, Source Select, Source Control and distributed global
 operations consume only unit PP records and static-text slots. They therefore
 add no application/group objects; the resolver still supplies all metadata
@@ -127,9 +172,10 @@ PP SAVE and PROJECT SAVE. Output therefore always reports
 5. open one database-only PP session and apply the issued parent plan;
 6. verify complete PP readback and issue one `PP SAVE` to the source unit;
 7. issue one target `PROJECT SAVE`;
-8. close/load the target project and verify the exact application/group
-   address inventory, created identities, existing application/group metadata,
-   unrelated project/unit/network metadata and all PP values.
+8. close/load the target project and verify the exact
+   application/group/level address inventory, created identities and safe
+   variants, existing metadata, unrelated project/unit/network metadata and all
+   PP values.
 
 If creation or PP staging fails before PP SAVE starts, the manager deletes the
 created object IDs in reverse order, saves the inverse operations, closes and
@@ -154,22 +200,39 @@ backup.
 pins the inspected Toolkit 1.18 source hashes and the exact original methods
 that establish application/group auto-resolution, virtual group 255, level and
 TagDLT population, and static-label load ordering. Portable tests use a native
-command-shaped project simulator to verify planning, preservation, creation,
-save/reload, rollback and lost-reply evidence. An optional native gate requires
-an explicitly provisioned disposable closed project:
+command-shaped project simulator to verify planning, preservation, mixed
+parent/scene creation, one PP save, save/reload, rollback and lost-reply
+evidence. It also verifies Applications/Corridor list order, exact Reset raw
+strings, positive-control refusal and the non-projecting save boundary.
+Optional native gates require an explicitly provisioned disposable closed
+project. The ordered-cache gate accepts a reviewed operation JSON file:
 
 ```sh
-CBUS_EDLT_PARENT_METADATA_ACCEPTANCE=1 \
+CBUS_EDLT_PARENT_CACHE_METADATA_ACCEPTANCE=1 \
+CBUS_EDLT_PARENT_CACHE_METADATA_UNIT=//PROJECT/254/p/20 \
+CBUS_EDLT_PARENT_CACHE_METADATA_BACKUP=PARENTBK \
+CBUS_EDLT_PARENT_CACHE_METADATA_OPERATIONS=/path/to/operations.json \
+CBUS_CGATE_TEST_HOST=127.0.0.1 \
+CBUS_UNITSPEC_DIR=/path/to/specs \
+PYTHONPATH=src:tests:. python3.13 -m unittest \
+  tests.test_edlt_parent_auto_cache.ParentAutomaticCacheNativeAcceptance -v
+```
+
+The combined SceneManager gate is:
+
+```sh
+CBUS_EDLT_PARENT_SCENE_METADATA_ACCEPTANCE=1 \
 CBUS_EDLT_PARENT_METADATA_UNIT=//PROJECT/254/p/20 \
 CBUS_EDLT_PARENT_METADATA_BACKUP=PARENTBK \
 CBUS_CGATE_TEST_HOST=127.0.0.1 \
 CBUS_UNITSPEC_DIR=/path/to/specs \
-PYTHONPATH=src:. python3.13 -m unittest \
-  tests.test_edlt_parent_metadata.ParentMetadataTests.test_optional_native_database_metadata_parent_transaction -v
+PYTHONPATH=src:tests:. python3.13 -m unittest \
+  tests.test_edlt_parent_scene_metadata.ParentSceneMetadataTests.test_optional_native_parent_scene_metadata_transaction -v
 ```
 
-That optional gate was not run for the committed portable acceptance. The
-original WinForms parent form, add dialog, refresh timing, project image
-download and a combined transaction against Schneider C-Gate remain
-unexecuted for this slice. No physical unit is opened or programmed, and
-physical display, label and event behavior remain unverified.
+Those optional gates were not run for the portable acceptance. The
+original combined WinForms parent/SceneManager form, add dialog, refresh and
+focus timing, project image download and the optional combined Schneider
+C-Gate transaction remain unexecuted for this slice. No physical unit is
+opened or programmed, and physical display, label and event behavior remain
+unverified.

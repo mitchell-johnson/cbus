@@ -13,7 +13,7 @@ from types import MappingProxyType
 from typing import Mapping
 import weakref
 
-from .edlt import EdltError, EdltApplyError, _int, _render, CRC_RANGES, configuration_crc
+from .edlt import EdltError, EdltApplyError, _int, _render
 from .edlt_application_cache import ApplicationCache
 from .edlt_lifecycle import EdltLifecycle, LoadedEdlt, LifecycleGroup, LifecycleMetadataError, _changes, _delta, _error_text
 
@@ -243,6 +243,47 @@ class SceneManagerPlan:
             scene_pointers=[self.before_save[f'Scene{slot}StartAddress'][0] for slot in range(1, 9)],
             static_text=static_text, metadata_created=False, static_text_allocated=bool(static_text['allocations']), physical_device_verified=False,
             full_form_validation_verified=False, incomplete_edit_persisted=False, saved=False)
+
+
+@dataclass(frozen=True)
+class SceneManagerComposition:
+    """Issued scene-only projection for one enclosing parent transaction."""
+    source: SceneManagerState
+    terminal: SceneManagerState
+    fields: Mapping
+    validation: str
+    item_count: int
+    _origin: _Origin = field(repr=False, compare=False)
+
+    def __post_init__(self):
+        object.__setattr__(self, 'fields', MappingProxyType(dict(self.fields)))
+
+    def as_dict(self):
+        return {
+            'format': 'cbus-edlt-scene-manager-composition-v1',
+            'scope': 'retained scene graph and static-name control projection',
+            'scene_fields': {
+                name: list(value) if isinstance(value, tuple) else value
+                for name, value in self.fields.items()
+            },
+            'scene_pointers': [
+                self.fields[f'Scene{slot}StartAddress'][0]
+                for slot in range(1, 9)
+            ],
+            'item_count': self.item_count,
+            'full_capacity_temporary_crc_tail': self.item_count == 64,
+            'validation': json.loads(self.validation),
+            'static_text': self.terminal.static_text_evidence(),
+            'terminal_scene_models': [
+                scene.as_dict() for scene in self.terminal.scenes
+            ],
+            'terminal_save_deferred_to_parent': True,
+            'terminal_crc_deferred_to_parent': True,
+            'complete_scene_cache_required': True,
+            'full_form_validation_verified': False,
+            'physical_device_verified': False,
+            'saved': False,
+        }
 
 
 class EdltSceneManager:
@@ -554,43 +595,68 @@ class EdltSceneManager:
         issued = self._next(state, scenes=tuple(scenes), validation=_json(record))
         return SceneValidationOutcome(issued, not warnings, warnings, tuple(skipped))
 
-    def prepare_save(self, state):
+    def prepare_composition(self, state):
+        """Serialize retained scene controls without a lifecycle or CRC pass.
+
+        The returned receipt is deliberately scene-only.  An enclosing
+        :class:`EdltParentTransaction` enters these exact fields into its
+        validated control state and owns the one terminal lifecycle pass.
+        """
         self._check(state)
-        if not state.complete: raise EdltError('An incomplete scene edit or capture cannot be persisted')
-        # Run the already loaded baseline's non-scene BeforeSave rules exactly
-        # once; then serialize edited retained scene objects, without reloading.
-        baseline = self.lifecycle.prepare_save(state.loaded); values = dict(baseline.before_save)
-        values.update(state.static_text_overlay)
-        scenes = list(state.scenes); bucket = bytearray(); pointers = []
-        for i, scene in enumerate(scenes):
-            scene, trigger = self._trigger(state, scene); scene, action = self._action(state, scene)
-            if action == -1: scene = self._set_action(state, scene, 0)
-            scene, action = self._action(state, scene); scenes[i] = scene
-            pointers.append(len(bucket)); bucket.extend((scene.primary_secondary + 2 * int(scene.can_edit), len(scene.items), trigger, 255 if action < 0 else action, scene.name_index))
-            for item in scene.items: bucket.extend((16 * int(item.can_edit) + item.ramp_rate, item.group.group, item.level))
-        if len(bucket) > 232: raise EdltError('Retained scene data exceeds the 232-byte native PP layout')
-        values['SceneCount'] = (8,); values['SceneBucket'] = tuple(bucket.ljust(232, b'\xff'))
-        for n, pointer in enumerate(pointers, 1): values[f'Scene{n}StartAddress'] = (pointer,)
+        if not state.complete:
+            raise EdltError('An incomplete scene edit or capture cannot be persisted')
+        values = dict(state.static_text_overlay)
+        scenes = list(state.scenes)
+        bucket = bytearray()
+        pointers = []
+        for index, scene in enumerate(scenes):
+            scene, trigger = self._trigger(state, scene)
+            scene, action = self._action(state, scene)
+            if action == -1:
+                scene = self._set_action(state, scene, 0)
+            scene, action = self._action(state, scene)
+            scenes[index] = scene
+            pointers.append(len(bucket))
+            bucket.extend((
+                scene.primary_secondary + 2 * int(scene.can_edit),
+                len(scene.items), trigger, 255 if action < 0 else action,
+                scene.name_index,
+            ))
+            for item in scene.items:
+                bucket.extend((
+                    16 * int(item.can_edit) + item.ramp_rate,
+                    item.group.group, item.level,
+                ))
+        if len(bucket) > 232:
+            raise EdltError('Retained scene data exceeds the 232-byte native PP layout')
+        values['SceneCount'] = (8,)
+        values['SceneBucket'] = tuple(bucket.ljust(232, b'\xff'))
+        for slot, pointer in enumerate(pointers, 1):
+            values[f'Scene{slot}StartAddress'] = (pointer,)
         terminal = self._next(state, scenes=tuple(scenes))
-        # Validation is observed separately on a branch; its mutating getters
-        # must not silently change the serialization sequence.
-        warning = self.validate(state).as_dict(); warning.pop('state')
-        crcs = self.lifecycle.crcs(values)
-        if len(bucket) == 232:
-            # Original SaveScenes appends FF even when all 232 data bytes are
-            # occupied. Original PPHelper's foreach consumes that extra token
-            # into the temporary CRC image despite the declared ArraySize.
-            memory = bytearray(9216)
-            for name, value in self.snapshot(values).items():
-                if self.codec.layout(name).address < 256: continue
-                for edit in self.codec.encode(name, value).edits:
-                    index = edit.address - 256; memory[index] = (memory[index] & ~edit.mask) | edit.value
-            memory[0x21fa - 256] = 255
-            crcs = {name: tuple(configuration_crc(bytes(memory[start:start + size])).to_bytes(2, 'big'))
-                    for name, (start, size) in CRC_RANGES.items()}
+        warning = self.validate(state).as_dict()
+        warning.pop('state')
+        origin = _Origin(self._owner)
+        result = SceneManagerComposition(
+            state, terminal, values, _json(warning),
+            sum(len(scene.items) for scene in scenes), origin)
+        return self._seal(result)
+
+    def prepare_save(self, state):
+        composition = self.prepare_composition(state)
+        # Run the already loaded baseline's non-scene BeforeSave rules exactly
+        # once; then insert the issued scene-only projection without reloading.
+        baseline = self.lifecycle.prepare_save(state.loaded)
+        values = dict(baseline.before_save)
+        values.update(composition.fields)
+        crcs = self.lifecycle.scene_manager_crcs(
+            values, item_count=composition.item_count)
         final = {**values, **crcs}
-        plan = SceneManagerPlan(state, terminal, state.loaded.expected, state.loaded.after_load, values,
-            _changes(state.loaded.expected, final), _json(warning), _Origin(self._owner))
+        plan = SceneManagerPlan(
+            state, composition.terminal, state.loaded.expected,
+            state.loaded.after_load, values,
+            _changes(state.loaded.expected, final), composition.validation,
+            _Origin(self._owner))
         return self._seal(plan)
 
     def _interrupted(self, error, plan, attempted, original_error=None):

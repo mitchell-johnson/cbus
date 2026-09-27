@@ -11,7 +11,10 @@ from types import MappingProxyType
 from typing import Mapping
 import weakref
 
-from .edlt import EdltLighting, EdltError, EdltApplyError, _field, _int, _render
+from .edlt import (
+    CRC_RANGES, EdltLighting, EdltError, EdltApplyError, _field, _int,
+    _render, configuration_crc,
+)
 
 FORMAT = 'cbus-edlt-lifecycle-cache-v1'
 MAX_GROUPS = 512
@@ -411,6 +414,36 @@ class EdltLifecycle:
     def snapshot(self, values): return self.common.snapshot(values)
     def crcs(self, values): return self.common.crcs(values)
 
+    def scene_manager_crcs(self, values, *, item_count):
+        """Calculate the retained SceneManager CRC image, including capacity.
+
+        Original ``SaveScenes`` appends one final ``FF`` token even when the
+        native 232-byte scene bucket is full.  The extra token exists only in
+        PPHelper's temporary CRC image.  Keep that accepted behavior at the
+        lifecycle boundary so standalone and composed SceneManager saves use
+        the same one-pass calculation.
+        """
+        _int(item_count, 'SceneManager item count', 0, 64)
+        snapshot = self.snapshot(values)
+        if sum(len(row[3]) for row in self._scenes(snapshot)) != item_count:
+            raise EdltError(
+                'SceneManager item count differs from its serialized graph')
+        if item_count != 64:
+            return self.crcs(snapshot)
+        memory = bytearray(9216)
+        for name, value in snapshot.items():
+            if self.codec.layout(name).address < 256:
+                continue
+            for edit in self.codec.encode(name, value).edits:
+                index = edit.address - 256
+                memory[index] = ((memory[index] & ~edit.mask) | edit.value)
+        memory[0x21fa - 256] = 255
+        return {
+            name: tuple(configuration_crc(
+                bytes(memory[start:start + size])).to_bytes(2, 'big'))
+            for name, (start, size) in CRC_RANGES.items()
+        }
+
     @staticmethod
     def _scenes(values):
         bucket = values['SceneBucket']
@@ -673,7 +706,9 @@ class EdltLifecycle:
             blank=blank, reset=reset)
 
     def _prepare_composed_save(self, loaded, after_controls, *,
-                               _mra_globals=None):
+                               _mra_globals=None, _blank_transitions=(),
+                               _scene_manager_fields=None,
+                               _scene_manager_item_count=None):
         """Run one terminal save projection over validated bound controls.
 
         This private composition point exists so a bounded parent-form editor
@@ -681,7 +716,37 @@ class EdltLifecycle:
         control values before the single BeforeSavePPData/CRC projection.  It
         is deliberately not a general PP override API.
         """
-        self._validate_loaded(loaded)
+        reset = loaded if type(loaded) is ResetEdlt else None
+        if reset is not None:
+            if (type(reset._origin) is not _LoadedOrigin or
+                    reset._origin.owner is not self._loaded_owner or
+                    reset._origin.reference is None or
+                    reset._origin.reference() is not reset):
+                raise EdltError(
+                    'Use an intact Reset transition returned by this '
+                    'EdltLifecycle instance')
+            self._validate_loaded(reset.base)
+            self._validate_loaded(reset.fresh)
+            from .edlt_reset import _validate_context
+            _validate_context(self, reset.base, reset.context)
+            save_models = reset.fresh
+            original = reset.expected
+            after_load = reset.base.after_load
+        else:
+            self._validate_loaded(loaded)
+            save_models = loaded
+            original = loaded.expected
+            after_load = loaded.after_load
+        if (not isinstance(_blank_transitions, tuple) or any(
+                type(blank) is not BlankedEdlt or blank.base is not loaded or
+                type(blank._origin) is not _LoadedOrigin or
+                blank._origin.owner is not self._loaded_owner or
+                blank._origin.reference is None or
+                blank._origin.reference() is not blank
+                for blank in _blank_transitions)):
+            raise EdltError(
+                'Internal composed Blank transitions must be intact receipts '
+                'for the retained loaded model')
         if _mra_globals is not None:
             if (type(_mra_globals) is not tuple or len(_mra_globals) != 2):
                 raise EdltError(
@@ -689,13 +754,50 @@ class EdltLifecycle:
             _int(_mra_globals[0], 'Composed MRA multiplexer', 1, 4)
             _int(_mra_globals[1], 'Composed MRA zone', 1, 8)
         values = self.snapshot(after_controls)
+        scene_fields = {
+            'SceneCount', 'SceneBucket',
+            *(f'Scene{slot}StartAddress' for slot in range(1, 9)),
+        }
+        if ((_scene_manager_fields is None) !=
+                (_scene_manager_item_count is None)):
+            raise EdltError(
+                'Internal SceneManager composition requires fields and item '
+                'count together')
+        if _scene_manager_fields is not None:
+            if (not isinstance(_scene_manager_fields, Mapping) or
+                    set(_scene_manager_fields) != scene_fields):
+                raise EdltError(
+                    'Internal SceneManager composition requires the complete '
+                    'scene field set')
+            supplied = dict(_scene_manager_fields)
+            if any(values[name] != supplied[name] for name in scene_fields):
+                raise EdltError(
+                    'SceneManager composition fields must already be present '
+                    'in the validated control state')
+            projected = dict(values)
+            projected.update(supplied)
+            projected = self.snapshot(projected)
+            _int(_scene_manager_item_count, 'SceneManager item count', 0, 64)
+            if (projected['SceneCount'] != (8,) or
+                    sum(len(row[3]) for row in self._scenes(projected)) !=
+                    _scene_manager_item_count):
+                raise EdltError(
+                    'SceneManager composition fields do not describe the '
+                    'complete issued graph')
         return self._prepare_save_values(
-            loaded, original=loaded.expected, after_load=loaded.after_load,
-            values=values, composition=True, mra_globals=_mra_globals)
+            save_models, original=original, after_load=after_load,
+            values=values, reset=reset, composition=True,
+            mra_globals=_mra_globals,
+            blank_transitions=_blank_transitions,
+            scene_manager_fields=(None if _scene_manager_fields is None else
+                                  dict(_scene_manager_fields)),
+            scene_manager_item_count=_scene_manager_item_count)
 
     def _prepare_save_values(self, loaded, *, original, after_load, values,
                              blank=None, reset=None, composition=False,
-                             mra_globals=None):
+                             mra_globals=None, blank_transitions=(),
+                             scene_manager_fields=None,
+                             scene_manager_item_count=None):
         values = dict(values)
         def reset_type(widget, wanted):
             key = _field(widget)
@@ -703,13 +805,20 @@ class EdltLifecycle:
                 values[key] = (wanted,)
                 if widget >= 6: values[f'Widget{widget}RestoreLevel'] = (0,)
         values['Application']=(values['PrimaryApplication'][0],values['SecondaryApplication'][0])
-        bucket=bytearray(); pointers=[]
-        for scene in loaded.scenes:
-            header, items = _scene_bytes(scene)
-            pointers.append(len(bucket)); bucket.extend(header)
-            for item in items: bucket.extend(item)
-        values['SceneCount']=(8,); values['SceneBucket']=tuple(bucket.ljust(232,b'\xff'))
-        for index,pointer in enumerate(pointers,1): values[f'Scene{index}StartAddress']=(pointer,)
+        if scene_manager_fields is None:
+            bucket=bytearray(); pointers=[]
+            for scene in loaded.scenes:
+                header, items = _scene_bytes(scene)
+                pointers.append(len(bucket)); bucket.extend(header)
+                for item in items: bucket.extend(item)
+            values['SceneCount']=(8,); values['SceneBucket']=tuple(bucket.ljust(232,b'\xff'))
+            for index,pointer in enumerate(pointers,1): values[f'Scene{index}StartAddress']=(pointer,)
+            scene_item_count = sum(len(scene.items) for scene in loaded.scenes)
+        else:
+            values.update(scene_manager_fields)
+            pointers = [values[f'Scene{index}StartAddress'][0]
+                        for index in range(1, 9)]
+            scene_item_count = scene_manager_item_count
         first_mra=loaded.mra.source_widget
         effective_mra_globals = (None if first_mra is None else
             (loaded.mra.multiplexer + 1, loaded.mra.zone + 1))
@@ -732,8 +841,12 @@ class EdltLifecycle:
                 control=values[_field(widget,1)][0]
                 if control&15 != 5:values[_field(widget,10)]=(0,)
                 values[_field(widget,1)]=((control&0xF0)|5,)
-        before_save=dict(values); calculated_crcs=self.crcs(values); values.update(calculated_crcs)
-        evidence={'metadata_facts_consumed':json.loads(loaded.consumed_facts),'events':json.loads(loaded.events),'scene_count':8,'scene_item_count':sum(len(scene.items) for scene in loaded.scenes),
+        before_save=dict(values)
+        calculated_crcs = (self.crcs(values) if scene_manager_fields is None
+                           else self.scene_manager_crcs(
+                               values, item_count=scene_item_count))
+        values.update(calculated_crcs)
+        evidence={'metadata_facts_consumed':json.loads(loaded.consumed_facts),'events':json.loads(loaded.events),'scene_count':8,'scene_item_count':scene_item_count,
                   'scene_pointers':pointers,'scene_bucket_hex':bytes(before_save['SceneBucket']).hex(),
                   'mra_source_widget':first_mra,'source_scene_count_ignored':original['SceneCount'][0],
                   'blank_fallback_widgets':[{'widget':widget,'stored_type':values[_field(widget)][0]} for widget in range(1,22) if 17<=values[_field(widget)][0]<=254]}
@@ -748,6 +861,17 @@ class EdltLifecycle:
                     'zone': effective_mra_globals[1],
                 }
                 evidence['mra_composition_override'] = True
+            if blank_transitions:
+                evidence['blank_transitions'] = [
+                    transition.as_dict() for transition in blank_transitions]
+            if scene_manager_fields is not None:
+                evidence['scene_manager_composition'] = {
+                    'complete_scene_field_override': True,
+                    'item_count': scene_item_count,
+                    'full_capacity_temporary_crc_tail':
+                        scene_item_count == 64,
+                    'terminal_scene_serialization_passes': 1,
+                }
         if blank is not None:
             evidence['blank_transition'] = blank.as_dict()
         if reset is not None:

@@ -92,6 +92,15 @@ fn routed_reply(bridges: &[u8], unit: u8, cal: &[u8]) -> Vec<u8> {
 async fn bridged_pingu_keeps_mqtt_live_and_plain_tcp_fault_is_clean() {
     let project = cbus_test_support::proc::temp_path("bridged-project.xml");
     let state = cbus_test_support::proc::temp_path("bridged-cgate.json");
+    let specs = cbus_test_support::proc::temp_path("bridged-pp-unitspec");
+    std::fs::create_dir_all(&specs).unwrap();
+    std::fs::write(
+        specs.join("TESTUNIT.xml"),
+        r#"<UnitSpecification><Parameters>
+        <Param><Name>Standard</Name><Type>int</Type><Address>$20</Address><ArraySize>2</ArraySize><ProgramMethod>direct</ProgramMethod><Protection>checksum</Protection><Tag>Core</Tag></Param>
+        </Parameters></UnitSpecification>"#,
+    )
+    .unwrap();
     std::fs::write(
         &project,
         r#"<Installation><Project oid="project-topology"><TagName>TOPO</TagName>
@@ -102,6 +111,12 @@ async fn bridged_pingu_keeps_mqtt_live_and_plain_tcp_fault_is_clean() {
           <Application oid="app"><TagName>Lighting</TagName><Address>56</Address>
             <Group oid="group"><TagName>Local Light</TagName><Address>1</Address></Group>
           </Application>
+          <Application oid="local-trigger"><TagName>Trigger Control</TagName><Address>202</Address>
+            <Group oid="local-trigger-group"><TagName>Local Trigger</TagName><Address>2</Address></Group>
+          </Application>
+          <Application oid="local-enable"><TagName>Enable Control</TagName><Address>203</Address>
+            <Group oid="local-enable-variable"><TagName>Local Enable</TagName><Address>3</Address></Group>
+          </Application>
         </Network>
         <Network oid="network-253"><TagName>Remote</TagName><Address>253</Address>
           <Interface><InterfaceType>Bridge</InterfaceType><InterfaceAddress>254/p/253</InterfaceAddress></Interface>
@@ -109,6 +124,12 @@ async fn bridged_pingu_keeps_mqtt_live_and_plain_tcp_fault_is_clean() {
           <Unit oid="bridge-far"><Address>254</Address><UnitType>BRIDGE2N</UnitType></Unit>
           <Application oid="remote-app"><TagName>Remote Lighting</TagName><Address>56</Address>
             <Group oid="remote-group"><TagName>Remote Light</TagName><Address>1</Address></Group>
+          </Application>
+          <Application oid="remote-trigger"><TagName>Trigger Control</TagName><Address>202</Address>
+            <Group oid="remote-trigger-group"><TagName>Remote Trigger</TagName><Address>2</Address></Group>
+          </Application>
+          <Application oid="remote-enable"><TagName>Enable Control</TagName><Address>203</Address>
+            <Group oid="remote-enable-variable"><TagName>Remote Enable</TagName><Address>3</Address></Group>
           </Application>
         </Network></Project></Installation>"#,
     )
@@ -122,6 +143,8 @@ async fn bridged_pingu_keeps_mqtt_live_and_plain_tcp_fault_is_clean() {
             "127.0.0.1:0".into(),
             "--cgate-state".into(),
             state.to_string_lossy().into_owned(),
+            "--cgate-unitspec".into(),
+            specs.to_string_lossy().into_owned(),
         ],
         ..Default::default()
     })
@@ -165,12 +188,39 @@ async fn bridged_pingu_keeps_mqtt_live_and_plain_tcp_fault_is_clean() {
         }
     }
 
+    async fn command_until(
+        reader: &mut BufReader<tokio::net::tcp::OwnedReadHalf>,
+        writer: &mut tokio::net::tcp::OwnedWriteHalf,
+        text: &str,
+        expected: &str,
+    ) -> String {
+        let deadline = tokio::time::Instant::now() + COMMAND_DRAIN;
+        loop {
+            let response = command(reader, writer, text).await;
+            if response.contains(expected) {
+                return response;
+            }
+            assert!(
+                tokio::time::Instant::now() < deadline,
+                "{text} never contained {expected:?}: {response:?}"
+            );
+            tokio::time::sleep(std::time::Duration::from_millis(10)).await;
+        }
+    }
+
     let path = command(&mut reader, &mut writer, "DBNETWORKPATH 254 253 COMPACT").await;
     assert!(path.contains("136 FD"), "{path:?}");
     let capabilities = command(&mut reader, &mut writer, "CMQTT CAPABILITIES").await;
     assert!(capabilities.contains("\"bridged_read_only_discovery\":true"));
     assert!(capabilities.contains("\"bridged_syncnew_general\":true"));
     assert!(capabilities.contains("\"bridged_network_max_hops\":6"));
+    assert!(capabilities.contains("\"physical_pp_routed_load\":true"));
+    assert!(capabilities.contains("\"physical_pp_routed_save\":true"));
+    assert!(capabilities.contains("\"physical_pp_routed_methods\":[\"direct\"]"));
+    assert!(capabilities.contains("\"physical_application_routed_control\":true"));
+    assert!(capabilities.contains(
+        "\"physical_application_routed_delivery_semantics\":\"pci-confirmed-exactly-once-no-replay-no-device-readback\""
+    ));
 
     let pingu = command(&mut reader, &mut writer, "NET PINGU //TOPO/253");
     let peer = async {
@@ -268,32 +318,418 @@ async fn bridged_pingu_keeps_mqtt_live_and_plain_tcp_fault_is_clean() {
     );
     assert_eq!(sys.pci.connections(), 1);
 
-    let before = sys.pci.frames().len();
-    let targeted = command(&mut reader, &mut writer, "NET SYNCNEW //TOPO/253 5").await;
-    assert!(targeted.contains("502 Routed NET SYNCNEW targeted discovery"));
-    assert_eq!(
-        sys.pci.frames().len(),
-        before,
-        "unevidenced routed duplicate challenges must fail before PCI I/O"
-    );
+    let targeted = command(&mut reader, &mut writer, "NET SYNCNEW //TOPO/253 5");
+    let peer = async {
+        // PINGU and the preceding general SYNCNEW emitted occurrences one
+        // through six. Targeted SYNCNEW repeats the native five-pass scan.
+        for occurrence in 7..=11 {
+            require(STARTUP, "targeted routed SYNCNEW installation MMI", || {
+                sys.pci.count_payload("03FD09FFFAFF00FF") >= occurrence
+            })
+            .await;
+            for (start, count) in [(0, 88), (88, 88), (176, 80)] {
+                sys.pci
+                    .inject(&routed_installation_mmi_block(&[253], start, count, &[5]));
+            }
+        }
 
-    let before = sys.pci.frames().len();
-    let mutation = command(&mut reader, &mut writer, "ON //TOPO/253/56/1").await;
+        for (attempt, payload) in [
+            (0u8, "46FD090511801E"),
+            (1u8, "46FD090511811D"),
+            (2u8, "46FD090511821C"),
+        ] {
+            require(STARTUP, "routed SYNCNEW duplicate challenge", || {
+                sys.pci.count_payload(payload) == 1
+            })
+            .await;
+            let cal = [0x82, 0x80 + attempt, 0x33];
+            // Same unit and parameter on a neighbouring route cannot enter
+            // the duplicate count. FakePci supplies the positive command
+            // confirmation; the client still observes its bounded quiet
+            // window before moving to the next exact-once challenge.
+            sys.pci.inject(&routed_reply(&[252], 5, &cal));
+            sys.pci.inject(&routed_reply(&[253], 5, &cal));
+        }
+
+        for (attribute, value) in [(1u8, b"KEYE1".as_slice()), (2, b"1.2.30".as_slice())] {
+            let prefix = format!("46FD090521{attribute:02X}");
+            require(STARTUP, "targeted routed SYNCNEW identity", || {
+                sys.pci
+                    .frames()
+                    .iter()
+                    .any(|frame| frame.payload.starts_with(&prefix))
+            })
+            .await;
+            let mut cal = vec![0x80 | (value.len() as u8 + 1), attribute];
+            cal.extend_from_slice(value);
+            sys.pci.inject(&routed_reply(&[252], 5, &cal));
+            sys.pci.inject(&routed_reply(&[253], 5, &cal));
+        }
+
+        require(STARTUP, "targeted routed SYNCNEW serial identity", || {
+            sys.pci
+                .frames()
+                .iter()
+                .any(|frame| frame.payload.starts_with("46FD09052104"))
+        })
+        .await;
+        let serial = serial_identity("101136.1558", 5);
+        let mut cal = vec![0x80 | (serial.len() as u8 + 1), 4];
+        cal.extend_from_slice(&serial);
+        sys.pci.inject(&routed_reply(&[252], 5, &cal));
+        sys.pci.inject(&routed_reply(&[253], 5, &cal));
+    };
+    let (targeted, ()) = tokio::join!(targeted, peer);
     assert!(
-        mutation.contains("404 Network is not connected"),
-        "{mutation:?}"
+        targeted
+            .contains("303 New Unit Found: address=5 type=KEYE1 version=1.2.30 serial=101136.1558"),
+        "{targeted:?}"
     );
-    let unexpected = sys
+    assert_eq!(sys.pci.connections(), 1);
+
+    let publishes_before_identity = sys
+        .broker
+        .find_publishes("homeassistant/light/cbus_1/state")
+        .len();
+    let set_identity = command(
+        &mut reader,
+        &mut writer,
+        "NET SET_PROJECT_IDENTIFY //TOPO/253 TEST",
+    );
+    let peer = async {
+        require(STARTUP, "project identity routed installation MMI", || {
+            sys.pci.count_payload("03FD09FFFAFF00FF") >= 12
+        })
+        .await;
+        sys.pci.inject(&pci_wire(&[5, 4, 56, 0, 121, 1]));
+        require(STARTUP, "MQTT state during routed project identity", || {
+            sys.broker
+                .find_publishes("homeassistant/light/cbus_1/state")
+                .len()
+                > publishes_before_identity
+        })
+        .await;
+        for (start, count) in [(0, 88), (88, 88), (176, 80)] {
+            sys.pci
+                .inject(&routed_installation_mmi_block(&[253], start, count, &[4]));
+        }
+
+        require(STARTUP, "project identity routed IDENTIFY1", || {
+            sys.pci.count_payload("46FD090421018E") >= 2
+        })
+        .await;
+        sys.pci
+            .inject(&routed_reply(&[252], 4, &[0x86, 1, b'B', b'A', b'D']));
+        sys.pci.inject(&routed_reply(
+            &[253],
+            4,
+            &[0x86, 1, b'K', b'E', b'Y', b'E', b'1'],
+        ));
+
+        require(STARTUP, "project identity routed IDENTIFY4", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload.starts_with("46FD09042104"))
+                .count()
+                >= 2
+        })
+        .await;
+        let serial = serial_identity("101136.1558", 4);
+        let mut cal = vec![0x80 | (serial.len() as u8 + 1), 4];
+        cal.extend_from_slice(&serial);
+        sys.pci.inject(&routed_reply(&[252], 4, &cal));
+        sys.pci.inject(&routed_reply(&[253], 4, &cal));
+
+        require(STARTUP, "project identity routed STORE", || {
+            sys.pci.count_payload("46FD0904A82346CE4CB379E79ED4") == 1
+        })
+        .await;
+        sys.pci
+            .inject(&routed_reply(&[252], 4, &[0x32, 0x23, 0x46]));
+        sys.pci
+            .inject(&routed_reply(&[253], 4, &[0x32, 0x23, 0x46]));
+
+        require(STARTUP, "project identity routed readback", || {
+            sys.pci.count_payload("46FD09041A23066D") == 1
+        })
+        .await;
+        sys.pci.inject(&routed_reply(
+            &[252],
+            4,
+            &[0x87, 0x23, 0xce, 0x4c, 0xb3, 0x79, 0xe7, 0x9e],
+        ));
+        sys.pci.inject(&routed_reply(
+            &[253],
+            4,
+            &[0x87, 0x23, 0xce, 0x4c, 0xb3, 0x79, 0xe7, 0x9e],
+        ));
+    };
+    let (set_identity, ()) = tokio::join!(set_identity, peer);
+    assert!(set_identity.contains("200 OK."), "{set_identity:?}");
+    assert_eq!(
+        sys.pci.count_payload("46FD0904A82346CE4CB379E79ED4"),
+        1,
+        "routed STORE must be exact-once"
+    );
+    let project_name = command(&mut reader, &mut writer, "GET //TOPO/253/p/4 ProjectName").await;
+    assert!(
+        project_name.contains("ProjectName=TEST    "),
+        "{project_name:?}"
+    );
+    assert_eq!(sys.pci.connections(), 1);
+
+    assert!(
+        command(&mut reader, &mut writer, "PP LOCK REMOTE //TOPO/253")
+            .await
+            .contains("200 OK")
+    );
+    assert!(command(&mut reader, &mut writer, "PP START PPS REMOTE")
+        .await
+        .contains("200 OK"));
+    let publishes_before_pp = sys
+        .broker
+        .find_publishes("homeassistant/light/cbus_1/state")
+        .len();
+    let identify_1_before = sys
         .pci
         .frames()
-        .into_iter()
-        .skip(before)
-        .filter(|frame| !is_status_request(&frame.payload))
-        .collect::<Vec<_>>();
+        .iter()
+        .filter(|frame| frame.payload.starts_with("46FD09042101"))
+        .count();
+    let identify_2_before = sys
+        .pci
+        .frames()
+        .iter()
+        .filter(|frame| frame.payload.starts_with("46FD09042102"))
+        .count();
+    let recall_before = sys.pci.count_payload("46FD09041A200274");
+    let load = command(&mut reader, &mut writer, "PP LOAD PPS //TOPO/253/p/4 Core");
+    let peer = async {
+        require(STARTUP, "routed PP LOAD identity type", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload.starts_with("46FD09042101"))
+                .count()
+                > identify_1_before
+        })
+        .await;
+        let mut reply = vec![0x89, 1];
+        reply.extend_from_slice(b"TESTUNIT");
+        sys.pci.inject(&routed_reply(&[252], 4, &reply));
+        sys.pci.inject(&routed_reply(&[253], 4, &reply));
+
+        require(STARTUP, "routed PP LOAD identity firmware", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload.starts_with("46FD09042102"))
+                .count()
+                > identify_2_before
+        })
+        .await;
+        let mut reply = vec![0x87, 2];
+        reply.extend_from_slice(b"1.2.03");
+        sys.pci.inject(&routed_reply(&[252], 4, &reply));
+        sys.pci.inject(&routed_reply(&[253], 4, &reply));
+
+        require(STARTUP, "routed PP LOAD direct recall", || {
+            sys.pci.count_payload("46FD09041A200274") > recall_before
+        })
+        .await;
+        // Direct-network MQTT traffic continues through the same reader while
+        // the routed PP transaction owns the programming lane.
+        sys.pci.inject(&pci_wire(&[5, 4, 56, 0, 121, 1]));
+        sys.pci
+            .inject(&routed_reply(&[252], 4, &[0x83, 0x20, 0xaa, 0xbb]));
+        sys.pci
+            .inject(&routed_reply(&[253], 4, &[0x83, 0x20, 0x12, 0x34]));
+    };
+    let (loaded, ()) = tokio::join!(load, peer);
+    assert!(loaded.contains("200 OK"), "{loaded:?}");
+    let values = command(&mut reader, &mut writer, "PP GET PPS *").await;
+    assert!(values.contains("Standard=0x12 0x34"), "{values:?}");
+    require(STARTUP, "MQTT continuity during routed PP", || {
+        sys.broker
+            .find_publishes("homeassistant/light/cbus_1/state")
+            .len()
+            > publishes_before_pp
+    })
+    .await;
+
     assert!(
-        unexpected.is_empty(),
-        "remote mutation must emit no PCI command; background status probes are independent: {unexpected:?}"
+        command(&mut reader, &mut writer, "PP SET PPS Standard 0x56 0x78",)
+            .await
+            .contains("200 OK")
     );
+    let identify_1_before = sys
+        .pci
+        .frames()
+        .iter()
+        .filter(|frame| frame.payload.starts_with("46FD09042101"))
+        .count();
+    let identify_2_before = sys
+        .pci
+        .frames()
+        .iter()
+        .filter(|frame| frame.payload.starts_with("46FD09042102"))
+        .count();
+    let recall_before = sys.pci.count_payload("46FD09041A200274");
+    let save = command(&mut reader, &mut writer, "PP SAVE_TO_SOURCE PPS");
+    let peer = async {
+        require(STARTUP, "routed PP SAVE identity type", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload.starts_with("46FD09042101"))
+                .count()
+                > identify_1_before
+        })
+        .await;
+        let mut reply = vec![0x89, 1];
+        reply.extend_from_slice(b"TESTUNIT");
+        sys.pci.inject(&routed_reply(&[253], 4, &reply));
+        require(STARTUP, "routed PP SAVE identity firmware", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload.starts_with("46FD09042102"))
+                .count()
+                > identify_2_before
+        })
+        .await;
+        let mut reply = vec![0x87, 2];
+        reply.extend_from_slice(b"1.2.03");
+        sys.pci.inject(&routed_reply(&[253], 4, &reply));
+        require(STARTUP, "routed PP SAVE pre-read", || {
+            sys.pci.count_payload("46FD09041A200274") > recall_before
+        })
+        .await;
+        sys.pci
+            .inject(&routed_reply(&[253], 4, &[0x83, 0x20, 0x12, 0x34]));
+        require(STARTUP, "routed PP exact-once STORE", || {
+            sys.pci.count_payload("46FD0904A4200056781E") == 1
+        })
+        .await;
+        sys.pci
+            .inject(&routed_reply(&[252], 4, &[0x32, 0x20, 0x00]));
+        sys.pci
+            .inject(&routed_reply(&[253], 4, &[0x32, 0x20, 0x00]));
+        require(STARTUP, "routed PP SAVE readback", || {
+            sys.pci.count_payload("46FD09041A200274") > recall_before + 1
+        })
+        .await;
+        sys.pci
+            .inject(&routed_reply(&[252], 4, &[0x83, 0x20, 0x56, 0x78]));
+        sys.pci
+            .inject(&routed_reply(&[253], 4, &[0x83, 0x20, 0x56, 0x78]));
+    };
+    let (saved, ()) = tokio::join!(save, peer);
+    assert!(saved.contains("200 OK"), "{saved:?}");
+    assert_eq!(
+        sys.pci.count_payload("46FD0904A4200056781E"),
+        1,
+        "routed PP STORE must never replay"
+    );
+    assert_eq!(sys.pci.connections(), 1);
+
+    // Standard routed SAL control is a one-shot PPM frame. The only success
+    // receipt is the exact PCI confirmation supplied by FakePci; no remote
+    // application response or routed status readback is invented.
+    let publishes_before_control = sys
+        .broker
+        .find_publishes("homeassistant/light/cbus_1/state")
+        .len();
+    let routed_lighting = command(&mut reader, &mut writer, "ON //TOPO/253/56/1");
+    let peer = async {
+        require(COMMAND_DRAIN, "routed lighting PPM", || {
+            sys.pci.count_payload("03FD0938790145") == 1
+        })
+        .await;
+        // Direct-network observations continue through the same shared reader
+        // and retain their existing MQTT address while routed delivery waits.
+        sys.pci.inject(&pci_wire(&[5, 4, 56, 0, 121, 1]));
+    };
+    let (routed_lighting, ()) = tokio::join!(routed_lighting, peer);
+    assert!(routed_lighting.contains("200 OK"), "{routed_lighting:?}");
+    require(
+        COMMAND_DRAIN,
+        "MQTT continuity during routed lighting",
+        || {
+            sys.broker
+                .find_publishes("homeassistant/light/cbus_1/state")
+                .len()
+                > publishes_before_control
+        },
+    )
+    .await;
+    assert_eq!(sys.pci.count_payload("03FD0938790145"), 1);
+
+    let routed_do = command(&mut reader, &mut writer, "DO //TOPO/253/56/1 OFF").await;
+    assert!(
+        routed_do.contains("202 Done: //TOPO/253/56/1"),
+        "{routed_do:?}"
+    );
+    assert_eq!(sys.pci.count_payload("03FD09380101BD"), 1);
+
+    let trigger = command(
+        &mut reader,
+        &mut writer,
+        "TRIGGER EVENT //TOPO/253/202/2 55",
+    )
+    .await;
+    assert!(trigger.contains("200 OK"), "{trigger:?}");
+    assert_eq!(sys.pci.count_payload("03FD09CA020237F2"), 1);
+    let trigger_kill = command(
+        &mut reader,
+        &mut writer,
+        "TRIGGER INDICATORKILL //TOPO/253/202/2",
+    )
+    .await;
+    assert!(trigger_kill.contains("200 OK"), "{trigger_kill:?}");
+    assert_eq!(sys.pci.count_payload("03FD09CA090222"), 1);
+
+    // Seed a direct Enable observation, then prove the routed SET commits only
+    // the target network's cache on the same one CNI connection.
+    sys.pci.inject(&pci_wire(&[5, 4, 203, 0, 2, 3, 13]));
+    assert!(command_until(
+        &mut reader,
+        &mut writer,
+        "GET //TOPO/254/203/3 Level",
+        "Level=13",
+    )
+    .await
+    .contains("Level=13"));
+    let enable = command(&mut reader, &mut writer, "ENABLE SET //TOPO/253/203/3 77").await;
+    assert!(enable.contains("200 OK"), "{enable:?}");
+    assert_eq!(sys.pci.count_payload("03FD09CB02034DDA"), 1);
+    // The service-level regression inspects the remote cache directly. The
+    // public GET fast path deliberately exposes only the PCI-bound network,
+    // so here prove that the routed SET did not overwrite that local value.
+    let local_enable = command(&mut reader, &mut writer, "GET //TOPO/254/203/3 Level").await;
+    assert!(local_enable.contains("Level=13"), "{local_enable:?}");
+
+    for (unsupported, expected) in [
+        ("ON //TOPO/253/202/1", "400 Not a lighting application"),
+        ("ON //TOPO/252/56/1", "404 Network not found"),
+    ] {
+        let before = sys.pci.frames().len();
+        let response = command(&mut reader, &mut writer, unsupported).await;
+        assert!(response.contains(expected), "{unsupported}: {response:?}");
+        let unexpected = sys
+            .pci
+            .frames()
+            .into_iter()
+            .skip(before)
+            .filter(|frame| !is_status_request(&frame.payload))
+            .collect::<Vec<_>>();
+        assert!(
+            unexpected.is_empty(),
+            "unsupported routed application command wrote to PCI: {unsupported}: {unexpected:?}"
+        );
+    }
+    assert_eq!(sys.pci.connections(), 1);
 
     sys.pci.kick();
     let status = sys
@@ -310,6 +746,7 @@ async fn bridged_pingu_keeps_mqtt_live_and_plain_tcp_fault_is_clean() {
     drop(sys);
     std::fs::remove_file(project).unwrap();
     std::fs::remove_file(state).unwrap();
+    std::fs::remove_dir_all(specs).unwrap();
 }
 
 #[tokio::test]

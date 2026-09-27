@@ -1,0 +1,262 @@
+{
+  "format": "cbus-native-memory-fragment-acceptance-v1",
+  "generated_at": "2026-09-26T21:43:35.679319+00:00",
+  "target": "Schneider Electric C-Gate 3.4.0 build 2001",
+  "scope": "Changing-value original C-Gate encoder acceptance for the two logical layouts present only in the internal I_DLTF fragment.",
+  "execution": {
+    "platform": "macOS-15.7.4-arm64-arm-64bit-Mach-O",
+    "python": "3.13.14 (main, Jun 10 2026, 12:24:04) [Clang 17.0.0 (clang-1700.6.4.2)]",
+    "java_version": "openjdk version \"11.0.32.1\" 2026-08-18\nOpenJDK Runtime Environment Homebrew (build 11.0.32.1+0)\nOpenJDK 64-Bit Server VM Homebrew (build 11.0.32.1+0, mixed mode)",
+    "java_sha256": "2fe1decd61295e8e61e6157447f2cf1e3782eb101cff937e9a8176ef17fe584e",
+    "javac_sha256": "8eac9b8066b63af58d50214c0b630e7f53cfa6e27d6d91a4c0c8eea2d4f9e576",
+    "network_denied": true,
+    "server_started": false,
+    "command_service_started": false,
+    "physical_io": false,
+    "automatic_retry": false,
+    "compile_exit_code": 0,
+    "original_exit_code": 0,
+    "original_stdout_sha256": "e6651df30268c49024ab9c88b6e305e8cf411cbdfdf73454fe104821bec86991",
+    "compiled_class_sha256": "643b95da2695a17314ac1b0a3f9f849ce3bd04fd302efe59d59dabe0d1726aa4"
+  },
+  "source_sha256": {
+    "research/NativeMemoryFragmentProbe.java": "1c935e4f2006e39855438b479965e6854580fa50c84cb3e366f43c5d54f690f7",
+    "research/verify_memory_fragments.py": "8eaab5dd38162e6f7ea615d1de9aeb56dbba49a5c41ff95209519ff7d3764ec8",
+    "src/cbus_toolkit/memory.py": "372cbc3a79710b743d23aa6690a8b56b1780de091ffe8a1d0a543e4cfa9c1f31",
+    "src/cbus_toolkit/unitspec.py": "f8d9e2f30c0ab431b0897959328781fac6a7c9825a4d9d2bb5ecf348acb66747",
+    "vendor_cgate.jar": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "vendor_I_DLTF.xml.es": "06230884b82d9282a6a3c9d9ee7f283aea82967d11bc0b9f350bc7acf3b26f36",
+    "decrypted_I_DLTF.xml": "db1eee1f7c92271085514e11e0061b617dbb39094c318f5bf29c7e598f7d3c28"
+  },
+  "original": {
+    "network_witness": {
+      "exception": "java.net.ConnectException",
+      "message_base64": "T3BlcmF0aW9uIG5vdCBwZXJtaXR0ZWQgKGNvbm5lY3QgZmFpbGVkKQ=="
+    },
+    "layouts": {
+      "LabelFlavourLSB": {
+        "type": "bit",
+        "address": "$60",
+        "array_size": "8",
+        "bit_size": "",
+        "bit_address": "3",
+        "array_skip": "",
+        "endian": ""
+      },
+      "LabelFlavourMSB": {
+        "type": "bit",
+        "address": "$60",
+        "array_size": "8",
+        "bit_size": "",
+        "bit_address": "6",
+        "array_skip": "",
+        "endian": ""
+      }
+    },
+    "terminal": {
+      "layouts": 2,
+      "trials": 4,
+      "original_encoder_invoked": "true",
+      "command_service_started": "false",
+      "physical_io": "false"
+    }
+  },
+  "cases": [
+    {
+      "parameter": "LabelFlavourLSB",
+      "layout": [
+        "bit",
+        1,
+        3,
+        0,
+        8,
+        "little"
+      ],
+      "trial": 0,
+      "seed": 165,
+      "value": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0
+      ],
+      "native_raw_hex": "ada2a5a5a5a5a5a5",
+      "python_raw_hex": "ada2a5a5a5a5a5a5",
+      "native_decoded": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0
+      ],
+      "python_decoded": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0
+      ],
+      "status": "pass"
+    },
+    {
+      "parameter": "LabelFlavourLSB",
+      "layout": [
+        "bit",
+        1,
+        3,
+        0,
+        8,
+        "little"
+      ],
+      "trial": 1,
+      "seed": 90,
+      "value": [
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1
+      ],
+      "native_raw_hex": "525d5a5a5a5a5a5a",
+      "python_raw_hex": "525d5a5a5a5a5a5a",
+      "native_decoded": [
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1
+      ],
+      "python_decoded": [
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1
+      ],
+      "status": "pass"
+    },
+    {
+      "parameter": "LabelFlavourMSB",
+      "layout": [
+        "bit",
+        1,
+        6,
+        0,
+        8,
+        "little"
+      ],
+      "trial": 0,
+      "seed": 165,
+      "value": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0
+      ],
+      "native_raw_hex": "6595a5a5a5a5a5a5",
+      "python_raw_hex": "6595a5a5a5a5a5a5",
+      "native_decoded": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0
+      ],
+      "python_decoded": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0
+      ],
+      "status": "pass"
+    },
+    {
+      "parameter": "LabelFlavourMSB",
+      "layout": [
+        "bit",
+        1,
+        6,
+        0,
+        8,
+        "little"
+      ],
+      "trial": 1,
+      "seed": 90,
+      "value": [
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1
+      ],
+      "native_raw_hex": "9a6a5a5a5a5a5a5a",
+      "python_raw_hex": "9a6a5a5a5a5a5a5a",
+      "native_decoded": [
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1
+      ],
+      "python_decoded": [
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1
+      ],
+      "status": "pass"
+    }
+  ],
+  "summary": {
+    "distinct_layouts": 2,
+    "passing_layouts": 2,
+    "passing_change_trials": 4,
+    "failed_change_trials": 0
+  },
+  "limitations": [
+    "The two parameters are internal-fragment layouts and remain unavailable through PP GET/SET token commands.",
+    "This proves host-side native encoder equivalence, not physical transfer, checksum, protection or device behavior.",
+    "The probe invokes original C-Gate classes, not the original Toolkit GUI."
+  ],
+  "inputs_unchanged": true
+}

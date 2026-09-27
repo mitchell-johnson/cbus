@@ -1,0 +1,83 @@
+{
+  "format": "cbus-native-unit-template-transaction-acceptance-v1",
+  "scope": "Owned C-Gate-compatible service, closed temporary database units, one PP SAVE and fresh reload per operation; no project-file or physical-device save",
+  "profiles": [
+    {
+      "profile": {
+        "unit_type": "KEY1",
+        "firmware": "1.2.67",
+        "catalog_number": "5031N",
+        "spec": "KEY1.xml"
+      },
+      "copy_save_reload_cases": 1,
+      "defaults_save_reload_cases": 1,
+      "preserved_parameters": [
+        "CUSTYPE",
+        "EEPROMChecksumActive",
+        "EEPROMLevelRecall",
+        "LearnedFlag",
+        "NetworkAddress",
+        "PatchEnable",
+        "Project",
+        "UnitAddress"
+      ],
+      "passed": true
+    },
+    {
+      "profile": {
+        "unit_type": "KEY2",
+        "firmware": "1.2.67",
+        "catalog_number": "5032N",
+        "spec": "KEY2.xml"
+      },
+      "copy_save_reload_cases": 1,
+      "defaults_save_reload_cases": 1,
+      "preserved_parameters": [
+        "CUSTYPE",
+        "EEPROMChecksumActive",
+        "EEPROMLevelRecall",
+        "LearnedFlag",
+        "NetworkAddress",
+        "PatchEnable",
+        "Project",
+        "UnitAddress"
+      ],
+      "passed": true
+    },
+    {
+      "profile": {
+        "unit_type": "KEY4",
+        "firmware": "1.2.67",
+        "catalog_number": "5034N",
+        "spec": "KEY4.xml"
+      },
+      "copy_save_reload_cases": 1,
+      "defaults_save_reload_cases": 1,
+      "preserved_parameters": [
+        "CUSTYPE",
+        "EEPROMChecksumActive",
+        "EEPROMLevelRecall",
+        "LearnedFlag",
+        "NetworkAddress",
+        "PatchEnable",
+        "Project",
+        "UnitAddress"
+      ],
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "physical_hardware_verified": false,
+  "original_gui_process_verified": false,
+  "greeting": "201 cmqttd C-Gate service ready",
+  "copy_save_reload_cases": 3,
+  "defaults_save_reload_cases": 3,
+  "source_hashes": {
+    "src/cbus_toolkit/template_transaction.py": "74df11a670317b608c763db38abb0c00ed57b3920cbdc781af94b752d2d043f5",
+    "src/cbus_toolkit/unit_templates.py": "d40e382a3ecef8ff7ed247bb888ed12569020a4e4fd70cfa70b5784526dce433",
+    "src/cbus_toolkit/cli.py": "7e4db1a36e62983f765de601725d5454d6ee36a65f751d152ad9e0f8734f6aa9",
+    "tests/test_template_transaction.py": "63903a9a7ab6e4f8580267b47b47c74151a15b895d607129a98918d4da178cbf",
+    "tests/test_template_transaction_native.py": "ce3ac6d476edc851bac0ac77b5690ca540cb8907e24c2770efe051582719c925",
+    "tests/test_cli_unit_templates.py": "f4dd2a34d1b484777d9e9079d8886f2b8e159adb9ad25a9766fb349fd8c21e45"
+  }
+}

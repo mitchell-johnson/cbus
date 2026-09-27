@@ -472,28 +472,390 @@
       "class_sha256": "22e21c0bdd5b9f0779e8919e1870f94b7760b436d7744848ea61b11171e46d87",
       "evidenced_selector": "EXT_ONLY",
       "obfuscated_class": "fs",
-      "other_selectors": "fail-before-io",
+      "other_selectors": "local-session-target-validation-then-fail-before-io",
+      "preflight_selectors": [
+        "DALI_ONLY",
+        "FULL"
+      ],
       "wire": "commissioning"
     },
     "SESSION EXTRACT": {
       "class": 118,
       "class_sha256": "f83c4a39ec30ef1fafb04fa7edcb2b45ee8e39e6301f2547867f618835534f15",
-      "evidenced_selector": "EXT_ONLY",
+      "evidenced_selectors": [
+        "EXT_ONLY",
+        "DALI_ONLY",
+        "FULL",
+        "REFRESH_STATUS_INFO",
+        "RETRIEVE_RECONCILE"
+      ],
+      "safe_prefix_selectors": [
+        "COND_QUICK",
+        "COND_EXTENDED",
+        "RESCAN_FAULT"
+      ],
       "obfuscated_class": "fu",
-      "other_selectors": "fail-before-io",
+      "remaining_selectors": [
+        "COND_QUICK",
+        "COND_EXTENDED",
+        "RESCAN_FAULT"
+      ],
       "wire": "commissioning"
     }
   },
   "safety_boundary": {
-    "behavior": "refuse before I/O; retained plan names are evidenced but their complete typed model codec is not implemented",
-    "typed_session_plans": [
-      "DALI_ONLY",
-      "FULL",
+    "behavior": "read-only extraction plans run the exact source-pinned steps, stage typed model and extended bytes, commit one active-generation snapshot atomically, and never replay; mutation-bearing plans run only their retained non-remediating prefix, discard its staged masks, and stop before ADDRESS_UNKNOWN without assigning an address or committing a partial session snapshot",
+    "implemented_read_only_typed_session_plans": {
+      "DALI_ONLY": [
+        "CHECK_FOR_UNKNOWN",
+        "POLL_KNOWN",
+        "BROKEN",
+        "MISSING",
+        "CONFLICTING",
+        "DISCOVER_KNOWN_TYPE_INFO",
+        "DISCOVER_KNOWN_FULL_INFO",
+        "DISCOVER_STATUS_INFO_ECG",
+        "GET_KNOWN_TYPE_INFO_ECG",
+        "GET_COMMON_PARAMS_ECG",
+        "GET_COMMON_READ_ONLY_PARAMS_ECG",
+        "GET_SCENE_VALUES_ECG",
+        "GET_LED_PARAMS_ECG",
+        "GET_EMERGENCY_PARAMS_ECG",
+        "GET_EMERGENCY_STATUS_ECG"
+      ],
+      "FULL": [
+        "POLL_KNOWN",
+        "BROKEN",
+        "MISSING",
+        "CONFLICTING",
+        "DISCOVER_KNOWN_TYPE_INFO",
+        "DISCOVER_KNOWN_FULL_INFO",
+        "DISCOVER_STATUS_INFO_ECG",
+        "GET_KNOWN_TYPE_INFO_ECG",
+        "GET_COMMON_PARAMS_ECG",
+        "GET_COMMON_READ_ONLY_PARAMS_ECG",
+        "GET_SCENE_VALUES_ECG",
+        "DISCOVER_GTIN_SERIAL_ECG",
+        "GET_GTIN_ECG",
+        "GET_SERIAL_ECG",
+        "GET_LED_PARAMS_ECG",
+        "GET_EMERGENCY_PARAMS_ECG",
+        "GET_EMERGENCY_STATUS_ECG",
+        "READ_GATEWAY_EXT_FULL"
+      ],
+      "REFRESH_STATUS_INFO": [
+        "DISCOVER_STATUS_INFO_ECG",
+        "GET_COMMON_READ_ONLY_PARAMS_ECG",
+        "GET_EMERGENCY_STATUS_ECG"
+      ],
+      "RETRIEVE_RECONCILE": [
+        "COND_UNREAD_GET_COMMON_READ_ONLY_PARAMS_ECG",
+        "COND_UNREAD_GET_EMERGENCY_PARAMS_ECG",
+        "COND_UNREAD_GET_LED_PARAMS_ECG",
+        "COND_UNREAD_DISCOVER_GTIN_SERIAL_ECG",
+        "COND_UNREAD_GET_GTIN_ECG",
+        "COND_UNREAD_GET_SERIAL_ECG"
+      ]
+    },
+    "implemented_read_only_typed_session_operations": {
+      "device_type": 218,
+      "line_b_operation_mask": 128,
+      "CHECK_FOR_UNKNOWN": 13,
+      "POLL_KNOWN": 7,
+      "BROKEN": 10,
+      "MISSING": 11,
+      "CONFLICTING": 9,
+      "DISCOVER_KNOWN_TYPE_INFO": 3,
+      "DISCOVER_KNOWN_FULL_INFO": 4,
+      "DISCOVER_STATUS_INFO_ECG": 26,
+      "GET_KNOWN_TYPE_INFO_ECG": 16,
+      "GET_COMMON_PARAMS_ECG": 17,
+      "GET_COMMON_READ_ONLY_PARAMS_ECG": 18,
+      "GET_SCENE_VALUES_ECG_LOW": 19,
+      "GET_SCENE_VALUES_ECG_HIGH": 20,
+      "DISCOVER_GTIN_SERIAL_ECG": 27,
+      "GET_GTIN_ECG": 21,
+      "GET_SERIAL_ECG": 22,
+      "GET_LED_PARAMS_ECG": 25,
+      "GET_EMERGENCY_PARAMS_ECG": 23,
+      "GET_EMERGENCY_STATUS_ECG": 24,
+      "COND_UNREAD_GET_COMMON_READ_ONLY_PARAMS_ECG": 18,
+      "COND_UNREAD_GET_EMERGENCY_PARAMS_ECG": 23,
+      "COND_UNREAD_GET_LED_PARAMS_ECG": 25,
+      "COND_UNREAD_DISCOVER_GTIN_SERIAL_ECG": 27,
+      "COND_UNREAD_GET_GTIN_ECG": 21,
+      "COND_UNREAD_GET_SERIAL_ECG": 22
+    },
+    "implemented_mutation_preflight": {
+      "COND_QUICK": [
+        {
+          "mode": "POLL",
+          "operation": 4,
+          "reply": "status zero plus 8-byte mask",
+          "step": "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO"
+        },
+        {
+          "mode": "AUTO",
+          "operation": 11,
+          "reply": "status zero plus 8-byte mask",
+          "step": "MISSING"
+        }
+      ],
+      "COND_EXTENDED": [
+        {
+          "mode": "POLL",
+          "operation": 4,
+          "reply": "status zero plus 8-byte mask",
+          "step": "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO"
+        },
+        {
+          "mode": "AUTO",
+          "operation": 11,
+          "reply": "status zero plus 8-byte mask",
+          "step": "MISSING"
+        }
+      ],
+      "RESCAN_FAULT": [
+        {
+          "mode": "AUTO",
+          "operation": 14,
+          "reply": "status zero; operation payload is not interpreted",
+          "step": "RESCAN"
+        },
+        {
+          "mode": "POLL",
+          "operation": 4,
+          "reply": "status zero plus 8-byte mask",
+          "step": "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO"
+        },
+        {
+          "mode": "AUTO",
+          "operation": 11,
+          "reply": "status zero plus 8-byte mask",
+          "step": "MISSING"
+        }
+      ],
+      "commit": "never; ADDRESS_UNKNOWN remains unevidenced and the incomplete selector returns 502",
+      "delivery": "source-correlated exact-once exchanges on one captured PCI generation; no replay"
+    },
+    "native_plan_evidence": {
+      "cgate_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+      "extract_plan_class": "jY",
+      "extract_plan_class_sha256": "5f6308a20c449b76e6a0ed9f3927383c107cb345749101052c3c056c30455e49",
+      "bit_helper_class_sha256": "a988aebba9ce8ff91c16be68d85a6e548cc8c5fa832a4992c86210c16d4a7a3e",
+      "integer_helper_class_sha256": "9e343525eeb0d12896bae34590b8593b97409afc01cbf9d25857e09affe00335",
+      "dali_command_type_class_sha256": "a8354d6ec53d791c47b8cf27d31af283703d28f3292b117b195e225f2ed61fbf",
+      "executor_class": "ka",
+      "executor_class_sha256": "12aebdff36fa11d380db4360e94696bb2427169f94c2be6136661f0b1580bebd",
+      "selection_class": "kc",
+      "selection_class_sha256": "f67547064bd9ba034e2c8cfa1051bde8f53aba55e8a4167c72537a5578ef31a1",
+      "step_enum_sha256": "726ef597c711f12b05994f881d2adb1ca3d49dad7514e9520dda3389c4c3b940",
+      "operation_command_class_sha256": {
+        "ADDRESS_UNKNOWN:dG": "c97241786bdd497017f5e72f4abec5338d6b082dafe27d753a9616e22f6c4c59",
+        "DISCOVER_KNOWN_TYPE_INFO:dT": "9856c86721c6e7e9b5199acd00e0e2809d388ead908441a4f282baef14e53cb8",
+        "GET_KNOWN_TYPE_INFO_ECG:eU": "d0b3cd67b5a2ad33678b5324a4914cab64e98be0ad01ebc872d22e9128170fe1",
+        "POLL_KNOWN:eT": "72acb01c9b506681213b989768faf33a6816b815bba8e1e486d16b9dc007189b",
+        "CHECK_FOR_UNKNOWN:fV": "b8fa9d6dedcb042731c537ec5f114c9b5ad1460c9dcf04530d2507af94fa68fb",
+        "BROKEN:dH": "b34047341c6c2a20062dc1fd9bfa6841bf86c0a1931a3fa8c2d173455283fe8c",
+        "MISSING:fc": "1b8d5ad4cc815b6af9566524ac013a13e66aa1f5bbe058655ad64aa281507e23",
+        "CONFLICTING:dQ": "670f1d4f78ff5932e85e008bb3ee5afa2665a0abb08bfe925184d81124ef4e82",
+        "DISCOVER_KNOWN_FULL_INFO:dS": "d65991b377597efccb49fc87a67d3358e12d800e0d714558dcb06fad64b14909",
+        "GET_COMMON_PARAMS_ECG:dO": "1c1b44adb5ce4b7593a0005aeda3b973c90507e9836adbcae0606b6026740d19",
+        "GET_COMMON_READ_ONLY_PARAMS_ECG:dP": "b6a45d186eb858fdc7dba48ff49ff604bf08d3b64dfb37e7d2c28c78a1d9e132",
+        "GET_LED_PARAMS_ECG:eV": "2bcafe8bb44ee811958bcb527b285667f5d96f4bf64227024fa40aeacc93ef3b",
+        "GET_SCENE_VALUES_ECG_HIGH:fn": "2a21970b966f27515624a8a82a493bdc2ebdc2c2d3ec9f171525940002fde2e3",
+        "GET_SCENE_VALUES_ECG_LOW:fo": "74b509b4b7da09f0e691d7e52b798f0084a4277087d2059d606acf4d3ddc75b8",
+        "DISCOVER_GTIN_SERIAL_ECG:dR": "bc2ae00e5c9796ef598335d2bb0362f4525c6789ce0654dab9e0d376227ccc62",
+        "GET_GTIN_ECG:eS": "3c8367f28189a413d096a04f5befa25349f30be5f1a7b40fa6648194b6aa292d",
+        "GET_SERIAL_ECG:fp": "9b42432449b40401c8bc3fae2b17b457e49a0ac88a3b87ded996ebe4df6affa7",
+        "DISCOVER_STATUS_INFO_ECG:dU": "ab93f7e1a6bf1daffb59bcb5a0eac20f9ef8833d50a4c69deabc41a033a42495",
+        "GET_EMERGENCY_PARAMS_ECG:dW": "30ed470de443c183877f9db38092c4242de4be45f8217ddac9c0637d16381f16",
+        "GET_EMERGENCY_STATUS_ECG:eb": "d6c9ac66d2389b3581fe470b9b71d6093a283e847404c06b54bc3d85e22d3efa"
+      },
+      "typed_model_class_sha256": {
+        "DaliStruct102ReadOnly": "06f816e2651f2888e71b83c00b2d3906db144dbee63eeb38316f491bc0553592",
+        "DaliStruct202Params": "a643f64e786526aca6f627968045726f9bccfcaf932ed1b2d4cc141a902c7607",
+        "DaliStruct202Status": "fb912e505d8d9a8c4eabed454481d7a150f7593d860bc65ee46e808bf26e18bb",
+        "DaliStruct207Params": "42632fa4d9aeef29cda389a58461f8c3098328b6bd1d48d5fb94d2566892c2f4",
+        "DaliStructGtinSerial": "23b34f332fbc2d004ec1d8d418f9e68c9aa8cf783bb53607cd8d332b7e66a61f",
+        "DaliDeviceType": "e491fceaaf93c0ac9a6ce7abd4f7296512e5be45da83ed556250eb6e87720539",
+        "DaliEcgSupportedDeviceType": "f6367087f9ff614542c6924b454b9cf202dcda48f5d17bbe11d64ebd71f6b3a7",
+        "DaliEcgUnmatchedDeviceType": "0cce897a3757f23bfbe303e26a3ee8c9c4fefd5808e2a2403ed3bc89e7484373",
+        "DaliStruct102Params": "ce3f81438e4f5307e9d6b79aab5ce5f3c58bd69cf902f0d69a6b8e0f145513f6",
+        "DaliEcgScene": "cda9592e031295fbbf2d381dd492f53cc73787209a92c1f6c20d09cc85efeeb7",
+        "DaliEcg": "50dd3d30d0794fe00bc0004ea26f125b50f7547b7cdff53a625692a4bbe00f13",
+        "DaliLine": "b71fdf68ad911d51bc228999127b42591dbea33f538cded8c16ad868bed0a588"
+      },
+      "extract_type_enum_sha256": "5626928bc99258de3454643fc26bee3e398c5290d7f203bb007152d41a3d1876",
+      "extract_type_enum_values": {
+        "READ_ONLY": "a",
+        "QUICK": "b",
+        "EXT_ONLY": "c",
+        "DALI_ONLY": "d",
+        "COND_QUICK": "e",
+        "FULL": "f",
+        "COND_EXTENDED": "g",
+        "RESCAN_FAULT": "h",
+        "REFRESH_STATUS_INFO": "i",
+        "RETRIEVE_RECONCILE": "j"
+      }
+    },
+    "address_unknown_evidence_audit": {
+      "device_type": 218,
+      "operation": 2,
+      "line_a_execute_cal_hex": "e381da02",
+      "line_b_execute_cal_hex": "e381da82",
+      "execute_payload_bytes": 0,
+      "success_payload_bytes": 8,
+      "success_payload_semantics": "short-address assigned/discovered bitmask only",
+      "missing_safe_contract": [
+        "no request byte selects a free short address or caller range",
+        "no request byte identifies one unaddressed physical device",
+        "the reply has no device identity or serial-to-address mapping",
+        "the reply does not distinguish newly assigned bits from previously occupied bits",
+        "the retained evidence does not define collision-safe allocator choice or ordering",
+        "the retained evidence does not define the typed-model merge and post-assignment verification receipt"
+      ],
+      "decision": "do not send ADDRESS_UNKNOWN from SESSION EXTRACT; stop after the non-remediating prefix"
+    },
+    "typed_deploy_evidence_audit": {
+      "safe_preflight": [
+        "parse line and bounded ECG range",
+        "require an existing session",
+        "validate selected known ECG addresses are unique and in 0..63",
+        "resolve one configured SYS_DAL2 gateway"
+      ],
+      "individually_evidenced_wire_operations": {
+        "SET_COMMON_PARAMS": {
+          "operation": 32,
+          "payload_bytes": 7,
+          "readback_operation": 17,
+          "readback_payload_bytes": 9
+        },
+        "SET_SCENE_VALUES_LOW": {
+          "operation": 34,
+          "payload_bytes": 9,
+          "readback_operation": 19,
+          "readback_payload_bytes": 9
+        },
+        "SET_SCENE_VALUES_HIGH": {
+          "operation": 35,
+          "payload_bytes": 9,
+          "readback_operation": 20,
+          "readback_payload_bytes": 9
+        },
+        "SET_EMERGENCY_PARAMS": {
+          "operation": 38,
+          "payload_bytes": 4,
+          "readback_operation": 23,
+          "readback_payload_bytes": 8
+        },
+        "SET_LED_PARAMS": {
+          "operation": 40,
+          "payload_bytes": 2,
+          "readback_operation": 25,
+          "readback_payload_bytes": 3
+        },
+        "EXT_ONLY": {
+          "wire": "page-bounded verified programming store",
+          "write_chunk": 12
+        }
+      },
+      "missing_contract": [
+        "no retained DALI_ONLY or FULL deployment step list",
+        "no retained rule maps dirty typed-model fields to per-address versus many-address setters",
+        "no retained rule defines null, omitted, unmatched-device-type, or FF scene ownership",
+        "no retained per-field write/readback ordering or acceptance receipt",
+        "no retained failure, resume, or retry boundary for a partial typed deployment",
+        "no retained FULL atomic boundary or ordering between typed writes and EXT_ONLY chunks"
+      ],
+      "decision": "perform local session, selection, range, and gateway validation; refuse before PCI I/O"
+    },
+    "remaining_typed_session_plans": [
       "COND_QUICK",
       "COND_EXTENDED",
-      "RESCAN_FAULT",
-      "REFRESH_STATUS_INFO",
-      "RETRIEVE_RECONCILE"
-    ]
+      "RESCAN_FAULT"
+    ],
+    "remaining_typed_deploy_plans": [
+      "DALI_ONLY",
+      "FULL"
+    ],
+    "refused_mutation_bearing_session_plans": {
+      "COND_QUICK": {
+        "native_steps_before_refusal": [
+          "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO",
+          "MISSING"
+        ],
+        "first_mutating_step": "ADDRESS_UNKNOWN",
+        "first_mutating_step_index": 3,
+        "operation": 2,
+        "native_plan": [
+          "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO",
+          "MISSING",
+          "ADDRESS_UNKNOWN",
+          "COND_DISCOVER_KNOWN_TYPE_INFO",
+          "COND_DISCOVER_KNOWN_FULL_INFO",
+          "BROKEN",
+          "CONFLICTING",
+          "GET_KNOWN_TYPE_INFO_ECG",
+          "COND_GET_COMMON_READ_ONLY_PARAMS_ECG",
+          "GET_EMERGENCY_PARAMS_ECG",
+          "COND_BROKEN_GET_COMMON_READ_ONLY_PARAMS_ECG",
+          "COND_BROKEN_GET_EMERGENCY_STATUS_ECG",
+          "READ_GATEWAY_EXT_COND_QUICK"
+        ]
+      },
+      "COND_EXTENDED": {
+        "native_steps_before_refusal": [
+          "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO",
+          "MISSING"
+        ],
+        "first_mutating_step": "ADDRESS_UNKNOWN",
+        "first_mutating_step_index": 3,
+        "operation": 2,
+        "native_plan": [
+          "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO",
+          "MISSING",
+          "ADDRESS_UNKNOWN",
+          "COND_DISCOVER_KNOWN_TYPE_INFO",
+          "COND_DISCOVER_KNOWN_FULL_INFO",
+          "BROKEN",
+          "CONFLICTING",
+          "GET_KNOWN_TYPE_INFO_ECG",
+          "COND_GET_COMMON_READ_ONLY_PARAMS_ECG",
+          "GET_EMERGENCY_PARAMS_ECG",
+          "COND_BROKEN_GET_COMMON_READ_ONLY_PARAMS_ECG",
+          "COND_BROKEN_GET_EMERGENCY_STATUS_ECG",
+          "READ_GATEWAY_EXT_COND_QUICK",
+          "GET_COMMON_PARAMS_ECG"
+        ]
+      },
+      "RESCAN_FAULT": {
+        "native_steps_before_refusal": [
+          "RESCAN",
+          "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO",
+          "MISSING"
+        ],
+        "first_mutating_step": "ADDRESS_UNKNOWN",
+        "first_mutating_step_index": 4,
+        "operation": 2,
+        "native_plan": [
+          "RESCAN",
+          "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO",
+          "MISSING",
+          "ADDRESS_UNKNOWN",
+          "COND_DISCOVER_KNOWN_TYPE_INFO",
+          "COND_DISCOVER_KNOWN_FULL_INFO",
+          "BROKEN",
+          "CONFLICTING",
+          "GET_KNOWN_TYPE_INFO_ECG",
+          "COND_GET_COMMON_READ_ONLY_PARAMS_ECG",
+          "GET_EMERGENCY_PARAMS_ECG",
+          "COND_BROKEN_GET_COMMON_READ_ONLY_PARAMS_ECG",
+          "COND_BROKEN_GET_EMERGENCY_STATUS_ECG",
+          "READ_GATEWAY_EXT_COND_QUICK"
+        ]
+      }
+    }
   }
 }

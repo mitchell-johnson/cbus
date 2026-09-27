@@ -2,14 +2,14 @@
 
 This is an implementation in progress targeting **Toolkit 1.18.0.2754 with
 C-Gate 3.4.0.2001**. It does **not yet provide 100% Toolkit parity**. The
-current ledger has **38 areas: 17 implemented, 19 in progress and 2 pending**,
+current ledger has **39 areas: 18 implemented, 19 in progress and 2 pending**,
 and `census_complete` is `false`. Run
 `cbus-toolkit coverage --require-complete` to inspect the machine-readable
 ledger; it deliberately exits nonzero while the census or acceptance work is
 unfinished.
 
 See [completed functions and outstanding work](docs/implementation-status.md)
-for the current status of all 38 feature areas, detailed eDLT functions,
+for the current status of all 39 feature areas, detailed eDLT functions,
 accepted test checkpoints and the remaining implementation plan.
 
 For supported physical operations without Windows, connect this CLI to the
@@ -26,11 +26,11 @@ include the cached 44-byte `WidgetGroups` mapping. The audit distinguishes
 verified static configuration from transient network-wide label observations
 and unread device caches; see [the eDLT label acceptance workflow](docs/edlt-label-audit.md).
 
-The 27 September 2026 source-tree gate passed **2,379 tests**, skipped **275
-provisioning-gated tests**, and passed **18,561 subtests**. The interoperability
-gate passed **14 tests** and skipped one test requiring external vendor unit
-specifications. These results have no failures, but the skips and unfinished
-ledger still prevent a completion claim.
+The 27 September 2026 source-tree and isolated installed-wheel gates each
+passed **2,445 tests**, skipped **265 provisioning-gated tests**, and passed
+**18,584 subtests**. The interoperability gate passed **16 tests** and skipped
+one test requiring external vendor unit specifications. These results have no
+failures, but the skips and unfinished ledger still prevent a completion claim.
 
 ## Install and run
 
@@ -755,25 +755,45 @@ cbus-toolkit cgate unit --lock-address //TEST/254 \
   --metadata lifecycle-cache.json --operations operations.json
 ```
 
-The JSON array contains two through 22 operations and must include a widget.
+The JSON array contains two through 22 operations and must include a widget,
+one retained SceneManager sequence or Reset.
 It accepts Measurement, Lighting, Enable, Fan, HVAC, Multi Level, Room
 Courtesy, Scene, Shutter, Time/Date, Timer, MRA Zone Control, Source Select and
-Source Control widgets, plus activation, General, Display, Standby, Colours,
-Navigation, Quick Status, Page Control and distributed MRA globals.
+Source Control and Blank widgets, plus activation, General, Display, Standby, Colours,
+Navigation, Quick Status, Page Control, distributed MRA globals, Applications
+and Corridor, one `scene-manager` nested operation array, plus an optional
+operation-1 Reset baseline. Applications,
+Corridor and Reset require a complete ordered
+`cbus-edlt-application-cache-v1`. Supply it with `--metadata`, or let the
+automatic resolver derive existing DBGETXML objects in XML child order. That
+branch never creates a missing list object and uses exact TagName as its
+database-view display because registry display/sort preferences are absent.
+SceneManager requires
+the superset `cbus-edlt-scene-manager-cache-v1` on the caller-cache path. The
+automatic parent path derives that cache through the exact native SceneManager
+resolver and can create missing Trigger application/group/action objects in
+deterministic dependency order. Reset also requires exact raw PP strings; the
+automatic branch reads all 874 selected Unit PP `Value` attributes. Its fresh
+21-widget/eight-scene graph becomes the baseline
+for later operations. Reset after operation 1, duplicate Reset and Reset+Blank
+are rejected before PP I/O.
 The planner rejects overlapping complete records, a duplicate settings owner,
 conflicting page modes, missing application/group evidence, mismatched dynamic
 text/icon metadata, duplicate JSON keys and unknown fields. Operation order is
 meaningful: Display can enable a later HVAC icon edit, Standby can enable later
 idle colour controls, a newly created MRA widget can precede `mra-globals`, and
-a two-slice Time/Date edit reserves both adjacent
+a parent Applications edit must precede SceneManager while SceneManager must
+precede every Scene widget. Only one operation owns the complete scene graph,
+and incomplete capacity prefixes fail before PP mutation. A
+two-slice Time/Date edit reserves both adjacent
 slots. It composes shared static allocation in order, preserves every unowned
-control byte, runs one terminal retained normalization and five-CRC projection,
+control byte, runs one terminal retained-or-fresh normalization and five-CRC projection,
 then uses one parameter-write/readback/rollback sequence and one database save
 on successful non-dry-run execution. The original component models have
 retained independent evidence. MRA shared settings preserve the first existing
 pre-conversion record, stored standby placements, raw multiplexer 3, low
-status bits and unrelated bytes. Cache/dialog workflows, the complete
-original multi-panel WinForms sequence and physical behavior remain unverified. See
+status bits and unrelated bytes. The complete original multi-panel WinForms
+sequence and physical behavior remain unverified. See
 [edlt-parent-transaction.md](docs/edlt-parent-transaction.md).
 
 `lifecycle.crc_fields_calculated` names all five fields. A field already holding
@@ -806,6 +826,9 @@ creation, PP SAVE and PROJECT SAVE as separate operations, so this path reports
 retries an uncertain save. DYNAMIC/FONT/ICON image facts that depend on project
 files or Toolkit's DLTP index fail closed. See
 [edlt-parent-metadata.md](docs/edlt-parent-metadata.md).
+This automatic path accepts existing Applications/Corridor lists and
+operation-1 Reset raw state. It refuses missing/projected list objects and any
+combination of those operations with automatic SceneManager metadata.
 
 Time/Date widgets support standby and functional positions, with unit-wide
 date formats, time formats and leading zeroes:
@@ -1014,9 +1037,11 @@ Twelve ordered CLI/helper tests cover persistence, input guards and failure
 evidence through the final save and both cleanup stages. See [Applications](docs/edlt-applications.md)
 and [Corridor](docs/edlt-corridor.md) for cache formats and exact limits. These
 standalone paths still require caller-supplied metadata. The composed parent
-transaction can derive and create its bounded application, group and static-label
-metadata from one admitted project snapshot. Dependent panel bindings, the
-complete form, project/DLTP image-dependent metadata and physical operation
+transaction accepts both dialog operations with the same complete application
+cache and gives them field ownership inside one terminal save. Its automatic
+project resolver can derive and create bounded metadata for the other admitted
+operations, but it cannot replace the ordered list contract for these two.
+The complete form, project/DLTP image-dependent metadata and physical operation
 remain separate work.
 
 Select Blank for one visible widget while retaining the loaded scenes, static
@@ -1032,6 +1057,9 @@ The [Blank workflow](docs/edlt-blank.md) passes 54 tests per Python version,
 including 31 original control cases, thirteen native save/reload cases and
 the prior lifecycle/restore regressions. Plans distinguish the selected Blank
 from a stored end marker, and reject covered standby or navigation positions.
+The ordered parent transaction accepts `blank` with the same page/position
+placement and retained receipt, reserves its whole slot and performs one
+shared terminal save/CRC projection with later distinct operations.
 The database Blank workflow remains separate from the guarded physical
 FactoryDefault command below; physical post-reset readback and persistence are
 still separate acceptance work.
@@ -1051,7 +1079,10 @@ applies the original ordered defaults and retained-model transitions, and
 reproduces the selected tab's effects. Its raw input preserves numeric spelling
 and dirty state. Fifty-five tests pass on both Python versions, including four
 fresh original/native cases per version, all 874 parameters, five CRCs and
-save/reload checks. Full form initialization and physical reset remain unverified.
+save/reload checks. The ordered parent transaction accepts Reset only as
+operation 1 with the same exact raw/application-cache contract, then binds
+later operations to its fresh graph before one terminal save. Reset+Blank,
+full interactive form initialization and physical reset remain unverified.
 
 Copy selected eDLT global categories to existing database units:
 
@@ -1336,6 +1367,11 @@ cbus-toolkit cgate unit --lock-address //TEST/254 --source /db//TEST/254/p/20 \
 cbus-toolkit unit-templates inspect key-template.xml
 cbus-toolkit cgate unit --lock-address //TEST/254 --source /db//TEST/254/p/21 \
   --dry-run template-import key-template.xml
+cbus-toolkit cgate unit --lock-address //TEST/254 \
+  --source /db//TEST/254/p/20 --destination /db//TEST/254/p/21 \
+  --dry-run template-copy --profile KEY4
+cbus-toolkit cgate unit --lock-address //TEST/254 --source /db//TEST/254/p/21 \
+  --dry-run template-reset-defaults --profile KEY4
 ```
 
 Remove `--dry-run` to save the verified database programming. The template's
@@ -1347,6 +1383,14 @@ snapshot.json key-template.xml` exports the same format offline. See
 [unit-templates.md](docs/unit-templates.md) for the supported fields and limits.
 The default profile is KEY4; add `--profile KEY1` or `--profile KEY2` to the
 export/import command for those units. Imports require matching unit types.
+`template-copy` transfers a matching profile directly between two closed
+database units. `template-reset-defaults` resets only the original 26 template
+fields from the decoded specification. Both commands stage safely with
+`--dry-run`. Applying performs one PP save, opens a fresh destination session,
+verifies every template field and checks the stable excluded identity and
+other listed preservation values exposed by the server. A lost save reply is
+reported as uncertain and is never retried. The receipt explicitly reports that the
+enclosing project file and physical hardware were not saved.
 
 ## eDLT USB diagnostics
 
@@ -1854,14 +1898,15 @@ The current Python 3.13 source-tree gates are:
 cd toolkit-cli
 make check
 make check-interop
+make check-wheel
 ```
 
-On 27 September 2026, `make check` completed with **2,379 passed, 275 skipped
-and 18,561 passing subtests**. `make check-interop` completed with **14 passed
-and one skipped** because the external vendor unit-specification tree was not
-provisioned. The skipped tests cover explicit vendor, Windows, native-service
-or hardware provisions; an offline pass is not a zero-skip wheel or hardware
-acceptance.
+On 27 September 2026, `make check` and the isolated `make check-wheel` each
+completed with **2,445 passed, 265 skipped and 18,584 passing subtests**.
+`make check-interop` completed with **16 passed and one skipped** because the
+external vendor unit-specification tree was not provisioned. The skipped tests
+cover explicit vendor, Windows, native-service or hardware provisions; an
+offline wheel pass is not zero-skip native or hardware acceptance.
 
 ```sh
 PYTHONPATH=toolkit-cli/src python3 -m unittest discover -s toolkit-cli/tests -v
@@ -1926,7 +1971,7 @@ The retained focused checkpoints below were recorded outside that frozen
 wheel; each linked record identifies its runtime, source scope and date:
 
 - [Configuration CRC](docs/edlt-crc.md): 21 tests, including 65,588 fresh original CRC results per run.
-- [Percentage conversion](docs/edlt-percentage.md), [bounded parent composition](docs/edlt-parent-form.md), [ordered parent transaction](docs/edlt-parent-transaction.md), [automatic parent metadata](docs/edlt-parent-metadata.md) and [automatic SceneManager metadata](docs/edlt-scene-metadata.md): pure conversion and CLI acceptance, standalone original Windows 12- and 528-case captures, 14 portable Measurement/Percentage lifecycle composition tests, 38 portable parent-transaction tests across 14 admitted configurable widget panels and nine direct parent/settings operations plus two optional native gates, 19 portable parent-metadata/CLI cases plus one optional native gate, and 32 portable SceneManager-metadata/CLI cases plus one optional native gate. Applications/Corridor cache dialogs, Blank/Reset parent composition, the complete original parent/SceneManager dialogs and combined Schneider C-Gate/physical acceptance remain outstanding.
+- [Percentage conversion](docs/edlt-percentage.md), [bounded parent composition](docs/edlt-parent-form.md), [ordered parent transaction](docs/edlt-parent-transaction.md), [automatic parent metadata](docs/edlt-parent-metadata.md) and [automatic SceneManager metadata](docs/edlt-scene-metadata.md): pure conversion and CLI acceptance, standalone original Windows 12- and 528-case captures, 14 portable Measurement/Percentage lifecycle composition tests, 59 portable parent-transaction tests across 15 widget operations, eleven direct parent/settings operations, one retained SceneManager sequence and operation-1 Reset plus two optional native gates, 36 portable parent-metadata/CLI cases plus three optional native gates, and 32 portable SceneManager-metadata/CLI cases plus one optional native gate. Automatic parent metadata resolves existing Applications/Corridor lists and exact Reset raw strings, while its separate SceneManager branch reuses the exact Trigger application/group/action creator before one parent PP save. Reset+Blank graph binding, automatic list-plus-SceneManager metadata, registry display/sort preferences, the complete original parent/SceneManager dialogs and combined Schneider C-Gate/physical acceptance remain outstanding.
 - [About information](docs/toolkit-about.md): 16 tests, including 51 original instruction cases per run.
 - [Signed update metadata](docs/toolkit-update-metadata.md), [revocation stages](docs/toolkit-update-revocation.md) and [supplied-context registry conditions](docs/toolkit-update-registry-conditions.md): separate 56-, 53- and 78-test checkpoints with explicit trust and availability limits.
 - [PCI routing](docs/pci-routing.md), [incoming routing](docs/pci-incoming-routing.md), [routed RECALL](docs/pci-routed-recall.md) and [routed IDENTIFY](docs/pci-routed-identify.md): separate codec and transport checkpoints; IDENTIFY passes 104 tests with fresh original matcher comparisons and owned loopback exchanges.

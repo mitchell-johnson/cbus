@@ -208,11 +208,17 @@ fn tls_configuration(opts: &Options) -> Result<rumqttc::TlsConfiguration, String
 /// TLS server configuration for the embedded C-Gate listener. `None`
 /// keeps the byte-identical plaintext path. Both cert and key are
 /// required together; any load failure is fatal at startup (no listener
-/// is opened). No client authentication is requested (P4b transport-only).
+/// is opened). Supplying `--cgate-tls-client-ca` requires a valid client
+/// certificate chain during the TLS handshake. Certificate authentication
+/// is independent of the command-layer ACCESS/LOGIN policy.
 pub fn cgate_tls_config(opts: &Options) -> Result<Option<Arc<rustls::ServerConfig>>, String> {
-    match (&opts.cgate_tls_cert, &opts.cgate_tls_key) {
-        (None, None) => Ok(None),
-        (Some(cert_path), Some(key_path)) => {
+    match (
+        &opts.cgate_tls_cert,
+        &opts.cgate_tls_key,
+        &opts.cgate_tls_client_ca,
+    ) {
+        (None, None, None) => Ok(None),
+        (Some(cert_path), Some(key_path), client_ca_path) => {
             let certs = pem_certs(cert_path)?;
             if certs.is_empty() {
                 return Err(format!("no certificates found in {}", cert_path.display()));
@@ -222,14 +228,47 @@ pub fn cgate_tls_config(opts: &Options) -> Result<Option<Arc<rustls::ServerConfi
             let key = rustls_pemfile::private_key(&mut key_data.as_slice())
                 .map_err(|e| format!("bad PEM in {}: {e}", key_path.display()))?
                 .ok_or_else(|| format!("no private key found in {}", key_path.display()))?;
-            rustls::ServerConfig::builder()
-                .with_no_client_auth()
+            let builder = rustls::ServerConfig::builder();
+            let builder = if let Some(client_ca_path) = client_ca_path {
+                let client_certs = pem_certs(client_ca_path)?;
+                if client_certs.is_empty() {
+                    return Err(format!(
+                        "no client CA certificates found in {}",
+                        client_ca_path.display()
+                    ));
+                }
+                let mut roots = rustls::RootCertStore::empty();
+                for certificate in client_certs {
+                    roots.add(certificate).map_err(|error| {
+                        format!(
+                            "bad C-Gate TLS client CA certificate in {}: {error}",
+                            client_ca_path.display()
+                        )
+                    })?;
+                }
+                let verifier = rustls::server::WebPkiClientVerifier::builder(Arc::new(roots))
+                    .build()
+                    .map_err(|error| {
+                        format!(
+                            "bad C-Gate TLS client CA bundle {}: {error}",
+                            client_ca_path.display()
+                        )
+                    })?;
+                builder.with_client_cert_verifier(verifier)
+            } else {
+                builder.with_no_client_auth()
+            };
+            builder
                 .with_single_cert(certs, key)
                 .map(Arc::new)
                 .map(Some)
                 .map_err(|e| format!("bad C-Gate TLS cert/key: {e}"))
         }
-        _ => Err("both --cgate-tls-cert and --cgate-tls-key must be specified together".into()),
+        _ => Err(
+            "--cgate-tls-cert and --cgate-tls-key must be specified together; \
+             --cgate-tls-client-ca additionally requires both"
+                .into(),
+        ),
     }
 }
 
@@ -371,6 +410,7 @@ mod tests {
             cgate_unitspec: None,
             cgate_tls_cert: cert,
             cgate_tls_key: key,
+            cgate_tls_client_ca: None,
             cgate_auth_file: None,
         }
     }
@@ -387,6 +427,93 @@ mod tests {
             Some(tls_fixture("cgate-tls-test-key.pem")),
         );
         assert!(cgate_tls_config(&opts).unwrap().is_some());
+    }
+
+    #[test]
+    fn cgate_tls_loads_required_client_ca() {
+        let mut opts = tls_opts(
+            Some(tls_fixture("cgate-tls-test-cert.pem")),
+            Some(tls_fixture("cgate-tls-test-key.pem")),
+        );
+        opts.cgate_tls_client_ca = Some(tls_fixture("cgate-tls-test-cert.pem"));
+        assert!(cgate_tls_config(&opts).unwrap().is_some());
+    }
+
+    #[test]
+    fn cgate_tls_client_ca_load_failure_is_fatal() {
+        let mut opts = tls_opts(
+            Some(tls_fixture("cgate-tls-test-cert.pem")),
+            Some(tls_fixture("cgate-tls-test-key.pem")),
+        );
+        opts.cgate_tls_client_ca = Some(std::path::PathBuf::from("/nonexistent/client-ca.pem"));
+        assert!(cgate_tls_config(&opts).is_err());
+    }
+
+    fn test_tls_client_config(with_certificate: bool) -> Arc<rustls::ClientConfig> {
+        let certificate_path = tls_fixture("cgate-tls-test-cert.pem");
+        let certificates = pem_certs(&certificate_path).expect("test certificates");
+        let mut roots = rustls::RootCertStore::empty();
+        roots
+            .add(certificates[0].clone())
+            .expect("test trust anchor");
+        let builder = rustls::ClientConfig::builder().with_root_certificates(roots);
+        if with_certificate {
+            let key_path = tls_fixture("cgate-tls-test-key.pem");
+            let key_data = std::fs::read(key_path).expect("test private key");
+            let key = rustls_pemfile::private_key(&mut key_data.as_slice())
+                .expect("parse test key")
+                .expect("test key present");
+            Arc::new(
+                builder
+                    .with_client_auth_cert(certificates, key)
+                    .expect("test client identity"),
+            )
+        } else {
+            Arc::new(builder.with_no_client_auth())
+        }
+    }
+
+    async fn test_tls_handshake(
+        server: Arc<rustls::ServerConfig>,
+        client: Arc<rustls::ClientConfig>,
+    ) -> (bool, bool) {
+        let (client_io, server_io) = tokio::io::duplex(64 * 1024);
+        let acceptor = tokio_rustls::TlsAcceptor::from(server);
+        let connector = tokio_rustls::TlsConnector::from(client);
+        let server_name = rustls::pki_types::ServerName::try_from("127.0.0.1")
+            .expect("test server name")
+            .to_owned();
+        let (server_result, client_result) = tokio::join!(
+            acceptor.accept(server_io),
+            connector.connect(server_name, client_io)
+        );
+        (server_result.is_ok(), client_result.is_ok())
+    }
+
+    #[tokio::test]
+    async fn cgate_tls_client_ca_rejects_missing_identity_and_accepts_trusted_identity() {
+        let mut opts = tls_opts(
+            Some(tls_fixture("cgate-tls-test-cert.pem")),
+            Some(tls_fixture("cgate-tls-test-key.pem")),
+        );
+        opts.cgate_tls_client_ca = Some(tls_fixture("cgate-tls-test-cert.pem"));
+        let server = cgate_tls_config(&opts)
+            .expect("mTLS configuration")
+            .expect("TLS enabled");
+
+        let without_identity =
+            test_tls_handshake(server.clone(), test_tls_client_config(false)).await;
+        assert!(
+            !without_identity.0,
+            "the server must reject a client that supplies no certificate"
+        );
+
+        let with_identity = test_tls_handshake(server, test_tls_client_config(true)).await;
+        assert_eq!(
+            with_identity,
+            (true, true),
+            "a certificate signed by the configured client CA must complete both handshake sides"
+        );
     }
 
     #[test]

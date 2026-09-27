@@ -4,6 +4,12 @@ The Python `EdltApplications` workflow implements the original Primary and Secon
 
 `ApplicationCache` supplies complete ordered application inventory, group presence and the existing lifecycle facts. See [the cache contract](edlt-application-cache.md). Names and formatted displays remain distinct. Duplicate display names are permitted; duplicate numeric object identities are rejected. Caller completeness is an explicit input contract, not verification against a physical network.
 
+The [automatic ordered parent metadata](edlt-parent-metadata.md) workflow can
+derive this cache for existing DBGETXML objects. It preserves XML child order
+and exact TagName, uses TagName as a deterministic database-view display, and
+refuses missing objects because post-creation list placement is not evidenced.
+Standalone Applications planning still requires a caller cache.
+
 ```python
 from cbus_toolkit.edlt_applications import EdltApplications, ApplicationEdit
 

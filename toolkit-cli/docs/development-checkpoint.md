@@ -4,7 +4,7 @@ Updated **27 September 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.
 
 ## Current product state
 
-The Python CLI is an active product with local project tools, typed C-Gate and PCI workflows, unit programming helpers, eDLT editors and diagnostics. It has not reached full Toolkit parity. The packaged ledger currently contains **38 areas: 17 implemented, 19 in progress and 2 pending**. `census_complete` is `false`, so `cbus-toolkit coverage --require-complete` exits nonzero by design.
+The Python CLI is an active product with local project tools, typed C-Gate and PCI workflows, unit programming helpers, eDLT editors and diagnostics. It has not reached full Toolkit parity. The packaged ledger currently contains **39 areas: 18 implemented, 19 in progress and 2 pending**. `census_complete` is `false`, so `cbus-toolkit coverage --require-complete` exits nonzero by design.
 
 `cbus-toolkit cgate exec` sends one raw command and `cbus-toolkit cgate run` sends a batch in one session. Together they can reach the command surface exposed by the selected native C-Gate, `cgate-mock` or embedded `cmqttd` service. That transport reach does not create a typed Toolkit workflow, reproduce Toolkit GUI state, prove native-server semantics, or verify a physical effect. Each typed workflow keeps its own validation and acceptance boundary.
 
@@ -17,13 +17,27 @@ The current Python 3.13 gates were run from `toolkit-cli/` on 27 September 2026:
 ```sh
 make check
 make check-interop
+make check-wheel
 ```
 
-`make check` completed with **2,379 passed, 275 skipped and 18,561 passing subtests**, with no failures or errors. The skips are explicit provisioning gates for vendor software or specifications, Windows, native services and hardware. `make check-interop` completed with **14 passed and one skipped** because the external vendor unit-specification tree was not provisioned.
+`make check` and a clean, isolated `make check-wheel` each completed with
+**2,445 passed, 265 skipped and 18,584 passing subtests**, with no failures or
+errors. The wheel gate installed all supported extras from the built artifact
+without importing the source package. The skips are explicit provisioning
+gates for vendor software or specifications, Windows, native services and
+hardware. `make check-interop` completed with **16 passed and one skipped**
+because the external vendor unit-specification tree was not provisioned.
 
-This is the current source-tree checkpoint. It is not a zero-skip installed-wheel audit, a complete native C-Gate differential, or physical-hardware acceptance.
+This is the current source-tree and offline installed-wheel checkpoint. It is
+not a zero-skip native C-Gate differential or physical-hardware acceptance.
 
-The most recent complete installed-wheel audit remains the **15 September 2026** frozen snapshot in [test-acceptance.json](test-acceptance.json): 1,725 tests on Python 3.13.14 and 1,725 on Python 3.10.20, with all 14 native gates enabled and no skips. It is retained as historical evidence and predates the current tree. Python 3.13 is now the only supported runtime, and a fresh complete wheel audit is still required after the remaining work is integrated.
+The most recent zero-skip native installed-wheel audit remains the **15
+September 2026** frozen snapshot in
+[test-acceptance.json](test-acceptance.json): 1,725 tests on Python 3.13.14 and
+1,725 on Python 3.10.20, with all 14 native gates enabled and no skips. It is
+retained as historical evidence and predates the current tree. Python 3.13 is
+now the only supported runtime; the current wheel gate is fresh and complete
+for the offline provision, while native and hardware gates remain explicit.
 
 ## Accepted current additions
 

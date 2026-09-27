@@ -84,16 +84,93 @@ async fn administrative_documents_and_mqtt_share_the_running_daemon() {
     assert!(repository[0].contains("123 index=1 type=cmqttd-json path="));
     assert!(repository[0].ends_with(" current=yes"));
 
+    assert!(command(&mut reader, &mut writer, "7", "PROJECT USE AUX2")
+        .await
+        .last()
+        .unwrap()
+        .contains("200 OK"));
+    assert!(command(
+        &mut reader,
+        &mut writer,
+        "8",
+        "DBCREATENET 1 Auxiliary Cni loopback",
+    )
+    .await
+    .last()
+    .unwrap()
+    .contains("200 OK"));
+    let added = command(&mut reader, &mut writer, "9", "DBADD 1 Application").await;
+    let application_oid = added
+        .last()
+        .unwrap()
+        .split_once("301 OID=")
+        .map(|(_, oid)| oid)
+        .expect("application OID")
+        .to_string();
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "10",
+            &format!("DBSET !{application_oid}/Address 56"),
+        )
+        .await
+        .last()
+        .unwrap(),
+        "[10] 200 OK."
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "11",
+            &format!("DBSET !{application_oid}/TagName Original"),
+        )
+        .await
+        .last()
+        .unwrap(),
+        "[11] 200 OK."
+    );
+    let typed = concat!(
+        "<Application><OID>70000000-0000-4000-8000-000000000001</OID>",
+        "<TagName>Daemon typed</TagName><Address>58</Address>",
+        "<Group><OID>70000000-0000-4000-8000-000000000002</OID>",
+        "<TagName>Scenes</TagName><Address>10</Address>",
+        "<Level Value=\"128\"><OID>70000000-0000-4000-8000-000000000003</OID>",
+        "<TagName>Evening</TagName><Address>1</Address></Level></Group></Application>"
+    );
     writer
-        .write_all(b"[7] DBSETXML //HARNESS/254/p/5/TagName << END\r\nSystem document\r\nEND\r\n")
+        .write_all(
+            format!("[12] DBSETXML !{application_oid} << END_TYPED\r\n{typed}\r\nEND_TYPED\r\n")
+                .as_bytes(),
+        )
+        .await
+        .unwrap();
+    let mut typed_reply = String::new();
+    reader.read_line(&mut typed_reply).await.unwrap();
+    assert_eq!(
+        typed_reply,
+        "[12] 301 OID=70000000-0000-4000-8000-000000000001\r\n"
+    );
+    let typed_readback = command(&mut reader, &mut writer, "13", "DBGETXML //AUX2/1/58").await;
+    assert!(typed_readback
+        .iter()
+        .any(|line| line.contains("<Level Value=\"128\">")));
+    assert!(
+        command(&mut reader, &mut writer, "14", "PROJECT USE HARNESS")
+            .await
+            .last()
+            .unwrap()
+            .contains("200 OK")
+    );
+
+    writer
+        .write_all(b"[15] DBSETXML //HARNESS/254/p/5/TagName << END\r\nSystem document\r\nEND\r\n")
         .await
         .unwrap();
     let mut document_reply = String::new();
     reader.read_line(&mut document_reply).await.unwrap();
-    assert_eq!(
-        document_reply,
-        "[7] 502 Document command semantics are not implemented\r\n"
-    );
+    assert_eq!(document_reply, "[15] 200 OK\r\n");
 
     let payload = "053800790149";
     let before = sys.pci.count_payload(payload);

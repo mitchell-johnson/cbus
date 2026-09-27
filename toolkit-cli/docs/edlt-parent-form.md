@@ -9,8 +9,9 @@ full readback and database save.
 
 For several distinct widget edits in one retained save, use the
 [ordered parent transaction](edlt-parent-transaction.md). It accepts
-14 admitted configurable widgets, including all three MRA models, and nine
-direct parent/settings operations, rejects
+15 admitted widget operations, including Blank and all three MRA models,
+eleven direct parent/settings operations and an optional operation-1 Reset
+fresh graph, rejects
 overlapping complete records/fields, validates ordered dependencies and
 performs one terminal lifecycle/CRC projection.
 

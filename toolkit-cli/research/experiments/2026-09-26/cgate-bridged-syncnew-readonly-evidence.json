@@ -1,8 +1,8 @@
 {
-  "format": "cbus-cgate-bridged-syncnew-readonly-evidence-v1",
-  "date": "2026-09-26",
+  "format": "cbus-cgate-bridged-syncnew-readonly-evidence-v2",
+  "date": "2026-09-27",
   "passed": true,
-  "scope": "Owned C-Gate 3.4.0_2001 classfile and disposable one-bridge outbound-wire evidence, published C-Bus routing grammar, and cmqttd scripted-PCI acceptance; no live C-Bus network or site project was used",
+  "scope": "Owned C-Gate 3.4.0_2001 classfile and disposable one-bridge outbound-MMI evidence, published C-Bus routing grammar, and cmqttd scripted-PCI general and targeted acceptance; no live C-Bus network or site project was used",
   "selected_native_runtime": {
     "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
     "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
@@ -28,13 +28,13 @@
     },
     {
       "class": "kV",
-      "finding": "With an optional unit address, kV runs three dd commands with parameters 0x80 through 0x82 before identity. This separate routed targeted form has no retained routed completion capture and remains outside cmqttd's admitted subset."
+      "finding": "With an optional unit address, kV runs three dd commands with parameters 0x80 through 0x82 against the resolved CBusBaseNetwork before identity. No retained native routed completion capture was obtained; cmqttd's routed target path is admitted from this classfile contract plus published Reply Network grammar and exact scripted-PCI acceptance."
     }
   ],
   "native_manual_contract": {
     "command": "NET SYNCNEW net-address [unit-number]",
     "general_form": "Checks the addressed network for new units and returns type, version and serial number; native examples use 120 progress and 303 results.",
-    "database_difference": "Native C-Gate identity may create a database unit. cmqttd's admitted bridged general subset is deliberately read-only on the bus and updates only the reconnect-invalidated volatile physical cache; it does not claim persistent project commissioning parity."
+    "database_difference": "Native C-Gate identity may create a database unit. cmqttd's admitted bridged general and targeted forms update only the reconnect-invalidated volatile physical cache; they do not claim persistent project commissioning parity."
   },
   "selected_runtime_wire_evidence": {
     "capture_sha256": "d02308d50bc7930b02a4f257bf2cc040736b2add27cc37a2a7f71ae91f30c705",
@@ -61,15 +61,18 @@
   },
   "cmqttd_acceptance": [
     "A one-bridge service test completes five route-matched MMI passes plus routed IDENTIFY1, IDENTIFY2 and IDENTIFY4, rejects a complete-looking neighbour-route identity, and writes only network 253's volatile cache and event.",
+    "The routed optional-unit service test pins the exact three challenge bodies 46FD090511801E, 46FD090511811D and 46FD090511821C, ignores neighbour-route duplicate and identity replies, then commits only the selected network after identity.",
+    "Transport tests pin one- and two-bridge challenge encoding, ignore direct and wrong-route replies, require both positive confirmation and the two-second quiet window, and prove that a lost confirmation is never replayed and retires the generation.",
+    "A routed optional-unit timeout service test proves that a matching reply without confirmation returns 408, exposes reconnect-required state, and commits no cache or event.",
     "A reconnect-generation race after identity discards the staged cache and event and returns 408.",
-    "The routed optional-unit form returns 502 before any PCI traffic.",
-    "A real cmqttd system test completes general routed SYNCNEW while direct-network bus traffic still reaches MQTT over the same single CNI connection, then verifies clean connection-loss handling.",
-    "Golden vectors pin checksummed outbound 46FD090421018E and matching one-bridge Reply Network identity decoding."
+    "A real cmqttd system test completes general and targeted routed SYNCNEW while direct-network bus traffic still reaches MQTT over the same single CNI connection, rejects neighbour-route replies, then verifies clean connection-loss handling.",
+    "Exact tests also pin checksummed outbound 46FD090421018E identity traffic and matching one-bridge Reply Network decoding."
   ],
   "evidence_boundaries": [
     "No physical bridge or routed C-Bus device completed NET SYNCNEW in this acceptance run.",
-    "The selected-version classfile proves that native general SYNCNEW applies its five-pass MMI and identity logic to the resolved CBusBridgeNetwork; the selected-version wire capture pins the shared routed MMI grammar.",
-    "Reply Network success and strict route correlation are implementation acceptance against CBUS-SIUG 1.17 and scripted PCI, not live-hardware acceptance.",
-    "Routed targeted SYNCNEW, duplicate challenges, persistent unit creation, routed writes, readdressing and OEM eDLT metadata remain fail-closed or outside this subset."
+    "The selected-version classfile proves that native SYNCNEW applies its five-pass MMI to the resolved CBusBridgeNetwork and runs three parameterized duplicate commands for an optional address; the selected-version wire capture pins only the shared routed MMI grammar.",
+    "No retained native routed optional-address completion or native duplicate-challenge wire capture was obtained.",
+    "Reply Network success, strict route correlation, confirmation plus quiet-window completion and retirement on uncertainty are implementation acceptance against CBUS-SIUG 1.17 and scripted PCI, not live-hardware acceptance.",
+    "Persistent unit creation, routed writes, readdressing and routed OEM eDLT metadata remain fail-closed or outside this subset."
   ]
 }

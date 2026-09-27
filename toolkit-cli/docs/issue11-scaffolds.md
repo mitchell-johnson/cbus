@@ -30,5 +30,5 @@ plus (where noted) hardware or vendor-gated acceptance.
 | 16 fresh wheel | cbus-ahr | BLOCKED until ledger+census complete | — | installed-wheel 3.13 run, 14 gates, skip evidence |
 
 Verification: `cbus-toolkit coverage --require-complete` still exits 1
-(17 implemented / 19 in_progress / 2 pending, `census_complete: false`)
+(18 implemented / 19 in_progress / 2 pending, `census_complete: false`)
 by design; these scaffolds intentionally flip no ledger status.

@@ -417,7 +417,10 @@ class ExtendedParentPanelTests(unittest.TestCase):
         boundary = document['implemented_boundary']
         self.assertEqual(
             boundary['widget_operations'] + boundary['settings_operations'],
-            list(SUPPORTED_OPERATION_NAMES))
+            [name for name in SUPPORTED_OPERATION_NAMES
+            if name not in (
+                'applications', 'corridor', 'blank', 'reset',
+                'scene-manager')])
         for row in document['accepted_panel_fixtures']:
             self.assertEqual(
                 hashlib.sha256((ROOT / row['path']).read_bytes()).hexdigest(),

@@ -671,20 +671,53 @@ retained help locally. Inspect the boundary programmatically with
   "dali_specialized_commands_fail_closed": 0,
   "dali_full_compatibility": false,
   "dali_session_ext_only": true,
-  "dali_session_typed_device_plans": "fail-closed-before-io",
+  "dali_session_typed_device_plans": "complete-read-only-extract",
+  "dali_session_typed_extract_plans": ["DALI_ONLY", "FULL", "REFRESH_STATUS_INFO", "RETRIEVE_RECONCILE"],
+  "dali_session_typed_extract_plans_remaining": ["COND_QUICK", "COND_EXTENDED", "RESCAN_FAULT"],
+  "dali_session_typed_extract_safe_prefix_plans": {
+    "COND_QUICK": ["POLL_FINISH_DISCOVER_KNOWN_FULL_INFO", "MISSING"],
+    "COND_EXTENDED": ["POLL_FINISH_DISCOVER_KNOWN_FULL_INFO", "MISSING"],
+    "RESCAN_FAULT": ["RESCAN", "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO", "MISSING"]
+  },
+  "dali_session_typed_extract_refusal_step": "ADDRESS_UNKNOWN",
+  "dali_session_typed_extract_refusal_receipt": "mask-only-no-explicit-device-allocation",
+  "dali_session_typed_deploy_plans_remaining": ["DALI_ONLY", "FULL"],
+  "dali_session_typed_deploy_preflight": "local-session-target-validation-before-io",
+  "dali_session_typed_deploy_refusal_missing": [
+    "native-step-order",
+    "model-to-payload-ownership",
+    "per-field-readback-receipts",
+    "full-typed-ext-atomic-boundary"
+  ],
   "dali_delivery_semantics": "source-correlated-exactly-once-no-replay"
 }
 ```
 
 `EXT_ONLY` session extraction and deployment have exact paged-memory physical
-plans. Do not silently map `DALI_ONLY`, `FULL`, `COND_QUICK`, `COND_EXTENDED`,
-`RESCAN_FAULT`, `REFRESH_STATUS_INFO`, or `RETRIEVE_RECONCILE` onto that plan.
-C-Gate's retained classes make those typed-model workflows; cmqttd refuses
-them before I/O until the full typed model codec is evidenced.
+plans. Every retained read-only typed extraction selector is implemented:
+`DALI_ONLY` runs the exact 15-step line/device plan, `FULL` runs its exact
+18-step plan including GTIN/serial and the complete extended map, and
+`REFRESH_STATUS_INFO`/`RETRIEVE_RECONCILE` run the retained three-step/six-step
+plans over known selected ECGs. The executor stages decoded masks, types,
+common parameters, scenes, status, emergency, LED, GTIN, serial, and extended
+bytes and commits only after the whole plan completes on the captured PCI
+generation. Broken discovery retains the previous broken value and full
+discovery applies its mask to both known and full-known. Do not invoke
+`COND_QUICK`, `COND_EXTENDED`, or `RESCAN_FAULT` as completed read-only
+operations. They run only the retained non-remediating prefix with
+source-correlated exact-once exchanges, discard every staged mask, and return
+502 before operation 2, `ADDRESS_UNKNOWN`. That operation has no target/range
+payload bytes and returns only an eight-byte short-address mask with no
+device-to-address allocation receipt. Typed `DALI_ONLY` and `FULL` deployment
+validate the session, known-address selection, range, and gateway locally,
+then fail before I/O. Generic operations 32/34/35/38/40 and their read getters
+are individually evidenced, but no retained deploy step order, dirty-field
+ownership, per-field acceptance receipt, or `FULL` typed/extended atomic
+boundary connects them into a safe session plan.
 
 There is no MQTT DALI state contract. Ground syntax/help in
 `rust/testdata/fixtures/native_cgate_dali_help.json`, specialized class hashes,
-layouts, and the fail-before-I/O boundary in
+layouts, and the stop-before-mutation boundary in
 `rust/testdata/fixtures/native_cgate_dali_specialized.json`, exact CAL/page
 bytes in `rust/testdata/vectors/dali.jsonl`, and real-daemon fake-PCI/MQTT
 behavior in `rust/cmqttd/tests/system_cgate_dali.rs` and
@@ -696,7 +729,35 @@ methods for lighting and direct/bridged read-only `SYNC`, Trigger Control,
 Enable Control, clock date/time/refresh, Temperature Broadcast, `NET PINGU`, `NET SYNC`,
 `NET CHECKUNIT`, physical `NET CLOCKS`, physical `PP LOAD`, and readback-verified physical `PP SAVE` for
 `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and
-`goc2` parameters using decoded unit specifications. Direct and page-aware
+`goc2` parameters using decoded unit specifications on the configured network.
+Across a resolved route through one to six bridges, PP LOAD is limited to
+standard-CAL `direct` parameters and PP SAVE/SAVE_TO_SOURCE is limited to
+`direct` parameters with `none` or `checksum` protection. Routed identity,
+pre-read, tagged STORE acknowledgement and readback require the exact Reply
+Network, remote unit, parameter, tag and count; each STORE is sent once, the
+owned session commits only on the captured shared PCI generation, and neither
+network physical cache is changed. Routed LOAD rejects non-direct schema
+entries after identity and before parameter I/O. A routed SAVE containing lock,
+page-aware, OEM/GOC, or Save-to-NVM work returns 502 before physical identity
+or write I/O.
+
+Standard application control also uses a database-resolved route through one
+to six bridges for Lighting applications 48–95 (bare, `LIGHTING`, and `DO`
+ON/OFF/RAMP/STOP forms), Trigger application 202 EVENT/INDICATORKILL, and
+Enable application 203 SET. It composes the retained direct SAL with the
+evidenced point-to-point-to-multipoint route envelope and sends one frame. The
+only completion receipt is the exact PCI confirmation allocated to that frame;
+neighbouring Reply Network traffic and direct observations remain shared-reader
+fanout and cannot complete it. A positive confirmation proves only interface
+acceptance. No routed application reply, Lighting status request, device state,
+or persistence is inferred. State invalidation, values, and events apply only
+to the addressed network on the captured PCI generation. Unsupported
+applications and unresolved routes fail before I/O; Enable REMOVE remains a
+local saved-value operation. Ground this scope in
+`rust/testdata/fixtures/native_cgate_routed_application_control.json` and the
+`en-cmqttd-routed-application-*` vectors.
+
+Direct and page-aware
 `lock` parameters use the captured unlock phase. A specification containing
 `ProgramMethod=ncc` identifies the vendor C-Bus 3 families; after at least one
 changed store, SAVE performs native group-0 operation-4 EXECUTE followed by
@@ -921,17 +982,19 @@ requires complete contiguous MMI coverage, retains raw IDENTIFY4 replies with
 multiplicity, bounds each address and the full collection, and marks silent or
 malformed identities partial. Its observations are sequential and are not an
 atomic network snapshot.
-`NET SYNCNEW //PROJECT/NETWORK [unit]` is hardware-backed for direct networks,
-and its general form is hardware-backed through one to six bridges. It merges
-five complete MMI passes. The direct optional targeted form rejects an
-already-modeled address before bus I/O, runs native duplicate challenges
-`0x80`, `0x81`, and `0x82`, then reads IDENTIFY1/2/4. General routed discovery
-uses exact Reply Network correlation for IDENTIFY1/2/4 and commits its staged
-cache and event changes only if the shared PCI generation is still current.
-Routed targeted discovery returns 502 before PCI I/O because its duplicate
-challenge completion has not been captured. Results update only the addressed
-network's volatile physical cache and retain native progress/result codes
-(`120`, `303`, `408`); they do not create persistent database units. See the
+`NET SYNCNEW //PROJECT/NETWORK [unit]` is hardware-backed for direct networks
+and through one to six bridges. It merges five complete MMI passes. Both
+optional targeted forms reject an already-modeled address before bus I/O, run
+native duplicate challenges `0x80`, `0x81`, and `0x82`, then read
+IDENTIFY1/2/4. Routed duplicate and identity replies must match the first
+bridge, remaining Reply Network, source unit and parameter. Each challenge is
+sent exactly once and succeeds only after a positive confirmation and bounded
+quiet window; an incomplete exchange retires the PCI generation without replay
+or commit. All forms commit staged cache and event changes only if the shared
+PCI generation is still current. Results update only the addressed network's
+volatile physical cache and retain native progress/result codes (`120`, `303`,
+`408`); they do not create persistent database units. No retained native routed
+target completion or live physical-bridge acceptance is claimed. See the
 [retained C-Gate 3.4 classfile and routed-wire evidence](../../../../toolkit-cli/research/experiments/2026-09-26/cgate-bridged-syncnew-readonly-evidence.json).
 `NET PROJECT_IDENTIFY TYPE@ADDRESS` is hardware-backed for the one interface
 already shared with MQTT. It runs one complete MMI, counts every nonzero state,
@@ -941,21 +1004,25 @@ does not update the project cache. A different valid interface returns 502;
 cmqttd never opens a second PCI/CNI for this command. See the retained
 [C-Gate 3.4 native acceptance](../../../../toolkit-cli/research/experiments/2026-09-26/cgate-project-identify-native-acceptance.json)
 for exact grammar, bytecode and scripted wire evidence.
-`NET SET_PROJECT_IDENTIFY //PROJECT/NETWORK NAME` is also hardware-backed.
-It packs the uppercased 1–8 character native six-bit identity, selects the
-first unit in non-error present MMI state one or two with valid IDENTIFY1 data
-and exactly one valid known IDENTIFY4 serial reply over the complete quiet
-window, stores parameter 35,
-and requires exact RECALL readback. A failed or uncertain write invalidates an
+`NET SET_PROJECT_IDENTIFY //PROJECT/NETWORK NAME` is also hardware-backed for
+the direct network and resolved paths through one to six bridges. It packs the
+uppercased 1–8 character native six-bit identity, selects the first unit in
+non-error present MMI state one or two with valid route-correlated IDENTIFY1
+data and exactly one valid known IDENTIFY4 serial reply over the complete quiet
+window, then sends one parameter-35 STORE with fixed tag `0x46`. The ACK and
+verified RECALL readback must match the selected Reply Network, unit, parameter,
+and tag; direct and neighbouring-route replies cannot complete a routed
+operation. A failed or uncertain write invalidates only that target network's
 older cached `ProjectName`. The verified update or same-generation invalidation
 commits only while the captured shared PCI generation and pointer remain
-current and connected. A reconnect returns 408, and the old operation cannot
-clear or repopulate the replacement generation's cache. The typed CLI
-mK-quotes spaces, quotes and backslashes; the cached `ProjectName` is decoded
+current; an incomplete exchange retires that generation without replay. The
+typed CLI mK-quotes spaces, quotes and backslashes; the cached `ProjectName` is decoded
 from verified bytes so the native `?`/space alias stays canonical. It updates
 only the volatile physical snapshot and does not rename or persist a project.
 This is distinct from the read-only interface discovery performed by
-`NET PROJECT_IDENTIFY`.
+`NET PROJECT_IDENTIFY`. The selected C-Gate class path, retained original route
+matrices, exact one/six-bridge vectors, and hardware boundary are recorded in
+[`native_cgate_routed_project_identity.json`](../../../../rust/testdata/fixtures/native_cgate_routed_project_identity.json).
 Query `CMQTT CAPABILITIES`; `unit_readdress: true` denotes the readdress path and
 `physical_pp_save_cbus3_nvm: true` denotes the NVM commit path,
 `dynamic_labels: true` denotes the label sender,
@@ -981,30 +1048,56 @@ controls, `SHORTMESSAGE SEND`, and `EREPORT MESSAGE` while reads,
 `SHORTMESSAGE REFRESH`, the Telephony last-number request, and
 other bus control stay open; failures answer `420 LOGIN required` / `420 LOGIN failed` (malformed
 `LOGIN` with no token is 400 and also clears the flag), never `401`.
-This is not exact native `access.txt` handler/access-level parity, and TLS client
-identity is not mapped into ACCESS rows;
+This is not exact native `access.txt` handler/access-level parity. The C-Gate
+listener can require mutual TLS with `--cgate-tls-client-ca <bundle.pem>` in
+addition to its server certificate and key. That rejects an untrusted or
+certificate-less peer before the greeting, independently of ACCESS/LOGIN; the
+verified certificate identity is not mapped into ACCESS rows;
+`pci_generation`, `pci_connected`, and `programming_lane_state` expose the
+current shared transport generation. `reconnect-required` means an incomplete
+source-correlated programming exchange retired that generation; do not retry or
+resume the failed request. Wait for a fresh connected generation, then restart
+the whole read or explicitly reviewed write workflow;
 `named_scenes: true` denotes hardware-backed named-scene playback,
 and `do_methods: ["factorydefault", "lighting", "sync", "unravel"]` denotes the physical object-method aliases,
 `network_clocks: true` denotes IDENTIFY16 inspection plus schema-backed target
 count and gateway recovery,
-`network_syncnew: true` denotes the five-pass direct backend,
-`bridged_syncnew_general: true` denotes routed general discovery while the
-optional routed targeted form remains unavailable,
+`network_syncnew: true` denotes the five-pass direct backend and optional target,
+`bridged_syncnew_general: true` denotes routed general discovery; routed
+optional-target support is listed by the `NET SYNCNEW` capability-matrix row,
 `bridged_read_only_discovery: true` denotes `DBNETWORKPATH` plus routed
-`NET PINGU`, `NET SYNC`, general `NET SYNCNEW`, `DO ... SYNC`, and
+`NET PINGU`, `NET SYNC`, general and targeted `NET SYNCNEW`, `DO ... SYNC`, and
 `NET CHECKUNIT`,
 `bridged_network_max_hops: 6` is the proven source-route bound,
-`network_set_project_identify: true` denotes the verified parameter-35 write,
+`network_set_project_identify: true` denotes the verified direct/routed
+parameter-35 write,
+`bridged_project_identity_write: true`, `physical_pp_routed_load: true`, and
+`physical_pp_routed_save: true`
+expose the bounded routed programming slice.
+`physical_application_routed_control: true` exposes the
+Lighting/Trigger/Enable-SET slice; inspect its family,
+command, delivery, state-scope, and readback fields before using it.
+`bridged_mutation_commands` lists `LIGHTING`, `DO lighting`, `TRIGGER`,
+`ENABLE SET`, `NET SET_PROJECT_IDENTIFY`, `PP SAVE`, and `PP SAVE_TO_SOURCE`; the PP-specific
+method/protection/lock/NVM fields preserve its narrower scope rather than
+implying support for other routed writes,
 `pp_reset_to_defaults: true` denotes specification-backed staged
 `PP RESET_TO_DEFAULTS` behavior,
 `document_framing: true` denotes bounded, synchronized here-document transport;
 `file_commands`, `file_storage`, `file_binary_transfer`, and
 `file_host_filesystem` describe the complete FILE family and its sandboxed
 cmqttd repository boundary;
-`database_documents: false` records that native DBSETXML replacement semantics
-and its 301 OID receipt remain unavailable,
+`database_documents: true` and
+`database_document_scope: ["scalar-field", "typed-unit", "typed-level",
+"typed-netvar", "typed-group", "typed-application", "typed-network"]` records
+the bounded DBSETXML surface. Complete forms validate the selected path/OID,
+whole submitted tree, OIDs and sibling addresses before an atomic durable
+replacement and `301 OID=...` root receipt. Network-with-Unit replacement and
+private vendor XML/repository formats remain unavailable for lack of retained
+native replacement evidence,
 `project_archive_restore: "cmqttd-internal"` denotes durable snapshot keys in
-the cmqttd JSON repository (never vendor archive files),
+the cmqttd JSON repository (never vendor archive files). Internal snapshots
+retain complete typed-object extension metadata and Unit templates/PP ownership,
 `project_rename_secondary: true` denotes rename support except for the running
 hardware-bound project,
 `project_copy: "cmqttd-internal"` denotes an OID-preserving durable copy inside
@@ -1097,8 +1190,13 @@ null fields through `DBGET !oid/field`, then populate them with `DBSET`.
 TagName throughout the copied subtree; across projects it preserves those
 fields and materializes the copied tree. `DBNEW` leaves a blank selected
 Installation/Project and survives restart. These local operations, DBTAGLIST,
-unsafe scalar DBSET and secondary-project DBRENAMENET variants commit atomically
-and send no PCI traffic.
+unsafe scalar DBSET, complete typed-Unit DBSETXML, and secondary-project
+DBRENAMENET variants commit atomically and send no PCI traffic. DBSETXML validates
+the selected existing Unit and its required fields before replacement, returns
+`301 OID=...`, and retains the accepted document as a projection template so
+unknown attributes, nested elements, comments, and order survive later modeled
+scalar or PP updates. It does not implement complete typed replacement for other
+object families or import private Schneider XML formats.
 
 `DBCREATE`, `DBUPDATE` and `DBVERIFY` are physical inventory operations for the
 configured project. They run the normal generation-guarded NET SYNC first.
@@ -1159,10 +1257,13 @@ cmqttd recognizes `[tag] COMMAND << DELIMITER`, followed by a body and the exact
 delimiter on its own line. It limits individual lines to 1 MiB and the document
 to 16 MiB, drains an oversized body before returning tagged 400, and closes
 after a tagged 400 if EOF arrives before the delimiter. `CGL IMPORT` accepts
-only the bounded CGL 1.1 model above. `DBSETXML` remains 502 unchanged: native
-DBSETXML replaces a typed object and the retained Toolkit workflows require a
-`301 OID=...` receipt plus XML readback; the mock's opaque string store does
-not establish that behavior.
+only the bounded CGL 1.1 model above. `DBSETXML` accepts scalar-field documents
+and a complete typed `Unit` at an existing selected-project unit path. The Unit
+form atomically replaces the durable local record, can change its unique address
+or OID, returns `301 OID=...`, and supplies XML readback with unknown markup
+preserved and current modeled fields projected. It performs no physical I/O.
+Other complete typed families and vendor repository/XML formats are not
+implemented.
 
 Command connections also provide native-shaped `SESSION_ID`, `SESSION_ID ALL`
 and one-shot `SESSION_ID TAG` state, including live TCP/TLS peer and connection

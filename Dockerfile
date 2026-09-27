@@ -6,6 +6,9 @@ COPY rust/ /build/
 RUN cargo build --release -p cmqttd -p cbus-tools -p cbus-simulator -p cbus-cgate
 
 FROM alpine:3.20 AS cmqttd
+ARG CMQTTD_REVISION=unknown
+LABEL org.opencontainers.image.source="https://github.com/mitchell-johnson/cbus" \
+      org.opencontainers.image.revision="${CMQTTD_REVISION}"
 RUN apk add --no-cache tzdata ca-certificates sqlite-libs sqlite libxslt
 COPY COPYING COPYING.LESSER README.md entrypoint-cmqttd.sh /
 RUN sed -i 's/\r$//' /entrypoint-cmqttd.sh && chmod +x /entrypoint-cmqttd.sh

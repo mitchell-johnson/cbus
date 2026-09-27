@@ -23,6 +23,7 @@ mdns-sd = { workspace = true }
 
 [dev-dependencies]
 cbus-test-support = { path = "../cbus-test-support" }
+tokio-rustls = "0.25"
 hex = { workspace = true }
 base64 = { workspace = true }
 if-addrs = { workspace = true }

@@ -6,7 +6,7 @@ use cbus_protocol::dali::DaliCalMode;
 use cbus_protocol::serial_address::{encode_serial_address, parse_native_serial};
 use cbus_protocol::{kfi, label_clear};
 use std::io::{Error, ErrorKind, Result};
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::Ordering;
 
 const REPLY_TIMEOUT: Duration = Duration::from_secs(10);
 const IDENTIFY_QUIET: Duration = Duration::from_secs(2);
@@ -16,6 +16,10 @@ const DUPLICATE_PROBE_MAX_REPLIES: usize = 7;
 const SERIAL_ADDRESS_QUIET: Duration = Duration::from_secs(2);
 const NVM_POLL_INTERVAL: Duration = Duration::from_millis(500);
 const NVM_POLL_TIMEOUT: Duration = Duration::from_secs(15);
+
+fn programming_context(error: Error, context: impl std::fmt::Display) -> Error {
+    Error::new(error.kind(), format!("{context}: {error}"))
+}
 
 fn validate_bridge_route(bridges: &[u8]) -> Result<()> {
     if (1..=6).contains(&bridges.len()) {
@@ -28,7 +32,7 @@ fn validate_bridge_route(bridges: &[u8]) -> Result<()> {
     }
 }
 
-fn identify_reply_matches(
+fn programming_reply_matches(
     meta: &Meta,
     unit_address: u8,
     bridged: bool,
@@ -50,7 +54,7 @@ fn identify_reply_matches(
 // distinguished from a future read. Require a fresh connection instead of
 // ever returning a potentially misattributed memory image.
 struct Transaction<'a> {
-    fault: &'a AtomicBool,
+    client: &'a PciClient,
     complete: bool,
 }
 
@@ -70,9 +74,10 @@ struct SelectedSerialCaptureTransaction<'a> {
 }
 
 #[derive(Clone, Copy)]
-enum ProgrammingRoute {
+enum ProgrammingRoute<'a> {
     DirectChecksummed,
     DirectUnchecksummed,
+    Routed(&'a [u8]),
     Oem,
 }
 
@@ -261,7 +266,12 @@ impl std::error::Error for SelectedSerialApplyError {
 impl Drop for Transaction<'_> {
     fn drop(&mut self) {
         if !self.complete {
-            self.fault.store(true, Ordering::Release);
+            // Untagged CAL fragments can arrive after the caller's future has
+            // ended. Mark this generation permanently unsafe before emitting
+            // ConnectionLost so a connection manager can replace the whole
+            // transport. The failed request is never replayed.
+            self.client.programming_fault.store(true, Ordering::Release);
+            self.client.request_shutdown();
         }
     }
 }
@@ -302,7 +312,7 @@ impl PciClient {
             ));
         }
         let mut transaction = Transaction {
-            fault: &self.programming_fault,
+            client: self,
             complete: false,
         };
         for request in requests.iter().take(3).cloned() {
@@ -332,7 +342,7 @@ impl PciClient {
             ));
         }
         let mut transaction = Transaction {
-            fault: &self.programming_fault,
+            client: self,
             complete: false,
         };
         for request in requests {
@@ -613,7 +623,7 @@ impl PciClient {
             ));
         }
         let mut transaction = Transaction {
-            fault: &self.programming_fault,
+            client: self,
             complete: false,
         };
         let mut replies = self.packets.subscribe();
@@ -1127,7 +1137,7 @@ impl PciClient {
             ));
         }
         let mut transaction = Transaction {
-            fault: &self.programming_fault,
+            client: self,
             complete: false,
         };
         let mut replies = self.packets.subscribe();
@@ -1212,7 +1222,7 @@ impl PciClient {
             ));
         }
         let mut transaction = Transaction {
-            fault: &self.programming_fault,
+            client: self,
             complete: false,
         };
         let mut replies = self.packets.subscribe();
@@ -1349,7 +1359,7 @@ impl PciClient {
             ));
         }
         let mut transaction = Transaction {
-            fault: &self.programming_fault,
+            client: self,
             complete: false,
         };
         let mut replies = self.packets.subscribe();
@@ -1517,6 +1527,33 @@ impl PciClient {
         })
     }
 
+    /// Send one standard SAL command through a one-to-six bridge source route.
+    ///
+    /// Routed application commands have no evidenced application-level reply;
+    /// success therefore means only that the active PCI returned the exact
+    /// confirmation character allocated to this PPM frame. The frame is never
+    /// registered for automatic replay, and unrelated Reply Network traffic
+    /// continues through the shared reader without completing the command.
+    pub async fn send_routed_application_confirmed_once(
+        &self,
+        bridges: &[u8],
+        sal: Sal,
+    ) -> Result<()> {
+        if !(1..=6).contains(&bridges.len()) {
+            return Err(Error::new(
+                ErrorKind::InvalidInput,
+                "routed application command requires one to six bridges",
+            ));
+        }
+        self.send_confirmed_once(&Packet::PointToPointToMultipoint {
+            meta: Meta::new(true, 0),
+            bridges: bridges.to_vec(),
+            application: sal.application(),
+            sals: vec![sal],
+        })
+        .await
+    }
+
     async fn programming_exchange(
         &self,
         unit: u8,
@@ -1524,15 +1561,25 @@ impl PciClient {
         parameter: u8,
         count: usize,
         ack: Option<u8>,
-        route: ProgrammingRoute,
+        route: ProgrammingRoute<'_>,
     ) -> Result<Vec<u8>> {
         let mut replies = self.packets.subscribe();
         let bytes = if !matches!(route, ProgrammingRoute::Oem) {
+            let (bridged, hops) = match route {
+                ProgrammingRoute::Routed(bridges) => (true, bridges.to_vec()),
+                _ => (false, Vec::new()),
+            };
             let packet = Packet::PointToPoint {
-                meta: Meta::new(matches!(route, ProgrammingRoute::DirectChecksummed), 1),
+                meta: Meta::new(
+                    matches!(
+                        route,
+                        ProgrammingRoute::DirectChecksummed | ProgrammingRoute::Routed(_)
+                    ),
+                    1,
+                ),
                 unit_address: unit,
-                bridged: false,
-                hops: vec![],
+                bridged,
+                hops,
                 cals: vec![request],
             };
             let mut bytes = vec![b'\\'];
@@ -1547,7 +1594,8 @@ impl PciClient {
             cbus_protocol::packet::programming_request(unit, &request)
                 .map_err(|e| Error::new(ErrorKind::InvalidInput, e.0))?
         };
-        tokio::time::timeout(REPLY_TIMEOUT, async {
+        let mut received = 0usize;
+        let exchange = tokio::time::timeout(REPLY_TIMEOUT, async {
             self.init_done
                 .subscribe()
                 .wait_for(|&done| done)
@@ -1563,19 +1611,41 @@ impl PciClient {
             let mut result = Vec::with_capacity(count);
             loop {
                 let cals = match replies.recv().await {
-                    Ok(Some(Packet::PointToPoint { meta, cals, .. }))
-                        if meta.source_address == Some(unit) =>
+                    Ok(Some(Packet::PointToPoint {
+                        meta,
+                        unit_address,
+                        bridged,
+                        hops,
+                        cals,
+                    })) if match route {
+                        ProgrammingRoute::Routed(bridges) => programming_reply_matches(
+                            &meta,
+                            unit_address,
+                            bridged,
+                            &hops,
+                            bridges,
+                            unit,
+                        ),
+                        _ => !bridged && meta.source_address == Some(unit),
+                    } =>
                     {
                         cals
                     }
-                    Ok(Some(Packet::PointToPoint { meta, cals, .. }))
-                        if meta.source_address.is_none()
-                            && self.local_unit.load(Ordering::Acquire) == u16::from(unit) =>
+                    Ok(Some(Packet::PointToPoint {
+                        meta,
+                        bridged,
+                        cals,
+                        ..
+                    })) if !matches!(route, ProgrammingRoute::Routed(_))
+                        && !bridged
+                        && meta.source_address.is_none()
+                        && self.local_unit.load(Ordering::Acquire) == u16::from(unit) =>
                     {
                         cals
                     }
                     Ok(Some(Packet::BareCal(cal)))
-                        if self.local_unit.load(Ordering::Acquire) == u16::from(unit) =>
+                        if !matches!(route, ProgrammingRoute::Routed(_))
+                            && self.local_unit.load(Ordering::Acquire) == u16::from(unit) =>
                     {
                         vec![cal]
                     }
@@ -1608,10 +1678,15 @@ impl PciClient {
                                 return Ok(data);
                             }
                             result.extend(data);
+                            received = result.len();
                             if result.len() > count {
                                 return Err(Error::new(
                                     ErrorKind::InvalidData,
-                                    "unit returned excess memory bytes",
+                                    format!(
+                                        "unit {unit} parameter 0x{parameter:02X} returned \
+                                         excess fragmented bytes ({}/{count})",
+                                        result.len()
+                                    ),
                                 ));
                             }
                             if result.len() == count {
@@ -1623,13 +1698,24 @@ impl PciClient {
                 }
             }
         })
-        .await
-        .unwrap_or_else(|_| {
-            Err(Error::new(
-                ErrorKind::TimedOut,
-                "unit programming reply timed out",
-            ))
-        })
+        .await;
+        match exchange {
+            Ok(result) => result,
+            Err(_) => {
+                let expected = match ack {
+                    Some(tag) => format!("ack tag 0x{tag:02X}"),
+                    None if count == 0 => "one complete reply".to_string(),
+                    None => format!("{count} fragmented bytes; received {received}"),
+                };
+                Err(Error::new(
+                    ErrorKind::TimedOut,
+                    format!(
+                        "unit {unit} parameter 0x{parameter:02X} programming reply timed out \
+                         awaiting {expected}"
+                    ),
+                ))
+            }
+        }
     }
 
     /// Send one native extended CAL command and wait for its source-correlated
@@ -1796,7 +1882,7 @@ impl PciClient {
             ));
         }
         let mut transaction = Transaction {
-            fault: &self.programming_fault,
+            client: self,
             complete: false,
         };
         let mut exchanges = Vec::new();
@@ -1846,7 +1932,7 @@ impl PciClient {
             ));
         }
         let mut transaction = Transaction {
-            fault: &self.programming_fault,
+            client: self,
             complete: false,
         };
         let execute = self
@@ -1944,11 +2030,12 @@ impl PciClient {
             ));
         }
         let mut transaction = Transaction {
-            fault: &self.programming_fault,
+            client: self,
             complete: false,
         };
         let mut result = Vec::with_capacity(length);
         while result.len() < length {
+            let block = result.len() / 128;
             let offset = address + result.len() as u32;
             let mut selector = vec![0x41];
             selector
@@ -1964,7 +2051,15 @@ impl PciClient {
                 Some(0x41),
                 ProgrammingRoute::Oem,
             )
-            .await?;
+            .await
+            .map_err(|error| {
+                programming_context(
+                    error,
+                    format_args!(
+                        "memory read unit {unit} selector block {block} offset 0x{offset:08X}"
+                    ),
+                )
+            })?;
             let count = (length - result.len()).min(128) as u8;
             result.extend(
                 self.programming_exchange(
@@ -1975,7 +2070,16 @@ impl PciClient {
                     None,
                     ProgrammingRoute::Oem,
                 )
-                .await?,
+                .await
+                .map_err(|error| {
+                    programming_context(
+                        error,
+                        format_args!(
+                            "memory read unit {unit} parameter 0x01 block {block} \
+                             offset 0x{offset:08X} length {count}"
+                        ),
+                    )
+                })?,
             );
         }
         transaction.complete = true;
@@ -2009,7 +2113,7 @@ impl PciClient {
             ));
         }
         let mut transaction = Transaction {
-            fault: &self.programming_fault,
+            client: self,
             complete: false,
         };
         let result = self
@@ -2028,6 +2132,7 @@ impl PciClient {
     ) -> Result<Vec<u8>> {
         let mut result = Vec::with_capacity(length);
         while result.len() < length {
+            let block = result.len() / dialect.recall_limit();
             let offset = address + result.len() as u32;
             let offset = u16::try_from(offset)
                 .map_err(|_| Error::new(ErrorKind::InvalidInput, "GOC address exceeds 16 bits"))?;
@@ -2042,7 +2147,16 @@ impl PciClient {
                 Some(0x42),
                 ProgrammingRoute::DirectChecksummed,
             )
-            .await?;
+            .await
+            .map_err(|error| {
+                programming_context(
+                    error,
+                    format_args!(
+                        "GOC memory read unit {unit} selector block {block} \
+                         offset 0x{offset:04X}"
+                    ),
+                )
+            })?;
             let count = (length - result.len()).min(dialect.recall_limit()) as u8;
             result.extend(
                 self.programming_exchange(
@@ -2056,7 +2170,16 @@ impl PciClient {
                     None,
                     ProgrammingRoute::DirectChecksummed,
                 )
-                .await?,
+                .await
+                .map_err(|error| {
+                    programming_context(
+                        error,
+                        format_args!(
+                            "GOC memory read unit {unit} parameter 0xFF block {block} \
+                             offset 0x{offset:04X} length {count}"
+                        ),
+                    )
+                })?,
             );
         }
         Ok(result)
@@ -2080,12 +2203,27 @@ impl PciClient {
         .await
     }
 
+    /// Recall one standard CAL parameter through a one-to-six bridge source
+    /// route. The Reply Network envelope, remote unit, parameter and total
+    /// byte count must all match before any data is returned.
+    pub async fn recall_parameter_routed(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+        parameter: u8,
+        length: usize,
+    ) -> Result<Vec<u8>> {
+        validate_bridge_route(bridges)?;
+        self.recall_parameter_with_route(unit, parameter, length, ProgrammingRoute::Routed(bridges))
+            .await
+    }
+
     async fn recall_parameter_with_route(
         &self,
         unit: u8,
         parameter: u8,
         length: usize,
-        route: ProgrammingRoute,
+        route: ProgrammingRoute<'_>,
     ) -> Result<Vec<u8>> {
         let count = u8::try_from(length).map_err(|_| {
             Error::new(
@@ -2106,7 +2244,7 @@ impl PciClient {
             ));
         }
         let mut transaction = Transaction {
-            fault: &self.programming_fault,
+            client: self,
             complete: false,
         };
         let result = self
@@ -2121,7 +2259,16 @@ impl PciClient {
                 None,
                 route,
             )
-            .await?;
+            .await
+            .map_err(|error| {
+                programming_context(
+                    error,
+                    format_args!(
+                        "parameter recall unit {unit} parameter 0x{parameter:02X} \
+                         block 0 offset 0 length {length}"
+                    ),
+                )
+            })?;
         transaction.complete = true;
         Ok(result)
     }
@@ -2211,10 +2358,11 @@ impl PciClient {
             ));
         }
         let mut transaction = Transaction {
-            fault: &self.programming_fault,
+            client: self,
             complete: false,
         };
         let mut result = Vec::with_capacity(length);
+        let mut block = 0usize;
         while result.len() < length {
             let logical = address + result.len() as u32;
             let page = (logical >> 8) as u8;
@@ -2234,8 +2382,19 @@ impl PciClient {
                     None,
                     ProgrammingRoute::DirectUnchecksummed,
                 )
-                .await?,
+                .await
+                .map_err(|error| {
+                    programming_context(
+                        error,
+                        format_args!(
+                            "paged recall unit {unit} parameter 0x{parameter:02X} \
+                             page 0x{page:02X} block {block} offset 0x{logical:04X} \
+                             length {count}"
+                        ),
+                    )
+                })?,
             );
+            block += 1;
         }
         transaction.complete = true;
         Ok(result)
@@ -2270,7 +2429,7 @@ impl PciClient {
             ));
         }
         let mut transaction = Transaction {
-            fault: &self.programming_fault,
+            client: self,
             complete: false,
         };
         let mut written = 0usize;
@@ -2498,7 +2657,7 @@ impl PciClient {
             ));
         }
         let mut transaction = Transaction {
-            fault: &self.programming_fault,
+            client: self,
             complete: false,
         };
         let challenge = self.programming_unlock(source, 0x20).await?;
@@ -2585,8 +2744,39 @@ impl PciClient {
         parameter: u8,
         data: &[u8],
     ) -> Result<()> {
-        self.store_parameter_verified_inner(unit, parameter, data, false)
-            .await
+        self.store_parameter_verified_inner(
+            unit,
+            parameter,
+            data,
+            false,
+            ProgrammingRoute::DirectChecksummed,
+        )
+        .await
+    }
+
+    /// Store one standard CAL parameter range through a one-to-six bridge
+    /// source route and verify the complete value with routed RECALL.
+    ///
+    /// Every STORE chunk is sent once and requires an ACK whose Reply Network,
+    /// unit, parameter and tag all match. This unprotected primitive mirrors
+    /// [`Self::store_parameter_verified`]; callers remain responsible for
+    /// knowing whether a device parameter requires a separate unlock.
+    pub async fn store_parameter_verified_routed(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+        parameter: u8,
+        data: &[u8],
+    ) -> Result<()> {
+        validate_bridge_route(bridges)?;
+        self.store_parameter_verified_inner(
+            unit,
+            parameter,
+            data,
+            false,
+            ProgrammingRoute::Routed(bridges),
+        )
+        .await
     }
 
     /// Store the native C-Gate project identity at parameter 35 and verify it.
@@ -2596,6 +2786,34 @@ impl PciClient {
     /// that exact wire contract and require the matching unit ACK before a
     /// direct six-byte RECALL proves the value that remains on the unit.
     pub async fn set_project_identity_verified(&self, unit: u8, encoded: &[u8; 6]) -> Result<()> {
+        self.set_project_identity_verified_inner(unit, encoded, ProgrammingRoute::DirectChecksummed)
+            .await
+    }
+
+    /// Store and verify the native project identity through a one-to-six
+    /// bridge source route.
+    ///
+    /// The STORE is sent exactly once. Both its fixed-tag ACK and the
+    /// immediate parameter-35 RECALL must arrive in the matching Reply Network
+    /// envelope. An incomplete exchange retires the programming generation;
+    /// callers must reconnect and explicitly decide whether to try again.
+    pub async fn set_project_identity_verified_routed(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+        encoded: &[u8; 6],
+    ) -> Result<()> {
+        validate_bridge_route(bridges)?;
+        self.set_project_identity_verified_inner(unit, encoded, ProgrammingRoute::Routed(bridges))
+            .await
+    }
+
+    async fn set_project_identity_verified_inner(
+        &self,
+        unit: u8,
+        encoded: &[u8; 6],
+        route: ProgrammingRoute<'_>,
+    ) -> Result<()> {
         const PARAMETER: u8 = 35;
         const TAG: u8 = 0x46;
 
@@ -2606,7 +2824,7 @@ impl PciClient {
             ));
         }
         let mut transaction = Transaction {
-            fault: &self.programming_fault,
+            client: self,
             complete: false,
         };
         let mut tagged = Vec::with_capacity(encoded.len() + 1);
@@ -2622,7 +2840,7 @@ impl PciClient {
                 PARAMETER,
                 0,
                 Some(TAG),
-                ProgrammingRoute::DirectChecksummed,
+                route,
             )
             .await
         {
@@ -2644,7 +2862,7 @@ impl PciClient {
                 PARAMETER,
                 encoded.len(),
                 None,
-                ProgrammingRoute::DirectChecksummed,
+                route,
             )
             .await?;
         if actual != encoded {
@@ -2664,8 +2882,14 @@ impl PciClient {
         parameter: u8,
         data: &[u8],
     ) -> Result<()> {
-        self.store_parameter_verified_inner(unit, parameter, data, true)
-            .await
+        self.store_parameter_verified_inner(
+            unit,
+            parameter,
+            data,
+            true,
+            ProgrammingRoute::DirectChecksummed,
+        )
+        .await
     }
 
     async fn store_parameter_verified_inner(
@@ -2674,6 +2898,7 @@ impl PciClient {
         parameter: u8,
         data: &[u8],
         locked: bool,
+        route: ProgrammingRoute<'_>,
     ) -> Result<()> {
         if data.is_empty()
             || data.len() > u8::MAX as usize
@@ -2691,7 +2916,7 @@ impl PciClient {
             ));
         }
         let mut transaction = Transaction {
-            fault: &self.programming_fault,
+            client: self,
             complete: false,
         };
         for (chunk_index, chunk) in data.chunks(12).enumerate() {
@@ -2713,7 +2938,7 @@ impl PciClient {
                 target,
                 0,
                 Some(tag),
-                ProgrammingRoute::DirectChecksummed,
+                route,
             )
             .await?;
         }
@@ -2728,7 +2953,7 @@ impl PciClient {
                 parameter,
                 data.len(),
                 None,
-                ProgrammingRoute::DirectChecksummed,
+                route,
             )
             .await?;
         if actual != data {
@@ -2819,7 +3044,7 @@ impl PciClient {
             ));
         }
         let mut transaction = Transaction {
-            fault: &self.programming_fault,
+            client: self,
             complete: false,
         };
         let previous_version = self
@@ -3141,7 +3366,7 @@ impl PciClient {
             ));
         }
         let mut transaction = Transaction {
-            fault: &self.programming_fault,
+            client: self,
             complete: false,
         };
         if halt {
@@ -3275,7 +3500,7 @@ impl PciClient {
             ));
         }
         let mut transaction = Transaction {
-            fault: &self.programming_fault,
+            client: self,
             complete: false,
         };
         for (chunk_index, chunk) in data.chunks(dialect.store_limit()).enumerate() {
@@ -3318,7 +3543,7 @@ impl PciClient {
             ));
         }
         let mut transaction = Transaction {
-            fault: &self.programming_fault,
+            client: self,
             complete: false,
         };
         let result = self
@@ -3391,6 +3616,27 @@ impl PciClient {
             .next())
     }
 
+    /// Return the first route-correlated IDENTIFY reply after one exact send.
+    ///
+    /// This is the programming-workflow variant: an absent PCI confirmation,
+    /// lost reply, or connection change is outcome-uncertain and must not
+    /// register the IDENTIFY frame for automatic replay. The incomplete
+    /// exchange faults the programming lane until the caller reconnects.
+    pub async fn identify_first_routed_once(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+        attribute: u8,
+    ) -> Result<Option<Vec<u8>>> {
+        validate_bridge_route(bridges)?;
+        let _lane = self.programming_lane.lock().await;
+        Ok(self
+            .identify_collect_inner_for_route(unit, attribute, true, bridges, false)
+            .await?
+            .into_iter()
+            .next())
+    }
+
     /// Run one native C-Gate duplicate-address challenge for `NET SYNCNEW`.
     ///
     /// Native C-Gate sends CAL Unlock parameters `0x80`, `0x81`, and `0x82`
@@ -3401,6 +3647,35 @@ impl PciClient {
     /// complete, and reaching the native seven-reply bound faults the lane
     /// rather than silently claiming a complete count.
     pub async fn duplicate_address_probe(&self, unit: u8, attempt: u8) -> Result<usize> {
+        self.duplicate_address_probe_inner(&[], unit, attempt).await
+    }
+
+    /// Run one native duplicate-address challenge through an evidenced bridge
+    /// source route.
+    ///
+    /// The outgoing CAL and three-attempt selector are identical to the direct
+    /// form. Only a reply whose first bridge, remaining Reply Network and unit
+    /// all match `bridges`/`unit` contributes to the count. Direct and
+    /// neighbouring-route replies are ignored. The request is sent exactly
+    /// once; a lost confirmation or incomplete quiet window retires this PCI
+    /// generation and is never replayed.
+    pub async fn duplicate_address_probe_routed(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+        attempt: u8,
+    ) -> Result<usize> {
+        validate_bridge_route(bridges)?;
+        self.duplicate_address_probe_inner(bridges, unit, attempt)
+            .await
+    }
+
+    async fn duplicate_address_probe_inner(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+        attempt: u8,
+    ) -> Result<usize> {
         if attempt > 2 {
             return Err(Error::new(
                 ErrorKind::InvalidInput,
@@ -3415,7 +3690,7 @@ impl PciClient {
             ));
         }
         let mut transaction = Transaction {
-            fault: &self.programming_fault,
+            client: self,
             complete: false,
         };
         let mut replies = self.packets.subscribe();
@@ -3425,11 +3700,11 @@ impl PciClient {
         let packet = Packet::PointToPoint {
             meta: Meta::new(true, 1),
             unit_address: unit,
-            bridged: false,
-            hops: vec![],
+            bridged: !bridges.is_empty(),
+            hops: bridges.to_vec(),
             cals: vec![Cal::Unlock { parameter }],
         };
-        let confirmation = self.send_guarded(&packet).await?;
+        let confirmation = self.send_guarded_once(&packet).await?;
         let code = confirmation.code;
 
         let result = tokio::time::timeout(REPLY_TIMEOUT, async {
@@ -3476,20 +3751,35 @@ impl PciClient {
                     }
                     Ok(Some(packet)) => {
                         let cals = match packet {
-                            Packet::PointToPoint { meta, cals, .. }
-                                if meta.source_address == Some(unit) =>
+                            Packet::PointToPoint {
+                                meta,
+                                unit_address,
+                                bridged,
+                                hops,
+                                cals,
+                            } if programming_reply_matches(
+                                &meta,
+                                unit_address,
+                                bridged,
+                                &hops,
+                                bridges,
+                                unit,
+                            ) =>
                             {
                                 cals
                             }
                             Packet::PointToPoint { meta, cals, .. }
-                                if meta.source_address.is_none()
+                                if bridges.is_empty()
+                                    && meta.source_address.is_none()
                                     && self.local_unit.load(Ordering::Acquire)
                                         == u16::from(unit) =>
                             {
                                 cals
                             }
                             Packet::BareCal(cal)
-                                if self.local_unit.load(Ordering::Acquire) == u16::from(unit) =>
+                                if bridges.is_empty()
+                                    && self.local_unit.load(Ordering::Acquire)
+                                        == u16::from(unit) =>
                             {
                                 vec![cal]
                             }
@@ -3551,7 +3841,7 @@ impl PciClient {
         bridges: &[u8],
     ) -> Result<Vec<Vec<u8>>> {
         let _lane = self.programming_lane.lock().await;
-        self.identify_collect_inner_for_route(unit, attribute, stop_after_first, bridges)
+        self.identify_collect_inner_for_route(unit, attribute, stop_after_first, bridges, true)
             .await
     }
 
@@ -3562,7 +3852,7 @@ impl PciClient {
         attribute: u8,
         stop_after_first: bool,
     ) -> Result<Vec<Vec<u8>>> {
-        self.identify_collect_inner_for_route(unit, attribute, stop_after_first, &[])
+        self.identify_collect_inner_for_route(unit, attribute, stop_after_first, &[], true)
             .await
     }
 
@@ -3572,6 +3862,7 @@ impl PciClient {
         attribute: u8,
         stop_after_first: bool,
         bridges: &[u8],
+        retry_confirmation: bool,
     ) -> Result<Vec<Vec<u8>>> {
         if self.programming_fault.load(Ordering::Acquire) {
             return Err(Error::other(
@@ -3579,7 +3870,7 @@ impl PciClient {
             ));
         }
         let mut transaction = Transaction {
-            fault: &self.programming_fault,
+            client: self,
             complete: false,
         };
         let mut replies = self.packets.subscribe();
@@ -3593,7 +3884,11 @@ impl PciClient {
             hops: bridges.to_vec(),
             cals: vec![Cal::Identify { attribute }],
         };
-        let confirmation = self.send_guarded(&packet).await?;
+        let confirmation = if retry_confirmation {
+            self.send_guarded(&packet).await?
+        } else {
+            self.send_guarded_once(&packet).await?
+        };
         let code = confirmation.code;
 
         let result = tokio::time::timeout(REPLY_TIMEOUT, async {
@@ -3648,7 +3943,7 @@ impl PciClient {
                                 bridged,
                                 hops,
                                 cals,
-                            } if identify_reply_matches(
+                            } if programming_reply_matches(
                                 &meta,
                                 unit_address,
                                 bridged,
@@ -3813,6 +4108,16 @@ mod tests {
         let mut bytes = Vec::new();
         remote.read_until(b'\r', &mut bytes).await.unwrap();
         bytes
+    }
+
+    async fn assert_no_replay(
+        remote: &mut BufReader<tokio::io::DuplexStream>,
+        duration: Duration,
+        message: &str,
+    ) {
+        if let Ok(bytes) = tokio::time::timeout(duration, line(remote)).await {
+            assert!(bytes.is_empty(), "{message}: {bytes:?}");
+        }
     }
 
     async fn reply(remote: &mut BufReader<tokio::io::DuplexStream>, unit: u8, cal: &[u8]) {
@@ -4106,12 +4411,12 @@ mod tests {
             .await
             .unwrap_err();
         assert!(error.to_string().contains("reconnect"));
-        tokio::select! {
-            unexpected = line(&mut remote) => {
-                panic!("late KFI responses advanced a new sequence: {unexpected:?}")
-            }
-            _ = tokio::time::sleep(Duration::from_millis(1)) => {}
-        }
+        assert_no_replay(
+            &mut remote,
+            Duration::from_millis(1),
+            "late KFI responses advanced a new sequence",
+        )
+        .await;
     }
 
     #[tokio::test(start_paused = true)]
@@ -4975,36 +5280,104 @@ mod tests {
             .unwrap_err()
             .to_string()
             .contains("needs reconnect"));
-        assert!(
-            tokio::time::timeout(Duration::from_secs(1), line(&mut remote))
-                .await
-                .is_err(),
-            "neither phase may be replayed after an incomplete recall"
-        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(1),
+            "an incomplete recall replayed one of its phases",
+        )
+        .await;
     }
 
     #[tokio::test(start_paused = true)]
     async fn edlt_widget_groups_timeout_does_not_replay_and_faults_programming_lane() {
-        let (pci, mut remote, _) = setup().await;
+        let (pci, mut remote, mut events) = setup().await;
+        assert_eq!(pci.programming_lane_state(), ProgrammingLaneState::Ready);
         let worker = pci.clone();
         let read = tokio::spawn(async move { worker.read_edlt_widget_groups(5).await });
         assert_eq!(line(&mut remote).await, b"\\460509001AFA2C6C\r");
+        reply(
+            &mut remote,
+            5,
+            &[
+                0x91, 0xfa, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+            ],
+        )
+        .await;
         tokio::time::advance(REPLY_TIMEOUT).await;
         tokio::task::yield_now().await;
-        assert_eq!(read.await.unwrap().unwrap_err().kind(), ErrorKind::TimedOut);
-        assert!(pci.programming_fault.load(Ordering::Acquire));
+        let error = read.await.unwrap().unwrap_err();
+        assert_eq!(error.kind(), ErrorKind::TimedOut);
+        let message = error.to_string();
+        assert!(
+            message.contains("parameter recall unit 5 parameter 0xFA block 0 offset 0 length 44")
+        );
+        assert!(message.contains("received 16"));
+        assert_eq!(
+            pci.programming_lane_state(),
+            ProgrammingLaneState::ReconnectRequired
+        );
+        assert!(!pci.is_connected(), "the unsafe generation is retired");
+        assert_eq!(events.recv().await, Some(CBusEvent::ConnectionLost));
         assert!(pci
             .read_edlt_widget_groups(5)
             .await
             .unwrap_err()
             .to_string()
             .contains("needs reconnect"));
-        assert!(
-            tokio::time::timeout(Duration::from_secs(1), line(&mut remote))
-                .await
-                .is_err(),
-            "the incomplete read must not be replayed"
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(1),
+            "the incomplete read was replayed",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn second_memory_block_timeout_reports_exact_unit_parameter_block_and_offset() {
+        let (pci, mut remote, mut events) = setup().await;
+        let worker = pci.clone();
+        let read = tokio::spawn(async move { worker.read_memory(23, 0x1200, 129).await });
+
+        let first_selector = line(&mut remote).await;
+        assert!(first_selector.starts_with(b"\\46170900A400410012"));
+        reply(&mut remote, 23, &[0x32, 0, 0x41]).await;
+        let first_recall = line(&mut remote).await;
+        assert!(first_recall.starts_with(b"\\461709001A0180"));
+        for first in (0u8..128).step_by(16) {
+            let mut cal = vec![0x91, 1];
+            cal.extend(first..first + 16);
+            reply(&mut remote, 23, &cal).await;
+        }
+
+        let second_selector = line(&mut remote).await;
+        assert!(second_selector.starts_with(b"\\46170900A400418012"));
+        reply(&mut remote, 23, &[0x32, 0, 0x41]).await;
+        let second_recall = line(&mut remote).await;
+        assert!(second_recall.starts_with(b"\\461709001A0101"));
+
+        tokio::time::advance(REPLY_TIMEOUT).await;
+        tokio::task::yield_now().await;
+        let error = read.await.unwrap().unwrap_err();
+        assert_eq!(error.kind(), ErrorKind::TimedOut);
+        let message = error.to_string();
+        assert!(message
+            .contains("memory read unit 23 parameter 0x01 block 1 offset 0x00001280 length 1"));
+        assert!(message.contains(
+            "unit 23 parameter 0x01 programming reply timed out awaiting 1 fragmented bytes; \
+             received 0"
+        ));
+        assert_eq!(
+            pci.programming_lane_state(),
+            ProgrammingLaneState::ReconnectRequired
         );
+        assert!(!pci.is_connected());
+        assert_eq!(events.recv().await, Some(CBusEvent::ConnectionLost));
+        assert_no_replay(
+            &mut remote,
+            Duration::from_millis(1),
+            "the timed-out block was replayed",
+        )
+        .await;
     }
 
     #[tokio::test(start_paused = true)]
@@ -5394,12 +5767,12 @@ mod tests {
             .to_string()
             .contains("full patch verify failed"));
         assert!(pci.programming_fault.load(Ordering::Acquire));
-        assert!(
-            tokio::time::timeout(Duration::from_millis(25), line(&mut remote))
-                .await
-                .is_err(),
-            "failed full verification continued to version finalization"
-        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_millis(25),
+            "failed full verification continued to version finalization",
+        )
+        .await;
     }
 
     #[tokio::test(start_paused = true)]
@@ -5457,11 +5830,12 @@ mod tests {
             .to_string()
             .contains("existing patch re-enable failed"));
         assert!(pci.programming_fault.load(Ordering::Acquire));
-        assert!(
-            tokio::time::timeout(Duration::from_millis(25), line(&mut remote))
-                .await
-                .is_err()
-        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_millis(25),
+            "failed patch enable recovery continued on the retired generation",
+        )
+        .await;
     }
 
     #[tokio::test(start_paused = true)]
@@ -5508,6 +5882,150 @@ mod tests {
             !pci.programming_fault.load(Ordering::Acquire),
             "a definitive NAK must leave the programming lane usable"
         );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_project_identity_store_requires_exact_reply_network_ack_and_readback() {
+        async fn run(
+            bridges: Vec<u8>,
+            expected_store: &'static [u8],
+            expected_recall: &'static [u8],
+        ) {
+            let (pci, mut remote, _) = setup().await;
+            let worker = pci.clone();
+            let encoded = [0xce, 0x4c, 0xb3, 0x79, 0xe7, 0x9e];
+            let operation_bridges = bridges.clone();
+            let write = tokio::spawn(async move {
+                worker
+                    .set_project_identity_verified_routed(&operation_bridges, 6, &encoded)
+                    .await
+            });
+
+            assert_eq!(line(&mut remote).await, expected_store);
+            direct_reply(&mut remote, 6, &[0x32, 0x23, 0x46]).await;
+            let mut wrong_route = bridges.clone();
+            wrong_route[0] = wrong_route[0].wrapping_sub(1);
+            routed_reply(&mut remote, &wrong_route, 6, &[0x32, 0x23, 0x46]).await;
+            routed_reply(&mut remote, &bridges, 5, &[0x32, 0x23, 0x46]).await;
+            routed_reply(&mut remote, &bridges, 6, &[0x32, 0x24, 0x46]).await;
+            routed_reply(&mut remote, &bridges, 6, &[0x32, 0x23, 0x47]).await;
+            routed_reply(&mut remote, &bridges, 6, &[0x32, 0x23, 0x46]).await;
+
+            assert_eq!(line(&mut remote).await, expected_recall);
+            direct_reply(
+                &mut remote,
+                6,
+                &[0x87, 0x23, 0xce, 0x4c, 0xb3, 0x79, 0xe7, 0x9e],
+            )
+            .await;
+            routed_reply(
+                &mut remote,
+                &wrong_route,
+                6,
+                &[0x87, 0x23, 0xce, 0x4c, 0xb3, 0x79, 0xe7, 0x9e],
+            )
+            .await;
+            routed_reply(
+                &mut remote,
+                &bridges,
+                5,
+                &[0x87, 0x23, 0xce, 0x4c, 0xb3, 0x79, 0xe7, 0x9e],
+            )
+            .await;
+            routed_reply(
+                &mut remote,
+                &bridges,
+                6,
+                &[0x87, 0x24, 0xce, 0x4c, 0xb3, 0x79, 0xe7, 0x9e],
+            )
+            .await;
+            routed_reply(
+                &mut remote,
+                &bridges,
+                6,
+                &[0x87, 0x23, 0xce, 0x4c, 0xb3, 0x79, 0xe7, 0x9e],
+            )
+            .await;
+            write.await.unwrap().unwrap();
+        }
+
+        run(
+            vec![0xfd],
+            b"\\46FD0906A82346CE4CB379E79ED2\r",
+            b"\\46FD09061A23066B\r",
+        )
+        .await;
+        run(
+            vec![0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xf9],
+            b"\\46FA36FBFCFDFEF906A82346CE4CB379E79EBD\r",
+            b"\\46FA36FBFCFDFEF9061A230656\r",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_standard_parameter_store_and_recall_are_reusable_and_bounded() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let write = tokio::spawn(async move {
+            worker
+                .store_parameter_verified_routed(&[0xfd, 0xfc], 6, 0x2a, &[0xbe, 0xef])
+                .await
+        });
+        assert_eq!(line(&mut remote).await, b"\\46FD12FC06A42A00BEEF2E\r");
+        routed_reply(&mut remote, &[0xfd, 0xfb], 6, &[0x32, 0x2a, 0]).await;
+        routed_reply(&mut remote, &[0xfd, 0xfc], 6, &[0x32, 0x2a, 0]).await;
+        assert_eq!(line(&mut remote).await, b"\\46FD12FC061A2A0263\r");
+        routed_reply(&mut remote, &[0xfd, 0xfb], 6, &[0x83, 0x2a, 0xbe, 0xef]).await;
+        routed_reply(&mut remote, &[0xfd, 0xfc], 6, &[0x83, 0x2a, 0xbe, 0xef]).await;
+        write.await.unwrap().unwrap();
+
+        assert_eq!(
+            pci.recall_parameter_routed(&[], 6, 0x23, 6)
+                .await
+                .unwrap_err()
+                .kind(),
+            ErrorKind::InvalidInput
+        );
+        assert_eq!(
+            pci.store_parameter_verified_routed(&[1, 2, 3, 4, 5, 6, 7], 6, 1, &[1])
+                .await
+                .unwrap_err()
+                .kind(),
+            ErrorKind::InvalidInput
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_project_identity_bad_readback_retires_without_replaying_store() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let encoded = [0xce, 0x4c, 0xb3, 0x79, 0xe7, 0x9e];
+        let write = tokio::spawn(async move {
+            worker
+                .set_project_identity_verified_routed(&[0xfd], 6, &encoded)
+                .await
+        });
+        assert_eq!(line(&mut remote).await, b"\\46FD0906A82346CE4CB379E79ED2\r");
+        routed_reply(&mut remote, &[0xfd], 6, &[0x32, 0x23, 0x46]).await;
+        assert_eq!(line(&mut remote).await, b"\\46FD09061A23066B\r");
+        routed_reply(&mut remote, &[0xfd], 6, &[0x87, 0x23, 0, 0, 0, 0, 0, 0]).await;
+        assert!(write
+            .await
+            .unwrap()
+            .unwrap_err()
+            .to_string()
+            .contains("project identity readback did not match STORE"));
+        assert_eq!(
+            pci.programming_lane_state(),
+            ProgrammingLaneState::ReconnectRequired
+        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_millis(25),
+            "uncertain routed project identity STORE was replayed",
+        )
+        .await;
     }
 
     #[tokio::test(start_paused = true)]
@@ -5721,11 +6239,12 @@ mod tests {
             .unwrap_err()
             .to_string()
             .contains("needs reconnect"));
-        assert!(
-            tokio::time::timeout(Duration::from_millis(1), line(&mut remote))
-                .await
-                .is_err()
-        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_millis(1),
+            "lost DALI reply was replayed",
+        )
+        .await;
     }
 
     #[tokio::test(start_paused = true)]
@@ -6021,6 +6540,117 @@ mod tests {
     }
 
     #[tokio::test(start_paused = true)]
+    async fn routed_application_confirmation_is_exact_and_preserves_shared_fanout() {
+        let (pci, mut remote, mut events) = setup().await;
+        let command = tokio::spawn({
+            let pci = pci.clone();
+            async move {
+                pci.send_routed_application_confirmed_once(
+                    &[0xfd, 0xfc],
+                    Sal::LightingOn {
+                        application: 56,
+                        group_address: 1,
+                    },
+                )
+                .await
+            }
+        });
+        let request = line(&mut remote).await;
+        assert_eq!(&request[..request.len() - 2], b"\\03FD12FC38790140");
+        let code = request[request.len() - 2];
+        assert!(pci.state.lock().unwrap().pending.is_empty());
+
+        // A neighbouring Reply Network packet and another allocated-looking
+        // confirmation character cannot complete this delivery. Ordinary
+        // direct lighting still fans out while the routed send is pending.
+        routed_reply(&mut remote, &[0xfd, 0xfb], 4, &[0x82, 1, 0]).await;
+        let wrong = if code == b'i' { b'j' } else { b'i' };
+        remote.get_mut().write_all(&[wrong, b'.']).await.unwrap();
+        remote
+            .get_mut()
+            .write_all(b"05043800790145\r\n")
+            .await
+            .unwrap();
+        assert_eq!(
+            events.recv().await,
+            Some(CBusEvent::LightingOn {
+                source: Some(4),
+                app: 56,
+                group: 1,
+            })
+        );
+        assert!(!command.is_finished());
+
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        assert!(command.await.unwrap().is_ok());
+        assert_no_replay(
+            &mut remote,
+            Duration::from_millis(1),
+            "confirmed routed application command was replayed",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_application_rejects_bad_routes_and_never_replays_lost_confirmation() {
+        let (pci, mut remote, _) = setup().await;
+        for bridges in [&[][..], &[1, 2, 3, 4, 5, 6, 7][..]] {
+            let error = pci
+                .send_routed_application_confirmed_once(
+                    bridges,
+                    Sal::EnableSetNetworkVariable {
+                        variable: 3,
+                        value: 77,
+                    },
+                )
+                .await
+                .unwrap_err();
+            assert_eq!(error.kind(), ErrorKind::InvalidInput);
+        }
+        assert_no_replay(
+            &mut remote,
+            Duration::from_millis(1),
+            "invalid route wrote an application frame",
+        )
+        .await;
+
+        let command = tokio::spawn({
+            let pci = pci.clone();
+            async move {
+                pci.send_routed_application_confirmed_once(
+                    &[0xfd],
+                    Sal::EnableSetNetworkVariable {
+                        variable: 3,
+                        value: 77,
+                    },
+                )
+                .await
+            }
+        });
+        let request = line(&mut remote).await;
+        assert_eq!(&request[..request.len() - 2], b"\\03FD09CB02034DDA");
+        let code = request[request.len() - 2];
+        assert!(pci.state.lock().unwrap().pending.is_empty());
+
+        tokio::time::advance(Duration::from_secs(13)).await;
+        assert_eq!(
+            command.await.unwrap().unwrap_err().kind(),
+            ErrorKind::TimedOut
+        );
+        {
+            let state = pci.state.lock().unwrap();
+            assert!(state.pending.is_empty());
+            assert!(state.quarantined_codes.contains(&code));
+        }
+        assert_no_replay(
+            &mut remote,
+            Duration::from_millis(1),
+            "routed application command was replayed after lost confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
     async fn aircon_status_is_fanned_out_without_completing_confirmed_send() {
         let (pci, mut remote, mut events) = setup().await;
         let worker = pci.clone();
@@ -6294,6 +6924,47 @@ mod tests {
     }
 
     #[tokio::test(start_paused = true)]
+    async fn routed_identify_once_lost_confirmation_is_not_replayed() {
+        let (pci, mut remote, mut events) = setup().await;
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.identify_first_routed_once(&[0xfd], 4, 1).await }
+        });
+        let request = line(&mut remote).await;
+        assert_eq!(&request[..request.len() - 2], b"\\46FD090421018E");
+
+        // A complete route-correlated unit reply still cannot replace the
+        // independent PCI delivery confirmation. The programming workflow
+        // sends this IDENTIFY exactly once and retires the whole generation
+        // if delivery becomes outcome-uncertain.
+        routed_reply(
+            &mut remote,
+            &[0xfd],
+            4,
+            &[0x87, 1, b'K', b'E', b'Y', b'P', b'P', b'4'],
+        )
+        .await;
+        tokio::time::advance(REPLY_TIMEOUT).await;
+        tokio::task::yield_now().await;
+
+        let error = running.await.unwrap().unwrap_err();
+        assert_eq!(error.kind(), ErrorKind::TimedOut);
+        assert_eq!(error.to_string(), "IDENTIFY collection timed out");
+        assert_eq!(
+            pci.programming_lane_state(),
+            ProgrammingLaneState::ReconnectRequired
+        );
+        assert!(!pci.is_connected());
+        assert_eq!(events.recv().await, Some(CBusEvent::ConnectionLost));
+        assert_no_replay(
+            &mut remote,
+            Duration::from_millis(1),
+            "routed programming IDENTIFY was replayed",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
     async fn identify_all_can_prove_no_reply_in_the_bounded_window() {
         let (pci, mut remote, _) = setup().await;
         let running = tokio::spawn(async move { pci.identify_all(99, 4).await });
@@ -6413,10 +7084,87 @@ mod tests {
     }
 
     #[tokio::test(start_paused = true)]
+    async fn routed_duplicate_probe_uses_native_path_and_counts_only_matching_reply_network() {
+        let (pci, mut remote, _) = setup().await;
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move {
+                pci.duplicate_address_probe_routed(&[0xfd, 0xfc], 5, 1)
+                    .await
+            }
+        });
+        let request = line(&mut remote).await;
+        assert_eq!(&request[..request.len() - 2], b"\\46FD12FC05118118");
+        let code = request[request.len() - 2];
+
+        // Complete-looking replies from the direct network, another first
+        // bridge and another far-side network cannot enter this count.
+        reply(&mut remote, 5, &[0x82, 0x81, 0x01]).await;
+        routed_reply(&mut remote, &[0xfe, 0xfc], 5, &[0x82, 0x81, 0x02]).await;
+        routed_reply(&mut remote, &[0xfd, 0xfb], 5, &[0x82, 0x81, 0x03]).await;
+        routed_reply(&mut remote, &[0xfd, 0xfc], 5, &[0x82, 0x81, 0x11]).await;
+        routed_reply(&mut remote, &[0xfd, 0xfc], 5, &[0x82, 0x81, 0x22]).await;
+        tokio::task::yield_now().await;
+        assert!(
+            !running.is_finished(),
+            "unit replies do not replace confirmation"
+        );
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        tokio::time::advance(DUPLICATE_PROBE_QUIET).await;
+        tokio::task::yield_now().await;
+        assert_eq!(running.await.unwrap().unwrap(), 2);
+        assert_eq!(pci.programming_lane_state(), ProgrammingLaneState::Ready);
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_duplicate_probe_lost_confirmation_is_not_replayed_and_retires_generation() {
+        let (pci, mut remote, mut events) = setup().await;
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.duplicate_address_probe_routed(&[0xfd], 5, 0).await }
+        });
+        let request = line(&mut remote).await;
+        assert_eq!(&request[..request.len() - 2], b"\\46FD090511801E");
+        routed_reply(&mut remote, &[0xfd], 5, &[0x82, 0x80, 0x33]).await;
+
+        tokio::time::advance(REPLY_TIMEOUT).await;
+        tokio::task::yield_now().await;
+        let error = running.await.unwrap().unwrap_err();
+        assert_eq!(error.kind(), ErrorKind::TimedOut);
+        assert_eq!(error.to_string(), "duplicate-address probe timed out");
+        assert_eq!(
+            pci.programming_lane_state(),
+            ProgrammingLaneState::ReconnectRequired
+        );
+        assert!(!pci.is_connected());
+        assert_eq!(events.recv().await, Some(CBusEvent::ConnectionLost));
+        assert_no_replay(
+            &mut remote,
+            Duration::from_millis(1),
+            "routed duplicate challenge was replayed",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
     async fn duplicate_address_probe_rejects_an_unknown_attempt_without_faulting_lane() {
         let (pci, _remote, _) = setup().await;
         assert_eq!(
             pci.duplicate_address_probe(5, 3).await.unwrap_err().kind(),
+            ErrorKind::InvalidInput
+        );
+        assert_eq!(
+            pci.duplicate_address_probe_routed(&[], 5, 0)
+                .await
+                .unwrap_err()
+                .kind(),
+            ErrorKind::InvalidInput
+        );
+        assert_eq!(
+            pci.duplicate_address_probe_routed(&[1, 2, 3, 4, 5, 6, 7], 5, 0)
+                .await
+                .unwrap_err()
+                .kind(),
             ErrorKind::InvalidInput
         );
         assert!(!pci.programming_fault.load(Ordering::Acquire));
@@ -6493,18 +7241,23 @@ mod tests {
         drop(held);
         tokio::time::advance(Duration::from_secs(15)).await;
         let mut byte = [0u8; 1];
-        assert!(tokio::time::timeout(
+        let trailing = tokio::time::timeout(
             Duration::from_millis(100),
-            tokio::io::AsyncReadExt::read(&mut remote, &mut byte)
+            tokio::io::AsyncReadExt::read(&mut remote, &mut byte),
         )
-        .await
-        .is_err());
-        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
-        tokio::task::yield_now().await;
+        .await;
+        assert!(
+            matches!(trailing, Err(_) | Ok(Ok(0))),
+            "a queued retry reached the retired generation: {trailing:?}"
+        );
+        assert_eq!(
+            pci.programming_lane_state(),
+            ProgrammingLaneState::ReconnectRequired
+        );
+        assert!(!pci.is_connected());
         let state = pci.state.lock().unwrap();
-        assert!(!state.codes_in_use.contains_key(&code));
-        assert!(!state.allocation_ids.contains_key(&code));
-        assert!(!state.quarantined_codes.contains(&code));
+        assert!(!state.pending.contains_key(&code));
+        assert!(state.quarantined_codes.contains(&code));
     }
 
     #[tokio::test(start_paused = true)]

@@ -472,6 +472,20 @@ pub type BoxedWrite = Box<dyn AsyncWrite + Send + Unpin>;
 /// Read half of a connected transport.
 pub type BoxedRead = Box<dyn AsyncRead + Send + Unpin>;
 
+/// Health of the source-correlated programming lane in this client generation.
+///
+/// [`ProgrammingLaneState::ReconnectRequired`] is sticky for the lifetime of
+/// the [`PciClient`]. Untagged CAL fragments from an incomplete transaction
+/// cannot be attributed safely to a later request, so the affected transport
+/// is retired and callers must use a newly connected client generation.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ProgrammingLaneState {
+    /// This client generation may accept a new programming transaction.
+    Ready,
+    /// An incomplete transaction made this generation unsafe for programming.
+    ReconnectRequired,
+}
+
 /// Async client for a C-Bus PCI/CNI, with the
 /// fixed post-init pacing replaced by the adaptive flow controller.
 pub struct PciClient {
@@ -507,6 +521,23 @@ pub struct PciClient {
 }
 
 impl PciClient {
+    /// Report whether this client generation can safely start programming.
+    ///
+    /// The fault state never clears in place. An incomplete programming
+    /// transaction also requests transport shutdown, allowing the owning
+    /// connection manager to install a fresh generation without replaying the
+    /// failed request.
+    pub fn programming_lane_state(&self) -> ProgrammingLaneState {
+        if self
+            .programming_fault
+            .load(std::sync::atomic::Ordering::Acquire)
+        {
+            ProgrammingLaneState::ReconnectRequired
+        } else {
+            ProgrammingLaneState::Ready
+        }
+    }
+
     /// Acquire MMI before programming everywhere a combined guard is needed.
     /// Nested operations use the guard's methods rather than reacquiring lanes.
     pub(crate) async fn commissioning_observation(
@@ -1522,7 +1553,9 @@ fn classify(cmd: &Packet, conf: Option<u8>) -> (Priority, ResponseKind) {
         )
     };
     let priority = match cmd {
-        Packet::PointToMultipoint { sals, .. } if sals.iter().any(is_interactive) => {
+        Packet::PointToMultipoint { sals, .. } | Packet::PointToPointToMultipoint { sals, .. }
+            if sals.iter().any(is_interactive) =>
+        {
             Priority::Command
         }
         _ => Priority::Background,

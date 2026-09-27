@@ -23,9 +23,17 @@ toolkit-cli/.venv/bin/python -m pip install -e './toolkit-cli[test,research,seri
 cd toolkit-cli
 make check
 make check-interop
+make check-wheel
 ```
 
 `make check` runs the offline Python suite. Tests requiring vendor binaries, unit specifications, native C-Gate, Windows workers, or physical devices skip unless their explicit environment gates are configured. `make check-interop` builds the Rust mock and exercises the production Python client and wrappers against it. CI runs the offline suite with the mock built; vendor and hardware acceptance remain separate.
+
+`make check-wheel` builds a fresh wheel, creates a temporary Python 3.13
+environment, installs the wheel with all supported extras, and runs the same
+offline suite with `PYTHONPATH=tests` so imports resolve from the installed
+artifact instead of `src/`. The temporary wheel and environment are removed
+after either success or failure. Provisioning-gated skips retain the same
+meaning as the source-tree run.
 
 Do not equate offline test success with complete Toolkit parity. Run `cbus-toolkit coverage --require-complete` to inspect that separate gate, and consult the [Toolkit status and acceptance evidence](../toolkit-cli/docs/implementation-status.md) for full validation requirements.
 
@@ -39,7 +47,7 @@ Do not equate offline test success with complete Toolkit parity. Run `cbus-toolk
 
 `cmqttd` tests launch the compiled daemon against an in-process MQTT 3.1.1 broker and a scripted fake PCI. They verify startup, subscriptions, discovery, state publication, command delivery, status sweeps, clock behavior, and reconnect-related flows without external services. The MQTT consistency regressions cover immediate opposite QoS 1 commands, PUBACKs, delayed and lost PCI confirmations, FIFO blocking, outcome-uncertain failure, per-command physical level requests, C-Gate cache population only from bus reports, transport-state publication, and a forced post-reconnect sweep.
 
-`cgate-mock` tests exercise tagged framing, multiline replies, shared state, per-session project selection, event filtering and fanout, here-documents, command inventory reachability, and programming access. The hardware-service tests separately pin bounded `DBSETXML` document framing; durable project archive/restore/rename/copy/delete rollback; selected-project `DBTAGLIST`, scalar `DBSET`, and secondary-project network readdressing across restart; read-only repository listing; and the absence of PCI traffic for these local administrative commands. `rust/testdata/fixtures/native_cgate_legacy_database.json` records the exact legacy-database oracle for incomplete OID objects, recursive copying, blank-database creation, physical replacement/update and difference reporting. `cmqttd/tests/system_cgate_database_lifecycle.rs` verifies local lifecycle persistence through real daemon restarts; the embedded-service PCI test covers the physical lifecycle. `cmqttd/tests/system_cgate_project_copy_delete.rs` is the dedicated project copy/delete and MQTT-continuity regression.
+`cgate-mock` tests exercise tagged framing, multiline replies, shared state, per-session project selection, event filtering and fanout, here-documents, command inventory reachability, and programming access. Focused `DBSETXML` tests cover scalar fields and complete typed Unit, Level, NetVar, Group, Application, and Network/Interface replacement; submitted-root `301 OID` receipts; conflict-before-mutation behavior; subtree retirement; namespace/comment retention; and copy/rename/delete/archive/restart lifecycle. The production Python C-Gate client and real cmqttd daemon repeat an Application/Group/Level exchange. Hardware-service tests pin atomic durable restart readback and no PCI I/O. A Network document containing Unit remains a pre-mutation refusal because retained native replacement evidence does not cover that mixed subtree. `rust/testdata/fixtures/native_cgate_legacy_database.json` and `rust/testdata/vectors/cgate_dbsetxml.jsonl` retain the oracle summary and exact documents/readbacks.
 
 `cmqttd/tests/system_cgate_dali.rs` launches the real daemon with the scripted
 PCI and broker. It pins DALI help and capability reporting, LOGIN boundaries,

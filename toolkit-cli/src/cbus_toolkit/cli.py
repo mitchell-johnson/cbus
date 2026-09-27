@@ -1614,6 +1614,18 @@ def build_parser():
         p.add_argument("--profile", choices=("KEY1", "KEY2", "KEY4"), default="KEY4")
         if action == "template-export":
             p.add_argument("--description", default="")
+    p = unops.add_parser(
+        "template-copy",
+        help="Copy a supported template field set between two database units and verify a fresh reload",
+    )
+    p.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
+    p.add_argument("--profile", choices=("KEY1", "KEY2", "KEY4"), default="KEY4")
+    p = unops.add_parser(
+        "template-reset-defaults",
+        help="Reset only the supported template field set to decoded specification defaults and verify a fresh reload",
+    )
+    p.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
+    p.add_argument("--profile", choices=("KEY1", "KEY2", "KEY4"), default="KEY4")
 
     convert = cgops.add_parser("conversion", help="Native database conversion; moves replace the destination and remove the source")
     convops = convert.add_subparsers(dest="remote_action", required=True)
@@ -2781,7 +2793,7 @@ def _network(args, client):
 def _programming(args, client):
     from .programming import Programmer
     programmer = Programmer(client)
-    mutable = args.remote_action in ("set", "reset-defaults", "import", "key-macro", "neo-key-macro", "sensor-occupancy", "edlt-lighting", "edlt-enable", "edlt-shutter", "edlt-timer", "edlt-fan", "edlt-multilevel", "edlt-room-courtesy", "edlt-measurement", "edlt-parent-form", "edlt-parent-transaction", "edlt-time-date", "edlt-hvac", "edlt-display", "edlt-mra", "edlt-mra-globals", "edlt-general", "edlt-standby", "edlt-colours", "edlt-navigation", "edlt-quick-status", "edlt-activation", "edlt-page-control", "edlt-lifecycle", "edlt-restore-levels", "edlt-applications", "edlt-corridor", "edlt-blank", "edlt-reset-controls", "edlt-scene-manager", "edlt-scene-capture", "edlt-scene", "edlt-scenes", "device-scene", "template-import")
+    mutable = args.remote_action in ("set", "reset-defaults", "import", "key-macro", "neo-key-macro", "sensor-occupancy", "edlt-lighting", "edlt-enable", "edlt-shutter", "edlt-timer", "edlt-fan", "edlt-multilevel", "edlt-room-courtesy", "edlt-measurement", "edlt-parent-form", "edlt-parent-transaction", "edlt-time-date", "edlt-hvac", "edlt-display", "edlt-mra", "edlt-mra-globals", "edlt-general", "edlt-standby", "edlt-colours", "edlt-navigation", "edlt-quick-status", "edlt-activation", "edlt-page-control", "edlt-lifecycle", "edlt-restore-levels", "edlt-applications", "edlt-corridor", "edlt-blank", "edlt-reset-controls", "edlt-scene-manager", "edlt-scene-capture", "edlt-scene", "edlt-scenes", "device-scene", "template-import", "template-copy", "template-reset-defaults")
     destination = args.destination or args.source
     if mutable and not args.dry_run and not destination:
         raise ValueError("Edits need --source or --destination, or --dry-run")
@@ -2789,6 +2801,10 @@ def _programming(args, client):
         raise ValueError("The eDLT widget workflows support database destinations only")
     if args.remote_action == "template-import" and destination and not destination.lower().startswith("/db//"):
         raise ValueError("The tested unit template workflow supports database destinations only")
+    if args.remote_action == "template-copy" and args.destination is None:
+        raise ValueError("template-copy requires an explicit --destination database unit")
+    if args.remote_action == "template-reset-defaults" and args.destination is not None:
+        raise ValueError("template-reset-defaults resets its --source database unit; omit --destination")
     if (args.remote_action == "edlt-scene-manager"
             and getattr(args, "auto_metadata", False)):
         if args.unit_type is not None or args.source is None:
@@ -2860,6 +2876,20 @@ def _programming(args, client):
             and (getattr(args, "exclusive_project", False)
                  or getattr(args, "backup_project", None) is not None)):
         raise ValueError("--exclusive-project and --backup-project require --auto-metadata")
+    transaction_actions = ("template-copy", "template-reset-defaults")
+    transaction_templates = _unit_templates(args) if args.remote_action in transaction_actions else None
+    if args.remote_action in transaction_actions:
+        if args.unit_type is not None or args.source is None:
+            raise ValueError("Native template transactions require an existing --source database unit")
+        from .template_transaction import NativeTemplateTransaction
+        transaction = NativeTemplateTransaction(programmer, transaction_templates, args.lock_address)
+        if args.remote_action == "template-copy":
+            return transaction.copy(
+                args.source,
+                args.destination,
+                dry_run=args.dry_run,
+            )
+        return transaction.reset_template_defaults(args.source, dry_run=args.dry_run)
     if args.unit_type:
         if not args.firmware:
             raise ValueError("--unit-type requires --firmware")
@@ -3495,7 +3525,7 @@ def main(argv=None):
         result.update(routed_recall_error_payload(exc, args))
         result.update(routed_identify_error_payload(exc, args))
         result.update(project_repair_error_payload(exc, args))
-        for name in ("pci_mmi_observation", "pci_serial_observation", "pci_inventory_observation", "usb_dfu_evidence", "edlt_display_evidence", "edlt_mra_evidence", "edlt_general_evidence", "edlt_standby_evidence", "edlt_colours_evidence", "edlt_navigation_evidence", "edlt_quick_status_evidence", "edlt_activation_evidence", "edlt_page_control_evidence", "edlt_lifecycle_evidence", "edlt_parent_form_evidence", "edlt_parent_transaction_evidence", "edlt_parent_metadata_evidence", "edlt_restore_levels_evidence", "edlt_applications_evidence", "edlt_corridor_evidence", "edlt_blank_evidence", "edlt_reset_evidence", "edlt_scene_manager_evidence", "edlt_scene_metadata_evidence", "edlt_scene_live_evidence"):
+        for name in ("pci_mmi_observation", "pci_serial_observation", "pci_inventory_observation", "usb_dfu_evidence", "unit_template_transaction_evidence", "edlt_display_evidence", "edlt_mra_evidence", "edlt_general_evidence", "edlt_standby_evidence", "edlt_colours_evidence", "edlt_navigation_evidence", "edlt_quick_status_evidence", "edlt_activation_evidence", "edlt_page_control_evidence", "edlt_lifecycle_evidence", "edlt_parent_form_evidence", "edlt_parent_transaction_evidence", "edlt_parent_metadata_evidence", "edlt_restore_levels_evidence", "edlt_applications_evidence", "edlt_corridor_evidence", "edlt_blank_evidence", "edlt_reset_evidence", "edlt_scene_manager_evidence", "edlt_scene_metadata_evidence", "edlt_scene_live_evidence"):
             evidence = getattr(exc, name, None)
             if isinstance(evidence, dict):
                 result[name] = evidence

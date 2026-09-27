@@ -24,6 +24,11 @@ from xml.dom import Node
 from .addressing import NetworkAddressing, _container
 from .edlt import EdltError, _field as _pp_field
 from .edlt_activation import WAKE_MODES
+from .edlt_application_cache import (
+    ApplicationCache,
+    CachedDisplay,
+    CachedGroupList,
+)
 from .edlt_lifecycle import FORMAT, LifecycleCache, LifecycleGroup
 from .edlt_parent_transaction import (
     EdltParentTransaction, _DYNAMIC_FIELD_OFFSETS, _candidate_widget,
@@ -113,7 +118,7 @@ def _pp_values(unit, editor):
         if not name or name in values:
             raise ValueError('Native eDLT PP parameter names must be nonempty and unique')
         values[name] = row.getAttribute('Value')
-    return editor.snapshot(values)
+    return editor.snapshot(values), values
 
 
 def _default_language(network):
@@ -178,6 +183,7 @@ class NativeEdltProjectSnapshot:
     unit: int
     unit_oid: str
     values: tuple[tuple[str, tuple[int, ...]], ...]
+    raw_values: tuple[tuple[str, str], ...]
     project_metadata: str
     unit_metadata: str
     network_metadata: str
@@ -187,6 +193,9 @@ class NativeEdltProjectSnapshot:
 
     def value_map(self):
         return dict(self.values)
+
+    def raw_map(self):
+        return dict(self.raw_values)
 
 
 def _dynamic_labels(node, default_language):
@@ -254,7 +263,7 @@ def _snapshot(text, unit_path, editor):
             _field(unit, 'CatalogNumber')) != ('KEYGL5', '5.5.00', '5055EDL'):
         raise ValueError('Native unit is not KEYGL5 / 5055EDL firmware 5.5.00')
     unit_oid = _oid(_field(unit, 'OID'))
-    values = _pp_values(unit, editor)
+    values, raw_values = _pp_values(unit, editor)
     default_language = _default_language(network)
 
     applications = []
@@ -304,8 +313,7 @@ def _snapshot(text, unit_path, editor):
                     level_identity,
                     _field(level, 'TagName'), labels, labels_known,
                     _json(_shape(level))))
-            level_records = tuple(sorted(level_records,
-                                         key=lambda row: row.address))
+            level_records = tuple(level_records)
             images, known = _tag_images(group, default_language)
             groups.append(NativeGroupRecord(
                 address, group_address, group.tagName, group_identity,
@@ -316,7 +324,7 @@ def _snapshot(text, unit_path, editor):
         applications.append(NativeApplicationRecord(
             address, identity, _field(application, 'TagName'),
             _node_shape(application, exclude=frozenset(('Group', 'NetVar'))),
-            tuple(sorted(groups, key=lambda row: row.address))))
+            tuple(groups)))
     if len(identities) > MAX_OBJECTS:
         raise ValueError('Native eDLT metadata inventory exceeds 4096 objects')
     project_metadata = _node_shape(project, exclude=frozenset(('Network',)))
@@ -329,9 +337,10 @@ def _snapshot(text, unit_path, editor):
         _json(_shape(row)) for row in units if row is not unit))
     return NativeEdltProjectSnapshot(
         project_name, network_address, unit_address, unit_oid,
-        tuple(sorted(values.items())), project_metadata, unit_metadata,
+        tuple(sorted(values.items())), tuple(sorted(raw_values.items())),
+        project_metadata, unit_metadata,
         network_metadata, other_networks, other_units,
-        tuple(sorted(applications, key=lambda row: row.address)))
+        tuple(applications))
 
 
 def _operation_groups(values, operations):
@@ -472,6 +481,21 @@ def _operation_groups(values, operations):
             if group != 255:
                 add(203, group,
                     f'operation {index} Page Control group')
+        elif kind == 'applications':
+            # Later controls see the ordered application selections.  The
+            # applications editor performs the authoritative validation; this
+            # narrow projection only selects the application whose group fact
+            # a later operation will consume.
+            for edit in operation.get('edits', ()):
+                if not isinstance(edit, dict):
+                    continue
+                address = edit.get('address')
+                if type(address) is not int or not 0 <= address <= 255:
+                    continue
+                if edit.get('field') == 'primary':
+                    primary = address
+                elif edit.get('field') == 'secondary':
+                    secondary = address
     return tuple(facts)
 
 
@@ -481,11 +505,24 @@ class MetadataCreation:
     application: int
     address: int
     name: str
+    group: int | None = None
+    value: int | None = None
+    safe_blank_variants: bool = False
+    reasons: tuple[str, ...] = ()
 
     def as_dict(self):
         result = {'kind': self.kind, 'address': self.address, 'name': self.name}
         if self.kind != 'Application':
             result['application'] = self.application
+        if self.kind == 'Level':
+            result.update(group=self.group, value=self.value)
+        if self.safe_blank_variants:
+            result['default_dynamic_labels'] = [
+                {'value': str(variant), 'name': '', 'image_present': False}
+                for variant in range(4)
+            ]
+        if self.reasons:
+            result['reasons'] = list(self.reasons)
         return result
 
 
@@ -496,11 +533,12 @@ class NativeEdltParentPlan:
     snapshot: NativeEdltProjectSnapshot
     networks: tuple[str, ...]
     operations: tuple
-    cache: LifecycleCache
-    creations: tuple[MetadataCreation, ...]
+    cache: object
+    creations: tuple[object, ...]
     parent_plan: object
     requirements: str
     static_labels: str
+    scene_metadata: object | None = None
 
     @property
     def mutation_required(self):
@@ -508,15 +546,41 @@ class NativeEdltParentPlan:
 
     def semantic_source(self):
         return (self.snapshot, self.operations, self.cache,
-                self.creations, self.parent_plan.expected)
+                self.creations, self.scene_metadata,
+                tuple(sorted(self.parent_plan.expected.items())),
+                tuple(sorted(self.parent_plan.changes.items())))
 
     def as_dict(self):
+        ordered_operations = tuple(
+            row['op'] for row in self.operations
+            if row['op'] in ('applications', 'corridor', 'reset'))
+        ordered_cache = None
+        if (ordered_operations and isinstance(self.cache, ApplicationCache)
+                and self.scene_metadata is None):
+            ordered_cache = {
+                'operations': list(ordered_operations),
+                'applications_complete': self.cache.applications_complete,
+                'group_lists_complete': [
+                    row.application for row in self.cache.group_lists
+                    if row.complete
+                ],
+                'inventory_order_source':
+                    'DBGETXML Application/Group XML child order',
+                'display_projection': 'exact TagName database view',
+                'toolkit_registry_display_and_sort_preferences_observed': False,
+                'projected_list_objects_admitted': False,
+                'reset_raw_source': (
+                    'exact selected Unit PP Value attributes'
+                    if self.parent_plan.expected_raw is not None else None),
+            }
         return {
             'format': 'cbus-native-edlt-parent-metadata-plan-v1',
             'profile': PROFILE, 'unit': self.unit,
             'project_xml_sha256': _digest(self.before_xml),
             'parameters_sha256': _digest(_json({
                 name: list(value) for name, value in self.snapshot.values})),
+            'raw_parameters_sha256': _digest(_json(
+                dict(self.snapshot.raw_values))),
             'requirements': json.loads(self.requirements),
             'metadata_cache': self.cache.as_dict(),
             'metadata_provenance': 'one-admitted-native-project-xml-snapshot',
@@ -526,7 +590,12 @@ class NativeEdltParentPlan:
             'static_labels': json.loads(self.static_labels),
             'planned_creations': [row.as_dict() for row in self.creations],
             'creation_order': ['Application address order',
-                               'Group/NetVar application then address order'],
+                               'Group/NetVar application then address order',
+                               'Trigger action Level group then address order'],
+            'automatic_scene_metadata': (
+                None if self.scene_metadata is None
+                else self.scene_metadata.as_dict()),
+            'automatic_ordered_application_cache': ordered_cache,
             'mutation_required': self.mutation_required,
             'parent_transaction': self.parent_plan.as_dict(),
             'closed_networks': list(self.networks),
@@ -539,6 +608,7 @@ class NativeEdltParentPlan:
             'rollback_after_pp_save_attempt': False,
             'project_images_loaded': False,
             'unresolved_image_metadata_rejected_when_consumed': True,
+            'full_scene_manager_control_binding_verified': False,
             'native_parent_form_executed': False,
             'physical_device_programmed': False,
         }
@@ -560,6 +630,400 @@ def _static_labels(values):
                   'database_objects_created': False, 'labels': rows})
 
 
+def _merge_lifecycle_fact(existing, replacement):
+    """Join independently proven facts without weakening either source."""
+    if existing is None:
+        return replacement
+    if existing.exists != replacement.exists:
+        raise ValueError('Automatic metadata sources disagree on group presence')
+    images = existing.dynamic_images
+    images_known = existing.dynamic_images_known
+    if replacement.dynamic_images_known:
+        if images_known and images != replacement.dynamic_images:
+            raise ValueError(
+                'Automatic metadata sources disagree on dynamic image facts')
+        images, images_known = replacement.dynamic_images, True
+    levels = existing.levels
+    if replacement.levels is not None:
+        if levels is not None and levels != replacement.levels:
+            raise ValueError(
+                'Automatic metadata sources disagree on complete level facts')
+        levels = replacement.levels
+    return LifecycleGroup(
+        existing.application, existing.group, existing.exists,
+        images, images_known, levels)
+
+
+def _accumulate_requirements(document, required_apps, requirement_rows):
+    """Merge complete lifecycle requirement documents by consumed fact."""
+    if (not isinstance(document, dict)
+            or not isinstance(document.get('applications'), list)
+            or not isinstance(document.get('groups'), list)):
+        raise ValueError('Invalid automatic lifecycle requirement document')
+    for row in document['applications']:
+        required_apps.add(row['application'])
+    for row in document['groups']:
+        key = (row['application'], row['group'])
+        target = requirement_rows.setdefault(key, {
+            'application': row['application'],
+            'group': row['group'],
+            'facts': {},
+        })
+        for fact, reasons in row['facts'].items():
+            if not isinstance(reasons, list):
+                raise ValueError('Invalid automatic lifecycle fact reasons')
+            bucket = target['facts'].setdefault(fact, [])
+            for reason in reasons:
+                if reason not in bucket:
+                    bucket.append(reason)
+
+
+def _accumulate_operation_groups(values, operations, required_apps,
+                                 requirement_rows):
+    for application, group, reason, needs_images in _operation_groups(
+            values, operations):
+        required_apps.add(application)
+        key = (application, group)
+        target = requirement_rows.setdefault(key, {
+            'application': application,
+            'group': group,
+            'facts': {},
+        })
+        exists = target['facts'].setdefault('exists', [])
+        if reason not in exists:
+            exists.append(reason)
+        if needs_images:
+            images = target['facts'].setdefault(
+                'dynamic_images_if_present', [])
+            marker = {'reason': reason}
+            if marker not in images:
+                images.append(marker)
+
+
+def _complete_application_cache(snapshot, required_apps, requirement_rows,
+                                *, required_existing=(),
+                                required_group_lists=()):
+    """Resolve one complete database-view cache without projecting objects.
+
+    ``TagName`` and XML child order are exact database facts.  Toolkit's
+    registry-backed formatted-display and sorting preferences are not present
+    in DBGETXML, so the cache deliberately uses a deterministic TagName view.
+    """
+    applications = {row.address: row for row in snapshot.applications}
+    required_existing = set(required_existing)
+    required_group_lists = set(required_group_lists)
+    required = (set(required_apps) | required_group_lists
+                | {application for application, _group in required_existing})
+    if 255 in required:
+        raise ValueError(
+            'Application255 is virtual and has no derivable native list')
+    missing = sorted(required - set(applications))
+    if missing:
+        raise ValueError(
+            'Complete ordered application cache cannot project missing '
+            'applications: ' + ', '.join(map(str, missing)))
+
+    facts = []
+    for (application, group), requirement in sorted(requirement_rows.items()):
+        if application not in applications:
+            raise ValueError(
+                'Required native application is absent: ' + str(application))
+        if group == 255:
+            facts.append(LifecycleGroup(
+                application, 255, True, (False,) * 4, True, ()))
+            continue
+        record = next((row for row in applications[application].groups
+                       if row.address == group), None)
+        if record is None:
+            if (application, group) in required_existing:
+                raise ValueError(
+                    'Reset does not infer a missing bound control group: '
+                    f'application {application} group {group}')
+            facts.append(LifecycleGroup(application, group, False))
+            continue
+        consumed = requirement.get('facts', {})
+        needs_images = bool(consumed.get('dynamic_images_if_present'))
+        if needs_images and not record.dynamic_images_known:
+            raise ValueError(
+                'Consumed dynamic image metadata is not derivable from '
+                'DBGETXML; application '
+                f'{application} group {group} requires project/DLTP images')
+        levels = (record.levels
+                  if consumed.get('complete_levels_if_present') else None)
+        facts.append(LifecycleGroup(
+            application, group, True,
+            record.dynamic_images if needs_images else None,
+            needs_images, levels))
+
+    for application, group in sorted(required_existing):
+        key = (application, group)
+        if any((row.application, row.group) == key for row in facts):
+            continue
+        if application not in applications:
+            raise ValueError(
+                'Reset bound-control application is absent: '
+                + str(application))
+        record = next((row for row in applications[application].groups
+                       if row.address == group), None)
+        if group != 255 and record is None:
+            raise ValueError(
+                'Reset does not infer a missing bound control group: '
+                f'application {application} group {group}')
+        facts.append(LifecycleGroup(
+            application, group, True,
+            (False,) * 4 if group == 255 else None,
+            group == 255, () if group == 255 else None))
+    facts = tuple(sorted(facts, key=lambda row: (row.application, row.group)))
+    if len(facts) > 512:
+        raise ValueError(
+            'Complete ordered application cache exceeds 512 consumed group '
+            'facts')
+
+    application_order = tuple(row.address for row in snapshot.applications)
+    lifecycle = LifecycleCache(application_order, facts)
+    displays = tuple(CachedDisplay(row.address, row.tag, row.tag)
+                     for row in snapshot.applications)
+    virtual = {
+        row.application for row in facts
+        if row.group == 255 and row.exists
+    }
+    group_lists = []
+    count = 0
+    for application in snapshot.applications:
+        groups = [CachedDisplay(row.address, row.tag, row.tag)
+                  for row in application.groups]
+        if application.address in virtual:
+            groups.append(CachedDisplay(255, '<Unused>', '<Unused>'))
+        count += len(groups)
+        if count > 4096:
+            raise ValueError(
+                'Complete ordered application cache exceeds 4096 groups')
+        group_lists.append(CachedGroupList(
+            application.address, True, tuple(groups)))
+    return ApplicationCache(
+        lifecycle, True, displays, tuple(group_lists))
+
+
+def _reset_requirements(snapshot, editor, operations):
+    reset = next((row for row in operations if row['op'] == 'reset'), None)
+    if reset is None:
+        return None, frozenset(), frozenset()
+    options = {name: value for name, value in reset.items()
+               if name not in ('op', 'dirty_parameters')}
+    document = editor._editor('reset').requirements(
+        snapshot.raw_map(), **options).as_dict()
+    control_groups = frozenset(
+        (row['application'], row['group'])
+        for row in document['control_groups'])
+    return document, control_groups, frozenset(document['complete_group_lists'])
+
+
+def _plan_parent_scene_metadata(text, unit_path, supplied, editor, operations,
+                                snapshot, requirements, *, networks=()):
+    """Compose the exact SceneManager resolver with parent dependencies."""
+    from .edlt_scene_manager import SceneManagerCache
+    from .edlt_scene_metadata import (
+        SceneContainerCreation, SceneLevelCreation,
+        resolve_native_scene_metadata,
+    )
+
+    unsupported = sorted({
+        row['op'] for row in operations
+        if row['op'] in ('applications', 'corridor', 'reset')
+    })
+    if unsupported:
+        raise ValueError(
+            'Automatic parent SceneManager metadata does not admit the '
+            'separate cache/raw contract for: ' + ', '.join(unsupported))
+    scene_operation = next(
+        row for row in operations if row['op'] == 'scene-manager')
+    required_apps = {
+        row['application'] for row in requirements['applications']
+    }
+    group_reasons = {}
+    requirement_rows = {}
+    for row in requirements['groups']:
+        key = (row['application'], row['group'])
+        requirement_rows[key] = row
+        group_reasons.setdefault(key, []).extend(row['facts']['exists'])
+    operation_images = {}
+    for application, group, reason, needs_images in _operation_groups(
+            supplied, operations):
+        required_apps.add(application)
+        group_reasons.setdefault((application, group), []).append(reason)
+        if needs_images:
+            operation_images.setdefault((application, group), []).append(
+                reason)
+
+    applications = {row.address: row for row in snapshot.applications}
+    outer_creations = []
+    for address in sorted(required_apps):
+        if address == 255:
+            raise ValueError(
+                'Application255 is virtual and cannot satisfy parent metadata')
+        # The retained SceneManager resolver owns Trigger Control creation.
+        if address not in applications and address != 202:
+            outer_creations.append(MetadataCreation(
+                'Application', address, address,
+                APPLICATION_NAMES.get(address, 'Application ' + str(address))))
+    for (application, group), reasons in sorted(group_reasons.items()):
+        if application == 255:
+            raise ValueError(
+                'Group metadata cannot belong to virtual application255')
+        if group == 255:
+            continue
+        app = applications.get(application)
+        record = None if app is None else next(
+            (row for row in app.groups if row.address == group), None)
+        if record is not None:
+            continue
+        requirement = requirement_rows.get((application, group), {})
+        needs_levels = bool(requirement.get('facts', {}).get(
+            'complete_levels_if_present'))
+        if needs_levels:
+            if application == 202:
+                # Trigger groups and exact action levels are projected by the
+                # retained resolver below.
+                continue
+            raise ValueError(
+                'Missing scene trigger metadata requires level creation, '
+                'which is outside the bounded parent metadata transaction: '
+                f'application {application} group {group}')
+        kind = 'NetVar' if application == 203 else 'Group'
+        outer_creations.append(MetadataCreation(
+            kind, application, group, 'Group ' + str(group),
+            safe_blank_variants=True,
+            reasons=tuple(dict.fromkeys(reasons))))
+
+    projected = tuple(
+        SceneContainerCreation(
+            row.kind, row.application, row.address, row.name, row.reasons)
+        for row in outer_creations
+    )
+    scene_engine = editor._editor('scene-manager')
+    resolved = resolve_native_scene_metadata(
+        text, unit_path, supplied, scene_engine,
+        scene_operation['operations'], _projected_containers=projected)
+    if resolved.snapshot != snapshot:
+        raise ValueError(
+            'Parent and SceneManager metadata snapshots do not identify the '
+            'same native project state')
+
+    state = scene_engine.load(supplied, metadata=resolved.cache)
+    outcome = scene_engine.edit(
+        state, operations=scene_operation['operations'])
+    if not outcome.complete:
+        raise ValueError(
+            'SceneManager capacity stopped the nested edit; partial scene '
+            'graphs cannot enter automatic parent metadata')
+    composition = scene_engine.prepare_composition(outcome.state)
+    dependency_values = {**supplied, **composition.fields}
+
+    # Scene widgets after SceneManager must consume the final trigger graph.
+    for application, group, reason, needs_images in _operation_groups(
+            dependency_values, operations):
+        required_apps.add(application)
+        group_reasons.setdefault((application, group), []).append(reason)
+        if needs_images:
+            operation_images.setdefault((application, group), []).append(
+                reason)
+
+    scene_application_cache = resolved.cache.application_cache
+    facts = {
+        (row.application, row.group): row
+        for row in scene_application_cache.lifecycle.groups
+    }
+    projected_apps = set(scene_application_cache.lifecycle.applications)
+    for address in required_apps:
+        if address not in projected_apps:
+            raise ValueError(
+                'Parent dependency application was not projected into the '
+                'complete SceneManager cache: ' + str(address))
+    for (application, group), _reasons in sorted(group_reasons.items()):
+        if group == 255:
+            replacement = LifecycleGroup(
+                application, 255, True, (False,) * 4, True, ())
+            facts[(application, group)] = _merge_lifecycle_fact(
+                facts.get((application, group)), replacement)
+            continue
+        app = applications.get(application)
+        record = None if app is None else next(
+            (row for row in app.groups if row.address == group), None)
+        current = facts.get((application, group))
+        if record is None:
+            if current is None or not current.exists:
+                raise ValueError(
+                    'Parent dependency group was not projected into the '
+                    'complete SceneManager cache: '
+                    f'{application}/{group}')
+            replacement = current
+        else:
+            requirement = requirement_rows.get((application, group), {})
+            needs_levels = bool(requirement.get('facts', {}).get(
+                'complete_levels_if_present'))
+            levels = (current.levels if current is not None
+                      and current.levels is not None else
+                      record.levels if needs_levels else None)
+            needs_images = bool(
+                requirement.get('facts', {}).get('dynamic_images_if_present')
+                or (application, group) in operation_images)
+            if needs_images and not record.dynamic_images_known:
+                raise ValueError(
+                    'Consumed dynamic image metadata is not derivable from '
+                    'DBGETXML; application '
+                    f'{application} group {group} requires project/DLTP images')
+            replacement = LifecycleGroup(
+                application, group, True,
+                record.dynamic_images if needs_images else None,
+                needs_images, levels)
+        facts[(application, group)] = _merge_lifecycle_fact(
+            current, replacement)
+    if len(facts) > 512:
+        raise ValueError('Resolved eDLT parent scene cache exceeds 512 group facts')
+    lifecycle = LifecycleCache(
+        scene_application_cache.lifecycle.applications,
+        tuple(facts[key] for key in sorted(facts)))
+    application_cache = ApplicationCache(
+        lifecycle, scene_application_cache.applications_complete,
+        scene_application_cache.applications,
+        scene_application_cache.group_lists)
+    cache = SceneManagerCache(application_cache, resolved.cache.level_labels)
+
+    scene_creations = []
+    for row in resolved.creations:
+        if isinstance(row, SceneLevelCreation):
+            scene_creations.append(MetadataCreation(
+                'Level', 202, row.address, row.name,
+                group=row.group, value=row.address,
+                safe_blank_variants=True, reasons=row.reasons))
+        else:
+            scene_creations.append(MetadataCreation(
+                row.kind, row.application, row.address, row.name,
+                safe_blank_variants=row.kind != 'Application',
+                reasons=row.reasons))
+    creations = tuple(sorted(
+        (*outer_creations, *scene_creations),
+        key=lambda row: (
+            0 if row.kind == 'Application' else
+            1 if row.kind in ('Group', 'NetVar') else 2,
+            row.application,
+            row.group if row.group is not None else -1,
+            row.address)))
+    keys = [
+        (row.kind, row.application, row.group, row.address)
+        for row in creations
+    ]
+    if len(keys) != len(set(keys)):
+        raise ValueError('Automatic parent metadata projected duplicate objects')
+    if len(creations) > 512:
+        raise ValueError('eDLT parent scene metadata plan exceeds 512 creations')
+    parent = editor.plan(supplied, metadata=cache, operations=operations)
+    return NativeEdltParentPlan(
+        unit_path, text, snapshot, tuple(networks), operations, cache,
+        creations, parent, _json(requirements), _static_labels(supplied),
+        resolved)
+
+
 def plan_native_parent_metadata(text, unit_path, values, editor, operations,
                                 *, networks=()):
     """Build the projected cache and parent plan without native I/O."""
@@ -572,6 +1036,73 @@ def plan_native_parent_metadata(text, unit_path, values, editor, operations,
     if supplied != snapshot.value_map():
         raise ValueError('PP snapshot differs from the selected native project unit')
     requirements = editor.lifecycle.requirements(supplied).as_dict()
+    if any(row['op'] == 'scene-manager' for row in operations):
+        return _plan_parent_scene_metadata(
+            text, unit_path, supplied, editor, operations, snapshot,
+            requirements, networks=networks)
+
+    # Applications, Corridor and Reset consume complete ordered lists.  For
+    # this branch a missing object cannot be appended at a position that is
+    # evidenced by DBGETXML, so it is rejected rather than projected.  Reset
+    # additionally consumes the exact PP Value spellings, which the numeric
+    # public ``values`` argument deliberately cannot carry.
+    ordered_cache_operations = {
+        row['op'] for row in operations
+        if row['op'] in ('applications', 'corridor', 'reset')
+    }
+    if ordered_cache_operations:
+        required_apps = set()
+        requirement_rows = {}
+        _accumulate_requirements(
+            requirements, required_apps, requirement_rows)
+        reset_requirements, control_groups, complete_group_lists = \
+            _reset_requirements(snapshot, editor, operations)
+        if reset_requirements is not None:
+            _accumulate_requirements(
+                reset_requirements['initial_load'], required_apps,
+                requirement_rows)
+            _accumulate_requirements(
+                reset_requirements['fresh_reset_load'], required_apps,
+                requirement_rows)
+
+            # Obtain the issued fresh graph using a first cache containing
+            # exactly the initial/fresh Reset facts.  Later operation
+            # dependencies are then resolved against the post-Reset numeric
+            # state before the final canonical parent plan is issued.
+            preliminary = _complete_application_cache(
+                snapshot, required_apps, requirement_rows,
+                required_existing=control_groups,
+                required_group_lists=complete_group_lists)
+            reset_operation = operations[0]
+            reset_options = {
+                name: value for name, value in reset_operation.items()
+                if name != 'op'
+            }
+            reset_options.setdefault('dirty_parameters', ())
+            _raw, _dirty, _prepared, transition = \
+                editor._editor('reset').prepare_unit_reset(
+                    snapshot.raw_map(), metadata=preliminary,
+                    **reset_options)
+            dependency_values = dict(transition.after_controls)
+            dependency_operations = operations[1:]
+        else:
+            dependency_values = supplied
+            dependency_operations = operations
+        _accumulate_operation_groups(
+            dependency_values, dependency_operations, required_apps,
+            requirement_rows)
+        cache = _complete_application_cache(
+            snapshot, required_apps, requirement_rows,
+            required_existing=control_groups,
+            required_group_lists=complete_group_lists)
+        parent_input = (snapshot.raw_map()
+                        if reset_requirements is not None else supplied)
+        parent = editor.plan(
+            parent_input, metadata=cache, operations=operations)
+        return NativeEdltParentPlan(
+            unit_path, text, snapshot, tuple(networks), operations, cache,
+            (), parent, _json(requirements), _static_labels(supplied))
+
     required_apps = {row['application'] for row in requirements['applications']}
     group_reasons = {}
     requirement_rows = {}
@@ -679,8 +1210,16 @@ class NativeEdltParentTransaction:
             'format': RESULT_FORMAT, 'profile': PROFILE, 'operation': operation,
             'state': 'preconditions', 'complete': False, 'commands': [],
             'objects': [], 'backup_created': False,
+            'backup_source_save_attempted': False,
+            'backup_source_save_confirmed': False,
+            'backup_source_save_outcome_uncertain': False,
+            'backup_copy_attempted': False,
+            'backup_copy_confirmed': False,
+            'backup_copy_outcome_uncertain': False,
             'saved': False, 'database_persistence': 'not-attempted',
             'metadata_mutation_attempted': False,
+            'metadata_objects_created': 0,
+            'unidentified_metadata_mutation': False,
             'pp_mutation_attempted': False, 'pp_readback_verified': False,
             'pp_save_attempted': False, 'pp_save_confirmed': False,
             'pp_save_outcome_uncertain': False,
@@ -695,6 +1234,7 @@ class NativeEdltParentTransaction:
             'caller_exclusive_project_required': True,
             'server_project_edit_lock_acquired': False,
             'physical_device_programmed': False,
+            'full_scene_manager_control_binding_verified': False,
             'native_parent_form_executed': False,
         }
 
@@ -703,23 +1243,35 @@ class NativeEdltParentTransaction:
         return self.last_result
 
     def _fail(self, error):
+        backup_save_uncertain = (
+            self._evidence['backup_source_save_attempted']
+            and not self._evidence['backup_source_save_confirmed'])
+        backup_copy_uncertain = (
+            self._evidence['backup_copy_attempted']
+            and not self._evidence['backup_copy_confirmed'])
         pp_save_uncertain = (self._evidence['pp_save_attempted']
                              and not self._evidence['pp_save_confirmed'])
         project_save_uncertain = (
             self._evidence['target_project_save_attempted']
             and not self._evidence['target_project_save_confirmed'])
-        rollback_uncertain = (
-            (self._evidence['metadata_mutation_attempted']
-             or self._evidence['pp_mutation_attempted'])
-            and self._evidence['rollback_attempted']
-            and not self._evidence['rollback_verified'])
+        staging = self._evidence.get('staging_evidence') or {}
+        rollback_verified = (self._evidence['rollback_verified']
+                             or bool(staging.get('rollback_verified')))
+        rollback_attempted = (self._evidence['rollback_attempted']
+                              or bool(staging.get('attempted_parameters')))
+        rollback_errors = [*self._evidence['rollback_errors'],
+                           *staging.get('rollback_errors', ())]
+        rollback_uncertain = rollback_attempted and not rollback_verified
         pp_uncertain = pp_save_uncertain or rollback_uncertain
-        database_uncertain = (pp_save_uncertain or project_save_uncertain
-                              or rollback_uncertain)
-        partial = (self._evidence['pp_save_attempted']
+        database_uncertain = (
+            backup_save_uncertain or backup_copy_uncertain
+            or pp_save_uncertain or project_save_uncertain
+            or rollback_uncertain)
+        partial = (self._evidence['backup_created']
+                   or self._evidence['pp_save_attempted']
                    or self._evidence['target_project_save_attempted']
-                   or rollback_uncertain)
-        if self._evidence['rollback_verified']:
+                   or database_uncertain)
+        if rollback_verified:
             persistence = 'original-state-verified-after-rollback'
         elif (self._evidence['target_project_save_confirmed']
               and not self._evidence['persistence_verified']):
@@ -736,6 +1288,11 @@ class NativeEdltParentTransaction:
             saved=False, database_persistence=persistence,
             pp_state_uncertain=pp_uncertain,
             database_state_uncertain=database_uncertain,
+            rollback_attempted=rollback_attempted,
+            rollback_verified=rollback_verified,
+            rollback_errors=rollback_errors,
+            backup_source_save_outcome_uncertain=backup_save_uncertain,
+            backup_copy_outcome_uncertain=backup_copy_uncertain,
             pp_save_outcome_uncertain=pp_save_uncertain,
             target_project_save_outcome_uncertain=project_save_uncertain,
             partial_failure_possible=partial,
@@ -828,74 +1385,167 @@ class NativeEdltParentTransaction:
         if creation.kind == 'Application':
             parent = f'//{plan.snapshot.project}/{plan.snapshot.network}'
             kind = 'application'
+        elif creation.kind == 'Level':
+            parent = (f'//{plan.snapshot.project}/{plan.snapshot.network}/'
+                      f'{creation.application}/{creation.group}')
+            kind = 'level'
         else:
             parent = (f'//{plan.snapshot.project}/{plan.snapshot.network}/'
                       f'{creation.application}')
             kind = creation.kind.lower()
-        response = self.database.add(parent, kind, creation.address,
-                                     _name(creation.name, 'Metadata name'))
+        receipt = {
+            **creation.as_dict(), 'attempted': True, 'created': False,
+            'value_initialized': False,
+        }
+        try:
+            response = self.database.add(
+                parent, kind, creation.address,
+                _name(creation.name, 'Metadata name'))
+        except BaseException:
+            self._evidence['unidentified_metadata_mutation'] = True
+            raise
         identities = [match[1].lower() for line in response.lines
                       if (match := re.fullmatch(
                           r'301[- ]OID=([0-9a-fA-F-]{36})', line))]
         if len(identities) != 1:
+            self._evidence['unidentified_metadata_mutation'] = True
             raise RuntimeError('Created metadata did not return exactly one OID')
-        identity = _oid(identities[0])
+        try:
+            identity = _oid(identities[0])
+        except ValueError:
+            self._evidence['unidentified_metadata_mutation'] = True
+            raise
         if identity in known:
+            self._evidence['unidentified_metadata_mutation'] = True
             raise RuntimeError('Created metadata returned an existing OID')
         known.add(identity)
-        self._evidence['objects'].append({
-            **creation.as_dict(), 'oid': identity, 'created': True})
+        receipt.update(
+            oid=identity, created=True,
+            value_initialized=creation.kind == 'Level')
+        self._evidence['objects'].append(receipt)
+        self._evidence['metadata_objects_created'] = len(
+            self._evidence['objects'])
 
     def _verify_created(self, plan, text):
         snapshot = _snapshot(text, plan.unit, self.editor)
-        apps = {row.address: row for row in snapshot.applications}
-        created = {(row['kind'], row.get('application'), row['address']): row
-                   for row in self._evidence['objects']}
-        initial_apps = {row.address: row for row in plan.snapshot.applications}
-        expected_apps = set(initial_apps)
-        expected_groups = {
-            address: {group.address for group in row.groups}
-            for address, row in initial_apps.items()}
-        for creation in plan.creations:
-            if creation.kind == 'Application':
-                expected_apps.add(creation.address)
-                expected_groups.setdefault(creation.address, set())
-            else:
-                expected_groups.setdefault(creation.application, set()).add(
-                    creation.address)
-        if set(apps) != expected_apps:
-            raise RuntimeError('Native application inventory changed during the transaction')
-        for address, expected in expected_groups.items():
-            if {group.address for group in apps[address].groups} != expected:
+        before_apps = {row.address: row for row in plan.snapshot.applications}
+        after_apps = {row.address: row for row in snapshot.applications}
+        app_creations = {
+            row.address: row for row in plan.creations
+            if row.kind == 'Application'
+        }
+        group_creations = {
+            (row.application, row.address): row for row in plan.creations
+            if row.kind in ('Group', 'NetVar')
+        }
+        level_creations = {
+            (row.application, row.group, row.address): row
+            for row in plan.creations if row.kind == 'Level'
+        }
+        if set(after_apps) != set(before_apps) | set(app_creations):
+            raise RuntimeError(
+                'Native application inventory changed during the transaction')
+        receipts = {}
+        for row in self._evidence['objects']:
+            key = (
+                row['kind'], row.get('application'), row.get('group'),
+                row['address'])
+            if key in receipts:
+                raise RuntimeError('Duplicate parent metadata creation receipt')
+            receipts[key] = row
+
+        for app_address, after_app in after_apps.items():
+            before_app = before_apps.get(app_address)
+            if before_app is None:
+                creation = app_creations.get(app_address)
+                receipt = receipts.get(
+                    ('Application', None, None, app_address))
+                if (creation is None or receipt is None
+                        or after_app.oid != receipt['oid']
+                        or after_app.tag != creation.name):
+                    raise RuntimeError(
+                        'Created parent application differs after native readback')
+            elif (after_app.oid, after_app.tag, after_app.metadata) != (
+                    before_app.oid, before_app.tag, before_app.metadata):
+                raise RuntimeError('Existing application metadata changed')
+
+            before_groups = ({row.address: row for row in before_app.groups}
+                             if before_app is not None else {})
+            expected_new_groups = {
+                address: row for (application, address), row
+                in group_creations.items() if application == app_address
+            }
+            after_groups = {row.address: row for row in after_app.groups}
+            if set(after_groups) != (set(before_groups)
+                                     | set(expected_new_groups)):
                 raise RuntimeError(
                     'Native group inventory changed during the transaction')
-        for creation in plan.creations:
-            receipt = created[(creation.kind,
-                               None if creation.kind == 'Application'
-                               else creation.application, creation.address)]
-            if creation.kind == 'Application':
-                row = apps.get(creation.address)
-            else:
-                app = apps.get(creation.application)
-                row = None if app is None else next(
-                    (item for item in app.groups
-                     if item.address == creation.address), None)
-            if (row is None or row.oid != receipt['oid']
-                    or row.tag != creation.name
-                    or (creation.kind != 'Application'
-                        and row.kind != creation.kind)):
-                raise RuntimeError('Created metadata differs after native readback')
-        # Existing metadata and unrelated selected-unit fields must remain exact.
-        for address, before in initial_apps.items():
-            after = apps.get(address)
-            if after is None or (after.oid, after.tag, after.metadata) != (
-                    before.oid, before.tag, before.metadata):
-                raise RuntimeError('Existing application metadata changed')
-            after_groups = {row.address: row for row in after.groups}
-            for group in before.groups:
-                saved = after_groups.get(group.address)
-                if saved is None or saved != group:
+
+            for group_address, after_group in after_groups.items():
+                before_group = before_groups.get(group_address)
+                if before_group is None:
+                    creation = expected_new_groups.get(group_address)
+                    receipt = receipts.get((
+                        creation.kind if creation is not None else '',
+                        app_address, None, group_address))
+                    if (creation is None or receipt is None
+                            or after_group.kind != creation.kind
+                            or after_group.oid != receipt['oid']
+                            or after_group.tag != creation.name):
+                        raise RuntimeError(
+                            'Created parent group differs after native readback')
+                    if (creation.safe_blank_variants
+                            and (not after_group.dynamic_images_known
+                                 or after_group.dynamic_images !=
+                                 (False,) * 4)):
+                        raise RuntimeError(
+                            'Created parent group lacks safe blank variants')
+                elif (after_group.kind, after_group.oid, after_group.tag,
+                      after_group.metadata, after_group.dynamic_images,
+                      after_group.dynamic_images_known) != (
+                          before_group.kind, before_group.oid,
+                          before_group.tag, before_group.metadata,
+                          before_group.dynamic_images,
+                          before_group.dynamic_images_known):
                     raise RuntimeError('Existing group metadata changed')
+
+                before_levels = (
+                    {row.address: row for row in before_group.level_records}
+                    if before_group is not None else {})
+                expected_new_levels = {
+                    address: row
+                    for (application, group, address), row
+                    in level_creations.items()
+                    if (application, group) == (app_address, group_address)
+                }
+                after_levels = {
+                    row.address: row for row in after_group.level_records
+                }
+                if set(after_levels) != (set(before_levels)
+                                         | set(expected_new_levels)):
+                    raise RuntimeError(
+                        'Native level inventory changed during the transaction')
+                for address, before_level in before_levels.items():
+                    if after_levels[address] != before_level:
+                        raise RuntimeError('Existing level metadata changed')
+                for address, creation in expected_new_levels.items():
+                    row = after_levels[address]
+                    receipt = receipts.get(
+                        ('Level', app_address, group_address, address))
+                    blanks = tuple((str(variant), '', False)
+                                   for variant in range(4))
+                    if (receipt is None or row.oid != receipt['oid']
+                            or row.address != address
+                            or row.value != creation.value
+                            or row.tag != creation.name
+                            or (creation.safe_blank_variants
+                                and (not row.dynamic_labels_known
+                                     or row.dynamic_labels != blanks))):
+                        raise RuntimeError(
+                            'Created trigger action differs after native readback')
+
+        if len(receipts) != len(plan.creations):
+            raise RuntimeError('Parent metadata creation receipts are incomplete')
         if (snapshot.unit_oid != plan.snapshot.unit_oid
                 or snapshot.project_metadata != plan.snapshot.project_metadata
                 or snapshot.unit_metadata != plan.snapshot.unit_metadata
@@ -908,21 +1558,21 @@ class NativeEdltParentTransaction:
     def _rollback_pre_save(self, plan):
         self._evidence['rollback_attempted'] = True
         try:
-            for row in reversed(self._evidence['objects']):
-                row['rollback_delete_attempted'] = True
-                self.database.delete('!' + row['oid'])
-                row['rollback_delete_confirmed'] = True
-            # Persist the inverse database operations, then reload the project
-            # so verification observes the same native boundary as apply.
-            self._operation('save', plan.snapshot.project)
-            self._evidence['rollback_project_save_confirmed'] = True
+            if not self._evidence['unidentified_metadata_mutation']:
+                for row in reversed(self._evidence['objects']):
+                    row['rollback_delete_attempted'] = True
+                    self.database.delete('!' + row['oid'])
+                    row['rollback_delete_confirmed'] = True
+                # Persist identified inverse operations. If an add reply was
+                # ambiguous, reload the already saved source instead of
+                # persisting an unidentified object.
+                self._operation('save', plan.snapshot.project)
+                self._evidence['rollback_project_save_confirmed'] = True
             for action in ('close', 'load'):
                 self._operation(action, plan.snapshot.project)
             text = self._xml(plan.snapshot.project)
-            current = plan_native_parent_metadata(
-                text, plan.unit, plan.snapshot.value_map(), self.editor,
-                plan.operations, networks=plan.networks)
-            if current.semantic_source() != plan.semantic_source():
+            current = _snapshot(text, plan.unit, self.editor)
+            if current != plan.snapshot:
                 raise RuntimeError('Reload did not restore the admitted eDLT source')
             self._evidence['rollback_verified'] = True
         except BaseException as error:
@@ -943,9 +1593,12 @@ class NativeEdltParentTransaction:
             self._evidence.update(plan=plan.as_dict(), backup_project=backup)
             self._fresh(plan, exact=True)
             self._evidence['state'] = 'backup'
+            self._evidence['backup_source_save_attempted'] = True
             self._operation('save', plan.snapshot.project)
             self._evidence['backup_source_save_confirmed'] = True
+            self._evidence['backup_copy_attempted'] = True
             self._operation('copy', plan.snapshot.project, backup)
+            self._evidence['backup_copy_confirmed'] = True
             self._evidence['backup_created'] = True
             self._fresh(plan)
             self._operation('use', plan.snapshot.project)
@@ -954,6 +1607,7 @@ class NativeEdltParentTransaction:
                 known.add(app.oid)
                 for group in app.groups:
                     known.add(group.oid)
+                    known.update(level.oid for level in group.level_records)
             if plan.creations:
                 self._evidence.update(state='metadata',
                                       metadata_mutation_attempted=True)
@@ -968,7 +1622,15 @@ class NativeEdltParentTransaction:
             with self.programmer.load(lock, source) as session:
                 if self.editor.snapshot(session.values()) != plan.snapshot.value_map():
                     raise ValueError('PP source changed after native metadata planning')
-                result = self.editor.apply(session, plan.parent_plan)
+                try:
+                    result = self.editor.apply(session, plan.parent_plan)
+                except BaseException as staging_error:
+                    evidence = getattr(
+                        staging_error, 'edlt_parent_transaction_evidence', None)
+                    if isinstance(evidence, dict):
+                        self._evidence['staging_evidence'] = evidence
+                    raise
+                self._evidence['staging_evidence'] = result
                 self._evidence['pp_readback_verified'] = bool(result.get('verified'))
                 self._evidence['state'] = 'pp_save'
                 self._evidence['pp_save_attempted'] = True
@@ -999,7 +1661,9 @@ class NativeEdltParentTransaction:
             )
             return self._finish()
         except BaseException as error:
-            if (not pp_save_attempted and self._evidence.get('backup_created')
+            if (not pp_save_attempted
+                    and not self._evidence.get('target_project_save_attempted')
+                    and self._evidence.get('backup_created')
                     and (self._evidence.get('metadata_mutation_attempted')
                          or self._evidence.get('pp_mutation_attempted'))):
                 self._rollback_pre_save(plan)

@@ -34,6 +34,22 @@ Use `--project-file project.cbz` or a bare project XML file for human-readable l
 
 Copy `.env.example` to `.env` and set at least `MQTT_SERVER` plus `CNI_ADDR` or `SERIAL_PORT`. `docker compose up --build` uses a private bridge network, with outbound access to the configured CNI and broker. C-Gate port 20023 is published on the host's `127.0.0.1` only. Use reachable LAN addresses for the broker and CNI; container localhost is not the host's localhost.
 
+Release builds should record the exact tested Git commit in the image:
+
+```sh
+docker build \
+  --build-arg CMQTTD_REVISION="$(git rev-parse HEAD)" \
+  --tag "cmqttd:$(git rev-parse --short=8 HEAD)" \
+  --tag cmqttd:latest .
+docker image inspect cmqttd:latest \
+  --format '{{index .Config.Labels "org.opencontainers.image.revision"}}'
+```
+
+Build from a clean checkout of that commit. Site project archives and decoded
+unit specifications belong only in the ignored `cmqttd_config/` build context
+for that local image and must be removed from any temporary clean worktree
+after the build.
+
 Optional container files live in `cmqttd_config/`:
 
 - `project.cbz`
@@ -45,6 +61,21 @@ Optional container files live in `cmqttd_config/`:
 These files are excluded from Git. The Docker build copies any that exist locally into `/etc/cmqttd`. Rebuild the image after changing copied files, or mount them into `/etc/cmqttd` at runtime.
 
 The entrypoint maps environment variables to `cmqttd` options. `MQTT_USE_TLS=1` enables TLS, `CBUS_TIMESYNC` sets the synchronization interval, `CBUS_STATUS_RESYNC` sets the status interval, `CBUS_CLOCK=0` disables clock replies, and `CMQTTD_CBUS_NETWORK` selects a project network. The daemon runs as PID 1 so Docker stop signals reach it directly.
+
+When `CMQTTD_CGATE_BIND` enables the embedded C-Gate listener, the container
+also recognizes these mounted files:
+
+| Purpose | Default container path | Override variable |
+|---|---|---|
+| Server certificate chain | `/etc/cmqttd/cgate-server.pem` | `CMQTTD_CGATE_TLS_CERT_PATH` |
+| Server private key | `/etc/cmqttd/cgate-server.key` | `CMQTTD_CGATE_TLS_KEY_PATH` |
+| Client CA bundle | `/etc/cmqttd/cgate-client-ca.pem` | `CMQTTD_CGATE_TLS_CLIENT_CA_PATH` |
+| High-entropy LOGIN token | `/etc/cmqttd/cgate-auth` | `CMQTTD_CGATE_AUTH_PATH` |
+
+The certificate and key must appear together. Mounting the client CA makes a
+valid client certificate mandatory. A client CA without the server pair stops
+startup, as does a half-configured server pair. The entrypoint passes only file
+paths; it never copies credential contents into the process arguments.
 
 ## Embedded C-Gate service
 

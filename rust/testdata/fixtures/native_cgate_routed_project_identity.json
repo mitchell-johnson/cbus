@@ -1,0 +1,72 @@
+{
+  "format": "cmqttd-native-cgate-routed-project-identity-evidence-v1",
+  "date": "2026-09-27",
+  "passed": true,
+  "scope": "Owned C-Gate 3.4.0 build 2001 classfile semantics, retained original routed RECALL and IDENTIFY correlation matrices, CBUS-SIUG source routing, and cmqttd scripted one-through-six-bridge acceptance; no live C-Bus bridge or site data",
+  "selected_native_runtime": {
+    "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "classfile_tool": "javap from the pinned owned Java 11 runtime"
+  },
+  "native_classfile_findings": [
+    {
+      "class": "com.clipsal.cgate.cbus.net.NetCommand",
+      "finding": "The command registry maps set_project_identify to kS."
+    },
+    {
+      "class": "kS",
+      "finding": "runCommand resolves exactly one supplied address with argAsNetworkList, casts the result only to CBusBaseNetwork, encodes the uppercase one-to-eight-character identity to six bytes, and invokes CBusBaseNetwork.a(access, encoded). It contains no direct-network or concrete-network-class restriction."
+    },
+    {
+      "class": "com.clipsal.cgate.cbus.core.CBusBaseNetwork",
+      "method": "a(aX, byte[])",
+      "finding": "The method requires six encoded bytes, selects the first usable nonzero-address unit through the addressed network's own MMI and identity machinery, then calls CBusUnit.a(access, encoded) on that unit."
+    },
+    {
+      "class": "com.clipsal.cgate.cbus.core.CBusUnit",
+      "method": "a(aX, byte[])",
+      "finding": "The unit method binds a ct STORE command to the same CBusBaseNetwork and calls ct.a(unit, 35, 70, six bytes, 6): parameter 35 and decimal 70/fixed tag 0x46. It waits for completion and distinguishes no-response, negative acknowledge and other store failure. Native does not perform a second parameter-35 readback here; cmqttd deliberately requires one before updating its cache."
+    },
+    {
+      "class": "com.clipsal.cgate.cbus.net.CBusBridgeNetwork",
+      "finding": "Bridge networks are CBusBaseNetwork instances and use their near-side chain for command transport. Because kS retains the resolved base-network object through unit selection and STORE binding, the native command contract includes a resolved bridged network rather than substituting the root network."
+    }
+  ],
+  "retained_route_evidence": [
+    {
+      "path": "toolkit-cli/research/fixtures/pci-routed-recall-original-vectors.json",
+      "sha256": "0a090870b4ad1738a93c100021de62371668d295250bdc3e7ac3a1389ec2fa9e",
+      "finding": "Original C-Gate receiver correlation accepts Reply Network paths from one through six bridges and rejects route, unit and CAL mismatches across the finite retained matrix."
+    },
+    {
+      "path": "toolkit-cli/research/fixtures/pci-routed-identify-original-vectors.json",
+      "sha256": "17cc9a2ff8c3df5d27fca51fb40059969546c2c41789f4fdbea9a5fc39751df6",
+      "finding": "Original routed IDENTIFY matching establishes the same Reply Network envelope used to select the destination unit safely before STORE."
+    },
+    {
+      "path": "toolkit-cli/research/experiments/2026-09-26/cgate-bridged-topology-native-acceptance.json",
+      "sha256": "e95d33f9e4608b7e31af34a4a6cbe4dbef2e56a7d5aa2f6f0084ed9def0baa72",
+      "finding": "The retained native topology acceptance pins CBusBridgeNetwork resolution and the one-to-six source-route bound."
+    }
+  ],
+  "cmqttd_wire_vectors": [
+    "en-cmqttd-routed-set-project-identify-store-one-bridge",
+    "en-cmqttd-routed-set-project-identify-recall-one-bridge",
+    "en-cmqttd-routed-set-project-identify-store-six-bridges",
+    "en-cmqttd-routed-set-project-identify-recall-six-bridges",
+    "fp-cmqttd-routed-project-identity-ack-one-bridge",
+    "fp-cmqttd-routed-project-identity-readback-one-bridge",
+    "fp-cmqttd-routed-project-identity-ack-six-bridges",
+    "fp-cmqttd-routed-project-identity-readback-six-bridges"
+  ],
+  "cmqttd_acceptance": [
+    "Transport tests pin literal one- and six-bridge STORE and RECALL frames, exact Reply Network/unit/parameter/tag correlation, exact readback, route-length validation and retirement without replay after mismatched readback.",
+    "Service tests run routed MMI, IDENTIFY1 and the complete IDENTIFY4 uniqueness window, reject direct and neighbouring-route replies, send one STORE, require routed readback, and update only the target network's volatile ProjectName; a mismatched readback retires the generation without replay, invalidates only the target value, and preserves the root-network cache.",
+    "A real cmqttd test completes the routed mutation while direct lighting observations continue to reach MQTT over the same single CNI connection."
+  ],
+  "evidence_boundaries": [
+    "No physical bridge or routed unit completed this mutation in the acceptance run.",
+    "The original classfile proves bridged-network admission and the STORE selector. Literal routed STORE bytes are implementation acceptance from the selected native command contract, CBUS-SIUG routing grammar and retained routed-correlation matrices, not a native wire capture of this exact command.",
+    "cmqttd's exact RECALL verification is a stricter commit rule than the selected native C-Gate method and does not claim device persistence or power-cycle survival.",
+    "An incomplete or mismatched routed write retires the shared PCI generation and is never retried automatically."
+  ]
+}

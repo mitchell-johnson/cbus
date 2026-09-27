@@ -59,6 +59,20 @@ Native connections support TLS and client certificates. A live address such as `
 
 Successful operations emit JSON on stdout, operation errors emit JSON on stderr, and failures return nonzero. Argument usage errors can be plain argparse text. `--compact` is a global option before the command; event monitoring emits JSON lines. Preserve partial-operation evidence and do not replay uncertain writes automatically.
 
+For supported classic UnitTemplate work, use `template-export` and
+`template-import` for XML files. Use database-unit `template-copy` to transfer
+the original 26-field template set directly between distinct matching
+KEY1/KEY2/KEY4 1.2.67 units under one exact network lock. Use
+`template-reset-defaults` to restore only that field set from the selected
+decoded specification. Preview either transaction with unit-level `--dry-run`.
+An apply sends one PP SAVE and opens a fresh destination session; inspect
+`staged_verified`, `save_confirmed`, `reload_verified` and
+`preserved_parameters`. `project_file_saved=false` means a separate project
+save is still required for file durability. Never retry when
+`save_outcome_uncertain=true`. These commands require `/db` units, reject
+cross-profile conversion and do not perform a physical or factory reset. See
+`toolkit-cli/docs/unit-templates.md`.
+
 ## eDLT Measurement decimal values
 
 For a KEYGL5 / 5055EDL 5.5.00 database unit, configure exact scaling with
@@ -103,8 +117,16 @@ For two or more supported KEYGL5 5.5.00 panel edits, use `edlt
 parent-transaction-plan` offline or database-unit `edlt-parent-transaction`.
 The ordered operations cover Measurement, Lighting, Enable, Fan, HVAC, Multi
 Level, Room Courtesy, Scene, Shutter, Time/Date, Timer, MRA Zone Control,
-Source Select, Source Control, activation, General, Display, Standby, Colours,
-Navigation, Quick Status, Page Control and MRA globals. The
+Source Select, Source Control, Blank, activation, General, Display, Standby, Colours,
+Navigation, Quick Status, Page Control, MRA globals, Applications and
+Corridor, one retained SceneManager sequence, plus an optional operation-1
+Reset baseline. Applications, Corridor and Reset require the complete
+application cache; SceneManager requires the complete SceneManager cache. The
+automatic parent metadata resolver derives existing ordered DBGETXML lists and
+exact Unit PP strings for operation-1 Reset without projecting missing list
+objects. Its separate SceneManager branch derives that cache and creates exact
+Trigger application/group/action objects. Combining those automatic branches
+remains refused. The
 transaction reconciles one page mode, rejects overlapping complete records or
 settings fields, reserves both Time/Date slices, validates application/group
 and effective dynamic-variant dependencies, composes shared text allocation in
@@ -114,8 +136,11 @@ idle Colours controls and a retained/new MRA widget before `mra-globals`.
 Shared multiplexer and zone components each have one explicit owner; omitted
 values use the first existing pre-conversion MRA record. Review `operation_results`,
 `operation_metadata_dependencies`, `ownership`, `preservation` and
-`execution_counts`. Applications/Corridor cache dialogs and Blank/Reset remain
-separate. The original
+`execution_counts`. Blank uses whole-slot ownership. Reset creates a fresh
+widget/scene graph before later operations and reports layered baseline
+overrides; Reset after operation 1, duplicate Reset and Reset+Blank fail
+closed. Applications must precede SceneManager, and SceneManager must precede
+every Scene widget so final graph dependencies are validated. The original
 component evidence does not establish an executed original multi-panel form; see
 `toolkit-cli/docs/edlt-parent-transaction.md`.
 
@@ -125,7 +150,12 @@ manual cache with the bounded automatic resolver. Offline, pass
 `--auto-metadata --exclusive-project`. It derives required applications and
 groups for every admitted operation, complete consumed scene-level addresses,
 safe dynamic-variant facts and all 64 static-label slots, then deterministically
-plans missing application/group records. Review the
+plans missing application/group records. With `scene-manager`, it reuses the
+exact retained resolver and adds missing Trigger application, group and action
+levels after container creation and before the one parent PP save. Review the
+`automatic_ordered_application_cache` database-view provenance for
+Applications/Corridor/Reset: XML child order and TagName are exact, while
+Toolkit registry display/sort preferences are unobserved. Review the
 plan before applying and use the selected source network as the exact PP lock
 address. The apply creates a project backup but DBADDSAFE, PP SAVE
 and PROJECT SAVE are separate C-Gate operations. Automatic rollback stops once

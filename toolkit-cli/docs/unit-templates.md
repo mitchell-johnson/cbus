@@ -12,8 +12,9 @@ specifications:
 
 This transfers the 26 native parameters selected by the original Toolkit
 template attribute list. It preserves destination address, project, serial
-metadata and parameters excluded from that list. `UnitName` is included and
-is therefore copied.
+metadata and, for the verified database transaction, the stable excluded
+values listed below when the C-Gate schema exposes them. `UnitName` is
+included and is therefore copied.
 
 This is a bounded template workflow. It does not establish template support
 for other profiles, cross-model conversion, physical device transfer or full
@@ -32,6 +33,14 @@ cbus-toolkit cgate --host 127.0.0.1 unit --lock-address //TEST/254 \
 cbus-toolkit cgate --host 127.0.0.1 unit --lock-address //TEST/254 \
   --source /db//TEST/254/p/231 --dry-run template-import key4-template.xml \
   --spec-dir /path/to/unitspec
+
+cbus-toolkit cgate --host 127.0.0.1 unit --lock-address //TEST/254 \
+  --source /db//TEST/254/p/230 --destination /db//TEST/254/p/231 \
+  --dry-run template-copy --profile KEY4 --spec-dir /path/to/unitspec
+
+cbus-toolkit cgate --host 127.0.0.1 unit --lock-address //TEST/254 \
+  --source /db//TEST/254/p/231 --dry-run template-reset-defaults \
+  --profile KEY4 --spec-dir /path/to/unitspec
 ```
 
 Removing `--dry-run` applies and saves the destination database unit. Native
@@ -56,6 +65,45 @@ profile exactly. These tests do not establish cross-type conversion.
 CLI exports/imports default to KEY4. Pass `--profile KEY1` or `--profile KEY2`
 to the relevant export/import command for those profiles; offline snapshot
 identity is checked against that selection.
+
+## Verified database copy and template-default reset
+
+`template-copy` performs a complete bounded transfer without creating an
+intermediate file. Both `--source` and `--destination` must be distinct
+database units under the exact `--lock-address`, and both must match the
+selected KEY1, KEY2 or KEY4 profile. The operation reads the source template,
+opens a separate destination PP session, validates all 26 values and the
+native schema, stages only changed fields, and confirms the staged template.
+Without `--dry-run` it issues one destination `PP SAVE`, closes the session,
+opens the destination again and compares every selected field with the source.
+
+`template-reset-defaults` follows the same staging, save and fresh-reload
+sequence, using the selected decoded unit specification's defaults as its
+template. It resets only the 26 original template-selected parameters. It is
+deliberately different from the broad native `reset-defaults` command and does
+not claim a device factory reset.
+
+Both operations compare every stable template-excluded value present from
+this list before staging and after reload:
+
+```text
+CUSTYPE EEPROMChecksumActive EEPROMLevelRecall LearnedFlag NetworkAddress
+PatchEnable Project SerialNo State UnitAddress
+```
+
+C-Gate schemas can omit some names, so the result records the exact
+`preserved_parameters` intersection it checked. The calculated EEPROM checksum
+and checksum alarm are not preservation candidates. A dry run closes the PP
+session without saving. A confirmed run returns
+`cbus-native-unit-template-transaction-v1` evidence including changed fields,
+CRC, save and reload state. A lost or interrupted save reply sets
+`save_outcome_uncertain=true`; the CLI never retries or opens a verification
+session after that uncertain boundary.
+
+`PP SAVE` updates the C-Gate database model. It does not save the enclosing
+project file, and the receipt therefore keeps `project_file_saved=false`.
+Project-file durability remains a separate operator action. Neither operation
+contacts a physical unit because it admits `/db` sources and destinations only.
 
 ## Exact format and source evidence
 
@@ -128,8 +176,14 @@ Fifteen focused tests pass with the original EXE, native C-Gate 3.4.0 build
   parameters, 28 independently specified raw bytes, XML-special UnitName
   characters, destination identity preservation, and a complete save/reload.
   The totals are 78 parameter transfers, 84 raw bytes and three save/reloads.
+- Three direct-copy and three template-default transactions across KEY1, KEY2
+  and KEY4 against an owned cmqttd C-Gate service. Each used one confirmed PP
+  save, a fresh destination session and all eight stable excluded fields
+  exposed by that service. The retained result is
+  [native-template-transaction-acceptance.json](native-template-transaction-acceptance.json).
 - Corrupt checksums, incompatible profiles/schemas, bounds, duplicate fields
-  and partial-write behavior.
+  partial writes, unrelated-field changes, uncertain saves and interruption
+  identity.
 
 The executable probes run unmodified routine instructions in an x86 CPU
 emulator. Memory, Delphi string allocation and text-file runtime primitives
@@ -152,3 +206,15 @@ closed `/db` unit sources. Missing native/EXE prerequisites are explicit test
 skips, never counted as acceptance passes. The recorded run used CPython 3.13;
 Python 3.10 executable-probe acceptance is tracked separately by the installed
 wheel harness.
+
+The transaction acceptance has its own explicit gate, so it can run against
+an owned C-Gate-compatible service without changing the original-server test:
+
+```sh
+CBUS_TEMPLATE_TRANSACTION_TEST_HOST=127.0.0.1 \
+CBUS_TEMPLATE_TRANSACTION_TEST_PORT=20023 \
+CBUS_UNITSPEC_DIR=/path/to/unitspec \
+CBUS_TEMPLATE_TRANSACTION_REPORT=/tmp/native-template-transaction-acceptance.json \
+.venv/bin/python -m pytest \
+  tests/test_template_transaction_native.py -q
+```

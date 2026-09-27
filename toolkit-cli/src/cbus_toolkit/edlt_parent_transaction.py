@@ -14,7 +14,11 @@ from typing import Mapping
 
 from .edlt import EdltApplyError, EdltError, EdltLighting, _field, _render
 from .edlt_activation import EdltActivation, FIELDS as ACTIVATION_FIELDS
+from .edlt_application_cache import ApplicationCache
+from .edlt_applications import EdltApplications
+from .edlt_blank import EdltBlankWidget
 from .edlt_colours import EdltColours, FIELDS as COLOUR_FIELDS
+from .edlt_corridor import EdltCorridor, FIELDS as CORRIDOR_FIELDS
 from .edlt_display import EdltDisplaySettings
 from .edlt_enable import EdltEnableWidget
 from .edlt_fan import EdltFanWidget
@@ -35,7 +39,12 @@ from .edlt_parent_form import (
 from .edlt_percentage import byte_to_percentage, percentage_to_byte
 from .edlt_quick_status import EdltQuickStatus, FIELDS as QUICK_STATUS_FIELDS
 from .edlt_room_courtesy import EdltRoomCourtesyWidget
+from .edlt_reset import EdltResetControls, _EXCLUDED as RESET_EXCLUDED
 from .edlt_scene import EdltSceneWidget
+from .edlt_scene_manager import (
+    MAX_OPERATIONS as MAX_SCENE_OPERATIONS, EdltSceneManager,
+    SceneManagerCache,
+)
 from .edlt_shutter import EdltShutterWidget
 from .edlt_standby import EdltStandby
 from .edlt_time_date import EdltTimeDateWidget
@@ -125,17 +134,24 @@ MRA_SOURCE_SELECT_OPTION_NAMES = MRA_COMMON_OPTION_NAMES + (
     'source1', 'source2', 'status_text', 'status_index',
 )
 MRA_GLOBAL_OPTION_NAMES = ('multiplexer', 'zone')
+APPLICATIONS_OPTION_NAMES = ('edits',)
+CORRIDOR_OPTION_NAMES = ('edits',)
+BLANK_OPTION_NAMES = ('page', 'position')
+RESET_OPTION_NAMES = ('active_tab', 'binding_variant', 'dirty_parameters')
+SCENE_MANAGER_OPTION_NAMES = ('operations',)
 
 WIDGET_OPERATION_NAMES = (
     'measurement', 'lighting', 'enable', 'fan', 'hvac', 'multilevel',
     'room-courtesy', 'scene', 'shutter', 'time-date', 'timer',
-    'zone-control', 'source-select', 'source-control',
+    'zone-control', 'source-select', 'source-control', 'blank',
 )
 SETTING_OPERATION_NAMES = (
     'activation', 'general', 'display', 'standby', 'colours', 'navigation',
-    'quick-status', 'page-control', 'mra-globals',
+    'quick-status', 'page-control', 'mra-globals', 'applications', 'corridor',
 )
-SUPPORTED_OPERATION_NAMES = WIDGET_OPERATION_NAMES + SETTING_OPERATION_NAMES
+GRAPH_OPERATION_NAMES = ('reset', 'scene-manager')
+SUPPORTED_OPERATION_NAMES = (WIDGET_OPERATION_NAMES + SETTING_OPERATION_NAMES +
+                             GRAPH_OPERATION_NAMES)
 
 _OPERATION_SHAPES = {
     'measurement': (MEASUREMENT_OPTION_NAMES, ('page', 'position', 'device_id', 'channel')),
@@ -161,6 +177,11 @@ _OPERATION_SHAPES = {
     'quick-status': (QUICK_STATUS_OPTION_NAMES, ()),
     'page-control': (PAGE_CONTROL_OPTION_NAMES, ()),
     'mra-globals': (MRA_GLOBAL_OPTION_NAMES, ()),
+    'applications': (APPLICATIONS_OPTION_NAMES, ('edits',)),
+    'corridor': (CORRIDOR_OPTION_NAMES, ('edits',)),
+    'blank': (BLANK_OPTION_NAMES, ('page', 'position')),
+    'reset': (RESET_OPTION_NAMES, ('active_tab', 'binding_variant')),
+    'scene-manager': (SCENE_MANAGER_OPTION_NAMES, ('operations',)),
 }
 
 _SETTING_FIELDS = {
@@ -176,6 +197,8 @@ _SETTING_FIELDS = {
                    *(f'PageNameIndex{page}' for page in range(1, 5))),
     'quick-status': tuple(QUICK_STATUS_FIELDS.values()),
     'page-control': ('KeySetsEnableGroup',),
+    'applications': ('PrimaryApplication', 'SecondaryApplication'),
+    'corridor': tuple(CORRIDOR_FIELDS.values()),
 }
 
 PANEL_BINDING_SOURCES = {
@@ -193,6 +216,11 @@ PANEL_BINDING_SOURCES = {
     'source-select': 'research/NativeEdltMRAProbe.cs',
     'source-control': 'research/NativeEdltMRAProbe.cs',
     'mra-globals': 'research/NativeEdltNormalizationProbe.cs',
+    'applications': 'FrmBaseUnit.cs',
+    'corridor': 'FrmBaseUnit.cs',
+    'blank': 'BaseWidget.cs / FrmBaseUnit.cs',
+    'reset': 'FrmBaseUnit.cs ResetUnit',
+    'scene-manager': 'SceneManager.cs / FrmBaseUnit.cs',
 }
 CRC_FIELDS = (
     'OverallCRC', 'GlobalParameterCRC', 'WidgetsCRC', 'StaticTextCRC',
@@ -237,6 +265,15 @@ def _operation(value):
             value.get(name) is not None for name in MRA_GLOBAL_OPTION_NAMES):
         raise EdltError(
             'mra-globals operation requires multiplexer and/or zone')
+    if operation == 'scene-manager':
+        nested = value['operations']
+        if (not isinstance(nested, (tuple, list)) or
+                not 1 <= len(nested) <= MAX_SCENE_OPERATIONS):
+            raise EdltError(
+                'scene-manager operation requires 1..256 nested scene '
+                'operations')
+        value = {**value, 'operations': tuple(
+            EdltSceneManager._operation(row) for row in nested)}
     # A canonical key order makes plan identity independent of JSON key order.
     return {'op': operation, **{name: value[name] for name in allowed if name in value}}
 
@@ -248,8 +285,25 @@ def normalize_operations(operations):
         raise EdltError(
             f'Parent transaction requires {MIN_OPERATIONS}..{MAX_OPERATIONS} operations')
     result = tuple(_operation(value) for value in operations)
-    if not any(value['op'] in WIDGET_OPERATION_NAMES for value in result):
-        raise EdltError('Parent transaction requires at least one widget operation')
+    resets = tuple(index for index, value in enumerate(result)
+                   if value['op'] == 'reset')
+    if len(resets) > 1:
+        raise EdltError('Parent transaction permits only one reset operation')
+    if resets and resets[0] != 0:
+        raise EdltError(
+            'Reset must be operation 1 because it replaces the retained '
+            'widget and scene graph')
+    if resets and any(value['op'] == 'blank' for value in result):
+        raise EdltError(
+            'Reset and Blank cannot share one parent transaction: Reset '
+            'creates a fresh graph, while the retained Blank receipt accepts '
+            'only the original loaded graph')
+    if not (resets or any(value['op'] in WIDGET_OPERATION_NAMES
+                          for value in result) or
+            any(value['op'] == 'scene-manager' for value in result)):
+        raise EdltError(
+            'Parent transaction requires at least one widget, SceneManager '
+            'or reset operation')
     return result
 
 
@@ -258,6 +312,11 @@ def _candidate_widget(operation, values):
     page, position = operation.get('page'), operation.get('position')
     if type(page) is not int or type(position) is not int:
         return None
+    if operation['op'] == 'blank':
+        try:
+            return EdltBlankWidget._slot(values, page, position)
+        except EdltError:
+            return None
     mode = operation.get('page_mode')
     if mode is None:
         nav = values['NavWidgetType'][0]
@@ -362,11 +421,14 @@ def _terminal_lifecycle_fields(after_controls, before_save):
 @dataclass(frozen=True)
 class ParentTransactionPlan:
     expected: Mapping
+    expected_raw: Mapping | None
     after_load: Mapping
     after_controls: Mapping
     before_save: Mapping
     changes: Mapping
     metadata: LifecycleCache
+    application_cache: ApplicationCache | None
+    scene_manager_cache: SceneManagerCache | None
     operations: tuple[Mapping, ...]
     operation_results: tuple[str, ...]
     evidence: str
@@ -376,6 +438,9 @@ class ParentTransactionPlan:
                      'changes'):
             object.__setattr__(self, name,
                                MappingProxyType(dict(getattr(self, name))))
+        if self.expected_raw is not None:
+            object.__setattr__(self, 'expected_raw',
+                               MappingProxyType(dict(self.expected_raw)))
         object.__setattr__(self, 'operations', tuple(
             MappingProxyType(dict(value)) for value in self.operations))
 
@@ -383,14 +448,22 @@ class ParentTransactionPlan:
         final = {**self.expected, **self.changes}
         return {
             'format': 'cbus-edlt-parent-transaction-plan-v1',
-            'scope': ('ordered widget panels and direct unit settings '
-                      'through one retained parent save'),
+            'scope': ('ordered retained Blank/widget/settings controls and '
+                      'an optional operation-1 Reset baseline through one '
+                      'parent save'),
             'unit_type': 'KEYGL5', 'catalog_number': '5055EDL',
             'firmware': '5.5.00',
             'operations': [dict(value) for value in self.operations],
             'supported_operation_types': list(SUPPORTED_OPERATION_NAMES),
             'operation_results': [json.loads(value)
                                   for value in self.operation_results],
+            'application_cache': (None if self.application_cache is None else
+                                  self.application_cache.as_dict()),
+            'scene_manager_cache': (
+                None if self.scene_manager_cache is None else
+                self.scene_manager_cache.as_dict()),
+            'reset_raw_source_retained_for_canonical_replay':
+                self.expected_raw is not None,
             'phases': {
                 'after_load': _delta(self.expected, self.after_load),
                 'controls': _delta(self.after_load, self.after_controls),
@@ -407,6 +480,8 @@ class ParentTransactionPlan:
             'cache_freshness_verified': False,
             'native_parent_form_executed': False,
             'native_multi_edit_parent_form_executed': False,
+            'original_interactive_blank_reset_sequence_executed': False,
+            'original_scene_manager_parent_binding_executed': False,
             'physical_device_verified': False,
             'saved': False,
         }
@@ -457,10 +532,19 @@ class EdltParentTransaction:
             'source-select': EdltMRAWidget,
             'source-control': EdltMRAWidget,
             'mra-globals': EdltMRAWidget,
+            'applications': EdltApplications,
+            'corridor': EdltCorridor,
+            'reset': EdltResetControls,
+            'scene-manager': EdltSceneManager,
         }
         spec, catalog_number, firmware = self._profile
-        editor = classes[kind](
-            spec, catalog_number=catalog_number, firmware=firmware)
+        if kind == 'reset':
+            editor = classes[kind](
+                spec, catalog_number=catalog_number, firmware=firmware,
+                lifecycle=self.lifecycle)
+        else:
+            editor = classes[kind](
+                spec, catalog_number=catalog_number, firmware=firmware)
         self._extended_editors[kind] = editor
         return editor
 
@@ -554,12 +638,64 @@ class EdltParentTransaction:
 
     def plan(self, current, *, metadata, operations):
         operations = normalize_operations(operations)
-        cache = LifecycleCache.from_dict(
-            metadata.as_dict() if isinstance(metadata, LifecycleCache) else metadata)
-        loaded = self.lifecycle.load(current, metadata=cache)
-        control_values = dict(loaded.after_load)
-        planning_values = dict(loaded.after_load)
+        application_cache = None
+        scene_manager_cache = None
+        if isinstance(metadata, SceneManagerCache):
+            scene_manager_cache = SceneManagerCache.from_dict(
+                metadata.as_dict())
+            application_cache = scene_manager_cache.application_cache
+            cache = application_cache.lifecycle
+        elif (isinstance(metadata, Mapping) and
+              metadata.get('format') ==
+              'cbus-edlt-scene-manager-cache-v1'):
+            scene_manager_cache = SceneManagerCache.from_dict(metadata)
+            application_cache = scene_manager_cache.application_cache
+            cache = application_cache.lifecycle
+        elif isinstance(metadata, ApplicationCache):
+            application_cache = ApplicationCache.from_dict(metadata.as_dict())
+            cache = application_cache.lifecycle
+        elif (isinstance(metadata, Mapping) and
+              metadata.get('format') == 'cbus-edlt-application-cache-v1'):
+            application_cache = ApplicationCache.from_dict(metadata)
+            cache = application_cache.lifecycle
+        else:
+            cache = LifecycleCache.from_dict(
+                metadata.as_dict() if isinstance(metadata, LifecycleCache) else metadata)
+        reset_transition = None
+        reset_preparation = None
+        reset_baseline_fields = set()
+        if operations[0]['op'] == 'reset':
+            if application_cache is None:
+                raise EdltError(
+                    'reset parent composition requires a complete '
+                    'cbus-edlt-application-cache-v1 metadata document')
+            reset_options = {
+                name: value for name, value in operations[0].items()
+                if name != 'op'
+            }
+            reset_options.setdefault('dirty_parameters', ())
+            raw, dirty, prepared_cache, reset_transition = \
+                self._editor('reset').prepare_unit_reset(
+                    current, metadata=application_cache, **reset_options)
+            if _json(prepared_cache.as_dict()) != _json(application_cache.as_dict()):
+                raise EdltError(
+                    'Reset preparation changed the parent application cache')
+            loaded = reset_transition.base
+            control_values = dict(reset_transition.after_controls)
+            planning_values = dict(reset_transition.after_controls)
+            reset_baseline_fields = {
+                name for name in control_values
+                if control_values[name] != loaded.after_load[name]
+            }
+            reset_preparation = {
+                'raw': raw, 'dirty': dirty, 'cache': prepared_cache,
+            }
+        else:
+            loaded = self.lifecycle.load(current, metadata=cache)
+            control_values = dict(loaded.after_load)
+            planning_values = dict(loaded.after_load)
         owners, slots, results, selected = {}, {}, [], []
+        blank_transitions = []
         navigation_mode = None
         activation_seen = False
         setting_panels = set()
@@ -570,6 +706,9 @@ class EdltParentTransaction:
         mra_source_widget = None
         mra_source_captured = False
         mra_operations = 0
+        scene_manager_composition = None
+        scene_manager_seen = False
+        scene_widget_seen = False
         widget_editors = {
             'measurement': self.measurement_editor,
             'lighting': self.lighting_editor,
@@ -580,7 +719,177 @@ class EdltParentTransaction:
             owner = f'operation {number} ({kind})'
             options = {name: value for name, value in operation.items()
                        if name != 'op'}
+            if kind == 'reset':
+                # normalize_operations makes Reset unique and first.  The
+                # transition was issued above so every later control sees its
+                # genuinely fresh widget/scene graph.
+                if (number != 1 or reset_transition is None or
+                        reset_preparation is None):
+                    raise EdltError(
+                        'Reset composition requires its issued operation-1 '
+                        'fresh-graph transition')
+                document = {
+                    'format': 'cbus-edlt-parent-reset-operation-v1',
+                    'operation': number,
+                    'composition_role':
+                        'fresh retained graph baseline before later controls',
+                    'active_tab': options['active_tab'],
+                    'binding_variant': options['binding_variant'],
+                    'initial_dirty_parameters': list(
+                        reset_preparation['dirty']),
+                    'reset_transition': reset_transition.as_dict(),
+                    'raw_phase_order': list(reset_transition.raw_phases),
+                    'reset_baseline_parameters': sorted(
+                        reset_baseline_fields),
+                    'reset_excluded_parameters': sorted(RESET_EXCLUDED),
+                    'new_widget_models': 21,
+                    'new_scene_models': 8,
+                    'old_scene_references_retained': False,
+                    'terminal_save_deferred_to_parent': True,
+                    'terminal_crc_deferred_to_parent': True,
+                    'standalone_changes_applied_directly': False,
+                    'parent_panel_binding': {
+                        'source': PANEL_BINDING_SOURCES[kind],
+                        'retained_reset_transition_reused': True,
+                        'full_original_parent_form_executed': False,
+                    },
+                }
+                results.append(_json(document))
+                continue
+
+            if kind == 'scene-manager':
+                if scene_manager_cache is None:
+                    raise EdltError(
+                        'scene-manager parent composition requires a complete '
+                        'cbus-edlt-scene-manager-cache-v1 metadata document')
+                if scene_manager_seen:
+                    raise EdltError(
+                        'Duplicate or conflicting scene graph ownership: only '
+                        'one scene-manager operation is permitted')
+                if scene_widget_seen:
+                    raise EdltError(
+                        'scene-manager must precede every scene widget '
+                        'operation so widget dependencies resolve against the '
+                        'final scene graph')
+                scene_manager_seen = True
+                manager = self._editor(kind)
+                state = manager.load(
+                    planning_values, metadata=scene_manager_cache)
+                outcome = manager.edit(
+                    state, operations=options['operations'])
+                if not outcome.complete:
+                    raise EdltError(
+                        'SceneManager capacity stopped the nested edit; '
+                        'partial scene graphs cannot enter a parent '
+                        'transaction')
+                composition = manager.prepare_composition(outcome.state)
+                graph_fields = {
+                    'SceneCount', 'SceneBucket',
+                    *(f'Scene{slot}StartAddress'
+                      for slot in range(1, 9)),
+                }
+                if not graph_fields <= set(composition.fields):
+                    raise EdltError(
+                        'SceneManager composition omitted required scene '
+                        'graph fields')
+                static_fields = set(composition.fields) - graph_fields
+                if any(not name.startswith('StaticTextString')
+                       for name in static_fields):
+                    raise EdltError(
+                        'SceneManager composition changed an unsupported '
+                        'control field')
+                claimed = sorted(graph_fields | static_fields)
+                self._claim(owners, claimed, owner)
+                for parameter in claimed:
+                    control_values[parameter] = composition.fields[parameter]
+                    planning_values[parameter] = composition.fields[parameter]
+                scene_manager_composition = composition
+                metadata_dependencies.extend(json.loads(
+                    composition.source.loaded.consumed_facts))
+                results.append(_json({
+                    'format':
+                        'cbus-edlt-parent-scene-manager-operation-v1',
+                    'operation': number,
+                    'composition_role': (
+                        'retained scene graph and static-name projection '
+                        'before the parent terminal save'),
+                    'nested_operations': [dict(row)
+                                          for row in options['operations']],
+                    'nested_operation_results': [
+                        json.loads(row) for row in outcome.operation_results
+                    ],
+                    'composition': composition.as_dict(),
+                    'owned_parameters': claimed,
+                    'parent_panel_binding': {
+                        'source': PANEL_BINDING_SOURCES[kind],
+                        'retained_scene_manager_model_reused': True,
+                        'complete_scene_cache_required': True,
+                        'full_original_parent_form_executed': False,
+                    },
+                    'standalone_changes_applied_directly': False,
+                }))
+                continue
+
+            if kind == 'blank':
+                candidate = _candidate_widget(operation, planning_values)
+                # The exact placement helper supplies more specific errors
+                # for covered standby and navigation positions.
+                slot = EdltBlankWidget._slot(
+                    planning_values, options['page'], options['position'])
+                if candidate != slot:
+                    raise EdltError(
+                        'Blank placement changed during parent validation')
+                if slot in slots:
+                    raise EdltError(
+                        f'Duplicate widget byte ownership for widget{slot}: '
+                        f'{slots[slot]} and {owner}')
+                mode = ('multiple' if planning_values['NavWidgetType'][0] == 1
+                        else 'single')
+                if navigation_mode is None:
+                    navigation_mode = mode
+                    self._claim(owners, ('NavWidgetType',),
+                                'transaction navigation constraint')
+                elif navigation_mode != mode:
+                    raise EdltError(
+                        'Conflicting page-mode ownership: ' + navigation_mode +
+                        ' and ' + mode)
+                transition = self.lifecycle.blank_widget(loaded, slot)
+                blank_transitions.append(transition)
+                slots[slot] = owner
+                claimed = [_field(slot, offset) for offset in range(32)]
+                if slot >= 6:
+                    claimed.append(f'Widget{slot}RestoreLevel')
+                self._claim(owners, claimed, owner)
+                transition_delta = {
+                    name: value for name, value in transition.after_controls.items()
+                    if value != loaded.after_load[name]
+                }
+                control_values.update(transition_delta)
+                planning_values.update(transition_delta)
+                selected.append((slot, kind))
+                document = transition.as_dict()
+                document.update({
+                    'operation': number,
+                    'page': options['page'],
+                    'position': options['position'],
+                    'composition_role':
+                        'retained Blank selection with whole-slot reservation',
+                    'owned_parameters': sorted(claimed),
+                    'mutated_parameters': sorted(transition_delta),
+                    'reserved_widget_slots': [slot],
+                    'parent_panel_binding': {
+                        'source': PANEL_BINDING_SOURCES[kind],
+                        'retained_blank_transition_reused': True,
+                        'placement_filter_reused': True,
+                    },
+                    'standalone_changes_applied_directly': False,
+                })
+                results.append(_json(document))
+                continue
+
             if kind in WIDGET_OPERATION_NAMES:
+                if kind == 'scene':
+                    scene_widget_seen = True
                 is_mra = kind in MRA_WIDGET_TYPES
                 if is_mra:
                     for component in MRA_GLOBAL_OPTION_NAMES:
@@ -782,6 +1091,52 @@ class EdltParentTransaction:
                 results.append(_json(document))
                 continue
 
+            if kind in ('applications', 'corridor'):
+                if kind == 'applications' and scene_manager_seen:
+                    raise EdltError(
+                        'applications must precede scene-manager so retained '
+                        'scene output groups bind to the final application '
+                        'selection')
+                if application_cache is None:
+                    raise EdltError(
+                        f'{kind} parent composition requires a complete '
+                        'cbus-edlt-application-cache-v1 metadata document')
+                if kind in setting_panels:
+                    raise EdltError(
+                        f'Duplicate or conflicting byte ownership: only one {kind} '
+                        'operation may own that settings panel')
+                setting_panels.add(kind)
+                panel_plan = self._editor(kind).plan(
+                    planning_values, cache=application_cache,
+                    edits=options['edits'])
+                projected = dict(panel_plan.after_controls)
+                fields = list(_SETTING_FIELDS[kind])
+                if kind == 'applications':
+                    fields.extend(
+                        name for name in projected
+                        if (name.startswith('Widget') and
+                            name.endswith('WidgetByteValue1') and
+                            projected[name] != planning_values[name]))
+                self._claim(owners, fields, owner)
+                for parameter in fields:
+                    control_values[parameter] = projected[parameter]
+                    planning_values[parameter] = projected[parameter]
+                document = panel_plan.as_dict()
+                document.update({
+                    'operation': number,
+                    'composition_role':
+                        'validated parent cache-dialog projection',
+                    'owned_parameters': sorted(fields),
+                    'parent_panel_binding': {
+                        'source': PANEL_BINDING_SOURCES[kind],
+                        'standalone_dependency_validation_reused': True,
+                        'complete_ordered_application_cache_required': True,
+                    },
+                    'standalone_changes_applied_directly': False,
+                })
+                results.append(_json(document))
+                continue
+
             if kind == 'activation':
                 if activation_seen:
                     raise EdltError(
@@ -928,7 +1283,7 @@ class EdltParentTransaction:
             name for name in after_controls
             if after_controls[name] != loaded.after_load[name]
         }
-        unexpected_controls = changed_controls - set(owners)
+        unexpected_controls = changed_controls - set(owners) - reset_baseline_fields
         if unexpected_controls:
             raise EdltError(
                 'Control composition changed unowned fields: ' +
@@ -936,8 +1291,23 @@ class EdltParentTransaction:
 
         # This is the transaction's sole terminal save normalization and CRC
         # pass.  Standalone editor plans above are validation projections only.
+        scene_manager_fields = None
+        scene_manager_item_count = None
+        if scene_manager_composition is not None:
+            scene_manager_fields = {
+                name: value
+                for name, value in scene_manager_composition.fields.items()
+                if (name in ('SceneCount', 'SceneBucket') or
+                    (name.startswith('Scene') and
+                     name.endswith('StartAddress')))
+            }
+            scene_manager_item_count = scene_manager_composition.item_count
         lifecycle_plan = self.lifecycle._prepare_composed_save(
-            loaded, after_controls, _mra_globals=mra_globals)
+            reset_transition or loaded, after_controls,
+            _mra_globals=mra_globals,
+            _blank_transitions=tuple(blank_transitions),
+            _scene_manager_fields=scene_manager_fields,
+            _scene_manager_item_count=scene_manager_item_count)
         before_save = lifecycle_plan.before_save
         final = {**lifecycle_plan.expected, **lifecycle_plan.changes}
         lifecycle_document = lifecycle_plan.as_dict()
@@ -997,7 +1367,9 @@ class EdltParentTransaction:
             'original_save_order': list(ORIGINAL_SAVE_ORDER),
             'transaction_order': [
                 'validate exact profile, complete snapshot, lifecycle cache and operation grammar',
-                'load one retained parent model',
+                ('issue Reset operation 1 and replace the retained graph with '
+                 'fresh widget/scene models' if reset_transition is not None
+                 else 'load one retained parent model'),
                 'validate ordered distinct control projections and byte ownership',
                 'enter every validated control into the retained model',
                 'run one terminal BeforeSavePPData normalization and five-CRC calculation',
@@ -1012,6 +1384,14 @@ class EdltParentTransaction:
                 'navigation_mode': navigation_mode,
                 'activation_operations': int(activation_seen),
                 'settings_panels': sorted(setting_panels),
+                'blank_operations': len(blank_transitions),
+                'reset_operations': int(reset_transition is not None),
+                'scene_manager_operations': int(scene_manager_seen),
+                'reset_must_be_first': True,
+                'reset_blank_combination_refused': True,
+                'single_scene_graph_owner': True,
+                'applications_must_precede_scene_manager': True,
+                'scene_manager_must_precede_scene_widgets': True,
                 'mra_operations': mra_operations,
                 'mra_global_components_owned': sorted(mra_global_owners),
                 'supported_operation_types': list(SUPPORTED_OPERATION_NAMES),
@@ -1022,6 +1402,11 @@ class EdltParentTransaction:
             'operation_metadata_dependencies': metadata_dependencies,
             'execution_counts': {
                 'retained_load_models': 1,
+                'reset_fresh_model_loads': int(reset_transition is not None),
+                'reset_graph_replacements': int(reset_transition is not None),
+                'retained_blank_transitions': len(blank_transitions),
+                'retained_scene_manager_projections':
+                    int(scene_manager_composition is not None),
                 'standalone_validation_placement_projections':
                     validation_placement_projections,
                 'terminal_normalization_passes': 1,
@@ -1033,11 +1418,31 @@ class EdltParentTransaction:
                 'database_save_calls_for_offline_or_dry_run': 0,
             },
             'ownership': {
+                'reset_baseline_parameters': sorted(reset_baseline_fields),
+                'reset_baseline_overridden_by_later_controls': [
+                    {'parameter': parameter, 'owner': owners[parameter]}
+                    for parameter in sorted(reset_baseline_fields & set(owners))
+                ],
+                'reset_is_ordered_baseline_not_a_parallel_byte_owner':
+                    reset_transition is not None,
                 'parameters': [
                     {'parameter': parameter, 'owner': owner}
                     for parameter, owner in sorted(owners.items())
                 ],
                 'navigation_is_one_reconciled_parent_constraint': True,
+                'scene_graph': {
+                    'active': scene_manager_composition is not None,
+                    'owner': (None if scene_manager_composition is None else
+                              next(owners[name] for name in owners
+                                   if name == 'SceneBucket')),
+                    'complete_field_set_owned':
+                        scene_manager_composition is not None,
+                    'item_count': (None if scene_manager_composition is None
+                                   else scene_manager_composition.item_count),
+                    'full_capacity_temporary_crc_tail': (
+                        False if scene_manager_composition is None else
+                        scene_manager_composition.item_count == 64),
+                },
                 'mra_global_bits': {
                     'active': mra_globals is not None,
                     'multiplexer_mask': '0xc0',
@@ -1068,8 +1473,19 @@ class EdltParentTransaction:
                     {'widget': widget, 'type': kind}
                     for widget, kind in selected
                 ],
-                'retained_scene_models': True,
-                'retained_mra_source': True,
+                'retained_scene_models': (reset_transition is None and
+                                          scene_manager_composition is None),
+                'retained_scene_models_edited': (
+                    reset_transition is None and
+                    scene_manager_composition is not None),
+                'fresh_reset_scene_models_edited': (
+                    reset_transition is not None and
+                    scene_manager_composition is not None),
+                'fresh_reset_scene_models': reset_transition is not None,
+                'retained_mra_source': reset_transition is None,
+                'fresh_reset_widget_models': reset_transition is not None,
+                'post_reset_unowned_fields_preserved_exactly':
+                    reset_transition is not None,
                 'stored_standby_mra_placements_preserved': True,
                 'mra_status_bits_and_unrelated_record_bytes_preserved': True,
                 'untouched_widget_and_parent_fields_preserved': True,
@@ -1082,6 +1498,10 @@ class EdltParentTransaction:
             'reused_original_measurement_probe': True,
             'reused_original_lighting_probe': True,
             'reused_original_percentage_control_probe': True,
+            'reused_retained_blank_transition': bool(blank_transitions),
+            'reused_retained_reset_transition': reset_transition is not None,
+            'reused_retained_scene_manager':
+                scene_manager_composition is not None,
             'reused_standalone_panel_acceptance': sorted(
                 {operation['op'] for operation in operations}),
             'python_multi_edit_composition_verified': True,
@@ -1093,9 +1513,28 @@ class EdltParentTransaction:
         if mra_operations:
             evidence['mra_parent_evidence_fixture'] = (
                 'research/fixtures/edlt-parent-mra-evidence.json')
+        if blank_transitions:
+            evidence['blank_transition_evidence_fixtures'] = [
+                'research/fixtures/edlt-blank-windows-vectors.json',
+                'research/fixtures/edlt-blank-placements.json',
+                'research/fixtures/edlt-blank-acceptance.json',
+            ]
+        if reset_transition is not None:
+            evidence['reset_transition_evidence_fixtures'] = [
+                'research/fixtures/edlt-reset-windows-vectors.json',
+                'research/fixtures/edlt-reset-acceptance.json',
+            ]
+        if scene_manager_composition is not None:
+            evidence['scene_manager_evidence_fixtures'] = [
+                'research/fixtures/edlt-scene-manager-vectors.json',
+                'research/fixtures/edlt-scene-manager-acceptance.json',
+            ]
         return ParentTransactionPlan(
-            loaded.expected, loaded.after_load, after_controls, before_save,
-            lifecycle_plan.changes, cache, operations, tuple(results),
+            loaded.expected,
+            (None if reset_preparation is None else reset_preparation['raw']),
+            loaded.after_load, after_controls, before_save,
+            lifecycle_plan.changes, cache, application_cache,
+            scene_manager_cache, operations, tuple(results),
             _json(evidence))
 
     @staticmethod
@@ -1121,14 +1560,23 @@ class EdltParentTransaction:
             self.snapshot(values)
         try:
             canonical = self.plan(
-                plan.expected, metadata=plan.metadata,
+                (plan.expected if plan.expected_raw is None
+                 else plan.expected_raw),
+                metadata=(plan.scene_manager_cache or
+                          plan.application_cache or plan.metadata),
                 operations=plan.operations)
         except TypeError as error:
             raise EdltError('Invalid parent transaction plan options') from error
         if canonical != plan or _json(canonical.as_dict()) != _json(plan.as_dict()):
             raise EdltError('Plan differs from its validated parent transaction')
         self.common._verify_session(session)
-        if self.snapshot(session.values()) != dict(plan.expected):
+        current = session.values()
+        if plan.expected_raw is None:
+            stale = self.snapshot(current) != dict(plan.expected)
+        else:
+            stale = (self._editor('reset').raw_input(current) !=
+                     dict(plan.expected_raw))
+        if stale:
             raise EdltError('PP values changed since the parent transaction was made')
         expected = {**plan.expected, **plan.changes}
         attempted = []
@@ -1152,7 +1600,11 @@ class EdltParentTransaction:
                             'PP state is uncertain')
                         break
                     try:
-                        session.set(name, _render(plan.expected[name]))
+                        session.set(
+                            name,
+                            (plan.expected_raw[name]
+                             if plan.expected_raw is not None
+                             else _render(plan.expected[name])))
                     except Exception as rollback:
                         rollback_errors.append(_error_text(rollback))
                 if getattr(session.programmer.client, 'connected', True):

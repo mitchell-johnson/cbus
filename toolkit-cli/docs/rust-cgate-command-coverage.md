@@ -153,9 +153,16 @@ CGL rules and portable repository boundaries are pinned in
 
 The legacy database tranche is routed end to end. `DBADD`, recursive fresh-OID
 `DBCOPY`, `DBNEW`, tags, scalar mutation, recursive delete and network rename
-are durable local operations. `DBCREATE`, `DBUPDATE`, and `DBVERIFY` first
-obtain a generation-guarded physical inventory, then respectively replace,
-merge, or compare the durable model with atomic commit and rollback behavior.
+are durable local operations. `DBSETXML` covers scalar-field documents and
+complete typed Unit, Level, NetVar, Group, Application and Network/Interface
+trees: it validates before mutation, atomically replaces the old subtree, and
+returns the submitted root as `301 OID=...`. The Python interop suite drives
+Unit and Application/Group/Level forms through the production client. Network
+documents containing Unit and private vendor XML formats remain unsupported
+because no retained replacement contract establishes them. `DBCREATE`,
+`DBUPDATE`, and `DBVERIFY` first obtain a generation-guarded physical inventory,
+then respectively replace, merge, or compare the durable model with atomic
+commit and rollback behavior.
 
 Fourteen family roots now reproduce the exact retained C-Gate 3.4 help
 envelopes for bare, literal `?`, and `HELP` forms. Nine of those roots are in

@@ -1,4 +1,6 @@
 """Toolkit XML template CLI and preserved destination identity."""
+from contextlib import nullcontext, redirect_stderr, redirect_stdout
+import io
 import json
 import os
 from pathlib import Path
@@ -6,7 +8,11 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 from uuid import uuid4
+
+from cbus_toolkit import cli
+from cbus_toolkit.template_transaction import UnitTemplateTransactionError
 
 
 class UnitTemplateCLITests(unittest.TestCase):
@@ -118,6 +124,124 @@ class UnitTemplateCLITests(unittest.TestCase):
             finally:
                 projects.operation("close", project)
                 projects.operation("delete", project)
+
+
+class UnitTemplateTransactionCLITests(unittest.TestCase):
+    def arguments(self, *tail):
+        return cli.build_parser().parse_args(
+            [
+                "cgate",
+                "unit",
+                "--lock-address",
+                "//TEST/254",
+                "--source",
+                "/db//TEST/254/p/20",
+                *tail,
+            ]
+        )
+
+    def test_copy_and_default_commands_dispatch_complete_native_transactions(self):
+        calls = []
+
+        class Transaction:
+            def __init__(self, programmer, templates, lock):
+                calls.append(("init", programmer, templates, lock))
+
+            def copy(self, source, destination, **options):
+                calls.append(("copy", source, destination, options))
+                return {"operation": "copy", "complete": True}
+
+            def reset_template_defaults(self, destination, **options):
+                calls.append(("reset", destination, options))
+                return {"operation": "reset-template-defaults", "complete": True}
+
+        programmer, templates = object(), object()
+        with patch("cbus_toolkit.programming.Programmer", return_value=programmer), patch(
+            "cbus_toolkit.cli._unit_templates", return_value=templates
+        ), patch(
+            "cbus_toolkit.template_transaction.NativeTemplateTransaction", Transaction
+        ):
+            copied = cli._programming(
+                self.arguments(
+                    "--destination",
+                    "/db//TEST/254/p/21",
+                    "--dry-run",
+                    "template-copy",
+                    "--profile",
+                    "KEY2",
+                ),
+                object(),
+            )
+            reset = cli._programming(
+                self.arguments("template-reset-defaults", "--profile", "KEY1"),
+                object(),
+            )
+        self.assertTrue(copied["complete"])
+        self.assertTrue(reset["complete"])
+        self.assertEqual(
+            calls[1],
+            (
+                "copy",
+                "/db//TEST/254/p/20",
+                "/db//TEST/254/p/21",
+                {"dry_run": True},
+            ),
+        )
+        self.assertEqual(
+            calls[3],
+            ("reset", "/db//TEST/254/p/20", {"dry_run": False}),
+        )
+
+    def test_transaction_surface_guards_fail_before_profile_or_programming_io(self):
+        cases = (
+            self.arguments("template-copy"),
+            self.arguments(
+                "--destination",
+                "/db//TEST/254/p/21",
+                "template-reset-defaults",
+            ),
+        )
+        for arguments in cases:
+            with self.subTest(action=arguments.remote_action), patch(
+                "cbus_toolkit.programming.Programmer"
+            ) as programmer, patch("cbus_toolkit.cli._unit_templates") as templates:
+                with self.assertRaises(ValueError):
+                    cli._programming(arguments, object())
+                programmer.assert_called_once()
+                templates.assert_not_called()
+
+    def test_failure_and_interruption_emit_uncertain_transaction_evidence(self):
+        evidence = {
+            "format": "cbus-native-unit-template-transaction-v1",
+            "state": "saving_destination",
+            "save_attempted": True,
+            "save_confirmed": False,
+            "save_outcome_uncertain": True,
+            "complete": False,
+        }
+        arguments = [
+            "cgate",
+            "unit",
+            "--lock-address",
+            "//TEST/254",
+            "--source",
+            "/db//TEST/254/p/20",
+            "--destination",
+            "/db//TEST/254/p/21",
+            "template-copy",
+        ]
+        error = UnitTemplateTransactionError("lost save reply", evidence)
+        for failure, status in ((error, 1), (KeyboardInterrupt(), 130)):
+            if isinstance(failure, KeyboardInterrupt):
+                failure.unit_template_transaction_evidence = evidence
+            with self.subTest(status=status), patch(
+                "cbus_toolkit.cgate.CGateClient", return_value=nullcontext(object())
+            ), patch("cbus_toolkit.cli._programming", side_effect=failure), redirect_stdout(
+                io.StringIO()
+            ), redirect_stderr(io.StringIO()) as errors:
+                self.assertEqual(cli.main(arguments), status)
+                result = json.loads(errors.getvalue())
+                self.assertEqual(result["unit_template_transaction_evidence"], evidence)
 
 
 if __name__ == "__main__":

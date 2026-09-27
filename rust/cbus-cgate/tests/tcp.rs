@@ -421,6 +421,58 @@ fn tcp_documents_and_oid_flow() {
 }
 
 #[test]
+fn tcp_complete_typed_dbsetxml_returns_root_oid_and_exact_readback() {
+    let mock = Mock::spawn();
+    let mut session = mock.connect();
+    assert!(session.greeting().starts_with("201 "));
+    assert_eq!(session.command("PROJECT NEW XMLT").status, 200);
+    assert_eq!(
+        session
+            .command("DBCREATENET 254 Local Cni 127.0.0.1:1")
+            .status,
+        200
+    );
+    let add = session.command("DBADD 254 Application");
+    let old_oid = add.lines[0].trim_start_matches("301 OID=").to_string();
+    assert_eq!(
+        session
+            .command(&format!("DBSET !{old_oid}/Address 56"))
+            .status,
+        200
+    );
+    assert_eq!(
+        session
+            .command(&format!("DBSET !{old_oid}/TagName Original"))
+            .status,
+        200
+    );
+    let document = concat!(
+        "<Application><OID>50000000-0000-4000-8000-000000000001</OID>",
+        "<TagName>TCP typed</TagName><Address>58</Address>",
+        "<Group><OID>50000000-0000-4000-8000-000000000002</OID>",
+        "<TagName>Scenes</TagName><Address>10</Address>",
+        "<Level Value=\"128\"><OID>50000000-0000-4000-8000-000000000003</OID>",
+        "<TagName>Evening</TagName><Address>1</Address></Level></Group></Application>\n"
+    );
+    let replaced = session.document(&format!("DBSETXML !{old_oid}"), "END_TYPED", document);
+    assert_eq!(replaced.status, 301, "{:?}", replaced.lines);
+    assert_eq!(
+        replaced.lines,
+        ["301 OID=50000000-0000-4000-8000-000000000001"]
+    );
+    let readback = session.command("DBGETXML //XMLT/254/58");
+    assert_eq!(readback.status, 200);
+    assert!(readback
+        .lines
+        .iter()
+        .any(|line| line.contains("<Level Value=\"128\">")));
+    assert_eq!(
+        session.command(&format!("DBGET !{old_oid}/OID")).status,
+        401
+    );
+}
+
+#[test]
 fn tcp_legacy_database_add_and_copy_preserve_native_oid_flow() {
     let mock = Mock::spawn();
     let mut session = mock.connect();

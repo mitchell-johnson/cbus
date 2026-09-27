@@ -13,6 +13,16 @@ The page convention is shared with other eDLT helpers. Page0 is standby, with po
 
 The lifecycle loads once, retaining eight scene objects, their cached item identities/private action selectors, all widget models, static strings and the original first-MRA global values. `blank_widget(loaded, slot)` issues a new `BlankedEdlt` receipt owned by that lifecycle instance. A copied, replaced, cross-editor or chained receipt is rejected. `prepare_save` then uses that issued control state without running AfterLoad again.
 
+The ordered [parent transaction](edlt-parent-transaction.md) also accepts
+`{"op":"blank","page":1,"position":2}`. It reuses that same issued
+`BlankedEdlt` receipt, reserves the whole selected record against another
+operation and defers BeforeSave plus all five CRCs to the parent’s single
+terminal projection. It can compose with other distinct widget/settings
+operations. It cannot currently share a transaction with Reset because the
+Reset receipt replaces the loaded graph and this Blank receipt accepts only
+the original `LoadedEdlt`; the operation grammar rejects that combination
+before PP I/O.
+
 On a genuine stored-type change, the original selected WidgetData becomes BlankData and its functional RestoreLevel becomes0. Selecting an already loaded Blank preserves its model identity and RestoreLevel. The other31 record bytes remain intact. A legacy type1 may already have become Blank during AfterLoad, so `type_changed` describes the actual selection phase. Unknown stored types can carry BlankData without being stored0; selecting0 still performs the original type change.
 
 BeforeSave retains its normal effects. Clearing the original first MRA widget does not reinitialize MRA globals from its next sibling. Removing the last functional widget may serialize Blank as end marker255, with later Blank RestoreLevels retained. Scene repacking, global normalization, remaining-widget forcing and five CRCs follow the same model save order. Stored static strings are preserved; clearing a widget can make its old label reference inactive. `after_load`, `after_controls`, `before_save` and final values remain separate in the plan.

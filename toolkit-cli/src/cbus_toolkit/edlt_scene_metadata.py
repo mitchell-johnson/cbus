@@ -93,7 +93,8 @@ def _record(snapshot, application, group):
     return next((row for row in app.groups if row.address == group), None)
 
 
-def _operation_facts(values, engine, snapshot, operations):
+def _operation_facts(values, engine, snapshot, operations,
+                     projected_containers=()):
     """Replay trigger/action accesses and their original creation side effects.
 
     ``CBusNetwork.GetApplicationByAddress`` and
@@ -109,14 +110,22 @@ def _operation_facts(values, engine, snapshot, operations):
     groups = {}
     level_groups = set()
     applications = {row.address for row in snapshot.applications}
+    applications.update(
+        row.address for row in projected_containers
+        if row.kind == 'Application')
     present_groups = {
         (row.address, group.address)
         for row in snapshot.applications for group in row.groups
     }
+    present_groups.update(
+        (row.application, row.address) for row in projected_containers
+        if row.kind in ('Group', 'NetVar'))
     levels = {
         (row.address, group.address): set(group.levels)
         for row in snapshot.applications for group in row.groups
     }
+    for key in present_groups:
+        levels.setdefault(key, set())
     application_reasons = []
     group_creation_reasons = {}
     creation_reasons = {}
@@ -297,10 +306,21 @@ class ResolvedSceneMetadata:
         }
 
 
-def resolve_native_scene_metadata(text, unit_path, values, engine, operations):
+def resolve_native_scene_metadata(text, unit_path, values, engine, operations,
+                                  *, _projected_containers=()):
     """Resolve one immutable SceneManager cache without native mutation."""
     if type(engine) is not EdltSceneManager:
         raise ValueError('Expected an EdltSceneManager engine')
+    if (not isinstance(_projected_containers, tuple)
+            or any(type(row) is not SceneContainerCreation
+                   for row in _projected_containers)):
+        raise ValueError('Projected scene containers must be exact receipts')
+    projected_keys = [
+        (row.kind, row.application, row.address)
+        for row in _projected_containers
+    ]
+    if len(projected_keys) != len(set(projected_keys)):
+        raise ValueError('Projected scene containers contain duplicate objects')
     operations = _normal_operations(engine, operations)
     unit_path, _project_name, _network, _unit = _unit_path(unit_path)
     snapshot = _snapshot(text, unit_path, engine)
@@ -311,7 +331,12 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations):
     requirements = engine.lifecycle.requirements(supplied).as_dict()
     applications = {row.address: row for row in snapshot.applications}
     required_apps = {row['application'] for row in requirements['applications']}
+    projected_application_addresses = {
+        row.address for row in _projected_containers
+        if row.kind == 'Application'
+    }
     missing_apps = sorted(required_apps - set(applications)
+                          - projected_application_addresses
                           - {TRIGGER_APPLICATION})
     if missing_apps:
         raise ValueError('Required native applications are absent: '
@@ -328,11 +353,12 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations):
             level_groups.add(key)
     (extra_groups, extra_levels, action_pairs, creations, projected_levels,
      projected_applications, projected_groups) = _operation_facts(
-        supplied, engine, snapshot, operations)
+        supplied, engine, snapshot, operations, _projected_containers)
     object_count = 1 + sum(
         1 + sum(1 + len(group.level_records) for group in application.groups)
         for application in snapshot.applications)
-    if object_count + len(creations) > MAX_OBJECTS:
+    if (object_count + len(_projected_containers) + len(creations)
+            > MAX_OBJECTS):
         raise ValueError(
             'Native eDLT metadata creation would exceed 4096 objects')
     for key, reasons in extra_groups.items():
@@ -376,12 +402,22 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations):
     if len(cache_groups) > 512:
         raise ValueError('Resolved eDLT scene cache exceeds 512 group facts')
 
-    lifecycle = LifecycleCache(
-        tuple(sorted(projected_applications)), tuple(cache_groups))
     container_creations = {
         (row.kind, row.application, row.address): row
-        for row in creations if isinstance(row, SceneContainerCreation)
+        for row in (*_projected_containers, *creations)
+        if isinstance(row, SceneContainerCreation)
     }
+    application_order = [row.address for row in snapshot.applications]
+    for row in (*_projected_containers, *creations):
+        if (isinstance(row, SceneContainerCreation)
+                and row.kind == 'Application'
+                and row.address not in application_order):
+            application_order.append(row.address)
+    if set(application_order) != set(projected_applications):
+        raise ValueError(
+            'Projected application inventory lacks deterministic creation '
+            'receipts')
+    lifecycle = LifecycleCache(tuple(application_order), tuple(cache_groups))
     displays = tuple(
         CachedDisplay(address,
                       (applications[address].tag
@@ -392,21 +428,27 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations):
                        if address in applications
                        else container_creations[
                            ('Application', address, address)].name))
-        for address in sorted(projected_applications))
+        for address in application_order)
     virtual_apps = {row.application for row in cache_groups
                     if row.group == 255 and row.exists}
     group_lists = []
-    for address in sorted(projected_applications):
+    for address in application_order:
         existing = applications.get(address)
-        rows = ({row.address: CachedDisplay(row.address, row.tag, row.tag)
-                 for row in existing.groups} if existing is not None else {})
-        for (kind, application, group), creation in container_creations.items():
-            if kind == 'Group' and application == address:
-                rows[group] = CachedDisplay(group, creation.name, creation.name)
-        if address in virtual_apps:
-            rows[255] = CachedDisplay(255, '<Unused>', '<Unused>')
+        rows = ([CachedDisplay(row.address, row.tag, row.tag)
+                 for row in existing.groups] if existing is not None else [])
+        seen = {row.address for row in rows}
+        for creation in (*_projected_containers, *creations):
+            if (isinstance(creation, SceneContainerCreation)
+                    and creation.kind in ('Group', 'NetVar')
+                    and creation.application == address
+                    and creation.address not in seen):
+                rows.append(CachedDisplay(
+                    creation.address, creation.name, creation.name))
+                seen.add(creation.address)
+        if address in virtual_apps and 255 not in seen:
+            rows.append(CachedDisplay(255, '<Unused>', '<Unused>'))
         group_lists.append(CachedGroupList(
-            address, True, tuple(rows[key] for key in sorted(rows))))
+            address, True, tuple(rows)))
     application_cache = ApplicationCache(
         lifecycle, True, displays, tuple(group_lists))
 
