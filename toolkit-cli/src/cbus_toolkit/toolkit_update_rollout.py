@@ -22,6 +22,14 @@ from .toolkit_update_metadata import (
 _COHORT = re.compile(r"[0-9]{1,2}\Z", re.ASCII)
 
 
+def parse_supplied_stored_cohort(stored_cohort: str) -> int:
+    """Admit the same narrow already-stored decimal string in both reports."""
+    if (type(stored_cohort) is not str or not _COHORT.fullmatch(stored_cohort)
+            or int(stored_cohort) > 99):
+        raise ValueError("stored_cohort must be one or two ASCII decimal digits from 0 to 99")
+    return int(stored_cohort)
+
+
 @dataclass(frozen=True)
 class RolloutCohortDecision:
     catalogue_source_sha256: str
@@ -77,10 +85,7 @@ def inspect_rollout_cohort(
     separate original branches and are not modeled by this pure function.
     """
     validate_node_id(node_id)
-    if (type(stored_cohort) is not str or not _COHORT.fullmatch(stored_cohort)
-            or int(stored_cohort) > 99):
-        raise ValueError("stored_cohort must be one or two ASCII decimal digits from 0 to 99")
-    cohort = int(stored_cohort)
+    cohort = parse_supplied_stored_cohort(stored_cohort)
     response = _json(catalogue_response, limit=MAX_NODE_BYTES)
     if (type(response) is not dict or response.get("success") is not True
             or type(response.get("statusCode")) is not int

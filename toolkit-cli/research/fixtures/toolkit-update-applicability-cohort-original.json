@@ -1,0 +1,41 @@
+{
+  "format": "cbus-toolkit-original-sesu-applicability-cohort-v1",
+  "capture_date_utc": "2026-09-28",
+  "runtime": "disposable Windows 11 x86 CLR process; UTM Host Only from boot; original installed SESU 3.0.7 assembly",
+  "sesubrick_dad_sha256": "21a6b2fb74d9b308d22c740ca0a1d887d80a067cccc03f59e4dd1bbb6c9c4b0c",
+  "original_method_token": "0x0600012B",
+  "original_method_rva": "0x4F74",
+  "original_method_il_sha256": "da89b1a0ad366d6059d25bb9e8da195a5c6f2f61c67844de49bb56e0deb0bc9e",
+  "original_rollout_helper_token": "0x0600012C",
+  "original_rollout_helper_rva": "0x5190",
+  "original_rollout_helper_il_sha256": "f6dd553c61e7af5a6d216422a6040102de46330e1bc7dad3dc7259f25bfead56",
+  "owned_probe_source_sha256": "3a1a0839846960a5dedd63d055d1958697740d04b0e65fb6a31e4bf4921ad28a",
+  "owned_probe_x86_sha256": "60b2a6cf87d9577565800f3364b2a7eaa41f3a8397ed945585997317be3a300d",
+  "original_stdout_sha256": "1ad795ecd6785913f353dce409936dbde004c75e130950dc874dc4f1f8897cb4",
+  "original_stdout_line_count": 17,
+  "original_case_count": 15,
+  "original_stderr_bytes": 0,
+  "default_ipv4_routes_at_capture": 0,
+  "default_ipv6_routes_at_capture": 0,
+  "admitted_rows": [
+    {"case": "pass-middle", "variant": null, "visibility": 42, "stored_cohort": "41", "original_return": true, "original_rollout_reached": true},
+    {"case": "equal-middle", "variant": null, "visibility": 41, "stored_cohort": "41", "original_return": false, "original_rollout_reached": true},
+    {"case": "pass-zero", "variant": null, "visibility": 1, "stored_cohort": "0", "original_return": true, "original_rollout_reached": true},
+    {"case": "equal-zero", "variant": null, "visibility": 0, "stored_cohort": "0", "original_return": false, "original_rollout_reached": true},
+    {"case": "pass-high", "variant": null, "visibility": 99, "stored_cohort": "98", "original_return": true, "original_rollout_reached": true},
+    {"case": "equal-high", "variant": null, "visibility": 99, "stored_cohort": "99", "original_return": false, "original_rollout_reached": true},
+    {"case": "date-before-start", "variant": "future-start", "visibility": 42, "stored_cohort": "41", "original_return": false, "original_rollout_reached": false},
+    {"case": "date-after-expiry", "variant": "expired", "visibility": 42, "stored_cohort": "41", "original_return": false, "original_rollout_reached": false},
+    {"case": "no-selected-uri", "variant": "missing-url", "visibility": 42, "stored_cohort": "41", "original_return": false, "original_rollout_reached": false},
+    {"case": "unknown-media", "variant": "unknown-media", "visibility": 42, "stored_cohort": "41", "original_return": false, "original_rollout_reached": false}
+  ],
+  "missing_entry_witnesses_outside_cli": [
+    {"case": "seed-on-reached", "variant": "baseline", "visibility": 0, "original_return": false, "decimal_cohort_persisted": true},
+    {"case": "no-seed-before-start", "variant": "future-start", "visibility": 42, "original_return": false, "decimal_cohort_persisted": false},
+    {"case": "no-seed-after-expiry", "variant": "expired", "visibility": 42, "original_return": false, "decimal_cohort_persisted": false},
+    {"case": "no-seed-without-uri", "variant": "missing-url", "visibility": 42, "original_return": false, "decimal_cohort_persisted": false},
+    {"case": "no-seed-unknown-media", "variant": "unknown-media", "visibility": 42, "original_return": false, "decimal_cohort_persisted": false}
+  ],
+  "owned_registry_key_removed": true,
+  "scope": "Direct original applicability method with owned selected-URI/media fields and empty conditions; original file selection was independently captured earlier; no constructor, HTTP, publisher trust, downloader, or installer"
+}

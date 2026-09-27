@@ -112,6 +112,15 @@ persist a cohort, or compose an update-availability decision. The
 [17-case original-helper fixture](../research/fixtures/toolkit-update-rollout-cohort-original.json)
 also records the stateful branches that remain outside this command.
 
+`update-applicability-cohort-preflight` applies the earlier captured
+date/file/media/URI gates and this 0–99 cohort comparison to the same selected
+source node. Its [combined finite profile](toolkit-update-applicability-cohort-preflight.md)
+reports whether earlier failures prevented the rollout gate from being reached.
+The separate [15-case direct original-method fixture](../research/fixtures/toolkit-update-applicability-cohort-original.json)
+confirms that order with missing-entry persistence witnesses. All clock,
+platform and stored-cohort facts remain caller-supplied; no host, publisher,
+availability or install claim is added.
+
 Evidence: [original vectors](../research/fixtures/toolkit-updates-vectors.json),
 [acceptance](../research/fixtures/toolkit-updates-acceptance.json).
 Primary vendor context: [Toolkit1.18 release](https://www.se.com/au/en/download/document/C-Bus_Toolkit_V1_18_0/)

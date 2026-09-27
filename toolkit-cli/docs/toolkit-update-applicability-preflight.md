@@ -54,6 +54,12 @@ times. It is not a live-machine applicability decision.
 Only the caller-supplied x86 or x64 platform is considered; host architecture
 is never inferred.
 
+For the separately evidenced 0–99% path with a **caller-supplied** stored
+cohort, use [applicability-cohort-preflight](toolkit-update-applicability-cohort-preflight.md).
+It composes these earlier gates and the strict rollout comparison on one
+selected source node, while keeping actual HKCU cohort provenance and full
+machine applicability unassessed.
+
 The original `SesuConnect.GetUpdates` path first applies a server-side
 product/version assignment filter and its own separate
 `IsMetadataValidated` gate. It then appends passing nodes in server order; it

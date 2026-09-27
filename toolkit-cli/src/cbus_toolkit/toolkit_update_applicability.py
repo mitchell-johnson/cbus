@@ -21,6 +21,7 @@ from .toolkit_update_metadata import (
     validate_context,
     validate_node_id,
 )
+from .toolkit_update_rollout import parse_supplied_stored_cohort
 
 
 PLATFORMS = ("windows_x86_32", "windows_x86_64")
@@ -43,15 +44,22 @@ class UpdateApplicabilityPreflight:
     selected_uri_present: bool | None
     empty_conditions: bool | None
     rollout_bypassed_visibility_100: bool | None
+    supplied_stored_cohort: int | None = None
+    rollout_gate_reached: bool | None = None
+    rollout_gate_under_supplied_cohort: bool | None = None
 
     @property
     def applicable_under_supplied_context(self) -> bool | None:
         return {"passed": True, "failed": False, "unsupported": None}[self.status]
 
     def as_dict(self) -> dict:
-        return {
-            "format": "cbus-toolkit-update-applicability-preflight-v1",
-            "scope": "Offline empty-condition/100-percent branch under an explicit UTC/platform context",
+        supplied_cohort_profile = self.supplied_stored_cohort is not None
+        result = {
+            "format": ("cbus-toolkit-update-applicability-cohort-preflight-v1"
+                       if supplied_cohort_profile else "cbus-toolkit-update-applicability-preflight-v1"),
+            "scope": ("Offline empty-condition/0–99-percent branch under explicit UTC/platform and caller-supplied cohort"
+                      if supplied_cohort_profile else
+                      "Offline empty-condition/100-percent branch under an explicit UTC/platform context"),
             "catalogue_source_sha256": self.catalogue_source_sha256,
             "selected_node_sha256": self.selected_node_sha256,
             "canonical_node_sha256": self.canonical_node_sha256,
@@ -83,6 +91,16 @@ class UpdateApplicabilityPreflight:
             "registry_accessed": False,
             "certificate_store_accessed": False,
         }
+        if supplied_cohort_profile:
+            result["checks"].pop("rollout_bypassed_visibility_100")
+            result["checks"]["rollout_gate_reached_under_supplied_context"] = self.rollout_gate_reached
+            result["checks"]["rollout_gate_under_supplied_cohort"] = self.rollout_gate_under_supplied_cohort
+            result["supplied_stored_cohort"] = self.supplied_stored_cohort
+            result["cohort_provenance"] = "caller-supplied; not observed from this host"
+            result["cohort_generated"] = False
+            result["cohort_persisted"] = False
+            result["full_machine_applicability_evaluated"] = False
+        return result
 
 
 def _https_uri_in_profile(value: str) -> bool:
@@ -127,6 +145,7 @@ def _https_uri_in_profile(value: str) -> bool:
 
 def inspect_update_applicability(
     catalogue_response: bytes, *, node_id: str, platform: str, at_utc: str,
+    stored_cohort: str | None = None,
 ) -> UpdateApplicabilityPreflight:
     """Evaluate one original date/file/media path without host or trust reads.
 
@@ -136,6 +155,8 @@ def inspect_update_applicability(
     validate_node_id(node_id)
     if type(platform) is not str or platform not in PLATFORMS:
         raise ValueError("platform must be windows_x86_32 or windows_x86_64")
+    cohort = (None if stored_cohort is None else
+              parse_supplied_stored_cohort(stored_cohort))
     at_ticks, normalized_at = validate_context(at_utc)
     response = _json(catalogue_response, limit=MAX_NODE_BYTES)
     if (type(response) is not dict or response.get("success") is not True
@@ -150,12 +171,14 @@ def inspect_update_applicability(
     chosen = None
     date_pass = media_pass = uri_pass = None
     empty_conditions = rollout_bypassed = None
+    rollout_reached = rollout_gate = None
 
     def report(status: str, reason: str | None) -> UpdateApplicabilityPreflight:
         return UpdateApplicabilityPreflight(
             source_sha, selected_sha, canonical_sha, node_id, platform,
             normalized_at, status, reason, chosen, date_pass, media_pass,
-            uri_pass, empty_conditions, rollout_bypassed,
+            uri_pass, empty_conditions, rollout_bypassed, cohort,
+            rollout_reached, rollout_gate,
         )
 
     try:
@@ -171,9 +194,13 @@ def inspect_update_applicability(
             or condition["conditions"]):
         return report("unsupported", "only an empty original condition dictionary is admitted")
     empty_conditions = True
-    if type(data.get("visibilityInPercent")) is not int or data["visibilityInPercent"] != 100:
-        return report("unsupported", "only visibilityInPercent=100 bypasses stateful rollout here")
-    rollout_bypassed = True
+    visibility = data.get("visibilityInPercent")
+    if cohort is None:
+        if type(visibility) is not int or visibility != 100:
+            return report("unsupported", "only visibilityInPercent=100 bypasses stateful rollout here")
+        rollout_bypassed = True
+    elif type(visibility) is not int or not 0 <= visibility < 100:
+        return report("unsupported", "supplied-cohort profile requires explicit visibilityInPercent from 0 to 99")
     try:
         start, _ = validate_context(data["startDate"])
         expiry, _ = validate_context(data["expireDate"])
@@ -219,6 +246,20 @@ def inspect_update_applicability(
     if chosen is None:
         media_pass = False
         uri_pass = False
-    accepted = date_pass and media_pass and uri_pass
-    return report("passed" if accepted else "failed", None if accepted else
+    predecessor_passed = date_pass and media_pass and uri_pass
+    if cohort is not None:
+        rollout_reached = bool(predecessor_passed)
+        if rollout_reached:
+            rollout_gate = visibility > cohort
+        accepted = predecessor_passed and bool(rollout_gate)
+    else:
+        accepted = predecessor_passed
+    if accepted:
+        reason = None
+    elif not predecessor_passed:
+        reason = ("one or more date, selected-file, media or URI gates did not pass; rollout was not reached"
+                  if cohort is not None else
                   "one or more date, selected-file, media or URI gates did not pass")
+    else:
+        reason = "visibilityInPercent did not exceed the supplied stored cohort"
+    return report("passed" if accepted else "failed", reason)

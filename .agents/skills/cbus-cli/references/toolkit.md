@@ -57,6 +57,17 @@ update. Consult `toolkit-cli/docs/toolkit-update-rollout-cohort.md` before
 composing it with applicability or metadata diagnostics; independent reports
 do not by themselves establish one trusted update workflow.
 
+`update-applicability-cohort-preflight --catalogue-response RAW.json --node-id
+ID --platform windows_x86_64 --at-utc ...Z --stored-cohort 41` evaluates the
+captured empty-condition date/file/media/URI path and 0–99 rollout gate on the
+same selected node. Read `checks.rollout_gate_reached_under_supplied_context`:
+false means an earlier gate failed and the comparison was not reached; then
+`checks.rollout_gate_under_supplied_cohort` is null. This remains a calculation
+under supplied UTC/platform/cohort facts, not a host registry observation,
+publisher trust, update availability, or install approval. See
+`toolkit-cli/docs/toolkit-update-applicability-cohort-preflight.md` for the
+native 15-case evidence and exact profile.
+
 For `update-condition-live`, use `--expected-user-sid` with the complete known
 Windows SID to require the intended HKCU user before any registry request. A
 mismatch fails before observation and does not switch users. Check

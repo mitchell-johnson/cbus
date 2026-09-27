@@ -62,9 +62,11 @@ metadata validator, package downloader or installer. It does not establish
 current publisher trust or complete SESU rollout.
 
 The earlier [applicability preflight](toolkit-update-applicability-preflight.md)
-still admits only 100% visibility and does not consume this independent gate.
-Combining two reports does not establish one trusted, same-machine updater
-workflow. Issue [#62](https://github.com/mitchell-johnson/cbus/issues/62)
+still admits only 100% visibility. The separate
+[same-source cohort preflight](toolkit-update-applicability-cohort-preflight.md)
+combines the captured earlier gates and this comparison under supplied
+UTC/platform/cohort facts, but does not establish one trusted, same-machine
+updater workflow. Issue [#62](https://github.com/mitchell-johnson/cbus/issues/62)
 remains open for original current-user registry provenance, random persistence,
 nonempty conditions, publisher chain/current revocation, complete source and
 version policy, availability and installation acceptance.
