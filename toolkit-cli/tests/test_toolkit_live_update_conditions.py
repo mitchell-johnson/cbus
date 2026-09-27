@@ -95,7 +95,7 @@ class LiveUpdateConditionsTests(unittest.TestCase):
         self.assertTrue(document['observer_closed'])
         self.assertEqual(document['registry_observations'][0]['status'], 'failed')
 
-    def test_wrapper_and_observer_are_single_use(self):
+    def test_direct_evaluate_and_observer_are_single_use(self):
         observer = StubObserver(value=0)
         wrapper = ToolkitLiveUpdateConditions(observer)
         completed = wrapper.evaluate(condition_json(), file_context=file_context())
@@ -103,6 +103,60 @@ class LiveUpdateConditionsTests(unittest.TestCase):
             wrapper.evaluate(condition_json(), file_context=file_context())
         self.assertIs(wrapper.last_report, completed)
         self.assertEqual(observer.close_calls, 1)
+
+    def test_explicit_next_evaluation_rejects_prior_observer_without_losing_report(self):
+        first, second = StubObserver(0), StubObserver(1)
+        wrapper = ToolkitLiveUpdateConditions(first)
+        initial = wrapper.evaluate(condition_json(), file_context=file_context())
+        for candidate in (first,):
+            with self.assertRaisesRegex(ValueError, 'different fresh observer'):
+                wrapper.evaluate_next(condition_json(), file_context=file_context(), observer=candidate)
+        self.assertIs(wrapper.last_report, initial)
+        self.assertIs(wrapper.observer, first)
+        self.assertEqual(first.close_calls, 1)
+        result = wrapper.evaluate_next(condition_json(), file_context=file_context(), observer=second)
+        self.assertTrue(result.computed)
+        self.assertIs(result.result, False)
+        with self.assertRaisesRegex(ValueError, 'Only two same-wrapper evaluations'):
+            wrapper.evaluate_next(condition_json(), file_context=file_context(), observer=first)
+        third = StubObserver(0)
+        with self.assertRaisesRegex(ValueError, 'Only two same-wrapper evaluations'):
+            wrapper.evaluate_next(condition_json(), file_context=file_context(), observer=third)
+        self.assertIs(wrapper.last_report, result)
+        self.assertEqual([len(first.queries), len(second.queries)], [1, 1])
+        self.assertEqual([first.close_calls, second.close_calls], [1, 1])
+        self.assertEqual(third.queries, [])
+        self.assertEqual(third.close_calls, 0)
+
+    def test_next_evaluation_requires_a_clean_prior_boolean_result(self):
+        fresh = StubObserver(0)
+        wrapper = ToolkitLiveUpdateConditions(StubObserver(0))
+        with self.assertRaisesRegex(ValueError, 'completed prior Boolean result'):
+            wrapper.evaluate_next(condition_json(), file_context=file_context(), observer=fresh)
+        incomplete = wrapper.evaluate(b'{invalid', file_context=file_context())
+        self.assertFalse(incomplete.computed)
+        with self.assertRaisesRegex(ValueError, 'completed prior Boolean result'):
+            wrapper.evaluate_next(condition_json(), file_context=file_context(), observer=fresh)
+        self.assertIs(wrapper.last_report, incomplete)
+        self.assertEqual(fresh.queries, [])
+        self.assertEqual(fresh.close_calls, 0)
+
+    def test_next_evaluation_rejects_preused_windows_observer_before_switch(self):
+        initial_observer = StubObserver(0)
+        wrapper = ToolkitLiveUpdateConditions(initial_observer)
+        initial = wrapper.evaluate(condition_json(), file_context=file_context())
+        scope = RegistryReadScope.from_json(encode({'format': 'cbus-toolkit-registry-read-scope-v1',
+            'queries': [{'path': PATH, 'entry': 'Value', 'default': {'kind': 'System.Int32', 'value': 1}}]}))
+        used = WindowsConditionRegistry(compiler_path='not opened during validation', scope=scope)
+        used._records.append({'sequence': 0})
+        with patch.object(used, 'read') as read, patch.object(used, 'close') as close:
+            with self.assertRaisesRegex(ValueError, 'fresh Windows registry observer'):
+                wrapper.evaluate_next(condition_json(), file_context=file_context(), observer=used)
+        read.assert_not_called()
+        close.assert_not_called()
+        self.assertIs(wrapper.last_report, initial)
+        self.assertIs(wrapper.observer, initial_observer)
+        self.assertEqual(initial_observer.close_calls, 1)
 
     def test_malformed_condition_reports_failed_stage_without_any_registry_read(self):
         observer = StubObserver(value=0)

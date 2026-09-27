@@ -88,29 +88,56 @@ class _LiveFacts:
 
 
 class ToolkitLiveUpdateConditions:
-    """Evaluate once with a fresh observer; no registry access during validation.
+    """Evaluate with a fresh observer for each call; no registry access during validation.
 
     WindowsConditionRegistry receipts carry checked runtime provenance. Other
     read(query)->tagged-primitive providers are useful for deterministic tests
     and are always labeled unverified; their dictionaries cannot claim live
     Windows provenance. A supplied observer's close() is called once after the
     evaluation, including errors. Instances retain the latest partial report.
+    A completed call can be followed once by evaluate_next() with a different
+    fresh observer; an incomplete or raised call has no admitted repeat transition.
     """
     def __init__(self, observer):
         self.observer = observer
         self.last_report = None
         self._used = False
+        # Strong references prevent identity reuse from being mistaken for a
+        # new provider after an earlier observer is closed and collected.
+        self._observers = [observer]
+
+    @staticmethod
+    def _require_fresh_windows_observer(observer):
+        if type(observer) is WindowsConditionRegistry and (
+                observer._records or observer._closed or observer._failure is not None
+                or observer._terminal):
+            # Receipt-sequence validation alone would discover reuse only
+            # after consuming an additional registry observation.
+            raise ValueError('Live evaluation requires a fresh Windows registry observer')
+
+    def evaluate_next(self, condition_json: bytes, *, file_context: bytes, observer) -> LiveConditionReport:
+        """Evaluate again on this wrapper with an explicit unused observer.
+
+        Only one repeat after a clean Boolean result is admitted by the pinned
+        original case. Each call has its own cache and report; no result,
+        worker, or registry snapshot is shared.
+        """
+        if not self._used or self.last_report is None or not self.last_report.computed:
+            raise ValueError('Repeated live evaluation requires a completed prior Boolean result')
+        if len(self._observers) >= 2:
+            raise ValueError('Only two same-wrapper evaluations are source-admitted')
+        if any(observer is earlier for earlier in self._observers):
+            raise ValueError('Repeated live evaluation requires a different fresh observer')
+        self._require_fresh_windows_observer(observer)
+        self.observer = observer
+        self._observers.append(observer)
+        self._used = False
+        return self.evaluate(condition_json, file_context=file_context)
 
     def evaluate(self, condition_json: bytes, *, file_context: bytes) -> LiveConditionReport:
         if self._used:
-            raise ValueError('Live evaluation requires a fresh observer and wrapper')
-        if type(self.observer) is WindowsConditionRegistry and (
-                self.observer._records or self.observer._closed or self.observer._failure is not None
-                or self.observer._terminal):
-            # Reject an already used session before another query is issued.
-            # Receipt-sequence validation alone would discover reuse only
-            # after consuming a fresh registry observation from that session.
-            raise ValueError('Live evaluation requires a fresh Windows registry observer')
+            raise ValueError('Direct live evaluation is single-use; use evaluate_next with a fresh observer')
+        self._require_fresh_windows_observer(self.observer)
         self.last_report = None
         self._used = True
         document = {'profile': PROFILE, 'scope': 'Lazy registry condition observations with supplied file facts',

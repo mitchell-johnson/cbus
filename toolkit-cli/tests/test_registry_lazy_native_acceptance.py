@@ -69,6 +69,28 @@ def test_fresh_evaluations_match_original_cache_reset(value, native_id):
     assert len(observer.queries) == 1
 
 
+def test_same_wrapper_successive_evaluations_match_original_public_cache_reset():
+    condition_bytes = json.dumps({'expression': 'A and A', 'conditions': {'A': condition()}}).encode()
+    context_bytes = json.dumps({'format': 'cbus-toolkit-condition-context-v1',
+                                'culture': 'invariant-ascii', 'files': []}).encode()
+    first_observer, second_observer = SequenceObserver(0), SequenceObserver(1)
+    wrapper = ToolkitLiveUpdateConditions(first_observer)
+    first = wrapper.evaluate(condition_bytes, file_context=context_bytes)
+    second = wrapper.evaluate_next(condition_bytes, file_context=context_bytes,
+                                   observer=second_observer)
+
+    assert [first.result, second.result] == [ROWS['public-first-true']['result'],
+                                              ROWS['public-fresh-evaluate-false']['result']]
+    assert first.as_dict()['condition_result_cache'] == ROWS['public-first-true']['cache']
+    assert second.as_dict()['condition_result_cache'] == ROWS['public-fresh-evaluate-false']['cache']
+    assert first.as_dict()['registry_observations'][0]['result']['value'] == 0
+    assert second.as_dict()['registry_observations'][0]['result']['value'] == 1
+    assert [len(first_observer.queries), len(second_observer.queries)] == [1, 1]
+    assert [first_observer.closed, second_observer.closed] == [1, 1]
+    assert wrapper.last_report is second
+    assert first.as_dict()['condition_result'] is True
+
+
 def test_true_and_false_caches_are_per_name_not_per_registry_query():
     observer = SequenceObserver(0, 1, 0)
     result = evaluate('A and A and (B or B)', {'A': condition(), 'B': condition()}, observer)

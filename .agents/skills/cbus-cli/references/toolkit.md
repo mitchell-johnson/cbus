@@ -87,6 +87,13 @@ desktop session or original Toolkit wrapper parity. The native condition-wrapper
 confirms per-name true/false caches and shows that even ASCII `I`/`i` differs
 under `tr-TR`; keep the production `invariant-ascii` restriction. Do not infer
 interactive preferences/settings behavior from this condition-checker evidence.
+For the bounded same-instance public `Evaluate` cache-reset case, the Python
+API can call `ToolkitLiveUpdateConditions.evaluate_next(..., observer=fresh)`
+once after a clean Boolean result. Keep the previous report, use a distinct fresh
+observer for every call, and treat the CLI as one evaluation per invocation.
+This matches the pinned original true-then-false outcomes with separate Python
+observers; it does not establish identical original worker lifetime or a
+repeat-after-failure contract. See `toolkit-cli/docs/toolkit-live-registry-observation.md`.
 
 `update-package-file --catalogue-response raw-catalogue.json --node-id ID
 --file-id ID --package-path local-package.exe` compares one already-local

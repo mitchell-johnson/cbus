@@ -65,8 +65,8 @@ and ready-frame format are unchanged.
 Portable tests cover malformed SID inputs, mocked Win32 pointer/length bounds,
 PID/liveness disagreement, denied APIs, cleanup errors, and a forged ready SID
 that disagrees with the OS token. These tests are separate from native Windows
-acceptance. Interactive-user/native-wrapper, culture and repeated-read acceptance
-remain open.
+acceptance. Interactive-user/native-wrapper, broader culture and repeated-read
+acceptance remain open.
 
 A [sanitized native smoke receipt](../research/experiments/2026-09-28/registry-primary-token-native-smoke.json)
 binds the tested source hashes and private outputs. On Windows 11 ARM64 with
@@ -166,8 +166,8 @@ may prevent in-process fixture cleanup and is not acceptance.
 
 The same original checker instance was reused for the first two public
 `Evaluate` calls; it cleared successful-result cache entries on each evaluation.
-The Python comparison uses a fresh one-shot wrapper and observer for each call,
-so those cases establish outcome agreement, not identical object lifecycle.
+The archived Python comparison used a fresh one-shot wrapper and observer for
+each call, so it established outcome agreement, not identical object lifecycle.
 Separate original callback calls show that both true and false
 results are cached by condition name; another name sharing the same registry
 query sees a changed fixture value. A failed integer comparison leaves the
@@ -188,8 +188,33 @@ compatibility. General culture support remains outside the declared profile.
 wrapper with the original results and caches, including repeated false-cache
 hits and culture rejection. Python test observers are deterministic doubles;
 they do not turn an offline test run into fresh Windows evidence. Python's
-public wrapper still requires a fresh observer per evaluation, including after
-failure; it does not expose the original private callback retry API.
+public wrapper requires a fresh observer per evaluation and does not expose the
+original private callback retry API.
+
+## Repeated public evaluation on one Python wrapper
+
+The API now admits one narrow two-call same-wrapper sequence demonstrated by
+the first two original public `Evaluate` rows. After a clean Boolean result, call
+`ToolkitLiveUpdateConditions.evaluate_next(conditions, file_context=context,
+observer=fresh_observer)` on the same Python object. The next observer must be
+distinct from every observer used by that wrapper; a Windows observer must also
+be unused and healthy. The prior report object remains available to the caller,
+while `last_report` becomes the new independent report. Each call starts with an
+empty result cache and observation sequence, and closes its own observer once.
+Only one repeat is admitted. An initial false Boolean is still a clean result
+and can be followed by another call. A failed, unsupported, interrupted or
+close-failed evaluation has no
+admitted repeat transition; construct a new wrapper after such a result.
+
+The original pinned case changed an owned HKCU DWORD from 0 to 1 between calls
+and returned true then false with caches `{"a":true}` and `{"a":false}`. The
+source test now repeats that sequence on one Python wrapper with two deterministic
+observers and checks both retained receipts and independent closes. It does not
+claim identical Windows worker lifetime or original provider scheduling: the
+caller supplies a fresh observer for each evaluation, and each Windows observer
+starts its own worker on its first read. The public
+CLI remains a single evaluation per invocation. No interactive-user context,
+thread impersonation, or full preferences runtime effect is established.
 
 The native fixture was removed, no owned probe process remained, and the
 Host Only disposable VM was stopped with its original networking restored.
