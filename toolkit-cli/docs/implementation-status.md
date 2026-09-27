@@ -160,7 +160,7 @@ These functions have implementation and focused evidence for **KEYGL5 / 5055EDL 
 | Quick Status | Four modes, palettes, groups and linked threshold control ordering. [Quick Status](edlt-quick-status.md), [Windows comparisons](edlt-quick-status-windows.md). |
 | Activation and Page Control | Wake modes, events, activation page/first key; fixed Enable application page group. [Activation](edlt-activation.md), [Page Control](edlt-page-control.md). |
 | Clear Dynamic Labels | Guarded one-shot native request, identity/inventory checks and separate receipt/fixture-erasure evidence. [Label clear](edlt-label-clear.md). |
-| Live label inventory and drift audit | One fresh network serial refresh selects exact KEYGL5 5.5.00 records in numeric order for sequential, CRC-checked static configuration reads through `cmqttd`. Physical IDENTIFY4 brackets each memory snapshot; the inventory identity is attached only when both serials match it. The acceptance audit joins each successful image to its cached 44-byte WidgetGroups mapping from that same synchronization and creates tamper-checked exact/configuration/labels baselines. Partial identities, per-unit errors and one network-wide transient observation ring remain explicit; dynamic traffic is never fingerprinted. [Service scope](../../docs/cmqttd-cgate.md#live-label-reads), [audit](edlt-label-audit.md). |
+| Live label inventory and drift audit | One fresh network serial refresh selects exact KEYGL5 5.5.00 records in numeric order for sequential, CRC-checked static configuration reads through `cmqttd`. Physical IDENTIFY4 brackets each memory snapshot; the inventory identity is attached only when both serials match it. One separate read-only `DBGETXML` snapshot enumerates saved Group/TagsDLT project labels, gated by an explicit cmqttd import capability; these are never device-cache readback. The acceptance audit joins each successful image to its cached 44-byte WidgetGroups mapping from that same synchronization and creates tamper-checked exact/configuration/labels baselines. Partial identities, per-unit errors and one network-wide transient observation ring remain explicit; dynamic traffic is never fingerprinted. [Service scope](../../docs/cmqttd-cgate.md#live-label-reads), [audit](edlt-label-audit.md). |
 | Physical FactoryDefault | Guarded one-shot KEYGL5 request through `cmqttd`, exact native OEM control, durable intent, fresh identity/inventory checks, strict ACK correlation, no replay, and separate delivery/readback/persistence evidence. [FactoryDefault](edlt-factory-default.md). |
 | Retained model lifecycle and restore editor | Supported load/save phases, supplied cache, all 16 restore controls, display-name coupling and type-reset precedence. [Lifecycle](edlt-lifecycle.md), [restore levels](edlt-restore-levels.md). |
 | Ordered application and Corridor controls | Primary/Secondary applications, role exclusions, missing-group handling and timer byte-clamp behavior, standalone save/reload and complete-caller-cache composition inside the ordered parent transaction. [Applications](edlt-applications.md), [Corridor](edlt-corridor.md). |
@@ -273,6 +273,12 @@ from every device. They are transient, network-wide, recipient-unverified and
 always incomplete. Unit-shaped `CMQTT LABELS` requests are compatibility aliases
 for that same network ring; they do not prove which display received traffic.
 Physical dynamic-label cache readback remains unimplemented and false. The
+[read-only saved-project Group/TagsDLT report](../../docs/cmqttd-cgate.md#live-label-reads)
+uses one network `DBGETXML` response and remains separate from static physical
+strings and observed traffic. cmqttd advertises
+`saved_project_group_dlt_labels: true` only after its importer preserves these
+records; the CLI rejects an older status-200 cmqttd response without that
+marker. A native status-344 `DBGETXML` response needs no cmqttd marker. The
 [pinned native 1.18/3.4 investigation](edlt-dynamic-cache-boundary.md) found no
 exposed operation to enumerate a device's pre-existing cache; it does not
 claim that undocumented firmware protocols are impossible. See also the

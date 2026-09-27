@@ -495,14 +495,25 @@ def _edlt_static_labels(client, address, *, database_name=True, expected_serial=
 
 
 def edlt_labels(client, address):
-    """Read one physical eDLT and retain the existing single-unit JSON shape."""
+    """Read one physical eDLT and its separate saved network group tags."""
     result = _edlt_static_labels(client, address)
     address = result['address']
     observed = decode_observed_labels(_object(client, f'CMQTT LABELS {address}'))
     if observed['requested_address'] is not None and observed['requested_address'] != address:
         raise ValueError('cmqttd dynamic-label response does not match the requested unit-shaped address')
+    network = _network_for_unit(address)
+    project_labels, project_error = None, None
+    try:
+        from .edlt_project_labels import project_group_labels
+        project_labels = project_group_labels(client, network)
+    except Exception as error:
+        project_error = _error(network, error)
     return {**result, 'observed_dynamic_labels': observed,
-            'dynamic_labels_observed': bool(observed['entries'])}
+            'dynamic_labels_observed': bool(observed['entries']),
+            'project_group_labels': project_labels,
+            'project_group_labels_complete': project_error is None,
+            'project_group_labels_error': project_error,
+            'complete': project_error is None}
 
 
 def _record_kind(record):
@@ -651,6 +662,12 @@ def edlt_label_inventory(client, network):
             observed = decode_observed_labels(_object(client, f'CMQTT LABELS {network}'))
             if observed['requested_address'] != network:
                 raise ValueError('cmqttd dynamic-label response does not match the requested network')
+        except RuntimeError as error:
+            observed = None
+            observation_error = _error(network, error)
+            # The tagged client closes on an incomplete/late reply. Do not
+            # reuse it for the following database snapshot.
+            connection_usable = False
         except Exception as error:
             observed = None
             observation_error = _error(network, error)
@@ -658,12 +675,25 @@ def edlt_label_inventory(client, network):
         observation_error = {'address': network, 'type': 'NotAttempted',
                              'error': 'A prior transport failure made the connection unusable'}
 
+    project_labels = None
+    project_error = None
+    if connection_usable:
+        try:
+            from .edlt_project_labels import project_group_labels
+            project_labels = project_group_labels(client, network)
+        except Exception as error:
+            project_error = _error(network, error)
+    else:
+        project_error = {'address': network, 'type': 'NotAttempted',
+                         'error': 'A prior transport failure made the connection unusable'}
+
     selection_complete = (inventory.refresh_completed and not inventory.errors
                           and coverage['agrees_with_fresh_inventory']
                           and not classified['unsupported'] and not classified['unknown']
                           and not classified['ambiguous'])
     complete = (selection_complete and inventory.complete and not read_errors
-                and observation_error is None and len(units) == len(supported))
+                and observation_error is None and project_error is None
+                and len(units) == len(supported))
     return {
         'format': 'cbus-edlt-label-inventory-v1',
         'network': network,
@@ -683,6 +713,9 @@ def edlt_label_inventory(client, network):
         'observed_dynamic_labels_scope': network,
         'observed_dynamic_labels': observed,
         'observation_error': observation_error,
+        'project_group_labels': project_labels,
+        'project_group_labels_complete': project_error is None,
+        'project_group_labels_error': project_error,
         'dynamic_labels_observed': bool(observed and observed['entries']),
         'device_dynamic_label_cache_readback': False,
         'observations_complete': False,

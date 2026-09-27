@@ -66,6 +66,14 @@ the same network ring. The nested observation document's `complete: false` and
 pre-existing cache. `CMQTT LABELS`, `UNIT READMEM` and `UNIT IDENTIFY` are
 cmqttd extensions.
 
+`edlt-labels` also reports saved project `Group/TagsDLT/TagDLT` rows from one
+read-only network `DBGETXML` response. `project_group_labels` is network-wide
+project metadata and is never attributed to a display. For cmqttd's status-200
+response, the CLI requires `CMQTT CAPABILITIES` to advertise
+`saved_project_group_dlt_labels: true`; native C-Gate status-344 XML is accepted
+without that extension. Keep this source separate from physical static strings,
+current-connection SAL observations, and unreadable device dynamic caches.
+
 `edlt-label-audit` adds one cached `WidgetGroups` getter per successful unit and
 creates or compares a deterministic baseline. It reuses the inventory's initial
 network synchronization, requires stable serial evidence and excludes transient

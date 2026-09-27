@@ -346,6 +346,12 @@ struct Database {
     unit_documents: HashMap<String, String>,
     #[serde(default)]
     unit_pp_fields: HashMap<String, std::collections::BTreeSet<String>>,
+    /// Set after the configured project's unit templates and DLT metadata
+    /// have been admitted. Older durable databases are upgraded once.
+    #[serde(default)]
+    imported_project_metadata: bool,
+    #[serde(default)]
+    saved_project_group_dlt_labels_complete: bool,
     #[serde(default)]
     db_xml_extras: HashMap<String, crate::DbXmlExtras>,
     // Persist unordered server sets in lexical order so an otherwise
@@ -410,6 +416,8 @@ impl Database {
             db_fields: s.db_fields.clone(),
             unit_documents: s.unit_documents.clone(),
             unit_pp_fields: s.unit_pp_fields.clone(),
+            imported_project_metadata: true,
+            saved_project_group_dlt_labels_complete: s.saved_project_group_dlt_labels_complete,
             db_xml_extras: s.db_xml_extras.clone(),
             objects: s.objects.iter().cloned().collect(),
             known_oids: s.known_oids.iter().cloned().collect(),
@@ -508,6 +516,7 @@ impl Database {
         s.db_fields = self.db_fields;
         s.unit_documents = self.unit_documents;
         s.unit_pp_fields = self.unit_pp_fields;
+        s.saved_project_group_dlt_labels_complete = self.saved_project_group_dlt_labels_complete;
         s.db_xml_extras = self.db_xml_extras;
         s.objects = self.objects.into_iter().collect();
         // Network OIDs are first-class database identities. Legacy state did
@@ -1672,12 +1681,18 @@ impl Service {
                 if data.len() > MAX_STATE {
                     return Err(io::Error::other("C-Gate database exceeds 32 MiB"));
                 }
-                let migrated = serde_json::from_slice::<Database>(&data)?.restore(&mut model)?;
-                if migrated {
+                let database = serde_json::from_slice::<Database>(&data)?;
+                let needs_import = !database.imported_project_metadata;
+                let migrated = database.restore(&mut model)?;
+                if needs_import {
+                    seed_project_xml_metadata(&mut model, xml, &project)?;
+                }
+                if migrated || needs_import {
                     Database::from_server(&model).save(&state_path)?;
                 }
             }
             Err(e) if e.kind() == io::ErrorKind::NotFound => {
+                seed_project_xml_metadata(&mut model, xml, &project)?;
                 Database::from_server(&model).save(&state_path)?
             }
             Err(e) => return Err(e),
@@ -2466,8 +2481,13 @@ impl Service {
                 // Opt-in command-layer LOGIN gate (see Service::set_auth_token_hash):
                 // false with the dormant default, true once armed.
                 "cgate_auth":self.auth_token_hash.get().is_some()});
-            // Keep the new flat flag out of the already recursion-deep json!
-            // invocation while retaining one static capability document.
+            capabilities["saved_project_group_dlt_labels"] = serde_json::Value::Bool(
+                self.model
+                    .lock()
+                    .await
+                    .saved_project_group_dlt_labels_complete,
+            );
+            // Keep the new flat flag out of the already recursion-deep json! invocation.
             capabilities["physical_pp_routed_load"] = serde_json::Value::Bool(true);
             capabilities["physical_pp_routed_save"] = serde_json::Value::Bool(true);
             capabilities["physical_pp_routed_methods"] = serde_json::json!([
@@ -15057,6 +15077,237 @@ async fn identify_all_for_route(
     } else {
         pci.identify_all_routed(route, address, attribute).await
     }
+}
+
+/// Admit the configured project's already-saved XML into the modeled database.
+/// The original importer kept PP values but lost the PP element shape and all
+/// Application/Group DLT tags. Both omissions made a read-only DBGETXML
+/// network response unsuitable for project-label enumeration. This seeding is
+/// done once for old durable state; subsequent database state is authoritative.
+fn seed_project_xml_metadata(model: &mut Server, xml: &str, project_name: &str) -> io::Result<()> {
+    const MAX_OBJECTS: usize = 4096;
+    const MAX_UNIT_XML: usize = 256 * 1024;
+    const MAX_DLT_XML: usize = 64 * 1024;
+    let document = roxmltree::Document::parse(xml)
+        .map_err(|error| io::Error::new(io::ErrorKind::InvalidData, error))?;
+    let field = |node: roxmltree::Node<'_, '_>, name: &str| -> String {
+        node.children()
+            .find(|child| child.has_tag_name(name))
+            .and_then(|child| child.text())
+            .or_else(|| node.attribute(name))
+            .unwrap_or("")
+            .to_string()
+    };
+    let project = document
+        .descendants()
+        .find(|node| node.has_tag_name("Project") && field(*node, "TagName") == project_name)
+        .ok_or_else(|| io::Error::other("configured project absent from project XML"))?;
+    let mut object_count = 0;
+    let mut complete = true;
+    for network in project
+        .children()
+        .filter(|node| node.has_tag_name("Network"))
+    {
+        let address = field(network, "Address")
+            .parse::<u8>()
+            .map_err(io::Error::other)?;
+        let Some(stored_network) = model
+            .projects
+            .get(project_name)
+            .and_then(|project| project.networks.get(&address))
+        else {
+            continue;
+        };
+        let units = stored_network.units.clone();
+        let network_path = format!("//{project_name}/{address}");
+        for unit in network.children().filter(|node| node.has_tag_name("Unit")) {
+            let unit_address = field(unit, "Address")
+                .parse::<u8>()
+                .map_err(io::Error::other)?;
+            let Some(stored_unit) = units.get(&unit_address) else {
+                continue;
+            };
+            if stored_unit.unit_type != field(unit, "UnitType")
+                || stored_unit.firmware != field(unit, "FirmwareVersion")
+            {
+                continue;
+            }
+            let template =
+                xml_fragment_with_inherited_namespaces(unit, xml).map_err(io::Error::other)?;
+            if template.len() > MAX_UNIT_XML {
+                return Err(io::Error::other("imported Unit XML exceeds 256 KiB"));
+            }
+            let key = Server::unit_document_key(project_name, &stored_unit.oid);
+            model.unit_documents.entry(key.clone()).or_insert(template);
+            let pp = unit
+                .children()
+                .filter(|child| child.has_tag_name("PP"))
+                .filter_map(|child| child.attribute("Name").map(str::to_string))
+                .collect();
+            model.unit_pp_fields.entry(key).or_insert(pp);
+        }
+        for application in network
+            .children()
+            .filter(|node| node.has_tag_name("Application"))
+        {
+            object_count += 1;
+            if object_count > MAX_OBJECTS {
+                return Err(io::Error::other(
+                    "configured application/group count exceeds 4096",
+                ));
+            }
+            let application_address = field(application, "Address")
+                .parse::<u8>()
+                .map_err(io::Error::other)?;
+            let application_path = format!("{network_path}/{application_address}");
+            seed_imported_object(
+                model,
+                project_name,
+                &network_path,
+                &application_path,
+                "Application",
+                application_address,
+            );
+            for group in application
+                .children()
+                .filter(|node| node.has_tag_name("Group"))
+            {
+                object_count += 1;
+                if object_count > MAX_OBJECTS {
+                    return Err(io::Error::other(
+                        "configured application/group count exceeds 4096",
+                    ));
+                }
+                let group_address = field(group, "Address")
+                    .parse::<u8>()
+                    .map_err(io::Error::other)?;
+                let group_path = format!("{application_path}/{group_address}");
+                let created = seed_imported_object(
+                    model,
+                    project_name,
+                    &application_path,
+                    &group_path,
+                    "Group",
+                    group_address,
+                );
+                if group.children().any(|node| {
+                    node.is_element()
+                        && node.tag_name().name() == "TagsDLT"
+                        && node.tag_name().namespace().is_some()
+                }) {
+                    return Err(io::Error::other(
+                        "imported TagsDLT has an unsupported default namespace",
+                    ));
+                }
+                let tags = group
+                    .children()
+                    .filter(|node| node.has_tag_name("TagsDLT"))
+                    .collect::<Vec<_>>();
+                if tags.len() > 1 {
+                    return Err(io::Error::other(
+                        "imported Group has duplicate TagsDLT collections",
+                    ));
+                }
+                if let Some(tags) = tags.first() {
+                    if tags.descendants().any(|node| {
+                        node.is_element()
+                            && node.tag_name().name() == "TagDLT"
+                            && node.tag_name().namespace().is_some()
+                    }) {
+                        return Err(io::Error::other(
+                            "imported TagDLT has an unsupported default namespace",
+                        ));
+                    }
+                    if let Some(oid) = created {
+                        let snippet = xml_fragment_with_inherited_namespaces(*tags, xml)
+                            .map_err(io::Error::other)?;
+                        if snippet.len() > MAX_DLT_XML {
+                            return Err(io::Error::other("imported TagsDLT XML exceeds 64 KiB"));
+                        }
+                        let key = Server::unit_document_key(project_name, &oid);
+                        model
+                            .db_xml_extras
+                            .entry(key)
+                            .or_default()
+                            .children
+                            .push(snippet);
+                    } else if tags.children().any(|node| node.has_tag_name("TagDLT")) {
+                        // A legacy durable Group may have been edited after
+                        // import, including an intentional DLT clear. Preserve
+                        // it, but do not certify the resulting snapshot as a
+                        // complete import when no explicit TagsDLT survived.
+                        let has_durable_tags = model
+                            .db_pending
+                            .values()
+                            .find(|object| {
+                                object.project == project_name
+                                    && object.path.as_deref() == Some(group_path.as_str())
+                            })
+                            .and_then(|object| {
+                                model
+                                    .db_xml_extras
+                                    .get(&Server::unit_document_key(project_name, &object.oid))
+                            })
+                            .is_some_and(|extras| {
+                                extras.children.iter().any(|child| {
+                                    roxmltree::Document::parse(child).is_ok_and(|document| {
+                                        document.root_element().has_tag_name("TagsDLT")
+                                    })
+                                })
+                            });
+                        if !has_durable_tags {
+                            complete = false;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    model.saved_project_group_dlt_labels_complete = complete;
+    Ok(())
+}
+
+/// Return a new OID only when the imported addressable object was absent.
+/// Existing durable Group edits are never replaced by configured XML.
+fn seed_imported_object(
+    model: &mut Server,
+    project: &str,
+    parent: &str,
+    path: &str,
+    element: &str,
+    address: u8,
+) -> Option<String> {
+    let tag = model.db_fields.get(&format!("{path}/TagName"))?.clone();
+    if model
+        .db_pending
+        .values()
+        .any(|object| object.project == project && object.path.as_deref() == Some(path))
+    {
+        return None;
+    }
+    let oid = loop {
+        let candidate = fresh_oid();
+        if model.known_oids.insert(candidate.clone()) {
+            break candidate;
+        }
+    };
+    model.objects.insert(path.to_string());
+    model.objects.insert(format!("!{oid}"));
+    model.db_pending.insert(
+        Server::unit_document_key(project, &oid),
+        DbPendingObject {
+            oid: oid.clone(),
+            project: project.to_string(),
+            parent: parent.to_string(),
+            element: element.to_string(),
+            fields: HashMap::from([
+                ("Address".to_string(), address.to_string()),
+                ("TagName".to_string(), tag),
+            ]),
+            path: Some(path.to_string()),
+        },
+    );
+    Some(oid)
 }
 
 fn import_project(xml: &str, network_name: Option<&str>) -> io::Result<(Server, String, u8)> {

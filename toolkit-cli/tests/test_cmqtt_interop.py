@@ -45,7 +45,12 @@ def test_real_cli_reads_all_edlt_labels_through_cmqttd(tmp_path):
                          physical_memory={5: dict(enumerate(image))})
     project = tmp_path / 'project.xml'
     project.write_text('<Installation><Project><TagName>TEST</TagName><Network><Address>254</Address>'
-                       '<TagName>Fixture</TagName><Unit><Address>5</Address><TagName>Fixture eDLT</TagName>'
+                       '<TagName>Fixture</TagName><Application><Address>56</Address>'
+                       '<TagName>Lighting</TagName><Group><Address>27</Address>'
+                       '<TagName>Sample Group</TagName><TagsDLT><TagDLT><LanguageID>1</LanguageID>'
+                       '<FlavourID>1</FlavourID><TagType>TEXT</TagType>'
+                       '<TagValue>Synthetic Label</TagValue></TagDLT></TagsDLT></Group>'
+                       '</Application><Unit><Address>5</Address><TagName>Fixture eDLT</TagName>'
                        '<UnitType>KEYGL5</UnitType><FirmwareVersion>5.5.00</FirmwareVersion>'
                        '</Unit></Network></Project></Installation>')
     # Hold a local broker socket without accepting/publishing anything.
@@ -77,6 +82,9 @@ def test_real_cli_reads_all_edlt_labels_through_cmqttd(tmp_path):
                 assert [w['label'] for w in value['widgets']] == ['Kitchen', 'Goodnight']
                 assert len(value['static_strings']) == 64
                 assert value['static_text_crc_verified']
+                assert value['project_group_labels_complete']
+                assert value['project_group_labels']['labels'][0]['tag_value'] == 'Synthetic Label'
+                assert value['project_group_labels']['device_readback'] is False
                 assert sim.physical_memory[5] == dict(enumerate(image))
                 connections = {row['connection'] for row in sim.wire_log}
                 assert len(connections) == 1

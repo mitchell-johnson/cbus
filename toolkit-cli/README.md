@@ -1802,7 +1802,9 @@ The serial refresh commands described above share the longer default.
 
 This form runs one whole-network serial refresh (`NET SYNC` followed by
 `NET CHECKUNIT`), classifies the fresh records and reads supported addresses in
-numeric order. The JSON retains the fresh inventory, unsupported firmware,
+numeric order. It uses a 300-second command timeout by default for the fresh
+network scan; an explicit `--timeout` overrides that value. The JSON retains
+the fresh inventory, unsupported firmware,
 unknown or ambiguous identities, other unit families, successful device
 snapshots, and read or observation errors. Every successful device snapshot
 contains the static strings and their references, with live identity, stable
@@ -1811,7 +1813,8 @@ bracket each selected memory snapshot. The fresh inventory identity is attached
 only when both physical serials match its serial; a mismatch remains a
 per-device read error and cannot attach stale identity evidence. The snapshots
 are read one at a time and therefore are not an atomic network image. If
-selection, a device read, or the final observation query is incomplete, the CLI
+selection, a device read, the observation query, or the saved project group-tag
+query is incomplete, the CLI
 still prints the partial report with `complete: false` and exits nonzero.
 If a whole-network MMI candidate produces no IDENTIFY4 reply, its native
 `No units detected` CHECKUNIT row remains an unknown identity and keeps the
@@ -1827,6 +1830,21 @@ compatibility alias for the same network ring; it does not narrow the records
 to that unit. No physical operation reads an eDLT's existing dynamic-label
 cache, so `device_dynamic_label_cache_readback` and the observation document's
 `device_readback` remain false and the observations remain incomplete.
+
+The report also includes `project_group_labels`: saved
+`Application/Group/TagsDLT/TagDLT` rows from one read-only
+`DBGETXML //PROJECT/NETWORK` snapshot. Each row names its application, group,
+language, flavour, type and value. This is the configured project label, not
+the label stored or displayed by a particular eDLT. For cmqttd's status-200
+reply, the CLI verifies its `saved_project_group_dlt_labels` capability and
+configured project against the requested project so
+older builds that dropped imported tags cannot return a falsely complete empty
+list. Native C-Gate's status-344 XML completion is accepted directly. The
+nested `project_snapshot_complete` field covers only the returned saved Group
+tags; `device_label_inventory_complete` remains false. The network and
+single-unit forms keep this project-wide result separate from physical static
+strings and transient observed traffic. A failed project query keeps any
+successful physical evidence, marks `complete: false`, and exits nonzero.
 
 The original single-device form remains available when the caller deliberately
 selects one address:

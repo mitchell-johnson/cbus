@@ -22,7 +22,7 @@ from .toolkit_database_csv_projection import (
 PROFILE = 'cbus-toolkit-database-native-xml-projection-v1'
 
 
-def native_xml_reply_text(reply):
+def native_xml_reply_text(reply, *, completion_codes=(344,)):
     """Extract all XML payload lines from a native DBGETXML response."""
     lines = getattr(reply, 'lines', None)
     if not isinstance(lines, (tuple, list)) or any(type(line) is not str for line in lines):
@@ -36,7 +36,7 @@ def native_xml_reply_text(reply):
             if code == 347:
                 started = True
                 payload.append(match[2])
-            elif code == 344 and started:
+            elif code in completion_codes and started:
                 break
             elif started:
                 raise ValueError('Native XML response contains an unexpected status line')

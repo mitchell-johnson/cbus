@@ -530,6 +530,125 @@ fn xml_open_tag_end(text: &str, start: usize) -> Option<usize> {
     None
 }
 
+/// Read XML attributes from a parsed element's opening tag, respecting quote
+/// boundaries and optional whitespace around `=`. A textual substring check
+/// can mistake an attribute value for a namespace declaration.
+fn opening_attribute_value_range(opening: &str, wanted: &str) -> Option<std::ops::Range<usize>> {
+    let bytes = opening.as_bytes();
+    let mut cursor = 0;
+    while cursor < bytes.len() && bytes[cursor] != b'<' {
+        cursor += 1;
+    }
+    cursor += 1;
+    while cursor < bytes.len()
+        && !bytes[cursor].is_ascii_whitespace()
+        && !matches!(bytes[cursor], b'/' | b'>')
+    {
+        cursor += 1;
+    }
+    while cursor < bytes.len() {
+        while cursor < bytes.len() && bytes[cursor].is_ascii_whitespace() {
+            cursor += 1;
+        }
+        if cursor >= bytes.len() || matches!(bytes[cursor], b'/' | b'>') {
+            break;
+        }
+        let start = cursor;
+        while cursor < bytes.len()
+            && !bytes[cursor].is_ascii_whitespace()
+            && !matches!(bytes[cursor], b'=' | b'/' | b'>')
+        {
+            cursor += 1;
+        }
+        let name = &opening[start..cursor];
+        while cursor < bytes.len() && bytes[cursor].is_ascii_whitespace() {
+            cursor += 1;
+        }
+        if bytes.get(cursor) != Some(&b'=') {
+            break;
+        }
+        cursor += 1;
+        while cursor < bytes.len() && bytes[cursor].is_ascii_whitespace() {
+            cursor += 1;
+        }
+        let Some(quote @ (b'\'' | b'"')) = bytes.get(cursor).copied() else {
+            break;
+        };
+        cursor += 1;
+        let value_start = cursor;
+        while cursor < bytes.len() && bytes[cursor] != quote {
+            cursor += 1;
+        }
+        let value_end = cursor;
+        cursor += usize::from(cursor < bytes.len());
+        if name == wanted {
+            return Some(value_start..value_end);
+        }
+    }
+    None
+}
+
+fn opening_has_attribute(opening: &str, wanted: &str) -> bool {
+    opening_attribute_value_range(opening, wanted).is_some()
+}
+
+/// Update only one modeled XML attribute, retaining unrelated attributes,
+/// nested extension elements, and their original namespace bindings.
+fn xml_replace_opening_attribute(fragment: &str, name: &str, value: &str) -> Option<String> {
+    let open_end = xml_open_tag_end(fragment, 0)?;
+    let opening = &fragment[..=open_end];
+    let mut output = fragment.to_string();
+    let escaped = xml_escape(value).replace('\'', "&apos;");
+    if let Some(range) = opening_attribute_value_range(opening, name) {
+        output.replace_range(range, &escaped);
+    } else {
+        let insertion = if fragment.as_bytes().get(open_end.saturating_sub(1)) == Some(&b'/') {
+            open_end - 1
+        } else {
+            open_end
+        };
+        output.insert_str(insertion, &format!(" {name}=\"{escaped}\""));
+    }
+    Some(output)
+}
+
+/// Detach one XML node from its ancestors without losing prefixed content.
+/// The source document is already parsed, but standalone Unit/TagsDLT
+/// templates need their inherited namespace bindings materialized locally.
+fn xml_fragment_with_inherited_namespaces(
+    node: roxmltree::Node<'_, '_>,
+    source: &str,
+) -> Result<String, String> {
+    let mut fragment = source
+        .get(node.range())
+        .ok_or_else(|| "invalid XML source range".to_string())?
+        .to_string();
+    let open_end =
+        xml_open_tag_end(&fragment, 0).ok_or_else(|| "invalid XML opening tag".to_string())?;
+    let opening = fragment[..=open_end].to_string();
+    let mut declarations = String::new();
+    for namespace in node.namespaces() {
+        let Some(prefix) = namespace.name().filter(|prefix| *prefix != "xml") else {
+            continue;
+        };
+        if !opening_has_attribute(&opening, &format!("xmlns:{prefix}")) {
+            declarations.push_str(&format!(
+                " xmlns:{prefix}=\"{}\"",
+                xml_escape(namespace.uri())
+            ));
+        }
+    }
+    let insertion = if fragment.as_bytes().get(open_end.saturating_sub(1)) == Some(&b'/') {
+        open_end - 1
+    } else {
+        open_end
+    };
+    fragment.insert_str(insertion, &declarations);
+    roxmltree::Document::parse(&fragment)
+        .map_err(|_| "detached XML fragment is not well-formed".to_string())?;
+    Ok(fragment)
+}
+
 fn parse_db_xml_extras(node: roxmltree::Node<'_, '_>, source: &str) -> DbXmlExtras {
     let namespaces = node
         .namespaces()
@@ -782,36 +901,7 @@ fn parse_db_xml_unit(
         }
     }
 
-    let range = node.range();
-    let mut document = source
-        .get(range)
-        .ok_or_else(|| "DBSETXML Unit source range is invalid".to_string())?
-        .to_string();
-    let open_end = xml_open_tag_end(&document, 0)
-        .ok_or_else(|| "DBSETXML Unit has an invalid opening tag".to_string())?;
-    let opening = document[..=open_end].to_string();
-    let declares_prefix = |prefix: &str| {
-        let name = format!("xmlns:{prefix}");
-        opening.match_indices(&name).any(|(offset, _)| {
-            let left = opening[..offset].chars().next_back();
-            let right = opening[offset + name.len()..].trim_start();
-            left.is_some_and(|character| character == '<' || character.is_whitespace())
-                && right.starts_with('=')
-        })
-    };
-    let mut declarations = String::new();
-    for namespace in node.namespaces() {
-        let Some(prefix) = namespace.name().filter(|prefix| *prefix != "xml") else {
-            continue;
-        };
-        if !declares_prefix(prefix) {
-            declarations.push_str(&format!(
-                " xmlns:{prefix}=\"{}\"",
-                xml_escape(namespace.uri())
-            ));
-        }
-    }
-    document.insert_str(open_end, &declarations);
+    let document = xml_fragment_with_inherited_namespaces(node, source)?;
 
     scalars.remove("OID");
     scalars.remove("Address");
@@ -1687,6 +1777,9 @@ pub struct Server {
     /// rows in each project-scoped unit document. A deterministic set keeps repository
     /// serialization byte-stable across otherwise unchanged restarts.
     unit_pp_fields: HashMap<String, BTreeSet<String>>,
+    /// Whether configured-project DLT tags were imported without an
+    /// ambiguous pre-existing Group that may have intentionally cleared them.
+    saved_project_group_dlt_labels_complete: bool,
     /// Opaque namespaced metadata for complete non-Unit DBSETXML objects,
     /// keyed by selected project and stable object OID.
     db_xml_extras: HashMap<String, DbXmlExtras>,
@@ -1801,6 +1894,7 @@ impl Server {
             db_fields: HashMap::new(),
             unit_documents: HashMap::new(),
             unit_pp_fields: HashMap::new(),
+            saved_project_group_dlt_labels_complete: false,
             db_xml_extras: HashMap::new(),
             objects: std::collections::HashSet::new(),
             known_oids: std::collections::HashSet::new(),
@@ -3651,7 +3745,18 @@ impl Server {
                 if let Some(field) = field {
                     if let Some(project) = self.current.as_deref() {
                         if let Some(object) = self.pending_object(project, oid) {
-                            let value = object.fields.get(field).cloned().unwrap_or_default();
+                            let value = object
+                                .path
+                                .as_deref()
+                                .filter(|_| {
+                                    matches!(object.element.as_str(), "Application" | "Group")
+                                })
+                                .and_then(|object_path| {
+                                    self.db_fields.get(&format!("{object_path}/{field}"))
+                                })
+                                .or_else(|| object.fields.get(field))
+                                .cloned()
+                                .unwrap_or_default();
                             return if value.is_empty() {
                                 err(
                                     tag,
@@ -4030,16 +4135,17 @@ impl Server {
             &[]
         };
         let mut output = self.db_xml_open(project, &object.oid, &object.element, attributes);
+        let current_tag = object
+            .path
+            .as_deref()
+            .and_then(|path| self.db_fields.get(&format!("{path}/TagName")))
+            .or_else(|| object.fields.get("TagName"))
+            .map(String::as_str)
+            .unwrap_or("");
         output.push_str(&format!(
             "<OID>{}</OID><TagName>{}</TagName><Address>{}</Address>",
             xml_escape(&object.oid),
-            xml_escape(
-                object
-                    .fields
-                    .get("TagName")
-                    .map(String::as_str)
-                    .unwrap_or("")
-            ),
+            xml_escape(current_tag),
             xml_escape(
                 object
                     .fields
@@ -4305,16 +4411,18 @@ impl Server {
                                 {
                                     if let Some(name) = child.attribute("Name") {
                                         if pp.contains(name) {
-                                            output.push_str(&format!(
-                                                "<PP Name=\"{}\" Value=\"{}\"/>",
-                                                xml_escape(name),
-                                                xml_escape(
-                                                    unit.fields
-                                                        .get(name)
-                                                        .map(String::as_str)
-                                                        .unwrap_or(""),
+                                            let source = &template[child_range.clone()];
+                                            let value = unit
+                                                .fields
+                                                .get(name)
+                                                .map(String::as_str)
+                                                .unwrap_or("");
+                                            output.push_str(
+                                                &xml_replace_opening_attribute(
+                                                    source, "Value", value,
                                                 )
-                                            ));
+                                                .unwrap_or_else(|| source.to_string()),
+                                            );
                                             seen_pp.insert(name.to_string());
                                         } else {
                                             output.push_str(&template[child_range.clone()]);
@@ -8201,6 +8309,21 @@ impl Server {
             if let Some(project) = self.current.clone() {
                 if let Some(root) = self.pending_object(&project, &oid).cloned() {
                     let mut remove = vec![oid.clone()];
+                    if let Some(path) = root.path.as_deref() {
+                        let prefix = format!("{path}/");
+                        remove.extend(
+                            self.db_pending
+                                .values()
+                                .filter(|object| {
+                                    object.project == project
+                                        && object
+                                            .path
+                                            .as_deref()
+                                            .is_some_and(|candidate| candidate.starts_with(&prefix))
+                                })
+                                .map(|object| object.oid.clone()),
+                        );
+                    }
                     let mut index = 0;
                     while index < remove.len() {
                         let parent = format!("!{}", remove[index]);
@@ -8311,6 +8434,8 @@ impl Server {
                     remove.sort();
                     remove.dedup();
                     for remove_oid in remove {
+                        self.db_xml_extras
+                            .remove(&Self::unit_document_key(&project, &remove_oid));
                         if !self.oid_used_anywhere(&remove_oid) {
                             self.known_oids.remove(&remove_oid);
                             self.objects.remove(&format!("!{remove_oid}"));
@@ -8542,6 +8667,31 @@ impl Server {
         }
         if self.unit_of(words[1]).is_some() && !self.unit_anywhere(words[1]) {
             return err(tag, status::ABSENT, "401 Unit not found");
+        }
+        // Imported Application/Group objects have both a canonical path and
+        // a stable OID. Keep their mutable TagName in the same project-scoped
+        // record whichever address form the caller used. An unscoped
+        // `!oid/TagName` db_fields alias could leak across project copies.
+        if let Some((object_address, "TagName")) = words[1].rsplit_once('/') {
+            if let Some(project) = self.current.as_deref() {
+                let key = self.db_pending.iter().find_map(|(key, object)| {
+                    (object.project == project
+                        && matches!(object.element.as_str(), "Application" | "Group")
+                        && (object.path.as_deref() == Some(object_address)
+                            || object_address == format!("!{}", object.oid)))
+                    .then(|| key.clone())
+                });
+                if let Some(key) = key {
+                    if let Some(object) = self.db_pending.get_mut(&key) {
+                        if let Some(path) = object.path.as_deref() {
+                            self.db_fields
+                                .insert(format!("{path}/TagName"), value.clone());
+                            object.fields.insert("TagName".to_string(), value);
+                            return ok(tag, vec![], "200 OK");
+                        }
+                    }
+                }
+            }
         }
         self.mirror_unit_field(words[1], &value);
         self.db_fields.insert(words[1].to_string(), value);

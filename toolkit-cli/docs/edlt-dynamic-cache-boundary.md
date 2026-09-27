@@ -56,6 +56,13 @@ or whether it persisted through a power cycle. The service capability remains
 `device_dynamic_label_cache_readback: false` and refuses a forged `complete` or
 `device_readback` observation document.
 
+The read-only `DBGETXML` saved-project `Group/TagsDLT/TagDLT` enumeration is a
+third, independent source. Its text, language, flavour and type describe the
+configured group label; they do not prove that a particular eDLT received it,
+currently displays it, or retained it after a restart. The CLI reports these
+rows in `project_group_labels`, separate from physical static strings and the
+observed SAL ring.
+
 The decision is invalidated by a different Toolkit/C-Gate artifact hash, a
 new registered native command or independently captured device-cache query,
 or a change that upgrades observed traffic to a readback claim. Reproduce the

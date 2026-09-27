@@ -547,6 +547,34 @@ not verified, they are never assigned to one of the selected devices, and they
 reset on reconnect. The report therefore keeps `observations_complete=false`
 and `device_dynamic_label_cache_readback=false`; C-Bus exposes no evidenced
 query that inventories a display's pre-existing dynamic-label cache.
+Both label-read forms also make one read-only `DBGETXML` request for the saved
+network and return `project_group_labels` at top level. These are the project
+database's Group/TagsDLT rows, including language, flavour, type and value;
+they are not attached to a physical unit or treated as displayed labels. A
+cmqttd status-200 XML reply is accepted only when `CMQTT CAPABILITIES` reports
+`saved_project_group_dlt_labels: true`; native C-Gate status-344 XML needs no
+cmqttd marker bound to the requested project. A malformed or unverified database response is a separate
+`project_group_labels_error`, leaves physical read evidence in place, and sets
+the CLI's top-level `complete=false`. The nested
+`project_snapshot_complete=true` means only that the returned saved Group
+snapshot was fully parsed. `device_label_inventory_complete=false` and
+`device_dynamic_label_cache_readback=false` retain the physical boundary.
+The network form defaults to a 300-second C-Gate command timeout because its
+fresh `NET SYNC` and sequential physical reads can exceed the ordinary
+10-second default. An explicit `cgate --timeout` value takes precedence.
+
+On a fresh import, cmqttd preserves each configured Group's TagsDLT and the
+Unit XML/PP element shape in its durable database. An existing database from
+before this feature is upgraded once on startup; subsequent database state
+remains authoritative. This also keeps PP names containing spaces as valid
+`<PP Name="…" Value="…"/>` elements in `DBGETXML` network XML. Synthetic
+state-file restart tests and an optional private project/state-copy acceptance
+test cover the migration without a physical scan. The advertised capability is
+persisted with the database:
+an older durable Group with no saved TagsDLT is left untouched and reports
+`saved_project_group_dlt_labels: false` because an intentional prior clear
+cannot be distinguished from metadata lost by the old importer.
+
 The [Toolkit 1.18 / C-Gate 3.4 source and loopback investigation](../toolkit-cli/docs/edlt-dynamic-cache-boundary.md)
 records why this release-specific native readback operation is absent; it does
 not establish a universal firmware limitation.

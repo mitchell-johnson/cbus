@@ -7,7 +7,7 @@ from unittest.mock import Mock
 import pytest
 
 from cbus_toolkit.cgate import CGateError, CGateResponse
-from cbus_toolkit.cli import build_parser
+from cbus_toolkit.cli import _cgate_timeout, build_parser
 from cbus_toolkit.cmqtt import edlt_label_inventory
 from cbus_toolkit.edlt import configuration_crc
 
@@ -19,6 +19,16 @@ def native(lines, code):
 
 def response(value):
     return CGateResponse(('200-' + json.dumps(value), '200 OK.'), '200 OK.', 200)
+
+
+def project_xml_response():
+    xml = ('<Network><Address>254</Address><Application><Address>56</Address>'
+           '<TagName>Lighting</TagName><Group><Address>27</Address>'
+           '<TagName>Sample Group</TagName><TagsDLT><TagDLT><LanguageID>1</LanguageID>'
+           '<FlavourID>1</FlavourID><TagType>TEXT</TagType>'
+           '<TagValue>Synthetic Label</TagValue></TagDLT></TagsDLT></Group>'
+           '</Application></Network>')
+    return CGateResponse(('347-' + xml, '200 OK.'), '200 OK.', 200)
 
 
 def observed():
@@ -139,6 +149,12 @@ class InventoryClient:
         if words[:2] == ['CMQTT', 'LABELS']:
             assert words[2] == '//TEST/254'
             return response(self.observations)
+        if words[:1] == ['DBGETXML']:
+            assert words[1] == '//TEST/254'
+            return project_xml_response()
+        if words[:2] == ['CMQTT', 'CAPABILITIES']:
+            return response({'service': 'cmqttd', 'project': 'TEST',
+                             'saved_project_group_dlt_labels': True})
         raise AssertionError(f'Unexpected command: {command}')
 
 
@@ -169,6 +185,11 @@ def test_network_inventory_refreshes_once_orders_units_and_observes_once():
     assert result['mmi_coverage']['agrees_with_fresh_inventory']
     assert result['mmi_coverage']['addresses'] == [5, 9, 16]
     assert client.calls.count('CMQTT LABELS //TEST/254') == 1
+    assert client.calls.count('DBGETXML //TEST/254') == 1
+    assert client.calls.count('CMQTT CAPABILITIES') == 1
+    assert result['project_group_labels_complete']
+    assert result['project_group_labels']['labels'][0]['tag_value'] == 'Synthetic Label'
+    assert result['project_group_labels']['device_readback'] is False
     assert client.calls.count('UNIT IDENTIFY //TEST/254/p/5 4') == 2
     assert client.calls.count('UNIT IDENTIFY //TEST/254/p/9 4') == 2
     assert not any(call.startswith('CMQTT LABELS //TEST/254/p/') for call in client.calls)
@@ -376,6 +397,23 @@ def test_network_inventory_rejects_absent_or_mismatched_observation_request():
         assert client.calls.count('CMQTT LABELS //TEST/254') == 1
 
 
+def test_transport_failure_during_observation_does_not_reuse_closed_session():
+    class ClosingClient(InventoryClient):
+        def command(self, command):
+            if command == 'CMQTT LABELS //TEST/254':
+                self.calls.append(command)
+                raise RuntimeError('C-Gate operation timed out; connection closed')
+            return super().command(command)
+
+    client = ClosingClient({5: ('KEYGL5', '5.5.00', '100.5')},
+                           images={5: labelled('Five')})
+    result = edlt_label_inventory(client, '//TEST/254')
+    assert not result['complete']
+    assert result['project_group_labels'] is None
+    assert result['project_group_labels_error']['type'] == 'NotAttempted'
+    assert not any(command.startswith('DBGETXML ') for command in client.calls)
+
+
 @pytest.mark.parametrize('network', [
     '//TEST/254/p/5', '//TEST/256', '//BAD-NAME/254', '//TOO_LONG9/254',
     '//BAD NAME/254', 'TEST/254',
@@ -393,6 +431,10 @@ def test_cli_keeps_unit_form_and_adds_explicit_network_form():
     assert unit.address == '//TEST/254/p/5' and unit.network is None
     network = parser.parse_args(['cgate', 'edlt-labels', '--network', '//TEST/254'])
     assert network.address is None and network.network == '//TEST/254'
+    assert _cgate_timeout(network) == 300.0
+    assert _cgate_timeout(unit) == 10.0
+    explicit = parser.parse_args(['cgate', '--timeout', '15', 'edlt-labels', '--network', '//TEST/254'])
+    assert _cgate_timeout(explicit) == 15.0
     with pytest.raises(SystemExit):
         parser.parse_args(['cgate', 'edlt-labels'])
     with pytest.raises(SystemExit):

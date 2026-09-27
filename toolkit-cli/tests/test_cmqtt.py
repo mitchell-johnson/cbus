@@ -33,6 +33,16 @@ def response(value):
     return CGateResponse(('200-'+json.dumps(value),'200 OK'),'200 OK',200)
 
 
+def project_xml_response():
+    xml = ('<Network><Address>254</Address><Application><Address>56</Address>'
+           '<TagName>Lighting</TagName><Group><Address>27</Address>'
+           '<TagName>Sample Group</TagName><TagsDLT><TagDLT><LanguageID>1</LanguageID>'
+           '<FlavourID>1</FlavourID><TagType>TEXT</TagType>'
+           '<TagValue>Synthetic Label</TagValue></TagDLT></TagsDLT></Group>'
+           '</Application></Network>')
+    return CGateResponse(('347-'+xml,'200 OK.'),'200 OK.',200)
+
+
 def observed(*payloads):
     return {'format': 'cmqttd-observed-dynamic-labels-v1', 'source': 'observed-sal-traffic',
             'complete': False, 'device_readback': False, 'reset_on_reconnect': True,
@@ -163,6 +173,10 @@ def test_reads_via_cgate_only_and_checks_live_identity_and_stability():
     client = Mock(); image = memory(); address='//TEST/254/p/5'; calls=[]
     def command(text):
         calls.append(text); words=text.split()
+        if words[0] == 'DBGETXML': return project_xml_response()
+        if words[:2] == ['CMQTT','CAPABILITIES']:
+            return response({'service':'cmqttd','project':'TEST',
+                             'saved_project_group_dlt_labels':True})
         if words[:2] == ['CMQTT','UNIT']: return response({'name':'Fixture'})
         if words[:2] == ['CMQTT','LABELS']:
             value = observed()
@@ -178,8 +192,12 @@ def test_reads_via_cgate_only_and_checks_live_identity_and_stability():
     result=edlt_labels(client,address)
     assert result['source']=='physical-via-cmqttd'
     assert result['widgets'][1]['label']=='Goodnight'
-    assert calls[-2]==f'UNIT READMEM {address} 0 16'
-    assert calls[-1]==f'CMQTT LABELS {address}'
+    assert calls[-4]==f'UNIT READMEM {address} 0 16'
+    assert calls[-3]==f'CMQTT LABELS {address}'
+    assert calls[-2]=='DBGETXML //TEST/254'
+    assert calls[-1]=='CMQTT CAPABILITIES'
+    assert result['project_group_labels_complete']
+    assert result['project_group_labels']['labels'][0]['tag_value']=='Synthetic Label'
     assert not result['dynamic_labels_observed']
     assert not result['observed_dynamic_labels']['complete']
     assert result['observed_dynamic_labels']['observation_scope'] == 'network'

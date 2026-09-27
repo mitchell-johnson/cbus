@@ -37,12 +37,14 @@ def test_cgate_timeout_selection_reaches_the_connection(argv, expected):
     assert args.cgate_timeout_explicit is ('--timeout' in argv)
     with patch('cbus_toolkit.cgate.CGateClient', return_value=Connection()) as client, \
             patch('cbus_toolkit.cmqtt.edlt_label_inventory', return_value={'complete': True}), \
-            patch('cbus_toolkit.cmqtt.edlt_labels', return_value={}), \
+            patch('cbus_toolkit.cmqtt.edlt_labels', return_value={'complete': True}), \
             patch('cbus_toolkit.edlt_label_audit.capture_label_audit',
                   return_value={'accepted': True}):
         _, status = run(args)
     assert status == 0
     assert client.call_args.kwargs['timeout'] == expected
+    if args.action == 'edlt-labels':
+        assert client.call_args.kwargs['max_line_bytes'] > 4 * 1024 * 1024
     assert args.timeout == (expected if '--timeout' in argv else 10.0)
 
 

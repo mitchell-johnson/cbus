@@ -2,6 +2,661 @@ use super::*;
 use base64::Engine as _;
 use tokio::io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader};
 
+#[test]
+fn imported_project_dlt_metadata_and_spaced_pp_names_survive_dbgetxml_and_upgrade() {
+    let xml = r#"<Installation><Project><TagName>SYNTH</TagName>
+      <Network><TagName>Local</TagName><Address>254</Address>
+        <Interface><InterfaceType>CNI</InterfaceType><InterfaceAddress>127.0.0.1:10001</InterfaceAddress></Interface>
+        <Application><TagName>Lighting</TagName><Address>56</Address>
+          <Group><TagName>Sample Group</TagName><Address>27</Address>
+            <TagsDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>1</FlavourID>
+              <TagType>TEXT</TagType><TagValue>Synthetic Label</TagValue></TagDLT></TagsDLT>
+          </Group>
+        </Application>
+        <Unit><TagName>Sample eDLT</TagName><Address>5</Address><UnitType>KEYGL5</UnitType>
+          <FirmwareVersion>5.5.00</FirmwareVersion><SerialNumber>100.5</SerialNumber>
+          <PP Name="EEPROM Checksum" Value="0x0"/>
+        </Unit>
+      </Network>
+    </Project></Installation>"#;
+    let (mut model, project, _) = import_project(xml, None).unwrap();
+    seed_project_xml_metadata(&mut model, xml, &project).unwrap();
+    let reply = model.handle("[xml] DBGETXML //SYNTH/254");
+    assert_eq!(reply.status, 200);
+    let document = reply.lines[0].strip_prefix("347-").unwrap();
+    let parsed = roxmltree::Document::parse(document).unwrap();
+    let label = parsed
+        .descendants()
+        .find(|node| node.has_tag_name("TagValue"))
+        .unwrap();
+    assert_eq!(label.text(), Some("Synthetic Label"));
+    let pp = parsed
+        .descendants()
+        .find(|node| node.has_tag_name("PP"))
+        .unwrap();
+    assert_eq!(pp.attribute("Name"), Some("EEPROM Checksum"));
+    assert_eq!(
+        parsed
+            .descendants()
+            .filter(|node| node.has_tag_name("Group"))
+            .count(),
+        1
+    );
+    assert_eq!(
+        model
+            .handle("[rename] DBSETSAFE //SYNTH/254/56/27/TagName Updated")
+            .status,
+        200
+    );
+    let renamed = model.handle("[renamed] DBGETXML //SYNTH/254/56/27");
+    let parsed =
+        roxmltree::Document::parse(renamed.lines[0].strip_prefix("347-").unwrap()).unwrap();
+    assert_eq!(
+        parsed
+            .root_element()
+            .children()
+            .find(|node| node.has_tag_name("TagName"))
+            .and_then(|node| node.text()),
+        Some("Updated")
+    );
+    let imported_group_oid = model
+        .db_pending
+        .values()
+        .find(|object| object.path.as_deref() == Some("//SYNTH/254/56/27"))
+        .unwrap()
+        .oid
+        .clone();
+    let by_oid = model.handle(&format!("[oid] DBGET !{imported_group_oid}/TagName"));
+    assert_eq!(
+        by_oid.final_text,
+        format!("342 !{imported_group_oid}/TagName=Updated")
+    );
+    assert_eq!(
+        model
+            .handle(&format!(
+                "[rename-oid] DBSETSAFE !{imported_group_oid}/TagName OID Updated"
+            ))
+            .status,
+        200
+    );
+    let by_path = model.handle("[path] DBGETXML //SYNTH/254/56/27");
+    let parsed =
+        roxmltree::Document::parse(by_path.lines[0].strip_prefix("347-").unwrap()).unwrap();
+    assert_eq!(
+        parsed
+            .root_element()
+            .children()
+            .find(|node| node.has_tag_name("TagName"))
+            .and_then(|node| node.text()),
+        Some("OID Updated")
+    );
+
+    let durable = Database::from_server(&model);
+    let mut legacy = serde_json::to_value(&durable).unwrap();
+    let object = legacy.as_object_mut().unwrap();
+    object.remove("imported_project_metadata");
+    object.remove("unit_documents");
+    object.remove("unit_pp_fields");
+    object.remove("db_xml_extras");
+    object.remove("db_pending");
+    let legacy: Database = serde_json::from_value(legacy).unwrap();
+    assert!(!legacy.imported_project_metadata);
+    let (mut upgraded, project, _) = import_project(xml, None).unwrap();
+    legacy.restore(&mut upgraded).unwrap();
+    seed_project_xml_metadata(&mut upgraded, xml, &project).unwrap();
+    let upgraded_reply = upgraded.handle("[upgraded] DBGETXML //SYNTH/254");
+    assert_eq!(upgraded_reply.status, 200);
+    let upgraded_document = upgraded_reply.lines[0].strip_prefix("347-").unwrap();
+    let parsed = roxmltree::Document::parse(upgraded_document).unwrap();
+    assert_eq!(
+        parsed
+            .descendants()
+            .filter(|node| node.has_tag_name("TagDLT"))
+            .count(),
+        1
+    );
+    assert_eq!(
+        parsed
+            .descendants()
+            .filter(|node| node.has_tag_name("PP"))
+            .count(),
+        1
+    );
+    seed_project_xml_metadata(&mut upgraded, xml, &project).unwrap();
+    let repeated = upgraded.handle("[again] DBGETXML //SYNTH/254");
+    let parsed =
+        roxmltree::Document::parse(repeated.lines[0].strip_prefix("347-").unwrap()).unwrap();
+    assert_eq!(
+        parsed
+            .descendants()
+            .filter(|node| node.has_tag_name("TagDLT"))
+            .count(),
+        1
+    );
+
+    let group_oid = upgraded
+        .db_pending
+        .values()
+        .find(|object| object.path.as_deref() == Some("//SYNTH/254/56/27"))
+        .unwrap()
+        .oid
+        .clone();
+    let key = Server::unit_document_key("SYNTH", &group_oid);
+    upgraded.db_xml_extras.get_mut(&key).unwrap().children = vec![
+        "<TagsDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Durable Edit</TagValue></TagDLT></TagsDLT>".to_string(),
+    ];
+    seed_project_xml_metadata(&mut upgraded, xml, &project).unwrap();
+    let edited = upgraded.handle("[edited] DBGETXML //SYNTH/254");
+    let parsed = roxmltree::Document::parse(edited.lines[0].strip_prefix("347-").unwrap()).unwrap();
+    let values = parsed
+        .descendants()
+        .filter(|node| node.has_tag_name("TagValue"))
+        .filter_map(|node| node.text())
+        .collect::<Vec<_>>();
+    assert_eq!(values, ["Durable Edit"]);
+}
+
+#[test]
+fn imported_tagsdlt_materializes_inherited_namespace_prefix() {
+    let xml = r#"<Installation><Project><TagName>SYNTH</TagName><Network xmlns:v="urn:example">
+      <TagName>Local</TagName><Address>254</Address>
+      <Application><TagName>Lighting</TagName><Address>56</Address>
+        <Group><TagName>Sample</TagName><Address>27</Address>
+          <TagsDLT><v:Note>opaque</v:Note><TagDLT><LanguageID>1</LanguageID>
+            <FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Safe</TagValue>
+          </TagDLT></TagsDLT>
+        </Group>
+      </Application>
+    </Network></Project></Installation>"#;
+    let (mut model, project, _) = import_project(xml, None).unwrap();
+    seed_project_xml_metadata(&mut model, xml, &project).unwrap();
+    let reply = model.handle("[xml] DBGETXML //SYNTH/254");
+    let parsed = roxmltree::Document::parse(reply.lines[0].strip_prefix("347-").unwrap()).unwrap();
+    assert_eq!(
+        parsed
+            .descendants()
+            .filter(|node| node.has_tag_name("TagDLT"))
+            .count(),
+        1
+    );
+    let note = parsed
+        .descendants()
+        .find(|node| node.has_tag_name("Note"))
+        .unwrap();
+    assert_eq!(note.tag_name().namespace(), Some("urn:example"));
+}
+
+#[test]
+fn imported_tagsdlt_with_default_namespace_fails_closed() {
+    let xml = r#"<Installation><Project><TagName>SYNTH</TagName><Network>
+      <TagName>Local</TagName><Address>254</Address>
+      <Application><TagName>Lighting</TagName><Address>56</Address>
+        <Group><TagName>Sample</TagName><Address>27</Address>
+          <TagsDLT xmlns="urn:unexpected"><TagDLT><TagValue>Opaque</TagValue></TagDLT></TagsDLT>
+        </Group>
+      </Application>
+    </Network></Project></Installation>"#;
+    let (mut model, project, _) = import_project(xml, None).unwrap();
+    let error = seed_project_xml_metadata(&mut model, xml, &project).unwrap_err();
+    assert!(error.to_string().contains("default namespace"));
+}
+
+#[test]
+fn empty_tagsdlt_with_inherited_prefix_remains_well_formed() {
+    let xml = r#"<Installation><Project><TagName>SYNTH</TagName>
+      <Network xmlns:v="urn:example"><TagName>Local</TagName><Address>254</Address>
+        <Application><TagName>Lighting</TagName><Address>56</Address>
+          <Group><TagName>Sample</TagName><Address>27</Address><TagsDLT/></Group>
+        </Application>
+      </Network>
+    </Project></Installation>"#;
+    let (mut model, project, _) = import_project(xml, None).unwrap();
+    seed_project_xml_metadata(&mut model, xml, &project).unwrap();
+    let reply = model.handle("[xml] DBGETXML //SYNTH/254");
+    let parsed = roxmltree::Document::parse(reply.lines[0].strip_prefix("347-").unwrap()).unwrap();
+    assert_eq!(
+        parsed
+            .descendants()
+            .filter(|node| node.has_tag_name("TagsDLT"))
+            .count(),
+        1
+    );
+}
+
+#[test]
+fn local_namespace_declaration_with_spaces_is_not_duplicated() {
+    let xml = r#"<Installation><Project><TagName>SYNTH</TagName>
+      <Network xmlns:v="urn:example"><TagName>Local</TagName><Address>254</Address>
+        <Application><TagName>Lighting</TagName><Address>56</Address>
+          <Group><TagName>Sample</TagName><Address>27</Address>
+            <TagsDLT xmlns:v = "urn:example"><v:Note>kept</v:Note>
+              <TagDLT><LanguageID>1</LanguageID><FlavourID>1</FlavourID>
+                <TagType>TEXT</TagType><TagValue>Safe</TagValue></TagDLT>
+            </TagsDLT>
+          </Group>
+        </Application>
+      </Network>
+    </Project></Installation>"#;
+    let (mut model, project, _) = import_project(xml, None).unwrap();
+    seed_project_xml_metadata(&mut model, xml, &project).unwrap();
+    let reply = model.handle("[xml] DBGETXML //SYNTH/254");
+    assert_eq!(reply.status, 200);
+    let detached = reply.lines[0].strip_prefix("347-").unwrap();
+    let parsed = roxmltree::Document::parse(detached).unwrap();
+    assert_eq!(
+        parsed
+            .descendants()
+            .filter(|node| node.has_tag_name("TagDLT"))
+            .count(),
+        1
+    );
+    assert!(!detached.contains("xmlns:v=\"urn:example\" xmlns:v"));
+}
+
+#[tokio::test]
+async fn imported_unit_inherited_namespace_and_pp_extensions_survive_restart() {
+    let xml = r#"<Installation><Project><TagName>SYNTH</TagName>
+      <Network xmlns:v="urn:example"><TagName>Local</TagName><Address>254</Address>
+        <Unit v:flag="kept"><TagName>Sample eDLT</TagName><Address>5</Address>
+          <UnitType>KEYGL5</UnitType><FirmwareVersion>5.5.00</FirmwareVersion>
+          <PP Name="EEPROM Checksum" Value="0x0" v:mark="yes"><v:Extra>nested</v:Extra></PP>
+          <v:Opaque>preserved</v:Opaque>
+        </Unit>
+      </Network>
+    </Project></Installation>"#;
+    let path = state_path();
+    let (pci, _remote) = pci();
+    for _ in 0..2 {
+        let service = Service::new(xml, None, path.clone(), pci.clone(), None).unwrap();
+        let response = service
+            .handle(&mut ClientState::default(), "[xml] DBGETXML //SYNTH/254")
+            .await;
+        assert_eq!(response.status, 200);
+        let parsed =
+            roxmltree::Document::parse(response.lines[0].strip_prefix("347-").unwrap()).unwrap();
+        let unit = parsed
+            .descendants()
+            .find(|node| node.has_tag_name("Unit"))
+            .unwrap();
+        assert_eq!(unit.attribute(("urn:example", "flag")), Some("kept"));
+        let pp = unit
+            .children()
+            .find(|node| node.has_tag_name("PP"))
+            .unwrap();
+        assert_eq!(pp.attribute("Name"), Some("EEPROM Checksum"));
+        assert_eq!(pp.attribute(("urn:example", "mark")), Some("yes"));
+        assert_eq!(
+            pp.children()
+                .find(|node| node.has_tag_name("Extra"))
+                .and_then(|node| node.text()),
+            Some("nested")
+        );
+        assert_eq!(
+            unit.children()
+                .find(|node| node.has_tag_name("Opaque"))
+                .and_then(|node| node.text()),
+            Some("preserved")
+        );
+    }
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn ambiguous_legacy_group_keeps_edits_and_disables_saved_label_capability() {
+    let xml = r#"<Installation><Project><TagName>SYNTH</TagName><Network>
+      <TagName>Local</TagName><Address>254</Address>
+      <Application><TagName>Lighting</TagName><Address>56</Address>
+        <Group><TagName>Source Group</TagName><Address>27</Address><TagsDLT><TagDLT>
+          <LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType>
+          <TagValue>Source Label</TagValue></TagDLT></TagsDLT></Group>
+      </Application>
+    </Network></Project></Installation>"#;
+    let path = state_path();
+    let (mut legacy_model, project, _) = import_project(xml, None).unwrap();
+    let group_path = "//SYNTH/254/56/27";
+    seed_imported_object(
+        &mut legacy_model,
+        &project,
+        "//SYNTH/254/56",
+        group_path,
+        "Group",
+        27,
+    )
+    .unwrap();
+    legacy_model.db_fields.insert(
+        format!("{group_path}/TagName"),
+        "Durable Rename".to_string(),
+    );
+    let mut legacy = serde_json::to_value(Database::from_server(&legacy_model)).unwrap();
+    let fields = legacy.as_object_mut().unwrap();
+    fields.remove("imported_project_metadata");
+    fields.remove("saved_project_group_dlt_labels_complete");
+    std::fs::write(&path, serde_json::to_vec(&legacy).unwrap()).unwrap();
+    let (pci, _remote) = pci();
+    let mut saved_bytes = None;
+    for _ in 0..2 {
+        let service = Service::new(xml, None, path.clone(), pci.clone(), None).unwrap();
+        let mut client = ClientState::default();
+        let capabilities = service
+            .handle(&mut client, "[caps] CMQTT CAPABILITIES")
+            .await;
+        assert_eq!(capabilities.status, 200);
+        let capabilities: serde_json::Value = serde_json::from_str(&capabilities.lines[0]).unwrap();
+        assert_eq!(capabilities["saved_project_group_dlt_labels"], false);
+        let xml_reply = service
+            .handle(&mut client, "[xml] DBGETXML //SYNTH/254")
+            .await;
+        assert_eq!(xml_reply.status, 200);
+        let parsed =
+            roxmltree::Document::parse(xml_reply.lines[0].strip_prefix("347-").unwrap()).unwrap();
+        assert_eq!(
+            parsed
+                .descendants()
+                .filter(|node| node.has_tag_name("TagDLT"))
+                .count(),
+            0
+        );
+        assert!(xml_reply.lines[0].contains("Durable Rename"));
+        assert_eq!(
+            service.handle(&mut client, "[ver] APIVER").await.status,
+            138
+        );
+        let current = std::fs::read(&path).unwrap();
+        let stored: Database = serde_json::from_slice(&current).unwrap();
+        assert!(stored.imported_project_metadata);
+        assert!(!stored.saved_project_group_dlt_labels_complete);
+        if let Some(previous) = saved_bytes.replace(current.clone()) {
+            assert_eq!(current, previous);
+        }
+    }
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn deleting_imported_application_removes_descendant_dlt_without_touching_copy() {
+    let xml = r#"<Installation><Project><TagName>SYNTH</TagName><Network>
+      <TagName>Local</TagName><Address>254</Address>
+      <Application><TagName>Lighting</TagName><Address>56</Address>
+        <Group><TagName>Original</TagName><Address>27</Address><TagsDLT><TagDLT>
+          <LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType>
+          <TagValue>Saved Tag</TagValue></TagDLT></TagsDLT></Group>
+      </Application>
+    </Network></Project></Installation>"#;
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(xml, None, path.clone(), pci.clone(), None).unwrap();
+    let group_oid = service
+        .model
+        .lock()
+        .await
+        .db_pending
+        .values()
+        .find(|object| object.path.as_deref() == Some("//SYNTH/254/56/27"))
+        .unwrap()
+        .oid
+        .clone();
+    let mut client = ClientState::default();
+    assert_eq!(
+        service
+            .handle(&mut client, "[copy] PROJECT COPY SYNTH COPY")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[use] PROJECT USE SYNTH")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[delete] DBDELETE //SYNTH/254/56")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, &format!("[stale] DBGETXML !{group_oid}"))
+            .await
+            .status,
+        401
+    );
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[recreate] DBADDSAFE //SYNTH/254 Application 56 Replacement"
+            )
+            .await
+            .status,
+        200
+    );
+    let after_recreate = service
+        .handle(&mut client, "[no-tag] DBGETXML //SYNTH/254")
+        .await;
+    let parsed =
+        roxmltree::Document::parse(after_recreate.lines[0].strip_prefix("347-").unwrap()).unwrap();
+    assert_eq!(
+        parsed
+            .descendants()
+            .filter(|node| node.has_tag_name("TagDLT"))
+            .count(),
+        0
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[use] PROJECT USE COPY")
+            .await
+            .status,
+        200
+    );
+    let copy = service
+        .handle(&mut client, "[copy-xml] DBGETXML //COPY/254")
+        .await;
+    let parsed = roxmltree::Document::parse(copy.lines[0].strip_prefix("347-").unwrap()).unwrap();
+    assert_eq!(
+        parsed
+            .descendants()
+            .filter(|node| node.has_tag_name("TagDLT"))
+            .count(),
+        1
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, &format!("[copy-oid] DBGETXML !{group_oid}"))
+            .await
+            .status,
+        200
+    );
+    let saved = std::fs::read(&path).unwrap();
+    drop(service);
+
+    let restarted = Service::new(xml, None, path.clone(), pci, None).unwrap();
+    assert_eq!(
+        restarted
+            .handle(&mut client, "[use] PROJECT USE SYNTH")
+            .await
+            .status,
+        200
+    );
+    let source = restarted
+        .handle(&mut client, "[source] DBGETXML //SYNTH/254")
+        .await;
+    let parsed = roxmltree::Document::parse(source.lines[0].strip_prefix("347-").unwrap()).unwrap();
+    assert_eq!(
+        parsed
+            .descendants()
+            .filter(|node| node.has_tag_name("TagDLT"))
+            .count(),
+        0
+    );
+    assert_eq!(
+        restarted
+            .handle(&mut client, "[use] PROJECT USE COPY")
+            .await
+            .status,
+        200
+    );
+    let copy = restarted
+        .handle(&mut client, "[copy] DBGETXML //COPY/254")
+        .await;
+    let parsed = roxmltree::Document::parse(copy.lines[0].strip_prefix("347-").unwrap()).unwrap();
+    assert_eq!(
+        parsed
+            .descendants()
+            .filter(|node| node.has_tag_name("TagDLT"))
+            .count(),
+        1
+    );
+    let before: serde_json::Value = serde_json::from_slice(&saved).unwrap();
+    let after: serde_json::Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+    for field in ["db_pending", "db_xml_extras", "db_fields"] {
+        assert_eq!(after[field], before[field], "{field} changed after restart");
+    }
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn legacy_state_file_upgrades_once_and_restart_keeps_project_dlt_xml() {
+    let xml = r#"<Installation><Project><TagName>SYNTH</TagName><Network>
+      <TagName>Local</TagName><Address>254</Address>
+      <Application><TagName>Lighting</TagName><Address>56</Address>
+        <Group><TagName>Sample</TagName><Address>27</Address><TagsDLT><TagDLT>
+          <LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType>
+          <TagValue>Saved Tag</TagValue></TagDLT></TagsDLT></Group></Application>
+      <Unit><Address>5</Address><TagName>Sample eDLT</TagName><UnitType>KEYGL5</UnitType>
+        <FirmwareVersion>5.5.00</FirmwareVersion><PP Name="EEPROM Checksum" Value="0x0"/>
+      </Unit>
+    </Network></Project></Installation>"#;
+    let path = state_path();
+    let (legacy_model, _, _) = import_project(xml, None).unwrap();
+    let mut legacy = serde_json::to_value(Database::from_server(&legacy_model)).unwrap();
+    legacy
+        .as_object_mut()
+        .unwrap()
+        .remove("imported_project_metadata");
+    std::fs::write(&path, serde_json::to_vec(&legacy).unwrap()).unwrap();
+
+    let (pci, _remote) = pci();
+    let service = Service::new(xml, None, path.clone(), pci.clone(), None).unwrap();
+    let mut client = ClientState::default();
+    let response = service
+        .handle(&mut client, "[first] DBGETXML //SYNTH/254")
+        .await;
+    let first_xml = response.lines[0].strip_prefix("347-").unwrap();
+    let parsed = roxmltree::Document::parse(first_xml).unwrap();
+    assert_eq!(
+        parsed
+            .descendants()
+            .filter(|node| node.has_tag_name("TagDLT"))
+            .count(),
+        1
+    );
+    assert_eq!(
+        parsed
+            .descendants()
+            .filter(|node| node.has_tag_name("PP"))
+            .count(),
+        1
+    );
+    let first_saved = std::fs::read(&path).unwrap();
+    let saved: Database = serde_json::from_slice(&first_saved).unwrap();
+    assert!(saved.imported_project_metadata);
+    drop(service);
+
+    let restarted = Service::new(xml, None, path.clone(), pci, None).unwrap();
+    let response = restarted
+        .handle(&mut client, "[again] DBGETXML //SYNTH/254")
+        .await;
+    let restarted_xml = response.lines[0].strip_prefix("347-").unwrap();
+    let parsed = roxmltree::Document::parse(restarted_xml).unwrap();
+    assert_eq!(
+        parsed
+            .descendants()
+            .filter(|node| node.has_tag_name("TagDLT"))
+            .count(),
+        1
+    );
+    assert_eq!(
+        parsed
+            .descendants()
+            .filter(|node| node.has_tag_name("PP"))
+            .count(),
+        1
+    );
+    assert_eq!(std::fs::read(&path).unwrap(), first_saved);
+    std::fs::remove_file(path).unwrap();
+}
+
+/// Private acceptance is opt-in and uses caller-owned inputs only. It writes a
+/// temporary copy of the durable state, never the supplied source file.
+#[tokio::test]
+#[ignore = "requires CBUS_PRIVATE_PROJECT_XML and CBUS_PRIVATE_CGATE_STATE"]
+async fn private_existing_database_project_dlt_upgrade() {
+    let xml = std::fs::read_to_string(std::env::var("CBUS_PRIVATE_PROJECT_XML").unwrap()).unwrap();
+    let old_state = std::fs::read(std::env::var("CBUS_PRIVATE_CGATE_STATE").unwrap()).unwrap();
+    let source = roxmltree::Document::parse(&xml).unwrap();
+    let project = source
+        .descendants()
+        .find(|node| node.has_tag_name("Project"))
+        .unwrap();
+    let name = project
+        .children()
+        .find(|node| node.has_tag_name("TagName"))
+        .and_then(|node| node.text())
+        .unwrap();
+    let selected_network = project
+        .children()
+        .find(|node| node.has_tag_name("Network"))
+        .unwrap();
+    let network_address = selected_network
+        .children()
+        .find(|node| node.has_tag_name("Address"))
+        .and_then(|node| node.text())
+        .unwrap();
+    let expected_labels = selected_network
+        .descendants()
+        .filter(|node| node.has_tag_name("TagDLT"))
+        .count();
+    let path = state_path();
+    std::fs::write(&path, old_state).unwrap();
+    let (pci, _remote) = pci();
+    let service = Service::new(&xml, None, path.clone(), pci.clone(), None).unwrap();
+    let command = format!("[private] DBGETXML //{name}/{network_address}");
+    let mut client = ClientState::default();
+    let reply = service.handle(&mut client, &command).await;
+    assert_eq!(reply.status, 200);
+    let parsed = roxmltree::Document::parse(reply.lines[0].strip_prefix("347-").unwrap()).unwrap();
+    let actual_labels = parsed
+        .descendants()
+        .filter(|node| node.has_tag_name("TagDLT"))
+        .count();
+    assert_eq!(actual_labels, expected_labels);
+    let upgraded_state = std::fs::read(&path).unwrap();
+    let stored: Database = serde_json::from_slice(&upgraded_state).unwrap();
+    assert!(stored.imported_project_metadata);
+    assert!(stored.saved_project_group_dlt_labels_complete);
+    if let Ok(output_path) = std::env::var("CBUS_PRIVATE_MIGRATED_STATE") {
+        std::fs::write(output_path, &upgraded_state).unwrap();
+    }
+    drop(service);
+    let restarted = Service::new(&xml, None, path.clone(), pci, None).unwrap();
+    let reply = restarted.handle(&mut client, &command).await;
+    let parsed = roxmltree::Document::parse(reply.lines[0].strip_prefix("347-").unwrap()).unwrap();
+    assert_eq!(
+        parsed
+            .descendants()
+            .filter(|node| node.has_tag_name("TagDLT"))
+            .count(),
+        expected_labels
+    );
+    assert_eq!(std::fs::read(&path).unwrap(), upgraded_state);
+    std::fs::remove_file(path).unwrap();
+}
+
 fn fixture() -> String {
     include_str!("../../../testdata/fixtures/project.xml").replace("</Network>",
         "<Unit oid=\"00000000-0000-0000-0000-00000000000c\"><Address>5</Address><TagName>Fixture eDLT</TagName><UnitType>KEYGL5</UnitType><FirmwareVersion>5.5.00</FirmwareVersion><PP Name=\"StaticTextString0\" Value=\"Fixture\"/></Unit></Network>")
