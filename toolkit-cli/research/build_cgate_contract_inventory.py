@@ -21,7 +21,11 @@ REPOSITORY = ROOT.parent
 MATRIX_PATH = REPOSITORY / "rust" / "cbus-cgate" / "src" / "capability_matrix.rs"
 MANUAL_PATH = REPOSITORY / "rust" / "cbus-cgate" / "src" / "manual.rs"
 SERVICE_PATH = REPOSITORY / "rust" / "cbus-cgate" / "src" / "service.rs"
+EVENT_MODE_PATH = REPOSITORY / "rust" / "cbus-cgate" / "src" / "lib.rs"
 SURFACE_PATH = ROOT / "docs" / "toolkit-surface.json"
+NATIVE_SESSION_PATH = (
+    ROOT / "research" / "experiments" / "2026-09-25" / "cgate-session-native-acceptance.json"
+)
 OUTPUT_PATH = ROOT / "src" / "cbus_toolkit" / "cgate-contract-inventory.json"
 
 AXIS_SUBAXES = {
@@ -47,6 +51,18 @@ SUPPLEMENT_REF = "rust/cbus-cgate/src/capability_matrix.rs#SUPPLEMENT_ROUTING"
 MANUAL_REF = "rust/cbus-cgate/src/manual.rs#APPLICATION_COMMANDS+MEDIA_COMMANDS"
 SERVICE_AUTH_REF = "rust/cbus-cgate/src/service.rs#requires_programming_auth"
 SERVICE_SESSION_REF = "rust/cbus-cgate/src/service.rs#Service::handle"
+EVENT_MODE_REF = "rust/cbus-cgate/src/lib.rs#EventMode::parse"
+NATIVE_SESSION_REF = (
+    "toolkit-cli/research/experiments/2026-09-25/"
+    "cgate-session-native-acceptance.json"
+)
+NATIVE_CGATE_JAR_SHA256 = (
+    "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+)
+NATIVE_SESSION_EVIDENCE_SHA256 = (
+    "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f"
+)
+SESSION_PATHS = {"SESSION_ID", "SESSION_ID ALL", "SESSION_ID TAG", "EVENT", "QUIT"}
 TELEPHONY_PROGRAM_PATHS = {
     "TELEPHONY CLEAR_DIVERSION",
     "TELEPHONY DIVERT",
@@ -415,6 +431,254 @@ def axis(subaxes: dict[str, dict]) -> dict:
     return {"status": status, "subaxes": subaxes}
 
 
+def validate_native_session_observations() -> None:
+    """Reject a missing or weakened native trace before promoting session facts."""
+    report = json.loads(NATIVE_SESSION_PATH.read_text(encoding="utf-8"))
+    if (
+        report.get("format") != "cbus-cgate-session-native-acceptance-v1"
+        or report.get("passed") is not True
+        or report.get("vendor_jar_sha256") != NATIVE_CGATE_JAR_SHA256
+        or report.get("cleanup", {}).get("cleanup_complete") is not True
+        or report.get("environment", {}).get("physical_networks_opened") is not False
+    ):
+        raise ValueError("Native C-Gate session acceptance trace is not admissible")
+    actual = {(row["command"], row["status"]) for row in report["cases"]}
+    required = {
+        ("SESSION_ID", 300),
+        ("SESSION_ID bogus", 400),
+        ("SESSION_ID ALL", 300),
+        ("SESSION_ID ALL ignored-by-native", 300),
+        ("SESSION_ID TAG C-Bus   Toolkit test", 200),
+        ("SESSION_ID TAG replacement", 408),
+        ("SESSION_ID TAG", 400),
+        ("EVENT", 306),
+        ("EVENTS", 306),
+        ("EVENTS ON", 200),
+        ("EVENT OFF", 200),
+        ("EVENT e5s1c1", 200),
+    }
+    closes = {
+        row["command"]
+        for row in report["connection_close_cases"]
+        if row.get("eof_after_reply") is True
+        and row.get("reply", "").endswith("204 Closing connection.")
+    }
+    if not required <= actual or closes != {"QUIT", "EXIT"}:
+        raise ValueError("Native C-Gate session acceptance cases changed")
+    stable_replies = {
+        "SESSION_ID bogus": ["400 Syntax Error."],
+        "SESSION_ID TAG C-Bus   Toolkit test": ["200 OK."],
+        "SESSION_ID TAG replacement": [
+            "408 Operation failed: tag name has already been set"
+        ],
+        "SESSION_ID TAG": ["400 Syntax Error: tag name not supplied"],
+        "EVENTS ON": ["200 OK."],
+        "EVENT OFF": ["200 OK."],
+        "EVENT e5s1c1": ["200 OK."],
+    }
+    if any(
+        row["reply"] != stable_replies[row["command"]]
+        for row in report["cases"]
+        if row["command"] in stable_replies
+    ):
+        raise ValueError("Native C-Gate session response evidence changed")
+    if not all(
+        len(row["reply"]) == 1
+        and re.fullmatch(r"300 sessionID=cmd[0-9]+", row["reply"][0])
+        for row in report["cases"]
+        if row["command"] == "SESSION_ID"
+    ):
+        raise ValueError("Native C-Gate session ID response evidence changed")
+    session_all_lines = [
+        line
+        for row in report["cases"]
+        if row["command"] == "SESSION_ID ALL"
+        for line in row["reply"]
+    ]
+    if not any(" origin=internal " in line for line in session_all_lines):
+        raise ValueError("Native C-Gate internal command session evidence changed")
+    if not any(
+        row["reply"] == ["306 e0s0c0"]
+        for row in report["cases"]
+        if row["command"] in {"EVENT", "EVENTS"}
+    ):
+        raise ValueError("Native C-Gate initial event mode evidence changed")
+    if report.get("observations") != {
+        "external_session_ids_are_odd_cmd_numbers": True,
+        "session_all_reports_origin_connection_time_and_optional_tag": True,
+        "session_tag_is_one_shot": True,
+        "session_all_ignores_trailing_words": True,
+        "event_default": "e0s0c0",
+        "events_alias_supported": True,
+        "quit_and_exit_flush_204_then_close": True,
+    }:
+        raise ValueError("Native C-Gate session observations changed")
+    if digest(NATIVE_SESSION_PATH) != NATIVE_SESSION_EVIDENCE_SHA256:
+        raise ValueError("Native C-Gate session acceptance source changed")
+
+
+def apply_native_session_contract(path: str, axes: dict[str, dict]) -> None:
+    """Expand only five command-session paths observed against original C-Gate.
+
+    These are endpoint contracts, not functional acceptance or independent
+    ACCESS-role findings. Uncaptured native error/event variants stay open.
+    """
+    if path not in SESSION_PATHS:
+        return
+    refs = (NATIVE_SESSION_REF, SERVICE_SESSION_REF)
+    help_ref = f"toolkit-cli/docs/toolkit-surface.json#cgate:{path}"
+    selector = axes["selector_grammar"]["subaxes"]
+    arities: dict[str, object] = {
+        "SESSION_ID": {"minimum": 0, "maximum": 0},
+        "SESSION_ID ALL": {
+            "minimum": 0,
+            "maximum": None,
+            "trailing_words": "ignored_by_native_and_endpoint",
+        },
+        "SESSION_ID TAG": {"minimum": 1, "maximum": None},
+        "EVENT": {"query": 0, "set": 1, "more_than_one": "syntax_error"},
+        "QUIT": {"minimum": 0, "maximum": 0, "alias": "EXIT"},
+    }
+    if path in {"EVENT", "QUIT"}:
+        selector["argument_arity"] = unresolved(
+            "The retained native trace does not bound trailing-word handling for this command.",
+            help_ref,
+            *refs,
+            known={"observed_native_forms": ["EVENT", "EVENTS", "EVENTS ON", "EVENT OFF", "EVENT e5s1c1"]
+                   if path == "EVENT" else ["QUIT", "EXIT"]},
+        )
+    else:
+        selector["argument_arity"] = resolved(arities[path], help_ref, *refs)
+    domains: dict[str, object] = {
+        "SESSION_ID": "no_arguments",
+        "SESSION_ID ALL": "ALL_selector_with_ignored_trailing_words",
+        "EVENT": {
+            "query": "no_argument",
+            "set": ["ON", "OFF", "e[+0-9]s[01]c[01]"],
+            "mode_case": "ON_OFF_case_insensitive; e_form_lowercase",
+            "new_connection_default": "e0s0c0",
+            "alias": "EVENTS",
+        },
+        "QUIT": {"verb": ["QUIT", "EXIT"]},
+    }
+    if path == "SESSION_ID TAG":
+        selector["value_domains"] = unresolved(
+            "Native tag length, character and quoting limits are not fully captured.",
+            help_ref,
+            *refs,
+            known={
+                "accepted_example": "C-Bus   Toolkit test",
+                "endpoint_normalization": "collapse_whitespace_and_retain_literal_quotes",
+                "one_shot": True,
+            },
+        )
+    elif path == "EVENT":
+        selector["value_domains"] = unresolved(
+            "Native EVENT case, trailing-word and numeric mode forms exceed the retained trace and endpoint parser.",
+            help_ref,
+            *refs,
+            EVENT_MODE_REF,
+            known={"observed_native_forms": ["ON", "OFF", "e5s1c1"],
+                   "new_connection_default": "e0s0c0", "alias": "EVENTS"},
+        )
+    else:
+        domain_refs = (*refs, EVENT_MODE_REF) if path == "EVENT" else refs
+        selector["value_domains"] = resolved(domains[path], help_ref, *domain_refs)
+
+    session = axes["session_states"]["subaxes"]
+    session["selection_and_locks"] = resolved(
+        {
+            "project_selection": "not_required",
+            "network_selection": "not_required",
+            "advisory_lock": "not_required",
+            "programming_session": "not_required",
+            "scope": "connected_command_session",
+        },
+        *refs,
+    )
+    targets = axes["target_forms"]["subaxes"]
+    target_scope: object = (
+        {
+            "native": "all_open_command_sessions_including_internal_console",
+            "endpoint": "live_external_tcp_tls_sessions_only",
+        }
+        if path == "SESSION_ID ALL"
+        else "calling_command_session"
+    )
+    targets["address_shape"] = resolved(
+        {"cbus_address_argument": False, "scope": target_scope},
+        help_ref,
+        *refs,
+    )
+    targets["route_shape"] = resolved("command_connection_only_no_cbus_route", *refs)
+
+    response = axes["response_event_envelopes"]["subaxes"]
+    envelopes: dict[str, object] = {
+        "SESSION_ID": {
+            "query": "300 sessionID=cmdN",
+            "invalid_subcommand": "400 Syntax Error.",
+        },
+        "SESSION_ID ALL": {
+            "rows": "300-sessionID=cmdN ...",
+            "terminal": "300 sessionID=cmdN ...",
+            "trailing_words": "ignored",
+        },
+        "SESSION_ID TAG": {
+            "first_assignment": "200 OK.",
+            "missing_tag": "400 Syntax Error: tag name not supplied",
+            "second_assignment": "408 Operation failed: tag name has already been set",
+        },
+        "QUIT": {"terminal": "204 Closing connection.", "then": "EOF"},
+    }
+    response["command_envelope"] = unresolved(
+        "The native trace does not cover every syntax, access-policy, "
+        "transport, timeout and event-interleaving envelope.",
+        help_ref,
+        *refs,
+        known=(
+            {"query": 306, "set": 200, "endpoint_invalid_mode": 400}
+            if path == "EVENT"
+            else envelopes[path]
+        ),
+    )
+
+    effects = axes["effects_routing"]["subaxes"]
+    state_effects: dict[str, object] = {
+        "SESSION_ID": {
+            "command_session_registry": "read_calling_id",
+            "endpoint_audit_log": "append_command_record",
+        },
+        "SESSION_ID ALL": {
+            "native_registry": "read_all_open_sessions_including_internal_console",
+            "endpoint_registry": "read_all_live_external_tcp_tls_sessions_only",
+            "endpoint_audit_log": "append_command_record",
+        },
+        "SESSION_ID TAG": {
+            "command_session_registry": "set_calling_tag_once",
+            "endpoint_audit_log": "append_command_record",
+        },
+        "EVENT": {
+            "query": "read_calling_connection_filter",
+            "set": "replace_calling_connection_filter",
+        },
+        "QUIT": {
+            "command_connection": "flush_204_then_close",
+            "command_session_registry": "remove_calling_session",
+            "advisory_and_programming_locks": "release_on_disconnect",
+            "endpoint_audit_log": "append_command_record",
+        },
+    }
+    effects["state_effect"] = resolved(state_effects[path], *refs)
+    for axis_name in (
+        "selector_grammar",
+        "session_states",
+        "target_forms",
+        "response_event_envelopes",
+        "effects_routing",
+    ):
+        axes[axis_name] = axis(axes[axis_name]["subaxes"])
+
+
 def build_row(
     row: dict,
     arities: dict[str, dict[str, int | None]],
@@ -598,6 +862,7 @@ def build_row(
         "effects_routing": axis(effects),
         "implementation_acceptance": axis(implementation),
     }
+    apply_native_session_contract(path, axes)
     contract = {
         "id": f"cgate-contract:{sha256(path.encode()).hexdigest()[:16]}",
         "path": path,
@@ -611,6 +876,7 @@ def build_row(
 
 
 def build() -> dict:
+    validate_native_session_observations()
     primary, supplement = capability_paths()
     arities = application_arities()
     syntax_hashes = public_syntax_hashes()
@@ -642,8 +908,10 @@ def build() -> dict:
             "capability_matrix": {"sha256": digest(MATRIX_PATH)},
             "manual": {"sha256": digest(MANUAL_PATH)},
             "service": {"sha256": digest(SERVICE_PATH)},
+            "event_mode": {"sha256": digest(EVENT_MODE_PATH)},
             "authorization_policy": {"sha256": authorization_source_digest()},
             "toolkit_surface": {"sha256": digest(SURFACE_PATH)},
+            "native_session_acceptance": {"sha256": digest(NATIVE_SESSION_PATH)},
         },
         "counts": {
             "paths": len(contracts),

@@ -1392,7 +1392,9 @@ and one-shot `SESSION_ID TAG` state, including live TCP/TLS peer and connection
 time fields. `EVENT` and its `EVENTS` alias default to `e0s0c0` on a new cmqttd
 connection. `QUIT` and `EXIT` flush `204 Closing connection.` before closing the
 stream. These operations are volatile and perform no PCI or persistent database
-I/O.
+I/O. The original C-Gate `SESSION_ID ALL` trace also lists its internal
+console session; cmqttd currently lists external TCP/TLS command sessions
+only. Treat that as an open compatibility difference, not accepted parity.
 
 `BROADCAST_EVENT event-class [event-text]` is also local command traffic. In
 retained help, `SP` denotes the required whitespace before `event-class`; it is

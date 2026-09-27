@@ -15548,9 +15548,9 @@
     },
     {
       "path": "tests/test_cgate_contract_inventory.py",
-      "bytes": 11162,
-      "sha256": "5464476e2bbbc65a1c673380af59b5fbd39966837a11392ad9aefbcbc60d5e1d",
-      "test_definitions": 10,
+      "bytes": 17216,
+      "sha256": "7da6842c02c46103b4efcf22e6a63824998537ded03f4f5b328704495dae5922",
+      "test_definitions": 15,
       "status": "source_present_results_not_imported"
     },
     {
@@ -17032,8 +17032,8 @@
     },
     {
       "path": "tests/test_parity_register.py",
-      "bytes": 25045,
-      "sha256": "d9ea77da0ad05d7fbb5df4d58c0ed7a5fb6913684db2bf75eb12e5a1f6c80c1a",
+      "bytes": 25060,
+      "sha256": "bffa3b3a8353c40b370c93db1169d43b1a8e6d690bb323935e871bf88f9b18ab",
       "test_definitions": 18,
       "status": "source_present_results_not_imported"
     },

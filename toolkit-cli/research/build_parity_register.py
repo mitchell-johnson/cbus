@@ -26,6 +26,10 @@ LEDGER_PATH = PACKAGE / "capabilities.json"
 MATRIX_PATH = REPOSITORY / "rust" / "cbus-cgate" / "src" / "capability_matrix.rs"
 MANUAL_PATH = REPOSITORY / "rust" / "cbus-cgate" / "src" / "manual.rs"
 SERVICE_PATH = REPOSITORY / "rust" / "cbus-cgate" / "src" / "service.rs"
+EVENT_MODE_PATH = REPOSITORY / "rust" / "cbus-cgate" / "src" / "lib.rs"
+NATIVE_SESSION_PATH = (
+    ROOT / "research" / "experiments" / "2026-09-25" / "cgate-session-native-acceptance.json"
+)
 ROADMAP_PATH = REPOSITORY / "docs" / "parity-review-and-roadmap.md"
 REGISTER_PATH = PACKAGE / "parity-obligations.json"
 EVIDENCE_PATH = PACKAGE / "parity-evidence.json"
@@ -153,8 +157,10 @@ def cgate_contract_inventory(
         "capability_matrix": digest(MATRIX_PATH),
         "manual": digest(MANUAL_PATH),
         "service": digest(SERVICE_PATH),
+        "event_mode": digest(EVENT_MODE_PATH),
         "authorization_policy": authorization_policy_digest(),
         "toolkit_surface": digest(SURFACE_PATH),
+        "native_session_acceptance": digest(NATIVE_SESSION_PATH),
     }
     if not isinstance(sources, dict):
         raise ValueError("C-Gate contract inventory requires sources")

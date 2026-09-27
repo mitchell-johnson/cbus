@@ -787,11 +787,16 @@ plus 398 path-level programming-gate decisions. The separate handler-role
 subaxis is resolved as minimum `Program` for all five TELEPHONY leaves, so
 those five paths now have fully resolved authorization axes. It retains 70
 model arities as unresolved known facts pending production-parser
-reconciliation. Target forms, value domains, 44 argument-dependent
-programming-gate decisions, handler roles on the other 437 paths, most exact
-response/event envelopes and 438 command-specific effect contracts remain
-open, and no path has functional acceptance evidence. P0.02 and issue #14
-therefore remain open.
+reconciliation. The pinned original C-Gate command-session trace and production
+parser now resolve three additional path arities, five session-state axes, five
+target-form axes, three value domains and five state effects for `SESSION_ID`
+variants, `EVENT` and `QUIT`, while keeping native `EVENT` mode/trailing-word
+and `QUIT` trailing-word grammar plus incomplete response/event cases open.
+Target forms for the other 437 paths, value domains for the other
+439, 44 argument-dependent programming-gate decisions, handler roles on the
+other 437 paths, most exact response/event envelopes and 433 command-specific
+effect contracts remain open, and no path has functional acceptance evidence.
+P0.02 and issue #14 therefore remain open.
 
 ### Blockers to remove early
 

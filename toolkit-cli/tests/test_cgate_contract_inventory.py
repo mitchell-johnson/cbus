@@ -11,6 +11,7 @@ import sys
 import pytest
 
 from cbus_toolkit import parity
+from research import build_cgate_contract_inventory as contract_builder
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -55,7 +56,12 @@ def test_resolved_subaxes_are_exactly_counted_without_acceptance_inflation() -> 
         "resolved": 442
     }
     assert counts["subaxis_status"]["selector_grammar.argument_arity"] == {
-        "unresolved": 442,
+        "resolved": 3,
+        "unresolved": 439,
+    }
+    assert counts["subaxis_status"]["selector_grammar.value_domains"] == {
+        "resolved": 3,
+        "unresolved": 439,
     }
     assert counts["declarative_argument_arities"] == 70
     known_arities = sum(
@@ -87,7 +93,151 @@ def test_resolved_subaxes_are_exactly_counted_without_acceptance_inflation() -> 
     assert counts["subaxis_status"][
         "implementation_acceptance.functional_acceptance"
     ] == {"unresolved": 442}
-    assert counts["axis_status"]["target_forms"] == {"unresolved": 442}
+    assert counts["axis_status"]["target_forms"] == {
+        "resolved": 5,
+        "unresolved": 437,
+    }
+    assert counts["subaxis_status"]["session_states.selection_and_locks"] == {
+        "resolved": 5,
+        "unresolved": 437,
+    }
+    assert counts["subaxis_status"]["effects_routing.state_effect"] == {
+        "resolved": 9,
+        "unresolved": 433,
+    }
+
+
+@pytest.mark.parametrize(
+    ("path", "arity", "effect"),
+    [
+        ("SESSION_ID", {"minimum": 0, "maximum": 0}, "read_calling_id"),
+        (
+            "SESSION_ID ALL",
+            {
+                "minimum": 0,
+                "maximum": None,
+                "trailing_words": "ignored_by_native_and_endpoint",
+            },
+            "read_all_live_external_tcp_tls_sessions_only",
+        ),
+        ("SESSION_ID TAG", {"minimum": 1, "maximum": None}, "set_calling_tag_once"),
+        (
+            "EVENT",
+            None,
+            "replace_calling_connection_filter",
+        ),
+        ("QUIT", None, "flush_204_then_close"),
+    ],
+)
+def test_native_session_contracts_are_bounded_and_preserve_open_axes(
+    path: str, arity: dict | None, effect: str
+) -> None:
+    row = contract_by_path(inventory(), path)
+    axes = row["axes"]
+    argument_arity = axes["selector_grammar"]["subaxes"]["argument_arity"]
+    if arity is None:
+        assert argument_arity["status"] == "unresolved"
+        assert argument_arity["known"]["observed_native_forms"]
+    else:
+        assert argument_arity["value"] == arity
+    assert axes["session_states"]["status"] == "resolved"
+    assert axes["target_forms"]["status"] == "resolved"
+    assert axes["target_forms"]["subaxes"]["route_shape"]["value"] == (
+        "command_connection_only_no_cbus_route"
+    )
+    if path == "SESSION_ID ALL":
+        assert axes["target_forms"]["subaxes"]["address_shape"]["value"][
+            "scope"
+        ] == {
+            "native": "all_open_command_sessions_including_internal_console",
+            "endpoint": "live_external_tcp_tls_sessions_only",
+        }
+    state_effect = axes["effects_routing"]["subaxes"]["state_effect"]
+    assert state_effect["status"] == "resolved"
+    assert effect in state_effect["value"].values()
+    assert contract_builder.NATIVE_SESSION_REF in state_effect["source_refs"]
+    assert axes["response_event_envelopes"]["subaxes"]["command_envelope"][
+        "status"
+    ] == "unresolved"
+    assert axes["authorization"]["subaxes"]["handler_roles"][
+        "status"
+    ] == "unresolved"
+    assert axes["implementation_acceptance"]["subaxes"]["functional_acceptance"][
+        "status"
+    ] == "unresolved"
+
+
+def test_native_session_trace_loss_fails_contract_generation(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    changed = json.loads(contract_builder.NATIVE_SESSION_PATH.read_text())
+    changed["cases"] = [
+        row for row in changed["cases"] if row["command"] != "SESSION_ID TAG replacement"
+    ]
+    fixture = tmp_path / "changed-native-session.json"
+    fixture.write_text(json.dumps(changed), encoding="utf-8")
+    monkeypatch.setattr(contract_builder, "NATIVE_SESSION_PATH", fixture)
+    with pytest.raises(ValueError, match="session acceptance cases changed"):
+        contract_builder.build()
+
+
+def test_native_internal_session_delta_cannot_be_silently_removed(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    changed = json.loads(contract_builder.NATIVE_SESSION_PATH.read_text())
+    for row in changed["cases"]:
+        if row["command"] == "SESSION_ID ALL":
+            row["reply"] = [
+                line for line in row["reply"] if " origin=internal " not in line
+            ]
+    fixture = tmp_path / "without-internal-session.json"
+    fixture.write_text(json.dumps(changed), encoding="utf-8")
+    monkeypatch.setattr(contract_builder, "NATIVE_SESSION_PATH", fixture)
+    with pytest.raises(ValueError, match="internal command session evidence changed"):
+        contract_builder.build()
+
+
+def test_native_session_status_without_matching_reply_cannot_resolve_contract(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    changed = json.loads(contract_builder.NATIVE_SESSION_PATH.read_text())
+    for row in changed["cases"]:
+        if row["command"] == "SESSION_ID TAG replacement":
+            row["reply"] = ["408 Other result"]
+    fixture = tmp_path / "changed-reply.json"
+    fixture.write_text(json.dumps(changed), encoding="utf-8")
+    monkeypatch.setattr(contract_builder, "NATIVE_SESSION_PATH", fixture)
+    with pytest.raises(ValueError, match="session response evidence changed"):
+        contract_builder.build()
+
+
+@pytest.mark.parametrize("weakened", ["tagged_all", "trailing_all", "post_set_event"])
+def test_unchecked_native_session_reply_changes_are_source_bound(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, weakened: str
+) -> None:
+    changed = json.loads(contract_builder.NATIVE_SESSION_PATH.read_text())
+    if weakened == "tagged_all":
+        rows = [row for row in changed["cases"] if row["command"] == "SESSION_ID ALL"]
+        rows[1]["reply"] = [
+            line for line in rows[1]["reply"] if "tag=C-Bus Toolkit test" not in line
+        ]
+    elif weakened == "trailing_all":
+        row = next(
+            row for row in changed["cases"]
+            if row["command"] == "SESSION_ID ALL ignored-by-native"
+        )
+        row["reply"] = ["300 arbitrary"]
+    else:
+        row = next(
+            row for row in changed["cases"]
+            if row["command"] == "EVENT" and row["reply"] == ["306 e+s0c0"]
+        )
+        row["reply"] = ["306 e0s0c0"]
+    fixture = tmp_path / f"weakened-{weakened}.json"
+    fixture.write_text(json.dumps(changed), encoding="utf-8")
+    monkeypatch.setattr(contract_builder, "NATIVE_SESSION_PATH", fixture)
+    with pytest.raises(ValueError, match="session acceptance source changed"):
+        contract_builder.build()
 
 
 @pytest.mark.parametrize(

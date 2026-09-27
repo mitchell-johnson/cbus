@@ -5,15 +5,15 @@
   "census_complete": false,
   "purpose": "Provisional exhaustive source accounting; not yet a deduplicated functional denominator or acceptance claim.",
   "source_digests": {
-    "toolkit_surface": "2be3b80dd3524b2d947a86836f272f2ef3740817de8c14ba39838b4fe85477d5",
+    "toolkit_surface": "9c780d3e245e7fb6fa1fa25cd5504a0920cfe481a1a59c01ef6f6918e45cbe1c",
     "unindexed_help_review": "dcf9d5fa20ec98d321372c4099dea6c320f881fab1322de91cbb997d69808e80",
     "toolkit_executable_surface": "f9fe2111679495b920deb4ce095fe3d6cc9693d7f478835d5f19d01977617af2",
     "toolkit_executable_binary": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
     "toolkit_map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
     "feature_ledger": "79750e146f08911f5350e2a655f86ff0472a73b30e89cf969923ab737ceb85af",
     "cgate_capability_matrix": "a943b9df5e3170845237a7beefad8b655ce1ea0379b005b313544d9bfa685fb9",
-    "cgate_contract_inventory": "08c6b8e30591d5c6e7cacb41b71f399fbba2f9bd46984b862908120f838c6c6f",
-    "roadmap": "27963d6939667c0eb933f638dc78a1a54ddd1aea29eb27bf1f79d6292898dc91"
+    "cgate_contract_inventory": "7706aa7e128d3ef060eb31bcb4b7f9072c2a255801b45cb725abecfb0c8de0d4",
+    "roadmap": "607285cae45ae079cc8eef97dae5ae590d7c87bbc5331e1c3a84797ac483cca8"
   },
   "evidence_bundle_sha256": "055dde83ff05aa7056c13761cac120604e1d89fc0c4c27275c28ceded39bde40",
   "work_item_ids": [
@@ -162,13 +162,16 @@
       "contract_inventory_version": "cgate-contracts-2026-09-27.1",
       "axis_status": {
         "selector_grammar": {
-          "partial": 442
+          "partial": 440,
+          "resolved": 2
         },
         "session_states": {
-          "partial": 442
+          "partial": 437,
+          "resolved": 5
         },
         "target_forms": {
-          "unresolved": 442
+          "resolved": 5,
+          "unresolved": 437
         },
         "authorization": {
           "partial": 437,
@@ -179,8 +182,8 @@
           "resolved": 2
         },
         "effects_routing": {
-          "partial": 438,
-          "resolved": 4
+          "partial": 433,
+          "resolved": 9
         },
         "implementation_acceptance": {
           "partial": 442
@@ -191,10 +194,12 @@
           "resolved": 442
         },
         "selector_grammar.argument_arity": {
-          "unresolved": 442
+          "resolved": 3,
+          "unresolved": 439
         },
         "selector_grammar.value_domains": {
-          "unresolved": 442
+          "resolved": 3,
+          "unresolved": 439
         },
         "session_states.connection": {
           "resolved": 442
@@ -203,13 +208,16 @@
           "resolved": 442
         },
         "session_states.selection_and_locks": {
-          "unresolved": 442
+          "resolved": 5,
+          "unresolved": 437
         },
         "target_forms.address_shape": {
-          "unresolved": 442
+          "resolved": 5,
+          "unresolved": 437
         },
         "target_forms.route_shape": {
-          "unresolved": 442
+          "resolved": 5,
+          "unresolved": 437
         },
         "authorization.connection_policy": {
           "resolved": 442
@@ -240,8 +248,8 @@
           "resolved": 442
         },
         "effects_routing.state_effect": {
-          "resolved": 4,
-          "unresolved": 438
+          "resolved": 9,
+          "unresolved": 433
         },
         "implementation_acceptance.endpoint_route": {
           "resolved": 442
@@ -142785,8 +142793,8 @@
       "source_id": "EVENT",
       "routing_class": "LocalDatabase",
       "contract_id": "cgate-contract:b3c5c91627ba8885",
-      "contract_sha256": "4aebbf2be48672fd4f162ff5539fa0eb6a5f11251729dedf36c4789d22d3ac78",
-      "contract_axes_sha256": "69abc7d7eef2f94dca08b149db5590671a5fde5870ed92facaf64edf09071901",
+      "contract_sha256": "2b324cb11f549f6fad0c6545d2bf626173b63c6dbfb23c1457d3892f85bc043b",
+      "contract_axes_sha256": "3e281abc5a9f59ffab75ed1ec6d54a3c8b5baaca2c85ee4981ec07ace800148f",
       "contract_axes": {
         "selector_grammar": {
           "status": "partial",
@@ -142802,30 +142810,45 @@
             },
             "argument_arity": {
               "status": "unresolved",
-              "reason": "No machine-readable argument-count contract is committed for this path.",
+              "reason": "The retained native trace does not bound trailing-word handling for this command.",
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX",
-                "toolkit-cli/docs/toolkit-surface.json#cgate:EVENT"
+                "toolkit-cli/docs/toolkit-surface.json#cgate:EVENT",
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
               ],
               "known": {
-                "help_syntax_sha256": "fe498d70bd1b750d5a8ff455ad6e356ced6135a2c858bf6120cdd88fdd76c16f"
+                "observed_native_forms": [
+                  "EVENT",
+                  "EVENTS",
+                  "EVENTS ON",
+                  "EVENT OFF",
+                  "EVENT e5s1c1"
+                ]
               }
             },
             "value_domains": {
               "status": "unresolved",
-              "reason": "Argument names, ranges, aliases and conditional branches are not yet normalized into a structured contract.",
+              "reason": "Native EVENT case, trailing-word and numeric mode forms exceed the retained trace and endpoint parser.",
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX",
-                "toolkit-cli/docs/toolkit-surface.json#cgate:EVENT"
+                "toolkit-cli/docs/toolkit-surface.json#cgate:EVENT",
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle",
+                "rust/cbus-cgate/src/lib.rs#EventMode::parse"
               ],
               "known": {
-                "help_syntax_sha256": "fe498d70bd1b750d5a8ff455ad6e356ced6135a2c858bf6120cdd88fdd76c16f"
+                "observed_native_forms": [
+                  "ON",
+                  "OFF",
+                  "e5s1c1"
+                ],
+                "new_connection_default": "e0s0c0",
+                "alias": "EVENTS"
               }
             }
           }
         },
         "session_states": {
-          "status": "partial",
+          "status": "resolved",
           "subaxes": {
             "connection": {
               "status": "resolved",
@@ -142842,31 +142865,42 @@
               ]
             },
             "selection_and_locks": {
-              "status": "unresolved",
-              "reason": "Selected project/network, event subscription, advisory lock and programming-session preconditions are not yet mapped per path.",
+              "status": "resolved",
+              "value": {
+                "project_selection": "not_required",
+                "network_selection": "not_required",
+                "advisory_lock": "not_required",
+                "programming_session": "not_required",
+                "scope": "connected_command_session"
+              },
               "source_refs": [
-                "rust/cbus-cgate/src/service.rs#Service::handle",
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
               ]
             }
           }
         },
         "target_forms": {
-          "status": "unresolved",
+          "status": "resolved",
           "subaxes": {
             "address_shape": {
-              "status": "unresolved",
-              "reason": "Accepted path, OID, serial, unit, application and group target forms are not yet normalized per path.",
+              "status": "resolved",
+              "value": {
+                "cbus_address_argument": false,
+                "scope": "calling_command_session"
+              },
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX",
-                "toolkit-cli/docs/toolkit-surface.json#cgate:EVENT"
+                "toolkit-cli/docs/toolkit-surface.json#cgate:EVENT",
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
               ]
             },
             "route_shape": {
-              "status": "unresolved",
-              "reason": "Direct, selected-network and bridged-route applicability is not yet normalized per selector variant.",
+              "status": "resolved",
+              "value": "command_connection_only_no_cbus_route",
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
               ]
             }
           }
@@ -142911,10 +142945,17 @@
             },
             "command_envelope": {
               "status": "unresolved",
-              "reason": "Exact success, syntax, state, transport and timeout envelopes are not yet structured for every selector variant.",
+              "reason": "The native trace does not cover every syntax, access-policy, transport, timeout and event-interleaving envelope.",
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ]
+                "toolkit-cli/docs/toolkit-surface.json#cgate:EVENT",
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ],
+              "known": {
+                "query": 306,
+                "set": 200,
+                "endpoint_invalid_mode": 400
+              }
             },
             "event_fanout": {
               "status": "unresolved",
@@ -142926,7 +142967,7 @@
           }
         },
         "effects_routing": {
-          "status": "partial",
+          "status": "resolved",
           "subaxes": {
             "routing_class": {
               "status": "resolved",
@@ -142943,14 +142984,15 @@
               ]
             },
             "state_effect": {
-              "status": "unresolved",
-              "reason": "The matrix evidence describes the primary route but does not normalize every database, cache, session, event and device effect.",
+              "status": "resolved",
+              "value": {
+                "query": "read_calling_connection_filter",
+                "set": "replace_calling_connection_filter"
+              },
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ],
-              "known": {
-                "routing_evidence": "Service::connection_io handles native EVENT/EVENTS query and set forms as per-connection subscription state, including event filtering, without PCI I/O."
-              }
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ]
             }
           }
         },
@@ -172936,8 +172978,8 @@
       "source_id": "QUIT",
       "routing_class": "LocalDatabase",
       "contract_id": "cgate-contract:a872f67384948f79",
-      "contract_sha256": "4afe8d63391d38b180d7440eb3c4e6031deeac7e215014702d9c3e8fea64f908",
-      "contract_axes_sha256": "6358a40fccaf5adaab0c7c9905c510a8250db6f741ef4a90a326512c3d2a824d",
+      "contract_sha256": "b04943d6917de3a9da7e30023607e5e0751828e4ef5f05971642f02bd5981d42",
+      "contract_axes_sha256": "06d6c730781db1111d59a812d60442a0b07c9f90dcee500df84ee314519dc2ee",
       "contract_axes": {
         "selector_grammar": {
           "status": "partial",
@@ -172953,30 +172995,37 @@
             },
             "argument_arity": {
               "status": "unresolved",
-              "reason": "No machine-readable argument-count contract is committed for this path.",
+              "reason": "The retained native trace does not bound trailing-word handling for this command.",
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX",
-                "toolkit-cli/docs/toolkit-surface.json#cgate:QUIT"
+                "toolkit-cli/docs/toolkit-surface.json#cgate:QUIT",
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
               ],
               "known": {
-                "help_syntax_sha256": "ea1a8e7b4df22195f0ac959dc08c50f41bed4d5d4f9c7caf8e4392062b0d9a0a"
+                "observed_native_forms": [
+                  "QUIT",
+                  "EXIT"
+                ]
               }
             },
             "value_domains": {
-              "status": "unresolved",
-              "reason": "Argument names, ranges, aliases and conditional branches are not yet normalized into a structured contract.",
+              "status": "resolved",
+              "value": {
+                "verb": [
+                  "QUIT",
+                  "EXIT"
+                ]
+              },
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX",
-                "toolkit-cli/docs/toolkit-surface.json#cgate:QUIT"
-              ],
-              "known": {
-                "help_syntax_sha256": "ea1a8e7b4df22195f0ac959dc08c50f41bed4d5d4f9c7caf8e4392062b0d9a0a"
-              }
+                "toolkit-cli/docs/toolkit-surface.json#cgate:QUIT",
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ]
             }
           }
         },
         "session_states": {
-          "status": "partial",
+          "status": "resolved",
           "subaxes": {
             "connection": {
               "status": "resolved",
@@ -172993,31 +173042,42 @@
               ]
             },
             "selection_and_locks": {
-              "status": "unresolved",
-              "reason": "Selected project/network, event subscription, advisory lock and programming-session preconditions are not yet mapped per path.",
+              "status": "resolved",
+              "value": {
+                "project_selection": "not_required",
+                "network_selection": "not_required",
+                "advisory_lock": "not_required",
+                "programming_session": "not_required",
+                "scope": "connected_command_session"
+              },
               "source_refs": [
-                "rust/cbus-cgate/src/service.rs#Service::handle",
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
               ]
             }
           }
         },
         "target_forms": {
-          "status": "unresolved",
+          "status": "resolved",
           "subaxes": {
             "address_shape": {
-              "status": "unresolved",
-              "reason": "Accepted path, OID, serial, unit, application and group target forms are not yet normalized per path.",
+              "status": "resolved",
+              "value": {
+                "cbus_address_argument": false,
+                "scope": "calling_command_session"
+              },
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX",
-                "toolkit-cli/docs/toolkit-surface.json#cgate:QUIT"
+                "toolkit-cli/docs/toolkit-surface.json#cgate:QUIT",
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
               ]
             },
             "route_shape": {
-              "status": "unresolved",
-              "reason": "Direct, selected-network and bridged-route applicability is not yet normalized per selector variant.",
+              "status": "resolved",
+              "value": "command_connection_only_no_cbus_route",
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
               ]
             }
           }
@@ -173062,10 +173122,16 @@
             },
             "command_envelope": {
               "status": "unresolved",
-              "reason": "Exact success, syntax, state, transport and timeout envelopes are not yet structured for every selector variant.",
+              "reason": "The native trace does not cover every syntax, access-policy, transport, timeout and event-interleaving envelope.",
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ]
+                "toolkit-cli/docs/toolkit-surface.json#cgate:QUIT",
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ],
+              "known": {
+                "terminal": "204 Closing connection.",
+                "then": "EOF"
+              }
             },
             "event_fanout": {
               "status": "unresolved",
@@ -173077,7 +173143,7 @@
           }
         },
         "effects_routing": {
-          "status": "partial",
+          "status": "resolved",
           "subaxes": {
             "routing_class": {
               "status": "resolved",
@@ -173094,14 +173160,17 @@
               ]
             },
             "state_effect": {
-              "status": "unresolved",
-              "reason": "The matrix evidence describes the primary route but does not normalize every database, cache, session, event and device effect.",
+              "status": "resolved",
+              "value": {
+                "command_connection": "flush_204_then_close",
+                "command_session_registry": "remove_calling_session",
+                "advisory_and_programming_locks": "release_on_disconnect",
+                "endpoint_audit_log": "append_command_record"
+              },
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ],
-              "known": {
-                "routing_evidence": "Service::handle returns the native 204 envelope for QUIT/EXIT and Service::connection_io closes the command connection after flushing that reply, without PCI I/O."
-              }
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ]
             }
           }
         },
@@ -176080,11 +176149,11 @@
       "source_id": "SESSION_ID",
       "routing_class": "LocalDatabase",
       "contract_id": "cgate-contract:143c54a154393f4e",
-      "contract_sha256": "aa3bc6e38c2d4647b0b040ef24958da0932fda9efddb589da12bb869140573cf",
-      "contract_axes_sha256": "d42648a1fab74f909693a1f846c9cbf5ae18435c7c8bdce0e14eac69227242a1",
+      "contract_sha256": "f2780a572fbe44b853bb162b511ae8be3ec4ee23eb5fbf18f66deecacb2d325f",
+      "contract_axes_sha256": "84dc342331599a5f4bf0bf887e4fdc0da373201741ae14f9daafd545f4729a1f",
       "contract_axes": {
         "selector_grammar": {
-          "status": "partial",
+          "status": "resolved",
           "subaxes": {
             "command_path": {
               "status": "resolved",
@@ -176096,31 +176165,30 @@
               ]
             },
             "argument_arity": {
-              "status": "unresolved",
-              "reason": "No machine-readable argument-count contract is committed for this path.",
+              "status": "resolved",
+              "value": {
+                "minimum": 0,
+                "maximum": 0
+              },
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX",
-                "toolkit-cli/docs/toolkit-surface.json#cgate:SESSION_ID"
-              ],
-              "known": {
-                "help_syntax_sha256": "143c54a154393f4e916064f339dbb5fe25bd3796f8e4bcc04663aa68aa9656fb"
-              }
+                "toolkit-cli/docs/toolkit-surface.json#cgate:SESSION_ID",
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ]
             },
             "value_domains": {
-              "status": "unresolved",
-              "reason": "Argument names, ranges, aliases and conditional branches are not yet normalized into a structured contract.",
+              "status": "resolved",
+              "value": "no_arguments",
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX",
-                "toolkit-cli/docs/toolkit-surface.json#cgate:SESSION_ID"
-              ],
-              "known": {
-                "help_syntax_sha256": "143c54a154393f4e916064f339dbb5fe25bd3796f8e4bcc04663aa68aa9656fb"
-              }
+                "toolkit-cli/docs/toolkit-surface.json#cgate:SESSION_ID",
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ]
             }
           }
         },
         "session_states": {
-          "status": "partial",
+          "status": "resolved",
           "subaxes": {
             "connection": {
               "status": "resolved",
@@ -176137,31 +176205,42 @@
               ]
             },
             "selection_and_locks": {
-              "status": "unresolved",
-              "reason": "Selected project/network, event subscription, advisory lock and programming-session preconditions are not yet mapped per path.",
+              "status": "resolved",
+              "value": {
+                "project_selection": "not_required",
+                "network_selection": "not_required",
+                "advisory_lock": "not_required",
+                "programming_session": "not_required",
+                "scope": "connected_command_session"
+              },
               "source_refs": [
-                "rust/cbus-cgate/src/service.rs#Service::handle",
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
               ]
             }
           }
         },
         "target_forms": {
-          "status": "unresolved",
+          "status": "resolved",
           "subaxes": {
             "address_shape": {
-              "status": "unresolved",
-              "reason": "Accepted path, OID, serial, unit, application and group target forms are not yet normalized per path.",
+              "status": "resolved",
+              "value": {
+                "cbus_address_argument": false,
+                "scope": "calling_command_session"
+              },
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX",
-                "toolkit-cli/docs/toolkit-surface.json#cgate:SESSION_ID"
+                "toolkit-cli/docs/toolkit-surface.json#cgate:SESSION_ID",
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
               ]
             },
             "route_shape": {
-              "status": "unresolved",
-              "reason": "Direct, selected-network and bridged-route applicability is not yet normalized per selector variant.",
+              "status": "resolved",
+              "value": "command_connection_only_no_cbus_route",
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
               ]
             }
           }
@@ -176206,10 +176285,16 @@
             },
             "command_envelope": {
               "status": "unresolved",
-              "reason": "Exact success, syntax, state, transport and timeout envelopes are not yet structured for every selector variant.",
+              "reason": "The native trace does not cover every syntax, access-policy, transport, timeout and event-interleaving envelope.",
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ]
+                "toolkit-cli/docs/toolkit-surface.json#cgate:SESSION_ID",
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ],
+              "known": {
+                "query": "300 sessionID=cmdN",
+                "invalid_subcommand": "400 Syntax Error."
+              }
             },
             "event_fanout": {
               "status": "unresolved",
@@ -176221,7 +176306,7 @@
           }
         },
         "effects_routing": {
-          "status": "partial",
+          "status": "resolved",
           "subaxes": {
             "routing_class": {
               "status": "resolved",
@@ -176238,14 +176323,15 @@
               ]
             },
             "state_effect": {
-              "status": "unresolved",
-              "reason": "The matrix evidence describes the primary route but does not normalize every database, cache, session, event and device effect.",
+              "status": "resolved",
+              "value": {
+                "command_session_registry": "read_calling_id",
+                "endpoint_audit_log": "append_command_record"
+              },
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ],
-              "known": {
-                "routing_evidence": "Service::handle reads the connection's native-style cmdN identifier from the live command-session registry without PCI I/O."
-              }
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ]
             }
           }
         },
@@ -176287,11 +176373,11 @@
       "source_id": "SESSION_ID ALL",
       "routing_class": "LocalDatabase",
       "contract_id": "cgate-contract:c11c2667484965c5",
-      "contract_sha256": "268a244fa08c5749d6b3a5f9710c80644af1610e35bc7aa3fe4c2dc637748db3",
-      "contract_axes_sha256": "14bbb9687a1f4027f3dc1826fc2a3df4f7fa023d024a93c1eeadab7e0c74ee2f",
+      "contract_sha256": "2897a930c6a39b568870b85cac9d5d077ae9f2711c2a9212971790663c29c4c5",
+      "contract_axes_sha256": "f2264ebb3792e0977cc1bb9098856dbd17586e22b00cff985f7bdd4fa922af17",
       "contract_axes": {
         "selector_grammar": {
-          "status": "partial",
+          "status": "resolved",
           "subaxes": {
             "command_path": {
               "status": "resolved",
@@ -176304,31 +176390,31 @@
               ]
             },
             "argument_arity": {
-              "status": "unresolved",
-              "reason": "No machine-readable argument-count contract is committed for this path.",
+              "status": "resolved",
+              "value": {
+                "minimum": 0,
+                "maximum": null,
+                "trailing_words": "ignored_by_native_and_endpoint"
+              },
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX",
-                "toolkit-cli/docs/toolkit-surface.json#cgate:SESSION_ID ALL"
-              ],
-              "known": {
-                "help_syntax_sha256": "c11c2667484965c55fe135362c17fe0829b80772e704ba572c8332f0e8b12cdf"
-              }
+                "toolkit-cli/docs/toolkit-surface.json#cgate:SESSION_ID ALL",
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ]
             },
             "value_domains": {
-              "status": "unresolved",
-              "reason": "Argument names, ranges, aliases and conditional branches are not yet normalized into a structured contract.",
+              "status": "resolved",
+              "value": "ALL_selector_with_ignored_trailing_words",
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX",
-                "toolkit-cli/docs/toolkit-surface.json#cgate:SESSION_ID ALL"
-              ],
-              "known": {
-                "help_syntax_sha256": "c11c2667484965c55fe135362c17fe0829b80772e704ba572c8332f0e8b12cdf"
-              }
+                "toolkit-cli/docs/toolkit-surface.json#cgate:SESSION_ID ALL",
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ]
             }
           }
         },
         "session_states": {
-          "status": "partial",
+          "status": "resolved",
           "subaxes": {
             "connection": {
               "status": "resolved",
@@ -176345,31 +176431,45 @@
               ]
             },
             "selection_and_locks": {
-              "status": "unresolved",
-              "reason": "Selected project/network, event subscription, advisory lock and programming-session preconditions are not yet mapped per path.",
+              "status": "resolved",
+              "value": {
+                "project_selection": "not_required",
+                "network_selection": "not_required",
+                "advisory_lock": "not_required",
+                "programming_session": "not_required",
+                "scope": "connected_command_session"
+              },
               "source_refs": [
-                "rust/cbus-cgate/src/service.rs#Service::handle",
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
               ]
             }
           }
         },
         "target_forms": {
-          "status": "unresolved",
+          "status": "resolved",
           "subaxes": {
             "address_shape": {
-              "status": "unresolved",
-              "reason": "Accepted path, OID, serial, unit, application and group target forms are not yet normalized per path.",
+              "status": "resolved",
+              "value": {
+                "cbus_address_argument": false,
+                "scope": {
+                  "native": "all_open_command_sessions_including_internal_console",
+                  "endpoint": "live_external_tcp_tls_sessions_only"
+                }
+              },
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX",
-                "toolkit-cli/docs/toolkit-surface.json#cgate:SESSION_ID ALL"
+                "toolkit-cli/docs/toolkit-surface.json#cgate:SESSION_ID ALL",
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
               ]
             },
             "route_shape": {
-              "status": "unresolved",
-              "reason": "Direct, selected-network and bridged-route applicability is not yet normalized per selector variant.",
+              "status": "resolved",
+              "value": "command_connection_only_no_cbus_route",
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
               ]
             }
           }
@@ -176414,10 +176514,17 @@
             },
             "command_envelope": {
               "status": "unresolved",
-              "reason": "Exact success, syntax, state, transport and timeout envelopes are not yet structured for every selector variant.",
+              "reason": "The native trace does not cover every syntax, access-policy, transport, timeout and event-interleaving envelope.",
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ]
+                "toolkit-cli/docs/toolkit-surface.json#cgate:SESSION_ID ALL",
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ],
+              "known": {
+                "rows": "300-sessionID=cmdN ...",
+                "terminal": "300 sessionID=cmdN ...",
+                "trailing_words": "ignored"
+              }
             },
             "event_fanout": {
               "status": "unresolved",
@@ -176429,7 +176536,7 @@
           }
         },
         "effects_routing": {
-          "status": "partial",
+          "status": "resolved",
           "subaxes": {
             "routing_class": {
               "status": "resolved",
@@ -176446,14 +176553,16 @@
               ]
             },
             "state_effect": {
-              "status": "unresolved",
-              "reason": "The matrix evidence describes the primary route but does not normalize every database, cache, session, event and device effect.",
+              "status": "resolved",
+              "value": {
+                "native_registry": "read_all_open_sessions_including_internal_console",
+                "endpoint_registry": "read_all_live_external_tcp_tls_sessions_only",
+                "endpoint_audit_log": "append_command_record"
+              },
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ],
-              "known": {
-                "routing_evidence": "Service::handle returns every live TCP/TLS command session in native 300 envelope form with origin, connection time and optional tag, without PCI I/O."
-              }
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ]
             }
           }
         },
@@ -176495,8 +176604,8 @@
       "source_id": "SESSION_ID TAG",
       "routing_class": "LocalDatabase",
       "contract_id": "cgate-contract:79c348f8a682ea25",
-      "contract_sha256": "4ece47e5262536a104d980361b135b685f1b05e352328fd49ca75984bf6ff9d5",
-      "contract_axes_sha256": "4e25497856538a6b3de1408f18935e0bcf033fc6d0d01aed97281f8ee4802bbb",
+      "contract_sha256": "d4feba9d3cde0161a93e26342ca1ad72b137368c489ddf4d14d79d327fad5592",
+      "contract_axes_sha256": "27f38e8191c94d169a8bb2a02d0ea670e998f6b5ff571b72f7012eaccad2d931",
       "contract_axes": {
         "selector_grammar": {
           "status": "partial",
@@ -176512,31 +176621,35 @@
               ]
             },
             "argument_arity": {
-              "status": "unresolved",
-              "reason": "No machine-readable argument-count contract is committed for this path.",
+              "status": "resolved",
+              "value": {
+                "minimum": 1,
+                "maximum": null
+              },
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX",
-                "toolkit-cli/docs/toolkit-surface.json#cgate:SESSION_ID TAG"
-              ],
-              "known": {
-                "help_syntax_sha256": "4ffeaa49997c60fb303a8745304294c19c073da8013c6ba3ef95a1fe42659aa5"
-              }
+                "toolkit-cli/docs/toolkit-surface.json#cgate:SESSION_ID TAG",
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ]
             },
             "value_domains": {
               "status": "unresolved",
-              "reason": "Argument names, ranges, aliases and conditional branches are not yet normalized into a structured contract.",
+              "reason": "Native tag length, character and quoting limits are not fully captured.",
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX",
-                "toolkit-cli/docs/toolkit-surface.json#cgate:SESSION_ID TAG"
+                "toolkit-cli/docs/toolkit-surface.json#cgate:SESSION_ID TAG",
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
               ],
               "known": {
-                "help_syntax_sha256": "4ffeaa49997c60fb303a8745304294c19c073da8013c6ba3ef95a1fe42659aa5"
+                "accepted_example": "C-Bus   Toolkit test",
+                "endpoint_normalization": "collapse_whitespace_and_retain_literal_quotes",
+                "one_shot": true
               }
             }
           }
         },
         "session_states": {
-          "status": "partial",
+          "status": "resolved",
           "subaxes": {
             "connection": {
               "status": "resolved",
@@ -176553,31 +176666,42 @@
               ]
             },
             "selection_and_locks": {
-              "status": "unresolved",
-              "reason": "Selected project/network, event subscription, advisory lock and programming-session preconditions are not yet mapped per path.",
+              "status": "resolved",
+              "value": {
+                "project_selection": "not_required",
+                "network_selection": "not_required",
+                "advisory_lock": "not_required",
+                "programming_session": "not_required",
+                "scope": "connected_command_session"
+              },
               "source_refs": [
-                "rust/cbus-cgate/src/service.rs#Service::handle",
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
               ]
             }
           }
         },
         "target_forms": {
-          "status": "unresolved",
+          "status": "resolved",
           "subaxes": {
             "address_shape": {
-              "status": "unresolved",
-              "reason": "Accepted path, OID, serial, unit, application and group target forms are not yet normalized per path.",
+              "status": "resolved",
+              "value": {
+                "cbus_address_argument": false,
+                "scope": "calling_command_session"
+              },
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX",
-                "toolkit-cli/docs/toolkit-surface.json#cgate:SESSION_ID TAG"
+                "toolkit-cli/docs/toolkit-surface.json#cgate:SESSION_ID TAG",
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
               ]
             },
             "route_shape": {
-              "status": "unresolved",
-              "reason": "Direct, selected-network and bridged-route applicability is not yet normalized per selector variant.",
+              "status": "resolved",
+              "value": "command_connection_only_no_cbus_route",
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
               ]
             }
           }
@@ -176622,10 +176746,17 @@
             },
             "command_envelope": {
               "status": "unresolved",
-              "reason": "Exact success, syntax, state, transport and timeout envelopes are not yet structured for every selector variant.",
+              "reason": "The native trace does not cover every syntax, access-policy, transport, timeout and event-interleaving envelope.",
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ]
+                "toolkit-cli/docs/toolkit-surface.json#cgate:SESSION_ID TAG",
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ],
+              "known": {
+                "first_assignment": "200 OK.",
+                "missing_tag": "400 Syntax Error: tag name not supplied",
+                "second_assignment": "408 Operation failed: tag name has already been set"
+              }
             },
             "event_fanout": {
               "status": "unresolved",
@@ -176637,7 +176768,7 @@
           }
         },
         "effects_routing": {
-          "status": "partial",
+          "status": "resolved",
           "subaxes": {
             "routing_class": {
               "status": "resolved",
@@ -176654,14 +176785,15 @@
               ]
             },
             "state_effect": {
-              "status": "unresolved",
-              "reason": "The matrix evidence describes the primary route but does not normalize every database, cache, session, event and device effect.",
+              "status": "resolved",
+              "value": {
+                "command_session_registry": "set_calling_tag_once",
+                "endpoint_audit_log": "append_command_record"
+              },
               "source_refs": [
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ],
-              "known": {
-                "routing_evidence": "Service::handle records one native-style application tag on the calling command session and rejects a second assignment, without PCI I/O."
-              }
+                "toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ]
             }
           }
         },

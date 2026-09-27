@@ -143,21 +143,42 @@ row that no longer matches its packaged contract.
 The current inventory resolves the command path for all 442 paths, connection
 and recovery-mode behavior for all 442, peer access policy for all 442, and the
 optional programming LOGIN gate for 398. Forty-four programming-gate rows
-remain invocation-dependent. The independent native ACCESS role is now
-resolved for all five TELEPHONY leaves as minimum `Program`, including
+remain invocation-dependent. The independent native ACCESS role is resolved
+for all five TELEPHONY leaves as minimum `Program`, including
 `RECALL_LAST_NUMBER_REQUEST`; that read-like leaf remains outside the optional
 operation-based LOGIN gate. Those five paths therefore have a fully resolved
-authorization axis. Seventy declarative model arities are retained as known
-inputs but remain unresolved until each is reconciled with the production
-service parser. The inventory also resolves response framing for all 442, the
-complete tagged/untagged envelopes for the two comment forms, routing and
-physical-I/O boundaries for all 442, and endpoint route plus
-native-obsolescence status for all 442. All 442 functional-acceptance and arity
-subaxes remain unresolved, as do every normalized value domain, every target
-form, and the command-specific state/effect contracts for 438 paths. The two
-comment forms have fully resolved response axes; the comments and two
-native-obsolete commands have fully resolved effect axes. These are
-contract-census facts, not acceptance evidence.
+authorization axis.
+
+A pinned, sanitized original C-Gate 3.4.0.2001 command-session trace plus the
+public HELP syntax and production endpoint now expand five command paths:
+`SESSION_ID`, `SESSION_ID ALL`, `SESSION_ID TAG`, `EVENT` and `QUIT` (including
+the observed `EVENTS` and `EXIT` aliases). Their absence of C-Bus address/route
+targets, lack of project or programming-session preconditions, and
+connection-state effects are structured and source-bound. The three
+`SESSION_ID` forms have resolved arities; `EVENT` and `QUIT` trailing-word
+behavior remains unresolved. `SESSION_ID`, `SESSION_ID ALL`, and the
+`QUIT`/`EXIT` verb choice have resolved value domains. Tag text limits and
+`EVENT` mode case/numeric forms remain unresolved. Native
+`SESSION_ID ALL` ignores trailing words, a tag can be set only once, `EVENT`
+starts at `e0s0c0`, and `QUIT`/`EXIT` flush `204` before EOF. The original trace
+also includes an internal console session in `SESSION_ID ALL`; cmqttd currently
+lists only its live external TCP/TLS sessions. That difference is recorded in
+the target/effect fields and remains a parity gap. The original trace
+did not exercise every ACCESS role, malformed selector, transport, timeout or
+event-interleaving case, so those response/event and functional-acceptance
+subaxes remain unresolved. The source digest and required native cases are
+checked during generation; fixture weakening fails closed.
+
+The 70 declarative model arities remain known but unresolved until each is
+reconciled with the production parser. Across all paths, three argument-arity
+subaxes, three value domains, five full session-state axes, five target-form
+axes and nine state-effect subaxes are now resolved; the other 437 target-form
+axes and 433 command-specific effect subaxes remain open. Response framing is
+resolved for all 442, but full response/event axes only for the two comment
+forms. Routing and physical-I/O boundaries, endpoint routes and native
+obsolescence statuses are resolved for all 442. All 442 functional-acceptance
+subaxes remain unresolved. These are contract-census facts, not acceptance
+evidence.
 
 ## Current result
 
