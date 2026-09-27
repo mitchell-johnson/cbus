@@ -46,10 +46,10 @@ class ReleaseGateTests(unittest.TestCase):
                 "CBUS_CGATE_JAVA": str(executable),
                 "CBUS_LOCAL_CGATE_VENDOR": str(vendor),
             })
-            self.assertEqual(verified, [
-                {"name": "CBUS_CGATE_JAVA", "kind": "executable", "present": True},
-                {"name": "CBUS_LOCAL_CGATE_VENDOR", "kind": "directory", "present": True},
-            ])
+            self.assertEqual([entry["name"] for entry in verified],
+                             ["CBUS_CGATE_JAVA", "CBUS_LOCAL_CGATE_VENDOR"])
+            self.assertEqual(verified[0]["sha256"], release_gate.digest(executable))
+            self.assertEqual(verified[1]["files"], 1)
             self.assertNotIn(str(executable), json.dumps(verified))
             executable.chmod(0o600)
             with self.assertRaisesRegex(release_gate.GateError, "not an executable"):
@@ -74,7 +74,7 @@ class ReleaseGateTests(unittest.TestCase):
                             release_gate.load_manifest(manifest, "hardware")
             manifest = self.fixture(root)
             with patch.object(release_gate, "ROOT", root), patch.object(release_gate.platform, "system", return_value="DifferentOS"):
-                with self.assertRaisesRegex(release_gate.GateError, "requires one of"):
+                with self.assertRaisesRegex(release_gate.GateError, "system requirements"):
                     release_gate.load_manifest(manifest, "hardware")
 
     def test_junit_records_skip_identity_and_cannot_pass_strict_gate(self):
@@ -82,13 +82,17 @@ class ReleaseGateTests(unittest.TestCase):
             result = Path(folder) / "result.xml"
             result.write_text(
                 '<testsuites><testsuite tests="2" failures="0" errors="0" skipped="1">'
-                '<testcase classname="tests.test_one" name="test_pass" />'
+                '<testcase classname="tests.test_one" name="test_pass"><properties>'
+                '<property name="cbus_release_gate_nodeid" value="tests/test_one.py::test_pass" />'
+                '</properties></testcase>'
                 '<testcase classname="tests.test_one" name="test_skip">'
+                '<properties><property name="cbus_release_gate_nodeid" '
+                'value="tests/test_one.py::test_skip" /></properties>'
                 '<skipped message="missing fixture" /></testcase></testsuite></testsuites>'
             )
             self.assertEqual(release_gate.junit_result(result), {
                 "tests": 2, "failures": 0, "errors": 0, "skipped": 1, "passed": 1,
-                "skip_details": [{"test": "tests.test_one::test_skip", "reason": "missing fixture"}],
+                "nodeids": ["tests/test_one.py::test_pass", "tests/test_one.py::test_skip"],
             })
 
     def test_main_writes_failing_receipt_when_a_selected_test_skips(self):
@@ -100,10 +104,19 @@ class ReleaseGateTests(unittest.TestCase):
 
             def run_pytest(command, **_kwargs):
                 self.assertIn("tests/test_fixture.py", command)
+                trace = Path(command[command.index("--cbus-release-gate-trace") + 1])
+                trace.write_text(json.dumps({
+                    "format": release_gate.TRACE_FORMAT,
+                    "collected": ["tests/test_fixture.py::test_fixture"],
+                    "executed": ["tests/test_fixture.py::test_fixture"],
+                    "deselected": [], "session_exitstatus": 0,
+                }))
                 junit.parent.mkdir(parents=True, exist_ok=True)
                 junit.write_text(
                     '<testsuites><testsuite tests="1" failures="0" errors="0" skipped="1">'
                     '<testcase classname="test_fixture" name="test_fixture">'
+                    '<properties><property name="cbus_release_gate_nodeid" '
+                    'value="tests/test_fixture.py::test_fixture" /></properties>'
                     '<skipped message="missing hardware" /></testcase></testsuite></testsuites>'
                 )
                 return SimpleNamespace(returncode=0)
@@ -113,6 +126,10 @@ class ReleaseGateTests(unittest.TestCase):
             with patch.object(release_gate, "ROOT", root), \
                  patch.object(release_gate.platform, "system", return_value="SyntheticOS"), \
                  patch.object(release_gate, "source_revision", return_value="a" * 40), \
+                 patch.object(release_gate, "source_inputs", return_value={"sha256": "b" * 64}), \
+                 patch.object(release_gate, "installed_package", return_value={"sha256": "c" * 64}), \
+                 patch.object(release_gate, "wheel_package", return_value={"sha256": "d" * 64}), \
+                 patch.object(release_gate, "verify_test_import"), \
                  patch.object(release_gate.subprocess, "run", side_effect=run_pytest), \
                  patch.dict(os.environ, {"CBUS_HARDWARE_ACCEPTANCE": "1"}, clear=True), \
                  patch("sys.argv", arguments), redirect_stdout(io.StringIO()):
@@ -120,7 +137,7 @@ class ReleaseGateTests(unittest.TestCase):
             receipt = json.loads(output.read_text())
             self.assertFalse(receipt["passed"])
             self.assertEqual(receipt["result"]["skipped"], 1)
-            self.assertIn("do not permit skipped", receipt["error"])
+            self.assertIn("do not permit failed or skipped", receipt["error"])
             self.assertEqual(receipt["verified_provision"], [
                 {"kind": "flag", "name": "CBUS_HARDWARE_ACCEPTANCE", "present": True}
             ])

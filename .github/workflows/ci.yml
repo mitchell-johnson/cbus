@@ -116,10 +116,14 @@ jobs:
         with:
           python-version: '3.13'
 
-      - name: Install Toolkit CLI and acceptance dependencies
+      - name: Build and install the exact Toolkit wheel under test
         run: |
+          python -m pip wheel --no-deps --wheel-dir "${RUNNER_TEMP}/gate-dist" ./toolkit-cli
           python -m venv toolkit-cli/.venv
-          toolkit-cli/.venv/bin/python -m pip install -e './toolkit-cli[test,research,serial,usb]'
+          wheel=$(find "${RUNNER_TEMP}/gate-dist" -maxdepth 1 -name 'cbus_toolkit_cli-*.whl' -print -quit)
+          test -n "$wheel"
+          toolkit-cli/.venv/bin/python -m pip install "${wheel}[test,research,serial,usb]"
+          printf 'CBUS_TOOLKIT_WHEEL=%s\n' "$wheel" >> "$GITHUB_ENV"
 
       - name: Run strict native acceptance selection
         working-directory: toolkit-cli
@@ -164,10 +168,14 @@ jobs:
         with:
           python-version: '3.13'
 
-      - name: Install Toolkit CLI and acceptance dependencies
+      - name: Build and install the exact Toolkit wheel under test
         run: |
+          python -m pip wheel --no-deps --wheel-dir "${RUNNER_TEMP}/gate-dist" ./toolkit-cli
           python -m venv toolkit-cli/.venv
-          toolkit-cli/.venv/bin/python -m pip install -e './toolkit-cli[test,research,serial,usb]'
+          wheel=$(find "${RUNNER_TEMP}/gate-dist" -maxdepth 1 -name 'cbus_toolkit_cli-*.whl' -print -quit)
+          test -n "$wheel"
+          toolkit-cli/.venv/bin/python -m pip install "${wheel}[test,research,serial,usb]"
+          printf 'CBUS_TOOLKIT_WHEEL=%s\n' "$wheel" >> "$GITHUB_ENV"
 
       - name: Run strict hardware acceptance selection
         working-directory: toolkit-cli

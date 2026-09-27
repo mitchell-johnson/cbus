@@ -62,8 +62,10 @@ labelled `cbus-native` and the `cbus-native` environment. Its environment must
 supply executable `CBUS_CGATE_JAVA` and `CBUS_CGATE_JAVAC` paths, the original
 C-Gate application directory in `CBUS_LOCAL_CGATE_VENDOR`, including
 `cgate.jar`, and `CBUS_UNITSPEC_DIR`. `make check-native` reads the committed
-`research/release-gates/native.json` selection. A missing path, unsupported
-host, zero-test selection, failed test, or skipped test fails the gate.
+`research/release-gates/native.json` selection. Both manual jobs build and
+install a non-editable wheel, then set `CBUS_TOOLKIT_WHEEL` to that exact
+archive. A missing or substituted wheel, missing provision, unsupported host,
+zero-test selection, failed test, or skipped test fails the gate.
 
 The hardware job requires a self-hosted runner labelled `cbus-hardware`, the
 `cbus-hardware` environment, `CBUS_HARDWARE_ACCEPTANCE=1`, and a private
@@ -84,14 +86,27 @@ manifest path in `CBUS_HARDWARE_GATE_MANIFEST`. The manifest uses this shape:
 
 Allowed provision kinds are `value`, `flag` (exactly `1`), `file`,
 `directory`, and `executable`; a file or directory rule may add a relative
-`contains` list. Test selectors must name `tests/test_*.py` modules in the
-checkout, optionally followed by pytest node IDs. Keep device identities,
+`contains` list. Test selectors must name committed `tests/test_*.py` modules
+in the checkout, optionally followed by pytest node IDs. Keep device identities,
 endpoints and vendor paths in the protected runner environment, not the
-manifest. `research/release_gate.py` records the source revision, manifest
-hash, selected tests, sanitized provision names and kinds, JUnit counters and
-skip reasons without recording provision values. The hardware selection stays
-private until P1.04 defines the required fixtures; an absent manifest fails
-instead of turning hardware acceptance into a skip.
+manifest. `research/release_gate.py` rejects a dirty tracked checkout,
+untracked executable inputs under Toolkit source/tests/research (including
+`conftest.py`), and inherited pytest options or plugins. It hashes the
+selected modules and checked-in Toolkit
+source/test/research inputs, hashes provision files and whole directory trees,
+and verifies every installed package member against the wheel's `RECORD`,
+archive bytes and exact checkout source bytes. Its pytest plugin records
+collected, deselected and executed node IDs. The gate requires each selected
+module or node to collect tests,
+every collected test to execute once, no deselection, matching JUnit identities
+and counters, and unchanged source, wheel, installed package, manifest and
+provision artifacts after execution. It removes a prior JUnit report before
+running pytest. The receipt contains the source revision, aggregate hashes,
+counts, provision variable names and kinds, and a sanitized failure reason;
+it omits private paths, values, test IDs and pytest output. Keep the separate
+JUnit artifact protected because test-produced XML may contain site details.
+The hardware selection stays private until P1.04 defines the required fixtures;
+an absent manifest fails instead of turning hardware acceptance into a skip.
 
 Both provisioned jobs upload the JSON receipt and JUnit report, then run
 `.venv/bin/cbus-toolkit coverage --require-complete` directly. That final
