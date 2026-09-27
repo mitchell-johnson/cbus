@@ -28,6 +28,40 @@ cbus-toolkit interface discover-cni \
 The Rust equivalent is `cbus-tools cni-discover` with the same options. Both
 commands emit `cbus-cni-discovery-v1` JSON and use the same wire vectors.
 
+## Explicit multi-adapter and subnet scan
+
+`scan-cni` repeats the same captured query for each *explicit* local IPv4
+bind and destination pair. It does not enumerate the host's adapters or infer
+broadcast addresses. Use the broadcast destination appropriate to each
+selected subnet; a unicast destination is also accepted:
+
+```sh
+cbus-toolkit interface scan-cni \
+  --probe 192.0.2.10@192.0.2.255 \
+  --probe 198.51.100.10@198.51.100.255 \
+  --timeout 2
+```
+
+The command accepts 1–16 unique pairs and validates all of them before any
+socket opens. It probes sequentially; `--timeout` and `--max-datagrams` apply
+to each pair, and the sum of configured reply windows cannot exceed 300
+seconds. A failed local socket operation is retained for that pair and
+later pairs are still scanned. The result format is
+`cbus-cni-multi-discovery-v1`, with each probe's original
+`cbus-cni-discovery-v1` observation nested under `observation`.
+
+Each probe has a distinct outcome: `devices_observed`,
+`no_reply_by_deadline`, `no_valid_reply_by_deadline` (only malformed replies),
+`hidden_replies_by_deadline` (only valid hidden-product replies),
+`filtered_replies_by_deadline` (hidden and malformed replies),
+`datagram_limit`, or `transport_error`. `scan_complete=false` if any probe
+reached its datagram cap or had a transport error. A transport error leaves
+`query_sent_once=null`, because it may have occurred before or after sending;
+the client never retries it. A zero-reply deadline is an observation window,
+not proof of absence. The scan never opens the advertised TCP service or
+checks exclusive ownership, and it never selects a discovered device for
+project mutation.
+
 ## Wire and result boundary
 
 The exact 19-byte query is:
@@ -50,7 +84,10 @@ change it while every other byte remains stable. Each device record therefore
 uses the UDP source IPv4 address with the advertised TCP
 port to form `endpoint`. Exact duplicates from the same UDP source are counted
 once. Structurally invalid datagrams are retained under `malformed`; they are
-never treated as devices. Results are sorted deterministically.
+never treated as devices. To keep a 4096-datagram scan bounded in memory,
+duplicate keys use a source/length/SHA-256 fingerprint and malformed records
+retain at most the first 64 raw bytes, plus `raw_length` and `raw_truncated`.
+Results are sorted deterministically.
 
 One monotonic deadline covers reply collection. `--max-datagrams` is bounded
 to 1–4096. Reaching it sets `collection_complete=false`; reaching the deadline
@@ -88,3 +125,16 @@ hidden filtering, malformed evidence, argument validation and CLI JSON. Rust
 tests cover the pure codec, transport and executable boundary. These checks do
 not replace a fresh original Toolkit differential or broad real-interface and
 multi-adapter acceptance.
+
+The explicit multi-route tests cover two different local binds, independent
+no-reply and device observations, malformed-only, hidden-only and capped
+results, a failed adapter followed by a successful later probe, all-route
+preflight, and CLI output. They use one-shot loopback UDP peers, not a native
+Toolkit run or physical interface acceptance.
+
+An operator-authorized read-only scan on 27 September 2026 sent one query from
+each of two active Mac adapters on the house subnet. Each route received one
+valid CNI2 reply advertising the same endpoint; the raw address-bearing
+output remains outside the repository. This checks per-route reporting on
+that host only. It does not establish original Toolkit behavior, TCP
+reachability or ownership, C-Bus network identity, or other adapters/subnets.

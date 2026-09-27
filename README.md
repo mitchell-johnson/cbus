@@ -91,10 +91,12 @@ Results are JSON on stdout; operation errors are JSON on stderr and return a non
 
 To find a CNI2 or Wiser endpoint first, run `cbus-toolkit interface
 discover-cni`. It sends one bounded IPv4 UDP query and reports the source
-address plus advertised TCP port without opening the interface. A zero-reply
-result does not prove that no interface exists. The Rust tools expose the same
-wire codec and JSON boundary as `cbus-tools cni-discover`; see the [discovery
-contract](toolkit-cli/docs/cni-discovery.md).
+address plus advertised TCP port without opening the interface. For several
+adapters or subnets, `cbus-toolkit interface scan-cni --probe
+LOCAL_IP@SUBNET_BROADCAST` records each chosen route independently. A
+zero-reply result does not prove that no interface exists. The Rust tools
+expose the same wire codec and JSON boundary as `cbus-tools cni-discover`;
+see the [discovery contract](toolkit-cli/docs/cni-discovery.md).
 
 ### Toolkit compatibility and current status
 
@@ -698,6 +700,7 @@ For a PCI/CNI test endpoint, run `rust/target/release/cbus-simulator 127.0.0.1 1
 - [Architecture](docs/architecture.md), [command reference](docs/commands.md), and [protocols](docs/protocol.md)
 - [MQTT bridge configuration](docs/configuration.md), [C-Gate compatibility](docs/cgate.md), and [physical DALI commands](docs/cgate-dali.md)
 - [Testing and development](docs/testing.md)
+- [Original Toolkit/C-Gate artifact provenance](toolkit-cli/docs/original-artifact-provenance.md) and [functional parity register](toolkit-cli/docs/parity-register.md)
 - [AI skill](.agents/skills/cbus-cli/SKILL.md) with command, system, and workflow references; [repository agent guidance](AGENTS.md)
 
 ## Repository layout

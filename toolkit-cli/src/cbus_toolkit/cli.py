@@ -1250,6 +1250,20 @@ def build_parser():
                           help="Bound in 1..4096; reaching it marks collection incomplete")
     discover.add_argument("--include-hidden", action="store_true",
                           help="Include product-id 2 replies hidden by captured Toolkit behavior")
+    scan = interface_ops.add_parser(
+        "scan-cni", help="Probe up to 16 explicit local-adapter and destination pairs"
+    )
+    scan.add_argument("--probe", action="append", required=True, metavar="BIND_IPV4@DESTINATION_IPV4",
+                      help="One local IPv4 bind address and broadcast/unicast destination; repeat for each route")
+    scan.add_argument("--listen-port", type=int, default=20050,
+                      help="Local UDP port for each sequential probe; 0 selects an ephemeral port")
+    scan.add_argument("--discovery-port", type=int, default=20050)
+    scan.add_argument("--timeout", type=float, default=2.0,
+                      help="Reply window per probe in seconds, in (0, 300]")
+    scan.add_argument("--max-datagrams", type=int, default=256,
+                      help="Per-probe bound in 1..4096; reaching it marks the scan incomplete")
+    scan.add_argument("--include-hidden", action="store_true",
+                      help="Include product-id 2 replies hidden by captured Toolkit behavior")
 
     project = commands.add_parser("project", help="Edit legacy Toolkit XML/CBZ projects without discarding unknown data")
     ops = project.add_subparsers(dest="action", required=True)
@@ -3249,13 +3263,20 @@ def _memory(args):
 
 def run(args):
     if args.area == "interface":
-        from .cni_discovery import discover_cni
-        return discover_cni(
-            bind=args.bind,
-            listen_port=args.listen_port,
-            destination=args.destination,
-            discovery_port=args.discovery_port,
-            timeout=args.timeout,
+        from .cni_discovery import discover_cni, scan_cni
+        if args.action == "discover-cni":
+            return discover_cni(
+                bind=args.bind,
+                listen_port=args.listen_port,
+                destination=args.destination,
+                discovery_port=args.discovery_port,
+                timeout=args.timeout,
+                max_datagrams=args.max_datagrams,
+                include_hidden=args.include_hidden,
+            ), 0
+        return scan_cni(
+            args.probe, listen_port=args.listen_port,
+            discovery_port=args.discovery_port, timeout=args.timeout,
             max_datagrams=args.max_datagrams,
             include_hidden=args.include_hidden,
         ), 0

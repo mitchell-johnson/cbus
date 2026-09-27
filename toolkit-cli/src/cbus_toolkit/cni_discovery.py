@@ -8,6 +8,7 @@ assigned unverified meanings.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import hashlib
 import ipaddress
 import socket
 import time
@@ -17,6 +18,9 @@ DISCOVERY_PORT = 20_050
 DISCOVERY_QUERY = bytes.fromhex("cb800000000000000101010b011d80010247ff")
 DISCOVERY_REPLY_LENGTH = 30
 MAX_DISCOVERY_DATAGRAMS = 4_096
+MAX_DISCOVERY_PROBES = 16
+MAX_DISCOVERY_SCAN_SECONDS = 300
+MAX_MALFORMED_RAW_PREFIX = 64
 
 
 @dataclass(frozen=True)
@@ -94,6 +98,31 @@ def _port(value, label, *, allow_zero=False):
     return value
 
 
+def _timeout(value):
+    if (isinstance(value, bool) or not isinstance(value, (int, float))
+            or value != value or value in (float("inf"), float("-inf"))
+            or not 0 < value <= 300):
+        raise ValueError("CNI discovery timeout must be finite and in (0, 300]")
+    return float(value)
+
+
+def _max_datagrams(value):
+    if (isinstance(value, bool) or not isinstance(value, int)
+            or not 1 <= value <= MAX_DISCOVERY_DATAGRAMS):
+        raise ValueError(
+            f"CNI discovery max_datagrams must be in 1..={MAX_DISCOVERY_DATAGRAMS}"
+        )
+    return value
+
+
+def _probe(value):
+    if not isinstance(value, str) or value.count("@") != 1:
+        raise ValueError("CNI discovery probe must be BIND_IPV4@DESTINATION_IPV4")
+    bind, destination = value.split("@")
+    return (_ipv4(bind, "CNI discovery probe bind address"),
+            _ipv4(destination, "CNI discovery probe destination"))
+
+
 def discover_cni(*, bind="0.0.0.0", listen_port=DISCOVERY_PORT,
                  destination="255.255.255.255", discovery_port=DISCOVERY_PORT,
                  timeout=2.0, max_datagrams=256, include_hidden=False,
@@ -108,18 +137,10 @@ def discover_cni(*, bind="0.0.0.0", listen_port=DISCOVERY_PORT,
     destination = _ipv4(destination, "CNI discovery destination")
     listen_port = _port(listen_port, "CNI discovery listen port", allow_zero=True)
     discovery_port = _port(discovery_port, "CNI discovery destination port")
-    if isinstance(timeout, bool) or not isinstance(timeout, (int, float)) or not 0 < timeout <= 300:
-        raise ValueError("CNI discovery timeout must be finite and in (0, 300]")
-    if timeout != timeout or timeout in (float("inf"), float("-inf")):
-        raise ValueError("CNI discovery timeout must be finite and in (0, 300]")
-    if (isinstance(max_datagrams, bool) or not isinstance(max_datagrams, int)
-            or not 1 <= max_datagrams <= MAX_DISCOVERY_DATAGRAMS):
-        raise ValueError(
-            f"CNI discovery max_datagrams must be in 1..={MAX_DISCOVERY_DATAGRAMS}"
-        )
+    timeout = _timeout(timeout)
+    max_datagrams = _max_datagrams(max_datagrams)
     if not isinstance(include_hidden, bool):
         raise ValueError("CNI discovery include_hidden must be a boolean")
-
     peer = socket_factory(socket.AF_INET, socket.SOCK_DGRAM)
     devices = []
     malformed = []
@@ -133,7 +154,7 @@ def discover_cni(*, bind="0.0.0.0", listen_port=DISCOVERY_PORT,
         sent = peer.sendto(DISCOVERY_QUERY, (destination, discovery_port))
         if sent != len(DISCOVERY_QUERY):
             raise OSError(f"CNI discovery sent {sent} of {len(DISCOVERY_QUERY)} query bytes")
-        deadline = clock() + float(timeout)
+        deadline = clock() + timeout
         while True:
             if received == max_datagrams:
                 complete = False
@@ -148,7 +169,7 @@ def discover_cni(*, bind="0.0.0.0", listen_port=DISCOVERY_PORT,
                 break
             received += 1
             source_address, source_port = source[:2]
-            key = (source_address, source_port, raw)
+            key = (source_address, source_port, len(raw), hashlib.sha256(raw).digest())
             if key in seen:
                 duplicates += 1
                 continue
@@ -158,7 +179,9 @@ def discover_cni(*, bind="0.0.0.0", listen_port=DISCOVERY_PORT,
             except (TypeError, ValueError) as error:
                 malformed.append({
                     "source": f"{source_address}:{source_port}",
-                    "raw_hex": raw.hex(),
+                    "raw_hex": raw[:MAX_MALFORMED_RAW_PREFIX].hex(),
+                    "raw_length": len(raw),
+                    "raw_truncated": len(raw) > MAX_MALFORMED_RAW_PREFIX,
                     "error": str(error),
                 })
                 continue
@@ -206,3 +229,80 @@ def discover_cni(*, bind="0.0.0.0", listen_port=DISCOVERY_PORT,
         }
     finally:
         peer.close()
+
+
+def scan_cni(probes, *, listen_port=DISCOVERY_PORT,
+             discovery_port=DISCOVERY_PORT, timeout=2.0, max_datagrams=256,
+             include_hidden=False, discover=discover_cni):
+    """Run an explicit bounded sequence of independent CNI/Wiser UDP probes.
+
+    Every route is validated before the first socket opens. Each successful
+    probe uses the captured single-query contract; failures in one local
+    adapter do not erase observations from later probes. No result proves that
+    a device is absent or that its advertised TCP service is reachable.
+    """
+    if not isinstance(probes, (list, tuple)) or not 1 <= len(probes) <= MAX_DISCOVERY_PROBES:
+        raise ValueError(f"CNI discovery requires 1..={MAX_DISCOVERY_PROBES} probes")
+    routes = tuple(_probe(value) for value in probes)
+    if len(set(routes)) != len(routes):
+        raise ValueError("CNI discovery probes must be unique")
+    listen_port = _port(listen_port, "CNI discovery listen port", allow_zero=True)
+    discovery_port = _port(discovery_port, "CNI discovery destination port")
+    timeout = _timeout(timeout)
+    max_datagrams = _max_datagrams(max_datagrams)
+    if not isinstance(include_hidden, bool):
+        raise ValueError("CNI discovery include_hidden must be a boolean")
+    if timeout * len(routes) > MAX_DISCOVERY_SCAN_SECONDS:
+        raise ValueError(
+            f"CNI discovery configured scan window must be <= {MAX_DISCOVERY_SCAN_SECONDS} seconds"
+        )
+
+    observations = []
+    for bind, destination in routes:
+        route = {"bind": bind, "destination": destination}
+        try:
+            result = discover(
+                bind=bind, listen_port=listen_port, destination=destination,
+                discovery_port=discovery_port, timeout=timeout,
+                max_datagrams=max_datagrams, include_hidden=include_hidden,
+            )
+        except OSError as error:
+            observations.append({
+                "route": route,
+                "outcome": "transport_error",
+                "query_sent_once": None,
+                "error": str(error),
+                "observation": None,
+            })
+            continue
+        if not result["collection_complete"]:
+            outcome = "datagram_limit"
+        elif result["devices"]:
+            outcome = "devices_observed"
+        elif result["hidden_ignored"] and result["malformed"]:
+            outcome = "filtered_replies_by_deadline"
+        elif result["hidden_ignored"]:
+            outcome = "hidden_replies_by_deadline"
+        elif result["malformed"]:
+            outcome = "no_valid_reply_by_deadline"
+        else:
+            outcome = "no_reply_by_deadline"
+        observations.append({
+            "route": route,
+            "outcome": outcome,
+            "query_sent_once": True,
+            "error": None,
+            "observation": result,
+        })
+    return {
+        "format": "cbus-cni-multi-discovery-v1",
+        "query_hex": DISCOVERY_QUERY.hex(),
+        "probes": observations,
+        "probe_count": len(observations),
+        "scan_complete": all(probe["observation"] is not None
+                             and probe["observation"]["collection_complete"]
+                             for probe in observations),
+        "absence_proven": False,
+        "ownership_checked": False,
+        "tcp_connection_opened": False,
+    }

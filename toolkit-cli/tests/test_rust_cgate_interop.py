@@ -28,7 +28,7 @@ import threading
 import unittest
 from pathlib import Path
 
-from cbus_toolkit.cgate import CGateClient
+from cbus_toolkit.cgate import CGateClient, CGateError
 
 
 def find_mock():
@@ -565,10 +565,17 @@ class RustInteropTests(unittest.TestCase):
         replacement = (
             '<Unit xmlns:x="urn:interop" x:mode="preserve">'
             f"<OID>{oid}</OID><Address>21</Address><TagName>Moved</TagName>"
-            "<UnitType>KEYE1</UnitType><FirmwareVersion>1.2.67</FirmwareVersion>"
+            "<UnitType>KEYE1</UnitType><UnitName>Moved</UnitName>"
+            "<FirmwareVersion>1.2.67</FirmwareVersion>"
             '<!--opaque-comment--><x:Opaque order="1"><x:Nested>yes</x:Nested>'
             '</x:Opaque><PP Name="UnitAddress" Value="21"/></Unit>'
         )
+        with self.assertRaises(CGateError) as refused:
+            self.client.command_document(
+                "DBSETXML //TEST/254/p/20",
+                replacement.replace("<UnitName>Moved</UnitName>", ""))
+        self.assertEqual(refused.exception.response.code, 446)
+        self.assertEqual(xml_text(database.get("//TEST/254/p/20", xml=True)), initial)
         replaced = self.client.command_document(
             "DBSETXML //TEST/254/p/20", replacement)
         self.assertEqual(replaced.code, 301)

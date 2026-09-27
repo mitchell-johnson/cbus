@@ -214,9 +214,10 @@ live Network accepts this database-only replacement at its existing address
 when `InterfaceType` and `InterfaceAddress` retain the running service binding;
 physical inventory, live levels, network state and retries remain runtime
 owned. A move or interface rebinding returns 408 after staged validation and
-before persistence. The combined Network/Unit path composes the retained
-complete-Network and complete-Unit contracts; an exact native combined
-replacement capture and private vendor formats remain unavailable.
+before persistence. One owned native C-Gate 3.4.0.2001 combined
+Network/Application/Unit capture pins the root-OID receipt, plain Unit
+readback order and missing-UnitName validation. Other combined forms,
+extension/namespace behavior and private vendor formats remain unverified.
 `REPOSITORY USE 1` is an idempotent
 selection of cmqttd's only repository, and `PROJECT REPAIR` performs an atomic
 JSON serialize/parse/restore validation while preserving runtime caches. All

@@ -72,6 +72,22 @@ is hidden by default to match the retained behavior; use `--include-hidden` to
 inspect it. A zero-result run does not prove absence. On hosts with several
 adapters, pass the numeric local address with `--bind`.
 
+To survey several chosen adapters or subnets in one run, pass one numeric
+local-address and destination pair per probe:
+
+```sh
+cbus-toolkit interface scan-cni \
+  --probe 192.0.2.10@192.0.2.255 \
+  --probe 198.51.100.10@198.51.100.255
+```
+
+Each route gets one query and its own result. The command accepts 1–16 unique
+routes with a total configured reply window of at most 300 seconds, and
+distinguishes devices, no reply by deadline, filtered packets, a datagram cap,
+and a transport error. It never infers absence, TCP reachability, or exclusive
+ownership. Adapter enumeration and native `PORT CNISCAN2` status checks remain
+separate work.
+
 After reviewing a result, use its `endpoint` explicitly when creating a native
 network:
 
@@ -1935,9 +1951,9 @@ segmented replies up to the requested 255-byte limit without truncation.
 
 ## Vendor evidence
 
-The installer and its documentation are kept locally under `research/vendor/`
-and are not redistributed in this repository. Start with your legally obtained
-Toolkit 1.18.0 download:
+Keep the installer and its documentation privately, outside tracked files;
+`research/vendor/` is one ignored local location. Start with your legally
+obtained Toolkit 1.18.0 download:
 
 ```sh
 brew install innoextract sevenzip
@@ -1951,6 +1967,12 @@ The initial artifact inventory contains 3,767 help topics, 577 catalog entries,
 271 unit types and 3,750 firmware revision entries. The command reference
 lists 209 entries; additional internal programming commands exist and the
 complete workflow census is still being expanded.
+
+The [original-artifact provenance manifest](docs/original-artifact-provenance.md)
+pins the private target installer, extracted Toolkit/C-Gate files, bundled JRE,
+and decoded unit-catalogue inputs by hash and version without committing their
+contents. Verify those inputs before an original comparison; the pin alone is
+not a native or hardware acceptance receipt.
 
 Decode the vendor's authenticated unit specification format for inspection:
 

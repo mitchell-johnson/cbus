@@ -1,0 +1,191 @@
+{
+  "format": "cbus-original-artifact-provenance-v1",
+  "target": "Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001",
+  "roots": {
+    "installer": "private extracted installer audit",
+    "decoded_specs": "private decoded C-Gate unit specification directory"
+  },
+  "versions": {
+    "toolkit": {
+      "artifact": "toolkit-exe",
+      "source": "PE fixed FileVersion",
+      "value": "1.18.0.2754"
+    },
+    "cgate": {
+      "artifact": "cgate-jar",
+      "source": "JAR META-INF/MANIFEST.MF Implementation-Version",
+      "value": "3.4.0_2001",
+      "build_number": "2001"
+    },
+    "jre": {
+      "artifact": "cgate-jre",
+      "source": "bundled JRE release JAVA_RUNTIME_VERSION",
+      "value": "11.0.24+8",
+      "implementor": "Temurin-11.0.24+8"
+    },
+    "firmware_updater": {
+      "artifact": "firmware-updater",
+      "source": "PE fixed FileVersion",
+      "value": "1.16.3.0"
+    }
+  },
+  "specification_alignment": {
+    "encrypted_count": 280,
+    "decoded_count": 280,
+    "names_match": true
+  },
+  "artifacts": [
+    {
+      "id": "toolkit-installer",
+      "root": "installer",
+      "path": "setup.exe",
+      "kind": "file",
+      "size_bytes": 176675576,
+      "sha256": "34811c4837ab484061760ebe8b02d059c59b57d8a40a8324391aa1bdd12f9c41"
+    },
+    {
+      "id": "toolkit-exe",
+      "root": "installer",
+      "path": "extracted-20260926/app/CBusToolkit.exe",
+      "kind": "file",
+      "size_bytes": 20518992,
+      "sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab"
+    },
+    {
+      "id": "toolkit-map",
+      "root": "installer",
+      "path": "extracted-20260926/app/CBusToolkit.map",
+      "kind": "file",
+      "size_bytes": 19819281,
+      "sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+    },
+    {
+      "id": "toolkit-binaries",
+      "root": "installer",
+      "path": "extracted-20260926/app",
+      "kind": "flat-exe-dll",
+      "file_count": 27,
+      "total_bytes": 31564064,
+      "sha256": "e5afeaa30b6d39133384eccbd460803b1fe65da0a6ba96211f62722bb1eb20b5"
+    },
+    {
+      "id": "toolkit-help-chm",
+      "root": "installer",
+      "path": "extracted-20260926/app/Toolkit Help.chm",
+      "kind": "file",
+      "size_bytes": 18739212,
+      "sha256": "a189775cc95c426d0c55218f82951f9701b328e65b5dacbcfea457ed410511ab"
+    },
+    {
+      "id": "toolkit-help-extracted",
+      "root": "installer",
+      "path": "help-20260926",
+      "kind": "tree",
+      "file_count": 4284,
+      "total_bytes": 51490149,
+      "sha256": "b3eab253ff5a271236caf07c2a967f447ddf72bfb7eb63ecad39983e5d728ea6"
+    },
+    {
+      "id": "cgate-installer",
+      "root": "installer",
+      "path": "extracted-20260926/tmp/cgate-3.4.0_2001-JRE-11.0.24_8-setup.exe",
+      "kind": "file",
+      "size_bytes": 91568288,
+      "sha256": "e2e0df561828c40fdad56e80439586820946f41ff93efe41d55e01a696db6aaa"
+    },
+    {
+      "id": "cgate-launcher",
+      "root": "installer",
+      "path": "cgate-extracted-20260926/app/cgate.exe",
+      "kind": "file",
+      "size_bytes": 157264,
+      "sha256": "cd68f5dfdabbfbcaf12583f1482c694b12c3fb31429eeb47adce9015b700a750"
+    },
+    {
+      "id": "cgate-jar",
+      "root": "installer",
+      "path": "cgate-extracted-20260926/app/cgate.jar",
+      "kind": "file",
+      "size_bytes": 3769295,
+      "sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+    },
+    {
+      "id": "cgate-libraries",
+      "root": "installer",
+      "path": "cgate-extracted-20260926/app/lib",
+      "kind": "tree",
+      "file_count": 31,
+      "total_bytes": 26421806,
+      "sha256": "a86161db9e3541212deeaa005008da03ecc3388646f8599b3476d62b33f4dd15"
+    },
+    {
+      "id": "cgate-jre",
+      "root": "installer",
+      "path": "cgate-extracted-20260926/app/openjdk_jre_11.0.24_8_x64",
+      "kind": "tree",
+      "file_count": 332,
+      "total_bytes": 124724204,
+      "sha256": "8dfeab5367d827907b6cae68a582cc762c391910f40796d9839313ac8125c59b"
+    },
+    {
+      "id": "cgate-encrypted-specs",
+      "root": "installer",
+      "path": "cgate-extracted-20260926/app/unitspec",
+      "kind": "tree",
+      "file_count": 282,
+      "total_bytes": 3919864,
+      "sha256": "9f0be322bdd230bacb5e7da5ad69db1c227fc8ec7ed63b4dcd834d006cedcf0e"
+    },
+    {
+      "id": "cgate-dali-catalogue",
+      "root": "installer",
+      "path": "cgate-extracted-20260926/app/dali_catalogue",
+      "kind": "tree",
+      "file_count": 25,
+      "total_bytes": 8372,
+      "sha256": "09e55d738bd6df00dc34dd0c6ca0335f85ff0531a0053f7a360eabe18ecfeb85"
+    },
+    {
+      "id": "decoded-specs",
+      "root": "decoded_specs",
+      "path": ".",
+      "kind": "tree",
+      "file_count": 280,
+      "total_bytes": 2503309,
+      "sha256": "1b60936327b14d7431129c6af63911f53e50fd4b3396d0afbf5f731d57d13386"
+    },
+    {
+      "id": "firmware-updater",
+      "root": "installer",
+      "path": "extracted-20260926/app/FirmwareUpdater.exe",
+      "kind": "file",
+      "size_bytes": 189440,
+      "sha256": "f54ea945167436b8a3e95decb1d146d01d60e4af1badcd34f4bad626df1e54d5"
+    },
+    {
+      "id": "edlt-firmware",
+      "root": "installer",
+      "path": "extracted-20260926/app/Firmware/eDLTFirmware",
+      "kind": "tree",
+      "file_count": 25,
+      "total_bytes": 16443637,
+      "sha256": "ab34ccd878278ce16d0139a5ab0fbc47583e07db475ac2e6e632ae2f115e1dd5"
+    },
+    {
+      "id": "sesu-installer",
+      "root": "installer",
+      "path": "extracted-20260926/tmp/SESU_3.0.7_setup_sfx.exe",
+      "kind": "file",
+      "size_bytes": 27059912,
+      "sha256": "7086d31ae7e8654427d1f345576dc06045a4b61637d4fefeba8baeb27195b174"
+    },
+    {
+      "id": "sesu-toolkit-config",
+      "root": "installer",
+      "path": "extracted-20260926/commoncf32/Schneider Electric Shared/Schneider Electric Software Update/Config/luSettingsC-Bus Toolkit.xml",
+      "kind": "file",
+      "size_bytes": 600,
+      "sha256": "a8b6b1d2911abc2f443a9fa0c7d0d3f919ded4c20e1a7ee84d3f8b11aecfb870"
+    }
+  ]
+}
