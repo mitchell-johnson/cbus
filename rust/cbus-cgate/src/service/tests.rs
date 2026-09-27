@@ -5344,6 +5344,130 @@ async fn timed_direct_lighting_ramp_requests_final_physical_level_after_native_d
 }
 
 #[tokio::test(start_paused = true)]
+async fn later_direct_command_cancels_superseded_ramp_final_read() {
+    let path = state_path();
+    let (pci_client, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci_client.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        database_pci_line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let first = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[first] RAMP //HARNESS/254/56/1 77 1",
+                )
+                .await
+        }
+    });
+    let request = database_pci_line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\0538000A014D"), "{request:?}");
+    remote_write
+        .write_all(&[request[request.len() - 2], b'.'])
+        .await
+        .unwrap();
+    assert_eq!(first.await.unwrap().status, 200);
+    let status_request = database_pci_line(&mut remote_read).await;
+    assert!(
+        status_request.starts_with(b"\\05FF00"),
+        "{status_request:?}"
+    );
+
+    tokio::time::advance(Duration::from_secs(1)).await;
+    let second = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[second] RAMP //HARNESS/254/56/1 64 1",
+                )
+                .await
+        }
+    });
+    let request = database_pci_line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\0538000A0140"), "{request:?}");
+    remote_write
+        .write_all(&[request[request.len() - 2], b'.'])
+        .await
+        .unwrap();
+    assert_eq!(second.await.unwrap().status, 200);
+    assert_eq!(database_pci_line(&mut remote_read).await, status_request);
+
+    // The first request would have matured here, but its group was replaced.
+    tokio::time::advance(Duration::from_millis(3500)).await;
+    assert!(
+        tokio::time::timeout(
+            Duration::from_millis(1),
+            database_pci_line(&mut remote_read)
+        )
+        .await
+        .is_err(),
+        "superseded ramp must not issue a final status request"
+    );
+    tokio::time::advance(Duration::from_secs(1)).await;
+    assert_eq!(database_pci_line(&mut remote_read).await, status_request);
+
+    let third = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[third] RAMP //HARNESS/254/56/1 128 1",
+                )
+                .await
+        }
+    });
+    let request = database_pci_line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\0538000A0180"), "{request:?}");
+    remote_write
+        .write_all(&[request[request.len() - 2], b'.'])
+        .await
+        .unwrap();
+    assert_eq!(third.await.unwrap().status, 200);
+    assert_eq!(database_pci_line(&mut remote_read).await, status_request);
+
+    let off = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(&mut ClientState::default(), "[off] OFF //HARNESS/254/56/1")
+                .await
+        }
+    });
+    let request = database_pci_line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\0538000101"), "{request:?}");
+    remote_write
+        .write_all(&[request[request.len() - 2], b'.'])
+        .await
+        .unwrap();
+    assert_eq!(off.await.unwrap().status, 200);
+    assert_eq!(database_pci_line(&mut remote_read).await, status_request);
+    tokio::time::advance(Duration::from_secs(5)).await;
+    assert!(
+        tokio::time::timeout(
+            Duration::from_millis(1),
+            database_pci_line(&mut remote_read)
+        )
+        .await
+        .is_err(),
+        "OFF must cancel the pending ramp final status request"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test(start_paused = true)]
 async fn timed_ramp_final_readback_skips_routed_network_and_replaced_pci() {
     let path = state_path();
     let (pci_client, remote) = pci();

@@ -1716,8 +1716,11 @@ same confirmed SAL path as the corresponding lighting command. On the direct
 network, a nonzero-duration RAMP schedules an additional physical level-status
 request after the table-snapped native duration plus 500 ms. A first status
 report can show an intermediate level; only a later received report can update
-the cached level to the physical result. The deferred request is skipped after
-an observed PCI replacement and never targets the replacement transport;
+the cached level to the physical result. A later confirmed direct command for
+the same application/group cancels its pending final request; different groups
+keep independent deadlines even when they share a status block. The deferred
+request is skipped after an observed PCI replacement and never targets the
+replacement transport;
 reconnect racing just after the check may still receive that read-only request
 on the captured old PCI. Immediate ramps and routed commands do not schedule
 this additional readback. `DO

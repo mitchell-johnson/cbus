@@ -92,7 +92,7 @@ use std::{
 use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
     net::{lookup_host, TcpListener, TcpStream},
-    sync::{broadcast, mpsc, Mutex, RwLock, Semaphore},
+    sync::{broadcast, mpsc, oneshot, Mutex, RwLock, Semaphore},
 };
 
 const MAX_LINE: usize = 1024 * 1024;
@@ -670,6 +670,8 @@ pub struct ClientState {
     shutdown_pending: bool,
 }
 
+type PendingLightingRamps = HashMap<(u8, u8), (u64, oneshot::Sender<()>)>;
+
 /// One real, explicitly selected C-Bus network, shared with the MQTT gateway.
 pub struct Service {
     model: Mutex<Server>,
@@ -697,6 +699,11 @@ pub struct Service {
     next_programmer_identity: AtomicU64,
     // Serialize command intents without preventing readback/event processing.
     commands: Mutex<()>,
+    /// One cancellable final read per direct Lighting group. A later command
+    /// to that group supersedes its pending ramp; other groups in the same
+    /// status block retain their own completion deadlines.
+    pending_lighting_ramps: Mutex<PendingLightingRamps>,
+    next_lighting_ramp_timer: AtomicU64,
     /// SHA-256 digest of the optional recovery LOGIN token. `None` (unset)
     /// means the additional mutation gate is dormant while native ACCESS
     /// LOGIN/LOGOUT remain available. Set once at startup from
@@ -1765,6 +1772,8 @@ impl Service {
             next_advisory_identity: AtomicU64::new(1),
             next_programmer_identity: AtomicU64::new(1),
             commands: Mutex::new(()),
+            pending_lighting_ramps: Mutex::new(HashMap::new()),
+            next_lighting_ramp_timer: AtomicU64::new(1),
             auth_token_hash: OnceLock::new(),
             port_endpoint: OnceLock::new(),
             shutdown,
@@ -1870,6 +1879,9 @@ impl Service {
     pub async fn set_pci(&self, pci: Arc<PciClient>) {
         let _generation_gate = self.pci_generation_gate.lock().await;
         self.pci_generation.fetch_add(1, Ordering::AcqRel);
+        for (_, (_, cancel)) in self.pending_lighting_ramps.lock().await.drain() {
+            let _ = cancel.send(());
+        }
         self.observe(&CBusEvent::ConnectionLost).await;
         *self.pci.write().await = pci;
         let mut model = self.model.lock().await;
@@ -12353,31 +12365,57 @@ impl Service {
                     // Queue the existing direct physical readback. There is no
                     // retained routed status-reply contract for these commands,
                     // so a bridged confirmation does not invent one.
+                    // Replace only this group's pending final ramp read. A
+                    // different group in the same block can have a distinct
+                    // completion deadline and must retain its final read.
+                    let key = (app, group);
+                    let mut pending = self.pending_lighting_ramps.lock().await;
+                    if let Some((_, cancel)) = pending.remove(&key) {
+                        let _ = cancel.send(());
+                    }
+                    let mut cancellation = final_readback_delay.map(|_| {
+                        let id = self
+                            .next_lighting_ramp_timer
+                            .fetch_add(1, Ordering::Relaxed);
+                        let (sender, receiver) = oneshot::channel();
+                        pending.insert(key, (id, sender));
+                        (id, receiver)
+                    });
+                    drop(pending);
                     let service = Arc::clone(self);
                     tokio::spawn(async move {
                         let final_at =
                             final_readback_delay.map(|delay| tokio::time::Instant::now() + delay);
-                        let Some(generation_guard) =
+                        if let Some(generation_guard) =
                             service.pci_commit_guard(pci_generation, &pci).await
-                        else {
-                            return;
-                        };
-                        // The flow controller may wait indefinitely for a
-                        // stalled CNI write. Do not hold the replacement gate
-                        // across it. A replacement racing after this check
-                        // can receive only this read-only request on the old
-                        // captured PCI, never a request on the new PCI.
-                        drop(generation_guard);
-                        let _ = pci.request_status(group & 0xe0, app, true).await;
-                        if let Some(final_at) = final_at {
-                            tokio::time::sleep_until(final_at).await;
-                            let Some(generation_guard) =
-                                service.pci_commit_guard(pci_generation, &pci).await
-                            else {
-                                return;
-                            };
+                        {
+                            // The flow controller may wait for a stalled CNI
+                            // write. Do not hold the replacement gate across
+                            // it. A replacement racing after this check can
+                            // receive only a read on the old captured PCI.
                             drop(generation_guard);
                             let _ = pci.request_status(group & 0xe0, app, true).await;
+                            if let (Some(final_at), Some((_, receiver))) =
+                                (final_at, cancellation.as_mut())
+                            {
+                                tokio::select! {
+                                    _ = tokio::time::sleep_until(final_at) => {
+                                        if let Some(generation_guard) =
+                                            service.pci_commit_guard(pci_generation, &pci).await
+                                        {
+                                            drop(generation_guard);
+                                            let _ = pci.request_status(group & 0xe0, app, true).await;
+                                        }
+                                    }
+                                    _ = receiver => {}
+                                }
+                            }
+                        }
+                        if let Some((id, _)) = cancellation {
+                            let mut pending = service.pending_lighting_ramps.lock().await;
+                            if pending.get(&key).is_some_and(|(current, _)| *current == id) {
+                                pending.remove(&key);
+                            }
                         }
                     });
                 }
