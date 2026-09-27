@@ -157,9 +157,12 @@ are durable local operations. `DBSETXML` covers scalar-field documents and
 complete typed Unit, Level, NetVar, Group, Application and Network/Interface
 trees: it validates before mutation, atomically replaces the old subtree, and
 returns the submitted root as `301 OID=...`. The Python interop suite drives
-Unit and Application/Group/Level forms through the production client. Network
-documents containing Unit and private vendor XML formats remain unsupported
-because no retained replacement contract establishes them. `DBCREATE`,
+Unit and Application/Group/Level forms through the production client. Complete
+Network documents containing Unit and Application are covered by separate
+Rust tests; the [owned original-service combined fixture](native-cgate-dbsetxml-combined-vm.md)
+adds a narrow mapper and omitted-child oracle without establishing exact Rust
+parity for unknown namespaced XML. Broader combined forms and private vendor
+XML formats remain outside the retained native contract. `DBCREATE`,
 `DBUPDATE`, and `DBVERIFY` first obtain a generation-guarded physical inventory,
 then respectively replace, merge, or compare the durable model with atomic
 commit and rollback behavior.

@@ -1,0 +1,176 @@
+{
+  "format": "native-cgate-dbsetxml-vm-fixture-v1",
+  "captured_utc": "2026-09-27T17:10:48.2035961Z",
+  "guest": "disposable owned UTM Windows 11 VM",
+  "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+  "java_sha256": "37048fe85e763554aa104d6711531b185271905a81ff7fb055978acf8eaea5f7",
+  "service_pid": 5172,
+  "service_listeners": [
+    "127.0.0.1:24100",
+    "127.0.0.1:24101",
+    "127.0.0.1:24102",
+    "127.0.0.1:24103",
+    "127.0.0.1:24110",
+    "127.0.0.1:24111"
+  ],
+  "default_route_count": 0,
+  "network_oid": "a30e4af0-9cc3-103f-9dbf-a55f288515de",
+  "interface_oid": "33333333-3333-4333-8333-333333333333",
+  "capture_script_sha256": "eea936de6596082a17720ffb9e1ee2198df44dac254a34a7a2c53dbfe2e8d1c6",
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0\r\n",
+  "cases": [
+    {
+      "tag": "900",
+      "command": "PROJECT USE XVM24",
+      "request": "[900] PROJECT USE XVM24\r\n",
+      "response_lines": [
+        "[900] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": "901",
+      "command": "DBGETXML //XVM24/254",
+      "request": "[901] DBGETXML //XVM24/254\r\n",
+      "response_lines": [
+        "[901] 343-Begin XML snippet\r\n",
+        "[901] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[901] 347-<Network><OID>a30e4af0-9cc3-103f-9dbf-a55f288515de</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>33333333-3333-4333-8333-333333333333</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[901] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": "902",
+      "command": "DBSETXML //XVM24/254 << END902",
+      "request": "[902] DBSETXML //XVM24/254 << END902\r\n<Network><OID>a30e4af0-9cc3-103f-9dbf-a55f288515de</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>33333333-3333-4333-8333-333333333333</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface></Network>\r\nEND902\r\n",
+      "response_lines": [
+        "[902] 301 OID=a30e4af0-9cc3-103f-9dbf-a55f288515de\r\n"
+      ]
+    },
+    {
+      "tag": "903",
+      "command": "DBGETXML //XVM24/254",
+      "request": "[903] DBGETXML //XVM24/254\r\n",
+      "response_lines": [
+        "[903] 343-Begin XML snippet\r\n",
+        "[903] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[903] 347-<Network><OID>a30e4af0-9cc3-103f-9dbf-a55f288515de</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>33333333-3333-4333-8333-333333333333</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface></Network>\r\n",
+        "[903] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": "904",
+      "command": "DBSETXML //XVM24/254 << END904",
+      "request": "[904] DBSETXML //XVM24/254 << END904\r\n<Network><OID>a30e4af0-9cc3-103f-9dbf-a55f288515de</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>33333333-3333-4333-8333-333333333333</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application></Network>\r\nEND904\r\n",
+      "response_lines": [
+        "[904] 301 OID=a30e4af0-9cc3-103f-9dbf-a55f288515de\r\n"
+      ]
+    },
+    {
+      "tag": "905",
+      "command": "DBGETXML //XVM24/254",
+      "request": "[905] DBGETXML //XVM24/254\r\n",
+      "response_lines": [
+        "[905] 343-Begin XML snippet\r\n",
+        "[905] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[905] 347-<Network><OID>a30e4af0-9cc3-103f-9dbf-a55f288515de</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>33333333-3333-4333-8333-333333333333</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[905] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": "906",
+      "command": "DBGETXML //XVM24/254/p/20",
+      "request": "[906] DBGETXML //XVM24/254/p/20\r\n",
+      "response_lines": [
+        "[906] 343-Begin XML snippet\r\n",
+        "[906] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[906] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\n",
+        "[906] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": "907",
+      "command": "DBGETXML //XVM24/254/56",
+      "request": "[907] DBGETXML //XVM24/254/56\r\n",
+      "response_lines": [
+        "[907] 343-Begin XML snippet\r\n",
+        "[907] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[907] 347-<Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+        "[907] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": "908",
+      "command": "DBSETXML //XVM24/254 << END908",
+      "request": "[908] DBSETXML //XVM24/254 << END908\r\n<Network xmlns:ext=\"urn:cbus:oracle:2026\"><OID>a30e4af0-9cc3-103f-9dbf-a55f288515de</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>33333333-3333-4333-8333-333333333333</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Unit ext:flag=\"synthetic\"><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application></Network>\r\nEND908\r\n",
+      "response_lines": [
+        "[908] 301 OID=a30e4af0-9cc3-103f-9dbf-a55f288515de\r\n"
+      ]
+    },
+    {
+      "tag": "909",
+      "command": "DBGETXML //XVM24/254",
+      "request": "[909] DBGETXML //XVM24/254\r\n",
+      "response_lines": [
+        "[909] 343-Begin XML snippet\r\n",
+        "[909] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[909] 347-<Network><OID>a30e4af0-9cc3-103f-9dbf-a55f288515de</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>33333333-3333-4333-8333-333333333333</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[909] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": "910",
+      "command": "DBSETXML //XVM24/254 << END910",
+      "request": "[910] DBSETXML //XVM24/254 << END910\r\n<Network xmlns:ext=\"urn:cbus:oracle:2026\"><OID>a30e4af0-9cc3-103f-9dbf-a55f288515de</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>33333333-3333-4333-8333-333333333333</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><ext:Diagnostic>synthetic</ext:Diagnostic></Unit><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application></Network>\r\nEND910\r\n",
+      "response_lines": [
+        "[910] 301 OID=a30e4af0-9cc3-103f-9dbf-a55f288515de\r\n"
+      ]
+    },
+    {
+      "tag": "911",
+      "command": "DBGETXML //XVM24/254",
+      "request": "[911] DBGETXML //XVM24/254\r\n",
+      "response_lines": [
+        "[911] 343-Begin XML snippet\r\n",
+        "[911] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[911] 347-<Network><OID>a30e4af0-9cc3-103f-9dbf-a55f288515de</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>33333333-3333-4333-8333-333333333333</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[911] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": "912",
+      "command": "DBSETXML //XVM24/254 << END912",
+      "request": "[912] DBSETXML //XVM24/254 << END912\r\n<Network><OID>a30e4af0-9cc3-103f-9dbf-a55f288515de</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>33333333-3333-4333-8333-333333333333</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\nEND912\r\n",
+      "response_lines": [
+        "[912] 301 OID=a30e4af0-9cc3-103f-9dbf-a55f288515de\r\n"
+      ]
+    },
+    {
+      "tag": "913",
+      "command": "DBGETXML //XVM24/254",
+      "request": "[913] DBGETXML //XVM24/254\r\n",
+      "response_lines": [
+        "[913] 343-Begin XML snippet\r\n",
+        "[913] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[913] 347-<Network><OID>a30e4af0-9cc3-103f-9dbf-a55f288515de</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>33333333-3333-4333-8333-333333333333</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[913] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": "914",
+      "command": "DBGETXML //XVM24/254/56",
+      "request": "[914] DBGETXML //XVM24/254/56\r\n",
+      "response_lines": [
+        "[914] 401 Bad object or device ID: Element 56 not found.\r\n"
+      ]
+    },
+    {
+      "tag": "915",
+      "command": "NET LIST",
+      "request": "[915] NET LIST\r\n",
+      "response_lines": [
+        "[915] 131 network=254 State=new InterfaceState=closed\r\n"
+      ]
+    }
+  ],
+  "raw_capture_sha256": "7d9c5ba9e7c15a8efc78b6796f8e599356969cf7405c4d907fe0c5e8bc91ea45"
+}
