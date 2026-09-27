@@ -66,14 +66,16 @@ def digest(path: Path) -> str:
 
 
 def rust_source_paths(*, daemon: bool = False) -> set[Path]:
-    """Find the in-workspace crate source closure used by either Rust server.
+    """Find the crate source closure used by either Rust server.
 
     Include target-specific and test-only path dependencies conservatively so
     changes to a crate that participates in the validation build cannot leave
-    an older accepted receipt looking current.
+    an older accepted receipt looking current. Literal include assets may live
+    elsewhere in this repository; crate code and manifests remain in rust/.
     """
     workspace = ROOT / "rust"
     workspace_root = workspace.resolve()
+    repository_root = ROOT.resolve()
     workspace_manifest = tomllib.loads((workspace / "Cargo.toml").read_text(encoding="utf-8"))
     workspace_dependencies = workspace_manifest.get("workspace", {}).get("dependencies", {})
     pending = [workspace / "cbus-cgate"]
@@ -108,8 +110,10 @@ def rust_source_paths(*, daemon: bool = False) -> set[Path]:
                 raise ValueError(f"Rust source has a nonliteral include: {source}")
             for include in includes:
                 asset = (source.parent / include).resolve()
-                if not asset.is_relative_to(workspace_root) or not asset.is_file():
-                    raise ValueError(f"Rust include is missing or outside the workspace: {asset}")
+                if not asset.is_relative_to(repository_root):
+                    raise ValueError(f"Rust include escapes the repository: {asset}")
+                if not asset.is_file():
+                    raise ValueError(f"Rust include is missing: {asset}")
                 paths.add(asset)
         dependency_tables = [data.get(kind, {}) for kind in
                              ("dependencies", "build-dependencies", "dev-dependencies")]

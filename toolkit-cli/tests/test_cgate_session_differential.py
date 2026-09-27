@@ -158,6 +158,44 @@ def test_untracked_rust_include_fails_closed(tmp_path, monkeypatch, include, err
         differential.rust_source_paths()
 
 
+def test_literal_rust_include_inside_repository_but_outside_workspace_is_fingerprinted(
+    tmp_path, monkeypatch
+):
+    workspace = tmp_path / "rust"
+    crate = workspace / "cbus-cgate"
+    source_dir = crate / "src"
+    source_dir.mkdir(parents=True)
+    (workspace / "Cargo.toml").write_text("[workspace]\n", encoding="utf-8")
+    (crate / "Cargo.toml").write_text("[package]\nname = 'cbus-cgate'\n", encoding="utf-8")
+    asset = tmp_path / "toolkit-cli/research/local_cgate.py"
+    asset.parent.mkdir(parents=True)
+    asset.write_text("# bounded fixture\n", encoding="utf-8")
+    (source_dir / "lib.rs").write_text(
+        'const HARNESS: &[u8] = include_bytes!("../../../toolkit-cli/research/local_cgate.py");\n',
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(differential, "ROOT", tmp_path)
+    assert asset.resolve() in differential.rust_source_paths()
+
+
+def test_literal_rust_include_outside_repository_fails_closed(tmp_path, monkeypatch):
+    workspace = tmp_path / "rust"
+    crate = workspace / "cbus-cgate"
+    source_dir = crate / "src"
+    source_dir.mkdir(parents=True)
+    (workspace / "Cargo.toml").write_text("[workspace]\n", encoding="utf-8")
+    (crate / "Cargo.toml").write_text("[package]\nname = 'cbus-cgate'\n", encoding="utf-8")
+    outside = tmp_path.parent / f"{tmp_path.name}-outside.txt"
+    outside.write_text("outside\n", encoding="utf-8")
+    (source_dir / "lib.rs").write_text(
+        f'const OUTSIDE: &str = include_str!("../../../../{outside.name}");\n',
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(differential, "ROOT", tmp_path)
+    with pytest.raises(ValueError, match="include escapes the repository"):
+        differential.rust_source_paths()
+
+
 def test_rust_source_resolving_outside_workspace_fails_closed(tmp_path, monkeypatch):
     workspace = tmp_path / "rust"
     crate = workspace / "cbus-cgate"
