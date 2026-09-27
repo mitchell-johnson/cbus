@@ -120,7 +120,7 @@ archived source/test/fixture files were unchanged before/after, and imported
 package paths resolved to this worktree. The [host test report](../research/experiments/2026-09-24/registry-host-review.json) records these results; the full archive remains under
 `/Volumes/external/cbus-toolkit-registry-live-review-20260924/`.
 
-The current Python 3.13 focused suite adds five CLI boundary tests and passes
+The 2026-09-24 Python 3.13 CLI checkpoint added five boundary tests and passed
 **113 tests** in total. The CLI tests cover true and false results, exact source
 hashes, scope and regular-file admission before observer construction, invalid
 timeouts, retained interruption evidence, report-export failure recovery and
@@ -142,9 +142,59 @@ sharing violation. It made no network, C-Gate or CNI call.
 
 Remaining work is to repeat production acceptance in the interactive Toolkit
 user context and compare the typed results with the original leaves and
-same-provider witnesses. Original callback/cache ordering must also be checked
-with controlled value changes, along with short-circuiting, unsupported binary
-values and bounded interruption. Broader registry hives/value domains,
+same-provider witnesses. The bounded original callback/cache matrix below covers selected ordering
+cases with controlled value changes and short-circuiting. Broader scheduling,
+unsupported binary values, bounded interruption, registry hives/value domains,
 culture-sensitive comparisons and complete update applicability and
 selection remain outstanding. Existing supplied-fact behavior and its limitations are documented in
 [toolkit-update-registry-conditions.md](toolkit-update-registry-conditions.md).
+
+## Original lazy-cache and culture matrix
+
+The [2026-09-28 native matrix](../research/experiments/2026-09-28/registry-lazy-culture-native.json)
+records 11 results from the pinned original SESU `ClientConditionChecker` on
+Windows 11 ARM64, using the x86 Framework runtime and one newly created HKCU
+fixture. Whole-assembly hashes, four original method tokens/IL hashes, the
+source base revision and raw-capture hashes bind this evidence. The authored
+[C# probe](../research/experiments/2026-09-28/CbusLazyRegistryProbe.cs) and
+[compile/run wrapper](../research/experiments/2026-09-28/cbus-lazy-run.ps1) contain
+only synthetic fixture inputs and original API calls, not vendor code.
+They write an owned temporary registry key; they are research tools, not a
+read-only production command. They require the pinned installed DLLs at the
+recorded path. The wrapper bounds process execution to 30 seconds; a timeout
+may prevent in-process fixture cleanup and is not acceptance.
+
+The same original checker instance was reused for the first two public
+`Evaluate` calls; it cleared successful-result cache entries on each evaluation.
+The Python comparison uses a fresh one-shot wrapper and observer for each call,
+so those cases establish outcome agreement, not identical object lifecycle.
+Separate original callback calls show that both true and false
+results are cached by condition name; another name sharing the same registry
+query sees a changed fixture value. A failed integer comparison leaves the
+cache empty, and a corrected direct callback retry succeeds. A public
+`A and B` evaluation with false A leaves an invalid B unevaluated. Callback
+calls were deliberately sequenced through reflection and the original cache
+was inspected after each call; registry-provider syscall counts were not
+instrumented. These observations establish those bounded cache cases, not all
+NCalc grammar or concurrent-provider timing behavior.
+
+For registry string content `I` compared with `i`, original invariant culture
+returns true and original `tr-TR` returns false. The Python profile matches the
+invariant result and rejects a `tr-TR` context before a registry query. This
+counterexample is why ASCII input alone cannot justify culture-independent
+compatibility. General culture support remains outside the declared profile.
+
+`tests/test_registry_lazy_native_acceptance.py` compares the current live
+wrapper with the original results and caches, including repeated false-cache
+hits and culture rejection. Python test observers are deterministic doubles;
+they do not turn an offline test run into fresh Windows evidence. Python's
+public wrapper still requires a fresh observer per evaluation, including after
+failure; it does not expose the original private callback retry API.
+
+The native fixture was removed, no owned probe process remained, and the
+Host Only disposable VM was stopped with its original networking restored.
+This oracle did not capture user/token identity, exercise the interactive
+Toolkit preferences/settings wrapper, or accept an interactive-user context.
+The separate process-token smoke above retains its narrower identity evidence.
+P9.02 / issue #61 remains open for those untested workflows and broader culture,
+provider and runtime-effect coverage.
