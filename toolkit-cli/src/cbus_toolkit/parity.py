@@ -842,6 +842,7 @@ def validate_register(
         key: dict(sorted(value.items())) for key, value in cgate_subaxis_counts.items()
     }
     domain_ids: set[str] = set()
+    domain_scope_kinds: set[str] = set()
     unresolved_domains: list[str] = []
     for domain in source_inventory:
         if not isinstance(domain, dict) or not isinstance(domain.get("id"), str):
@@ -861,6 +862,11 @@ def validate_register(
         if domain["resolved"] and expected is None:
             raise ValueError(f"{domain_id} cannot be resolved with an unknown count")
         if kind is not None:
+            if not isinstance(kind, str) or not kind:
+                raise ValueError(f"{domain_id}.scope_kind must be a nonempty string")
+            if kind in domain_scope_kinds:
+                raise ValueError(f"Duplicate source inventory scope kind: {kind}")
+            domain_scope_kinds.add(kind)
             if not isinstance(expected, int) or expected < 0:
                 raise ValueError(f"{domain_id}.count must be a nonnegative integer")
             if scope_counts[kind] != expected:
@@ -890,6 +896,13 @@ def validate_register(
                 )
         if not domain["resolved"]:
             unresolved_domains.append(domain_id)
+    if domain_scope_kinds != set(scope_counts):
+        missing = sorted(set(scope_counts) - domain_scope_kinds)
+        extra = sorted(domain_scope_kinds - set(scope_counts))
+        raise ValueError(
+            "Source inventory scope kinds differ from scoped kinds "
+            f"(missing={missing}, extra={extra})"
+        )
     if register["census_complete"] and (unresolved_scope or unresolved_domains):
         raise ValueError("census_complete cannot hide unresolved scope")
 

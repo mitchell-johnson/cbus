@@ -548,6 +548,41 @@ class ParityRegisterTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "no mapped obligation"):
             parity.evaluate(register, evidence, ledger, evidence_raw=evidence_raw)
 
+    def test_complete_census_requires_one_counted_domain_per_scope_kind(self):
+        register, evidence, ledger, evidence_raw = fixture_documents()
+        self.assertTrue(
+            parity.evaluate(register, evidence, ledger, evidence_raw=evidence_raw)[
+                "complete"
+            ]
+        )
+
+        # Previously this still returned complete=true: the one functional
+        # scope item was no longer represented by a counted source domain.
+        register["source_inventory"][0].update(
+            {"scope_kind": "unrelated", "count": 0}
+        )
+        with self.assertRaisesRegex(
+            ValueError, r"scope kinds differ.*missing=\['fixture'\]"
+        ):
+            parity.evaluate(register, evidence, ledger, evidence_raw=evidence_raw)
+
+        register, evidence, ledger, evidence_raw = fixture_documents()
+        del register["source_inventory"][0]["scope_kind"]
+        with self.assertRaisesRegex(ValueError, "scope kinds differ"):
+            parity.evaluate(register, evidence, ledger, evidence_raw=evidence_raw)
+
+        register, evidence, ledger, evidence_raw = fixture_documents()
+        register["source_inventory"].append(
+            {"id": "duplicate", "scope_kind": "fixture", "count": 1, "resolved": True}
+        )
+        with self.assertRaisesRegex(ValueError, "Duplicate source inventory scope kind"):
+            parity.evaluate(register, evidence, ledger, evidence_raw=evidence_raw)
+
+        register, evidence, ledger, evidence_raw = fixture_documents()
+        register["source_inventory"][0]["scope_kind"] = ""
+        with self.assertRaisesRegex(ValueError, "scope_kind must be a nonempty string"):
+            parity.evaluate(register, evidence, ledger, evidence_raw=evidence_raw)
+
 
 if __name__ == "__main__":
     unittest.main()

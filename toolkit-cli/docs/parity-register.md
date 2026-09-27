@@ -97,6 +97,10 @@ missing IDs, orphaned scope items, resolved domains with unknown counts,
 unknown states, unknown ledger/work-item/evidence references, unsafe artifact paths,
 changed evidence bundles or record digests, changed source artifact hashes,
 substituted feature ledgers, unexplained skips and required skipped cases.
+Every scope-item kind must have exactly one counted source-inventory domain.
+Renaming, omitting or duplicating a counted domain is invalid even if all
+obligations and evidence otherwise appear complete; a `census_complete` flag
+cannot hide an unbound source surface.
 Work-item references are checked against the packaged 59-ID authoritative roster,
 so a syntactically valid but unplanned ID is rejected. The exact parsed evidence
 object must equal the duplicate-key- and non-finite-safe parse of the digest-bound
