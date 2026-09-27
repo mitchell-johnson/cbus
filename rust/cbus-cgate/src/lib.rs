@@ -441,6 +441,21 @@ fn err(tag: &str, code: u16, text: &str) -> Response {
     }
 }
 
+const DB_XML_UNIT_NAME_REQUIRED: &str = "DBSETXML Unit is missing UnitName";
+
+fn db_xml_missing_unit_name(tag: &str, network_child: bool) -> Response {
+    let detail = if network_child {
+        "The following exception occured while validating field '_unitList' of class 'com.clipsal.cgate.tag.model.Network';    - location of error: XPATH: /Network/Unit The field '_unitName' (whose xml name is 'UnitName') is a required field of class 'com.clipsal.cgate.tag.model.Unit'"
+    } else {
+        "The field '_unitName' (whose xml name is 'UnitName') is a required field of class 'com.clipsal.cgate.tag.model.Unit';    - location of error: XPATH: /Unit/UnitName"
+    };
+    err(
+        tag,
+        446,
+        &format!("446 Unable to set XML: ValidationException: {detail}"),
+    )
+}
+
 fn tag_of(cmd: &TaggedCommand) -> &str {
     &cmd.tag
 }
@@ -661,6 +676,23 @@ fn parse_db_xml_unit(
             pp_values.insert(parameter.to_string(), value.to_string());
             continue;
         }
+        if name == "UnitName" {
+            // Native C-Gate's XML mapper accepts attributes and nested
+            // content on this required field, but stores only direct text.
+            // A nested-only UnitName is therefore present with an empty
+            // value, not an absent field.
+            let value = child
+                .children()
+                .filter(roxmltree::Node::is_text)
+                .filter_map(|node| node.text())
+                .collect::<String>();
+            if pp_fields.contains(name) || scalars.insert(name.to_string(), value).is_some() {
+                return Err(
+                    "DBSETXML contains a duplicate or ambiguous scalar Unit field".to_string(),
+                );
+            }
+            continue;
+        }
         // Unknown nested elements are retained in the template. Native
         // scalar fields are direct text-only elements.
         if child.children().any(|child| child.is_element()) {
@@ -672,7 +704,7 @@ fn parse_db_xml_unit(
             .collect::<String>();
         let required = matches!(
             name,
-            "OID" | "Address" | "TagName" | "UnitType" | "FirmwareVersion"
+            "OID" | "Address" | "TagName" | "UnitType" | "UnitName" | "FirmwareVersion"
         );
         let standard = required || matches!(name, "CatalogNumber" | "SerialNumber");
         if standard && child.attributes().len() != 0 {
@@ -684,9 +716,20 @@ fn parse_db_xml_unit(
             return Err("DBSETXML contains a duplicate or ambiguous scalar Unit field".to_string());
         }
     }
-    for required in ["OID", "Address", "TagName", "UnitType", "FirmwareVersion"] {
+    for required in [
+        "OID",
+        "Address",
+        "TagName",
+        "UnitType",
+        "UnitName",
+        "FirmwareVersion",
+    ] {
         if !scalars.contains_key(required) {
-            return Err(format!("DBSETXML Unit is missing {required}"));
+            return Err(if required == "UnitName" {
+                DB_XML_UNIT_NAME_REQUIRED.to_string()
+            } else {
+                format!("DBSETXML Unit is missing {required}")
+            });
         }
     }
     let oid = scalars["OID"].clone();
@@ -3845,15 +3888,15 @@ impl Server {
         ));
         self.append_db_xml_extensions(proj_name, &network.interface_oid, &mut doc);
         doc.push_str("</Interface>");
+        let network_path = format!("//{proj_name}/{net}");
+        for application in self.db_xml_children(proj_name, &network_path, &["Application"]) {
+            doc.push_str(&self.pending_db_xml_document(proj_name, application));
+        }
         let mut addrs: Vec<u8> = network.units.keys().copied().collect();
         addrs.sort();
         for addr in addrs {
             let unit = &network.units[&addr];
             doc.push_str(&self.unit_xml_document(proj_name, unit));
-        }
-        let network_path = format!("//{proj_name}/{net}");
-        for application in self.db_xml_children(proj_name, &network_path, &["Application"]) {
-            doc.push_str(&self.pending_db_xml_document(proj_name, application));
         }
         self.append_db_xml_extensions(proj_name, &network.oid, &mut doc);
         doc.push_str("</Network>");
@@ -4035,19 +4078,29 @@ impl Server {
         };
         let core = [
             "OID",
-            "Address",
             "TagName",
+            "Address",
+            "Description",
             "UnitType",
+            "UnitName",
+            "SerialNumber",
             "FirmwareVersion",
             "CatalogNumber",
-            "SerialNumber",
         ];
         let append_missing =
             |output: &mut String, seen_scalars: &BTreeSet<String>, seen_pp: &BTreeSet<String>| {
                 for name in core {
                     if !seen_scalars.contains(name) {
-                        let value = scalar(name).unwrap_or_default();
-                        output.push_str(&format!("<{name}>{}</{name}>", xml_escape(&value)));
+                        if matches!(
+                            name,
+                            "Description" | "UnitName" | "SerialNumber" | "CatalogNumber"
+                        ) && !unit.fields.contains_key(name)
+                        {
+                            continue;
+                        }
+                        if let Some(value) = scalar(name) {
+                            output.push_str(&format!("<{name}>{}</{name}>", xml_escape(&value)));
+                        }
                     }
                 }
                 let mut extra = unit
@@ -4083,6 +4136,115 @@ impl Server {
                 let root = document.root_element();
                 let range = root.range();
                 if root.tag_name().name() == "Unit" {
+                    // Native build 2001 serializes a plain Unit through its
+                    // schema, regardless of submitted element order. Keep the
+                    // existing template path for extension markup whose
+                    // placement cannot be inferred from that schema.
+                    let native_scalar = [
+                        "OID",
+                        "TagName",
+                        "Address",
+                        "Description",
+                        "UnitType",
+                        "UnitName",
+                        "SerialNumber",
+                        "FirmwareVersion",
+                        "CatalogNumber",
+                    ];
+                    let plain = root.attributes().len() == 0
+                        && native_scalar.iter().all(|name| !pp.contains(*name))
+                        && root.children().all(|child| {
+                            if child.is_text() {
+                                return child.text().is_none_or(|text| text.trim().is_empty());
+                            }
+                            if !child.is_element() || child.tag_name().namespace().is_some() {
+                                return false;
+                            }
+                            match child.tag_name().name() {
+                                "PP" => {
+                                    child.attributes().len() == 2
+                                        && !child.children().any(|node| node.is_element())
+                                }
+                                name if native_scalar.contains(&name) => {
+                                    child.attributes().len() == 0
+                                        && !child.children().any(|node| node.is_element())
+                                }
+                                _ => false,
+                            }
+                        });
+                    if plain {
+                        let mut output = "<Unit>".to_string();
+                        for name in [
+                            "OID",
+                            "TagName",
+                            "Address",
+                            "Description",
+                            "UnitType",
+                            "UnitName",
+                            "SerialNumber",
+                            "FirmwareVersion",
+                        ] {
+                            if root.children().any(|child| child.has_tag_name(name))
+                                || (matches!(name, "Description" | "SerialNumber")
+                                    && unit.fields.contains_key(name))
+                            {
+                                let value = scalar(name).unwrap_or_default();
+                                output
+                                    .push_str(&format!("<{name}>{}</{name}>", xml_escape(&value)));
+                            }
+                        }
+                        let mut seen_pp = BTreeSet::new();
+                        for child in root.children().filter(|child| child.has_tag_name("PP")) {
+                            if let Some(name) = child.attribute("Name") {
+                                output.push_str(&format!(
+                                    "<PP Name=\"{}\" Value=\"{}\"/>",
+                                    xml_escape(name),
+                                    xml_escape(
+                                        unit.fields.get(name).map(String::as_str).unwrap_or("")
+                                    ),
+                                ));
+                                seen_pp.insert(name.to_string());
+                            }
+                        }
+                        for name in &pp {
+                            if !seen_pp.contains(name) {
+                                output.push_str(&format!(
+                                    "<PP Name=\"{}\" Value=\"{}\"/>",
+                                    xml_escape(name),
+                                    xml_escape(
+                                        unit.fields.get(name).map(String::as_str).unwrap_or("")
+                                    ),
+                                ));
+                            }
+                        }
+                        if root
+                            .children()
+                            .any(|child| child.has_tag_name("CatalogNumber"))
+                            || unit.fields.contains_key("CatalogNumber")
+                        {
+                            let value = scalar("CatalogNumber").unwrap_or_default();
+                            output.push_str(&format!(
+                                "<CatalogNumber>{}</CatalogNumber>",
+                                xml_escape(&value)
+                            ));
+                        }
+                        let mut extra = unit
+                            .fields
+                            .keys()
+                            .filter(|name| {
+                                !native_scalar.contains(&name.as_str()) && !pp.contains(*name)
+                            })
+                            .collect::<Vec<_>>();
+                        extra.sort();
+                        for name in extra {
+                            output.push_str(&format!(
+                                "<{name}>{}</{name}>",
+                                xml_escape(&unit.fields[name])
+                            ));
+                        }
+                        output.push_str("</Unit>");
+                        return output;
+                    }
                     if let Some(open_end) = xml_open_tag_end(template, range.start) {
                         if let Some(relative_close) = template[open_end + 1..range.end].rfind("</")
                         {
@@ -4122,7 +4284,8 @@ impl Server {
                                     }
                                 } else if child.is_element()
                                     && child.tag_name().namespace().is_none()
-                                    && !child.children().any(|node| node.is_element())
+                                    && (!child.children().any(|node| node.is_element())
+                                        || child.tag_name().name() == "UnitName")
                                 {
                                     let name = child.tag_name().name();
                                     if let Some(value) = scalar(name) {
@@ -4135,6 +4298,12 @@ impl Server {
                                         output.push_str(&template[child_range.clone()]);
                                     }
                                 } else {
+                                    if child.is_element()
+                                        && child.tag_name().namespace().is_none()
+                                        && core.contains(&child.tag_name().name())
+                                    {
+                                        seen_scalars.insert(child.tag_name().name().to_string());
+                                    }
                                     output.push_str(&template[child_range.clone()]);
                                 }
                                 cursor = child_range.end;
@@ -6874,6 +7043,9 @@ impl Server {
 
         let parsed_unit = match parse_db_xml_unit(root, document) {
             Ok(unit) => unit,
+            Err(error) if error == DB_XML_UNIT_NAME_REQUIRED => {
+                return db_xml_missing_unit_name(tag, false)
+            }
             Err(error) => return err(tag, status::BAD_REQUEST, &format!("400 {error}")),
         };
         let oid = parsed_unit.oid.clone();
@@ -6984,6 +7156,9 @@ impl Server {
         };
         let object = match parse_db_xml_object(parsed_document.root_element(), document) {
             Ok(object) => object,
+            Err(error) if error == DB_XML_UNIT_NAME_REQUIRED => {
+                return db_xml_missing_unit_name(tag, true)
+            }
             Err(error) => return err(tag, status::BAD_REQUEST, &format!("400 {error}")),
         };
         let target = match self.resolve_db_xml_target(path) {

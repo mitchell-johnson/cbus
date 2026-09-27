@@ -171,7 +171,7 @@ async fn administrative_documents_and_mqtt_share_the_running_daemon() {
         "<Interface><OID>53000000-0000-4000-8000-000000000002</OID><InterfaceType>CNI</InterfaceType>",
         "<InterfaceAddress>127.0.0.1:10001</InterfaceAddress></Interface>",
         "<Unit x:source=\"system\"><OID>53000000-0000-4000-8000-000000000003</OID>",
-        "<TagName>System unit</TagName><Address>5</Address><UnitType>KEYGL5</UnitType>",
+        "<TagName>System unit</TagName><Address>5</Address><UnitType>KEYGL5</UnitType><UnitName>System unit</UnitName>",
         "<FirmwareVersion>5.5.00</FirmwareVersion><PP Name=\"StaticTextString0\" Value=\"System\"/>",
         "<!--kept--><x:Opaque>yes</x:Opaque></Unit></Network>"
     );

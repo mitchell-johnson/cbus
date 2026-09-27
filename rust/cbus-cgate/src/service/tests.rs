@@ -12931,7 +12931,7 @@ async fn document_semantics_validate_before_mutation_and_remain_authenticated() 
         .oid
         .clone();
     let replacement = format!(
-        "<Unit source=\"service-test\"><OID>{oid}</OID><Address>5</Address><TagName>Document eDLT</TagName><UnitType>KEYGL5</UnitType><FirmwareVersion>5.5.00</FirmwareVersion><PP Name=\"StaticTextString0\" Value=\"Replaced\"/><Opaque><Nested>kept</Nested></Opaque></Unit>"
+        "<Unit source=\"service-test\"><OID>{oid}</OID><Address>5</Address><TagName>Document eDLT</TagName><UnitType>KEYGL5</UnitType><UnitName>Document eDLT</UnitName><FirmwareVersion>5.5.00</FirmwareVersion><PP Name=\"StaticTextString0\" Value=\"Replaced\"/><Opaque><Nested>kept</Nested></Opaque></Unit>"
     );
     let dbset = service
         .handle_document(
@@ -13052,7 +13052,7 @@ async fn document_semantics_validate_before_mutation_and_remain_authenticated() 
         .oid
         .clone();
     let authenticated_replacement = format!(
-        "<Unit><OID>{auth_oid}</OID><Address>5</Address><TagName>Authenticated</TagName><UnitType>KEYGL5</UnitType><FirmwareVersion>5.5.00</FirmwareVersion></Unit>"
+        "<Unit><OID>{auth_oid}</OID><Address>5</Address><TagName>Authenticated</TagName><UnitType>KEYGL5</UnitType><UnitName>Authenticated</UnitName><FirmwareVersion>5.5.00</FirmwareVersion></Unit>"
     );
     assert_eq!(
         authed
@@ -13218,7 +13218,7 @@ async fn configured_network_dbsetxml_replaces_database_topology_without_rebindin
         network.clone()
     };
     let document = format!(
-        "<Network xmlns:x=\"urn:configured\" x:revision=\"2\"><OID>52000000-0000-4000-8000-000000000001</OID><TagName>Configured replacement</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>52000000-0000-4000-8000-000000000002</OID><InterfaceType>{}</InterfaceType><InterfaceAddress>{}</InterfaceAddress></Interface><Unit x:source=\"document\"><OID>52000000-0000-4000-8000-000000000003</OID><TagName>Replacement eDLT</TagName><Address>6</Address><UnitType>KEYGL5</UnitType><FirmwareVersion>5.5.00</FirmwareVersion><PP Name=\"StaticTextString0\" Value=\"Topology\"/><!--unit--><x:Opaque>kept</x:Opaque></Unit><Application><OID>52000000-0000-4000-8000-000000000004</OID><TagName>Lighting</TagName><Address>56</Address></Application><!--network--></Network>",
+        "<Network xmlns:x=\"urn:configured\" x:revision=\"2\"><OID>52000000-0000-4000-8000-000000000001</OID><TagName>Configured replacement</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>52000000-0000-4000-8000-000000000002</OID><InterfaceType>{}</InterfaceType><InterfaceAddress>{}</InterfaceAddress></Interface><Unit x:source=\"document\"><OID>52000000-0000-4000-8000-000000000003</OID><TagName>Replacement eDLT</TagName><Address>6</Address><UnitType>KEYGL5</UnitType><UnitName>Replacement eDLT</UnitName><FirmwareVersion>5.5.00</FirmwareVersion><PP Name=\"StaticTextString0\" Value=\"Topology\"/><!--unit--><x:Opaque>kept</x:Opaque></Unit><Application><OID>52000000-0000-4000-8000-000000000004</OID><TagName>Lighting</TagName><Address>56</Address></Application><!--network--></Network>",
         original.iface_type, original.iface_addr
     );
     let replaced = service
@@ -13343,7 +13343,7 @@ async fn tcp_here_documents_preserve_tags_drain_limits_and_close_on_truncation()
     let (mut reader, mut writer) = connect_command_session(address).await;
 
     writer
-        .write_all(format!("[doc] DBSETXML //HARNESS/254/p/5 << END\r\n<Unit><OID>{oid}</OID><Address>5</Address><TagName>TCP eDLT</TagName><UnitType>KEYGL5</UnitType><FirmwareVersion>5.5.00</FirmwareVersion></Unit>\r\nEND\r\n").as_bytes())
+        .write_all(format!("[doc] DBSETXML //HARNESS/254/p/5 << END\r\n<Unit><OID>{oid}</OID><Address>5</Address><TagName>TCP eDLT</TagName><UnitType>KEYGL5</UnitType><UnitName>TCP eDLT</UnitName><FirmwareVersion>5.5.00</FirmwareVersion></Unit>\r\nEND\r\n").as_bytes())
         .await
         .unwrap();
     let mut reply = String::new();

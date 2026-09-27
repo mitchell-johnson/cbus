@@ -86,7 +86,7 @@
       "raw-native-dbsetxml-netvar-probe-v1",
       "raw-native-dbsetxml-container-probe-v1"
     ],
-    "combined_network_unit_boundary": "No exact native DBSETXML capture combined a complete Network root with a Unit child. cmqttd composes the separately captured complete-Network replacement contract with the complete-Unit contract, validates the whole mixed tree on a clone, and documents this evidence limit rather than presenting the composition as a native combined oracle."
+    "combined_network_unit_boundary": "An exact owned-loopback C-Gate 3.4.0 build 2001 combined Network/Application/Unit DBSETXML capture is now retained in native_cgate_dbsetxml_combined.json. It proves the 301 root-OID receipt, Application-before-Unit readback, schema-ordered plain Unit fields, and a 446 missing-UnitName refusal that leaves prior state intact. Wider metadata, duplicate and address-collision behavior remains separately evidenced or a cmqttd safety repair."
   },
   "database_lifecycle": {
     "DBADD": {

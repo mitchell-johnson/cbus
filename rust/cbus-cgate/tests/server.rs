@@ -2065,7 +2065,7 @@ fn dbsetxml_replaces_typed_unit_atomically_and_preserves_opaque_metadata() {
         .unwrap()
         .to_string();
     let replacement = format!(
-        "<Unit xmlns:x=\"urn:test\" x:mode=\"kept\"><OID>{oid}</OID><Address>21</Address><TagName>Moved</TagName><UnitType>KEYE1</UnitType><FirmwareVersion>1.2.67</FirmwareVersion><CatalogNumber>5031N</CatalogNumber><SerialNumber>00100700.3526</SerialNumber><!--keep--><x:TagName x:source=\"vendor\">Opaque name</x:TagName><x:PP Name=\"opaque\" Value=\"vendor\"/><Description>A &amp; B<x:Opaque order=\"1\"><x:Nested>yes</x:Nested></x:Opaque></Description><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>"
+        "<Unit xmlns:x=\"urn:test\" x:mode=\"kept\"><OID>{oid}</OID><Address>21</Address><TagName>Moved</TagName><UnitType>KEYE1</UnitType><UnitName>Moved</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><CatalogNumber>5031N</CatalogNumber><SerialNumber>00100700.3526</SerialNumber><!--keep--><x:TagName x:source=\"vendor\">Opaque name</x:TagName><x:PP Name=\"opaque\" Value=\"vendor\"/><Description>A &amp; B<x:Opaque order=\"1\"><x:Nested>yes</x:Nested></x:Opaque></Description><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>"
     );
     let replaced = server.handle_document("[6] DBSETXML //TEST/254/p/20", &replacement);
     assert_eq!(replaced.status, 301, "{replaced:?}");
@@ -2279,7 +2279,7 @@ fn dbsetxml_unit_enforces_project_wide_oid_uniqueness_and_retires_old_identity()
         .text()
         .unwrap();
     let collision = format!(
-        "<Unit><OID>{interface_oid}</OID><Address>20</Address><TagName>Collision</TagName><UnitType>KEYE1</UnitType><FirmwareVersion>1.2.67</FirmwareVersion></Unit>"
+        "<Unit><OID>{interface_oid}</OID><Address>20</Address><TagName>Collision</TagName><UnitType>KEYE1</UnitType><UnitName>Collision</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>"
     );
     assert_eq!(
         server
@@ -2294,7 +2294,7 @@ fn dbsetxml_unit_enforces_project_wide_oid_uniqueness_and_retires_old_identity()
 
     let replacement_oid = "80000000-0000-4000-8000-000000000001";
     let replacement = format!(
-        "<Unit><OID>{replacement_oid}</OID><Address>20</Address><TagName>Replacement</TagName><UnitType>KEYE1</UnitType><FirmwareVersion>1.2.67</FirmwareVersion></Unit>"
+        "<Unit><OID>{replacement_oid}</OID><Address>20</Address><TagName>Replacement</TagName><UnitType>KEYE1</UnitType><UnitName>Replacement</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>"
     );
     assert_eq!(
         server
@@ -2458,7 +2458,7 @@ fn dbsetxml_replaces_evidenced_typed_database_trees_atomically() {
     assert!(level.lines[0].contains("<Address>5</Address>"));
 
     let network = format!(
-        "<Network xmlns:x=\"urn:topology\"><OID>30000000-0000-4000-8000-000000000001</OID><TagName>Moved network</TagName><Address>253</Address><NetworkNumber>253</NetworkNumber><Interface><OID>{interface_oid}</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:2</InterfaceAddress></Interface><Unit x:source=\"submitted\"><OID>30000000-0000-4000-8000-000000000003</OID><TagName>Topology unit</TagName><Address>20</Address><UnitType>KEYE1</UnitType><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><!--unit-comment--><?unit retained?><x:Opaque>yes</x:Opaque></Unit><Application><OID>30000000-0000-4000-8000-000000000002</OID><TagName>Lighting</TagName><Address>56</Address></Application></Network>"
+        "<Network xmlns:x=\"urn:topology\"><OID>30000000-0000-4000-8000-000000000001</OID><TagName>Moved network</TagName><Address>253</Address><NetworkNumber>253</NetworkNumber><Interface><OID>{interface_oid}</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:2</InterfaceAddress></Interface><Unit x:source=\"submitted\"><OID>30000000-0000-4000-8000-000000000003</OID><TagName>Topology unit</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Topology unit</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><!--unit-comment--><?unit retained?><x:Opaque>yes</x:Opaque></Unit><Application><OID>30000000-0000-4000-8000-000000000002</OID><TagName>Lighting</TagName><Address>56</Address></Application></Network>"
     );
     assert_eq!(
         server
@@ -2603,7 +2603,7 @@ fn dbsetxml_network_unit_topology_is_atomic_conflict_checked_and_retires_omissio
         .to_string();
 
     let replacement = format!(
-        "<Network xmlns:x=\"urn:mixed\" x:revision=\"2\"><OID>{network_oid}</OID><TagName>Local replaced</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>{interface_oid}</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:10001</InterfaceAddress></Interface><Unit x:vendor=\"kept\"><OID>51000000-0000-4000-8000-000000000001</OID><TagName>New unit</TagName><Address>21</Address><UnitType>KEYE1</UnitType><FirmwareVersion>1.2.67</FirmwareVersion><CatalogNumber>5031N</CatalogNumber><SerialNumber>00100700.3526</SerialNumber><PP Name=\"UnitAddress\" Value=\"0x15\"/><!--inside--><x:Data>opaque</x:Data></Unit><Application><OID>51000000-0000-4000-8000-000000000002</OID><TagName>Lighting</TagName><Address>56</Address><Group><OID>51000000-0000-4000-8000-000000000003</OID><TagName>Group</TagName><Address>1</Address></Group></Application><!--network-comment--></Network>"
+        "<Network xmlns:x=\"urn:mixed\" x:revision=\"2\"><OID>{network_oid}</OID><TagName>Local replaced</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>{interface_oid}</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:10001</InterfaceAddress></Interface><Unit x:vendor=\"kept\"><OID>51000000-0000-4000-8000-000000000001</OID><TagName>New unit</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>New unit</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><CatalogNumber>5031N</CatalogNumber><SerialNumber>00100700.3526</SerialNumber><PP Name=\"UnitAddress\" Value=\"0x15\"/><!--inside--><x:Data>opaque</x:Data></Unit><Application><OID>51000000-0000-4000-8000-000000000002</OID><TagName>Lighting</TagName><Address>56</Address><Group><OID>51000000-0000-4000-8000-000000000003</OID><TagName>Group</TagName><Address>1</Address></Group></Application><!--network-comment--></Network>"
     );
     let response = server.handle_document("[8] DBSETXML //MIXED/254", &replacement);
     assert_eq!(response.status, 301, "{response:?}");
@@ -2639,7 +2639,7 @@ fn dbsetxml_network_unit_topology_is_atomic_conflict_checked_and_retires_omissio
 
     let duplicate_address = replacement.replace(
         "</Unit><Application>",
-        "</Unit><Unit><OID>51000000-0000-4000-8000-000000000004</OID><TagName>Duplicate</TagName><Address>21</Address><UnitType>KEYE1</UnitType><FirmwareVersion>1.2.67</FirmwareVersion></Unit><Application>",
+        "</Unit><Unit><OID>51000000-0000-4000-8000-000000000004</OID><TagName>Duplicate</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Duplicate</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit><Application>",
     );
     let duplicate_oid = replacement.replace(
         "51000000-0000-4000-8000-000000000002</OID><TagName>Lighting",
@@ -2685,6 +2685,239 @@ fn dbsetxml_network_unit_topology_is_atomic_conflict_checked_and_retires_omissio
             .handle("[16] DBGET !51000000-0000-4000-8000-000000000001/OID")
             .status,
         401
+    );
+}
+
+#[test]
+fn dbsetxml_combined_network_unit_matches_native_build_2001_capture() {
+    let evidence: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_dbsetxml_combined.json"
+    ))
+    .unwrap();
+    assert_eq!(evidence["schema"], "native-cgate-dbsetxml-combined-v1");
+    assert_eq!(evidence["oracle"]["version"], "3.4.0 build 2001");
+    assert_eq!(evidence["oracle"]["live_cbus_endpoint"], false);
+    assert_eq!(evidence["oracle"]["cleanup_complete"], true);
+
+    let mut server = Server::new(AccessLevel::Program).with_programming(true);
+    assert_eq!(server.handle("[1] PROJECT NEW XCOMB").status, 200);
+    assert_eq!(server.handle("[2] PROJECT USE XCOMB").status, 200);
+    assert_eq!(
+        server
+            .handle("[3] DBCREATENET 254 Local Cni 127.0.0.1:1")
+            .status,
+        200
+    );
+    let initial = server.handle("[4] DBGETXML //XCOMB/254");
+    let initial_xml = initial.lines[0].strip_prefix("347-").unwrap();
+    let initial_document = roxmltree::Document::parse(initial_xml).unwrap();
+    let network_oid = initial_document
+        .root_element()
+        .children()
+        .find(|child| child.has_tag_name("OID"))
+        .unwrap()
+        .text()
+        .unwrap();
+    let interface_oid = initial_document
+        .descendants()
+        .find(|child| child.has_tag_name("Interface"))
+        .unwrap()
+        .children()
+        .find(|child| child.has_tag_name("OID"))
+        .unwrap()
+        .text()
+        .unwrap();
+    let from_capture = |key: &str| {
+        evidence[key]
+            .as_str()
+            .unwrap()
+            .replace(evidence["network_oid"].as_str().unwrap(), network_oid)
+            .replace(evidence["interface_oid"].as_str().unwrap(), interface_oid)
+    };
+    let submitted = from_capture("document");
+    let accepted = server.handle_document("[5] DBSETXML //XCOMB/254", &submitted);
+    assert_eq!(accepted.status, 301, "{accepted:?}");
+    assert_eq!(accepted.final_text, from_capture("reply"));
+    let network = server.handle("[6] DBGETXML //XCOMB/254");
+    assert_eq!(
+        network.lines,
+        [format!("347-{}", from_capture("network_readback"))]
+    );
+    let unit = server.handle("[7] DBGETXML //XCOMB/254/p/20");
+    assert_eq!(
+        unit.lines,
+        [format!("347-{}", from_capture("unit_readback"))]
+    );
+    assert_eq!(server.handle("[8] DBGETXML //XCOMB/254/56").status, 200);
+
+    let missing_name = submitted.replace("<UnitName>Room</UnitName>", "");
+    let refused = server.handle_document("[9] DBSETXML //XCOMB/254", &missing_name);
+    assert_eq!(refused.status, 446, "{refused:?}");
+    assert_eq!(
+        refused.final_text,
+        evidence["missing_unit_name_error"].as_str().unwrap()
+    );
+    assert_eq!(
+        server.handle("[10] DBGETXML //XCOMB/254").lines,
+        network.lines
+    );
+    assert_eq!(
+        server.handle("[11] DBGETXML //XCOMB/254/p/20").lines,
+        unit.lines
+    );
+
+    // The second native capture omitted optional fields, then populated
+    // them through DBSETSAFE. A schema projection must notice later writes.
+    let without_optional = submitted
+        .replace("<CatalogNumber>5031N</CatalogNumber>", "")
+        .replace("<SerialNumber>123.4</SerialNumber>", "")
+        .replace("<PP Name=\"UnitAddress\" Value=\"20\"/>", "");
+    assert_eq!(
+        server
+            .handle_document("[12] DBSETXML //XCOMB/254", &without_optional)
+            .status,
+        301
+    );
+    let observed_unit =
+        |server: &mut Server| server.handle("[read] DBGETXML //XCOMB/254/p/20").lines[0].clone();
+    assert_eq!(
+        observed_unit(&mut server),
+        format!(
+            "347-{}",
+            evidence["optional_field_probe"]["unit_without_optional_readback"]
+                .as_str()
+                .unwrap()
+        )
+    );
+    assert_eq!(
+        server
+            .handle("[description] DBSETSAFE //XCOMB/254/p/20/Description VALUE")
+            .status,
+        200
+    );
+    assert_eq!(
+        observed_unit(&mut server),
+        format!(
+            "347-{}",
+            evidence["optional_field_probe"]["after_description_set_readback"]
+                .as_str()
+                .unwrap()
+        )
+    );
+    assert_eq!(
+        server
+            .handle_document("[reset] DBSETXML //XCOMB/254", &without_optional)
+            .status,
+        301
+    );
+    assert_eq!(
+        server
+            .handle("[13] DBSETSAFE //XCOMB/254/p/20/CatalogNumber 5031N")
+            .status,
+        200
+    );
+    assert_eq!(
+        observed_unit(&mut server),
+        format!(
+            "347-{}",
+            evidence["optional_field_probe"]["after_catalog_set_readback"]
+                .as_str()
+                .unwrap()
+        )
+    );
+    assert_eq!(
+        server
+            .handle("[14] DBSETSAFE //XCOMB/254/p/20/SerialNumber 123.4")
+            .status,
+        200
+    );
+    assert_eq!(
+        observed_unit(&mut server),
+        format!(
+            "347-{}",
+            evidence["optional_field_probe"]["after_serial_set_readback"]
+                .as_str()
+                .unwrap()
+        )
+    );
+
+    // PP SAVE can add fields after a plain DBSETXML, too. The previous
+    // projection dropped those new PP elements entirely.
+    assert_eq!(server.handle("[15] PP LOCK L //XCOMB/254").status, 200);
+    assert_eq!(server.handle("[16] PP START S L").status, 200);
+    assert_eq!(server.handle("[17] PP NEW S KEYE1 1.2.67").status, 200);
+    assert_eq!(server.handle("[18] PP SET S Note Added").status, 200);
+    assert_eq!(
+        server.handle("[19] PP SAVE S /db//XCOMB/254/p/20").status,
+        200
+    );
+    assert!(observed_unit(&mut server).contains("<PP Name=\"Note\" Value=\"Added\"/>"));
+
+    // A known-name element with nested extension markup is not plain XML.
+    // Preserve the supplied subtree instead of flattening it to an empty
+    // scalar while canonicalizing ordinary Unit fields.
+    let nested_catalog = concat!(
+        "<Unit><OID>11111111-1111-4111-8111-111111111111</OID>",
+        "<TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType>",
+        "<UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion>",
+        "<CatalogNumber><Opaque keep=\"yes\">VENDOR</Opaque></CatalogNumber></Unit>"
+    );
+    assert_eq!(
+        server
+            .handle_document("[20] DBSETXML //XCOMB/254/p/20", nested_catalog)
+            .status,
+        301
+    );
+    let nested = observed_unit(&mut server);
+    assert!(
+        nested.contains("<CatalogNumber><Opaque keep=\"yes\">VENDOR</Opaque></CatalogNumber>"),
+        "{nested}"
+    );
+    assert!(
+        !nested.contains("<CatalogNumber></CatalogNumber>"),
+        "{nested}"
+    );
+
+    // Native XML mapping accepts decoration on required UnitName, while
+    // discarding the decoration and keeping only direct text.
+    let attributed = concat!(
+        "<Unit><OID>11111111-1111-4111-8111-111111111111</OID>",
+        "<TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType>",
+        "<UnitName mark=\"vendor\">Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>"
+    );
+    assert_eq!(
+        server
+            .handle_document("[21] DBSETXML //XCOMB/254/p/20", attributed)
+            .status,
+        301
+    );
+    assert_eq!(
+        observed_unit(&mut server),
+        format!(
+            "347-{}",
+            evidence["unit_name_mapper_probe"]["attribute_readback"]
+                .as_str()
+                .unwrap()
+        )
+    );
+    let nested_name = attributed.replace(
+        "<UnitName mark=\"vendor\">Room</UnitName>",
+        "<UnitName><Opaque>Room</Opaque></UnitName>",
+    );
+    assert_eq!(
+        server
+            .handle_document("[22] DBSETXML //XCOMB/254/p/20", &nested_name)
+            .status,
+        301
+    );
+    assert_eq!(
+        observed_unit(&mut server),
+        format!(
+            "347-{}",
+            evidence["unit_name_mapper_probe"]["nested_readback"]
+                .as_str()
+                .unwrap()
+        )
     );
 }
 
