@@ -167,3 +167,15 @@ cargo build --release --workspace
 ```
 
 For documentation or skill-only changes, validate links, examples, frontmatter, and the skill package. Run binary smoke checks when command syntax was changed.
+
+For Toolkit changes, create `toolkit-cli/.venv` with Python 3.13 and the
+`test,research,serial,usb` extras, then run `make check`,
+`make check-interop`, and `make check-wheel` from `toolkit-cli/`.
+`check-interop` builds and requires both `cgate-mock` and `cmqttd`; the focused
+interop targets fail when their selected binary is missing. Native and physical
+release acceptance are separate strict provisioned gates described in
+`docs/testing.md`; they reject skips and must not be inferred from offline CI.
+Use `make require-complete` or invoke
+`cbus-toolkit coverage --require-complete` directly for the enforcing parity
+decision. `make coverage` is informational and deliberately does not propagate
+the incomplete-ledger status.

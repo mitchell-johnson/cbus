@@ -31,7 +31,8 @@ def input_files(pattern):
     paths.update(path for path in (ROOT / "tests").glob("*.py") if not path.name.startswith("test_"))
     for directory, suffixes in ((ROOT / "src/cbus_toolkit", ("*.py", "*.json")),
                                 (ROOT / "research", ("*.py", "*.java", "*.cs")),
-                                (ROOT / "research/fixtures", ("*.json", "*.txt"))):
+                                (ROOT / "research/fixtures", ("*.json", "*.txt")),
+                                (ROOT / "research/release-gates", ("*.json",))):
         for suffix in suffixes:
             paths.update(directory.glob(suffix))
     if (ROOT / "pyproject.toml").is_file():

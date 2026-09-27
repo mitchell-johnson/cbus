@@ -1,0 +1,37 @@
+{
+  "format": "cbus-provisioned-release-gate-v1",
+  "gate": "native",
+  "systems": [
+    "Darwin"
+  ],
+  "required_environment": {
+    "CBUS_CGATE_JAVA": {
+      "kind": "executable"
+    },
+    "CBUS_CGATE_JAVAC": {
+      "kind": "executable"
+    },
+    "CBUS_LOCAL_CGATE_VENDOR": {
+      "kind": "directory",
+      "contains": [
+        "cgate.jar"
+      ]
+    },
+    "CBUS_UNITSPEC_DIR": {
+      "kind": "directory"
+    }
+  },
+  "tests": [
+    "tests/test_native_network_oracle.py",
+    "tests/test_memory_fragment_acceptance.py",
+    "tests/test_pci_incoming.py",
+    "tests/test_project_repair.py",
+    "tests/test_local_cgate.py",
+    "tests/test_pci_routing.py",
+    "tests/test_repositories.py",
+    "tests/test_native_thermostat_schedule_integration.py",
+    "tests/test_project_repair_native.py",
+    "tests/test_pci_routed_identify_original.py",
+    "tests/test_pci_routed_recall_original.py"
+  ]
+}

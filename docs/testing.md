@@ -26,14 +26,77 @@ make check-interop
 make check-wheel
 ```
 
-`make check` runs the offline Python suite. Tests requiring vendor binaries, unit specifications, native C-Gate, Windows workers, or physical devices skip unless their explicit environment gates are configured. `make check-interop` builds the Rust mock and exercises the production Python client and wrappers against it. CI runs the offline suite with the mock built; vendor and hardware acceptance remain separate.
+`make check` runs the complete source-tree suite. Tests requiring vendor
+binaries, unit specifications, native C-Gate, Windows workers, or physical
+devices skip unless their explicit environment gates are configured. The
+pytest summary reports those skips. `make check-offline` omits the two Rust
+interop modules so CI can execute and report each one separately.
+
+`make check-interop` builds both `cgate-mock` and `cmqttd`, verifies that both
+executables exist, and runs `test_rust_cgate_interop.py` and
+`test_cmqtt_interop.py` in separate pytest invocations. The focused
+`check-cgate-interop` and `check-cmqtt-interop` targets deliberately do not
+build a missing binary: they fail before collection. CI builds the two servers
+once, runs the offline and two interop selections separately, and retains a
+JUnit report for each selection. A green source job therefore cannot conceal a
+cmqttd suite that skipped because its binary was absent.
 
 `make check-wheel` builds a fresh wheel, creates a temporary Python 3.13
 environment, installs the wheel with all supported extras, and runs the same
-offline suite with `PYTHONPATH=tests` so imports resolve from the installed
-artifact instead of `src/`. The temporary wheel and environment are removed
-after either success or failure. Provisioning-gated skips retain the same
-meaning as the source-tree run.
+suite from outside the checkout with only the repository root and tests on
+`PYTHONPATH`. Before collection it resolves `cbus_toolkit.__file__` and fails
+unless it is under the temporary environment's `site-packages`; importing
+`src/cbus_toolkit` cannot satisfy this gate. The temporary wheel and
+environment are removed after either success or failure. The independent CI
+wheel job retains its JUnit report, including every provisioning-gated skip.
+
+## Provisioned release gates
+
+Native and physical acceptance are manual, separately provisioned jobs in
+`.github/workflows/ci.yml`; neither is implied by ordinary pull-request CI.
+Dispatch the workflow with `release_gate=native` or
+`release_gate=hardware`. The native job requires a self-hosted macOS runner
+labelled `cbus-native` and the `cbus-native` environment. Its environment must
+supply executable `CBUS_CGATE_JAVA` and `CBUS_CGATE_JAVAC` paths, the original
+C-Gate application directory in `CBUS_LOCAL_CGATE_VENDOR`, including
+`cgate.jar`, and `CBUS_UNITSPEC_DIR`. `make check-native` reads the committed
+`research/release-gates/native.json` selection. A missing path, unsupported
+host, zero-test selection, failed test, or skipped test fails the gate.
+
+The hardware job requires a self-hosted runner labelled `cbus-hardware`, the
+`cbus-hardware` environment, `CBUS_HARDWARE_ACCEPTANCE=1`, and a private
+manifest path in `CBUS_HARDWARE_GATE_MANIFEST`. The manifest uses this shape:
+
+```json
+{
+  "format": "cbus-provisioned-release-gate-v1",
+  "gate": "hardware",
+  "systems": ["Darwin"],
+  "required_environment": {
+    "CBUS_HARDWARE_ACCEPTANCE": {"kind": "flag"},
+    "CBUS_CNI_ENDPOINT": {"kind": "value"}
+  },
+  "tests": ["tests/test_physical_fixture.py::PhysicalFixtureTests::test_effect_and_readback"]
+}
+```
+
+Allowed provision kinds are `value`, `flag` (exactly `1`), `file`,
+`directory`, and `executable`; a file or directory rule may add a relative
+`contains` list. Test selectors must name `tests/test_*.py` modules in the
+checkout, optionally followed by pytest node IDs. Keep device identities,
+endpoints and vendor paths in the protected runner environment, not the
+manifest. `research/release_gate.py` records the source revision, manifest
+hash, selected tests, sanitized provision names and kinds, JUnit counters and
+skip reasons without recording provision values. The hardware selection stays
+private until P1.04 defines the required fixtures; an absent manifest fails
+instead of turning hardware acceptance into a skip.
+
+Both provisioned jobs upload the JSON receipt and JUnit report, then run
+`.venv/bin/cbus-toolkit coverage --require-complete` directly. That final
+command remains nonzero while the census or any implementation/acceptance
+requirement is incomplete. `make coverage` is only an informational local
+summary that prints the same status without enforcing it; use
+`make require-complete` or the direct command for a release decision.
 
 Do not equate offline test success with complete Toolkit parity. Run `cbus-toolkit coverage --require-complete` to inspect that separate gate, and consult the [Toolkit status and acceptance evidence](../toolkit-cli/docs/implementation-status.md) for full validation requirements.
 

@@ -3,6 +3,7 @@
 Only ephemeral loopback sockets and synthetic configuration bytes are used.
 """
 import json
+import os
 from pathlib import Path
 import re
 import socket
@@ -16,7 +17,17 @@ from test_cmqtt import memory
 
 
 ROOT = Path(__file__).resolve().parents[2]
-BIN = ROOT / 'rust/target/debug/cmqttd'
+
+
+def find_cmqttd():
+    override = os.environ.get('CBUS_CMQTTD_BIN')
+    candidate = Path(override) if override else ROOT / 'rust/target/debug/cmqttd'
+    if candidate.is_file() and os.access(candidate, os.X_OK):
+        return candidate.resolve()
+    return None
+
+
+BIN = find_cmqttd()
 
 
 class InitializedPCI(PCISimulator):
@@ -27,7 +38,7 @@ class InitializedPCI(PCISimulator):
         return super()._command(line, context)
 
 
-@pytest.mark.skipif(not BIN.exists(), reason='Build the Rust cmqttd binary to run cross-language hardware-service tests')
+@pytest.mark.skipif(BIN is None, reason='Build the Rust cmqttd binary to run cross-language hardware-service tests')
 def test_real_cli_reads_all_edlt_labels_through_cmqttd(tmp_path):
     image = memory()
     sim = InitializedPCI(profile='captured', command_checksum=True,
@@ -75,7 +86,7 @@ def test_real_cli_reads_all_edlt_labels_through_cmqttd(tmp_path):
                 except subprocess.TimeoutExpired: process.kill(); process.wait(timeout=5)
 
 
-@pytest.mark.skipif(not BIN.exists(), reason='Build the Rust cmqttd binary to run cross-language hardware-service tests')
+@pytest.mark.skipif(BIN is None, reason='Build the Rust cmqttd binary to run cross-language hardware-service tests')
 def test_real_cli_programs_direct_physical_parameter_and_freshly_reloads_it(tmp_path):
     """Exercise the production typed workflow over the real shared PCI path.
 

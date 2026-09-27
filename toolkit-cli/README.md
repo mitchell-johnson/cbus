@@ -1977,7 +1977,17 @@ cd toolkit-cli
 make check
 make check-interop
 make check-wheel
+make require-complete
 ```
+
+CI runs the source-only selection, `cgate-mock` interop and real `cmqttd`
+interop as separate reported steps after building both Rust servers. A second
+job installs the wheel into a fresh environment and rejects any import from
+`src/`. JUnit artifacts retain the executed and skipped cases. Provisioned
+native and physical-hardware release jobs are manual and fail on missing
+provision or any skip; see the repository [test strategy](../docs/testing.md).
+`make require-complete` is the enforcing ledger gate and remains nonzero until
+the full census, implementation and acceptance requirements are complete.
 
 On 27 September 2026, `make check` and the isolated `make check-wheel` each
 completed with **2,477 passed, 265 skipped and 19,488 passing subtests**.
