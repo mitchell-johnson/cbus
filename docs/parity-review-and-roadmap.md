@@ -632,6 +632,9 @@ exchange remains intact after each workflow.
 - [ ] **P9.03** ([#62](https://github.com/mitchell-johnson/cbus/issues/62)) — Bind catalogue, signed metadata, revocation, conditions and package bytes to
   one source/version. Implement the actual publisher chain/current trust,
   applicability, version comparison and rollout policy from original evidence.
+  The original SESU Registry32 key/entry are now source-pinned, and a guarded
+  read-only CLI has an interactive-user absent-entry and one original-seeded
+  numeric-cohort comparison. These do not compose the updater's full policy.
 - [ ] **P9.04** ([#63](https://github.com/mitchell-johnson/cbus/issues/63)) — Implement verified download, selection, install/open and restart/result
   reporting where those are Toolkit-owned functions. Retain failures and
   recovery; do not infer availability from a valid signature alone.

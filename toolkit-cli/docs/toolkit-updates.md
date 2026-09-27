@@ -120,6 +120,10 @@ performs a [read-only observation](toolkit-update-rollout-current-user.md) of
 the original key and entry proved by the pinned SESU DLL, after verifying the
 exact assembly hash and intended process user SID. It does not sample, write,
 compare a catalogue candidate or determine update availability.
+A separate guarded interactive Windows acceptance invoked the pinned original
+helper once, confirmed a persisted 0–99 cohort, read the same value with the
+read-only CLI, and restored the previously absent entry. This accepts that
+bounded source-to-read path, not a complete updater policy.
 
 `update-applicability-cohort-preflight` applies the earlier captured
 date/file/media/URI gates and this 0–99 cohort comparison to the same selected

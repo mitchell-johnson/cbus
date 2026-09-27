@@ -73,7 +73,7 @@ missing/sentinel/unsupported values cannot become a usable cohort and it
 never samples or writes. Read
 `toolkit-cli/docs/toolkit-update-rollout-current-user.md` for the exact path,
 source evidence, accepted interactive missing-entry read and remaining
-numeric-cohort boundary.
+one guarded original-seeded numeric read. Neither is a complete rollout decision.
 
 `update-applicability-cohort-preflight --catalogue-response RAW.json --node-id
 ID --platform windows_x86_64 --at-utc ...Z --stored-cohort 41` evaluates the

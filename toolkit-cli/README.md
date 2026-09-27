@@ -176,8 +176,10 @@ On Windows, `update-rollout-current-user --source-assembly SesuBrick.DAD.dll
 --expected-user-sid SID` separately reads the pinned original SESU cohort
 entry in this CLI process user's HKCU Registry32 view. The
 [read-only contract](docs/toolkit-update-rollout-current-user.md) explains the
-source/SID guards, supported values and missing/sentinel branches. It makes
-no catalogue, trust, availability or installation decision.
+source/SID guards, supported values and missing/sentinel branches. One
+interactive Windows acceptance seeded a cohort with the pinned original
+helper, read the same value with this CLI, then restored the absent entry.
+The CLI makes no catalogue, trust, availability or installation decision.
 
 `update-applicability-cohort-preflight --catalogue-response raw-catalogue.json
 --node-id ID --platform windows_x86_64 --at-utc ...Z --stored-cohort 41`

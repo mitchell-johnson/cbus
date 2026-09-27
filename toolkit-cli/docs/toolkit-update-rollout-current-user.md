@@ -80,8 +80,20 @@ original key but no cohort entry, so the CLI returned `unsupported` with
 after also found the entry absent; the command did not seed or write it.
 The sanitized [evidence fixture](../research/fixtures/toolkit-update-rollout-original-registry-identity.json)
 records the wheel and private receipt hashes and cleanup. This accepts the
-read-only missing-entry branch, not an observed numeric cohort or an original
-updater rollout decision. Native original updater behavior for an existing
-interactive user's numeric value, RNG persistence, broader `REG_DWORD` and string parsing,
-nonempty conditions and end-to-end update policy also remain open under
+read-only missing-entry branch.
+
+One further guarded acceptance used the same interactive account and the
+unmodified original registry fields. A 32-bit process checked the pinned DLL,
+five method IL hashes, helper signature and absent entry, then invoked the
+original helper **once** with visibility 0. It returned false and wrote a
+canonical 0–99 `REG_SZ` cohort. The installed CLI wheel read the same value
+as `observed` with exit 0. The test deleted only the matching newly generated
+entry, preserved the key, and confirmed the entry absent in a fresh process.
+All temporary tasks and guest files were removed. The fixture records the
+private receipt hash without exposing the sampled value or user SID.
+
+This establishes one original-helper seed and matching read-only CLI path,
+not the helper's random distribution, repeated-session behavior or a complete
+updater rollout decision. Broader `REG_DWORD` and string parsing, nonempty
+conditions and end-to-end update policy remain open under
 [issue #62](https://github.com/mitchell-johnson/cbus/issues/62).

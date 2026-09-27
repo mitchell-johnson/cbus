@@ -61,9 +61,35 @@
     "owned_temporary_paths_removed": 24,
     "owned_temporary_paths_remaining": 0
   },
+  "interactive_original_helper_seed": {
+    "runtime": "disposable Windows 11 guest, interactive user session 1, x86 original helper and Python 3.13.14 ARM64 wheel",
+    "private_receipt_sha256": "899c5d966bae7992904261a92393b8029675b17c5fe03f16fffa62fa0a1befed",
+    "original_helper_token": "0x0600012C",
+    "original_helper_il_sha256": "f6dd553c61e7af5a6d216422a6040102de46330e1bc7dad3dc7259f25bfead56",
+    "source_assembly_sha256": "21a6b2fb74d9b308d22c740ca0a1d887d80a067cccc03f59e4dd1bbb6c9c4b0c",
+    "installed_wheel_sha256": "9b05fc3d3c6fbc06c5dc5e8c02f197d366655639f3d4717f58806cf88c62c1f5",
+    "original_static_fields_modified": false,
+    "before_read_state": "entry_absent",
+    "helper_invocation_count": 1,
+    "visibility": 0,
+    "helper_return": false,
+    "generated_value_kind": "REG_SZ",
+    "generated_cohort_in_range_0_99": true,
+    "cli_read_status": "observed",
+    "cli_read_exit_code": 0,
+    "cli_cohort_matches_generated": true,
+    "matching_generated_value_deleted": true,
+    "key_preserved": true,
+    "fresh_process_post_cleanup_read_state": "entry_absent",
+    "temporary_tasks_remaining": 0,
+    "owned_temporary_paths_remaining": 0,
+    "updater_constructor_invoked": false,
+    "network_request_initiated": false,
+    "installer_invoked": false
+  },
   "limits": [
-    "The native reflection ran as LocalSystem. A separate interactive-user CLI read verified only an absent entry; no numeric current-user cohort was observed.",
-    "No original updater constructor, rollout helper, update selection, HTTP, download, or installer was invoked by the identity probe.",
-    "The current-user CLI path is read-only and does not model original random sampling or persistence."
+    "The native identity reflection ran as LocalSystem. Separate interactive-user runs verified the absent-entry read and one original-helper seed/read/cleanup transaction; they do not prove a sampling distribution or repeated-session policy.",
+    "The identity probe did not invoke the original updater constructor or helper. The later seed acceptance invoked only the pinned helper once, without update selection, HTTP, download or installer.",
+    "The current-user CLI path remains read-only. Original sampling/persistence occurred only in the guarded native acceptance, not in this CLI command or a complete updater workflow."
   ]
 }
