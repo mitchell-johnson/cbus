@@ -5051,8 +5051,23 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["database_documents"], true);
     assert_eq!(
         document["database_document_scope"],
-        serde_json::json!(["scalar-field", "typed-unit"])
+        serde_json::json!([
+            "scalar-field",
+            "typed-unit",
+            "typed-level",
+            "typed-netvar",
+            "typed-group",
+            "typed-application",
+            "typed-network",
+            "typed-network-with-unit"
+        ])
     );
+    assert_eq!(document["database_document_network_units"], true);
+    assert_eq!(
+        document["database_document_configured_network"],
+        "same-address-same-interface-binding"
+    );
+    assert_eq!(document["database_document_physical_io"], false);
     assert_eq!(
         document["legacy_database_local_commands"],
         serde_json::json!([
@@ -12153,9 +12168,9 @@ async fn typed_container_dbsetxml_is_durable_atomic_and_never_reaches_pci() {
     assert_eq!(readback.status, 200, "{readback:?}");
     assert!(readback.lines[0].contains("<Level Value=\"42\">"));
 
-    // The configured network is a live endpoint identity and is refused
-    // before model mutation; secondary-project Network replacements remain
-    // available through the fully local path above.
+    // A malformed configured-network document reaches schema validation; the
+    // bounded same-address/same-interface replacement contract is exercised
+    // separately below.
     let configured_oid = restarted.model.lock().await.projects["HARNESS"].networks[&254]
         .oid
         .clone();
@@ -12166,7 +12181,141 @@ async fn typed_container_dbsetxml_is_durable_atomic_and_never_reaches_pci() {
             "<Network/>",
         )
         .await;
-    assert_eq!(refused.status, 408);
+    assert_eq!(refused.status, 400);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn configured_network_dbsetxml_replaces_database_topology_without_rebinding_or_pci_io() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    let original = {
+        let mut model = service.model.lock().await;
+        let network = model
+            .projects
+            .get_mut("HARNESS")
+            .unwrap()
+            .networks
+            .get_mut(&254)
+            .unwrap();
+        let physical = network.units[&5].clone();
+        network.physical.insert(5, physical);
+        network.levels.insert((56, 1), 77);
+        network.state = NetworkState::Open;
+        network.retries = 7;
+        network.clone()
+    };
+    let document = format!(
+        "<Network xmlns:x=\"urn:configured\" x:revision=\"2\"><OID>52000000-0000-4000-8000-000000000001</OID><TagName>Configured replacement</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>52000000-0000-4000-8000-000000000002</OID><InterfaceType>{}</InterfaceType><InterfaceAddress>{}</InterfaceAddress></Interface><Unit x:source=\"document\"><OID>52000000-0000-4000-8000-000000000003</OID><TagName>Replacement eDLT</TagName><Address>6</Address><UnitType>KEYGL5</UnitType><FirmwareVersion>5.5.00</FirmwareVersion><PP Name=\"StaticTextString0\" Value=\"Topology\"/><!--unit--><x:Opaque>kept</x:Opaque></Unit><Application><OID>52000000-0000-4000-8000-000000000004</OID><TagName>Lighting</TagName><Address>56</Address></Application><!--network--></Network>",
+        original.iface_type, original.iface_addr
+    );
+    let replaced = service
+        .handle_document(&mut client, "[replace] DBSETXML //HARNESS/254", &document)
+        .await;
+    assert_eq!(replaced.status, 301, "{replaced:?}");
+    assert_eq!(
+        replaced.final_text,
+        "301 OID=52000000-0000-4000-8000-000000000001"
+    );
+    {
+        let model = service.model.lock().await;
+        let network = &model.projects["HARNESS"].networks[&254];
+        assert_eq!(network.name, "Configured replacement");
+        assert_eq!(network.oid, "52000000-0000-4000-8000-000000000001");
+        assert_eq!(
+            network.interface_oid,
+            "52000000-0000-4000-8000-000000000002"
+        );
+        assert_eq!(network.iface_type, original.iface_type);
+        assert_eq!(network.iface_addr, original.iface_addr);
+        assert_eq!(network.state, NetworkState::Open);
+        assert_eq!(network.retries, 7);
+        assert_eq!(network.levels.get(&(56, 1)), Some(&77));
+        assert_eq!(network.physical.get(&5).map(|unit| unit.address), Some(5));
+        assert!(!network.units.contains_key(&5));
+        assert_eq!(network.units[&6].fields["TagName"], "Replacement eDLT");
+    }
+    let unit_xml = service
+        .handle(&mut client, "[unit] DBGETXML //HARNESS/254/p/6")
+        .await;
+    assert_eq!(unit_xml.status, 200, "{unit_xml:?}");
+    assert!(unit_xml.lines[0].contains("xmlns:x=\"urn:configured\""));
+    assert!(unit_xml.lines[0].contains("x:source=\"document\""));
+    assert!(unit_xml.lines[0].contains("<!--unit-->"));
+    assert!(unit_xml.lines[0].contains("<x:Opaque>kept</x:Opaque>"));
+    let persisted = std::fs::read(&path).unwrap();
+
+    let changed_binding = document.replace(
+        &format!(
+            "<InterfaceAddress>{}</InterfaceAddress>",
+            original.iface_addr
+        ),
+        "<InterfaceAddress>127.0.0.1:65535</InterfaceAddress>",
+    );
+    let refused_binding = service
+        .handle_document(&mut client, "[binding] DBSETXML 254", &changed_binding)
+        .await;
+    assert_eq!(refused_binding.status, 408, "{refused_binding:?}");
+    assert!(refused_binding
+        .final_text
+        .contains("physical interface binding is immutable"));
+    assert_eq!(std::fs::read(&path).unwrap(), persisted);
+
+    let moved = document
+        .replace("<Address>254</Address>", "<Address>253</Address>")
+        .replace(
+            "<NetworkNumber>254</NetworkNumber>",
+            "<NetworkNumber>253</NetworkNumber>",
+        );
+    let refused_move = service
+        .handle_document(
+            &mut client,
+            "[move] DBSETXML !52000000-0000-4000-8000-000000000001",
+            &moved,
+        )
+        .await;
+    assert_eq!(refused_move.status, 408, "{refused_move:?}");
+    assert!(refused_move
+        .final_text
+        .contains("configured network address is immutable"));
+    assert_eq!(std::fs::read(&path).unwrap(), persisted);
+    {
+        let model = service.model.lock().await;
+        let network = &model.projects["HARNESS"].networks[&254];
+        assert_eq!(network.oid, "52000000-0000-4000-8000-000000000001");
+        assert_eq!(network.state, NetworkState::Open);
+        assert_eq!(network.levels.get(&(56, 1)), Some(&77));
+        assert!(network.physical.contains_key(&5));
+        assert!(network.units.contains_key(&6));
+        assert!(!model.projects["HARNESS"].networks.contains_key(&253));
+    }
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err(),
+        "configured Network DBSETXML must not write to PCI"
+    );
+
+    drop(service);
+    let (restart_pci, _remote) = pci();
+    let restarted = Service::new(&fixture(), None, path.clone(), restart_pci, None).unwrap();
+    let mut restarted_client = ClientState::default();
+    let restarted_unit = restarted
+        .handle(
+            &mut restarted_client,
+            "[restart] DBGETXML //HARNESS/254/p/6",
+        )
+        .await;
+    assert_eq!(restarted_unit.status, 200, "{restarted_unit:?}");
+    assert!(restarted_unit.lines[0].contains("<TagName>Replacement eDLT</TagName>"));
+    assert!(restarted_unit.lines[0].contains("<x:Opaque>kept</x:Opaque>"));
+    assert!(
+        restarted.model.lock().await.projects["HARNESS"].networks[&254]
+            .physical
+            .is_empty()
+    );
     std::fs::remove_file(path).unwrap();
 }
 

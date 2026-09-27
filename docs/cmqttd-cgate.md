@@ -169,7 +169,7 @@ versioned portable container.
 | `DBGETJSON NAC_OBJECTS_LIST/NAC_ROUTING_TABLE/NAC_TAGMAP` | Exact root help and native JSON envelopes over a validated durable unit. The importer does not retain vendor `NACObjectList` definitions, so object and routing projections are explicitly empty and `database_json_nac_object_definitions` is false. TAGMAP emits the durable local network, supported application, group and level tags available in cmqttd's model. These reads perform no PCI I/O; see `rust/testdata/fixtures/native_cgate_local_admin.json` |
 | `DBADD`; `DBCOPY`; `DBNEW`; `DBTAGLIST`; `DBSET`; secondary-project `DBRENAMENET`/`DBRENAMENETSAFE` | Selected-project local database lifecycle grounded in `rust/testdata/fixtures/native_cgate_legacy_database.json`. DBADD creates durable typed objects before compulsory fields exist; OID DBGET reports native nulls and DBSET atomically materializes the object after Address and TagName arrive. DBCOPY assigns fresh OIDs throughout the subtree, clears Address and TagName throughout a same-project copy, and retains them for a cross-project copy. DBNEW atomically leaves the selected Installation/Project blank while cmqttd retains its configured interface as a non-durable runtime shell. DBTAGLIST, unsafe DBSET and both network-rename spellings retain their selected-project, atomic-persistence and corruption-repair contracts. These local commands never send PCI traffic. |
 | `DBCREATE`; `DBUPDATE`; `DBVERIFY` | Physical database lifecycle over the configured shared CNI. Every operation first uses generation-guarded `NET SYNC`; an incomplete, disconnected or stale refresh fails before database mutation. DBCREATE replaces the selected tag database with fresh network/unit OIDs and `[default]` compulsory names where the network supplies none. DBUPDATE accepts a network or unit and optional exact `UnitDelete`, preserves existing OIDs and database names, updates physical identity, and removes absent database units only when requested. DBVERIFY compares database and physical presence plus nonblank type, firmware and serial identity, returning ordered 345 Difference rows and a counted final 408 or 200 when equal. Successful mutations commit atomically and survive restart. |
-| `DBSETXML` | Scalar-field documents and complete `Unit`, `Level`, `NetVar`, `Group`, `Application`, and `Network`/`Interface` documents are supported. Complete forms validate the entire document, selected-project path/OID target, required fields, subtree OID uniqueness, and sibling address conflicts on a staged clone, then atomically replace the old subtree and return `301 OID=<submitted-root-oid>`. Modeled readback retains namespaced attributes/elements, comments, and processing instructions where feasible; state survives copy, rename, archive/restore, and restart with no PCI traffic. The configured live Network is immutable. A Network document containing `Unit` is rejected before mutation because the retained native replacement probes do not establish that mixed subtree contract; private Schneider XML/repository formats remain unsupported. |
+| `DBSETXML` | Scalar-field documents and complete `Unit`, `Level`, `NetVar`, `Group`, `Application`, and `Network`/`Interface` documents are supported, including a complete Network composed with Unit and Application children. Complete forms validate the entire document, selected-project path/OID target, required Unit scalars and PP ownership, subtree OID uniqueness, and sibling application/unit address conflicts on a staged clone, then atomically replace the old subtree and return `301 OID=<submitted-root-oid>`. Modeled readback retains Unit templates, inherited namespace declarations, namespaced attributes/elements, comments, and processing instructions where feasible; state survives copy, rename, archive/restore, and restart with no PCI traffic. The configured live Network accepts a replacement only at the same address and with the same interface type/address binding; runtime physical inventory, levels, state, and retry count remain intact. A move or rebind rolls back with 408. The mixed tree composes separately retained native complete-Network and complete-Unit contracts; an exact native combined replacement capture and private Schneider XML/repository formats remain unsupported. |
 | Here-document framing | TCP and TLS recognize native `COMMAND << DELIMITER` framing and apply the optional LOGIN gate. Lines are limited to 1 MiB and bodies to 16 MiB; an oversized body is drained to its delimiter and returns tagged 400 so the connection remains synchronized, while EOF before the delimiter returns tagged 400 and closes the connection. `CGL IMPORT` validates and atomically applies only the bounded CGL 1.1 label model above. `DBSETXML` uses the same bounded transport for its scalar-field and evidenced complete typed-object scope. |
 | `DBNETWORKPATH` | Resolves Bridge `InterfaceAddress` topology using the standard far-side network-address convention, requires the corresponding source-network bridge unit, limits paths to six bridges, and returns native single-line `136` COMPACT or multi-line `137` network-OID results without PCI I/O. Returned OIDs resolve through `DBGET !oid/OID` in the selected project. The final `/p/<interface-unit>` component may differ from the child network; it validates as an interface address but does not replace the far-side route byte, and path discovery does not require that suffix unit to exist. Native zero-hop `START == END` requests return `408 ... No path found`; only a literal `COMPACT` selects compact output, while another mode token defaults to OID and later tokens are ignored |
 | `NET`, `NETWORK`, `TOPOLOGY`; `NET CREATE/DELETE/FLUSH/LIST/LOAD/RENAME/SAVE` | Exact retained build-2001 root/subcommand help and a runtime network-definition catalogue in the atomic `cmqttd-json` repository. CREATE accepts a bounded definition but never opens another interface. RENAME changes the runtime definition while preserving its immutable optional shared-PCI binding and does not rename the tag-database object. DELETE refuses an operating bound definition with native 468. FLUSH clears only volatile observations. SAVE/LOAD use internal `DB` or `FILE` snapshots; `FILE` is not a host path, and LOAD rejects duplicate names with the observed 408 before mutation. Their retained optional project token resolves the named project even when another project is selected; cross-project tests pin isolation and a missing project returns native 401. Mutations require LOGIN when armed and send no PCI traffic |
@@ -746,7 +746,7 @@ non-inventoried service commands. Full replacement still requires:
   implemented on the configured network and topology-resolved routes through one to six bridges; physical device acceptance and state readback remain unverified. Short Message SEND
   is a deliberate coherent repair of the retained native malformed encoder.
 - Schneider repository/archive formats, full vendor CGL metadata/controller
-  semantics, DBSETXML Network documents containing Unit children, and exact native configuration,
+  semantics, exact native combined DBSETXML Network/Unit capture, and exact native configuration,
   access, TLS, firmware, and deployment semantics. `REPOSITORY USE 1`,
   `PROJECT REPAIR`, all five portable TRANSFORM leaves, internal project
   snapshots, OID-preserving secondary-project copy/delete, the `cmqttd-json`
@@ -756,10 +756,12 @@ non-inventoried service commands. Full replacement still requires:
   arbitrary host paths and private Schneider schemas. CGL 1.1 import/export is
   limited to the modeled label graph over known routes. DBSETXML provides
   scalar-field writes and complete Unit, Level, NetVar, Group, Application and
-  Network/Interface replacement with a submitted-root 301 OID receipt in the
-  atomic local database. Retained typed state stays isolated across project
-  copies and follows copy, rename, delete and internal archive/restore. A
-  Network document containing Unit and private vendor XML formats remain
+  Network/Interface replacement, including composed Network/Unit trees, with a
+  submitted-root 301 OID receipt in the atomic local database. Retained typed
+  state stays isolated across project copies and follows copy, rename, delete
+  and internal archive/restore. A configured live Network admits the database
+  replacement only at its existing address and interface binding, preserving
+  its runtime observations without PCI I/O. Private vendor XML formats remain
   unsupported, and this bounded path is not general vendor-file interoperability.
   C-Gate TLS supports optional mandatory client-certificate verification with
   a private CA bundle. Physical `ACCESS_CONTROL CLOSE/LOCK` is implemented for
@@ -790,13 +792,16 @@ duplicate/non-numeric corruption defects. Unit and embedded-service tests pin
 the repaired pre-mutation refusals, bridge/path remapping, atomic restart
 persistence, configured-project boundary, incomplete and recursive OID objects,
 complete typed Unit, Level, NetVar, Group, Application and Network/Interface
-DBSETXML replacement and its 301 OID receipt, opaque XML preservation where
-modeled, physical refresh/replace/update/verify
+DBSETXML replacement, composed Network/Unit/Application trees, their 301 OID
+receipts, opaque XML preservation where modeled, configured-Network binding
+guards and runtime-state preservation, physical refresh/replace/update/verify
 behavior, and the absence of PCI traffic for local database operations.
 `toolkit-cli/tests/test_rust_cgate_interop.py` drives Unit and
 Application/Group/Level forms through the production Python client.
-`system_cgate_admin.rs` repeats the typed subtree exchange through the running
-daemon; `system_cgate_database_lifecycle.rs` additionally pins restart behavior.
+`system_cgate_admin.rs` repeats both a typed application subtree and a complete
+configured Network/Unit exchange through the running daemon while checking
+zero administrative PCI traffic; `system_cgate_database_lifecycle.rs`
+additionally pins restart behavior.
 
 `native_cgate_deploy_queue.json` retains all five command help/grammar paths,
 TaskGroupSummary field order, delete-type behavior, exact event JSON, owned

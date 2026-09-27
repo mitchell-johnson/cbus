@@ -164,13 +164,61 @@ async fn administrative_documents_and_mqtt_share_the_running_daemon() {
             .contains("200 OK")
     );
 
+    let before_network_document = sys.pci.payloads();
+    let network = concat!(
+        "<Network xmlns:x=\"urn:system-topology\"><OID>53000000-0000-4000-8000-000000000001</OID>",
+        "<TagName>System topology</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber>",
+        "<Interface><OID>53000000-0000-4000-8000-000000000002</OID><InterfaceType>CNI</InterfaceType>",
+        "<InterfaceAddress>127.0.0.1:10001</InterfaceAddress></Interface>",
+        "<Unit x:source=\"system\"><OID>53000000-0000-4000-8000-000000000003</OID>",
+        "<TagName>System unit</TagName><Address>5</Address><UnitType>KEYGL5</UnitType>",
+        "<FirmwareVersion>5.5.00</FirmwareVersion><PP Name=\"StaticTextString0\" Value=\"System\"/>",
+        "<!--kept--><x:Opaque>yes</x:Opaque></Unit></Network>"
+    );
     writer
-        .write_all(b"[15] DBSETXML //HARNESS/254/p/5/TagName << END\r\nSystem document\r\nEND\r\n")
+        .write_all(
+            format!("[15] DBSETXML //HARNESS/254 << END_NETWORK\r\n{network}\r\nEND_NETWORK\r\n")
+                .as_bytes(),
+        )
+        .await
+        .unwrap();
+    let mut network_reply = String::new();
+    reader.read_line(&mut network_reply).await.unwrap();
+    assert_eq!(
+        network_reply,
+        "[15] 301 OID=53000000-0000-4000-8000-000000000001\r\n"
+    );
+    let network_unit = command(&mut reader, &mut writer, "16", "DBGETXML //HARNESS/254/p/5").await;
+    assert!(network_unit
+        .iter()
+        .any(|line| line.contains("xmlns:x=\"urn:system-topology\"")));
+    assert!(network_unit
+        .iter()
+        .any(|line| line.contains("<x:Opaque>yes</x:Opaque>")));
+    assert_eq!(sys.pci.payloads(), before_network_document);
+
+    writer
+        .write_all(b"[17] DBSETXML //HARNESS/254/p/5/TagName << END\r\nSystem document\r\nEND\r\n")
         .await
         .unwrap();
     let mut document_reply = String::new();
     reader.read_line(&mut document_reply).await.unwrap();
-    assert_eq!(document_reply, "[15] 200 OK\r\n");
+    assert_eq!(document_reply, "[17] 200 OK\r\n");
+
+    let capabilities = command(&mut reader, &mut writer, "18", "CMQTT CAPABILITIES").await;
+    let capabilities: serde_json::Value = serde_json::from_str(
+        capabilities[0]
+            .split_once(" 200-")
+            .map(|(_, json)| json)
+            .expect("capability JSON"),
+    )
+    .unwrap();
+    assert_eq!(capabilities["database_document_network_units"], true);
+    assert_eq!(
+        capabilities["database_document_configured_network"],
+        "same-address-same-interface-binding"
+    );
+    assert_eq!(capabilities["database_document_physical_io"], false);
 
     let payload = "053800790149";
     let before = sys.pci.count_payload(payload);

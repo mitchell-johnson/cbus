@@ -81,12 +81,12 @@
     "address_behavior": "Level, NetVar, Group, Application and Network roots move to the submitted Address; Network Address and NetworkNumber are equal in the observed replacement",
     "subtree_identity": "submitted descendant OIDs may retain an old descendant identity or replace it; all submitted OIDs resolve after success and every omitted/replaced old descendant identity is retired",
     "cmqttd_validation": "the complete document, selected target identity, all OIDs, child addresses and destination conflicts are checked on a staged clone before commit",
-    "unsupported_boundary": "the retained replacement probes do not include a Unit child inside a complete Network replacement, so cmqttd rejects that mixed subtree before mutation rather than infer lifecycle semantics",
     "raw_probes": [
       "raw-native-dbsetxml-level-probe-v1",
       "raw-native-dbsetxml-netvar-probe-v1",
       "raw-native-dbsetxml-container-probe-v1"
-    ]
+    ],
+    "combined_network_unit_boundary": "No exact native DBSETXML capture combined a complete Network root with a Unit child. cmqttd composes the separately captured complete-Network replacement contract with the complete-Unit contract, validates the whole mixed tree on a clone, and documents this evidence limit rather than presenting the composition as a native combined oracle."
   },
   "database_lifecycle": {
     "DBADD": {

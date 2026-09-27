@@ -2614,8 +2614,20 @@ impl Service {
             capabilities["broadcast_event_persistence"] = serde_json::Value::Bool(false);
             capabilities["document_framing"] = serde_json::Value::Bool(true);
             capabilities["database_documents"] = serde_json::Value::Bool(true);
-            capabilities["database_document_scope"] =
-                serde_json::json!(["scalar-field", "typed-unit"]);
+            capabilities["database_document_scope"] = serde_json::json!([
+                "scalar-field",
+                "typed-unit",
+                "typed-level",
+                "typed-netvar",
+                "typed-group",
+                "typed-application",
+                "typed-network",
+                "typed-network-with-unit"
+            ]);
+            capabilities["database_document_network_units"] = serde_json::Value::Bool(true);
+            capabilities["database_document_configured_network"] =
+                serde_json::Value::String("same-address-same-interface-binding".to_string());
+            capabilities["database_document_physical_io"] = serde_json::Value::Bool(false);
             capabilities["legacy_database_local_commands"] = serde_json::json!([
                 "dbadd",
                 "dbcopy",
@@ -3872,31 +3884,67 @@ impl Service {
                 .clone()
                 .or_else(|| Some(self.project.clone()));
             let target = words.get(1).copied().unwrap_or_default();
-            let configured_oid = model
+            let configured_network = model
                 .projects
                 .get(&self.project)
                 .and_then(|project| project.networks.get(&self.network))
-                .map(|network| network.oid.as_str());
+                .cloned();
             let configured_path = format!("//{}/{}", self.project, self.network);
-            if model.current.as_deref() == Some(self.project.as_str())
-                && (target.trim_end_matches('/') == configured_path
-                    || target
-                        .strip_prefix('!')
-                        .and_then(|value| value.split('/').next())
-                        .is_some_and(|oid| configured_oid == Some(oid)))
+            let configured_target = if let Some(oid) = target
+                .strip_prefix('!')
+                .and_then(|value| value.split('/').next())
             {
-                return err(
-                    tag,
-                    408,
-                    "408 Operation failed: configured network identity is immutable",
-                );
-            }
+                model.current.as_deref() == Some(self.project.as_str())
+                    && configured_network
+                        .as_ref()
+                        .is_some_and(|network| network.oid == oid)
+            } else {
+                let normalized_target = if target.starts_with("//") {
+                    target.trim_end_matches('/').to_string()
+                } else {
+                    format!(
+                        "//{}/{}",
+                        model.current.as_deref().unwrap_or_default(),
+                        target.trim_matches('/')
+                    )
+                };
+                normalized_target == configured_path
+            };
             let before = model.clone();
             let before_db = Database::from_server(&model);
             let response = model.handle_document(line, document);
             if response.status >= 400 {
                 *model = before;
                 return response;
+            }
+            if configured_target {
+                let Some(replacement) = model
+                    .projects
+                    .get(&self.project)
+                    .and_then(|project| project.networks.get(&self.network))
+                else {
+                    *model = before;
+                    return err(
+                        tag,
+                        408,
+                        "408 Operation failed: configured network address is immutable",
+                    );
+                };
+                let original = configured_network
+                    .as_ref()
+                    .expect("configured target has an existing network");
+                if !replacement
+                    .iface_type
+                    .eq_ignore_ascii_case(&original.iface_type)
+                    || replacement.iface_addr != original.iface_addr
+                {
+                    *model = before;
+                    return err(
+                        tag,
+                        408,
+                        "408 Operation failed: configured physical interface binding is immutable",
+                    );
+                }
             }
             // A local document replacement never changes observed hardware,
             // even though the compact mock mirrors scalar writes for its own

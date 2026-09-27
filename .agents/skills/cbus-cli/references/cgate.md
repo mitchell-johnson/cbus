@@ -1091,12 +1091,20 @@ implying support for other routed writes,
 cmqttd repository boundary;
 `database_documents: true` and
 `database_document_scope: ["scalar-field", "typed-unit", "typed-level",
-"typed-netvar", "typed-group", "typed-application", "typed-network"]` records
+"typed-netvar", "typed-group", "typed-application", "typed-network",
+"typed-network-with-unit"]` records
 the bounded DBSETXML surface. Complete forms validate the selected path/OID,
-whole submitted tree, OIDs and sibling addresses before an atomic durable
-replacement and `301 OID=...` root receipt. Network-with-Unit replacement and
-private vendor XML/repository formats remain unavailable for lack of retained
-native replacement evidence,
+whole submitted tree, Unit scalar/PP ownership, OIDs and sibling addresses
+before an atomic durable replacement and `301 OID=...` root receipt.
+`database_document_network_units: true` denotes the composed complete Network
+and Unit tree. `database_document_configured_network:
+"same-address-same-interface-binding"` means the running Network can receive
+that database replacement only while its configured address, interface type
+and interface address stay fixed; physical observations and live levels are
+preserved and `database_document_physical_io: false` remains authoritative.
+The complete Network and Unit contracts are separately retained, but an exact
+native combined replacement capture and private vendor XML/repository formats
+remain unavailable,
 `project_archive_restore: "cmqttd-internal"` denotes durable snapshot keys in
 the cmqttd JSON repository (never vendor archive files). Internal snapshots
 retain complete typed-object extension metadata and Unit templates/PP ownership,

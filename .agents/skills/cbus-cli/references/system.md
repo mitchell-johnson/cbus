@@ -205,11 +205,18 @@ also includes local DBADD/DBCOPY/DBNEW/tag/scalar/delete/rename transactions and
 physical generation-guarded DBCREATE/DBUPDATE/DBVERIFY inventory operations.
 DBSETXML stores scalar-field documents and complete typed Unit, Level, NetVar,
 Group, Application and Network/Interface replacements in the atomic local
-repository without PCI I/O. Complete forms validate the whole tree and target
-identity before mutation, return the submitted-root `301 OID=...`, retire the
-old subtree, and survive project lifecycle operations and restart. A Network
-document containing Unit and private vendor formats remain unavailable because
-their replacement contracts are not retained.
+repository without PCI I/O. A complete Network may contain complete Unit and
+Application subtrees. Complete forms validate the whole tree and target
+identity, Unit scalar/PP ownership, OID uniqueness, and sibling addresses
+before mutation, return the submitted-root `301 OID=...`, retire the old
+subtree, and survive project lifecycle operations and restart. The configured
+live Network accepts this database-only replacement at its existing address
+when `InterfaceType` and `InterfaceAddress` retain the running service binding;
+physical inventory, live levels, network state and retries remain runtime
+owned. A move or interface rebinding returns 408 after staged validation and
+before persistence. The combined Network/Unit path composes the retained
+complete-Network and complete-Unit contracts; an exact native combined
+replacement capture and private vendor formats remain unavailable.
 `REPOSITORY USE 1` is an idempotent
 selection of cmqttd's only repository, and `PROJECT REPAIR` performs an atomic
 JSON serialize/parse/restore validation while preserving runtime caches. All

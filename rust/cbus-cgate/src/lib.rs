@@ -608,6 +608,144 @@ fn parse_db_xml_interface(
     })
 }
 
+/// Parse one complete Unit embedded in a DBSETXML document.
+///
+/// A Unit keeps its own XML template because its schema contains the open
+/// ended PP catalogue and vendor extension markup.  When a Unit inherits a
+/// namespace declaration from the Network root, materialize that declaration
+/// on the stored Unit root so the isolated template remains well-formed on a
+/// later DBGETXML projection.
+fn parse_db_xml_unit(
+    node: roxmltree::Node<'_, '_>,
+    source: &str,
+) -> Result<ParsedDbXmlUnit, String> {
+    if node.tag_name().namespace().is_some() || node.tag_name().name() != "Unit" {
+        return Err("DBSETXML complete Unit must have an unnamespaced Unit root".to_string());
+    }
+
+    let mut scalars = HashMap::<String, String>::new();
+    let mut pp_values = HashMap::<String, String>::new();
+    let mut pp_fields = BTreeSet::<String>::new();
+    for child in node.children().filter(roxmltree::Node::is_element) {
+        // A namespaced child is opaque vendor metadata even when its local
+        // name collides with a native scalar or PP element.
+        if child.tag_name().namespace().is_some() {
+            continue;
+        }
+        let name = child.tag_name().name();
+        if name == "PP" {
+            if child.attributes().len() != 2
+                || child.attribute("Name").is_none()
+                || child.attribute("Value").is_none()
+                || child.children().any(|child| child.is_element())
+                || child
+                    .children()
+                    .filter_map(|child| child.text())
+                    .any(|text| !text.trim().is_empty())
+            {
+                return Err("DBSETXML PP requires exactly Name and Value attributes".to_string());
+            }
+            let parameter = child.attribute("Name").unwrap_or_default();
+            let value = child.attribute("Value").unwrap_or_default();
+            if parameter.is_empty()
+                || parameter.len() > 256
+                || parameter.chars().any(char::is_control)
+                || scalars.contains_key(parameter)
+                || !pp_fields.insert(parameter.to_string())
+            {
+                return Err(
+                    "DBSETXML contains an invalid, duplicate, or ambiguous PP parameter"
+                        .to_string(),
+                );
+            }
+            pp_values.insert(parameter.to_string(), value.to_string());
+            continue;
+        }
+        // Unknown nested elements are retained in the template. Native
+        // scalar fields are direct text-only elements.
+        if child.children().any(|child| child.is_element()) {
+            continue;
+        }
+        let value = child
+            .children()
+            .filter_map(|child| child.text())
+            .collect::<String>();
+        let required = matches!(
+            name,
+            "OID" | "Address" | "TagName" | "UnitType" | "FirmwareVersion"
+        );
+        let standard = required || matches!(name, "CatalogNumber" | "SerialNumber");
+        if standard && child.attributes().len() != 0 {
+            return Err("DBSETXML scalar Unit fields do not accept attributes".to_string());
+        }
+        if child.attributes().len() == 0
+            && (pp_fields.contains(name) || scalars.insert(name.to_string(), value).is_some())
+        {
+            return Err("DBSETXML contains a duplicate or ambiguous scalar Unit field".to_string());
+        }
+    }
+    for required in ["OID", "Address", "TagName", "UnitType", "FirmwareVersion"] {
+        if !scalars.contains_key(required) {
+            return Err(format!("DBSETXML Unit is missing {required}"));
+        }
+    }
+    let oid = scalars["OID"].clone();
+    if oid.trim() != oid || !valid_uuid(&oid) {
+        return Err("DBSETXML Unit has an invalid OID".to_string());
+    }
+    let address = scalars["Address"]
+        .parse::<u8>()
+        .map_err(|_| "DBSETXML Unit has an invalid Address".to_string())?;
+    for required in ["TagName", "UnitType", "FirmwareVersion"] {
+        let value = &scalars[required];
+        if value.is_empty() || value.trim() != value || value.chars().any(char::is_control) {
+            return Err(format!("DBSETXML Unit has an invalid {required}"));
+        }
+    }
+
+    let range = node.range();
+    let mut document = source
+        .get(range)
+        .ok_or_else(|| "DBSETXML Unit source range is invalid".to_string())?
+        .to_string();
+    let open_end = xml_open_tag_end(&document, 0)
+        .ok_or_else(|| "DBSETXML Unit has an invalid opening tag".to_string())?;
+    let opening = document[..=open_end].to_string();
+    let declares_prefix = |prefix: &str| {
+        let name = format!("xmlns:{prefix}");
+        opening.match_indices(&name).any(|(offset, _)| {
+            let left = opening[..offset].chars().next_back();
+            let right = opening[offset + name.len()..].trim_start();
+            left.is_some_and(|character| character == '<' || character.is_whitespace())
+                && right.starts_with('=')
+        })
+    };
+    let mut declarations = String::new();
+    for namespace in node.namespaces() {
+        let Some(prefix) = namespace.name().filter(|prefix| *prefix != "xml") else {
+            continue;
+        };
+        if !declares_prefix(prefix) {
+            declarations.push_str(&format!(
+                " xmlns:{prefix}=\"{}\"",
+                xml_escape(namespace.uri())
+            ));
+        }
+    }
+    document.insert_str(open_end, &declarations);
+
+    scalars.remove("OID");
+    scalars.remove("Address");
+    scalars.extend(pp_values);
+    Ok(ParsedDbXmlUnit {
+        oid,
+        address,
+        fields: scalars,
+        pp_fields,
+        document,
+    })
+}
+
 fn parse_db_xml_object(
     node: roxmltree::Node<'_, '_>,
     source: &str,
@@ -648,6 +786,7 @@ fn parse_db_xml_object(
 
     let mut scalars = HashMap::new();
     let mut children = Vec::new();
+    let mut units = Vec::new();
     let mut interface = None;
     for child in node.children().filter(roxmltree::Node::is_element) {
         if child.tag_name().namespace().is_some() {
@@ -683,10 +822,7 @@ fn parse_db_xml_object(
                 interface = Some(parse_db_xml_interface(child, source)?);
             }
             (DbXmlKind::Network, "Unit") => {
-                return Err(
-                    "DBSETXML Network Unit subtrees lack retained native replacement evidence"
-                        .to_string(),
-                );
+                units.push(parse_db_xml_unit(child, source)?);
             }
             _ => {
                 return Err(format!(
@@ -720,6 +856,15 @@ fn parse_db_xml_object(
             ));
         }
     }
+    let mut unit_addresses = BTreeSet::new();
+    for unit in &units {
+        if !unit_addresses.insert(unit.address) {
+            return Err(format!(
+                "DBSETXML Network contains duplicate Unit Address {}",
+                unit.address
+            ));
+        }
+    }
     Ok(ParsedDbXmlObject {
         kind,
         oid,
@@ -727,6 +872,7 @@ fn parse_db_xml_object(
         address,
         value,
         interface,
+        units,
         children,
         extras: parse_db_xml_extras(node, source),
     })
@@ -737,6 +883,7 @@ fn db_xml_object_oids(object: &ParsedDbXmlObject, output: &mut Vec<String>) {
     if let Some(interface) = &object.interface {
         output.push(interface.oid.clone());
     }
+    output.extend(object.units.iter().map(|unit| unit.oid.clone()));
     for child in &object.children {
         db_xml_object_oids(child, output);
     }
@@ -1375,8 +1522,18 @@ struct ParsedDbXmlObject {
     address: u8,
     value: Option<u8>,
     interface: Option<ParsedDbXmlInterface>,
+    units: Vec<ParsedDbXmlUnit>,
     children: Vec<ParsedDbXmlObject>,
     extras: DbXmlExtras,
+}
+
+#[derive(Debug, Clone)]
+struct ParsedDbXmlUnit {
+    oid: String,
+    address: u8,
+    fields: HashMap<String, String>,
+    pp_fields: BTreeSet<String>,
+    document: String,
 }
 
 #[derive(Debug, Clone)]
@@ -6622,6 +6779,7 @@ impl Server {
                 return self.dbsetxml_unit(tag_of(&cmd), words[1], document);
             }
             let typed_path = words[1].starts_with('!')
+                || matches!(parts.as_slice(), [network] if network.parse::<u8>().is_ok())
                 || matches!(parts.as_slice(), [_, network] if network.parse::<u8>().is_ok())
                 || matches!(parts.as_slice(), [_, network, application]
                     if network.parse::<u8>().is_ok() && application.parse::<u8>().is_ok())
@@ -6714,112 +6872,12 @@ impl Server {
             return err(tag, status::ABSENT, "401 Unit not found");
         };
 
-        let mut scalars = HashMap::<String, String>::new();
-        let mut pp_fields = BTreeSet::<String>::new();
-        for child in root.children().filter(roxmltree::Node::is_element) {
-            // Namespaced children are vendor extensions. Their local name may
-            // deliberately collide with a modeled field, so retain them only
-            // in the opaque template and never let them satisfy or overwrite
-            // the native Unit schema.
-            if child.tag_name().namespace().is_some() {
-                continue;
-            }
-            let name = child.tag_name().name();
-            if name == "PP" {
-                if child.attributes().len() != 2
-                    || child.attribute("Name").is_none()
-                    || child.attribute("Value").is_none()
-                    || child.children().any(|node| node.is_element())
-                    || child
-                        .children()
-                        .filter_map(|node| node.text())
-                        .any(|text| !text.trim().is_empty())
-                {
-                    return err(
-                        tag,
-                        status::BAD_REQUEST,
-                        "400 DBSETXML PP requires exactly Name and Value attributes",
-                    );
-                }
-                let parameter = child.attribute("Name").unwrap_or_default();
-                let value = child.attribute("Value").unwrap_or_default();
-                if parameter.is_empty()
-                    || parameter.len() > 256
-                    || parameter.chars().any(char::is_control)
-                    || !pp_fields.insert(parameter.to_string())
-                {
-                    return err(
-                        tag,
-                        status::BAD_REQUEST,
-                        "400 DBSETXML contains an invalid or duplicate PP parameter",
-                    );
-                }
-                scalars.insert(parameter.to_string(), value.to_string());
-                continue;
-            }
-            // Nested unknown elements are retained opaquely in the template.
-            // Native scalar fields are direct text-only elements.
-            if child.children().any(|node| node.is_element()) {
-                continue;
-            }
-            let value = child
-                .children()
-                .filter_map(|node| node.text())
-                .collect::<String>();
-            let is_required = matches!(
-                name,
-                "OID" | "Address" | "TagName" | "UnitType" | "FirmwareVersion"
-            );
-            let is_standard = is_required || matches!(name, "CatalogNumber" | "SerialNumber");
-            if is_standard && child.attributes().len() != 0 {
-                return err(
-                    tag,
-                    status::BAD_REQUEST,
-                    "400 DBSETXML scalar Unit fields do not accept attributes",
-                );
-            }
-            if child.attributes().len() == 0 && scalars.insert(name.to_string(), value).is_some() {
-                return err(
-                    tag,
-                    status::BAD_REQUEST,
-                    "400 DBSETXML contains a duplicate scalar Unit field",
-                );
-            }
-        }
-        for required in ["OID", "Address", "TagName", "UnitType", "FirmwareVersion"] {
-            if !scalars.contains_key(required) {
-                return err(
-                    tag,
-                    status::BAD_REQUEST,
-                    &format!("400 DBSETXML Unit is missing {required}"),
-                );
-            }
-        }
-        let oid = scalars["OID"].clone();
-        if !valid_uuid(oid.trim()) || oid.trim() != oid {
-            return err(
-                tag,
-                status::BAD_REQUEST,
-                "400 DBSETXML Unit has an invalid OID",
-            );
-        }
-        let Ok(new_address) = scalars["Address"].parse::<u8>() else {
-            return err(
-                tag,
-                status::BAD_REQUEST,
-                "400 DBSETXML Unit has an invalid Address",
-            );
+        let parsed_unit = match parse_db_xml_unit(root, document) {
+            Ok(unit) => unit,
+            Err(error) => return err(tag, status::BAD_REQUEST, &format!("400 {error}")),
         };
-        for required in ["TagName", "UnitType", "FirmwareVersion"] {
-            let value = &scalars[required];
-            if value.is_empty() || value.trim() != value || value.chars().any(char::is_control) {
-                return err(
-                    tag,
-                    status::BAD_REQUEST,
-                    &format!("400 DBSETXML Unit has an invalid {required}"),
-                );
-            }
-        }
+        let oid = parsed_unit.oid.clone();
+        let new_address = parsed_unit.address;
         let network = &self.projects[&project_name].networks[&network_address];
         if new_address != old_address && network.units.contains_key(&new_address) {
             return err(
@@ -6836,9 +6894,7 @@ impl Server {
             );
         }
 
-        let mut fields = scalars;
-        fields.remove("OID");
-        fields.remove("Address");
+        let fields = parsed_unit.fields;
         let unit_type = fields.get("UnitType").cloned().unwrap_or_default();
         let firmware = fields.get("FirmwareVersion").cloned().unwrap_or_default();
         let serial = fields.get("SerialNumber").cloned().unwrap_or_default();
@@ -6869,8 +6925,9 @@ impl Server {
             self.unit_pp_fields.remove(&old_document_key);
         }
         self.unit_documents
-            .insert(document_key.clone(), document.to_string());
-        self.unit_pp_fields.insert(document_key, pp_fields);
+            .insert(document_key.clone(), parsed_unit.document);
+        self.unit_pp_fields
+            .insert(document_key, parsed_unit.pp_fields);
 
         let old_prefix = format!("//{project_name}/{network_address}/p/{old_address}");
         let new_prefix = format!("//{project_name}/{network_address}/p/{new_address}");
@@ -7401,6 +7458,40 @@ impl Server {
                 )
             })
             .unwrap_or((NetworkState::Closed, 2, HashMap::new(), HashMap::new()));
+        let units = object
+            .units
+            .iter()
+            .map(|unit| {
+                let unit_type = unit.fields.get("UnitType").cloned().unwrap_or_default();
+                let firmware = unit
+                    .fields
+                    .get("FirmwareVersion")
+                    .cloned()
+                    .unwrap_or_default();
+                let serial = unit.fields.get("SerialNumber").cloned().unwrap_or_default();
+                let created_by_new = previous
+                    .and_then(|network| {
+                        network
+                            .units
+                            .values()
+                            .find(|candidate| candidate.oid == unit.oid)
+                    })
+                    .is_some_and(|candidate| candidate.created_by_new);
+                (
+                    unit.address,
+                    Unit {
+                        address: unit.address,
+                        unit_type,
+                        serial,
+                        serial_alternates: Vec::new(),
+                        firmware,
+                        fields: unit.fields.clone(),
+                        oid: unit.oid.clone(),
+                        created_by_new,
+                    },
+                )
+            })
+            .collect::<HashMap<_, _>>();
         let network = Network {
             oid: object.oid.clone(),
             interface_oid: interface.oid.clone(),
@@ -7410,7 +7501,7 @@ impl Server {
             iface_addr: interface.interface_address.clone(),
             state,
             retries,
-            units: HashMap::new(),
+            units,
             physical,
             levels,
         };
@@ -7424,6 +7515,20 @@ impl Server {
         self.store_db_xml_extras(project, &object.oid, &object.extras);
         self.store_db_xml_extras(project, &interface.oid, &interface.extras);
         let path = format!("//{project}/{}", object.address);
+        for unit in &object.units {
+            self.known_oids.insert(unit.oid.clone());
+            let unit_path = format!("{path}/p/{}", unit.address);
+            self.objects.insert(unit_path.clone());
+            for (name, value) in &unit.fields {
+                self.db_fields
+                    .insert(format!("{unit_path}/{name}"), value.clone());
+            }
+            let document_key = Self::unit_document_key(project, &unit.oid);
+            self.unit_documents
+                .insert(document_key.clone(), unit.document.clone());
+            self.unit_pp_fields
+                .insert(document_key, unit.pp_fields.clone());
+        }
         for child in &object.children {
             self.insert_db_xml_object(project, &path, child)?;
         }

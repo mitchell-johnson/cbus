@@ -2458,7 +2458,7 @@ fn dbsetxml_replaces_evidenced_typed_database_trees_atomically() {
     assert!(level.lines[0].contains("<Address>5</Address>"));
 
     let network = format!(
-        "<Network><OID>30000000-0000-4000-8000-000000000001</OID><TagName>Moved network</TagName><Address>253</Address><NetworkNumber>253</NetworkNumber><Interface><OID>{interface_oid}</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:2</InterfaceAddress></Interface><Application><OID>30000000-0000-4000-8000-000000000002</OID><TagName>Lighting</TagName><Address>56</Address></Application></Network>"
+        "<Network xmlns:x=\"urn:topology\"><OID>30000000-0000-4000-8000-000000000001</OID><TagName>Moved network</TagName><Address>253</Address><NetworkNumber>253</NetworkNumber><Interface><OID>{interface_oid}</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:2</InterfaceAddress></Interface><Unit x:source=\"submitted\"><OID>30000000-0000-4000-8000-000000000003</OID><TagName>Topology unit</TagName><Address>20</Address><UnitType>KEYE1</UnitType><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><!--unit-comment--><?unit retained?><x:Opaque>yes</x:Opaque></Unit><Application><OID>30000000-0000-4000-8000-000000000002</OID><TagName>Lighting</TagName><Address>56</Address></Application></Network>"
     );
     assert_eq!(
         server
@@ -2470,6 +2470,15 @@ fn dbsetxml_replaces_evidenced_typed_database_trees_atomically() {
     let network = server.handle("[23] DBGETXML //XMLT/253");
     assert!(network.lines[0].contains("<NetworkNumber>253</NetworkNumber>"));
     assert!(network.lines[0].contains("<Application"));
+    assert!(network.lines[0].contains("<Unit"));
+    let unit = server.handle("[23a] DBGETXML //XMLT/253/p/20");
+    assert_eq!(unit.status, 200, "{unit:?}");
+    assert!(unit.lines[0].contains("xmlns:x=\"urn:topology\""));
+    assert!(unit.lines[0].contains("x:source=\"submitted\""));
+    assert!(unit.lines[0].contains("<!--unit-comment-->"));
+    assert!(unit.lines[0].contains("<?unit retained?>"));
+    assert!(unit.lines[0].contains("<x:Opaque>yes</x:Opaque>"));
+    assert!(unit.lines[0].contains("<PP Name=\"UnitAddress\" Value=\"20\"/>"));
     let before = network.lines[0].clone();
     let unsupported = format!(
         "<Network><OID>30000000-0000-4000-8000-000000000001</OID><TagName>Moved network</TagName><Address>253</Address><NetworkNumber>253</NetworkNumber><Interface><OID>{interface_oid}</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:2</InterfaceAddress></Interface><Unit/></Network>"
@@ -2486,6 +2495,10 @@ fn dbsetxml_replaces_evidenced_typed_database_trees_atomically() {
     assert_eq!(server.handle("[28] PROJECT USE XMLR").status, 200);
     assert!(server.handle("[29] DBGETXML //XMLR/253/56").lines[0]
         .contains("30000000-0000-4000-8000-000000000002"));
+    let copied_unit = server.handle("[29a] DBGETXML //XMLR/253/p/20");
+    assert_eq!(copied_unit.status, 200, "{copied_unit:?}");
+    assert!(copied_unit.lines[0].contains("x:source=\"submitted\""));
+    assert!(copied_unit.lines[0].contains("<x:Opaque>yes</x:Opaque>"));
     assert_eq!(server.handle("[30] PROJECT DELETE XMLR").status, 200);
     assert_eq!(server.handle("[31] PROJECT USE XMLT").status, 200);
     assert_eq!(
@@ -2505,6 +2518,174 @@ fn dbsetxml_replaces_evidenced_typed_database_trees_atomically() {
     let restored = server.handle("[36] DBGETXML //XMLA/253/56");
     assert_eq!(restored.status, 200, "{restored:?}");
     assert!(restored.lines[0].contains("30000000-0000-4000-8000-000000000002"));
+    let restored_unit = server.handle("[37] DBGETXML //XMLA/253/p/20");
+    assert_eq!(restored_unit.status, 200, "{restored_unit:?}");
+    assert!(restored_unit.lines[0].contains("<!--unit-comment-->"));
+    assert!(restored_unit.lines[0].contains("<?unit retained?>"));
+}
+
+#[test]
+fn dbsetxml_network_unit_topology_is_atomic_conflict_checked_and_retires_omissions() {
+    fn first_oid(response: cbus_cgate::Response) -> String {
+        let xml = response.lines[0].strip_prefix("347-").unwrap();
+        roxmltree::Document::parse(xml)
+            .unwrap()
+            .descendants()
+            .find(|node| node.has_tag_name("OID"))
+            .unwrap()
+            .text()
+            .unwrap()
+            .to_string()
+    }
+
+    let mut server = Server::new(AccessLevel::Program);
+    assert_eq!(server.handle("[1] PROJECT NEW MIXED").status, 200);
+    assert_eq!(
+        server
+            .handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
+            .status,
+        200
+    );
+    assert_eq!(
+        server
+            .handle("[3] DBCREATENET 253 Other Cni 127.0.0.1:10002")
+            .status,
+        200
+    );
+    assert_eq!(
+        server
+            .handle("[4] DBADDSAFE //MIXED/254 Unit 20 Old")
+            .status,
+        200
+    );
+    for (field, value) in [("UnitType", "KEYE1"), ("FirmwareVersion", "1.2.67")] {
+        assert_eq!(
+            server
+                .handle(&format!("[set] DBSETSAFE //MIXED/254/p/20/{field} {value}"))
+                .status,
+            200
+        );
+    }
+    let old_unit_oid = first_oid(server.handle("[5] DBGETXML //MIXED/254/p/20"));
+    let network_response = server.handle("[6] DBGETXML //MIXED/254");
+    let network_xml = network_response.lines[0].strip_prefix("347-").unwrap();
+    let network_doc = roxmltree::Document::parse(network_xml).unwrap();
+    let network_oid = network_doc
+        .root_element()
+        .children()
+        .find(|node| node.has_tag_name("OID"))
+        .unwrap()
+        .text()
+        .unwrap()
+        .to_string();
+    let interface_oid = network_doc
+        .descendants()
+        .find(|node| node.has_tag_name("Interface"))
+        .unwrap()
+        .children()
+        .find(|node| node.has_tag_name("OID"))
+        .unwrap()
+        .text()
+        .unwrap()
+        .to_string();
+    let other_xml = server.handle("[7] DBGETXML //MIXED/253");
+    let other_doc =
+        roxmltree::Document::parse(other_xml.lines[0].strip_prefix("347-").unwrap()).unwrap();
+    let occupied_oid = other_doc
+        .descendants()
+        .find(|node| node.has_tag_name("Interface"))
+        .unwrap()
+        .children()
+        .find(|node| node.has_tag_name("OID"))
+        .unwrap()
+        .text()
+        .unwrap()
+        .to_string();
+
+    let replacement = format!(
+        "<Network xmlns:x=\"urn:mixed\" x:revision=\"2\"><OID>{network_oid}</OID><TagName>Local replaced</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>{interface_oid}</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:10001</InterfaceAddress></Interface><Unit x:vendor=\"kept\"><OID>51000000-0000-4000-8000-000000000001</OID><TagName>New unit</TagName><Address>21</Address><UnitType>KEYE1</UnitType><FirmwareVersion>1.2.67</FirmwareVersion><CatalogNumber>5031N</CatalogNumber><SerialNumber>00100700.3526</SerialNumber><PP Name=\"UnitAddress\" Value=\"0x15\"/><!--inside--><x:Data>opaque</x:Data></Unit><Application><OID>51000000-0000-4000-8000-000000000002</OID><TagName>Lighting</TagName><Address>56</Address><Group><OID>51000000-0000-4000-8000-000000000003</OID><TagName>Group</TagName><Address>1</Address></Group></Application><!--network-comment--></Network>"
+    );
+    let response = server.handle_document("[8] DBSETXML //MIXED/254", &replacement);
+    assert_eq!(response.status, 301, "{response:?}");
+    assert_eq!(response.final_text, format!("301 OID={network_oid}"));
+    assert_eq!(server.handle("[9] DBGETXML //MIXED/254/p/20").status, 401);
+    assert_eq!(
+        server
+            .handle(&format!("[10] DBGET !{old_unit_oid}/OID"))
+            .status,
+        401
+    );
+    assert_eq!(
+        server
+            .handle("[11] DBGET !51000000-0000-4000-8000-000000000001/OID")
+            .status,
+        342
+    );
+    let unit = server.handle("[12] DBGETXML //MIXED/254/p/21");
+    assert_eq!(unit.status, 200, "{unit:?}");
+    for expected in [
+        "xmlns:x=\"urn:mixed\"",
+        "x:vendor=\"kept\"",
+        "<!--inside-->",
+        "<x:Data>opaque</x:Data>",
+        "<PP Name=\"UnitAddress\" Value=\"0x15\"/>",
+    ] {
+        assert!(
+            unit.lines[0].contains(expected),
+            "missing {expected}: {unit:?}"
+        );
+    }
+    let before = server.handle("[13] DBGETXML //MIXED/254").lines[0].clone();
+
+    let duplicate_address = replacement.replace(
+        "</Unit><Application>",
+        "</Unit><Unit><OID>51000000-0000-4000-8000-000000000004</OID><TagName>Duplicate</TagName><Address>21</Address><UnitType>KEYE1</UnitType><FirmwareVersion>1.2.67</FirmwareVersion></Unit><Application>",
+    );
+    let duplicate_oid = replacement.replace(
+        "51000000-0000-4000-8000-000000000002</OID><TagName>Lighting",
+        "51000000-0000-4000-8000-000000000001</OID><TagName>Lighting",
+    );
+    let project_collision = replacement.replace(
+        "51000000-0000-4000-8000-000000000001</OID><TagName>New unit",
+        &format!("{occupied_oid}</OID><TagName>New unit"),
+    );
+    let ambiguous_pp = replacement.replace(
+        "<PP Name=\"UnitAddress\" Value=\"0x15\"/>",
+        "<PP Name=\"OID\" Value=\"shadow\"/>",
+    );
+    let incomplete = replacement.replace("<FirmwareVersion>1.2.67</FirmwareVersion>", "");
+    for (tag, invalid) in [
+        ("duplicate-address", duplicate_address),
+        ("duplicate-oid", duplicate_oid),
+        ("project-collision", project_collision),
+        ("ambiguous-pp", ambiguous_pp),
+        ("incomplete", incomplete),
+    ] {
+        let response = server.handle_document(&format!("[{tag}] DBSETXML //MIXED/254"), &invalid);
+        assert!(response.status >= 400, "{tag}: {response:?}");
+        assert_eq!(
+            server.handle("[unchanged] DBGETXML //MIXED/254").lines[0],
+            before,
+            "{tag} mutated the complete tree"
+        );
+    }
+
+    let omitted = format!(
+        "<Network><OID>{network_oid}</OID><TagName>No units</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>{interface_oid}</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:10001</InterfaceAddress></Interface></Network>"
+    );
+    assert_eq!(
+        server
+            .handle_document("[14] DBSETXML //MIXED/254", &omitted)
+            .status,
+        301
+    );
+    assert_eq!(server.handle("[15] DBGETXML //MIXED/254/p/21").status, 401);
+    assert_eq!(
+        server
+            .handle("[16] DBGET !51000000-0000-4000-8000-000000000001/OID")
+            .status,
+        401
+    );
 }
 
 #[test]
