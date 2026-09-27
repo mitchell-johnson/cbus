@@ -267,6 +267,18 @@ zero bytes produce an empty payload. The separate
 including fresh comparisons with 902 original IDENTIFY cases and 428 RECALL
 cases per run. Results retain raw bytes and explicit matching evidence.
 
+For one raw routed mutation, require the exact independent ACK path and tag:
+
+```sh
+cbus-toolkit pci --host 127.0.0.1 --port 10001 routed-write 4 7 AABB \
+  --bridge 20 --bridge 21 --expected-source 20 --expected-destination 16 \
+  --expected-route 21 --expected-route 4 --expected-ack-tag 0x55
+```
+
+The client sends once and never retries an uncertain write. A matching ACK is
+wire-correlation evidence; it does not prove physical delivery, parameter
+readback or persistence. See [routed WRITE](docs/pci-routed-write.md).
+
 ```sh
 cbus-toolkit cgate exec 'GET cgate version'
 cbus-toolkit cgate exec 'PROJECT LIST'
@@ -2031,7 +2043,7 @@ wheel; each linked record identifies its runtime, source scope and date:
 - [Percentage conversion](docs/edlt-percentage.md), [bounded parent composition](docs/edlt-parent-form.md), [ordered parent transaction](docs/edlt-parent-transaction.md), [automatic parent metadata](docs/edlt-parent-metadata.md) and [automatic SceneManager metadata](docs/edlt-scene-metadata.md): pure conversion and CLI acceptance, standalone original Windows 12- and 528-case captures, and portable focused coverage for all declared operations. Automatic parent metadata resolves existing Applications/Corridor lists and exact Reset raw strings, accepts contiguous fresh-graph Blank operations, and composes those results with the exact Trigger application/group/action creator before one parent PP save. Toolkit registry display/sort preferences, the original interactive Reset-plus-Blank and complete parent/SceneManager dialogs, project/DLTP images, and combined Schneider C-Gate/physical acceptance remain outstanding. Current exact test totals are reported by the repository test run rather than treated as a static capability claim.
 - [About information](docs/toolkit-about.md): 16 tests, including 51 original instruction cases per run.
 - [Signed update metadata](docs/toolkit-update-metadata.md), [revocation stages](docs/toolkit-update-revocation.md) and [supplied-context registry conditions](docs/toolkit-update-registry-conditions.md): separate 56-, 53- and 78-test checkpoints with explicit trust and availability limits.
-- [PCI routing](docs/pci-routing.md), [incoming routing](docs/pci-incoming-routing.md), [routed RECALL](docs/pci-routed-recall.md) and [routed IDENTIFY](docs/pci-routed-identify.md): separate codec and transport checkpoints; IDENTIFY passes 104 tests with fresh original matcher comparisons and owned loopback exchanges.
+- [PCI routing](docs/pci-routing.md), [incoming routing](docs/pci-incoming-routing.md), [routed RECALL](docs/pci-routed-recall.md), [routed IDENTIFY](docs/pci-routed-identify.md) and [routed WRITE](docs/pci-routed-write.md): separate codec and transport checkpoints; WRITE adds exact ACK path/tag matching and one-send mutation uncertainty evidence.
 - [Database CSV export](docs/toolkit-database-csv.md): 82 current core/CLI tests, two host Windows-adapter guards, five owned Windows tests and one owned C-Gate acceptance for captured values, exact saved column selection, cached-object projection, RELAY4/generic/KEYE1-3/DIMDN8/RELDN12/SENPIROA file/live native XML, explicit ordered multi-unit and network-document-order export from one shared snapshot/request with whole-selection rejection before output creation, KEYE per-block secondary-application associations, ordered repeated group associations, guarded Area13 persistence, portable UTF-8 and Toolkit-native Windows ACP output; the historical 23-test checkpoint includes 88 fresh original cases per run, while original Toolkit manager enumeration remains unverified.
 - [Thermostat temperature conversions](docs/thermostat-temperature.md): 17 tests with 28,840 fresh original cases per run and separate original Windows arithmetic acceptance.
 - [Thermostat scheduling](docs/native-thermostat-schedule.md): 67 tests in the retained level-writer checkpoint; the composed unit/application/group/level workflow adds 18 current host tests and two retained owned-C-Gate cases with exact planning, backup, one target save/reload, opaque project-data preservation and explicit no-retry uncertainty evidence.

@@ -63,7 +63,7 @@
     },
     {
       "id": "pci-command-transport",
-      "status": "in_progress",
+      "status": "implemented",
       "evidence": [
         "tests/test_pci.py",
         "tests/test_simulator.py",
@@ -99,9 +99,15 @@
         "tests/test_pci_routed_identify_original.py",
         "tests/test_cli_pci_routed_identify.py",
         "research/fixtures/pci-routed-identify-acceptance.json",
-        "docs/pci-routed-identify.md"
+        "docs/pci-routed-identify.md",
+        "src/cbus_toolkit/pci_routed_write.py",
+        "src/cbus_toolkit/pci_routed_write_cli.py",
+        "tests/test_pci_routed_write.py",
+        "tests/test_cli_pci_routed_write.py",
+        "research/fixtures/pci-routed-write-acceptance.json",
+        "docs/pci-routed-write.md"
       ],
-      "limits": "IDENTIFY/RECALL/WRITE/ACK with correlation. Pure selected-serial broadcast encoding and whole-capture receipt classification match original native vectors; they perform no I/O and cannot verify movement or persistence. Full application and commissioning protocols still expanding. A one-shot selected-serial transport now records one explicit send, the complete bounded response window, deadline/partial/interrupt evidence and independent receipt correlation. The transport alone does not claim movement or firmware persistence. A separate CLI coordinator now plans, durably records one attempt, applies and independently verifies an exact two-identity duplicate fixture, with literal wire, SRCHK, deadline, interruption and error-export acceptance. Separate outgoing CAL route encoding and wire inspection now pass24 codec/regression tests on both Python versions, including fresh358-input/493-step original Java comparisons. Five offline routing CLI tests also pass both versions in a separate combined checkpoint. They preserve raw address paths and unit0/programming ambiguity, reject more than six entries, and perform no network I/O. Separate strict received-frame inspection and CLI pass45 tests on both Python versions, each with1142 fresh original constructor/cache/CRC cases. Only addressed06/86 frames with0..6 literal entries, one supported CAL, mandatory checksum and exact CR are admitted. Original broader constructor/CRC tolerance is excluded. That inspector performs no cached topology resolution or response correlation. Separate one-shot routed RECALL API/CLI passes73 tests on Python3.13/3.10, each including428 fresh original matcher/confirmation cases and independent IPv4/IPv6 loopback peers. Requires explicit independent reply path, one positive confirmation and exact checksum/parameter/count, with both event orders and full final-chunk handling. Numeric sockets avoid DNS, one deadline covers receipt, and first errors survive cleanup. Declared wire matching is stronger than original cached-object admission; routed physical delivery, causal freshness, original topology identity, write and broader asynchronous receiver behavior remain separate. Separate raw routed IDENTIFY API/CLI passes104 tests on both Python versions, each including902 fresh original IDENTIFY cases and428 unchanged RECALL cases. It requires explicit incoming path, addressed checksum-valid REPLY and positive confirmation; expected_count is optional or exact0..30, and zero data returns empty bytes. Original typed getters, short-form fallback and special3B-negative handling are excluded. Numeric sockets, one send, full final-chunk processing, deadline and first-error evidence retain the declared stricter policy. It does not establish physical delivery or original cached-network identity."
+      "limits": "The supported raw CAL transport contract is complete: direct IDENTIFY, RECALL and WRITE require correlated Reply/Acknowledge CALs and PCI confirmations; explicit-path routed IDENTIFY, RECALL and WRITE require a caller-declared complete return path, checksum-valid response and one positive confirmation. Routed WRITE additionally requires an exact ACK tag, sends once, never retries an uncertain mutation and reports physical delivery, parameter commit and nonvolatile persistence as unverified. Selected-serial encoding, one-shot transport and the exact two-identity coordinator retain their separate guards and evidence. Outgoing route transforms retain 358 original cases/493 steps; incoming strict inspection retains 1,142 original constructor/cache/checksum cases; the routed read checkpoints retain their original matcher matrices. The routed WRITE checkpoint adds 13 Python 3.13 tests with independent IPv4/IPv6 peers, every parameter and ACK-tag byte, zero/maximum payloads, route depths 0..6, both event orders, exact negative paths and interruption evidence. Supported scope is raw CAL and the documented selected-serial operation. Original cached-topology identity, implicit/flow-control receiver modes, non-CAL protocol families, device-specific programming semantics, application workflows, causal freshness and physical routed delivery remain outside this transport row and require their owning workflow acceptance."
     },
     {
       "id": "vendor-catalog-inventory",

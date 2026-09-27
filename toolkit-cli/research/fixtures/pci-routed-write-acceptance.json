@@ -1,0 +1,70 @@
+{
+  "schema": 1,
+  "date": "2026-09-27",
+  "format": "pci-routed-write-focused-acceptance-v1",
+  "runtime": {
+    "implementation": "CPython",
+    "version": "3.13.14"
+  },
+  "command": "PYTHONPATH=src:. .venv/bin/python -m unittest tests.test_pci_routed_write tests.test_cli_pci_routed_write -v",
+  "result": {
+    "tests_run": 13,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "passed": true
+  },
+  "source_sha256": {
+    "src/cbus_toolkit/pci_routed_write.py": "3a3b827211c25481fa69091e1f90cf87707ad3a9e7b53312ded132d944b70264",
+    "src/cbus_toolkit/pci_routed_write_cli.py": "2fb0589fdee55dbcfb31f4539cd26d6173f4ba4f6d9ac4d79978efb4c1fc9aa1",
+    "tests/test_pci_routed_write.py": "aafe8207bd3fcea6f1d92408ecd29ff0c2bc5222ab3fc23462a04b0f2355e37c",
+    "tests/test_cli_pci_routed_write.py": "d783083bdad8cff25671dba9f6b439559811eabbb9c2bee210c26d5e1fdb8203",
+    "research/fixtures/pci-routing-original-vectors.json": "4813bd55b01e97771f3a76df8d1f9ca54ff86b207f1ab2e251207b473974c826",
+    "research/fixtures/pci-incoming-original-vectors.json": "586e9f08ea824a409b64b3a3fcb68bfc4d871e0870065d062f41f340df776cda"
+  },
+  "literal_wire": {
+    "routed_write_no_command_checksum": "5C343631343132313530344133303741414242670D",
+    "routed_write_with_command_checksum": "5C3436313431323135303441333037414142423643670D",
+    "routed_ack": "861410021504320755AD0D"
+  },
+  "coverage": {
+    "parameters": 256,
+    "ack_tags": 256,
+    "payload_lengths": [
+      0,
+      2,
+      30
+    ],
+    "route_depths": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "address_families": [
+      "IPv4",
+      "IPv6"
+    ],
+    "event_orders": [
+      "confirmation-before-ack",
+      "ack-before-confirmation"
+    ]
+  },
+  "boundaries": {
+    "one_send": true,
+    "automatic_retry": false,
+    "exact_expected_path": true,
+    "exact_expected_ack_tag": true,
+    "logical_network_resolved": false,
+    "physical_delivery_verified": false,
+    "parameter_commit_verified": false,
+    "nonvolatile_persistence_verified": false,
+    "physical_device_used": false,
+    "fresh_original_matcher_executed": false,
+    "original_byte_evidence": "Frozen route-transform and incoming constructor/checksum matrices"
+  },
+  "scope": "Strict raw direct CAL WRITE/ACK transaction against independent loopback peers; no live device mutation or persistence claim"
+}
