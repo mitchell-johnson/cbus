@@ -186,6 +186,69 @@ fn assert_timestamped_broadcast(line: &str, session: u64, content: &str) {
 }
 
 #[test]
+fn tcp_session_id_matches_native_loopback_profile() {
+    let mock = Mock::spawn();
+    let mut a = mock.connect();
+    assert!(a.greeting().starts_with("201 "));
+    let mut b = mock.connect();
+    assert!(b.greeting().starts_with("201 "));
+
+    assert_eq!(a.command("SESSION_ID").lines, ["300 sessionID=cmd3"]);
+    assert_eq!(b.command("SESSION_ID").lines, ["300 sessionID=cmd5"]);
+    let a_port = a.writer.local_addr().unwrap().port();
+    let b_port = b.writer.local_addr().unwrap().port();
+
+    let check_all = |lines: &[String], tagged: bool| {
+        assert_eq!(lines.len(), 2);
+        for (row, (session, port)) in lines.iter().zip([("cmd3", a_port), ("cmd5", b_port)]) {
+            let expected = if session == "cmd3" {
+                format!("300-sessionID={session} origin=/127.0.0.1:{port} from=")
+            } else {
+                format!("300 sessionID={session} origin=/127.0.0.1:{port} from=")
+            };
+            let suffix = row.strip_prefix(&expected).expect("native session row");
+            let timestamp = if tagged && session == "cmd3" {
+                suffix
+                    .strip_suffix(" tag=C-Bus Toolkit test")
+                    .expect("session tag")
+            } else {
+                suffix
+            };
+            chrono::NaiveDateTime::parse_from_str(timestamp, "%Y%m%d-%H%M%S")
+                .expect("connection time");
+        }
+    };
+    check_all(&a.command("SESSION_ID ALL").lines, false);
+    assert_eq!(
+        a.command("SESSION_ID TAG C-Bus   Toolkit test").lines,
+        ["200 OK."]
+    );
+    check_all(&b.command("SESSION_ID ALL").lines, true);
+    assert_eq!(
+        a.command("SESSION_ID TAG replacement").lines,
+        ["408 Operation failed: tag name has already been set"]
+    );
+    assert_eq!(
+        a.command("SESSION_ID TAG").lines,
+        ["400 Syntax Error: tag name not supplied"]
+    );
+    assert_eq!(a.command("SESSION_ID bogus").lines, ["400 Syntax Error."]);
+    check_all(&a.command("SESSION_ID ALL ignored-by-native").lines, true);
+
+    drop(b);
+    let mut remaining = Vec::new();
+    for _ in 0..40 {
+        remaining = a.command("SESSION_ID ALL").lines;
+        if remaining.len() == 1 {
+            break;
+        }
+        std::thread::sleep(Duration::from_millis(25));
+    }
+    assert_eq!(remaining.len(), 1, "a closed peer must leave the listing");
+    assert!(remaining[0].starts_with("300 sessionID=cmd3 origin=/127.0.0.1:"));
+}
+
+#[test]
 fn tcp_project_network_lighting_cycle() {
     let mock = Mock::spawn();
     let mut s = mock.connect();

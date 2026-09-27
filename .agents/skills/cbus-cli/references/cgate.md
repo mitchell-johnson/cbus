@@ -1414,8 +1414,21 @@ stream, even when extra words follow the verb. These operations are volatile
 and perform no PCI or persistent database I/O. The original C-Gate
 `SESSION_ID ALL` trace also lists its internal console session; cmqttd
 currently lists external TCP/TLS command sessions only. Treat that as an open
-compatibility difference, not accepted parity. The native `EVENT`/`EVENTS`
-setter consumes its first mode token and ignores later words. `ON`/`OFF` and
+compatibility difference, not accepted parity.
+For the narrower external loopback `SESSION_ID` profile, use the
+[nine-case differential runner](../../../../toolkit-cli/docs/cgate-session-differential.md).
+It tests query, ALL, one-shot TAG, errors and ignored ALL trailing words
+against the pinned original capture through both a fresh `cgate-mock` process
+and a separately provisioned offline `cmqttd --cgate-bind` listener. The
+runner normalizes only queried session numbers, validated peer ports and
+connection times; it records the exact excluded native internal Console row.
+Check `result`, `executed`, `failed` and `skipped` in each artifact-specific
+receipt before claiming a scoped differential pass. Native tag-prefix lines
+were stripped in the retained capture, and this receipt does not establish
+physical, TLS, authorization-policy or unfiltered ALL acceptance.
+
+The native `EVENT`/`EVENTS` setter consumes its first mode token and ignores
+later words. `ON`/`OFF` and
 the `e`/`s`/`c` markers are case-insensitive; the three levels accept `+` for
 events and decimal digits 0–9 for the other positions. A bare query echoes the
 normalized mode. The parser applies each component as it reads it: an invalid

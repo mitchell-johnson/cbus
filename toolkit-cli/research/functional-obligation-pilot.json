@@ -27,8 +27,8 @@
       "outcome": "A connected loopback client can query its own cmdN session identity with a 300 reply; an unknown SESSION_ID selector returns 400 without changing that identity.",
       "preconditions": ["C-Gate 3.4.0.2001 command connection", "owned loopback listener with no project or physical network"],
       "preservation": ["query and syntax error leave the session identity and C-Bus state unchanged"],
-      "implementation_basis": "in_progress: the Rust command-session test covers the observed forms, but the path's authorization and response-event contract remains partial",
-      "differential_gap": "The owned native trace is retained, but this scoped obligation has no passed current-artifact differential receipt.",
+      "implementation_basis": "in_progress: cmqttd and cgate-mock implement the observed loopback query, but authorization and response-event variants remain partial",
+      "differential_gap": "The retained native capture stores response payloads without client-tag prefixes; the differential validates Rust tag echo separately, while native tag-prefix capture remains outside this receipt.",
       "physical_candidate_reason": "The source-bound C-Gate contract classifies this query as command-session-only with no bus I/O, and the native capture opened no physical network. A passed not-applicable receipt is still required."
     },
     {
@@ -50,8 +50,8 @@
       "outcome": "A connected loopback client can list live external command sessions in 300 continuation framing with origin, connection time and optional one-shot tag; trailing words are ignored in the observed profile.",
       "preconditions": ["C-Gate 3.4.0.2001 command connection", "owned loopback listener with no project or physical network"],
       "preservation": ["listing does not change another session, any project, or C-Bus state"],
-      "implementation_basis": "in_progress: the Rust command-session test checks listing and disconnect removal, but volatile fields and access-policy variants still need acceptance",
-      "differential_gap": "The owned native ALL trace also reports an internal Console cmd1 row; the Rust test currently asserts only external sessions. This original difference and the lack of a passed current-artifact receipt keep differential acceptance unassessed.",
+      "implementation_basis": "in_progress: cmqttd and cgate-mock list live external sessions and remove closed peers, but access-policy variants remain open",
+      "differential_gap": "The native ALL trace also reports an internal Console cmd1 row. The external-session differential excludes that exact row and records it; full unfiltered ALL parity remains open.",
       "physical_candidate_reason": "The source-bound C-Gate contract classifies this listing as command-session-only with no bus I/O, and the native capture opened no physical network. A passed not-applicable receipt is still required."
     },
     {
@@ -71,11 +71,11 @@
         {"command": "SESSION_ID TAG replacement", "status": 408},
         {"command": "SESSION_ID TAG", "status": 400}
       ],
-      "outcome": "A connected loopback client can assign one tag to its own command session, preserving interior spaces; a second assignment returns 408 and a missing tag returns 400 without replacing the first tag.",
+      "outcome": "A connected loopback client can assign one tag to its own command session, with native command whitespace collapsed to single spaces; a second assignment returns 408 and a missing tag returns 400 without replacing the first tag.",
       "preconditions": ["C-Gate 3.4.0.2001 command connection", "owned loopback listener with no project or physical network"],
       "preservation": ["failed reassignment leaves the first tag and all other sessions unchanged", "no project or C-Bus state changes"],
-      "implementation_basis": "in_progress: the Rust command-session test covers one-shot assignment and errors, but other authorization and selector variants remain open",
-      "differential_gap": "The owned native trace is retained, but this scoped obligation has no passed current-artifact differential receipt.",
+      "implementation_basis": "in_progress: cmqttd and cgate-mock cover one-shot assignment and observed errors, but other authorization and selector variants remain open",
+      "differential_gap": "The scoped differential covers observed whitespace, reassignment and missing-tag cases; tag length, quoting and ACCESS/LOGIN variants remain open.",
       "physical_candidate_reason": "The source-bound C-Gate contract classifies this tag operation as command-session-only with no bus I/O, and the native capture opened no physical network. A passed not-applicable receipt is still required."
     }
   ]

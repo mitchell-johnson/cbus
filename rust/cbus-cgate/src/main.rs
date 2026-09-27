@@ -28,8 +28,10 @@
 //! cgate-mock --bind 127.0.0.1:0   # ephemeral port, prints the address
 //! ```
 
-use cbus_cgate::{format_response, EventMode, Response, Server};
+use cbus_cgate::{format_response, parse_command, EventMode, Response, Server};
+use chrono::Local;
 use std::collections::HashMap;
+use std::net::SocketAddr;
 use std::sync::Arc;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tokio::net::{TcpListener, TcpStream};
@@ -54,6 +56,11 @@ struct HubSub {
     mode: EventMode,
     /// This session's selected project (session state — never shared).
     current: Option<String>,
+    /// Native `SESSION_ID ALL` reports each command connection's peer and
+    /// connection time; a tag may be set exactly once for that connection.
+    peer: SocketAddr,
+    connected_at: String,
+    session_tag: Option<String>,
     /// Outbound lines (events and replies alike, in order).
     tx: mpsc::UnboundedSender<String>,
 }
@@ -124,6 +131,75 @@ impl Hub {
         self.emit(origin, &resp, &events);
         resp
     }
+
+    /// `SESSION_ID` is command-connection state, not shared project state.
+    /// Handle it at the TCP hub so ALL sees live peers and TAG cannot leak
+    /// from one client to another. Ordinary commands still use `Server`.
+    fn session_identity(&mut self, origin: u64, raw: &str) -> Option<Response> {
+        let command = parse_command(raw).ok()?;
+        let words: Vec<&str> = command.body.split_whitespace().collect();
+        if !words.first()?.eq_ignore_ascii_case("SESSION_ID") {
+            return None;
+        }
+        let tag = command.tag;
+        let reply = |status, final_text: &str| Response {
+            tag: tag.clone(),
+            lines: Vec::new(),
+            final_text: final_text.to_string(),
+            status,
+        };
+        let response = match words.get(1).map(|word| word.to_ascii_uppercase()) {
+            None => reply(300, &format!("300 sessionID=cmd{}", origin * 2 + 1)),
+            Some(selector) if selector == "ALL" => {
+                let mut sessions: Vec<_> = self.subs.iter().collect();
+                sessions.sort_by_key(|(id, _)| **id);
+                let rows: Vec<_> = sessions
+                    .into_iter()
+                    .map(|(id, sub)| {
+                        let mut row = format!(
+                            "sessionID=cmd{} origin=/{} from={}",
+                            id * 2 + 1,
+                            sub.peer,
+                            sub.connected_at
+                        );
+                        if let Some(session_tag) = &sub.session_tag {
+                            row.push_str(" tag=");
+                            row.push_str(session_tag);
+                        }
+                        row
+                    })
+                    .collect();
+                let (last, preceding) = rows.split_last().expect("origin session is live");
+                Response {
+                    tag,
+                    lines: preceding.iter().map(|row| format!("300-{row}")).collect(),
+                    final_text: format!("300 {last}"),
+                    status: 300,
+                }
+            }
+            Some(selector) if selector == "TAG" => {
+                let value = words.get(2..).unwrap_or(&[]).join(" ");
+                if value.is_empty() {
+                    reply(400, "400 Syntax Error: tag name not supplied")
+                } else if self
+                    .subs
+                    .get(&origin)
+                    .is_some_and(|sub| sub.session_tag.is_some())
+                {
+                    reply(408, "408 Operation failed: tag name has already been set")
+                } else {
+                    self.subs
+                        .get_mut(&origin)
+                        .expect("origin session is live")
+                        .session_tag = Some(value);
+                    reply(200, "200 OK.")
+                }
+            }
+            _ => reply(400, "400 Syntax Error."),
+        };
+        self.emit(origin, &response, &[]);
+        Some(response)
+    }
 }
 
 #[tokio::main]
@@ -158,6 +234,9 @@ async fn main() {
 
 async fn serve(stream: TcpStream, hub: Arc<Mutex<Hub>>) {
     let (tx, mut rx) = mpsc::unbounded_channel::<String>();
+    let peer = stream
+        .peer_addr()
+        .expect("accepted TCP connection has a peer");
     let id = {
         let mut hub = hub.lock().await;
         let id = hub.next;
@@ -168,6 +247,9 @@ async fn serve(stream: TcpStream, hub: Arc<Mutex<Hub>>) {
                 subscribed: false,
                 mode: EventMode::DEFAULT,
                 current: None,
+                peer,
+                connected_at: Local::now().format("%Y%m%d-%H%M%S").to_string(),
+                session_tag: None,
                 tx,
             },
         );
@@ -296,7 +378,8 @@ async fn serve(stream: TcpStream, hub: Arc<Mutex<Hub>>) {
         }
         let resp = {
             let mut hub = hub.lock().await;
-            hub.dispatch(id, |server| server.handle(&raw))
+            hub.session_identity(id, &raw)
+                .unwrap_or_else(|| hub.dispatch(id, |server| server.handle(&raw)))
         };
         track_subscription(&hub, id, &head, &resp).await;
         if resp.status == 204 {

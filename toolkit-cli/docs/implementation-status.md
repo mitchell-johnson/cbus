@@ -9,9 +9,13 @@ decision. Its current generated revision accounts for 22,156 source records,
 including 412 parsed Toolkit forms, 10,102 controls and 1,892 event bindings,
 and 39 provisional umbrella obligations plus 442 provisional C-Gate path
 obligations. Three narrow `SESSION_ID` functions are defined separately,
-giving 484 registered obligations, zero accepted obligations and zero evidence
-receipts. Implementation remains in progress, and differential and physical
-acceptance are unassessed for all three. These overlapping records are not a
+giving 484 registered obligations, zero fully accepted obligations and one
+scoped original-differential evidence receipt. The three `SESSION_ID` functions
+have accepted original-differential evidence for external IPv4 loopback
+response payloads only; implementation remains in progress and physical
+acceptance is unassessed. The native internal Console row and native client-tag
+prefix capture remain outside that receipt. See the
+[nine-case comparison](cgate-session-differential.md). These overlapping records are not a
 deduplicated functional denominator.
 Functional percentages remain unavailable until P0 resolves the source records
 into a complete denominator. Its packaged C-Gate
