@@ -128,3 +128,44 @@ request/response correlation, terminator, or completeness contract has been
 established. **P6.05 / issue #49 remains open.** A future implementation needs
 those details plus independent native and physical acceptance. No guessed
 CLI or cmqttd readback route is introduced by this evidence update.
+
+## Source and live-service recheck (28 September 2026)
+
+The verifier above was rerun against the retained, hash-matched Toolkit
+executable and assemblies, C-Gate JAR, owned native command captures, and
+offline GUI/project evidence. All four verifier stages passed. The exact
+vendor hashes and normalized command replies are in the linked fixture; the
+vendor files, raw captures, and private project remain outside Git. This
+reconfirms the exposed 1.18/3.4 command boundary, not physical cache absence.
+
+A separate read-only query of the running cmqttd endpoint used
+`CMQTT CAPABILITIES`, `CMQTT LABELS` for its configured network, and one
+`DBGETXML` network snapshot. The service advertised saved-project `TagsDLT`
+preservation, while explicitly reporting
+`dynamic_label_device_readback: false`. Its label reply identified its source
+as `observed-sal-traffic` and marked both `complete` and `device_readback`
+false. The project query and observed-traffic query address different stores;
+site-specific addresses, labels and counts are deliberately omitted here.
+These replies made no physical device-cache request.
+
+There is a direct information gap even if every saved-project label and every
+static unit string is known. Consider two devices with identical project and
+static memory, and no label traffic since cmqttd connected. One could have
+received a dynamic label before the connection and retained it; the other
+could have no such cached label. The exposed reads would be identical, while
+the rendered or cached label could differ. This is an inference from the
+documented observation scope and reset-on-reconnect behavior, not a claim
+that either physical state was observed in the house. Therefore neither the
+CLI nor cmqttd can truthfully mark an inventory of **all currently rendered
+dynamic labels** complete from these inputs.
+
+The next useful experiment is an isolated, controlled eDLT plus a captured
+original Toolkit/C-Gate session. Give one group distinguishable variant
+values, record the send and visible display, restart the observer without
+resending, then trace every request the original Dynamic Label Editor issues
+when reopened. A candidate cache-read request must return the pre-existing
+value, identify the intended recipient, and survive an observer restart
+before it can become a new readback API. If no such request appears, keep the
+bounded limitation and investigate official device diagnostics or a new
+firmware-specific protocol separately. This experiment must not use the
+saved project or an observed SAL frame as a substitute for device readback.
