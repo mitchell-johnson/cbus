@@ -8,6 +8,7 @@ assigned unverified meanings.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import ctypes
 import hashlib
 import ipaddress
 import socket
@@ -26,8 +27,36 @@ MAX_MALFORMED_RAW_PREFIX = 64
 MAX_ENUMERATED_INTERFACES = 256
 
 
+def _windows_interface_index(name, *, api=None):
+    """Resolve psutil's Windows friendly name (ifAlias) to its IPv4 index."""
+    native = api is None
+    if native:
+        api = ctypes.WinDLL("iphlpapi.dll")
+    try:
+        alias_to_luid = api.ConvertInterfaceAliasToLuid
+        luid_to_index = api.ConvertInterfaceLuidToIndex
+    except AttributeError as error:
+        raise OSError("Windows IP Helper interface conversion is unavailable") from error
+    if native:
+        alias_to_luid.argtypes = (ctypes.c_wchar_p, ctypes.POINTER(ctypes.c_uint64))
+        alias_to_luid.restype = ctypes.c_uint32
+        luid_to_index.argtypes = (ctypes.POINTER(ctypes.c_uint64),
+                                  ctypes.POINTER(ctypes.c_uint32))
+        luid_to_index.restype = ctypes.c_uint32
+    luid = ctypes.c_uint64()
+    status = alias_to_luid(name, ctypes.byref(luid))
+    if status:
+        raise OSError(f"Windows CNI interface alias could not be resolved: {status}")
+    index = ctypes.c_uint32()
+    status = luid_to_index(ctypes.byref(luid), ctypes.byref(index))
+    if status or not index.value:
+        raise OSError(f"Windows CNI interface index could not be resolved: {status}")
+    return index.value
+
+
 def _pin_discovery_interface(peer, name, *, platform=sys.platform,
-                             if_nametoindex=socket.if_nametoindex):
+                             if_nametoindex=socket.if_nametoindex,
+                             windows_index_resolver=None):
     """Constrain an IPv4 UDP socket to an OS interface before sending.
 
     The option and readback are checked independently of the local source-IP
@@ -37,7 +66,8 @@ def _pin_discovery_interface(peer, name, *, platform=sys.platform,
     if type(name) is not str or not name or "\0" in name:
         raise ValueError("CNI interface name must be nonempty text without NUL")
     try:
-        index = if_nametoindex(name)
+        index = ((windows_index_resolver or _windows_interface_index)(name)
+                 if platform == "win32" else if_nametoindex(name))
     except OSError as error:
         raise OSError(f"CNI interface index unavailable for {name}: {error}") from error
     if type(index) is not int or not 0 < index < 2 ** 32:

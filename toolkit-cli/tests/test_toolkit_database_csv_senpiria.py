@@ -186,6 +186,17 @@ class SENPIRIACSVTests(unittest.TestCase):
                           if group.identity in outcome.cached.unit.group_identities][:8],
                          ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8'])
 
+    def test_cached_sensor_rejects_extra_stored_group_before_projection(self):
+        outcome = project_native_xml_unit(synthetic(), UNIT, columns=COLUMNS)
+        unit = replace(outcome.cached.unit,
+                       group_identities=outcome.cached.unit.group_identities
+                       + (outcome.cached.unit.group_identities[0],))
+        with self.assertRaisesRegex(ValueError, 'exactly eight stored groups'):
+            project_cached_csv_unit(
+                unit, group_cache=outcome.cached.groups,
+                area_observations=(CSVAreaObservation('255'), CSVAreaObservation('255')),
+                columns=COLUMNS)
+
 
 if __name__ == '__main__':
     unittest.main()

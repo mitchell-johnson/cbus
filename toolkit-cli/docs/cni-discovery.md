@@ -49,7 +49,10 @@ and their reasons. Scan results attach that adapter record to each per-route
 observation. Before sending, automatic mode binds the socket to the named
 adapter with the OS option (`IP_BOUND_IF` on macOS, `SO_BINDTODEVICE` on Linux,
 or `IP_UNICAST_IF` on Windows), reads that option back, and fails that probe
-if either step fails. Each successful observation includes
+if either step fails. On Windows, the psutil adapter friendly name is resolved
+through IP Helper's alias-to-LUID and LUID-to-index calls before setting
+`IP_UNICAST_IF`; Python's `socket.if_nametoindex` uses a different Windows name
+form. Each successful observation includes
 `egress_interface_constraint` with the name, index, mechanism and confirmed
 readback. The per-probe and whole-scan `egress_interface_constraint_applied`
 flags distinguish a constrained send from a transport error. Explicit

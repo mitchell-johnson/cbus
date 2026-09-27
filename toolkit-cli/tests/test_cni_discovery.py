@@ -1,3 +1,4 @@
+import ctypes
 import json
 from pathlib import Path
 import socket
@@ -14,6 +15,7 @@ from cbus_toolkit.cni_discovery import (
     decode_discovery_reply,
     discover_cni,
     _pin_discovery_interface,
+    _windows_interface_index,
     plan_host_cni_probes,
     scan_cni,
     scan_host_cni,
@@ -100,7 +102,8 @@ class CniDiscoveryTransportTests(unittest.TestCase):
             with self.subTest(platform=platform):
                 peer = Peer(readback)
                 result = _pin_discovery_interface(
-                    peer, "en0", platform=platform, if_nametoindex=lambda _name: 42)
+                    peer, "en0", platform=platform, if_nametoindex=lambda _name: 42,
+                    windows_index_resolver=lambda _name: 42)
                 self.assertEqual(peer.set_calls[0][1:], (option, expected_set))
                 self.assertEqual(result["mechanism"], mechanism)
                 self.assertTrue(result["option_readback_matches"])
@@ -111,10 +114,62 @@ class CniDiscoveryTransportTests(unittest.TestCase):
                                      if_nametoindex=lambda _name: 42)
         with self.assertRaisesRegex(OSError, "four-byte index"):
             _pin_discovery_interface(Peer(b"\x00"), "en0", platform="win32",
-                                     if_nametoindex=lambda _name: 42)
+                                     windows_index_resolver=lambda _name: 42)
         with self.assertRaisesRegex(OSError, "unsupported"):
             _pin_discovery_interface(Peer(42), "en0", platform="unknown",
                                      if_nametoindex=lambda _name: 42)
+
+    def test_windows_friendly_alias_resolves_without_if_nametoindex(self):
+        class Api:
+            def __init__(self, *, alias_status=0, index_status=0):
+                self.alias_status = alias_status
+                self.index_status = index_status
+                self.aliases = []
+
+            def ConvertInterfaceAliasToLuid(self, name, output):
+                self.aliases.append(name)
+                ctypes.cast(output, ctypes.POINTER(ctypes.c_uint64))[0] = 1234
+                return self.alias_status
+
+            def ConvertInterfaceLuidToIndex(self, luid, output):
+                self.luid = ctypes.cast(luid, ctypes.POINTER(ctypes.c_uint64))[0]
+                ctypes.cast(output, ctypes.POINTER(ctypes.c_uint32))[0] = 42
+                return self.index_status
+
+        api = Api()
+        alias = "vEthernet (nat)"
+        self.assertEqual(_windows_interface_index(alias, api=api), 42)
+        self.assertEqual(api.aliases, [alias])
+        self.assertEqual(api.luid, 1234)
+        for bad_api, message in ((Api(alias_status=87), "alias"),
+                                 (Api(index_status=87), "index")):
+            with self.subTest(message=message), self.assertRaisesRegex(OSError, message):
+                _windows_interface_index(alias, api=bad_api)
+
+        class Peer:
+            def __init__(self):
+                self.set_calls = []
+
+            def setsockopt(self, *args):
+                self.set_calls.append(args)
+
+            def getsockopt(self, *_args):
+                return struct.pack("=I", 42)
+
+        peer = Peer()
+        result = _pin_discovery_interface(
+            peer, alias, platform="win32",
+            if_nametoindex=lambda _name: self.fail("Windows must resolve ifAlias"),
+            windows_index_resolver=lambda name: _windows_interface_index(name, api=Api()))
+        self.assertEqual(result["index"], 42)
+        self.assertEqual(peer.set_calls[0][2], struct.pack("!I", 42))
+        failing_peer = Peer()
+        with self.assertRaisesRegex(OSError, "alias"):
+            _pin_discovery_interface(
+                failing_peer, alias, platform="win32",
+                windows_index_resolver=lambda name: _windows_interface_index(
+                    name, api=Api(alias_status=87)))
+        self.assertEqual(failing_peer.set_calls, [])
 
     def test_interface_pin_failure_does_not_send_query(self):
         class Peer:

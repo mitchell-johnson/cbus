@@ -180,6 +180,8 @@ def _class(unit):
     if kind in _DIN_TYPES and unit.firmware == '2.7.00':
         return _DIN_TYPES[kind]
     if kind in _SENSOR_TYPES and unit.firmware == '2.4.00':
+        if kind == 'SENPIRIA' and len(unit.group_identities) != 8:
+            raise ValueError('Cached SENPIRIA profile requires exactly eight stored groups')
         return _SENSOR_TYPES[kind]
     if kind == 'KEYGL5' and unit.firmware == '5.5.00' and unit.catalog == '5055EDL':
         return 'TCBusEDLTUnit'
