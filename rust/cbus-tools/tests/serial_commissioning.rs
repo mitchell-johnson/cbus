@@ -23,6 +23,14 @@ use std::sync::atomic::{AtomicBool, Ordering};
 
 const BIN: &str = env!("CARGO_BIN_EXE_cbus-tools");
 
+fn remove_reported_attempt_marker(output: &str) {
+    let value: Value = serde_json::from_str(output.trim()).unwrap();
+    let path = value["attempt_identity"]
+        .as_str()
+        .expect("apply evidence must report its attempt marker");
+    std::fs::remove_file(path).expect("remove test attempt marker");
+}
+
 // ------------------------------------------------------------ plan fixture
 
 fn vector_plan_document() -> Value {
@@ -581,6 +589,7 @@ fn serial_apply_moves_and_journals() {
     assert_eq!(v["journal"], journal.to_str().unwrap(), "{v}");
     let journal_text = std::fs::read_to_string(&journal).expect("journal must exist");
     std::fs::remove_file(&journal).ok();
+    remove_reported_attempt_marker(&out);
     assert!(
         journal_text.contains("cbus-selected-serial-apply-v1"),
         "{journal_text}"
@@ -641,6 +650,7 @@ fn serial_apply_expected_after_succeeds_without_a_matching_receipt() {
 
     let journal_text = std::fs::read_to_string(&journal).expect("journal must exist");
     std::fs::remove_file(&journal).ok();
+    remove_reported_attempt_marker(&out);
     let journal_value: Value = serde_json::from_str(&journal_text).unwrap();
     assert_eq!(journal_value["sends"], 1, "{journal_value}");
     assert_eq!(journal_value["receipt_matched"], false, "{journal_value}");
@@ -684,6 +694,7 @@ fn serial_apply_uses_exact_checksummed_request_on_one_connection() {
     );
     std::fs::remove_file(&plan).ok();
     std::fs::remove_file(&journal).ok();
+    remove_reported_attempt_marker(&out);
     assert!(
         status.success(),
         "checksummed apply must succeed: {out} {err}"
@@ -866,6 +877,7 @@ fn serial_apply_reports_classified_post_send_observation() {
         .as_array()
         .is_some_and(|diffs| !diffs.is_empty()));
     std::fs::remove_file(&journal).ok();
+    remove_reported_attempt_marker(&out);
     assert!(
         journal_text.contains("cbus-selected-serial-apply-v1"),
         "{journal_text}"
@@ -930,7 +942,7 @@ fn serial_verify_from_journal_observes_expected_change() {
     let plan = plan_file_for_port(port, "vfj-apply.json");
     let journal = temp_path("vfj-journal.json");
     let addr = format!("127.0.0.1:{port}");
-    let (status, _, err) = run(
+    let (status, apply_out, err) = run(
         BIN,
         &[
             "serial-apply",
@@ -966,6 +978,153 @@ fn serial_verify_from_journal_observes_expected_change() {
     assert_eq!(v["operation"], "verify", "{v}");
     assert_eq!(v["journal"], journal.to_str().unwrap(), "{v}");
     std::fs::remove_file(&journal).ok();
+    remove_reported_attempt_marker(&apply_out);
+}
+
+#[test]
+fn durable_attempt_identity_survives_process_exit_and_recovers_without_main_journal() {
+    let port = spawn_persistent_phased_peer(PeerScript {
+        states: pre_move_states(),
+        probes: vec![(16, vec![serial_c()]), (255, vec![serial_a(), serial_b()])],
+        option: Some(5),
+        address_checksum: Some(false),
+        address_receipt: true,
+        post_states: Some(post_move_states()),
+        post_probes: Some(vec![
+            (6, vec![serial_a()]),
+            (16, vec![serial_c()]),
+            (255, vec![serial_b()]),
+        ]),
+    });
+    let plan = plan_file_for_port(port, "attempt-plan.json");
+    let directory = temp_path("attempt-store");
+    std::fs::create_dir(&directory).unwrap();
+    let journal = directory.join("first.json");
+    let second = directory.join("second.json");
+    let addr = format!("127.0.0.1:{port}");
+    let (status, out, err) = run(
+        BIN,
+        &[
+            "serial-apply",
+            "--pci",
+            &addr,
+            "--plan",
+            plan.to_str().unwrap(),
+            "--journal",
+            journal.to_str().unwrap(),
+            "--timeout",
+            "30",
+        ],
+    );
+    assert!(status.success(), "first apply must succeed: {out} {err}");
+    let evidence: Value = serde_json::from_str(out.trim()).unwrap();
+    let marker = PathBuf::from(evidence["attempt_identity"].as_str().unwrap());
+    let resolved_directory = std::fs::canonicalize(&directory).unwrap();
+    assert_eq!(marker.parent(), Some(resolved_directory.as_path()));
+    assert!(marker.is_file());
+    let marker_value: Value = serde_json::from_slice(&std::fs::read(&marker).unwrap()).unwrap();
+    assert_eq!(marker_value["format"], "cbus-selected-serial-attempt-v1");
+    assert_eq!(marker_value["send_may_have_occurred"], true);
+    assert_eq!(marker_value["read_only_recovery_only"], true);
+    assert_eq!(
+        marker_value["journal"],
+        resolved_directory.join("first.json").to_str().unwrap()
+    );
+
+    // Simulate interruption after the marker was durable but before the
+    // main journal was retained. The next process still has a safe read-only
+    // recovery path, and a new journal filename cannot re-send the plan.
+    std::fs::remove_file(&journal).unwrap();
+    let (status, out, err) = run(
+        BIN,
+        &[
+            "serial-verify",
+            "--pci",
+            &addr,
+            "--journal",
+            marker.to_str().unwrap(),
+            "--timeout",
+            "30",
+        ],
+    );
+    assert!(
+        status.success(),
+        "marker recovery must be read-only: {out} {err}"
+    );
+    let verify: Value = serde_json::from_str(out.trim()).unwrap();
+    assert_eq!(verify["outcome"], "observed_expected_change");
+    assert_eq!(verify["journal"], marker.to_str().unwrap());
+
+    let (status, out, err) = run(
+        BIN,
+        &[
+            "serial-apply",
+            "--pci",
+            &addr,
+            "--plan",
+            plan.to_str().unwrap(),
+            "--journal",
+            second.to_str().unwrap(),
+            "--timeout",
+            "30",
+        ],
+    );
+    assert_eq!(status.code(), Some(1), "replay must fail: {out} {err}");
+    assert!(err.contains("attempt identity already exists"), "{err}");
+    assert!(
+        !err.contains("connect"),
+        "must refuse before connecting: {err}"
+    );
+    assert!(out.trim().is_empty());
+    assert!(!second.exists());
+
+    // A tampered marker cannot be used as a source of verified plan intent.
+    let mut corrupt = marker_value;
+    corrupt["attempt_id"] = Value::from("sha256:bad");
+    std::fs::write(&marker, serde_json::to_vec(&corrupt).unwrap()).unwrap();
+    let (status, out, err) = run(
+        BIN,
+        &[
+            "serial-verify",
+            "--pci",
+            &addr,
+            "--journal",
+            marker.to_str().unwrap(),
+            "--timeout",
+            "30",
+        ],
+    );
+    assert_eq!(
+        status.code(),
+        Some(1),
+        "corrupt marker must fail: {out} {err}"
+    );
+    assert!(err.contains("attempt ID"), "{err}");
+    assert!(out.trim().is_empty());
+    let (status, out, err) = run(
+        BIN,
+        &[
+            "serial-apply",
+            "--pci",
+            &addr,
+            "--plan",
+            plan.to_str().unwrap(),
+            "--journal",
+            second.to_str().unwrap(),
+        ],
+    );
+    assert_eq!(
+        status.code(),
+        Some(1),
+        "tamper must not permit replay: {err}"
+    );
+    assert!(err.contains("attempt identity already exists"), "{err}");
+    assert!(out.trim().is_empty());
+    assert!(!second.exists());
+
+    std::fs::remove_file(&marker).unwrap();
+    std::fs::remove_file(&plan).unwrap();
+    std::fs::remove_dir(&directory).unwrap();
 }
 
 #[test]
@@ -1059,7 +1218,7 @@ fn serial_verify_from_journal_rejects_endpoint_mismatch_before_connect() {
     let plan = plan_file_for_port(port, "vfj-mismatch-apply.json");
     let journal = temp_path("vfj-mismatch-journal.json");
     let addr = format!("127.0.0.1:{port}");
-    let (status, _, err) = run(
+    let (status, apply_out, err) = run(
         BIN,
         &[
             "serial-apply",
@@ -1089,6 +1248,7 @@ fn serial_verify_from_journal_rejects_endpoint_mismatch_before_connect() {
         ],
     );
     std::fs::remove_file(&journal).ok();
+    remove_reported_attempt_marker(&apply_out);
     assert_eq!(status.code(), Some(1), "mismatch must fail: {err}");
     assert!(err.contains("endpoint mismatch"), "{err}");
     assert!(err.contains("plan is authoritative"), "{err}");

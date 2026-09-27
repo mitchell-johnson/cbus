@@ -100,10 +100,10 @@ rust/target/release/cbus-tools interrogate \
 ## Verify or apply a selected-serial plan
 
 1. Generate and inspect a strict version-one plan with the Toolkit CLI. Confirm the numeric endpoint, local unit and serial, selected serial, empty destination, and embedded fresh-before evidence.
-2. Give `--journal` one stable, protected path that does not exist. Preserve it after every outcome.
+2. Give `--journal` one stable, protected directory and a new filename. Preserve the journal and its hidden `attempt_identity` marker after every outcome.
 3. Run read-only `serial-verify --plan` first when you only need classification.
 4. Run `serial-apply` only while the process owns the endpoint and commissioning activity exclusively. It completes the exact bookended fresh-before inventory, then immediately rechecks option 66=`05` before journaling or sending on that same connection.
-5. Treat every existing apply journal as a possible send, even when it has no receipt. Continue only with `serial-verify --journal`; never rerun apply from recovery evidence.
+5. Treat every existing apply journal or attempt marker as a possible send, even when it has no receipt. Continue only with `serial-verify --journal`; never rerun apply from recovery evidence. If an interruption left the marker but no main journal, pass the marker path to `serial-verify --journal`.
 
 ```sh
 rust/target/release/cbus-tools serial-apply \
@@ -115,7 +115,7 @@ rust/target/release/cbus-tools serial-verify \
   --journal /operator/recovery/selected-plan-attempt.json --timeout 300
 ```
 
-The process-local canonical fingerprint only blocks equivalent plan encodings during that process. After restart, even an equivalent reserialization at a different journal path is not globally deduplicated; semantically different validated plans are distinct as well. Simulator and scripted-peer tests do not establish physical movement or persistence.
+`serial-apply` hashes canonical validated plan semantics and durably creates a hidden marker in the resolved journal directory before any address send. A second cooperating process using that directory refuses the same plan even with a new journal filename. The marker embeds the validated plan for read-only recovery if the process dies before creating the main journal. Different directories, deleted markers and other commissioning controllers remain outside this scoped guard; retain exclusive endpoint ownership. Simulator and scripted-peer tests do not establish physical movement or persistence.
 
 ## Exercise a C-Gate client
 

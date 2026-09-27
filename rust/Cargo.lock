@@ -235,6 +235,7 @@ dependencies = [
  "chrono",
  "hex",
  "proptest",
+ "ring",
  "serde_json",
  "tokio",
  "tokio-serial",

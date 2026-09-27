@@ -4,7 +4,9 @@ use cbus_protocol::cal::Cal;
 use cbus_protocol::decode::decode_packet;
 use cbus_protocol::json::packet_to_json;
 use cbus_protocol::packet::Packet;
-use cbus_transport::apply::{load_recovery, ApplyError, ApplyOnce, ApplyOptions};
+use cbus_transport::apply::{
+    attempt_identity_path, load_recovery, ApplyError, ApplyOnce, ApplyOptions,
+};
 use cbus_transport::conn::Endpoint;
 use cbus_transport::inventory::InventoryOptions;
 use cbus_transport::plan::{validate_plan_document_with_value, ValidatedPlan, MAX_PLAN_BYTES};
@@ -14,7 +16,7 @@ use cbus_transport::verify::{
 use cbus_transport::{conn, PciClient};
 use clap::{Parser, Subcommand};
 use serde_json::{json, Map, Value};
-use std::io::Read;
+use std::io::{ErrorKind, Read};
 use std::net::{Ipv4Addr, SocketAddrV4};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -108,8 +110,9 @@ enum Command {
     /// enforced. The plan comes from a file (`--plan`) or from the embedded
     /// plan in a recovery journal (`--journal`, resuming verification from
     /// a crashed/interrupted apply without the plan file); exactly one of
-    /// the two is required. Journal endpoint binding is identical: `--pci`
-    /// must equal the journal's embedded endpoint.
+    /// the two is required. `--journal` also accepts the durable attempt
+    /// marker if interruption preceded main-journal creation. Endpoint
+    /// binding is identical: `--pci` must equal the embedded endpoint.
     SerialVerify {
         /// Direct PCI endpoint as numeric IP:PORT (bracket IPv6); must equal
         /// the embedded endpoint and be exclusively available to this command
@@ -138,9 +141,11 @@ enum Command {
     /// `--timeout` separately bounds the fresh-before and post-send
     /// observations. The exact one-shot send and its bounded receipt capture
     /// use the same PCI connection as those observations. The journal is
-    /// recovery evidence that
-    /// also carries the embedded plan, so `serial-verify --journal` can
-    /// re-verify from it without the plan file.
+    /// recovery evidence that also carries the embedded plan. An additional
+    /// canonical-plan attempt marker is reserved beside the journal before
+    /// any send. Preserve both files. A new journal name in that directory
+    /// cannot replay the same plan, even after this process exits; a different
+    /// directory or competing controller is outside this scoped guard.
     SerialApply {
         /// Direct PCI endpoint as numeric IP:PORT (bracket IPv6); must equal
         /// the plan endpoint and be exclusively available to this command
@@ -987,6 +992,22 @@ async fn serial_apply_cmd(
             ));
         }
     }
+    let attempt_path = attempt_identity_path(&raw, journal_path).map_err(|e| e.to_string())?;
+    match std::fs::symlink_metadata(&attempt_path) {
+        Ok(_) => {
+            return Err(format!(
+                "attempt identity already exists at {}; read-only recovery only",
+                attempt_path.display()
+            ));
+        }
+        Err(error) if error.kind() == ErrorKind::NotFound => {}
+        Err(error) => {
+            return Err(format!(
+                "attempt identity: cannot inspect {}: {error}",
+                attempt_path.display()
+            ));
+        }
+    }
     let pci_client = connect_pci(plan.host.clone(), plan.port).await?;
     // Bind the plan's local address hint for correlated receipt parsing. The
     // inventory still checks the pinned serial independently; this hint alone
@@ -1001,6 +1022,7 @@ async fn serial_apply_cmd(
             journal_path,
             ApplyOptions {
                 verify: verify_options(total_deadline),
+                durable_attempt_identity: true,
             },
         )
         .await
@@ -1013,6 +1035,7 @@ async fn serial_apply_cmd(
             evidence["destination"] = Value::from(success.destination);
             evidence["receipt_matched"] = Value::from(success.receipt_matched);
             evidence["journal"] = Value::from(success.journal_path.to_string_lossy().into_owned());
+            evidence["attempt_identity"] = Value::from(attempt_path.to_string_lossy().into_owned());
             println!("{evidence}");
             // Exit 0 ONLY on the expected change, exactly like verify:
             // even on `Ok`, a non-expected outcome (should the library ever
@@ -1022,7 +1045,7 @@ async fn serial_apply_cmd(
             ))
         }
         Err(ApplyError::Preconditions(detail)) => {
-            let evidence = apply_failure_json(
+            let mut evidence = apply_failure_json(
                 &plan,
                 &raw,
                 total_deadline,
@@ -1033,6 +1056,7 @@ async fn serial_apply_cmd(
                 None,
                 Value::Null,
             );
+            evidence["attempt_identity"] = Value::Null;
             println!("{evidence}");
             Ok(1)
         }
@@ -1076,7 +1100,7 @@ async fn serial_apply_cmd(
                 .filter(|value| value.is_array())
                 .cloned()
                 .unwrap_or_else(|| Value::Array(Vec::new()));
-            let evidence = apply_failure_json(
+            let mut evidence = apply_failure_json(
                 &plan,
                 &raw,
                 total_deadline,
@@ -1087,6 +1111,7 @@ async fn serial_apply_cmd(
                 Some(journal_path),
                 receipt_matched,
             );
+            evidence["attempt_identity"] = Value::from(attempt_path.to_string_lossy().into_owned());
             println!("{evidence}");
             Ok(1)
         }

@@ -12,6 +12,7 @@ tracing = { workspace = true }
 chrono = { workspace = true }
 serde_json = { workspace = true, features = ["float_roundtrip"] }
 hex = { workspace = true }
+ring = "0.17"
 
 [dev-dependencies]
 proptest = { workspace = true }

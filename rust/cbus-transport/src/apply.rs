@@ -73,10 +73,13 @@
 //! The fingerprint guard is deliberately only a same-process defense. Its set
 //! is not persisted, retains one canonical document per journaled intent for
 //! the process lifetime, and treats non-equivalent canonical plan values as
-//! distinct. Across processes or restarts, replay prevention is the
-//! operator-selected stable journal path, its exclusive creation
-//! (`O_CREAT | O_EXCL`), and preservation of that file. A caller that chooses
-//! a different path after restart is not globally deduplicated. Every created
+//! distinct. Across processes or restarts, the CLI additionally reserves a
+//! durable SHA-256 plan identity beside the operator-selected journal. This
+//! prevents a cooperative caller using that directory from replaying an
+//! identical canonical plan with a different journal name. It is deliberately
+//! scoped to that directory: another directory, deleted marker, or competing
+//! controller is not globally deduplicated. Library callers opt in via
+//! [`ApplyOptions::durable_attempt_identity`]. Every created
 //! apply journal records
 //! `send_intent_recorded` and conservative `send_attempted=true` before the
 //! shared-session send primitive is invoked. A journal without a complete
@@ -92,8 +95,11 @@ use crate::journal::RecoveryJournal;
 use crate::plan::{parse_strict_json_value, validate_plan_document_with_value, ValidatedPlan};
 use crate::verify::{verify_plan, VerifyEvidence, VerifyOptions, VerifyOutcome};
 use crate::PciClient;
+use ring::digest::{digest, SHA256};
 use serde_json::{json, Map, Value};
 use std::collections::HashSet;
+use std::fs;
+use std::io::ErrorKind;
 use std::path::{Path, PathBuf};
 use std::sync::{
     atomic::{AtomicBool, Ordering},
@@ -102,6 +108,7 @@ use std::sync::{
 
 /// Rust-local journal format written by [`apply_plan`].
 const JOURNAL_FORMAT: &str = "cbus-selected-serial-apply-v1";
+const ATTEMPT_FORMAT: &str = "cbus-selected-serial-attempt-v1";
 
 /// Tunables for [`apply_plan`].
 #[derive(Debug, Clone, Copy, Default)]
@@ -109,6 +116,10 @@ pub struct ApplyOptions {
     /// Caller bounds used independently for the fresh-before and post-send
     /// observations, replacing plan timing for both reads.
     pub verify: VerifyOptions,
+    /// Reserve a durable canonical-plan marker in the journal's existing
+    /// parent directory before any address send. The CLI always enables this;
+    /// library callers must opt in and retain the marker for recovery.
+    pub durable_attempt_identity: bool,
 }
 
 /// Successful apply: one exact send completed and the fresh observation
@@ -212,6 +223,7 @@ struct Evidence {
     after_unexpected_changes: Vec<Value>,
     after_errors: Vec<String>,
     errors: Vec<String>,
+    attempt_identity: Option<String>,
     /// The full validated plan document, embedded so [`load_recovery`] can
     /// strictly revalidate the intent this journal records.
     plan: Value,
@@ -243,6 +255,7 @@ impl Evidence {
             after_unexpected_changes: Vec::new(),
             after_errors: Vec::new(),
             errors: Vec::new(),
+            attempt_identity: None,
             plan: plan_value,
         }
     }
@@ -273,6 +286,7 @@ impl Evidence {
             "after_unexpected_changes": self.after_unexpected_changes,
             "after_errors": self.after_errors,
             "errors": self.errors,
+            "attempt_identity": self.attempt_identity,
             "plan": self.plan,
             "journal": journal_path.map(|path| path.to_string_lossy().into_owned()),
         })
@@ -368,6 +382,104 @@ fn canonical_plan_fingerprint(value: &Value) -> Vec<u8> {
 
     serde_json::to_vec(&canonical(value))
         .expect("a validated serde_json::Value is always serializable")
+}
+
+fn attempt_id(fingerprint: &[u8]) -> String {
+    hex::encode(digest(&SHA256, fingerprint).as_ref())
+}
+
+fn identity_path(fingerprint: &[u8], recovery_path: &Path) -> Result<PathBuf, ApplyError> {
+    let file_name = recovery_path.file_name().ok_or_else(|| {
+        ApplyError::Journal("attempt identity: recovery path must name a file".to_string())
+    })?;
+    let parent = recovery_path
+        .parent()
+        .filter(|path| !path.as_os_str().is_empty())
+        .unwrap_or_else(|| Path::new("."));
+    let directory = fs::canonicalize(parent).map_err(|error| {
+        ApplyError::Journal(format!(
+            "attempt identity: cannot resolve recovery directory {}: {error}",
+            parent.display()
+        ))
+    })?;
+    if !directory.is_dir() {
+        return Err(ApplyError::Journal(format!(
+            "attempt identity: recovery parent is not a directory: {}",
+            directory.display()
+        )));
+    }
+    let path = directory.join(format!(
+        ".cbus-selected-serial-attempt-sha256-{}.json",
+        attempt_id(fingerprint)
+    ));
+    if directory.join(file_name) == path {
+        return Err(ApplyError::Journal(
+            "attempt identity: recovery journal must not use the identity path".to_string(),
+        ));
+    }
+    Ok(path)
+}
+
+/// Deterministic same-directory identity path for a strictly validated plan.
+///
+/// The path is a SHA-256 digest of canonical sanitized plan semantics in the
+/// journal's resolved parent directory. It is not a global deduplication key:
+/// callers must preserve and reuse the same directory. This function never
+/// touches PCI and does not create the marker.
+pub fn attempt_identity_path(raw_plan: &[u8], recovery_path: &Path) -> Result<PathBuf, ApplyError> {
+    let (_, value) = validate_plan_document_with_value(raw_plan)
+        .map_err(|error| ApplyError::Plan(error.to_string()))?;
+    identity_path(&canonical_plan_fingerprint(&value), recovery_path)
+}
+
+fn refuse_existing_identity(path: &Path) -> Result<(), ApplyError> {
+    match fs::symlink_metadata(path) {
+        Ok(_) => Err(ApplyError::AlreadyApplied(format!(
+            "attempt identity already exists at {}; read-only recovery only",
+            path.display()
+        ))),
+        Err(error) if error.kind() == ErrorKind::NotFound => Ok(()),
+        Err(error) => Err(ApplyError::Journal(format!(
+            "attempt identity: cannot inspect {}: {error}",
+            path.display()
+        ))),
+    }
+}
+
+fn reserve_attempt_identity(
+    path: &Path,
+    fingerprint: &[u8],
+    plan: &Value,
+    recovery_path: &Path,
+) -> Result<(), ApplyError> {
+    let mut marker = RecoveryJournal::new(path)
+        .map_err(|error| ApplyError::Journal(format!("attempt identity: {error}")))?;
+    let journal = recovery_path
+        .file_name()
+        .expect("identity_path checked recovery filename");
+    let record = json!({
+        "format": ATTEMPT_FORMAT,
+        "operation": "apply",
+        "attempt_id": format!("sha256:{}", attempt_id(fingerprint)),
+        "scope": "resolved_journal_directory",
+        "journal": path.parent().expect("identity path has a parent").join(journal).to_string_lossy(),
+        "plan": plan,
+        "send_may_have_occurred": true,
+        "read_only_recovery_only": true,
+    });
+    match marker.write(&record) {
+        Ok(()) => Ok(()),
+        Err(error) if error.reason() == "exclusive_exists" => {
+            Err(ApplyError::AlreadyApplied(format!(
+                "attempt identity already exists at {}; read-only recovery only",
+                path.display()
+            )))
+        }
+        Err(error) => Err(ApplyError::Journal(format!(
+            "attempt identity reservation at {} failed: {error}; no address request sent",
+            path.display()
+        ))),
+    }
 }
 /// Process-wide canonical fingerprints of plans that already recorded a
 /// journaled send intent. Populated only after a journal write durably marks
@@ -470,19 +582,20 @@ pub struct RecoveryRecord {
     pub plan: ValidatedPlan,
     /// Canonical sanitized plan bytes suitable for [`verify_plan`].
     pub plan_document: Vec<u8>,
-    /// Complete bounded journal document for reporting and diagnosis.
+    /// Complete bounded journal or attempt-marker document for diagnosis.
     pub evidence: Value,
-    /// Always true for an accepted apply journal: the durable send intent
-    /// means a crash may have happened after bytes reached the endpoint.
+    /// Always true for an accepted apply journal or attempt marker: a crash
+    /// may have happened after bytes reached the endpoint.
     pub send_may_have_occurred: bool,
 }
 
 /// Read back a journal for independent read-only verification.
 ///
 /// The single guarded read refuses symlinks, non-regular files, and content
-/// beyond the journal size bound. The envelope must be an apply record with
-/// durable send intent and conservative `send_attempted=true`; that marker
-/// never authorizes replay, regardless of any later classified observation.
+/// beyond the journal size bound. An apply journal must have durable send
+/// intent and conservative `send_attempted=true`. A durable attempt marker
+/// may also be used if interruption preceded journal creation. Neither
+/// record ever authorizes replay, regardless of later observation.
 /// The embedded plan is revalidated from the journal bytes. Envelope problems are
 /// [`ApplyError::Journal`]; an invalid embedded plan is [`ApplyError::Plan`].
 pub fn load_recovery(journal_path: &Path) -> Result<RecoveryRecord, ApplyError> {
@@ -496,20 +609,40 @@ pub fn load_recovery(journal_path: &Path) -> Result<RecoveryRecord, ApplyError> 
     let document = value.as_object().ok_or_else(|| {
         ApplyError::Journal("recovery corrupt: journal must be a JSON object".to_string())
     })?;
-    if document.get("format") != Some(&Value::from(JOURNAL_FORMAT)) {
-        return Err(ApplyError::Journal(format!(
-            "recovery corrupt: expected journal format {JOURNAL_FORMAT}"
-        )));
-    }
     if document.get("operation") != Some(&Value::from("apply")) {
         return Err(ApplyError::Journal(
             "recovery corrupt: journal is not an apply operation".to_string(),
         ));
     }
-    for field in ["send_intent_recorded", "attempt_recorded", "send_attempted"] {
-        if document.get(field) != Some(&Value::Bool(true)) {
+    match document.get("format").and_then(Value::as_str) {
+        Some(JOURNAL_FORMAT) => {
+            for field in ["send_intent_recorded", "attempt_recorded", "send_attempted"] {
+                if document.get(field) != Some(&Value::Bool(true)) {
+                    return Err(ApplyError::Journal(format!(
+                        "recovery ambiguous: apply journal lacks durable {field} evidence"
+                    )));
+                }
+            }
+        }
+        Some(ATTEMPT_FORMAT) => {
+            for field in ["send_may_have_occurred", "read_only_recovery_only"] {
+                if document.get(field) != Some(&Value::Bool(true)) {
+                    return Err(ApplyError::Journal(format!(
+                        "recovery ambiguous: attempt marker lacks {field}"
+                    )));
+                }
+            }
+            if document.get("scope") != Some(&Value::from("resolved_journal_directory"))
+                || !document.get("journal").is_some_and(Value::is_string)
+            {
+                return Err(ApplyError::Journal(
+                    "recovery ambiguous: invalid attempt marker scope or journal".to_string(),
+                ));
+            }
+        }
+        _ => {
             return Err(ApplyError::Journal(format!(
-                "recovery ambiguous: apply journal lacks durable {field} evidence"
+                "recovery corrupt: expected {JOURNAL_FORMAT} or {ATTEMPT_FORMAT}"
             )));
         }
     }
@@ -523,6 +656,17 @@ pub fn load_recovery(journal_path: &Path) -> Result<RecoveryRecord, ApplyError> 
     })?;
     let (plan, sanitized) = validate_plan_document_with_value(&plan_raw)
         .map_err(|error| ApplyError::Plan(format!("recovery plan: {error}")))?;
+    if document.get("format") == Some(&Value::from(ATTEMPT_FORMAT)) {
+        let expected = format!(
+            "sha256:{}",
+            attempt_id(&canonical_plan_fingerprint(&sanitized))
+        );
+        if document.get("attempt_id") != Some(&Value::from(expected)) {
+            return Err(ApplyError::Journal(
+                "recovery corrupt: attempt ID does not match embedded plan".to_string(),
+            ));
+        }
+    }
     Ok(RecoveryRecord {
         plan,
         plan_document: canonical_plan_fingerprint(&sanitized),
@@ -577,6 +721,16 @@ pub async fn apply_plan(
     let (plan, plan_value) = validate_plan_document_with_value(raw_plan)
         .map_err(|error| ApplyError::Plan(error.to_string()))?;
     let fingerprint = canonical_plan_fingerprint(&plan_value);
+    // The durable identity is scoped to the resolved journal directory. An
+    // existing path (including a symlink or corrupt record) fails closed
+    // before connecting through this API's PCI client or observing the bus.
+    let identity = if options.durable_attempt_identity {
+        let path = identity_path(&fingerprint, recovery_path)?;
+        refuse_existing_identity(&path)?;
+        Some(path)
+    } else {
+        None
+    };
     // Replay guard before any I/O: a plan that already recorded a journaled
     // attempt is refused regardless of the journal path offered this time.
     // A poisoned guard fails closed with the same refusal before any I/O.
@@ -620,6 +774,13 @@ pub async fn apply_plan(
         )));
     }
     evidence.options_verified = Some(observed);
+    // Reserve an independent recovery handle before journal creation and
+    // before the one-shot address request. A crash after this point may leave
+    // only the marker; it embeds the validated plan for read-only verify.
+    if let Some(path) = identity.as_deref() {
+        reserve_attempt_identity(path, &fingerprint, &plan_value, recovery_path)?;
+        evidence.attempt_identity = Some(path.to_string_lossy().into_owned());
+    }
     // Durably mark a possible send before invoking the shared-PCI one-shot. The
     // first and therefore exclusive journal record is already conservative:
     // after it exists, recovery must assume the send may have reached the

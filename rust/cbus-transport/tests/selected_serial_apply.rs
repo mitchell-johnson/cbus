@@ -14,7 +14,9 @@
 
 use cbus_protocol::cal::Cal;
 use cbus_protocol::packet::Packet;
-use cbus_transport::apply::{apply_plan, load_recovery, ApplyError, ApplyOnce, ApplyOptions};
+use cbus_transport::apply::{
+    apply_plan, attempt_identity_path, load_recovery, ApplyError, ApplyOnce, ApplyOptions,
+};
 use cbus_transport::plan::validate_plan_document;
 use cbus_transport::verify::VerifyOutcome;
 use cbus_transport::PciClient;
@@ -37,6 +39,30 @@ fn valid_plan_doc() -> serde_json::Value {
 
 fn valid_plan_doc_bytes() -> Vec<u8> {
     serde_json::to_vec(&valid_plan_doc()).unwrap()
+}
+
+#[test]
+fn durable_identity_normalizes_plan_json_and_is_directory_scoped() {
+    let raw = valid_plan_doc_bytes();
+    let pretty = serde_json::to_vec_pretty(&valid_plan_doc()).unwrap();
+    let first =
+        std::env::temp_dir().join(format!("cbus-attempt-identity-{}-a", std::process::id()));
+    let second =
+        std::env::temp_dir().join(format!("cbus-attempt-identity-{}-b", std::process::id()));
+    std::fs::create_dir_all(&first).unwrap();
+    std::fs::create_dir_all(&second).unwrap();
+    let one = attempt_identity_path(&raw, &first.join("one.json")).unwrap();
+    let equivalent = attempt_identity_path(&pretty, &first.join("two.json")).unwrap();
+    let elsewhere = attempt_identity_path(&raw, &second.join("one.json")).unwrap();
+    assert_eq!(one, equivalent, "equivalent plan must share one identity");
+    assert_ne!(one, elsewhere, "directory is an explicit identity scope");
+    assert!(one
+        .file_name()
+        .unwrap()
+        .to_string_lossy()
+        .contains("sha256-"));
+    std::fs::remove_dir(first).unwrap();
+    std::fs::remove_dir(second).unwrap();
 }
 
 /// Rewrite the plan endpoint (top-level and `before` copies together) to an
@@ -401,6 +427,10 @@ async fn serve_selected_serial_send(
     let request = line(remote).await;
     assert_eq!(request, expected_request);
     assert_eq!(request.get(request.len() - 2), Some(&b'g'));
+    complete_selected_serial_send(remote).await;
+}
+
+async fn complete_selected_serial_send(remote: &mut BufReader<tokio::io::DuplexStream>) {
     remote.get_mut().write_all(b"g.").await.unwrap();
     let mut receipt = vec![
         0x86, 6, 16, 0x00, 0x87, 0x00, 0x18, 0xb1, 0x06, 0x16, 0xfa, 0xce,
@@ -455,11 +485,23 @@ async fn apply_moves_selected_serial_and_records_journal() {
     let validated = validate_plan_document(&doc).unwrap();
     let expected_request = validated.request_bytes.clone();
     let journal = journal_path("happy");
+    let marker = attempt_identity_path(&doc, &journal).unwrap();
     let (pci, mut remote) = setup().await;
     let worker = tokio::spawn({
         let pci = pci.clone();
         let journal = journal.clone();
-        async move { apply_plan(&doc, &pci, &journal, ApplyOptions::default()).await }
+        async move {
+            apply_plan(
+                &doc,
+                &pci,
+                &journal,
+                ApplyOptions {
+                    durable_attempt_identity: true,
+                    ..ApplyOptions::default()
+                },
+            )
+            .await
+        }
     });
 
     // Preconditions: a fresh bookended inventory proves the unmoved bus still
@@ -467,7 +509,14 @@ async fn apply_moves_selected_serial_and_records_journal() {
     serve_before_inventory(&mut remote).await;
     serve_local_options(&mut remote, 5).await;
     // The strict-plan bytes are sent exactly once on that same connection.
-    serve_selected_serial_send(&mut remote, &expected_request).await;
+    let request = line(&mut remote).await;
+    assert_eq!(request, expected_request);
+    assert!(marker.is_file(), "identity must be durable before send");
+    let recovered = load_recovery(&marker).expect("marker must carry a valid recovery plan");
+    assert!(recovered.send_may_have_occurred);
+    assert_eq!(recovered.plan.serial, validated.serial);
+    assert!(journal.is_file(), "main journal must also precede send");
+    complete_selected_serial_send(&mut remote).await;
     // Post-send observation replays the planned post-move state.
     let states = expected_states();
     serve_mmi(&mut remote, &states).await;
@@ -488,10 +537,69 @@ async fn apply_moves_selected_serial_and_records_journal() {
     assert!(journal_text.contains("cbus-selected-serial-apply-v1"));
     assert!(journal_text.contains("after_observed"));
     assert!(journal_text.contains("observed_expected_change"));
+    assert!(journal_text.contains("attempt_identity"));
     // No second connection and no replay on the shared session.
     assert_no_connection(&listener).await;
     assert_no_request(&mut remote).await;
     std::fs::remove_file(&journal).unwrap();
+    std::fs::remove_file(&marker).unwrap();
+}
+
+#[tokio::test(start_paused = true)]
+async fn journal_failure_after_identity_reservation_keeps_read_only_recovery_and_no_send() {
+    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let doc = plan_bytes_for_port(listener.local_addr().unwrap().port());
+    let journal = journal_path("marker-before-journal-failure");
+    let marker = attempt_identity_path(&doc, &journal).unwrap();
+    std::fs::write(&journal, b"occupied").unwrap();
+    let (pci, mut remote) = setup().await;
+    let worker = tokio::spawn({
+        let pci = pci.clone();
+        let journal = journal.clone();
+        let doc = doc.clone();
+        async move {
+            apply_plan(
+                &doc,
+                &pci,
+                &journal,
+                ApplyOptions {
+                    durable_attempt_identity: true,
+                    ..ApplyOptions::default()
+                },
+            )
+            .await
+        }
+    });
+    serve_before_inventory(&mut remote).await;
+    serve_local_options(&mut remote, 5).await;
+    let error = worker.await.unwrap().unwrap_err();
+    assert!(matches!(error, ApplyError::Journal(_)), "{error}");
+    assert!(marker.is_file(), "durable identity precedes main journal");
+    let recovered = load_recovery(&marker).expect("marker plan remains recoverable");
+    assert_eq!(recovered.plan.serial, "101136.1558");
+    assert!(recovered.send_may_have_occurred);
+    assert_no_request(&mut remote).await;
+    assert_no_connection(&listener).await;
+
+    // A new coordinator using a new journal name in this directory is
+    // refused even though the original main journal never recorded intent.
+    let next = journal_path("marker-before-journal-failure-next");
+    let error = apply_plan(
+        &doc,
+        &pci,
+        &next,
+        ApplyOptions {
+            durable_attempt_identity: true,
+            ..ApplyOptions::default()
+        },
+    )
+    .await
+    .unwrap_err();
+    assert!(matches!(error, ApplyError::AlreadyApplied(_)), "{error}");
+    assert!(!next.exists());
+    assert_no_request(&mut remote).await;
+    std::fs::remove_file(&journal).unwrap();
+    std::fs::remove_file(&marker).unwrap();
 }
 
 #[tokio::test(start_paused = true)]
