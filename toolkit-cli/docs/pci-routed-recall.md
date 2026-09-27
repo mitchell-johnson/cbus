@@ -1,6 +1,6 @@
-# Explicit routed RECALL
+# Explicit and project-resolved routed RECALL
 
-`RoutedRecallClient` performs one direct RECALL through caller-supplied route bytes. It requires an explicit expected incoming path, one positive PCI confirmation and one exact REPLY. This is a separate bounded transport; `PCIClient`, its stream parser, MMI, commissioning and the simulator are unchanged.
+`RoutedRecallClient` performs one direct RECALL through caller-supplied route bytes. It requires an explicit expected incoming path, one positive PCI confirmation and one exact REPLY. The CLI can also derive both routes from an exact legacy XML/CBZ project snapshot. This is a separate bounded transport; `PCIClient`, its stream parser, MMI, commissioning and the simulator are unchanged.
 
 ```python
 from cbus_toolkit.pci import RecallCAL
@@ -23,9 +23,19 @@ cbus-toolkit pci --host 127.0.0.1 --port 10001 --timeout 5 routed-recall 4 30 1 
   --expected-route 21 --expected-route 4
 ```
 
-The endpoint must be independently configured. `--bridge` and `--expected-route` repeat in their respective wire order. `--checksum` selects outgoing command checksums; incoming checksums remain mandatory. `--local-unit` is rejected for this explicit-path operation. `--max-events` and `--max-received-bytes` expose the bounded coordinator limits. CLI failures carry partial evidence, including a completed exchange if only subsequent result export fails.
+The endpoint must be independently configured. `--bridge` and `--expected-route` repeat in their respective wire order. `--checksum` selects outgoing command checksums; incoming checksums remain mandatory. Raw mode rejects `--local-unit`; its destination is the literal `--expected-destination`. `--max-events` and `--max-received-bytes` expose the bounded coordinator limits. CLI failures carry partial evidence, including a completed exchange if only subsequent result export fails.
 
-Outgoing and expected incoming paths are independent inputs. The incoming outer byte, destination and complete route must match exactly. The final declared incoming path byte must equal the requested unit; this is an added consistency requirement for the selected all-bridge profile, not a resolved device identity. Byte0 remains literal and its direct/programming ambiguity is reported. No cache lookup, route discovery, topology validation or source authentication occurs.
+For a unit selected in an authoritative saved topology, supply its logical networks instead of route bytes:
+
+```sh
+cbus-toolkit pci --host 127.0.0.1 --port 10001 --local-unit 16 routed-recall \
+  4 30 1 --project-file house.cbz --project-name GRENACHE \
+  --source-network 254 --target-network 252
+```
+
+The typed form shares the [WRITE route planner](pci-routed-write.md). It requires a CNI/Serial source, a selected target unit, an unambiguous connected path of at most six supported `BRIDGE2N` transitions, and the local unit. It derives the outgoing bridges and the independent complete Reply Network path. `--project-sha256` optionally pins the entire file. The CLI hashes the parsed snapshot, detects replacement during planning and rechecks the exact bytes just before handoff to the one-shot transport. A stale, missing, ambiguous, cyclic, disconnected, over-depth or unsupported project refuses before socket I/O. The result and partial error evidence carry the route plan and handoff-freshness flag; they still do not verify live bridge topology or device origin.
+
+In raw mode, outgoing and expected incoming paths are independent inputs. In typed mode, both are derived independently from the saved project. The incoming outer byte, destination and complete route must match exactly. The final declared incoming path byte must equal the requested unit; this is an added consistency requirement for the selected all-bridge profile, not a verified device identity. Byte0 remains literal and its direct/programming ambiguity is reported. Neither mode performs live route discovery, source authentication or cached-object correlation.
 
 Only numeric IPv4/IPv6 hosts without zone suffixes are accepted. Sockets use explicit `AF_INET`/`AF_INET6`; no DNS lookup is used. Inputs and current settings are revalidated before connecting. The command must be an exact direct `RecallCAL` with1..30 requested bytes. There are at most six bridge entries. Programming addressing, writes and multi-frame responses are outside this API.
 
@@ -37,7 +47,7 @@ A matching positive confirmation and REPLY can arrive in either order. Every byt
 
 A checksum-valid addressed envelope beginning with3B can be recorded as an `observed_negative_prefix` and rejected when its whole path matches. The suffix remains opaque: no new negative CAL grammar or parameter semantics are claimed, and the shared CAL decoder is unchanged. Positive success still requires the strict one-CAL inspector. Other malformed or unsupported envelopes fail as protocol errors.
 
-The frozen result retains actual sent/received bytes, the declared expectation, ordered events, the matching response and returned data. `as_dict()` returns detached JSON-safe evidence. `last_error` preserves the exact first failure object, including `KeyboardInterrupt` and `SystemExit`; guarded exception attachment and `last_evidence` preserve partial results when attachment is refused. Cleanup/reporting failures do not replace an earlier operational error. Rejected subsequent use clears old operation evidence and performs no connection.
+The frozen transport result retains actual sent/received bytes, the declared expectation, ordered events, the matching response and returned data. The typed CLI adds its saved-project route plan to that result. `as_dict()` returns detached JSON-safe evidence. `last_error` preserves the exact first failure object, including `KeyboardInterrupt` and `SystemExit`; guarded exception attachment and `last_evidence` preserve partial results when attachment is refused. Cleanup/reporting failures do not replace an earlier operational error. Rejected subsequent use clears old operation evidence and performs no connection.
 
 ## Original evidence and deliberate differences
 
@@ -52,3 +62,5 @@ The new original test uses existing explicit `CBUS_CGATE_JAVA`, `CBUS_CGATE_JAVA
 ## Focused acceptance
 
 [The pinned acceptance fixture](../research/fixtures/pci-routed-recall-acceptance.json) records73 tests passed on Python3.13.14 and3.10.20, with zero failures, errors or skips. Each run includes the six new CLI tests, one fresh428-case original process under the pre-pinned supported interpreter, and independent IPv4/IPv6 loopback peers. The selected package/harness/fixture/runtime bytes remained unchanged. This is focused source acceptance; it does not replace a complete installed-wheel run or establish physical-device compatibility.
+
+The newer [typed-read checkpoint](../research/fixtures/pci-typed-routed-reads-acceptance.json) retains literal two-bridge CLI/peer wires, XML and CBZ plans, all route depths and stale/foreign-path refusals. It reuses the earlier original matcher evidence without claiming a new original or physical-device run.

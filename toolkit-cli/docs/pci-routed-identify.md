@@ -1,6 +1,6 @@
-# Explicit routed IDENTIFY
+# Explicit and project-resolved routed IDENTIFY
 
-`RoutedIdentifyClient` sends one direct IDENTIFY through caller-supplied bridge bytes and returns raw reply data. It requires an explicit expected incoming path, a positive `g.` confirmation and one matching REPLY. The existing RECALL client, `PCIClient`, MMI, commissioning and simulator are unchanged.
+`RoutedIdentifyClient` sends one direct IDENTIFY through caller-supplied bridge bytes and returns raw reply data. It requires an explicit expected incoming path, a positive `g.` confirmation and one matching REPLY. The CLI can also derive both route paths from an exact legacy XML/CBZ project snapshot. The existing RECALL client, `PCIClient`, MMI, commissioning and simulator are unchanged.
 
 ```python
 from cbus_toolkit.pci import IdentifyCAL
@@ -21,11 +21,21 @@ cbus-toolkit pci --host 127.0.0.1 --port 10001 --timeout 5 routed-identify 4 1 \
   --expected-route 21 --expected-route 4 --expected-count 1
 ```
 
+For a selected unit on a saved logical network, use the same typed route plan as RECALL and WRITE:
+
+```sh
+cbus-toolkit pci --host 127.0.0.1 --port 10001 --local-unit 16 routed-identify \
+  4 1 --expected-count 1 --project-file house.cbz --project-name GRENACHE \
+  --source-network 254 --target-network 252
+```
+
+This mode requires a CNI/Serial source, exact target unit and unambiguous connected topology with at most six supported bridges. It derives the independent Reply Network expectation. `--project-sha256` can pin the complete file; parsing and transport handoff each check for substitution or change before any socket opens. Its route-plan receipt does not authenticate live topology, device origin or physical delivery. Raw and typed route options cannot be mixed.
+
 `expected_count=None` (omit `--expected-count`) accepts any supported wire count from0 through30. A supplied count must match exactly; Boolean values are not integer counts. A valid zero-data REPLY returns `b''`. Attributes and route entries are literal bytes. No parameter-specific typed getter, unit-class schema, legacy eight-to-seven-byte compatibility conversion or short-form matcher is used.
 
-Outgoing and expected incoming routes are independent declarations. The expected outer source, destination and complete route must match. The terminal incoming path byte must equal the requested unit, an additional consistency policy for this all-bridge profile. Raw unit0 retains direct/programming ambiguity. No logical network, cached object identity, authenticated device origin, physical delivery or causal freshness is inferred.
+Raw outgoing and incoming routes are independent declarations; typed routes are independently derived from one saved project snapshot. The expected outer source, destination and complete route must match. The terminal incoming path byte must equal the requested unit, an additional consistency policy for this all-bridge profile. Raw unit0 retains direct/programming ambiguity. A typed plan resolves the **saved** logical network only; neither mode proves cached object identity, authenticated device origin, physical delivery or causal freshness.
 
-The endpoint must be a numeric IPv4/IPv6 address without a zone suffix. The client uses explicit address-family sockets and does no DNS lookup. It validates all arguments and mutable settings before connecting. `--local-unit` and programming addressing are rejected. At most six outgoing and six incoming route entries are admitted. `--checksum` selects the outgoing checksum; incoming checksums are always required.
+The endpoint must be a numeric IPv4/IPv6 address without a zone suffix. The client uses explicit address-family sockets and does no DNS lookup. It validates all arguments and mutable settings before connecting. Raw mode rejects `--local-unit`; typed mode requires it. Programming addressing is rejected. At most six outgoing and six incoming route entries are admitted. `--checksum` selects the outgoing checksum; incoming checksums are always required.
 
 The client permits one attempted exchange and one send, with no discovery, setup, retry, rollback or cancel. The monotonic I/O deadline is checked before operations and after each received chunk is recorded. A late final chunk remains evidence but cannot complete successfully. Socket close is attempted once; a close failure blocks success, without replacing an earlier error. There is no hard scheduler or cleanup-duration guarantee.
 
@@ -46,3 +56,5 @@ The initial Python3.13 finite research capture executed all902 cases, then faile
 The promoted original helper uses explicit macOS `CBUS_CGATE_JAVA`, `CBUS_CGATE_JAVAC` and `CBUS_LOCAL_CGATE_VENDOR` gates. Optional `CBUS_PCI_ROUTED_IDENTIFY_REPORT_DIR` directs owned reports; its default is relative to the copied test root. It compiles the unchanged sealed Java source and runs two bounded batches of480 and422, preserving pre-execution inputs and partial outputs without replay. No VM or shared C-Gate service is used. Socket acceptance uses independent ephemeral loopback peers.
 
 [The pinned acceptance fixture](../research/fixtures/pci-routed-identify-acceptance.json) records104 focused tests passed on Python3.13.14 and3.10.20, with zero failures, errors or skips. Each run freshly executes902 IDENTIFY and428 unchanged RECALL original cases and includes independent IPv4/IPv6 peers plus CLI/routing regressions. All captured source and runtime hashes remained stable. The first focused3.13 run passed all104 tests but its final report-association guard rejected an incorrect report-directory selector; that run is preserved, and both final runs used the corrected selector. This is focused source acceptance, not a new installed-wheel or physical-device claim. The earlier research evidence is retained under `/Volumes/external/cbus-toolkit-research-20260915-pci-routed-cal/routed-identify-matrix-v1`; its seal is `f754b5e2830be526c52fa339e7d031e3005f8d9d6e4282fd93a1df7822c60ca9`.
+
+The newer [typed-read checkpoint](../research/fixtures/pci-typed-routed-reads-acceptance.json) retains literal two-bridge CLI/peer wires, XML and CBZ plans, all route depths and stale/foreign-path refusals. It reuses the earlier original matcher evidence without claiming a new original or physical-device run.

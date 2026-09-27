@@ -139,12 +139,14 @@ Its `passed` result is not current publisher, machine, rollout, version or
 installer approval. Nonempty conditions, sub-100 rollout and unproved URI
 or media forms are unsupported without a host or registry read.
 
-`pci routed-write` supports either literal bridge/reply bytes or a typed legacy
-XML/CBZ route. The typed form takes `--project-file`, `--source-network`,
-`--target-network`, and the global `--local-unit`; it binds the file digest and
-derives the exact return path before one non-replayed send. Use this only for
-the bounded CAL transport workflow. Device programming methods, readback,
-commit and persistence remain the responsibility of their typed workflow.
+`pci routed-recall`, `pci routed-identify` and `pci routed-write` each support
+literal bridge/reply bytes or a typed legacy XML/CBZ route. The typed form
+takes `--project-file`, `--source-network`, `--target-network`, and the global
+`--local-unit`; it binds the file digest and derives the exact return path
+before one send. WRITE additionally requires an ACK tag and never replays an
+uncertain mutation. Use these only for bounded CAL transport. Saved-project
+resolution does not authenticate live bridge topology; device programming
+methods, readback, commit and persistence remain separate.
 
 ## Offline project example
 

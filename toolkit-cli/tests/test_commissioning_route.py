@@ -84,6 +84,38 @@ def test_two_bridge_plan_derives_outgoing_and_independent_ack_path():
     assert report["nonvolatile_persistence_verified"] is False
 
 
+def test_read_plan_uses_the_same_route_without_inventing_an_ack_tag():
+    raw, project = line()
+    result = plan_commissioning_route(
+        project, project_digest=project_sha256(raw), source_network=254,
+        target_network=252, target_unit=5, local_unit=16,
+        expected_project_name="HOUSE",
+    )
+    assert result.bridges == (253, 252)
+    report = result.as_dict()
+    assert report["expected_reply_path"] == {
+        "outer_source_byte": 253, "destination_byte": 16,
+        "route_entries": [252, 5],
+    }
+    assert "expected_ack_path" not in report
+    assert "expected_ack_tag" not in report
+
+
+def test_read_route_boundaries_cover_direct_through_six_bridges():
+    for depth in range(7):
+        raw, project = line(depth)
+        result = plan_commissioning_route(
+            project, project_digest=project_sha256(raw), source_network=254,
+            target_network=254 - depth, target_unit=5, local_unit=16,
+        )
+        expected_bridges = tuple(range(253, 253 - depth, -1))
+        assert result.bridges == expected_bridges
+        path = result.as_dict()["expected_reply_path"]
+        assert path["outer_source_byte"] == (expected_bridges[0] if depth else 5)
+        assert path["destination_byte"] == 16
+        assert path["route_entries"] == list(expected_bridges[1:]) + ([5] if depth else [])
+
+
 def test_direct_and_six_bridge_boundaries_are_exact():
     direct_raw, direct_project = document([
         network(254, "Serial", "/dev/owned", units=((5, "KEYGL5"),)),

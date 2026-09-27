@@ -65,21 +65,29 @@ hardware method matrix false. Use `--dry-run` only for a temporary physical
 load/stage/readback; it is not offline. Full syntax and evidence are in
 `toolkit-cli/docs/physical-programming.md`.
 
-For one low-level WRITE through an authoritative legacy XML/CBZ topology, use
-the typed PCI route form:
+For low-level RECALL, IDENTIFY or WRITE through an authoritative legacy
+XML/CBZ topology, use the typed PCI route form:
 
 ```sh
 cbus-toolkit pci --host HOST --local-unit LOCAL routed-write \
   UNIT PARAMETER HEX --expected-ack-tag TAG --project-file PROJECT \
   --project-name NAME --source-network SOURCE --target-network TARGET
+cbus-toolkit pci --host HOST --local-unit LOCAL routed-recall \
+  UNIT PARAMETER COUNT --project-file PROJECT --project-name NAME \
+  --source-network SOURCE --target-network TARGET
+cbus-toolkit pci --host HOST --local-unit LOCAL routed-identify \
+  UNIT ATTRIBUTE --project-file PROJECT --project-name NAME \
+  --source-network SOURCE --target-network TARGET
 ```
 
-It derives the outbound route and independent ACK path from the project,
+Each derives the outbound route and independent return path from the project,
 rejects ambiguous, cyclic, disconnected, unsupported, stale, or over-depth
 topology before sending, and transmits once. Raw `--bridge` plus
 `--expected-source/--expected-destination/--expected-route` remains available.
-Neither successful form proves live bridge delivery, parameter commit,
-readback, reboot behavior, or nonvolatile persistence. See
+Neither successful form proves live bridge delivery or device origin. WRITE
+does not prove parameter commit, readback, reboot behavior or nonvolatile
+persistence. See `toolkit-cli/docs/pci-routed-recall.md`,
+`toolkit-cli/docs/pci-routed-identify.md` and
 `toolkit-cli/docs/pci-routed-write.md`.
 
 ### eDLT Measurement scaling

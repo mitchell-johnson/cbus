@@ -7,6 +7,10 @@ mode retains caller-supplied bridge and reply bytes. Both modes require a
 caller-supplied ACK tag, one positive PCI confirmation, and one addressed
 `AcknowledgeCAL` whose complete return path, parameter and tag match.
 
+The same saved-project route planner serves typed
+[RECALL](pci-routed-recall.md) and [IDENTIFY](pci-routed-identify.md). Those
+read commands derive a Reply Network path without inventing an ACK tag.
+
 Use typed mode when project data is authoritative:
 
 ```sh

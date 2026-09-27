@@ -7,8 +7,8 @@ network address.  Every transition requires a conventional ``BRIDGE2N`` unit
 at that address in the source network.
 
 No endpoint is opened here.  A plan binds the project bytes by SHA-256 so the
-CLI can reject a changed project immediately before handing a one-shot WRITE
-to the transport.
+CLI can reject a changed project immediately before handing a one-shot CAL
+request to the transport.
 """
 from __future__ import annotations
 
@@ -101,7 +101,7 @@ class CommissioningRoutePlan:
     target_unit: int
     target_unit_type: str
     local_unit: int
-    expected_ack_tag: int
+    expected_ack_tag: int | None
     bridges: tuple[int, ...]
     expected: RoutedReplyPath
 
@@ -113,9 +113,10 @@ class CommissioningRoutePlan:
             (self.target_network, "target_network"),
             (self.target_unit, "target_unit"),
             (self.local_unit, "local_unit"),
-            (self.expected_ack_tag, "expected_ack_tag"),
         ):
             _byte(value, label)
+        if self.expected_ack_tag is not None:
+            _byte(self.expected_ack_tag, "expected_ack_tag")
         if type(self.bridges) is not tuple or len(self.bridges) > MAX_BRIDGES:
             raise ValueError("bridges must be a tuple of at most six bytes")
         for bridge in self.bridges:
@@ -124,7 +125,7 @@ class CommissioningRoutePlan:
             raise ValueError("project and target-unit identity must be present")
 
     def as_dict(self) -> dict[str, object]:
-        return {
+        result = {
             "format": "cbus-commissioning-route-plan-v1",
             "project_name": self.project_name,
             "project_sha256": self.project_sha256,
@@ -134,9 +135,7 @@ class CommissioningRoutePlan:
             "target_unit": self.target_unit,
             "target_unit_type": self.target_unit_type,
             "local_unit": self.local_unit,
-            "expected_ack_tag": self.expected_ack_tag,
             "bridges": list(self.bridges),
-            "expected_ack_path": self.expected.as_dict(),
             "route_depth": len(self.bridges),
             "logical_network_resolved": True,
             "project_snapshot_bound": True,
@@ -144,6 +143,12 @@ class CommissioningRoutePlan:
             "physical_delivery_verified": False,
             "nonvolatile_persistence_verified": False,
         }
+        if self.expected_ack_tag is None:
+            result["expected_reply_path"] = self.expected.as_dict()
+        else:
+            result["expected_ack_tag"] = self.expected_ack_tag
+            result["expected_ack_path"] = self.expected.as_dict()
+        return result
 
 
 def project_sha256(payload: bytes) -> str:
@@ -291,10 +296,10 @@ def plan_commissioning_route(
     target_network: int,
     target_unit: int,
     local_unit: int,
-    expected_ack_tag: int,
+    expected_ack_tag: int | None = None,
     expected_project_name: str | None = None,
 ) -> CommissioningRoutePlan:
-    """Resolve one unit target into outbound and independent ACK route bytes."""
+    """Resolve one unit target into outbound and independent return-route bytes."""
     if type(project) is not ProjectDocument:
         raise TypeError("project must be an exact ProjectDocument")
     if not _SHA256.fullmatch(project_digest):
@@ -303,7 +308,7 @@ def plan_commissioning_route(
     target = _byte(target_network, "target_network")
     unit = _byte(target_unit, "target_unit")
     local = _byte(local_unit, "local_unit")
-    ack_tag = _byte(expected_ack_tag, "expected_ack_tag")
+    ack_tag = None if expected_ack_tag is None else _byte(expected_ack_tag, "expected_ack_tag")
     project_name, networks = _project_networks(project)
     if expected_project_name is not None:
         if type(expected_project_name) is not str or not expected_project_name:

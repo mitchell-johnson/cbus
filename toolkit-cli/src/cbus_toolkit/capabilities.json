@@ -95,9 +95,12 @@
         "docs/pci-routed-recall.md",
         "src/cbus_toolkit/pci_routed_identify.py",
         "src/cbus_toolkit/pci_routed_identify_cli.py",
+        "src/cbus_toolkit/pci_routed_read_topology.py",
         "tests/test_pci_routed_identify.py",
         "tests/test_pci_routed_identify_original.py",
         "tests/test_cli_pci_routed_identify.py",
+        "tests/test_cli_pci_typed_reads.py",
+        "research/fixtures/pci-typed-routed-reads-acceptance.json",
         "research/fixtures/pci-routed-identify-acceptance.json",
         "docs/pci-routed-identify.md",
         "src/cbus_toolkit/pci_routed_write.py",
@@ -107,7 +110,7 @@
         "research/fixtures/pci-routed-write-acceptance.json",
         "docs/pci-routed-write.md"
       ],
-      "limits": "The supported raw CAL transport contract is complete: direct IDENTIFY, RECALL and WRITE require correlated Reply/Acknowledge CALs and PCI confirmations; explicit-path routed IDENTIFY, RECALL and WRITE require a caller-declared complete return path, checksum-valid response and one positive confirmation. Routed WRITE additionally requires an exact ACK tag, sends once, never retries an uncertain mutation and reports physical delivery, parameter commit and nonvolatile persistence as unverified. Selected-serial encoding, one-shot transport and the exact two-identity coordinator retain their separate guards and evidence. Outgoing route transforms retain 358 original cases/493 steps; incoming strict inspection retains 1,142 original constructor/cache/checksum cases; the routed read checkpoints retain their original matcher matrices. The routed WRITE checkpoint adds 13 Python 3.13 tests with independent IPv4/IPv6 peers, every parameter and ACK-tag byte, zero/maximum payloads, route depths 0..6, both event orders, exact negative paths and interruption evidence. Supported scope is raw CAL and the documented selected-serial operation. Original cached-topology identity, implicit/flow-control receiver modes, non-CAL protocol families, device-specific programming semantics, application workflows, causal freshness and physical routed delivery remain outside this transport row and require their owning workflow acceptance."
+      "limits": "The supported raw CAL transport contract is complete: direct IDENTIFY, RECALL and WRITE require correlated Reply/Acknowledge CALs and PCI confirmations; explicit-path routed IDENTIFY, RECALL and WRITE require a caller-declared complete return path, checksum-valid response and one positive confirmation. Routed WRITE additionally requires an exact ACK tag, sends once, never retries an uncertain mutation and reports physical delivery, parameter commit and nonvolatile persistence as unverified. Selected-serial encoding, one-shot transport and the exact two-identity coordinator retain their separate guards and evidence. Outgoing route transforms retain 358 original cases/493 steps; incoming strict inspection retains 1,142 original constructor/cache/checksum cases; the routed read checkpoints retain their original matcher matrices. The routed WRITE checkpoint adds 13 Python 3.13 tests with independent IPv4/IPv6 peers, every parameter and ACK-tag byte, zero/maximum payloads, route depths 0..6, both event orders, exact negative paths and interruption evidence. Supported scope is raw CAL, snapshot-bound project-resolved routed RECALL/IDENTIFY/WRITE, and the documented selected-serial operation. The typed read checkpoint covers exact independent two-bridge literal wires, all route depths 0..6, stale and missing topology, foreign Reply Network rejection and no-socket preflight; saved topology is not live attachment proof. Original cached-topology identity, implicit/flow-control receiver modes, non-CAL protocol families, device-specific programming semantics, application workflows, causal freshness and physical routed delivery remain outside this transport row and require their owning workflow acceptance."
     },
     {
       "id": "vendor-catalog-inventory",

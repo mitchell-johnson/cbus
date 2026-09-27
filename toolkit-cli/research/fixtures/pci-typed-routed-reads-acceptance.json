@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "format": "pci-typed-routed-reads-focused-acceptance-v1",
+  "base_revision": "0c3bb0eac736766473ef083d6e36b2a1e422bcf8",
+  "runtime": "CPython 3.13.14 on macOS",
+  "command": "PYTHONPATH=src:tests .venv/bin/python -m pytest tests/test_commissioning_route.py tests/test_cli_pci_typed_reads.py tests/test_pci_routed_recall.py tests/test_cli_pci_routed_recall.py tests/test_pci_routed_identify.py tests/test_cli_pci_routed_identify.py tests/test_pci_routed_write.py tests/test_cli_pci_routed_write.py -q -p no:cacheprovider -ra",
+  "result": {
+    "tests_passed": 78,
+    "subtests_passed": 261,
+    "failed": 0,
+    "skipped": 0
+  },
+  "literal_two_bridge_wire": {
+    "recall_request_ascii_hex": "5C34364644313246433034314131453031670D",
+    "recall_reply_ascii_hex": "38364644313030324643303438323145303043420D",
+    "identify_request_ascii_hex": "5C3436464431324643303432313031670D",
+    "identify_reply_ascii_hex": "38364644313030324643303438323031413534330D"
+  },
+  "verified": [
+    "typed XML and CBZ input use the same project snapshot and independent Reply Network plan as routed WRITE",
+    "direct through six-bridge read plans retain exact source and return paths without an ACK tag",
+    "independent loopback peers accept literal two-bridge RECALL and IDENTIFY frames",
+    "a checksum-valid neighbouring Reply Network does not complete the typed read",
+    "changed project bytes during planning or at handoff refuse before a socket exists",
+    "hash mismatch, missing target and mixed raw/typed options refuse before socket I/O",
+    "raw routed RECALL, IDENTIFY and WRITE regressions remain passing"
+  ],
+  "source_sha256": {
+    "src/cbus_toolkit/commissioning_route.py": "6139179cffc76f80e3cf3f53160020dae58bf718ff3503a87dc177366a10151c",
+    "src/cbus_toolkit/pci_routed_read_topology.py": "1e0fa1058c4897d799fd767a161be564136cca7a76811c08048aa463b2b0a314",
+    "src/cbus_toolkit/pci_routed_recall_cli.py": "7fbf2e6ad640d54f3ccc394f58f4a37c108575cb476003f72fc606134157c556",
+    "src/cbus_toolkit/pci_routed_identify_cli.py": "e55639c4fe1a01470d256baeba0ca9c9e9ae5d8e97e071e722efa345c433838f",
+    "tests/test_commissioning_route.py": "c35c1f0fcb82058937862f0ed5bec13819e25e5bbaa56dc985202a9625c8b12d",
+    "tests/test_cli_pci_typed_reads.py": "0407d6d1bf264b8e0c093ec1a0e3382d5ec6553c0fe4b80e5014ec254e8a3016"
+  },
+  "limits": [
+    "Saved-project topology and literal loopback replies do not prove current bridge wiring, selected endpoint ownership or device origin.",
+    "No physical C-Bus device was queried or changed; device-specific programming, readback and nonvolatile persistence remain open.",
+    "This focused run does not replace the complete Toolkit, installed-wheel, native C-Gate or hardware gates."
+  ]
+}
