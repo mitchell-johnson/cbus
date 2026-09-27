@@ -6,8 +6,10 @@ import os
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 from unittest.mock import patch
 
+import cbus_toolkit.toolkit_update_package_file as package_file
 from cbus_toolkit.toolkit_update_package_file import inspect_update_package_file
 
 
@@ -128,15 +130,23 @@ class UpdatePackageFileTests(unittest.TestCase):
 
     def test_symlink_and_nonregular_file_are_rejected(self):
         link = Path(self.tmp.name) / "link.exe"
-        link.symlink_to(self.package)
+        try:
+            link.symlink_to(self.package)
+        except OSError as exc:
+            if os.name == "nt":
+                self.skipTest(f"Windows symlink creation unavailable: {exc}")
+            raise
         with self.assertRaises(ValueError):
             self.inspect(package_path=link)
+        with self.assertRaises(ValueError):
+            self.inspect(package_path=Path(self.tmp.name))
         if hasattr(os, "mkfifo"):
             fifo = Path(self.tmp.name) / "pipe"
             os.mkfifo(fifo)
             with self.assertRaises(ValueError):
                 self.inspect(package_path=fifo)
 
+    @unittest.skipIf(os.name == "nt", "POSIX os.open race test")
     def test_file_replaced_between_stat_and_open_is_rejected(self):
         replacement = Path(self.tmp.name) / "replacement.exe"
         replacement.write_bytes(PACKAGE)
@@ -150,6 +160,7 @@ class UpdatePackageFileTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "changed before the file read"):
                 self.inspect()
 
+    @unittest.skipIf(os.name == "nt", "POSIX os.read race test")
     def test_growth_during_read_is_rejected(self):
         original_read = os.read
         changed = False
@@ -181,6 +192,93 @@ class UpdatePackageFileTests(unittest.TestCase):
         source["data"][0]["files"][0]["security"]["sha256"] = "0" * 64
         with self.assertRaises(ValueError):
             self.inspect(source)
+
+    def test_platform_dispatch_uses_windows_reader_and_preserves_receipt_scope(self):
+        digests = (len(PACKAGE), hashlib.sha1(PACKAGE).hexdigest(), hashlib.sha256(PACKAGE).hexdigest())
+        with mock.patch.object(package_file, "_IS_WINDOWS", True), mock.patch.object(
+            package_file, "_hash_windows_regular_file", return_value=digests
+        ) as reader:
+            report = self.inspect().as_dict()
+        reader.assert_called_once_with(str(self.package), package_file.MAX_PACKAGE_BYTES)
+        self.assertTrue(report["bytes_match_catalogue_descriptor"])
+        self.assertFalse(report["publisher_trust_evaluated"])
+        self.assertFalse(report["install_permitted"])
+
+    def test_windows_reader_failure_and_unsafe_path_fail_closed(self):
+        with mock.patch.object(package_file, "_IS_WINDOWS", True), mock.patch.object(
+            package_file, "_hash_windows_regular_file", side_effect=OSError("Win32 file info unavailable")
+        ):
+            with self.assertRaises(OSError):
+                self.inspect()
+        for path in ("", "bad\0path", os.fsencode(self.package)):
+            with self.subTest(path=path), self.assertRaises(ValueError):
+                self.inspect(package_path=path)
+
+    @unittest.skipUnless(os.name == "nt", "requires native Win32 file handles")
+    def test_native_windows_reparse_file_is_rejected(self):
+        link = Path(self.tmp.name) / "reparse.exe"
+        try:
+            link.symlink_to(self.package)
+        except OSError as exc:
+            self.skipTest(f"Windows symlink creation unavailable: {exc}")
+        with self.assertRaises((ValueError, OSError)):
+            self.inspect(package_path=link)
+
+    @unittest.skipUnless(os.name == "nt", "requires native Win32 file handles")
+    def test_native_windows_replacement_is_denied_while_hashing(self):
+        source = body()
+        replacement = Path(self.tmp.name) / "replacement.exe"
+        replacement.write_bytes(b"X" * len(PACKAGE))
+        original_sha1 = hashlib.sha1
+        replacement_errors = []
+
+        class AttemptReplacement:
+            def __init__(self, *args, **kwargs):
+                self.inner = original_sha1(*args, **kwargs)
+
+            def update(self, chunk):
+                if not replacement_errors:
+                    try:
+                        os.replace(replacement, self_package)
+                    except OSError as exc:
+                        replacement_errors.append(exc)
+                    else:
+                        replacement_errors.append(None)
+                self.inner.update(chunk)
+
+            def hexdigest(self):
+                return self.inner.hexdigest()
+
+        self_package = self.package
+        with mock.patch.object(package_file.hashlib, "sha1", side_effect=AttemptReplacement):
+            report = self.inspect(source).as_dict()
+        self.assertTrue(report["bytes_match_catalogue_descriptor"])
+        self.assertEqual(len(replacement_errors), 1)
+        self.assertIsInstance(replacement_errors[0], OSError)
+        self.assertEqual(self.package.read_bytes(), PACKAGE)
+
+    @unittest.skipUnless(os.name == "nt", "requires native Win32 file handles")
+    def test_native_windows_preopen_substitution_rejects_same_size_file(self):
+        source = body()
+        substitute = Path(self.tmp.name) / "substitute.exe"
+        substitute.write_bytes(b"X" * len(PACKAGE))
+        real_stat = os.stat
+        original = real_stat(self.package, follow_symlinks=False)
+        swaps = []
+
+        def stale_path_stat(path, *args, **kwargs):
+            if os.fspath(path) == str(self.package) and kwargs.get("follow_symlinks") is False:
+                if not swaps:
+                    os.replace(substitute, self.package)
+                    swaps.append(True)
+                return original
+            return real_stat(path, *args, **kwargs)
+
+        with mock.patch.object(package_file.os, "stat", side_effect=stale_path_stat):
+            with self.assertRaisesRegex(ValueError, "changed before the file read"):
+                self.inspect(source)
+        self.assertEqual(swaps, [True])
+        self.assertEqual(self.package.read_bytes(), b"X" * len(PACKAGE))
 
     def test_captured_original_descriptor_is_selected_without_a_download(self):
         fixture = Path(__file__).resolve().parents[1] / "research/fixtures/toolkit-update-metadata-vectors.json"

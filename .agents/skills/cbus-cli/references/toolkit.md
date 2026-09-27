@@ -54,7 +54,14 @@ regular file with the selected untrusted SESU size and SHA-1 descriptor. A
 matching receipt exits zero; a mismatch emits a negative receipt and exits one.
 It does not fetch, authenticate, approve or execute an update. Inspect
 `toolkit-cli/docs/toolkit-update-package-file.md` before using its bounded
-file-input profile.
+file-input profile. The equivalent Python API is
+`cbus_toolkit.toolkit_update_package_file.inspect_update_package_file`.
+Windows uses a checked Win32 disk-file handle; POSIX uses
+no-follow/nonblocking/close-on-exec flags. An isolated SESU 3.0.7 oracle
+accepted a wrong digest when its security-dictionary folder key did not match
+the destination folder, so never substitute that isolated vendor method for
+this CLI's explicit catalogue file binding. Even a matching CLI receipt is
+not source, publisher, revocation or installer trust.
 
 `pci routed-write` supports either literal bridge/reply bytes or a typed legacy
 XML/CBZ route. The typed form takes `--project-file`, `--source-network`,

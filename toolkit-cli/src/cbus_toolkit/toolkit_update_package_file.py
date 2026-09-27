@@ -26,6 +26,7 @@ from .toolkit_updates import _candidate
 
 MAX_PACKAGE_BYTES = (1 << 31) - 1
 _SHA1 = re.compile(r"[0-9a-fA-F]{40}\Z", re.ASCII)
+_IS_WINDOWS = os.name == "nt"
 
 
 @dataclass(frozen=True)
@@ -121,11 +122,36 @@ def inspect_update_package_file(
     if type(sha1) is not str or _SHA1.fullmatch(sha1) is None:
         raise ValueError("selected file has no exact 40-digit security.sha1")
 
-    # Refuse platforms lacking a race-resistant no-follow regular-file open.
+    path = os.fspath(package_path)
+    if type(path) is not str or not path or "\0" in path:
+        raise ValueError("package_path must be nonempty filesystem text without NUL")
+    if _IS_WINDOWS:
+        observed, observed_sha1, observed_sha256 = _hash_windows_regular_file(
+            path, max_package_bytes
+        )
+    else:
+        observed, observed_sha1, observed_sha256 = _hash_posix_regular_file(
+            Path(path), max_package_bytes
+        )
+    return UpdatePackageFileReceipt(
+        catalogue_source_sha256=hashlib.sha256(catalogue_response).hexdigest(),
+        selected_node_sha256=hashlib.sha256(selected).hexdigest(),
+        canonical_node_sha256=hashlib.sha256(canonical).hexdigest(),
+        node_id=node_id,
+        file_id=file_id,
+        declared_size=size,
+        declared_sha1=sha1.lower(),
+        observed_size=observed,
+        observed_sha1=observed_sha1,
+        observed_sha256=observed_sha256,
+    )
+
+
+def _hash_posix_regular_file(path: Path, max_package_bytes: int) -> tuple[int, str, str]:
+    # Refuse POSIX-like platforms lacking a race-resistant no-follow open.
     required = ("O_NOFOLLOW", "O_NONBLOCK", "O_CLOEXEC")
     if any(not hasattr(os, flag) for flag in required):
         raise OSError("safe package-file open is unavailable on this platform")
-    path = Path(package_path)
     prior = os.stat(path, follow_symlinks=False)
     if not stat.S_ISREG(prior.st_mode) or prior.st_size > max_package_bytes:
         raise ValueError("package must be a bounded regular file")
@@ -155,15 +181,160 @@ def inspect_update_package_file(
             raise ValueError("package changed during the file read")
     finally:
         os.close(fd)
-    return UpdatePackageFileReceipt(
-        catalogue_source_sha256=hashlib.sha256(catalogue_response).hexdigest(),
-        selected_node_sha256=hashlib.sha256(selected).hexdigest(),
-        canonical_node_sha256=hashlib.sha256(canonical).hexdigest(),
-        node_id=node_id,
-        file_id=file_id,
-        declared_size=size,
-        declared_sha1=sha1.lower(),
-        observed_size=observed,
-        observed_sha1=sha1_hash.hexdigest(),
-        observed_sha256=sha256_hash.hexdigest(),
-    )
+    return observed, sha1_hash.hexdigest(), sha256_hash.hexdigest()
+
+
+def _hash_windows_regular_file(path: str, max_package_bytes: int) -> tuple[int, str, str]:
+    """Hash one Win32 disk-file handle without following its final reparse point.
+
+    A read-only handle with only FILE_SHARE_READ denies concurrent writers and
+    renames/deletes while it is open. Unsupported file-information queries fail
+    closed; unsupported Windows/filesystem handle queries are rejected.
+    """
+    import ctypes
+    from ctypes import wintypes
+    import msvcrt
+
+    file_attribute_reparse_point = 0x400
+    prior = os.stat(path, follow_symlinks=False)
+    if (
+        not stat.S_ISREG(prior.st_mode)
+        or prior.st_size > max_package_bytes
+        or getattr(prior, "st_file_attributes", 0) & file_attribute_reparse_point
+    ):
+        raise ValueError("package must be a bounded regular non-reparse file")
+
+    class FileAttributeTagInfo(ctypes.Structure):
+        _fields_ = [("attributes", wintypes.DWORD), ("reparse_tag", wintypes.DWORD)]
+
+    class FileBasicInfo(ctypes.Structure):
+        _fields_ = [
+            ("creation_time", ctypes.c_int64),
+            ("last_access_time", ctypes.c_int64),
+            ("last_write_time", ctypes.c_int64),
+            ("change_time", ctypes.c_int64),
+            ("attributes", wintypes.DWORD),
+        ]
+
+    class FileStandardInfo(ctypes.Structure):
+        _fields_ = [
+            ("allocation_size", ctypes.c_int64),
+            ("end_of_file", ctypes.c_int64),
+            ("number_of_links", wintypes.DWORD),
+            ("delete_pending", ctypes.c_ubyte),
+            ("directory", ctypes.c_ubyte),
+        ]
+
+    class FileIdInfo(ctypes.Structure):
+        _fields_ = [
+            ("volume_serial_number", ctypes.c_uint64),
+            ("file_id", ctypes.c_ubyte * 16),
+        ]
+
+    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    create_file = kernel32.CreateFileW
+    create_file.argtypes = [
+        wintypes.LPCWSTR, wintypes.DWORD, wintypes.DWORD, wintypes.LPVOID,
+        wintypes.DWORD, wintypes.DWORD, wintypes.HANDLE,
+    ]
+    create_file.restype = wintypes.HANDLE
+    get_file_type = kernel32.GetFileType
+    get_file_type.argtypes = [wintypes.HANDLE]
+    get_file_type.restype = wintypes.DWORD
+    get_info = kernel32.GetFileInformationByHandleEx
+    get_info.argtypes = [wintypes.HANDLE, ctypes.c_int, wintypes.LPVOID, wintypes.DWORD]
+    get_info.restype = wintypes.BOOL
+    read_file = kernel32.ReadFile
+    read_file.argtypes = [
+        wintypes.HANDLE, wintypes.LPVOID, wintypes.DWORD,
+        ctypes.POINTER(wintypes.DWORD), wintypes.LPVOID,
+    ]
+    read_file.restype = wintypes.BOOL
+    close_handle = kernel32.CloseHandle
+    close_handle.argtypes = [wintypes.HANDLE]
+    close_handle.restype = wintypes.BOOL
+
+    # NULL security attributes make the handle non-inheritable. Share-read-only
+    # prevents new write/delete opens and fails if an incompatible writer exists.
+    handle = create_file(path, 0x80000000, 0x00000001, None, 3, 0x00200000, None)
+    if handle == ctypes.c_void_p(-1).value:
+        raise ctypes.WinError(ctypes.get_last_error())
+    fd = None
+    try:
+        # The CRT descriptor owns the exact CreateFileW handle from here on;
+        # fstat binds it to the pre-open Python path identity.
+        fd = msvcrt.open_osfhandle(handle, os.O_RDONLY | os.O_BINARY)
+        if get_file_type(handle) != 1:  # FILE_TYPE_DISK
+            raise ValueError("package handle is not a disk file")
+
+        def query(info_class: int, info_type: type[ctypes.Structure]) -> ctypes.Structure:
+            info = info_type()
+            if not get_info(handle, info_class, ctypes.byref(info), ctypes.sizeof(info)):
+                raise ctypes.WinError(ctypes.get_last_error())
+            return info
+
+        def snapshot() -> tuple[int, int, int, int, int, int, int, bytes]:
+            tag = query(9, FileAttributeTagInfo)
+            standard = query(1, FileStandardInfo)
+            basic = query(0, FileBasicInfo)
+            file_id = query(18, FileIdInfo)
+            if tag.attributes & file_attribute_reparse_point or tag.reparse_tag:
+                raise ValueError("package handle is a reparse point")
+            if tag.attributes & 0x10 or standard.directory or standard.delete_pending:
+                raise ValueError("package handle is not a regular file")
+            if standard.end_of_file < 0 or standard.end_of_file > max_package_bytes:
+                raise ValueError("package exceeds max_package_bytes")
+            return (
+                standard.end_of_file, standard.number_of_links,
+                basic.last_write_time, basic.change_time, basic.attributes,
+                file_id.volume_serial_number, tag.attributes, bytes(file_id.file_id),
+            )
+
+        before = snapshot()
+        opened_handle = os.fstat(fd)
+        opened_path = os.stat(path, follow_symlinks=False)
+        path_identity = lambda item: (
+            item.st_dev, item.st_ino, item.st_size, item.st_mtime_ns, item.st_ctime_ns
+        )
+        if (
+            not prior.st_ino
+            or before[0] != prior.st_size
+            or path_identity(prior) != path_identity(opened_handle)
+            or path_identity(prior) != path_identity(opened_path)
+        ):
+            raise ValueError("package changed before the file read")
+        observed = 0
+        sha1_hash = hashlib.sha1(usedforsecurity=False)  # Legacy catalogue field, not trust.
+        sha256_hash = hashlib.sha256()
+        buffer = ctypes.create_string_buffer(1024 * 1024)
+        read_count = wintypes.DWORD()
+        while True:
+            if not read_file(
+                handle, buffer, min(len(buffer), max_package_bytes - observed + 1),
+                ctypes.byref(read_count), None,
+            ):
+                raise ctypes.WinError(ctypes.get_last_error())
+            if not read_count.value:
+                break
+            observed += read_count.value
+            if observed > max_package_bytes:
+                raise ValueError("package exceeds max_package_bytes during read")
+            block = buffer.raw[:read_count.value]
+            sha1_hash.update(block)
+            sha256_hash.update(block)
+        after = snapshot()
+        final_handle = os.fstat(fd)
+        final_path = os.stat(path, follow_symlinks=False)
+        if (
+            observed != before[0]
+            or before != after
+            or path_identity(opened_handle) != path_identity(final_handle)
+            or path_identity(prior) != path_identity(final_path)
+        ):
+            raise ValueError("package changed during the file read")
+        return observed, sha1_hash.hexdigest(), sha256_hash.hexdigest()
+    finally:
+        if fd is None:
+            close_handle(handle)
+        else:
+            os.close(fd)

@@ -42,12 +42,19 @@ must contain exactly 40 hexadecimal digits. Missing, ambiguous and unsupported
 metadata fails closed. The original client's automatic platform/file choice is
 **not** inferred from this explicit selection.
 
-The file is opened through a no-follow, nonblocking, close-on-exec descriptor
-and checked as a regular file. Platforms without those flags are refused. The
-default maximum is 2,147,483,647 bytes; callers can lower it. A changed file,
-FIFO, symlink or oversized file is rejected. A complete read with a wrong
-declared size or digest returns a negative receipt. The report retains SHA-256
-digests for the exact catalogue source, normalized selected node, canonical
+On POSIX, the file is opened through a no-follow, nonblocking, close-on-exec
+descriptor and checked as a regular file. On supported Windows hosts (tested
+on the disposable Windows 11 VM), a Win32 `CreateFileW` handle opens the final
+path component without following a reparse point, denies concurrent
+write/delete opens, and checks disk-file type, attributes, size, file ID and
+timestamps around a read from that same handle. The Windows path fails closed
+if the filesystem cannot provide those handle details. Parent-directory
+junctions are outside this command's current containment contract; callers
+must not infer a trusted source path from the receipt. The default maximum is
+2,147,483,647 bytes; callers can lower it. A changed file, FIFO,
+symlink/reparse point or oversized file is rejected. A complete read with a
+wrong declared size or digest returns a negative receipt. The report retains
+SHA-256 digests for the exact catalogue source, normalized selected node, canonical
 node and observed package bytes, as well as the legacy SHA-1 comparison. It
 does not expose the local path or catalogue URL.
 
@@ -69,6 +76,16 @@ excluding file URLs. The helper checks only that documented finite shape; it
 does not mimic or approve the original download path. The exact private
 binary/archive and committed fixture hashes, method hashes, and observations
 are in [the sanitized evidence](../research/fixtures/toolkit-update-package-file-source-evidence.json).
+
+An offline call to the original signed SESU 3.0.7
+`DownloadChannel.IntegrityCheck` accepted a synthetic file with a correct SHA-1
+and rejected a wrong SHA-1 when the security-dictionary key matched the
+destination folder. It accepted a wrong SHA-1 when that key did not match the
+folder. This bounded oracle shows why the CLI requires a unique, explicit
+catalogue file ID and digest/size comparison. It does not establish parity with
+the original signature-chain, revocation, download or installer gates. Windows
+Python 3.13.14 lacks `O_NOFOLLOW`, `O_NONBLOCK` and `O_CLOEXEC`; its native
+Win32 handle path is tested separately from POSIX.
 
 Issue [#62](https://github.com/mitchell-johnson/cbus/issues/62) still needs
 one verified source-to-package chain with current publisher/path trust and
