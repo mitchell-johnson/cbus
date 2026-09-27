@@ -1,0 +1,94 @@
+{
+  "format": "cbus-toolkit-csv-project-export-review-v1",
+  "work_item": "P8.02",
+  "date": "2026-09-28",
+  "base_revision": "0c3bb0e",
+  "scope": "Whole-project CSV composition of admitted native profiles; modeled Rust project DBGETXML snapshot enabling existing unit/network and new project CSV clients.",
+  "implemented": [
+    "Offline --native-xml-project and live --project selectors; exactly one native project snapshot.",
+    "Project/network XML document order, shared serializer/columns/encoding and atomic validation before output creation.",
+    "Bounds on all project networks and selected units, duplicate addresses/selected unit identities, empty projects/networks, preserved source.",
+    "Rust explicit //PROJECT read returns Installation/Project/Address and all existing modeled Network subtrees without selection mutation or PCI access."
+  ],
+  "stable_case_ids": {
+    "P8.02.project.document-order": "test_project_keeps_network_document_order_and_secondary_associations",
+    "P8.02.project.empty": "test_empty_project_or_empty_networks_produce_original_header_only",
+    "P8.02.project.ambiguity": "test_ambiguous_or_wrong_project_rejected",
+    "P8.02.project.atomic-output": "test_late_failure_leaves_no_partial_project_export",
+    "P8.02.project.bounds": "test_total_unit_bound_applies_across_networks_before_projection",
+    "P8.02.project.single-read": "test_live_project_uses_exactly_one_snapshot",
+    "P8.02.project.rust-integration": "test_csv_snapshot_through_rust_server",
+    "P8.02.project.rust-preservation": "project_xml_composes_networks_without_selection_or_mutation"
+  },
+  "source_sha256": {
+    "rust/cbus-cgate/src/lib.rs": "815d4e6a16248b656aaddc1d8cebbaff4f517b2df36d93cadb26ecd511bde0df",
+    "rust/testdata/vectors/cgate_project_snapshot.json": "a37b1ef60f3a33477cfdd7b6040a845da064f78938fbf1f390fe6d058c38e2ae",
+    "toolkit-cli/src/cbus_toolkit/toolkit_database_csv_cli.py": "6cbf37ce77dc3becd1c892d252be9cbc77111beba6cefff97f9bdbbad932b878",
+    "toolkit-cli/src/cbus_toolkit/toolkit_database_csv_native.py": "e206c472d02acbe37e3fbfc3afaf69df85125d67f2a240978304f2e83bcc12d9",
+    "toolkit-cli/tests/test_toolkit_database_csv_project_export.py": "2181b860beca69eb8d0af223b9bec697ccaa3ad7d93be99d40715a58828b8947",
+    "toolkit-cli/tests/test_toolkit_database_csv_project_interop.py": "412a1a46ac948ec83cee97ed1859a7a7bb8815a5b7cedcc247eef93cce3797d8",
+    "toolkit-cli/research/fixtures/native-cgate-project-xml-shape.json": "5774cccb5b0e7575a936f1dbd5c21d1e94296d3de994a75e3cce57470c78e85f"
+  },
+  "native_source_shape": "research/fixtures/native-cgate-project-xml-shape.json",
+  "native_original_project_reads_reinspected": 11,
+  "native_original_projects": 4,
+  "rust_binaries": {
+    "cgate-mock": {
+      "sha256": "cefab67b6e907e4e40b4f8b53564bfef5129add69a43d3a14089ab7cc325999e",
+      "build": "cargo build -p cbus-cgate -p cmqttd",
+      "source": "This branch base plus source_sha256 Rust change; binaries rebuilt from this worktree."
+    },
+    "cmqttd": {
+      "sha256": "edca15db75bcef3eea9844fa439a6965d4a732f6d24e5e200726341bf1245bfa",
+      "build": "cargo build -p cbus-cgate -p cmqttd",
+      "source": "This branch base plus source_sha256 Rust change; binaries rebuilt from this worktree."
+    }
+  },
+  "wheel": {
+    "filename": "cbus_toolkit_cli-0.1.0-py3-none-any.whl",
+    "sha256": "d33b3ec82ff84551b541b1595781e465c310224a1cb9aea358c2313797439daf",
+    "python": "3.13",
+    "package_import": "isolated venv site-packages; source tree excluded",
+    "packaged_production_sources_match": true
+  },
+  "checks": {
+    "source_and_installed_wheel": {
+      "passed_each": 121,
+      "subtests_passed_each": 194,
+      "skipped_each": 3,
+      "selection": [
+        "test_toolkit_database_csv_project_export.py",
+        "test_toolkit_database_csv_project_interop.py",
+        "test_toolkit_database_csv_selection_export.py",
+        "test_toolkit_database_csv_native.py",
+        "test_cli_toolkit_database_csv.py",
+        "test_toolkit_database_csv_projection.py",
+        "test_toolkit_database_csv_selection.py",
+        "test_toolkit_database_csv.py",
+        "test_toolkit_database_csv_area.py",
+        "test_windows_csv_selection.py",
+        "test_windows_csv_encoding.py"
+      ],
+      "skips": "One Windows CSV selection and two Windows native encoding tests require explicitly provisioned Windows host.",
+      "command": "python -m pytest <selection> -q -p no:cacheprovider -ra; both Rust binary environment variables configured"
+    },
+    "rust_fmt": "cargo fmt --check: passed",
+    "rust_clippy": "cargo clippy -p cbus-cgate --all-targets -- -D warnings: passed",
+    "rust_xml_tests": "cargo test -p cbus-cgate xml: 22 passed across library/server/show/TCP targets",
+    "rust_build": "cargo build -p cbus-cgate -p cmqttd: passed",
+    "session_differential": "9/9 each Rust server",
+    "tagged_session_differential": "11/11 each Rust server",
+    "dbsetxml_differential": "12/12 exact Unit wire and 2/2 combined Network each Rust server",
+    "parity_register": "make check-parity-register passed"
+  },
+  "limits": [
+    "Full source/wheel/workspace/release suites intentionally not repeated, following user instruction for focused verification.",
+    "Three Windows-specific cases skipped here; retained earlier native Windows evidence is not a fresh run.",
+    "Rust snapshot wrapper omits native Installation/Project OIDs, timestamps and unmodeled metadata; not lossless Schneider export.",
+    "No fresh original C-Gate process, original report manager, physical hardware or house network was used.",
+    "Snapshot order is not verified original report-manager enumeration.",
+    "Existing unit/firmware/Area and secondary-application profile restrictions remain.",
+    "Issue #56 remains open: original manager order, remaining unit/secondary profiles and full original report acceptance."
+  ],
+  "invalidation": "Any source/binary/wheel changes require corresponding revalidation; source fixture hash mismatch invalidates original hierarchy support. No original manager-order or broad parity acceptance is conferred."
+}

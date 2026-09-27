@@ -26,6 +26,8 @@ def options(commands):
                       help='Project admitted units from one native XML snapshot in the supplied order')
     mode.add_argument('--native-xml-network', metavar='//PROJECT/NETWORK',
                       help='Project every unit in one native XML network, preserving document order')
+    mode.add_argument('--native-xml-project', metavar='//PROJECT',
+                      help='Project every unit across all snapshot networks in document order')
     parser.add_argument('--columns', nargs='+', default=None, metavar='COLUMN',
                         help='all (default), or selected names: ' + ', '.join(COLUMNS) + '; output follows original order')
     _selection_options(parser)
@@ -40,6 +42,8 @@ def live_options(parser):
                       help='Admitted units from one project snapshot in the supplied order')
     mode.add_argument('--network', metavar='//PROJECT/NETWORK',
                       help='Every unit in one snapshot network, preserving document order')
+    mode.add_argument('--project', metavar='//PROJECT',
+                      help='Every unit across all project networks in snapshot document order')
     parser.add_argument('--output', required=True, type=Path,
                         help='New CSV file; existing destinations are never overwritten')
     parser.add_argument('--columns', nargs='+', default=None, metavar='COLUMN',
@@ -203,16 +207,18 @@ class DatabaseCSVFileOperation:
         self.last_error = self.last_cause = self.last_evidence = None
 
     def run(self, source, *, output, columns, cached_projection=False, native_xml_unit=None,
-            native_xml_units=None, native_xml_network=None,
+            native_xml_units=None, native_xml_network=None, native_xml_project=None,
             selection_evidence=None, toolkit_native_encoding=False):
         self.last_error = self.last_cause = self.last_evidence = None
         if type(cached_projection) is not bool:
             raise ValueError('cached_projection must be Boolean')
         if native_xml_unit is not None and type(native_xml_unit) is not str:
             raise ValueError('native_xml_unit must be text or absent')
-        batch = native_xml_units is not None or native_xml_network is not None
+        batch = any(value is not None for value in
+                    (native_xml_units, native_xml_network, native_xml_project))
         if sum((cached_projection, native_xml_unit is not None,
-                native_xml_units is not None, native_xml_network is not None)) > 1:
+                native_xml_units is not None, native_xml_network is not None,
+                native_xml_project is not None)) > 1:
             raise ValueError('Select at most one database CSV input mode')
         input_mode = ('native_xml_selection' if batch else
                       'native_xml' if native_xml_unit is not None else
@@ -249,7 +255,8 @@ class DatabaseCSVFileOperation:
             selected = validate_columns(columns)
             if batch:
                 from .toolkit_database_csv_native import _selection_project
-                _selection_project(unit_paths=native_xml_units, network_path=native_xml_network)
+                _selection_project(unit_paths=native_xml_units, network_path=native_xml_network,
+                                   project_path=native_xml_project)
             source, output = Path(source), Path(output)
             state.update(source=str(source), output=str(output), stage='source_stat')
             initial = os.lstat(source)
@@ -289,7 +296,7 @@ class DatabaseCSVFileOperation:
                 from .toolkit_database_csv_native import loads_native_xml_selection
                 state['stage'] = 'project_native_xml_selection'
                 projection = loads_native_xml_selection(raw, unit_paths=native_xml_units,
-                    network_path=native_xml_network, columns=selected)
+                    network_path=native_xml_network, project_path=native_xml_project, columns=selected)
                 state['projection'] = projection.as_dict()
                 report = projection.report
             elif native_xml_unit is not None:
@@ -403,6 +410,7 @@ def run(args):
                            native_xml_units=(tuple(args.native_xml_units)
                                if getattr(args, 'native_xml_units', None) is not None else None),
                            native_xml_network=getattr(args, 'native_xml_network', None),
+                           native_xml_project=getattr(args, 'native_xml_project', None),
                            selection_evidence=selection,
                            toolkit_native_encoding=getattr(
                                args, 'toolkit_native_encoding', False))
@@ -422,15 +430,17 @@ def live(args, client_factory, ssl_context):
     encoder = _prepare_output_encoder(toolkit_native_encoding)
     unit_paths = getattr(args, 'units', None)
     network_path = getattr(args, 'network', None)
-    batch = unit_paths is not None or network_path is not None
+    project_path = getattr(args, 'project', None)
+    batch = any(value is not None for value in (unit_paths, network_path, project_path))
     if batch:
         if args.unit is not None:
-            raise ValueError('Select either a positional unit, --units or --network')
+            raise ValueError('Select either a positional unit, --units, --network or --project')
         if unit_paths is not None:
             if type(unit_paths) not in (list, tuple):
                 raise ValueError('--units must contain unit paths')
             unit_paths = tuple(unit_paths)
-        project = _selection_project(unit_paths=unit_paths, network_path=network_path)
+        project = _selection_project(unit_paths=unit_paths, network_path=network_path,
+                                     project_path=project_path)
     else:
         project, _network, _unit = _path(args.unit)
     if type(args.apply_missing_area) is not bool:
@@ -471,7 +481,7 @@ def live(args, client_factory, ssl_context):
             reply = NativeDatabase(client).get('//' + project, xml=True)
             xml = native_xml_reply_text(reply)
         projection = (project_native_xml_selection(xml, unit_paths=unit_paths,
-                        network_path=network_path, columns=selected) if batch else
+                        network_path=network_path, project_path=project_path, columns=selected) if batch else
                       project_native_xml_unit(xml, args.unit, columns=selected))
     if not projection.complete or projection.report is None:
         raise ValueError('Native XML projection stopped: ' + str(projection.stop_reason))

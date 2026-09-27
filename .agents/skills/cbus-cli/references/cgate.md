@@ -1831,3 +1831,11 @@ is 400 and any accepted form is one volatile fanout event plus `200 OK.`.
 - Unit-spec file: 8 MiB maximum; include traversal is capped at 128 files and checked for directory containment.
 
 Use loopback and an ephemeral port in automated work. Stop the child process after the check. Do not expose the mock listener beyond the intended test environment.
+
+`DBGETXML //PROJECT` reads an existing loaded project's modeled
+Installation/Project wrapper and all modeled Network subtrees without changing
+session selection or accessing PCI. Networks are emitted in numeric address
+order. This enables the Toolkit database CSV single-unit/network/project
+snapshot workflows. Unmodeled native wrapper metadata is omitted; do not use
+this view as a lossless Schneider archive or infer original Toolkit manager
+order. See `docs/cmqttd-cgate.md` and the CSV profile restrictions.

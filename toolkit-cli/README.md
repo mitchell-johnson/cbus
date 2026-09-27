@@ -37,6 +37,14 @@ from the current revision. CI retains JUnit reports with the executed tests and
 provisioning skips; those reports are separate from the evidence-derived parity
 decision.
 
+Whole-project database CSV export is available offline with
+`toolkit-database-csv project.xml --native-xml-project //PROJECT --output new.csv`
+and live with `cgate database-csv --project //PROJECT --output new.csv`. It
+reads one project snapshot, includes every supported unit across its networks,
+and rejects unsupported or ambiguous units before creating a partial report.
+Rows follow XML document order; original Toolkit manager order remains
+unverified. See [CSV profiles and limits](docs/toolkit-database-csv.md).
+
 ## Install and run
 
 Python 3.13 or newer, from the repository root:

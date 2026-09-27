@@ -4104,6 +4104,16 @@ impl Server {
             }
             return ok(tag, vec![format!("path={path}")], "200 OK");
         }
+        // A project-qualified snapshot is independent of this connection's
+        // current selection. It is a modeled Installation/Project projection,
+        // not a lossless vendor archive or an implicit PROJECT USE.
+        if xml {
+            if let Some(project) = path.strip_prefix("//") {
+                if !project.is_empty() && !project.contains('/') {
+                    return self.project_xml(tag, project);
+                }
+            }
+        }
         let current = self.current.clone().unwrap_or_default();
         // `//PROJECT/NET[/APP[/GROUP]]`: the project and network must exist.
         let parts: Vec<&str> = path.split('/').filter(|s| !s.is_empty()).collect();
@@ -4212,6 +4222,32 @@ impl Server {
         ok(tag, vec![format!("path={path}")], "200 OK")
     }
 
+    /// Modeled network inventory under the observed native Installation/Project
+    /// wrapper. Vendor wrapper OIDs, timestamps and other unmodeled project
+    /// metadata are deliberately omitted; this is not a native project archive.
+    fn project_xml(&self, tag: &str, project_name: &str) -> Response {
+        let Some(project) = self.projects.get(project_name) else {
+            return err(tag, status::ABSENT, "401 Project not found");
+        };
+        let mut document = format!(
+            "<Installation><Project><Address>{}</Address>",
+            xml_escape(&project.name)
+        );
+        let mut networks = project.networks.keys().copied().collect::<Vec<_>>();
+        networks.sort_unstable();
+        for network in networks {
+            // Use the same modeled subtree as a direct Network read, retaining
+            // applications, labels, units, PP fields and XML extensions.
+            document.push_str(&self.network_xml_document(
+                project_name,
+                network,
+                &project.networks[&network],
+            ));
+        }
+        document.push_str("</Project></Installation>");
+        Self::db_xml_response(tag, document)
+    }
+
     /// Native network document for `DBGETXML //PROJECT/NET`.
     ///
     /// A single-line document the addressing inventory and physical
@@ -4227,6 +4263,10 @@ impl Server {
         else {
             return err(tag, status::ABSENT, "401 Network not found");
         };
+        Self::db_xml_response(tag, self.network_xml_document(proj_name, net, network))
+    }
+
+    fn network_xml_document(&self, proj_name: &str, net: u8, network: &Network) -> String {
         let mut doc = self.db_xml_open(proj_name, &network.oid, "Network", &[]);
         doc.push_str(&format!(
             "<OID>{}</OID><TagName>{}</TagName><Address>{net}</Address><NetworkNumber>{net}</NetworkNumber>",
@@ -4254,7 +4294,7 @@ impl Server {
         }
         self.append_db_xml_extensions(proj_name, &network.oid, &mut doc);
         doc.push_str("</Network>");
-        Self::db_xml_response(tag, doc)
+        doc
     }
 
     fn db_xml_response(tag: &str, document: String) -> Response {
@@ -11413,6 +11453,73 @@ mod tests {
         assert_eq!(pingu.final_text, "200 OK.");
         assert_eq!(s.handle("[7] DBGET //TEST/254/p/6/UnitName").status, 200);
         assert_eq!(s.handle("[8] GET //TEST/254/p/6 UnitName").status, 402);
+    }
+
+    #[test]
+    fn project_xml_composes_networks_without_selection_or_mutation() {
+        let mut server = Server::new(AccessLevel::Program);
+        for command in [
+            "PROJECT NEW SNAP",
+            "DBCREATENET 254 Later Cni 127.0.0.1:1",
+            "DBADDSAFE //SNAP/254 Unit 4 Owned",
+            "DBSETSAFE //SNAP/254/p/4/UnitName A&B",
+            "DBCREATENET 1 First Cni 127.0.0.1:1",
+            "DBADDSAFE //SNAP/1 Application 56 Lighting",
+            "DBADDSAFE //SNAP/1/56 Group 7 Lamp",
+            "PROJECT NEW OTHER",
+        ] {
+            assert_eq!(
+                server.handle(&format!("[1] {command}")).status,
+                200,
+                "{command}"
+            );
+        }
+        let before = server.projects.clone();
+        let selected = server.current_project();
+        let response = server.handle("[8] DBGETXML //SNAP");
+        assert_eq!(response.status, 200);
+        assert_eq!(server.current_project(), selected);
+        assert_eq!(server.projects, before);
+        let document = response.lines[0].strip_prefix("347-").unwrap();
+        let parsed = roxmltree::Document::parse(document).unwrap();
+        assert_eq!(parsed.root_element().tag_name().name(), "Installation");
+        let project = parsed.root_element().first_element_child().unwrap();
+        assert_eq!(project.tag_name().name(), "Project");
+        assert_eq!(project.first_element_child().unwrap().text(), Some("SNAP"));
+        let networks = project
+            .children()
+            .filter(|n| n.has_tag_name("Network"))
+            .collect::<Vec<_>>();
+        assert_eq!(networks.len(), 2);
+        for (element, address) in networks.iter().zip([1, 254]) {
+            let direct = server.network_xml("", "SNAP", address);
+            assert_eq!(
+                &document[element.range()],
+                direct.lines[0].strip_prefix("347-").unwrap()
+            );
+        }
+        assert!(document.contains("<UnitName>A&amp;B</UnitName>"));
+        server.set_current_project(None);
+        assert_eq!(server.handle("[8] DBGETXML //SNAP").lines, response.lines);
+        assert!(server.current_project().is_none());
+        assert_eq!(server.projects, before);
+        assert_eq!(server.handle("[9] DBGETXML //MISSING").status, 401);
+        assert_eq!(server.handle("[10] DBGET //SNAP").status, 400);
+    }
+
+    #[test]
+    fn project_xml_empty_snapshot_has_bounded_exact_wire_vector() {
+        let vector: serde_json::Value = serde_json::from_str(include_str!(
+            "../../testdata/vectors/cgate_project_snapshot.json"
+        ))
+        .unwrap();
+        let mut server = Server::new(AccessLevel::Program);
+        assert_eq!(server.handle("[1] PROJECT NEW EMPTY").status, 200);
+        let response = server.handle(vector["request"].as_str().unwrap().trim());
+        assert_eq!(
+            format_native_dbgetxml_wire_response(&response).as_deref(),
+            vector["response"].as_str()
+        );
     }
 
     #[test]

@@ -314,10 +314,18 @@ def _network_path(value):
     return match[1], int(match[2])
 
 
-def _selection_project(*, unit_paths=None, network_path=None):
+def _project_path(value):
+    if type(value) is not str or re.fullmatch(r'//[A-Za-z0-9_]{1,8}', value) is None:
+        raise ValueError('Use //PROJECT with a one-to-eight character project identifier')
+    return value[2:]
+
+
+def _selection_project(*, unit_paths=None, network_path=None, project_path=None):
     """Validate a selection without XML or I/O and return its one project name."""
-    if (unit_paths is None) == (network_path is None):
-        raise ValueError('Select exactly one ordered unit selection or one network')
+    if sum(value is not None for value in (unit_paths, network_path, project_path)) != 1:
+        raise ValueError('Select exactly one ordered unit selection, network or project')
+    if project_path is not None:
+        return _project_path(project_path)
     if network_path is not None:
         return _network_path(network_path)[0]
     if type(unit_paths) is not tuple or not 1 <= len(unit_paths) <= MAX_UNITS:
@@ -337,6 +345,7 @@ class NativeXMLCSVSelection:
     xml_sha256: str
     projections: tuple[NativeXMLCSVProjection, ...]
     report: DatabaseCSV
+    project_path: str | None = None
 
     @property
     def complete(self):
@@ -351,7 +360,9 @@ class NativeXMLCSVSelection:
             'format': 'cbus-toolkit-database-native-xml-selection-v1',
             'complete': True, 'unit_paths': list(self.unit_paths),
             'network_path': self.network_path,
-            'unit_order': ('snapshot_document' if self.network_path is not None
+            'project_path': self.project_path,
+            'unit_order': ('snapshot_document' if (self.network_path is not None
+                                                  or self.project_path is not None)
                            else 'explicit_selection'),
             'xml_sha256': self.xml_sha256,
             'projections': [item.as_dict() for item in self.projections],
@@ -365,27 +376,39 @@ class NativeXMLCSVSelection:
         }
 
 
-def project_native_xml_selection(text, *, unit_paths=None, network_path=None, columns):
-    """Project an ordered unit selection or all units in one snapshot network.
+def project_native_xml_selection(text, *, unit_paths=None, network_path=None,
+                                 project_path=None, columns):
+    """Project an ordered selection, one network or every project network.
 
-    Network selection preserves XML document order. This composes the admitted
-    per-unit profiles; it does not infer Toolkit's manager enumeration order.
+    Network and project selections preserve XML document order. This composes
+    the admitted per-unit profiles; it does not infer Toolkit's manager enumeration order.
     Every selected unit must project successfully before a report is returned.
     """
-    project_name = _selection_project(unit_paths=unit_paths, network_path=network_path)
+    project_name = _selection_project(unit_paths=unit_paths, network_path=network_path,
+                                      project_path=project_path)
     selected = validate_columns(columns)
     project = _snapshot_project(text, project_name)
     xml_sha256 = hashlib.sha256(text.encode('utf-8')).hexdigest()
-    if network_path is not None:
-        network_address = _network_path(network_path)[1]
-        network = _one_by_address(project, 'Network', network_address)
-        units = _children(network, 'Unit')
-        if len(units) > MAX_UNITS:
-            raise ValueError('Network unit selection exceeds 4096 units')
-        addresses = tuple(_byte(_field(unit, 'Address'), 'Unit address') for unit in units)
-        if len(set(addresses)) != len(addresses):
-            raise ValueError('Native network contains duplicate unit addresses')
-        unit_paths = tuple(f'{network_path}/p/{address}' for address in addresses)
+    if network_path is not None or project_path is not None:
+        networks = (_children(project, 'Network') if project_path is not None else
+                    [_one_by_address(project, 'Network', _network_path(network_path)[1])])
+        if len(networks) > 256:
+            raise ValueError('Project network selection exceeds 256 networks')
+        seen_networks = set()
+        selected_paths = []
+        for network in networks:
+            address = _byte(_field(network, 'Address'), 'Network address')
+            if address in seen_networks:
+                raise ValueError('Native project contains duplicate network addresses')
+            seen_networks.add(address)
+            units = _children(network, 'Unit')
+            if len(selected_paths) + len(units) > MAX_UNITS:
+                raise ValueError('Native unit selection exceeds 4096 units')
+            addresses = tuple(_byte(_field(unit, 'Address'), 'Unit address') for unit in units)
+            if len(set(addresses)) != len(addresses):
+                raise ValueError('Native network contains duplicate unit addresses')
+            selected_paths.extend(f'//{project_name}/{address}/p/{unit}' for unit in addresses)
+        unit_paths = tuple(selected_paths)
 
     projections = []
     identities = set()
@@ -404,11 +427,14 @@ def project_native_xml_selection(text, *, unit_paths=None, network_path=None, co
             raise ValueError(path + ': ' + str(error)) from error
     report = document_database_csv(tuple(item.cached.csv_unit for item in projections),
                                     columns=selected)
-    return NativeXMLCSVSelection(unit_paths, network_path, xml_sha256, tuple(projections), report)
+    return NativeXMLCSVSelection(unit_paths, network_path, xml_sha256, tuple(projections),
+                                 report, project_path)
 
 
-def loads_native_xml_selection(raw, *, unit_paths=None, network_path=None, columns):
+def loads_native_xml_selection(raw, *, unit_paths=None, network_path=None,
+                               project_path=None, columns):
     if type(raw) is not bytes or not 1 <= len(raw) <= MAX_CAPTURE_BYTES:
         raise ValueError('Native XML snapshot must be nonempty bytes within the 8 MiB bound')
     return project_native_xml_selection(raw.decode('utf-8'), unit_paths=unit_paths,
-                                        network_path=network_path, columns=columns)
+                                        network_path=network_path, project_path=project_path,
+                                        columns=columns)

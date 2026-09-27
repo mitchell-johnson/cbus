@@ -24,6 +24,21 @@ fragmented memory reads, then permanently retires that generation and signals
 connection loss. cmqttd reconnects a fresh generation through its existing
 connection manager; it never replays, resumes, or reuses the partial snapshot.
 
+`DBGETXML //PROJECT` now returns a read-only modeled
+`Installation/Project/Network` snapshot for an existing loaded project,
+independently of the connection's current project selection. It composes the
+same Network subtrees returned by direct network reads, including modeled
+applications, groups, labels, units and PP fields, in numeric network order.
+This enables Toolkit CLI CSV export for a unit, network or entire project
+through cmqttd. The native selector and hierarchy are backed by
+[11 retained original project reads](../toolkit-cli/research/fixtures/native-cgate-project-xml-shape.json).
+The minimal wrapper omits unmodeled native Installation/Project OIDs,
+timestamps and metadata; it is **not a lossless Schneider project export**,
+and numeric network order is local service behavior. The read neither
+selects a project nor performs PCI I/O. Missing projects return 401. Other
+project selector aliases, exact native error wording, complete original
+wrapper metadata and original Toolkit report-manager order remain unverified.
+
 ## Start and connect
 
 ```sh

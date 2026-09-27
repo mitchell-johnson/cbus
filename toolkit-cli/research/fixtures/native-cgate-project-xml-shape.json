@@ -1,0 +1,280 @@
+{
+  "format": "cbus-original-project-xml-shape-v1",
+  "source_report_sha256": "f4c8369e0fc4cad87de15a3ad844c7d6a303df741af4e87797ed2f7822bc158c",
+  "source_archive_sha256": "8ec94db97e7ed2a7bb153fa27662633579b0af3bee1d5e43e97671814883de4a",
+  "source_review": "research/experiments/2026-09-24/csv-native4-analysis.json",
+  "source_target": "C-Gate 3.4.0.2001; four owned synthetic projects",
+  "reinspection_date": "2026-09-28",
+  "cases": [
+    {
+      "command": "DBGETXML //CSVBA01",
+      "status": 344,
+      "payload_sha256": "471becbdbec5b03f4f0ef9c6462645f1a5ace451677bcd9616e3e951e2d49893",
+      "root": "Installation",
+      "installation_children": [
+        "OID",
+        "DBVersion",
+        "Version",
+        "Modified",
+        "Project",
+        "InstallationDetail"
+      ],
+      "project_children": [
+        "OID",
+        "TagName",
+        "Address",
+        "Description",
+        "Network",
+        "Config"
+      ],
+      "project_address_matches_selector": true,
+      "network_count": 1
+    },
+    {
+      "command": "DBGETXML //CSVBA01",
+      "status": 344,
+      "payload_sha256": "471becbdbec5b03f4f0ef9c6462645f1a5ace451677bcd9616e3e951e2d49893",
+      "root": "Installation",
+      "installation_children": [
+        "OID",
+        "DBVersion",
+        "Version",
+        "Modified",
+        "Project",
+        "InstallationDetail"
+      ],
+      "project_children": [
+        "OID",
+        "TagName",
+        "Address",
+        "Description",
+        "Network",
+        "Config"
+      ],
+      "project_address_matches_selector": true,
+      "network_count": 1
+    },
+    {
+      "command": "DBGETXML //CSVBA01",
+      "status": 344,
+      "payload_sha256": "471becbdbec5b03f4f0ef9c6462645f1a5ace451677bcd9616e3e951e2d49893",
+      "root": "Installation",
+      "installation_children": [
+        "OID",
+        "DBVersion",
+        "Version",
+        "Modified",
+        "Project",
+        "InstallationDetail"
+      ],
+      "project_children": [
+        "OID",
+        "TagName",
+        "Address",
+        "Description",
+        "Network",
+        "Config"
+      ],
+      "project_address_matches_selector": true,
+      "network_count": 1
+    },
+    {
+      "command": "DBGETXML //CSVBA02",
+      "status": 344,
+      "payload_sha256": "d9fa6d21e031565e171242c600fd04b555772eef7455d859bf87c0d1850d79e9",
+      "root": "Installation",
+      "installation_children": [
+        "OID",
+        "DBVersion",
+        "Version",
+        "Modified",
+        "Project",
+        "InstallationDetail"
+      ],
+      "project_children": [
+        "OID",
+        "TagName",
+        "Address",
+        "Description",
+        "Network",
+        "Config"
+      ],
+      "project_address_matches_selector": true,
+      "network_count": 1
+    },
+    {
+      "command": "DBGETXML //CSVBA02",
+      "status": 344,
+      "payload_sha256": "d9fa6d21e031565e171242c600fd04b555772eef7455d859bf87c0d1850d79e9",
+      "root": "Installation",
+      "installation_children": [
+        "OID",
+        "DBVersion",
+        "Version",
+        "Modified",
+        "Project",
+        "InstallationDetail"
+      ],
+      "project_children": [
+        "OID",
+        "TagName",
+        "Address",
+        "Description",
+        "Network",
+        "Config"
+      ],
+      "project_address_matches_selector": true,
+      "network_count": 1
+    },
+    {
+      "command": "DBGETXML //CSVBA02",
+      "status": 344,
+      "payload_sha256": "d9fa6d21e031565e171242c600fd04b555772eef7455d859bf87c0d1850d79e9",
+      "root": "Installation",
+      "installation_children": [
+        "OID",
+        "DBVersion",
+        "Version",
+        "Modified",
+        "Project",
+        "InstallationDetail"
+      ],
+      "project_children": [
+        "OID",
+        "TagName",
+        "Address",
+        "Description",
+        "Network",
+        "Config"
+      ],
+      "project_address_matches_selector": true,
+      "network_count": 1
+    },
+    {
+      "command": "DBGETXML //CSVBA03",
+      "status": 344,
+      "payload_sha256": "9fda465ee8037e9d45a81e00c1e9f6b692411a231be8d2a63ff3865fa2b4aae2",
+      "root": "Installation",
+      "installation_children": [
+        "OID",
+        "DBVersion",
+        "Version",
+        "Modified",
+        "Project",
+        "InstallationDetail"
+      ],
+      "project_children": [
+        "OID",
+        "TagName",
+        "Address",
+        "Description",
+        "Network",
+        "Config"
+      ],
+      "project_address_matches_selector": true,
+      "network_count": 1
+    },
+    {
+      "command": "DBGETXML //CSVBA03",
+      "status": 344,
+      "payload_sha256": "9fda465ee8037e9d45a81e00c1e9f6b692411a231be8d2a63ff3865fa2b4aae2",
+      "root": "Installation",
+      "installation_children": [
+        "OID",
+        "DBVersion",
+        "Version",
+        "Modified",
+        "Project",
+        "InstallationDetail"
+      ],
+      "project_children": [
+        "OID",
+        "TagName",
+        "Address",
+        "Description",
+        "Network",
+        "Config"
+      ],
+      "project_address_matches_selector": true,
+      "network_count": 1
+    },
+    {
+      "command": "DBGETXML //CSVBA03",
+      "status": 344,
+      "payload_sha256": "9fda465ee8037e9d45a81e00c1e9f6b692411a231be8d2a63ff3865fa2b4aae2",
+      "root": "Installation",
+      "installation_children": [
+        "OID",
+        "DBVersion",
+        "Version",
+        "Modified",
+        "Project",
+        "InstallationDetail"
+      ],
+      "project_children": [
+        "OID",
+        "TagName",
+        "Address",
+        "Description",
+        "Network",
+        "Config"
+      ],
+      "project_address_matches_selector": true,
+      "network_count": 1
+    },
+    {
+      "command": "DBGETXML //CSVBA04",
+      "status": 344,
+      "payload_sha256": "0ca7aa1e8a55f5be70303115ad2c873abff963b343af3768a9feda6d4122ef9e",
+      "root": "Installation",
+      "installation_children": [
+        "OID",
+        "DBVersion",
+        "Version",
+        "Modified",
+        "Project",
+        "InstallationDetail"
+      ],
+      "project_children": [
+        "OID",
+        "TagName",
+        "Address",
+        "Description",
+        "Network",
+        "Config"
+      ],
+      "project_address_matches_selector": true,
+      "network_count": 1
+    },
+    {
+      "command": "DBGETXML //CSVBA04",
+      "status": 344,
+      "payload_sha256": "0ca7aa1e8a55f5be70303115ad2c873abff963b343af3768a9feda6d4122ef9e",
+      "root": "Installation",
+      "installation_children": [
+        "OID",
+        "DBVersion",
+        "Version",
+        "Modified",
+        "Project",
+        "InstallationDetail"
+      ],
+      "project_children": [
+        "OID",
+        "TagName",
+        "Address",
+        "Description",
+        "Network",
+        "Config"
+      ],
+      "project_address_matches_selector": true,
+      "network_count": 1
+    }
+  ],
+  "limits": [
+    "Structural reinspection of the retained hash-verified original capture; no fresh native process run.",
+    "Wrapper OIDs, metadata values, runtime/host fields, original XML and private binary inputs are not copied.",
+    "Rust exposes modeled network subtrees under the observed hierarchy; it does not reproduce unmodeled Installation/Project fields or claim lossless vendor project interchange.",
+    "The four original captures do not prove multi-network Toolkit report-manager enumeration or every selector/error shape."
+  ]
+}

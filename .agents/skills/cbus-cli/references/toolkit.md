@@ -351,3 +351,12 @@ applicability. See
 `toolkit-cli/docs/toolkit-update-rollout-owned-registry.md` before using it.
 
 For development, install `./toolkit-cli[test,research,serial,usb]`, then run `make check` and `make check-interop` from `toolkit-cli/`. Native/vendor/hardware tests require explicit environment gates; report skips separately from passes.
+
+For a complete snapshot CSV selection, use `toolkit-database-csv project.xml
+--native-xml-project //PROJECT --output new.csv`, or `cgate database-csv
+--project //PROJECT --output new.csv` for one live DBGETXML snapshot. These
+include all networks and units in XML document order and reject the entire
+export before output creation if any selected unit is unsupported or
+ambiguous. The admitted unit profiles and read-only missing-Area restriction
+remain; this is not verified original Toolkit manager enumeration. Use
+`--units`/`--native-xml-units` for an explicitly selected supported subset.

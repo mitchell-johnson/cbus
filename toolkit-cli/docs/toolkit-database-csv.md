@@ -12,9 +12,11 @@ cbus-toolkit toolkit-database-csv cached.json --cached-projection --output relay
 cbus-toolkit toolkit-database-csv project.xml --native-xml-unit //PROJECT/254/p/4 --output native.csv
 cbus-toolkit toolkit-database-csv project.xml --native-xml-units //PROJECT/254/p/9 //PROJECT/254/p/4 --output selected.csv
 cbus-toolkit toolkit-database-csv project.xml --native-xml-network //PROJECT/254 --output network.csv
+cbus-toolkit toolkit-database-csv project.xml --native-xml-project //PROJECT --output project.csv
 cbus-toolkit cgate --host 127.0.0.1 database-csv //PROJECT/254/p/4 --output live.csv
 cbus-toolkit cgate --host 127.0.0.1 database-csv --units //PROJECT/254/p/9 //PROJECT/254/p/4 --output selected-live.csv
 cbus-toolkit cgate --host 127.0.0.1 database-csv --network //PROJECT/254 --output network-live.csv
+cbus-toolkit cgate --host 127.0.0.1 database-csv --project //PROJECT --output project-live.csv
 cbus-toolkit cgate --host 127.0.0.1 database-csv //PROJECT/254/p/4 --apply-missing-area --backup-project BACKUP --output live.csv
 ```
 
@@ -82,7 +84,36 @@ The admitted RELAY4 4.4 shape has applications `56 255`, groups 1 through 8 foll
 
 Multi-unit export uses `--native-xml-units` offline or `--units` live for an explicit ordered selection, or `--native-xml-network` offline / `--network` live for every unit in one network. Explicit selections must contain unique canonical paths from one project; they may span its networks. Network selection preserves the XML document's unit order, including an empty network. It does not sort by address or infer Toolkit's unit-manager enumeration order. Each operation parses one project snapshot, applies the existing admitted projector separately to every selected unit, and sends those values through the same serializer to produce one header, all rows and one final blank line. Live export still requests exactly one `DBGETXML //PROJECT` snapshot.
 
-All selected units must satisfy the existing profile, firmware, application, group-cache and Area restrictions. A missing or unsupported selected unit, ambiguous selected address, duplicate selected object identity or missing Area group rejects the complete export atomically before output creation: no partial selection is written. Explicit selection may omit unsupported units; whole-network selection cannot. The source snapshot remains unchanged. `--apply-missing-area` is rejected for selection/network modes, even when they select one unit; the positional single-unit B03 workflow below retains its original scope. Selection evidence records each projected path, the shared snapshot SHA-256 and whether order came from explicit selection or snapshot document order.
+Whole-project export uses `--native-xml-project //PROJECT` offline or
+`--project //PROJECT` live. It includes every direct Network and every direct
+Unit in the selected Installation/Project snapshot, retaining network document
+order followed by each network's unit document order. It emits one shared
+header and final blank line. Identical unit addresses in different networks
+remain distinct; receipt `unit_paths` identifies each row and `project_path`
+identifies the requested scope. Empty networks contribute no rows, and a
+project with no units produces the original header-only report. A snapshot
+may contain at most 256 networks and 4,096 selected units in total; duplicate
+network addresses, duplicate per-network unit addresses, duplicate selected
+unit identities, and any unsupported selected unit reject the entire report.
+The first such failure creates no output file, even after earlier rows were
+successfully projected. Live export uses exactly one `DBGETXML //PROJECT`
+request and never scans or opens a network. As with network selection, this
+is a composition of admitted unit profiles in **snapshot document order**;
+`original_manager_enumeration_verified` remains false. It does not establish
+the original report manager's complete whole-project behavior. See the
+[source and test receipt](../research/experiments/2026-09-28/csv-project-export-review.json).
+
+Both Rust services support the project-level read used by all live CSV modes.
+They return the observed `Installation/Project/Network` hierarchy with each
+modeled Network subtree, ordered by numeric network address. Their minimal
+Installation/Project wrapper intentionally omits native metadata that the Rust
+model does not retain; it is sufficient for these admitted CSV profiles, not a
+lossless native project export. The adapter consumes the returned order and
+keeps `original_manager_enumeration_verified=false`. Six loopback end-to-end
+checks exercise unit, network and project CSV exports against both Rust servers
+and verify that the project snapshot remains unchanged afterward.
+
+All selected units must satisfy the existing profile, firmware, application, group-cache and Area restrictions. A missing or unsupported selected unit, ambiguous selected address, duplicate selected object identity or missing Area group rejects the complete export atomically before output creation: no partial selection is written. Explicit selection may omit unsupported units; whole-network and whole-project selections cannot. The source snapshot remains unchanged. `--apply-missing-area` is rejected for selection/network/project modes, even when they select one unit; the positional single-unit B03 workflow below retains its original scope. Selection evidence records each projected path, the shared snapshot SHA-256 and whether order came from explicit selection or snapshot document order.
 
 `--apply-missing-area` is the explicit mutation path for the exact archived B03 shape only: one RELAY4 4.4 unit, one Lighting application at 56, stored applications `56 255`, interaction groups 1 through 8, stored Area13, and existing groups 1 through 8, 12 and 255 with their captured tags. `--backup-project` is mandatory and must name a distinct new project. The manager saves and copies the source before mutation, rechecks the complete network fingerprint, creates only application-56 group13 as `Group 13`, verifies its returned OID and the absence of any other network change, saves, closes, reloads and verifies persistence before rendering the CSV. A failed target save removes the created group and verifies the original network; a lost connection leaves the named backup for recovery. If file creation or writing fails after persistence, error details explicitly report the completed mutation and backup project.
 
@@ -110,7 +141,7 @@ The original quirks are deliberate:
 
 The pure serializer API is `document_database_csv(tuple_of_CSVUnitValues, *, columns=tuple_of_names)`. `loads_cached_projection(bytes, columns=...)` validates and executes the bounded cached projection; `project_cached_csv_unit(...)` is its typed API. Columns are mandatory. Inputs and results are immutable snapshots, and projection results include ordered events, terminal group/reference state, the selected original class and any stop reason. The package requires no original binaries for these operations.
 
-The multi-unit native API is `project_native_xml_selection(text, *, unit_paths=tuple_of_paths, columns=tuple_of_names)` or the same call with `network_path='//PROJECT/NETWORK'` instead of `unit_paths`. `loads_native_xml_selection(bytes, ...)` accepts the same selectors with an 8 MiB UTF-8 input limit. Explicit selections are nonempty and bounded to 4,096 units; an empty network produces the original empty report. Results contain the combined report and ordered per-unit projections. Completed cached projections also retain their immutable `CSVUnitValues` as `csv_unit`, allowing composition without retranscribing display values.
+The multi-unit native API is `project_native_xml_selection(text, *, unit_paths=tuple_of_paths, columns=tuple_of_names)` or the same call with `network_path='//PROJECT/NETWORK'` or `project_path='//PROJECT'` instead of `unit_paths`. The three selectors are mutually exclusive. `loads_native_xml_selection(bytes, ...)` accepts the same selectors with an 8 MiB UTF-8 input limit. Explicit selections are nonempty and bounded to 4,096 units; an empty network produces the original empty report. Results contain the combined report and ordered per-unit projections. Completed cached projections also retain their immutable `CSVUnitValues` as `csv_unit`, allowing composition without retranscribing display values.
 
 File export validates the complete capture and bounded encoded output before exclusive destination creation. It rejects existing output files and requires a regular source whose pre-open, opened-handle and post-open identities agree. It writes at most 32 MiB, handles partial writes, flushes with `fsync`, and closes once. An error after creation leaves the file in place with explicit possible-partial-output evidence; there is no replay or cleanup deletion. Evidence retains confirmed write counts and the first exception through secondary close/report failures. Parent-directory durability remains outside this acceptance.
 
@@ -118,7 +149,7 @@ The original executable is pinned to SHA-256 `9d01721abab3beb4724511e7d65e39328c
 
 Original `TStrings.SaveToFile` selects the Windows default code page. Static analysis pins the complete report action, both `SaveToFile` and `SaveToStream` overloads, `TEncoding.GetDefault`, the CP_ACP constructor, byte-count/conversion methods and empty preamble. Native Windows execution verifies the production path against CP1252, including the surrogate-pair replacement edge. UTF-8 remains the portable default. This feature does not establish network-scan admission or automatic project-to-row projection.
 
-The [focused acceptance fixture](../research/fixtures/toolkit-database-csv-acceptance.json) records the historical 23 tests passing without skips on Python 3.13.14 and 3.10.20, including a fresh 88-case original observation in each run. Exact source/test/runtime inputs were archived before execution. The current host selection passes 82 serializer/projection/Area/CLI tests. Five separate adapter tests on macOS execute two platform guards and declare three native cases skipped. The owned Windows VM passes two native registry and three native encoding tests on Python 3.13.14, including missing-value default, 32-bit `REG_SZ` roundtrip, wrong-type rejection, CP1252 conversion, exact production output evidence and cleanup. File tests cover Unicode, no-overwrite behavior, source-path replacement, partial writes, lost creation return, `fsync`/close failure and first-interruption preservation. The research launcher retains partial process output on timeout/interruption and records process reaping. The first Python 3.10 attempt stopped before original execution because its environment lacked Capstone; that attempt and earlier successful source versions remain preserved.
+The [focused acceptance fixture](../research/fixtures/toolkit-database-csv-acceptance.json) records the historical 23 tests passing without skips on Python 3.13.14 and 3.10.20, including a fresh 88-case original observation in each run. Exact source/test/runtime inputs were archived before execution. The earlier host selection passed 82 serializer/projection/Area/CLI tests. The current focused source and installed-wheel selections each pass 121 tests and 194 subtests, including six Rust-server live CSV cases; three Windows registry/encoding cases skip on this host. Five separate adapter tests on macOS execute two platform guards and declare three native cases skipped. The owned Windows VM passes two native registry and three native encoding tests on Python 3.13.14, including missing-value default, 32-bit `REG_SZ` roundtrip, wrong-type rejection, CP1252 conversion, exact production output evidence and cleanup. File tests cover Unicode, no-overwrite behavior, source-path replacement, partial writes, lost creation return, `fsync`/close failure and first-interruption preservation. The research launcher retains partial process output on timeout/interruption and records process reaping. The first Python 3.10 attempt stopped before original execution because its environment lacked Capstone; that attempt and earlier successful source versions remain preserved.
 
 Fresh original tests require the optional `research` extras (including pinned `capstone==5.0.7`) and `CBUS_TOOLKIT_EXE` naming the exact original executable. Their current native-library pins and network-denial harness are macOS-specific. Portable formatter and file tests do not require an original executable.
 

@@ -607,6 +607,11 @@ behavior. **Depends on:** P0/P1 and P2 where native formats are involved.
   invent general corrupt-database recovery.
 - [ ] **P8.02** ([#56](https://github.com/mitchell-johnson/cbus/issues/56)) — Finish original report-manager enumeration, remaining unit associations,
   secondary applications, whole-project export and encoding/column behavior.
+  The admitted snapshot adapter now exports every network/unit in one project
+  with one live DBGETXML request, document-order provenance, and atomic rejection
+  of unsupported or ambiguous units before output creation. This does not close
+  original manager enumeration or broaden supported unit/firmware profiles.
+  [Bounded project-export receipt](../toolkit-cli/research/experiments/2026-09-28/csv-project-export-review.json).
   Native XML document order alone does not prove Toolkit manager order.
 - [ ] **P8.03** ([#57](https://github.com/mitchell-johnson/cbus/issues/57)) — Implement project/database documentation, print/image export and topology
   navigation with comparable native outputs and reference integrity.
